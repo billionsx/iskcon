@@ -1,30 +1,21 @@
 import { useState } from "react";
 import { ICONS } from "./icons";
 
-// Top-bar icons (create + heart), drawn to Instagram weight
-const Glyph = ({ paths, size = 25, sw = 1.9 }: { paths: string[]; size?: number; sw?: number }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor"
-    strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round">
-    {paths.map((p, i) => <path key={i} d={p} />)}
-  </svg>
-);
-const CREATE = ["M6 4.7h12A1.3 1.3 0 0 1 19.3 6v12A1.3 1.3 0 0 1 18 19.3H6A1.3 1.3 0 0 1 4.7 18V6A1.3 1.3 0 0 1 6 4.7z", "M12 8.6v6.8", "M8.6 12h6.8"];
-const HEART = ["M12 20.3C7 17 3.5 13.5 3.5 9.6 3.5 7 5.4 5.2 7.8 5.2c1.7 0 3.2 1 4.2 2.5 1-1.5 2.5-2.5 4.2-2.5 2.4 0 4.3 1.8 4.3 4.4 0 3.9-3.5 7.4-8.5 10.7z"];
+const Img = ({ name, h }: { name: string; h: number }) => {
+  const ic = ICONS[name];
+  return <img src={ic.uri} alt="" draggable={false} style={{ height: h, width: (ic.w / ic.h) * h, display: "block" }} />;
+};
 
 function TopBar() {
   return (
     <header className="topbar">
+      <button className="tIcon" aria-label="Создать"><Img name="plus" h={23} /></button>
       <div className="brand">Gaurāṅgers</div>
-      <div className="topActions">
-        <button aria-label="Создать"><Glyph paths={CREATE} /></button>
-        <button aria-label="Уведомления"><Glyph paths={HEART} /></button>
-      </div>
+      <button className="tIcon" aria-label="Уведомления"><Img name="heart" h={25} /></button>
     </header>
   );
 }
 
-// Bottom nav: glyphs traced pixel-for-pixel from the reference; icon render height set
-// to the screenshot's proportion (22pt of 393 ≈ 5.6% → ~27px in a 480 container).
 const NAV = [
   { key: "home", label: "Главная", icon: "home" },
   { key: "reels", label: "Reels", icon: "reels" },
@@ -33,7 +24,7 @@ const NAV = [
   { key: "profile", label: "Профиль", avatar: true },
 ] as const;
 
-const ICON_H = 27; // px, proportional to the measured 22pt glyph
+const ICON_H = 27;
 
 function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
   return (
@@ -53,11 +44,9 @@ function TabBar({ active, onChange }: { active: string; onChange: (k: string) =>
             </button>
           );
         }
-        const ic = ICONS[(t as any).icon];
         return (
           <button key={t.key} className="tab" role="tab" aria-selected={on} aria-label={t.label} onClick={() => onChange(t.key)}>
-            <img src={ic.uri} alt="" draggable={false}
-              style={{ height: ICON_H, width: (ic.w / ic.h) * ICON_H, display: "block" }} />
+            <Img name={(t as any).icon} h={ICON_H} />
           </button>
         );
       })}
