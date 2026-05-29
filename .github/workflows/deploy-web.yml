@@ -27,20 +27,23 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bunx wrangler deploy 2>&1 | tee /tmp/web-deploy.log
 
-      - name: Smoke test site + noindex, record into D1
+      - name: Verify (workers.dev instant + apex), record into D1
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set +e
-          code=000; xr=""
-          for i in $(seq 1 10); do
-            code=$(curl -s -o /tmp/b.html -w "%{http_code}" https://gaurangers.com/)
-            xr=$(curl -s -I https://gaurangers.com/ | grep -i 'x-robots-tag' | tr -d '\r')
-            [ "$code" = "200" ] && break
-            sleep 12
-          done
-          echo "site -> HTTP $code ; $xr"
-          note=$(echo "$xr" | tr -d "\"'" | cut -c1-180)
+          WD=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/web-deploy.log | head -1)
+          echo "workers.dev = $WD"
+          if [ -n "$WD" ]; then
+            wcode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "$WD/")
+            wxr=$(curl -s -I --max-time 25 "$WD/" | grep -i 'x-robots-tag' | tr -d '\r')
+            echo "workers.dev -> HTTP $wcode ; $wxr"
+            bunx wrangler d1 execute iskcon-db --remote \
+              --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'web workers.dev',${wcode:-0},'$(echo "$WD ; $wxr" | tr -d "\"'" | cut -c1-180)');" || true
+          fi
+          acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://gaurangers.com/")
+          axr=$(curl -s -I --max-time 25 "https://gaurangers.com/" | grep -i 'x-robots-tag' | tr -d '\r')
+          echo "apex -> HTTP $acode ; $axr"
           bunx wrangler d1 execute iskcon-db --remote \
-            --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'https://gaurangers.com/ (web)',${code:-0},'$note');" || true
+            --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'web apex',${acode:-0},'$(echo "$axr" | tr -d "\"'" | cut -c1-150)');" || true
