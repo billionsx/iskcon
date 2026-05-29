@@ -1,261 +1,112 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-type Center = { id: string; name: string; city?: string; country?: string };
-type Festival = { id: string; type?: string; name_i18n?: any; name?: any };
-
-const tr = (v: any, lang = "ru") => {
-  try {
-    const o = typeof v === "string" ? JSON.parse(v) : v;
-    return (o && (o[lang] || o.en)) || "";
-  } catch {
-    return typeof v === "string" ? v : "";
-  }
-};
-
-const asArray = (d: any): any[] => {
-  if (Array.isArray(d)) return d;
-  if (!d || typeof d !== "object") return [];
-  return d.data || d.results || d.centers || d.festivals || d.events || d.items || [];
-};
-
-function useApi<T = any>(path: string) {
-  const [data, setData] = useState<T | null>(null);
-  useEffect(() => {
-    let on = true;
-    fetch(path)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => on && setData(d))
-      .catch(() => {});
-    return () => {
-      on = false;
-    };
-  }, [path]);
-  return data;
-}
-
-const ic = {
-  home: "M4 11.5 12 4l8 7.5M6 10v9h12v-9",
-  search: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M21 21l-4.3-4.3",
-  lotus:
-    "M12 21c-4.5 0-8-2.4-8-6 2 .4 3.6 1.5 4.6 3M12 21c4.5 0 8-2.4 8-6-2 .4-3.6 1.5-4.6 3M12 21c-2-3-2-6.2 0-9.2 2 3 2 6.2 0 9.2M12 12c-2-1-3-3-3-5 1.6.3 2.6 1.2 3 2.4.4-1.2 1.4-2.1 3-2.4 0 2-1 4-3 5",
-  calendar: "M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zM4 9.5h16M8 3v4M16 3v4",
-  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M5 20.5a7 7 0 0 1 14 0",
-  radio: "M4.5 8.5a16 16 0 0 1 15 0M7.5 12a10 10 0 0 1 9 0M12 15.5h.01",
-  bell: "M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20.5a2 2 0 0 0 4 0",
-  chat: "M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.3A8 8 0 1 1 21 12z",
-  pin: "M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11M12 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5",
-};
-
-const Icon = ({ d, size = 24 }: { d: string; size?: number }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-    <path d={d} />
+type GlyphProps = { paths: string[]; fill?: boolean; size?: number; sw?: number };
+const Glyph = ({ paths, fill = false, size = 26, sw = 1.8 }: GlyphProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    fill={fill ? "currentColor" : "none"}
+    stroke={fill ? "none" : "currentColor"}
+    strokeWidth={fill ? 0 : sw}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    {paths.map((p, i) => (
+      <path key={i} d={p} />
+    ))}
   </svg>
 );
+
+// ---- top bar line icons ----
+const RADIO = ["M4.6 8.6a16 16 0 0 1 14.8 0", "M7.6 12a10 10 0 0 1 8.8 0", "M12 15.4h.01"];
+const BELL = ["M6 9.2a6 6 0 1 1 12 0c0 4.8 2 6 2 6H4s2-1.2 2-6", "M10 20.4a2 2 0 0 0 4 0"];
+const SEND = ["M21 4 3 11l7 2.6L13 21l8-17z", "M10 13.6 21 4"];
+
+// ---- bottom nav glyphs (outline + filled) ----
+const HOME_O = ["M3.6 11.3 12 4.4l8.4 6.9", "M5.8 9.8V19.4h4.3v-5.4h3.8v5.4h4.3V9.8"];
+const HOME_F = ["M12 3.6 2.6 11.5h2.6v8.1h4.3v-5.3h5v5.3h4.3v-8.1h2.6z"];
+const SEARCH_O = ["M11 4.6a6.4 6.4 0 1 0 0 12.8 6.4 6.4 0 0 0 0-12.8z", "M20.2 20.2l-4.4-4.4"];
+const SEARCH_F = ["M11 4a7 7 0 0 1 5.2 11.7l4 4-1.5 1.5-4-4A7 7 0 1 1 11 4z"];
+const LOTUS_O = [
+  "M12 19.6c-4.3 0-7.8-2.2-7.8-5.5 1.9.3 3.5 1.3 4.6 3",
+  "M12 19.6c4.3 0 7.8-2.2 7.8-5.5-1.9.3-3.5 1.3-4.6 3",
+  "M12 19.6c-2-2.8-2-5.9 0-8.8 2 2.9 2 6 0 8.8",
+  "M12 11c-1.9-1-2.8-2.7-2.8-4.6 1.5.3 2.5 1 2.8 2.2.3-1.2 1.3-1.9 2.8-2.2 0 1.9-.9 3.6-2.8 4.6",
+];
+const LOTUS_F = [
+  "M12 20.2c-2.2-2.9-2.2-6.3 0-9.6 2.2 3.3 2.2 6.7 0 9.6z",
+  "M11.4 20c-1-2-2.7-3.2-5-3.6-1-.2-1.9-.9-2.4-1.9 2.1.2 6.3.9 7.6 4.9.2.6-.1.9-.2.6z",
+  "M12.6 20c1-2 2.7-3.2 5-3.6 1-.2 1.9-.9 2.4-1.9-2.1.2-6.3.9-7.6 4.9-.2.6.1.9.2.6z",
+  "M12 11.4c-2-1-3-2.9-3-5 1.6.3 2.6 1.1 3 2.4.4-1.3 1.4-2.1 3-2.4 0 2.1-1 4-3 5z",
+];
+const CAL_O = [
+  "M4.8 6.2h14.4a1.4 1.4 0 0 1 1.4 1.4v11.4a1.4 1.4 0 0 1-1.4 1.4H4.8a1.4 1.4 0 0 1-1.4-1.4V7.6a1.4 1.4 0 0 1 1.4-1.4z",
+  "M3.4 10.2h17.2",
+  "M7.8 3.6v4",
+  "M16.2 3.6v4",
+];
+const CAL_F = [
+  "M4.8 6.2h14.4a1.4 1.4 0 0 1 1.4 1.4v1.6H3.4V7.6a1.4 1.4 0 0 1 1.4-1.4z",
+  "M3.4 11h17.2v8a1.4 1.4 0 0 1-1.4 1.4H4.8A1.4 1.4 0 0 1 3.4 19z",
+  "M7.8 3.4v4",
+  "M16.2 3.4v4",
+];
 
 function TopBar() {
   return (
     <header className="topbar">
       <div className="brand">Gaurāṅgers</div>
       <div className="topActions">
-        <button aria-label="Krishna radio"><Icon d={ic.radio} size={22} /></button>
-        <button aria-label="Уведомления"><Icon d={ic.bell} size={22} /></button>
-        <button aria-label="Сангха и сообщения"><Icon d={ic.chat} size={22} /></button>
+        <button aria-label="Радио"><Glyph paths={RADIO} size={23} /></button>
+        <button aria-label="Уведомления"><Glyph paths={BELL} size={23} /></button>
+        <button aria-label="Сообщения"><Glyph paths={SEND} size={23} /></button>
       </div>
     </header>
   );
 }
 
-function TempleCard({ c }: { c: Center }) {
-  return (
-    <div className="templeCard">
-      <div className="tIcon"><Icon d={ic.pin} size={20} /></div>
-      <div className="tInfo">
-        <span className="tName">{c.name}</span>
-        <span className="tMeta">{[c.city, c.country].filter(Boolean).join(", ") || "—"}</span>
-      </div>
-    </div>
-  );
-}
-
-function Home({ centers }: { centers: Center[] }) {
-  return (
-    <div className="view">
-      <section className="darshan">
-        <span className="eyebrow">Даршан дня</span>
-        <h2 className="darshanName">Шри-Шри Радха-Мадхава</h2>
-        <span className="darshanLoc">Шри Маяпур Чандродая Мандир</span>
-        <div className="mandala" />
-      </section>
-
-      <section className="card">
-        <span className="eyebrow" style={{ color: "var(--gold)" }}>Стих дня</span>
-        <p className="verseText">«Подобно тому как воплощённая душа переходит из детства в юность и старость, так и в момент смерти она переходит в новое тело».</p>
-        <span className="verseRef">Бхагавад-гӣта 2.13</span>
-      </section>
-
-      <div className="rowCards">
-        <div className="miniCard">
-          <span className="miniLabel">Сегодня</span>
-          <span className="miniValue">Экадаши</span>
-          <span className="miniSub">день поста</span>
-        </div>
-        <div className="miniCard live">
-          <span className="miniLabel"><span className="dot" />В эфире</span>
-          <span className="miniValue">Киртан</span>
-          <span className="miniSub">Маяпур · сейчас</span>
-        </div>
-      </div>
-
-      <section>
-        <div className="sectionHead"><h3>Храмы рядом</h3><span className="seeAll">Все</span></div>
-        <div className="list">
-          {centers.slice(0, 4).map((c) => <TempleCard key={c.id} c={c} />)}
-          {centers.length === 0 && <div className="empty">Загружаем храмы…</div>}
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function Search({ centers }: { centers: Center[] }) {
-  const [q, setQ] = useState("");
-  const list = centers.filter((c) =>
-    (c.name + " " + (c.city || "") + " " + (c.country || "")).toLowerCase().includes(q.toLowerCase())
-  );
-  return (
-    <div className="view">
-      <h2 className="viewTitle">Поиск</h2>
-      <div className="searchBox">
-        <Icon d={ic.search} size={20} />
-        <input placeholder="Храмы, книги, личности, рецепты…" value={q} onChange={(e) => setQ(e.target.value)} />
-      </div>
-      <div className="sectionHead"><h3>Храмы мира</h3><span className="seeAll">{list.length}</span></div>
-      <div className="list">
-        {list.map((c) => <TempleCard key={c.id} c={c} />)}
-        {centers.length === 0 && <div className="empty">Загружаем храмы…</div>}
-        {centers.length > 0 && list.length === 0 && <div className="empty">Ничего не найдено</div>}
-      </div>
-    </div>
-  );
-}
-
-function Calendar({ festivals }: { festivals: Festival[] }) {
-  return (
-    <div className="view">
-      <h2 className="viewTitle">Календарь</h2>
-      <div className="banner">
-        <span className="eyebrow">Сегодня</span>
-        <strong>Экадаши — день поста</strong>
-      </div>
-      <div className="sectionHead"><h3>Праздники Вайшнавов</h3></div>
-      <div className="list">
-        {festivals.map((f) => (
-          <div className="festRow" key={f.id}>
-            <span className="fDot" />
-            <span className="fName">{tr(f.name_i18n || f.name) || f.id}</span>
-            <span className="fType">{f.type}</span>
-          </div>
-        ))}
-        {festivals.length === 0 && <div className="empty">Загружаем календарь…</div>}
-      </div>
-    </div>
-  );
-}
-
-function Temple() {
-  const [beads, setBeads] = useState(0);
-  const rounds = Math.floor(beads / 108);
-  const inRound = beads % 108;
-  return (
-    <div className="view mid">
-      <div className="deityPanel">
-        <span className="eyebrow">Храм в кармане</span>
-        <span className="deityName">Шри-Шри Радха-Мадхава</span>
-        <span className="deitySub">Ваш даршан · поднесите и воспевайте</span>
-        <div className="mandala sm" />
-      </div>
-      <div className="japa">
-        <button className="japaBtn" onClick={() => setBeads((b) => b + 1)} aria-label="Джапа, добавить бусину">
-          <span className="japaRounds">{rounds}</span>
-          <span className="japaLabel">кругов</span>
-        </button>
-        <div className="bar"><div className="barFill" style={{ width: `${(inRound / 108) * 100}%` }} /></div>
-        <span className="barCount">{inRound} / 108 бусин</span>
-        {beads > 0 && <button className="ghost" onClick={() => setBeads(0)}>Сбросить</button>}
-      </div>
-    </div>
-  );
-}
-
-const STAGES = ["шраддха", "садху-санга", "бхаджана-крийя", "анартха-нивритти", "ништха", "ручи", "асакти", "бхава", "према"];
-
-function Path() {
-  const current = 1;
-  return (
-    <div className="view">
-      <div className="profile">
-        <div className="avatar">अ</div>
-        <div>
-          <div className="pName">Преданный</div>
-          <div className="pSub">Начало пути · садху-санга</div>
-        </div>
-      </div>
-      <div className="streak">
-        <div><strong>0</strong><span>дней садханы</span></div>
-        <div><strong>0</strong><span>кругов</span></div>
-        <div><strong>2</strong><span>ступень</span></div>
-      </div>
-      <div className="sectionHead"><h3>Путь: шраддха → према</h3></div>
-      <div className="ladder">
-        {STAGES.map((s, i) => (
-          <div className={"step" + (i <= current ? " on" : "")} key={s}>
-            <span className="sDot">{i + 1}</span>
-            <span className="sName">{s}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 const TABS = [
-  { key: "home", label: "Сегодня", icon: ic.home },
-  { key: "search", label: "Поиск", icon: ic.search },
-  { key: "temple", label: "Храм", icon: ic.lotus, mid: true },
-  { key: "calendar", label: "Календарь", icon: ic.calendar },
-  { key: "path", label: "Мой путь", icon: ic.user },
+  { key: "home", label: "Сегодня", o: HOME_O, f: HOME_F },
+  { key: "search", label: "Поиск", o: SEARCH_O, f: SEARCH_F },
+  { key: "temple", label: "Храм", o: LOTUS_O, f: LOTUS_F },
+  { key: "calendar", label: "Календарь", o: CAL_O, f: CAL_F },
+  { key: "path", label: "Мой путь", avatar: true },
 ];
+
+function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
+  return (
+    <nav className="tabbar" role="tablist">
+      {TABS.map((t) => {
+        const on = active === t.key;
+        return (
+          <button
+            key={t.key}
+            className={"tab" + (on ? " on" : "")}
+            role="tab"
+            aria-selected={on}
+            aria-label={t.label}
+            onClick={() => onChange(t.key)}
+          >
+            {t.avatar ? (
+              <span className={"avatar" + (on ? " on" : "")} />
+            ) : (
+              <Glyph paths={on ? t.f! : t.o!} fill={on} sw={1.9} />
+            )}
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
 
 export default function App() {
   const [tab, setTab] = useState("home");
-  const centers = asArray(useApi("/api/centers"));
-  const festivals = asArray(useApi("/api/calendar/festivals"));
-
   return (
     <div className="shell">
       <TopBar />
-      <main className="content">
-        {tab === "home" && <Home centers={centers} />}
-        {tab === "search" && <Search centers={centers} />}
-        {tab === "temple" && <Temple />}
-        {tab === "calendar" && <Calendar festivals={festivals} />}
-        {tab === "path" && <Path />}
-      </main>
-      <nav className="tabbar">
-        {TABS.map((t) =>
-          t.mid ? (
-            <button key={t.key} className={"tab mid" + (tab === t.key ? " active" : "")} onClick={() => setTab(t.key)}>
-              <span className="centerBtn"><Icon d={t.icon} size={26} /></span>
-              <span className="tabLabel">{t.label}</span>
-            </button>
-          ) : (
-            <button key={t.key} className={"tab" + (tab === t.key ? " active" : "")} onClick={() => setTab(t.key)}>
-              <Icon d={t.icon} />
-              <span className="tabLabel">{t.label}</span>
-            </button>
-          )
-        )}
-      </nav>
+      <main className="content" />
+      <TabBar active={tab} onChange={setTab} />
     </div>
   );
 }
