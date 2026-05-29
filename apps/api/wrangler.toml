@@ -1,0 +1,79 @@
+name = "iskcon-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-15"
+compatibility_flags = ["nodejs_compat"]
+
+# Cloudflare account: Ceo@billionsx.com's account
+account_id = "d5cbe19470dc38599873eabfe148e6d1"
+
+[vars]
+ENVIRONMENT = "production"
+
+# Workers AI (free tier) — future semantic search / embeddings
+# (заменяет Postgres pgvector, который используется в apartsales)
+[ai]
+binding = "AI"
+
+# D1 (SQLite) — основная база
+[[d1_databases]]
+binding = "DB"
+database_name = "iskcon-db"
+database_id = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+
+# KV — кэш (по умолчанию prod; staging — в [env.staging])
+[[kv_namespaces]]
+binding = "CACHE"
+id = "de827666a549446b92d31d40c81c633d"
+preview_id = "cc34a9282bf14f5fb99f899cf3823d8d"
+
+# R2 — раскомментировать ПОСЛЕ включения R2 в дашборде Cloudflare
+# [[r2_buckets]]
+# binding = "STORAGE"
+# bucket_name = "iskcon-media"
+# preview_bucket_name = "iskcon-media-staging"
+
+[observability]
+enabled = true
+
+# ---------------- staging ----------------
+[env.staging]
+name = "iskcon-api-staging"
+vars = { ENVIRONMENT = "staging" }
+
+[env.staging.ai]
+binding = "AI"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "iskcon-db-staging"
+database_id = "7b7f1995-b958-4e0d-bf69-537dff208274"
+
+[[env.staging.kv_namespaces]]
+binding = "CACHE"
+id = "cc34a9282bf14f5fb99f899cf3823d8d"
+
+# ---------------- production ----------------
+[env.production]
+name = "iskcon-api-prod"
+vars = { ENVIRONMENT = "production" }
+
+[env.production.ai]
+binding = "AI"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "iskcon-db"
+database_id = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "de827666a549446b92d31d40c81c633d"
+
+# JWT_SECRET задаётся как Worker secret (никогда не коммитится):
+#   wrangler secret put JWT_SECRET --env production
+#   wrangler secret put JWT_SECRET --env staging
+
+# Custom domain — раскомментировать ПОСЛЕ активации зоны gaurangers.com в Cloudflare
+# [[env.production.routes]]
+# pattern = "api.gaurangers.com/*"
+# custom_domain = true
