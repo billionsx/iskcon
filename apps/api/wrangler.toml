@@ -35,6 +35,11 @@ preview_id = "cc34a9282bf14f5fb99f899cf3823d8d"
 [observability]
 enabled = true
 
+# Custom domain — API на gaurangers.com (зона активна в Cloudflare)
+[[routes]]
+pattern = "api.gaurangers.com"
+custom_domain = true
+
 # ---------------- staging ----------------
 [env.staging]
 name = "iskcon-api-staging"
