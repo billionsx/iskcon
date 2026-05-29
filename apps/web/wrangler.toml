@@ -1,0 +1,18 @@
+name = "iskcon-web"
+main = "worker.ts"
+compatibility_date = "2025-01-15"
+account_id = "d5cbe19470dc38599873eabfe148e6d1"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+# Сайт на основном домене (зона активна в Cloudflare)
+[[routes]]
+pattern = "gaurangers.com"
+custom_domain = true
+
+[[routes]]
+pattern = "www.gaurangers.com"
+custom_domain = true

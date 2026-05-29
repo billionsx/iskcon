@@ -1,0 +1,46 @@
+name: Deploy Web (Cloudflare)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/**'
+      - '.github/workflows/deploy-web.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install deps
+        run: bun install
+      - name: Build site
+        working-directory: apps/web
+        run: bun run build
+      - name: Deploy to Cloudflare
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler deploy 2>&1 | tee /tmp/web-deploy.log
+
+      - name: Smoke test site + noindex, record into D1
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          code=000; xr=""
+          for i in $(seq 1 10); do
+            code=$(curl -s -o /tmp/b.html -w "%{http_code}" https://gaurangers.com/)
+            xr=$(curl -s -I https://gaurangers.com/ | grep -i 'x-robots-tag' | tr -d '\r')
+            [ "$code" = "200" ] && break
+            sleep 12
+          done
+          echo "site -> HTTP $code ; $xr"
+          note=$(echo "$xr" | tr -d "\"'" | cut -c1-180)
+          bunx wrangler d1 execute iskcon-db --remote \
+            --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'https://gaurangers.com/ (web)',${code:-0},'$note');" || true
