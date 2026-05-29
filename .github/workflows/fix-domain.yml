@@ -1,0 +1,84 @@
+name: Fix domain binding (worker custom domain)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Diagnose + bind apex/www to iskcon-web, record into D1
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          ACCT=d5cbe19470dc38599873eabfe148e6d1
+          DB=6226aded-dd03-4e74-977f-9cd0b509e73d
+          API=https://api.cloudflare.com/client/v4
+          auth=(-H "Authorization: Bearer $T" -H "Content-Type: application/json")
+
+          d1ins() {
+            body=$(jq -nc --arg t "$1" --arg h "$2" --arg b "$3" \
+              '{sql:"INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime(\u0027now\u0027),?,?,?)",params:[$t,$h,$b]}')
+            curl -s -X POST "$API/accounts/$ACCT/d1/database/$DB/query" "${auth[@]}" --data "$body" >/dev/null
+          }
+
+          ZONE=$(curl -s "$API/zones?name=gaurangers.com" "${auth[@]}" | jq -r '.result[0].id')
+          echo "zone=$ZONE"
+
+          SSL=$(curl -s "$API/zones/$ZONE/settings/ssl" "${auth[@]}")
+          DNS=$(curl -s "$API/zones/$ZONE/dns_records?per_page=100" "${auth[@]}")
+          WD=$(curl -s "$API/accounts/$ACCT/workers/domains?per_page=100" "${auth[@]}")
+          echo "SSL=$(printf '%s' "$SSL" | jq -c '.result.value')"
+          echo "DNS names:"; printf '%s' "$DNS" | jq -r '.result[]? | "  \(.type) \(.name) -> \(.content) proxied=\(.proxied)"'
+          echo "Worker domains:"; printf '%s' "$WD" | jq -r '.result[]? | "  \(.hostname) -> \(.service)/\(.environment)"'
+
+          d1ins "diag-ssl"  0 "$(printf '%s' "$SSL" | base64 -w0)"
+          d1ins "diag-dns"  0 "$(printf '%s' "$DNS" | base64 -w0)"
+          d1ins "diag-wdom" 0 "$(printf '%s' "$WD"  | base64 -w0)"
+
+          attach() {
+            host=$1
+            abody=$(jq -nc --arg z "$ZONE" --arg host "$host" \
+              '{environment:"production",hostname:$host,service:"iskcon-web",zone_id:$z}')
+            curl -s -X PUT "$API/accounts/$ACCT/workers/domains" "${auth[@]}" --data "$abody"
+          }
+          del_named() {
+            host=$1
+            ids=$(printf '%s' "$DNS" | jq -r --arg h "$host" \
+              '.result[]? | select(.name==$h and (.type=="A" or .type=="AAAA" or .type=="CNAME")) | .id')
+            for id in $ids; do
+              echo "deleting conflicting record $id ($host)"
+              curl -s -X DELETE "$API/zones/$ZONE/dns_records/$id" "${auth[@]}" >/dev/null
+            done
+          }
+
+          for host in gaurangers.com www.gaurangers.com; do
+            r=$(attach "$host")
+            ok=$(printf '%s' "$r" | jq -r '.success')
+            echo "attach $host -> success=$ok"
+            if [ "$ok" != "true" ]; then
+              echo "  errors: $(printf '%s' "$r" | jq -c '.errors')"
+              del_named "$host"
+              sleep 2
+              r=$(attach "$host")
+              ok=$(printf '%s' "$r" | jq -r '.success')
+              echo "re-attach $host -> success=$ok ; errors=$(printf '%s' "$r" | jq -c '.errors')"
+            fi
+            d1ins "bind $host" 0 "$(printf '%s' "$r" | base64 -w0)"
+          done
+
+          echo "waiting for edge to settle..."
+          sleep 10
+          for host in gaurangers.com www.gaurangers.com; do
+            code=000
+            for i in $(seq 1 9); do
+              code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$host/")
+              echo "  $host attempt $i -> $code"
+              [ "$code" = "200" ] && break
+              sleep 9
+            done
+            xr=$(curl -s -I --max-time 20 "https://$host/" | grep -i 'x-robots-tag' | tr -d '\r')
+            d1ins "final $host" "${code:-0}" "$(printf '%s' "$xr" | base64 -w0)"
+          done
+          echo "done"
