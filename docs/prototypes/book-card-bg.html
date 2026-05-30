@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Главная · Библиотека · Бхагавад-гита</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#16132e; --night2:#241d49; --cream:#f6f1e7; --paper:#fffdf8;
+    --gold:#d4a73c; --gold-deep:#a9781f; --saffron:#e8743b; --rose:#c0476b;
+    --ink:#1b1733; --muted:#7d789a; --line:#ece6d8; --ok:#2e9e6b;
+    --shadow:0 18px 50px -18px rgba(22,19,46,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Manrope',sans-serif; color:var(--ink);
+    min-height:100vh; display:grid; place-items:center; padding:32px 16px;
+    background:
+      radial-gradient(1200px 600px at 18% -5%, #2c2358 0%, transparent 55%),
+      radial-gradient(900px 500px at 110% 10%, #3a2140 0%, transparent 50%),
+      linear-gradient(160deg,#0f0d22,#1b1638 60%,#241a3e);
+  }
+  /* phone */
+  .phone{
+    width:392px; height:830px; background:var(--cream); border-radius:42px;
+    box-shadow:var(--shadow), 0 0 0 10px #0c0a1c, 0 0 0 12px #2a2450;
+    overflow:hidden; position:relative; display:flex; flex-direction:column;
+  }
+  .scroll{flex:1; overflow:hidden auto; padding-bottom:84px}
+  .scroll::-webkit-scrollbar{width:0}
+  /* atmospheric header */
+  .topwrap{
+    background:
+      radial-gradient(420px 220px at 80% -20%, rgba(212,167,60,.35), transparent 60%),
+      linear-gradient(165deg,var(--night),var(--night2));
+    color:#efe9dc; padding:22px 20px 26px; position:relative;
+  }
+  .topwrap::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:30px;
+    background:var(--cream); border-radius:30px 30px 0 0}
+  .bar{display:flex;align-items:center;justify-content:space-between}
+  .hi small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c8a85a;font-weight:700}
+  .hi b{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:22px;margin-top:2px;color:#fbf7ee}
+  .icbtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+    background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);color:#efe9dc;position:relative}
+  .dot{position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:var(--saffron);border:1.5px solid var(--night2)}
+  .search{margin-top:16px;display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:11px 14px;color:#d9d3e6;font-size:13.5px}
+  /* verse of the day */
+  .vod{margin:14px 16px 4px;background:linear-gradient(120deg,#2a2150,#3a2540);border-radius:18px;
+    padding:14px 16px;color:#f3ecdd;position:relative;overflow:hidden;border:1px solid rgba(212,167,60,.22)}
+  .vod .tag{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#e7c372;font-weight:800}
+  .vod p{font-family:'Cormorant Garamond',serif;font-size:17px;line-height:1.35;margin-top:6px}
+  .vod span{display:block;margin-top:8px;font-size:11.5px;color:#b6aecd;font-weight:600}
+  .vod .om{position:absolute;right:-6px;bottom:-22px;font-size:90px;color:rgba(212,167,60,.12);font-family:'Cormorant Garamond',serif}
+  /* section head */
+  .sec{display:flex;align-items:baseline;justify-content:space-between;padding:20px 18px 10px}
+  .sec h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:25px;letter-spacing:.2px}
+  .sec a{font-size:12.5px;font-weight:700;color:var(--gold-deep);text-decoration:none}
+  /* ===== showcase book card (apartsales storefront) ===== */
+  .deck{padding:0 16px;display:flex;gap:14px;overflow:hidden}
+  .card{
+    flex:0 0 320px; background:var(--paper); border-radius:24px; overflow:hidden;
+    box-shadow:0 14px 34px -16px rgba(22,19,46,.4); border:1px solid #efe9da;
+    transform:translateY(14px); opacity:0; animation:rise .7s .15s forwards cubic-bezier(.2,.8,.2,1);
+    transition:transform .35s, box-shadow .35s;
+  }
+  .card:hover{transform:translateY(-4px);box-shadow:0 26px 50px -18px rgba(22,19,46,.5)}
+  .card.peek{flex:0 0 96px;opacity:.55;transform:translateY(14px)}
+  @keyframes rise{to{transform:translateY(0);opacity:1}}
+  /* cover hero */
+  .cover{position:relative;height:248px;
+    background:radial-gradient(120% 90% at 50% 8%, #3a2c63 0%, #201746 55%, #160f30 100%);
+    display:grid;place-items:center;overflow:hidden}
+  .rays{position:absolute;inset:0;background:
+    conic-gradient(from 0deg at 50% 22%, transparent 0 6deg, rgba(212,167,60,.10) 6deg 8deg, transparent 8deg 18deg);
+    mix-blend-mode:screen;opacity:.8}
+  .badge{position:absolute;top:12px;left:12px;display:flex;gap:6px;z-index:3}
+  .chip{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    padding:6px 9px;border-radius:999px;background:rgba(255,253,248,.92);color:#5a3d12;backdrop-filter:blur(4px)}
+  .chip.audio{background:rgba(46,158,107,.92);color:#fff}
+  .fav{position:absolute;top:11px;right:11px;z-index:3;width:38px;height:38px;border-radius:50%;
+    border:none;background:rgba(20,16,40,.42);backdrop-filter:blur(6px);display:grid;place-items:center;cursor:pointer;transition:transform .2s}
+  .fav:active{transform:scale(.88)}
+  .fav svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2;transition:.2s}
+  .fav.on svg{fill:#ff4d6d;stroke:#ff4d6d;animation:pop .35s}
+  @keyframes pop{0%{transform:scale(.6)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+  /* emblem cover art (original) */
+  .emblem{width:150px;height:200px;border-radius:10px;position:relative;z-index:2;
+    background:linear-gradient(160deg,#1d1540,#322058);
+    box-shadow:0 16px 30px -10px rgba(0,0,0,.6), inset 0 0 0 1px rgba(212,167,60,.5), inset 0 0 0 6px rgba(212,167,60,.12);
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 10px}
+  .emblem .dev{font-family:'Cormorant Garamond',serif;color:#e9c977;font-size:13px;letter-spacing:.5px}
+  .emblem .seal{width:78px;height:78px;border-radius:50%;border:1.5px solid rgba(233,201,119,.6);
+    display:grid;place-items:center;background:radial-gradient(circle at 50% 35%, rgba(233,201,119,.25), transparent 70%)}
+  .emblem .seal svg{width:54px;height:54px}
+  .emblem .ttl{font-family:'Cormorant Garamond',serif;color:#f4ecd8;font-size:15px;font-weight:700;text-align:center;line-height:1.05}
+  .emblem .ttl i{display:block;font-style:normal;font-size:9px;letter-spacing:.22em;color:#c7a868;text-transform:uppercase;margin-top:3px}
+  /* body */
+  .body{padding:15px 16px 16px}
+  .kicker{font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep)}
+  h3.title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;line-height:1.05;margin:3px 0 2px}
+  .iast{font-size:12px;color:var(--muted);font-style:italic}
+  .author{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12.5px;color:#4a455f;font-weight:600}
+  .author .ava{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--saffron));flex:0 0 auto}
+  .rowmeta{display:flex;align-items:center;gap:8px;margin-top:11px;flex-wrap:wrap}
+  .star{display:flex;align-items:center;gap:4px;font-weight:800;font-size:13px;color:#2a2540}
+  .star svg{width:14px;height:14px;fill:var(--gold)}
+  .rev{font-size:11.5px;color:var(--muted);font-weight:600}
+  .pill{font-size:11px;font-weight:700;color:#5a5572;background:#f1ecdf;border:1px solid #e7e0cd;border-radius:999px;padding:4px 9px}
+  .tagline{margin-top:11px;font-size:12.5px;line-height:1.45;color:#5d5876}
+  .divider{height:1px;background:var(--line);margin:14px 0 12px}
+  .foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .price small{display:block;font-size:10.5px;color:var(--muted);font-weight:600}
+  .price b{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink)}
+  .actions{display:flex;gap:8px}
+  .btn{border:none;border-radius:13px;font-family:'Manrope';font-weight:700;font-size:13px;cursor:pointer;
+    padding:11px 14px;display:flex;align-items:center;gap:6px;transition:transform .15s,filter .2s}
+  .btn:active{transform:scale(.96)}
+  .btn.ghost{background:#f1ecdf;color:#3b3656}
+  .btn.primary{background:linear-gradient(135deg,var(--gold),var(--saffron));color:#241a05;box-shadow:0 8px 18px -8px rgba(232,116,59,.7)}
+  .btn.primary:hover{filter:brightness(1.05)}
+  .svc{display:flex;gap:18px;margin-top:14px;padding-top:13px;border-top:1px dashed var(--line)}
+  .svc div{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10.5px;color:#6b6685;font-weight:600;flex:1}
+  .svc svg{width:19px;height:19px;stroke:var(--gold-deep);fill:none;stroke-width:1.8}
+  /* bottom tabbar */
+  .tabbar{position:absolute;left:0;right:0;bottom:0;height:72px;background:rgba(255,253,248,.92);
+    backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center;padding-bottom:6px}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#a59fbb;font-weight:700}
+  .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9}
+  .tab.active{color:var(--gold-deep)}
+  .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);opacity:0;
+    background:var(--ink);color:#fff;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:12px;
+    transition:.3s;pointer-events:none;white-space:nowrap;box-shadow:0 10px 30px -8px rgba(0,0,0,.5)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="scroll">
+    <!-- header -->
+    <div class="topwrap">
+      <div class="bar">
+        <div class="hi"><small>Харе Кришна 🙏</small><b>Доброе утро, Адвайта</b></div>
+        <div style="display:flex;gap:10px">
+          <div class="icbtn"><span class="dot"></span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#efe9dc" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          <div class="icbtn" style="background:linear-gradient(135deg,var(--gold),var(--saffron));border:none;color:#241a05;font-weight:800;font-family:'Cormorant Garamond',serif">А</div>
+        </div>
+      </div>
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cfc8de" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Найти книгу, стих, личность…
+      </div>
+    </div>
+
+    <!-- verse of the day -->
+    <div class="vod">
+      <span class="om">ॐ</span>
+      <div class="tag">Стих дня · БГ 9.34</div>
+      <p>«Всегда думай обо Мне, стань Моим преданным…»</p>
+      <span>Бхагавад-гита как она есть →</span>
+    </div>
+
+    <!-- section -->
+    <div class="sec"><h2>Библиотека</h2><a href="#">Все книги →</a></div>
+
+    <!-- showcase deck -->
+    <div class="deck">
+      <article class="card">
+        <div class="cover">
+          <div class="rays"></div>
+          <div class="badge">
+            <span class="chip">Бестселлер</span>
+            <span class="chip audio">Аудио</span>
+          </div>
+          <button class="fav" id="fav" aria-label="В избранное">
+            <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+          </button>
+          <!-- original cover emblem -->
+          <div class="emblem">
+            <div class="dev">श्रीमद् भगवद्गीता</div>
+            <div class="seal">
+              <svg viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="20" stroke="#e9c977" stroke-width="1"/>
+                <g stroke="#e9c977" stroke-width="1.4">
+                  <circle cx="32" cy="32" r="6"/>
+                  <g id="spokes"></g>
+                </g>
+                <path d="M32 14c5 6 5 12 0 18-5-6-5-12 0-18z" fill="rgba(233,201,119,.5)"/>
+              </svg>
+            </div>
+            <div class="ttl">Bhagavad-gītā<i>As It Is</i></div>
+          </div>
+        </div>
+
+        <div class="body">
+          <div class="kicker">Писание · Бхагаватам-канон</div>
+          <h3 class="title">Бхагавад-гита как она есть</h3>
+          <div class="iast">Bhagavad-gītā · «Произнесена Кришной Арджуне»</div>
+
+          <div class="author">
+            <span class="ava"></span>
+            А.Ч. Бхактиведанта Свами Прабхупада
+          </div>
+
+          <div class="rowmeta">
+            <span class="star">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>4.9
+            </span>
+            <span class="rev">· 12 480 оценок</span>
+            <span class="pill">18 глав</span>
+            <span class="pill">700 стихов</span>
+            <span class="pill">SA · RU · EN</span>
+          </div>
+
+          <p class="tagline">Беседа Кришны и Арджуны на поле Курукшетра — суть всех Вед в 700 стихах с пословным переводом и комментариями.</p>
+
+          <div class="divider"></div>
+          <div class="foot">
+            <div class="price"><small>Печатное издание</small><b>990 ₽</b></div>
+            <div class="actions">
+              <button class="btn ghost" onclick="toast('Открываю читалку…')">Читать</button>
+              <button class="btn primary" onclick="toast('Книга добавлена в заказ 🛒')">Заказать</button>
+            </div>
+          </div>
+
+          <div class="svc">
+            <div onclick="toast('Аудиокнига')"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16 8a5 5 0 0 1 0 8"/></svg>Аудио</div>
+            <div onclick="toast('Ссылка и QR на книгу')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 21v.01M17 21h.01M21 17h.01"/></svg>QR / поделиться</div>
+            <div onclick="toast('В план чтения')"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>В план</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- peek of next book on the shelf -->
+      <article class="card peek">
+        <div class="cover" style="height:100%;min-height:430px">
+          <div class="emblem" style="width:70px;height:96px;padding:8px 5px">
+            <div class="dev" style="font-size:8px">श्रीमद्</div>
+            <div class="seal" style="width:38px;height:38px"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" stroke="#e9c977" stroke-width="1.2" fill="none"/></svg></div>
+            <div class="ttl" style="font-size:9px">Śrīmad<br>Bhāgavatam</div>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div style="height:18px"></div>
+  </div>
+
+  <!-- bottom tabs -->
+  <nav class="tabbar">
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>Главная</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Храм</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Календарь</div>
+    <div class="tab active"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Библиотека</div>
+    <div class="tab"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Я</div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+  // chakra spokes
+  const sp=document.getElementById('spokes');
+  for(let i=0;i<12;i++){const a=i*30*Math.PI/180,x1=32+6*Math.cos(a),y1=32+6*Math.sin(a),x2=32+20*Math.cos(a),y2=32+20*Math.sin(a);
+    sp.innerHTML+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;}
+  // favorite
+  const fav=document.getElementById('fav');
+  fav.addEventListener('click',()=>{fav.classList.toggle('on');toast(fav.classList.contains('on')?'Добавлено в избранное ♥':'Убрано из избранного');});
+  // toast
+  let t;const el=document.getElementById('toast');
+  function toast(m){el.textContent=m;el.classList.add('show');clearTimeout(t);t=setTimeout(()=>el.classList.remove('show'),1700);}
+</script>
+</body>
+</html>
