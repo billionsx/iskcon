@@ -18,6 +18,7 @@ REL = [
  ("ggd_relations.csv","Гаура-ганоддеша-дипика"),
  ("iskcon_gurus_relations.csv","Гуру ИСККОН (GBC)"),
  ("prabhupada_lilamrita_relations.csv","Прабхупада-лиламрита"),
+ ("book_relations.csv","Книги (appears-in/author)"),
 ]
 REL_RU = {
  "avatar-of":"аватар (из)","expansion-of":"экспансия (из)","shaktyavesha-of":"шактьявеша (из)",
