@@ -10,52 +10,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pull all Tilda pages (html, texts, images) -> D1
+        shell: bash --noprofile --norc {0}
         env:
           PK: ${{ secrets.TILDA_PUBLIC_KEY }}
           SK: ${{ secrets.TILDA_SECRET_KEY }}
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
-          set +e
-          if [ -z "$PK" ] || [ -z "$SK" ]; then echo "::error::Tilda keys missing"; exit 1; fi
+          set +e +o pipefail
+          if [ -z "$PK" ] || [ -z "$SK" ]; then echo "Tilda keys missing"; exit 1; fi
           ACCT=d5cbe19470dc38599873eabfe148e6d1
           DB=6226aded-dd03-4e74-977f-9cd0b509e73d
           T="https://api.tildacdn.info/v1"
           D1="https://api.cloudflare.com/client/v4/accounts/$ACCT/d1/database/$DB/query"
-          cfauth=(-H "Authorization: Bearer $CF" -H "Content-Type: application/json")
-          d1() { jq -nc --arg sql "$1" --argjson p "$2" '{sql:$sql,params:$p}' > /tmp/q.json; curl -s -X POST "$D1" "${cfauth[@]}" --data @/tmp/q.json > /dev/null; }
+          post() { curl -s -X POST "$D1" -H "Authorization: Bearer $CF" -H "Content-Type: application/json" --data @"$1" > /dev/null; }
+          d1() { jq -nc --arg sql "$1" --argjson p "$2" '{sql:$sql,params:$p}' > /tmp/q.json; post /tmp/q.json; }
 
-          projects=$(curl -s "$T/getprojectslist/?publickey=$PK&secretkey=$SK")
-          [ "$(echo "$projects" | jq -r '.status')" = "FOUND" ] || { echo "$projects" | head -c 400; exit 1; }
-          echo "$projects" | jq -r '.result[] | "project \(.id): \(.title)"'
+          curl -s "$T/getprojectslist/?publickey=$PK&secretkey=$SK" > /tmp/projects.json
+          [ "$(jq -r '.status' /tmp/projects.json)" = "FOUND" ] || { head -c 400 /tmp/projects.json; exit 1; }
+          jq -r '.result[] | "project \(.id): \(.title)"' /tmp/projects.json
 
-          total=0; assets=0
-          for pid in $(echo "$projects" | jq -r '.result[].id'); do
-            pages=$(curl -s "$T/getpageslist/?publickey=$PK&secretkey=$SK&projectid=$pid")
-            for pageid in $(echo "$pages" | jq -r '.result[]?.id'); do
-              full=$(curl -s "$T/getpagefull/?publickey=$PK&secretkey=$SK&pageid=$pageid")
-              [ "$(echo "$full" | jq -r '.status')" = "FOUND" ] || { echo "page $pageid skip"; continue; }
-              r=$(echo "$full" | jq '.result')
-              html=$(echo "$r" | jq -r '.html // ""')
-              # image URLs straight from the HTML (tildacdn), unique
-              imgs=$(printf '%s' "$html" | grep -oE 'https://[A-Za-z0-9._-]*tildacdn[A-Za-z0-9._/-]*\.(png|jpg|jpeg|webp|gif|svg)' | sort -u | jq -R . | jq -cs '.')
-              [ -z "$imgs" ] && imgs='[]'
-              alias=$(echo "$r" | jq -r '.alias // ""')
+          total=0; assets=0; errors=0
+          for pid in $(jq -r '.result[].id' /tmp/projects.json); do
+            curl -s "$T/getpageslist/?publickey=$PK&secretkey=$SK&projectid=$pid" > /tmp/pages.json
+            for pageid in $(jq -r '.result[]?.id' /tmp/pages.json); do
+              curl -s "$T/getpagefull/?publickey=$PK&secretkey=$SK&pageid=$pageid" > /tmp/full.json
+              [ "$(jq -r '.status' /tmp/full.json 2>/dev/null)" = "FOUND" ] || { echo "page $pageid skip"; errors=$((errors+1)); continue; }
 
-              jq -nc --argjson r "$r" --argjson imgs "$imgs" '
+              jq -r '.result.html // ""' /tmp/full.json > /tmp/html.txt
+              grep -oE 'https://[A-Za-z0-9._-]*tildacdn[A-Za-z0-9._/-]*\.(png|jpg|jpeg|webp|gif|svg)' /tmp/html.txt 2>/dev/null | sort -u > /tmp/imgs.txt
+              imgs=$(jq -R . /tmp/imgs.txt | jq -cs '.'); [ -z "$imgs" ] && imgs='[]'
+              alias=$(jq -r '.result.alias // ""' /tmp/full.json)
+
+              # upsert page entirely from file (no arg-size limits)
+              jq -nc --slurpfile f /tmp/full.json --argjson imgs "$imgs" '
+                ($f[0].result) as $r |
                 {sql:"INSERT OR REPLACE INTO tilda_pages (pageid,projectid,alias,title,descr,html,images_json,img_count,fetched_at) VALUES (?,?,?,?,?,?,?,?,datetime(\u0027now\u0027))",
                  params:[ ($r.id|tostring), ($r.projectid//""|tostring), ($r.alias//""), ($r.title//""), ($r.descr//""), ($r.html//""), ($imgs|tostring), ($imgs|length) ]}' > /tmp/q.json
-              curl -s -X POST "$D1" "${cfauth[@]}" --data @/tmp/q.json > /dev/null
+              post /tmp/q.json
 
               d1 "DELETE FROM tilda_assets WHERE pageid=?" "[\"$pageid\"]"
-              jq -nc --arg pid "$pageid" --arg alias "$alias" --argjson imgs "$imgs" '
+              jq -nc --arg pid "$pageid" --arg al "$alias" --argjson imgs "$imgs" '
                 {sql:"INSERT INTO tilda_assets (pageid,alias,url,fetched_at) SELECT ?,?,value,datetime(\u0027now\u0027) FROM json_each(?)",
-                 params:[$pid,$alias,($imgs|tostring)]}' > /tmp/q.json
-              curl -s -X POST "$D1" "${cfauth[@]}" --data @/tmp/q.json > /dev/null
+                 params:[$pid,$al,($imgs|tostring)]}' > /tmp/q.json
+              post /tmp/q.json
 
-              n=$(echo "$imgs" | jq 'length'); assets=$((assets+n)); total=$((total+1))
-              echo "page $pageid [$alias] html=$(printf '%s' "$html" | wc -c)b imgs=$n"
-              sleep 0.3
+              n=$(jq 'length' <<<"$imgs"); assets=$((assets+n)); total=$((total+1))
+              echo "page $pageid [$alias] html=$(wc -c </tmp/html.txt)b imgs=$n"
+              sleep 0.2
             done
           done
-          echo "SYNCED pages=$total images=$assets"
-          d1 "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'tilda sync',?,?)" "[\"$total\",\"images=$assets\"]"
+          echo "SYNCED pages=$total images=$assets errors=$errors"
+          d1 "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'tilda sync',?,?)" "[\"$total\",\"images=$assets errors=$errors\"]"
+          exit 0
