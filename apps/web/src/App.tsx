@@ -1,8 +1,8 @@
 /**
  * gaurangers.com — shell copied 1:1 from apartsales (TopHeader + TabBar + UnitCard/UnitHero).
  * Book card PRESENTS the book (no price/rating/compare/CTA): tap → detail page.
- * Covers: official BBT artwork (images.bbtmedia.com), fallback to branded emblem.
- * Text strictly per Śrīla Prabhupāda (full title; framing from his Introduction).
+ * Cover: graphite background for now (real BBT artwork to be wired later).
+ * Text strictly per Śrīla Prabhupāda. One type family throughout.
  */
 import { useState, useRef, type ReactNode } from "react";
 import type { SVGProps } from "react";
@@ -35,7 +35,6 @@ function HeartIcon(p: IconProps) {
 function ShareIcon(p: IconProps) {
   return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>;
 }
-/** Bag with corner +/− glyph (apartsales cart on card) */
 function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
   const { cornerGlyph, ...rest } = p;
   const corner = cornerGlyph === "plus"
@@ -100,7 +99,7 @@ function TabBar({ active, onChange }: { active: string; onChange: (k: string) =>
   );
 }
 
-/* ═════════ logo mark — monochrome via mask (white over photo) ═════════ */
+/* ═════════ logo mark — monochrome via mask, color from parent ═════════ */
 function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
   return (
     <span role="img" aria-label={label} style={{
@@ -112,55 +111,12 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
   );
 }
 
-/* ═════════ branded emblem (fallback when a BBT cover fails to load) ═════════ */
-function spokes(cx: number, cy: number, r1: number, r2: number, n: number, sw: number) {
-  return Array.from({ length: n }, (_, i) => {
-    const a = (i * 2 * Math.PI) / n;
-    return <line key={i} x1={cx + r1 * Math.cos(a)} y1={cy + r1 * Math.sin(a)} x2={cx + r2 * Math.cos(a)} y2={cy + r2 * Math.sin(a)} stroke="#E9C977" strokeWidth={sw} />;
-  });
-}
-function EmblemCover() {
-  return (
-    <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, height: "100%", width: "100%" }} aria-hidden>
-      <defs>
-        <linearGradient id="cv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2c2158" /><stop offset=".55" stopColor="#1d1542" /><stop offset="1" stopColor="#140d2c" /></linearGradient>
-        <radialGradient id="gl" cx="50%" cy="34%" r="60%"><stop offset="0" stopColor="rgba(233,201,119,.30)" /><stop offset="1" stopColor="rgba(233,201,119,0)" /></radialGradient>
-      </defs>
-      <rect width="400" height="500" fill="url(#cv)" /><rect width="400" height="500" fill="url(#gl)" />
-      <g transform="translate(0,10)">
-        <circle cx="200" cy="250" r="74" fill="none" stroke="#E9C977" strokeWidth="1.4" />
-        <circle cx="200" cy="250" r="60" fill="none" stroke="#E9C977" strokeOpacity=".4" strokeWidth="1" />
-        {spokes(200, 250, 26, 70, 16, 1.3)}
-        <circle cx="200" cy="250" r="18" fill="none" stroke="#E9C977" strokeWidth="1.4" />
-        <circle cx="200" cy="250" r="5" fill="#E9C977" />
-      </g>
-    </svg>
-  );
-}
-
-/* Official BBT cover artwork (front covers). */
-const COVERS = [
-  "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk",
-  "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/DE%20BG%202012%20cover%20front_0.jpg?itok=Nj9Q9Rw8",
-  "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB",
-];
-
-function CoverImage({ src }: { src: string }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) return <EmblemCover />;
-  return (
-    <img src={src} alt="Бхагавад-гита как она есть — обложка" loading="eager" decoding="async" draggable={false}
-      onError={() => setFailed(true)}
-      style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover" }} />
-  );
-}
-
 /* ═════════ round glass action button ═════════ */
 function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { active?: boolean; activeColor?: string; ariaLabel: string; onClick: () => void; children: ReactNode }) {
   return (
     <button type="button" aria-label={ariaLabel} aria-pressed={active}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
-      style={{ display: "grid", height: 36, width: 36, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.45)", color: active && activeColor ? activeColor : "#fff", backdropFilter: "blur(12px)", transition: "background .2s" }}>
+      style={{ display: "grid", height: 36, width: 36, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(255,255,255,.12)", color: active && activeColor ? activeColor : "#fff", backdropFilter: "blur(12px)", transition: "background .2s" }}>
       {children}
     </button>
   );
@@ -186,37 +142,29 @@ function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
   );
 }
 
-/* ═════════ UnitHero — adapted to PRESENT a book ═════════ */
-function BookHero({ onOpen }: { onOpen?: () => void }) {
+/* ═════════ book card — graphite cover, presents the book ═════════ */
+function BookCard({ onOpen }: { onOpen?: () => void }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [photoIdx, setPhotoIdx] = useState(0);
-  const photosLen = COVERS.length;
-  const next = () => setPhotoIdx((i) => (i + 1) % photosLen);
-  const prev = () => setPhotoIdx((i) => (i - 1 + photosLen) % photosLen);
 
   return (
     <>
-      <div style={{ position: "relative", aspectRatio: "4 / 5", width: "100%", overflow: "hidden", background: "var(--color-bg-3)", userSelect: "none" }}>
-        <CoverImage key={photoIdx} src={COVERS[photoIdx]} />
-        {/* gradients */}
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 110, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />
-
-        {/* photo nav zones (edges) + center opens detail */}
-        <button type="button" aria-label="Предыдущее фото" onClick={prev} style={{ position: "absolute", insetBlock: 0, left: 0, width: "15%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-        <button type="button" aria-label="Открыть книгу" onClick={onOpen} style={{ position: "absolute", insetBlock: 0, left: "15%", right: "15%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-        <button type="button" aria-label="Следующее фото" onClick={next} style={{ position: "absolute", insetBlock: 0, right: 0, width: "15%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-
-        {/* TOP overlay: ISKCON + BBT (left, where rating was) · counter + actions (right) */}
-        <div style={{ position: "absolute", insetInline: 12, top: 12, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 10, height: 34, padding: "0 12px", borderRadius: 999, background: "rgba(0,0,0,.45)", color: "#fff", backdropFilter: "blur(12px)" }}>
-            <LogoMark src="/iskcon-sign.svg" label="ISKCON" height={20} />
-            <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={20} />
+      <article onClick={onOpen}
+        style={{
+          position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20, cursor: "pointer",
+          border: "0.5px solid var(--color-hairline)",
+          background: "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)",
+          boxShadow: "var(--shadow-card)",
+          display: "flex", flexDirection: "column", justifyContent: "flex-end",
+        }}>
+        {/* TOP: logos (left, no pill, no divider) · actions (right) */}
+        <div style={{ position: "absolute", insetInline: 14, top: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff" }}>
+            <LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />
+            <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{photoIdx + 1} / {photosLen}</span>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
             <ActionBtn ariaLabel="Поделиться" onClick={() => {}}><ShareIcon size={17} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => setInCart(v => !v)}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
@@ -226,40 +174,30 @@ function BookHero({ onOpen }: { onOpen?: () => void }) {
           </div>
         </div>
 
-        {/* INFO block — presents the book (tap opens detail) */}
-        <div onClick={onOpen} style={{ position: "absolute", insetInline: 16, bottom: 16, zIndex: 20, cursor: "pointer", filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.6))" }}>
-          <div style={{ fontSize: 25, fontWeight: 700, letterSpacing: "-0.3px", lineHeight: 1.1, color: "#fff", fontFamily: "var(--font-display)" }}>Бхагавад-гита как она есть</div>
-          <div style={{ marginTop: 4, fontSize: 13, color: "rgba(255,255,255,.72)" }}>Bhagavad-gītā<span style={{ margin: "0 5px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Господом Кришной Арджуне»</div>
+        {/* INFO — bottom, one type family throughout */}
+        <div style={{ position: "relative", padding: 20, fontFamily: "var(--font-text)" }}>
+          <h3 style={{ margin: 0, fontSize: 33, lineHeight: 1.05, fontWeight: 700, letterSpacing: "-0.5px", color: "#fff" }}>Бхагавад-гита<br />как она есть</h3>
+          <div style={{ marginTop: 6, fontSize: 14, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Кришной Арджуне»</div>
 
-          {/* full title of the author */}
-          <div style={{ marginTop: 12, lineHeight: 1.3 }}>
-            <div style={{ fontSize: 13.5, fontWeight: 600, color: "#fff" }}>Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада</div>
-            <div style={{ fontSize: 12, color: "rgba(255,255,255,.7)" }}>Ачарья-основатель Международного общества сознания Кришны</div>
+          <div style={{ marginTop: 14, lineHeight: 1.3 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада</div>
+            <div style={{ fontSize: 12.5, color: "rgba(255,255,255,.65)" }}>Ачарья-основатель Международного общества сознания Кришны</div>
           </div>
 
-          {/* description — strictly per Prabhupada's Introduction framing */}
-          <p style={{ margin: "12px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "rgba(255,255,255,.88)" }}>
-            Квинтэссенция ведического знания: беседа Господа Кришны и Арджуны о вечной душе, Верховной Личности Бога и пути преданного служения.
+          {/* description — Prabhupada framing, no repeat of Krishna/Arjuna */}
+          <p style={{ margin: "14px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "rgba(255,255,255,.85)" }}>
+            Квинтэссенция ведического знания: природа вечной души, Верховная Личность Бога и путь преданного служения.
           </p>
 
-          {/* pills — only chapters & verses */}
-          <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+          <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {["18 глав", "700 стихов"].map(p => (
-              <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.16)", padding: "3px 11px", fontSize: 13, fontWeight: 500, color: "#fff", backdropFilter: "blur(4px)" }}>{p}</span>
+              <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.14)", padding: "4px 12px", fontSize: 13, fontWeight: 500, color: "#fff" }}>{p}</span>
             ))}
           </div>
         </div>
-      </div>
+      </article>
       <ActionsMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
-  );
-}
-
-function BookCard() {
-  return (
-    <article style={{ position: "relative", width: "100%", overflow: "hidden", borderRadius: 20, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", boxShadow: "var(--shadow-card)" }}>
-      <BookHero onOpen={() => {}} />
-    </article>
   );
 }
 
@@ -274,9 +212,9 @@ function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void 
             <>
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
-                <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-display)" }}>Книги Прабхупады</h2>
+                <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
-              <BookCard />
+              <BookCard onOpen={() => {}} />
             </>
           ) : null}
         </div>
