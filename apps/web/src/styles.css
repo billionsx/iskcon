@@ -3,7 +3,8 @@
 html,body,#root{margin:0;padding:0;height:100%}
 body{font-family:var(--font-text);background:var(--color-bg);color:var(--color-label);-webkit-font-smoothing:antialiased}
 
-/* desktop = phone frame; mobile = fullscreen. Breakpoint 520px like apartsales. */
+/* desktop = phone frame; mobile = fullscreen. Breakpoint 520px like apartsales.
+   Only ONE renders at a time (display toggled by class, never overridden inline). */
 .as-desktop{display:flex}
 .as-mobile{display:none}
 @media (max-width:520px){
