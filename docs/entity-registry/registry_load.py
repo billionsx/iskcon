@@ -72,8 +72,20 @@ rrows = [[r["from_id"],r["relation"],r["to_id"]] for r in rels]
 nr = insert("entity_relations", ["from_id","relation","to_id"], rrows)
 print("relations:", nr)
 
+# 4b) profile layer — non-destructive (NOT dropped on reload; preserves curated prose)
+run("""CREATE TABLE IF NOT EXISTS entity_profiles (
+  entity_id TEXT PRIMARY KEY, summary TEXT, biography TEXT, contribution TEXT,
+  level TEXT NOT NULL DEFAULT 'bronze', reviewed_by TEXT, reviewed_at TEXT,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')) );""")
+run("""CREATE TABLE IF NOT EXISTS entity_citations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, entity_id TEXT NOT NULL, work_id TEXT NOT NULL,
+  ref TEXT NOT NULL, kind TEXT, note TEXT );""")
+# seed a bronze row for every entity lacking one; existing curated rows are kept (OR IGNORE)
+np = insert("entity_profiles", ["entity_id","summary"], [[e["id"], e.get("note","")] for e in ents])
+print("profiles seeded (bronze):", np)
+
 # 5) verify
-for t in ("entities","entity_names","entity_categories","entity_relations"):
+for t in ("entities","entity_names","entity_categories","entity_relations","entity_profiles"):
     res = run(f"SELECT COUNT(*) AS n FROM {t};")
     print(f"  D1 {t}:", res[0]["results"][0]["n"])
 print("done.")
