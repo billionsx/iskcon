@@ -1,124 +1,124 @@
-id,type,category,name_en,name_iast,name_ru,aliases,confidence,note
-krishna,personality,vishnu-tattva|svayam-bhagavan|vraja|bhagavatam|gita|cc,Krishna,Kṛṣṇa,Кришна,Govinda|Gopala|Shyamasundara|Madhava|Hari|Vasudeva,verified,Supreme Personality of Godhead; source of all avatars
-balarama,personality,vishnu-tattva|expansion|vraja|bhagavatam,Balarama,Balarāma,Баларама,Baladeva|Sankarshana|Halayudha,verified,Elder brother of Krishna; first expansion
-vishnu,personality,vishnu-tattva|godhead,Vishnu,Viṣṇu,Вишну,Narayana|Hari|Janardana,verified,Source of the avatars
-narayana,personality,vishnu-tattva|godhead,Narayana,Nārāyaṇa,Нараяна,Vishnu,verified,The Lord in Vaikuntha
-rama,personality,vishnu-tattva|avatar|lila-avatara|ramayana,Ramachandra,Rāmacandra,Рамачандра,Rama|Raghunatha|Raghupati|Raghava,verified,Hero of the Ramayana
-nrisimha,personality,vishnu-tattva|avatar,Nrisimha,Nṛsiṁha,Нрисимха,Narasimha|Nrihari,verified,Half-man half-lion; protector of Prahlada
-varaha,personality,vishnu-tattva|avatar,Varaha,Varāha,Вараха,,verified,Boar incarnation
-vamana,personality,vishnu-tattva|avatar,Vamana,Vāmana,Вамана,Trivikrama|Upendra,verified,Dwarf brahmana; tested Bali
-kurma,personality,vishnu-tattva|avatar,Kurma,Kūrma,Курма,,verified,Tortoise incarnation
-matsya,personality,vishnu-tattva|avatar,Matsya,Matsya,Матсья,,verified,Fish incarnation
-kalki,personality,vishnu-tattva|avatar,Kalki,Kalki,Калки,,verified,Future avatar at end of Kali-yuga
-buddha,personality,vishnu-tattva|avatar,Buddha,Buddha,Будда,,verified,Listed as a lila-avatara in the Bhagavatam
-kapila,personality,vishnu-tattva|avatar|sage,Kapila,Kapila,Капила,,verified,Son of Devahuti; taught Sankhya
-parashurama,personality,vishnu-tattva|avatar,Parashurama,Paraśurāma,Парашурама,Bhargava,verified,Warrior-brahmana avatar
-prithu,personality,vishnu-tattva|shaktyavesha,Prithu,Pṛthu,Притху,,verified,Empowered king-avatar
-rishabha,personality,vishnu-tattva|avatar,Rishabhadeva,Ṛṣabhadeva,Ришабхадева,,verified,Father of Bharata; avatar
-vyasadeva,personality,vishnu-tattva|shaktyavesha|sage|parampara,Vyasa,Vyāsa,Вьясадева,Krishna-Dvaipayana|Badarayana|Veda-vyasa,verified,Compiler of the Vedas; author of many scriptures
-radharani,personality,shakti-tattva|hladini|vraja|cc,Radharani,Rādhārāṇī,Шримати Радхарани,Radha|Radhika|Sri Radha,verified,Internal pleasure potency of Krishna
-rukmini,personality,shakti-tattva|krishna-consort|bhagavatam,Rukmini,Rukmiṇī,Рукмини,,verified,Chief queen of Krishna in Dvaraka
-satyabhama,personality,shakti-tattva|krishna-consort,Satyabhama,Satyabhāmā,Сатьябхама,,review,Queen of Krishna in Dvaraka
-lakshmi,personality,shakti-tattva|goddess,Lakshmi,Lakṣmī,Лакшми,Sri|Rama-devi|Padma,verified,Goddess of fortune; consort of Narayana
-sita,personality,shakti-tattva|ramayana,Sita,Sītā,Сита,Janaki|Vaidehi,verified,Consort of Rama
-subhadra,personality,krishna-family,Subhadra,Subhadrā,Субхадра,,verified,Sister of Krishna and Balarama
-nanda,personality,vraja|krishna-family,Nanda Maharaja,Nanda Mahārāja,Нанда Махарадж,,verified,Foster father of Krishna in Vrindavan
-yashoda,personality,vraja|krishna-family,Yashoda,Yaśodā,Яшода,,verified,Foster mother of Krishna in Vrindavan
-vasudeva,personality,krishna-family|bhagavatam,Vasudeva,Vasudeva,Васудева,Anakadundubhi,verified,Father of Krishna
-devaki,personality,krishna-family|bhagavatam,Devaki,Devakī,Деваки,,verified,Mother of Krishna
-uddhava,personality,krishna-associate|bhagavatam,Uddhava,Uddhava,Уддхава,,verified,Confidential friend of Krishna
-akrura,personality,krishna-associate|bhagavatam,Akrura,Akrūra,Акрура,,verified,Devotee who brought Krishna to Mathura
-arjuna,personality,mahabharata|gita|pandava,Arjuna,Arjuna,Арджуна,Partha|Dhananjaya|Gudakesha|Kaunteya,verified,Hearer of the Bhagavad-gita
-yudhishthira,personality,mahabharata|pandava,Yudhishthira,Yudhiṣṭhira,Юдхиштхира,Dharmaraja,verified,Eldest Pandava
-bhima,personality,mahabharata|pandava,Bhima,Bhīma,Бхима,Vrikodara,verified,Second Pandava
-nakula,personality,mahabharata|pandava,Nakula,Nakula,Накула,,verified,Fourth Pandava
-sahadeva,personality,mahabharata|pandava,Sahadeva,Sahadeva,Сахадева,,verified,Fifth Pandava
-kunti,personality,mahabharata|bhagavatam,Kunti,Kuntī,Кунти,Pritha,verified,Mother of the Pandavas; her prayers are in SB Canto 1
-draupadi,personality,mahabharata,Draupadi,Draupadī,Драупади,Panchali,verified,Wife of the Pandavas
-abhimanyu,personality,mahabharata,Abhimanyu,Abhimanyu,Абхиманью,,review,Son of Arjuna and Subhadra
-pariksit,personality,bhagavatam,Pariksit,Parīkṣit,Махараджа Парикшит,Pariksit Maharaja,verified,Hearer of Srimad-Bhagavatam; grandson of Arjuna
-sanjaya,personality,mahabharata|gita,Sanjaya,Sañjaya,Санджая,,verified,Narrated the Gita to Dhritarashtra
-vidura,personality,mahabharata|bhagavatam,Vidura,Vidura,Видура,,verified,Heard the Bhagavatam from Maitreya
-bhishma,personality,mahabharata|maha-jana,Bhishma,Bhīṣma,Бхишма,Devavrata|Gangeya,verified,Grandsire; one of the twelve mahajanas
-drona,personality,mahabharata,Dronacharya,Droṇācārya,Дроначарья,Drona,verified,Military preceptor of the Kurus and Pandavas
-karna,personality,mahabharata,Karna,Karṇa,Карна,Radheya,review,Son of Kunti by Surya
-dhritarashtra,personality,mahabharata,Dhritarashtra,Dhṛtarāṣṭra,Дхритараштра,,verified,Blind Kuru king; father of Duryodhana
-duryodhana,personality,mahabharata,Duryodhana,Duryodhana,Дурьодхана,Suyodhana,verified,Eldest Kaurava
-prahlada,personality,bhagavatam|maha-jana,Prahlada Maharaja,Prahlāda Mahārāja,Прахлада Махарадж,Prahlada,verified,Great devotee; son of Hiranyakashipu; a mahajana
-dhruva,personality,bhagavatam,Dhruva Maharaja,Dhruva Mahārāja,Дхрува Махарадж,Dhruva,verified,Child devotee who attained the polestar
-ajamila,personality,bhagavatam,Ajamila,Ajāmila,Аджамила,,verified,Fallen brahmana delivered by chanting Narayana
-ambarisa,personality,bhagavatam,Ambarisa Maharaja,Ambarīṣa,Амбариша Махарадж,Ambarisa,verified,Exemplary devotee-king
-bali,personality,bhagavatam|maha-jana,Bali Maharaja,Bali Mahārāja,Бали Махарадж,Bali,verified,Surrendered everything to Vamana; a mahajana
-bharata-maharaja,personality,bhagavatam,Bharata Maharaja,Bharata Mahārāja,Бхарата Махарадж,Jada Bharata,review,King after whom Bharata-varsha is named
-sukadeva,personality,bhagavatam,Shukadeva Goswami,Śukadeva Gosvāmī,Шукадева Госвами,Suka,verified,Speaker of Srimad-Bhagavatam to Pariksit
-maitreya,personality,bhagavatam|sage,Maitreya,Maitreya,Майтрея,,verified,Sage who instructed Vidura
-narada,personality,sage|maha-jana|bhagavatam|parampara,Narada Muni,Nārada Muni,Нарада Муни,Narada|Devarshi,verified,Travelling sage; spiritual master; a mahajana
-hiranyakashipu,personality,demon|bhagavatam,Hiranyakashipu,Hiraṇyakaśipu,Хираньякашипу,,verified,Demon father of Prahlada
-hiranyaksha,personality,demon|bhagavatam,Hiranyaksha,Hiraṇyākṣa,Хираньякша,,verified,Demon slain by Varaha
-kamsa,personality,demon|bhagavatam,Kamsa,Kaṁsa,Камса,,verified,Demoniac king of Mathura; uncle of Krishna
-putana,personality,demon|bhagavatam,Putana,Pūtanā,Путана,,verified,Witch slain by infant Krishna
-ravana,personality,demon|ramayana,Ravana,Rāvaṇa,Равана,,verified,Demon king of Lanka
-hanuman,personality,ramayana|maha-jana,Hanuman,Hanumān,Хануман,Bajrangabali|Anjaneya,verified,Great devotee of Rama; a mahajana
-brahma,personality,demigod|creator|parampara|maha-jana,Brahma,Brahmā,Брахма,Svayambhu|Pitamaha,verified,First created being; first in the Brahma-sampradaya
-shiva,personality,demigod|maha-jana,Shiva,Śiva,Шива,Mahadeva|Shambhu|Rudra|Mahesha,verified,Destroyer; greatest Vaishnava; a mahajana
-indra,personality,demigod|svarga,Indra,Indra,Индра,Devaraja|Purandara,verified,King of the heavenly planets
-surya,personality,demigod,Surya,Sūrya,Сурья,Vivasvan,verified,Sun-god; received the Gita first
-chandra,personality,demigod,Chandra,Candra,Чандра,Soma,review,Moon-god
-varuna,personality,demigod,Varuna,Varuṇa,Варуна,,review,Demigod of the waters
-yamaraja,personality,demigod|maha-jana,Yamaraja,Yamarāja,Ямараджа,Dharmaraja|Yama,verified,Lord of death; a mahajana
-agni,personality,demigod,Agni,Agni,Агни,,review,Fire-god
-kuvera,personality,demigod,Kuvera,Kuvera,Кувера,,review,Treasurer of the demigods
-ganesha,personality,demigod,Ganesha,Gaṇeśa,Ганеша,Ganapati,review,Son of Shiva
-kartikeya,personality,demigod,Kartikeya,Kārttikeya,Картикея,Skanda|Subrahmanya,review,Son of Shiva; commander of the demigods
-vasishtha,personality,sage,Vasishtha,Vasiṣṭha,Васиштха,,review,One of the seven sages
-vishvamitra,personality,sage,Vishvamitra,Viśvāmitra,Вишвамитра,,review,Sage; preceptor of Rama
-atri,personality,sage,Atri,Atri,Атри,,review,One of the seven sages
-kashyapa,personality,sage,Kashyapa,Kaśyapa,Кашьяпа,,review,Progenitor sage
-durvasa,personality,sage,Durvasa,Durvāsā,Дурваса,,review,Sage known for his anger; tested Ambarisa
-sanat-kumara,personality,sage|kumaras|maha-jana,Sanat-kumara,Sanat-kumāra,Санат-кумар,Four Kumaras,verified,Eldest of the four Kumaras; a mahajana
-bhrigu,personality,sage,Bhrigu,Bhṛgu,Бхригу,,review,Sage who tested the three deities
-svayambhuva-manu,personality,manu|maha-jana,Svayambhuva Manu,Svāyambhuva Manu,Сваямбхува Ману,Manu,verified,First Manu; a mahajana
-janaka,personality,king|maha-jana,Janaka,Janaka,Джанака,,verified,Self-realized king; father of Sita; a mahajana
-chaitanya,personality,gaudiya|chaitanya-lila|svayam-bhagavan|cc|maha-jana,Chaitanya Mahaprabhu,Caitanya Mahāprabhu,Шри Кришна Чайтанья Махапрабху,Gauranga|Gaurahari|Nimai|Vishvambhara|Sachinandana|Gaurasundara,verified,Krishna in the mood of Radharani; inaugurated the sankirtana movement
-nityananda,personality,gaudiya|pancha-tattva|chaitanya-lila,Nityananda Prabhu,Nityānanda Prabhu,Нитьянанда Прабху,Nitai,verified,Balarama in Chaitanya-lila
-advaita,personality,gaudiya|pancha-tattva|chaitanya-lila,Advaita Acharya,Advaita Ācārya,Адвайта Ачарья,Advaita,verified,Incarnation of Maha-Vishnu; called Chaitanya to descend
-gadadhara,personality,gaudiya|pancha-tattva,Gadadhara Pandita,Gadādhara Paṇḍita,Гададхара Пандит,,verified,Internal potency in Chaitanya-lila
-srivasa,personality,gaudiya|pancha-tattva,Srivasa Thakura,Śrīvāsa Ṭhākura,Шриваса Тхакур,,verified,Pure devotee; embodiment of Narada
-svarupa-damodara,personality,gaudiya|chaitanya-associate,Svarupa Damodara Goswami,Svarūpa Dāmodara Gosvāmī,Сварупа Дамодара Госвами,,verified,Confidential secretary of Chaitanya
-ramananda-raya,personality,gaudiya|chaitanya-associate,Ramananda Raya,Rāmānanda Rāya,Рамананда Рай,,verified,Intimate associate; instructor of Chaitanya
-haridasa-thakura,personality,gaudiya|namacharya,Haridasa Thakura,Haridāsa Ṭhākura,Харидас Тхакур,Namacharya,verified,Acharya of the holy name
-rupa-goswami,personality,gaudiya|six-goswamis,Rupa Goswami,Rūpa Gosvāmī,Рупа Госвами,,verified,Chief of the Six Goswamis; author of Bhakti-rasamrita-sindhu
-sanatana-goswami,personality,gaudiya|six-goswamis,Sanatana Goswami,Sanātana Gosvāmī,Санатана Госвами,,verified,Senior of the Six Goswamis; author of Hari-bhakti-vilasa
-raghunatha-das-goswami,personality,gaudiya|six-goswamis,Raghunatha das Goswami,Raghunātha dāsa Gosvāmī,Рагхунатха дас Госвами,,verified,One of the Six Goswamis; exemplar of renunciation
-raghunatha-bhatta-goswami,personality,gaudiya|six-goswamis,Raghunatha Bhatta Goswami,Raghunātha Bhaṭṭa Gosvāmī,Рагхунатха Бхатта Госвами,,verified,One of the Six Goswamis
-gopala-bhatta-goswami,personality,gaudiya|six-goswamis,Gopala Bhatta Goswami,Gopāla Bhaṭṭa Gosvāmī,Гопал Бхатта Госвами,,verified,One of the Six Goswamis
-jiva-goswami,personality,gaudiya|six-goswamis,Jiva Goswami,Jīva Gosvāmī,Джива Госвами,,verified,One of the Six Goswamis; author of the Sat-sandarbha
-krishnadasa-kaviraja,personality,gaudiya,Krishnadasa Kaviraja Goswami,Kṛṣṇadāsa Kavirāja Gosvāmī,Кришнадас Кавираджа Госвами,,verified,Author of Sri Chaitanya-charitamrita
-vrindavana-dasa-thakura,personality,gaudiya,Vrindavana dasa Thakura,Vṛndāvana dāsa Ṭhākura,Вриндаван дас Тхакур,,verified,Author of Caitanya-bhagavata
-narottama-dasa-thakura,personality,gaudiya|acharya,Narottama dasa Thakura,Narottama dāsa Ṭhākura,Нароттама дас Тхакур,,verified,Acharya; composer of devotional songs
-madhavendra-puri,personality,gaudiya|parampara,Madhavendra Puri,Mādhavendra Purī,Мадхавендра Пури,,verified,Root of devotional love in the line preceding Chaitanya
-ishvara-puri,personality,gaudiya|parampara,Ishvara Puri,Īśvara Purī,Ишвара Пури,,verified,Diksha-guru of Chaitanya Mahaprabhu
-madhva,personality,vaishnava-acharya|parampara,Madhvacharya,Madhvācārya,Мадхвачарья,Madhva|Anandatirtha,verified,Founder of the Madhva-sampradaya
-baladeva-vidyabhushana,personality,gaudiya|acharya,Baladeva Vidyabhushana,Baladeva Vidyābhūṣaṇa,Баладева Видьябхушана,,verified,Author of the Govinda-bhashya commentary on Vedanta-sutra
-bhaktivinoda-thakura,personality,gaudiya|acharya,Bhaktivinoda Thakura,Bhaktivinoda Ṭhākura,Бхактивинода Тхакур,,verified,Pioneer of the modern Gaudiya revival
-gaurakishora-dasa-babaji,personality,gaudiya|acharya,Gaurakishora dasa Babaji,Gaurakiśora dāsa Bābājī,Гауракишора дас Бабаджи,,verified,Diksha-guru of Bhaktisiddhanta Sarasvati
-bhaktisiddhanta-sarasvati,personality,gaudiya|acharya,Bhaktisiddhanta Sarasvati Thakura,Bhaktisiddhānta Sarasvatī Ṭhākura,Бхактисиддханта Сарасвати Тхакур,Srila Sarasvati Thakura,verified,Founder of the Gaudiya Matha; guru of Srila Prabhupada
-prabhupada,personality,gaudiya|founder-acharya|iskcon,A.C. Bhaktivedanta Swami Prabhupada,A.C. Bhaktivedānta Svāmī Prabhupāda,Шрила Прабхупада,Srila Prabhupada|Bhaktivedanta Swami|Abhay Charan,verified,Founder-Acharya of ISKCON
-vishnujana-swami,personality,iskcon|prabhupada-disciple,Vishnujana Swami,Viṣṇujana Svāmī,Вишнуджана Свами Махарадж,,verified,Early ISKCON sannyasi renowned for kirtana
-bg,scripture,prabhupada-book|canonical-scripture|gita,Bhagavad-gita As It Is,Bhagavad-gītā,Бхагавад-гита как она есть,Gita|Gitopanishad,verified,Spoken by Krishna to Arjuna; on vedabase.io
-sb,scripture,prabhupada-book|purana|bhagavatam,Srimad-Bhagavatam,Śrīmad-Bhāgavatam,Шримад-Бхагаватам,Bhagavata Purana|Bhagavatam,verified,Twelve cantos; the ripe fruit of Vedic literature; on vedabase.io
-cc,scripture,prabhupada-book|gaudiya,Sri Chaitanya-charitamrita,Śrī Caitanya-caritāmṛta,Шри Чайтанья-чаритамрита,Chaitanya-charitamrita,verified,Biography and teachings of Chaitanya; on vedabase.io
-brs,scripture,prabhupada-book|gaudiya,The Nectar of Devotion,Bhakti-rasāmṛta-sindhu,Нектар преданности,Bhakti-rasamrita-sindhu,verified,Summary study of Rupa Goswami's work
-noi,scripture,prabhupada-book|gaudiya,The Nectar of Instruction,Upadeśāmṛta,Нектар наставлений,Upadeshamrita,verified,Rupa Goswami's eleven verses of instruction
-iso,scripture,prabhupada-book|upanishad,Sri Isopanisad,Śrī Īśopaniṣad,Шри Ишопанишад,Isopanisad,verified,Eighteen mantras with purports
-bs,scripture,canonical-scripture|gaudiya,Brahma-samhita,Brahma-saṁhitā,Брахма-самхита,,verified,Prayers of Brahma; fifth chapter recovered by Chaitanya
-cb,scripture,gaudiya,Caitanya-bhagavata,Caitanya-bhāgavata,Чайтанья-бхагавата,,verified,Early biography of Chaitanya by Vrindavana dasa Thakura
-hbv,scripture,gaudiya,Hari-bhakti-vilasa,Hari-bhakti-vilāsa,Хари-бхакти-виласа,,verified,Vaishnava conduct compiled via Sanatana Goswami
-krishna-book,scripture,prabhupada-book,Krishna the Supreme Personality of Godhead,Kṛṣṇa,Кришна Верховная Личность Бога,KRSNA Book,verified,Summary study of the Tenth Canto
-tlc,scripture,prabhupada-book|gaudiya,Teachings of Lord Chaitanya,Teachings of Lord Caitanya,Учение Шри Чайтаньи,,verified,Summary study based on the Chaitanya-charitamrita
-vedanta-sutra,scripture,canonical-scripture,Vedanta-sutra,Vedānta-sūtra,Веданта-сутра,Brahma-sutra,verified,Aphorisms of Vyasadeva on the Absolute
-mahabharata,scripture,canonical-scripture|itihasa,Mahabharata,Mahābhārata,Махабхарата,,verified,Epic by Vyasadeva containing the Bhagavad-gita
-ramayana,scripture,canonical-scripture|itihasa,Ramayana,Rāmāyaṇa,Рамаяна,,verified,Epic of Lord Rama by Valmiki
-puranas,scripture,canonical-scripture,The Puranas,Purāṇa,Пураны,,verified,The eighteen principal Puranas
-upanishads,scripture,canonical-scripture,The Upanishads,Upaniṣad,Упанишады,,verified,Philosophical portions of the Vedas
-vedas,scripture,canonical-scripture,The Vedas,Veda,Веды,Rig|Yajur|Sama|Atharva,verified,The four original Vedas
+id,type,tattva,category,name_en,name_iast,name_ru,aliases,note,source_ref,confidence
+krishna,personality,vishnu-tattva,svayam-bhagavan|source-of-all|vraja|gita|bhagavatam|cc,Krishna,Kṛṣṇa,Кришна,Govinda|Gopala|Shyamasundara|Madhava|Hari|Vrajendra-nandana,Iznachalnaya Verkhovnaya Lichnost Boga; istochnik vsekh form Boga i vsekh avatar,СБ 1.3.28; Б.-с. 5.1,verified
+balarama,personality,vishnu-tattva,prakasha-vilasa|first-expansion|vraja,Balarama,Balarāma,Баларама,Baladeva|Sankarshana,Pervaya ekspansiya Krishny; istochnik chatur-vyuhi i purusha-avatar,Ч.-ч. Ади 5,verified
+vishnu,personality,vishnu-tattva,vilasa|guna-avatara|maintainer,Vishnu,Viṣṇu,Вишну,Narayana|Hari|Janardana,Guna-avatara blagosti; podderzhivayushchaya ekspansiya Krishny,Ч.-ч. Мадхья 20,verified
+narayana,personality,vishnu-tattva,vilasa|vaikuntha,Narayana,Nārāyaṇa,Нараяна,Vishnu,Gospod Vaikunthi; ekspansiya Krishny,,verified
+rama,personality,vishnu-tattva,avatara|lila-avatara|ramayana,Ramachandra,Rāmacandra,Рамачандра,Rama|Raghunatha|Raghupati,Lila-avatara; geroy Ramayany,,verified
+nrisimha,personality,vishnu-tattva,avatara|lila-avatara,Nrisimha,Nṛsiṁha,Нрисимха,Narasimha|Nrihari,Lila-avatara; zashchitnik Prahlady,СБ 7.8,verified
+varaha,personality,vishnu-tattva,avatara|lila-avatara,Varaha,Varāha,Вараха,,Lila-avatara; vepr podnyavshiy Zemlyu,,verified
+vamana,personality,vishnu-tattva,avatara|lila-avatara,Vamana,Vāmana,Вамана,Trivikrama|Upendra,Lila-avatara; ispytal Bali Maharadzha,СБ 8.18-22,verified
+kurma,personality,vishnu-tattva,avatara|lila-avatara,Kurma,Kūrma,Курма,,Lila-avatara; cherepakha pri pakhtanye okeana,,verified
+matsya,personality,vishnu-tattva,avatara|lila-avatara,Matsya,Matsya,Матсья,,Lila-avatara; ryba spasshaya Vedy,,verified
+kalki,personality,vishnu-tattva,avatara|lila-avatara,Kalki,Kalki,Калки,,Gryadushchiy avatar v kontse Kali-yugi,,verified
+buddha,personality,vishnu-tattva,avatara|lila-avatara,Buddha,Buddha,Будда,,Avatar Bhagavatam yavivshiysya chtoby vvesti v zabluzhdenie bezbozhnikov,СБ 1.3.24,verified
+kapila,personality,vishnu-tattva,avatara|lila-avatara|sage,Kapila,Kapila,Капила,,Lila-avatara; syn Devakhuti; uchil sankhye,СБ 3.25-33,verified
+parashurama,personality,vishnu-tattva,avatara|shaktyavesha,Parashurama,Paraśurāma,Парашурама,Bhargava,Voin-brahman; obychno otnositsya k shaktyavesha-avataram,,review
+rishabha,personality,vishnu-tattva,avatara|lila-avatara,Rishabhadeva,Ṛṣabhadeva,Ришабхадева,,Lila-avatara; otets Bharaty,СБ 5.3-6,verified
+chaitanya,personality,vishnu-tattva,yuga-avatara|svayam-bhagavan|channa-avatara|pancha-tattva|cc,Chaitanya Mahaprabhu,Caitanya Mahāprabhu,Шри Кришна Чайтанья Махапрабху,Gauranga|Gaurahari|Nimai|Vishvambhara|Sachinandana,Sam Krishna v umonastroenii Radharani; skrytyy yuga-avatar Kali,СБ 11.5.32; Ч.-ч. Ади 3,verified
+nityananda,personality,vishnu-tattva,pancha-tattva|prakasha-vilasa,Nityananda Prabhu,Nityānanda Prabhu,Нитьянанда Прабху,Nitai,Balarama v lile Chaitanyi,Ч.-ч. Ади 5,verified
+advaita,personality,vishnu-tattva,pancha-tattva|avatara,Advaita Acharya,Advaita Ācārya,Адвайта Ачарья,Advaita,Voploshchenie Makha-Vishnu (i Sadashivy); prizval Chaitanyu priyti,Ч.-ч. Ади 6,verified
+radharani,personality,shakti-tattva,hladini-shakti|vraja|cc,Radharani,Rādhārāṇī,Шримати Радхарани,Radha|Radhika|Sri Radha,Vnutrennyaya energiya naslazhdeniya Krishny (khladini-shakti),Ч.-ч. Ади 4,verified
+rukmini,personality,shakti-tattva,krishna-consort|bhagavatam,Rukmini,Rukmiṇī,Рукмини,,Glavnaya tsaritsa Krishny v Dvarake; ekspansiya Lakshmi,СБ 10.52-54,verified
+satyabhama,personality,shakti-tattva,krishna-consort,Satyabhama,Satyabhāmā,Сатьябхама,,Tsaritsa Krishny v Dvarake,,review
+lakshmi,personality,shakti-tattva,goddess,Lakshmi,Lakṣmī,Лакшми,Sri|Rama-devi|Padma,Boginya protsvetaniya; supruga Narayany,,verified
+sita,personality,shakti-tattva,ramayana,Sita,Sītā,Сита,Janaki|Vaidehi,Supruga Ramy; forma Lakshmi,,verified
+gadadhara,personality,shakti-tattva,pancha-tattva,Gadadhara Pandita,Gadādhara Paṇḍita,Гададхара Пандит,,Energiya predannosti (shakti) v Pancha-tattve,Ч.-ч. Ади 7.5,verified
+subhadra,personality,shakti-tattva,krishna-family,Subhadra,Subhadrā,Субхадра,,Sestra Krishny i Balaramy,,review
+shiva,personality,shiva-tattva,guna-avatara|maha-jana,Shiva,Śiva,Шива,Mahadeva|Shambhu|Rudra|Mahesha,Guna-avatara nevezhestva; ne Vishnu-tattva i ne obychnaya dzhiva,Б.-с. 5.45,verified
+nanda,personality,jiva-tattva,vraja|krishna-family|eternal-associate,Nanda Maharaja,Nanda Mahārāja,Нанда Махарадж,,Priyomnyy otets Krishny vo Vrindavane,,verified
+yashoda,personality,jiva-tattva,vraja|krishna-family|eternal-associate,Yashoda,Yaśodā,Яшода,,Priyomnaya mat Krishny vo Vrindavane,,verified
+vasudeva,personality,jiva-tattva,krishna-family|bhagavatam,Vasudeva,Vasudeva,Васудева,Anakadundubhi,Otets Krishny,,verified
+devaki,personality,jiva-tattva,krishna-family|bhagavatam,Devaki,Devakī,Деваки,,Mat Krishny,,verified
+uddhava,personality,jiva-tattva,krishna-associate|bhagavatam,Uddhava,Uddhava,Уддхава,,Blizkiy drug Krishny,СБ 3.4; 11.6-29,verified
+akrura,personality,jiva-tattva,krishna-associate|bhagavatam,Akrura,Akrūra,Акрура,,Predannyy privyozshiy Krishnu v Mathuru,,verified
+arjuna,personality,jiva-tattva,mahabharata|gita|pandava,Arjuna,Arjuna,Арджуна,Partha|Dhananjaya|Gudakesha|Kaunteya,Slushatel Bhagavad-gity; vechnyy sputnik Krishny,Б.-г.,verified
+yudhishthira,personality,jiva-tattva,mahabharata|pandava,Yudhishthira,Yudhiṣṭhira,Юдхиштхира,Dharmaraja,Starshiy iz Pandavov,,verified
+bhima,personality,jiva-tattva,mahabharata|pandava,Bhima,Bhīma,Бхима,Vrikodara,Vtoroy iz Pandavov,,verified
+nakula,personality,jiva-tattva,mahabharata|pandava,Nakula,Nakula,Накула,,Chetvyortyy iz Pandavov,,verified
+sahadeva,personality,jiva-tattva,mahabharata|pandava,Sahadeva,Sahadeva,Сахадева,,Pyatyy iz Pandavov,,verified
+kunti,personality,jiva-tattva,mahabharata|bhagavatam,Kunti,Kuntī,Кунти,Pritha,Mat Pandavov; eyo molitvy v SB Pesn 1,СБ 1.8,verified
+draupadi,personality,jiva-tattva,mahabharata,Draupadi,Draupadī,Драупади,Panchali,Supruga Pandavov,,verified
+abhimanyu,personality,jiva-tattva,mahabharata,Abhimanyu,Abhimanyu,Абхиманью,,Syn Ardzhuny i Subhadry,,review
+pariksit,personality,jiva-tattva,bhagavatam,Pariksit Maharaja,Parīkṣit,Махараджа Парикшит,Pariksit,Slushatel Shrimad-Bhagavatam; vnuk Ardzhuny,СБ 1.4-1.19,verified
+sanjaya,personality,jiva-tattva,mahabharata|gita,Sanjaya,Sañjaya,Санджая,,Pereskazal Gitu Dhritarashtre,Б.-г.,verified
+vidura,personality,jiva-tattva,mahabharata|bhagavatam,Vidura,Vidura,Видура,,Uslyshal Bhagavatam ot Maitrei,СБ 3,verified
+bhishma,personality,jiva-tattva,mahabharata|maha-jana,Bhishma,Bhīṣma,Бхишма,Devavrata|Gangeya,Ded Kuru; odin iz dvenadtsati makhadzhan,,verified
+drona,personality,jiva-tattva,mahabharata,Dronacharya,Droṇācārya,Дроначарья,Drona,Voennyy nastavnik Kuru i Pandavov,,verified
+karna,personality,jiva-tattva,mahabharata,Karna,Karṇa,Карна,Radheya,Syn Kunti ot Surya,,review
+dhritarashtra,personality,jiva-tattva,mahabharata,Dhritarashtra,Dhṛtarāṣṭra,Дхритараштра,,Slepoy tsar Kuru; otets Duryodhany,,verified
+duryodhana,personality,jiva-tattva,mahabharata,Duryodhana,Duryodhana,Дурьодхана,Suyodhana,Starshiy iz Kauravov,,verified
+prahlada,personality,jiva-tattva,bhagavatam|maha-jana,Prahlada Maharaja,Prahlāda Mahārāja,Прахлада Махарадж,Prahlada,Velikiy predannyy; syn Hiranyakashipu; makhadzhana,СБ 7,verified
+dhruva,personality,jiva-tattva,bhagavatam,Dhruva Maharaja,Dhruva Mahārāja,Дхрува Махарадж,Dhruva,Rebyonok-predannyy dostigshiy Polyarnoy zvezdy,СБ 4.8-12,verified
+ajamila,personality,jiva-tattva,bhagavatam,Ajamila,Ajāmila,Аджамила,,Padshiy brahman spasyonnyy imenem Narayany,СБ 6.1-2,verified
+ambarisa,personality,jiva-tattva,bhagavatam,Ambarisa Maharaja,Ambarīṣa,Амбариша Махарадж,Ambarisa,Obraztsovyy tsar-predannyy,СБ 9.4-5,verified
+bali,personality,jiva-tattva,bhagavatam|maha-jana,Bali Maharaja,Bali Mahārāja,Бали Махарадж,Bali,Otdal vsyo Vamane; makhadzhana,СБ 8.15-23,verified
+bharata-maharaja,personality,jiva-tattva,bhagavatam,Bharata Maharaja,Bharata Mahārāja,Бхарата Махарадж,Jada Bharata,Tsar po imeni kotorogo nazvana Bharata-varsha,СБ 5.7-14,review
+sukadeva,personality,jiva-tattva,bhagavatam|sage,Shukadeva Goswami,Śukadeva Gosvāmī,Шукадева Госвами,Suka,Rasskazchik Shrimad-Bhagavatam Parikshitu; syn Vyasy,СБ 1.2,verified
+maitreya,personality,jiva-tattva,bhagavatam|sage,Maitreya,Maitreya,Майтрея,,Mudrets nastavlyavshiy Viduru,СБ 3,verified
+narada,personality,jiva-tattva,shaktyavesha|sage|maha-jana|parampara,Narada Muni,Nārada Muni,Нарада Муни,Narada|Devarshi,Stranstvuyushchiy mudrets; shaktyavesha; makhadzhana; zveno paramparyi,СБ 1.5-6,verified
+hiranyakashipu,personality,jiva-tattva,demon|bhagavatam,Hiranyakashipu,Hiraṇyakaśipu,Хираньякашипу,,Demon-otets Prahlady,СБ 7,verified
+hiranyaksha,personality,jiva-tattva,demon|bhagavatam,Hiranyaksha,Hiraṇyākṣa,Хираньякша,,Demon ubityy Varahoy,СБ 3.17-19,verified
+kamsa,personality,jiva-tattva,demon|bhagavatam,Kamsa,Kaṁsa,Камса,,Demonichnyy tsar Mathury; dyadya Krishny,СБ 10,verified
+putana,personality,jiva-tattva,demon|bhagavatam,Putana,Pūtanā,Путана,,Vedma ubitaya mladentsem Krishnoy,СБ 10.6,verified
+ravana,personality,jiva-tattva,demon|ramayana,Ravana,Rāvaṇa,Равана,,Demon-tsar Lanki,,verified
+hanuman,personality,jiva-tattva,ramayana|maha-jana,Hanuman,Hanumān,Хануман,Bajrangabali|Anjaneya,Velikiy predannyy Ramy,,verified
+brahma,personality,jiva-tattva,guna-avatara|creator|parampara|maha-jana,Brahma,Brahmā,Брахма,Svayambhu|Pitamaha,Guna-avatara strasti; obychno nadelyonnaya siloy dzhiva; pervyy v parampare,Ч.-ч. Мадхья 20,verified
+indra,personality,jiva-tattva,demigod|svarga,Indra,Indra,Индра,Devaraja|Purandara,Tsar rayskikh planet (post dzhiv),,verified
+surya,personality,jiva-tattva,demigod,Surya,Sūrya,Сурья,Vivasvan,Bog Solntsa; pervym poluchil Gitu,Б.-г. 4.1,verified
+chandra,personality,jiva-tattva,demigod,Chandra,Candra,Чандра,Soma,Bog Luny,,review
+varuna,personality,jiva-tattva,demigod,Varuna,Varuṇa,Варуна,,Bog vod,,review
+yamaraja,personality,jiva-tattva,demigod|maha-jana,Yamaraja,Yamarāja,Ямараджа,Dharmaraja|Yama,Vladyka smerti; makhadzhana,,verified
+agni,personality,jiva-tattva,demigod,Agni,Agni,Агни,,Bog ognya,,review
+kuvera,personality,jiva-tattva,demigod,Kuvera,Kuvera,Кувера,,Kaznachey polubogov,,review
+ganesha,personality,jiva-tattva,demigod,Ganesha,Gaṇeśa,Ганеша,Ganapati,Syn Shivy,,review
+kartikeya,personality,jiva-tattva,demigod,Kartikeya,Kārttikeya,Картикея,Skanda|Subrahmanya,Syn Shivy; polkovodets polubogov,,review
+vasishtha,personality,jiva-tattva,sage,Vasishtha,Vasiṣṭha,Васиштха,,Odin iz semi mudretsov,,review
+vishvamitra,personality,jiva-tattva,sage,Vishvamitra,Viśvāmitra,Вишвамитра,,Mudrets; nastavnik Ramy,,review
+atri,personality,jiva-tattva,sage,Atri,Atri,Атри,,Odin iz semi mudretsov,,review
+kashyapa,personality,jiva-tattva,sage,Kashyapa,Kaśyapa,Кашьяпа,,Praroditel-mudrets,,review
+durvasa,personality,jiva-tattva,sage,Durvasa,Durvāsā,Дурваса,,Mudrets izvestnyy gnevom; ispytal Ambarishu,СБ 9.4-5,review
+sanat-kumara,personality,jiva-tattva,shaktyavesha|kumaras|maha-jana,Sanat-kumara,Sanat-kumāra,Санат-кумар,Four Kumaras,Starshiy iz chetyryokh Kumarov; shaktyavesha; makhadzhana,,verified
+bhrigu,personality,jiva-tattva,sage,Bhrigu,Bhṛgu,Бхригу,,Mudrets ispytavshiy tryokh bogov,,review
+svayambhuva-manu,personality,jiva-tattva,manu|maha-jana,Svayambhuva Manu,Svāyambhuva Manu,Сваямбхува Ману,Manu,Pervyy Manu; makhadzhana,,verified
+janaka,personality,jiva-tattva,king|maha-jana,Janaka,Janaka,Джанака,,Samoosoznavshiy tsar; otets Sity; makhadzhana,,verified
+srivasa,personality,jiva-tattva,pancha-tattva|shuddha-bhakta,Srivasa Thakura,Śrīvāsa Ṭhākura,Шриваса Тхакур,,Chistyy predannyy (shuddha-bhakta) v Pancha-tattve,Ч.-ч. Ади 7.5,verified
+svarupa-damodara,personality,jiva-tattva,gaudiya|chaitanya-associate,Svarupa Damodara Goswami,Svarūpa Dāmodara Gosvāmī,Сварупа Дамодара Госвами,,Doverennyy sekretar Chaitanyi,,verified
+ramananda-raya,personality,jiva-tattva,gaudiya|chaitanya-associate,Ramananda Raya,Rāmānanda Rāya,Рамананда Рай,,Blizkiy sputnik; nastavnik Chaitanyi,Ч.-ч. Мадхья 8,verified
+haridasa-thakura,personality,jiva-tattva,gaudiya|namacharya,Haridasa Thakura,Haridāsa Ṭhākura,Харидас Тхакур,Namacharya,Acharya svyatogo imeni,,verified
+rupa-goswami,personality,jiva-tattva,gaudiya|six-goswamis,Rupa Goswami,Rūpa Gosvāmī,Рупа Госвами,,Glava Shesti Gosvami; avtor Bhakti-rasamrita-sindhu,,verified
+sanatana-goswami,personality,jiva-tattva,gaudiya|six-goswamis,Sanatana Goswami,Sanātana Gosvāmī,Санатана Госвами,,Starshiy iz Shesti Gosvami; avtor Hari-bhakti-vilasy,,verified
+raghunatha-das-goswami,personality,jiva-tattva,gaudiya|six-goswamis,Raghunatha das Goswami,Raghunātha dāsa Gosvāmī,Рагхунатха дас Госвами,,Odin iz Shesti Gosvami; obrazets otrecheniya,,verified
+raghunatha-bhatta-goswami,personality,jiva-tattva,gaudiya|six-goswamis,Raghunatha Bhatta Goswami,Raghunātha Bhaṭṭa Gosvāmī,Рагхунатха Бхатта Госвами,,Odin iz Shesti Gosvami,,verified
+gopala-bhatta-goswami,personality,jiva-tattva,gaudiya|six-goswamis,Gopala Bhatta Goswami,Gopāla Bhaṭṭa Gosvāmī,Гопал Бхатта Госвами,,Odin iz Shesti Gosvami,,verified
+jiva-goswami,personality,jiva-tattva,gaudiya|six-goswamis,Jiva Goswami,Jīva Gosvāmī,Джива Госвами,,Odin iz Shesti Gosvami; avtor Shat-sandarbhi,,verified
+krishnadasa-kaviraja,personality,jiva-tattva,gaudiya,Krishnadasa Kaviraja Goswami,Kṛṣṇadāsa Kavirāja Gosvāmī,Кришнадас Кавираджа Госвами,,Avtor Shri Chaitanya-charitamrity,,verified
+vrindavana-dasa-thakura,personality,jiva-tattva,gaudiya,Vrindavana dasa Thakura,Vṛndāvana dāsa Ṭhākura,Вриндаван дас Тхакур,,Avtor Chaitanya-bhagavaty,,verified
+narottama-dasa-thakura,personality,jiva-tattva,gaudiya|acharya,Narottama dasa Thakura,Narottama dāsa Ṭhākura,Нароттама дас Тхакур,,Acharya; avtor bhadzhanov,,verified
+madhavendra-puri,personality,jiva-tattva,gaudiya|parampara,Madhavendra Puri,Mādhavendra Purī,Мадхавендра Пури,,Rostok premy v linii do Chaitanyi,Ч.-ч. Мадхья 4,verified
+ishvara-puri,personality,jiva-tattva,gaudiya|parampara,Ishvara Puri,Īśvara Purī,Ишвара Пури,,Diksha-guru Chaitanyi Mahaprabhu,,verified
+madhva,personality,jiva-tattva,vaishnava-acharya|parampara,Madhvacharya,Madhvācārya,Мадхвачарья,Madhva|Anandatirtha,Osnovatel Madhva-sampradai,,verified
+baladeva-vidyabhushana,personality,jiva-tattva,gaudiya|acharya,Baladeva Vidyabhushana,Baladeva Vidyābhūṣaṇa,Баладева Видьябхушана,,Avtor kommentariya Govinda-bhashya k Vedanta-sutre,,verified
+bhaktivinoda-thakura,personality,jiva-tattva,gaudiya|acharya,Bhaktivinoda Thakura,Bhaktivinoda Ṭhākura,Бхактивинода Тхакур,,Pioner sovremennogo vozrozhdeniya gaudiya-vaishnavizma,,verified
+gaurakishora-dasa-babaji,personality,jiva-tattva,gaudiya|acharya,Gaurakishora dasa Babaji,Gaurakiśora dāsa Bābājī,Гауракишора дас Бабаджи,,Diksha-guru Bhaktisiddhanty Sarasvati,,verified
+bhaktisiddhanta-sarasvati,personality,jiva-tattva,gaudiya|acharya,Bhaktisiddhanta Sarasvati Thakura,Bhaktisiddhānta Sarasvatī Ṭhākura,Бхактисиддханта Сарасвати Тхакур,Sarasvati Thakura,Osnovatel Gaudiya-mathi; guru Shrily Prabhupady,,verified
+prabhupada,personality,jiva-tattva,gaudiya|founder-acharya|iskcon,A.C. Bhaktivedanta Swami Prabhupada,A.C. Bhaktivedānta Svāmī Prabhupāda,Шрила Прабхупада,Srila Prabhupada|Bhaktivedanta Swami|Abhay Charan,Osnovatel-acharya ISKCON,,verified
+vishnujana-swami,personality,jiva-tattva,iskcon|prabhupada-disciple,Vishnujana Swami,Viṣṇujana Svāmī,Вишнуджана Свами Махарадж,,Ranniy sannyasi ISKCON proslavivshiysya kirtanom,,verified
+vyasadeva,personality,jiva-tattva,shaktyavesha|sage|parampara,Vyasa,Vyāsa,Вьясадева,Krishna-Dvaipayana|Badarayana|Veda-vyasa,Shaktyavesha-avatar; sostavitel Ved; avtor mnogikh pisaniy,СБ 1.3.21,verified
+prithu,personality,jiva-tattva,shaktyavesha|king,Prithu,Pṛthu,Притху,,Nadelyonnyy siloy tsar-avatar (shaktyavesha),СБ 4.15-23,verified
+bg,scripture,,prabhupada-book|canonical-scripture|gita,Bhagavad-gita As It Is,Bhagavad-gītā,Бхагавад-гита как она есть,Gita|Gitopanishad,Proiznesena Krishnoy Ardzhune; na vedabase.io,,verified
+sb,scripture,,prabhupada-book|purana|bhagavatam,Srimad-Bhagavatam,Śrīmad-Bhāgavatam,Шримад-Бхагаватам,Bhagavata Purana|Bhagavatam,Dvenadtsat pesn; na vedabase.io,,verified
+cc,scripture,,prabhupada-book|gaudiya,Sri Chaitanya-charitamrita,Śrī Caitanya-caritāmṛta,Шри Чайтанья-чаритамрита,Chaitanya-charitamrita,Biografiya i ucheniya Chaitanyi; na vedabase.io,,verified
+brs,scripture,,prabhupada-book|gaudiya,The Nectar of Devotion,Bhakti-rasāmṛta-sindhu,Нектар преданности,Bhakti-rasamrita-sindhu,Izlozhenie truda Rupy Gosvami,,verified
+noi,scripture,,prabhupada-book|gaudiya,The Nectar of Instruction,Upadeśāmṛta,Нектар наставлений,Upadeshamrita,Odinnadtsat stikhov nastavleniy Rupy Gosvami,,verified
+iso,scripture,,prabhupada-book|upanishad,Sri Isopanisad,Śrī Īśopaniṣad,Шри Ишопанишад,Isopanisad,Vosemnadtsat mantr s kommentariyami,,verified
+bs,scripture,,canonical-scripture|gaudiya,Brahma-samhita,Brahma-saṁhitā,Брахма-самхита,,Molitvy Brahmy; pyataya glava,,verified
+cb,scripture,,gaudiya,Caitanya-bhagavata,Caitanya-bhāgavata,Чайтанья-бхагавата,,Rannyaya biografiya Chaitanyi,,verified
+hbv,scripture,,gaudiya,Hari-bhakti-vilasa,Hari-bhakti-vilāsa,Хари-бхакти-виласа,,Vaishnavskoe povedenie; cherez Sanatanu Gosvami,,verified
+krishna-book,scripture,,prabhupada-book,Krishna the Supreme Personality of Godhead,Kṛṣṇa,Кришна Верховная Личность Бога,KRSNA Book,Izlozhenie Desyatoy pesni,,verified
+tlc,scripture,,prabhupada-book|gaudiya,Teachings of Lord Chaitanya,Teachings of Lord Caitanya,Учение Шри Чайтаньи,,Izlozhenie po Chaitanya-charitamrite,,verified
+vedanta-sutra,scripture,,canonical-scripture,Vedanta-sutra,Vedānta-sūtra,Веданта-сутра,Brahma-sutra,Aforizmy Vyasadevy ob Absolyute,,verified
+mahabharata,scripture,,canonical-scripture|itihasa,Mahabharata,Mahābhārata,Махабхарата,,Epos Vyasadevy soderzhashchiy Bhagavad-gitu,,verified
+ramayana,scripture,,canonical-scripture|itihasa,Ramayana,Rāmāyaṇa,Рамаяна,,Epos o Gospode Rame; Valmiki,,verified
+puranas,scripture,,canonical-scripture,The Puranas,Purāṇa,Пураны,,Vosemnadtsat osnovnykh Puran,,verified
+upanishads,scripture,,canonical-scripture,The Upanishads,Upaniṣad,Упанишады,,Filosofskie razdely Ved,,verified
+vedas,scripture,,canonical-scripture,The Vedas,Veda,Веды,Rig|Yajur|Sama|Atharva,Chetyre iznachalnye Vedy,,verified
