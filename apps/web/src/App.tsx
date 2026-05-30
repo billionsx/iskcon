@@ -1,6 +1,7 @@
 /**
- * gaurangers.com — оболочка и витринная карточка скопированы 1:1 из apartsales
- * (AppShell + TopHeader + TabBar + UnitCard/UnitHero). Контент — книга БГ.
+ * gaurangers.com — shell copied 1:1 from apartsales (TopHeader + TabBar + UnitCard/UnitHero).
+ * Book card is a PRESENTATION (not a sale): no price/rating/compare/CTA on the face;
+ * tapping the card opens the detail page. Order/print lives in the ⋯ menu.
  */
 import { useState, useRef, type ReactNode } from "react";
 import type { SVGProps } from "react";
@@ -30,37 +31,29 @@ function HeartIcon(p: IconProps) {
   const d = "M12 21c-7.4-4.6-9.9-8.7-9.9-12.5 0-2.85 2.04-5.2 4.85-5.2 1.97 0 3.6 1.05 5.05 3.07 1.45-2.02 3.08-3.07 5.05-3.07 2.81 0 4.85 2.35 4.85 5.2 0 3.8-2.5 7.9-9.9 12.5Z";
   return p.filled ? <svg {...sp(p)}><path d={d} fill="currentColor" /></svg> : <svg {...sp(p)}><path {...STROKE} d={d} /></svg>;
 }
-function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
-  const { cornerGlyph, ...rest } = p;
-  const corner = cornerGlyph === "plus"
-    ? <g><line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /><line x1="21.75" y1="1.5" x2="21.75" y2="5" {...STROKE} /></g>
-    : cornerGlyph === "minus" ? <line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /> : null;
-  return <svg {...sp(rest)} overflow="visible"><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" />{corner}</svg>;
+function BagIcon(p: IconProps) {
+  return <svg {...sp(p)}><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" /></svg>;
 }
-function StarIcon(p: IconProps) {
-  const d = "M12 2.5c.18 0 .35.1.43.27l2.6 5.27c.06.13.18.22.32.24l5.82.85c.4.06.55.55.27.84l-4.21 4.1c-.1.1-.15.24-.13.39l1 5.8c.07.4-.35.7-.7.51l-5.2-2.74a.51.51 0 0 0-.48 0l-5.2 2.74c-.36.19-.78-.11-.7-.51l.99-5.8a.51.51 0 0 0-.13-.39l-4.21-4.1c-.29-.29-.13-.78.27-.84l5.82-.85a.51.51 0 0 0 .32-.24l2.6-5.27c.07-.18.24-.27.42-.27Z";
-  return p.filled ? <svg {...sp(p)}><path d={d} fill="currentColor" /></svg> : <svg {...sp(p)}><path {...STROKE} d={d} /></svg>;
-}
-
-/* ═════════ BRAND wordmark (gaurangers) ═════════ */
-function Wordmark() {
-  return (
-    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px" }}>
-      <img src="/logo-black.svg" alt="ISKCON ONE LOVE" className="light-logo-only" style={{ width: 65, height: "auto" }} />
-      <img src="/logo-white.svg" alt="ISKCON ONE LOVE" className="dark-logo-only" style={{ width: 65, height: "auto" }} />
-    </span>
-  );
+function ShareIcon(p: IconProps) {
+  return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>;
 }
 
 /* ═════════ TopHeader (apartsales) — bag / wordmark / heart ═════════ */
 function TopHeader() {
   return (
-    <header style={{ position: "relative", zIndex: 30, height: 48, flexShrink: 0, background: "var(--color-bg)" }}>
+    <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, flexShrink: 0, background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div style={{ display: "grid", height: "100%", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 12px" }}>
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
-          <button aria-label="Корзина" style={{ position: "relative", display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><BagIcon size={26} /></button>
+          <button aria-label="Корзина" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><BagIcon size={26} /></button>
         </div>
-        <Wordmark />
+        <span style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px" }}>
+          {/* updated brand wordmark; black art, masked to label color so it works in both themes */}
+          <span aria-label="ISKCON ONE LOVE" role="img" style={{
+            display: "block", width: 132, height: 132 * 73 / 1067, backgroundColor: "var(--color-label)",
+            WebkitMaskImage: "url(/iskcon-one-love.svg)", maskImage: "url(/iskcon-one-love.svg)",
+            WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center",
+          }} />
+        </span>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
           <button aria-label="Избранное" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><HeartIcon size={24} /></button>
         </div>
@@ -75,12 +68,12 @@ const TABS = [
   { id: "feed", label: "Лента", Icon: FeedIcon, photo: null },
   { id: "search", label: "Поиск", Icon: AISearchIcon, photo: null },
   { id: "map", label: "Карта", Icon: MapPinIcon, photo: null },
-  { id: "passport", label: "Паспорт", Icon: null, photo: "/billionsx-avatar.jpeg" },
+  { id: "passport", label: "Паспорт", Icon: null, photo: "person" },
 ] as const;
 
 function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
   return (
-    <nav aria-label="Главная навигация" style={{ position: "relative", zIndex: 40, flexShrink: 0, borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+    <nav aria-label="Главная навигация" style={{ position: "sticky", bottom: 0, zIndex: 40, flexShrink: 0, borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", paddingBottom: "env(safe-area-inset-bottom)" }}>
       <ul style={{ display: "flex", height: 48, margin: 0, padding: 0, listStyle: "none", alignItems: "stretch" }}>
         {TABS.map(({ id, label, Icon, photo }) => {
           const on = active === id;
@@ -102,6 +95,18 @@ function TabBar({ active, onChange }: { active: string; onChange: (k: string) =>
   );
 }
 
+/* ═════════ logo mark — monochrome via mask (works white on photo) ═════════ */
+function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
+  return (
+    <span role="img" aria-label={label} style={{
+      display: "block", height, width: height, backgroundColor: "currentColor",
+      WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`,
+      WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+      WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center",
+    }} />
+  );
+}
+
 /* ═════════ book cover art (original; no copyrighted BBT artwork) ═════════ */
 function spokes(cx: number, cy: number, r1: number, r2: number, n: number, sw: number) {
   return Array.from({ length: n }, (_, i) => {
@@ -118,21 +123,21 @@ function BookCover() {
       </defs>
       <rect width="400" height="500" fill="url(#cv)" />
       <rect width="400" height="500" fill="url(#gl)" />
-      <text x="200" y="92" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="20" letterSpacing="1">श्रीमद् भगवद्गीता</text>
-      <g transform="translate(0,40)">
-        <circle cx="200" cy="210" r="74" fill="none" stroke="#E9C977" strokeWidth="1.4" />
-        <circle cx="200" cy="210" r="60" fill="none" stroke="#E9C977" strokeOpacity=".4" strokeWidth="1" />
-        {spokes(200, 210, 26, 70, 16, 1.3)}
-        <circle cx="200" cy="210" r="18" fill="none" stroke="#E9C977" strokeWidth="1.4" />
-        <circle cx="200" cy="210" r="5" fill="#E9C977" />
+      <text x="200" y="96" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="20" letterSpacing="1">श्रीमद् भगवद्गीता</text>
+      <g transform="translate(0,34)">
+        <circle cx="200" cy="200" r="74" fill="none" stroke="#E9C977" strokeWidth="1.4" />
+        <circle cx="200" cy="200" r="60" fill="none" stroke="#E9C977" strokeOpacity=".4" strokeWidth="1" />
+        {spokes(200, 200, 26, 70, 16, 1.3)}
+        <circle cx="200" cy="200" r="18" fill="none" stroke="#E9C977" strokeWidth="1.4" />
+        <circle cx="200" cy="200" r="5" fill="#E9C977" />
       </g>
-      <text x="200" y="372" textAnchor="middle" fill="#F4ECD8" fontFamily="var(--font-display)" fontSize="40" fontWeight="600">Bhagavad-gītā</text>
-      <text x="200" y="398" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="13" fontWeight="600" letterSpacing="6">AS IT IS</text>
+      <text x="200" y="362" textAnchor="middle" fill="#F4ECD8" fontFamily="var(--font-display)" fontSize="40" fontWeight="600">Bhagavad-gītā</text>
+      <text x="200" y="388" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="13" fontWeight="600" letterSpacing="6">AS IT IS</text>
     </svg>
   );
 }
 
-/* ═════════ ActionBtn (apartsales UnitCard) — round glass over photo ═════════ */
+/* ═════════ round glass action button (apartsales UnitCard) ═════════ */
 function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { active?: boolean; activeColor?: string; ariaLabel: string; onClick: () => void; children: ReactNode }) {
   return (
     <button type="button" aria-label={ariaLabel} aria-pressed={active}
@@ -143,94 +148,117 @@ function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { acti
   );
 }
 
-/* ═════════ UnitHero (apartsales) — book content ═════════ */
-function BookHero({ onOpen }: { onOpen?: () => void }) {
-  const [favorited, setFavorited] = useState(false);
-  const [compared, setCompared] = useState(false);
-  const [inCart, setInCart] = useState(false);
-  const photoIdx = 0, photosLen = 3;
-
+/* ═════════ ⋯ menu (book functions) ═════════ */
+const MENU_ITEMS = [
+  "Читать онлайн", "Слушать аудиокнигу", "Скачать PDF / EPUB",
+  "Язык издания — Русский", "Добавить в план чтения", "Поделиться · QR-код",
+  "Заказать печатную книгу", "Поддержать печать", "О книге и об авторе", "Стих дня из книги",
+];
+function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null;
   return (
-    <div style={{ position: "relative", aspectRatio: "4 / 5", width: "100%", overflow: "hidden", background: "var(--color-bg-3)", userSelect: "none" }}>
-      <BookCover />
-      {/* gradients */}
-      <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 96, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.50) 0%, rgba(0,0,0,0) 100%)" }} />
-      <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "72%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 40%, rgba(0,0,0,0) 100%)" }} />
-      {/* center tap = open */}
-      <button type="button" aria-label="Открыть полностью" onClick={onOpen} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-
-      {/* TOP overlay: score + counter + actions */}
-      <div style={{ position: "absolute", insetInline: 12, top: 12, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 4, borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "4px 8px", fontSize: 12, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>
-          <StarIcon size={12} filled />4.9
-        </span>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{photoIdx + 1} / {photosLen}</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-            <ActionBtn active={compared} activeColor="var(--color-brand-blue)" ariaLabel="Сравнить" onClick={() => setCompared(v => !v)}>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><rect x="5" y="5" width="6" height="14" rx="1.5" fill="currentColor" /><rect x="13" y="8" width="6" height="11" rx="1.5" fill="currentColor" opacity={compared ? 1 : 0.55} /></svg>
-            </ActionBtn>
-            <ActionBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel="В корзину" onClick={() => setInCart(v => !v)}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
-            <ActionBtn ariaLabel="Меню действий" onClick={() => {}}>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>
-            </ActionBtn>
-          </div>
-        </div>
-      </div>
-
-      {/* INFO block — bottom */}
-      <div style={{ position: "absolute", insetInline: 12, bottom: 16, zIndex: 20, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.6))" }}>
-        {/* price */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.3px", color: "#fff" }}>990 ₽</span>
-          <span style={{ display: "flex", alignItems: "center", borderRadius: 999, background: "#FF453A", padding: "2px 8px", fontSize: 12, fontWeight: 700, color: "#fff" }}>−15%</span>
-        </div>
-        {/* subline */}
-        <div style={{ marginTop: 2, display: "flex", alignItems: "baseline", gap: 6, fontSize: 13, color: "rgba(255,255,255,.8)" }}>
-          <span>аудио + PDF бесплатно</span><span style={{ color: "rgba(255,255,255,.4)" }}>·</span><span>700 стихов</span>
-        </div>
-        {/* pills */}
-        <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
-          {["18 глав", "санскрит", "IAST", "комментарии"].map(p => (
-            <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.15)", padding: "2px 10px", fontSize: 13, fontWeight: 500, color: "#fff", backdropFilter: "blur(4px)" }}>{p}</span>
-          ))}
-        </div>
-        {/* developer + title + meta */}
-        <div style={{ marginTop: 16, lineHeight: 1.2 }}>
-          <div style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.4px", color: "rgba(255,255,255,.65)" }}>BBT · Шрила Прабхупада</div>
-          <div style={{ marginTop: 2, fontSize: 17, fontWeight: 600, color: "#fff" }}>Бхагавад-гита как она есть</div>
-          <div style={{ marginTop: 2, fontSize: 13, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 4px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Кришной Арджуне»</div>
-        </div>
-        {/* CTA crumb + verified */}
-        <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(42,150,251,.85)", padding: "4px 10px", fontSize: 13, fontWeight: 600, color: "#fff", backdropFilter: "blur(4px)" }}>Читать · Слушать</span>
-          <span style={{ display: "flex", alignItems: "center", gap: 4, borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "4px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>
-            <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#30D158" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>vedabase
-          </span>
-        </div>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2)", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: "8px 0 max(8px, env(safe-area-inset-bottom))", boxShadow: "var(--shadow-card)" }}>
+        <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline)", margin: "8px auto 12px" }} />
+        {MENU_ITEMS.map((label) => (
+          <button key={label} onClick={onClose} style={{ display: "block", width: "100%", textAlign: "left", padding: "14px 20px", background: "none", border: "none", fontFamily: "var(--font-text)", fontSize: 17, color: "var(--color-label)", cursor: "pointer" }}>{label}</button>
+        ))}
       </div>
     </div>
   );
 }
 
-/* ═════════ UnitCard wrapper (apartsales) ═════════ */
+/* ═════════ UnitHero (apartsales) — adapted to PRESENT a book ═════════ */
+function BookHero({ onOpen }: { onOpen?: () => void }) {
+  const [favorited, setFavorited] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const photoIdx = 0, photosLen = 3;
+
+  return (
+    <>
+      <div onClick={onOpen} style={{ position: "relative", aspectRatio: "4 / 5", width: "100%", overflow: "hidden", background: "var(--color-bg-3)", userSelect: "none", cursor: "pointer" }}>
+        <BookCover />
+        {/* gradients */}
+        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 110, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.50) 0%, rgba(0,0,0,0) 100%)" }} />
+        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "74%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 42%, rgba(0,0,0,0) 100%)" }} />
+
+        {/* TOP overlay: ISKCON sign (left) · counter + actions (right) */}
+        <div style={{ position: "absolute", insetInline: 12, top: 12, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ display: "grid", placeItems: "center", height: 34, width: 34, borderRadius: "50%", background: "rgba(0,0,0,.45)", color: "#fff", backdropFilter: "blur(12px)" }}>
+            <LogoMark src="/iskcon-sign.svg" label="ISKCON" height={20} />
+          </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{photoIdx + 1} / {photosLen}</span>
+            <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+            <ActionBtn ariaLabel="Поделиться" onClick={() => {}}><ShareIcon size={17} /></ActionBtn>
+            <ActionBtn ariaLabel="Меню" onClick={() => setMenuOpen(true)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>
+            </ActionBtn>
+          </div>
+        </div>
+
+        {/* INFO block — bottom: present the book */}
+        <div style={{ position: "absolute", insetInline: 16, bottom: 16, zIndex: 20, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.6))" }}>
+          {/* authority: ISKCON + BBT */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, color: "rgba(255,255,255,.92)", marginBottom: 12 }}>
+            <LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />
+            <span style={{ width: 1, height: 20, background: "rgba(255,255,255,.3)" }} />
+            <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />
+          </div>
+          {/* author eyebrow */}
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "rgba(255,255,255,.65)" }}>Шрила Прабхупада</div>
+          {/* title */}
+          <div style={{ marginTop: 3, fontSize: 24, fontWeight: 700, letterSpacing: "-0.3px", lineHeight: 1.1, color: "#fff", fontFamily: "var(--font-display)" }}>Бхагавад-гита как она есть</div>
+          <div style={{ marginTop: 3, fontSize: 13, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 5px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Кришной Арджуне»</div>
+          {/* hook */}
+          <p style={{ margin: "12px 0 0", fontSize: 15, lineHeight: 1.4, color: "rgba(255,255,255,.88)" }}>
+            Вечный диалог о душе, долге и любви к Богу — суть всех Вед в 700 стихах.
+          </p>
+          {/* pills */}
+          <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+            {["18 глав", "700 стихов", "санскрит", "аудио", "комментарии"].map(p => (
+              <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.15)", padding: "3px 10px", fontSize: 12.5, fontWeight: 500, color: "#fff", backdropFilter: "blur(4px)" }}>{p}</span>
+            ))}
+          </div>
+          {/* source */}
+          <div style={{ marginTop: 14, display: "flex", alignItems: "center" }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 5, borderRadius: 999, background: "rgba(0,0,0,.45)", padding: "4px 9px", fontSize: 11, fontWeight: 600, color: "rgba(255,255,255,.85)", backdropFilter: "blur(12px)" }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#30D158" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              источник: vedabase.io
+            </span>
+          </div>
+        </div>
+      </div>
+      <ActionsMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+    </>
+  );
+}
+
 function BookCard() {
   return (
-    <article style={{ position: "relative", width: "100%", overflow: "hidden", borderRadius: 20, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.03)" }}>
+    <article style={{ position: "relative", width: "100%", overflow: "hidden", borderRadius: 20, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", boxShadow: "var(--shadow-card)" }}>
       <BookHero onOpen={() => {}} />
     </article>
   );
 }
 
-/* ═════════ APP SHELL (apartsales) — phone frame on desktop ═════════ */
 function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
     <>
       <TopHeader />
       <main ref={mainRef} style={{ position: "relative", flex: 1, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-        <div style={{ padding: 16 }}>{tab === "home" ? <BookCard /> : null}</div>
+        <div style={{ padding: 16 }}>
+          {tab === "home" ? (
+            <>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
+                <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-display)" }}>Книги Прабхупады</h2>
+              </div>
+              <BookCard />
+            </>
+          ) : null}
+        </div>
       </main>
       <TabBar active={tab} onChange={onChange} />
     </>
