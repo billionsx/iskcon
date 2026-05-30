@@ -1,67 +1,108 @@
-import { useState } from "react";
-import { ICONS } from "./icons";
-import { tk } from "./ui/tokens";
-import { Chip } from "./ui/primitives";
+/**
+ * gaurangers.com — оболочка и витринная карточка скопированы 1:1 из apartsales
+ * (AppShell + TopHeader + TabBar + UnitCard/UnitHero). Контент — книга БГ.
+ */
+import { useState, useRef, type ReactNode } from "react";
+import type { SVGProps } from "react";
 
-/* ───────── ORIGINAL MENU (restored verbatim) ───────── */
-// cqw per reference px: 1cqw = 1% of shell width; reference shell = 393pt = 1179px(@3x)
-const F = 100 / (393 * 3); // ≈ 0.084818
+/* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
+interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
+const sp = ({ size = 26 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
+const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 
-const Img = ({ name }: { name: string }) => {
-  const ic = ICONS[name];
+function HomeIcon(p: IconProps) {
+  return p.filled
+    ? <svg {...sp(p)}><path fill="currentColor" d="M11.32 2.46a1 1 0 0 1 1.36 0l8.68 8.5a1 1 0 0 1 .31.71v8.7c0 1-.8 1.83-1.81 1.83H15v-7.4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1V22.2H4.14A1.81 1.81 0 0 1 2.33 20.37v-8.7c0-.27.11-.53.31-.71l8.68-8.5Z" /></svg>
+    : <svg {...sp(p)}><path {...STROKE} d="m3 11.4 9-8.4 9 8.4v8.78a.83.83 0 0 1-.83.82H15v-7.5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1V21H3.83a.83.83 0 0 1-.83-.82V11.4Z" /></svg>;
+}
+function FeedIcon(p: IconProps) {
+  const r = (x: number, y: number) => <rect {...STROKE} x={x} y={y} width="7.5" height="7.5" rx="1.6" />;
+  return <svg {...sp(p)}>{r(3.5, 3.5)}{r(13, 3.5)}{r(3.5, 13)}{r(13, 13)}</svg>;
+}
+function AISearchIcon(p: IconProps) {
+  const sparkle = "M19 2c.06 0 .12.05.13.11l.4 2.18a1.4 1.4 0 0 0 1.18 1.18l2.18.4a.13.13 0 0 1 0 .26l-2.18.4a1.4 1.4 0 0 0-1.18 1.18l-.4 2.18a.13.13 0 0 1-.26 0l-.4-2.18a1.4 1.4 0 0 0-1.18-1.18l-2.18-.4a.13.13 0 0 1 0-.26l2.18-.4a1.4 1.4 0 0 0 1.18-1.18l.4-2.18A.13.13 0 0 1 19 2Z";
+  return <svg {...sp(p)}><circle {...STROKE} cx="10.5" cy="11.5" r="7" /><path {...STROKE} strokeWidth="1.9" d="m20 21-3.5-3.5" /><path d={sparkle} fill="currentColor" /></svg>;
+}
+function MapPinIcon(p: IconProps) {
+  return <svg {...sp(p)}><path {...STROKE} d="M12 22c-1.6-1.5-7.5-7-7.5-12 0-4.14 3.36-7.5 7.5-7.5s7.5 3.36 7.5 7.5c0 5-5.9 10.5-7.5 12Z" /><circle {...STROKE} cx="12" cy="10.2" r="2.8" /></svg>;
+}
+function HeartIcon(p: IconProps) {
+  const d = "M12 21c-7.4-4.6-9.9-8.7-9.9-12.5 0-2.85 2.04-5.2 4.85-5.2 1.97 0 3.6 1.05 5.05 3.07 1.45-2.02 3.08-3.07 5.05-3.07 2.81 0 4.85 2.35 4.85 5.2 0 3.8-2.5 7.9-9.9 12.5Z";
+  return p.filled ? <svg {...sp(p)}><path d={d} fill="currentColor" /></svg> : <svg {...sp(p)}><path {...STROKE} d={d} /></svg>;
+}
+function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
+  const { cornerGlyph, ...rest } = p;
+  const corner = cornerGlyph === "plus"
+    ? <g><line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /><line x1="21.75" y1="1.5" x2="21.75" y2="5" {...STROKE} /></g>
+    : cornerGlyph === "minus" ? <line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /> : null;
+  return <svg {...sp(rest)} overflow="visible"><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" />{corner}</svg>;
+}
+function StarIcon(p: IconProps) {
+  const d = "M12 2.5c.18 0 .35.1.43.27l2.6 5.27c.06.13.18.22.32.24l5.82.85c.4.06.55.55.27.84l-4.21 4.1c-.1.1-.15.24-.13.39l1 5.8c.07.4-.35.7-.7.51l-5.2-2.74a.51.51 0 0 0-.48 0l-5.2 2.74c-.36.19-.78-.11-.7-.51l.99-5.8a.51.51 0 0 0-.13-.39l-4.21-4.1c-.29-.29-.13-.78.27-.84l5.82-.85a.51.51 0 0 0 .32-.24l2.6-5.27c.07-.18.24-.27.42-.27Z";
+  return p.filled ? <svg {...sp(p)}><path d={d} fill="currentColor" /></svg> : <svg {...sp(p)}><path {...STROKE} d={d} /></svg>;
+}
+
+/* ═════════ BRAND wordmark (gaurangers) ═════════ */
+function Wordmark() {
   return (
-    <img className="glyph" src={ic.uri} alt="" draggable={false}
-      style={{ height: `${(ic.h * F).toFixed(2)}cqw`, width: `${(ic.w * F).toFixed(2)}cqw` }} />
+    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px" }}>
+      <img src="/logo-black.svg" alt="ISKCON ONE LOVE" className="light-logo-only" style={{ width: 130, height: "auto" }} />
+      <img src="/logo-white.svg" alt="ISKCON ONE LOVE" className="dark-logo-only" style={{ width: 130, height: "auto" }} />
+    </span>
   );
-};
+}
 
-function TopBar() {
+/* ═════════ TopHeader (apartsales) — bag / wordmark / heart ═════════ */
+function TopHeader() {
   return (
-    <header className="topbar">
-      <button className="tIcon" aria-label="Создать"><Img name="plus" /></button>
-      <div className="brand">
-        <img className="logo light" src="/logo-black.svg" alt="Gaurāṅgers" />
-        <img className="logo dark" src="/logo-white.svg" alt="Gaurāṅgers" />
+    <header style={{ position: "relative", zIndex: 30, height: 48, flexShrink: 0, background: "var(--color-bg)" }}>
+      <div style={{ display: "grid", height: "100%", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 12px" }}>
+        <div style={{ display: "flex", justifyContent: "flex-start" }}>
+          <button aria-label="Корзина" style={{ position: "relative", display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><BagIcon size={26} /></button>
+        </div>
+        <Wordmark />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+          <button aria-label="Избранное" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><HeartIcon size={24} /></button>
+        </div>
       </div>
-      <button className="tIcon" aria-label="Уведомления"><Img name="heart" /></button>
     </header>
   );
 }
 
-const NAV = [
-  { key: "home", label: "Главная", icon: "home" },
-  { key: "reels", label: "Reels", icon: "reels" },
-  { key: "direct", label: "Сообщения", icon: "plane" },
-  { key: "search", label: "Поиск", icon: "search" },
-  { key: "profile", label: "Профиль", avatar: true },
+/* ═════════ TabBar (apartsales) — 5 tabs, outline, active=brand-blue ═════════ */
+const TABS = [
+  { id: "home", label: "Главная", Icon: HomeIcon, photo: null },
+  { id: "feed", label: "Лента", Icon: FeedIcon, photo: null },
+  { id: "search", label: "Поиск", Icon: AISearchIcon, photo: null },
+  { id: "map", label: "Карта", Icon: MapPinIcon, photo: null },
+  { id: "passport", label: "Паспорт", Icon: null, photo: "/billionsx-avatar.jpeg" },
 ] as const;
 
 function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
   return (
-    <nav className="tabbar" role="tablist">
-      {NAV.map((t) => {
-        const on = active === t.key;
-        if ("avatar" in t && t.avatar) {
+    <nav aria-label="Главная навигация" style={{ position: "relative", zIndex: 40, flexShrink: 0, borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <ul style={{ display: "flex", height: 48, margin: 0, padding: 0, listStyle: "none", alignItems: "stretch" }}>
+        {TABS.map(({ id, label, Icon, photo }) => {
+          const on = active === id;
           return (
-            <button key={t.key} className="tab" role="tab" aria-selected={on} aria-label={t.label} onClick={() => onChange(t.key)}>
-              <span className={"avatar" + (on ? " on" : "")}>
-                <svg className="avPerson" viewBox="0 0 24 24" fill="#8B8B8B"><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" /></svg>
-                <i className="reddot" />
-              </span>
-            </button>
+            <li key={id} style={{ flex: 1 }}>
+              <button aria-label={label} aria-current={on ? "page" : undefined} onClick={() => onChange(id)}
+                style={{ position: "relative", display: "flex", height: "100%", width: "100%", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: on ? "var(--color-brand-blue)" : "var(--color-label)", transition: "color 180ms ease-out" }}>
+                {Icon ? <Icon size={26} filled={false} /> : (
+                  <span style={{ display: "grid", height: 26, width: 26, placeItems: "center", borderRadius: "50%", background: "var(--color-glass-regular)", color: "var(--color-label-2)", boxShadow: on ? "0 0 0 2px var(--color-brand-blue)" : "0 0 0 1px var(--color-hairline)" }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" /></svg>
+                  </span>
+                )}
+              </button>
+            </li>
           );
-        }
-        return (
-          <button key={t.key} className="tab" role="tab" aria-selected={on} aria-label={t.label} onClick={() => onChange(t.key)}>
-            <Img name={(t as any).icon} />
-          </button>
-        );
-      })}
+        })}
+      </ul>
     </nav>
   );
 }
 
-/* ───────── book cover art (original; no copyrighted BBT artwork) ───────── */
+/* ═════════ book cover art (original; no copyrighted BBT artwork) ═════════ */
 function spokes(cx: number, cy: number, r1: number, r2: number, n: number, sw: number) {
   return Array.from({ length: n }, (_, i) => {
     const a = (i * 2 * Math.PI) / n;
@@ -70,108 +111,165 @@ function spokes(cx: number, cy: number, r1: number, r2: number, n: number, sw: n
 }
 function BookCover() {
   return (
-    <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style={{ width: "100%", height: "100%", display: "block" }} aria-label="Бхагавад-гита как она есть">
+    <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover" }} aria-label="Бхагавад-гита как она есть">
       <defs>
-        <linearGradient id="cv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2c2158" /><stop offset=".55" stopColor="#1d1542" /><stop offset="1" stopColor="#160f30" /></linearGradient>
-        <radialGradient id="gl" cx="50%" cy="34%" r="60%"><stop offset="0" stopColor="rgba(233,201,119,.30)" /><stop offset="1" stopColor="rgba(233,201,119,0)" /></radialGradient>
+        <linearGradient id="cv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#2c2158" /><stop offset=".55" stopColor="#1d1542" /><stop offset="1" stopColor="#140d2c" /></linearGradient>
+        <radialGradient id="gl" cx="50%" cy="30%" r="60%"><stop offset="0" stopColor="rgba(233,201,119,.32)" /><stop offset="1" stopColor="rgba(233,201,119,0)" /></radialGradient>
       </defs>
-      <rect width="400" height="300" fill="url(#cv)" />
-      <rect width="400" height="300" fill="url(#gl)" />
-      <text x="200" y="56" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="17" letterSpacing="1">श्रीमद् भगवद्गीता</text>
-      <g transform="translate(0,16)">
-        <circle cx="200" cy="150" r="52" fill="none" stroke="#E9C977" strokeWidth="1.3" />
-        <circle cx="200" cy="150" r="42" fill="none" stroke="#E9C977" strokeOpacity=".4" strokeWidth="1" />
-        {spokes(200, 150, 18, 49, 16, 1.1)}
-        <circle cx="200" cy="150" r="13" fill="none" stroke="#E9C977" strokeWidth="1.3" />
-        <circle cx="200" cy="150" r="3.5" fill="#E9C977" />
+      <rect width="400" height="500" fill="url(#cv)" />
+      <rect width="400" height="500" fill="url(#gl)" />
+      <text x="200" y="92" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="20" letterSpacing="1">श्रीमद् भगवद्गीता</text>
+      <g transform="translate(0,40)">
+        <circle cx="200" cy="210" r="74" fill="none" stroke="#E9C977" strokeWidth="1.4" />
+        <circle cx="200" cy="210" r="60" fill="none" stroke="#E9C977" strokeOpacity=".4" strokeWidth="1" />
+        {spokes(200, 210, 26, 70, 16, 1.3)}
+        <circle cx="200" cy="210" r="18" fill="none" stroke="#E9C977" strokeWidth="1.4" />
+        <circle cx="200" cy="210" r="5" fill="#E9C977" />
       </g>
-      <text x="200" y="248" textAnchor="middle" fill="#F4ECD8" fontFamily="var(--font-display)" fontSize="30" fontWeight="600">Bhagavad-gītā</text>
-      <text x="200" y="272" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="11" fontWeight="600" letterSpacing="5">AS IT IS</text>
+      <text x="200" y="372" textAnchor="middle" fill="#F4ECD8" fontFamily="var(--font-display)" fontSize="40" fontWeight="600">Bhagavad-gītā</text>
+      <text x="200" y="398" textAnchor="middle" fill="#E9C977" fontFamily="var(--font-text)" fontSize="13" fontWeight="600" letterSpacing="6">AS IT IS</text>
     </svg>
   );
 }
 
-function HeartGlyph({ filled }: { filled: boolean }) {
-  return filled
-    ? <svg width={18} height={18} viewBox="0 0 24 24" aria-hidden><path fill="#FF453A" d="M12 21.3 4.3 13.6a5 5 0 0 1 7.1-7.1l.6.6.6-.6a5 5 0 1 1 7.1 7.1L12 21.3Z" /></svg>
-    : <svg width={18} height={18} viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="#fff" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" d="M12 20.3 5 13.3a4.5 4.5 0 0 1 6.4-6.3l.6.6.6-.6A4.5 4.5 0 1 1 19 13.3l-7 7Z" /></svg>;
-}
-function StarGlyph() {
-  return <svg width={11} height={11} viewBox="0 0 24 24" aria-hidden><path fill="currentColor" d="m12 2 2.9 6.1 6.6.8-4.9 4.5 1.3 6.5L12 17.8 6.1 20.4l1.3-6.5L2.5 8.9l6.6-.8L12 2Z" /></svg>;
+/* ═════════ ActionBtn (apartsales UnitCard) — round glass over photo ═════════ */
+function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { active?: boolean; activeColor?: string; ariaLabel: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" aria-label={ariaLabel} aria-pressed={active}
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ display: "grid", height: 36, width: 36, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.45)", color: active && activeColor ? activeColor : "#fff", backdropFilter: "blur(12px)", transition: "background .2s" }}>
+      {children}
+    </button>
+  );
 }
 
-/* ───────── BookCard — apartsales PropertyCard structure 1:1 ───────── */
-function BookCard() {
+/* ═════════ UnitHero (apartsales) — book content ═════════ */
+function BookHero({ onOpen }: { onOpen?: () => void }) {
   const [favorited, setFavorited] = useState(false);
+  const [compared, setCompared] = useState(false);
+  const [inCart, setInCart] = useState(false);
+  const photoIdx = 0, photosLen = 3;
+
   return (
-    <article style={{ position: "relative", overflow: "hidden", borderRadius: tk.radius.glass, border: `0.5px solid ${tk.color.glassStroke}`, background: tk.color.fill1 }}>
-      <div style={{ position: "relative", aspectRatio: "4 / 3", overflow: "hidden", background: tk.color.bg2 }}>
-        <BookCover />
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 96, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
-        <span style={{ position: "absolute", left: 12, top: 12, display: "flex", alignItems: "center", gap: 6, borderRadius: tk.radius.pill, background: "rgba(0,0,0,.55)", padding: "4px 10px", fontSize: tk.text.caption2, fontWeight: tk.weight.semibold, color: "#fff", backdropFilter: "blur(12px)" }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: tk.color.brand }} />Писание
+    <div style={{ position: "relative", aspectRatio: "4 / 5", width: "100%", overflow: "hidden", background: "var(--color-bg-3)", userSelect: "none" }}>
+      <BookCover />
+      {/* gradients */}
+      <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 96, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.50) 0%, rgba(0,0,0,0) 100%)" }} />
+      <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "72%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 40%, rgba(0,0,0,0) 100%)" }} />
+      {/* center tap = open */}
+      <button type="button" aria-label="Открыть полностью" onClick={onOpen} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
+
+      {/* TOP overlay: score + counter + actions */}
+      <div style={{ position: "absolute", insetInline: 12, top: 12, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 4, borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "4px 8px", fontSize: 12, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>
+          <StarIcon size={12} filled />4.9
         </span>
-        <button type="button" aria-label={favorited ? "Убрать из избранного" : "В избранное"} aria-pressed={favorited} onClick={() => setFavorited(v => !v)}
-          style={{ position: "absolute", right: 12, top: 12, display: "grid", placeItems: "center", height: 32, width: 32, borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.4)", backdropFilter: "blur(12px)", transition: `transform ${tk.duration.fast} ${tk.ease}` }}>
-          <span style={{ display: "block", transform: favorited ? "scale(1.08)" : "scale(1)", transition: `transform ${tk.duration.fast} ${tk.ease}` }}><HeartGlyph filled={favorited} /></span>
-        </button>
-        <div style={{ position: "absolute", left: 12, bottom: 12, display: "flex", flexWrap: "wrap", gap: 6 }}>
-          {["Бестселлер", "Аудио"].map(t => (
-            <span key={t} style={{ borderRadius: tk.radius.pill, background: "rgba(0,0,0,.55)", padding: "4px 10px", fontSize: tk.text.caption2, fontWeight: tk.weight.semibold, color: "#fff", backdropFilter: "blur(12px)" }}>{t}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{photoIdx + 1} / {photosLen}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+            <ActionBtn active={compared} activeColor="var(--color-brand-blue)" ariaLabel="Сравнить" onClick={() => setCompared(v => !v)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><rect x="5" y="5" width="6" height="14" rx="1.5" fill="currentColor" /><rect x="13" y="8" width="6" height="11" rx="1.5" fill="currentColor" opacity={compared ? 1 : 0.55} /></svg>
+            </ActionBtn>
+            <ActionBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel="В корзину" onClick={() => setInCart(v => !v)}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
+            <ActionBtn ariaLabel="Меню действий" onClick={() => {}}>
+              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>
+            </ActionBtn>
+          </div>
+        </div>
+      </div>
+
+      {/* INFO block — bottom */}
+      <div style={{ position: "absolute", insetInline: 12, bottom: 16, zIndex: 20, filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.6))" }}>
+        {/* price */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 32, fontWeight: 700, letterSpacing: "-0.3px", color: "#fff" }}>990 ₽</span>
+          <span style={{ display: "flex", alignItems: "center", borderRadius: 999, background: "#FF453A", padding: "2px 8px", fontSize: 12, fontWeight: 700, color: "#fff" }}>−15%</span>
+        </div>
+        {/* subline */}
+        <div style={{ marginTop: 2, display: "flex", alignItems: "baseline", gap: 6, fontSize: 13, color: "rgba(255,255,255,.8)" }}>
+          <span>аудио + PDF бесплатно</span><span style={{ color: "rgba(255,255,255,.4)" }}>·</span><span>700 стихов</span>
+        </div>
+        {/* pills */}
+        <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 4 }}>
+          {["18 глав", "санскрит", "IAST", "комментарии"].map(p => (
+            <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.15)", padding: "2px 10px", fontSize: 13, fontWeight: 500, color: "#fff", backdropFilter: "blur(4px)" }}>{p}</span>
           ))}
         </div>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: tk.space[2], padding: tk.space[4] }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: tk.space[2] }}>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <h3 style={{ margin: 0, fontSize: tk.text.callout, fontWeight: tk.weight.semibold, color: tk.color.label, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: tk.tracking.tight }}>Бхагавад-гита как она есть</h3>
-            <p style={{ margin: 0, fontSize: tk.text.footnote, color: tk.color.label2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Bhagavad-gītā · Шрила Прабхупада</p>
-          </div>
-          <span style={{ display: "flex", flexShrink: 0, alignItems: "center", gap: 4, borderRadius: tk.radius.pill, background: tk.color.fill2, padding: "4px 8px", fontSize: tk.text.caption, fontWeight: tk.weight.semibold, color: tk.color.label }}>
-            <span style={{ color: "#FFCC00", display: "grid", placeItems: "center" }}><StarGlyph /></span>4.9
+        {/* developer + title + meta */}
+        <div style={{ marginTop: 16, lineHeight: 1.2 }}>
+          <div style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.4px", color: "rgba(255,255,255,.65)" }}>BBT · Шрила Прабхупада</div>
+          <div style={{ marginTop: 2, fontSize: 17, fontWeight: 600, color: "#fff" }}>Бхагавад-гита как она есть</div>
+          <div style={{ marginTop: 2, fontSize: 13, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 4px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Кришной Арджуне»</div>
+        </div>
+        {/* CTA crumb + verified */}
+        <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(42,150,251,.85)", padding: "4px 10px", fontSize: 13, fontWeight: 600, color: "#fff", backdropFilter: "blur(4px)" }}>Читать · Слушать</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4, borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "4px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#30D158" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>vedabase
           </span>
         </div>
-
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: tk.space[2] }}>
-          <span style={{ fontSize: tk.text.title3, fontWeight: tk.weight.bold, color: tk.color.label, letterSpacing: tk.tracking.tight }}>990 ₽</span>
-          <span style={{ borderRadius: tk.radius.sm, background: tk.color.infoSurface, padding: "2px 8px", fontSize: tk.text.caption, fontWeight: tk.weight.semibold, color: tk.color.infoText }}>700 стихов</span>
-        </div>
-
-        <p style={{ margin: 0, fontSize: tk.text.footnote, color: tk.color.label2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>«Произнесена Кришной Арджуне» · 18 глав · санскрит · аудио · QR</p>
-
-        <div style={{ display: "flex", gap: tk.space[2], marginTop: tk.space[1] }}>
-          <Chip>Читать</Chip><Chip>Слушать</Chip><Chip>Поделиться</Chip>
-        </div>
-
-        <div style={{ display: "flex", gap: tk.space[2], marginTop: tk.space[1] }}>
-          <button style={{ flex: 1, border: "none", borderRadius: tk.radius.control, padding: 12, fontFamily: "var(--font-text)", fontSize: tk.text.subhead, fontWeight: tk.weight.semibold, color: "#fff", background: tk.color.brand, cursor: "pointer" }}>Читать</button>
-          <button style={{ flex: 1, border: "none", borderRadius: tk.radius.control, padding: 12, fontFamily: "var(--font-text)", fontSize: tk.text.subhead, fontWeight: tk.weight.semibold, color: tk.color.label, background: tk.color.fill2, cursor: "pointer" }}>Заказать</button>
-        </div>
       </div>
+    </div>
+  );
+}
+
+/* ═════════ UnitCard wrapper (apartsales) ═════════ */
+function BookCard() {
+  return (
+    <article style={{ position: "relative", width: "100%", overflow: "hidden", borderRadius: 20, border: "1px solid rgba(255,255,255,.08)", background: "rgba(255,255,255,.03)" }}>
+      <BookHero onOpen={() => {}} />
     </article>
   );
 }
 
-function Home() {
+/* ═════════ APP SHELL (apartsales) — phone frame on desktop ═════════ */
+function StatusBar() {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-block)", padding: "var(--pad-screen-x)", paddingTop: "var(--space-block)" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: tk.space[1] }}>
-        <div style={{ fontSize: tk.text.caption2, fontWeight: tk.weight.semibold, letterSpacing: tk.tracking.wide, textTransform: "uppercase", color: tk.color.brand }}>Библиотека</div>
-        <h2 style={{ margin: 0, fontSize: tk.text.title2, fontWeight: tk.weight.bold, letterSpacing: tk.tracking.tight, color: tk.color.label, fontFamily: "var(--font-display)" }}>Книги Прабхупады</h2>
-      </div>
-      <BookCard />
+    <div style={{ position: "relative", zIndex: 10, display: "flex", height: 44, flexShrink: 0, alignItems: "flex-end", justifyContent: "space-between", padding: "0 28px 4px", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>
+      <span style={{ letterSpacing: "-0.3px" }}>9:41</span>
+      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden><rect x="0" y="7" width="3" height="4" rx="0.5" /><rect x="4.5" y="5" width="3" height="6" rx="0.5" /><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" /><rect x="13.5" y="0" width="3" height="11" rx="0.5" /></svg>
+        <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor" aria-hidden><path d="M7.5 0C4.4 0 1.6 1.2 -.4 3.2L7.5 11l7.9-7.8C13.4 1.2 10.6 0 7.5 0Z" /></svg>
+        <svg width="25" height="11" viewBox="0 0 25 11" fill="none" aria-hidden><rect x="0.5" y="0.5" width="21" height="10" rx="2.5" stroke="currentColor" opacity="0.4" /><rect x="2" y="2" width="18" height="7" rx="1.5" fill="currentColor" /><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.75" fill="currentColor" opacity="0.4" /></svg>
+      </span>
     </div>
+  );
+}
+
+function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void }) {
+  const mainRef = useRef<HTMLElement>(null);
+  return (
+    <>
+      <TopHeader />
+      <main ref={mainRef} style={{ position: "relative", flex: 1, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
+        <div style={{ padding: 16 }}>{tab === "home" ? <BookCard /> : null}</div>
+      </main>
+      <TabBar active={tab} onChange={onChange} />
+    </>
   );
 }
 
 export default function App() {
   const [tab, setTab] = useState("home");
   return (
-    <div className="shell">
-      <TopBar />
-      <main className="content">{tab === "home" ? <Home /> : null}</main>
-      <TabBar active={tab} onChange={setTab} />
+    <div style={{ minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
+      {/* Desktop: phone frame centered on dark canvas */}
+      <div className="as-desktop" style={{ position: "relative", minHeight: "100vh", width: "100%", alignItems: "center", justifyContent: "center", padding: "32px 16px" }}>
+        <div aria-hidden style={{ pointerEvents: "none", position: "absolute", inset: 0, zIndex: -10, overflow: "hidden" }}>
+          <div style={{ position: "absolute", left: "50%", top: "50%", height: 700, width: 700, transform: "translate(-50%,-50%)", borderRadius: "50%", filter: "blur(120px)", backgroundColor: "rgba(42,150,251,0.08)" }} />
+        </div>
+        <div style={{ position: "relative", display: "flex", flexDirection: "column", overflow: "hidden", borderRadius: 44, background: "var(--color-bg)", width: 390, height: 844, transform: "translateZ(0)", boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 0 0 12px #0a0a0a, 0 0 0 13px rgba(255,255,255,0.08), 0 50px 100px -20px rgba(0,0,0,0.7), 0 30px 60px -30px rgba(0,0,0,0.6)" }}>
+          <div aria-hidden style={{ pointerEvents: "none", position: "absolute", left: "50%", top: 8, zIndex: 50, height: 28, width: 120, transform: "translateX(-50%)", borderRadius: 999, background: "#000" }} />
+          <StatusBar />
+          <Screen tab={tab} onChange={setTab} />
+        </div>
+      </div>
+
+      {/* Mobile: native fullscreen */}
+      <div className="as-mobile" style={{ display: "flex", height: "100dvh", flexDirection: "column" }}>
+        <Screen tab={tab} onChange={setTab} />
+      </div>
     </div>
   );
 }
