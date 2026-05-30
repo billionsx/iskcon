@@ -16,12 +16,12 @@ CAT={
  "krishna-associate":{"sb","krishna-book"}, "krishna-consort":{"sb","krishna-book"},
  "demigod":{"sb"}, "sage":{"sb"}, "demon":{"sb"}, "avatara":{"sb"}, "lila-avatara":{"sb"},
  "guna-avatara":{"sb"}, "yuga-avatara":{"sb"}, "kumaras":{"sb"}, "manu":{"sb"}, "king":{"sb"},
- "shaktyavesha":{"sb"}, "vilasa":{"sb"}, "pancha-tattva":{"cc","cb"},
- "chaitanya-associate":{"cc","cb"}, "cc":{"cc"}, "six-goswamis":{"cc"},
+ "shaktyavesha":{"sb"}, "vilasa":{"sb"}, "pancha-tattva":{"cc","cb","cm"},
+ "chaitanya-associate":{"cc","cb","cm"}, "cc":{"cc"}, "six-goswamis":{"cc","cb"},
 }
 OVERRIDE={
  "krishna":{"sb","krishna-book","bg","cc","cb","mahabharata","bs"},
- "chaitanya":{"cc","cb","sb"}, "radharani":{"sb","krishna-book","cc","cb","bs"},
+ "chaitanya":{"cc","cb","cm","sb","ggd"}, "radharani":{"sb","krishna-book","cc","cb","bs"},
  "balarama":{"sb","krishna-book","mahabharata"}, "bhishma":{"mahabharata","sb","bg"},
  "narayana":{"sb"}, "vishnu":{"sb","bs"}, "lakshmi":{"sb"},
  "haridasa-thakura":{"cc","cb"}, "madhavendra-puri":{"cc"}, "ishvara-puri":{"cc"},
@@ -30,7 +30,9 @@ OVERRIDE={
 }
 AUTHOR_OF={"vyasadeva":{"sb","mahabharata","puranas","vedanta-sutra"},
            "satsvarupa-das-goswami":{"prabhupada-lilamrita"},
-           "kavi-karnapura":{"ggd"}}
+           "kavi-karnapura":{"ggd"},
+           "lochana-dasa-thakura":{"cm"},
+           "valmiki":{"ramayana"}}
 
 # existing edges (dedup against BASE relation files only, never relations_all)
 existing=set()
@@ -50,7 +52,7 @@ for r in rows:
     if r["type"]!="personality": continue
     ds=r["dataset"]; cats=set((r["category"] or "").split("|"))
     target=set()
-    if ds=="Гаура-ганоддеша-дипика · Гаура-лила": target|={"ggd","cc","cb"}
+    if ds=="Гаура-ганоддеша-дипика · Гаура-лила": target|={"ggd","cc","cb","cm"}
     elif ds=="Гаура-ганоддеша-дипика · Кришна-лила": target|={"ggd","sb","krishna-book"}
     elif ds=="Прабхупада-лиламрита": target|={"prabhupada-lilamrita"}
     elif ds=="Ядро":
