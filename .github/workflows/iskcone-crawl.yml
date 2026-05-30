@@ -59,7 +59,7 @@ jobs:
           seeds=["https://iskcone.com/"]+["https://iskcone.com"+p for p in nav]
           seen=set(); queue=list(dict.fromkeys(seeds)); pages=0; imgtot=0; errors=0; failed=[]
           q("DELETE FROM tilda_assets", []); q("DELETE FROM tilda_pages", [])
-          while queue and pages<160:
+          while queue and pages<800:
               url=queue.pop(0)
               if url in seen: continue
               seen.add(url)
@@ -79,7 +79,7 @@ jobs:
                   n=norm(m, url)
                   if n and n not in seen and n not in queue: queue.append(n)
               print(f"{pages:3d} {path} imgs={len(imgs)} q={len(queue)}")
-              time.sleep(0.8)
+              time.sleep(0.55)
           print("FAILED:", failed[:40])
           q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone crawl',?,?)", [str(pages), f"images={imgtot} errors={errors} failed={','.join(failed[:25])}"])
           print(f"DONE pages={pages} images={imgtot} errors={errors}")
