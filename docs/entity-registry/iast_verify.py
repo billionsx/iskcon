@@ -165,6 +165,23 @@ GROUP_FIX = {
  "sakhi-of-radharani":("Sakhis of Radharani","Сакхи Радхарани","Sakhī"),
 }
 
+# Manual IAST for the 13 edge cases (composite identities, Bengali names, objects)
+MANUAL_IAST = {
+ "jangali":"Jāṅgalī",
+ "brihachchhishu":"Bṛhacchiṣu",
+ "ramai":"Rāmāi",
+ "nandai":"Nandāi",
+ "janaki-rukmini":"Jānakī / Rukmiṇī",
+ "karttikeya":"Kārttikeya / Acyuta-gopī",
+ "chandrakanti":"Candrakānti-devī / Pūrṇānanda-gopī",
+ "shaibya":"Śaibyā-gopī / Sarasvatī",
+ "vira-devi":"Vīrā-devī / Dūtī-devī",
+ "krishna-flute":"Vaṁśī",
+ "lavanga-manjari":"Lavaṅga-mañjarī / Rati-mañjarī",
+ "rasa-manjari":"Rāsa-mañjarī / Rati-mañjarī",
+ "yajna-patni":"Yajña-patnī",
+}
+
 # multi-word phrase fixes applied after token join
 PHRASE = {"Bhatta Gosvami":"Bhaṭṭa Gosvāmī"}
 
@@ -223,6 +240,8 @@ for fn,regen in FILES:
             r["iast_status"]="verified"; continue  # keep hand-curated core IAST
         ia,unres=iast_name(en)
         r["name_iast"]=ia
+        if r["id"] in MANUAL_IAST:
+            r["name_iast"]=MANUAL_IAST[r["id"]]; r["iast_status"]="verified"; continue
         if unres:
             r["iast_status"]="review"; review.append([r["id"],en,ia,"|".join(sorted(set(unres)))])
         else:
