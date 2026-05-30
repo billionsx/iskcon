@@ -12,12 +12,16 @@ ENT = [
  ("ggd_krishna_lila_entities.csv","Гаура-ганоддеша-дипика · Кришна-лила"),
  ("iskcon_gurus_entities.csv","Гуру ИСККОН (GBC)"),
  ("prabhupada_lilamrita_entities.csv","Прабхупада-лиламрита"),
+ ("mahabharata_entities.csv","Махабхарата"),
+ ("ramayana_entities.csv","Рамаяна"),
 ]
 REL = [
  ("relations_core.csv","Ядро"),
  ("ggd_relations.csv","Гаура-ганоддеша-дипика"),
  ("iskcon_gurus_relations.csv","Гуру ИСККОН (GBC)"),
  ("prabhupada_lilamrita_relations.csv","Прабхупада-лиламрита"),
+ ("mahabharata_relations.csv","Махабхарата"),
+ ("ramayana_relations.csv","Рамаяна"),
  ("book_relations.csv","Книги (appears-in/author)"),
 ]
 REL_RU = {

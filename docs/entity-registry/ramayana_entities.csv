@@ -1,0 +1,26 @@
+id,type,tattva,category,name_en,name_iast,name_ru,aliases,note,source_ref,confidence,iast_status
+lakshmana,personality,jiva-tattva,ramayana|raghu,Lakshmana,Lakṣmaṇa,Лакшмана,,Брат Рамы,Рамаяна,verified,verified
+bharata-dasharathi,personality,jiva-tattva,ramayana|raghu,Bharata,Bharata,Бхарата,,Брат Рамы,Рамаяна,verified,verified
+shatrughna,personality,jiva-tattva,ramayana|raghu,Shatrughna,Śatrughna,Шатругхна,,Брат Рамы,Рамаяна,verified,verified
+dasharatha,personality,jiva-tattva,ramayana|raghu,Dasharatha,Daśaratha,Дашаратха,,"Отец Рамы, царь Айодхьи",Рамаяна,verified,verified
+kausalya,personality,jiva-tattva,ramayana|raghu,Kausalya,Kausalyā,Каусалья,,Мать Рамы,Рамаяна,verified,verified
+kaikeyi,personality,jiva-tattva,ramayana|raghu,Kaikeyi,Kaikeyī,Кайкейи,,Мать Бхараты,Рамаяна,verified,verified
+sumitra,personality,jiva-tattva,ramayana|raghu,Sumitra,Sumitrā,Сумитра,,Мать Лакшманы и Шатругхны,Рамаяна,verified,verified
+urmila,personality,jiva-tattva,ramayana|raghu,Urmila,Ūrmilā,Урмила,,Жена Лакшманы,Рамаяна,verified,verified
+kusha,personality,jiva-tattva,ramayana|raghu,Kusha,Kuśa,Куша,,Сын Рамы,Рамаяна,verified,verified
+lava,personality,jiva-tattva,ramayana|raghu,Lava,Lava,Лава,,Сын Рамы,Рамаяна,verified,verified
+vali,personality,jiva-tattva,ramayana|vanara,Vali,Vālī,Вали,,Брат Сугривы,Рамаяна,verified,verified
+tara-vanara,personality,jiva-tattva,ramayana|vanara,Tara,Tārā,Тара,,Жена Вали,Рамаяна,verified,verified
+jambavan,personality,jiva-tattva,ramayana|vanara,Jambavan,Jāmbavān,Джамбаван,,Царь медведей,Рамаяна,verified,verified
+nala-vanara,personality,jiva-tattva,ramayana|vanara,Nala,Nala,Нала,,Строитель моста,Рамаяна,verified,verified
+kumbhakarna,personality,jiva-tattva,ramayana|rakshasa,Kumbhakarna,Kumbhakarṇa,Кумбхакарна,,Брат Раваны,Рамаяна,verified,verified
+indrajit,personality,jiva-tattva,ramayana|rakshasa,Indrajit,Indrajit,Индраджит,,Сын Раваны (Мегханада),Рамаяна,verified,verified
+mandodari,personality,jiva-tattva,ramayana|rakshasa,Mandodari,Mandodarī,Мандодари,,Жена Раваны,Рамаяна,verified,verified
+surpanakha,personality,jiva-tattva,ramayana|rakshasa,Surpanakha,Śūrpaṇakhā,Шурпанакха,,Сестра Раваны,Рамаяна,verified,verified
+maricha,personality,jiva-tattva,ramayana|rakshasa,Maricha,Mārīca,Маричи,,Демон-оборотень,Рамаяна,verified,verified
+jatayu,personality,jiva-tattva,ramayana|other,Jatayu,Jaṭāyu,Джатаю,,Царь-орёл,Рамаяна,verified,verified
+sampati,personality,jiva-tattva,ramayana|other,Sampati,Sampāti,Сампати,,Брат Джатаю,Рамаяна,verified,verified
+ahalya,personality,jiva-tattva,ramayana|other,Ahalya,Ahalyā,Ахалья,,Жена Гаутамы,Рамаяна,verified,verified
+shabari,personality,jiva-tattva,ramayana|other,Shabari,Śabarī,Шабари,,Преданная-отшельница,Рамаяна,verified,verified
+guha,personality,jiva-tattva,ramayana|other,Guha,Guha,Гуха,,Царь нишадов,Рамаяна,verified,verified
+valmiki,personality,jiva-tattva,ramayana|sage,Valmiki,Vālmīki,Валмики,,Автор Рамаяны,Рамаяна,verified,verified
