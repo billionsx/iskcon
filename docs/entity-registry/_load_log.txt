@@ -2,9 +2,11 @@ applying schema ...
 entities: 657
 names: 2193 | categories: 1294
 relations: 1959
+profiles seeded (bronze): 657
   D1 entities: 657
   D1 entity_names: 2193
   D1 entity_categories: 1294
   D1 entity_relations: 1957
+  D1 entity_profiles: 657
 done.
 EXIT=0
