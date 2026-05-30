@@ -36,10 +36,11 @@ def insert(table, cols, rows, batch=80):
         n += len(chunk)
     return n
 
-# 1) schema (drop+create) — split on ';' and run each statement
+# 1) schema (drop+create) — strip comments, split on ';' and run each statement
 print("applying schema ...")
-ddl = open(os.path.join(BASE,"schema.sql"),encoding="utf-8").read()
-for stmt in [s.strip() for s in ddl.split(";") if s.strip() and not s.strip().startswith("--")]:
+raw = open(os.path.join(BASE,"schema.sql"),encoding="utf-8").read()
+nocomments = "\n".join(l for l in raw.splitlines() if not l.strip().startswith("--"))
+for stmt in [s.strip() for s in nocomments.split(";") if s.strip()]:
     run(stmt+";")
 
 # 2) entities
