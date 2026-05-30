@@ -267,7 +267,7 @@ export default function App() {
       </div>
 
       {/* Mobile: native fullscreen */}
-      <div className="as-mobile" style={{ display: "flex", height: "100dvh", flexDirection: "column" }}>
+      <div className="as-mobile" style={{ height: "100dvh", flexDirection: "column" }}>
         <Screen tab={tab} onChange={setTab} />
       </div>
     </div>
