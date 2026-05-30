@@ -18,6 +18,17 @@ jobs:
           bun-version: latest
       - name: Install deps
         run: bun install
+      - name: Fetch BBT covers (public site, runner has open internet)
+        working-directory: apps/web
+        run: |
+          set -e
+          mkdir -p public/covers
+          UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'
+          dl () { curl -sL --fail --max-time 40 -A "$UA" -e "https://www.images.bbtmedia.com/node/31254" "$1" -o "$2" && echo "ok $2 ($(wc -c <"$2") bytes)" || echo "FAIL $2"; }
+          dl "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB" public/covers/bg-en-1989.jpg
+          dl "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk" public/covers/bg-uk-2015.jpg
+          dl "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/DE%20BG%202012%20cover%20front_0.jpg?itok=Nj9Q9Rw8" public/covers/bg-de-2012.jpg
+          echo "covers dir:"; ls -la public/covers || true
       - name: Build site
         working-directory: apps/web
         run: bun run build

@@ -142,22 +142,35 @@ function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
   );
 }
 
-/* ═════════ book card — graphite cover, presents the book ═════════ */
+/* ═════════ book card — BBT cover background (graphite fallback), presents the book ═════════ */
+const COVER_SRC = "/covers/bg-en-1989.jpg";
+const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
+
 function BookCard({ onOpen }: { onOpen?: () => void }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [coverOk, setCoverOk] = useState(true);
 
   return (
     <>
       <article onClick={onOpen}
         style={{
           position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20, cursor: "pointer",
-          border: "0.5px solid var(--color-hairline)",
-          background: "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)",
+          border: "0.5px solid var(--color-hairline)", background: GRAPHITE,
           boxShadow: "var(--shadow-card)",
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
+        {/* cover image */}
+        {coverOk && (
+          <img src={COVER_SRC} alt="Бхагавад-гита как она есть — обложка" loading="eager" decoding="async" draggable={false}
+            onError={() => setCoverOk(false)}
+            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover" }} />
+        )}
+        {/* legibility gradients over photo */}
+        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
+        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />
+
         {/* TOP: logos (left, no pill, no divider) · actions (right) */}
         <div style={{ position: "absolute", insetInline: 14, top: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff" }}>
@@ -184,7 +197,6 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
             <div style={{ fontSize: 12.5, color: "rgba(255,255,255,.65)" }}>Ачарья-основатель Международного общества сознания Кришны</div>
           </div>
 
-          {/* description — Prabhupada framing, no repeat of Krishna/Arjuna */}
           <p style={{ margin: "14px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "rgba(255,255,255,.85)" }}>
             Квинтэссенция ведического знания: природа вечной души, Верховная Личность Бога и путь преданного служения.
           </p>
