@@ -46,8 +46,8 @@ function StarIcon(p: IconProps) {
 function Wordmark() {
   return (
     <span style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px" }}>
-      <img src="/logo-black.svg" alt="ISKCON ONE LOVE" className="light-logo-only" style={{ width: 130, height: "auto" }} />
-      <img src="/logo-white.svg" alt="ISKCON ONE LOVE" className="dark-logo-only" style={{ width: 130, height: "auto" }} />
+      <img src="/logo-black.svg" alt="ISKCON ONE LOVE" className="light-logo-only" style={{ width: 65, height: "auto" }} />
+      <img src="/logo-white.svg" alt="ISKCON ONE LOVE" className="dark-logo-only" style={{ width: 65, height: "auto" }} />
     </span>
   );
 }
@@ -224,19 +224,6 @@ function BookCard() {
 }
 
 /* ═════════ APP SHELL (apartsales) — phone frame on desktop ═════════ */
-function StatusBar() {
-  return (
-    <div style={{ position: "relative", zIndex: 10, display: "flex", height: 44, flexShrink: 0, alignItems: "flex-end", justifyContent: "space-between", padding: "0 28px 4px", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>
-      <span style={{ letterSpacing: "-0.3px" }}>9:41</span>
-      <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor" aria-hidden><rect x="0" y="7" width="3" height="4" rx="0.5" /><rect x="4.5" y="5" width="3" height="6" rx="0.5" /><rect x="9" y="2.5" width="3" height="8.5" rx="0.5" /><rect x="13.5" y="0" width="3" height="11" rx="0.5" /></svg>
-        <svg width="15" height="11" viewBox="0 0 15 11" fill="currentColor" aria-hidden><path d="M7.5 0C4.4 0 1.6 1.2 -.4 3.2L7.5 11l7.9-7.8C13.4 1.2 10.6 0 7.5 0Z" /></svg>
-        <svg width="25" height="11" viewBox="0 0 25 11" fill="none" aria-hidden><rect x="0.5" y="0.5" width="21" height="10" rx="2.5" stroke="currentColor" opacity="0.4" /><rect x="2" y="2" width="18" height="7" rx="1.5" fill="currentColor" /><rect x="22.5" y="3.5" width="1.5" height="4" rx="0.75" fill="currentColor" opacity="0.4" /></svg>
-      </span>
-    </div>
-  );
-}
-
 function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
@@ -253,21 +240,8 @@ function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void 
 export default function App() {
   const [tab, setTab] = useState("home");
   return (
-    <div style={{ minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      {/* Desktop: phone frame centered on dark canvas */}
-      <div className="as-desktop" style={{ position: "relative", minHeight: "100vh", width: "100%", alignItems: "center", justifyContent: "center", padding: "32px 16px" }}>
-        <div aria-hidden style={{ pointerEvents: "none", position: "absolute", inset: 0, zIndex: -10, overflow: "hidden" }}>
-          <div style={{ position: "absolute", left: "50%", top: "50%", height: 700, width: 700, transform: "translate(-50%,-50%)", borderRadius: "50%", filter: "blur(120px)", backgroundColor: "rgba(42,150,251,0.08)" }} />
-        </div>
-        <div style={{ position: "relative", display: "flex", flexDirection: "column", overflow: "hidden", borderRadius: 44, background: "var(--color-bg)", width: 390, height: 844, transform: "translateZ(0)", boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 0 0 12px #0a0a0a, 0 0 0 13px rgba(255,255,255,0.08), 0 50px 100px -20px rgba(0,0,0,0.7), 0 30px 60px -30px rgba(0,0,0,0.6)" }}>
-          <div aria-hidden style={{ pointerEvents: "none", position: "absolute", left: "50%", top: 8, zIndex: 50, height: 28, width: 120, transform: "translateX(-50%)", borderRadius: 999, background: "#000" }} />
-          <StatusBar />
-          <Screen tab={tab} onChange={setTab} />
-        </div>
-      </div>
-
-      {/* Mobile: native fullscreen */}
-      <div className="as-mobile" style={{ height: "100dvh", flexDirection: "column" }}>
+    <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         <Screen tab={tab} onChange={setTab} />
       </div>
     </div>
