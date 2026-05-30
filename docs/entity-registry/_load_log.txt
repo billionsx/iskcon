@@ -1,10 +1,10 @@
 applying schema ...
-entities: 603
-names: 2031 | categories: 1188
-relations: 1617
-  D1 entities: 603
-  D1 entity_names: 2031
-  D1 entity_categories: 1188
-  D1 entity_relations: 1616
+entities: 657
+names: 2193 | categories: 1294
+relations: 1959
+  D1 entities: 657
+  D1 entity_names: 2193
+  D1 entity_categories: 1294
+  D1 entity_relations: 1957
 done.
 EXIT=0
