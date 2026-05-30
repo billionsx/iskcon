@@ -5,7 +5,7 @@ rohini,personality,,krishna-lila|associate,Rohini,Rohiṇī,Рохини,,identi
 paurnamasi,personality,,krishna-lila|associate,Paurnamasi,Paurṇamāsī,Паурнамаси,,identity in Gaura-lila (GGD 40),ГГД 40,review,verified
 ambika-nurse,personality,,krishna-lila|associate,Ambika,Ambikā,Амбика,,identity in Gaura-lila (GGD 41) · нянька Кришны · Nyanka Krishny,ГГД 41,review,verified
 kilambika,personality,,krishna-lila|associate,Kilambika-Devi,Kilambikā-Devī,Киламбика-деви,,identity in Gaura-lila (GGD 42),ГГД 42,review,verified
-janaki-rukmini,personality,,krishna-lila|associate,Janaki I Rukmini,Jānakī I Rukmiṇī,Джанаки и Рукмини,,identity in Gaura-lila (GGD 44) · Лакшми · Lakshmi,ГГД 44,review,review
+janaki-rukmini,personality,,krishna-lila|associate,Janaki I Rukmini,Jānakī / Rukmiṇī,Джанаки и Рукмини,,identity in Gaura-lila (GGD 44) · Лакшми · Lakshmi,ГГД 44,review,verified
 satrajit,personality,jiva-tattva,krishna-lila|king,Maharaja Satrajit,Mahārāja Satrājit,Махараджа Сатраджит,,identity in Gaura-lila (GGD 46),ГГД 46,review,verified
 bhu-devi,personality,,krishna-lila|associate,Bhu-Devi,Bhū-Devī,Бху-деви,,identity in Gaura-lila (GGD 46) · Бхушакти · Bhushakti,ГГД 46,review,verified
 kulaka,personality,jiva-tattva,krishna-lila|brahmana,Brahman Kulaka,Brāhmaṇa Kulaka,брахман Кулака,,identity in Gaura-lila (GGD 49),ГГД 49,review,verified
@@ -22,7 +22,7 @@ shantanu,personality,jiva-tattva,krishna-lila|king,Maharaja Shantanu,Mahārāja 
 pradyumna,personality,vishnu-tattva,krishna-lila|vishnu-tattva,Pradyumna,Pradyumna,Прадьюмна,,identity in Gaura-lila (GGD 69) · Чатур-вьюха · Chatur-Vyuha,ГГД 69,review,verified
 aniruddha,personality,vishnu-tattva,krishna-lila|vishnu-tattva,Aniruddha,Aniruddha,Анируддха,,identity in Gaura-lila (GGD 70) · Чатур-вьюха · Chatur-Vyuha,ГГД 70,review,verified
 yogamaya,personality,,krishna-lila|associate,Yogamayya,Yogamāyā,Йогамайя,,identity in Gaura-lila (GGD 85),ГГД 85,review,verified
-karttikeya,personality,shakti-tattva,krishna-lila|gopi,Karttikeya I Achyuta-Gopi,Kārttikeya I Acyuta-Gopī,Карттикея и Ачьюта-гопи,,identity in Gaura-lila (GGD 86),ГГД 86,review,review
+karttikeya,personality,shakti-tattva,krishna-lila|gopi,Karttikeya I Achyuta-Gopi,Kārttikeya / Acyuta-gopī,Карттикея и Ачьюта-гопи,,identity in Gaura-lila (GGD 86),ГГД 86,review,verified
 jaya,personality,,krishna-lila|associate,Jaya,Jaya,Джая,,identity in Gaura-lila (GGD 88),ГГД 88,review,verified
 vijaya,personality,,krishna-lila|associate,Vijaya,Vijaya,Виджая,,identity in Gaura-lila (GGD 88),ГГД 88,review,verified
 parvata-muni,personality,jiva-tattva,krishna-lila|sage,Parvata Muni,Parvata Muni,Парвата Муни,,identity in Gaura-lila (GGD 89),ГГД 89,review,verified
@@ -69,12 +69,12 @@ maladhara,personality,,krishna-lila|associate,Maladhara,Mālādhara,Маладх
 daksha-parrot,personality,,krishna-lila|associate,Daksha,Dakṣa,Дакша,,identity in Gaura-lila (GGD 144) · попугай · Popugay,ГГД 144,review,verified
 vichakshana-parrot,personality,,krishna-lila|associate,Vichakshana,Vicakṣaṇa,Вичакшана,,identity in Gaura-lila (GGD 144) · попугай · Popugay,ГГД 144,review,verified
 lalita,personality,shakti-tattva,krishna-lila|gopi,Lalita-Gopi,Lalitā-Gopī,Лалита-гопи,,identity in Gaura-lila (GGD 151),ГГД 151,review,verified
-chandrakanti,personality,shakti-tattva,krishna-lila|gopi,Chandrakanti-Devi I Purnananda-Gopi,Candrakānti-Devī I Pūrṇānanda-Gopī,Чандраканти-деви и Пурнананда-гопи,,identity in Gaura-lila (GGD 153),ГГД 153,review,review
+chandrakanti,personality,shakti-tattva,krishna-lila|gopi,Chandrakanti-Devi I Purnananda-Gopi,Candrakānti-devī / Pūrṇānanda-gopī,Чандраканти-деви и Пурнананда-гопи,,identity in Gaura-lila (GGD 153),ГГД 153,review,verified
 chandravali,personality,shakti-tattva,krishna-lila|gopi,Chandravali-Gopi,Candrāvalī-Gopī,Чандравали-гопи,,identity in Gaura-lila (GGD 155),ГГД 155,review,verified
 shribhadra,personality,shakti-tattva,krishna-lila|gopi,Shribhadra-Gopi,Śrībhadrā-Gopī,Шрибхадра-гопи,,identity in Gaura-lila (GGD 156),ГГД 156,review,verified
 taraka-devi,personality,shakti-tattva,krishna-lila|gopi,Taraka-Devi,Tārakā-Devī,Тарака-деви,,identity in Gaura-lila (GGD 157) · гопи · Gopi,ГГД 157,review,verified
 pali-devi,personality,shakti-tattva,krishna-lila|gopi,Pali-Devi,Pālī-Devī,Пали-деви,,identity in Gaura-lila (GGD 157) · гопи · Gopi,ГГД 157,review,verified
-shaibya,personality,shakti-tattva,krishna-lila|gopi,Shaybya-Gopi I Sarasvati,Śaibyā-Gopī I Sarasvatī,Шайбья-гопи и Сарасвати,,identity in Gaura-lila (GGD 158),ГГД 158,review,review
+shaibya,personality,shakti-tattva,krishna-lila|gopi,Shaybya-Gopi I Sarasvati,Śaibyā-gopī / Sarasvatī,Шайбья-гопи и Сарасвати,,identity in Gaura-lila (GGD 158),ГГД 158,review,verified
 vishakha,personality,shakti-tattva,krishna-lila|gopi,Vishakha-Gopi,Viśākhā-Gopī,Вишакха-гопи,,identity in Gaura-lila (GGD 159),ГГД 159,review,verified
 chitra-devi,personality,shakti-tattva,krishna-lila|gopi,Chitra-Devi,Citrā-Devī,Читра-деви,,identity in Gaura-lila (GGD 160) · гопи · Gopi,ГГД 160,review,verified
 champakalata,personality,shakti-tattva,krishna-lila|gopi,Champakalata-Gopi,Campakalatā-Gopī,Чампакалата-гопи,,identity in Gaura-lila (GGD 161),ГГД 161,review,verified
@@ -101,16 +101,16 @@ kalakantha,personality,,krishna-lila|associate,Kalakantha-Devi,Kālakaṇṭha-D
 sukantha,personality,,krishna-lila|associate,Sukantha-Devi,Sukaṇṭha-Devī,Сукантха-деви,,identity in Gaura-lila (GGD 172),ГГД 172,review,verified
 katyayani,personality,shakti-tattva,krishna-lila|gopi,Katyayani-Devi,Kātyāyanī-Devī,Катьяяни-деви,,identity in Gaura-lila (GGD 173) · гопи · Gopi,ГГД 173,review,verified
 vrinda-devi,personality,,krishna-lila|associate,Vrinda-Devi,Vṛndā-Devī,Вринда-деви,,identity in Gaura-lila (GGD 174),ГГД 174,review,verified
-vira-devi,personality,,krishna-lila|associate,Vira-Devi I Duti-Devi,Vīrā-Devī I Dūtī-Devī,Вира-деви и Дути-деви,,identity in Gaura-lila (GGD 175),ГГД 175,review,review
+vira-devi,personality,,krishna-lila|associate,Vira-Devi I Duti-Devi,Vīrā-devī / Dūtī-devī,Вира-деви и Дути-деви,,identity in Gaura-lila (GGD 175),ГГД 175,review,verified
 madhumati,personality,,krishna-lila|associate,Madhumati-Devi,Madhumatī-Devī,Мадхумати-деви,,identity in Gaura-lila (GGD 176),ГГД 176,review,verified
 ratnavali-devi,personality,shakti-tattva,krishna-lila|gopi,Ratnavali-Devi,Ratnāvalī-Devī,Ратнавали-деви,,identity in Gaura-lila (GGD 177) · гопи · Gopi,ГГД 177,review,verified
-krishna-flute,personality,,krishna-lila|associate,Phleyta Gospoda Krishny,Phleyta Gospoda Krishny,Флейта Господа Кришны,,identity in Gaura-lila (GGD 178),ГГД 178,review,review
+krishna-flute,personality,,krishna-lila|associate,Phleyta Gospoda Krishny,Vaṁśī,Флейта Господа Кришны,,identity in Gaura-lila (GGD 178),ГГД 178,review,verified
 rupa-manjari,personality,shakti-tattva,krishna-lila|manjari,Rupa-Manjari,Rūpa-Mañjarī,Рупа-манджари,,identity in Gaura-lila (GGD 179),ГГД 179,review,verified
-lavanga-manjari,personality,shakti-tattva,krishna-lila|manjari,Lavanga/rati-Manjari I Sanatana Kumar,Lavanga/rati-Mañjarī I Sanātana Kumāra,Лаванга/Рати-манджари и Санатана Кумар,,identity in Gaura-lila (GGD 180),ГГД 180,review,review
+lavanga-manjari,personality,shakti-tattva,krishna-lila|manjari,Lavanga/rati-Manjari I Sanatana Kumar,Lavaṅga-mañjarī / Rati-mañjarī,Лаванга/Рати-манджари и Санатана Кумар,,identity in Gaura-lila (GGD 180),ГГД 180,review,verified
 raga-manjari,personality,shakti-tattva,krishna-lila|manjari,Raga-Manjari,Rāgā-Mañjarī,Рага-манджари,,identity in Gaura-lila (GGD 184),ГГД 184,review,verified
-rasa-manjari,personality,shakti-tattva,krishna-lila|manjari,Rasa/rati-Manjari,Rasa/rati-Mañjarī,Раса/Рати-манджари,,identity in Gaura-lila (GGD 185) · или Бханумати · Ili Bhanumati,ГГД 185,review,review
+rasa-manjari,personality,shakti-tattva,krishna-lila|manjari,Rasa/rati-Manjari,Rāsa-mañjarī / Rati-mañjarī,Раса/Рати-манджари,,identity in Gaura-lila (GGD 185) · или Бханумати · Ili Bhanumati,ГГД 185,review,verified
 prema-manjari,personality,shakti-tattva,krishna-lila|manjari,Prema-Manjari,Prema-Mañjarī,Према-манджари,,identity in Gaura-lila (GGD 186),ГГД 186,review,verified
 lila-manjari,personality,shakti-tattva,krishna-lila|manjari,Lila-Manjari,Līlā-Mañjarī,Лила-манджари,,identity in Gaura-lila (GGD 186),ГГД 186,review,verified
 malli-devi,personality,,krishna-lila|associate,Malli-Devi,Mallī-Devī,Малли-деви,,identity in Gaura-lila (GGD 189),ГГД 189,review,verified
-yajna-patni,personality,,krishna-lila|associate,Yagya-Patni,Yagya-Patnī,Ягья-патни,,identity in Gaura-lila (GGD 190),ГГД 190,review,review
+yajna-patni,personality,,krishna-lila|associate,Yagya-Patni,Yajña-patnī,Ягья-патни,,identity in Gaura-lila (GGD 190),ГГД 190,review,verified
 kubja,personality,,krishna-lila|associate,Kubja,Kubjā,Кубджа,,identity in Gaura-lila (GGD 192),ГГД 192,review,verified
