@@ -1,0 +1,377 @@
+
+:root {
+  /* iOS 26+ semantic colors (dark-first) */
+  --color-bg: #000000;
+  --color-bg-2: #0a0a0a;
+  --color-bg-3: #1c1c1e;
+
+  --color-label: rgba(255, 255, 255, 0.95);
+  --color-label-2: rgba(235, 235, 245, 0.6);
+  --color-label-3: rgba(235, 235, 245, 0.3);
+
+  /* Glass surfaces */
+  --color-glass-thin: rgba(255, 255, 255, 0.08);
+  --color-glass-regular: rgba(255, 255, 255, 0.12);
+  --color-glass-thick: rgba(255, 255, 255, 0.18);
+  --color-glass-stroke: rgba(255, 255, 255, 0.2);
+
+  /* Interactive surfaces (header blur on scroll, button hover/active, separators) */
+  --color-header-blur: rgba(0, 0, 0, 0.65);
+  /* Тинт sticky-навигации (.glass-nav). Плотнее header-blur — контент
+     под стеклом приглушён сильнее, навигация остаётся читаемой. */
+  --color-glass-nav: rgba(10, 10, 10, 0.96);
+  --color-hover: rgba(255, 255, 255, 0.05);
+  --color-active: rgba(255, 255, 255, 0.10);
+  --color-hairline: rgba(255, 255, 255, 0.15);
+
+  /* Accents (iOS system semantics) */
+  --color-blue-system: #0a84ff;
+  --color-green: #30d158;
+  --color-orange: #ff9f0a;
+  --color-red: #ff453a;
+  --color-yellow: #ffd60a;
+
+  /* Apartsales brand — single source of truth in @apartsales/brand */
+  --color-brand-blue: #2a96fb;          /* APARTSALES_BLUE */
+  --color-brand-blue-50: #eaf5fe;
+  --color-brand-blue-100: #d0e9fd;
+  --color-brand-blue-200: #a1d2fb;
+  --color-brand-blue-300: #73bcf9;
+  --color-brand-blue-400: #4ea9f7;
+  --color-brand-blue-500: #2a96fb;
+  --color-brand-blue-600: #1f7ed9;
+  --color-brand-blue-700: #1865b0;
+  --color-brand-blue-800: #124d85;
+  --color-brand-blue-900: #0c355c;
+  --color-brand-black: #1e1e1e;
+  --color-brand-white: #ffffff;
+
+  /* Default action color = brand blue. Components reference this, not raw hex. */
+  --color-blue: var(--color-brand-blue);
+
+  /* Typography */
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* Radius */
+  --radius-glass: 20px;
+  --radius-glass-lg: 28px;
+  --radius-squircle: 13px;
+
+  /* ───────────────────────────────────────────────────────────
+   * Spacing scale — Apartsales standard.
+   *
+   * Применяется ВЕЗДЕ где есть вертикальный/секционный ритм.
+   * Меняешь здесь — меняется во всех табах и блоках.
+   *
+   * Иерархия:
+   *   --space-section  — между крупными секциями (Hero / Editorial / Отделка / Provenance)
+   *   --space-block    — между блоками внутри секции (между зонами интерьера)
+   *   --space-inner    — внутри блока (заголовок → главное фото → подписи)
+   *   --space-tight    — плотные элементы (subtitle под title, метка над H2)
+   *
+   * Горизонтальные:
+   *   --pad-screen-x   — боковой отступ контента от края экрана
+   *   --pad-card       — padding контентных карточек (rounded glass surfaces)
+   * ─────────────────────────────────────────────────────────── */
+  --space-section: 40px;
+  --space-block: 24px;
+  --space-inner: 12px;
+  --space-tight: 6px;
+  --pad-screen-x: 16px;
+  --pad-card: 20px;
+
+  /* ───────────────────────────────────────────────────────────
+   * UI ЗОЛОТОЙ СТАНДАРТ (веха ui-0) — единые токены интерфейса.
+   * Применяются inline через var(...) во всех табах карточки.
+   * ─────────────────────────────────────────────────────────── */
+
+  /* Типографическая шкала — текстовые стили Apple (DESIGN-LAW §5.2, выверено по HIG) */
+  --text-caption2: 11px;   /* Caption 2 — мелкие метки, eyebrow (пол: ниже 11px нельзя) */
+  --text-caption: 12px;    /* Caption 1 — подписи, вторичные метки */
+  --text-footnote: 13px;   /* Footnote — мелкий текст, строки */
+  --text-subhead: 15px;    /* Subheadline — подзаголовки, метаданные */
+  --text-callout: 16px;    /* Callout — акцентный body */
+  --text-body: 17px;       /* Body — основной текст (= размер Headline) */
+  --text-headline: 17px;   /* Headline — заголовок блока (= размер Body, вес тяжелее) */
+  --text-title3: 20px;     /* Title 3 — заголовок секции */
+  --text-title2: 22px;     /* Title 2 — заголовок таба */
+  --text-title1: 28px;     /* Title 1 — hero-заголовок */
+  --text-display: 34px;    /* Large Title — крупные числа, display */
+
+  /* Жирности */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-heavy: 800;
+
+  /* Межстрочный интервал */
+  --leading-tight: 1.1;    /* крупные заголовки */
+  --leading-snug: 1.35;    /* заголовки блоков */
+  --leading-normal: 1.5;   /* body-текст */
+
+  /* Трекинг */
+  --tracking-tight: -0.3px;  /* крупные заголовки */
+  --tracking-normal: 0;
+  --tracking-wide: 0.4px;    /* eyebrow-капс */
+
+  /* Сетка отступов — система 8pt с полушагом 4pt (DESIGN-LAW §6.1) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Радиусы — единая шкала */
+  --radius-xs: 8px;
+  --radius-control: 12px;   /* DESIGN-LAW §7 — inputs, small controls */
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  /* Семантические цвета — заливки/иконки (dark-first) */
+  --color-success: var(--color-green);
+  --color-warning: var(--color-orange);
+  --color-danger: var(--color-red);
+  --color-info: var(--color-brand-blue);
+
+  /* Семантические цвета — ТЕКСТ (контраст под тему) */
+  --color-success-text: #30d158;
+  --color-warning-text: #ff9f0a;
+  --color-danger-text: #ff453a;
+  --color-info-text: var(--color-brand-blue);
+
+  /* Семантические тонированные подложки */
+  --color-success-surface: rgba(48, 209, 88, 0.16);
+  --color-warning-surface: rgba(255, 159, 10, 0.16);
+  --color-danger-surface: rgba(255, 69, 58, 0.16);
+  --color-info-surface: rgba(42, 150, 251, 0.16);
+
+  /* Нейтральные заливки (алиасы glass — для inline-читаемости) */
+  --color-fill-1: var(--color-glass-thin);
+  --color-fill-2: var(--color-glass-regular);
+
+  /* Возвышение (elevation) */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.30);
+  --shadow-3: 0 10px 28px rgba(0, 0, 0, 0.32);
+  /* Карточка контента — мягкое двухслойное возвышение (iOS grouped card) */
+  --shadow-card: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 20px rgba(0, 0, 0, 0.28);
+
+  /* Движение — DESIGN-LAW §10 (выверено по Apple HIG Motion / WWDC) */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);  /* дефолт переходов (≈ .smooth) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);        /* появления, раскрытия */
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);         /* исчезновения */
+  --duration-fast: 150ms;   /* press-фидбек, микро */
+  --duration-base: 250ms;   /* переходы страниц / листов */
+  --duration-slow: 400ms;   /* онбординг, hero-раскрытия */
+}
+
+/* ─────────────────────────────────────────────────────────────────
+ * LIGHT THEME — applied when <html data-theme="light">
+ *
+ * iOS 26 semantic light tokens. Brand blue is preserved. System
+ * accent colors (green/orange/red/yellow) shift to lighter variants
+ * matching iOS Light. Glass surfaces invert (now black-tinted).
+ *
+ * Theme switching is controlled by lib/useTheme.ts; an inline
+ * script in index.html sets data-theme before first paint to
+ * avoid flash-of-wrong-theme.
+ * ───────────────────────────────────────────────────────────────── */
+:root[data-theme='light'] {
+  /* iOS 26 grouped background: main canvas is light grey, cards are pure white.
+     This gives the subtle elevation that pure-white-on-white would lose. */
+  --color-bg: #f2f2f7;
+  --color-bg-2: #ffffff;
+  --color-bg-3: #e5e5ea;
+
+  --color-label: rgba(0, 0, 0, 0.92);
+  --color-label-2: rgba(60, 60, 67, 0.60);
+  --color-label-3: rgba(60, 60, 67, 0.30);
+
+  --color-glass-thin: rgba(0, 0, 0, 0.04);
+  --color-glass-regular: rgba(0, 0, 0, 0.06);
+  --color-glass-thick: rgba(0, 0, 0, 0.10);
+  --color-glass-stroke: rgba(0, 0, 0, 0.12);
+
+  /* Interactive surfaces — inverted for light */
+  --color-header-blur: rgba(255, 255, 255, 0.72);
+  --color-glass-nav: rgba(252, 252, 253, 0.97);
+  --color-hover: rgba(0, 0, 0, 0.04);
+  --color-active: rgba(0, 0, 0, 0.08);
+  --color-hairline: rgba(60, 60, 67, 0.18);
+
+  --color-blue-system: #007aff;
+  --color-green: #34c759;
+  --color-orange: #ff9500;
+  --color-red: #ff3b30;
+  --color-yellow: #ffcc00;
+
+  /* UI золотой стандарт — переопределения под светлую тему.
+     Текст семантики затемнён для контраста на белых карточках;
+     тонированные подложки светлее; тени мягче. */
+  --color-success-text: #0a7d2e;
+  --color-warning-text: #a66800;
+  --color-danger-text: #c0392b;
+
+  --color-success-surface: rgba(52, 199, 89, 0.12);
+  --color-warning-surface: rgba(255, 149, 0, 0.13);
+  --color-danger-surface: rgba(255, 59, 48, 0.10);
+  --color-info-surface: rgba(42, 150, 251, 0.08);
+
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.10);
+  --shadow-3: 0 10px 28px rgba(0, 0, 0, 0.14);
+  /* Карточка контента — iOS grouped card: белая поверхность на сером
+     полотне, тень едва ощутима (ambient + лёгкий contact). */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+/* Theme-aware logo display.
+   Both wordmark variants render in DOM; CSS hides one based on data-theme.
+   Zero-flicker on theme swap (no re-mount), works with FOUC-prevention script. */
+:root[data-theme='light'] .dark-logo-only { display: none; }
+:root[data-theme='dark']  .light-logo-only { display: none; }
+:root:not([data-theme='light']) .light-logo-only { display: none; }
+
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background-color: var(--color-bg);
+    color: var(--color-label);
+    font-family: var(--font-text);
+    /* Smooth color transition when theme is toggled at runtime.
+       0 by default to avoid first-paint flash; useTheme.ts enables
+       transition only AFTER initial mount. */
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    transition: background-color 200ms ease;
+  }
+
+  ::selection {
+    background-color: var(--color-blue);
+    color: white;
+  }
+
+
+
+  /* DESIGN-LAW §8.2: glass chrome carries NO outer drop-shadow.
+     Depth comes from the material's blur contrast, not cast shadows.
+     Only the inset specular highlight is permitted. */
+  .glass {
+    background-color: var(--color-glass-regular);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    border: 0.5px solid var(--color-glass-stroke);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  }
+
+  /* Light-theme glass: inset specular highlight only (§8.2). */
+  :root[data-theme='light'] .glass {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  /* ───────────────────────────────────────────────────────────
+   * Liquid-glass navigation surface — ЕДИНЫЙ СТАНДАРТ для ВСЕХ
+   * sticky-навигационных слоёв карточки юнита:
+   *   TopBar (icon-меню: назад / избранное / сравнить / корзина / ещё)
+   *   UnitTabs        (Юнит … Шаги)
+   *   UnitSubTabs     (Подготовка / Финансы / …)
+   *   UnitSubSubTabs  (фазы внутри сценария)
+   *
+   * iOS 26 Liquid Glass: ОДИН полупрозрачный тинт
+   * var(--color-header-blur) + backdrop-blur, БЕЗ непрозрачной
+   * подложки var(--color-bg). Контент просвечивает сквозь blur —
+   * как у меню избранного. Слои стыкуются вплотную и читаются
+   * как одна непрерывная панель стекла.
+   * ─────────────────────────────────────────────────────────── */
+  .glass-nav {
+    background: var(--color-glass-nav);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+  }
+
+  /* Нижний hairline — ставится ТОЛЬКО на самый нижний слой стека
+     (UnitSubTabs / UnitSubSubTabs), отделяя навигацию от контента.
+     Промежуточные слои границы не имеют → стекло непрерывно. */
+  .glass-nav-edge {
+    border-bottom: 0.5px solid var(--color-glass-stroke);
+  }
+
+  /* DESIGN-LAW §8.4a — accessibility fallback for Liquid Glass.
+     Reduce Transparency: glass becomes a near-solid frosted panel so
+     translucency never costs legibility. The blur is kept (cheap, still
+     reads as a material) but the tint is raised to near-opaque. */
+  @media (prefers-reduced-transparency: reduce) {
+    .glass {
+      background: var(--color-bg);
+    }
+    .glass-nav {
+      background: var(--color-bg);
+    }
+  }
+
+  /* Increase Contrast: firm up the glass edge so tap targets are
+     clearly bounded against whatever shows through. */
+  @media (prefers-contrast: more) {
+    .glass,
+    .glass-nav-edge {
+      border-color: var(--color-label);
+    }
+  }
+
+
+/* Hide scrollbar visually while keeping scroll functionality.
+ * Used on horizontal-scroll rails (highlights, trust signals, stories,
+ * media tabs, photo carousel, etc.) — the scroll motion is still there,
+ * just no visible track/thumb.
+ */
+.scrollbar-none {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE/Edge legacy */
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari / Opera */
+  width: 0;
+  height: 0;
+}
+
+/* DESIGN-LAW §10.4 — Reduce Motion (app-wide).
+ * When the OS Reduce Motion setting is on, collapse all movement: springs,
+ * scale, slide and morph become near-instant. Opacity transitions are kept
+ * (a fade is not "motion" in the vestibular sense). This is the global
+ * baseline; components needing bespoke handling still read the media query. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* DESIGN-LAW §11.5.6 — focus visibility.
+ * The browser default focus box (a square outline on click) is not iOS and
+ * not in the law. Remove the click outline; keep a real brand-blue ring for
+ * KEYBOARD focus only (focus-visible) so keyboard users still see focus. */
+:where(button, a, [role='button'], [role='tab'], input, textarea, select):focus {
+  outline: none;
+}
+:where(button, a, [role='button'], [role='tab'], input, textarea, select):focus-visible {
+  outline: 2px solid var(--color-brand-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-squircle);
+}
