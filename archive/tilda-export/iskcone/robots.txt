@@ -1,0 +1,43 @@
+User-Agent: *
+Disallow: /page48555731.html
+Disallow: /header
+Disallow: /page48666889.html
+Disallow: /goloca
+Disallow: /page50349351.html
+Disallow: /footer
+Disallow: /page67568405.html
+Disallow: /ru/rupa-goswami
+Disallow: /page91664446.html
+Disallow: /ru/kirtiraj-das
+Disallow: /page99836006.html
+Disallow: /ru/jayadeva-goswami
+Disallow: /page49033225.html
+Disallow: /menu
+Disallow: /page49886205.html
+Disallow: /thank-you-page
+Disallow: /page49886207.html
+Disallow: /error
+Disallow: /page49332927.html
+Disallow: /mahabhava/dhama
+Disallow: /page73278045.html
+Disallow: /mahabhava/dhama/varshana
+Disallow: /page73382829.html
+Disallow: /mahabhava/dhama/nanda-gaon
+Disallow: /page30027915.html
+Disallow: /old/dhama
+Disallow: /page21997129.html
+Disallow: /old/dhama-old-page
+Disallow: /page96721256.html
+Disallow: /dham
+Disallow: /tilda/form*
+Disallow: /tilda/rec*
+Disallow: /tilda/click*
+Disallow: /tilda/scroll*
+Disallow: /tilda/popup*
+Disallow: /tilda/cart*
+Disallow: /tilda/product*
+Disallow: /tilda/event*
+Disallow:
+
+
+Sitemap: https://iskcone.com/sitemap.xml

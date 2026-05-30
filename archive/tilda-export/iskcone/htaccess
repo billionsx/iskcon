@@ -1,0 +1,615 @@
+ErrorDocument 403 /page48666889.html
+ErrorDocument 404 /page48666889.html
+
+DirectoryIndex page48888237.html
+
+RewriteEngine On
+
+RewriteCond %{HTTP:X-Forwarded-Proto} =http
+RewriteRule ^(.*)$ https://iskcone\.com/$1 [R=301,L]
+
+RewriteCond %{HTTP:X-Forwarded-Proto} =https
+RewriteCond %{HTTP_HOST} ^www\.iskcone.com [NC]
+RewriteRule ^(.*)$ https://iskcone\.com/$1 [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} /robots.txt
+RewriteCond "%{DOCUMENT_ROOT}/robots_%{HTTP_HOST}.txt" -f
+RewriteRule ^(.*)$ robots_%{HTTP_HOST}.txt [NC,L]
+RewriteRule ^ru$ page48888237.html [NC]
+RewriteRule ^ru/$ page48888237.html [NC]
+
+RewriteRule ^en$ page48556653.html [NC]
+RewriteRule ^en/$ page48556653.html [NC]
+
+RewriteRule ^header$ page48555731.html [NC]
+RewriteRule ^header/$ page48555731.html [NC]
+
+RewriteRule ^goloca$ page48666889.html [NC]
+RewriteRule ^goloca/$ page48666889.html [NC]
+
+RewriteRule ^footer$ page50349351.html [NC]
+RewriteRule ^footer/$ page50349351.html [NC]
+
+RewriteRule ^vi$ page105596946.html [NC]
+RewriteRule ^vi/$ page105596946.html [NC]
+
+RewriteRule ^km$ page105847626.html [NC]
+RewriteRule ^km/$ page105847626.html [NC]
+
+RewriteRule ^ru/rupa-goswami$ page67568405.html [NC]
+RewriteRule ^ru/rupa-goswami/$ page67568405.html [NC]
+
+RewriteRule ^ru/kirtiraj-das$ page91664446.html [NC]
+RewriteRule ^ru/kirtiraj-das/$ page91664446.html [NC]
+
+RewriteRule ^ru/lila$ page49138229.html [NC]
+RewriteRule ^ru/lila/$ page49138229.html [NC]
+
+RewriteRule ^ru/svarupa-damodara-goswami$ page10726619.html [NC]
+RewriteRule ^ru/svarupa-damodara-goswami/$ page10726619.html [NC]
+
+RewriteRule ^ru/ramananda-rai$ page10738405.html [NC]
+RewriteRule ^ru/ramananda-rai/$ page10738405.html [NC]
+
+RewriteRule ^ru/madhavendra-puri$ page10811748.html [NC]
+RewriteRule ^ru/madhavendra-puri/$ page10811748.html [NC]
+
+RewriteRule ^ru/prabodhananda-saraswati-thakur$ page10757147.html [NC]
+RewriteRule ^ru/prabodhananda-saraswati-thakur/$ page10757147.html [NC]
+
+RewriteRule ^ru/jahnava-thakurani$ page10757204.html [NC]
+RewriteRule ^ru/jahnava-thakurani/$ page10757204.html [NC]
+
+RewriteRule ^ru/yamuna-devi-dasi$ page18708239.html [NC]
+RewriteRule ^ru/yamuna-devi-dasi/$ page18708239.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami$ page22264235.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/$ page22264235.html [NC]
+
+RewriteRule ^ru/narahari-sarakara-thakur$ page95491836.html [NC]
+RewriteRule ^ru/narahari-sarakara-thakur/$ page95491836.html [NC]
+
+RewriteRule ^ru/baladeva-vidiabhushana$ page95540056.html [NC]
+RewriteRule ^ru/baladeva-vidiabhushana/$ page95540056.html [NC]
+
+RewriteRule ^ru/bhugarbha-goswami$ page96053176.html [NC]
+RewriteRule ^ru/bhugarbha-goswami/$ page96053176.html [NC]
+
+RewriteRule ^ru/jayadeva-goswami$ page99836006.html [NC]
+RewriteRule ^ru/jayadeva-goswami/$ page99836006.html [NC]
+
+RewriteRule ^ru/krishna$ page48956255.html [NC]
+RewriteRule ^ru/krishna/$ page48956255.html [NC]
+
+RewriteRule ^ru/radharani$ page48956281.html [NC]
+RewriteRule ^ru/radharani/$ page48956281.html [NC]
+
+RewriteRule ^krishna$ page48959741.html [NC]
+RewriteRule ^krishna/$ page48959741.html [NC]
+
+RewriteRule ^radharani$ page48959837.html [NC]
+RewriteRule ^radharani/$ page48959837.html [NC]
+
+RewriteRule ^menu$ page49033225.html [NC]
+RewriteRule ^menu/$ page49033225.html [NC]
+
+RewriteRule ^thank-you-page$ page49886205.html [NC]
+RewriteRule ^thank-you-page/$ page49886205.html [NC]
+
+RewriteRule ^error$ page49886207.html [NC]
+RewriteRule ^error/$ page49886207.html [NC]
+
+RewriteRule ^ru/bhajans$ page49092937.html [NC]
+RewriteRule ^ru/bhajans/$ page49092937.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/je-anilo-prema-dhana$ page22958943.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/je-anilo-prema-dhana/$ page22958943.html [NC]
+
+RewriteRule ^ru/bhajans/damodarashtaka$ page30841994.html [NC]
+RewriteRule ^ru/bhajans/damodarashtaka/$ page30841994.html [NC]
+
+RewriteRule ^ru/bhajans/rupa-goswami/shree-radhika-stava$ page27540933.html [NC]
+RewriteRule ^ru/bhajans/rupa-goswami/shree-radhika-stava/$ page27540933.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-krishna-chaytaniya-prabhu$ page27628827.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-krishna-chaytaniya-prabhu/$ page27628827.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-guru-vandana$ page27628890.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-guru-vandana/$ page27628890.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/hari-hari$ page28107668.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/hari-hari/$ page28107668.html [NC]
+
+RewriteRule ^ru/bhajans/bhaktivinod-thakur/gurudev$ page30649766.html [NC]
+RewriteRule ^ru/bhajans/bhaktivinod-thakur/gurudev/$ page30649766.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/gauranga-bolite-habe$ page39597964.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/gauranga-bolite-habe/$ page39597964.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/vaishnava-vigyapti$ page39599100.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/vaishnava-vigyapti/$ page39599100.html [NC]
+
+RewriteRule ^ru/bhajans/bhaktivinod-thakur/ohe-vaishnava-thakur$ page39599739.html [NC]
+RewriteRule ^ru/bhajans/bhaktivinod-thakur/ohe-vaishnava-thakur/$ page39599739.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-rupa-manjari-pada$ page40121219.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-rupa-manjari-pada/$ page40121219.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/nama-sankirtana$ page40149457.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/nama-sankirtana/$ page40149457.html [NC]
+
+RewriteRule ^ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka$ page40170775.html [NC]
+RewriteRule ^ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka/$ page40170775.html [NC]
+
+RewriteRule ^ru/bhajans/tulasi$ page40170891.html [NC]
+RewriteRule ^ru/bhajans/tulasi/$ page40170891.html [NC]
+
+RewriteRule ^ru/bhajans/govindam$ page40171027.html [NC]
+RewriteRule ^ru/bhajans/govindam/$ page40171027.html [NC]
+
+RewriteRule ^ru/bhajans/lochan-das-thakur/parama-koruna$ page42557300.html [NC]
+RewriteRule ^ru/bhajans/lochan-das-thakur/parama-koruna/$ page42557300.html [NC]
+
+RewriteRule ^ru/bhajans/radharani-ki-jay$ page42608956.html [NC]
+RewriteRule ^ru/bhajans/radharani-ki-jay/$ page42608956.html [NC]
+
+RewriteRule ^ru/bhajans/shree-radha-stotram$ page42609315.html [NC]
+RewriteRule ^ru/bhajans/shree-radha-stotram/$ page42609315.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-radha-nishtha$ page42611932.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/shree-radha-nishtha/$ page42611932.html [NC]
+
+RewriteRule ^ru/sri-narasimha-pranama$ page49202837.html [NC]
+RewriteRule ^ru/sri-narasimha-pranama/$ page49202837.html [NC]
+
+RewriteRule ^ru/srila-prabhupada-pranama-mantra$ page49203471.html [NC]
+RewriteRule ^ru/srila-prabhupada-pranama-mantra/$ page49203471.html [NC]
+
+RewriteRule ^ru/pancha-tattva-maha-mantra$ page49203771.html [NC]
+RewriteRule ^ru/pancha-tattva-maha-mantra/$ page49203771.html [NC]
+
+RewriteRule ^ru/maha-mantra$ page49204255.html [NC]
+RewriteRule ^ru/maha-mantra/$ page49204255.html [NC]
+
+RewriteRule ^ru/jaya-radha-madhava$ page49205173.html [NC]
+RewriteRule ^ru/jaya-radha-madhava/$ page49205173.html [NC]
+
+RewriteRule ^ru/sri-gauranga-pranama-mantra$ page49229307.html [NC]
+RewriteRule ^ru/sri-gauranga-pranama-mantra/$ page49229307.html [NC]
+
+RewriteRule ^ru/prasada-mantra$ page49229555.html [NC]
+RewriteRule ^ru/prasada-mantra/$ page49229555.html [NC]
+
+RewriteRule ^ru/sri-krishna-pranama-mantra$ page49229797.html [NC]
+RewriteRule ^ru/sri-krishna-pranama-mantra/$ page49229797.html [NC]
+
+RewriteRule ^ru/prema-dhavani$ page49510735.html [NC]
+RewriteRule ^ru/prema-dhavani/$ page49510735.html [NC]
+
+RewriteRule ^ru/sri-sri-siksastaka$ page49514071.html [NC]
+RewriteRule ^ru/sri-sri-siksastaka/$ page49514071.html [NC]
+
+RewriteRule ^ru/sri-vaisnava-pranama$ page49514841.html [NC]
+RewriteRule ^ru/sri-vaisnava-pranama/$ page49514841.html [NC]
+
+RewriteRule ^ru/katha-mantra$ page49515111.html [NC]
+RewriteRule ^ru/katha-mantra/$ page49515111.html [NC]
+
+RewriteRule ^ru/srimad-bhagavatam-pranama$ page49518045.html [NC]
+RewriteRule ^ru/srimad-bhagavatam-pranama/$ page49518045.html [NC]
+
+RewriteRule ^ru/tilaka$ page49547507.html [NC]
+RewriteRule ^ru/tilaka/$ page49547507.html [NC]
+
+RewriteRule ^ru/gaura-arati$ page49566341.html [NC]
+RewriteRule ^ru/gaura-arati/$ page49566341.html [NC]
+
+RewriteRule ^ru/nama-aparadha$ page49568853.html [NC]
+RewriteRule ^ru/nama-aparadha/$ page49568853.html [NC]
+
+RewriteRule ^ru/narayana-kavacha$ page67356301.html [NC]
+RewriteRule ^ru/narayana-kavacha/$ page67356301.html [NC]
+
+RewriteRule ^ru/bhajans/vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho$ page82172436.html [NC]
+RewriteRule ^ru/bhajans/vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho/$ page82172436.html [NC]
+
+RewriteRule ^ru/bhajans/narottam-das-thakur/vrindavana-ramia-sthana$ page84369886.html [NC]
+RewriteRule ^ru/bhajans/narottam-das-thakur/vrindavana-ramia-sthana/$ page84369886.html [NC]
+
+RewriteRule ^ru/srila-bhaktisiddhanta-sarasvati-mantra$ page89955856.html [NC]
+RewriteRule ^ru/srila-bhaktisiddhanta-sarasvati-mantra/$ page89955856.html [NC]
+
+RewriteRule ^ru/gaurakisor-das-babaji-pranama$ page90008586.html [NC]
+RewriteRule ^ru/gaurakisor-das-babaji-pranama/$ page90008586.html [NC]
+
+RewriteRule ^ru/bhaktivinod-thakur-pranama$ page90015466.html [NC]
+RewriteRule ^ru/bhaktivinod-thakur-pranama/$ page90015466.html [NC]
+
+RewriteRule ^ru/jagannatha-das-babaji-pranama$ page90016906.html [NC]
+RewriteRule ^ru/jagannatha-das-babaji-pranama/$ page90016906.html [NC]
+
+RewriteRule ^ru/madhvacharia-vandana$ page90020876.html [NC]
+RewriteRule ^ru/madhvacharia-vandana/$ page90020876.html [NC]
+
+RewriteRule ^ru/madhavendra-puri-vandana$ page90127436.html [NC]
+RewriteRule ^ru/madhavendra-puri-vandana/$ page90127436.html [NC]
+
+RewriteRule ^ru/shrila-sanatana-goswami-vighyapti$ page90146726.html [NC]
+RewriteRule ^ru/shrila-sanatana-goswami-vighyapti/$ page90146726.html [NC]
+
+RewriteRule ^ru/shrila-rupa-goswami-vighyapti$ page90223336.html [NC]
+RewriteRule ^ru/shrila-rupa-goswami-vighyapti/$ page90223336.html [NC]
+
+RewriteRule ^ru/shri-shukadeva-goswami-pranama$ page90257086.html [NC]
+RewriteRule ^ru/shri-shukadeva-goswami-pranama/$ page90257086.html [NC]
+
+RewriteRule ^ru/shrinivas-acharia/sad-goswami-ashtakam$ page90285096.html [NC]
+RewriteRule ^ru/shrinivas-acharia/sad-goswami-ashtakam/$ page90285096.html [NC]
+
+RewriteRule ^ru/kavi-karnapur/shree-gaura-gannodesha-dipika$ page39915814.html [NC]
+RewriteRule ^ru/kavi-karnapur/shree-gaura-gannodesha-dipika/$ page39915814.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/prathama-shree-chaitania-ashtaka$ page30236905.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/prathama-shree-chaitania-ashtaka/$ page30236905.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/dvitiya-shree-chaitania-ashtaka$ page30243185.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/dvitiya-shree-chaitania-ashtaka/$ page30243185.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/tritya-shree-chaitania-ashtaka$ page30243595.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/tritya-shree-chaitania-ashtaka/$ page30243595.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/shree-anandakkhya-stotra$ page30253219.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/shree-anandakkhya-stotra/$ page30253219.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/premendu-sagarakkhia-shree-krishna-namashtottara-shata$ page30279262.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/premendu-sagarakkhia-shree-krishna-namashtottara-shata/$ page30279262.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/shree-keshava-ashtaka$ page30385073.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/shree-keshava-ashtaka/$ page30385073.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/pratkhama-shree-kundzha-vikhary-ashtaka$ page30385313.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/pratkhama-shree-kundzha-vikhary-ashtaka/$ page30385313.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/dvitiya-shree-kundzha-vikhary-ashtaka$ page30439640.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/dvitiya-shree-kundzha-vikhary-ashtaka/$ page30439640.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/shree-mukunda-ashtaka$ page30534782.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/shree-mukunda-ashtaka/$ page30534782.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala/shree-vradja-nava-yuva-radja-ashtaka$ page30536407.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/shree-vradja-nava-yuva-radja-ashtaka/$ page30536407.html [NC]
+
+RewriteRule ^ru/rupa-goswami/stavamala$ page30236860.html [NC]
+RewriteRule ^ru/rupa-goswami/stavamala/$ page30236860.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/shastra$ page30227706.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/shastra/$ page30227706.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali$ page30227571.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/$ page30227571.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/shri-shri-vilapa-kusumanjali$ page27202226.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/shri-shri-vilapa-kusumanjali/$ page27202226.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/shri-shri-mukta-charita$ page27218079.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/shri-shri-mukta-charita/$ page27218079.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/chaitanya-ashtakam$ page27072670.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/chaitanya-ashtakam/$ page27072670.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/gauranga-stava-kalpataru$ page27075392.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/gauranga-stava-kalpataru/$ page27075392.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/manah-shiksha$ page27076631.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/manah-shiksha/$ page27076631.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prarthana$ page27077986.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prarthana/$ page27077986.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/govardhana-ashraya-dasaka$ page27079041.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/govardhana-ashraya-dasaka/$ page27079041.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/radha-kunda-ashtaka$ page27079891.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/radha-kunda-ashtaka/$ page27079891.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/govardhana-vasa-prarthana-dasakam$ page27080478.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/govardhana-vasa-prarthana-dasakam/$ page27080478.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prema-purabhidha-stotram$ page27092465.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prema-purabhidha-stotram/$ page27092465.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/grantha-kartuh-prarthana$ page27092705.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/grantha-kartuh-prarthana/$ page27092705.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/swa-niyama-dashakam$ page27092902.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/swa-niyama-dashakam/$ page27092902.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/vraja-vilasa-stava$ page27097999.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/vraja-vilasa-stava/$ page27097999.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/radhikashtottara-shata-nama-stotram$ page27104396.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/radhikashtottara-shata-nama-stotram/$ page27104396.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/sri-radhika-ashtakam$ page27121975.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/sri-radhika-ashtakam/$ page27121975.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/premabhoja-marandakhya-stava-rasa$ page27128696.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/premabhoja-marandakhya-stava-rasa/$ page27128696.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/swa-sankalpa-prakasha-stotram$ page27129350.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/swa-sankalpa-prakasha-stotram/$ page27129350.html [NC]
+
+RewriteRule ^raghunath-das-goswami/stavavali/sri-sri-radha-krishna-ujwala-kusuma-kali$ page27130219.html [NC]
+RewriteRule ^raghunath-das-goswami/stavavali/sri-sri-radha-krishna-ujwala-kusuma-kali/$ page27130219.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prathanamrita$ page27132653.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prathanamrita/$ page27132653.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/nava-ashtakam$ page27134293.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/nava-ashtakam/$ page27134293.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/gopala-raja-stotram$ page27138739.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/gopala-raja-stotram/$ page27138739.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/madana-gopala-stotram$ page27156384.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/madana-gopala-stotram/$ page27156384.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/visakha-anandada-stotram$ page27157514.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/visakha-anandada-stotram/$ page27157514.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/mukunda-ashtakam$ page27187677.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/mukunda-ashtakam/$ page27187677.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/utkantha-dashakam$ page27188935.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/utkantha-dashakam/$ page27188935.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/nava-yuva-dvandva-didriksha-ashtakam$ page27190007.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/nava-yuva-dvandva-didriksha-ashtakam/$ page27190007.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/abhishta-prarthana-ashtakam$ page27190595.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/abhishta-prarthana-ashtakam/$ page27190595.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/dana-nirvartana-kunda-ashtakam$ page27190859.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/dana-nirvartana-kunda-ashtakam/$ page27190859.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prarthanashraya-chatur-dashakam$ page27192174.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/prarthanashraya-chatur-dashakam/$ page27192174.html [NC]
+
+RewriteRule ^ru/raghunath-das-goswami/stavavali/abhishta-suchanam$ page27192559.html [NC]
+RewriteRule ^ru/raghunath-das-goswami/stavavali/abhishta-suchanam/$ page27192559.html [NC]
+
+RewriteRule ^raganuga$ page22213349.html [NC]
+RewriteRule ^raganuga/$ page22213349.html [NC]
+
+RewriteRule ^ru/books$ page49156703.html [NC]
+RewriteRule ^ru/books/$ page49156703.html [NC]
+
+RewriteRule ^ru/bhakti-rasayana$ page44703737.html [NC]
+RewriteRule ^ru/bhakti-rasayana/$ page44703737.html [NC]
+
+RewriteRule ^ru/prabhupada-siksamrita/jivopis$ page49213161.html [NC]
+RewriteRule ^ru/prabhupada-siksamrita/jivopis/$ page49213161.html [NC]
+
+RewriteRule ^ru/prabhupada-siksamrita/obshestvo-predannih$ page49923321.html [NC]
+RewriteRule ^ru/prabhupada-siksamrita/obshestvo-predannih/$ page49923321.html [NC]
+
+RewriteRule ^ru/prabhupada-siksamrita/gbc$ page50075127.html [NC]
+RewriteRule ^ru/prabhupada-siksamrita/gbc/$ page50075127.html [NC]
+
+RewriteRule ^ru/avatara$ page49363065.html [NC]
+RewriteRule ^ru/avatara/$ page49363065.html [NC]
+
+RewriteRule ^ru/narasimha$ page49346973.html [NC]
+RewriteRule ^ru/narasimha/$ page49346973.html [NC]
+
+RewriteRule ^ru/matsia$ page49945249.html [NC]
+RewriteRule ^ru/matsia/$ page49945249.html [NC]
+
+RewriteRule ^ru/kurma$ page63157251.html [NC]
+RewriteRule ^ru/kurma/$ page63157251.html [NC]
+
+RewriteRule ^ru/varaha$ page63234167.html [NC]
+RewriteRule ^ru/varaha/$ page63234167.html [NC]
+
+RewriteRule ^batumi$ page50018347.html [NC]
+RewriteRule ^batumi/$ page50018347.html [NC]
+
+RewriteRule ^evpatoria$ page66502309.html [NC]
+RewriteRule ^evpatoria/$ page66502309.html [NC]
+
+RewriteRule ^mahabhava$ page43557308.html [NC]
+RewriteRule ^mahabhava/$ page43557308.html [NC]
+
+RewriteRule ^en/mahabhava$ page104278716.html [NC]
+RewriteRule ^en/mahabhava/$ page104278716.html [NC]
+
+RewriteRule ^mahabhava/dhama$ page49332927.html [NC]
+RewriteRule ^mahabhava/dhama/$ page49332927.html [NC]
+
+RewriteRule ^mahabhava/dhama/varshana$ page73278045.html [NC]
+RewriteRule ^mahabhava/dhama/varshana/$ page73278045.html [NC]
+
+RewriteRule ^mahabhava/dhama/nanda-gaon$ page73382829.html [NC]
+RewriteRule ^mahabhava/dhama/nanda-gaon/$ page73382829.html [NC]
+
+RewriteRule ^old/dhama$ page30027915.html [NC]
+RewriteRule ^old/dhama/$ page30027915.html [NC]
+
+RewriteRule ^old/dhama-old-page$ page21997129.html [NC]
+RewriteRule ^old/dhama-old-page/$ page21997129.html [NC]
+
+RewriteRule ^dasa$ page48995545.html [NC]
+RewriteRule ^dasa/$ page48995545.html [NC]
+
+RewriteRule ^dasa/darshan-premi$ page37220002.html [NC]
+RewriteRule ^dasa/darshan-premi/$ page37220002.html [NC]
+
+RewriteRule ^dasa/bhavu-mozhno-razvit-cherez$ page30147205.html [NC]
+RewriteRule ^dasa/bhavu-mozhno-razvit-cherez/$ page30147205.html [NC]
+
+RewriteRule ^dasa/prema-devi$ page35957431.html [NC]
+RewriteRule ^dasa/prema-devi/$ page35957431.html [NC]
+
+RewriteRule ^dasa/puls-dvoih$ page30804352.html [NC]
+RewriteRule ^dasa/puls-dvoih/$ page30804352.html [NC]
+
+RewriteRule ^dasa/predloji-svoe-serdze$ page30093778.html [NC]
+RewriteRule ^dasa/predloji-svoe-serdze/$ page30093778.html [NC]
+
+RewriteRule ^dasa/vstrecha-s-shrimati-radharani$ page29383941.html [NC]
+RewriteRule ^dasa/vstrecha-s-shrimati-radharani/$ page29383941.html [NC]
+
+RewriteRule ^dasa/mir-nishhego-sadhu$ page29066907.html [NC]
+RewriteRule ^dasa/mir-nishhego-sadhu/$ page29066907.html [NC]
+
+RewriteRule ^dasa/chto-mne-do-vsego-etogo-esli-pryamo-seychas-aindra-baba$ page28825320.html [NC]
+RewriteRule ^dasa/chto-mne-do-vsego-etogo-esli-pryamo-seychas-aindra-baba/$ page28825320.html [NC]
+
+RewriteRule ^dasa/attribute-of-bhava$ page28499623.html [NC]
+RewriteRule ^dasa/attribute-of-bhava/$ page28499623.html [NC]
+
+RewriteRule ^dasa/run-through-the-living-vrindavan$ page28499317.html [NC]
+RewriteRule ^dasa/run-through-the-living-vrindavan/$ page28499317.html [NC]
+
+RewriteRule ^dasa/ya-skuchau-po-tem-kto-plachet-ot-toski$ page28175749.html [NC]
+RewriteRule ^dasa/ya-skuchau-po-tem-kto-plachet-ot-toski/$ page28175749.html [NC]
+
+RewriteRule ^dasa/kakoy-mir-tebya-zhdet$ page27601848.html [NC]
+RewriteRule ^dasa/kakoy-mir-tebya-zhdet/$ page27601848.html [NC]
+
+RewriteRule ^dasa/namek-na-krishna-lilu$ page27404831.html [NC]
+RewriteRule ^dasa/namek-na-krishna-lilu/$ page27404831.html [NC]
+
+RewriteRule ^dasa/bez-interesa-k-krishne-nevozmozhno-ochistitsya$ page27261323.html [NC]
+RewriteRule ^dasa/bez-interesa-k-krishne-nevozmozhno-ochistitsya/$ page27261323.html [NC]
+
+RewriteRule ^dasa/buketi-cvetov-rodnomy$ page26822845.html [NC]
+RewriteRule ^dasa/buketi-cvetov-rodnomy/$ page26822845.html [NC]
+
+RewriteRule ^dasa/sadhu-povtoryaet-ne-svyatoe-imya$ page26634861.html [NC]
+RewriteRule ^dasa/sadhu-povtoryaet-ne-svyatoe-imya/$ page26634861.html [NC]
+
+RewriteRule ^dasa/perezhivanie-toski-po-krishne$ page26417688.html [NC]
+RewriteRule ^dasa/perezhivanie-toski-po-krishne/$ page26417688.html [NC]
+
+RewriteRule ^dasa/dorogoi-papa$ page26095216.html [NC]
+RewriteRule ^dasa/dorogoi-papa/$ page26095216.html [NC]
+
+RewriteRule ^dasa/vsya-tyazholaya-zhizn-dlya-odnogo-mgnoveniya$ page26007420.html [NC]
+RewriteRule ^dasa/vsya-tyazholaya-zhizn-dlya-odnogo-mgnoveniya/$ page26007420.html [NC]
+
+RewriteRule ^dasa/chistaya-archana$ page25749533.html [NC]
+RewriteRule ^dasa/chistaya-archana/$ page25749533.html [NC]
+
+RewriteRule ^dasa/vitri-slezami$ page25663576.html [NC]
+RewriteRule ^dasa/vitri-slezami/$ page25663576.html [NC]
+
+RewriteRule ^dasa/nachni-smotret-v-storony-krishni$ page24779018.html [NC]
+RewriteRule ^dasa/nachni-smotret-v-storony-krishni/$ page24779018.html [NC]
+
+RewriteRule ^dasa/1-10000-ya-chast$ page24686136.html [NC]
+RewriteRule ^dasa/1-10000-ya-chast/$ page24686136.html [NC]
+
+RewriteRule ^dasa/na-chto-operetsya-esli-net-lubvi-k-krishne$ page24621845.html [NC]
+RewriteRule ^dasa/na-chto-operetsya-esli-net-lubvi-k-krishne/$ page24621845.html [NC]
+
+RewriteRule ^dasa/narottam-narottam-narottam$ page24583449.html [NC]
+RewriteRule ^dasa/narottam-narottam-narottam/$ page24583449.html [NC]
+
+RewriteRule ^dasa/blagosloveniya-dautsya-iz-lubvi$ page24047501.html [NC]
+RewriteRule ^dasa/blagosloveniya-dautsya-iz-lubvi/$ page24047501.html [NC]
+
+RewriteRule ^dasa/vechnie-otnoshenia$ page23892720.html [NC]
+RewriteRule ^dasa/vechnie-otnoshenia/$ page23892720.html [NC]
+
+RewriteRule ^dasa/cheto-darpana-marjanam$ page23619346.html [NC]
+RewriteRule ^dasa/cheto-darpana-marjanam/$ page23619346.html [NC]
+
+RewriteRule ^dasa/prabhupada-zhitel-vrindavana$ page23344957.html [NC]
+RewriteRule ^dasa/prabhupada-zhitel-vrindavana/$ page23344957.html [NC]
+
+RewriteRule ^dasa/smotri-na-lyubuyu-chast-vraja-kak-na-chast-altarya-krishni$ page23171576.html [NC]
+RewriteRule ^dasa/smotri-na-lyubuyu-chast-vraja-kak-na-chast-altarya-krishni/$ page23171576.html [NC]
+
+RewriteRule ^dasa/shuddha-tamas-i-serdze-sputnika-krishni$ page22717180.html [NC]
+RewriteRule ^dasa/shuddha-tamas-i-serdze-sputnika-krishni/$ page22717180.html [NC]
+
+RewriteRule ^dasa/vijti-iz-bhadjana-ne-vojdya-v-nego$ page22612055.html [NC]
+RewriteRule ^dasa/vijti-iz-bhadjana-ne-vojdya-v-nego/$ page22612055.html [NC]
+
+RewriteRule ^dasa/otkuda-poyavlyaetsya-spontannost$ page22502422.html [NC]
+RewriteRule ^dasa/otkuda-poyavlyaetsya-spontannost/$ page22502422.html [NC]
+
+RewriteRule ^dasa/voshischenie-formoi-krishni$ page22301106.html [NC]
+RewriteRule ^dasa/voshischenie-formoi-krishni/$ page22301106.html [NC]
+
+RewriteRule ^dasa/zhivaya-bhava-v-dhame$ page22213384.html [NC]
+RewriteRule ^dasa/zhivaya-bhava-v-dhame/$ page22213384.html [NC]
+
+RewriteRule ^dasa/vstrecha-s-krishnoj-na-svobode$ page22210138.html [NC]
+RewriteRule ^dasa/vstrecha-s-krishnoj-na-svobode/$ page22210138.html [NC]
+
+RewriteRule ^dasa/esli-sadhu-ne-raskrivaet-svoe-serdze$ page22210405.html [NC]
+RewriteRule ^dasa/esli-sadhu-ne-raskrivaet-svoe-serdze/$ page22210405.html [NC]
+
+RewriteRule ^dasa/predlagai-svoemy-krishne$ page22212443.html [NC]
+RewriteRule ^dasa/predlagai-svoemy-krishne/$ page22212443.html [NC]
+
+RewriteRule ^dasa/zhivoi-altar-v-serdce$ page22212496.html [NC]
+RewriteRule ^dasa/zhivoi-altar-v-serdce/$ page22212496.html [NC]
+
+RewriteRule ^dasa/bhava-i-svarupa$ page22212772.html [NC]
+RewriteRule ^dasa/bhava-i-svarupa/$ page22212772.html [NC]
+
+RewriteRule ^dasa/vremenniy-krishna$ page22213021.html [NC]
+RewriteRule ^dasa/vremenniy-krishna/$ page22213021.html [NC]
+
+RewriteRule ^dasa/esli-krishna-vse-je-roditsya-v-vashem-serdce$ page22213083.html [NC]
+RewriteRule ^dasa/esli-krishna-vse-je-roditsya-v-vashem-serdce/$ page22213083.html [NC]
+
+RewriteRule ^dasa/vi-suschestvuete$ page22213174.html [NC]
+RewriteRule ^dasa/vi-suschestvuete/$ page22213174.html [NC]
+
+RewriteRule ^dasa/krishna-otvet-pochemu$ page22213229.html [NC]
+RewriteRule ^dasa/krishna-otvet-pochemu/$ page22213229.html [NC]
+
+RewriteRule ^dasa/vremya-poter-i-vremya-lubvi$ page22213258.html [NC]
+RewriteRule ^dasa/vremya-poter-i-vremya-lubvi/$ page22213258.html [NC]
+
+RewriteRule ^dasa/vozvraschay-svoe-serdce$ page22213287.html [NC]
+RewriteRule ^dasa/vozvraschay-svoe-serdce/$ page22213287.html [NC]
+
+RewriteRule ^dasa/opisanie-zhivogo-vrindavana$ page22213318.html [NC]
+RewriteRule ^dasa/opisanie-zhivogo-vrindavana/$ page22213318.html [NC]
+
+RewriteRule ^dasa/vrajavasi-abhiman$ page27073136.html [NC]
+RewriteRule ^dasa/vrajavasi-abhiman/$ page27073136.html [NC]
+
+RewriteRule ^dasa/dva-okeana-premi$ page36210667.html [NC]
+RewriteRule ^dasa/dva-okeana-premi/$ page36210667.html [NC]
+
+RewriteRule ^dasa/v-storone-prekrasnih-zhiteley-vradja$ page40249817.html [NC]
+RewriteRule ^dasa/v-storone-prekrasnih-zhiteley-vradja/$ page40249817.html [NC]
+
+RewriteRule ^dham$ page96721256.html [NC]
+RewriteRule ^dham/$ page96721256.html [NC]
+
+RewriteRule ^ru/prabhupada/molitva-lotosnim-stopam-krishni$ page108763556.html [NC]
+RewriteRule ^ru/prabhupada/molitva-lotosnim-stopam-krishni/$ page108763556.html [NC]
+
+RewriteRule ^ru/prabhupada/markine-bhagavat-dharma$ page108813776.html [NC]
+RewriteRule ^ru/prabhupada/markine-bhagavat-dharma/$ page108813776.html [NC]
+
+RewriteRule ^dasa/jiva-prema-doya$ page109158926.html [NC]
+RewriteRule ^dasa/jiva-prema-doya/$ page109158926.html [NC]
+
+RewriteRule ^dasa/vpusti-krishnu-v-serdce$ page125894786.html [NC]
+RewriteRule ^dasa/vpusti-krishnu-v-serdce/$ page125894786.html [NC]
+
+RewriteRule ^dasa/nezapolnyaemaya-toska$ page126896333.html [NC]
+RewriteRule ^dasa/nezapolnyaemaya-toska/$ page126896333.html [NC]
+
+RewriteRule ^etiquette$ page141310153.html [NC]
+RewriteRule ^etiquette/$ page141310153.html [NC]
+
+
