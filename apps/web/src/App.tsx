@@ -18,7 +18,7 @@ function TopBar() {
       <button className="tIcon" aria-label="Создать"><Img name="plus" /></button>
       <div className="brand">
         <img className="logo light" src="/logo-black.svg" alt="Gaurāṅgers" />
-        <img className="logo dark" src="/logo-white.png" alt="Gaurāṅgers" />
+        <img className="logo dark" src="/logo-white.svg" alt="Gaurāṅgers" />
       </div>
       <button className="tIcon" aria-label="Уведомления"><Img name="heart" /></button>
     </header>
