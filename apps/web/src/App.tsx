@@ -1,31 +1,67 @@
 import { useState } from "react";
-import type { SVGProps } from "react";
+import { ICONS } from "./icons";
 import { tk } from "./ui/tokens";
 import { Chip } from "./ui/primitives";
 
-/* ───────── icons (geometry traced from apartsales icons.tsx) ───────── */
-interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
-const base = ({ size = 26 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
-const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+/* ───────── ORIGINAL MENU (restored verbatim) ───────── */
+// cqw per reference px: 1cqw = 1% of shell width; reference shell = 393pt = 1179px(@3x)
+const F = 100 / (393 * 3); // ≈ 0.084818
 
-function HeartIcon(p: IconProps) {
-  return p.filled
-    ? <svg {...base(p)}><path fill="currentColor" d="M12 21.3 4.3 13.6a5 5 0 0 1 7.1-7.1l.6.6.6-.6a5 5 0 1 1 7.1 7.1L12 21.3Z" /></svg>
-    : <svg {...base(p)}><path {...STROKE} d="M12 20.3 5 13.3a4.5 4.5 0 0 1 6.4-6.3l.6.6.6-.6A4.5 4.5 0 1 1 19 13.3l-7 7Z" /></svg>;
-}
-function StarIcon(p: IconProps) { return <svg {...base(p)}><path fill="currentColor" d="m12 2 2.9 6.1 6.6.8-4.9 4.5 1.3 6.5L12 17.8 6.1 20.4l1.3-6.5L2.5 8.9l6.6-.8L12 2Z" /></svg>; }
-function HomeIcon(p: IconProps) {
-  return p.filled
-    ? <svg {...base(p)}><path fill="currentColor" d="M11.32 2.46a1 1 0 0 1 1.36 0l8.68 8.5a1 1 0 0 1 .31.71v8.7c0 1-.8 1.83-1.81 1.83H15v-7.4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1V22.2H4.14A1.81 1.81 0 0 1 2.33 20.37v-8.7c0-.27.11-.53.31-.71l8.68-8.5Z" /></svg>
-    : <svg {...base(p)}><path {...STROKE} d="m3 11.4 9-8.4 9 8.4v8.78a.83.83 0 0 1-.83.82H15v-7.5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1V21H3.83a.83.83 0 0 1-.83-.82V11.4Z" /></svg>;
-}
-function FeedIcon(p: IconProps) { return <svg {...base(p)}><g {...STROKE}><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.6" /><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.6" /><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.6" /><rect x="13" y="13" width="7.5" height="7.5" rx="1.6" /></g></svg>; }
-function SearchIcon(p: IconProps) { return <svg {...base(p)}><g {...STROKE}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.6-3.6" /></g></svg>; }
-function PinIcon(p: IconProps) { return <svg {...base(p)}><g {...STROKE}><path d="M12 21c4.5-4.4 7-7.6 7-11a7 7 0 1 0-14 0c0 3.4 2.5 6.6 7 11Z" /><circle cx="12" cy="10" r="2.5" /></g></svg>; }
-function PlusIcon(p: IconProps) { return <svg {...base(p)}><g {...STROKE}><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><path d="M12 8.5v7M8.5 12h7" /></g></svg>; }
-function PersonIcon(p: IconProps) { return <svg {...base(p)}><g {...STROKE}><circle cx="12" cy="8.5" r="3.5" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" /></g></svg>; }
+const Img = ({ name }: { name: string }) => {
+  const ic = ICONS[name];
+  return (
+    <img className="glyph" src={ic.uri} alt="" draggable={false}
+      style={{ height: `${(ic.h * F).toFixed(2)}cqw`, width: `${(ic.w * F).toFixed(2)}cqw` }} />
+  );
+};
 
-/* ───────── original book cover art (no copyrighted BBT artwork) ───────── */
+function TopBar() {
+  return (
+    <header className="topbar">
+      <button className="tIcon" aria-label="Создать"><Img name="plus" /></button>
+      <div className="brand">
+        <img className="logo light" src="/logo-black.svg" alt="Gaurāṅgers" />
+        <img className="logo dark" src="/logo-white.svg" alt="Gaurāṅgers" />
+      </div>
+      <button className="tIcon" aria-label="Уведомления"><Img name="heart" /></button>
+    </header>
+  );
+}
+
+const NAV = [
+  { key: "home", label: "Главная", icon: "home" },
+  { key: "reels", label: "Reels", icon: "reels" },
+  { key: "direct", label: "Сообщения", icon: "plane" },
+  { key: "search", label: "Поиск", icon: "search" },
+  { key: "profile", label: "Профиль", avatar: true },
+] as const;
+
+function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
+  return (
+    <nav className="tabbar" role="tablist">
+      {NAV.map((t) => {
+        const on = active === t.key;
+        if ("avatar" in t && t.avatar) {
+          return (
+            <button key={t.key} className="tab" role="tab" aria-selected={on} aria-label={t.label} onClick={() => onChange(t.key)}>
+              <span className={"avatar" + (on ? " on" : "")}>
+                <svg className="avPerson" viewBox="0 0 24 24" fill="#8B8B8B"><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" /></svg>
+                <i className="reddot" />
+              </span>
+            </button>
+          );
+        }
+        return (
+          <button key={t.key} className="tab" role="tab" aria-selected={on} aria-label={t.label} onClick={() => onChange(t.key)}>
+            <Img name={(t as any).icon} />
+          </button>
+        );
+      })}
+    </nav>
+  );
+}
+
+/* ───────── book cover art (original; no copyrighted BBT artwork) ───────── */
 function spokes(cx: number, cy: number, r1: number, r2: number, n: number, sw: number) {
   return Array.from({ length: n }, (_, i) => {
     const a = (i * 2 * Math.PI) / n;
@@ -55,7 +91,16 @@ function BookCover() {
   );
 }
 
-/* ───────── BookCard — structure 1:1 with apartsales PropertyCard ───────── */
+function HeartGlyph({ filled }: { filled: boolean }) {
+  return filled
+    ? <svg width={18} height={18} viewBox="0 0 24 24" aria-hidden><path fill="#FF453A" d="M12 21.3 4.3 13.6a5 5 0 0 1 7.1-7.1l.6.6.6-.6a5 5 0 1 1 7.1 7.1L12 21.3Z" /></svg>
+    : <svg width={18} height={18} viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="#fff" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" d="M12 20.3 5 13.3a4.5 4.5 0 0 1 6.4-6.3l.6.6.6-.6A4.5 4.5 0 1 1 19 13.3l-7 7Z" /></svg>;
+}
+function StarGlyph() {
+  return <svg width={11} height={11} viewBox="0 0 24 24" aria-hidden><path fill="currentColor" d="m12 2 2.9 6.1 6.6.8-4.9 4.5 1.3 6.5L12 17.8 6.1 20.4l1.3-6.5L2.5 8.9l6.6-.8L12 2Z" /></svg>;
+}
+
+/* ───────── BookCard — apartsales PropertyCard structure 1:1 ───────── */
 function BookCard() {
   const [favorited, setFavorited] = useState(false);
   return (
@@ -67,8 +112,8 @@ function BookCard() {
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: tk.color.brand }} />Писание
         </span>
         <button type="button" aria-label={favorited ? "Убрать из избранного" : "В избранное"} aria-pressed={favorited} onClick={() => setFavorited(v => !v)}
-          style={{ position: "absolute", right: 12, top: 12, display: "grid", placeItems: "center", height: 32, width: 32, borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.4)", color: favorited ? "#FF453A" : "#fff", backdropFilter: "blur(12px)", transition: `transform ${tk.duration.fast} ${tk.ease}` }}>
-          <span style={{ display: "block", transform: favorited ? "scale(1.08)" : "scale(1)", transition: `transform ${tk.duration.fast} ${tk.ease}` }}><HeartIcon size={18} filled={favorited} /></span>
+          style={{ position: "absolute", right: 12, top: 12, display: "grid", placeItems: "center", height: 32, width: 32, borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.4)", backdropFilter: "blur(12px)", transition: `transform ${tk.duration.fast} ${tk.ease}` }}>
+          <span style={{ display: "block", transform: favorited ? "scale(1.08)" : "scale(1)", transition: `transform ${tk.duration.fast} ${tk.ease}` }}><HeartGlyph filled={favorited} /></span>
         </button>
         <div style={{ position: "absolute", left: 12, bottom: 12, display: "flex", flexWrap: "wrap", gap: 6 }}>
           {["Бестселлер", "Аудио"].map(t => (
@@ -84,7 +129,7 @@ function BookCard() {
             <p style={{ margin: 0, fontSize: tk.text.footnote, color: tk.color.label2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Bhagavad-gītā · Шрила Прабхупада</p>
           </div>
           <span style={{ display: "flex", flexShrink: 0, alignItems: "center", gap: 4, borderRadius: tk.radius.pill, background: tk.color.fill2, padding: "4px 8px", fontSize: tk.text.caption, fontWeight: tk.weight.semibold, color: tk.color.label }}>
-            <span style={{ color: "#FFCC00", display: "grid", placeItems: "center" }}><StarIcon size={11} /></span>4.9
+            <span style={{ color: "#FFCC00", display: "grid", placeItems: "center" }}><StarGlyph /></span>4.9
           </span>
         </div>
 
@@ -105,40 +150,6 @@ function BookCard() {
         </div>
       </div>
     </article>
-  );
-}
-
-/* ───────── shell ───────── */
-function TopBar() {
-  return (
-    <header className="topbar">
-      <button className="tIcon" aria-label="Создать"><PlusIcon size={26} /></button>
-      <div className="brand">
-        <img className="logo light" src="/logo-black.svg" alt="Gaurāṅgers" />
-        <img className="logo dark" src="/logo-white.svg" alt="Gaurāṅgers" />
-      </div>
-      <button className="tIcon" aria-label="Уведомления"><HeartIcon size={26} /></button>
-    </header>
-  );
-}
-
-const NAV = [
-  { key: "home", label: "Главная", Icon: HomeIcon },
-  { key: "feed", label: "Лента", Icon: FeedIcon },
-  { key: "search", label: "Поиск", Icon: SearchIcon },
-  { key: "centers", label: "Центры", Icon: PinIcon },
-  { key: "profile", label: "Профиль", Icon: PersonIcon },
-] as const;
-
-function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
-  return (
-    <nav className="tabbar" role="tablist">
-      {NAV.map(({ key, label, Icon }) => (
-        <button key={key} className="tab" role="tab" aria-selected={active === key} aria-label={label} onClick={() => onChange(key)}>
-          <Icon size={26} filled={active === key} />
-        </button>
-      ))}
-    </nav>
   );
 }
 
