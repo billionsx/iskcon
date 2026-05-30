@@ -57,6 +57,15 @@ jobs:
           SCRIPT=re.compile(r'(Бхагавад[\- ]?г[ӣи]та|Шр[иӣ]мад[\- ]?Бхагаватам|Чайтань[яе][\- ]?[Чч]аритамрита|Брахма[\- ]?самхита|Шикш[аā]штак|Упадешамрит|Бхакти[\- ]?рас[аā]мрита|Нектар (преданности|наставлений))', re.I)
           REFHINT=re.compile(r'(стих|текст\s*\d|глава|песн[ьи]|\bлила\b|\d)', re.I)
           def is_ref(b): return len(b)<160 and bool(SCRIPT.search(b)) and bool(REFHINT.search(b))
+          def is_attrib(b):
+              b2=b.strip().strip(',").«»').strip()
+              w=b2.split()
+              if not w or len(w)>8 or len(b2)>60: return False
+              if re.search(r'[.!?:;]', b2): return False
+              caps=sum(1 for x in w if x[:1].isupper())
+              return caps>=max(1,(len(w)+1)//2)
+          def clean_q(b):
+              return b.strip().strip('"').strip().strip(',').strip()
 
           pt=qn=pr=0
           q("DELETE FROM page_text",[]); q("DELETE FROM quotes",[]); q("DELETE FROM prayers",[])
@@ -67,14 +76,17 @@ jobs:
               q("INSERT OR REPLACE INTO page_text (slug,lang,n_blocks,text,updated_at) VALUES (?,?,?,?,datetime('now'))",
                 [slug,lang,len(body),text]); pt+=1
               if typ=="personality":
-                  ord=0
+                  ordn=0
                   for i,b in enumerate(body):
                       if is_ref(b) and i>0:
-                          quote=body[i-1]
-                          if 12<=len(quote)<=900 and not is_ref(quote):
-                              ord+=1
-                              q("INSERT INTO quotes (slug,personality_slug,lang,ord,text,source) VALUES (?,?,?,?,?,?)",
-                                [slug,slug,lang,ord,quote,b]); qn+=1
+                          speaker=None; qi=i-1
+                          if is_attrib(body[i-1]) and i>=2:
+                              speaker=body[i-1].strip().strip(',').strip(); qi=i-2
+                          quote=clean_q(body[qi])
+                          if 18<=len(quote)<=1000 and not is_ref(quote) and not is_attrib(quote):
+                              ordn+=1
+                              q("INSERT INTO quotes (slug,personality_slug,lang,ord,text,source,speaker) VALUES (?,?,?,?,?,?,?)",
+                                [slug,slug,lang,ordn,quote,b,speaker]); qn+=1
               if typ=="prayer":
                   author = sub if (sub and sub!="bhajan") else None
                   q("INSERT OR REPLACE INTO prayers (slug,lang,name,author_slug,text,hero_image,updated_at) VALUES (?,?,?,?,?,?,datetime('now'))",
