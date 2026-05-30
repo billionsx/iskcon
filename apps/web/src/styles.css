@@ -4,12 +4,11 @@
 }
 *{box-sizing:border-box}
 html,body,#root{margin:0;padding:0;height:100%}
-body{background:#DADADA;color:var(--ink);font-family:Inter,-apple-system,"SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-@media (prefers-color-scheme: dark){ body{background:#111} }
+body{color:var(--ink);font-family:Inter,-apple-system,"SF Pro Text",system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:var(--bg)}
 
 .shell{position:relative;max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--bg);
   container-type:inline-size;container-name:shell}
-@media(min-width:481px){ .shell{box-shadow:0 0 0 1px var(--line)} }
+
 
 /* TOP: plus left · logo center · heart right */
 .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
