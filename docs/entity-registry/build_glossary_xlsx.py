@@ -44,7 +44,7 @@ for fn,label in REL:
         r["dataset"]=label; rels.append(r)
 
 # ---- master CSVs (canonical merge for repo / DB)
-cols=["id","type","tattva","category","name_en","name_iast","name_ru","aliases","note","source_ref","confidence","dataset"]
+cols=["id","type","tattva","category","name_en","name_iast","name_ru","aliases","note","source_ref","confidence","iast_status","dataset"]
 with open(os.path.join(base,"entities_all.csv"),"w",newline="",encoding="utf-8") as f:
     w=csv.DictWriter(f,fieldnames=cols); w.writeheader()
     for r in ents: w.writerow({k:r.get(k,"") for k in cols})
@@ -73,15 +73,15 @@ wb=Workbook()
 
 # ===== Sheet 1: Glossary =====
 ws=wb.active; ws.title="Глоссарий"
-hdr=["№","id","Имя (RU)","Name (EN)","IAST","Таттва","Категория","Алиасы","Определение","Источник","Достоверность","Датасет"]
+hdr=["№","id","Имя (RU)","Name (EN)","IAST","IAST статус","Таттва","Категория","Алиасы","Определение","Источник","Достоверность","Датасет"]
 ws.append(hdr)
 for i,r in enumerate(ents,1):
-    ws.append([i,r["id"],r.get("name_ru",""),r.get("name_en",""),r.get("name_iast",""),
+    ws.append([i,r["id"],r.get("name_ru",""),r.get("name_en",""),r.get("name_iast",""),r.get("iast_status",""),
                r.get("tattva",""),r.get("category",""),r.get("aliases",""),r.get("note",""),
                r.get("source_ref",""),r.get("confidence",""),r["dataset"]])
 for row in ws.iter_rows(min_row=2,max_row=ws.max_row):
     for c in row: c.font=BASE_FONT; c.alignment=WRAP; c.border=BORDER
-widths=[5,30,26,30,18,14,30,26,46,22,13,34]
+widths=[5,30,26,30,18,12,14,30,26,46,22,13,34]
 for i,wd in enumerate(widths,1): ws.column_dimensions[get_column_letter(i)].width=wd
 style_header(ws,len(hdr))
 
