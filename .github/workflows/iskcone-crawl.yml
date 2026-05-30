@@ -26,7 +26,7 @@ jobs:
 
           HOST="iskcone.com"
           UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-          def fetch(url, tries=3):
+          def fetch(url, tries=4):
               last=""
               for i in range(tries):
                   try:
@@ -59,7 +59,7 @@ jobs:
           seeds=["https://iskcone.com/"]+["https://iskcone.com"+p for p in nav]
           seen=set(); queue=list(dict.fromkeys(seeds)); pages=0; imgtot=0; errors=0; failed=[]
           q("DELETE FROM tilda_assets", []); q("DELETE FROM tilda_pages", [])
-          while queue and pages<800:
+          while queue and pages<400:
               url=queue.pop(0)
               if url in seen: continue
               seen.add(url)
@@ -79,7 +79,7 @@ jobs:
                   n=norm(m, url)
                   if n and n not in seen and n not in queue: queue.append(n)
               print(f"{pages:3d} {path} imgs={len(imgs)} q={len(queue)}")
-              time.sleep(0.55)
+              time.sleep(0.9)
           print("FAILED:", failed[:40])
           q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone crawl',?,?)", [str(pages), f"images={imgtot} errors={errors} failed={','.join(failed[:25])}"])
           print(f"DONE pages={pages} images={imgtot} errors={errors}")
