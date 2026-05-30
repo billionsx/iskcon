@@ -1,0 +1,78 @@
+name: tilda import (download export zip -> archive/tilda-export/)
+
+on:
+  workflow_dispatch:
+    inputs:
+      zip_url:
+        description: "Tilda export .zip URL"
+        required: true
+        default: "https://export.tildacdn.com/export/zips/iskcone_8ac9a678f5ee92b3d21f49f8a7ccafab2439e093.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download Tilda export zip
+        run: |
+          set -e
+          URL="${{ github.event.inputs.zip_url }}"
+          echo "Downloading: $URL"
+          curl -sS -L --fail --retry 5 --retry-delay 3 --max-time 600 \
+               -A "Mozilla/5.0 (compatible; iskcon-import/1.0)" \
+               -o /tmp/tilda.zip "$URL"
+          echo "Downloaded bytes:"; wc -c < /tmp/tilda.zip
+          file /tmp/tilda.zip
+
+      - name: Extract into archive/tilda-export/
+        run: |
+          set -e
+          rm -rf archive/tilda-export
+          mkdir -p archive/tilda-export
+          unzip -q -o /tmp/tilda.zip -d archive/tilda-export
+          echo "=== top-level entries ==="
+          ls -la archive/tilda-export | head -40
+          echo "=== file count by type ==="
+          find archive/tilda-export -type f | sed -E 's/.*\.([A-Za-z0-9]+)$/\1/' | tr 'A-Z' 'a-z' | sort | uniq -c | sort -rn | head -30
+          echo "=== total files / size ==="
+          find archive/tilda-export -type f | wc -l
+          du -sh archive/tilda-export
+
+      - name: Write manifest
+        run: |
+          set -e
+          {
+            echo "# Tilda export — raw site archive"
+            echo
+            echo "Source: ${{ github.event.inputs.zip_url }}"
+            echo "Imported (UTC): $(date -u +'%Y-%m-%d %H:%M:%S')"
+            echo "Run: ${{ github.run_id }}"
+            echo
+            echo "## Files by extension"
+            echo '```'
+            find archive/tilda-export -type f | sed -E 's/.*\.([A-Za-z0-9]+)$/\1/' | tr 'A-Z' 'a-z' | sort | uniq -c | sort -rn
+            echo '```'
+            echo
+            echo "Total files: $(find archive/tilda-export -type f | wc -l)"
+            echo "Total size: $(du -sh archive/tilda-export | cut -f1)"
+          } > archive/tilda-export/_IMPORT_MANIFEST.md
+
+      - name: Commit & push
+        run: |
+          set -e
+          git config user.name "Claude (assistant)"
+          git config user.email "claude@users.noreply.github.com"
+          git add -A archive/tilda-export
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -q -m "chore(archive): import full Tilda site export into archive/tilda-export/"
+            git push origin HEAD:main
+            echo "Pushed."
+          fi
+          git rev-parse HEAD
