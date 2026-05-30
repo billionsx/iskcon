@@ -1,85 +1,32 @@
-:root{ --bg:#FFFFFF; --bar:#FFFFFF; --ink:#0A0A0A; --line:rgba(0,0,0,.10); --iconfilter:none;
-  --ink2:rgba(0,0,0,.55); --fill:#F2F2F2; --brand:#0E5E54; }
-@media (prefers-color-scheme: dark){
-  :root{ --bg:#000000; --bar:#000000; --ink:#FFFFFF; --line:rgba(255,255,255,.14); --iconfilter:invert(1);
-    --ink2:rgba(255,255,255,.6); --fill:#1C1C1E; }
-}
+/* Shell chrome (Instagram/iOS frame). Colors come from ui/globals.css design tokens. */
 *{box-sizing:border-box}
 html,body,#root{margin:0;padding:0;height:100%}
-body{color:var(--ink);font-family:-apple-system,"SF Pro Text","SF Pro Display",system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:var(--bg)}
+body{font-family:var(--font-text);background:var(--color-bg);color:var(--color-label)}
 
-.shell{position:relative;max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--bg);
-  container-type:inline-size;container-name:shell}
+.shell{position:relative;max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;
+  background:var(--color-bg);container-type:inline-size;container-name:shell}
 
 /* TOP: plus left · logo center · heart right */
 .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
   padding:13px 16px;padding-top:calc(13px + env(safe-area-inset-top));
-  background:var(--bar);border-bottom:.5px solid var(--line)}
-.tIcon{background:none;border:none;padding:0;display:grid;place-items:center;cursor:pointer;z-index:2}
+  background:var(--color-header-blur);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);
+  border-bottom:.5px solid var(--color-hairline)}
+.tIcon{background:none;border:none;padding:0;display:grid;place-items:center;cursor:pointer;z-index:2;color:var(--color-label)}
 .tIcon:active{opacity:.5}
 .brand{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:center;pointer-events:none}
-.logo{height:4.65cqw;width:auto;display:block}
+.logo{height:22px;width:auto;display:block}
 .logo.dark{display:none}
-@media (prefers-color-scheme: dark){ .logo.light{display:none} .logo.dark{display:block} }
+:root:not([data-theme='light']) .logo.light{display:none}
+:root:not([data-theme='light']) .logo.dark{display:block}
 
-.content{flex:1;padding-bottom:22cqw}
+.content{flex:1;padding-bottom:96px}
 
-/* glyphs: black PNGs traced from reference; invert to white in dark theme */
-.glyph{display:block;filter:var(--iconfilter)}
-
-/* BOTTOM: 5 equal cells, full width */
+/* BOTTOM: 5 equal cells */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:space-around;
-  padding:12px 0;padding-bottom:calc(12px + env(safe-area-inset-bottom));
-  background:var(--bar);border-top:.5px solid var(--line)}
+  padding:10px 0;padding-bottom:calc(10px + env(safe-area-inset-bottom));
+  background:var(--color-glass-nav);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);
+  border-top:.5px solid var(--color-hairline)}
 @media(min-width:481px){ .tabbar{left:50%;transform:translateX(-50%);width:480px} }
-.tab{flex:1;height:7cqw;background:none;border:none;cursor:pointer;display:grid;place-items:center;padding:0}
+.tab{flex:1;height:44px;background:none;border:none;cursor:pointer;display:grid;place-items:center;padding:0;color:var(--color-label-2)}
+.tab[aria-selected="true"]{color:var(--color-label)}
 .tab:active{opacity:.55}
-
-/* avatar = 24pt diameter (6.11cqw) */
-.avatar{position:relative;width:6.11cqw;height:6.11cqw;border-radius:50%;
-  background:radial-gradient(120% 120% at 30% 22%, #ECECEC, #C7C7C7);box-shadow:inset 0 0 0 .5px rgba(0,0,0,.18);display:grid;place-items:center}
-.avatar .avPerson{width:74%;height:74%}
-.avatar.on{box-shadow:0 0 0 1.6cqw transparent,0 0 0 .55cqw var(--ink)}
-.avatar .reddot{position:absolute;right:-2%;bottom:-2%;width:2.1cqw;height:2.1cqw;border-radius:50%;background:#FF3040;border:1.5px solid var(--bar)}
-
-/* ===== FEED (Instagram 2026 / iOS 26), SF type, apartsales storefront laws ===== */
-.feed{display:block}
-.post{border-bottom:.5px solid var(--line)}
-.post:last-child{border-bottom:none}
-
-.pHead{display:flex;align-items:center;gap:2.5cqw;padding:2.6cqw 3.4cqw}
-.pAv{width:8.4cqw;height:8.4cqw;border-radius:50%;overflow:hidden;flex:0 0 auto;box-shadow:inset 0 0 0 .5px var(--line)}
-.pAv svg{display:block;width:100%;height:100%}
-.pIdent{display:flex;flex-direction:column;min-width:0}
-.pName{font-weight:600;font-size:3.5cqw;letter-spacing:-.1px;display:flex;align-items:center;gap:1.1cqw;line-height:1.15}
-.pName .vf{width:3.5cqw;height:3.5cqw;flex:0 0 auto}
-.pSub{font-size:3cqw;color:var(--ink2);margin-top:.3cqw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pMore{margin-left:auto;background:none;border:none;color:var(--ink);padding:1cqw;cursor:pointer;display:grid;place-items:center}
-.pMore:active{opacity:.5}
-.pMore svg{width:5.4cqw;height:1.5cqw;fill:currentColor}
-
-.pMedia{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#170f33}
-.pMedia svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-
-.pAct{display:flex;align-items:center;gap:4.4cqw;padding:3cqw 3.4cqw 1.4cqw}
-.pAct button{background:none;border:none;padding:0;color:var(--ink);cursor:pointer;display:grid;place-items:center}
-.pAct button:active{opacity:.55;transform:scale(.9)}
-.pAct svg{width:6.9cqw;height:6.9cqw;fill:none;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round}
-.pAct .save{margin-left:auto}
-.pAct .heart.on svg{fill:#FF3040;stroke:#FF3040;animation:hb .35s}
-.pAct .save.on svg{fill:var(--ink)}
-@keyframes hb{0%{transform:scale(.7)}45%{transform:scale(1.28)}100%{transform:scale(1)}}
-
-.pLikes{padding:.6cqw 3.4cqw 0;font-weight:600;font-size:3.45cqw;letter-spacing:-.1px}
-.pCap{padding:1.4cqw 3.4cqw 0;font-size:3.5cqw;line-height:1.45}
-.pCap b{font-weight:600}
-.pCap .iast{color:var(--ink2);font-style:italic}
-.pMeta{padding:1.5cqw 3.4cqw 0;font-size:3.05cqw;color:var(--ink2)}
-
-.pBuy{display:flex;gap:2.6cqw;padding:3.2cqw 3.4cqw 4cqw}
-.pBuy button{flex:1;border:none;border-radius:3.1cqw;font-family:inherit;font-weight:600;font-size:3.6cqw;
-  letter-spacing:-.1px;padding:3.3cqw 2cqw;cursor:pointer}
-.pBuy button:active{transform:scale(.985);opacity:.9}
-.pBuy .primary{background:var(--brand);color:#fff}
-.pBuy .sec{background:var(--fill);color:var(--ink)}
