@@ -17,7 +17,7 @@ body{color:var(--ink);font-family:Inter,-apple-system,"SF Pro Text",system-ui,sa
 .tIcon{background:none;border:none;padding:0;display:grid;place-items:center;cursor:pointer;z-index:2}
 .tIcon:active{opacity:.5}
 .brand{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:center;pointer-events:none}
-.logo{height:5.81cqw;width:auto;display:block}
+.logo{height:4.65cqw;width:auto;display:block}
 .logo.dark{display:none}
 @media (prefers-color-scheme: dark){ .logo.light{display:none} .logo.dark{display:block} }
 
