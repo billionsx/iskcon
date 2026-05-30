@@ -1,4 +1,4 @@
-name: Tilda sync (pull pages + images into D1)
+name: Tilda sync (iskcone project only)
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Pull all Tilda pages -> D1 (with self-logging)
+      - name: Sync iskcone Tilda project -> D1 (self-logging)
         shell: bash --noprofile --norc {0}
         env:
           PK: ${{ secrets.TILDA_PUBLIC_KEY }}
@@ -24,48 +24,59 @@ jobs:
           post(){ curl -s -X POST "$D1" -H "Authorization: Bearer $CF" -H "Content-Type: application/json" --data @"$1" >/dev/null; }
           d1(){ jq -nc --arg sql "$1" --argjson p "$2" '{sql:$sql,params:$p}' >/tmp/q.json; post /tmp/q.json; }
 
-          run_sync(){
-            echo "PK_len=${#PK} SK_len=${#SK} CF_len=${#CF}"
-            echo "jq: $(jq --version 2>&1)"
+          run(){
             curl -s "$T/getprojectslist/?publickey=$PK&secretkey=$SK" > /tmp/projects.json
-            echo "projects status=$(jq -r '.status' /tmp/projects.json 2>&1)"
-            echo "projects head: $(head -c 200 /tmp/projects.json)"
-            jq -r '.result[] | "project \(.id): \(.title)"' /tmp/projects.json 2>&1
+            echo "projects status=$(jq -r '.status' /tmp/projects.json 2>&1)  head=$(head -c 160 /tmp/projects.json)"
+            [ "$(jq -r '.status' /tmp/projects.json 2>/dev/null)" = "FOUND" ] || { echo "ABORT: cannot list projects (likely Tilda rate limit 150/hr)"; return; }
+            jq -r '.result[] | "  proj \(.id): \(.title)"' /tmp/projects.json
 
-            total=0; assets=0; errors=0
-            for pid in $(jq -r '.result[].id' /tmp/projects.json 2>/dev/null); do
-              curl -s "$T/getpageslist/?publickey=$PK&secretkey=$SK&projectid=$pid" > /tmp/pages.json
-              np=$(jq -r '.result | length' /tmp/pages.json 2>/dev/null)
-              echo "project $pid pages=$np"
-              for pageid in $(jq -r '.result[]?.id' /tmp/pages.json 2>/dev/null); do
-                curl -s "$T/getpagefull/?publickey=$PK&secretkey=$SK&pageid=$pageid" > /tmp/full.json
-                st=$(jq -r '.status' /tmp/full.json 2>/dev/null)
-                if [ "$st" != "FOUND" ]; then echo "page $pageid status=$st SKIP"; errors=$((errors+1)); continue; fi
-                jq -r '.result.html // ""' /tmp/full.json > /tmp/html.txt 2>/dev/null
-                grep -oE 'https://[A-Za-z0-9._-]*tildacdn[A-Za-z0-9._/-]*\.(png|jpg|jpeg|webp|gif|svg)' /tmp/html.txt 2>/dev/null | sort -u > /tmp/imgs.txt
-                imgs=$(jq -R . /tmp/imgs.txt 2>/dev/null | jq -cs '.' 2>/dev/null); [ -z "$imgs" ] && imgs='[]'
-                alias=$(jq -r '.result.alias // ""' /tmp/full.json 2>/dev/null)
-                jq -nc --slurpfile f /tmp/full.json --argjson imgs "$imgs" '
-                  ($f[0].result) as $r |
-                  {sql:"INSERT OR REPLACE INTO tilda_pages (pageid,projectid,alias,title,descr,html,images_json,img_count,fetched_at) VALUES (?,?,?,?,?,?,?,?,datetime(\u0027now\u0027))",
-                   params:[($r.id|tostring),($r.projectid//""|tostring),($r.alias//""),($r.title//""),($r.descr//""),($r.html//""),($imgs|tostring),($imgs|length)]}' > /tmp/q.json 2>/tmp/jqerr
-                if [ ! -s /tmp/q.json ]; then echo "page $pageid JQ-FAIL: $(head -c 150 /tmp/jqerr)"; errors=$((errors+1)); continue; fi
-                post /tmp/q.json
-                d1 "DELETE FROM tilda_assets WHERE pageid=?" "[\"$pageid\"]"
-                jq -nc --arg pid "$pageid" --arg al "$alias" --argjson imgs "$imgs" '{sql:"INSERT INTO tilda_assets (pageid,alias,url,fetched_at) SELECT ?,?,value,datetime(\u0027now\u0027) FROM json_each(?)",params:[$pid,$al,($imgs|tostring)]}' > /tmp/q.json
-                post /tmp/q.json
-                n=$(jq 'length' <<<"$imgs" 2>/dev/null); assets=$((assets+n)); total=$((total+1))
-                echo "page $pageid [$alias] imgs=$n"
+            target=""
+            # 1) match by title
+            while IFS=$'\t' read -r id title; do
+              echo "$title" | grep -qiE 'iskcon|iskcone|кришн|гауранг|gaur|one love' && { target=$id; echo "matched by title: $id ($title)"; break; }
+            done < <(jq -r '.result[] | [(.id|tostring),.title] | @tsv' /tmp/projects.json)
+            # 2) fallback: scan project info for domain iskcone
+            if [ -z "$target" ]; then
+              for id in $(jq -r '.result[].id' /tmp/projects.json); do
+                curl -s "$T/getprojectinfo/?publickey=$PK&secretkey=$SK&projectid=$id" > /tmp/pi.json
+                if grep -qi 'iskcone' /tmp/pi.json; then target=$id; echo "matched by domain: $id"; break; fi
                 sleep 0.2
               done
+            fi
+            [ -z "$target" ] && { echo "ABORT: iskcone project not found"; return; }
+
+            curl -s "$T/getpageslist/?publickey=$PK&secretkey=$SK&projectid=$target" > /tmp/pages.json
+            np=$(jq -r '.result | length' /tmp/pages.json 2>/dev/null)
+            echo "iskcone project=$target pages=$np"
+            [ "$(jq -r '.status' /tmp/pages.json)" = "FOUND" ] || { echo "ABORT: pageslist status $(jq -r '.status' /tmp/pages.json)"; return; }
+
+            # clean slate, then refill ONLY this project
+            d1 "DELETE FROM tilda_assets" "[]"; d1 "DELETE FROM tilda_pages" "[]"
+
+            total=0; assets=0; errors=0
+            for pageid in $(jq -r '.result[]?.id' /tmp/pages.json); do
+              curl -s "$T/getpagefull/?publickey=$PK&secretkey=$SK&pageid=$pageid" > /tmp/full.json
+              [ "$(jq -r '.status' /tmp/full.json 2>/dev/null)" = "FOUND" ] || { echo "page $pageid skip"; errors=$((errors+1)); continue; }
+              jq -r '.result.html // ""' /tmp/full.json > /tmp/html.txt 2>/dev/null
+              grep -oE 'https://[A-Za-z0-9._-]*tildacdn[A-Za-z0-9._/-]*\.(png|jpg|jpeg|webp|gif|svg)' /tmp/html.txt 2>/dev/null | sort -u > /tmp/imgs.txt
+              imgs=$(jq -R . /tmp/imgs.txt 2>/dev/null | jq -cs '.' 2>/dev/null); [ -z "$imgs" ] && imgs='[]'
+              alias=$(jq -r '.result.alias // ""' /tmp/full.json)
+              jq -nc --slurpfile f /tmp/full.json --argjson imgs "$imgs" '($f[0].result) as $r |
+                {sql:"INSERT OR REPLACE INTO tilda_pages (pageid,projectid,alias,title,descr,html,images_json,img_count,fetched_at) VALUES (?,?,?,?,?,?,?,?,datetime(\u0027now\u0027))",
+                 params:[($r.id|tostring),($r.projectid//""|tostring),($r.alias//""),($r.title//""),($r.descr//""),($r.html//""),($imgs|tostring),($imgs|length)]}' > /tmp/q.json
+              post /tmp/q.json
+              jq -nc --arg pid "$pageid" --arg al "$alias" --argjson imgs "$imgs" '{sql:"INSERT INTO tilda_assets (pageid,alias,url,fetched_at) SELECT ?,?,value,datetime(\u0027now\u0027) FROM json_each(?)",params:[$pid,$al,($imgs|tostring)]}' > /tmp/q.json
+              post /tmp/q.json
+              n=$(jq 'length' <<<"$imgs" 2>/dev/null); assets=$((assets+n)); total=$((total+1))
+              echo "page $pageid [$alias] imgs=$n"
+              sleep 0.2
             done
             echo "SYNCED pages=$total images=$assets errors=$errors"
           }
 
-          run_sync > /tmp/run.log 2>&1
-          code=$?
-          echo "===== RUN LOG ====="; cat /tmp/run.log; echo "EXIT=$code"
+          run > /tmp/run.log 2>&1
+          echo "===== RUN LOG ====="; cat /tmp/run.log
           B=$(tail -c 4500 /tmp/run.log | base64 -w0)
-          jq -nc --arg c "$code" --arg b "$B" '{sql:"INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime(\u0027now\u0027),\u0027tilda log\u0027,?,?)",params:[$c,$b]}' > /tmp/q.json
+          jq -nc --arg b "$B" '{sql:"INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime(\u0027now\u0027),\u0027tilda log\u0027,0,?)",params:[$b]}' > /tmp/q.json
           post /tmp/q.json
           exit 0
