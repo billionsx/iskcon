@@ -1,0 +1,38 @@
+name: Tilda extract images (from stored HTML, no Tilda calls)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract tildacdn image URLs from stored HTML -> tilda_assets
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, re, urllib.request
+          CF=os.environ["CF"]
+          ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          URL=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def q(sql, params=None):
+              body=json.dumps({"sql":sql,"params":params or []}).encode()
+              rq=urllib.request.Request(URL, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())
+          rx=re.compile(r'https://[A-Za-z0-9._-]*tildacdn[A-Za-z0-9._/\-]*\.(?:png|jpe?g|webp|gif|svg)', re.I)
+          rows=q("SELECT pageid, alias, html FROM tilda_pages")["result"][0]["results"]
+          print("pages:", len(rows))
+          total=0
+          for r in rows:
+              pid=str(r["pageid"]); alias=r.get("alias") or ""; html=r.get("html") or ""
+              urls=sorted(set(rx.findall(html)))
+              q("DELETE FROM tilda_assets WHERE pageid=?", [pid])
+              if urls:
+                  q("INSERT INTO tilda_assets (pageid,alias,url,fetched_at) SELECT ?,?,value,datetime('now') FROM json_each(?)", [pid, alias, json.dumps(urls)])
+              q("UPDATE tilda_pages SET images_json=?, img_count=? WHERE pageid=?", [json.dumps(urls), len(urls), pid])
+              total+=len(urls)
+              print(f"  {pid} [{alias}] -> {len(urls)} imgs")
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'tilda extract',?,?)", [str(len(rows)), f"images={total}"])
+          print("DONE images=", total)
+          PY
