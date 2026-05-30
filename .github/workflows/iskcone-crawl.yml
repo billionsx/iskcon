@@ -26,17 +26,21 @@ jobs:
 
           HOST="iskcone.com"
           UA="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
-          def fetch(url):
-              rq=urllib.request.Request(url, headers={"User-Agent":UA,"Accept-Language":"ru,en"})
-              with urllib.request.urlopen(rq, timeout=30) as r:
-                  return r.read().decode("utf-8","replace")
+          def fetch(url, tries=3):
+              last=""
+              for i in range(tries):
+                  try:
+                      rq=urllib.request.Request(url, headers={"User-Agent":UA,"Accept":"text/html","Accept-Language":"ru,en"})
+                      with urllib.request.urlopen(rq, timeout=40) as r: return r.read().decode("utf-8","replace")
+                  except Exception as e:
+                      last=str(e)[:80]; time.sleep(1.5*(i+1))
+              raise RuntimeError(last)
 
           def norm(href, base):
               if not href: return None
               href=href.split("#")[0].strip()
               if not href or href.startswith(("mailto:","tel:","javascript:")): return None
-              u=urllib.parse.urljoin(base, href)
-              p=urllib.parse.urlsplit(u)
+              u=urllib.parse.urljoin(base, href); p=urllib.parse.urlsplit(u)
               if p.netloc.replace("www.","")!=HOST: return None
               path=p.path
               if re.search(r'\.(png|jpe?g|svg|webp|gif|css|js|pdf|zip|mp4|mp3|ico|xml|txt)$', path, re.I): return None
@@ -48,31 +52,35 @@ jobs:
           TITLE=re.compile(r'<title[^>]*>(.*?)</title>', re.I|re.S)
           DESC=re.compile(r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']*)["\']', re.I)
 
-          seeds=["https://iskcone.com/","https://iskcone.com/ru","https://iskcone.com/en","https://iskcone.com/vi","https://iskcone.com/km"]
-          seen=set(); queue=list(seeds); pages=0; imgtot=0; errors=0
+          nav=["/ru","/en","/vi","/km","/ru/books","/ru/bhajans","/ru/krishna","/ru/radharani",
+               "/ru/svarupa-damodara-goswami","/ru/ramananda-rai","/ru/madhavendra-puri",
+               "/ru/prabodhananda-saraswati-thakur","/ru/jahnava-thakurani","/ru/yamuna-devi-dasi",
+               "/ru/narasimha","/ru/matsia","/ru/kurma","/evpatoria","/batumi","/mahabhava","/dasa"]
+          seeds=["https://iskcone.com/"]+["https://iskcone.com"+p for p in nav]
+          seen=set(); queue=list(dict.fromkeys(seeds)); pages=0; imgtot=0; errors=0; failed=[]
           q("DELETE FROM tilda_assets", []); q("DELETE FROM tilda_pages", [])
-          while queue and pages<150:
+          while queue and pages<160:
               url=queue.pop(0)
               if url in seen: continue
               seen.add(url)
               try: html=fetch(url)
               except Exception as e:
-                  print("fetch fail", url, str(e)[:80]); errors+=1; continue
+                  errors+=1; failed.append(urllib.parse.urlsplit(url).path); continue
               path=urllib.parse.urlsplit(url).path or "/"
-              title=(TITLE.search(html) or [None,""])[1].strip()[:300] if TITLE.search(html) else ""
-              descr=(DESC.search(html).group(1)[:600] if DESC.search(html) else "")
+              mt=TITLE.search(html); title=(mt.group(1).strip()[:300] if mt else "")
+              md=DESC.search(html); descr=(md.group(1)[:600] if md else "")
               imgs=sorted(set(IMG.findall(html)))
               q("INSERT OR REPLACE INTO tilda_pages (pageid,projectid,alias,title,descr,html,images_json,img_count,fetched_at) VALUES (?,?,?,?,?,?,?,?,datetime('now'))",
-                [path, "iskcone-public", path, title, descr, html, json.dumps(imgs), len(imgs)])
+                [path,"iskcone-public",path,title,descr,html,json.dumps(imgs),len(imgs)])
               if imgs:
-                  q("INSERT INTO tilda_assets (pageid,alias,url,fetched_at) SELECT ?,?,value,datetime('now') FROM json_each(?)", [path, path, json.dumps(imgs)])
+                  q("INSERT INTO tilda_assets (pageid,alias,url,fetched_at) SELECT ?,?,value,datetime('now') FROM json_each(?)", [path,path,json.dumps(imgs)])
               pages+=1; imgtot+=len(imgs)
-              # enqueue internal links
               for m in HREF.findall(html):
                   n=norm(m, url)
                   if n and n not in seen and n not in queue: queue.append(n)
-              print(f"{pages:3d} {path}  imgs={len(imgs)} links_q={len(queue)}")
-              time.sleep(0.25)
-          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone crawl',?,?)", [str(pages), f"images={imgtot} errors={errors}"])
+              print(f"{pages:3d} {path} imgs={len(imgs)} q={len(queue)}")
+              time.sleep(0.8)
+          print("FAILED:", failed[:40])
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone crawl',?,?)", [str(pages), f"images={imgtot} errors={errors} failed={','.join(failed[:25])}"])
           print(f"DONE pages={pages} images={imgtot} errors={errors}")
           PY
