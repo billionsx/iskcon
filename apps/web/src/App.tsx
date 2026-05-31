@@ -211,17 +211,17 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
         <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
           <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", whiteSpace: "nowrap" }}>Бхагавад-гита</h3>
           <div style={{ marginTop: 2, fontSize: 25, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em", color: "rgba(255,255,255,.95)" }}>как она есть</div>
-          <div style={{ marginTop: 8, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
+          <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
 
-          <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.92)" }}>
+          <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.35, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.92)" }}>
             Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН
           </p>
 
-          <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>
+          <p style={{ margin: "10px 0 0", fontSize: 14, lineHeight: 1.35, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>
             Квинтэссенция ведического знания: природа вечной души, Верховная Личность Бога и путь преданного служения.
           </p>
 
-          <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+          <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {["18 глав", "700 стихов"].map(p => (
               <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.16)", padding: "4px 12px", fontSize: 13, lineHeight: 1.2, fontWeight: 500, letterSpacing: "-0.01em", color: "#fff" }}>{p}</span>
             ))}
