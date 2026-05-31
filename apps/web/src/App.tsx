@@ -182,15 +182,26 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
         <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
         <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />
 
-        {/* tap zones: edges flip photos, center opens detail */}
-        <button type="button" aria-label="Предыдущее изображение" onClick={prev} style={{ position: "absolute", insetBlock: 0, left: 0, width: "18%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-        <button type="button" aria-label="Открыть книгу" onClick={() => onOpen?.()} style={{ position: "absolute", top: 56, left: "18%", right: "18%", bottom: 120, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-        <button type="button" aria-label="Следующее изображение" onClick={next} style={{ position: "absolute", insetBlock: 0, right: 0, width: "18%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
+        {/* whole card opens detail */}
+        <button type="button" aria-label="Открыть книгу" onClick={() => onOpen?.()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
 
-        {/* TOP: logos (left) · counter + actions (right) */}
+        {/* gallery arrows (visible, above everything) */}
+        {n > 1 && (
+          <>
+            <button type="button" aria-label="Предыдущее изображение" onClick={prev}
+              style={{ position: "absolute", left: 12, top: "42%", zIndex: 25, display: "grid", placeItems: "center", height: 34, width: 34, borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.4)", color: "#fff", backdropFilter: "blur(12px)" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <button type="button" aria-label="Следующее изображение" onClick={next}
+              style={{ position: "absolute", right: 12, top: "42%", zIndex: 25, display: "grid", placeItems: "center", height: 34, width: 34, borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(0,0,0,.4)", color: "#fff", backdropFilter: "blur(12px)" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+          </>
+        )}
+
+        {/* TOP: BBT logo (left) · counter + actions (right) */}
         <div style={{ position: "absolute", insetInline: 14, top: 14, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <span style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff" }}>
-            <LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />
+          <span style={{ display: "flex", alignItems: "center", color: "#fff" }}>
             <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -204,22 +215,22 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
           </div>
         </div>
 
-        {/* INFO — bottom, one type family throughout; tapping opens detail */}
-        <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)" }}>
-          <h3 style={{ margin: 0, fontSize: 34, lineHeight: 1.02, fontWeight: 800, letterSpacing: "-0.6px", color: "#fff" }}>Бхагавад-гита<br />как она есть</h3>
-          <div style={{ marginTop: 6, fontSize: 14, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
+        {/* INFO — bottom. Standard type scale (apartsales): title 28/700, body 15/400, line-height 1.4 */}
+        <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
+          <h3 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 700, letterSpacing: "-0.02em", color: "#fff" }}>Бхагавад-гита как она есть</h3>
+          <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
 
-          <p style={{ margin: "14px 0 0", fontSize: 13.5, fontWeight: 500, lineHeight: 1.35, color: "rgba(255,255,255,.9)" }}>
+          <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.92)" }}>
             Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН
           </p>
 
-          <p style={{ margin: "14px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "rgba(255,255,255,.85)" }}>
+          <p style={{ margin: "12px 0 0", fontSize: 15, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>
             Квинтэссенция ведического знания: природа вечной души, Верховная Личность Бога и путь преданного служения.
           </p>
 
-          <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+          <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {["18 глав", "700 стихов"].map(p => (
-              <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.14)", padding: "4px 12px", fontSize: 13, fontWeight: 500, color: "#fff" }}>{p}</span>
+              <span key={p} style={{ borderRadius: 999, background: "rgba(255,255,255,.16)", padding: "4px 12px", fontSize: 13, lineHeight: 1.2, fontWeight: 500, letterSpacing: "-0.01em", color: "#fff" }}>{p}</span>
             ))}
           </div>
         </div>
