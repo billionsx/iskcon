@@ -17,7 +17,7 @@ Runs on the GitHub Actions runner (open internet).
 """
 import json, re, sys, time, urllib.request, html
 
-BASE = "https://vedabase.io/en/library/bg"
+BASE = "https://vedabase.io/ru/library/bg"
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
 
 def fetch(url, tries=3):
@@ -84,8 +84,8 @@ def parse_chapter_verse_refs(chapter):
     htmltext = fetch(url)
     if not htmltext:
         return []
-    # vedabase verse links look like href="/en/library/bg/1/16-18/" etc.
-    refs = re.findall(rf'/en/library/bg/{chapter}/([0-9]+(?:-[0-9]+)?)/', htmltext)
+    # vedabase verse links look like href="/ru/library/bg/1/16-18/" etc.
+    refs = re.findall(rf'/ru/library/bg/{chapter}/([0-9]+(?:-[0-9]+)?)/', htmltext)
     # dedupe preserving order
     seen=set(); out=[]
     for r in refs:
