@@ -6,6 +6,8 @@
  */
 import { useState, useRef, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
+import { BookDetailPage } from "./BookDetailPage";
+import { BOOKS } from "./books";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -233,7 +235,7 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
   );
 }
 
-function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void }) {
+function Screen({ tab, onChange, onOpenBook }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
     <>
@@ -246,7 +248,7 @@ function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void 
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
                 <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
-              <BookCard onOpen={() => {}} />
+              <BookCard onOpen={onOpenBook} />
             </>
           ) : null}
         </div>
@@ -258,10 +260,17 @@ function Screen({ tab, onChange }: { tab: string; onChange: (k: string) => void 
 
 export default function App() {
   const [tab, setTab] = useState("home");
+  const [openBook, setOpenBook] = useState(false);
   return (
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
-        <Screen tab={tab} onChange={setTab} />
+        {openBook ? (
+          <main style={{ position: "relative", flex: 1, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
+            <BookDetailPage book={BOOKS.bg} onBack={() => setOpenBook(false)} />
+          </main>
+        ) : (
+          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} />
+        )}
       </div>
     </div>
   );
