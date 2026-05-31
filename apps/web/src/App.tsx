@@ -143,15 +143,15 @@ function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
 }
 
 /* ═════════ book card — painting carousel (blue chariot first), presents the book ═════════ */
-// bg-001 = синяя колесница (Кришна правит, белые кони) — единственная широкая с конями+золотом.
+// bg-003 = синяя колесница (Кришна правит четвёркой белых коней, Арджуна, красный флаг) — обложка.
 const COVERS = [
-  "/covers/bg-001.png?v=3", // синяя колесница — обложка
-  "/covers/bg-003.png?v=3",
-  "/covers/bg-004.png?v=3",
-  "/covers/bg-005.png?v=3",
-  "/covers/bg-007.png?v=3",
-  "/covers/bg-006.png?v=3",
-  "/covers/bg-002.png?v=3",
+  "/covers/bg-003.png?v=4", // синяя колесница — обложка
+  "/covers/bg-002.png?v=4",
+  "/covers/bg-005.png?v=4",
+  "/covers/bg-004.png?v=4",
+  "/covers/bg-007.png?v=4",
+  "/covers/bg-006.png?v=4",
+  "/covers/bg-001.png?v=4",
 ];
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
