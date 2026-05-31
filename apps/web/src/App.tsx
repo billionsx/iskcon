@@ -5,7 +5,7 @@
  * Text strictly per Śrīla Prabhupāda. One type family throughout.
  */
 import { useState, useRef, type ReactNode } from "react";
-import type { SVGProps } from "react";
+import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -142,42 +142,58 @@ function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
   );
 }
 
-/* ═════════ book card — BBT cover background (graphite fallback), presents the book ═════════ */
-const COVER_SRC = "/covers/bg-en-1989.jpg?v=2";
+/* ═════════ book card — painting carousel (blue chariot first), presents the book ═════════ */
+const COVERS = [
+  "/covers/bg-001.png", // Кришна и Арджуна на колеснице (синяя) — обложка
+  "/covers/bg-002.png",
+  "/covers/bg-003.png",
+  "/covers/bg-004.png",
+  "/covers/bg-005.png",
+  "/covers/bg-006.png",
+  "/covers/bg-007.png",
+];
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
 function BookCard({ onOpen }: { onOpen?: () => void }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [coverOk, setCoverOk] = useState(true);
+  const [idx, setIdx] = useState(0);
+  const n = COVERS.length;
+  const next = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i + 1) % n); };
+  const prev = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i - 1 + n) % n); };
 
   return (
     <>
-      <article onClick={onOpen}
+      <article
         style={{
-          position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20, cursor: "pointer",
+          position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20,
           border: "0.5px solid var(--color-hairline)", background: GRAPHITE,
           boxShadow: "var(--shadow-card)",
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
-        {/* cover image */}
-        {coverOk && (
-          <img src={COVER_SRC} alt="Бхагавад-гита как она есть — обложка" loading="eager" decoding="async" draggable={false}
-            onError={() => setCoverOk(false)}
-            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover" }} />
-        )}
+        {/* cover images (current shown) */}
+        {COVERS.map((src, i) => (
+          <img key={src} src={src} alt="Бхагавад-гита как она есть" loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
+            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s ease" }} />
+        ))}
         {/* legibility gradients over photo */}
         <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
         <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />
 
-        {/* TOP: logos (left, no pill, no divider) · actions (right) */}
-        <div style={{ position: "absolute", insetInline: 14, top: 14, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        {/* tap zones: edges flip photos, center opens detail */}
+        <button type="button" aria-label="Предыдущее изображение" onClick={prev} style={{ position: "absolute", insetBlock: 0, left: 0, width: "18%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
+        <button type="button" aria-label="Открыть книгу" onClick={() => onOpen?.()} style={{ position: "absolute", top: 56, left: "18%", right: "18%", bottom: 120, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
+        <button type="button" aria-label="Следующее изображение" onClick={next} style={{ position: "absolute", insetBlock: 0, right: 0, width: "18%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
+
+        {/* TOP: logos (left) · counter + actions (right) */}
+        <div style={{ position: "absolute", insetInline: 14, top: 14, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff" }}>
             <LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />
             <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
             <ActionBtn ariaLabel="Поделиться" onClick={() => {}}><ShareIcon size={17} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => setInCart(v => !v)}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
@@ -187,8 +203,15 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
           </div>
         </div>
 
-        {/* INFO — bottom, one type family throughout */}
-        <div style={{ position: "relative", padding: 20, fontFamily: "var(--font-text)" }}>
+        {/* dots */}
+        <div style={{ position: "absolute", insetInline: 0, top: 60, zIndex: 20, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none" }}>
+          {COVERS.map((_, i) => (
+            <span key={i} style={{ width: i === idx ? 16 : 5, height: 5, borderRadius: 999, background: i === idx ? "#fff" : "rgba(255,255,255,.5)", transition: "width .25s, background .25s" }} />
+          ))}
+        </div>
+
+        {/* INFO — bottom, one type family throughout; tapping opens detail */}
+        <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)" }}>
           <h3 style={{ margin: 0, fontSize: 33, lineHeight: 1.05, fontWeight: 700, letterSpacing: "-0.5px", color: "#fff" }}>Бхагавад-гита<br />как она есть</h3>
           <div style={{ marginTop: 6, fontSize: 14, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Кришной Арджуне»</div>
 
