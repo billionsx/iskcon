@@ -222,7 +222,7 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
           </p>
 
           <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-            {["18 глав", "700 стихов"].map(p => (
+            {["18 глав", "700 стихов", "5 000+ лет"].map(p => (
               <span key={p} style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.16)", height: 26, padding: "0 12px", fontSize: 13, lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "#fff" }}>{p}</span>
             ))}
           </div>
