@@ -18,33 +18,6 @@ jobs:
           bun-version: latest
       - name: Install deps
         run: bun install
-      - name: Fetch BBT covers (public site, runner has open internet)
-        working-directory: apps/web
-        run: |
-          mkdir -p public/covers
-          UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'
-          REF='https://www.images.bbtmedia.com/node/31254'
-          B='https://www.images.bbtmedia.com/sites/default/files'
-          grab () {
-            out="$1"; shift
-            for u in "$@"; do
-              if curl -sL --fail --max-time 60 -A "$UA" -e "$REF" "$u" -o "$out"; then
-                sz=$(wc -c <"$out"); echo "ok $out <- $u ($sz bytes)"
-                if [ "$sz" -gt 8000 ]; then return 0; fi
-              fi
-            done
-            echo "FAIL $out"
-          }
-          grab public/covers/bg-en-1989.jpg \
-            "$B/covers_front/GB-BGV-89.jpg" \
-            "$B/styles/large/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB" \
-            "$B/styles/medium/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB"
-          grab public/covers/bg-uk-2015.jpg \
-            "$B/covers_front/UK%20BG%202015%20front%20cover.jpg" \
-            "$B/styles/large/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk" \
-            "$B/styles/medium/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk"
-          echo "covers dir:"; ls -la public/covers || true
-          file public/covers/*.jpg || true
       - name: Build site
         working-directory: apps/web
         run: bun run build
