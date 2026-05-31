@@ -143,14 +143,15 @@ function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
 }
 
 /* ═════════ book card — painting carousel (blue chariot first), presents the book ═════════ */
+// bg-001 = синяя колесница (Кришна правит, белые кони) — единственная широкая с конями+золотом.
 const COVERS = [
-  "/covers/bg-001.png", // Кришна и Арджуна на колеснице (синяя) — обложка
-  "/covers/bg-002.png",
-  "/covers/bg-003.png",
-  "/covers/bg-004.png",
-  "/covers/bg-005.png",
-  "/covers/bg-006.png",
-  "/covers/bg-007.png",
+  "/covers/bg-001.png?v=3", // синяя колесница — обложка
+  "/covers/bg-003.png?v=3",
+  "/covers/bg-004.png?v=3",
+  "/covers/bg-005.png?v=3",
+  "/covers/bg-007.png?v=3",
+  "/covers/bg-006.png?v=3",
+  "/covers/bg-002.png?v=3",
 ];
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -203,22 +204,14 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
           </div>
         </div>
 
-        {/* dots */}
-        <div style={{ position: "absolute", insetInline: 0, top: 60, zIndex: 20, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none" }}>
-          {COVERS.map((_, i) => (
-            <span key={i} style={{ width: i === idx ? 16 : 5, height: 5, borderRadius: 999, background: i === idx ? "#fff" : "rgba(255,255,255,.5)", transition: "width .25s, background .25s" }} />
-          ))}
-        </div>
-
         {/* INFO — bottom, one type family throughout; tapping opens detail */}
         <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)" }}>
-          <h3 style={{ margin: 0, fontSize: 33, lineHeight: 1.05, fontWeight: 700, letterSpacing: "-0.5px", color: "#fff" }}>Бхагавад-гита<br />как она есть</h3>
-          <div style={{ marginTop: 6, fontSize: 14, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>«Произнесена Кришной Арджуне»</div>
+          <h3 style={{ margin: 0, fontSize: 34, lineHeight: 1.02, fontWeight: 800, letterSpacing: "-0.6px", color: "#fff" }}>Бхагавад-гита<br />как она есть</h3>
+          <div style={{ marginTop: 6, fontSize: 14, color: "rgba(255,255,255,.7)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
 
-          <div style={{ marginTop: 14, lineHeight: 1.3 }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада</div>
-            <div style={{ fontSize: 12.5, color: "rgba(255,255,255,.65)" }}>Ачарья-основатель Международного общества сознания Кришны</div>
-          </div>
+          <p style={{ margin: "14px 0 0", fontSize: 13.5, fontWeight: 500, lineHeight: 1.35, color: "rgba(255,255,255,.9)" }}>
+            Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН
+          </p>
 
           <p style={{ margin: "14px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "rgba(255,255,255,.85)" }}>
             Квинтэссенция ведического знания: природа вечной души, Верховная Личность Бога и путь преданного служения.
