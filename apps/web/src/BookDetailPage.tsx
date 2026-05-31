@@ -139,7 +139,7 @@ function ChevronIcon({ open }: { open: boolean }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ transition: "transform .2s", transform: open ? "rotate(90deg)" : "none", flexShrink: 0 }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
-function ChapterRowItem({ ch, last }: { ch: ChapterRow; last: boolean }) {
+function ChapterRowItem({ ch, last, onOpenVerse }: { ch: ChapterRow; last: boolean; onOpenVerse: (v: VerseRow) => void }) {
   const [open, setOpen] = useState(false);
   const [verses, setVerses] = useState<VerseRow[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -172,10 +172,10 @@ function ChapterRowItem({ ch, last }: { ch: ChapterRow; last: boolean }) {
           {verses && (
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {verses.map((v) => (
-                <a key={v.ref} href={v.source_url} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 11px", borderRadius: 999, background: "var(--color-glass-regular)", fontSize: 13, fontWeight: 500, color: "var(--color-label)", textDecoration: "none" }}>
+                <button key={v.ref} onClick={() => onOpenVerse(v)}
+                  style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 11px", borderRadius: 999, background: "var(--color-glass-regular)", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
                   {v.ref.replace("БГ ", "")}
-                </a>
+                </button>
               ))}
             </div>
           )}
@@ -185,7 +185,7 @@ function ChapterRowItem({ ch, last }: { ch: ChapterRow; last: boolean }) {
   );
 }
 
-function Contents() {
+function Contents({ onOpenVerse }: { onOpenVerse: (v: VerseRow) => void }) {
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   useEffect(() => {
     fetch("/api/books/bg/chapters").then(r => r.json()).then(d => setChapters(d.chapters ?? [])).catch(() => setChapters([]));
@@ -197,12 +197,12 @@ function Contents() {
         {chapters && (
           <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 20, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
             {chapters.map((c, i) => (
-              <ChapterRowItem key={c.id} ch={c} last={i === chapters.length - 1} />
+              <ChapterRowItem key={c.id} ch={c} last={i === chapters.length - 1} onOpenVerse={onOpenVerse} />
             ))}
           </ol>
         )}
         <p style={{ margin: "12px 4px 0", fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-3, var(--color-label-2))" }}>
-          Текст стиха и комментарии открываются на vedabase.io
+          Перевод и комментарии © Бхактиведанта Бук Траст (BBT). Текст открывается из официального источника vedabase.io.
         </p>
       </Section>
     </div>
@@ -282,6 +282,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [tab, setTab] = useState<BookTabId>("overview");
+  const [readerVerse, setReaderVerse] = useState<VerseRow | null>(null);
   const n = book.covers.length;
 
   useEffect(() => {
@@ -330,7 +331,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <div style={{ paddingBottom: 8 }}>
         {tab === "overview" && <Overview book={book} />}
-        {tab === "contents" && <Contents />}
+        {tab === "contents" && <Contents onOpenVerse={setReaderVerse} />}
         {tab === "author" && <Author />}
         {tab === "source" && <Source />}
         {tab === "editions" && <Editions />}
@@ -344,6 +345,51 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
       </div>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
+      {readerVerse && <ReaderView verse={readerVerse} onClose={() => setReaderVerse(null)} />}
+    </div>
+  );
+}
+
+/* ───────── in-app reader: frames the official source with BBT attribution ───────── */
+function ReaderView({ verse, onClose }: { verse: VerseRow; onClose: () => void }) {
+  const [blocked, setBlocked] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    // If the frame doesn't report load within 4s, assume embedding is blocked → show fallback.
+    const t = setTimeout(() => { if (!loaded) setBlocked(true); }, 4000);
+    return () => clearTimeout(t);
+  }, [loaded]);
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+      {/* reader header with attribution */}
+      <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 8, padding: "0 8px 0 4px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+        <button aria-label="Закрыть" onClick={onClose} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{verse.ref}</div>
+          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>© Бхактиведанта Бук Траст · vedabase.io</div>
+        </div>
+        <a href={verse.source_url} target="_blank" rel="noopener noreferrer" aria-label="Открыть в источнике" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", color: "var(--color-label)" }}><ShareIcon size={18} /></a>
+      </header>
+
+      {/* framed source */}
+      <div style={{ position: "relative", flex: 1, background: "#fff" }}>
+        {!blocked ? (
+          <iframe title={verse.ref} src={verse.source_url} onLoad={() => setLoaded(true)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} referrerPolicy="no-referrer-when-downgrade" />
+        ) : (
+          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 32, textAlign: "center", background: "var(--color-bg)" }}>
+            <div style={{ color: "var(--color-label)" }}><LogoMark src="/bbt.svg" label="BBT" height={48} /></div>
+            <div style={{ fontSize: 17, fontWeight: 600, color: "var(--color-label)" }}>{verse.ref}</div>
+            <p style={{ margin: 0, maxWidth: 320, fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+              Источник не разрешает встраивание. Откройте стих с переводом и комментариями Шрилы Прабхупады на официальном сайте.
+            </p>
+            <a href={verse.source_url} target="_blank" rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 48, padding: "0 22px", borderRadius: 14, background: "var(--color-brand-blue)", color: "#fff", fontSize: 16, fontWeight: 600, textDecoration: "none" }}>
+              Открыть на Vedabase.io
+            </a>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
