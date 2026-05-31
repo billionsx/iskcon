@@ -192,7 +192,7 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
         )}
 
         {/* TOP: BBT logo (left) · counter + actions (right) */}
-        <div style={{ position: "absolute", insetInline: 14, top: 14, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
           <span style={{ display: "flex", alignItems: "center", color: "#fff" }}>
             <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />
           </span>
@@ -209,8 +209,9 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
 
         {/* INFO — bottom. Standard type scale (apartsales): title 28/700, body 15/400, line-height 1.4 */}
         <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
-          <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>Бхагавад-гита как она есть</h3>
-          <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
+          <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", whiteSpace: "nowrap" }}>Бхагавад-гита</h3>
+          <div style={{ marginTop: 2, fontSize: 25, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em", color: "rgba(255,255,255,.95)" }}>как она есть</div>
+          <div style={{ marginTop: 8, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>Bhagavad-gītā<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>Песнь Бога</div>
 
           <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.92)" }}>
             Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН
