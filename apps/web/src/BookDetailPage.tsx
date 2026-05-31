@@ -132,38 +132,78 @@ function KeyVal({ k, v, last }: { k: string; v: string; last?: boolean }) {
   );
 }
 
-const CHAPTERS = [
-  "Обзор армий на поле битвы Курукшетра",
-  "Краткое изложение «Бхагавад-гиты»",
-  "Карма-йога",
-  "Трансцендентное знание",
-  "Карма-йога — деятельность в сознании Кришны",
-  "Дхьяна-йога",
-  "Знание об Абсолюте",
-  "Достижение обители Всевышнего",
-  "Самое сокровенное знание",
-  "Великолепие Абсолюта",
-  "Вселенская форма",
-  "Преданное служение",
-  "Природа, наслаждающийся и сознание",
-  "Три гуны материальной природы",
-  "Йога Верховной Личности",
-  "Божественные и демонические натуры",
-  "Разновидности веры",
-  "Совершенство отречения",
-];
+interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
+interface VerseRow { ref: string; source_url: string; devanagari: string | null; translit: string | null; }
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ transition: "transform .2s", transform: open ? "rotate(90deg)" : "none", flexShrink: 0 }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+}
+
+function ChapterRowItem({ ch, last }: { ch: ChapterRow; last: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [verses, setVerses] = useState<VerseRow[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const toggle = async () => {
+    const willOpen = !open;
+    setOpen(willOpen);
+    if (willOpen && !verses) {
+      setLoading(true);
+      try {
+        const r = await fetch(`/api/books/bg/chapters/${ch.number}/verses`);
+        const data = await r.json();
+        setVerses(data.verses ?? []);
+      } catch { setVerses([]); }
+      setLoading(false);
+    }
+  };
+  return (
+    <li style={{ borderBottom: last && !open ? "none" : "0.5px solid var(--color-hairline)" }}>
+      <button onClick={toggle} style={{ display: "flex", width: "100%", alignItems: "center", gap: 14, padding: "13px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "var(--color-label)" }}>
+        <span style={{ flexShrink: 0, display: "grid", placeItems: "center", height: 26, width: 26, borderRadius: 8, background: "var(--color-glass-regular)", fontSize: 13, fontWeight: 600, color: "var(--color-label-2)" }}>{ch.number}</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 15, lineHeight: 1.3, color: "var(--color-label)" }}>{ch.title_ru}</span>
+          <span style={{ display: "block", fontSize: 12.5, color: "var(--color-label-3, var(--color-label-2))" }}>{ch.verses} стихов</span>
+        </span>
+        <span style={{ color: "var(--color-label-2)" }}><ChevronIcon open={open} /></span>
+      </button>
+      {open && (
+        <div style={{ padding: "0 16px 12px 56px" }}>
+          {loading && <div style={{ fontSize: 14, color: "var(--color-label-2)", padding: "6px 0" }}>Загрузка…</div>}
+          {verses && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {verses.map((v) => (
+                <a key={v.ref} href={v.source_url} target="_blank" rel="noopener noreferrer"
+                  style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 11px", borderRadius: 999, background: "var(--color-glass-regular)", fontSize: 13, fontWeight: 500, color: "var(--color-label)", textDecoration: "none" }}>
+                  {v.ref.replace("БГ ", "")}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
+
 function Contents() {
+  const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
+  useEffect(() => {
+    fetch("/api/books/bg/chapters").then(r => r.json()).then(d => setChapters(d.chapters ?? [])).catch(() => setChapters([]));
+  }, []);
   return (
     <div style={{ paddingTop: 24 }}>
       <Section title="18 глав">
-        <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 20, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-          {CHAPTERS.map((c, i) => (
-            <li key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "13px 16px", borderBottom: i < CHAPTERS.length - 1 ? "0.5px solid var(--color-hairline)" : "none" }}>
-              <span style={{ flexShrink: 0, display: "grid", placeItems: "center", height: 26, width: 26, borderRadius: 8, background: "var(--color-glass-regular)", fontSize: 13, fontWeight: 600, color: "var(--color-label-2)" }}>{i + 1}</span>
-              <span style={{ fontSize: 15, lineHeight: 1.35, color: "var(--color-label)" }}>{c}</span>
-            </li>
-          ))}
-        </ol>
+        {!chapters && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка оглавления…</div>}
+        {chapters && (
+          <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 20, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+            {chapters.map((c, i) => (
+              <ChapterRowItem key={c.id} ch={c} last={i === chapters.length - 1} />
+            ))}
+          </ol>
+        )}
+        <p style={{ margin: "12px 4px 0", fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-3, var(--color-label-2))" }}>
+          Текст стиха и комментарии открываются на vedabase.io
+        </p>
       </Section>
     </div>
   );
