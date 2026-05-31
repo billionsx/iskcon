@@ -143,7 +143,7 @@ function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) 
 }
 
 /* ═════════ book card — BBT cover background (graphite fallback), presents the book ═════════ */
-const COVER_SRC = "/covers/bg-en-1989.jpg";
+const COVER_SRC = "/covers/bg-en-1989.jpg?v=2";
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
 function BookCard({ onOpen }: { onOpen?: () => void }) {

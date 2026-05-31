@@ -21,14 +21,45 @@ jobs:
       - name: Fetch BBT covers (public site, runner has open internet)
         working-directory: apps/web
         run: |
-          set -e
           mkdir -p public/covers
           UA='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36'
-          dl () { curl -sL --fail --max-time 40 -A "$UA" -e "https://www.images.bbtmedia.com/node/31254" "$1" -o "$2" && echo "ok $2 ($(wc -c <"$2") bytes)" || echo "FAIL $2"; }
-          dl "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB" public/covers/bg-en-1989.jpg
-          dl "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk" public/covers/bg-uk-2015.jpg
-          dl "https://www.images.bbtmedia.com/sites/default/files/styles/medium/public/covers_front/DE%20BG%202012%20cover%20front_0.jpg?itok=Nj9Q9Rw8" public/covers/bg-de-2012.jpg
+          REF='https://www.images.bbtmedia.com/node/31254'
+          # try full-size original first, then large style, then medium thumb
+          grab () { # $1=out  $2..=urls
+            out="$1"; shift
+            for u in "$@"; do
+              if curl -sL --fail --max-time 60 -A "$UA" -e "$REF" "$u" -o "$out"; then
+                sz=$(wc -c <"$out"); echo "ok $out <- $u ($sz bytes)"; [ "$sz" -gt 8000 ] && return 0
+              fi
+            done
+            echo "FAIL $out"; return 0
+          }
+          B='https://www.images.bbtmedia.com/sites/default/files'
+          grab public/covers/bg-en-1989.jpg \
+            "$B/covers_front/GB-BGV-89.jpg" \
+            "$B/styles/large/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB" \
+            "$B/styles/medium/public/covers_front/GB-BGV-89.jpg?itok=bqjye2kB"
+          grab public/covers/bg-uk-2015.jpg \
+            "$B/covers_front/UK%20BG%202015%20front%20cover.jpg" \
+            "$B/styles/large/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk" \
+            "$B/styles/medium/public/covers_front/UK%20BG%202015%20front%20cover.jpg?itok=wng7Gkyk"
           echo "covers dir:"; ls -la public/covers || true
+          # report pixel dimensions so we know quality
+          for f in public/covers/*.jpg; do python3 - "$f" <<'PY' || true
+import sys,struct
+f=sys.argv[1]
+try:
+  d=open(f,'rb').read(); i=2; w=h=0
+  while i<len(d):
+    if d[i]!=0xFF: i+=1; continue
+    m=d[i+1]
+    if 0xC0<=m<=0xCF and m not in (0xC4,0xC8,0xCC):
+      h=struct.unpack('>H',d[i+5:i+7])[0]; w=struct.unpack('>H',d[i+7:i+9])[0]; break
+    i+=2+struct.unpack('>H',d[i+2:i+4])[0]
+  print(f"DIM {f}: {w}x{h}")
+except Exception as e: print("DIM ? ",f,e)
+PY
+          done
       - name: Build site
         working-directory: apps/web
         run: bun run build
