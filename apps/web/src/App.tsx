@@ -217,7 +217,7 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
             Его Божественная Милость А.&nbsp;Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН
           </p>
 
-          <p style={{ margin: "12px 0 0", fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>
+          <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>
             Квинтэссенция ведического знания: природа вечной души, Верховная Личность Бога и путь преданного служения.
           </p>
 
