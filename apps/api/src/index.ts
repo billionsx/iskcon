@@ -17,6 +17,7 @@ import { requestId } from 'hono/request-id';
 import { healthRouter } from '~/routes/health';
 import { centersRouter } from '~/routes/centers';
 import { calendarRouter } from '~/routes/calendar';
+import { booksRouter } from '~/routes/books';
 import { errorHandler } from '~/middleware/error';
 
 export type Bindings = {
@@ -58,11 +59,11 @@ const v1 = app.basePath('/v1');
 v1.route('/health', healthRouter);
 v1.route('/centers', centersRouter);
 v1.route('/calendar', calendarRouter);
+v1.route('/books', booksRouter);
 
 // Future (Phase 1+):
 // v1.route('/auth', authRouter);
 // v1.route('/personalities', personalitiesRouter);
-// v1.route('/books', booksRouter);
 // v1.route('/donations', donationsRouter);
 
 // --- Root --------------------------------------------------------------------

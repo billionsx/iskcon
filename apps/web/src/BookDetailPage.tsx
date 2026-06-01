@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode } from "react";
 import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS } from "./books";
+import { api } from "./api";
 
 /* ───────── icons (same geometry as the card) ───────── */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -149,7 +150,7 @@ function ChapterRowItem({ ch, last, onOpenVerse }: { ch: ChapterRow; last: boole
     if (willOpen && !verses) {
       setLoading(true);
       try {
-        const r = await fetch(`/api/books/bg/chapters/${ch.number}/verses`);
+        const r = await fetch(api(`/books/bg/chapters/${ch.number}/verses`));
         const data = await r.json();
         setVerses(data.verses ?? []);
       } catch { setVerses([]); }
@@ -188,7 +189,7 @@ function ChapterRowItem({ ch, last, onOpenVerse }: { ch: ChapterRow; last: boole
 function Contents({ onOpenVerse }: { onOpenVerse: (v: VerseRow) => void }) {
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   useEffect(() => {
-    fetch("/api/books/bg/chapters").then(r => r.json()).then(d => setChapters(d.chapters ?? [])).catch(() => setChapters([]));
+    fetch(api("/books/bg/chapters")).then(r => r.json()).then(d => setChapters(d.chapters ?? [])).catch(() => setChapters([]));
   }, []);
   return (
     <div style={{ paddingTop: 24 }}>
@@ -282,7 +283,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [tab, setTab] = useState<BookTabId>("overview");
-  const [readerVerse, setReaderVerse] = useState<VerseRow | null>(null);
+  const [readerRef, setReaderRef] = useState<string | null>(null);
   const n = book.covers.length;
 
   useEffect(() => {
@@ -331,7 +332,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <div style={{ paddingBottom: 8 }}>
         {tab === "overview" && <Overview book={book} />}
-        {tab === "contents" && <Contents onOpenVerse={setReaderVerse} />}
+        {tab === "contents" && <Contents onOpenVerse={(v) => setReaderRef(v.ref)} />}
         {tab === "author" && <Author />}
         {tab === "source" && <Source />}
         {tab === "editions" && <Editions />}
@@ -340,56 +341,191 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       {/* sticky CTA bar */}
       <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: 0, zIndex: 40, width: "100%", maxWidth: 480, display: "flex", gap: 10, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "var(--color-header-blur, var(--color-bg))", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderTop: "0.5px solid var(--color-hairline)" }}>
-        <button style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><ReadIcon size={20} />Читать</button>
+        <button onClick={() => setReaderRef("БГ 1.1")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><ReadIcon size={20} />Читать</button>
         <button style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-glass-regular)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><PlayIcon size={18} />Слушать</button>
       </div>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
-      {readerVerse && <ReaderView verse={readerVerse} onClose={() => setReaderVerse(null)} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} />}
     </div>
   );
 }
 
-/* ───────── in-app reader: frames the official source with BBT attribution ───────── */
-function ReaderView({ verse, onClose }: { verse: VerseRow; onClose: () => void }) {
-  const [blocked, setBlocked] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+/* ───────── native verse reader: five layers per ПКП standard ───────── */
+interface VerseToken { term: string; gloss: string | null; }
+interface VerseDetail {
+  ref: string;
+  label: string;
+  uvaca: string | null;
+  devanagari: string | null;
+  translit: string | null;
+  tokens: VerseToken[];
+  translation: string | null;
+  purport: string | null;
+  source_url: string | null;
+  prev: string | null;
+  next: string | null;
+}
+
+function SlidersIcon(p: IconProps) {
+  return <svg {...sp(p)}><path {...STROKE} d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0" /><circle cx="16" cy="6" r="2" {...STROKE} /><circle cx="8" cy="12" r="2" {...STROKE} /><circle cx="18" cy="18" r="2" {...STROKE} /></svg>;
+}
+
+type LayerKey = "deva" | "translit" | "ww" | "commentary";
+
+function LayerRow({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
+  return (
+    <button onClick={onToggle} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "11px 4px", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)" }}>
+      <span>{label}</span>
+      <span aria-hidden style={{ position: "relative", width: 42, height: 26, borderRadius: 999, background: on ? "var(--color-brand-blue)" : "var(--color-glass-regular)", transition: "background .2s", flexShrink: 0 }}>
+        <span style={{ position: "absolute", top: 3, left: on ? 19 : 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", transition: "left .2s", boxShadow: "0 1px 3px rgba(0,0,0,.3)" }} />
+      </span>
+    </button>
+  );
+}
+
+function LayerLabel({ children }: { children: ReactNode }) {
+  return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 600, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)" }}><span style={{ width: 18, height: 1, background: "var(--color-brand-blue)", opacity: .6 }} />{children}</div>;
+}
+
+function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNavigate: (ref: string) => void; onClose: () => void }) {
+  const [data, setData] = useState<VerseDetail | null>(null);
+  const [error, setError] = useState(false);
+  const [panel, setPanel] = useState(false);
+  const [layers, setLayers] = useState<Record<LayerKey, boolean>>({ deva: true, translit: true, ww: true, commentary: true });
+  const toggle = (k: LayerKey) => setLayers((s) => ({ ...s, [k]: !s[k] }));
+
   useEffect(() => {
-    // If the frame doesn't report load within 4s, assume embedding is blocked → show fallback.
-    const t = setTimeout(() => { if (!loaded) setBlocked(true); }, 4000);
-    return () => clearTimeout(t);
-  }, [loaded]);
+    let live = true;
+    setData(null); setError(false);
+    fetch(api(`/books/bg/verses/${encodeURIComponent(refStr)}`))
+      .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then((d) => { if (live) setData(d as VerseDetail); })
+      .catch(() => { if (live) setError(true); });
+    return () => { live = false; };
+  }, [refStr]);
+
+  const hasDeva = !!data?.devanagari && layers.deva;
+  const hasTranslit = !!data?.translit && layers.translit;
+  const hasWW = !!data?.tokens?.length && layers.ww;
+  const hasCommentary = !!data?.purport && layers.commentary;
+
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
-      {/* reader header with attribution */}
-      <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 8, padding: "0 8px 0 4px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+      {/* header */}
+      <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
         <button aria-label="Закрыть" onClick={onClose} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{verse.ref}</div>
-          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>© Бхактиведанта Бук Траст · vedabase.io</div>
+        <div style={{ flex: 1, minWidth: 0, textAlign: "center" }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.label ?? refStr}</div>
+          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Бхагавад-гита как она есть</div>
         </div>
-        <a href={verse.source_url} target="_blank" rel="noopener noreferrer" aria-label="Открыть в источнике" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", color: "var(--color-label)" }}><ShareIcon size={18} /></a>
+        <button aria-label="Слои" onClick={() => setPanel((v) => !v)} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: panel ? "var(--color-glass-regular)" : "none", cursor: "pointer", color: "var(--color-label)" }}><SlidersIcon size={22} /></button>
       </header>
 
-      {/* framed source */}
-      <div style={{ position: "relative", flex: 1, background: "#fff" }}>
-        {!blocked ? (
-          <iframe title={verse.ref} src={verse.source_url} onLoad={() => setLoaded(true)}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} referrerPolicy="no-referrer-when-downgrade" />
-        ) : (
-          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 32, textAlign: "center", background: "var(--color-bg)" }}>
-            <div style={{ color: "var(--color-label)" }}><LogoMark src="/bbt.svg" label="BBT" height={48} /></div>
-            <div style={{ fontSize: 17, fontWeight: 600, color: "var(--color-label)" }}>{verse.ref}</div>
-            <p style={{ margin: 0, maxWidth: 320, fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-              Источник не разрешает встраивание. Откройте стих с переводом и комментариями Шрилы Прабхупады на официальном сайте.
-            </p>
-            <a href={verse.source_url} target="_blank" rel="noopener noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 48, padding: "0 22px", borderRadius: 14, background: "var(--color-brand-blue)", color: "#fff", fontSize: 16, fontWeight: 600, textDecoration: "none" }}>
-              Открыть на Vedabase.io
-            </a>
-          </div>
-        )}
+      {/* layers panel */}
+      {panel && (
+        <div style={{ flexShrink: 0, padding: "8px 18px 14px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)", padding: "6px 4px 2px" }}>Слои стиха</div>
+          <LayerRow label="Деванагари" on={layers.deva} onToggle={() => toggle("deva")} />
+          <LayerRow label="Транслитерация" on={layers.translit} onToggle={() => toggle("translit")} />
+          <LayerRow label="Пословный перевод" on={layers.ww} onToggle={() => toggle("ww")} />
+          <div style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "11px 4px", fontSize: 16, color: "var(--color-label-2)" }}><span>Перевод</span><span style={{ fontSize: 12, color: "var(--color-label-3, var(--color-label-2))" }}>всегда</span></div>
+          <LayerRow label="Комментарий" on={layers.commentary} onToggle={() => toggle("commentary")} />
+        </div>
+      )}
+
+      {/* scroll body */}
+      <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "28px 22px 40px" }}>
+          {!data && !error && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>Загрузка стиха…</div>}
+          {error && (
+            <div style={{ textAlign: "center", padding: "40px 0" }}>
+              <p style={{ fontSize: 15, color: "var(--color-label-2)" }}>Не удалось загрузить стих.</p>
+              <button onClick={onClose} style={{ marginTop: 8, height: 40, padding: "0 18px", borderRadius: 12, border: "none", background: "var(--color-glass-regular)", color: "var(--color-label)", cursor: "pointer", fontSize: 15 }}>К содержанию</button>
+            </div>
+          )}
+          {data && (
+            <>
+              <div style={{ textAlign: "center", fontSize: 13, fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: 24 }}>{data.label}</div>
+
+              {hasDeva && (
+                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 24, lineHeight: 2, textAlign: "center", color: "var(--color-label)", whiteSpace: "pre-line", marginBottom: hasTranslit ? 14 : 24 }}>{data.devanagari}</div>
+              )}
+              {hasTranslit && (
+                <div style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.85, textAlign: "center", color: "var(--color-label-2)", whiteSpace: "pre-line", marginBottom: 24 }}>{data.translit}</div>
+              )}
+              {(hasDeva || hasTranslit) && <div style={{ textAlign: "center", color: "var(--color-brand-blue)", opacity: .5, letterSpacing: "0.4em", margin: "8px 0 28px" }}>❖</div>}
+
+              {hasWW && (
+                <section style={{ marginBottom: 28 }}>
+                  <LayerLabel>Пословный перевод</LayerLabel>
+                  <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.95, color: "var(--color-label-2)" }}>
+                    {data.tokens.map((t, i) => (
+                      <span key={i}>
+                        <span style={{ fontStyle: "italic", color: "var(--color-label)" }}>{t.term}</span>
+                        {t.gloss ? ` — ${t.gloss}` : ""}{i < data.tokens.length - 1 ? "; " : "."}
+                      </span>
+                    ))}
+                  </p>
+                </section>
+              )}
+
+              <section style={{ marginBottom: 28 }}>
+                <LayerLabel>Перевод</LayerLabel>
+                {data.translation ? (
+                  <div style={{ borderRadius: 16, padding: "18px 20px", background: "var(--color-bg-2)", borderLeft: "3px solid var(--color-brand-blue)" }}>
+                    <p style={{ margin: 0, fontSize: 19, lineHeight: 1.5, color: "var(--color-label)" }}>{data.translation}</p>
+                  </div>
+                ) : (
+                  <div style={{ borderRadius: 16, padding: "18px 20px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+                    <div style={{ color: "var(--color-label)", marginBottom: 12 }}><LogoMark src="/bbt.svg" label="BBT" height={22} /></div>
+                    <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+                      Перевод и комментарий Шрилы Прабхупады для этого стиха появятся здесь. Пока их можно прочитать на официальном источнике.
+                    </p>
+                    {data.source_url && (
+                      <a href={data.source_url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 44, padding: "0 18px", borderRadius: 12, background: "var(--color-brand-blue)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
+                        Читать на Vedabase.io
+                      </a>
+                    )}
+                  </div>
+                )}
+              </section>
+
+              {hasCommentary && (
+                <section style={{ marginBottom: 8 }}>
+                  <LayerLabel>Комментарий</LayerLabel>
+                  <div style={{ fontSize: 17, lineHeight: 1.78, color: "var(--color-label)" }}>
+                    {data.purport!.split(/\n\n+/).map((para, i) => (
+                      <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {data.source_url && data.translation && (
+                <div style={{ marginTop: 24, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, color: "var(--color-label-2)", display: "flex", alignItems: "center", gap: 8 }}>
+                  <span>© Бхактиведанта Бук Траст</span>
+                  <a href={data.source_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)" }}>источник</a>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
+
+      {/* spine navigation */}
+      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 8px calc(10px + env(safe-area-inset-bottom))", borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+        <button disabled={!data?.prev} onClick={() => data?.prev && onNavigate(data.prev)}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 40, padding: "0 12px", background: "none", border: "none", cursor: data?.prev ? "pointer" : "default", color: data?.prev ? "var(--color-label)" : "var(--color-label-3, var(--color-label-2))", opacity: data?.prev ? 1 : .35, fontSize: 14.5, fontFamily: "var(--font-text)" }}>
+          <BackIcon size={18} />Назад
+        </button>
+        <button onClick={onClose} style={{ height: 40, padding: "0 14px", background: "none", border: "none", cursor: "pointer", color: "var(--color-label-2)", fontSize: 14.5, fontFamily: "var(--font-text)" }}>К содержанию</button>
+        <button disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 40, padding: "0 12px", background: "none", border: "none", cursor: data?.next ? "pointer" : "default", color: data?.next ? "var(--color-label)" : "var(--color-label-3, var(--color-label-2))", opacity: data?.next ? 1 : .35, fontSize: 14.5, fontFamily: "var(--font-text)" }}>
+          Вперёд<span style={{ transform: "scaleX(-1)", display: "inline-flex" }}><BackIcon size={18} /></span>
+        </button>
+      </nav>
     </div>
   );
 }
