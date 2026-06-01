@@ -153,19 +153,32 @@ function ChapterRowItem({ ch, last, onOpenVerse }: { ch: ChapterRow; last: boole
   const [open, setOpen] = useState(false);
   const [verses, setVerses] = useState<VerseRow[] | null>(null);
   const [loading, setLoading] = useState(false);
-  const toggle = async () => {
+
+  const loadVerses = async (): Promise<VerseRow[]> => {
+    if (verses) return verses;
+    setLoading(true);
+    let list: VerseRow[] = [];
+    try {
+      const r = await fetch(api(`/books/bg/chapters/${ch.number}/verses`));
+      const data = await r.json();
+      list = data.verses ?? [];
+    } catch { list = []; }
+    setVerses(list);
+    setLoading(false);
+    return list;
+  };
+
+  const toggle = () => {
     const willOpen = !open;
     setOpen(willOpen);
-    if (willOpen && !verses) {
-      setLoading(true);
-      try {
-        const r = await fetch(api(`/books/bg/chapters/${ch.number}/verses`));
-        const data = await r.json();
-        setVerses(data.verses ?? []);
-      } catch { setVerses([]); }
-      setLoading(false);
-    }
+    if (willOpen) void loadVerses();
   };
+
+  const readChapter = async () => {
+    const list = await loadVerses();
+    onOpenVerse(list[0] ?? ({ ref: `БГ ${ch.number}.1` } as VerseRow));
+  };
+
   return (
     <li style={{ borderBottom: last && !open ? "none" : "0.5px solid var(--color-hairline)" }}>
       <button onClick={toggle} style={{ display: "flex", width: "100%", alignItems: "center", gap: 14, padding: "13px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "var(--color-label)" }}>
@@ -177,17 +190,24 @@ function ChapterRowItem({ ch, last, onOpenVerse }: { ch: ChapterRow; last: boole
         <span style={{ color: "var(--color-label-2)" }}><ChevronIcon open={open} /></span>
       </button>
       {open && (
-        <div style={{ padding: "0 16px 12px 56px" }}>
-          {loading && <div style={{ fontSize: 14, color: "var(--color-label-2)", padding: "6px 0" }}>Загрузка…</div>}
-          {verses && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-              {verses.map((v) => (
-                <button key={v.ref} onClick={() => onOpenVerse(v)}
-                  style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 11px", borderRadius: 999, background: "var(--color-glass-regular)", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                  {v.ref.replace("БГ ", "")}
-                </button>
-              ))}
-            </div>
+        <div style={{ padding: "2px 16px 14px 56px" }}>
+          <button onClick={readChapter}
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 38, padding: "0 16px", marginBottom: 14, borderRadius: 10, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600 }}>
+            <ReadIcon size={17} />Читать главу с начала
+          </button>
+          {loading && !verses && <div style={{ fontSize: 14, color: "var(--color-label-2)", padding: "6px 0" }}>Загрузка…</div>}
+          {verses && verses.length > 0 && (
+            <>
+              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-label-2)", margin: "2px 0 10px" }}>Перейти к стиху</div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                {verses.map((v) => (
+                  <button key={v.ref} onClick={() => onOpenVerse(v)}
+                    style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 11px", borderRadius: 999, background: "var(--color-glass-regular)", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                    {v.ref.replace("БГ ", "")}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
       )}
@@ -481,6 +501,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
   }, [refStr]);
 
   const demo = DEMO_VERSES[data?.ref ?? refStr];
+  const chapterNo = (data?.ref ?? refStr).replace(/^[^\d]*/, "").split(".")[0];
   const evDeva = data?.devanagari || demo?.devanagari || null;
   const evTranslit = data?.translit || demo?.translit || null;
   const evTokens = (data?.tokens && data.tokens.length ? data.tokens : demo?.tokens) ?? [];
@@ -501,7 +522,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
         <button aria-label="Закрыть" onClick={onClose} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center" }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.label ?? refStr}</div>
-          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Бхагавад-гита как она есть</div>
+          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}Бхагавад-гита</div>
         </div>
         <button aria-label="Слои" onClick={() => setPanel((v) => !v)} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: panel ? "var(--color-glass-regular)" : "none", cursor: "pointer", color: "var(--color-label)" }}><SlidersIcon size={22} /></button>
       </header>
