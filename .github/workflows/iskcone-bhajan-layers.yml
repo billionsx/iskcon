@@ -69,14 +69,19 @@ jobs:
           q("UPDATE prayers SET translit=NULL, translation=NULL WHERE is_section=0")
           slugs=[r["slug"] for r in q(
               "SELECT p.slug AS slug FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")]
-          done=skipped=0
+          done=skipped=bothc=txonly=tronly=0
           for slug in slugs:
               tr,tx=parse(pages.get(slug[1:]) or [])
-              if len(tr)>=10 and len(tx)>=10:
-                  q("UPDATE prayers SET translit=?, translation=? WHERE slug=?", [tr, tx, slug]); done+=1
+              trv = tr if len(tr)>=10 else None
+              txv = tx if len(tx)>=10 else None
+              if trv or txv:
+                  q("UPDATE prayers SET translit=?, translation=? WHERE slug=?", [trv, txv, slug]); done+=1
+                  if trv and txv: bothc+=1
+                  elif txv: txonly+=1
+                  else: tronly+=1
               else:
                   skipped+=1
           q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone bhajan layers',?,?)",
-            [str(len(slugs)), f"updated={done} skipped={skipped} boiler={len(boiler)}"])
+            [str(len(slugs)), f"updated={done} both={bothc} tx_only={txonly} tr_only={tronly} skipped={skipped} boiler={len(boiler)}"])
           print(f"DONE updated={done} skipped={skipped}")
           PY
