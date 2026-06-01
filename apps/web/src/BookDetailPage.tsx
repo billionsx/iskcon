@@ -284,13 +284,8 @@ function JumpSheet({ verses, onPick, onClose }: { verses: ChapterVerse[]; onPick
   );
 }
 
-function ChapterPage({ chapter, scrollToRef, onBack }: { chapter: ChapterRow; scrollToRef?: string; onBack: () => void }) {
+function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; onOpenVerse: (ref: string) => void; onBack: () => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
-  const [panel, setPanel] = useState(false);
-  const [jump, setJump] = useState(false);
-  const [layers, setLayers] = useState<Record<LayerKey, boolean>>({ deva: true, translit: true, ww: true, commentary: true });
-  const toggle = (k: LayerKey) => setLayers((s) => ({ ...s, [k]: !s[k] }));
-  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     let live = true;
@@ -302,60 +297,49 @@ function ChapterPage({ chapter, scrollToRef, onBack }: { chapter: ChapterRow; sc
     return () => { live = false; };
   }, [chapter.number]);
 
-  useEffect(() => {
-    if (verses && scrollToRef && itemRefs.current[scrollToRef]) {
-      const el = itemRefs.current[scrollToRef];
-      const t = setTimeout(() => el?.scrollIntoView({ behavior: "auto", block: "start" }), 60);
-      return () => clearTimeout(t);
-    }
-  }, [verses, scrollToRef]);
-
-  const scrollTo = (ref: string) => { setJump(false); itemRefs.current[ref]?.scrollIntoView({ behavior: "smooth", block: "start" }); };
-  const anyDemo = !!verses && verses.some((v) => (!v.translation && DEMO_VERSES[v.ref]?.translation) || (!v.devanagari && DEMO_VERSES[v.ref]?.devanagari));
+  const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Глава {chapter.number} · {verses?.length ?? chapter.verses} стихов</div>
+          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Бхагавад-гита · {verses?.length ?? chapter.verses} стихов</div>
           <div style={{ fontSize: 15.5, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapter.title_ru}</div>
         </div>
-        <button aria-label="Перейти к стиху" onClick={() => setJump(true)} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M8 6h12M8 12h12M8 18h12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><circle cx="4" cy="6" r="1.3" fill="currentColor" /><circle cx="4" cy="12" r="1.3" fill="currentColor" /><circle cx="4" cy="18" r="1.3" fill="currentColor" /></svg>
-        </button>
-        <button aria-label="Слои" onClick={() => setPanel((v) => !v)} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: panel ? "var(--color-glass-regular)" : "none", cursor: "pointer", color: "var(--color-label)" }}><SlidersIcon size={22} /></button>
       </header>
 
-      {panel && (
-        <div style={{ flexShrink: 0, padding: "8px 18px 14px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)", padding: "6px 4px 2px" }}>Слои стиха</div>
-          <LayerRow label="Деванагари" on={layers.deva} onToggle={() => toggle("deva")} />
-          <LayerRow label="Транслитерация" on={layers.translit} onToggle={() => toggle("translit")} />
-          <LayerRow label="Пословный перевод" on={layers.ww} onToggle={() => toggle("ww")} />
-          <div style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "11px 4px", fontSize: 16, color: "var(--color-label-2)" }}><span>Перевод</span><span style={{ fontSize: 12, color: "var(--color-label-3, var(--color-label-2))" }}>всегда</span></div>
-          <LayerRow label="Комментарий" on={layers.commentary} onToggle={() => toggle("commentary")} />
-        </div>
-      )}
-
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: "8px 22px 48px" }}>
+        <div style={{ maxWidth: 720, margin: "0 auto", padding: "24px 22px 48px" }}>
+          <div style={{ textAlign: "center", marginBottom: 30 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "var(--color-label-2)", marginBottom: 8 }}>Глава {chapter.number}</div>
+            <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{chapter.title_ru}</h1>
+          </div>
+
           {!verses && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>Загрузка главы…</div>}
           {verses && verses.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>В этой главе пока нет стихов.</div>}
-          {verses && verses.map((v, i) => (
-            <div key={v.ref} ref={(el) => { itemRefs.current[v.ref] = el; }} style={{ borderTop: i > 0 ? "0.5px solid var(--color-hairline)" : "none" }}>
-              <VerseBlock v={v} layers={layers} />
-            </div>
-          ))}
+
+          {verses && verses.map((v) => {
+            const tr = v.translation || DEMO_VERSES[v.ref]?.translation || null;
+            const isDemo = !v.translation && !!DEMO_VERSES[v.ref]?.translation;
+            return (
+              <button key={v.ref} onClick={() => onOpenVerse(v.ref)}
+                style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", padding: "16px 4px", fontFamily: "var(--font-text)" }}>
+                <p style={{ margin: 0, fontSize: 17, lineHeight: 1.62, color: "var(--color-label)" }}>
+                  <span style={{ color: "var(--color-brand-blue)", fontWeight: 700 }}>{v.label}: </span>
+                  {tr ? <>{tr}{isDemo && <DemoBadge />}</> : <span style={{ color: "var(--color-label-2)", fontStyle: "italic" }}>перевод готовится</span>}
+                </p>
+              </button>
+            );
+          })}
+
           {anyDemo && (
-            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-              Санскрит и транслитерация — общественное достояние. Перевод и комментарий, помеченные «демо», — демонстрационный текст для прототипа; он будет заменён лицензированным текстом издания.
+            <div style={{ marginTop: 18, fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+              Перевод, помеченный «демо», — демонстрационный текст для прототипа; он будет заменён лицензированным текстом издания. Откройте любой стих, чтобы увидеть санскрит, транслитерацию, пословный перевод и комментарий.
             </div>
           )}
         </div>
       </div>
-
-      {jump && verses && <JumpSheet verses={verses} onPick={scrollTo} onClose={() => setJump(false)} />}
     </div>
   );
 }
@@ -448,13 +432,14 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [scrolled, setScrolled] = useState(false);
   const [tab, setTab] = useState<BookTabId>("overview");
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
-  const [openChapter, setOpenChapter] = useState<{ chapter: ChapterRow; scrollToRef?: string } | null>(null);
+  const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
+  const [readerRef, setReaderRef] = useState<string | null>(null);
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
   }, []);
-  const openChapterByNumber = (num: string, scrollToRef?: string) => {
+  const openChapterByNumber = (num: string) => {
     const c = chapters?.find((x) => x.number === num);
-    if (c) setOpenChapter({ chapter: c, scrollToRef });
+    if (c) setOpenChapter(c);
   };
   const n = book.covers.length;
 
@@ -503,7 +488,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     if (label.startsWith("Читать")) { openChapterByNumber("1"); return; }
     if (label.startsWith("Слушать")) { setTab("listen"); return; }
     if (label.startsWith("О книге")) { setTab("author"); return; }
-    if (label.startsWith("Стих дня")) { const ref = verseOfDay(); openChapterByNumber(ref.replace(/^[^\d]*/, "").split(".")[0], ref); return; }
+    if (label.startsWith("Стих дня")) { setReaderRef(verseOfDay()); return; }
     if (label.startsWith("Поделиться")) { void shareBook(); return; }
     if (label.startsWith("Добавить")) { flash("Добавлено в план чтения"); return; }
     if (label.startsWith("Язык")) { flash("Издание: русский. Другие языки — скоро"); return; }
@@ -551,7 +536,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <div style={{ paddingBottom: 8 }}>
         {tab === "overview" && <Overview book={book} />}
-        {tab === "contents" && <Contents chapters={chapters} onOpenChapter={(ch) => setOpenChapter({ chapter: ch })} />}
+        {tab === "contents" && <Contents chapters={chapters} onOpenChapter={setOpenChapter} />}
         {tab === "author" && <Author />}
         {tab === "source" && <Source />}
         {tab === "editions" && <Editions />}
@@ -566,7 +551,8 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
       <Toast msg={toast} />
-      {openChapter && <ChapterPage chapter={openChapter.chapter} scrollToRef={openChapter.scrollToRef} onBack={() => setOpenChapter(null)} />}
+      {openChapter && <ChapterPage chapter={openChapter} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} />}
     </div>
   );
 }
@@ -744,7 +730,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
           style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 40, padding: "0 12px", background: "none", border: "none", cursor: data?.prev ? "pointer" : "default", color: data?.prev ? "var(--color-label)" : "var(--color-label-3, var(--color-label-2))", opacity: data?.prev ? 1 : .35, fontSize: 14.5, fontFamily: "var(--font-text)" }}>
           <BackIcon size={18} />Назад
         </button>
-        <button onClick={onClose} style={{ height: 40, padding: "0 14px", background: "none", border: "none", cursor: "pointer", color: "var(--color-label-2)", fontSize: 14.5, fontFamily: "var(--font-text)" }}>К содержанию</button>
+        <button onClick={onClose} style={{ height: 40, padding: "0 14px", background: "none", border: "none", cursor: "pointer", color: "var(--color-label-2)", fontSize: 14.5, fontFamily: "var(--font-text)" }}>К главе</button>
         <button disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}
           style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 40, padding: "0 12px", background: "none", border: "none", cursor: data?.next ? "pointer" : "default", color: data?.next ? "var(--color-label)" : "var(--color-label-3, var(--color-label-2))", opacity: data?.next ? 1 : .35, fontSize: 14.5, fontFamily: "var(--font-text)" }}>
           Вперёд<span style={{ transform: "scaleX(-1)", display: "inline-flex" }}><BackIcon size={18} /></span>
