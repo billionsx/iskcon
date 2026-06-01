@@ -4,10 +4,12 @@
  * Cover: graphite background for now (real BBT artwork to be wired later).
  * Text strictly per Śrīla Prabhupāda. One type family throughout.
  */
-import { useState, useRef, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
+import BhajanDetailPage from "./BhajanDetailPage";
+import { api } from "./api";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -235,7 +237,50 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void }) {
+/* ═════════ Bhajan shelf — list from D1 prayers (api /bhajans) ═════════ */
+interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; }
+function BhajanShelf({ onOpen }: { onOpen: (slug: string) => void }) {
+  const [items, setItems] = useState<BhajanListItem[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(api("/bhajans"))
+      .then((r) => r.json())
+      .then((d) => { if (live) setItems(d.bhajans ?? []); })
+      .catch(() => { if (live) setItems([]); });
+    return () => { live = false; };
+  }, []);
+
+  return (
+    <section style={{ marginTop: 28 }}>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Молитвенник</div>
+        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
+      </div>
+      {!items && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
+      {items && items.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
+      {items && items.length > 0 && (
+        <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+          {items.map((b, i) => (
+            <li key={b.slug} style={{ borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+              <button onClick={() => onOpen(b.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                {b.hero_image
+                  ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+                  : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)" }} />}
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
+                  {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
+                </span>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
     <>
@@ -249,6 +294,7 @@ function Screen({ tab, onChange, onOpenBook }: { tab: string; onChange: (k: stri
                 <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
               <BookCard onOpen={onOpenBook} />
+              <BhajanShelf onOpen={onOpenBhajan} />
             </>
           ) : null}
         </div>
@@ -261,6 +307,7 @@ function Screen({ tab, onChange, onOpenBook }: { tab: string; onChange: (k: stri
 export default function App() {
   const [tab, setTab] = useState("home");
   const [openBook, setOpenBook] = useState(false);
+  const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   return (
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
@@ -268,8 +315,12 @@ export default function App() {
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BookDetailPage book={BOOKS.bg} onBack={() => setOpenBook(false)} />
           </main>
+        ) : openBhajan ? (
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+            <BhajanDetailPage slug={openBhajan} onBack={() => setOpenBhajan(null)} />
+          </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} />
         )}
       </div>
     </div>
