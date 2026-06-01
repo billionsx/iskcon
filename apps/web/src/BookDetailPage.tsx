@@ -11,6 +11,7 @@ import type { SVGProps, ReactNode } from "react";
 import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS } from "./books";
 import { api } from "./api";
+import { DEMO_VERSES, DEMO_REFS } from "./demo";
 
 /* ───────── icons (same geometry as the card) ───────── */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -76,17 +77,25 @@ function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: Book
 }
 
 /* ───────── actions sheet (book functions ⋯) ───────── */
-function ActionsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+function ActionsSheet({ open, onClose, onSelect }: { open: boolean; onClose: () => void; onSelect: (label: string) => void }) {
   if (!open) return null;
   return (
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2)", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: "8px 0 max(8px, env(safe-area-inset-bottom))", boxShadow: "var(--shadow-card)" }}>
         <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline)", margin: "8px auto 12px" }} />
         {BOOK_MENU_ITEMS.map((label) => (
-          <button key={label} onClick={onClose} style={{ display: "block", width: "100%", textAlign: "left", padding: "14px 20px", background: "none", border: "none", fontFamily: "var(--font-text)", fontSize: 17, color: "var(--color-label)", cursor: "pointer" }}>{label}</button>
+          <button key={label} onClick={() => onSelect(label)} style={{ display: "block", width: "100%", textAlign: "left", padding: "14px 20px", background: "none", border: "none", fontFamily: "var(--font-text)", fontSize: 17, color: "var(--color-label)", cursor: "pointer" }}>{label}</button>
         ))}
       </div>
     </div>
+  );
+}
+
+/* ───────── transient toast ───────── */
+function Toast({ msg }: { msg: string | null }) {
+  if (!msg) return null;
+  return (
+    <div style={{ position: "fixed", left: "50%", bottom: "calc(96px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)", textAlign: "center" }}>{msg}</div>
   );
 }
 
@@ -253,12 +262,26 @@ function Editions() {
     </div>
   );
 }
-function Listen() {
+function Listen({ onRead }: { onRead: () => void }) {
   return (
-    <div style={{ paddingTop: 24 }}>
-      <Section title="Слушать и читать">
+    <div style={{ display: "flex", flexDirection: "column", gap: 28, paddingTop: 24 }}>
+      <Section title="Читать">
         <Card>
-          <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--color-label-2)" }}>Аудиокнига, чтение онлайн и PDF/EPUB будут доступны здесь. Полнотекстовый ридер со стихами (санскрит · транслитерация · пословный перевод · литературный перевод · комментарий) — в разработке.</p>
+          <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.5, color: "var(--color-label)" }}>
+            Полнотекстовый ридер со всеми слоями стиха: санскрит, транслитерация, пословный перевод, перевод и комментарий — с переключением слоёв и сквозной навигацией по книге.
+          </p>
+          <button onClick={onRead} style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 46, padding: "0 20px", borderRadius: 12, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600 }}><ReadIcon size={18} />Открыть ридер</button>
+        </Card>
+      </Section>
+      <Section title="Аудиокнига">
+        <Card>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, opacity: .6 }}>
+            <span style={{ display: "grid", placeItems: "center", height: 46, width: 46, borderRadius: "50%", background: "var(--color-glass-regular)", color: "var(--color-label-2)", flexShrink: 0 }}><PlayIcon size={20} /></span>
+            <div style={{ flex: 1 }}>
+              <div style={{ height: 4, borderRadius: 999, background: "var(--color-hairline)" }}><div style={{ width: "0%", height: "100%", borderRadius: 999, background: "var(--color-label-3, var(--color-label-2))" }} /></div>
+              <div style={{ marginTop: 8, fontSize: 12.5, color: "var(--color-label-2)" }}>Озвучивание — скоро</div>
+            </div>
+          </div>
         </Card>
       </Section>
     </div>
@@ -294,15 +317,62 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     return () => main.removeEventListener("scroll", onScroll);
   }, []);
 
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = (msg: string) => {
+    setToast(msg);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2200);
+  };
+
+  const shareBook = async () => {
+    const url = "https://gaurangers.com/#/bhagavad-gita";
+    const payload = { title: "Бхагавад-гита как она есть", text: "Бхагавад-гита как она есть — читать онлайн", url };
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
+        await (navigator as Navigator).share(payload);
+        return;
+      }
+    } catch { /* user cancelled — fall through */ }
+    try {
+      await navigator.clipboard.writeText(url);
+      flash("Ссылка скопирована");
+    } catch {
+      flash(url);
+    }
+  };
+
+  // «Стих дня» — детерминированно по дню года, из демо-набора.
+  const verseOfDay = () => {
+    const now = new Date();
+    const day = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000);
+    return DEMO_REFS[day % DEMO_REFS.length] ?? "БГ 1.1";
+  };
+
+  const menuAction = (label: string) => {
+    setMoreOpen(false);
+    if (label.startsWith("Читать")) { setReaderRef("БГ 1.1"); return; }
+    if (label.startsWith("Слушать")) { setTab("listen"); return; }
+    if (label.startsWith("О книге")) { setTab("author"); return; }
+    if (label.startsWith("Стих дня")) { setReaderRef(verseOfDay()); return; }
+    if (label.startsWith("Поделиться")) { void shareBook(); return; }
+    if (label.startsWith("Добавить")) { flash("Добавлено в план чтения"); return; }
+    if (label.startsWith("Язык")) { flash("Издание: русский. Другие языки — скоро"); return; }
+    if (label.startsWith("Скачать")) { flash("PDF / EPUB — скоро"); return; }
+    if (label.startsWith("Заказать")) { flash("Печатное издание — скоро"); return; }
+    if (label.startsWith("Поддержать")) { flash("Поддержка печати — скоро"); return; }
+    flash("Скоро");
+  };
+
   return (
     <div style={{ position: "relative", minHeight: "100%", background: "var(--color-bg)", paddingBottom: "calc(env(safe-area-inset-bottom,0px) + 96px)" }}>
       {/* scroll-aware top bar over hero */}
       <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 12px", transition: "background .2s", background: scrolled ? "var(--color-header-blur, var(--color-bg))" : "transparent", backdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", WebkitBackdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", borderBottom: scrolled ? "0.5px solid var(--color-hairline)" : "0.5px solid transparent" }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 36, width: 36, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: scrolled ? "transparent" : "rgba(0,0,0,.45)", color: scrolled ? "var(--color-label)" : "#fff", backdropFilter: scrolled ? "none" : "blur(12px)" }}><BackIcon size={22} /></button>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <GlassBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></GlassBtn>
-          <GlassBtn ariaLabel="Поделиться" onClick={() => {}}><ShareIcon size={17} /></GlassBtn>
-          <GlassBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => setInCart(v => !v)}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></GlassBtn>
+          <GlassBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const nv = !favorited; setFavorited(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></GlassBtn>
+          <GlassBtn ariaLabel="Поделиться" onClick={() => void shareBook()}><ShareIcon size={17} /></GlassBtn>
+          <GlassBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const nv = !inCart; setInCart(nv); flash(nv ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></GlassBtn>
           <GlassBtn ariaLabel="Меню" onClick={() => setMoreOpen(true)}><MoreIcon size={16} /></GlassBtn>
         </div>
       </header>
@@ -336,16 +406,17 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
         {tab === "author" && <Author />}
         {tab === "source" && <Source />}
         {tab === "editions" && <Editions />}
-        {tab === "listen" && <Listen />}
+        {tab === "listen" && <Listen onRead={() => setReaderRef("БГ 1.1")} />}
       </div>
 
       {/* sticky CTA bar */}
       <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: 0, zIndex: 40, width: "100%", maxWidth: 480, display: "flex", gap: 10, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "var(--color-header-blur, var(--color-bg))", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderTop: "0.5px solid var(--color-hairline)" }}>
         <button onClick={() => setReaderRef("БГ 1.1")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><ReadIcon size={20} />Читать</button>
-        <button style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-glass-regular)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><PlayIcon size={18} />Слушать</button>
+        <button onClick={() => setTab("listen")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-glass-regular)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><PlayIcon size={18} />Слушать</button>
       </div>
 
-      <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
+      <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
+      <Toast msg={toast} />
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} />}
     </div>
   );
@@ -388,6 +459,10 @@ function LayerLabel({ children }: { children: ReactNode }) {
   return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 600, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)" }}><span style={{ width: 18, height: 1, background: "var(--color-brand-blue)", opacity: .6 }} />{children}</div>;
 }
 
+function DemoBadge() {
+  return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: "var(--color-glass-regular)", color: "var(--color-label-2)", fontSize: 9.5, fontWeight: 700, letterSpacing: ".5px" }}>демо</span>;
+}
+
 function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNavigate: (ref: string) => void; onClose: () => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
@@ -405,10 +480,19 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
     return () => { live = false; };
   }, [refStr]);
 
-  const hasDeva = !!data?.devanagari && layers.deva;
-  const hasTranslit = !!data?.translit && layers.translit;
-  const hasWW = !!data?.tokens?.length && layers.ww;
-  const hasCommentary = !!data?.purport && layers.commentary;
+  const demo = DEMO_VERSES[data?.ref ?? refStr];
+  const evDeva = data?.devanagari || demo?.devanagari || null;
+  const evTranslit = data?.translit || demo?.translit || null;
+  const evTokens = (data?.tokens && data.tokens.length ? data.tokens : demo?.tokens) ?? [];
+  const evTranslation = data?.translation || demo?.translation || null;
+  const evPurport = data?.purport || demo?.purport || null;
+  const translationIsDemo = !data?.translation && !!demo?.translation;
+  const purportIsDemo = !data?.purport && !!demo?.purport;
+
+  const hasDeva = !!evDeva && layers.deva;
+  const hasTranslit = !!evTranslit && layers.translit;
+  const hasWW = !!evTokens.length && layers.ww;
+  const hasCommentary = !!evPurport && layers.commentary;
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
@@ -449,10 +533,10 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
               <div style={{ textAlign: "center", fontSize: 13, fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: 24 }}>{data.label}</div>
 
               {hasDeva && (
-                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 24, lineHeight: 2, textAlign: "center", color: "var(--color-label)", whiteSpace: "pre-line", marginBottom: hasTranslit ? 14 : 24 }}>{data.devanagari}</div>
+                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 24, lineHeight: 2, textAlign: "center", color: "var(--color-label)", whiteSpace: "pre-line", marginBottom: hasTranslit ? 14 : 24 }}>{evDeva}</div>
               )}
               {hasTranslit && (
-                <div style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.85, textAlign: "center", color: "var(--color-label-2)", whiteSpace: "pre-line", marginBottom: 24 }}>{data.translit}</div>
+                <div style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.85, textAlign: "center", color: "var(--color-label-2)", whiteSpace: "pre-line", marginBottom: 24 }}>{evTranslit}</div>
               )}
               {(hasDeva || hasTranslit) && <div style={{ textAlign: "center", color: "var(--color-brand-blue)", opacity: .5, letterSpacing: "0.4em", margin: "8px 0 28px" }}>❖</div>}
 
@@ -460,10 +544,10 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
                 <section style={{ marginBottom: 28 }}>
                   <LayerLabel>Пословный перевод</LayerLabel>
                   <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.95, color: "var(--color-label-2)" }}>
-                    {data.tokens.map((t, i) => (
+                    {evTokens.map((t, i) => (
                       <span key={i}>
                         <span style={{ fontStyle: "italic", color: "var(--color-label)" }}>{t.term}</span>
-                        {t.gloss ? ` — ${t.gloss}` : ""}{i < data.tokens.length - 1 ? "; " : "."}
+                        {t.gloss ? ` — ${t.gloss}` : ""}{i < evTokens.length - 1 ? "; " : "."}
                       </span>
                     ))}
                   </p>
@@ -471,10 +555,10 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
               )}
 
               <section style={{ marginBottom: 28 }}>
-                <LayerLabel>Перевод</LayerLabel>
-                {data.translation ? (
+                <LayerLabel>Перевод{translationIsDemo && <DemoBadge />}</LayerLabel>
+                {evTranslation ? (
                   <div style={{ borderRadius: 16, padding: "18px 20px", background: "var(--color-bg-2)", borderLeft: "3px solid var(--color-brand-blue)" }}>
-                    <p style={{ margin: 0, fontSize: 19, lineHeight: 1.5, color: "var(--color-label)" }}>{data.translation}</p>
+                    <p style={{ margin: 0, fontSize: 19, lineHeight: 1.5, color: "var(--color-label)" }}>{evTranslation}</p>
                   </div>
                 ) : (
                   <div style={{ borderRadius: 16, padding: "18px 20px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
@@ -494,9 +578,9 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
 
               {hasCommentary && (
                 <section style={{ marginBottom: 8 }}>
-                  <LayerLabel>Комментарий</LayerLabel>
+                  <LayerLabel>Комментарий{purportIsDemo && <DemoBadge />}</LayerLabel>
                   <div style={{ fontSize: 17, lineHeight: 1.78, color: "var(--color-label)" }}>
-                    {data.purport!.split(/\n\n+/).map((para, i) => (
+                    {evPurport!.split(/\n\n+/).map((para, i) => (
                       <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
                     ))}
                   </div>
@@ -507,6 +591,12 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
                 <div style={{ marginTop: 24, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, color: "var(--color-label-2)", display: "flex", alignItems: "center", gap: 8 }}>
                   <span>© Бхактиведанта Бук Траст</span>
                   <a href={data.source_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)" }}>источник</a>
+                </div>
+              )}
+
+              {(translationIsDemo || purportIsDemo) && (
+                <div style={{ marginTop: 24, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+                  Санскрит и транслитерация — общественное достояние. Перевод и комментарий помечены «демо» — это демонстрационный текст для прототипа, не издание Шрилы Прабхупады; он будет заменён лицензированным текстом.
                 </div>
               )}
             </>
