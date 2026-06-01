@@ -149,73 +149,22 @@ function ChevronIcon({ open }: { open: boolean }) {
   return <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ transition: "transform .2s", transform: open ? "rotate(90deg)" : "none", flexShrink: 0 }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
 
-function ChapterRowItem({ ch, last, onOpenVerse }: { ch: ChapterRow; last: boolean; onOpenVerse: (v: VerseRow) => void }) {
-  const [open, setOpen] = useState(false);
-  const [verses, setVerses] = useState<VerseRow[] | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const loadVerses = async (): Promise<VerseRow[]> => {
-    if (verses) return verses;
-    setLoading(true);
-    let list: VerseRow[] = [];
-    try {
-      const r = await fetch(api(`/books/bg/chapters/${ch.number}/verses`));
-      const data = await r.json();
-      list = data.verses ?? [];
-    } catch { list = []; }
-    setVerses(list);
-    setLoading(false);
-    return list;
-  };
-
-  const toggle = () => {
-    const willOpen = !open;
-    setOpen(willOpen);
-    if (willOpen) void loadVerses();
-  };
-
-  const readChapter = async () => {
-    const list = await loadVerses();
-    onOpenVerse(list[0] ?? ({ ref: `БГ ${ch.number}.1` } as VerseRow));
-  };
-
+function ChapterRowItem({ ch, last, onOpenChapter }: { ch: ChapterRow; last: boolean; onOpenChapter: (ch: ChapterRow) => void }) {
   return (
-    <li style={{ borderBottom: last && !open ? "none" : "0.5px solid var(--color-hairline)" }}>
-      <button onClick={toggle} style={{ display: "flex", width: "100%", alignItems: "center", gap: 14, padding: "13px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "var(--color-label)" }}>
+    <li style={{ borderBottom: last ? "none" : "0.5px solid var(--color-hairline)" }}>
+      <button onClick={() => onOpenChapter(ch)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 14, padding: "14px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "var(--color-label)" }}>
         <span style={{ flexShrink: 0, display: "grid", placeItems: "center", height: 26, width: 26, borderRadius: 8, background: "var(--color-glass-regular)", fontSize: 13, fontWeight: 600, color: "var(--color-label-2)" }}>{ch.number}</span>
         <span style={{ flex: 1, minWidth: 0 }}>
           <span style={{ display: "block", fontSize: 15, lineHeight: 1.3, color: "var(--color-label)" }}>{ch.title_ru}</span>
           <span style={{ display: "block", fontSize: 12.5, color: "var(--color-label-3, var(--color-label-2))" }}>{ch.verses} стихов</span>
         </span>
-        <span style={{ color: "var(--color-label-2)" }}><ChevronIcon open={open} /></span>
+        <span style={{ color: "var(--color-label-2)" }}><ChevronIcon open={false} /></span>
       </button>
-      {open && (
-        <div style={{ padding: "2px 16px 14px 56px" }}>
-          <button onClick={readChapter}
-            style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 38, padding: "0 16px", marginBottom: 14, borderRadius: 10, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600 }}>
-            <ReadIcon size={17} />Читать главу с начала
-          </button>
-          {loading && !verses && <div style={{ fontSize: 14, color: "var(--color-label-2)", padding: "6px 0" }}>Загрузка…</div>}
-          {verses && verses.length > 0 && (
-            <>
-              <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-label-2)", margin: "2px 0 10px" }}>Перейти к стиху</div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                {verses.map((v) => (
-                  <button key={v.ref} onClick={() => onOpenVerse(v)}
-                    style={{ display: "inline-flex", alignItems: "center", height: 30, padding: "0 11px", borderRadius: 999, background: "var(--color-glass-regular)", border: "none", cursor: "pointer", fontSize: 13, fontWeight: 500, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                    {v.ref.replace("БГ ", "")}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      )}
     </li>
   );
 }
 
-function Contents({ onOpenVerse }: { onOpenVerse: (v: VerseRow) => void }) {
+function Contents({ onOpenChapter }: { onOpenChapter: (ch: ChapterRow) => void }) {
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then(r => r.json()).then(d => setChapters(d.chapters ?? [])).catch(() => setChapters([]));
@@ -227,14 +176,64 @@ function Contents({ onOpenVerse }: { onOpenVerse: (v: VerseRow) => void }) {
         {chapters && (
           <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 20, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
             {chapters.map((c, i) => (
-              <ChapterRowItem key={c.id} ch={c} last={i === chapters.length - 1} onOpenVerse={onOpenVerse} />
+              <ChapterRowItem key={c.id} ch={c} last={i === chapters.length - 1} onOpenChapter={onOpenChapter} />
             ))}
           </ol>
         )}
-        <p style={{ margin: "12px 4px 0", fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-3, var(--color-label-2))" }}>
-          Перевод и комментарии © Бхактиведанта Бук Траст (BBT). Текст открывается из официального источника vedabase.io.
-        </p>
       </Section>
+    </div>
+  );
+}
+
+/* ───────── chapter page — list of all verses in a chapter ───────── */
+function verseLabel(ref: string): string {
+  const tail = ref.split(".").pop() ?? "";
+  return /[-–]/.test(tail) ? `Тексты ${tail.replace("-", "–")}` : `Текст ${tail}`;
+}
+
+function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; onOpenVerse: (ref: string) => void; onBack: () => void }) {
+  const [verses, setVerses] = useState<VerseRow[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(api(`/books/bg/chapters/${chapter.number}/verses`))
+      .then((r) => r.json())
+      .then((d) => { if (live) setVerses(d.verses ?? []); })
+      .catch(() => { if (live) setVerses([]); });
+    return () => { live = false; };
+  }, [chapter.number]);
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+      <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 6, padding: "0 8px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Глава {chapter.number} · {chapter.verses} стихов</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapter.title_ru}</div>
+        </div>
+      </header>
+
+      <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "16px 16px 40px" }}>
+          <button onClick={() => verses && verses[0] && onOpenVerse(verses[0].ref)} disabled={!verses?.length}
+            style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, height: 48, marginBottom: 18, borderRadius: 14, border: "none", cursor: verses?.length ? "pointer" : "default", opacity: verses?.length ? 1 : .5, background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}>
+            <ReadIcon size={20} />Читать главу с начала
+          </button>
+
+          {!verses && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "30px 0", fontSize: 15 }}>Загрузка стихов…</div>}
+          {verses && (
+            <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 16, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+              {verses.map((v, i) => (
+                <li key={v.ref} style={{ borderBottom: i === verses.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                  <button onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "15px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "var(--color-label)" }}>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: 16, color: "var(--color-label)" }}>{verseLabel(v.ref)}</span>
+                    <span style={{ color: "var(--color-label-2)" }}><ChevronIcon open={false} /></span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -327,6 +326,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [scrolled, setScrolled] = useState(false);
   const [tab, setTab] = useState<BookTabId>("overview");
   const [readerRef, setReaderRef] = useState<string | null>(null);
+  const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const n = book.covers.length;
 
   useEffect(() => {
@@ -422,7 +422,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <div style={{ paddingBottom: 8 }}>
         {tab === "overview" && <Overview book={book} />}
-        {tab === "contents" && <Contents onOpenVerse={(v) => setReaderRef(v.ref)} />}
+        {tab === "contents" && <Contents onOpenChapter={setOpenChapter} />}
         {tab === "author" && <Author />}
         {tab === "source" && <Source />}
         {tab === "editions" && <Editions />}
@@ -437,6 +437,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
       <Toast msg={toast} />
+      {openChapter && <ChapterPage chapter={openChapter} onBack={() => setOpenChapter(null)} onOpenVerse={(ref) => setReaderRef(ref)} />}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} />}
     </div>
   );
@@ -582,17 +583,8 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
                     <p style={{ margin: 0, fontSize: 19, lineHeight: 1.5, color: "var(--color-label)" }}>{evTranslation}</p>
                   </div>
                 ) : (
-                  <div style={{ borderRadius: 16, padding: "18px 20px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-                    <div style={{ color: "var(--color-label)", marginBottom: 12 }}><LogoMark src="/bbt.svg" label="BBT" height={22} /></div>
-                    <p style={{ margin: "0 0 14px", fontSize: 15, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-                      Перевод и комментарий Шрилы Прабхупады для этого стиха появятся здесь. Пока их можно прочитать на официальном источнике.
-                    </p>
-                    {data.source_url && (
-                      <a href={data.source_url} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 44, padding: "0 18px", borderRadius: 12, background: "var(--color-brand-blue)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
-                        Читать на Vedabase.io
-                      </a>
-                    )}
+                  <div style={{ borderRadius: 16, padding: "20px", background: "var(--color-bg-2)", border: "0.5px dashed var(--color-hairline)", textAlign: "center" }}>
+                    <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--color-label-2)" }}>Перевод этого стиха готовится.</p>
                   </div>
                 )}
               </section>
@@ -608,16 +600,9 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
                 </section>
               )}
 
-              {data.source_url && data.translation && (
-                <div style={{ marginTop: 24, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, color: "var(--color-label-2)", display: "flex", alignItems: "center", gap: 8 }}>
-                  <span>© Бхактиведанта Бук Траст</span>
-                  <a href={data.source_url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)" }}>источник</a>
-                </div>
-              )}
-
               {(translationIsDemo || purportIsDemo) && (
                 <div style={{ marginTop: 24, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-                  Санскрит и транслитерация — общественное достояние. Перевод и комментарий помечены «демо» — это демонстрационный текст для прототипа, не издание Шрилы Прабхупады; он будет заменён лицензированным текстом.
+                  Санскрит и транслитерация — общественное достояние. Перевод и комментарий помечены «демо» — это демонстрационный текст для прототипа; он будет заменён лицензированным текстом издания.
                 </div>
               )}
             </>
