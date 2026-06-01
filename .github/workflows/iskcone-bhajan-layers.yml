@@ -25,6 +25,8 @@ jobs:
           BR=re.compile(r'(?i)<br\s*/?>')
           BOLD=re.compile(r'(?i)<(?:strong|b)\b')
           TAGS=re.compile(r'(?s)<[^>]+>')
+          # site chrome that pollutes pages (header quote + footer/about)
+          CHROME=re.compile(r'(Лучшее, что можно сделать для Господа|ISKCON ONE LOVE|ОНЛАЙН-РЕСУРС|БРАХМА-МАДХВА-ГАУДИЯ|РАЗНЫХ СТРАН)', re.I)
           def clean(s):
               s=H.unescape(TAGS.sub(' ', s))
               return re.sub(r'\s+',' ',s).strip()
@@ -32,10 +34,10 @@ jobs:
               out=[]
               for m in BLOCK.finditer(htmltext or ""):
                   inner=m.group(1)
-                  out.append((inner, clean(BR.sub(' ', inner)), bool(BOLD.search(inner))))
+                  out.append((inner, clean(BR.sub(' ', inner))))
               return out
 
-          # 1) load ALL pages, count block-signature frequency -> boilerplate
+          # 1) load ALL pages; frequency of block signatures -> extra boilerplate net
           pages={}; off=0
           while True:
               rows=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
@@ -46,20 +48,14 @@ jobs:
           freq=collections.Counter()
           for blks in pages.values():
               for sig in {b[1] for b in blks if b[1]}: freq[sig]+=1
-          thr=max(3,int(0.30*n))
+          thr=max(4,int(0.18*n))
           boiler={sig for sig,c in freq.items() if c>=thr}
-          print("boilerplate blocks:", len(boiler))
+          print("boilerplate blocks:", len(boiler), "thr:", thr)
 
-          # 2) reset, then parse each prayer's non-boilerplate bold blocks
-          q("UPDATE prayers SET translit=NULL, translation=NULL WHERE is_section=0")
-          slugs=[r["slug"] for r in q(
-              "SELECT p.slug AS slug FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")]
-          done=skipped=0
-          for slug in slugs:
-              blks=pages.get(slug[1:]) or []
+          def parse(blks):
               tr_b=[]; tx_b=[]
-              for inner, sig, has_bold in blks:
-                  if not has_bold or sig in boiler: continue   # only page-specific lyric blocks
+              for inner, sig in blks:
+                  if not sig or sig in boiler or CHROME.search(sig): continue
                   tr=[]; tx=[]
                   for raw in BR.split(inner):
                       txt=clean(raw)
@@ -67,7 +63,15 @@ jobs:
                       (tr if BOLD.search(raw) else tx).append(txt)
                   if tr: tr_b.append("\n".join(tr))
                   if tx: tx_b.append("\n".join(tx))
-              tr="\n\n".join(tr_b).strip(); tx="\n\n".join(tx_b).strip()
+              return ("\n\n".join(tr_b).strip(), "\n\n".join(tx_b).strip())
+
+          # 2) reset + fill
+          q("UPDATE prayers SET translit=NULL, translation=NULL WHERE is_section=0")
+          slugs=[r["slug"] for r in q(
+              "SELECT p.slug AS slug FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")]
+          done=skipped=0
+          for slug in slugs:
+              tr,tx=parse(pages.get(slug[1:]) or [])
               if len(tr)>=10 and len(tx)>=10:
                   q("UPDATE prayers SET translit=?, translation=? WHERE slug=?", [tr, tx, slug]); done+=1
               else:
