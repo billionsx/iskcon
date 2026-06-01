@@ -164,11 +164,7 @@ function ChapterRowItem({ ch, last, onOpenChapter }: { ch: ChapterRow; last: boo
   );
 }
 
-function Contents({ onOpenChapter }: { onOpenChapter: (ch: ChapterRow) => void }) {
-  const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
-  useEffect(() => {
-    fetch(api("/books/bg/chapters")).then(r => r.json()).then(d => setChapters(d.chapters ?? [])).catch(() => setChapters([]));
-  }, []);
+function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void }) {
   return (
     <div style={{ paddingTop: 24 }}>
       <Section title="18 глав">
@@ -185,55 +181,181 @@ function Contents({ onOpenChapter }: { onOpenChapter: (ch: ChapterRow) => void }
   );
 }
 
-/* ───────── chapter page — list of all verses in a chapter ───────── */
+/* ───────── chapter page — continuous reader (verses rendered in place) ───────── */
 function verseLabel(ref: string): string {
   const tail = ref.split(".").pop() ?? "";
   return /[-–]/.test(tail) ? `Тексты ${tail.replace("-", "–")}` : `Текст ${tail}`;
 }
 
-function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; onOpenVerse: (ref: string) => void; onBack: () => void }) {
-  const [verses, setVerses] = useState<VerseRow[] | null>(null);
+interface ChapterVerse {
+  ref: string;
+  label: string;
+  devanagari: string | null;
+  translit: string | null;
+  tokens: { term: string; gloss: string | null }[];
+  translation: string | null;
+  purport: string | null;
+}
+
+function VerseBlock({ v, layers }: { v: ChapterVerse; layers: Record<LayerKey, boolean> }) {
+  const demo = DEMO_VERSES[v.ref];
+  const evDeva = v.devanagari || demo?.devanagari || null;
+  const evTranslit = v.translit || demo?.translit || null;
+  const evTokens = (v.tokens?.length ? v.tokens : demo?.tokens) ?? [];
+  const evTranslation = v.translation || demo?.translation || null;
+  const evPurport = v.purport || demo?.purport || null;
+  const translationIsDemo = !v.translation && !!demo?.translation;
+  const purportIsDemo = !v.purport && !!demo?.purport;
+
+  const hasDeva = !!evDeva && layers.deva;
+  const hasTranslit = !!evTranslit && layers.translit;
+  const hasWW = !!evTokens.length && layers.ww;
+  const hasCommentary = !!evPurport && layers.commentary;
+
+  return (
+    <article style={{ padding: "28px 0" }}>
+      <div style={{ textAlign: "center", fontSize: 13, fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: 20 }}>{v.label}</div>
+
+      {hasDeva && (
+        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 23, lineHeight: 2, textAlign: "center", color: "var(--color-label)", whiteSpace: "pre-line", marginBottom: hasTranslit ? 14 : 22 }}>{evDeva}</div>
+      )}
+      {hasTranslit && (
+        <div style={{ fontStyle: "italic", fontSize: 17, lineHeight: 1.85, textAlign: "center", color: "var(--color-label-2)", whiteSpace: "pre-line", marginBottom: 22 }}>{evTranslit}</div>
+      )}
+      {(hasDeva || hasTranslit) && <div style={{ textAlign: "center", color: "var(--color-brand-blue)", opacity: .45, letterSpacing: "0.4em", margin: "4px 0 26px" }}>❖</div>}
+
+      {hasWW && (
+        <section style={{ marginBottom: 26 }}>
+          <LayerLabel>Пословный перевод</LayerLabel>
+          <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.95, color: "var(--color-label-2)" }}>
+            {evTokens.map((t, i) => (
+              <span key={i}>
+                <span style={{ fontStyle: "italic", color: "var(--color-label)" }}>{t.term}</span>
+                {t.gloss ? ` — ${t.gloss}` : ""}{i < evTokens.length - 1 ? "; " : "."}
+              </span>
+            ))}
+          </p>
+        </section>
+      )}
+
+      <section style={{ marginBottom: hasCommentary ? 26 : 0 }}>
+        <LayerLabel>Перевод{translationIsDemo && <DemoBadge />}</LayerLabel>
+        {evTranslation ? (
+          <div style={{ borderRadius: 16, padding: "18px 20px", background: "var(--color-bg-2)", borderLeft: "3px solid var(--color-brand-blue)" }}>
+            <p style={{ margin: 0, fontSize: 19, lineHeight: 1.5, color: "var(--color-label)" }}>{evTranslation}</p>
+          </div>
+        ) : (
+          <div style={{ borderRadius: 16, padding: "20px", background: "var(--color-bg-2)", border: "0.5px dashed var(--color-hairline)", textAlign: "center" }}>
+            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "var(--color-label-2)" }}>Перевод этого стиха готовится.</p>
+          </div>
+        )}
+      </section>
+
+      {hasCommentary && (
+        <section>
+          <LayerLabel>Комментарий{purportIsDemo && <DemoBadge />}</LayerLabel>
+          <div style={{ fontSize: 17, lineHeight: 1.78, color: "var(--color-label)" }}>
+            {evPurport!.split(/\n\n+/).map((para, i) => (
+              <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
+            ))}
+          </div>
+        </section>
+      )}
+    </article>
+  );
+}
+
+function JumpSheet({ verses, onPick, onClose }: { verses: ChapterVerse[]; onPick: (ref: string) => void; onClose: () => void }) {
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 75, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, maxHeight: "70vh", overflowY: "auto", background: "var(--color-bg-2)", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: "8px 18px max(16px, env(safe-area-inset-bottom))", boxShadow: "var(--shadow-card)" }}>
+        <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline)", margin: "8px auto 14px" }} />
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-label-2)", marginBottom: 12 }}>Перейти к стиху</div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {verses.map((v) => (
+            <button key={v.ref} onClick={() => onPick(v.ref)}
+              style={{ display: "inline-flex", alignItems: "center", height: 34, minWidth: 40, justifyContent: "center", padding: "0 12px", borderRadius: 999, background: "var(--color-glass-regular)", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+              {v.ref.replace("БГ ", "")}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChapterPage({ chapter, scrollToRef, onBack }: { chapter: ChapterRow; scrollToRef?: string; onBack: () => void }) {
+  const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
+  const [panel, setPanel] = useState(false);
+  const [jump, setJump] = useState(false);
+  const [layers, setLayers] = useState<Record<LayerKey, boolean>>({ deva: true, translit: true, ww: true, commentary: true });
+  const toggle = (k: LayerKey) => setLayers((s) => ({ ...s, [k]: !s[k] }));
+  const itemRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   useEffect(() => {
     let live = true;
-    fetch(api(`/books/bg/chapters/${chapter.number}/verses`))
+    setVerses(null);
+    fetch(api(`/books/bg/chapters/${chapter.number}/read`))
       .then((r) => r.json())
       .then((d) => { if (live) setVerses(d.verses ?? []); })
       .catch(() => { if (live) setVerses([]); });
     return () => { live = false; };
   }, [chapter.number]);
 
+  useEffect(() => {
+    if (verses && scrollToRef && itemRefs.current[scrollToRef]) {
+      const el = itemRefs.current[scrollToRef];
+      const t = setTimeout(() => el?.scrollIntoView({ behavior: "auto", block: "start" }), 60);
+      return () => clearTimeout(t);
+    }
+  }, [verses, scrollToRef]);
+
+  const scrollTo = (ref: string) => { setJump(false); itemRefs.current[ref]?.scrollIntoView({ behavior: "smooth", block: "start" }); };
+  const anyDemo = !!verses && verses.some((v) => (!v.translation && DEMO_VERSES[v.ref]?.translation) || (!v.devanagari && DEMO_VERSES[v.ref]?.devanagari));
+
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
-      <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 6, padding: "0 8px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+      <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Глава {chapter.number} · {chapter.verses} стихов</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapter.title_ru}</div>
+          <div style={{ fontSize: 11, color: "var(--color-label-2)" }}>Глава {chapter.number} · {verses?.length ?? chapter.verses} стихов</div>
+          <div style={{ fontSize: 15.5, fontWeight: 700, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapter.title_ru}</div>
         </div>
+        <button aria-label="Перейти к стиху" onClick={() => setJump(true)} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M8 6h12M8 12h12M8 18h12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><circle cx="4" cy="6" r="1.3" fill="currentColor" /><circle cx="4" cy="12" r="1.3" fill="currentColor" /><circle cx="4" cy="18" r="1.3" fill="currentColor" /></svg>
+        </button>
+        <button aria-label="Слои" onClick={() => setPanel((v) => !v)} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: panel ? "var(--color-glass-regular)" : "none", cursor: "pointer", color: "var(--color-label)" }}><SlidersIcon size={22} /></button>
       </header>
 
-      <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: "16px 16px 40px" }}>
-          <button onClick={() => verses && verses[0] && onOpenVerse(verses[0].ref)} disabled={!verses?.length}
-            style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, height: 48, marginBottom: 18, borderRadius: 14, border: "none", cursor: verses?.length ? "pointer" : "default", opacity: verses?.length ? 1 : .5, background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}>
-            <ReadIcon size={20} />Читать главу с начала
-          </button>
+      {panel && (
+        <div style={{ flexShrink: 0, padding: "8px 18px 14px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)", padding: "6px 4px 2px" }}>Слои стиха</div>
+          <LayerRow label="Деванагари" on={layers.deva} onToggle={() => toggle("deva")} />
+          <LayerRow label="Транслитерация" on={layers.translit} onToggle={() => toggle("translit")} />
+          <LayerRow label="Пословный перевод" on={layers.ww} onToggle={() => toggle("ww")} />
+          <div style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "11px 4px", fontSize: 16, color: "var(--color-label-2)" }}><span>Перевод</span><span style={{ fontSize: 12, color: "var(--color-label-3, var(--color-label-2))" }}>всегда</span></div>
+          <LayerRow label="Комментарий" on={layers.commentary} onToggle={() => toggle("commentary")} />
+        </div>
+      )}
 
-          {!verses && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "30px 0", fontSize: 15 }}>Загрузка стихов…</div>}
-          {verses && (
-            <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 16, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-              {verses.map((v, i) => (
-                <li key={v.ref} style={{ borderBottom: i === verses.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                  <button onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "15px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left", color: "var(--color-label)" }}>
-                    <span style={{ flex: 1, minWidth: 0, fontSize: 16, color: "var(--color-label)" }}>{verseLabel(v.ref)}</span>
-                    <span style={{ color: "var(--color-label-2)" }}><ChevronIcon open={false} /></span>
-                  </button>
-                </li>
-              ))}
-            </ol>
+      <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "8px 22px 48px" }}>
+          {!verses && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>Загрузка главы…</div>}
+          {verses && verses.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>В этой главе пока нет стихов.</div>}
+          {verses && verses.map((v, i) => (
+            <div key={v.ref} ref={(el) => { itemRefs.current[v.ref] = el; }} style={{ borderTop: i > 0 ? "0.5px solid var(--color-hairline)" : "none" }}>
+              <VerseBlock v={v} layers={layers} />
+            </div>
+          ))}
+          {anyDemo && (
+            <div style={{ marginTop: 16, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+              Санскрит и транслитерация — общественное достояние. Перевод и комментарий, помеченные «демо», — демонстрационный текст для прототипа; он будет заменён лицензированным текстом издания.
+            </div>
           )}
         </div>
       </div>
+
+      {jump && verses && <JumpSheet verses={verses} onPick={scrollTo} onClose={() => setJump(false)} />}
     </div>
   );
 }
@@ -325,8 +447,15 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [tab, setTab] = useState<BookTabId>("overview");
-  const [readerRef, setReaderRef] = useState<string | null>(null);
-  const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
+  const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
+  const [openChapter, setOpenChapter] = useState<{ chapter: ChapterRow; scrollToRef?: string } | null>(null);
+  useEffect(() => {
+    fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
+  }, []);
+  const openChapterByNumber = (num: string, scrollToRef?: string) => {
+    const c = chapters?.find((x) => x.number === num);
+    if (c) setOpenChapter({ chapter: c, scrollToRef });
+  };
   const n = book.covers.length;
 
   useEffect(() => {
@@ -371,10 +500,10 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
   const menuAction = (label: string) => {
     setMoreOpen(false);
-    if (label.startsWith("Читать")) { setReaderRef("БГ 1.1"); return; }
+    if (label.startsWith("Читать")) { openChapterByNumber("1"); return; }
     if (label.startsWith("Слушать")) { setTab("listen"); return; }
     if (label.startsWith("О книге")) { setTab("author"); return; }
-    if (label.startsWith("Стих дня")) { setReaderRef(verseOfDay()); return; }
+    if (label.startsWith("Стих дня")) { const ref = verseOfDay(); openChapterByNumber(ref.replace(/^[^\d]*/, "").split(".")[0], ref); return; }
     if (label.startsWith("Поделиться")) { void shareBook(); return; }
     if (label.startsWith("Добавить")) { flash("Добавлено в план чтения"); return; }
     if (label.startsWith("Язык")) { flash("Издание: русский. Другие языки — скоро"); return; }
@@ -422,23 +551,22 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <div style={{ paddingBottom: 8 }}>
         {tab === "overview" && <Overview book={book} />}
-        {tab === "contents" && <Contents onOpenChapter={setOpenChapter} />}
+        {tab === "contents" && <Contents chapters={chapters} onOpenChapter={(ch) => setOpenChapter({ chapter: ch })} />}
         {tab === "author" && <Author />}
         {tab === "source" && <Source />}
         {tab === "editions" && <Editions />}
-        {tab === "listen" && <Listen onRead={() => setReaderRef("БГ 1.1")} />}
+        {tab === "listen" && <Listen onRead={() => openChapterByNumber("1")} />}
       </div>
 
       {/* sticky CTA bar */}
       <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: 0, zIndex: 40, width: "100%", maxWidth: 480, display: "flex", gap: 10, padding: "12px 16px calc(12px + env(safe-area-inset-bottom))", background: "var(--color-header-blur, var(--color-bg))", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderTop: "0.5px solid var(--color-hairline)" }}>
-        <button onClick={() => setReaderRef("БГ 1.1")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><ReadIcon size={20} />Читать</button>
+        <button onClick={() => openChapterByNumber("1")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><ReadIcon size={20} />Читать</button>
         <button onClick={() => setTab("listen")} style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-glass-regular)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600 }}><PlayIcon size={18} />Слушать</button>
       </div>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
       <Toast msg={toast} />
-      {openChapter && <ChapterPage chapter={openChapter} onBack={() => setOpenChapter(null)} onOpenVerse={(ref) => setReaderRef(ref)} />}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} />}
+      {openChapter && <ChapterPage chapter={openChapter.chapter} scrollToRef={openChapter.scrollToRef} onBack={() => setOpenChapter(null)} />}
     </div>
   );
 }

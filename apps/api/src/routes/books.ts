@@ -59,6 +59,54 @@ booksRouter.get('/:work/chapters/:number/verses', async (c) => {
   return c.json({ verses: results ?? [] });
 });
 
+// GET /v1/books/:work/chapters/:number/read — все стихи главы со слоями (для непрерывного чтения)
+booksRouter.get('/:work/chapters/:number/read', async (c) => {
+  const work = c.req.param('work');
+  const number = c.req.param('number');
+
+  const versesRes = await c.env.DB.prepare(
+    `SELECT v.id, v.ref, v.ordinal, v.devanagari, v.translit, vt.translation, vt.purport
+     FROM verses v
+     JOIN divisions d ON d.id = v.division_id
+     LEFT JOIN verse_texts vt ON vt.verse_id = v.id AND vt.edition_id = ?
+     WHERE v.work_id = ? AND d.number = ?
+     ORDER BY v.ordinal`,
+  )
+    .bind(`${work}-ru`, work, number)
+    .all();
+  const verses = (versesRes.results as Row[]) ?? [];
+
+  const tokRes = await c.env.DB.prepare(
+    `SELECT t.verse_id, t.term, t.gloss
+     FROM verse_tokens t
+     JOIN verses v ON v.id = t.verse_id
+     JOIN divisions d ON d.id = v.division_id
+     WHERE v.work_id = ? AND d.number = ?
+     ORDER BY t.verse_id, t.ordinal`,
+  )
+    .bind(work, number)
+    .all();
+  const byVerse: Record<string, { term: string; gloss: string | null }[]> = {};
+  for (const t of (tokRes.results as Row[]) ?? []) {
+    (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: t.gloss ?? null });
+  }
+
+  const out = verses.map((v) => {
+    const tail = String(v.ref).split('.').pop() ?? '';
+    const label = /[-–]/.test(tail) ? `Тексты ${tail.replace('-', '–')}` : `Текст ${tail}`;
+    return {
+      ref: v.ref,
+      label,
+      devanagari: v.devanagari ?? null,
+      translit: v.translit ?? null,
+      tokens: byVerse[v.id] ?? [],
+      translation: v.translation ?? null,
+      purport: v.purport ?? null,
+    };
+  });
+  return c.json({ work, chapter: Number(number), verses: out });
+});
+
 // GET /v1/books/:work/verses/:ref — полный стих со слоями + сосед по спайну
 booksRouter.get('/:work/verses/:ref', async (c) => {
   const work = c.req.param('work');
