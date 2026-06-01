@@ -12,7 +12,7 @@ jobs:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           python3 - <<'PY'
-          import os, json, re, html as H, urllib.request
+          import os, json, re, html as H, urllib.request, collections
           CF=os.environ["CF"]
           ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
@@ -28,35 +28,51 @@ jobs:
           def clean(s):
               s=H.unescape(TAGS.sub(' ', s))
               return re.sub(r'\s+',' ',s).strip()
-
-          def parse(htmltext):
-              tr_blocks=[]; tx_blocks=[]
+          def blocks_of(htmltext):
+              out=[]
               for m in BLOCK.finditer(htmltext or ""):
                   inner=m.group(1)
-                  if not BOLD.search(inner):
-                      continue                       # only lyric blocks (bold = transliteration)
+                  out.append((inner, clean(BR.sub(' ', inner)), bool(BOLD.search(inner))))
+              return out
+
+          # 1) load ALL pages, count block-signature frequency -> boilerplate
+          pages={}; off=0
+          while True:
+              rows=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
+              if not rows: break
+              for r in rows: pages[r["alias"]]=blocks_of(r.get("html") or "")
+              off+=25
+          n=len(pages); print("pages:", n)
+          freq=collections.Counter()
+          for blks in pages.values():
+              for sig in {b[1] for b in blks if b[1]}: freq[sig]+=1
+          thr=max(3,int(0.30*n))
+          boiler={sig for sig,c in freq.items() if c>=thr}
+          print("boilerplate blocks:", len(boiler))
+
+          # 2) reset, then parse each prayer's non-boilerplate bold blocks
+          q("UPDATE prayers SET translit=NULL, translation=NULL WHERE is_section=0")
+          slugs=[r["slug"] for r in q(
+              "SELECT p.slug AS slug FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")]
+          done=skipped=0
+          for slug in slugs:
+              blks=pages.get(slug[1:]) or []
+              tr_b=[]; tx_b=[]
+              for inner, sig, has_bold in blks:
+                  if not has_bold or sig in boiler: continue   # only page-specific lyric blocks
                   tr=[]; tx=[]
                   for raw in BR.split(inner):
                       txt=clean(raw)
                       if not txt: continue
                       (tr if BOLD.search(raw) else tx).append(txt)
-                  if tr: tr_blocks.append("\n".join(tr))
-                  if tx: tx_blocks.append("\n".join(tx))
-              return ("\n\n".join(tr_blocks).strip(), "\n\n".join(tx_blocks).strip())
-
-          slugs=[r["slug"] for r in q(
-              "SELECT p.slug AS slug FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")]
-          print("candidates:", len(slugs))
-          done=skipped=0
-          for slug in slugs:
-              rr=q("SELECT html FROM tilda_pages WHERE alias=?", [slug[1:]])
-              tr,tx = parse(rr[0].get("html") if rr else "")
+                  if tr: tr_b.append("\n".join(tr))
+                  if tx: tx_b.append("\n".join(tx))
+              tr="\n\n".join(tr_b).strip(); tx="\n\n".join(tx_b).strip()
               if len(tr)>=10 and len(tx)>=10:
-                  q("UPDATE prayers SET translit=?, translation=? WHERE slug=?", [tr, tx, slug])
-                  done+=1
+                  q("UPDATE prayers SET translit=?, translation=? WHERE slug=?", [tr, tx, slug]); done+=1
               else:
                   skipped+=1
           q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone bhajan layers',?,?)",
-            [str(len(slugs)), f"updated={done} skipped={skipped}"])
+            [str(len(slugs)), f"updated={done} skipped={skipped} boiler={len(boiler)}"])
           print(f"DONE updated={done} skipped={skipped}")
           PY
