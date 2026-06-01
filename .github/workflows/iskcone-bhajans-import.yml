@@ -1,0 +1,75 @@
+name: iskcone bhajans import (missing /bhajans/* into prayers)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Insert missing bhajans into prayers
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, re, html as H, urllib.request, collections
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def q(sql, params=None):
+              body=json.dumps({"sql":sql,"params":params or []}).encode()
+              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())["result"][0]["results"]
+
+          HERO="https://static.tildacdn.net/tild3063-6561-4534-a539-336262316565/iskcon.png"
+          BLOCK=re.compile(r'field="text"[^>]*>(.*?)</div>', re.S|re.I)
+          BR=re.compile(r'(?i)<br\s*/?>'); TAGS=re.compile(r'(?s)<[^>]+>')
+          CHROME=re.compile(r'(Лучшее, что можно сделать для Господа|ISKCON ONE LOVE|ОНЛАЙН-РЕСУРС|БРАХМА-МАДХВА-ГАУДИЯ|РАЗНЫХ СТРАН)', re.I)
+          def clean(s): return re.sub(r'\s+',' ',H.unescape(TAGS.sub(' ', s))).strip()
+          AUTH={'bhaktivinod-thakur':'Бхактивинод Тхакур','lochan-das-thakur':'Лочан дас Тхакур',
+                'narottam-das-thakur':'Нароттам дас Тхакур','vasudeva-ghosh':'Васудева Гхош',
+                'visvanatha-chakravarti-thakur':'Вишванатха Чакраварти Тхакур','rupa-goswami':'Рупа Госвами',
+                'raghunath-das-goswami':'Рагхунатх дас Госвами'}
+          def name_of(title): return re.split(r'\.\s*', (title or '').strip())[0][:200].strip()
+          def author_of(alias, title):
+              for k,v in AUTH.items():
+                  if '/'+k+'/' in '/'+alias: return v, k
+              parts=[p.strip() for p in re.split(r'\.\s*', title or '') if p.strip()]
+              if len(parts)>=2 and not re.match(r'(?i)isk?con|исккон', parts[1]): return parts[1], None
+              return None, None
+
+          pages={}; off=0
+          while True:
+              rows=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
+              if not rows: break
+              for r in rows: pages[r["alias"]]=r.get("html") or ""
+              off+=25
+          freq=collections.Counter()
+          for htmltext in pages.values():
+              for s in {clean(BR.sub(' ', m.group(1))) for m in BLOCK.finditer(htmltext)}:
+                  if s: freq[s]+=1
+          n=len(pages); thr=max(4,int(0.18*n)); boiler={s for s,c in freq.items() if c>=thr}
+
+          def body_of(htmltext):
+              keep=[]
+              for m in BLOCK.finditer(htmltext):
+                  sig=clean(BR.sub(' ', m.group(1)))
+                  if not sig or sig in boiler or CHROME.search(sig): continue
+                  lines=[clean(x) for x in BR.split(m.group(1))]; lines=[x for x in lines if x]
+                  if lines: keep.append("\n".join(lines))
+              return "\n\n".join(keep).strip()
+
+          existing={r["slug"] for r in q("SELECT slug FROM prayers")}
+          STRAG={'ru/raghunath-das-goswami/shri-shri-mukta-charita','ru/rupa-goswami/stavamala/shree-vradja-nava-yuva-radja-ashtaka'}
+          metas={r["alias"]:(r.get("title") or "") for r in q("SELECT alias, title FROM tilda_pages")}
+          targets=[a for a in pages if (a.startswith('ru/bhajans/') or a in STRAG) and ('/'+a) not in existing]
+          ins=0
+          for a in sorted(targets):
+              title=metas.get(a, a)
+              nm=name_of(title); au,aus=author_of(a,title)
+              text=(title.strip()+"\n"+body_of(pages[a])).strip()
+              q("INSERT OR IGNORE INTO prayers (slug,lang,name,author_slug,author_name,text,hero_image,is_section,updated_at) VALUES (?,?,?,?,?,?,?,?,datetime('now'))",
+                ['/'+a,'ru',nm,aus,au,text,HERO,0]); ins+=1
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone bhajans import',?,?)",
+            [str(len(targets)), f"inserted={ins}"])
+          print("inserted", ins, "of", len(targets))
+          PY
