@@ -1,0 +1,62 @@
+name: iskcone bhajan layers (translit + translation)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  layers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Split bhajan HTML into translit + translation
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, re, html as H, urllib.request
+          CF=os.environ["CF"]
+          ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def q(sql, params=None):
+              body=json.dumps({"sql":sql,"params":params or []}).encode()
+              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())["result"][0]["results"]
+
+          BLOCK=re.compile(r'field="text"[^>]*>(.*?)</div>', re.S|re.I)
+          BR=re.compile(r'(?i)<br\s*/?>')
+          BOLD=re.compile(r'(?i)<(?:strong|b)\b')
+          TAGS=re.compile(r'(?s)<[^>]+>')
+          def clean(s):
+              s=H.unescape(TAGS.sub(' ', s))
+              return re.sub(r'\s+',' ',s).strip()
+
+          def parse(htmltext):
+              tr_blocks=[]; tx_blocks=[]
+              for m in BLOCK.finditer(htmltext or ""):
+                  inner=m.group(1)
+                  if not BOLD.search(inner):
+                      continue                       # only lyric blocks (bold = transliteration)
+                  tr=[]; tx=[]
+                  for raw in BR.split(inner):
+                      txt=clean(raw)
+                      if not txt: continue
+                      (tr if BOLD.search(raw) else tx).append(txt)
+                  if tr: tr_blocks.append("\n".join(tr))
+                  if tx: tx_blocks.append("\n".join(tx))
+              return ("\n\n".join(tr_blocks).strip(), "\n\n".join(tx_blocks).strip())
+
+          slugs=[r["slug"] for r in q(
+              "SELECT p.slug AS slug FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")]
+          print("candidates:", len(slugs))
+          done=skipped=0
+          for slug in slugs:
+              rr=q("SELECT html FROM tilda_pages WHERE alias=?", [slug[1:]])
+              tr,tx = parse(rr[0].get("html") if rr else "")
+              if len(tr)>=10 and len(tx)>=10:
+                  q("UPDATE prayers SET translit=?, translation=? WHERE slug=?", [tr, tx, slug])
+                  done+=1
+              else:
+                  skipped+=1
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone bhajan layers',?,?)",
+            [str(len(slugs)), f"updated={done} skipped={skipped}"])
+          print(f"DONE updated={done} skipped={skipped}")
+          PY
