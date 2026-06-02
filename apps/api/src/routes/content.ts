@@ -95,23 +95,19 @@ contentRouter.get('/detail', async (c) => {
 
   const pt = (await c.env.DB.prepare(`SELECT text FROM page_text WHERE slug = ?`).bind(slug).first()) as Row | null;
   const body = bodyOf(pt?.text);
-  // абзацы для рендера
   const paragraphs = body.split('\n').map((s) => s.trim()).filter((s) => s.length > 0);
 
-  let quotes: { ord: number; text: string; source: string | null; speaker: string | null }[] = [];
-  if (ci.type === 'personality') {
-    const { results } = await c.env.DB.prepare(
-      `SELECT ord, text, source, speaker FROM quotes WHERE personality_slug = ? ORDER BY (ord IS NULL), ord, id`,
-    )
-      .bind(slug)
-      .all();
-    quotes = ((results as Row[]) ?? []).map((q) => ({
-      ord: q.ord ?? 0,
-      text: q.text,
-      source: q.source ?? null,
-      speaker: q.speaker ?? null,
-    }));
-  }
+  // structured layout blocks (heading/accent/para/quote/sign/image) — реальная вёрстка iskcone
+  const { results: brows } = await c.env.DB.prepare(
+    `SELECT ord, kind, text, image FROM content_blocks WHERE slug = ? ORDER BY ord`,
+  )
+    .bind(slug)
+    .all();
+  const blocks = ((brows as Row[]) ?? []).map((b) => ({
+    kind: b.kind as string,
+    text: b.text ?? null,
+    image: b.image ?? null,
+  }));
 
   const SUB: Record<string, string> = {
     bhagavan: 'Верховный Господь',
@@ -126,7 +122,7 @@ contentRouter.get('/detail', async (c) => {
     type: ci.type,
     kind: SUB[ci.subtype as string] ?? null,
     hero_image: ci.hero_image ?? null,
-    paragraphs,
-    quotes,
+    blocks,
+    paragraphs, // fallback, если blocks пуст
   });
 });
