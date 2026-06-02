@@ -1,0 +1,682 @@
+[
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/01-arunodaya-kirtana-1",
+  "name": "Арунодая-киртана — песнь первая",
+  "translit_name": "arunodaya-kirtana 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Арунодая-киртана (рассветный киртан)",
+  "ord": 1
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/02-arunodaya-kirtana-2",
+  "name": "Арунодая-киртана — песнь вторая",
+  "translit_name": "arunodaya-kirtana 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Арунодая-киртана (рассветный киртан)",
+  "ord": 2
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/03-arati-kirtana-1",
+  "name": "Арати-киртана — песнь первая",
+  "translit_name": "arati-kirtana 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Арати-киртана",
+  "ord": 3
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/04-arati-kirtana-2",
+  "name": "Арати-киртана — песнь вторая",
+  "translit_name": "arati-kirtana 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Арати-киртана",
+  "ord": 4
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/05-arati-kirtana-3",
+  "name": "Арати-киртана — песнь третья",
+  "translit_name": "arati-kirtana 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Арати-киртана",
+  "ord": 5
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/06-arati-kirtana-4",
+  "name": "Арати-киртана — песнь четвёртая",
+  "translit_name": "arati-kirtana 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Арати-киртана",
+  "ord": 6
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/07-prasada-sevaya-1",
+  "name": "Прасада-севая — песнь первая",
+  "translit_name": "prasada-sevaya 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Прасада-севая (почитание прасада)",
+  "ord": 7
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/08-prasada-sevaya-2",
+  "name": "Прасада-севая — песнь вторая",
+  "translit_name": "prasada-sevaya 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Прасада-севая (почитание прасада)",
+  "ord": 8
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/09-prasada-sevaya-3",
+  "name": "Прасада-севая — песнь третья",
+  "translit_name": "prasada-sevaya 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Прасада-севая (почитание прасада)",
+  "ord": 9
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/10-prasada-sevaya-4",
+  "name": "Прасада-севая — песнь четвёртая",
+  "translit_name": "prasada-sevaya 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Прасада-севая (почитание прасада)",
+  "ord": 10
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/11-prasada-sevaya-5",
+  "name": "Прасада-севая — песнь пятая",
+  "translit_name": "prasada-sevaya 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Прасада-севая (почитание прасада)",
+  "ord": 11
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/12-prasada-sevaya-6",
+  "name": "Прасада-севая — песнь шестая",
+  "translit_name": "prasada-sevaya 6",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Прасада-севая (почитание прасада)",
+  "ord": 12
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/13-sri-nagara-kirtana-1",
+  "name": "Шри Нагара-киртана — песнь первая",
+  "translit_name": "sri-nagara-kirtana 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 13
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/14-sri-nagara-kirtana-2",
+  "name": "Шри Нагара-киртана — песнь вторая",
+  "translit_name": "sri-nagara-kirtana 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 14
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/15-sri-nagara-kirtana-3",
+  "name": "Шри Нагара-киртана — песнь третья",
+  "translit_name": "sri-nagara-kirtana 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 15
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/16-sri-nagara-kirtana-4",
+  "name": "Шри Нагара-киртана — песнь четвёртая",
+  "translit_name": "sri-nagara-kirtana 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 16
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/17-sri-nagara-kirtana-5",
+  "name": "Шри Нагара-киртана — песнь пятая",
+  "translit_name": "sri-nagara-kirtana 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 17
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/18-sri-nagara-kirtana-6",
+  "name": "Шри Нагара-киртана — песнь шестая",
+  "translit_name": "sri-nagara-kirtana 6",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 18
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/19-sri-nagara-kirtana-7",
+  "name": "Шри Нагара-киртана — песнь седьмая",
+  "translit_name": "sri-nagara-kirtana 7",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 19
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/20-sri-nagara-kirtana-8",
+  "name": "Шри Нагара-киртана — песнь восьмая",
+  "translit_name": "sri-nagara-kirtana 8",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нагара-киртана (киртан по городу)",
+  "ord": 20
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/21-mahaprabhu-sata-nama-1",
+  "name": "Шриман Махапрабхур шата-нама — песнь первая",
+  "translit_name": "mahaprabhu-sata-nama 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шриман Махапрабхур шата-нама (сто имён Махапрабху)",
+  "ord": 21
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/22-mahaprabhu-sata-nama-2",
+  "name": "Шриман Махапрабхур шата-нама — песнь вторая",
+  "translit_name": "mahaprabhu-sata-nama 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шриман Махапрабхур шата-нама (сто имён Махапрабху)",
+  "ord": 22
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/23-mahaprabhu-sata-nama-3",
+  "name": "Шриман Махапрабхур шата-нама — песнь третья",
+  "translit_name": "mahaprabhu-sata-nama 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шриман Махапрабхур шата-нама (сто имён Махапрабху)",
+  "ord": 23
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/24-mahaprabhu-sata-nama-4",
+  "name": "Шриман Махапрабхур шата-нама — песнь четвёртая",
+  "translit_name": "mahaprabhu-sata-nama 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шриман Махапрабхур шата-нама (сто имён Махапрабху)",
+  "ord": 24
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/25-krsna-sata-nama-1",
+  "name": "Шри Кришнер вимшоттара-шата-нама — песнь первая",
+  "translit_name": "krsna-sata-nama 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Кришнер вимшоттара-шата-нама (120 имён Кришны)",
+  "ord": 25
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/26-krsna-sata-nama-2",
+  "name": "Шри Кришнер вимшоттара-шата-нама — песнь вторая",
+  "translit_name": "krsna-sata-nama 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Кришнер вимшоттара-шата-нама (120 имён Кришны)",
+  "ord": 26
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/27-krsna-sata-nama-3",
+  "name": "Шри Кришнер вимшоттара-шата-нама — песнь третья",
+  "translit_name": "krsna-sata-nama 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Кришнер вимшоттара-шата-нама (120 имён Кришны)",
+  "ord": 27
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/28-krsna-sata-nama-4",
+  "name": "Шри Кришнер вимшоттара-шата-нама — песнь четвёртая",
+  "translit_name": "krsna-sata-nama 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Кришнер вимшоттара-шата-нама (120 имён Кришны)",
+  "ord": 28
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/29-krsna-sata-nama-5",
+  "name": "Шри Кришнер вимшоттара-шата-нама — песнь пятая",
+  "translit_name": "krsna-sata-nama 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Кришнер вимшоттара-шата-нама (120 имён Кришны)",
+  "ord": 29
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/30-krsna-sata-nama-6",
+  "name": "Шри Кришнер вимшоттара-шата-нама — песнь шестая",
+  "translit_name": "krsna-sata-nama 6",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Кришнер вимшоттара-шата-нама (120 имён Кришны)",
+  "ord": 30
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/31-sri-nama-kirtana-1",
+  "name": "Шри Нама-киртана — песнь первая",
+  "translit_name": "sri-nama-kirtana 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нама-киртана (воспевание Святого Имени)",
+  "ord": 31
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/32-sri-nama-kirtana-2",
+  "name": "Шри Нама-киртана — песнь вторая",
+  "translit_name": "sri-nama-kirtana 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нама-киртана (воспевание Святого Имени)",
+  "ord": 32
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/33-sri-nama-kirtana-3",
+  "name": "Шри Нама-киртана — песнь третья",
+  "translit_name": "sri-nama-kirtana 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нама-киртана (воспевание Святого Имени)",
+  "ord": 33
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/34-sri-nama-kirtana-4",
+  "name": "Шри Нама-киртана — песнь четвёртая",
+  "translit_name": "sri-nama-kirtana 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нама-киртана (воспевание Святого Имени)",
+  "ord": 34
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/35-sri-nama-kirtana-5",
+  "name": "Шри Нама-киртана — песнь пятая",
+  "translit_name": "sri-nama-kirtana 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Нама-киртана (воспевание Святого Имени)",
+  "ord": 35
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/36-sreyo-nirnaya-1",
+  "name": "Шрейо-нирная — песнь первая",
+  "translit_name": "sreyo-nirnaya 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шрейо-нирная (определение блага)",
+  "ord": 36
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/37-sreyo-nirnaya-2",
+  "name": "Шрейо-нирная — песнь вторая",
+  "translit_name": "sreyo-nirnaya 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шрейо-нирная (определение блага)",
+  "ord": 37
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/38-sreyo-nirnaya-3",
+  "name": "Шрейо-нирная — песнь третья",
+  "translit_name": "sreyo-nirnaya 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шрейо-нирная (определение блага)",
+  "ord": 38
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/39-sreyo-nirnaya-4",
+  "name": "Шрейо-нирная — песнь четвёртая",
+  "translit_name": "sreyo-nirnaya 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шрейо-нирная (определение блага)",
+  "ord": 39
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/40-sreyo-nirnaya-5",
+  "name": "Шрейо-нирная — песнь пятая",
+  "translit_name": "sreyo-nirnaya 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шрейо-нирная (определение блага)",
+  "ord": 40
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/41-bhajana-gita-1",
+  "name": "Бхаджана-гита — песнь первая",
+  "translit_name": "bhajana-gita 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Бхаджана-гита (песни для бхаджана)",
+  "ord": 41
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/42-bhajana-gita-2",
+  "name": "Бхаджана-гита — песнь вторая",
+  "translit_name": "bhajana-gita 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Бхаджана-гита (песни для бхаджана)",
+  "ord": 42
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/43-prema-dhvani-1",
+  "name": "Према-дхвани",
+  "translit_name": "prema-dhvani 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Према-дхвани (возгласы любви)",
+  "ord": 43
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/44-sri-namastaka-1",
+  "name": "Шри Намаштака — песнь первая",
+  "translit_name": "sri-namastaka 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 44
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/45-sri-namastaka-2",
+  "name": "Шри Намаштака — песнь вторая",
+  "translit_name": "sri-namastaka 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 45
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/46-sri-namastaka-3",
+  "name": "Шри Намаштака — песнь третья",
+  "translit_name": "sri-namastaka 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 46
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/47-sri-namastaka-4",
+  "name": "Шри Намаштака — песнь четвёртая",
+  "translit_name": "sri-namastaka 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 47
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/48-sri-namastaka-5",
+  "name": "Шри Намаштака — песнь пятая",
+  "translit_name": "sri-namastaka 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 48
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/49-sri-namastaka-6",
+  "name": "Шри Намаштака — песнь шестая",
+  "translit_name": "sri-namastaka 6",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 49
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/50-sri-namastaka-7",
+  "name": "Шри Намаштака — песнь седьмая",
+  "translit_name": "sri-namastaka 7",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 50
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/51-sri-namastaka-8",
+  "name": "Шри Намаштака — песнь восьмая",
+  "translit_name": "sri-namastaka 8",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Намаштака (восемь молитв Святому Имени)",
+  "ord": 51
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/52-sri-radhastaka-1",
+  "name": "Шри Радхаштака — песнь первая",
+  "translit_name": "sri-radhastaka 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 52
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/53-sri-radhastaka-2",
+  "name": "Шри Радхаштака — песнь вторая",
+  "translit_name": "sri-radhastaka 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 53
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/54-sri-radhastaka-3",
+  "name": "Шри Радхаштака — песнь третья",
+  "translit_name": "sri-radhastaka 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 54
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/55-sri-radhastaka-4",
+  "name": "Шри Радхаштака — песнь четвёртая",
+  "translit_name": "sri-radhastaka 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 55
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/56-sri-radhastaka-5",
+  "name": "Шри Радхаштака — песнь пятая",
+  "translit_name": "sri-radhastaka 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 56
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/57-sri-radhastaka-6",
+  "name": "Шри Радхаштака — песнь шестая",
+  "translit_name": "sri-radhastaka 6",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 57
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/58-sri-radhastaka-7",
+  "name": "Шри Радхаштака — песнь седьмая",
+  "translit_name": "sri-radhastaka 7",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 58
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/59-sri-radhastaka-8",
+  "name": "Шри Радхаштака — песнь восьмая",
+  "translit_name": "sri-radhastaka 8",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Радхаштака (восемь молитв Шримати Радхарани)",
+  "ord": 59
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/60-parisista-1",
+  "name": "Паришишта",
+  "translit_name": "parisista 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Паришишта (дополнение)",
+  "ord": 60
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/61-sri-siksastaka-1",
+  "name": "Шри Шикшаштака — песнь первая",
+  "translit_name": "sri-siksastaka 1",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 61
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/62-sri-siksastaka-2",
+  "name": "Шри Шикшаштака — песнь вторая",
+  "translit_name": "sri-siksastaka 2",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 62
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/63-sri-siksastaka-3",
+  "name": "Шри Шикшаштака — песнь третья",
+  "translit_name": "sri-siksastaka 3",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 63
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/64-sri-siksastaka-4",
+  "name": "Шри Шикшаштака — песнь четвёртая",
+  "translit_name": "sri-siksastaka 4",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 64
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/65-sri-siksastaka-5",
+  "name": "Шри Шикшаштака — песнь пятая",
+  "translit_name": "sri-siksastaka 5",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 65
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/66-sri-siksastaka-6",
+  "name": "Шри Шикшаштака — песнь шестая",
+  "translit_name": "sri-siksastaka 6",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 66
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/67-sri-siksastaka-7",
+  "name": "Шри Шикшаштака — песнь седьмая",
+  "translit_name": "sri-siksastaka 7",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 67
+ },
+ {
+  "slug": "/ru/bhajans/bhaktivinoda-thakura/gitavali/68-sri-siksastaka-8",
+  "name": "Шри Шикшаштака — песнь восьмая",
+  "translit_name": "sri-siksastaka 8",
+  "author_name": "Бхактивинод Тхакур",
+  "source_text": "Гитавали",
+  "category": "Песни ачарьев",
+  "section": "Шри Шикшаштака (восемь наставлений)",
+  "ord": 68
+ }
+]
