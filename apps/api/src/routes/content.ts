@@ -27,7 +27,7 @@ contentRouter.get('/articles', async (c) => {
             length(COALESCE(pt.text,'')) AS tlen
        FROM content_items ci
        LEFT JOIN page_text pt ON pt.slug = ci.slug
-      WHERE ci.type = 'article' AND ci.subtype = 'dasa' AND length(COALESCE(pt.text,'')) > 120
+      WHERE ci.type = 'article' AND ci.subtype = 'dasa' AND ci.lang = 'ru' AND length(COALESCE(pt.text,'')) > 120
       ORDER BY tlen DESC`,
   ).all();
   const items = ((results as Row[]) ?? []).map((r) => ({
@@ -46,7 +46,7 @@ contentRouter.get('/personalities', async (c) => {
             length(COALESCE(pt.text,'')) AS tlen
        FROM content_items ci
        LEFT JOIN page_text pt ON pt.slug = ci.slug
-      WHERE ci.type = 'personality'
+      WHERE ci.type = 'personality' AND ci.lang = 'ru'
       ORDER BY (ci.subtype='bhagavan') DESC, (ci.subtype='avatar') DESC, n_quotes DESC, tlen DESC`,
   ).all();
   const SUB: Record<string, string> = {
@@ -70,7 +70,7 @@ contentRouter.get('/centers', async (c) => {
     `SELECT ci.slug, ci.name, ci.hero_image
        FROM content_items ci
        LEFT JOIN page_text pt ON pt.slug = ci.slug
-      WHERE ci.type = 'center' AND length(COALESCE(pt.text,'')) > 120
+      WHERE ci.type = 'center' AND ci.lang = 'ru' AND length(COALESCE(pt.text,'')) > 120
       ORDER BY length(COALESCE(pt.text,'')) DESC`,
   ).all();
   const items = ((results as Row[]) ?? []).map((r) => ({
