@@ -13,6 +13,20 @@ export const contentRouter = new Hono<{ Bindings: Bindings; Variables: Variables
 
 type Row = Record<string, any>;
 
+// GET /v1/content/resolve?slug=… — чем является slug: контент / бхаджан / нет.
+// Нужен для чистых URL (slug = путь) при холодном входе по прямой ссылке.
+contentRouter.get('/resolve', async (c) => {
+  const slug = c.req.query('slug') ?? '';
+  if (!slug) return c.json({ kind: 'none' });
+  const ci = (await c.env.DB.prepare(
+    `SELECT type FROM content_items WHERE slug = ? AND type IN ('article','personality','center') LIMIT 1`,
+  ).bind(slug).first()) as Row | null;
+  if (ci) return c.json({ kind: 'content', type: ci.type });
+  const pr = (await c.env.DB.prepare(`SELECT 1 AS x FROM prayers WHERE slug = ? LIMIT 1`).bind(slug).first()) as Row | null;
+  if (pr) return c.json({ kind: 'bhajan' });
+  return c.json({ kind: 'none' });
+});
+
 // первая строка page_text — служебный заголовок («Имя. Раздел. …»); срезаем
 function bodyOf(text: string | null | undefined): string {
   const raw = String(text ?? '');

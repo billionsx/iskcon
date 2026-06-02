@@ -161,7 +161,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 2000); };
-  const pageUrl = `https://gaurangers.com/c${slug}`;
+  const pageUrl = `https://gaurangers.com${slug}`;
   const share = async () => {
     const payload = { title: data?.name ?? "ISKCON ONE LOVE", text: data?.name ? `${data.name} — gaurangers.com` : "gaurangers.com", url: pageUrl };
     try { if (typeof navigator !== "undefined" && (navigator as Navigator).share) { await (navigator as Navigator).share(payload); return; } } catch { /* cancelled */ }

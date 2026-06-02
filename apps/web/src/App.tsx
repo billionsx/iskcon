@@ -466,36 +466,46 @@ export default function App() {
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
   const fromPop = useRef(false);
 
-  // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере уже включён) ──
-  // /c{slug} контент · /b{slug} бхаджан · /bhajans каталог · /book/{id} карточка
-  // /read/{work}/{div?}/{ch?}/{v?} ридер · /, /feed, /search, /map, /passport табы
+  // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере включён) ──
+  // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
+  // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
+  // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
+  const RESERVED = ["", "feed", "search", "map", "passport", "bhajans", "book", "read"];
   function pathFromState(): string {
     if (openBook) return "/book/bg";
-    if (scripture) {
-      const p = ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "");
-      return p.join("/");
-    }
-    if (openBhajan) return "/b" + openBhajan;
+    if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
+    if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openCatalog) return "/bhajans";
-    if (openContent) return "/c" + openContent;
+    if (openContent) return openContent;   // slug сам по себе путь
     return tab === "home" ? "/" : "/" + tab;
   }
+  function resolveAndOpen(slug: string) {
+    fetch(api(`/content/resolve?slug=${encodeURIComponent(slug)}`))
+      .then((r) => r.json())
+      .then((d) => {
+        fromPop.current = true;
+        if (d?.kind === "bhajan") setOpenBhajan(slug);
+        else setOpenContent(slug); // content или неизвестно → пробуем как контент
+      })
+      .catch(() => { fromPop.current = true; setOpenContent(slug); });
+  }
   function applyPath(path: string) {
+    fromPop.current = true;
     const clean = (path || "/").replace(/\/+$/, "") || "/";
-    // сброс всех слоёв, затем установка нужного
     setOpenBook(false); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null);
-    if (clean === "/" ) { setTab("home"); return; }
-    if (["/feed", "/search", "/map", "/passport"].includes(clean)) { setTab(clean.slice(1)); return; }
+    const seg0 = clean.split("/")[1] ?? "";
+    if (clean === "/") { setTab("home"); return; }
+    if (["feed", "search", "map", "passport"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
-    if (clean === "/book/bg" || clean === "/book") { setOpenBook(true); return; }
-    if (clean.startsWith("/read/")) {
+    if (seg0 === "book") { setOpenBook(true); return; }
+    if (seg0 === "read") {
       const [, , work, div, ch, v] = clean.split("/");
       if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
       return;
     }
-    if (clean.startsWith("/b/")) { setOpenBhajan(clean.slice(2)); return; } // "/b" + slug
-    if (clean.startsWith("/c/")) { setOpenContent(clean.slice(2)); return; } // "/c" + slug
-    setTab("home"); // неизвестный путь
+    if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
+    if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
+    setTab("home");
   }
 
   // инициализация из URL + кнопки назад/вперёд
