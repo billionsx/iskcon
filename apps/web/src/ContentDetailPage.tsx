@@ -15,10 +15,55 @@ import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
 
-interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; }
+interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean }
 const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
+function HeartIcon({ filled, ...p }: IconProps) { return <svg {...sp(p)}><path d="M12 20s-7-4.3-9.3-8.6C1.2 8.3 2.7 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.3 0 4.8 3.3 3.3 6.4C19 15.7 12 20 12 20Z" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.7} strokeLinejoin="round" /></svg>; }
+function ShareIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>; }
+function MoreIcon(p: IconProps) { return <svg {...sp(p)}><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>; }
+function LinkIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.6 1.6" /><path {...STROKE} d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.6-1.6" /></svg>; }
+function TopIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 19V7M6 11l6-6 6 6" /></svg>; }
+
+/** Круглая стеклянная кнопка навбара (как в ПКП). На hero — тёмное стекло; при
+ *  скролле растворяется в фон и icon берёт цвет контента (передаётся onGlass). */
+function NavBtn({ ariaLabel, onClick, onGlass, active, activeColor, children }: { ariaLabel: string; onClick: () => void; onGlass: number; active?: boolean; activeColor?: string; children: React.ReactNode }) {
+  // onGlass: 1 → поверх фото (тёмное стекло, белый); 0 → на фоне (прозрачно, label)
+  const dark = onGlass;
+  return (
+    <button type="button" aria-label={ariaLabel} aria-pressed={active} onClick={onClick}
+      style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer",
+        background: `color-mix(in srgb, rgba(0,0,0,0.42) ${Math.round(dark * 100)}%, transparent)`,
+        color: active && activeColor ? activeColor : `color-mix(in srgb, #fff ${Math.round(dark * 100)}%, var(--color-label))`,
+        backdropFilter: dark > 0.1 ? "blur(12px)" : "none", WebkitBackdropFilter: dark > 0.1 ? "blur(12px)" : "none",
+        transition: "background 120ms linear, color 120ms linear" }}>
+      {children}
+    </button>
+  );
+}
+
+function ActionsSheet({ open, items, onClose, onSelect }: { open: boolean; items: { key: string; label: string; danger?: boolean; icon: React.ReactNode }[]; onClose: () => void; onSelect: (key: string) => void }) {
+  if (!open) return null;
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,.4)", animation: "fadein 160ms ease" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, margin: "0 8px", marginBottom: "calc(8px + env(safe-area-inset-bottom,0px))", background: "var(--color-bg-2)", borderRadius: "var(--radius-glass)", padding: 8, boxShadow: "var(--shadow-card)" }}>
+        <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline)", margin: "6px auto 10px" }} />
+        {items.map((it, i) => (
+          <button key={it.key} onClick={() => onSelect(it.key)} style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "13px 14px", background: "none", border: "none", borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 17, color: it.danger ? "#FF453A" : "var(--color-label)", cursor: "pointer" }}>
+            <span style={{ flexShrink: 0, color: it.danger ? "#FF453A" : "var(--color-label-2)" }}>{it.icon}</span>
+            {it.label}
+          </button>
+        ))}
+        <button onClick={onClose} style={{ width: "100%", marginTop: 8, padding: "14px", borderRadius: "var(--radius-control)", border: "none", background: "var(--color-bg-3)", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-brand-blue)", cursor: "pointer" }}>Отмена</button>
+      </div>
+    </div>
+  );
+}
+
+function Toast({ msg }: { msg: string | null }) {
+  if (!msg) return null;
+  return <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, maxWidth: 340, padding: "11px 18px", borderRadius: 999, background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)", textAlign: "center", animation: "fadein 160ms ease" }}>{msg}</div>;
+}
 
 function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
   return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
@@ -111,6 +156,31 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0); // 0..1 прогресс ухода hero под навбар
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [favorited, setFavorited] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 2000); };
+  const pageUrl = `https://gaurangers.com/c${slug}`;
+  const share = async () => {
+    const payload = { title: data?.name ?? "ISKCON ONE LOVE", text: data?.name ? `${data.name} — gaurangers.com` : "gaurangers.com", url: pageUrl };
+    try { if (typeof navigator !== "undefined" && (navigator as Navigator).share) { await (navigator as Navigator).share(payload); return; } } catch { /* cancelled */ }
+    try { await navigator.clipboard.writeText(pageUrl); flash("Ссылка скопирована"); } catch { flash(pageUrl); }
+  };
+  const toggleFav = () => { const nv = !favorited; setFavorited(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); };
+  const menuItems = [
+    { key: "share", label: "Поделиться", icon: <ShareIcon size={19} /> },
+    { key: "copy", label: "Скопировать ссылку", icon: <LinkIcon size={19} /> },
+    { key: "fav", label: favorited ? "Убрать из избранного" : "В избранное", icon: <HeartIcon size={19} filled={favorited} /> },
+    { key: "top", label: "В начало", icon: <TopIcon size={19} /> },
+  ];
+  const onMenu = (key: string) => {
+    setMenuOpen(false);
+    if (key === "share") return void share();
+    if (key === "copy") { navigator.clipboard?.writeText(pageUrl).then(() => flash("Ссылка скопирована")).catch(() => flash(pageUrl)); return; }
+    if (key === "fav") return toggleFav();
+    if (key === "top") { scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  };
 
   useEffect(() => {
     let live = true;
@@ -153,7 +223,13 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: t > 0.6 ? (t - 0.6) / 0.4 : 0 }}>
           {data?.name ?? ""}
         </div>
-        <div style={{ width: 38, flexShrink: 0 }} />
+        {data && (
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+            <NavBtn ariaLabel={favorited ? "Убрать из избранного" : "В избранное"} onClick={toggleFav} onGlass={1 - t} active={favorited} activeColor="#FF453A"><HeartIcon size={18} filled={favorited} /></NavBtn>
+            <NavBtn ariaLabel="Поделиться" onClick={() => void share()} onGlass={1 - t}><ShareIcon size={17} /></NavBtn>
+            <NavBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)} onGlass={1 - t}><MoreIcon size={16} /></NavBtn>
+          </div>
+        )}
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -215,6 +291,9 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
           </>
         )}
       </div>
+
+      <ActionsSheet open={menuOpen} items={menuItems} onClose={() => setMenuOpen(false)} onSelect={onMenu} />
+      <Toast msg={toast} />
     </div>
   );
 }
