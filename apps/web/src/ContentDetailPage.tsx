@@ -27,6 +27,9 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
 interface SignRef {
   author: string | null; authorSlug: string | null;
   workName: string | null; workId: string | null; workHref: string | null;
+  division: string | null; divisionSlug: string | null;
+  chapter: string | null; verse: string | null;
+  chapterHref: string | null; verseHref: string | null;
   citation: string | null; raw: string;
 }
 interface Block { kind: string; text: string | null; image: string | null; ref?: SignRef }
@@ -37,32 +40,58 @@ interface ContentDetail {
 
 /** Редакционный pull-quote (Apple Books / News): крупный курсив слева,
  *  тонкая акцентная линия, структурированная атрибуция со ссылками. */
-function PullQuote({ text, ref, onPerson, onBook }: { text: string; ref: SignRef | null; onPerson: (slug: string) => void; onBook: (workId: string) => void }) {
-  const linkBtn: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-brand-blue)", cursor: "pointer" };
+function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: SignRef | null; onPerson: (slug: string) => void; onBook: (workId: string) => void; onRef: (href: string) => void }) {
+  const link: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-brand-blue)", cursor: "pointer" };
+  const dim = <span style={{ color: "var(--color-label-3)" }}>{"  ·  "}</span>;
+  const hasStruct = ref && (ref.author || ref.workName);
+  // ридер пока есть только для bg → глубокие ссылки активны для bg; cc/sb — текст
+  const deep = ref?.workId === "bg";
   return (
     <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid color-mix(in srgb, var(--color-brand-blue) 55%, transparent)" }}>
       <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 22, lineHeight: 1.42, letterSpacing: "0.1px", color: "var(--color-label)" }}>
         {text}
       </blockquote>
-      {ref && (ref.author || ref.workName || ref.citation || ref.raw) && (
+      {ref && (hasStruct || ref.raw) && (
         <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
-          {/* автор → личность */}
-          {ref.author && (
-            ref.authorSlug
-              ? <button onClick={() => onPerson(ref.authorSlug as string)} style={{ ...linkBtn, fontWeight: 600 }}>{ref.author}</button>
-              : <span style={{ fontWeight: 600, color: "var(--color-label)" }}>{ref.author}</span>
+          {hasStruct ? (
+            <>
+              {/* автор → личность */}
+              {ref.author && (
+                ref.authorSlug
+                  ? <button onClick={() => onPerson(ref.authorSlug as string)} style={{ ...link, fontWeight: 600 }}>{ref.author}</button>
+                  : <span style={{ fontWeight: 600, color: "var(--color-label)" }}>{ref.author}</span>
+              )}
+              {ref.author && ref.workName && dim}
+              {/* книга → книга (ридер пока есть для bg) */}
+              {ref.workName && (
+                deep && ref.workId
+                  ? <button onClick={() => onBook(ref.workId as string)} style={link}>{ref.workName}</button>
+                  : <span>{ref.workName}</span>
+              )}
+              {/* раздел (лила/песнь) — текст */}
+              {ref.division && <span>{", "}{ref.division}</span>}
+              {/* глава → глава */}
+              {ref.chapter && (
+                <span>{", "}
+                  {deep && ref.chapterHref
+                    ? <button onClick={() => onRef(ref.chapterHref as string)} style={link}>глава {ref.chapter}</button>
+                    : <span>глава {ref.chapter}</span>}
+                </span>
+              )}
+              {/* стих → стих */}
+              {ref.verse && (
+                <span>{", "}
+                  {deep && ref.verseHref
+                    ? <button onClick={() => onRef(ref.verseHref as string)} style={link}>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</button>
+                    : <span>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</span>}
+                </span>
+              )}
+              {/* если книга не распознана, но есть хвост — добавим его */}
+              {!ref.workName && ref.citation && <span>{ref.citation}</span>}
+            </>
+          ) : (
+            <span>{ref.raw}</span>
           )}
-          {ref.author && (ref.workName || ref.citation) && <span style={{ color: "var(--color-label-3)" }}>{"  ·  "}</span>}
-          {/* книга → книга */}
-          {ref.workName && (
-            ref.workId
-              ? <button onClick={() => onBook(ref.workId as string)} style={linkBtn}>{ref.workName}</button>
-              : <span>{ref.workName}</span>
-          )}
-          {/* глава/стих — текст (углубление появится вместе с контентом книги) */}
-          {ref.citation && <span>{ref.workName ? ", " : ""}{ref.citation}</span>}
-          {/* fallback, если ничего не распозналось */}
-          {!ref.author && !ref.workName && !ref.citation && ref.raw && <span>{ref.raw}</span>}
         </figcaption>
       )}
     </figure>
@@ -77,7 +106,7 @@ function Figure({ src }: { src: string }) {
   );
 }
 
-export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenBook }: { slug: string; onBack: () => void; onOpenContent: (slug: string) => void; onOpenBook: (workId: string) => void }) {
+export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenBook, onOpenRef }: { slug: string; onBack: () => void; onOpenContent: (slug: string) => void; onOpenBook: (workId: string) => void; onOpenRef: (href: string) => void }) {
   const [data, setData] = useState<ContentDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0); // 0..1 прогресс ухода hero под навбар
@@ -168,7 +197,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                         return b.image ? <Figure key={i} src={b.image} /> : null;
                       case "quote": {
                         const ref = next && next.kind === "sign" ? (next.ref ?? null) : null;
-                        return <PullQuote key={i} text={b.text ?? ""} ref={ref} onPerson={onOpenContent} onBook={onOpenBook} />;
+                        return <PullQuote key={i} text={b.text ?? ""} ref={ref} onPerson={onOpenContent} onBook={onOpenBook} onRef={onOpenRef} />;
                       }
                       default:
                         return <p key={i} style={{ margin: "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{b.text}</p>;

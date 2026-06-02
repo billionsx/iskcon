@@ -484,6 +484,7 @@ export default function App() {
               onBack={() => setOpenContent(null)}
               onOpenContent={(s) => setOpenContent(s)}
               onOpenBook={() => { setOpenContent(null); setOpenBook(true); }}
+              onOpenRef={(href) => { if (href.includes(":bg")) { setOpenContent(null); setOpenBook(true); } }}
             />
           </main>
         ) : (
