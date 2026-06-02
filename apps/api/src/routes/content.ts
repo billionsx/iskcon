@@ -71,9 +71,15 @@ interface SignRef {
   authorSlug: string | null;   // ссылка на личность (или null)
   workName: string | null;
   workId: string | null;       // ссылка на книгу (или null)
-  workHref: string | null;     // канонический адрес книги (или главы для bg)
-  citation: string | null;     // «Антья-лила, глава 19, стих 35» — хвост источника
-  raw: string;                 // исходная строка (fallback)
+  workHref: string | null;     // канонический адрес книги
+  division: string | null;     // «Антья-лила» / «Песнь 7» (человекочитаемо)
+  divisionSlug: string | null; // adi|madhya|antya | номер песни
+  chapter: string | null;      // номер главы
+  verse: string | null;        // номер стиха (или «35-37» / «введение»)
+  chapterHref: string | null;  // chap:{work}:{div}:{ch}
+  verseHref: string | null;    // verse:{work}:{div}:{ch}:{v}
+  citation: string | null;     // человекочитаемый хвост (fallback-показ)
+  raw: string;
 }
 
 function matchAuthor(s: string): { name: string; slug: string } | null {
@@ -83,7 +89,7 @@ function matchAuthor(s: string): { name: string; slug: string } | null {
 
 // Разбор одной подписи в структуру ссылок
 function parseSign(raw: string): SignRef {
-  const out: SignRef = { author: null, authorSlug: null, workName: null, workId: null, workHref: null, citation: null, raw };
+  const out: SignRef = { author: null, authorSlug: null, workName: null, workId: null, workHref: null, division: null, divisionSlug: null, chapter: null, verse: null, chapterHref: null, verseHref: null, citation: null, raw };
   // 1) автор — сегмент до первого ' · ', если он похож на личность/Прабхупаду
   const segs = raw.split('·').map((x) => x.trim()).filter(Boolean);
   let sourceStr = raw;
@@ -104,13 +110,37 @@ function parseSign(raw: string): SignRef {
   // 3) хвост-цитата (раздел/глава/стих) — всё после названия книги
   let tail = sourceStr;
   if (out.workName) {
-    // срезаем имя книги (по первому совпадению known-форм)
     tail = sourceStr.replace(/^[^,]*,\s*/, '').trim(); // убираем «Книга, »
   }
-  // лила для ЧЧ — оставляем в citation как есть; citation = человекочитаемый хвост
   out.citation = tail && tail !== sourceStr ? tail : (out.workName ? tail : null);
-  // 4) workHref — страница книги (книга→книга). Для bg ведём в ридер.
+
+  // 3a) раздел (лила для cc / песнь для sb)
+  if (out.workId === 'cc') {
+    for (const l of CC_LILAS) {
+      if (l.re.test(sourceStr)) {
+        out.division = l.label;
+        out.divisionSlug = /ади/i.test(l.label) ? 'adi' : /мадхья/i.test(l.label) ? 'madhya' : 'antya';
+        break;
+      }
+    }
+  } else if (out.workId === 'sb') {
+    const pm = sourceStr.match(/песн[ьи]\s*(\d+)/i);
+    if (pm) { out.division = `Песнь ${pm[1]}`; out.divisionSlug = pm[1] ?? null; }
+  }
+  // 3b) глава
+  const cm = sourceStr.match(/глав[аы]\s*(\d+)/i);
+  if (cm) out.chapter = cm[1] ?? null;
+  // 3c) стих(и) / введение
+  const vm = sourceStr.match(/стих[аи]?\s*(\d+(?:\s*[-–]\s*\d+)?)/i);
+  if (vm) out.verse = (vm[1] ?? '').replace(/\s+/g, '');
+  else if (/введение/i.test(sourceStr)) out.verse = 'введение';
+
+  // 4) канонические адреса (для bg раздел = глава напрямую)
+  const dv = out.workId === 'bg' ? out.chapter : out.divisionSlug;
   if (out.workId) out.workHref = `book:${out.workId}`;
+  if (out.workId && dv && out.chapter) out.chapterHref = `chap:${out.workId}:${dv}:${out.chapter}`;
+  if (out.workId && dv && out.chapter && out.verse && /^\d/.test(out.verse))
+    out.verseHref = `verse:${out.workId}:${dv}:${out.chapter}:${out.verse}`;
   return out;
 }
 
