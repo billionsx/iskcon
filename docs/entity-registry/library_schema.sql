@@ -100,3 +100,67 @@ CREATE INDEX IF NOT EXISTS idx_tok_verse   ON verse_tokens(verse_id, ordinal);
 CREATE INDEX IF NOT EXISTS idx_tok_lemma   ON verse_tokens(lemma);
 CREATE INDEX IF NOT EXISTS idx_tok_entity  ON verse_tokens(entity_id);
 CREATE INDEX IF NOT EXISTS idx_fav_user    ON user_favorites(user_id);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Нормализация заголовков секций (см. migrations/0002_strip_section_labels.sql).
+-- Срезает ведущую метку секции при записи из любого источника (CRM, GH Actions,
+-- ручной импорт). Идемпотентно; чистые строки не трогает.
+--   verses.devanagari → «Деванагари» · verses.translit/uvaca → «Текст стиха»
+--   verse_texts.translation → «Перевод» · verse_texts.purport → «Комментарий»
+--   verse_tokens.term → «Пословный перевод»
+-- ─────────────────────────────────────────────────────────────────────────────
+DROP TRIGGER IF EXISTS trg_verses_strip_ins;
+CREATE TRIGGER trg_verses_strip_ins AFTER INSERT ON verses
+WHEN NEW.devanagari LIKE 'Деванагари%' OR NEW.translit LIKE 'Текст стиха%' OR NEW.uvaca LIKE 'Текст стиха%'
+BEGIN
+  UPDATE verses SET
+    devanagari = CASE WHEN devanagari LIKE 'Деванагари%'  THEN SUBSTR(devanagari, LENGTH('Деванагари')+1)  ELSE devanagari END,
+    translit   = CASE WHEN translit   LIKE 'Текст стиха%' THEN SUBSTR(translit,   LENGTH('Текст стиха')+1) ELSE translit   END,
+    uvaca      = CASE WHEN uvaca       LIKE 'Текст стиха%' THEN SUBSTR(uvaca,      LENGTH('Текст стиха')+1) ELSE uvaca      END
+  WHERE id = NEW.id;
+END;
+
+DROP TRIGGER IF EXISTS trg_verses_strip_upd;
+CREATE TRIGGER trg_verses_strip_upd AFTER UPDATE ON verses
+WHEN NEW.devanagari LIKE 'Деванагари%' OR NEW.translit LIKE 'Текст стиха%' OR NEW.uvaca LIKE 'Текст стиха%'
+BEGIN
+  UPDATE verses SET
+    devanagari = CASE WHEN devanagari LIKE 'Деванагари%'  THEN SUBSTR(devanagari, LENGTH('Деванагари')+1)  ELSE devanagari END,
+    translit   = CASE WHEN translit   LIKE 'Текст стиха%' THEN SUBSTR(translit,   LENGTH('Текст стиха')+1) ELSE translit   END,
+    uvaca      = CASE WHEN uvaca       LIKE 'Текст стиха%' THEN SUBSTR(uvaca,      LENGTH('Текст стиха')+1) ELSE uvaca      END
+  WHERE id = NEW.id;
+END;
+
+DROP TRIGGER IF EXISTS trg_verse_texts_strip_ins;
+CREATE TRIGGER trg_verse_texts_strip_ins AFTER INSERT ON verse_texts
+WHEN NEW.translation LIKE 'Перевод%' OR NEW.purport LIKE 'Комментарий%'
+BEGIN
+  UPDATE verse_texts SET
+    translation = CASE WHEN translation LIKE 'Перевод%'     THEN SUBSTR(translation, LENGTH('Перевод')+1)     ELSE translation END,
+    purport     = CASE WHEN purport     LIKE 'Комментарий%' THEN SUBSTR(purport,     LENGTH('Комментарий')+1) ELSE purport     END
+  WHERE id = NEW.id;
+END;
+
+DROP TRIGGER IF EXISTS trg_verse_texts_strip_upd;
+CREATE TRIGGER trg_verse_texts_strip_upd AFTER UPDATE ON verse_texts
+WHEN NEW.translation LIKE 'Перевод%' OR NEW.purport LIKE 'Комментарий%'
+BEGIN
+  UPDATE verse_texts SET
+    translation = CASE WHEN translation LIKE 'Перевод%'     THEN SUBSTR(translation, LENGTH('Перевод')+1)     ELSE translation END,
+    purport     = CASE WHEN purport     LIKE 'Комментарий%' THEN SUBSTR(purport,     LENGTH('Комментарий')+1) ELSE purport     END
+  WHERE id = NEW.id;
+END;
+
+DROP TRIGGER IF EXISTS trg_verse_tokens_strip_ins;
+CREATE TRIGGER trg_verse_tokens_strip_ins AFTER INSERT ON verse_tokens
+WHEN NEW.term LIKE 'Пословный перевод%'
+BEGIN
+  UPDATE verse_tokens SET term = SUBSTR(term, LENGTH('Пословный перевод')+1) WHERE id = NEW.id;
+END;
+
+DROP TRIGGER IF EXISTS trg_verse_tokens_strip_upd;
+CREATE TRIGGER trg_verse_tokens_strip_upd AFTER UPDATE ON verse_tokens
+WHEN NEW.term LIKE 'Пословный перевод%'
+BEGIN
+  UPDATE verse_tokens SET term = SUBSTR(term, LENGTH('Пословный перевод')+1) WHERE id = NEW.id;
+END;
