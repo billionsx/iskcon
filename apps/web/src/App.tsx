@@ -10,6 +10,7 @@ import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
+import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
 import { api } from "./api";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -462,12 +463,32 @@ export default function App() {
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
+  const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
+
+  // ссылка-цитата → действие. Адреса: book:{id} | chap:{id}:{div}:{ch} | verse:{id}:{div}:{ch}:{v}
+  function openRef(href: string) {
+    const [kind, work, div, ch, v] = href.split(":");
+    if (!work) return;
+    if (work === "bg") { setOpenContent(null); setScripture(null); setOpenBook(true); return; }
+    // ЧЧ/ШБ и прочие иерархические — референс-ридер
+    setOpenContent(null); setOpenBook(false);
+    setScripture({
+      work,
+      div: kind === "book" ? null : (div ?? null),
+      chapter: kind === "chap" || kind === "verse" ? (ch ?? null) : null,
+      verse: kind === "verse" ? (v ?? null) : null,
+    });
+  }
   return (
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         {openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BookDetailPage book={BOOKS.bg} onBack={() => setOpenBook(false)} />
+          </main>
+        ) : scripture ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <ScriptureReader target={scripture} onBack={() => setScripture(null)} />
           </main>
         ) : openBhajan ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -483,8 +504,8 @@ export default function App() {
               slug={openContent}
               onBack={() => setOpenContent(null)}
               onOpenContent={(s) => setOpenContent(s)}
-              onOpenBook={() => { setOpenContent(null); setOpenBook(true); }}
-              onOpenRef={(href) => { if (href.includes(":bg")) { setOpenContent(null); setOpenBook(true); } }}
+              onOpenBook={(workId) => openRef(`book:${workId}`)}
+              onOpenRef={(href) => openRef(href)}
             />
           </main>
         ) : (
