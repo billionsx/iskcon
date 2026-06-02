@@ -12,18 +12,8 @@
  * Источник: GET /content/detail?slug=… → { blocks[], paragraphs[] (fallback) }.
  */
 import { useEffect, useRef, useState } from "react";
-import type { SVGProps } from "react";
 import { api } from "./api";
-
-interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean }
-const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
-const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
-function HeartIcon({ filled, ...p }: IconProps) { return <svg {...sp(p)}><path d="M12 20s-7-4.3-9.3-8.6C1.2 8.3 2.7 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.3 0 4.8 3.3 3.3 6.4C19 15.7 12 20 12 20Z" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.7} strokeLinejoin="round" /></svg>; }
-function ShareIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>; }
-function MoreIcon(p: IconProps) { return <svg {...sp(p)}><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>; }
-function LinkIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.6 1.6" /><path {...STROKE} d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.6-1.6" /></svg>; }
-function TopIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 19V7M6 11l6-6 6 6" /></svg>; }
+import { BackIcon, HeartIcon, ShareIcon, MoreIcon, LinkIcon, TopIcon, type IconProps } from "./ui/icons";
 
 /** Круглая стеклянная кнопка навбара (как в ПКП). На hero — тёмное стекло; при
  *  скролле растворяется в фон и icon берёт цвет контента (передаётся onGlass). */

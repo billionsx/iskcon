@@ -12,16 +12,12 @@ import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
+import { BackIcon, HeartIcon, ShareIcon, MoreIcon } from "./ui/icons";
 
 /* ───────── icons (same geometry as the card) ───────── */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
 const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-function HeartIcon(p: IconProps) {
-  const d = "M12 21c-7.4-4.6-9.9-8.7-9.9-12.5 0-2.85 2.04-5.2 4.85-5.2 1.97 0 3.6 1.05 5.05 3.07 1.45-2.02 3.08-3.07 5.05-3.07 2.81 0 4.85 2.35 4.85 5.2 0 3.8-2.5 7.9-9.9 12.5Z";
-  return p.filled ? <svg {...sp(p)}><path d={d} fill="currentColor" /></svg> : <svg {...sp(p)}><path {...STROKE} d={d} /></svg>;
-}
-function ShareIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>; }
 function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
   const { cornerGlyph, ...rest } = p;
   const corner = cornerGlyph === "plus"
@@ -29,8 +25,6 @@ function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
     : cornerGlyph === "minus" ? <line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /> : null;
   return <svg {...sp(rest)} overflow="visible"><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" />{corner}</svg>;
 }
-function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
-function MoreIcon(p: IconProps) { return <svg {...sp(p)}><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>; }
 function PlayIcon(p: IconProps) { return <svg {...sp(p)}><path d="M7 5l12 7-12 7V5z" fill="currentColor" /></svg>; }
 function ReadIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 6c-1.8-1.2-4-1.8-6.5-1.8C4 4.2 3 4.6 3 5.4v12c0 .7.7 1 1.5.9C6.7 18 9 18.4 12 20c3-1.6 5.3-2 7.5-1.7.8.1 1.5-.2 1.5-.9v-12c0-.8-1-1.2-2.5-1.2C16 4.2 13.8 4.8 12 6Zm0 0v14" /></svg>; }
 
