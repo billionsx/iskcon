@@ -77,7 +77,6 @@ interface ContentDetail {
  *  тонкая акцентная линия, структурированная атрибуция со ссылками. */
 function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: SignRef | null; onPerson: (slug: string) => void; onBook: (workId: string) => void; onRef: (href: string) => void }) {
   const link: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-brand-blue)", cursor: "pointer" };
-  const dim = <span style={{ color: "var(--color-label-3)" }}>{"  ·  "}</span>;
   const hasStruct = ref && (ref.author || ref.workName);
   // ридер есть для bg (товарная карточка) и cc/sb (референс-ридер)
   const deep = !!ref?.workId && ["bg", "cc", "sb"].includes(ref.workId);
@@ -90,39 +89,40 @@ function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: 
         <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
           {hasStruct ? (
             <>
-              {/* автор → личность */}
+              {/* строка 1 — автор → личность */}
               {ref.author && (
-                ref.authorSlug
-                  ? <button onClick={() => onPerson(ref.authorSlug as string)} style={{ ...link, fontWeight: 600 }}>{ref.author}</button>
-                  : <span style={{ fontWeight: 600, color: "var(--color-label)" }}>{ref.author}</span>
+                <div style={{ marginBottom: 3 }}>
+                  {ref.authorSlug
+                    ? <button onClick={() => onPerson(ref.authorSlug as string)} style={{ ...link, fontWeight: 600 }}>{ref.author}</button>
+                    : <span style={{ fontWeight: 600, color: "var(--color-label)" }}>{ref.author}</span>}
+                </div>
               )}
-              {ref.author && ref.workName && dim}
-              {/* книга → книга (ридер пока есть для bg) */}
-              {ref.workName && (
-                deep && ref.workId
-                  ? <button onClick={() => onBook(ref.workId as string)} style={link}>{ref.workName}</button>
-                  : <span>{ref.workName}</span>
+              {/* строка 2 — источник: книга, раздел, глава, стих */}
+              {(ref.workName || ref.citation) && (
+                <div>
+                  {ref.workName && (
+                    deep && ref.workId
+                      ? <button onClick={() => onBook(ref.workId as string)} style={link}>{ref.workName}</button>
+                      : <span>{ref.workName}</span>
+                  )}
+                  {ref.division && <span>{ref.workName ? ", " : ""}{ref.division}</span>}
+                  {ref.chapter && (
+                    <span>{(ref.workName || ref.division) ? ", " : ""}
+                      {deep && ref.chapterHref
+                        ? <button onClick={() => onRef(ref.chapterHref as string)} style={link}>глава {ref.chapter}</button>
+                        : <span>глава {ref.chapter}</span>}
+                    </span>
+                  )}
+                  {ref.verse && (
+                    <span>{(ref.workName || ref.division || ref.chapter) ? ", " : ""}
+                      {deep && ref.verseHref
+                        ? <button onClick={() => onRef(ref.verseHref as string)} style={link}>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</button>
+                        : <span>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</span>}
+                    </span>
+                  )}
+                  {!ref.workName && ref.citation && <span>{ref.citation}</span>}
+                </div>
               )}
-              {/* раздел (лила/песнь) — текст */}
-              {ref.division && <span>{", "}{ref.division}</span>}
-              {/* глава → глава */}
-              {ref.chapter && (
-                <span>{", "}
-                  {deep && ref.chapterHref
-                    ? <button onClick={() => onRef(ref.chapterHref as string)} style={link}>глава {ref.chapter}</button>
-                    : <span>глава {ref.chapter}</span>}
-                </span>
-              )}
-              {/* стих → стих */}
-              {ref.verse && (
-                <span>{", "}
-                  {deep && ref.verseHref
-                    ? <button onClick={() => onRef(ref.verseHref as string)} style={link}>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</button>
-                    : <span>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</span>}
-                </span>
-              )}
-              {/* если книга не распознана, но есть хвост — добавим его */}
-              {!ref.workName && ref.citation && <span>{ref.citation}</span>}
             </>
           ) : (
             <span>{ref.raw}</span>
