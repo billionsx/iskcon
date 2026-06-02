@@ -52,6 +52,8 @@
   /* Typography */
   --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* Священный текст (стихи, транслитерация) — Georgia, как на iskcone.com */
+  --font-scripture: Georgia, 'Times New Roman', 'Iowan Old Style', serif;
 
   /* Radius */
   --radius-glass: 20px;
