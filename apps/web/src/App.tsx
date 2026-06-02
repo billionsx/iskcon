@@ -479,7 +479,12 @@ export default function App() {
           </main>
         ) : openContent ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <ContentDetailPage slug={openContent} onBack={() => setOpenContent(null)} />
+            <ContentDetailPage
+              slug={openContent}
+              onBack={() => setOpenContent(null)}
+              onOpenContent={(s) => setOpenContent(s)}
+              onOpenBook={() => { setOpenContent(null); setOpenBook(true); }}
+            />
           </main>
         ) : (
           <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} />
