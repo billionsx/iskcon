@@ -1,6 +1,10 @@
+import { handleAdmin } from "./loader/handler";
+
 interface Env {
   ASSETS: { fetch: (req: Request) => Promise<Response> };
   DB: D1Database;
+  // Секрет для CRM-загрузчика: wrangler secret put ADMIN_TOKEN
+  ADMIN_TOKEN?: string;
 }
 
 const NOINDEX = "noindex, nofollow, noarchive, nosnippet, noimageindex";
@@ -48,6 +52,11 @@ export default {
          ORDER BY ordinal`
       ).bind(divId).all();
       return json({ work: "bg", chapter: Number(m[1]), verses: results });
+    }
+
+    // ── Admin / CRM book-loader (writes to D1; protected by ADMIN_TOKEN) ──
+    if (url.pathname.startsWith("/api/admin/")) {
+      return handleAdmin(request, env, url);
     }
 
     // Same-origin proxy to the API so the browser never makes a cross-origin call.

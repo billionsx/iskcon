@@ -21,3 +21,6 @@ custom_domain = true
 [[routes]]
 pattern = "www.gaurangers.com"
 custom_domain = true
+
+# CRM-загрузчик (/api/admin/*): секрет оператора, без него маршруты отдают 503.
+#   wrangler secret put ADMIN_TOKEN
