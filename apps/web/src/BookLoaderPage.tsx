@@ -73,7 +73,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
   });
   const [keyInput, setKeyInput] = useState("");
   const [work] = useState("bg");
-  const [layers, setLayers] = useState({ sanskrit: true, edition: false });
+  const [layers, setLayers] = useState({ sanskrit: true, edition: true });
   const [status, setStatus] = useState<StatusResp | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [loadingCh, setLoadingCh] = useState<string | null>(null);
@@ -422,19 +422,18 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           <div style={{ ...card, marginBottom: 16 }}>
             <div style={sectionLabel}>Что загружать</div>
             <Toggle
-              label="Санскрит — деванагари + транслитерация"
-              note="общественное достояние · структура"
-              on={layers.sanskrit}
-              onToggle={() => setLayers((s) => ({ ...s, sanskrit: !s.sanskrit }))}
-            />
-            <Toggle
-              label="Издание — пословный, перевод, комментарий"
-              note="из источника"
+              label="Все слои — санскрит, пословный, перевод, комментарий"
+              note="полная карточка стиха из источника"
               on={layers.edition}
-              onToggle={() => setLayers((s) => ({ ...s, edition: !s.edition }))}
+              onToggle={() =>
+                setLayers((s) => {
+                  const next = !s.edition;
+                  return { sanskrit: next, edition: next };
+                })
+              }
             />
-            {!layers.sanskrit && !layers.edition && (
-              <div style={{ marginTop: 8, fontSize: 12, color: "#c0392b" }}>Выберите хотя бы один слой.</div>
+            {!layers.edition && (
+              <div style={{ marginTop: 8, fontSize: 12, color: "#c0392b" }}>Включите загрузку слоёв.</div>
             )}
           </div>
 
