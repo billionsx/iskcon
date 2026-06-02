@@ -107,7 +107,7 @@ export async function handleAdmin(request: Request, env: Env, url: URL): Promise
 
     const offset = Math.max(0, Number.isFinite(Number(body.offset)) ? Number(body.offset) : 0);
     const limit =
-      Number.isFinite(Number(body.limit)) && Number(body.limit) > 0 ? Math.min(40, Number(body.limit)) : 30;
+      Number.isFinite(Number(body.limit)) && Number(body.limit) > 0 ? Math.min(40, Number(body.limit)) : 20;
 
     let verses: NormalizedVerse[];
     let total: number;
