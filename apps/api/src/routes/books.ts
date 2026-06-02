@@ -12,6 +12,59 @@ export const booksRouter = new Hono<{ Bindings: Bindings; Variables: Variables }
 
 type Row = Record<string, any>;
 
+// Отображаемые названия книг (works без title) — для ридера/оглавления
+const WORK_NAMES: Record<string, string> = {
+  bg: 'Бхагавад-гита',
+  cc: 'Шри Чайтанья-чаритамрита',
+  sb: 'Шримад-Бхагаватам',
+  bs: 'Брахма-самхита',
+  noi: 'Нектар наставлений',
+  brs: 'Нектар преданности',
+  iso: 'Шри Ишопанишад',
+  cb: 'Чайтанья-бхагавата',
+  cm: 'Чайтанья-манджуша',
+  mahabharata: 'Махабхарата',
+  ramayana: 'Рамаяна',
+  'krishna-book': 'Кришна',
+};
+
+// GET /v1/books/:work/toc — оглавление с учётом уровней (лила/песнь → глава)
+booksRouter.get('/:work/toc', async (c) => {
+  const work = c.req.param('work');
+  const { results } = await c.env.DB.prepare(
+    `SELECT d.id, d.parent_id, d.level, d.number,
+            json_extract(d.title,'$.ru') AS title_ru,
+            (SELECT COUNT(*) FROM verses v WHERE v.division_id = d.id) AS verses
+     FROM divisions d WHERE d.work_id = ? ORDER BY d.ordinal`,
+  )
+    .bind(work)
+    .all();
+  const rows = (results as Row[]) ?? [];
+  const slugOf = (id: string) => { const p = id.split('.'); return p.length > 1 ? p[p.length - 1] : id; };
+
+  const topDivs = rows.filter((r) => r.level === 'division');
+  const hierarchical = topDivs.length > 0;
+
+  if (hierarchical) {
+    const divisions = topDivs.map((d) => ({
+      id: d.id,
+      slug: slugOf(d.id),
+      number: String(d.number),
+      title_ru: d.title_ru ?? '',
+      chapters: rows
+        .filter((r) => r.level === 'chapter' && r.parent_id === d.id)
+        .map((ch) => ({ id: ch.id, number: String(ch.number), title_ru: ch.title_ru ?? '', verses: Number(ch.verses ?? 0) })),
+    }));
+    return c.json({ work, name: WORK_NAMES[work] ?? work, hierarchical: true, divisions });
+  }
+
+  // плоская книга (как bg): главы верхнего уровня
+  const chapters = rows
+    .filter((r) => r.level === 'chapter' || !r.parent_id)
+    .map((ch) => ({ id: ch.id, number: String(ch.number), title_ru: ch.title_ru ?? '', verses: Number(ch.verses ?? 0) }));
+  return c.json({ work, name: WORK_NAMES[work] ?? work, hierarchical: false, chapters });
+});
+
 // GET /v1/books/:work/chapters — оглавление (разделы верхнего уровня книги)
 booksRouter.get('/:work/chapters', async (c) => {
   const work = c.req.param('work');

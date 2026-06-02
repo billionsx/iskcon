@@ -44,8 +44,8 @@ function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: 
   const link: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-brand-blue)", cursor: "pointer" };
   const dim = <span style={{ color: "var(--color-label-3)" }}>{"  ·  "}</span>;
   const hasStruct = ref && (ref.author || ref.workName);
-  // ридер пока есть только для bg → глубокие ссылки активны для bg; cc/sb — текст
-  const deep = ref?.workId === "bg";
+  // ридер есть для bg (товарная карточка) и cc/sb (референс-ридер)
+  const deep = !!ref?.workId && ["bg", "cc", "sb"].includes(ref.workId);
   return (
     <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid color-mix(in srgb, var(--color-brand-blue) 55%, transparent)" }}>
       <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 22, lineHeight: 1.42, letterSpacing: "0.1px", color: "var(--color-label)" }}>
