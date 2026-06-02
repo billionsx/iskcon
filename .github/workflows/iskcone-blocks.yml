@@ -29,6 +29,7 @@ jobs:
 
           # icon = svg, or known logo/raster chrome; content photo = jpg/jpeg/png that is NOT a logo
           LOGO=re.compile(r'(iskcon|one[-_]?love|gauranga|billionsx|the_international)', re.I)
+          QUOTE_RECS={'220','230','250','251','252'}  # Tilda quote/cite boxes
           def is_content_img(u):
               if not re.search(r'\.(jpg|jpeg|png|webp)(\?|$)', u, re.I): return False  # drops .svg
               if LOGO.search(u): return False
@@ -79,23 +80,25 @@ jobs:
                       seq.append(('image', None, tok[1], None)); i+=1; continue
                   rtype, fkind, body, line = tok
                   if not line or line in boiler or CHROME.search(line): i+=1; continue
+                  # signature delivered explicitly as authorname
                   if fkind=='authorname':
                       sig=" · ".join(x.strip(' ,') for x in body.split('\n') if x.strip())
                       if sig and not CHROME.search(sig): seq.append(('sign', sig, None, None))
                       i+=1; continue
-                  # look ahead up to 3 tokens for an authorname (skip IMG/title)
-                  has_sig=False
-                  for j in range(i+1, min(i+4, len(tokens))):
-                      tj=tokens[j]
-                      if tj[0]=='IMG': continue
-                      if tj[1]=='authorname': has_sig=True; break
-                      if tj[1] in ('text','descr'): break
+                  # Tilda quote/cite box (t220 etc): title = quote text, following text = source
+                  if rtype in QUOTE_RECS and fkind=='title':
+                      seq.append(('quote', body, None, None))
+                      if i+1 < len(tokens):
+                          t2=tokens[i+1]
+                          if t2[0]!='IMG' and t2[1] in ('text','descr','authorname'):
+                              s2=" · ".join(x.strip(' ,') for x in (t2[2] or '').split('\n') if x.strip())
+                              if s2 and not CHROME.search(s2): seq.append(('sign', s2, None, None))
+                              i+=2; continue
+                      i+=1; continue
                   if rtype in ('60','61','62'):
                       k='heading'
                   elif rtype in ('65','66'):
                       k='accent'
-                  elif has_sig:
-                      k='quote'
                   else:
                       k='para'
                   if k=='para':
@@ -103,7 +106,7 @@ jobs:
                       if not parts: parts=[body]
                       for part in parts:
                           if len(part)<=4 and not re.search(r'[.!?]', part):
-                              continue  # drop stray nick like "dāsa"
+                              continue
                           seq.append(('para', part, None, None))
                   else:
                       seq.append((k, body, None, None))
