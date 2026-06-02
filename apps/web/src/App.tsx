@@ -464,6 +464,63 @@ export default function App() {
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
+  const fromPop = useRef(false);
+
+  // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере уже включён) ──
+  // /c{slug} контент · /b{slug} бхаджан · /bhajans каталог · /book/{id} карточка
+  // /read/{work}/{div?}/{ch?}/{v?} ридер · /, /feed, /search, /map, /passport табы
+  function pathFromState(): string {
+    if (openBook) return "/book/bg";
+    if (scripture) {
+      const p = ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "");
+      return p.join("/");
+    }
+    if (openBhajan) return "/b" + openBhajan;
+    if (openCatalog) return "/bhajans";
+    if (openContent) return "/c" + openContent;
+    return tab === "home" ? "/" : "/" + tab;
+  }
+  function applyPath(path: string) {
+    const clean = (path || "/").replace(/\/+$/, "") || "/";
+    // сброс всех слоёв, затем установка нужного
+    setOpenBook(false); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null);
+    if (clean === "/" ) { setTab("home"); return; }
+    if (["/feed", "/search", "/map", "/passport"].includes(clean)) { setTab(clean.slice(1)); return; }
+    if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
+    if (clean === "/book/bg" || clean === "/book") { setOpenBook(true); return; }
+    if (clean.startsWith("/read/")) {
+      const [, , work, div, ch, v] = clean.split("/");
+      if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
+      return;
+    }
+    if (clean.startsWith("/b/")) { setOpenBhajan(clean.slice(2)); return; } // "/b" + slug
+    if (clean.startsWith("/c/")) { setOpenContent(clean.slice(2)); return; } // "/c" + slug
+    setTab("home"); // неизвестный путь
+  }
+
+  // инициализация из URL + кнопки назад/вперёд
+  useEffect(() => {
+    const onPop = () => { fromPop.current = true; applyPath(window.location.pathname); };
+    window.addEventListener("popstate", onPop);
+    applyPath(window.location.pathname);
+    return () => window.removeEventListener("popstate", onPop);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // состояние → URL (pushState), кроме случаев применения из popstate
+  useEffect(() => {
+    if (fromPop.current) { fromPop.current = false; return; }
+    const next = pathFromState();
+    if (window.location.pathname !== next) window.history.pushState(null, "", next);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent]);
+
+  // «Назад»: настоящая история, но не выходим за пределы приложения при прямом входе
+  const enteredAt = useRef(typeof window !== "undefined" ? window.history.length : 0);
+  function goBack() {
+    if (typeof window !== "undefined" && window.history.length > enteredAt.current) { window.history.back(); }
+    else { window.history.pushState(null, "", "/"); applyPath("/"); }
+  }
 
   // ссылка-цитата → действие. Адреса: book:{id} | chap:{id}:{div}:{ch} | verse:{id}:{div}:{ch}:{v}
   function openRef(href: string) {
@@ -484,25 +541,25 @@ export default function App() {
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         {openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BookDetailPage book={BOOKS.bg} onBack={() => setOpenBook(false)} />
+            <BookDetailPage book={BOOKS.bg} onBack={goBack} />
           </main>
         ) : scripture ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <ScriptureReader target={scripture} onBack={() => setScripture(null)} />
+            <ScriptureReader target={scripture} onBack={goBack} />
           </main>
         ) : openBhajan ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BhajanDetailPage slug={openBhajan} onBack={() => setOpenBhajan(null)} />
+            <BhajanDetailPage slug={openBhajan} onBack={goBack} />
           </main>
         ) : openCatalog ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={() => setOpenCatalog(false)} />
+            <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={goBack} />
           </main>
         ) : openContent ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <ContentDetailPage
               slug={openContent}
-              onBack={() => setOpenContent(null)}
+              onBack={goBack}
               onOpenContent={(s) => setOpenContent(s)}
               onOpenBook={(workId) => openRef(`book:${workId}`)}
               onOpenRef={(href) => openRef(href)}

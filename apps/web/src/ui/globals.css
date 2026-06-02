@@ -377,3 +377,6 @@
   outline-offset: 2px;
   border-radius: var(--radius-squircle);
 }
+
+/* sheet / toast entrance */
+@keyframes fadein { from { opacity: 0 } to { opacity: 1 } }
