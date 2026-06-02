@@ -21,20 +21,18 @@ jobs:
               with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())["result"][0]["results"]
 
           TAGS=re.compile(r'(?s)<[^>]+>'); BR=re.compile(r'(?i)<br\s*/?>'); BOLD=re.compile(r'(?i)<(?:strong|b)\b')
-          CHROME=re.compile(r'(Лучшее, что можно сделать для Господа|ISKCON ONE LOVE|ОНЛАЙН-РЕСУРС|БРАХМА-МАДХВА-ГАУДИЯ|РАЗНЫХ СТРАН|Founder-Āc|His Divine Grace|Что бы ты делал)', re.I)
+          CHROME=re.compile(r'(Лучшее, что можно сделать для Господа|ISKCON ONE LOVE|ОНЛАЙН-РЕСУРС|БРАХМА-МАДХВА-ГАУДИЯ|РАЗНЫХ СТРАН|Founder-Āc|His Divine Grace|Что бы ты делал|ВСЕ МАТЕРИАЛЫ ПУБЛИКУ)', re.I)
           def one_line(s): return re.sub(r'\s+',' ',H.unescape(TAGS.sub(' ', s))).strip()
           def multi(s):
               s=BR.sub('\n', s); s=H.unescape(TAGS.sub('', s))
               return "\n".join(x.strip() for x in s.split('\n') if x.strip())
 
-          # t257 block: capture inner text-field and optional following authorname
-          TXT=re.compile(r'field="text"[^>]*>(.*?)</div>', re.S|re.I)
-          AUTH=re.compile(r'field="authorname"[^>]*>(.*?)</div>', re.S|re.I)
-          # split html into t257 records to keep text<->author pairing local
-          REC=re.compile(r'(<div[^>]*class="[^"]*t257[^"]*"[^>]*>.*?)(?=<div[^>]*class="[^"]*t257|<style|<script|$)', re.S|re.I)
+          # Walk every field= block in document order; pair a text block with the
+          # authorname block that immediately follows it (before the next text block).
+          FIELD=re.compile(r'field="(text|authorname)"[^>]*>(.*?)</div>', re.S|re.I)
 
           rows=q("SELECT p.slug AS slug, t.html AS html FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")
-          # frequency boilerplate net over all pages
+          # boilerplate net across all pages (by text-block signature frequency)
           allpages={}; off=0
           while True:
               b=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
@@ -43,51 +41,48 @@ jobs:
               off+=25
           freq=collections.Counter()
           for h in allpages.values():
-              seen=set()
-              for m in TXT.finditer(h):
-                  sig=one_line(m.group(1))
-                  if sig: seen.add(sig)
-              for s in seen: freq[s]+=1
+              seen={one_line(m.group(2)) for m in FIELD.finditer(h) if m.group(1).lower()=="text"}
+              for s in seen:
+                  if s: freq[s]+=1
           nP=len(allpages); thr=max(4,int(0.18*nP)); boiler={s for s,c in freq.items() if c>=thr}
 
           def parse_page(htmltext):
-              verses=[]   # (translit, text, signature)
-              recs=REC.findall(htmltext)
-              chunks=recs if recs else [htmltext]
-              for ch in chunks:
-                  tx_m=TXT.search(ch)
-                  if not tx_m: continue
-                  inner=tx_m.group(1)
+              seq=[(m.group(1).lower(), m.group(2)) for m in FIELD.finditer(htmltext)]
+              verses=[]; i=0
+              while i < len(seq):
+                  kind, inner = seq[i]
+                  if kind != "text": i+=1; continue
                   sig_line=one_line(inner)
-                  if not sig_line or sig_line in boiler or CHROME.search(sig_line): continue
-                  au_m=AUTH.search(ch)
-                  signature=None
-                  if au_m:
-                      s=multi(au_m.group(1))
-                      s=" · ".join(x.strip(" ,") for x in s.split('\n') if x.strip())
-                      if s and not CHROME.search(s): signature=s
-                  # within the verse text, split bold(translit) vs plain(translation)
+                  if not sig_line or sig_line in boiler or CHROME.search(sig_line): i+=1; continue
+                  # transliteration vs translation inside the verse
                   tr=[]; pl=[]
                   for raw in BR.split(inner):
                       t=one_line(raw)
                       if not t: continue
                       (tr if BOLD.search(raw) else pl).append(t)
-                  translit="\n".join(tr).strip()
-                  text="\n".join(pl).strip()
-                  if not translit and not text: continue
-                  verses.append((translit or None, text or None, signature))
+                  translit="\n".join(tr).strip(); text="\n".join(pl).strip()
+                  # signature = next authorname before any next text block
+                  signature=None
+                  if i+1 < len(seq) and seq[i+1][0]=="authorname":
+                      s=multi(seq[i+1][1])
+                      s=" · ".join(x.strip(" ,") for x in s.split('\n') if x.strip())
+                      if s and not CHROME.search(s): signature=s
+                  if translit or text:
+                      verses.append((translit or None, text or None, signature))
+                  i+=1
               return verses
 
           q("DELETE FROM prayer_verses", [])
-          songs=vt=0
+          songs=vt=sigc=0
           for r in rows:
               vs=parse_page(r.get("html") or "")
               if not vs: continue
               songs+=1
-              for i,(tr,tx,sig) in enumerate(vs, start=1):
+              for idx,(tr,tx,sig) in enumerate(vs, start=1):
+                  if sig: sigc+=1
                   q("INSERT OR REPLACE INTO prayer_verses (slug,ord,verse_translit,verse_text,signature) VALUES (?,?,?,?,?)",
-                    [r["slug"], i, tr, tx, sig]); vt+=1
+                    [r["slug"], idx, tr, tx, sig]); vt+=1
           q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone verse split',?,?)",
-            [str(len(rows)), f"songs={songs} verses={vt} boiler={len(boiler)}"])
-          print(f"DONE songs={songs} verses={vt}")
+            [str(len(rows)), f"songs={songs} verses={vt} with_sig={sigc} boiler={len(boiler)}"])
+          print(f"DONE songs={songs} verses={vt} with_sig={sigc}")
           PY
