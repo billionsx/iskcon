@@ -27,6 +27,19 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bunx wrangler deploy 2>&1 | tee /tmp/web-deploy.log
 
+      - name: Apply ADMIN_TOKEN secret (book-loader CRM)
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          if [ -n "$ADMIN_TOKEN" ]; then
+            printf '%s' "$ADMIN_TOKEN" | bunx wrangler secret put ADMIN_TOKEN
+            echo "ADMIN_TOKEN applied to iskcon-web."
+          else
+            echo "No ADMIN_TOKEN repo secret — /api/admin/* will return 503 until you add it."
+          fi
+
       - name: Verify (workers.dev instant + apex), record into D1
         working-directory: apps/web
         env:
