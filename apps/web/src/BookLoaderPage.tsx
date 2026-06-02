@@ -9,7 +9,7 @@
  * Вызовы идут на same-origin /api/admin/* (web-воркер пишет в D1). Доступ — по
  * ключу ADMIN_TOKEN, который оператор вводит один раз (хранится локально).
  */
-import { useCallback, useEffect, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { BackIcon } from "./ui/icons";
 import { api } from "./api";
 
@@ -41,6 +41,20 @@ interface LoadSummary {
   translation: number;
   purport: number;
 }
+interface PreviewToken {
+  term: string;
+  gloss: string | null;
+}
+interface PreviewVerse {
+  ref: string;
+  devanagari: string | null;
+  translit: string | null;
+  uvaca: string | null;
+  sourceUrl: string | null;
+  translation: string | null;
+  purport: string | null;
+  tokens: PreviewToken[];
+}
 
 const TOKEN_KEY = "gx_admin_token";
 const WORKS: { id: string; title: string; enabled: boolean }[] = [
@@ -68,10 +82,42 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
   const [jsonOpen, setJsonOpen] = useState(false);
   const [jsonText, setJsonText] = useState("");
   const [jsonCh, setJsonCh] = useState("");
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [openCh, setOpenCh] = useState<string | null>(null);
+  const [preview, setPreview] = useState<Record<string, PreviewVerse[]>>({});
+  const [previewLoading, setPreviewLoading] = useState<string | null>(null);
 
   const headers = useCallback(
     () => ({ "content-type": "application/json", "x-admin-token": token }),
     [token],
+  );
+
+  const openChRef = useRef<string | null>(null);
+
+  const fetchPreview = useCallback(
+    async (chapter: string) => {
+      setPreviewLoading(chapter);
+      try {
+        const r = await fetch(api(`/admin/verses?work=${work}&chapter=${chapter}`), { headers: headers() });
+        const d = (await r.json()) as { verses?: PreviewVerse[] };
+        if (r.ok && Array.isArray(d.verses)) setPreview((p) => ({ ...p, [chapter]: d.verses ?? [] }));
+      } catch {
+        /* ignore */
+      } finally {
+        setPreviewLoading(null);
+      }
+    },
+    [work, headers],
+  );
+
+  const togglePreview = useCallback(
+    (chapter: string) => {
+      const willOpen = openChRef.current !== chapter;
+      openChRef.current = willOpen ? chapter : null;
+      setOpenCh(willOpen ? chapter : null);
+      if (willOpen && !preview[chapter]) void fetchPreview(chapter);
+    },
+    [preview, fetchPreview],
   );
 
   const pushLog = (line: string) => setLog((l) => [line, ...l].slice(0, 60));
@@ -143,6 +189,13 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
             (layers.edition ? ` · перевод ${s.translation} · комм. ${s.purport} · токены ${s.tokens}` : ``),
         );
         mergeSummary(chapter, s);
+        setPreview((p) => {
+          if (!(chapter in p)) return p;
+          const n = { ...p };
+          delete n[chapter];
+          return n;
+        });
+        if (openChRef.current === chapter) void fetchPreview(chapter);
         return true;
       } catch {
         pushLog(`Гл. ${chapter}: сбой запроса`);
@@ -151,7 +204,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
         setLoadingCh(null);
       }
     },
-    [headers, work, layers],
+    [headers, work, layers, fetchPreview],
   );
 
   const loadAll = useCallback(async () => {
@@ -351,51 +404,57 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
 
           {/* таблица глав */}
           <div style={sectionLabel}>Главы</div>
+          <div style={{ margin: "0 0 8px", fontSize: 12.5, color: "var(--color-label-2)" }}>
+            «Смотреть» — увидеть загруженные стихи прямо здесь. «Загрузить» — залить главу из источника.
+          </div>
           <div style={{ borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
             {!status && <div style={{ padding: "28px 0", textAlign: "center", color: "var(--color-label-2)", fontSize: 14 }}>Загрузка статуса…</div>}
             {status?.chapters.map((c, i) => {
               const sankDone = c.verses > 0 && c.deva >= c.verses;
+              const open = openCh === c.number;
+              const vs = preview[c.number];
+              const last = i === status.chapters.length - 1;
               return (
-                <div
-                  key={c.number}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    padding: "12px 14px",
-                    borderBottom: i === status.chapters.length - 1 ? "none" : "0.5px solid var(--color-hairline)",
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {c.number}. {c.title_ru || "—"}
+                <div key={c.number} style={{ borderBottom: last && !open ? "none" : "0.5px solid var(--color-hairline)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 14px" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {c.number}. {c.title_ru || "—"}
+                      </div>
+                      <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11.5, color: "var(--color-label-2)" }}>
+                        <Chip label={`${c.verses} стихов`} />
+                        <Chip label={`санскрит ${c.deva}/${c.verses}`} tone={sankDone ? "ok" : "muted"} />
+                        {(layers.edition || c.translation > 0) && <Chip label={`перевод ${c.translation}`} tone={c.translation > 0 ? "ok" : "muted"} />}
+                      </div>
                     </div>
-                    <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11.5, color: "var(--color-label-2)" }}>
-                      <Chip label={`${c.verses} стихов`} />
-                      <Chip label={`санскрит ${c.deva}/${c.verses}`} tone={sankDone ? "ok" : "muted"} />
-                      {(layers.edition || c.translation > 0) && <Chip label={`перевод ${c.translation}`} tone={c.translation > 0 ? "ok" : "muted"} />}
-                    </div>
+                    <button onClick={() => togglePreview(c.number)} style={{ ...ghostBtn, background: open ? "var(--color-glass-regular)" : "var(--color-bg)" }}>
+                      {open ? "Скрыть" : "Смотреть"}
+                    </button>
+                    <button
+                      onClick={() => loadChapter(c.number)}
+                      disabled={busy || (!layers.sanskrit && !layers.edition)}
+                      style={{
+                        ...ghostBtn,
+                        background: loadingCh === c.number ? "var(--color-brand-blue)" : "var(--color-bg)",
+                        color: loadingCh === c.number ? "#fff" : "var(--color-brand-blue)",
+                        cursor: busy ? "default" : "pointer",
+                        opacity: busy && loadingCh !== c.number ? 0.5 : 1,
+                      }}
+                    >
+                      {loadingCh === c.number ? "…" : "Загрузить"}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => loadChapter(c.number)}
-                    disabled={busy || (!layers.sanskrit && !layers.edition)}
-                    style={{
-                      flexShrink: 0,
-                      height: 34,
-                      padding: "0 14px",
-                      borderRadius: 10,
-                      border: "0.5px solid var(--color-hairline)",
-                      background: loadingCh === c.number ? "var(--color-brand-blue)" : "var(--color-bg)",
-                      color: loadingCh === c.number ? "#fff" : "var(--color-brand-blue)",
-                      fontSize: 13.5,
-                      fontWeight: 600,
-                      fontFamily: "var(--font-text)",
-                      cursor: busy ? "default" : "pointer",
-                      opacity: busy && loadingCh !== c.number ? 0.5 : 1,
-                    }}
-                  >
-                    {loadingCh === c.number ? "…" : "Загрузить"}
-                  </button>
+                  {open && (
+                    <div style={{ padding: "2px 14px 12px", borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+                      {previewLoading === c.number && !vs ? (
+                        <div style={{ padding: "14px 0", color: "var(--color-label-2)", fontSize: 13 }}>Загрузка стихов…</div>
+                      ) : !vs || vs.length === 0 ? (
+                        <div style={{ padding: "14px 0", color: "var(--color-label-2)", fontSize: 13 }}>Пока пусто — нажмите «Загрузить».</div>
+                      ) : (
+                        vs.map((v, idx) => <VersePreview key={idx} v={v} />)
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -413,29 +472,47 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
             </>
           )}
 
-          {/* импорт JSON (резерв, если источник недоступен) */}
+          {/* импорт файла / JSON (резерв или ручная загрузка) */}
           <button
             onClick={() => setJsonOpen((v) => !v)}
             style={{ marginTop: 22, background: "none", border: "none", color: "var(--color-brand-blue)", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: "4px 0", fontFamily: "var(--font-text)" }}
           >
-            {jsonOpen ? "▾ " : "▸ "}Импорт JSON (если источник недоступен)
+            {jsonOpen ? "▾ " : "▸ "}Загрузить из файла с компьютера / JSON
           </button>
           {jsonOpen && (
             <div style={{ ...card, marginTop: 8 }}>
-              <p style={{ margin: "0 0 10px", fontSize: 12.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-                Массив стихов одной главы. Поля: <code>seg</code> («1» или «16-18»), <code>devanagari</code>, <code>translit</code>, <code>uvaca</code>, <code>tokens</code> (
-                <code>[{`{term,gloss}`}]</code>), <code>translation</code>, <code>purport</code>. Записываются по выбранным выше слоям.
+              <p style={{ margin: "0 0 12px", fontSize: 12.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+                Если что-то не тянется с источника — загрузите главу из файла. Файл <code>.json</code> — массив стихов одной главы. Поля каждого стиха: <code>seg</code> («1» или «16-18»), <code>devanagari</code>, <code>translit</code>, <code>uvaca</code>, <code>tokens</code> (<code>[{`{term,gloss}`}]</code>), <code>translation</code>, <code>purport</code>. Запишется по включённым выше слоям.
               </p>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
+                <label style={{ ...primaryBtn, display: "inline-flex", alignItems: "center", height: 40, cursor: "pointer" }}>
+                  Выбрать файл
+                  <input
+                    type="file"
+                    accept=".json,.txt,application/json"
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      setFileName(f.name);
+                      const reader = new FileReader();
+                      reader.onload = () => setJsonText(String(reader.result ?? ""));
+                      reader.readAsText(f);
+                    }}
+                  />
+                </label>
+                {fileName && <span style={{ fontSize: 13, color: "var(--color-label-2)" }}>{fileName}</span>}
+              </div>
               <input value={jsonCh} onChange={(e) => setJsonCh(e.target.value)} placeholder="Номер главы (например, 2)" style={{ ...input, marginBottom: 8 }} />
               <textarea
                 value={jsonText}
                 onChange={(e) => setJsonText(e.target.value)}
-                placeholder='[{"seg":"13","translit":"…","translation":"…"}]'
+                placeholder={'Содержимое файла появится здесь — или вставьте JSON вручную: [{"seg":"13","translit":"…","translation":"…"}]'}
                 rows={6}
-                style={{ ...input, resize: "vertical", fontFamily: "ui-monospace, monospace", fontSize: 12.5 }}
+                style={{ ...input, height: "auto", padding: "10px 14px", resize: "vertical", fontFamily: "ui-monospace, monospace", fontSize: 12.5 }}
               />
               <button onClick={importJson} disabled={busy} style={{ ...primaryBtn, marginTop: 10, opacity: busy ? 0.5 : 1 }}>
-                Импортировать главу
+                Загрузить главу из файла
               </button>
             </div>
           )}
@@ -488,9 +565,59 @@ function Chip({ label, tone = "muted" }: { label: string; tone?: "ok" | "muted" 
   );
 }
 
+function VersePreview({ v }: { v: PreviewVerse }) {
+  const [more, setMore] = useState(false);
+  const empty = !v.devanagari && !v.translit && !v.translation && !v.purport && v.tokens.length === 0;
+  const purp = v.purport ?? "";
+  const long = purp.length > 280;
+  return (
+    <div style={{ padding: "12px 0", borderTop: "0.5px dashed var(--color-hairline)" }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-brand-blue)" }}>{v.ref}</span>
+        {v.sourceUrl && (
+          <a href={v.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: "var(--color-label-3, var(--color-label-2))" }}>
+            источник ↗
+          </a>
+        )}
+      </div>
+      {empty ? (
+        <div style={{ marginTop: 4, fontSize: 12.5, color: "var(--color-label-3, var(--color-label-2))" }}>пусто — не загружено</div>
+      ) : (
+        <>
+          {v.devanagari && <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.6, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.devanagari}</div>}
+          {v.translit && <div style={{ marginTop: 4, fontSize: 13, fontStyle: "italic", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>{v.translit}</div>}
+          {v.tokens.length > 0 && (
+            <div style={{ marginTop: 6, fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+              {v.tokens.map((t, i) => (
+                <span key={i}>
+                  <b style={{ fontWeight: 600, color: "var(--color-label)" }}>{t.term}</b>
+                  {t.gloss ? ` — ${t.gloss}` : ""}
+                  {i < v.tokens.length - 1 ? "; " : ""}
+                </span>
+              ))}
+            </div>
+          )}
+          {v.translation && <div style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
+          {v.purport && (
+            <div style={{ marginTop: 6, fontSize: 13, lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
+              {long && !more ? purp.slice(0, 280) + "…" : purp}
+              {long && (
+                <button onClick={() => setMore((m) => !m)} style={{ marginLeft: 6, background: "none", border: "none", color: "var(--color-brand-blue)", cursor: "pointer", fontSize: 12, padding: 0, fontFamily: "var(--font-text)" }}>
+                  {more ? "свернуть" : "развернуть"}
+                </button>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ─────────── стили ─────────── */
 const page: CSSProperties = { display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)" };
 const card: CSSProperties = { borderRadius: 14, padding: "16px 18px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" };
 const input: CSSProperties = { width: "100%", boxSizing: "border-box", height: 44, padding: "0 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-label)", fontSize: 15, fontFamily: "var(--font-text)", outline: "none" };
 const primaryBtn: CSSProperties = { height: 46, padding: "0 18px", borderRadius: 12, border: "none", background: "var(--color-brand-blue)", color: "#fff", fontSize: 15, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
 const sectionLabel: CSSProperties = { fontSize: 11, fontWeight: 600, letterSpacing: "1.4px", textTransform: "uppercase", color: "var(--color-label-2)", margin: "0 0 10px" };
+const ghostBtn: CSSProperties = { flexShrink: 0, height: 34, padding: "0 12px", borderRadius: 10, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
