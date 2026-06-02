@@ -19,6 +19,7 @@ import { centersRouter } from '~/routes/centers';
 import { calendarRouter } from '~/routes/calendar';
 import { booksRouter } from '~/routes/books';
 import { bhajansRouter } from '~/routes/bhajans';
+import { contentRouter } from '~/routes/content';
 import { errorHandler } from '~/middleware/error';
 
 export type Bindings = {
@@ -62,6 +63,7 @@ v1.route('/centers', centersRouter);
 v1.route('/calendar', calendarRouter);
 v1.route('/books', booksRouter);
 v1.route('/bhajans', bhajansRouter);
+v1.route('/content', contentRouter);
 
 // Future (Phase 1+):
 // v1.route('/auth', authRouter);
