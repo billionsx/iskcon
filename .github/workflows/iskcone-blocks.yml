@@ -1,0 +1,106 @@
+name: iskcone blocks (structured page layout)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  blocks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse Tilda records into content_blocks
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, re, html as H, urllib.request, collections
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def q(sql, params=None):
+              body=json.dumps({"sql":sql,"params":params or []}).encode()
+              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())["result"][0]["results"]
+
+          TAGS=re.compile(r'(?s)<[^>]+>'); BR=re.compile(r'(?i)<br\s*/?>')
+          CHROME=re.compile(r'(Лучшее, что можно сделать для Господа|ISKCON ONE LOVE|ОНЛАЙН-РЕСУРС|БРАХМА-МАДХВА-ГАУДИЯ|РАЗНЫХ СТРАН|Founder-Āc|His Divine Grace|Что бы ты делал|ВСЕ МАТЕРИАЛЫ ПУБЛИКУ|THE INTERNATIONAL SOCIETY|FOR KRISHNA)', re.I)
+          def one(s): return re.sub(r'\s+',' ',H.unescape(TAGS.sub(' ', s))).strip()
+          def multi(s):
+              s=BR.sub('\n', s); s=H.unescape(TAGS.sub('', s))
+              return "\n".join(x.strip() for x in s.split('\n') if x.strip())
+
+          ICON=re.compile(r'(iskcon|one[-_]?love|billionsx|frame_?\d|/-/|empty|logo|sign|gauranga|the_international|\b0\d\.svg)', re.I)
+          def imgs_in(block):
+              urls=re.findall(r'https://static\.tildacdn\.(?:com|net)/[^"\'\\) ]+', block)
+              out=[]
+              for u in urls:
+                  if not re.search(r'\.(jpg|jpeg|png|webp)(\?|$)', u, re.I): continue
+                  if ICON.search(u): continue
+                  if u not in out: out.append(u)
+              return out
+
+          # frequency net for repeated text blocks (header/footer chrome) across all pages
+          allpages=q("SELECT alias, html FROM tilda_pages")
+          freq=collections.Counter()
+          for r in allpages:
+              h=r.get("html") or ""
+              seen={one(m.group(1)) for m in re.finditer(r'field="(?:text|title)"[^>]*>(.*?)</div>', h, re.S|re.I)}
+              for s in seen:
+                  if s: freq[s]+=1
+          nP=len(allpages); thr=max(4,int(0.30*nP)); boiler={s for s,c in freq.items() if c>=thr}
+
+          # which pages to parse: articles(dasa), personalities, centers — ru only
+          targets=q("""SELECT ci.slug AS slug, ci.type AS type, ('/'||t.alias)=ci.slug AS m, t.html AS html
+                       FROM content_items ci JOIN tilda_pages t ON '/'||t.alias=ci.slug
+                       WHERE ci.lang='ru' AND ci.type IN ('article','personality','center')""")
+          def kind_of(rtype):
+              if rtype in ('60','61','62'): return 'heading'
+              if rtype in ('65','66'): return 'accent'
+              if rtype in ('3','22','23','24','25','510'): return 'image'
+              return 'para'
+
+          q("DELETE FROM content_blocks", [])
+          pages=blocks=imgc=0
+          for t in targets:
+              html=t.get("html") or ""
+              recs=re.split(r'(?=<div id="rec\d+")', html)
+              seq=[]; first_heading_seen=False
+              for rb in recs:
+                  mt=re.search(r'data-record-type="(\d+)"', rb)
+                  if not mt: continue
+                  rtype=mt.group(1); kind=kind_of(rtype)
+                  bg=re.search(r'background(?:-color)?:\s*(#[0-9a-fA-F]{3,6})', rb)
+                  bgv=bg.group(1) if bg else None
+                  if kind=='image':
+                      for u in imgs_in(rb):
+                          seq.append(('image', None, u, None))
+                      continue
+                  # text-bearing
+                  fields=re.findall(r'field="(text|title|authorname|descr)"[^>]*>(.*?)</div>', rb, re.S|re.I)
+                  if not fields:
+                      # some blocks hold image even if type not in image set
+                      for u in imgs_in(rb): seq.append(('image', None, u, None))
+                      continue
+                  for fkind,fv in fields:
+                      body=multi(fv)
+                      line=one(fv)
+                      if not line or line in boiler or CHROME.search(line): continue
+                      if fkind=='authorname':
+                          sig=" · ".join(x.strip(' ,') for x in body.split('\n') if x.strip())
+                          if sig and not CHROME.search(sig): seq.append(('sign', sig, None, None))
+                          continue
+                      k = 'heading' if (rtype in ('60','61','62')) else ('accent' if rtype in ('65','66') else ('quote' if bgv else 'para'))
+                      seq.append((k, body, None, bgv))
+              # trim: drop leading non-heading chrome until first heading or first real para
+              # keep as-is but skip empty
+              if not seq: continue
+              pages+=1
+              ordn=0
+              for (k,txt,img,bgv) in seq:
+                  ordn+=1
+                  q("INSERT OR REPLACE INTO content_blocks (slug,ord,kind,text,image,bg) VALUES (?,?,?,?,?,?)",
+                    [t["slug"], ordn, k, txt, img, bgv])
+                  blocks+=1
+                  if img: imgc+=1
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone blocks',?,?)",
+            [str(pages), f"pages={pages} blocks={blocks} images={imgc} boiler={len(boiler)}"])
+          print(f"DONE pages={pages} blocks={blocks} images={imgc}")
+          PY
