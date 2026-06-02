@@ -153,3 +153,56 @@ export async function editionInfo(db: D1Database, work: string) {
     ? { id: String(row.id), license: (row.license as string) ?? null, source: (row.source as string) ?? null }
     : null;
 }
+
+/** Один стих со всеми слоями — для предпросмотра «что загрузилось» в CRM. */
+export interface ChapterVerse {
+  ref: string;
+  devanagari: string | null;
+  translit: string | null;
+  uvaca: string | null;
+  sourceUrl: string | null;
+  translation: string | null;
+  purport: string | null;
+  tokens: { term: string; gloss: string | null }[];
+}
+
+/** Стихи главы с содержимым (санскрит + издание <work>-ru + пословный). */
+export async function chapterVerses(db: D1Database, work: string, chapter: number): Promise<ChapterVerse[]> {
+  const divId = `${work}.${chapter}`;
+  const editionId = `${work}-ru`;
+  const vRes = await db
+    .prepare(
+      `SELECT v.id AS id, v.ref AS ref, v.devanagari AS devanagari, v.translit AS translit,
+              v.uvaca AS uvaca, v.source_url AS source_url, x.translation AS translation, x.purport AS purport
+       FROM verses v
+       LEFT JOIN verse_texts x ON x.verse_id = v.id AND x.edition_id = ?2
+       WHERE v.work_id = ?3 AND v.division_id = ?1
+       ORDER BY v.ordinal`,
+    )
+    .bind(divId, editionId, work)
+    .all();
+  const tRes = await db
+    .prepare(
+      `SELECT t.verse_id AS verse_id, t.term AS term, t.gloss AS gloss
+       FROM verse_tokens t JOIN verses v ON v.id = t.verse_id
+       WHERE v.work_id = ?2 AND v.division_id = ?1
+       ORDER BY t.verse_id, t.ordinal`,
+    )
+    .bind(divId, work)
+    .all();
+  const byVerse: Record<string, { term: string; gloss: string | null }[]> = {};
+  for (const r of (tRes.results as Record<string, unknown>[]) ?? []) {
+    const vid = String(r.verse_id);
+    (byVerse[vid] ||= []).push({ term: String(r.term ?? ''), gloss: (r.gloss as string) ?? null });
+  }
+  return ((vRes.results as Record<string, unknown>[]) ?? []).map((r) => ({
+    ref: String(r.ref),
+    devanagari: (r.devanagari as string) ?? null,
+    translit: (r.translit as string) ?? null,
+    uvaca: (r.uvaca as string) ?? null,
+    sourceUrl: (r.source_url as string) ?? null,
+    translation: (r.translation as string) ?? null,
+    purport: (r.purport as string) ?? null,
+    tokens: byVerse[String(r.id)] ?? [],
+  }));
+}

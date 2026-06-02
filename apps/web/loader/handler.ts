@@ -14,7 +14,7 @@
  *                source?: 'vedabase'|'json', verses?: NormalizedVerse[] }
  */
 import { fetchChapterSegs, fetchVerse } from './vedabase';
-import { chapterStatus, editionInfo, upsertVerse } from './ingest';
+import { chapterStatus, chapterVerses, editionInfo, upsertVerse } from './ingest';
 import type { LayerFlags, NormalizedVerse, VerseLoadReport } from './types';
 
 interface Env {
@@ -77,6 +77,17 @@ export async function handleAdmin(request: Request, env: Env, url: URL): Promise
     if (!KNOWN_WORKS.includes(work)) return json({ error: 'unknown_work', work }, 400);
     const [chapters, edition] = await Promise.all([chapterStatus(env.DB, work), editionInfo(env.DB, work)]);
     return json({ work, edition, chapters });
+  }
+
+  // GET /api/admin/verses?work=bg&chapter=2 → стихи главы с содержимым (предпросмотр)
+  if (request.method === 'GET' && url.pathname === '/api/admin/verses') {
+    const work = url.searchParams.get('work') || 'bg';
+    const chapter = Number(url.searchParams.get('chapter'));
+    if (!KNOWN_WORKS.includes(work) || !Number.isFinite(chapter) || chapter < 1) {
+      return json({ error: 'bad_params' }, 400);
+    }
+    const verses = await chapterVerses(env.DB, work, chapter);
+    return json({ work, chapter, verses });
   }
 
   if (request.method === 'POST' && url.pathname === '/api/admin/load-chapter') {
