@@ -83,9 +83,13 @@ jobs:
                       sig=" · ".join(x.strip(' ,') for x in body.split('\n') if x.strip())
                       if sig and not CHROME.search(sig): seq.append(('sign', sig, None, None))
                       i+=1; continue
-                  # look ahead: is the next text token an authorname?
-                  nxt = tokens[i+1] if i+1 < len(tokens) else None
-                  has_sig = bool(nxt and nxt[0] not in ('IMG',) and nxt[1]=='authorname')
+                  # look ahead up to 3 tokens for an authorname (skip IMG/title)
+                  has_sig=False
+                  for j in range(i+1, min(i+4, len(tokens))):
+                      tj=tokens[j]
+                      if tj[0]=='IMG': continue
+                      if tj[1]=='authorname': has_sig=True; break
+                      if tj[1] in ('text','descr'): break
                   if rtype in ('60','61','62'):
                       k='heading'
                   elif rtype in ('65','66'):
@@ -94,7 +98,16 @@ jobs:
                       k='quote'
                   else:
                       k='para'
-                  seq.append((k, body, None, None)); i+=1
+                  if k=='para':
+                      parts=[x.strip() for x in body.split('\n') if x.strip()]
+                      if not parts: parts=[body]
+                      for part in parts:
+                          if len(part)<=4 and not re.search(r'[.!?]', part):
+                              continue  # drop stray nick like "dāsa"
+                          seq.append(('para', part, None, None))
+                  else:
+                      seq.append((k, body, None, None))
+                  i+=1
               if not seq: continue
               pages+=1; ordn=0
               for (k,txt,img,bgv) in seq:
