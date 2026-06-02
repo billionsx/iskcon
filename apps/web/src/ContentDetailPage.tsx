@@ -24,23 +24,45 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
   return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
 }
 
-interface Block { kind: string; text: string | null; image: string | null; }
+interface SignRef {
+  author: string | null; authorSlug: string | null;
+  workName: string | null; workId: string | null; workHref: string | null;
+  citation: string | null; raw: string;
+}
+interface Block { kind: string; text: string | null; image: string | null; ref?: SignRef }
 interface ContentDetail {
   slug: string; name: string; type: string; kind: string | null;
   hero_image: string | null; blocks: Block[]; paragraphs: string[];
 }
 
 /** Редакционный pull-quote (Apple Books / News): крупный курсив слева,
- *  тонкая акцентная линия, подпись SF под ним. Без серой плашки. */
-function PullQuote({ text, source }: { text: string; source: string | null }) {
+ *  тонкая акцентная линия, структурированная атрибуция со ссылками. */
+function PullQuote({ text, ref, onPerson, onBook }: { text: string; ref: SignRef | null; onPerson: (slug: string) => void; onBook: (workId: string) => void }) {
+  const linkBtn: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-brand-blue)", cursor: "pointer" };
   return (
-    <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid var(--color-brand-blue)" }}>
+    <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid color-mix(in srgb, var(--color-brand-blue) 55%, transparent)" }}>
       <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 22, lineHeight: 1.42, letterSpacing: "0.1px", color: "var(--color-label)" }}>
         {text}
       </blockquote>
-      {source && (
-        <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
-          {source}
+      {ref && (ref.author || ref.workName || ref.citation || ref.raw) && (
+        <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
+          {/* автор → личность */}
+          {ref.author && (
+            ref.authorSlug
+              ? <button onClick={() => onPerson(ref.authorSlug as string)} style={{ ...linkBtn, fontWeight: 600 }}>{ref.author}</button>
+              : <span style={{ fontWeight: 600, color: "var(--color-label)" }}>{ref.author}</span>
+          )}
+          {ref.author && (ref.workName || ref.citation) && <span style={{ color: "var(--color-label-3)" }}>{"  ·  "}</span>}
+          {/* книга → книга */}
+          {ref.workName && (
+            ref.workId
+              ? <button onClick={() => onBook(ref.workId as string)} style={linkBtn}>{ref.workName}</button>
+              : <span>{ref.workName}</span>
+          )}
+          {/* глава/стих — текст (углубление появится вместе с контентом книги) */}
+          {ref.citation && <span>{ref.workName ? ", " : ""}{ref.citation}</span>}
+          {/* fallback, если ничего не распозналось */}
+          {!ref.author && !ref.workName && !ref.citation && ref.raw && <span>{ref.raw}</span>}
         </figcaption>
       )}
     </figure>
@@ -55,7 +77,7 @@ function Figure({ src }: { src: string }) {
   );
 }
 
-export default function ContentDetailPage({ slug, onBack }: { slug: string; onBack: () => void }) {
+export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenBook }: { slug: string; onBack: () => void; onOpenContent: (slug: string) => void; onOpenBook: (workId: string) => void }) {
   const [data, setData] = useState<ContentDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0); // 0..1 прогресс ухода hero под навбар
@@ -145,8 +167,8 @@ export default function ContentDetailPage({ slug, onBack }: { slug: string; onBa
                       case "image":
                         return b.image ? <Figure key={i} src={b.image} /> : null;
                       case "quote": {
-                        const src = next && next.kind === "sign" ? (next.text ?? null) : null;
-                        return <PullQuote key={i} text={b.text ?? ""} source={src} />;
+                        const ref = next && next.kind === "sign" ? (next.ref ?? null) : null;
+                        return <PullQuote key={i} text={b.text ?? ""} ref={ref} onPerson={onOpenContent} onBook={onOpenBook} />;
                       }
                       default:
                         return <p key={i} style={{ margin: "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{b.text}</p>;
