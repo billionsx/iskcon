@@ -1,8 +1,10 @@
 /**
- * ContentDetailPage — единая карточка контента iskcone (статья dāsa / личность / центр).
- * Стиль Apple HIG: SF для интерфейса и текста, hero-панно с маской-знаком ISKCON,
- * scroll-aware прозрачная шапка. Цитаты личностей — отдельным блоком (Georgia курсив).
- * Источник: GET /content/detail?slug=…
+ * ContentDetailPage — карточка контента iskcone (личность / статья / центр).
+ * Рендерит РЕАЛЬНУЮ вёрстку страницы блоками (content_blocks):
+ *   heading · accent · para · quote(+sign) · image
+ * Стиль Apple HIG (SF для UI/текста), цитаты — тонированный бокс с Georgia-текстом
+ * по центру и подписью-источником (как золотые блоки iskcone, но чисто по-Apple).
+ * Источник: GET /content/detail?slug=… → { blocks[], paragraphs[] (fallback) }.
  */
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
@@ -17,14 +19,41 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
   return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
 }
 
-interface Quote { ord: number; text: string; source: string | null; speaker: string | null; }
+interface Block { kind: string; text: string | null; image: string | null; }
 interface ContentDetail {
   slug: string; name: string; type: string; kind: string | null;
-  hero_image: string | null; paragraphs: string[]; quotes: Quote[];
+  hero_image: string | null; blocks: Block[]; paragraphs: string[];
 }
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-label-2)" }}>{children}</div>;
+}
+
+/** Один блок вёрстки. signNext — подпись (sign), идущая сразу за quote. */
+function BlockView({ b, signNext }: { b: Block; signNext: string | null }) {
+  switch (b.kind) {
+    case "heading":
+      return <h2 style={{ margin: "var(--space-8) 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", lineHeight: "var(--leading-snug)", color: "var(--color-label)" }}>{b.text}</h2>;
+    case "accent":
+      return <p style={{ margin: "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-semibold)", lineHeight: "var(--leading-snug)", color: "var(--color-label)" }}>{b.text}</p>;
+    case "image":
+      return b.image ? (
+        <img src={b.image} alt="" loading="lazy" style={{ display: "block", width: "100%", margin: "var(--space-6) 0 0", borderRadius: "var(--radius-lg)", objectFit: "cover" }} />
+      ) : null;
+    case "quote":
+      return (
+        <figure style={{ margin: "var(--space-6) 0 0", padding: "var(--space-6) var(--space-5)", borderRadius: "var(--radius-xl)", background: "var(--color-bg-3)", border: "0.5px solid var(--color-hairline)" }}>
+          <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 19, lineHeight: 1.65, textAlign: "center", color: "var(--color-label)" }}>{b.text}</blockquote>
+          {signNext && (
+            <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", textAlign: "center", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>{signNext}</figcaption>
+          )}
+        </figure>
+      );
+    case "sign":
+      return null; // отрисовывается внутри предыдущего quote
+    default: // para
+      return <p style={{ margin: "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{b.text}</p>;
+  }
 }
 
 export default function ContentDetailPage({ slug, onBack }: { slug: string; onBack: () => void }) {
@@ -38,7 +67,7 @@ export default function ContentDetailPage({ slug, onBack }: { slug: string; onBa
     setData(null); setErr(false);
     fetch(api(`/content/detail?slug=${encodeURIComponent(slug)}`))
       .then((r) => r.json())
-      .then((d) => { if (live) { if (d && Array.isArray(d.paragraphs)) setData(d); else setErr(true); } })
+      .then((d) => { if (live) { if (d && (Array.isArray(d.blocks) || Array.isArray(d.paragraphs))) setData(d); else setErr(true); } })
       .catch(() => { if (live) setErr(true); });
     return () => { live = false; };
   }, [slug]);
@@ -50,7 +79,9 @@ export default function ContentDetailPage({ slug, onBack }: { slug: string; onBa
     return () => el.removeEventListener("scroll", onScroll);
   }, [data]);
 
-  const hasQuotes = !!(data && data.quotes.length > 0);
+  // блоки с привязкой подписи к предыдущей цитате
+  const blocks = data?.blocks ?? [];
+  const useBlocks = blocks.length > 0;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
@@ -76,29 +107,20 @@ export default function ContentDetailPage({ slug, onBack }: { slug: string; onBa
               {data.kind && <div style={{ marginBottom: "var(--space-2)" }}><Eyebrow>{data.kind}</Eyebrow></div>}
               <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{data.name}</h1>
 
-              {/* текст статьи / описание личности — абзацы SF */}
-              <div style={{ marginTop: "var(--space-6)" }}>
-                {data.paragraphs.map((p, i) => (
-                  <p key={i} style={{ margin: i === 0 ? 0 : "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{p}</p>
-                ))}
-              </div>
-
-              {/* цитаты личности — Georgia курсив, с подписью источника */}
-              {hasQuotes && (
-                <div style={{ marginTop: "var(--space-8)" }}>
-                  <Eyebrow>Цитаты</Eyebrow>
-                  <div style={{ marginTop: "var(--space-4)" }}>
-                    {data.quotes.map((q, i) => (
-                      <figure key={q.ord || i} style={{ margin: i === 0 ? 0 : "var(--space-6) 0 0", paddingTop: i === 0 ? 0 : "var(--space-6)", borderTop: i === 0 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                        <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 18, lineHeight: 1.7, color: "var(--color-label)" }}>{q.text}</blockquote>
-                        {(q.source || q.speaker) && (
-                          <figcaption style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>
-                            {[q.speaker, q.source].filter(Boolean).join(" · ")}
-                          </figcaption>
-                        )}
-                      </figure>
-                    ))}
-                  </div>
+              {useBlocks ? (
+                <div>
+                  {blocks.map((b, i) => {
+                    if (b.kind === "sign") return null; // включается в предыдущую цитату
+                    const next = blocks[i + 1];
+                    const signNext = b.kind === "quote" && next && next.kind === "sign" ? (next.text ?? null) : null;
+                    return <BlockView key={i} b={b} signNext={signNext} />;
+                  })}
+                </div>
+              ) : (
+                <div style={{ marginTop: "var(--space-6)" }}>
+                  {data.paragraphs.map((p, i) => (
+                    <p key={i} style={{ margin: i === 0 ? 0 : "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{p}</p>
+                  ))}
                 </div>
               )}
             </div>
