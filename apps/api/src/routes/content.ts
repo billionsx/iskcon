@@ -88,6 +88,7 @@ interface SignRef {
   workHref: string | null;     // канонический адрес книги
   division: string | null;     // «Антья-лила» / «Песнь 7» (человекочитаемо)
   divisionSlug: string | null; // adi|madhya|antya | номер песни
+  divisionHref: string | null; // div:{work}:{slug} — ссылка на раздел книги
   chapter: string | null;      // номер главы
   verse: string | null;        // номер стиха (или «35-37» / «введение»)
   chapterHref: string | null;  // chap:{work}:{div}:{ch}
@@ -103,7 +104,7 @@ function matchAuthor(s: string): { name: string; slug: string } | null {
 
 // Разбор одной подписи в структуру ссылок
 function parseSign(raw: string): SignRef {
-  const out: SignRef = { author: null, authorSlug: null, workName: null, workId: null, workHref: null, division: null, divisionSlug: null, chapter: null, verse: null, chapterHref: null, verseHref: null, citation: null, raw };
+  const out: SignRef = { author: null, authorSlug: null, workName: null, workId: null, workHref: null, division: null, divisionSlug: null, divisionHref: null, chapter: null, verse: null, chapterHref: null, verseHref: null, citation: null, raw };
   // 1) автор — сегмент до первого ' · ', если он похож на личность/Прабхупаду
   const segs = raw.split('·').map((x) => x.trim()).filter(Boolean);
   let sourceStr = raw;
@@ -152,6 +153,7 @@ function parseSign(raw: string): SignRef {
   // 4) канонические адреса (для bg раздел = глава напрямую)
   const dv = out.workId === 'bg' ? out.chapter : out.divisionSlug;
   if (out.workId) out.workHref = `book:${out.workId}`;
+  if (out.workId && out.workId !== 'bg' && out.divisionSlug) out.divisionHref = `div:${out.workId}:${out.divisionSlug}`;
   if (out.workId && dv && out.chapter) out.chapterHref = `chap:${out.workId}:${dv}:${out.chapter}`;
   if (out.workId && dv && out.chapter && out.verse && /^\d/.test(out.verse))
     out.verseHref = `verse:${out.workId}:${dv}:${out.chapter}:${out.verse}`;
