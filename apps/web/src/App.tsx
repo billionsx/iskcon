@@ -239,7 +239,7 @@ function BookCard({ onOpen }: { onOpen?: () => void }) {
 
 /* ═════════ Bhajan shelf — list from D1 prayers (api /bhajans) ═════════ */
 interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; }
-function BhajanShelf({ onOpen }: { onOpen: (slug: string) => void }) {
+function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void; onOpenCatalog: () => void }) {
   const [items, setItems] = useState<BhajanListItem[] | null>(null);
   useEffect(() => {
     let live = true;
@@ -252,9 +252,15 @@ function BhajanShelf({ onOpen }: { onOpen: (slug: string) => void }) {
 
   return (
     <section style={{ marginTop: 28 }}>
-      <div style={{ marginBottom: 12 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Молитвенник</div>
-        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
+      <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Молитвенник</div>
+          <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
+        </div>
+        <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+          Весь каталог
+          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
       </div>
       {!items && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
       {items && items.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
@@ -280,7 +286,88 @@ function BhajanShelf({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void }) {
+/* ═════════ Bhajan catalog — grouped author → songbook → section ═════════ */
+interface CatalogItem { slug: string; name: string; author: string | null; source_text: string | null; category: string | null; section: string | null; ord: number | null; has_text: boolean; }
+function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onBack: () => void }) {
+  const [items, setItems] = useState<CatalogItem[] | null>(null);
+  const [err, setErr] = useState(false);
+  useEffect(() => {
+    let live = true;
+    fetch(api("/bhajans/catalog"))
+      .then((r) => r.json())
+      .then((d) => { if (live) { if (Array.isArray(d.items)) setItems(d.items); else setErr(true); } })
+      .catch(() => { if (live) setErr(true); });
+    return () => { live = false; };
+  }, []);
+
+  // group: author -> songbook(source_text|'—') -> items (ordered)
+  const groups: { author: string; books: { book: string | null; rows: CatalogItem[] }[] }[] = [];
+  if (items) {
+    const byAuthor = new Map<string, CatalogItem[]>();
+    for (const it of items) {
+      const a = it.author ?? "Традиционные";
+      (byAuthor.get(a) ?? byAuthor.set(a, []).get(a)!).push(it);
+    }
+    for (const [author, rows] of byAuthor) {
+      const byBook = new Map<string, CatalogItem[]>();
+      for (const it of rows) {
+        const b = it.source_text ?? "—";
+        (byBook.get(b) ?? byBook.set(b, []).get(b)!).push(it);
+      }
+      const books = [...byBook.entries()].map(([book, r]) => ({ book: book === "—" ? null : book, rows: r }));
+      groups.push({ author, books });
+    }
+  }
+  const totalText = items ? items.filter((i) => i.has_text).length : 0;
+
+  return (
+    <div style={{ minHeight: "100%", background: "var(--color-bg)" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", gap: 6, padding: "0 8px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
+        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <div style={{ flex: 1, minWidth: 0, fontSize: 15.5, fontWeight: 700, color: "var(--color-label)" }}>Каталог бхаджанов</div>
+      </header>
+
+      {!items && !err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 0", fontSize: 15 }}>Загрузка…</div>}
+      {err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 16px", fontSize: 15 }}>Не удалось загрузить каталог.</div>}
+
+      {items && (
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "16px 16px 56px" }}>
+          <div style={{ fontSize: 13, color: "var(--color-label-2)", marginBottom: 18 }}>
+            {items.length} молитв и песен · {totalText} с полным текстом
+          </div>
+          {groups.map((g) => (
+            <section key={g.author} style={{ marginBottom: 26 }}>
+              <h2 style={{ margin: "0 0 10px", fontSize: 18, fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
+              {g.books.map((bk) => (
+                <div key={(g.author) + "|" + (bk.book ?? "_")} style={{ marginBottom: 12 }}>
+                  {bk.book && <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-brand-blue)", margin: "8px 2px 6px" }}>{bk.book}</div>}
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+                    {bk.rows.map((it, i) => (
+                      <li key={it.slug} style={{ borderBottom: i === bk.rows.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                        <button onClick={() => onOpen(it.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "11px 12px", textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                          <span style={{ minWidth: 0, flex: 1 }}>
+                            <span style={{ display: "block", fontSize: 15, fontWeight: 500, lineHeight: 1.3, color: "var(--color-label)" }}>{it.name}</span>
+                            {it.section && <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{it.section}</span>}
+                          </span>
+                          {!it.has_text && <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-label-2)", border: "0.5px solid var(--color-hairline)", borderRadius: 999, padding: "2px 8px" }}>скоро</span>}
+                          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </section>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
     <>
@@ -294,7 +381,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan }: { tab: string; onCh
                 <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
               <BookCard onOpen={onOpenBook} />
-              <BhajanShelf onOpen={onOpenBhajan} />
+              <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
           ) : null}
         </div>
@@ -308,6 +395,7 @@ export default function App() {
   const [tab, setTab] = useState("home");
   const [openBook, setOpenBook] = useState(false);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
+  const [openCatalog, setOpenCatalog] = useState(false);
   return (
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
@@ -319,8 +407,12 @@ export default function App() {
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BhajanDetailPage slug={openBhajan} onBack={() => setOpenBhajan(null)} />
           </main>
+        ) : openCatalog ? (
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+            <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={() => setOpenCatalog(false)} />
+          </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} />
         )}
       </div>
     </div>
