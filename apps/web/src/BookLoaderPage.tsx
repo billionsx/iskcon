@@ -256,8 +256,6 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
     );
   }
 
-  const editionPending = status?.edition?.license && status.edition.license !== "public-domain";
-
   return (
     <div style={page}>
       <Header
@@ -278,9 +276,12 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>
             Библиотека · ингест
           </div>
-          <h1 style={{ margin: "2px 0 16px", fontSize: 24, fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
+          <h1 style={{ margin: "2px 0 6px", fontSize: 24, fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
             Загрузчик книги
           </h1>
+          <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+            Тянет тексты с vedabase.io и пишет их в базу gaurangers (D1). «Загрузить» на главе или «Загрузить всю книгу» — воркер по очереди открывает каждый стих, разбирает на слои и сохраняет.
+          </p>
 
           {/* выбор книги */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
@@ -313,30 +314,6 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
             <div style={{ ...card, marginBottom: 16, color: "#c0392b", fontSize: 14 }}>{err}</div>
           )}
 
-          {/* лицензия издания */}
-          {status?.edition && (
-            <div
-              style={{
-                ...card,
-                marginBottom: 16,
-                borderLeft: `3px solid ${editionPending ? "#d99100" : "var(--color-brand-blue)"}`,
-                background: editionPending ? "rgba(217,145,0,.08)" : "var(--color-bg-2)",
-              }}
-            >
-              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--color-label)" }}>
-                Издание {status.edition.id} · лицензия:{" "}
-                <span style={{ color: editionPending ? "#a8700a" : "var(--color-brand-blue)" }}>
-                  {status.edition.license ?? "—"}
-                </span>
-              </div>
-              <p style={{ margin: "6px 0 0", fontSize: 13, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-                {editionPending
-                  ? "Перевод и комментарий — материалы издания (BBT). Загружайте их только при урегулированных правах: до этого слой издания держим выключенным."
-                  : "Перевод и комментарий доступны к публикации."}
-              </p>
-            </div>
-          )}
-
           {/* слои */}
           <div style={{ ...card, marginBottom: 16 }}>
             <div style={sectionLabel}>Что загружать</div>
@@ -348,8 +325,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
             />
             <Toggle
               label="Издание — пословный, перевод, комментарий"
-              note={editionPending ? "лицензия pending — публикация после прав" : "издание"}
-              warn={!!editionPending}
+              note="из источника"
               on={layers.edition}
               onToggle={() => setLayers((s) => ({ ...s, edition: !s.edition }))}
             />
@@ -465,7 +441,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           )}
 
           <p style={{ marginTop: 26, fontSize: 12, lineHeight: 1.55, color: "var(--color-label-3, var(--color-label-2))" }}>
-            Принцип «ссылка, а не копия»: по умолчанию загружаются только общедоступная структура и санскрит, у каждого стиха сохраняется канонический источник. Слой издания (перевод/комментарий) — отдельное, осознанное действие при урегулированных правах.
+            Источник — vedabase.io (раздел /ru/library). Загрузка идёт по стихам: деванагари и транслитерация (санскрит), а при включённом «Издании» — ещё пословный, перевод и комментарий. Запись в базу идемпотентная (повтор не дублирует), у каждого стиха сохраняется ссылка на оригинал.
           </p>
         </div>
       </div>
