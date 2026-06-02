@@ -11,6 +11,7 @@ import { BOOKS } from "./books";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
+import BookLoaderPage from "./BookLoaderPage";
 import { api } from "./api";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -464,14 +465,16 @@ export default function App() {
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
+  const [openAdmin, setOpenAdmin] = useState(false);
   const fromPop = useRef(false);
 
   // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере включён) ──
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "feed", "search", "map", "passport", "bhajans", "book", "read"];
+  const RESERVED = ["", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin"];
   function pathFromState(): string {
+    if (openAdmin) return "/admin";
     if (openBook) return "/book/bg";
     if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
     if (openBhajan) return openBhajan;     // slug сам по себе путь
@@ -492,12 +495,13 @@ export default function App() {
   function applyPath(path: string) {
     fromPop.current = true;
     const clean = (path || "/").replace(/\/+$/, "") || "/";
-    setOpenBook(false); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null);
+    setOpenBook(false); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["feed", "search", "map", "passport"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (seg0 === "book") { setOpenBook(true); return; }
+    if (seg0 === "admin") { setOpenAdmin(true); return; }
     if (seg0 === "read") {
       const [, , work, div, ch, v] = clean.split("/");
       if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
@@ -523,7 +527,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) window.history.pushState(null, "", next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent]);
+  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent, openAdmin]);
 
   // «Назад»: настоящая история, но не выходим за пределы приложения при прямом входе
   const enteredAt = useRef(typeof window !== "undefined" ? window.history.length : 0);
@@ -549,7 +553,11 @@ export default function App() {
   return (
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
-        {openBook ? (
+        {openAdmin ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <BookLoaderPage onBack={goBack} />
+          </main>
+        ) : openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BookDetailPage book={BOOKS.bg} onBack={goBack} />
           </main>
