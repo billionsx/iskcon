@@ -7,7 +7,7 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump block sequence of one page
+      - name: Dump block sequence into deploy_checks
         env:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
@@ -20,31 +20,26 @@ jobs:
               rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
               with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())["result"][0]["results"]
           html=q("SELECT html FROM tilda_pages WHERE alias='ru/radharani'")[0]["html"]
-
-          TAGS=re.compile(r'(?s)<[^>]+>'); BR=re.compile(r'(?i)<br\s*/?>')
+          TAGS=re.compile(r'(?s)<[^>]+>')
           def txt(s): return re.sub(r'\s+',' ',H.unescape(TAGS.sub(' ', s))).strip()
-
-          # split into Tilda records: <div id="recNNNN" ... data-record-type="TYPE"
           recs=re.split(r'(?=<div id="rec\d+")', html)
-          print("records:", len(recs))
           out=[]
           for r in recs:
               mt=re.search(r'data-record-type="(\d+)"', r)
               if not mt: continue
               rtype=mt.group(1)
-              # text fields
               fields=re.findall(r'field="(text|title|authorname|descr)"[^>]*>(.*?)</div>', r, re.S|re.I)
-              # bg color (cite boxes)
               bg=re.search(r'background:\s*(#[0-9a-fA-F]{3,6})', r)
-              # images in this record (exclude svg icons)
               imgs=[u for u in re.findall(r'https://static\.tildacdn\.com/[^"\'\\) ]+', r)
                     if re.search(r'\.(jpg|jpeg|png|webp)$', u, re.I) and 'iskcon' not in u.lower()]
               imgs=list(dict.fromkeys(imgs))
-              desc=""
               if fields:
-                  k,v=fields[0]; desc=f"{k}:{txt(v)[:70]}"
-              elif imgs: desc=f"IMG x{len(imgs)}"
-              out.append((rtype, bg.group(1) if bg else "", len(imgs), desc))
-          for i,(t,bg,ni,d) in enumerate(out):
-              print(f"{i:2d} t{t:<4} bg={bg or '-':<8} img={ni} {d}")
+                  k,v=fields[0]; desc=f"{k}:{txt(v)[:55]}"
+              elif imgs: desc=f"IMGx{len(imgs)}"
+              else: desc=""
+              out.append(f"t{rtype} bg={bg.group(1) if bg else '-'} img={len(imgs)} {desc}")
+          blob=" || ".join(out[:60])
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'probe radharani',?,?)",
+            [str(len(out)), blob[:3500]])
+          print("done", len(out))
           PY
