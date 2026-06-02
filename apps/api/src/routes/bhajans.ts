@@ -30,14 +30,12 @@ bhajansRouter.get('/', async (c) => {
   return c.json({ bhajans });
 });
 
-// GET /v1/bhajans/catalog — полный каталог (наполненные + каталожные), сгруппирован
+// GET /v1/bhajans/catalog — каталог заполненных молитв, сгруппирован
 bhajansRouter.get('/catalog', async (c) => {
   const { results } = await c.env.DB.prepare(
-    `SELECT slug, name, author_name, source_text, category, section, ord,
-            is_catalog,
-            CASE WHEN length(COALESCE(text,'')) > 0 THEN 1 ELSE 0 END AS has_text
+    `SELECT slug, name, author_name, source_text, category, section, ord
        FROM prayers
-      WHERE is_section = 0
+      WHERE is_section = 0 AND is_catalog = 0 AND length(COALESCE(text,'')) > 0
       ORDER BY (author_name IS NULL), author_name,
                (source_text IS NULL), source_text,
                (ord IS NULL), ord, name`,
@@ -50,7 +48,7 @@ bhajansRouter.get('/catalog', async (c) => {
     category: r.category ?? null,
     section: r.section ?? null,
     ord: r.ord ?? null,
-    has_text: !!r.has_text,
+    has_text: true,
   }));
   return c.json({ items });
 });

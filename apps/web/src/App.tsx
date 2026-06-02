@@ -9,6 +9,7 @@ import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
 import BhajanDetailPage from "./BhajanDetailPage";
+import ContentDetailPage from "./ContentDetailPage";
 import { api } from "./api";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -367,7 +368,69 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void }) {
+/* ═════════ Feed — перенос контента iskcone (статьи · личности · центры) ═════════ */
+interface FeedItem { slug: string; name: string; hero_image: string | null; kind?: string | null; n_quotes?: number }
+
+function ContentSection({ eyebrow, title, endpoint, onOpen }: { eyebrow: string; title: string; endpoint: string; onOpen: (slug: string) => void }) {
+  const [items, setItems] = useState<FeedItem[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(api(endpoint))
+      .then((r) => r.json())
+      .then((d) => { if (live) setItems(d.items ?? []); })
+      .catch(() => { if (live) setItems([]); });
+    return () => { live = false; };
+  }, [endpoint]);
+
+  if (items && items.length === 0) return null;
+  return (
+    <section style={{ marginTop: "var(--space-8)" }}>
+      <div style={{ marginBottom: "var(--space-3)" }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{eyebrow}</div>
+        <h2 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{title}</h2>
+      </div>
+      {!items && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
+      {items && (
+        <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: "var(--radius-lg)", overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+          {items.map((it, i) => (
+            <li key={it.slug} style={{ borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+              <button onClick={() => onOpen(it.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-3)", textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                {it.hero_image
+                  ? <img src={it.hero_image} alt="" loading="lazy" style={{ width: 56, height: 56, borderRadius: "var(--radius-md)", objectFit: "cover", flexShrink: 0 }} />
+                  : <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, borderRadius: "var(--radius-md)", flexShrink: 0, background: "var(--color-bg-3)", color: "var(--color-label-3)" }}><LogoMark src="/iskcon-sign.svg" label="" height={30} /></span>}
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: "var(--weight-semibold)", lineHeight: 1.3, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{it.name}</span>
+                  {(it.kind || it.n_quotes) ? (
+                    <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>
+                      {[it.kind, it.n_quotes ? `${it.n_quotes} цитат` : null].filter(Boolean).join(" · ")}
+                    </span>
+                  ) : null}
+                </span>
+                <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
+  return (
+    <div>
+      <div style={{ marginBottom: "var(--space-2)" }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>ISKCON ONE LOVE</div>
+        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>Лента</h1>
+      </div>
+      <ContentSection eyebrow="Личности" title="Кришна, аватары и спутники" endpoint="/content/personalities" onOpen={onOpen} />
+      <ContentSection eyebrow="Заметки на полях сердца" title="Статьи" endpoint="/content/articles" onOpen={onOpen} />
+      <ContentSection eyebrow="Сообщество" title="Центры ИСККОН" endpoint="/content/centers" onOpen={onOpen} />
+    </div>
+  );
+}
+
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
@@ -383,6 +446,8 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog }: { ta
               <BookCard onOpen={onOpenBook} />
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
+          ) : tab === "feed" ? (
+            <FeedScreen onOpen={onOpenContent} />
           ) : null}
         </div>
       </main>
@@ -396,6 +461,7 @@ export default function App() {
   const [openBook, setOpenBook] = useState(false);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
+  const [openContent, setOpenContent] = useState<string | null>(null);
   return (
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
@@ -411,8 +477,12 @@ export default function App() {
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={() => setOpenCatalog(false)} />
           </main>
+        ) : openContent ? (
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+            <ContentDetailPage slug={openContent} onBack={() => setOpenContent(null)} />
+          </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} />
         )}
       </div>
     </div>
