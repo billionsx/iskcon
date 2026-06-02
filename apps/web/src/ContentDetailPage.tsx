@@ -202,6 +202,8 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   // имя личности на оригинале часто повторяется первым heading-блоком — не дублируем H1
   const skipFirstHeading = useBlocks && blocks[0]?.kind === "heading"
     && (blocks[0].text || "").trim().toLowerCase() === (data?.name || "").trim().toLowerCase();
+  // первый accent (сразу под именем) — дек/подзаголовок; последующие accent — секционные интерлюдии
+  const firstAccentIdx = blocks.findIndex((b) => b.kind === "accent");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
@@ -264,8 +266,16 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                     switch (b.kind) {
                       case "heading":
                         return <h2 key={i} style={{ margin: "var(--space-8) 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", lineHeight: "var(--leading-snug)", color: "var(--color-label)" }}>{b.text}</h2>;
-                      case "accent":
-                        return <p key={i} style={{ margin: "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-regular)", lineHeight: 1.4, color: "var(--color-label-2)" }}>{b.text}</p>;
+                      case "accent": {
+                        // дек — крупный серый подзаголовок сразу под именем (стандарт страницы Кришны)
+                        if (i === firstAccentIdx)
+                          return <p key={i} style={{ margin: "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-regular)", lineHeight: 1.4, color: "var(--color-label-2)" }}>{b.text}</p>;
+                        // секционная интерлюдия — по центру, с тонкой линией сверху; пара accent'ов подряд читается как один блок
+                        const prevAccent = blocks[i - 1]?.kind === "accent";
+                        return (
+                          <p key={i} style={{ margin: prevAccent ? "var(--space-2) 0 0" : "var(--space-8) 0 0", paddingTop: prevAccent ? 0 : "var(--space-6)", borderTop: prevAccent ? "none" : "0.5px solid var(--color-hairline)", textAlign: "center", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-medium)", letterSpacing: "var(--tracking-tight)", lineHeight: "var(--leading-snug)", color: "var(--color-label)" }}>{b.text}</p>
+                        );
+                      }
                       case "image":
                         return b.image ? <Figure key={i} src={b.image} /> : null;
                       case "quote": {
