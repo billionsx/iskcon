@@ -69,10 +69,23 @@ bhajansRouter.get('/detail', async (c) => {
     .first()) as Row | null;
   if (!row) return c.json({ error: { code: 'not_found', message: 'bhajan not found' } }, 404);
 
+  const { results: vrows } = await c.env.DB.prepare(
+    `SELECT ord, verse_translit, verse_text, signature
+       FROM prayer_verses WHERE slug = ? ORDER BY ord`,
+  )
+    .bind(slug)
+    .all();
+  const verses = ((vrows as Row[]) ?? []).map((v) => ({
+    ord: v.ord,
+    translit: v.verse_translit ?? null,
+    text: v.verse_text ?? null,
+    signature: v.signature ?? null,
+  }));
+
   const raw = String(row.text ?? '');
   const nl = raw.indexOf('\n');
   const body = (nl >= 0 ? raw.slice(nl + 1) : raw).trim(); // срезаем служебную первую строку
-  const hasText = body.length > 0 || !!(row.translit || row.translation);
+  const hasText = verses.length > 0 || body.length > 0 || !!(row.translit || row.translation);
 
   return c.json({
     slug: row.slug,
@@ -82,6 +95,7 @@ bhajansRouter.get('/detail', async (c) => {
     source_text: row.source_text ?? null,
     category: row.category ?? null,
     section: row.section ?? null,
+    verses,
     translit: row.translit ?? null,
     translation: row.translation ?? null,
     body,
