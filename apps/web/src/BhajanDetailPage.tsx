@@ -6,9 +6,12 @@ interface BhajanDetail {
   name: string;
   author: string | null;
   hero_image: string | null;
+  source_text: string | null;
+  section: string | null;
   translit: string | null;
   translation: string | null;
   body: string;
+  pending: boolean;
 }
 
 function Layer({ label, text, italic }: { label: string; text: string; italic?: boolean }) {
@@ -57,8 +60,17 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
           <div style={{ padding: "22px 22px 0" }}>
             <h1 style={{ margin: 0, fontSize: 27, lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{data.name}</h1>
             {data.author && <div style={{ marginTop: 6, fontSize: 15, color: "var(--color-label-2)" }}>{data.author}</div>}
+            {(data.source_text || data.section) && (
+              <div style={{ marginTop: 3, fontSize: 13, color: "var(--color-label-2)" }}>
+                {[data.source_text, data.section].filter(Boolean).join(" · ")}
+              </div>
+            )}
 
-            {hasLayers ? (
+            {data.pending ? (
+              <div style={{ marginTop: 26, padding: "20px 18px", borderRadius: 14, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)", fontSize: 15, lineHeight: 1.6 }}>
+                Текст готовится к публикации.
+              </div>
+            ) : hasLayers ? (
               <>
                 {data.translit && <Layer label="Транслитерация" text={data.translit} italic />}
                 {data.translation && <Layer label="Перевод" text={data.translation} />}
@@ -67,10 +79,12 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               <div style={{ marginTop: 22, fontSize: 18, lineHeight: 1.72, color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
             )}
 
-            <div style={{ marginTop: 28, display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderRadius: 14, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
-              <span style={{ fontSize: 14 }}>Аудио — скоро</span>
-            </div>
+            {!data.pending && (
+              <div style={{ marginTop: 28, display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderRadius: 14, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden><path d="M8 5v14l11-7z" fill="currentColor" /></svg>
+                <span style={{ fontSize: 14 }}>Аудио — скоро</span>
+              </div>
+            )}
           </div>
         </div>
       )}
