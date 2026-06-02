@@ -149,6 +149,19 @@ function parseSign(raw: string): SignRef {
   const vm = sourceStr.match(/стих[аи]?\s*(\d+(?:\s*[-–]\s*\d+)?)/i);
   if (vm) out.verse = (vm[1] ?? '').replace(/\s+/g, '');
   else if (/введение/i.test(sourceStr)) out.verse = 'введение';
+  // 3d) компактный формат «X.Y» (глава.стих) или «X.Y.Z» (песнь/канто.глава.стих) — как на iskcone
+  if (!out.chapter || !out.verse) {
+    const three = sourceStr.match(/(\d+)\.(\d+)\.(\d+)/);
+    const two = sourceStr.match(/(\d+)\.(\d+)/);
+    if (three) {
+      if (!out.divisionSlug && out.workId === 'sb') { out.division = `Песнь ${three[1]}`; out.divisionSlug = three[1] ?? null; }
+      out.chapter = out.chapter ?? (three[2] ?? null);
+      out.verse = out.verse ?? (three[3] ?? null);
+    } else if (two) {
+      out.chapter = out.chapter ?? (two[1] ?? null);
+      out.verse = out.verse ?? (two[2] ?? null);
+    }
+  }
 
   // 4) канонические адреса (для bg раздел = глава напрямую)
   const dv = out.workId === 'bg' ? out.chapter : out.divisionSlug;
