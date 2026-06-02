@@ -1,0 +1,93 @@
+name: iskcone verse split (per-verse + signature)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Split bhajan HTML into verses with signatures (iskcone standard)
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, re, html as H, urllib.request, collections
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def q(sql, params=None):
+              body=json.dumps({"sql":sql,"params":params or []}).encode()
+              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq) as r: return json.loads(r.read().decode())["result"][0]["results"]
+
+          TAGS=re.compile(r'(?s)<[^>]+>'); BR=re.compile(r'(?i)<br\s*/?>'); BOLD=re.compile(r'(?i)<(?:strong|b)\b')
+          CHROME=re.compile(r'(Лучшее, что можно сделать для Господа|ISKCON ONE LOVE|ОНЛАЙН-РЕСУРС|БРАХМА-МАДХВА-ГАУДИЯ|РАЗНЫХ СТРАН|Founder-Āc|His Divine Grace|Что бы ты делал)', re.I)
+          def one_line(s): return re.sub(r'\s+',' ',H.unescape(TAGS.sub(' ', s))).strip()
+          def multi(s):
+              s=BR.sub('\n', s); s=H.unescape(TAGS.sub('', s))
+              return "\n".join(x.strip() for x in s.split('\n') if x.strip())
+
+          # t257 block: capture inner text-field and optional following authorname
+          TXT=re.compile(r'field="text"[^>]*>(.*?)</div>', re.S|re.I)
+          AUTH=re.compile(r'field="authorname"[^>]*>(.*?)</div>', re.S|re.I)
+          # split html into t257 records to keep text<->author pairing local
+          REC=re.compile(r'(<div[^>]*class="[^"]*t257[^"]*"[^>]*>.*?)(?=<div[^>]*class="[^"]*t257|<style|<script|$)', re.S|re.I)
+
+          rows=q("SELECT p.slug AS slug, t.html AS html FROM prayers p JOIN tilda_pages t ON '/'||t.alias=p.slug WHERE p.is_section=0")
+          # frequency boilerplate net over all pages
+          allpages={}; off=0
+          while True:
+              b=q("SELECT alias, html FROM tilda_pages ORDER BY alias LIMIT 25 OFFSET ?", [off])
+              if not b: break
+              for r in b: allpages[r["alias"]]=r.get("html") or ""
+              off+=25
+          freq=collections.Counter()
+          for h in allpages.values():
+              seen=set()
+              for m in TXT.finditer(h):
+                  sig=one_line(m.group(1))
+                  if sig: seen.add(sig)
+              for s in seen: freq[s]+=1
+          nP=len(allpages); thr=max(4,int(0.18*nP)); boiler={s for s,c in freq.items() if c>=thr}
+
+          def parse_page(htmltext):
+              verses=[]   # (translit, text, signature)
+              recs=REC.findall(htmltext)
+              chunks=recs if recs else [htmltext]
+              for ch in chunks:
+                  tx_m=TXT.search(ch)
+                  if not tx_m: continue
+                  inner=tx_m.group(1)
+                  sig_line=one_line(inner)
+                  if not sig_line or sig_line in boiler or CHROME.search(sig_line): continue
+                  au_m=AUTH.search(ch)
+                  signature=None
+                  if au_m:
+                      s=multi(au_m.group(1))
+                      s=" · ".join(x.strip(" ,") for x in s.split('\n') if x.strip())
+                      if s and not CHROME.search(s): signature=s
+                  # within the verse text, split bold(translit) vs plain(translation)
+                  tr=[]; pl=[]
+                  for raw in BR.split(inner):
+                      t=one_line(raw)
+                      if not t: continue
+                      (tr if BOLD.search(raw) else pl).append(t)
+                  translit="\n".join(tr).strip()
+                  text="\n".join(pl).strip()
+                  if not translit and not text: continue
+                  verses.append((translit or None, text or None, signature))
+              return verses
+
+          q("DELETE FROM prayer_verses", [])
+          songs=vt=0
+          for r in rows:
+              vs=parse_page(r.get("html") or "")
+              if not vs: continue
+              songs+=1
+              for i,(tr,tx,sig) in enumerate(vs, start=1):
+                  q("INSERT OR REPLACE INTO prayer_verses (slug,ord,verse_translit,verse_text,signature) VALUES (?,?,?,?,?)",
+                    [r["slug"], i, tr, tx, sig]); vt+=1
+          q("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone verse split',?,?)",
+            [str(len(rows)), f"songs={songs} verses={vt} boiler={len(boiler)}"])
+          print(f"DONE songs={songs} verses={vt}")
+          PY

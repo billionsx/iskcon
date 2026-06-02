@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "./api";
 
+interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; }
 interface BhajanDetail {
   slug: string;
   name: string;
@@ -8,6 +9,7 @@ interface BhajanDetail {
   hero_image: string | null;
   source_text: string | null;
   section: string | null;
+  verses: Verse[];
   translit: string | null;
   translation: string | null;
   body: string;
@@ -19,6 +21,23 @@ function Layer({ label, text, italic }: { label: string; text: string; italic?: 
     <section style={{ marginTop: 24 }}>
       <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)", marginBottom: 10 }}>{label}</div>
       <div style={{ fontStyle: italic ? "italic" : "normal", fontSize: italic ? 17 : 18, lineHeight: italic ? 1.85 : 1.72, color: "var(--color-label)", whiteSpace: "pre-line" }}>{text}</div>
+    </section>
+  );
+}
+
+// Один стих по стандарту iskcone: транслитерация (курсив) + перевод + подпись.
+function VerseBlock({ v, n }: { v: Verse; n: number }) {
+  return (
+    <section style={{ marginTop: 26, paddingTop: n === 1 ? 0 : 22, borderTop: n === 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+      {v.translit && (
+        <div style={{ fontStyle: "italic", fontSize: 17, lineHeight: 1.85, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.translit}</div>
+      )}
+      {v.text && (
+        <div style={{ marginTop: v.translit ? 12 : 0, fontSize: 18, lineHeight: 1.72, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.text}</div>
+      )}
+      {v.signature && (
+        <div style={{ marginTop: 10, fontSize: 13, color: "var(--color-label-2)" }}>{v.signature}</div>
+      )}
     </section>
   );
 }
@@ -38,6 +57,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
     return () => { live = false; };
   }, [slug]);
 
+  const hasVerses = !!(data && data.verses && data.verses.length > 0);
   const hasLayers = !!(data && (data.translit || data.translation));
 
   return (
@@ -69,6 +89,10 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
             {data.pending ? (
               <div style={{ marginTop: 26, padding: "20px 18px", borderRadius: 14, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)", fontSize: 15, lineHeight: 1.6 }}>
                 Текст готовится к публикации.
+              </div>
+            ) : hasVerses ? (
+              <div>
+                {data.verses.map((v, i) => <VerseBlock key={v.ord} v={v} n={i + 1} />)}
               </div>
             ) : hasLayers ? (
               <>

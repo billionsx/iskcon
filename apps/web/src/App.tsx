@@ -370,9 +370,9 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
 function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   return (
-    <>
+    <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader />
-      <main ref={mainRef} style={{ position: "relative", flex: 1, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
+      <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ padding: 16 }}>
           {tab === "home" ? (
             <>
@@ -387,7 +387,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog }: { ta
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} />
-    </>
+    </div>
   );
 }
 
