@@ -171,29 +171,55 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
 
   const loadChapter = useCallback(
     async (chapter: string): Promise<boolean> => {
+      const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+      type Batch = {
+        summary?: LoadSummary;
+        total?: number;
+        processed?: number;
+        nextOffset?: number | null;
+        error?: string;
+        message?: string;
+      };
+      // Vedabase throttles under sustained load: keep each request small and
+      // retry with backoff so a temporarily-slow upstream self-heals.
+      const postBatch = async (offset: number): Promise<Batch> => {
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const r = await fetch(api(`/admin/load-chapter`), {
+              method: "POST",
+              headers: headers(),
+              body: JSON.stringify({ work, chapter: Number(chapter), layers, offset, limit: 20 }),
+            });
+            if (r.ok) {
+              const d = (await r.json()) as Batch;
+              if (d.summary) return d;
+              if (attempt >= 3) return d;
+            } else if (attempt >= 3) {
+              try {
+                return (await r.json()) as Batch;
+              } catch {
+                return { error: `http_${r.status}` };
+              }
+            }
+          } catch {
+            if (attempt >= 3) return { error: "network" };
+          }
+          await sleep(1300 * attempt);
+        }
+        return { error: "failed" };
+      };
+
       setLoadingCh(chapter);
       try {
         let offset: number | null = 0;
         let guard = 0;
         let total = 0;
         const acc = { verses: 0, deva: 0, translit: 0, tokens: 0, translation: 0, purport: 0 };
-        while (offset !== null && guard < 80) {
+        while (offset !== null && guard < 120) {
           guard++;
-          const r = await fetch(api(`/admin/load-chapter`), {
-            method: "POST",
-            headers: headers(),
-            body: JSON.stringify({ work, chapter: Number(chapter), layers, offset, limit: 30 }),
-          });
-          const d = (await r.json()) as {
-            summary?: LoadSummary;
-            total?: number;
-            processed?: number;
-            nextOffset?: number | null;
-            error?: string;
-            message?: string;
-          };
-          if (!r.ok || !d.summary) {
-            pushLog(`Гл. ${chapter}: ошибка — ${d.message || d.error || r.status}`);
+          const d = await postBatch(offset);
+          if (!d.summary) {
+            pushLog(`Гл. ${chapter}: ошибка — ${d.message || d.error || "сбой"}`);
             return false;
           }
           const s = d.summary;
@@ -206,7 +232,10 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           total = d.total ?? acc.verses;
           const processed = d.processed ?? acc.verses;
           offset = d.nextOffset ?? null;
-          if (offset !== null) pushLog(`Гл. ${chapter}: ${processed}/${total}…`);
+          if (offset !== null) {
+            pushLog(`Гл. ${chapter}: ${processed}/${total}…`);
+            await sleep(300);
+          }
         }
         pushLog(
           `Гл. ${chapter}: готово · ${acc.verses}/${total} · санскрит ${acc.deva}` +
@@ -221,9 +250,6 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
         });
         if (openChRef.current === chapter) void fetchPreview(chapter);
         return true;
-      } catch {
-        pushLog(`Гл. ${chapter}: сбой запроса`);
-        return false;
       } finally {
         setLoadingCh(null);
       }
@@ -238,6 +264,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
     for (let i = 0; i < chs.length; i++) {
       await loadChapter(chs[i]);
       setBulk({ done: i + 1, total: chs.length });
+      await new Promise((res) => setTimeout(res, 600));
     }
     setBulk(null);
     void fetchStatus();
