@@ -62,7 +62,7 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
 interface SignRef {
   author: string | null; authorSlug: string | null;
   workName: string | null; workId: string | null; workHref: string | null;
-  division: string | null; divisionSlug: string | null;
+  division: string | null; divisionSlug: string | null; divisionHref: string | null;
   chapter: string | null; verse: string | null;
   chapterHref: string | null; verseHref: string | null;
   citation: string | null; raw: string;
@@ -97,24 +97,31 @@ function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: 
                     : <span style={{ fontWeight: 600, color: "var(--color-label)" }}>{ref.author}</span>}
                 </div>
               )}
-              {/* строка 2 — источник: книга, раздел, глава, стих */}
-              {(ref.workName || ref.citation) && (
+              {/* строка 2 — книга → книга */}
+              {ref.workName && (
                 <div>
-                  {ref.workName && (
-                    deep && ref.workId
-                      ? <button onClick={() => onBook(ref.workId as string)} style={link}>{ref.workName}</button>
-                      : <span>{ref.workName}</span>
+                  {deep && ref.workId
+                    ? <button onClick={() => onBook(ref.workId as string)} style={link}>{ref.workName}</button>
+                    : <span>{ref.workName}</span>}
+                </div>
+              )}
+              {/* строка 3 — место в книге: раздел · глава · стих (каждое — ссылка) */}
+              {(ref.division || ref.chapter || ref.verse || (!ref.workName && ref.citation)) && (
+                <div style={{ marginTop: ref.workName ? 1 : 0 }}>
+                  {ref.division && (
+                    deep && ref.divisionHref
+                      ? <button onClick={() => onRef(ref.divisionHref as string)} style={link}>{ref.division}</button>
+                      : <span>{ref.division}</span>
                   )}
-                  {ref.division && <span>{ref.workName ? ", " : ""}{ref.division}</span>}
                   {ref.chapter && (
-                    <span>{(ref.workName || ref.division) ? ", " : ""}
+                    <span>{ref.division ? ", " : ""}
                       {deep && ref.chapterHref
                         ? <button onClick={() => onRef(ref.chapterHref as string)} style={link}>глава {ref.chapter}</button>
                         : <span>глава {ref.chapter}</span>}
                     </span>
                   )}
                   {ref.verse && (
-                    <span>{(ref.workName || ref.division || ref.chapter) ? ", " : ""}
+                    <span>{(ref.division || ref.chapter) ? ", " : ""}
                       {deep && ref.verseHref
                         ? <button onClick={() => onRef(ref.verseHref as string)} style={link}>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</button>
                         : <span>{/\d/.test(ref.verse) ? `стих ${ref.verse}` : ref.verse}</span>}
