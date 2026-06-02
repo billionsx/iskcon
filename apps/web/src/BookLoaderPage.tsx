@@ -173,22 +173,46 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
     async (chapter: string): Promise<boolean> => {
       setLoadingCh(chapter);
       try {
-        const r = await fetch(api(`/admin/load-chapter`), {
-          method: "POST",
-          headers: headers(),
-          body: JSON.stringify({ work, chapter: Number(chapter), layers }),
-        });
-        const d = (await r.json()) as { summary?: LoadSummary; error?: string; message?: string };
-        if (!r.ok || !d.summary) {
-          pushLog(`Гл. ${chapter}: ошибка — ${d.message || d.error || r.status}`);
-          return false;
+        let offset: number | null = 0;
+        let guard = 0;
+        let total = 0;
+        const acc = { verses: 0, deva: 0, translit: 0, tokens: 0, translation: 0, purport: 0 };
+        while (offset !== null && guard < 80) {
+          guard++;
+          const r = await fetch(api(`/admin/load-chapter`), {
+            method: "POST",
+            headers: headers(),
+            body: JSON.stringify({ work, chapter: Number(chapter), layers, offset, limit: 30 }),
+          });
+          const d = (await r.json()) as {
+            summary?: LoadSummary;
+            total?: number;
+            processed?: number;
+            nextOffset?: number | null;
+            error?: string;
+            message?: string;
+          };
+          if (!r.ok || !d.summary) {
+            pushLog(`Гл. ${chapter}: ошибка — ${d.message || d.error || r.status}`);
+            return false;
+          }
+          const s = d.summary;
+          acc.verses += s.verses;
+          acc.deva += s.deva;
+          acc.translit += s.translit;
+          acc.tokens += s.tokens;
+          acc.translation += s.translation;
+          acc.purport += s.purport;
+          total = d.total ?? acc.verses;
+          const processed = d.processed ?? acc.verses;
+          offset = d.nextOffset ?? null;
+          if (offset !== null) pushLog(`Гл. ${chapter}: ${processed}/${total}…`);
         }
-        const s = d.summary;
         pushLog(
-          `Гл. ${chapter}: ${s.verses} стихов · санскрит ${s.deva}/${s.verses}` +
-            (layers.edition ? ` · перевод ${s.translation} · комм. ${s.purport} · токены ${s.tokens}` : ``),
+          `Гл. ${chapter}: готово · ${acc.verses}/${total} · санскрит ${acc.deva}` +
+            (layers.edition ? ` · перевод ${acc.translation} · комм. ${acc.purport}` : ``),
         );
-        mergeSummary(chapter, s);
+        mergeSummary(chapter, acc);
         setPreview((p) => {
           if (!(chapter in p)) return p;
           const n = { ...p };

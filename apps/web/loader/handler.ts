@@ -105,9 +105,16 @@ export async function handleAdmin(request: Request, env: Env, url: URL): Promise
       return json({ error: 'bad_params' }, 400);
     }
 
+    const offset = Math.max(0, Number.isFinite(Number(body.offset)) ? Number(body.offset) : 0);
+    const limit =
+      Number.isFinite(Number(body.limit)) && Number(body.limit) > 0 ? Math.min(40, Number(body.limit)) : 30;
+
     let verses: NormalizedVerse[];
+    let total: number;
+    let nextOffset: number | null = null;
     if (body.source === 'json' && Array.isArray(body.verses)) {
       verses = normalizeIncoming(body.verses);
+      total = verses.length;
     } else {
       const segs = await fetchChapterSegs(work, chapter);
       if (!segs.length) {
@@ -115,19 +122,23 @@ export async function handleAdmin(request: Request, env: Env, url: URL): Promise
           {
             error: 'no_verses_found',
             message:
-              'Источник не вернул список стихов главы (изменилась разметка vedabase или доступ ограничен). Можно загрузить главу через «Импорт JSON».',
+              'Источник не вернул список стихов главы (изменилась разметка vedabase или доступ ограничен). Можно загрузить главу из файла.',
             work,
             chapter,
           },
           502,
         );
       }
+      total = segs.length;
+      // Бьём на пачки: Cloudflare Worker (free) разрешает ~50 fetch на запрос.
+      const slice = segs.slice(offset, offset + limit);
       verses = [];
-      for (let i = 0; i < segs.length; i++) {
-        const v = await fetchVerse(work, chapter, segs[i]);
-        v.ordinal = i + 1;
+      for (let i = 0; i < slice.length; i++) {
+        const v = await fetchVerse(work, chapter, slice[i]);
+        v.ordinal = offset + i + 1;
         verses.push(v);
       }
+      nextOffset = offset + limit < total ? offset + limit : null;
     }
 
     const reports: VerseLoadReport[] = [];
@@ -141,7 +152,7 @@ export async function handleAdmin(request: Request, env: Env, url: URL): Promise
       translation: reports.filter((r) => r.translation).length,
       purport: reports.filter((r) => r.purport).length,
     };
-    return json({ work, chapter, layers, summary, reports });
+    return json({ work, chapter, layers, total, processed: offset + reports.length, nextOffset, summary, reports });
   }
 
   return json({ error: 'not_found' }, 404);
