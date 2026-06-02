@@ -65,28 +65,27 @@ jobs:
                   mt=re.search(r'data-record-type="(\d+)"', rb)
                   if not mt: continue
                   rtype=mt.group(1)
-                  placed=False
+                  qbox = bool(re.search(r'(class="t220|class="t230|class="t250|<!--\s*T220|<!--\s*T230)', rb))
                   for fkind,fv in re.findall(r'field="(text|title|authorname|descr)"[^>]*>(.*?)</div>', rb, re.S|re.I):
                       body=multi(fv); line=one(fv)
-                      tokens.append((rtype, fkind, body, line)); placed=True
+                      tokens.append((rtype, fkind, body, line, qbox))
                   for u in imgs_in(rb):
-                      tokens.append(('IMG', u, None, None))
-                      placed=True
+                      tokens.append(('IMG', u, None, None, False))
               # 2) fold tokens into blocks; a text followed by authorname => quote+sign
               seq=[]; i=0
               while i < len(tokens):
                   tok=tokens[i]
                   if tok[0]=='IMG':
                       seq.append(('image', None, tok[1], None)); i+=1; continue
-                  rtype, fkind, body, line = tok
+                  rtype, fkind, body, line, qbox = tok
                   if not line or line in boiler or CHROME.search(line): i+=1; continue
                   # signature delivered explicitly as authorname
                   if fkind=='authorname':
                       sig=" · ".join(x.strip(' ,') for x in body.split('\n') if x.strip())
                       if sig and not CHROME.search(sig): seq.append(('sign', sig, None, None))
                       i+=1; continue
-                  # Tilda quote/cite box (t220 etc): title = quote text, following text = source
-                  if rtype in QUOTE_RECS and fkind=='title':
+                  # Tilda quote/cite box (class t220/t230): title = quote text, following text = source
+                  if qbox and fkind=='title':
                       seq.append(('quote', body, None, None))
                       if i+1 < len(tokens):
                           t2=tokens[i+1]
