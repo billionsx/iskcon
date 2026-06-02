@@ -294,7 +294,7 @@ function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; on
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -625,7 +625,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
   const hasCommentary = !!evPurport && layers.commentary;
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* header */}
       <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
         <button aria-label="Закрыть" onClick={onClose} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon size={22} /></button>
