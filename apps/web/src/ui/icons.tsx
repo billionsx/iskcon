@@ -23,12 +23,13 @@ export function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }
     : cornerGlyph === "minus" ? <line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /> : null;
   return <svg {...sp(rest)} overflow="visible"><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" />{corner}</svg>;
 }
-export function AirPodsIcon(p: IconProps) {
+/** Over-ear headphones — the "listen / audio" action. Stroked headband + filled ear-cups. */
+export function HeadphonesIcon(p: IconProps) {
   return (
     <svg {...sp(p)}>
-      <path fill="currentColor" d="M5.4 9.4 H6.7 A1.7 1.7 0 0 1 8.4 11.1 V17.1 A1.7 1.7 0 0 1 6.7 18.8 H5.4 A1.7 1.7 0 0 1 3.7 17.1 V11.1 A1.7 1.7 0 0 1 5.4 9.4 Z" />
-      <path fill="currentColor" d="M17.3 9.4 H18.6 A1.7 1.7 0 0 1 20.3 11.1 V17.1 A1.7 1.7 0 0 1 18.6 18.8 H17.3 A1.7 1.7 0 0 1 15.6 17.1 V11.1 A1.7 1.7 0 0 1 17.3 9.4 Z" />
-      <path fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M6.05 10.2 C6.05 4.6 8.6 3.2 12 3.2 C15.4 3.2 17.95 4.6 17.95 10.2" />
+      <path fill="none" stroke="currentColor" strokeWidth={2.1} strokeLinecap="round" d="M4.6 14V12a7.4 7.4 0 0 1 14.8 0v2" />
+      <rect x="2.7" y="12.6" width="4" height="7.8" rx="2" fill="currentColor" />
+      <rect x="17.3" y="12.6" width="4" height="7.8" rx="2" fill="currentColor" />
     </svg>
   );
 }
