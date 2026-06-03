@@ -46,6 +46,10 @@
   --color-brand-black: #1e1e1e;
   --color-brand-white: #ffffff;
 
+  /* Reader accent — тёплый шафран; гармонирует с девотической графикой (обложки/миниатюры). */
+  --reader-accent: #e3953a;
+  --reader-accent-soft: rgba(227, 149, 58, 0.16);
+
   /* Default action color = brand blue. Components reference this, not raw hex. */
   --color-blue: var(--color-brand-blue);
 
@@ -203,6 +207,8 @@
 
   /* Interactive surfaces — inverted for light */
   --color-header-blur: rgba(255, 255, 255, 0.72);
+  --reader-accent: #a65e18;
+  --reader-accent-soft: rgba(166, 94, 24, 0.10);
   --color-glass-nav: rgba(252, 252, 253, 0.97);
   --color-hover: rgba(0, 0, 0, 0.04);
   --color-active: rgba(0, 0, 0, 0.08);

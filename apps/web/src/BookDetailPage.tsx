@@ -4,6 +4,8 @@
  *   sticky liquid-glass табы (Содержание · О книге · Автор) →
  *   контент активного таба. Ридер главы и стиха — fixed-overlay
  *   в том же 480px-фрейме, с glass-навигацией и крупными заголовками.
+ * Палитра: единый тёплый акцент --reader-accent (шафран), материал — мягкая
+ * глубина (--shadow-card) и чёткая кромка стекла; перевод — tinted-плашка.
  * Данные книги — books.ts; стихи — API (/chapters/:n/read, /verses/:ref).
  */
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +15,10 @@ import { BOOK_MENU_ITEMS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon } from "./ui/icons";
+
+const ACC = "var(--reader-accent)";
+const ACC_SOFT = "var(--reader-accent-soft)";
+const RIM: CSSProperties = { boxShadow: "inset 0 0.5px 0 var(--color-glass-stroke)" };
 
 /* ───────── icons ───────── */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -37,8 +43,8 @@ function SlidersIcon(p: IconProps) {
   return <svg {...sp(p)}><path {...STROKE} d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0" /><circle cx="16" cy="6" r="2" {...STROKE} /><circle cx="8" cy="12" r="2" {...STROKE} /><circle cx="18" cy="18" r="2" {...STROKE} /></svg>;
 }
 
-function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
-  return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
+function LogoMark({ src, label, height, color }: { src: string; label: string; height: number; color?: string }) {
+  return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: color ?? "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
 }
 
 /* Centered hairline ornament with a small diamond (verse-block divider). */
@@ -46,7 +52,7 @@ function Ornament() {
   return (
     <div aria-hidden style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, margin: "8px 0 28px" }}>
       <span style={{ width: 44, height: 0.5, background: "linear-gradient(to right, transparent, var(--color-hairline))" }} />
-      <span style={{ color: "var(--color-brand-blue)", opacity: .55, fontSize: 9 }}>◆</span>
+      <span style={{ color: ACC, opacity: .7, fontSize: 9 }}>◆</span>
       <span style={{ width: 44, height: 0.5, background: "linear-gradient(to left, transparent, var(--color-hairline))" }} />
     </div>
   );
@@ -104,7 +110,7 @@ function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: Book
             <button key={t.id} ref={(el) => { tabRefs.current[t.id] = el; }} type="button" onClick={() => onChange(t.id)}
               style={{ position: "relative", flexShrink: 0, padding: "13px 18px", fontSize: 15, background: "none", border: "none", cursor: "pointer", color: on ? "var(--color-label)" : "var(--color-label-2)", fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0, transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
               {t.label}
-              {on && <span aria-hidden style={{ position: "absolute", insetInline: 14, bottom: 0, height: 2.5, borderRadius: 999, background: "var(--color-brand-blue)" }} />}
+              {on && <span aria-hidden style={{ position: "absolute", insetInline: 14, bottom: 0, height: 2.5, borderRadius: 999, background: ACC }} />}
             </button>
           );
         })}
@@ -146,7 +152,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 function Card({ children, pad = 18 }: { children: ReactNode; pad?: number }) {
-  return <div style={{ borderRadius: 20, padding: pad, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>{children}</div>;
+  return <div style={{ borderRadius: 22, padding: pad, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", boxShadow: "var(--shadow-card)" }}>{children}</div>;
 }
 function KeyVal({ k, v, last }: { k: string; v: string; last?: boolean }) {
   return (
@@ -207,8 +213,8 @@ function Milestone({ year, text, last }: { year: string; text: string; last?: bo
   return (
     <li style={{ position: "relative", paddingLeft: 30, paddingBottom: last ? 0 : 20 }}>
       {!last && <span aria-hidden style={{ position: "absolute", left: 6, top: 14, bottom: 0, width: 1.5, background: "var(--color-hairline)" }} />}
-      <span aria-hidden style={{ position: "absolute", left: 1.5, top: 4, width: 11, height: 11, borderRadius: "50%", background: "var(--color-brand-blue)", boxShadow: "0 0 0 3px var(--color-bg)" }} />
-      <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.3px", color: "var(--color-brand-blue)", marginBottom: 3 }}>{year}</div>
+      <span aria-hidden style={{ position: "absolute", left: 1.5, top: 4, width: 11, height: 11, borderRadius: "50%", background: ACC, boxShadow: "0 0 0 3px var(--color-bg)" }} />
+      <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.3px", color: ACC, marginBottom: 3 }}>{year}</div>
       <div style={{ fontSize: 15, lineHeight: 1.5, color: "var(--color-label)" }}>{text}</div>
     </li>
   );
@@ -218,8 +224,8 @@ function Author() {
     <div style={{ display: "flex", flexDirection: "column", gap: 32, padding: "26px 0 8px" }}>
       {/* hero band */}
       <header style={{ padding: "0 20px" }}>
-        <div style={{ color: "var(--color-brand-blue)", opacity: .9, marginBottom: 16 }}>
-          <LogoMark src="/iskcon-sign.svg" label="ИСККОН" height={34} />
+        <div style={{ marginBottom: 16 }}>
+          <LogoMark src="/iskcon-sign.svg" label="ИСККОН" height={34} color={ACC} />
         </div>
         <AuthorEyebrow>Автор перевода и комментариев</AuthorEyebrow>
         <h1 style={{ margin: 0, fontSize: 28, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>
@@ -235,7 +241,7 @@ function Author() {
 
       {/* accent deck */}
       <section style={{ padding: "0 20px" }}>
-        <div style={{ paddingLeft: 16, borderLeft: "2.5px solid var(--color-brand-blue)" }}>
+        <div style={{ paddingLeft: 16, borderLeft: `2.5px solid ${ACC}` }}>
           <p style={{ margin: 0, fontSize: 20, lineHeight: 1.42, fontWeight: 500, letterSpacing: "-0.01em", color: "var(--color-label)" }}>
             В 69 лет он в одиночку привёз учение «Бхагавад-гиты» из Индии на Запад — и за одиннадцать лет перевёл и прокомментировал десятки томов ведических писаний, основав движение, охватившее весь мир.
           </p>
@@ -294,7 +300,7 @@ function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; 
       <Section title={chapters ? `${chapters.length} глав` : "Содержание"}>
         {!chapters && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка оглавления…</div>}
         {chapters && (
-          <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 20, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+          <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 22, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", boxShadow: "var(--shadow-card)" }}>
             {chapters.map((c, i) => (
               <ChapterRowItem key={c.id} ch={c} last={i === chapters.length - 1} onOpenChapter={onOpenChapter} />
             ))}
@@ -336,7 +342,7 @@ function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; on
 
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
-      <header className="glass-nav glass-nav-edge" style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", zIndex: 2 }}>
+      <header className="glass-nav glass-nav-edge" style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", zIndex: 2, ...RIM }}>
         <CircleBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></CircleBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
           <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
@@ -349,7 +355,7 @@ function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; on
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "20px 22px calc(40px + env(safe-area-inset-bottom))" }}>
           <div style={{ textAlign: "center", marginBottom: 4 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: 10 }}>Глава {chapter.number}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: ACC, marginBottom: 10 }}>Глава {chapter.number}</div>
             <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: "var(--color-label)" }}>{chapter.title_ru}</h1>
             <div style={{ marginTop: 10, fontSize: 13.5, color: "var(--color-label-2)" }}>{verses?.length ?? chapter.verses} стихов</div>
           </div>
@@ -359,7 +365,7 @@ function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; on
           {verses && verses.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>В этой главе пока нет стихов.</div>}
 
           {verses && verses.length > 0 && (
-            <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 20, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+            <ol style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 22, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", boxShadow: "var(--shadow-card)" }}>
               {verses.map((v, i) => {
                 const tr = v.translation || DEMO_VERSES[v.ref]?.translation || null;
                 const isDemo = !v.translation && !!DEMO_VERSES[v.ref]?.translation;
@@ -367,7 +373,7 @@ function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; on
                   <li key={v.ref} style={{ position: "relative" }}>
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "15px 16px" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
-                        <span style={{ display: "block", fontSize: 12, fontWeight: 700, letterSpacing: "0.3px", color: "var(--color-brand-blue)", marginBottom: 4 }}>{v.label}{isDemo && <DemoBadge />}</span>
+                        <span style={{ display: "block", fontSize: 12, fontWeight: 700, letterSpacing: "0.3px", color: ACC, marginBottom: 4 }}>{v.label}{isDemo && <DemoBadge />}</span>
                         <span style={{ display: "block", fontSize: 16, lineHeight: 1.5, color: tr ? "var(--color-label)" : "var(--color-label-2)", fontStyle: tr ? "normal" : "italic" }}>
                           {tr ?? "перевод готовится"}
                         </span>
@@ -398,14 +404,14 @@ function LayerRow({ label, on, onToggle }: { label: string; on: boolean; onToggl
   return (
     <button onClick={onToggle} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "11px 4px", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", WebkitTapHighlightColor: "transparent" }}>
       <span>{label}</span>
-      <span aria-hidden style={{ position: "relative", width: 42, height: 26, borderRadius: 999, background: on ? "var(--color-brand-blue)" : "var(--color-glass-regular)", transition: "background .2s", flexShrink: 0 }}>
+      <span aria-hidden style={{ position: "relative", width: 42, height: 26, borderRadius: 999, background: on ? ACC : "var(--color-glass-regular)", transition: "background .2s", flexShrink: 0 }}>
         <span style={{ position: "absolute", top: 3, left: on ? 19 : 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", transition: "left .2s", boxShadow: "0 1px 3px rgba(0,0,0,.3)" }} />
       </span>
     </button>
   );
 }
 function LayerLabel({ children }: { children: ReactNode }) {
-  return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)" }}><span style={{ width: 18, height: 1.5, background: "var(--color-brand-blue)", opacity: .6, borderRadius: 999 }} />{children}</div>;
+  return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: "var(--color-label-2)" }}><span style={{ width: 18, height: 1.5, background: ACC, opacity: .7, borderRadius: 999 }} />{children}</div>;
 }
 function DemoBadge() {
   return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: "var(--color-glass-regular)", color: "var(--color-label-2)", fontSize: 9.5, fontWeight: 700, letterSpacing: ".5px", verticalAlign: "middle" }}>демо</span>;
@@ -466,7 +472,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* glass header */}
-      <header className="glass-nav glass-nav-edge" style={{ flexShrink: 0, height: 54, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", zIndex: 3 }}>
+      <header className="glass-nav glass-nav-edge" style={{ flexShrink: 0, height: 54, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", zIndex: 3, ...RIM }}>
         <CircleBtn ariaLabel="Закрыть" onClick={onClose}><BackIcon size={22} /></CircleBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center" }}>
           <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.label ?? refStr}</div>
@@ -500,7 +506,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
           {data && (
             <>
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 24 }}>
-                <span style={{ padding: "5px 14px", borderRadius: 999, background: "var(--color-glass-regular)", fontSize: 12.5, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{data.label}</span>
+                <span style={{ padding: "5px 14px", borderRadius: 999, background: ACC_SOFT, fontSize: 12.5, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: ACC }}>{data.label}</span>
               </div>
 
               {hasDeva && (
@@ -528,7 +534,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
               <section style={{ marginBottom: hasCommentary ? 30 : 8 }}>
                 <LayerLabel>Перевод{translationIsDemo && <DemoBadge />}</LayerLabel>
                 {evTranslation ? (
-                  <div style={{ borderRadius: 18, padding: "20px 22px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", borderLeft: "2.5px solid var(--color-brand-blue)" }}>
+                  <div style={{ borderRadius: 18, padding: "20px 22px", background: ACC_SOFT }}>
                     <p style={{ margin: 0, fontSize: 20, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{evTranslation}</p>
                   </div>
                 ) : (
@@ -560,7 +566,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
       </div>
 
       {/* floating glass spine nav */}
-      <nav className="glass-nav glass-nav-edge" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px calc(10px + env(safe-area-inset-bottom))", borderTop: "0.5px solid var(--color-hairline)", borderBottom: "none" }}>
+      <nav className="glass-nav" style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px calc(10px + env(safe-area-inset-bottom))", borderTop: "0.5px solid var(--color-hairline)", ...RIM }}>
         <SpineBtn dir="prev" disabled={!data?.prev} onClick={() => data?.prev && onNavigate(data.prev)}>
           <BackIcon size={18} />Назад
         </SpineBtn>
@@ -666,7 +672,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <GlassBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const nv = !favorited; setFavorited(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></GlassBtn>
           <GlassBtn ariaLabel="Слушать" onClick={() => flash("Аудиокнига — скоро")}><HeadphonesIcon size={19} /></GlassBtn>
-          <GlassBtn active={inCart} activeColor="var(--color-brand-blue)" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const nv = !inCart; setInCart(nv); flash(nv ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></GlassBtn>
+          <GlassBtn active={inCart} activeColor="var(--reader-accent)" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const nv = !inCart; setInCart(nv); flash(nv ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></GlassBtn>
           <GlassBtn ariaLabel="Меню" onClick={() => setMoreOpen(true)}><MoreIcon size={16} /></GlassBtn>
         </div>
       </header>
