@@ -16,6 +16,7 @@ export function HeartIcon(p: IconProps) {
 }
 export function ShareIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>; }
 export function MoreIcon(p: IconProps) { return <svg {...sp(p)}><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>; }
+export function AirPodsIcon(p: IconProps) { return <svg {...sp(p)}><ellipse cx="8" cy="6" rx="3.1" ry="3.4" fill="currentColor" /><rect x="6.6" y="7.4" width="2.8" height="12.2" rx="1.4" fill="currentColor" /><ellipse cx="16" cy="6" rx="3.1" ry="3.4" fill="currentColor" /><rect x="14.6" y="7.4" width="2.8" height="12.2" rx="1.4" fill="currentColor" /></svg>; }
 export function LinkIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 1 0-5.7-5.7l-1.6 1.6" /><path {...STROKE} d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 1 0 5.7 5.7l1.6-1.6" /></svg>; }
 export function TopIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 19V7M6 11l6-6 6 6" /></svg>; }
 export function ChevRightIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M9 5l7 7-7 7" /></svg>; }

@@ -13,7 +13,7 @@ import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
-import { BackIcon, HeartIcon, MoreIcon } from "./ui/icons";
+import { BackIcon, HeartIcon, MoreIcon, ShareIcon, AirPodsIcon } from "./ui/icons";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -492,7 +492,7 @@ interface ChapterVerse {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; onOpenVerse: (ref: string) => void; onBack: () => void }) {
+function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack }: { chapter: ChapterRow; bookTitle: string; onOpenVerse: (ref: string) => void; onBack: () => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
 
@@ -514,7 +514,7 @@ function ChapterPage({ chapter, onOpenVerse, onBack }: { chapter: ChapterRow; on
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
           <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
-          <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number}</div>
+          <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
         <span style={{ width: 40, flexShrink: 0 }} />
       </header>
@@ -607,12 +607,11 @@ function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "n
   );
 }
 
-function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNavigate: (ref: string) => void; onClose: () => void }) {
+function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuAction }: { refStr: string; bookTitle: string; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
-  const [panel, setPanel] = useState(false);
-  const [layers, setLayers] = useState<Record<LayerKey, boolean>>({ deva: true, translit: true, ww: true, commentary: true });
-  const toggle = (k: LayerKey) => setLayers((s) => ({ ...s, [k]: !s[k] }));
+  const [fav, setFav] = useState(false);
+  const [vMenu, setVMenu] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -634,32 +633,37 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
   const translationIsDemo = !data?.translation && !!demo?.translation;
   const purportIsDemo = !data?.purport && !!demo?.purport;
 
-  const hasDeva = !!evDeva && layers.deva;
-  const hasTranslit = !!evTranslit && layers.translit;
-  const hasWW = !!evTokens.length && layers.ww;
-  const hasCommentary = !!evPurport && layers.commentary;
+  const hasDeva = !!evDeva;
+  const hasTranslit = !!evTranslit;
+  const hasWW = !!evTokens.length;
+  const hasCommentary = !!evPurport;
+
+  const shareVerse = async () => {
+    const label = data?.label ?? refStr;
+    const url = "https://gaurangers.com/book/bg";
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
+        await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, url });
+        return;
+      }
+    } catch { /* cancelled */ }
+    try { await navigator.clipboard.writeText(url); flash("Ссылка скопирована"); }
+    catch { flash(url); }
+  };
 
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: PAPER }}>
-      <header style={{ flexShrink: 0, height: 54, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${LINE}`, zIndex: 3 }}>
+      <header style={{ flexShrink: 0, height: 54, display: "flex", alignItems: "center", gap: 1, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${LINE}`, zIndex: 3 }}>
         <NavBtn ariaLabel="Закрыть" onClick={onClose}><BackIcon size={22} /></NavBtn>
-        <div style={{ flex: 1, minWidth: 0, textAlign: "center" }}>
+        <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>
           <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.label ?? refStr}</div>
-          <div style={{ fontSize: 11, color: INK2 }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}Бхагавад-гита</div>
+          <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
-        <NavBtn ariaLabel="Слои" onClick={() => setPanel((v) => !v)} active={panel}><SlidersIcon size={22} /></NavBtn>
+        <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио стиха — скоро")} size={36}><AirPodsIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Поделиться" onClick={() => void shareVerse()} size={36}><ShareIcon size={17} /></NavBtn>
+        <NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn>
       </header>
-
-      {panel && (
-        <div style={{ flexShrink: 0, position: "relative", zIndex: 2, margin: "10px 16px 4px", padding: "4px 16px 10px", borderRadius: 16, background: PAPER, border: `0.5px solid ${LINE}`, boxShadow: "0 10px 30px rgba(0,0,0,.10)" }}>
-          <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: INK2, padding: "10px 0 4px" }}>Слои стиха</div>
-          <LayerRow label="Деванагари" on={layers.deva} onToggle={() => toggle("deva")} />
-          <LayerRow label="Транслитерация" on={layers.translit} onToggle={() => toggle("translit")} />
-          <LayerRow label="Пословный перевод" on={layers.ww} onToggle={() => toggle("ww")} />
-          <div style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "11px 0", fontSize: 16, color: INK2 }}><span>Перевод</span><span style={{ fontSize: 12, color: INK3 }}>всегда</span></div>
-          <LayerRow label="Комментарий" on={layers.commentary} onToggle={() => toggle("commentary")} />
-        </div>
-      )}
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ margin: "0 auto", padding: "22px 20px 40px" }}>
@@ -737,6 +741,8 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
         <NavAction onClick={onClose}>К главе</NavAction>
         <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
+
+      <ActionsSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(label) => { setVMenu(false); onMenuAction(label); }} />
     </div>
   );
 }
@@ -828,7 +834,8 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     if (label.startsWith("Поделиться")) { void shareBook(); return; }
     if (label.startsWith("Добавить")) { flash("Добавлено в план чтения"); return; }
     if (label.startsWith("Язык")) { flash("Издание: русский. Другие языки — скоро"); return; }
-    if (label.startsWith("Скачать")) { flash("PDF / EPUB — скоро"); return; }
+    if (label.startsWith("Скачать")) { flash("PDF — скоро"); return; }
+    if (label.startsWith("QR")) { flash("QR-код — скоро"); return; }
     if (label.startsWith("Заказать")) { flash("Печатное издание — скоро"); return; }
     if (label.startsWith("Поддержать")) { flash("Поддержка печати — скоро"); return; }
     flash("Скоро");
@@ -841,8 +848,8 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
         <TopBtn solid={scrolled} ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></TopBtn>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <TopBtn solid={scrolled} active={favorited} activeColor="#FF3B30" ariaLabel="В избранное" onClick={() => { const nv = !favorited; setFavorited(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></TopBtn>
-          <TopBtn solid={scrolled} ariaLabel="Слушать" onClick={() => flash("Аудиокнига — скоро")}><HeadphonesIcon size={19} /></TopBtn>
-          <TopBtn solid={scrolled} active={inCart} activeColor={GOLDT} ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const nv = !inCart; setInCart(nv); flash(nv ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></TopBtn>
+          <TopBtn solid={scrolled} ariaLabel="Слушать" onClick={() => flash("Аудиокнига — скоро")}><AirPodsIcon size={18} /></TopBtn>
+          <TopBtn solid={scrolled} ariaLabel="Поделиться" onClick={() => void shareBook()}><ShareIcon size={17} /></TopBtn>
           <TopBtn solid={scrolled} ariaLabel="Меню" onClick={() => setMoreOpen(true)}><MoreIcon size={16} /></TopBtn>
         </div>
       </header>
@@ -879,8 +886,8 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
       <Toast msg={toast} />
-      {openChapter && <ChapterPage chapter={openChapter} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} />}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} />}
+      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} />}
     </div>
   );
 }
