@@ -614,6 +614,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
   const [error, setError] = useState(false);
   const [fav, setFav] = useState(false);
   const [vMenu, setVMenu] = useState(false);
+  const vMoreRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     let live = true;
@@ -664,7 +665,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио стиха — скоро")} size={36}><AirPodsIcon size={18} /></NavBtn>
         <NavBtn ariaLabel="Поделиться" onClick={() => void shareVerse()} size={36}><ShareIcon size={17} /></NavBtn>
-        <NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn>
+        <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -744,7 +745,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
         <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
 
-      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => { setVMenu(false); onMenuAction(id); }} />
+      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => { setVMenu(false); onMenuAction(id); }} anchorRef={vMoreRef} />
     </div>
   );
 }
