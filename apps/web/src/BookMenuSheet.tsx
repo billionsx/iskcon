@@ -1,11 +1,11 @@
 /**
  * BookMenuSheet — the single ⋯ menu for the book (card, detail hero, verse reader).
  *
- * iOS-26 system action menu (the Photos/Share-sheet list standard, dark mode):
+ * iOS-26 system action menu (the Photos/Share-sheet list standard):
  *   • Grouped rounded card; each row is a LEADING SF-style glyph + label.
  *   • Hairline separators inset to the label column.
- *   • Frosted DARK material matching the app shell — the dark-mode form of the
- *     same grouped menu iOS shows in light mode.
+ *   • Material + text follow the app theme tokens (the app runs light, so this
+ *     reads as a light frosted card — matching the iOS light share sheet).
  *   • Springs from the ⋯ button (anchorRef) with the iOS spring; flips above the
  *     button when there isn't room below.
  *
@@ -65,9 +65,9 @@ const TEXT_X = 58; // leading icon column width — labels & separators start he
 const MENU_CSS = `
 @keyframes bm-pop { from { opacity: 0; transform: scale(.92) } to { opacity: 1; transform: scale(1) } }
 .bm-row { position: relative; -webkit-tap-highlight-color: transparent; transition: background-color .12s ease; }
-.bm-row:active { background-color: rgba(255,255,255,0.12); }
-@media (hover: hover) { .bm-row:hover { background-color: rgba(255,255,255,0.06); } }
-.bm-row:not(:first-of-type)::before { content: ""; position: absolute; top: 0; left: ${TEXT_X}px; right: 0; height: 0.5px; background: rgba(255,255,255,0.10); }
+.bm-row:active { background-color: rgba(120,120,128,0.20); }
+@media (hover: hover) { .bm-row:hover { background-color: rgba(120,120,128,0.10); } }
+.bm-row:not(:first-of-type)::before { content: ""; position: absolute; top: 0; left: ${TEXT_X}px; right: 0; height: 0.5px; background: var(--color-glass-stroke, rgba(0,0,0,0.12)); }
 @media (prefers-reduced-motion: reduce) { .bm-menu { animation: none !important; } }
 `;
 
@@ -103,16 +103,16 @@ export function BookMenuSheet({ open, onClose, onSelect, anchorRef }: {
       <div className="bm-menu" role="menu" onClick={(e) => e.stopPropagation()}
         style={{
           position: "fixed", top: pos.top, right: pos.right, width: 290,
-          background: "rgba(36,36,40,0.82)",
+          background: "var(--color-glass-nav, rgba(252,252,253,0.97))",
           backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)",
           borderRadius: 20, overflow: "hidden",
-          border: "0.5px solid rgba(255,255,255,0.12)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.14), 0 12px 44px rgba(0,0,0,0.5)",
+          border: "0.5px solid var(--color-glass-stroke, rgba(0,0,0,0.12))",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6), 0 12px 40px rgba(0,0,0,0.18)",
           transformOrigin: pos.flip ? "bottom right" : "top right",
           animation: "bm-pop .18s cubic-bezier(.2,.9,.3,1.2)",
         }}>
         {ITEMS.map((it) => {
-          const color = it.danger ? "#FF453A" : "var(--color-label, rgba(255,255,255,0.96))";
+          const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
           return (
             <button key={it.id} role="menuitem" type="button" className="bm-row"
               onClick={() => { onClose(); onSelect(it.id); }}
