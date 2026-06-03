@@ -414,14 +414,16 @@ interface VerseDetail {
   source_url: string | null; prev: string | null; next: string | null;
 }
 
-function SpineBtn({ dir, disabled, onClick, children }: { dir: "prev" | "next"; disabled: boolean; onClick: () => void; children: ReactNode }) {
+function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: ReactNode }) {
   const [pressed, setPressed] = useState(false);
   const off = () => setPressed(false);
   return (
-    <button disabled={disabled} onClick={onClick}
-      onPointerDown={() => setPressed(true)} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
-      style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 38, padding: dir === "prev" ? "0 16px 0 12px" : "0 12px 0 16px", borderRadius: 999, border: "none", cursor: disabled ? "default" : "pointer", background: disabled ? "transparent" : (pressed ? "rgba(0,0,0,0.08)" : FILL), color: disabled ? INK3 : INK, opacity: disabled ? .5 : 1, fontSize: 14.5, fontWeight: 600, fontFamily: "var(--font-text)", transition: "background .12s", WebkitTapHighlightColor: "transparent" }}>
+    <button type="button" disabled={disabled} onClick={onClick}
+      onPointerDown={() => { if (!disabled) setPressed(true); }} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, height: 40, padding: "0 14px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? FILL : "transparent", color: disabled ? INK3 : INK, opacity: disabled ? .45 : 1, fontSize: 15, fontWeight: 600, fontFamily: "var(--font-text)", transition: "background .12s", WebkitTapHighlightColor: "transparent" }}>
+      {arrow === "prev" && <BackIcon size={18} />}
       {children}
+      {arrow === "next" && <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><BackIcon size={18} /></span>}
     </button>
   );
 }
@@ -481,7 +483,7 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
       )}
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ margin: "0 auto", padding: "26px 24px 40px" }}>
+        <div style={{ margin: "0 auto", padding: "22px 20px 40px" }}>
           {!data && !error && <div style={{ textAlign: "center", color: INK2, padding: "40px 0", fontSize: 15 }}>Загрузка стиха…</div>}
           {error && (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
@@ -491,15 +493,15 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
           )}
           {data && (
             <>
-              <div style={{ display: "flex", justifyContent: "center", marginBottom: 26 }}>
-                <span style={{ padding: "5px 14px", borderRadius: 999, border: `1px solid ${GOLD}`, background: GOLD_SOFT, fontSize: 12.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLDT }}>{data.label}</span>
-              </div>
-
               {hasDeva && (
-                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 25, lineHeight: 1.95, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 24 }}>{evDeva}</div>
+                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{evDeva}</div>
               )}
               {hasTranslit && (
-                <div style={{ fontStyle: "italic", fontSize: 18, lineHeight: 1.85, textAlign: "center", color: INK2, whiteSpace: "pre-line", marginBottom: 16 }}>{evTranslit}</div>
+                <div style={{ marginBottom: 16 }}>
+                  {evTranslit!.split("\n").map((ln, i) => (
+                    <div key={i} style={{ fontStyle: "italic", fontSize: 16.5, lineHeight: 1.4, textAlign: "center", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
+                  ))}
+                </div>
               )}
               {(hasDeva || hasTranslit) && <Ornament />}
 
@@ -551,14 +553,10 @@ function VerseReader({ refStr, onNavigate, onClose }: { refStr: string; onNaviga
         </div>
       </div>
 
-      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px calc(10px + env(safe-area-inset-bottom))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
-        <SpineBtn dir="prev" disabled={!data?.prev} onClick={() => data?.prev && onNavigate(data.prev)}>
-          <BackIcon size={18} />Назад
-        </SpineBtn>
-        <button onClick={onClose} style={{ height: 38, padding: "0 14px", background: "none", border: "none", cursor: "pointer", color: INK2, fontSize: 14.5, fontWeight: 600, fontFamily: "var(--font-text)", WebkitTapHighlightColor: "transparent" }}>К главе</button>
-        <SpineBtn dir="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>
-          Вперёд<span style={{ transform: "scaleX(-1)", display: "inline-flex" }}><BackIcon size={18} /></span>
-        </SpineBtn>
+      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
+        <NavAction arrow="prev" disabled={!data?.prev} onClick={() => data?.prev && onNavigate(data.prev)}>Назад</NavAction>
+        <NavAction onClick={onClose}>К главе</NavAction>
+        <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
     </div>
   );
