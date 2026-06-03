@@ -1,18 +1,21 @@
 /**
  * BookMenuSheet — the single ⋯ menu for the book (card, detail hero, verse reader).
  *
- * iOS Share-Sheet action-list standard (light), replicated exactly:
- *   • SECTIONED grouped cards (light frosted grey) with a gap between groups.
+ * iOS Share-Sheet, replicated as a FULL-WIDTH BOTTOM SHEET (light):
+ *   • Dimmed full-screen scrim; sheet docked to the bottom, springs up.
+ *   • Grabber, then SECTIONED grouped cards (light, slightly lighter than the
+ *     sheet) with a gap between groups.
  *   • Each row: LEADING black SF-style glyph + label; no trailing element.
  *   • Hairline separators between rows WITHIN a card, inset to the label column.
- *   • Material + text from theme tokens (app runs light → light grey cards).
- *   • Springs from the ⋯ button (anchorRef); flips above it when needed.
+ *   • Text from theme tokens (app runs light).
  *
  * Items: [Поделиться · Скачать PDF · QR-код]  [Задонатить · Сообщить об ошибке].
- * Glyphs mirror SF Symbols (square.and.arrow.up / .down, qrcode, gift,
- * exclamationmark.triangle). "Задонатить" is a gift — never a heart.
+ * Glyphs mirror SF Symbols. "Задонатить" is a gift — never a heart.
+ *
+ * (anchorRef is accepted for call-site compatibility but unused — the sheet is
+ *  bottom-anchored, not popover-anchored.)
  */
-import { useLayoutEffect, useState, type ReactNode, type RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 
 const S = 26;
 const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -62,87 +65,69 @@ const GROUPS: Item[][] = [
     { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
   ],
 ];
-const ROW_COUNT = GROUPS.reduce((n, g) => n + g.length, 0);
 
 const ROW_H = 56;
 const PAD_L = 20;
 const ICON_BOX = 26;
 const GAP = 16;
-const SEP_LEFT = PAD_L + ICON_BOX + GAP; // separators & implicit label start
-const GROUP_GAP = 10;
+const SEP_LEFT = PAD_L + ICON_BOX + GAP;
 
-const MENU_CSS = `
-@keyframes bm-pop { from { opacity: 0; transform: scale(.94) } to { opacity: 1; transform: scale(1) } }
-.bm-card { position: relative; }
-.bm-row { position: relative; -webkit-tap-highlight-color: transparent; transition: background-color .12s ease; }
-.bm-row:active { background-color: rgba(120,120,128,0.18); }
-@media (hover: hover) { .bm-row:hover { background-color: rgba(120,120,128,0.10); } }
-.bm-row:not(:first-child)::before { content: ""; position: absolute; top: 0; left: ${SEP_LEFT}px; right: 0; height: 0.5px; background: rgba(60,60,67,0.13); }
-@media (prefers-reduced-motion: reduce) { .bm-menu { animation: none !important; } }
+const SHEET_CSS = `
+.bms-scrim { animation: bms-fade .22s ease-out; }
+.bms-sheet { animation: bms-rise .36s cubic-bezier(.32,.72,0,1); }
+@keyframes bms-fade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes bms-rise { from { transform: translateY(100%) } to { transform: translateY(0) } }
+.bms-row { position: relative; -webkit-tap-highlight-color: transparent; transition: background-color .12s ease; }
+.bms-row:active { background-color: rgba(120,120,128,0.18); }
+@media (hover: hover) { .bms-row:hover { background-color: rgba(120,120,128,0.10); } }
+.bms-row:not(:first-child)::before { content: ""; position: absolute; top: 0; left: ${SEP_LEFT}px; right: 0; height: 0.5px; background: rgba(60,60,67,0.13); }
+@media (prefers-reduced-motion: reduce) { .bms-scrim, .bms-sheet { animation: none !important; } }
 `;
 
-export function BookMenuSheet({ open, onClose, onSelect, anchorRef }: {
+export function BookMenuSheet({ open, onClose, onSelect }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
 }) {
-  const [pos, setPos] = useState<{ top: number; right: number; flip: boolean }>({ top: 64, right: 16, flip: false });
-
-  useLayoutEffect(() => {
-    if (!open) return;
-    const menuH = ROW_COUNT * ROW_H + (GROUPS.length - 1) * GROUP_GAP;
-    const el = anchorRef?.current;
-    if (el) {
-      const r = el.getBoundingClientRect();
-      const below = r.bottom + 8;
-      const flip = below + menuH > window.innerHeight - 10;
-      setPos({
-        top: flip ? Math.max(10, r.top - menuH - 8) : below,
-        right: Math.max(10, window.innerWidth - r.right),
-        flip,
-      });
-    } else {
-      setPos({ top: 64, right: 16, flip: false });
-    }
-  }, [open, anchorRef]);
-
   if (!open) return null;
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return (
-    <div onClick={(e) => { e.stopPropagation(); onClose(); }}
-      style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.20)" }}>
-      <style>{MENU_CSS}</style>
-      <div className="bm-menu" role="menu" onClick={(e) => e.stopPropagation()}
+    <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
+      style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
+      <style>{SHEET_CSS}</style>
+      <div className="bms-sheet" role="menu" onClick={(e) => e.stopPropagation()}
         style={{
-          position: "fixed", top: pos.top, right: pos.right, width: 300,
-          display: "flex", flexDirection: "column", gap: GROUP_GAP,
-          transformOrigin: pos.flip ? "bottom right" : "top right",
-          animation: "bm-pop .18s cubic-bezier(.2,.9,.3,1.2)",
+          width: "100%", maxWidth: 540,
+          background: "rgba(243,243,246,0.82)",
+          backdropFilter: "blur(36px) saturate(180%)", WebkitBackdropFilter: "blur(36px) saturate(180%)",
+          borderTopLeftRadius: 22, borderTopRightRadius: 22,
+          borderTop: "0.5px solid rgba(255,255,255,0.6)",
+          boxShadow: "0 -10px 50px rgba(0,0,0,0.22)",
+          padding: "0 10px max(16px, env(safe-area-inset-bottom))",
+          display: "flex", flexDirection: "column",
         }}>
-        {GROUPS.map((group, gi) => (
-          <div key={gi} className="bm-card"
-            style={{
-              borderRadius: 18, overflow: "hidden",
-              background: "rgba(242,242,245,0.86)",
-              backdropFilter: "blur(30px) saturate(180%)", WebkitBackdropFilter: "blur(30px) saturate(180%)",
-              boxShadow: "0 10px 40px rgba(0,0,0,0.16)",
-            }}>
-            {group.map((it) => {
-              const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
-              return (
-                <button key={it.id} role="menuitem" type="button" className="bm-row"
-                  onClick={() => onPick(it.id)}
-                  style={{
-                    display: "flex", width: "100%", alignItems: "center",
-                    height: ROW_H, paddingLeft: PAD_L, paddingRight: 16, gap: GAP,
-                    background: "none", border: "none", cursor: "pointer", textAlign: "left",
-                  }}>
-                  <span style={{ width: ICON_BOX, height: ICON_BOX, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color }}>{it.Icon()}</span>
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: 17.5, letterSpacing: "-0.01em", color, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        ))}
+        <div style={{ height: 5, width: 36, borderRadius: 999, background: "rgba(60,60,67,0.3)", margin: "8px auto 12px" }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {GROUPS.map((group, gi) => (
+            <div key={gi}
+              style={{ borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.94)" }}>
+              {group.map((it) => {
+                const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
+                return (
+                  <button key={it.id} role="menuitem" type="button" className="bms-row"
+                    onClick={() => onPick(it.id)}
+                    style={{
+                      display: "flex", width: "100%", alignItems: "center",
+                      height: ROW_H, paddingLeft: PAD_L, paddingRight: 16, gap: GAP,
+                      background: "none", border: "none", cursor: "pointer", textAlign: "left",
+                    }}>
+                    <span style={{ width: ICON_BOX, height: ICON_BOX, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color }}>{it.Icon()}</span>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: 17.5, letterSpacing: "-0.01em", color, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
