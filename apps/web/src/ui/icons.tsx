@@ -27,9 +27,9 @@ export function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }
 export function HeadphonesIcon(p: IconProps) {
   return (
     <svg {...sp(p)}>
-      <path fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" d="M5 13.5v-1.6a7 7 0 0 1 14 0v1.6" />
-      <path fill="currentColor" d="M3.2 13.3a1.9 1.9 0 0 1 1.9-1.9h.1a1.9 1.9 0 0 1 1.9 1.9v4.6a1.9 1.9 0 0 1-1.9 1.9h-.1a1.9 1.9 0 0 1-1.9-1.9z" />
-      <path fill="currentColor" d="M16.9 13.3a1.9 1.9 0 0 1 1.9-1.9h.1a1.9 1.9 0 0 1 1.9 1.9v4.6a1.9 1.9 0 0 1-1.9 1.9h-.1a1.9 1.9 0 0 1-1.9-1.9z" />
+      <path fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" d="M4.7 14V11.4C4.7 6.7 7.7 4.7 12 4.7C16.3 4.7 19.3 6.7 19.3 11.4V14" />
+      <path fill="currentColor" d="M7 11.6v8.6H5.3A2.6 2.6 0 0 1 2.7 17.6v-3.4A2.6 2.6 0 0 1 5.3 11.6Z" />
+      <path fill="currentColor" d="M17 11.6v8.6h1.7a2.6 2.6 0 0 0 2.6-2.6v-3.4a2.6 2.6 0 0 0-2.6-2.6Z" />
     </svg>
   );
 }
