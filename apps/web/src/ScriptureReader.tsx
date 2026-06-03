@@ -25,7 +25,7 @@ interface Toc { work: string; name: string; hierarchical: boolean; divisions?: D
 
 function verseLabel(v: string): string {
   if (!/\d/.test(v)) return v.charAt(0).toUpperCase() + v.slice(1); // «введение»
-  return /[-–]/.test(v) ? `Тексты ${v.replace("-", "–")}` : `Текст ${v}`;
+  return /[-–]/.test(v) ? `Тексты ${v.replace(/[–—]/g, "-")}` : `Текст ${v}`;
 }
 
 export default function ScriptureReader({ target, onBack }: { target: ScriptureTarget; onBack: () => void }) {

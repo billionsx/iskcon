@@ -146,7 +146,7 @@ booksRouter.get('/:work/chapters/:number/read', async (c) => {
 
   const out = verses.map((v) => {
     const tail = String(v.ref).split('.').pop() ?? '';
-    const label = /[-–]/.test(tail) ? `Тексты ${tail.replace('-', '–')}` : `Текст ${tail}`;
+    const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, '-')}` : `Текст ${tail}`;
     return {
       ref: v.ref,
       label,
@@ -212,7 +212,7 @@ booksRouter.get('/:work/verses/:ref', async (c) => {
 
   // Метка: последний дотированный сегмент. "БГ 2.13" → "13"; "БГ 2.16-17" → "16-17".
   const tail = String(verse.ref).split('.').pop() ?? '';
-  const label = /[-–]/.test(tail) ? `Тексты ${tail.replace('-', '–')}` : `Текст ${tail}`;
+  const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, '-')}` : `Текст ${tail}`;
 
   return c.json({
     ref: verse.ref,

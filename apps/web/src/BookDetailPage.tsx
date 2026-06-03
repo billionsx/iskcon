@@ -236,7 +236,7 @@ function Author() {
           Его Божественная Милость · Ачарья-основатель Международного общества сознания Кришны (ИСККОН)
         </div>
         <div style={{ marginTop: 12, display: "inline-flex", alignItems: "center", padding: "5px 12px", borderRadius: 999, border: `0.5px solid ${LINE}`, fontSize: 13, fontWeight: 600, color: INK }}>
-          1896&nbsp;—&nbsp;1977
+          1896-1977
         </div>
       </header>
 
