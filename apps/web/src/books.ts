@@ -46,6 +46,7 @@ export const BOOKS: Record<string, BookData> = {
 export const BOOK_MENU_ITEMS = [
   "Скачать PDF",
   "QR-код",
+  "Поделиться",
   "Заказать печатную книгу",
   "Язык издания — Русский",
   "Стих дня из книги",
