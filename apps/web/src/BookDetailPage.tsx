@@ -13,7 +13,7 @@ import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
-import { BackIcon, HeartIcon, MoreIcon, ShareIcon, AirPodsIcon } from "./ui/icons";
+import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
 
@@ -39,9 +39,6 @@ function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
     ? <g><line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /><line x1="21.75" y1="1.5" x2="21.75" y2="5" {...STROKE} /></g>
     : cornerGlyph === "minus" ? <line x1="20" y1="3.25" x2="23.5" y2="3.25" {...STROKE} /> : null;
   return <svg {...sp(rest)} overflow="visible"><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" />{corner}</svg>;
-}
-function HeadphonesIcon(p: IconProps) {
-  return <svg {...sp(p)}><path {...STROKE} d="M4 13v-1a8 8 0 0 1 16 0v1" /><rect x="3.2" y="12" width="4.2" height="7" rx="2.1" {...STROKE} /><rect x="16.6" y="12" width="4.2" height="7" rx="2.1" {...STROKE} /></svg>;
 }
 function ChevronIcon({ size = 18 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>;
@@ -663,7 +660,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
           <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио стиха — скоро")} size={36}><AirPodsIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио стиха — скоро")} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <NavBtn ariaLabel="Поделиться" onClick={() => void shareVerse()} size={36}><ShareIcon size={17} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>

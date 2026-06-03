@@ -3,12 +3,12 @@
  * Used identically by the showcase card on the feed (ВКП) and by the
  * detail-page hero (ПКП). Content comes from books.ts; only `topLeft`
  * (logo vs back) and `onOpen` (feed taps to open) differ between contexts.
- * Standard action set: избранное · AirPods · в корзину · ⋯.
+ * Standard action set: избранное · наушники · в корзину · ⋯.
  */
 import { useRef, useState, type ReactNode } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { type BookData } from "./books";
-import { HeartIcon, AirPodsIcon, BagIcon, MoreIcon } from "./ui/icons";
+import { HeartIcon, HeadphonesIcon, BagIcon, MoreIcon } from "./ui/icons";
 import { BookMenuSheet } from "./BookMenuSheet";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
@@ -63,7 +63,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash?.(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-            <ActionBtn ariaLabel="Слушать" onClick={() => flash?.("Аудиокнига — скоро")}><AirPodsIcon size={18} /></ActionBtn>
+            <ActionBtn ariaLabel="Слушать" onClick={() => flash?.("Аудиокнига — скоро")}><HeadphonesIcon size={18} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="#4a86e8" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const v = !inCart; setInCart(v); flash?.(v ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
             <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
           </div>
