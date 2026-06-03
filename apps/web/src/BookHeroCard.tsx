@@ -7,8 +7,9 @@
  */
 import { useState, type ReactNode } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
-import { BOOK_MENU_ITEMS, type BookData } from "./books";
+import { type BookData } from "./books";
 import { HeartIcon, AirPodsIcon, BagIcon, MoreIcon } from "./ui/icons";
+import { BookMenuSheet } from "./BookMenuSheet";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -22,21 +23,7 @@ function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { acti
   );
 }
 
-function CardMenu({ open, onClose, onSelect }: { open: boolean; onClose: () => void; onSelect?: (label: string) => void }) {
-  if (!open) return null;
-  return (
-    <div onClick={(e) => { e.stopPropagation(); onClose(); }} style={{ position: "fixed", inset: 0, zIndex: 90, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2, #fff)", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: "8px 0 max(8px, env(safe-area-inset-bottom))", boxShadow: "0 -8px 40px rgba(0,0,0,.18)" }}>
-        <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline, rgba(0,0,0,.12))", margin: "8px auto 12px" }} />
-        {BOOK_MENU_ITEMS.map((label) => (
-          <button key={label} onClick={() => { onClose(); onSelect?.(label); }} style={{ display: "block", width: "100%", textAlign: "left", padding: "14px 20px", background: "none", border: "none", fontFamily: "var(--font-text)", fontSize: 17, color: "var(--color-label, #1f2024)", cursor: "pointer" }}>{label}</button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (label: string) => void }) {
+export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -95,7 +82,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
           </div>
         </div>
       </article>
-      <CardMenu open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} />
     </>
   );
 }
