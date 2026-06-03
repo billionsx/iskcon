@@ -16,6 +16,7 @@
  *  bottom-anchored, not popover-anchored.)
  */
 import type { ReactNode, RefObject } from "react";
+import { createPortal } from "react-dom";
 
 const S = 26;
 const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -88,11 +89,11 @@ export function BookMenuSheet({ open, onClose, onSelect }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
 }) {
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
   const onPick = (id: string) => { onClose(); onSelect(id); };
-  return (
+  return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
-      style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
       <style>{SHEET_CSS}</style>
       <div className="bms-sheet" role="menu" onClick={(e) => e.stopPropagation()}
         style={{
@@ -129,6 +130,7 @@ export function BookMenuSheet({ open, onClose, onSelect }: {
           ))}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
