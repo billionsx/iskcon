@@ -105,11 +105,12 @@ function KeyVal({ k, v, last }: { k: string; v: string; last?: boolean }) {
 }
 
 /* ───────── tabs (white, gold underline) ───────── */
-type BookTabId = "contents" | "overview" | "author";
+type BookTabId = "contents" | "overview" | "author" | "reviews";
 const BOOK_TABS: { id: BookTabId; label: string }[] = [
   { id: "contents", label: "Содержание" },
   { id: "overview", label: "О книге" },
   { id: "author", label: "Автор" },
+  { id: "reviews", label: "Рецензии" },
 ];
 function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: BookTabId) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -372,6 +373,84 @@ function Author() {
           Жизнь Шрилы Прабхупады описана его учеником в семитомной биографии «Шрила Прабхупада-лиламрита».
         </p>
       </section>
+    </div>
+  );
+}
+
+/* ───────── Рецензии (отзывы влиятельных личностей) ───────── */
+function Review({ text, name, role, last }: { text: string; name: string; role: string; last?: boolean }) {
+  return (
+    <div style={{ padding: "20px 0", borderBottom: last ? "none" : `0.5px solid ${LINE}` }}>
+      <span aria-hidden style={{ display: "block", color: GOLD, fontFamily: "Georgia, 'Times New Roman', serif", fontSize: 34, lineHeight: 1, height: 18 }}>“</span>
+      <p style={{ margin: "2px 0 0", fontSize: 16.5, lineHeight: 1.55, color: INK }}>{text}</p>
+      <div style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 14.5, fontWeight: 700, color: INK }}>{name}</div>
+        <div style={{ fontSize: 13, lineHeight: 1.4, color: INK2, marginTop: 1 }}>{role}</div>
+      </div>
+    </div>
+  );
+}
+
+function Reviews() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: INK }}>
+          За полвека «Бхагавад-гита как она есть» получила отзывы учёных-индологов, религиоведов и деятелей культуры по всему миру.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Учёные и индологи</SectionTitle>
+        <div>
+          <Review
+            text="Научное и авторитетное издание «Гиты» — ценное и для специалиста, и для обычного читателя. Прекрасно сделанная книга, которую я рекомендую своим студентам."
+            name="Д-р Сэмюэл Д. Аткинс"
+            role="Профессор санскрита, Принстонский университет" />
+          <Review
+            text="Живое, новое прочтение текста, давно знакомого многим: оно многократно углубляет понимание. Этой работой Свами Бхактиведанта оказал услугу растущему числу западных читателей."
+            name="Д-р Эдвард Ч. Даймок-мл."
+            role="Кафедра южноазиатских языков и цивилизаций, Чикагский университет" />
+          <Review
+            text="Именно такого вдумчивого, близкого к тексту комментария к «Гите» нам недоставало — написанного и с позиции учёного, и с позиции практикующего, посвятившего этому жизнь."
+            name="Томас Дж. Хопкинс"
+            role="Профессор религиоведения, Колледж Франклина и Маршалла" />
+          <Review
+            text="Особая ценность этого прочтения «Гиты» в том, что оно даёт авторитетное толкование в русле традиции Чайтаньи."
+            name="Оливье Лакомб"
+            role="Профессор санскрита и индологии, Сорбонна, Париж" />
+          <Review
+            text="Книги BBT — отличного качества и большой ценности для университетских курсов по религиям Индии; особенно это их «Бхагавад-гита»."
+            name="Д-р Фредерик Б. Андервуд"
+            role="Профессор религиоведения, Колумбийский университет" />
+          <Review
+            text="Глубоко прочувствованная, мощно задуманная и прекрасно изложенная работа. Трудно сказать, чем восхищаться больше — самим переводом, смелым методом разъяснения или неисчерпаемым богатством идей."
+            name="Д-р Кайлаш Ваджпеи"
+            role="Директор отделения индийских исследований, Университет Мехико"
+            last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Культурное влияние</SectionTitle>
+        <p style={{ margin: "0 0 6px", fontSize: 15, lineHeight: 1.55, color: INK2 }}>
+          Учение, которое Прабхупада нёс миру, нашло отклик не только в академии:
+        </p>
+        <div>
+          <DefRow
+            term="Джордж Харрисон · The Beatles"
+            desc="В 1969 году спродюсировал сингл «Hare Krishna Mantra» (Apple Records), ставший хитом в Британии и Европе; профинансировал первое издание книги «Кришна» и написал к ней предисловие." />
+          <DefRow
+            term="Аллен Гинзберг · поэт"
+            desc="Публично воспевал маха-мантру на поэтических вечерах и в телеэфире, помогая познакомить с ней западную публику после встречи с Прабхупадой в Нью-Йорке."
+            last />
+        </div>
+      </section>
+
+      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+        Отзывы учёных приведены в сокращении и переводе; их полные тексты опубликованы в изданиях книги и публикуются Bhaktivedanta Book Trust.
+      </p>
     </div>
   );
 }
@@ -795,6 +874,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
         {tab === "contents" && <Contents chapters={chapters} onOpenChapter={setOpenChapter} />}
         {tab === "overview" && <Overview book={book} />}
         {tab === "author" && <Author />}
+        {tab === "reviews" && <Reviews />}
       </div>
 
       <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
