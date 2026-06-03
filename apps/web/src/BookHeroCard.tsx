@@ -5,7 +5,7 @@
  * (logo vs back) and `onOpen` (feed taps to open) differ between contexts.
  * Standard action set: избранное · AirPods · в корзину · ⋯.
  */
-import { useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 import { type BookData } from "./books";
 import { HeartIcon, AirPodsIcon, BagIcon, MoreIcon } from "./ui/icons";
@@ -27,6 +27,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const moreRef = useRef<HTMLSpanElement>(null);
   const [idx, setIdx] = useState(0);
   const n = book.covers.length;
   const next = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i + 1) % n); };
@@ -64,7 +65,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash?.(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
             <ActionBtn ariaLabel="Слушать" onClick={() => flash?.("Аудиокнига — скоро")}><AirPodsIcon size={18} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="#4a86e8" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const v = !inCart; setInCart(v); flash?.(v ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
-            <ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn>
+            <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
           </div>
         </div>
 
@@ -82,7 +83,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
           </div>
         </div>
       </article>
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} anchorRef={moreRef} />
     </>
   );
 }
