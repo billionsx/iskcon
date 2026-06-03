@@ -25,17 +25,10 @@ export function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }
 }
 export function AirPodsIcon(p: IconProps) {
   return (
-    <svg {...sp(p)} fill="currentColor">
-      <g transform="translate(12 12) scale(1.25) translate(-12 -9.5)">
-        <g transform="rotate(-8 7.1 4.4)">
-          <path fillRule="evenodd" d="M7 2.4 H7.2 A2.5 2.5 0 0 1 9.7 4.9 V6.7 A2.5 2.5 0 0 1 7.2 9.2 H7 A2.5 2.5 0 0 1 4.5 6.7 V4.9 A2.5 2.5 0 0 1 7 2.4 Z M6.1 4.85 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0 Z" />
-          <path d="M7.1 8 H7.1 A1.55 1.55 0 0 1 8.65 9.55 V15.05 A1.55 1.55 0 0 1 7.1 16.6 H7.1 A1.55 1.55 0 0 1 5.55 15.05 V9.55 A1.55 1.55 0 0 1 7.1 8 Z" />
-        </g>
-        <g transform="rotate(8 16.9 4.4)">
-          <path fillRule="evenodd" d="M16.8 2.4 H17 A2.5 2.5 0 0 1 19.5 4.9 V6.7 A2.5 2.5 0 0 1 17 9.2 H16.8 A2.5 2.5 0 0 1 14.3 6.7 V4.9 A2.5 2.5 0 0 1 16.8 2.4 Z M15.9 4.85 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0 Z" />
-          <path d="M16.9 8 H16.9 A1.55 1.55 0 0 1 18.45 9.55 V15.05 A1.55 1.55 0 0 1 16.9 16.6 H16.9 A1.55 1.55 0 0 1 15.35 15.05 V9.55 A1.55 1.55 0 0 1 16.9 8 Z" />
-        </g>
-      </g>
+    <svg {...sp(p)}>
+      <path fill="currentColor" d="M6.05 8 H6.05 A1.85 1.85 0 0 1 7.9 9.85 V16.75 A1.85 1.85 0 0 1 6.05 18.6 H6.05 A1.85 1.85 0 0 1 4.2 16.75 V9.85 A1.85 1.85 0 0 1 6.05 8 Z" />
+      <path fill="currentColor" d="M17.95 8 H17.95 A1.85 1.85 0 0 1 19.8 9.85 V16.75 A1.85 1.85 0 0 1 17.95 18.6 H17.95 A1.85 1.85 0 0 1 16.1 16.75 V9.85 A1.85 1.85 0 0 1 17.95 8 Z" />
+      <path fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" d="M6.05 8.6 C6.05 4.4 8.7 2.9 12 2.9 C15.3 2.9 17.95 4.4 17.95 8.6" />
     </svg>
   );
 }

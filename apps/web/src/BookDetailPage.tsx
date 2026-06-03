@@ -15,6 +15,7 @@ import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, AirPodsIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
+import { BookMenuSheet } from "./BookMenuSheet";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -743,7 +744,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
         <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
 
-      <ActionsSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(label) => { setVMenu(false); onMenuAction(label); }} />
+      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => { setVMenu(false); onMenuAction(id); }} />
     </div>
   );
 }
@@ -826,20 +827,13 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     return DEMO_REFS[day % DEMO_REFS.length] ?? "БГ 1.1";
   };
 
-  const menuAction = (label: string) => {
+  const menuAction = (id: string) => {
     setMoreOpen(false);
-    if (label.startsWith("Читать")) { openChapterByNumber("1"); return; }
-    if (label.startsWith("Слушать")) { flash("Аудиокнига — скоро"); return; }
-    if (label.startsWith("О книге")) { setTab("overview"); return; }
-    if (label.startsWith("Стих дня")) { setReaderRef(verseOfDay()); return; }
-    if (label.startsWith("Поделиться")) { void shareBook(); return; }
-    if (label.startsWith("Добавить")) { flash("Добавлено в план чтения"); return; }
-    if (label.startsWith("Язык")) { flash("Издание: русский. Другие языки — скоро"); return; }
-    if (label.startsWith("Скачать")) { flash("PDF — скоро"); return; }
-    if (label.startsWith("QR")) { flash("QR-код — скоро"); return; }
-    if (label.startsWith("Заказать")) { flash("Печатное издание — скоро"); return; }
-    if (label.startsWith("Поддержать")) { flash("Поддержка печати — скоро"); return; }
-    flash("Скоро");
+    if (id === "share") { void shareBook(); return; }
+    if (id === "pdf") { flash("PDF книги — скоро"); return; }
+    if (id === "qr") { flash("QR-код — скоро"); return; }
+    if (id === "donate") { flash("Поддержать печать — скоро"); return; }
+    if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
   };
 
   return (
@@ -864,7 +858,6 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
         {tab === "reviews" && <Reviews />}
       </div>
 
-      <ActionsSheet open={moreOpen} onClose={() => setMoreOpen(false)} onSelect={menuAction} />
       <Toast msg={toast} />
       {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} />}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} />}
