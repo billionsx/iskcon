@@ -7,8 +7,8 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
-import { BOOKS, BOOK_MENU_ITEMS, type BookData } from "./books";
-import { AirPodsIcon } from "./ui/icons";
+import { BOOKS } from "./books";
+import { BookHeroCard } from "./BookHeroCard";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
@@ -116,112 +116,6 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
       WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
       WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center",
     }} />
-  );
-}
-
-/* ═════════ round glass action button ═════════ */
-function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { active?: boolean; activeColor?: string; ariaLabel: string; onClick: () => void; children: ReactNode }) {
-  return (
-    <button type="button" aria-label={ariaLabel} aria-pressed={active}
-      onClick={(e) => { e.stopPropagation(); onClick(); }}
-      style={{ display: "grid", height: 36, width: 36, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: "rgba(255,255,255,.12)", color: active && activeColor ? activeColor : "#fff", backdropFilter: "blur(12px)", transition: "background .2s" }}>
-      {children}
-    </button>
-  );
-}
-
-/* ═════════ ⋯ menu (book functions) — items from books.ts (single source) ═════════ */
-function ActionsMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
-  return (
-    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,.4)" }}>
-      <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2)", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: "8px 0 max(8px, env(safe-area-inset-bottom))", boxShadow: "var(--shadow-card)" }}>
-        <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline)", margin: "8px auto 12px" }} />
-        {BOOK_MENU_ITEMS.map((label) => (
-          <button key={label} onClick={onClose} style={{ display: "block", width: "100%", textAlign: "left", padding: "14px 20px", background: "none", border: "none", fontFamily: "var(--font-text)", fontSize: 17, color: "var(--color-label)", cursor: "pointer" }}>{label}</button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ═════════ book card (ВКП) — data-driven from books.ts; same covers & fields as the detail page ═════════ */
-const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
-
-function BookCard({ book, onOpen }: { book: BookData; onOpen?: () => void }) {
-  const [favorited, setFavorited] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [idx, setIdx] = useState(0);
-  const n = book.covers.length;
-  const next = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i + 1) % n); };
-  const prev = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i - 1 + n) % n); };
-
-  return (
-    <>
-      <article
-        style={{
-          position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20,
-          border: "0.5px solid var(--color-hairline)", background: GRAPHITE,
-          boxShadow: "var(--shadow-card)",
-          display: "flex", flexDirection: "column", justifyContent: "flex-end",
-        }}>
-        {/* cover images (current shown) */}
-        {book.covers.map((src, i) => (
-          <img key={src} src={src} alt={book.titleLine1} loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
-            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s ease" }} />
-        ))}
-        {/* legibility gradients over photo */}
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />
-
-        {/* center opens detail; invisible edge zones flip the gallery */}
-        <button type="button" aria-label="Открыть книгу" onClick={() => onOpen?.()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-        {n > 1 && (
-          <>
-            <button type="button" aria-label="Предыдущее изображение" onClick={prev} style={{ position: "absolute", top: 56, bottom: "42%", left: 0, width: "22%", zIndex: 15, background: "none", border: "none", cursor: "pointer" }} />
-            <button type="button" aria-label="Следующее изображение" onClick={next} style={{ position: "absolute", top: 56, bottom: "42%", right: 0, width: "22%", zIndex: 15, background: "none", border: "none", cursor: "pointer" }} />
-          </>
-        )}
-
-        {/* TOP: BBT logo (left) · counter + actions (right) */}
-        <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <span style={{ display: "flex", alignItems: "center", color: "#fff" }}>
-            <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />
-          </span>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
-            <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => setFavorited(v => !v)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-            <ActionBtn ariaLabel="Слушать" onClick={() => {}}><AirPodsIcon size={18} /></ActionBtn>
-            <ActionBtn ariaLabel="Поделиться" onClick={() => {}}><ShareIcon size={17} /></ActionBtn>
-            <ActionBtn ariaLabel="Меню" onClick={() => setMenuOpen(true)}>
-              <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>
-            </ActionBtn>
-          </div>
-        </div>
-
-        {/* INFO — bottom. Standard type scale (apartsales): title 28/700, body 15/400, line-height 1.4 */}
-        <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: "pointer", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
-          <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", whiteSpace: "nowrap" }}>{book.titleLine1}</h3>
-          {book.titleLine2 && <div style={{ marginTop: 2, fontSize: 25, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em", color: "rgba(255,255,255,.95)" }}>{book.titleLine2}</div>}
-          <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>{book.iast}<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>{book.tagline}</div>
-
-          <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.35, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.92)" }}>
-            {book.author}
-          </p>
-
-          <p style={{ margin: "10px 0 0", fontSize: 14, lineHeight: 1.35, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>
-            {book.description}
-          </p>
-
-          <div style={{ marginTop: 20, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-            {book.chips.map(p => (
-              <span key={p} style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.16)", height: 26, padding: "0 12px", fontSize: 13, lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "#fff" }}>{p}</span>
-            ))}
-          </div>
-        </div>
-      </article>
-      <ActionsMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-    </>
   );
 }
 
@@ -430,7 +324,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
                 <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
-              <BookCard book={BOOKS.bg} onOpen={onOpenBook} />
+              <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={onOpenBook} />
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
           ) : tab === "feed" ? (

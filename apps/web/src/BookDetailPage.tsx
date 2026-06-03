@@ -14,6 +14,7 @@ import { BOOK_MENU_ITEMS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, AirPodsIcon } from "./ui/icons";
+import { BookHeroCard } from "./BookHeroCard";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -843,37 +844,16 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
 
   return (
     <div style={{ position: "relative", minHeight: "100%", background: PAPER, paddingBottom: "calc(env(safe-area-inset-bottom,0px) + 32px)" }}>
-      {/* scroll-aware top bar over hero */}
-      <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 12px", transition: "background .2s, border-color .2s", background: scrolled ? "rgba(255,255,255,0.82)" : "transparent", backdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", WebkitBackdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", borderBottom: `0.5px solid ${scrolled ? LINE : "transparent"}` }}>
-        <TopBtn solid={scrolled} ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></TopBtn>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <TopBtn solid={scrolled} active={favorited} activeColor="#FF3B30" ariaLabel="В избранное" onClick={() => { const nv = !favorited; setFavorited(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></TopBtn>
-          <TopBtn solid={scrolled} ariaLabel="Слушать" onClick={() => flash("Аудиокнига — скоро")}><AirPodsIcon size={18} /></TopBtn>
-          <TopBtn solid={scrolled} ariaLabel="Поделиться" onClick={() => void shareBook()}><ShareIcon size={17} /></TopBtn>
-          <TopBtn solid={scrolled} ariaLabel="Меню" onClick={() => setMoreOpen(true)}><MoreIcon size={16} /></TopBtn>
-        </div>
+      {/* scroll-aware top bar — persistent back; all actions live in the card below */}
+      <header style={{ position: "sticky", top: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 14px", transition: "background .2s, border-color .2s", background: scrolled ? "rgba(255,255,255,0.82)" : "transparent", backdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", WebkitBackdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", borderBottom: `0.5px solid ${scrolled ? LINE : "transparent"}` }}>
+        <button type="button" aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.05)", color: INK, cursor: "pointer", flexShrink: 0 }}><BackIcon size={22} /></button>
+        {scrolled && <div style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{book.titleLine1}</div>}
       </header>
 
-      {/* HERO carousel */}
-      <article style={{ position: "relative", marginTop: -56, aspectRatio: "4 / 5", overflow: "hidden", background: "#15161a" }}>
-        {book.covers.map((src, i) => (
-          <img key={src} src={src} alt={book.titleLine1} loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
-            style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s ease" }} />
-        ))}
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)" }} />
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "70%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.55) 45%, rgba(0,0,0,0) 100%)" }} />
-        {n > 1 && (<>
-          <button aria-label="Предыдущее" onClick={() => setIdx(i => (i - 1 + n) % n)} style={{ position: "absolute", top: 56, bottom: "40%", left: 0, width: "24%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-          <button aria-label="Следующее" onClick={() => setIdx(i => (i + 1) % n)} style={{ position: "absolute", top: 56, bottom: "40%", right: 0, width: "24%", zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />
-          <span style={{ position: "absolute", right: 16, top: 64, zIndex: 12, borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
-        </>)}
-        <div style={{ position: "absolute", left: 20, bottom: 20, right: 20, zIndex: 12, color: "#fff" }}>
-          <div style={{ color: "#fff", marginBottom: 14 }}><LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={24} color="#fff" /></div>
-          <h1 style={{ margin: 0, fontSize: 34, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", whiteSpace: "nowrap" }}>{book.titleLine1}</h1>
-          {book.titleLine2 && <div style={{ marginTop: 2, fontSize: 23, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em" }}>{book.titleLine2}</div>}
-          <div style={{ marginTop: 6, fontSize: 15, color: "rgba(255,255,255,.72)" }}>{book.iast}<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>{book.tagline}</div>
-        </div>
-      </article>
+      {/* HERO — the SAME card module as the feed (ВКП); single source from books.ts */}
+      <div style={{ padding: "2px 16px 6px" }}>
+        <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} />
+      </div>
 
       <BookTabs active={tab} onChange={setTab} />
 
