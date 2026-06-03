@@ -42,16 +42,14 @@ export const BOOKS: Record<string, BookData> = {
   },
 };
 
-/** The menu of book functions (⋯). Shared by card and detail page. */
+/** The menu of book functions (⋯). Single source — shared by card, detail page and verse reader. */
 export const BOOK_MENU_ITEMS = [
-  "Читать онлайн",
-  "Слушать аудиокнигу",
-  "Скачать PDF / EPUB",
-  "Язык издания — Русский",
-  "Добавить в план чтения",
-  "Поделиться · QR-код",
+  "Скачать PDF",
+  "QR-код",
   "Заказать печатную книгу",
+  "Язык издания — Русский",
+  "Стих дня из книги",
+  "Добавить в план чтения",
   "Поддержать печать",
   "О книге и об авторе",
-  "Стих дня из книги",
 ];
