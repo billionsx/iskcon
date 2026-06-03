@@ -1,23 +1,21 @@
 /**
  * BookMenuSheet — the single ⋯ menu for the book (card, detail hero, verse reader).
  *
- * iOS-26 system action menu (the Photos/Share-sheet list standard):
- *   • Grouped rounded card; each row is a LEADING SF-style glyph + label.
- *   • Hairline separators inset to the label column.
- *   • Material + text follow the app theme tokens (the app runs light, so this
- *     reads as a light frosted card — matching the iOS light share sheet).
- *   • Springs from the ⋯ button (anchorRef) with the iOS spring; flips above the
- *     button when there isn't room below.
+ * iOS Share-Sheet action-list standard (light), replicated exactly:
+ *   • SECTIONED grouped cards (light frosted grey) with a gap between groups.
+ *   • Each row: LEADING black SF-style glyph + label; no trailing element.
+ *   • Hairline separators between rows WITHIN a card, inset to the label column.
+ *   • Material + text from theme tokens (app runs light → light grey cards).
+ *   • Springs from the ⋯ button (anchorRef); flips above it when needed.
  *
- * Items: Поделиться · Скачать PDF · QR-код · Задонатить · Сообщить об ошибке.
+ * Items: [Поделиться · Скачать PDF · QR-код]  [Задонатить · Сообщить об ошибке].
  * Glyphs mirror SF Symbols (square.and.arrow.up / .down, qrcode, gift,
- * exclamationmark.triangle). "Задонатить" is a gift — never a heart (the heart is
- * reserved for «в избранное»).
+ * exclamationmark.triangle). "Задонатить" is a gift — never a heart.
  */
 import { useLayoutEffect, useState, type ReactNode, type RefObject } from "react";
 
-const S = 23;
-const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.9, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+const S = 26;
+const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 function Svg({ children }: { children: ReactNode }) {
   return <svg width={S} height={S} viewBox="0 0 24 24" aria-hidden>{children}</svg>;
 }
@@ -29,7 +27,7 @@ const PdfGlyph = () => <Svg><g {...stroke}><path d="M12 4v10.5" /><path d="M8.3 
 /* qrcode */
 const QrGlyph = () => (
   <Svg>
-    <g fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinejoin="round">
+    <g fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinejoin="round">
       <rect x="4" y="4" width="6" height="6" rx="1.6" /><rect x="14" y="4" width="6" height="6" rx="1.6" /><rect x="4" y="14" width="6" height="6" rx="1.6" />
     </g>
     <g fill="currentColor">
@@ -52,22 +50,34 @@ const GiftGlyph = () => (
 /* exclamationmark.triangle */
 const ReportGlyph = () => <Svg><g {...stroke}><path d="M12 4.5 20.5 19 3.5 19Z" /><path d="M12 10v3.8" /></g><circle cx="12" cy="16.4" r="0.6" fill="currentColor" /></Svg>;
 
-const ITEMS: { id: string; label: string; Icon: () => ReactNode; danger?: boolean }[] = [
-  { id: "share", label: "Поделиться", Icon: ShareGlyph },
-  { id: "pdf", label: "Скачать PDF", Icon: PdfGlyph },
-  { id: "qr", label: "QR-код", Icon: QrGlyph },
-  { id: "donate", label: "Задонатить", Icon: GiftGlyph },
-  { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
+type Item = { id: string; label: string; Icon: () => ReactNode; danger?: boolean };
+const GROUPS: Item[][] = [
+  [
+    { id: "share", label: "Поделиться", Icon: ShareGlyph },
+    { id: "pdf", label: "Скачать PDF", Icon: PdfGlyph },
+    { id: "qr", label: "QR-код", Icon: QrGlyph },
+  ],
+  [
+    { id: "donate", label: "Задонатить", Icon: GiftGlyph },
+    { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
+  ],
 ];
+const ROW_COUNT = GROUPS.reduce((n, g) => n + g.length, 0);
 
-const ROW_H = 54;
-const TEXT_X = 58; // leading icon column width — labels & separators start here
+const ROW_H = 56;
+const PAD_L = 20;
+const ICON_BOX = 26;
+const GAP = 16;
+const SEP_LEFT = PAD_L + ICON_BOX + GAP; // separators & implicit label start
+const GROUP_GAP = 10;
+
 const MENU_CSS = `
-@keyframes bm-pop { from { opacity: 0; transform: scale(.92) } to { opacity: 1; transform: scale(1) } }
+@keyframes bm-pop { from { opacity: 0; transform: scale(.94) } to { opacity: 1; transform: scale(1) } }
+.bm-card { position: relative; }
 .bm-row { position: relative; -webkit-tap-highlight-color: transparent; transition: background-color .12s ease; }
-.bm-row:active { background-color: rgba(120,120,128,0.20); }
+.bm-row:active { background-color: rgba(120,120,128,0.18); }
 @media (hover: hover) { .bm-row:hover { background-color: rgba(120,120,128,0.10); } }
-.bm-row:not(:first-of-type)::before { content: ""; position: absolute; top: 0; left: ${TEXT_X}px; right: 0; height: 0.5px; background: var(--color-glass-stroke, rgba(0,0,0,0.12)); }
+.bm-row:not(:first-child)::before { content: ""; position: absolute; top: 0; left: ${SEP_LEFT}px; right: 0; height: 0.5px; background: rgba(60,60,67,0.13); }
 @media (prefers-reduced-motion: reduce) { .bm-menu { animation: none !important; } }
 `;
 
@@ -79,7 +89,7 @@ export function BookMenuSheet({ open, onClose, onSelect, anchorRef }: {
 
   useLayoutEffect(() => {
     if (!open) return;
-    const menuH = ITEMS.length * ROW_H + 12;
+    const menuH = ROW_COUNT * ROW_H + (GROUPS.length - 1) * GROUP_GAP;
     const el = anchorRef?.current;
     if (el) {
       const r = el.getBoundingClientRect();
@@ -96,36 +106,43 @@ export function BookMenuSheet({ open, onClose, onSelect, anchorRef }: {
   }, [open, anchorRef]);
 
   if (!open) return null;
+  const onPick = (id: string) => { onClose(); onSelect(id); };
   return (
     <div onClick={(e) => { e.stopPropagation(); onClose(); }}
-      style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.18)" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 200, background: "rgba(0,0,0,0.20)" }}>
       <style>{MENU_CSS}</style>
       <div className="bm-menu" role="menu" onClick={(e) => e.stopPropagation()}
         style={{
-          position: "fixed", top: pos.top, right: pos.right, width: 290,
-          background: "var(--color-glass-nav, rgba(252,252,253,0.97))",
-          backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)",
-          borderRadius: 20, overflow: "hidden",
-          border: "0.5px solid var(--color-glass-stroke, rgba(0,0,0,0.12))",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.6), 0 12px 40px rgba(0,0,0,0.18)",
+          position: "fixed", top: pos.top, right: pos.right, width: 300,
+          display: "flex", flexDirection: "column", gap: GROUP_GAP,
           transformOrigin: pos.flip ? "bottom right" : "top right",
           animation: "bm-pop .18s cubic-bezier(.2,.9,.3,1.2)",
         }}>
-        {ITEMS.map((it) => {
-          const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
-          return (
-            <button key={it.id} role="menuitem" type="button" className="bm-row"
-              onClick={() => { onClose(); onSelect(it.id); }}
-              style={{
-                display: "flex", width: "100%", alignItems: "center", gap: 0,
-                height: ROW_H, padding: 0, background: "none", border: "none",
-                cursor: "pointer", textAlign: "left",
-              }}>
-              <span style={{ width: TEXT_X, display: "inline-flex", justifyContent: "center", flexShrink: 0, color }}>{it.Icon()}</span>
-              <span style={{ fontFamily: "var(--font-text)", fontSize: 17, letterSpacing: "-0.01em", color, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingRight: 18 }}>{it.label}</span>
-            </button>
-          );
-        })}
+        {GROUPS.map((group, gi) => (
+          <div key={gi} className="bm-card"
+            style={{
+              borderRadius: 18, overflow: "hidden",
+              background: "rgba(242,242,245,0.86)",
+              backdropFilter: "blur(30px) saturate(180%)", WebkitBackdropFilter: "blur(30px) saturate(180%)",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.16)",
+            }}>
+            {group.map((it) => {
+              const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
+              return (
+                <button key={it.id} role="menuitem" type="button" className="bm-row"
+                  onClick={() => onPick(it.id)}
+                  style={{
+                    display: "flex", width: "100%", alignItems: "center",
+                    height: ROW_H, paddingLeft: PAD_L, paddingRight: 16, gap: GAP,
+                    background: "none", border: "none", cursor: "pointer", textAlign: "left",
+                  }}>
+                  <span style={{ width: ICON_BOX, height: ICON_BOX, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color }}>{it.Icon()}</span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: 17.5, letterSpacing: "-0.01em", color, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
