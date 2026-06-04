@@ -28,22 +28,6 @@ export function exportToPdf(
   const layer = document.createElement("div");
   layer.id = "pdf-print-layer";
 
-  if (opts?.heading) {
-    const head = document.createElement("div");
-    head.className = "pdf-doc-head";
-    const title = document.createElement("div");
-    title.className = "pdf-doc-title";
-    title.textContent = opts.heading;
-    head.appendChild(title);
-    if (opts.subheading) {
-      const sub = document.createElement("div");
-      sub.className = "pdf-doc-sub";
-      sub.textContent = opts.subheading;
-      head.appendChild(sub);
-    }
-    layer.appendChild(head);
-  }
-
   const clone = content.cloneNode(true) as HTMLElement;
   clone.removeAttribute("data-pdf-root");
   clone.querySelectorAll("[data-pdf-no-print]").forEach((el) => {
@@ -65,15 +49,52 @@ export function exportToPdf(
   clone.style.removeProperty("min-height");
   clone.style.overflow = "visible";
 
-  const body = document.createElement("div");
-  body.className = "pdf-doc-body";
-  body.appendChild(clone);
-  layer.appendChild(body);
+  // Per-page margins WITHOUT the browser's date/url/page chrome: wrap content
+  // in a table. <thead>/<tfoot> repeat on every printed page, so thead acts as
+  // a top margin and tfoot (our brand line) as a bottom margin on EVERY page;
+  // left/right margins come from the cell padding. Works for the 1000+ page book.
+  const table = document.createElement("table");
+  table.className = "pdf-table";
 
+  const thead = document.createElement("thead");
+  thead.innerHTML = '<tr><td><div class="pdf-top-space"></div></td></tr>';
+
+  const tfoot = document.createElement("tfoot");
+  const footTr = document.createElement("tr");
+  const footTd = document.createElement("td");
   const foot = document.createElement("div");
-  foot.className = "pdf-doc-foot";
+  foot.className = "pdf-foot";
   foot.textContent = "ISKCON ONE LOVE · gaurangers.com";
-  layer.appendChild(foot);
+  footTd.appendChild(foot);
+  footTr.appendChild(footTd);
+  tfoot.appendChild(footTr);
+
+  const tbody = document.createElement("tbody");
+  const bodyTr = document.createElement("tr");
+  const bodyTd = document.createElement("td");
+  if (opts?.heading) {
+    const head = document.createElement("div");
+    head.className = "pdf-doc-head";
+    const title = document.createElement("div");
+    title.className = "pdf-doc-title";
+    title.textContent = opts.heading;
+    head.appendChild(title);
+    if (opts.subheading) {
+      const sub = document.createElement("div");
+      sub.className = "pdf-doc-sub";
+      sub.textContent = opts.subheading;
+      head.appendChild(sub);
+    }
+    bodyTd.appendChild(head);
+  }
+  bodyTd.appendChild(clone);
+  bodyTr.appendChild(bodyTd);
+  tbody.appendChild(bodyTr);
+
+  table.appendChild(thead);
+  table.appendChild(tfoot);
+  table.appendChild(tbody);
+  layer.appendChild(table);
 
   document.body.appendChild(layer);
   document.body.classList.add("printing");

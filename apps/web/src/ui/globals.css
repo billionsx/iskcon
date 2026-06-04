@@ -414,9 +414,13 @@
   #pdf-print-layer {
     display: block !important;
     color: var(--color-label);
-    padding: 16mm 15mm;
-    box-sizing: border-box;
+    padding: 0;
   }
+  /* поля на каждой странице через повторяющиеся thead/tfoot таблицы */
+  #pdf-print-layer .pdf-table { width: 100%; border-collapse: collapse; }
+  #pdf-print-layer .pdf-table td { padding: 0 15mm; vertical-align: top; }
+  #pdf-print-layer .pdf-top-space { height: 12mm; }
+  #pdf-print-layer .pdf-foot { padding: 6mm 0 0; text-align: center; font-size: 8pt; letter-spacing: 0.02em; color: #9a9a9e; }
 
   /* печатать фоны/цвета как на экране (обложка, плашки, заливки) */
   #pdf-print-layer,
