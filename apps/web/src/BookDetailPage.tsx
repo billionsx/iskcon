@@ -16,6 +16,7 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
+import { exportToPdf } from "./pdf";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -121,7 +122,7 @@ function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: Book
     c.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
   }, [active]);
   return (
-    <nav aria-label="Разделы книги" style={{ position: "sticky", top: 52, zIndex: 20, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${LINE}` }}>
+    <nav data-pdf-no-print aria-label="Разделы книги" style={{ position: "sticky", top: 52, zIndex: 20, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${LINE}` }}>
       <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {BOOK_TABS.map((t) => {
           const on = t.id === active;
@@ -612,6 +613,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
   const [fav, setFav] = useState(false);
   const [vMenu, setVMenu] = useState(false);
   const vMoreRef = useRef<HTMLSpanElement>(null);
+  const verseContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let live = true;
@@ -666,7 +668,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
       </header>
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ margin: "0 auto", padding: "22px 20px 40px" }}>
+        <div ref={verseContentRef} style={{ margin: "0 auto", padding: "22px 20px 40px" }}>
           {!data && !error && <div style={{ textAlign: "center", color: INK2, padding: "40px 0", fontSize: 15 }}>Загрузка стиха…</div>}
           {error && (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
@@ -742,7 +744,15 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
         <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
 
-      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => { setVMenu(false); onMenuAction(id); }} anchorRef={vMoreRef} />
+      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => {
+        setVMenu(false);
+        if (id === "pdf") {
+          const label = data?.label ?? refStr;
+          exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` });
+          return;
+        }
+        onMenuAction(id);
+      }} anchorRef={vMoreRef} />
     </div>
   );
 }
@@ -776,6 +786,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
+  const bookContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
@@ -828,7 +839,11 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { flash("PDF книги — скоро"); return; }
+    if (id === "pdf") {
+      const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
+      exportToPdf(bookContentRef.current, { title: name, heading: name, subheading: "ISKCON ONE LOVE" });
+      return;
+    }
     if (id === "qr") { flash("QR-код — скоро"); return; }
     if (id === "donate") { flash("Поддержать печать — скоро"); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
@@ -842,18 +857,20 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
         {scrolled && <div style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{book.titleLine1}</div>}
       </header>
 
-      {/* HERO — the SAME card module as the feed (ВКП); single source from books.ts */}
-      <div style={{ padding: "2px 16px 6px" }}>
-        <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} />
-      </div>
+      <div ref={bookContentRef}>
+        {/* HERO — the SAME card module as the feed (ВКП); single source from books.ts */}
+        <div style={{ padding: "2px 16px 6px" }}>
+          <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} />
+        </div>
 
-      <BookTabs active={tab} onChange={setTab} />
+        <BookTabs active={tab} onChange={setTab} />
 
-      <div>
-        {tab === "contents" && <Contents chapters={chapters} onOpenChapter={setOpenChapter} />}
-        {tab === "overview" && <Overview book={book} />}
-        {tab === "author" && <Author />}
-        {tab === "reviews" && <Reviews />}
+        <div>
+          {tab === "contents" && <Contents chapters={chapters} onOpenChapter={setOpenChapter} />}
+          {tab === "overview" && <Overview book={book} />}
+          {tab === "author" && <Author />}
+          {tab === "reviews" && <Reviews />}
+        </div>
       </div>
 
       <Toast msg={toast} />

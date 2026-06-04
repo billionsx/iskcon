@@ -396,3 +396,65 @@
  * Не трогает иконки (SVG) и текст без курсива.
  * ───────────────────────────────────────────────────────────────────────── */
 [style*="italic"] { font-family: var(--font-scripture); }
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * PDF-экспорт (print). См. src/pdf.ts: контент текущего уровня клонируется в
+ * #pdf-print-layer под <body>, остальное приложение скрывается. Текст —
+ * векторный, оформление берётся из наших же токенов. Печать в нашем CSS.
+ * ───────────────────────────────────────────────────────────────────────── */
+#pdf-print-layer { display: none; }
+
+@media print {
+  @page { margin: 16mm 14mm 18mm; }
+  html, body { background: #fff !important; }
+
+  /* печатаем только слой PDF, живое приложение скрываем целиком */
+  body.printing > #root { display: none !important; }
+  #pdf-print-layer { display: block !important; color: var(--color-label); }
+
+  /* печатать фоны/цвета как на экране (обложка, плашки, заливки) */
+  #pdf-print-layer,
+  #pdf-print-layer * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* шапка документа — один раз сверху */
+  #pdf-print-layer .pdf-doc-head {
+    margin: 0 0 14px;
+    padding: 0 0 10px;
+    border-bottom: 0.75pt solid rgba(0, 0, 0, 0.18);
+  }
+  #pdf-print-layer .pdf-doc-title {
+    font-family: var(--font-display, var(--font-text));
+    font-size: 17pt;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #1f2024;
+  }
+  #pdf-print-layer .pdf-doc-sub {
+    margin-top: 3px;
+    font-size: 9.5pt;
+    color: #6a6a6e;
+  }
+
+  /* подпись-бренд внизу каждой печатной страницы */
+  #pdf-print-layer .pdf-doc-foot {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    font-size: 8pt;
+    letter-spacing: 0.02em;
+    color: #9a9a9e;
+  }
+
+  /* разумные переносы страниц */
+  #pdf-print-layer section,
+  #pdf-print-layer [data-pdf-block] { break-inside: avoid; }
+  #pdf-print-layer h1,
+  #pdf-print-layer h2,
+  #pdf-print-layer h3 { break-after: avoid; }
+  #pdf-print-layer img { max-width: 100% !important; }
+}
