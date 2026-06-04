@@ -10,7 +10,6 @@ import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { exportWholeBook } from "./bookPdf";
-import { downloadServerPdf } from "./pdf";
 import { QrSheet } from "./QrSheet";
 import { PdfDoc } from "./PdfDoc";
 import BhajanDetailPage from "./BhajanDetailPage";
@@ -343,7 +342,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                   return;
                 }
-                if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, fallback: () => void exportWholeBook(BOOKS.bg, flash) }); return; }
+                if (id === "pdf") { void exportWholeBook(BOOKS.bg, flash); return; }
                 if (id === "qr") { setQrUrl("https://gaurangers.com/book/bg"); return; }
                 onOpenBook();
               }} />
