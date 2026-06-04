@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
-import { BOOK_MENU_ITEMS } from "./books";
+import { BOOK_MENU_ITEMS, bookShareTitle } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
@@ -803,8 +803,8 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   };
 
   const shareBook = async () => {
-    const url = "https://gaurangers.com/book/bg";
-    const payload = { title: "Бхагавад-гита как она есть", text: "Бхагавад-гита как она есть — читать онлайн", url };
+    const url = typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`;
+    const payload = { title: bookShareTitle(book), text: book.description, url };
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
         await (navigator as Navigator).share(payload);

@@ -42,6 +42,21 @@ export const BOOKS: Record<string, BookData> = {
   },
 };
 
+/**
+ * Standard share / Open-Graph title for a book:
+ *   "<Название>. ISKCON ONE LOVE. ИСККОН."
+ * Single source — used by the client share action and by the edge OG injector.
+ */
+export function bookShareTitle(b: BookData): string {
+  const name = b.titleLine2 ? `${b.titleLine1} ${b.titleLine2}` : b.titleLine1;
+  return `${name}. ISKCON ONE LOVE. ИСККОН.`;
+}
+
+/** Primary cover (absolute path on the site) used as the share/OG image for a book. */
+export function bookShareImage(b: BookData): string {
+  return b.covers[0] ?? "/og-default.png";
+}
+
 /** The menu of book functions (⋯). Single source — shared by card, detail page and verse reader. */
 export const BOOK_MENU_ITEMS = [
   "Скачать PDF",
