@@ -405,12 +405,17 @@
 #pdf-print-layer { display: none; }
 
 @media print {
-  @page { margin: 16mm 14mm 18mm; }
+  @page { margin: 0; }
   html, body { background: #fff !important; }
 
   /* печатаем только слой PDF, живое приложение скрываем целиком */
   body.printing > #root { display: none !important; }
-  #pdf-print-layer { display: block !important; color: var(--color-label); }
+  #pdf-print-layer {
+    display: block !important;
+    color: var(--color-label);
+    padding: 16mm 15mm;
+    box-sizing: border-box;
+  }
 
   /* печатать фоны/цвета как на экране (обложка, плашки, заливки) */
   #pdf-print-layer,
@@ -438,12 +443,11 @@
     color: #6a6a6e;
   }
 
-  /* подпись-бренд внизу каждой печатной страницы */
+  /* подпись-бренд один раз в конце документа */
   #pdf-print-layer .pdf-doc-foot {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 0.5pt solid rgba(0, 0, 0, 0.12);
     text-align: center;
     font-size: 8pt;
     letter-spacing: 0.02em;
