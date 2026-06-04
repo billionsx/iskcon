@@ -9,6 +9,8 @@ import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
+import { exportWholeBook } from "./bookPdf";
+import { QrSheet } from "./QrSheet";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
@@ -313,6 +315,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
 
 function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader />
@@ -324,7 +327,17 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
                 <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
-              <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={onOpenBook} onMenuSelect={(id) => { if (id === "share" && typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: BOOKS.bg.titleLine1, url: "https://gaurangers.com/book/bg" }).catch(() => {}); } else { onOpenBook(); } }} />
+              <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={onOpenBook} onMenuSelect={(id) => {
+                if (id === "share") {
+                  const url = "https://gaurangers.com/book/bg";
+                  if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: BOOKS.bg.titleLine1, url }).catch(() => {}); }
+                  else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
+                  return;
+                }
+                if (id === "pdf") { void exportWholeBook(BOOKS.bg); return; }
+                if (id === "qr") { setQrUrl("https://gaurangers.com/book/bg"); return; }
+                onOpenBook();
+              }} />
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
           ) : tab === "feed" ? (
@@ -333,6 +346,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} />
+      {qrUrl && <QrSheet url={qrUrl} title={BOOKS.bg.titleLine1} onClose={() => setQrUrl(null)} />}
     </div>
   );
 }

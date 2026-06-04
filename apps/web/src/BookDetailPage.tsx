@@ -17,6 +17,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf } from "./pdf";
+import { QrSheet } from "./QrSheet";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -456,7 +457,7 @@ function Reviews() {
 }
 
 /* ───────── Содержание (flat rows on white) ───────── */
-interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
+export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
 function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void }) {
   return (
     <div style={{ padding: "24px 20px 12px" }}>
@@ -484,7 +485,7 @@ function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; 
 }
 
 /* ───────── verse model ───────── */
-interface ChapterVerse {
+export interface ChapterVerse {
   ref: string; label: string;
   devanagari: string | null; translit: string | null;
   tokens: { term: string; gloss: string | null }[];
@@ -635,7 +636,8 @@ function VerseBody({ v }: { v: ChapterVerse }) {
   const hasWW = r.tokens.length > 0;
   const hasCommentary = !!r.purport;
   return (
-    <div data-pdf-block style={{ marginBottom: 34 }}>
+    <div style={{ marginBottom: 34 }}>
+      <div data-pdf-block>
       <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
       {r.deva && (
         <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{r.deva}</div>
@@ -673,6 +675,7 @@ function VerseBody({ v }: { v: ChapterVerse }) {
           </div>
         )}
       </section>
+      </div>
       {hasCommentary && (
         <section>
           <LayerLabel>Комментарий</LayerLabel>
@@ -703,7 +706,7 @@ function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow; verse
   );
 }
 
-function BookPrint({ book, chapters, versesByCh }: { book: BookData; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
+export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
   return (
     <div>
       {/* front matter */}
@@ -807,7 +810,6 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио стиха — скоро")} size={36}><HeadphonesIcon size={18} /></NavBtn>
-        <NavBtn ariaLabel="Поделиться" onClick={() => void shareVerse()} size={36}><ShareIcon size={17} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -890,6 +892,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
 
       <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => {
         setVMenu(false);
+        if (id === "share") { void shareVerse(); return; }
         if (id === "pdf") {
           const label = data?.label ?? refStr;
           exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` });
@@ -933,6 +936,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const bookContentRef = useRef<HTMLDivElement>(null);
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
+  const [qrUrl, setQrUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
@@ -1013,7 +1017,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
     if (id === "pdf") { void buildBookPdf(); return; }
-    if (id === "qr") { flash("QR-код — скоро"); return; }
+    if (id === "qr") { setQrUrl(typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`); return; }
     if (id === "donate") { flash("Поддержать печать — скоро"); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
   };
@@ -1050,6 +1054,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
         </div>
       )}
+      {qrUrl && <QrSheet url={qrUrl} title={book.titleLine1} onClose={() => setQrUrl(null)} />}
     </div>
   );
 }
