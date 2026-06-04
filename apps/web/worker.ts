@@ -1,9 +1,12 @@
 import { handleAdmin } from "./loader/handler";
 import { BOOKS, bookShareTitle, bookShareImage } from "./src/books";
+import puppeteer from "@cloudflare/puppeteer";
 
 interface Env {
   ASSETS: { fetch: (req: Request) => Promise<Response> };
   DB: D1Database;
+  // Cloudflare Browser Rendering — серверный рендер PDF (headless Chrome)
+  BROWSER: Fetcher;
   // Секрет для CRM-загрузчика: wrangler secret put ADMIN_TOKEN
   ADMIN_TOKEN?: string;
 }
@@ -19,6 +22,67 @@ function json(data: unknown, status = 200): Response {
       "Cache-Control": "public, max-age=300",
     },
   });
+}
+
+// ── Серверный рендер PDF через Cloudflare Browser Rendering ──
+// Открываем печатный режим SPA (/?pdf=…) в headless Chrome и снимаем page.pdf
+// с настоящими полями на каждой странице и колонтитулом с нумерацией.
+async function handlePdf(env: Env, url: URL): Promise<Response> {
+  const kind = url.searchParams.get("kind");
+  const n = url.searchParams.get("n") || "";
+  const ref = url.searchParams.get("ref") || "";
+  let printPath: string;
+  let filename: string;
+  if (kind === "book") {
+    printPath = "/?pdf=book";
+    filename = "Бхагавад-гита как она есть.pdf";
+  } else if (kind === "chapter" && n) {
+    printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
+    filename = `Бхагавад-гита — глава ${n}.pdf`;
+  } else if (kind === "verse" && ref) {
+    printPath = `/?pdf=verse&ref=${encodeURIComponent(ref)}`;
+    filename = `${ref} — Бхагавад-гита.pdf`;
+  } else {
+    return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
+  }
+  const target = url.origin + printPath;
+
+  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
+  try {
+    browser = await puppeteer.launch(env.BROWSER);
+    const page = await browser.newPage();
+    await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: 2 });
+    await page.goto(target, { waitUntil: "networkidle0", timeout: 30000 });
+    try {
+      await page.waitForFunction("window.__pdfReady === true", { timeout: 30000 });
+    } catch {
+      /* отрисовка затянулась — печатаем что отрисовалось */
+    }
+    const footer =
+      `<div style="width:100%;padding:0 16mm;font-family:Arial,Helvetica,sans-serif;font-size:8px;color:#9a9a9e;text-align:center;">` +
+      `ISKCON ONE LOVE &middot; gaurangers.com &nbsp;&middot;&nbsp; <span class="pageNumber"></span> / <span class="totalPages"></span></div>`;
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      displayHeaderFooter: true,
+      headerTemplate: "<div></div>",
+      footerTemplate: footer,
+      margin: { top: "18mm", bottom: "20mm", left: "16mm", right: "16mm" },
+    });
+    return new Response(pdf, {
+      headers: {
+        "content-type": "application/pdf",
+        "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
+        "X-Robots-Tag": NOINDEX,
+        "Cache-Control": "no-store",
+      },
+    });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    return new Response("pdf render failed: " + msg, { status: 500, headers: { "X-Robots-Tag": NOINDEX } });
+  } finally {
+    if (browser) { try { await browser.close(); } catch { /* ignore */ } }
+  }
 }
 
 // ── Open-Graph / share preview metadata (read by social crawlers despite noindex) ──
@@ -121,6 +185,11 @@ export default {
       out.headers.set("X-Robots-Tag", NOINDEX);
       out.headers.set("Cache-Control", "no-store");
       return out;
+    }
+
+    // ── Серверный PDF (Cloudflare Browser Rendering → headless Chrome) ──
+    if (url.pathname === "/pdf") {
+      return handlePdf(env, url);
     }
 
     const res = await env.ASSETS.fetch(request);

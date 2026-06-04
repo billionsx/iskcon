@@ -10,7 +10,9 @@ import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { exportWholeBook } from "./bookPdf";
+import { downloadServerPdf } from "./pdf";
 import { QrSheet } from "./QrSheet";
+import { PdfDoc } from "./PdfDoc";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
@@ -316,6 +318,13 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
 function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = (m: string) => {
+    setToast(m);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 2400);
+  };
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader />
@@ -334,7 +343,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                   return;
                 }
-                if (id === "pdf") { void exportWholeBook(BOOKS.bg); return; }
+                if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, fallback: () => void exportWholeBook(BOOKS.bg, flash) }); return; }
                 if (id === "qr") { setQrUrl("https://gaurangers.com/book/bg"); return; }
                 onOpenBook();
               }} />
@@ -347,11 +356,15 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       </main>
       <TabBar active={tab} onChange={onChange} />
       {qrUrl && <QrSheet url={qrUrl} title={BOOKS.bg.titleLine1} onClose={() => setQrUrl(null)} />}
+      {toast && <div style={{ position: "fixed", left: "50%", bottom: 90, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(31,32,36,0.95)", color: "#fff", padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontFamily: "var(--font-text)", boxShadow: "0 8px 30px rgba(0,0,0,0.25)", maxWidth: "86%", textAlign: "center" }}>{toast}</div>}
     </div>
   );
 }
 
 export default function App() {
+  if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pdf")) {
+    return <PdfDoc />;
+  }
   const [tab, setTab] = useState("home");
   const [openBook, setOpenBook] = useState(false);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
