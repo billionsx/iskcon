@@ -19,6 +19,9 @@ export function exportToPdf(
   if (typeof window === "undefined" || typeof document === "undefined") return;
   if (!content) { window.print(); return; }
 
+  const stale = document.getElementById("pdf-print-layer");
+  if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
+
   const prevTitle = document.title;
   if (opts?.title) document.title = opts.title;
 
@@ -76,21 +79,21 @@ export function exportToPdf(
   document.body.classList.add("printing");
 
   let done = false;
+  let safety: ReturnType<typeof setTimeout>;
   const cleanup = () => {
     if (done) return;
     done = true;
+    clearTimeout(safety);
     document.body.classList.remove("printing");
     if (layer.parentNode) layer.parentNode.removeChild(layer);
     document.title = prevTitle;
     window.removeEventListener("afterprint", cleanup);
-    window.removeEventListener("focus", onFocus);
   };
-  // afterprint is the reliable signal on desktop; focus covers browsers that
-  // skip it (it fires only after the print/share UI is dismissed).
-  const onFocus = () => { setTimeout(cleanup, 300); };
+  // afterprint fires once the print/save UI is dismissed (desktop + modern mobile).
   window.addEventListener("afterprint", cleanup);
-  window.addEventListener("focus", onFocus);
+  // last-resort cleanup — long enough never to interfere with preview generation.
+  safety = setTimeout(cleanup, 120000);
 
-  // let the clone lay out before invoking the dialog
-  setTimeout(() => window.print(), 60);
+  // give the clone a couple of frames to lay out, then open the dialog
+  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
 }
