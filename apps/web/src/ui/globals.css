@@ -460,7 +460,6 @@
   }
 
   /* разумные переносы страниц */
-  #pdf-print-layer section,
   #pdf-print-layer [data-pdf-block] { break-inside: avoid; }
   #pdf-print-layer p { orphans: 3; widows: 3; }
   #pdf-print-layer h1,
@@ -475,7 +474,6 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  .pdf-doc-page section,
   .pdf-doc-page [data-pdf-block] { break-inside: avoid; }
   .pdf-doc-page p { orphans: 3; widows: 3; }
   .pdf-doc-page h1,

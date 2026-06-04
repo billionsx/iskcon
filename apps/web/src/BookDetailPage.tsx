@@ -650,6 +650,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
         </div>
       )}
       {(r.deva || r.translit) && <Ornament />}
+      </div>
       {hasWW && (
         <section style={{ marginBottom: 30 }}>
           <LayerLabel>Пословный перевод</LayerLabel>
@@ -663,7 +664,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
           </p>
         </section>
       )}
-      <section style={{ marginBottom: hasCommentary ? 30 : 0 }}>
+      <section data-pdf-block style={{ marginBottom: hasCommentary ? 30 : 0 }}>
         <LayerLabel>Перевод</LayerLabel>
         {r.translation ? (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
@@ -675,7 +676,6 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
           </div>
         )}
       </section>
-      </div>
       {hasCommentary && (
         <section>
           <LayerLabel>Комментарий</LayerLabel>
