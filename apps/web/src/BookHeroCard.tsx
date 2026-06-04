@@ -60,7 +60,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
         {/* TOP: topLeft slot (logo / back) · counter + standard actions */}
         <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
           <span style={{ display: "flex", alignItems: "center", color: "#fff", minWidth: 0 }}>{topLeft}</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash?.(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
             <ActionBtn ariaLabel="Слушать" onClick={() => flash?.("Аудиокнига — скоро")}><HeadphonesIcon size={18} /></ActionBtn>
