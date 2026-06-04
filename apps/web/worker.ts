@@ -133,6 +133,9 @@ export default {
         .transform(res);
       const out = new Response(transformed.body, transformed);
       out.headers.set("X-Robots-Tag", NOINDEX);
+      // index.html must never be cached, or a deploy's new asset hashes are
+      // never picked up (stale page keeps loading the old JS/CSS bundle).
+      out.headers.set("Cache-Control", "no-store, must-revalidate");
       return out;
     }
     const out = new Response(res.body, res);
