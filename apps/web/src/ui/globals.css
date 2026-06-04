@@ -461,6 +461,10 @@
 
   /* разумные переносы страниц */
   #pdf-print-layer [data-pdf-block] { break-inside: avoid; }
+  /* всё остальное (пословный, комментарий, абзацы) обязано течь и переноситься,
+   * чтобы не оставлять пустот в конце страниц */
+  #pdf-print-layer p { break-inside: auto; }
+  #pdf-print-layer section:not([data-pdf-block]) { break-inside: auto; }
   #pdf-print-layer p { orphans: 3; widows: 3; }
   #pdf-print-layer h1,
   #pdf-print-layer h2,
