@@ -408,8 +408,10 @@
   @page { margin: 0; }
   html, body { background: #fff !important; }
 
-  /* печатаем только слой PDF, живое приложение скрываем целиком */
-  body.printing > #root { display: none !important; }
+  /* печатаем только слой PDF; скрываем приложение И любые служебные
+   * контейнеры (в т.ч. off-screen рендер книги из ленты — иначе он печатается
+   * как fixed-элемент на каждой странице и предпросмотр зависает) */
+  body.printing > *:not(#pdf-print-layer) { display: none !important; }
   #pdf-print-layer {
     display: block !important;
     color: var(--color-label);
