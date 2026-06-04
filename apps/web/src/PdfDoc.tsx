@@ -1,0 +1,87 @@
+import { useEffect, useState } from "react";
+import { BOOKS } from "./books";
+import { api } from "./api";
+import { BookPrint, ChapterPrint, VerseBody, type ChapterRow, type ChapterVerse } from "./BookDetailPage";
+
+type Loaded =
+  | { kind: "book"; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
+  | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[] }
+  | { kind: "verse"; verse: ChapterVerse; chapterNo: string };
+
+/** Сообщаем headless-браузеру (page.waitForFunction), что контент готов к печати. */
+function markReady() {
+  const done = () => { (window as unknown as { __pdfReady?: boolean }).__pdfReady = true; };
+  const f = (document as unknown as { fonts?: { ready?: Promise<unknown> } }).fonts;
+  if (f?.ready) f.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(done)));
+  else requestAnimationFrame(() => requestAnimationFrame(done));
+}
+
+/**
+ * Печатный режим SPA: открывается по /?pdf=book | chapter&n=N | verse&ref=REF.
+ * Рендерит чистый документ (без хрома приложения); поля и колонтитул задаёт
+ * page.pdf на сервере (worker.ts → handlePdf).
+ */
+export function PdfDoc() {
+  const params = new URLSearchParams(window.location.search);
+  const kind = params.get("pdf");
+  const n = params.get("n") || "";
+  const ref = params.get("ref") || "";
+  const [data, setData] = useState<Loaded | null>(null);
+  const [err, setErr] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      try {
+        if (kind === "book") {
+          const ch = await (await fetch(api("/books/bg/chapters"))).json();
+          const chapters: ChapterRow[] = ch.chapters ?? [];
+          const entries = await Promise.all(
+            chapters.map(async (c) => {
+              const d = await (await fetch(api(`/books/bg/chapters/${c.number}/read`))).json();
+              return [c.number, (d.verses ?? []) as ChapterVerse[]] as const;
+            }),
+          );
+          const versesByCh: Record<string, ChapterVerse[]> = {};
+          for (const [num, vs] of entries) versesByCh[num] = vs;
+          if (live) setData({ kind: "book", chapters, versesByCh });
+        } else if (kind === "chapter") {
+          const ch = await (await fetch(api("/books/bg/chapters"))).json();
+          const chapter = ((ch.chapters ?? []) as ChapterRow[]).find((c) => String(c.number) === String(n)) ?? null;
+          const d = await (await fetch(api(`/books/bg/chapters/${n}/read`))).json();
+          if (live) setData({ kind: "chapter", chapter, verses: (d.verses ?? []) as ChapterVerse[] });
+        } else if (kind === "verse") {
+          const d = await (await fetch(api(`/books/bg/verses/${encodeURIComponent(ref)}`))).json();
+          const m = ref.match(/(\d+)\s*\.\s*\d+/);
+          if (live) setData({ kind: "verse", verse: d as ChapterVerse, chapterNo: m ? m[1] : "" });
+        } else if (live) {
+          setErr(true);
+        }
+      } catch {
+        if (live) setErr(true);
+      }
+    })();
+    return () => { live = false; };
+  }, [kind, n, ref]);
+
+  useEffect(() => { if (data || err) markReady(); }, [data, err]);
+
+  if (err) return <div style={{ padding: 24, fontFamily: "var(--font-text)" }}>Не удалось загрузить данные.</div>;
+  if (!data) return <div style={{ padding: 24, fontFamily: "var(--font-text)", color: "#70727b" }}>Загрузка…</div>;
+
+  return (
+    <div className="pdf-doc-page" style={{ background: "#fff", color: "#1f2024", fontFamily: "var(--font-text)" }}>
+      {data.kind === "book" && <BookPrint book={BOOKS.bg} chapters={data.chapters} versesByCh={data.versesByCh} />}
+      {data.kind === "chapter" && data.chapter && <ChapterPrint chapter={data.chapter} verses={data.verses} />}
+      {data.kind === "chapter" && !data.chapter && <div style={{ padding: 24 }}>Глава не найдена.</div>}
+      {data.kind === "verse" && (
+        <>
+          <div style={{ margin: "0 0 16px", paddingBottom: 10, borderBottom: "0.75pt solid rgba(0,0,0,0.18)" }}>
+            <div style={{ fontSize: 13, color: "#70727b" }}>{data.chapterNo ? `Глава ${data.chapterNo} · ` : ""}Бхагавад-гита как она есть</div>
+          </div>
+          <VerseBody v={data.verse} />
+        </>
+      )}
+    </div>
+  );
+}

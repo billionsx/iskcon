@@ -16,7 +16,7 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
-import { exportToPdf } from "./pdf";
+import { exportToPdf, downloadServerPdf } from "./pdf";
 import { QrSheet } from "./QrSheet";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
@@ -578,8 +578,10 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, fl
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
         setMenu(false);
         if (id === "pdf") {
-          if (verses && verses.length) setPrinting(true);
-          else flash("Глава ещё загружается…");
+          void downloadServerPdf(`/pdf?kind=chapter&n=${chapter.number}`, `Бхагавад-гита — глава ${chapter.number}.pdf`, {
+            onStatus: flash,
+            fallback: () => { if (verses && verses.length) setPrinting(true); else flash("Глава ещё загружается…"); },
+          });
           return;
         }
         onMenuAction(id);
@@ -631,7 +633,7 @@ function resolveVerse(v: ChapterVerse) {
   };
 }
 
-function VerseBody({ v }: { v: ChapterVerse }) {
+export function VerseBody({ v }: { v: ChapterVerse }) {
   const r = resolveVerse(v);
   const hasWW = r.tokens.length > 0;
   const hasCommentary = !!r.purport;
@@ -690,7 +692,7 @@ function VerseBody({ v }: { v: ChapterVerse }) {
   );
 }
 
-function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow; verses: ChapterVerse[]; newPage?: boolean }) {
+export function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow; verses: ChapterVerse[]; newPage?: boolean }) {
   return (
     <div style={newPage ? { breakBefore: "page" } : undefined}>
       <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
@@ -895,7 +897,11 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
         if (id === "share") { void shareVerse(); return; }
         if (id === "pdf") {
           const label = data?.label ?? refStr;
-          exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` });
+          const vref = data?.ref ?? refStr;
+          void downloadServerPdf(`/pdf?kind=verse&ref=${encodeURIComponent(vref)}`, `${label} — ${bookTitle}.pdf`, {
+            onStatus: flash,
+            fallback: () => exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` }),
+          });
           return;
         }
         onMenuAction(id);
@@ -1016,7 +1022,11 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { void buildBookPdf(); return; }
+    if (id === "pdf") {
+      const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
+      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, fallback: () => void buildBookPdf() });
+      return;
+    }
     if (id === "qr") { setQrUrl(typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`); return; }
     if (id === "donate") { flash("Поддержать печать — скоро"); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }

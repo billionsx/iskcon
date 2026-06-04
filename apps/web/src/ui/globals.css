@@ -405,7 +405,6 @@
 #pdf-print-layer { display: none; }
 
 @media print {
-  @page { margin: 0; }
   html, body { background: #fff !important; }
 
   /* печатаем только слой PDF; скрываем приложение И любые служебные
@@ -464,4 +463,19 @@
   #pdf-print-layer h2,
   #pdf-print-layer h3 { break-after: avoid; }
   #pdf-print-layer img { max-width: 100% !important; }
+
+  /* серверный печатный документ (page.pdf) — поля и колонтитул задаёт сервер */
+  .pdf-doc-page { color: #1f2024; }
+  .pdf-doc-page,
+  .pdf-doc-page * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .pdf-doc-page section,
+  .pdf-doc-page [data-pdf-block] { break-inside: avoid; }
+  .pdf-doc-page p { orphans: 3; widows: 3; }
+  .pdf-doc-page h1,
+  .pdf-doc-page h2,
+  .pdf-doc-page h3 { break-after: avoid; }
+  .pdf-doc-page img { max-width: 100% !important; }
 }

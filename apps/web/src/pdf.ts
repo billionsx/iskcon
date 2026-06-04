@@ -77,6 +77,11 @@ export function exportToPdf(
 
   document.body.appendChild(layer);
   document.body.classList.add("printing");
+  // hide the browser's own header/footer (date/url/page) for the client print
+  const pageStyle = document.createElement("style");
+  pageStyle.id = "pdf-page-margin0";
+  pageStyle.textContent = "@page{margin:0}";
+  document.head.appendChild(pageStyle);
 
   let done = false;
   let safety: ReturnType<typeof setTimeout>;
@@ -86,6 +91,7 @@ export function exportToPdf(
     clearTimeout(safety);
     document.body.classList.remove("printing");
     if (layer.parentNode) layer.parentNode.removeChild(layer);
+    if (pageStyle.parentNode) pageStyle.parentNode.removeChild(pageStyle);
     document.title = prevTitle;
     window.removeEventListener("afterprint", cleanup);
   };
@@ -96,4 +102,40 @@ export function exportToPdf(
 
   // give the clone a couple of frames to lay out, then open the dialog
   requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
+}
+
+/**
+ * Скачивает PDF, отрендеренный на сервере (Cloudflare Browser Rendering),
+ * и сохраняет файлом одним действием. При ошибке вызывает запасной
+ * клиентский рендер (если передан).
+ *   path — например `/pdf?kind=book` | `/pdf?kind=chapter&n=2` | `/pdf?kind=verse&ref=…`
+ */
+export async function downloadServerPdf(
+  path: string,
+  filename: string,
+  opts?: { onStatus?: (m: string) => void; fallback?: () => void },
+): Promise<void> {
+  if (typeof window === "undefined") return;
+  const onStatus = opts?.onStatus;
+  const fallback = opts?.fallback;
+  onStatus?.("Готовлю PDF…");
+  try {
+    const res = await fetch(path, { headers: { accept: "application/pdf" } });
+    if (!res.ok) throw new Error("status " + res.status);
+    const blob = await res.blob();
+    if (!blob.size) throw new Error("empty");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 8000);
+    onStatus?.("Готово");
+  } catch {
+    if (fallback) { onStatus?.("Готовлю PDF в браузере…"); fallback(); }
+    else onStatus?.("Не удалось сформировать PDF");
+  }
 }
