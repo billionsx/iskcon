@@ -46,6 +46,16 @@ export function exportToPdf(
   clone.querySelectorAll("[data-pdf-no-print]").forEach((el) => {
     if (el.parentNode) el.parentNode.removeChild(el);
   });
+  // The clone may come from an off-screen print container (position:fixed;
+  // left:-10000px) — reset positioning so it flows normally in the print
+  // layer instead of staying off-page (which would print a blank document).
+  clone.style.position = "static";
+  clone.style.left = "auto";
+  clone.style.right = "auto";
+  clone.style.top = "auto";
+  clone.style.bottom = "auto";
+  clone.style.transform = "none";
+  clone.style.width = "auto";
   // drop scroll/height limits that inline styles may carry over
   clone.style.removeProperty("height");
   clone.style.removeProperty("max-height");
