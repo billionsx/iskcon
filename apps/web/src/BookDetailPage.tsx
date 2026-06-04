@@ -492,9 +492,20 @@ interface ChapterVerse {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack }: { chapter: ChapterRow; bookTitle: string; onOpenVerse: (ref: string) => void; onBack: () => void }) {
+function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, flash }: { chapter: ChapterRow; bookTitle: string; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [printing, setPrinting] = useState(false);
+  const moreRef = useRef<HTMLSpanElement>(null);
+  const printRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (printing && printRef.current) {
+      exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` });
+      setPrinting(false);
+    }
+  }, [printing, chapter.title_ru, bookTitle]);
 
   useEffect(() => {
     let live = true;
@@ -516,7 +527,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack }: { chapter: Cha
           <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
-        <span style={{ width: 40, flexShrink: 0 }} />
+        <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
       <div onScroll={(e) => setCollapsed((e.target as HTMLDivElement).scrollTop > 56)}
@@ -562,11 +573,24 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack }: { chapter: Cha
           )}
         </div>
       </div>
+
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
+        setMenu(false);
+        if (id === "pdf") {
+          if (verses && verses.length) setPrinting(true);
+          else flash("Глава ещё загружается…");
+          return;
+        }
+        onMenuAction(id);
+      }} anchorRef={moreRef} />
+      {printing && verses && (
+        <div ref={printRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
+          <ChapterPrint chapter={chapter} verses={verses} />
+        </div>
+      )}
     </div>
   );
 }
-
-/* ───────── verse layers ───────── */
 type LayerKey = "deva" | "translit" | "ww" | "commentary";
 function LayerRow({ label, on, onToggle }: { label: string; on: boolean; onToggle: () => void }) {
   return (
@@ -591,6 +615,126 @@ interface VerseDetail {
   devanagari: string | null; translit: string | null;
   tokens: VerseToken[]; translation: string | null; purport: string | null;
   source_url: string | null; prev: string | null; next: string | null;
+}
+
+/* ───────── PDF-вёрстка (стих / глава / книга) — наш дизайн на бумаге ───────── */
+function resolveVerse(v: ChapterVerse) {
+  const demo = DEMO_VERSES[v.ref];
+  return {
+    label: v.label,
+    deva: v.devanagari || demo?.devanagari || null,
+    translit: v.translit || demo?.translit || null,
+    tokens: (v.tokens && v.tokens.length ? v.tokens : demo?.tokens) ?? [],
+    translation: v.translation || demo?.translation || null,
+    purport: v.purport || demo?.purport || null,
+  };
+}
+
+function VerseBody({ v }: { v: ChapterVerse }) {
+  const r = resolveVerse(v);
+  const hasWW = r.tokens.length > 0;
+  const hasCommentary = !!r.purport;
+  return (
+    <div data-pdf-block style={{ marginBottom: 34 }}>
+      <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
+      {r.deva && (
+        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{r.deva}</div>
+      )}
+      {r.translit && (
+        <div style={{ marginBottom: 16 }}>
+          {r.translit.split("\n").map((ln, i) => (
+            <div key={i} style={{ fontStyle: "italic", fontSize: 16.5, lineHeight: 1.4, textAlign: "center", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
+          ))}
+        </div>
+      )}
+      {(r.deva || r.translit) && <Ornament />}
+      {hasWW && (
+        <section style={{ marginBottom: 30 }}>
+          <LayerLabel>Пословный перевод</LayerLabel>
+          <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.95, color: INK2 }}>
+            {r.tokens.map((t, i) => (
+              <span key={i}>
+                <span style={{ fontStyle: "italic", color: INK }}>{t.term}</span>
+                {t.gloss ? ` — ${t.gloss}` : ""}{i < r.tokens.length - 1 ? "; " : "."}
+              </span>
+            ))}
+          </p>
+        </section>
+      )}
+      <section style={{ marginBottom: hasCommentary ? 30 : 0 }}>
+        <LayerLabel>Перевод</LayerLabel>
+        {r.translation ? (
+          <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
+            <p style={{ margin: 0, fontSize: 20, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>{r.translation}</p>
+          </div>
+        ) : (
+          <div style={{ paddingLeft: 18, borderLeft: `2px solid ${LINE}` }}>
+            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: INK2 }}>Перевод этого стиха готовится.</p>
+          </div>
+        )}
+      </section>
+      {hasCommentary && (
+        <section>
+          <LayerLabel>Комментарий</LayerLabel>
+          <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>
+            {r.purport!.split(/\n\n+/).map((para, i) => (
+              <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow; verses: ChapterVerse[]; newPage?: boolean }) {
+  return (
+    <div style={newPage ? { breakBefore: "page" } : undefined}>
+      <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>
+        <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{chapter.title_ru}</h2>
+        <div style={{ marginTop: 8, fontSize: 13, color: INK2 }}>{verses.length} стихов</div>
+        <Ornament />
+      </div>
+      {verses.length === 0
+        ? <p style={{ textAlign: "center", color: INK2, fontSize: 15 }}>Стихи этой главы готовятся.</p>
+        : verses.map((v) => <VerseBody key={v.ref} v={v} />)}
+    </div>
+  );
+}
+
+function BookPrint({ book, chapters, versesByCh }: { book: BookData; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
+  return (
+    <div>
+      {/* front matter */}
+      <div data-pdf-block style={{ textAlign: "center", padding: "6px 0 8px" }}>
+        <h1 style={{ margin: 0, fontSize: 40, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: INK }}>{book.titleLine1}</h1>
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", color: INK }}>{book.titleLine2}</div>}
+        <div style={{ marginTop: 10, fontSize: 15, color: INK2 }}>{book.iast} · {book.tagline}</div>
+        <p style={{ margin: "20px auto 0", maxWidth: 520, fontSize: 15, lineHeight: 1.45, color: INK }}>{book.author}</p>
+        <p style={{ margin: "12px auto 0", maxWidth: 520, fontSize: 14.5, lineHeight: 1.5, color: INK2 }}>{book.description}</p>
+        <div style={{ marginTop: 18, fontSize: 12, letterSpacing: "1px", textTransform: "uppercase", color: GOLDT }}>{book.chips.join("  ·  ")}</div>
+        <Ornament />
+      </div>
+      {/* table of contents */}
+      <div data-pdf-block style={{ margin: "8px 0 4px" }}>
+        <LayerLabel>Содержание</LayerLabel>
+        <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
+          {chapters.map((c) => (
+            <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
+              <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{c.number}</span>
+              <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
+              <span style={{ fontSize: 12.5, color: INK3 }}>{c.verses} стихов</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {/* chapters with all verses, each from a new page */}
+      {chapters.map((c) => (
+        <ChapterPrint key={c.id} chapter={c} verses={versesByCh[c.number] ?? []} newPage />
+      ))}
+    </div>
+  );
 }
 
 function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: ReactNode }) {
@@ -787,6 +931,8 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
   const bookContentRef = useRef<HTMLDivElement>(null);
+  const bookPrintRef = useRef<HTMLDivElement>(null);
+  const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
 
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
@@ -811,6 +957,33 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     setToast(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 2200);
+  };
+
+  useEffect(() => {
+    if (bookPrint && bookPrintRef.current) {
+      const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
+      exportToPdf(bookPrintRef.current, { title: name });
+      setBookPrint(null);
+    }
+  }, [bookPrint, book.titleLine1, book.titleLine2]);
+
+  const buildBookPdf = async () => {
+    if (!chapters || chapters.length === 0) { flash("Книга ещё загружается…"); return; }
+    flash("Готовлю PDF всей книги…");
+    try {
+      const entries = await Promise.all(
+        chapters.map(async (c) => {
+          const r = await fetch(api(`/books/bg/chapters/${c.number}/read`));
+          const d = await r.json();
+          return [c.number, (d.verses ?? []) as ChapterVerse[]] as const;
+        }),
+      );
+      const versesByCh: Record<string, ChapterVerse[]> = {};
+      for (const [num, vs] of entries) versesByCh[num] = vs;
+      setBookPrint({ chapters, versesByCh });
+    } catch {
+      flash("Не удалось собрать книгу");
+    }
   };
 
   const shareBook = async () => {
@@ -839,11 +1012,7 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") {
-      const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
-      exportToPdf(bookContentRef.current, { title: name, heading: name, subheading: "ISKCON ONE LOVE" });
-      return;
-    }
+    if (id === "pdf") { void buildBookPdf(); return; }
     if (id === "qr") { flash("QR-код — скоро"); return; }
     if (id === "donate") { flash("Поддержать печать — скоро"); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
@@ -874,8 +1043,13 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
       </div>
 
       <Toast msg={toast} />
-      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} />}
+      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} onMenuAction={menuAction} flash={flash} />}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} />}
+      {bookPrint && (
+        <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
+          <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
+        </div>
+      )}
     </div>
   );
 }
