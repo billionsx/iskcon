@@ -1,4 +1,5 @@
 import { createRoot } from "react-dom/client";
+import { flushSync } from "react-dom";
 import { api } from "./api";
 import { exportToPdf } from "./pdf";
 import { BookPrint, type ChapterRow, type ChapterVerse } from "./BookDetailPage";
@@ -31,8 +32,13 @@ export async function exportWholeBook(book: BookData, onStatus?: (m: string) => 
     host.style.cssText = "position:fixed;left:-10000px;top:0;width:760px";
     document.body.appendChild(host);
     const root = createRoot(host);
-    root.render(<BookPrint book={book} chapters={chapters} versesByCh={versesByCh} />);
-    await new Promise((r) => setTimeout(r, 120)); // дать React и шрифтам отрисоваться
+    // flushSync guarantees the whole tree (всех ~700 стихов) is committed to
+    // the DOM before we snapshot it — иначе PDF мог обрезаться.
+    flushSync(() => { root.render(<BookPrint book={book} chapters={chapters} versesByCh={versesByCh} />); });
+    if (typeof document !== "undefined" && (document as Document).fonts?.ready) {
+      try { await (document as Document).fonts.ready; } catch { /* ignore */ }
+    }
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
     const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
     exportToPdf(host, { title: name });
     setTimeout(() => { root.unmount(); host.remove(); }, 2000);
