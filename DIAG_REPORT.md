@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:13:29 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:16:20 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -37,10 +37,20 @@ zone=708c4b79858d2ab38668e1b86f940025
     'Аудио главы' в нём: 0  | 'initialTarget': 0
 
 ## /__fresh: index.html напрямую из origin (минуя кэш края)
-    X-Asset-Status: 
-    X-Asset-CC:     
-    cf-cache-status:HIT
+    --- все заголовки /__fresh ---
+    HTTP/2 200 
+    content-type: text/html
+    cf-cache-status: HIT
+    cache-control: no-store, must-revalidate
+    x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
     JS в origin-index.html: /assets/index-896pWg7C.js
+
+## iskcon-web: версии и активный деплой
+    deploy 59c4eb17-7e26-444f-b3a2-9a6b9451151d created=2026-06-05T08:12:55.441339Z strategy=percentage
+    deploy dc5ef58e-0985-4c5d-9843-1c3dd57127ce created=2026-06-05T08:00:18.014031Z strategy=percentage
+    version 145 created=2026-06-05T08:12:55.441339Z tag=secret
+    version 144 created=2026-06-05T08:00:18.014031Z tag=secret
+    version 143 created=2026-06-05T07:39:11.809846Z tag=secret
 
 ## Существуют ли файлы на сервере (HEAD)
     /assets/index-896pWg7C.js -> HTTP 200 (cf-cache-status: HIT)
