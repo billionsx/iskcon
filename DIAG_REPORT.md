@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:05:52 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:09:18 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -28,10 +28,18 @@ zone=708c4b79858d2ab38668e1b86f940025
     server: cloudflare
 
 ## Какой JS грузит index.html (до purge)
-    script: /assets/index-896pWg7C.js
-    содержит 'Аудио главы — скоро' (меню главы, b7939c7): 0
-    содержит 'initialTarget' (роутинг 80b014a): 0
-    содержит 'run_worker_first-маркер? (no-store)': n/a
+    script (обычный /): /assets/index-896pWg7C.js
+
+## ПРОБА cache-buster: /?_cb=NNN (другой ключ кэша → должен дойти до воркера)
+    cf-cache-status: HIT
+    cache-control:   public, max-age=0, must-revalidate
+    script при cache-buster: /assets/index-896pWg7C.js
+    'Аудио главы' в нём: 0  | 'initialTarget': 0
+
+## Существуют ли файлы на сервере (HEAD)
+    /assets/index-896pWg7C.js -> HTTP 200 (cf-cache-status: HIT)
+    /assets/index-CoKgVYa4.js -> HTTP 200 (cf-cache-status: HIT)
+    (896pWg7C = старый бандл на сайте; CoKgVYa4 = новый из сборки main)
 
 ## PURGE EVERYTHING
     success=false errors=[{"code":10000,"message":"Authentication error"}]
