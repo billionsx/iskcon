@@ -80,12 +80,18 @@ jobs:
           echo "" >> $R
 
           echo "## /__fresh: index.html напрямую из origin (минуя кэш края)" >> $R
-          FH=$(curl -s -D /tmp/fh.hdr --max-time 25 "https://gaurangers.com/__fresh")
-          echo "    X-Asset-Status: $(grep -i '^x-asset-status:' /tmp/fh.hdr | tr -d '\r' | cut -d' ' -f2-)" >> $R
-          echo "    X-Asset-CC:     $(grep -i '^x-asset-cc:' /tmp/fh.hdr | tr -d '\r' | cut -d' ' -f2-)" >> $R
-          echo "    cf-cache-status:$(grep -i '^cf-cache-status:' /tmp/fh.hdr | tr -d '\r' | cut -d' ' -f2-)" >> $R
-          JSFRESH=$(printf '%s' "$FH" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+          curl -s -D /tmp/fh.hdr -o /tmp/fh.html --max-time 25 "https://gaurangers.com/__fresh"
+          echo '    --- все заголовки /__fresh ---' >> $R
+          tr -d '\r' < /tmp/fh.hdr | grep -iE '^HTTP|^x-asset|^x-robots|^cf-cache-status|^cache-control|^content-type' | sed 's/^/    /' >> $R
+          JSFRESH=$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' /tmp/fh.html | head -1)
           echo "    JS в origin-index.html: ${JSFRESH:-?}" >> $R
+          echo "" >> $R
+
+          echo "## iskcon-web: версии и активный деплой" >> $R
+          curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments" "${auth[@]}" \
+            | jq -r '.result.deployments[0:2][]? | "    deploy \(.id) created=\(.created_on) strategy=\(.strategy)"' >> $R 2>/dev/null
+          curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/versions?per_page=3" "${auth[@]}" \
+            | jq -r '.result.items[0:3][]? | "    version \(.number // .id) created=\(.metadata.created_on // .created_on) tag=\(.annotations["workers/triggered_by"] // "-")"' >> $R 2>/dev/null
           echo "" >> $R
 
           echo "## Существуют ли файлы на сервере (HEAD)" >> $R
