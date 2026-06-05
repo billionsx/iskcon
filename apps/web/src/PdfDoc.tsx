@@ -6,7 +6,7 @@ import { BookPrint, ChapterPrint, VerseBody, type ChapterRow, type ChapterVerse 
 type Loaded =
   | { kind: "book"; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[] }
-  | { kind: "verse"; verse: ChapterVerse; chapterNo: string };
+  | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string };
 
 /** Сообщаем headless-браузеру (page.waitForFunction), что контент готов к печати. */
 function markReady() {
@@ -51,9 +51,14 @@ export function PdfDoc() {
           const d = await (await fetch(api(`/books/bg/chapters/${n}/read`))).json();
           if (live) setData({ kind: "chapter", chapter, verses: (d.verses ?? []) as ChapterVerse[] });
         } else if (kind === "verse") {
-          const d = await (await fetch(api(`/books/bg/verses/${encodeURIComponent(ref)}`))).json();
+          const [chRes, vRes] = await Promise.all([
+            fetch(api("/books/bg/chapters")).then((r) => r.json()),
+            fetch(api(`/books/bg/verses/${encodeURIComponent(ref)}`)).then((r) => r.json()),
+          ]);
           const m = ref.match(/(\d+)\s*\.\s*\d+/);
-          if (live) setData({ kind: "verse", verse: d as ChapterVerse, chapterNo: m ? m[1] : "" });
+          const chapterNo = m ? m[1] : "";
+          const chapterTitle = ((chRes.chapters ?? []) as ChapterRow[]).find((c) => String(c.number) === chapterNo)?.title_ru ?? "";
+          if (live) setData({ kind: "verse", verse: vRes as ChapterVerse, chapterNo, chapterTitle });
         } else if (live) {
           setErr(true);
         }
@@ -64,7 +69,23 @@ export function PdfDoc() {
     return () => { live = false; };
   }, [kind, n, ref]);
 
-  useEffect(() => { if (data || err) markReady(); }, [data, err]);
+  useEffect(() => {
+    if (data) {
+      const BOOK = "Бхагавад-гита как она есть";
+      let h = BOOK;
+      if (data.kind === "chapter" && data.chapter) h = `${BOOK} · ${data.chapter.title_ru}`;
+      else if (data.kind === "verse") {
+        const vnum = ref.match(/\.\s*(\d+)/)?.[1] ?? "";
+        const parts = [BOOK];
+        if (data.chapterTitle) parts.push(data.chapterTitle);
+        else if (data.chapterNo) parts.push(`Глава ${data.chapterNo}`);
+        if (vnum) parts.push(`Текст ${vnum}`);
+        h = parts.join(" · ");
+      }
+      (window as unknown as { __pdfHeader?: string }).__pdfHeader = h;
+    }
+    if (data || err) markReady();
+  }, [data, err, ref]);
 
   if (err) return <div style={{ padding: 24, fontFamily: "var(--font-text)" }}>Не удалось загрузить данные.</div>;
   if (!data) return <div style={{ padding: 24, fontFamily: "var(--font-text)", color: "#70727b" }}>Загрузка…</div>;
