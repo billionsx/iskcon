@@ -41,6 +41,12 @@ jobs:
         run: |
           set +e
           bunx wrangler deploy 2>&1 | tee /tmp/web-deploy.log
+          RC=${PIPESTATUS[0]}
+          echo "wrangler deploy exit = $RC"
+          if [ "$RC" != "0" ]; then
+            echo "::error::wrangler deploy УПАЛ (exit $RC) — версия воркера НЕ обновлена. См. вывод выше."
+            exit "$RC"
+          fi
           # iskcon-web работает в режиме версий (gradual deployments): wrangler deploy
           # заливает новую версию, но боевой трафик может оставаться на старой. Поэтому
           # принудительно переводим САМУЮ свежую версию на 100% через API.

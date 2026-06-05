@@ -1,6 +1,10 @@
 name = "iskcon-web"
 main = "worker.ts"
 compatibility_date = "2025-01-15"
+# Воркер импортирует node:buffer (через @cloudflare/puppeteer для /pdf). Без флага
+# nodejs_compat Cloudflare отклоняет загрузку версии: No such module "node:buffer"
+# (code 10021) — именно поэтому wrangler deploy падал, а версия воркера не обновлялась.
+compatibility_flags = ["nodejs_compat"]
 account_id = "d5cbe19470dc38599873eabfe148e6d1"
 workers_dev = true
 
