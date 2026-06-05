@@ -10,7 +10,7 @@ import { BookDetailPage } from "./BookDetailPage";
 import { BOOKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { exportWholeBook } from "./bookPdf";
-import { QrSheet } from "./QrSheet";
+import { QrSheet, type QrData } from "./QrSheet";
 import { PdfDoc } from "./PdfDoc";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
@@ -316,7 +316,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
 
 function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => {
@@ -343,7 +343,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   return;
                 }
                 if (id === "pdf") { void exportWholeBook(BOOKS.bg, flash); return; }
-                if (id === "qr") { setQrUrl("https://gaurangers.com/book/bg"); return; }
+                if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
                 onOpenBook();
               }} />
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
@@ -354,7 +354,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} />
-      {qrUrl && <QrSheet url={qrUrl} title={BOOKS.bg.titleLine1} onClose={() => setQrUrl(null)} />}
+      {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 90, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(31,32,36,0.95)", color: "#fff", padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontFamily: "var(--font-text)", boxShadow: "0 8px 30px rgba(0,0,0,0.25)", maxWidth: "86%", textAlign: "center" }}>{toast}</div>}
     </div>
   );
@@ -366,6 +366,7 @@ export default function App() {
   }
   const [tab, setTab] = useState("home");
   const [openBook, setOpenBook] = useState(false);
+  const [bookTarget, setBookTarget] = useState<{ chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
@@ -400,12 +401,17 @@ export default function App() {
   function applyPath(path: string) {
     fromPop.current = true;
     const clean = (path || "/").replace(/\/+$/, "") || "/";
-    setOpenBook(false); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
+    setOpenBook(false); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["feed", "search", "map", "passport"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
-    if (seg0 === "book") { setOpenBook(true); return; }
+    if (seg0 === "book") {
+      const parts = clean.split("/");           // ["", "book", "bg", ch?, v?]
+      setBookTarget(parts[3] ? { chapter: parts[3], verse: parts[4] ?? null } : null);
+      setOpenBook(true);
+      return;
+    }
     if (seg0 === "admin") { setOpenAdmin(true); return; }
     if (seg0 === "read") {
       const [, , work, div, ch, v] = clean.split("/");
@@ -445,7 +451,7 @@ export default function App() {
   function openRef(href: string) {
     const [kind, work, div, ch, v] = href.split(":");
     if (!work) return;
-    if (work === "bg") { setOpenContent(null); setScripture(null); setOpenBook(true); return; }
+    if (work === "bg") { setOpenContent(null); setScripture(null); setBookTarget(null); setOpenBook(true); return; }
     // ЧЧ/ШБ и прочие иерархические — референс-ридер
     setOpenContent(null); setOpenBook(false);
     setScripture({
@@ -464,7 +470,7 @@ export default function App() {
           </main>
         ) : openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BookDetailPage book={BOOKS.bg} onBack={goBack} />
+            <BookDetailPage book={BOOKS.bg} onBack={goBack} initialTarget={bookTarget} />
           </main>
         ) : scripture ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -489,7 +495,7 @@ export default function App() {
             />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={() => setOpenBook(true)} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={() => { setBookTarget(null); setOpenBook(true); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} />
         )}
       </div>
     </div>
