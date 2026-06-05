@@ -8,6 +8,10 @@ workers_dev = true
 directory = "./dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
+# Воркер должен исполняться для ВСЕХ запросов (включая HTML). Без этого index.html
+# отдаёт ассет-сервер напрямую, мимо воркера: no-store и OG-теги не применяются,
+# и каждый деплой может приходить из кэша «края» — поэтому правки «не появлялись».
+run_worker_first = true
 
 [browser]
 binding = "BROWSER"
