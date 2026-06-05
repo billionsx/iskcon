@@ -79,6 +79,15 @@ jobs:
           fi
           echo "" >> $R
 
+          echo "## /__fresh: index.html напрямую из origin (минуя кэш края)" >> $R
+          FH=$(curl -s -D /tmp/fh.hdr --max-time 25 "https://gaurangers.com/__fresh")
+          echo "    X-Asset-Status: $(grep -i '^x-asset-status:' /tmp/fh.hdr | tr -d '\r' | cut -d' ' -f2-)" >> $R
+          echo "    X-Asset-CC:     $(grep -i '^x-asset-cc:' /tmp/fh.hdr | tr -d '\r' | cut -d' ' -f2-)" >> $R
+          echo "    cf-cache-status:$(grep -i '^cf-cache-status:' /tmp/fh.hdr | tr -d '\r' | cut -d' ' -f2-)" >> $R
+          JSFRESH=$(printf '%s' "$FH" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+          echo "    JS в origin-index.html: ${JSFRESH:-?}" >> $R
+          echo "" >> $R
+
           echo "## Существуют ли файлы на сервере (HEAD)" >> $R
           for H in 896pWg7C CoKgVYa4; do
             code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://gaurangers.com/assets/index-$H.js")
