@@ -139,24 +139,6 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // ── Диагностика: index.html напрямую из origin (минуя кэш «края») ──
-    if (url.pathname === "/__fresh") {
-      const r = await env.ASSETS.fetch(new Request(url.origin + "/", request));
-      const body = await r.text();
-      return new Response(body, {
-        headers: {
-          "content-type": "text/plain; charset=utf-8",
-          "Cache-Control": "no-store",
-          "CDN-Cache-Control": "no-store",
-          "Cloudflare-CDN-Cache-Control": "no-store",
-          "X-Asset-Status": String(r.status),
-          "X-Asset-ETag": r.headers.get("etag") || "none",
-          "X-Asset-CC": r.headers.get("cache-control") || "none",
-          "X-Robots-Tag": NOINDEX,
-        },
-      });
-    }
-
     // ── Library API (served from D1; structure + deep-links only) ──
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
     if (url.pathname === "/api/books/bg/chapters") {
