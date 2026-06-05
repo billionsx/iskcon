@@ -38,10 +38,13 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     filename = "Бхагавад-гита как она есть.pdf";
   } else if (kind === "chapter" && n) {
     printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
-    filename = `Бхагавад-гита — глава ${n}.pdf`;
+    filename = `Бхагавад-гита как она есть. Глава ${n}.pdf`;
   } else if (kind === "verse" && ref) {
     printPath = `/?pdf=verse&ref=${encodeURIComponent(ref)}`;
-    filename = `${ref} — Бхагавад-гита.pdf`;
+    const rd = ref.replace(/^[^\d]*/, "");
+    const vch = rd.split(".")[0];
+    const vseg = rd.includes(".") ? rd.slice(rd.indexOf(".") + 1) : "";
+    filename = `Бхагавад-гита как она есть. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`;
   } else {
     return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
   }

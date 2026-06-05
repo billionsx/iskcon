@@ -506,7 +506,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
     if (printing) {
       void downloadServerPdf(
         `/pdf?kind=chapter&n=${encodeURIComponent(chapter.number)}`,
-        `Бхагавад-гита — глава ${chapter.number}.pdf`,
+        `Бхагавад-гита как она есть. Глава ${chapter.number}.pdf`,
         { onStatus: flash, fallback: () => { if (printRef.current) exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` }); } },
       );
       setPrinting(false);
@@ -936,9 +936,10 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
         if (id === "pdf") {
           const label = data?.label ?? refStr;
           const vref = data?.ref ?? refStr;
+          const vfile = `Бхагавад-гита как она есть. Глава ${chapterNo}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`;
           void downloadServerPdf(
             `/pdf?kind=verse&ref=${encodeURIComponent(vref)}`,
-            `${label} — Бхагавад-гита.pdf`,
+            vfile,
             { onStatus: flash, fallback: () => exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` }) },
           );
           return;
@@ -992,6 +993,7 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
   const bookContentRef = useRef<HTMLDivElement>(null);
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
+  const [bookPct, setBookPct] = useState(0);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const openQr = (url: string, data: QrData) => setQr({ url, data });
 
@@ -999,34 +1001,69 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
   }, []);
 
-  // Deep-link (cold-load /book/bg/{ch}/{v}) → open the chapter, then the verse.
-  // The exact verse `ref` is resolved from live chapter data (no hardcoded prefix,
-  // handles verse ranges like 16-17), so a scanned QR lands on the right screen.
-  const didInitTarget = useRef(false);
-  useEffect(() => {
-    if (didInitTarget.current) return;
-    if (!initialTarget || !chapters) return;            // wait for chapters
-    const { chapter, verse } = initialTarget;
-    if (!chapter) { didInitTarget.current = true; return; }
-    const ch = chapters.find((x) => x.number === chapter);
-    if (!ch) { didInitTarget.current = true; return; }
-    didInitTarget.current = true;
+  // Открыть цель (глава + стих) — для холодного входа по ссылке, QR и кнопок назад/вперёд.
+  // navLock не даёт эффекту состояние→URL пушить адрес во время синхронизации ИЗ URL.
+  const navLock = useRef(false);
+  const openTarget = useRef<(chapter: string | null, verse: string | null) => void>(() => {});
+  openTarget.current = (chapter, verse) => {
+    if (!chapters) return;
+    navLock.current = true;
+    if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
+    const ch = chapters.find((x) => x.number === chapter) ?? null;
     setOpenChapter(ch);
-    if (verse) {
+    if (ch && verse) {
       fetch(api(`/books/bg/chapters/${chapter}/read`))
         .then((r) => r.json())
         .then((d) => {
           const vs = (d.verses ?? []) as ChapterVerse[];
           const want = verse.replace(/[–—]/g, "-");
-          const hit = vs.find((vv) => {
-            const tail = (String(vv.ref).split(".").pop() ?? "").replace(/[–—]/g, "-");
-            return tail === want;
-          });
-          if (hit) setReaderRef(hit.ref);
+          const hit = vs.find((vv) => (String(vv.ref).split(".").pop() ?? "").replace(/[–—]/g, "-") === want);
+          setReaderRef(hit ? hit.ref : null);
         })
-        .catch(() => {});
+        .catch(() => {})
+        .finally(() => { navLock.current = false; });
+    } else {
+      setReaderRef(null);
+      navLock.current = false;
     }
-  }, [initialTarget, chapters]);
+  };
+
+  // Холодный вход /book/bg/{ch}/{v} (в т.ч. из QR) → открыть цель один раз, когда главы готовы.
+  const didInitTarget = useRef(false);
+  useEffect(() => {
+    if (didInitTarget.current || !chapters) return;
+    if (initialTarget?.chapter) {
+      didInitTarget.current = true;
+      openTarget.current(initialTarget.chapter, initialTarget.verse);
+    }
+  }, [chapters, initialTarget]);
+
+  // Состояние → URL: адрес всегда уникален — /book/bg, /book/bg/{ch}, /book/bg/{ch}/{v}.
+  useEffect(() => {
+    if (!chapters || navLock.current || typeof window === "undefined") return;
+    let path = "/book/bg";
+    if (readerRef) {
+      const rd = readerRef.replace(/^[^\d]*/, "");
+      const ch = rd.split(".")[0];
+      const v = rd.includes(".") ? rd.slice(rd.indexOf(".") + 1) : "";
+      path = v ? `/book/bg/${ch}/${v}` : `/book/bg/${ch}`;
+    } else if (openChapter) {
+      path = `/book/bg/${openChapter.number}`;
+    }
+    if (window.location.pathname !== path) window.history.pushState(null, "", path);
+  }, [openChapter, readerRef, chapters]);
+
+  // URL → состояние при «назад/вперёд» браузера (в пределах книги).
+  useEffect(() => {
+    const onPop = () => {
+      const path = window.location.pathname;
+      if (!path.startsWith("/book/bg")) return;
+      const parts = path.split("/");        // ["", "book", "bg", ch?, v?]
+      openTarget.current(parts[3] || null, parts[4] || null);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const openChapterByNumber = (num: string) => {
     const c = chapters?.find((x) => x.number === num);
@@ -1053,7 +1090,7 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
   useEffect(() => {
     if (bookPrint) {
       const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
-      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } });
+      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, onProgress: setBookPct, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } });
       setBookPrint(null);
     }
   }, [bookPrint, book.titleLine1, book.titleLine2]);
@@ -1143,6 +1180,18 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
       </div>
 
       <Toast msg={toast} />
+      {bookPct > 0 && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
+          <div style={{ width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>Готовлю PDF книги</div>
+            <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1–2 минуты</div>
+            <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
+              <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
+            </div>
+            <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
+          </div>
+        </div>
+      )}
       {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} chapters={chapters} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
