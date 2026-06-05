@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
+import { DonateModal } from "./DonateModal";
 import { BOOKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { exportWholeBook } from "./bookPdf";
@@ -319,6 +320,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
   const mainRef = useRef<HTMLElement>(null);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [donate, setDonate] = useState(false);
   const [bookPct, setBookPct] = useState(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => {
@@ -349,6 +351,19 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 onOpenBook();
               }} />
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
+              <button
+                onClick={() => setDonate(true)}
+                style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", marginTop: 20, padding: "15px 16px", borderRadius: 18, border: "1px solid rgba(210,170,27,0.35)", background: "linear-gradient(135deg, rgba(210,170,27,0.12), rgba(210,170,27,0.03))", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}
+              >
+                <span style={{ display: "grid", placeItems: "center", width: 40, height: 40, flexShrink: 0, borderRadius: 12, background: "rgba(210,170,27,0.16)" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#D2AA1B" aria-hidden><path d="M12 21s-7.2-4.55-9.6-8.5C1.1 9.9 2.3 6.2 5.7 6.2c2 0 3.3 1.2 4.5 2.7C11.4 7.4 12.7 6.2 14.7 6.2c3.4 0 4.6 3.7 3.3 6.3C15.6 16.45 12 21 12 21z"/></svg>
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label, #1f2024)" }}>Поддержать проект</span>
+                  <span style={{ display: "block", fontSize: 12.5, color: "#70727b", marginTop: 2 }}>ЮMoney (рубли) или USDT&nbsp;TRC20</span>
+                </span>
+                <span style={{ color: "#a7a8b0", fontSize: 20, lineHeight: 1 }}>›</span>
+              </button>
             </>
           ) : tab === "feed" ? (
             <FeedScreen onOpen={onOpenContent} />
@@ -357,6 +372,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       </main>
       <TabBar active={tab} onChange={onChange} />
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
+      {donate && <DonateModal onClose={() => setDonate(false)} />}
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 90, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(31,32,36,0.95)", color: "#fff", padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontFamily: "var(--font-text)", boxShadow: "0 8px 30px rgba(0,0,0,0.25)", maxWidth: "86%", textAlign: "center" }}>{toast}</div>}
       {bookPct > 0 && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
