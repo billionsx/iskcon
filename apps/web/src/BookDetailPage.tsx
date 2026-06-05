@@ -753,7 +753,7 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
     <div>
       {/* cover / title page */}
       <div data-pdf-block style={{ textAlign: "center", breakAfter: "page", paddingTop: "30mm" }}>
-        <img src="/iskcon-one-love.svg" alt="ISKCON ONE LOVE" style={{ width: "32mm", height: "auto", display: "block", margin: "0 auto" }} />
+        <img src="/iskcon-one-love-mark.svg" alt="ISKCON ONE LOVE" style={{ width: "30mm", height: "auto", display: "block", margin: "0 auto" }} />
         <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
           <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
         </div>

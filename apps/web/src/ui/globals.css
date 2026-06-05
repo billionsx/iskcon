@@ -472,6 +472,15 @@
   #pdf-print-layer img { max-width: 100% !important; }
 
   /* серверный печатный документ (page.pdf) — поля и колонтитул задаёт сервер */
+  /* Книжная гарнитура с засечками — как в утверждённом образце (Noto Serif).
+     Noto Serif присутствует в среде рендеринга (Devanagari уже рисуется Noto),
+     поэтому и кириллица с диакритикой (транслитерация) ложится ровно, без «скачков». */
+  .pdf-doc-page,
+  #pdf-print-layer {
+    --font-text: 'Noto Serif', 'PT Serif', 'DejaVu Serif', Georgia, serif;
+    --font-display: 'Noto Serif', 'PT Serif', 'DejaVu Serif', Georgia, serif;
+    --font-scripture: 'Noto Serif', 'PT Serif', 'DejaVu Serif', Georgia, serif;
+  }
   .pdf-doc-page { color: #1f2024; }
   .pdf-doc-page,
   .pdf-doc-page * {
