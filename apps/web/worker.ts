@@ -65,20 +65,18 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
       `<div style="font-size:8px;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>` +
       `<div style="font-size:8.5px;letter-spacing:2px;margin-top:2.5px;">ISKCON ONE LOVE</div>` +
       `<div style="font-size:8px;letter-spacing:1px;color:#a7a8b0;">iskcone.com</div></div>`;
-    // Бегущий заголовок книги — для главы и стиха. На книге (есть титульная
-    // страница с крупным названием) бегущий заголовок не печатаем, чтобы не
-    // дублировать название на обложке.
+    // Бегущий заголовок книги — на каждой странице (включая книгу). Структура
+    // как у футера (внешний + внутренний div), чтобы Chrome его гарантированно рисовал.
     const header =
-      `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#9a9a9e;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
-      `Бхагавад-гита как она есть</div>`;
-    const isBook = kind === "book";
+      `<div style="width:100%;padding:0 18mm;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
+      `<div style="font-family:Georgia,'Times New Roman',serif;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#9a9a9e;">Бхагавад-гита как она есть</div></div>`;
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
       displayHeaderFooter: true,
-      headerTemplate: isBook ? "<div></div>" : header,
+      headerTemplate: header,
       footerTemplate: footer,
-      margin: { top: isBook ? "16mm" : "20mm", bottom: "22mm", left: "18mm", right: "18mm" },
+      margin: { top: "20mm", bottom: "22mm", left: "18mm", right: "18mm" },
     });
     return new Response(pdf, {
       headers: {

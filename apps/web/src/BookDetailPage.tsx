@@ -634,19 +634,12 @@ function LayerRow({ label, on, onToggle }: { label: string; on: boolean; onToggl
   );
 }
 function LayerLabel({ children }: { children: ReactNode }) {
-  return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: INK2 }}><span style={{ width: 18, height: 1.5, background: GOLD, borderRadius: 999 }} />{children}</div>;
+  return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: INK2, breakAfter: "avoid" }}><span style={{ width: 18, height: 1.5, background: GOLD, borderRadius: 999, flexShrink: 0 }} />{children}</div>;
 }
 
-/* Стандарт ИСККОН: метка «Комментарий» продолжается полной подписью авторства
-   Шрилы Прабхупады — в том же золотом капс-стиле, что и остальные метки слоёв. */
-const PURPORT_BYLINE = "Комментарий Его Божественной Милости Абхай Чаранаравинды Бхактиведанты Свами Шрилы Прабхупады, Ачарьи-основателя Международного общества сознания Кришны, ИСККОН";
+/* Метка «Комментарий» — в том же стиле, что и «Перевод» (LayerLabel). */
 function CommentaryLabel({ demo }: { demo?: boolean }) {
-  return (
-    <div style={{ margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", lineHeight: 1.55, textTransform: "uppercase", color: GOLDT }}>
-      <span aria-hidden style={{ display: "inline-block", width: 18, height: 1.5, background: GOLD, borderRadius: 999, verticalAlign: "middle", marginRight: 10 }} />
-      {PURPORT_BYLINE}{demo && <DemoBadge />}
-    </div>
-  );
+  return <LayerLabel>Комментарий{demo && <DemoBadge />}</LayerLabel>;
 }
 function DemoBadge() {
   return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: FILL, color: INK2, fontSize: 9.5, fontWeight: 700, letterSpacing: ".5px", verticalAlign: "middle" }}>демо</span>;
