@@ -97,7 +97,7 @@ interface OG { title: string; description: string; image: string; url: string; }
 function ogFor(url: URL): OG {
   const origin = url.origin;
   const pageUrl = origin + url.pathname;
-  const m = url.pathname.match(/^\/book\/([^/]+)\/?$/);
+  const m = url.pathname.match(/^\/book\/([^/]+)(?:\/.*)?$/);
   if (m) {
     const b = BOOKS[m[1]];
     if (b) return { title: bookShareTitle(b), description: b.description, image: origin + bookShareImage(b), url: pageUrl };

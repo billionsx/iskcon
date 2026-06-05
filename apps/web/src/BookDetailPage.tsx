@@ -17,7 +17,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf } from "./pdf";
-import { QrSheet } from "./QrSheet";
+import { QrSheet, type QrData } from "./QrSheet";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -493,7 +493,7 @@ export interface ChapterVerse {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, flash }: { chapter: ChapterRow; bookTitle: string; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; flash: (m: string) => void }) {
+function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; bookTitle: string; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -597,6 +597,15 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, fl
         if (id === "pdf") {
           if (verses && verses.length) setPrinting(true);
           else flash("Глава ещё загружается…");
+          return;
+        }
+        if (id === "qr") {
+          onQr(`https://gaurangers.com/book/bg/${chapter.number}`, {
+            kind: "chapter",
+            bookTitle,
+            chapterNumber: chapter.number,
+            chapterTitle: chapter.title_ru,
+          });
           return;
         }
         onMenuAction(id);
@@ -771,7 +780,7 @@ function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "n
   );
 }
 
-function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuAction }: { refStr: string; bookTitle: string; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void }) {
+function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; chapters: ChapterRow[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
   const [fav, setFav] = useState(false);
@@ -791,6 +800,10 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
 
   const demo = DEMO_VERSES[data?.ref ?? refStr];
   const chapterNo = (data?.ref ?? refStr).replace(/^[^\d]*/, "").split(".")[0];
+  const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "2.13" | "2.16-17"
+  const verseSeg = refDigits.includes(".") ? refDigits.slice(refDigits.indexOf(".") + 1) : "";
+  const verseUrl = `https://gaurangers.com/book/bg/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
+  const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
   const evDeva = data?.devanagari || demo?.devanagari || null;
   const evTranslit = data?.translit || demo?.translit || null;
   const evTokens = (data?.tokens && data.tokens.length ? data.tokens : demo?.tokens) ?? [];
@@ -806,7 +819,7 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
 
   const shareVerse = async () => {
     const label = data?.label ?? refStr;
-    const url = "https://gaurangers.com/book/bg";
+    const url = verseUrl;
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
         await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, url });
@@ -915,6 +928,17 @@ function VerseReader({ refStr, bookTitle, onNavigate, onClose, flash, onMenuActi
           exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` });
           return;
         }
+        if (id === "qr") {
+          onQr(verseUrl, {
+            kind: "verse",
+            bookTitle,
+            chapterNumber: chapterNo,
+            chapterTitle,
+            verseLabel: data?.label ?? refStr,
+            verseText: evTranslation,
+          });
+          return;
+        }
         onMenuAction(id);
       }} anchorRef={vMoreRef} />
     </div>
@@ -940,7 +964,7 @@ function TopBtn({ solid, active, activeColor, ariaLabel, onClick, children }: { 
 }
 
 /* ═════════ MAIN ═════════ */
-export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () => void }) {
+export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData; onBack: () => void; initialTarget?: { chapter: string | null; verse: string | null } | null }) {
   const [idx, setIdx] = useState(0);
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -953,11 +977,42 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
   const bookContentRef = useRef<HTMLDivElement>(null);
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
-  const [qrUrl, setQrUrl] = useState<string | null>(null);
+  const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
+  const openQr = (url: string, data: QrData) => setQr({ url, data });
 
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
   }, []);
+
+  // Deep-link (cold-load /book/bg/{ch}/{v}) → open the chapter, then the verse.
+  // The exact verse `ref` is resolved from live chapter data (no hardcoded prefix,
+  // handles verse ranges like 16-17), so a scanned QR lands on the right screen.
+  const didInitTarget = useRef(false);
+  useEffect(() => {
+    if (didInitTarget.current) return;
+    if (!initialTarget || !chapters) return;            // wait for chapters
+    const { chapter, verse } = initialTarget;
+    if (!chapter) { didInitTarget.current = true; return; }
+    const ch = chapters.find((x) => x.number === chapter);
+    if (!ch) { didInitTarget.current = true; return; }
+    didInitTarget.current = true;
+    setOpenChapter(ch);
+    if (verse) {
+      fetch(api(`/books/bg/chapters/${chapter}/read`))
+        .then((r) => r.json())
+        .then((d) => {
+          const vs = (d.verses ?? []) as ChapterVerse[];
+          const want = verse.replace(/[–—]/g, "-");
+          const hit = vs.find((vv) => {
+            const tail = (String(vv.ref).split(".").pop() ?? "").replace(/[–—]/g, "-");
+            return tail === want;
+          });
+          if (hit) setReaderRef(hit.ref);
+        })
+        .catch(() => {});
+    }
+  }, [initialTarget, chapters]);
+
   const openChapterByNumber = (num: string) => {
     const c = chapters?.find((x) => x.number === num);
     if (c) setOpenChapter(c);
@@ -1034,7 +1089,16 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
     if (id === "pdf") { void buildBookPdf(); return; }
-    if (id === "qr") { setQrUrl(typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`); return; }
+    if (id === "qr") {
+      openQr("https://gaurangers.com/book/bg", {
+        kind: "book",
+        bookTitle: book.titleLine1,
+        bookSubtitle: book.titleLine2,
+        tagline: book.tagline,
+        cover: book.covers[0],
+      });
+      return;
+    }
     if (id === "donate") { flash("Поддержать печать — скоро"); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
   };
@@ -1064,14 +1128,14 @@ export function BookDetailPage({ book, onBack }: { book: BookData; onBack: () =>
       </div>
 
       <Toast msg={toast} />
-      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} onMenuAction={menuAction} flash={flash} />}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} />}
+      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} chapters={chapters} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
         </div>
       )}
-      {qrUrl && <QrSheet url={qrUrl} title={book.titleLine1} onClose={() => setQrUrl(null)} />}
+      {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
     </div>
   );
 }
