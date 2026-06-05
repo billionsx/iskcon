@@ -37,6 +37,19 @@ jobs:
             | jq -r '.result[]? | "- \(.hostname) -> \(.service)/\(.environment)"' >> $R
           echo "" >> $R
 
+          echo "## Cache Rules / rulesets" >> $R
+          RS=$(curl -s "$API/zones/$ZONE/rulesets" "${auth[@]}")
+          printf '%s' "$RS" | jq -r '.result[]? | "- \(.phase): \(.name)"' >> $R
+          CID=$(printf '%s' "$RS" | jq -r '.result[]? | select(.phase=="http_request_cache_settings") | .id' | head -1)
+          if [ -n "$CID" ]; then
+            echo "    rules в http_request_cache_settings:" >> $R
+            curl -s "$API/zones/$ZONE/rulesets/$CID" "${auth[@]}" \
+              | jq -r '.result.rules[]? | "      [\(.enabled)] \(.expression) -> cache=\(.action_parameters.cache) edge_ttl=\(.action_parameters.edge_ttl // "respect")"' >> $R
+          else
+            echo "    (правил кэширования в зоне нет — HTML кэшируется по умолчанию/настройкам)" >> $R
+          fi
+          echo "" >> $R
+
           echo "## Pages-проекты и их домены" >> $R
           curl -s "$API/accounts/$ACCT/pages/projects?per_page=100" "${auth[@]}" \
             | jq -r '.result[]? | "- проект \(.name): domains=\(.domains)"' >> $R

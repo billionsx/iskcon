@@ -202,9 +202,13 @@ export default {
         .transform(res);
       const out = new Response(transformed.body, transformed);
       out.headers.set("X-Robots-Tag", NOINDEX);
-      // index.html must never be cached, or a deploy's new asset hashes are
-      // never picked up (stale page keeps loading the old JS/CSS bundle).
+      // index.html НИКОГДА не должен кэшироваться, иначе новые хэши ассетов после
+      // деплоя не подхватываются (старый JS/CSS грузится из кэша). CDN-Cache-Control
+      // и Cloudflare-CDN-Cache-Control явно запрещают кэш на «крае» Cloudflare и
+      // перебивают возможное правило «Cache Everything».
       out.headers.set("Cache-Control", "no-store, must-revalidate");
+      out.headers.set("CDN-Cache-Control", "no-store");
+      out.headers.set("Cloudflare-CDN-Cache-Control", "no-store");
       return out;
     }
     const out = new Response(res.body, res);
