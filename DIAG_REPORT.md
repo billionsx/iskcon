@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:09:18 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:13:29 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -35,6 +35,12 @@ zone=708c4b79858d2ab38668e1b86f940025
     cache-control:   public, max-age=0, must-revalidate
     script при cache-buster: /assets/index-896pWg7C.js
     'Аудио главы' в нём: 0  | 'initialTarget': 0
+
+## /__fresh: index.html напрямую из origin (минуя кэш края)
+    X-Asset-Status: 
+    X-Asset-CC:     
+    cf-cache-status:HIT
+    JS в origin-index.html: /assets/index-896pWg7C.js
 
 ## Существуют ли файлы на сервере (HEAD)
     /assets/index-896pWg7C.js -> HTTP 200 (cf-cache-status: HIT)
