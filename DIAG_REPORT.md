@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:27:28 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:29:38 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -46,7 +46,7 @@ zone=708c4b79858d2ab38668e1b86f940025
     JS в origin-index.html: /assets/index-896pWg7C.js
 
 ## ПРОБА свежий путь (никогда не запрашивался → кэш не перехватит → отработает воркер)
-    путь: /__probe-1780648049-7609
+    путь: /__probe-1780648180-32442
     HTTP/2 200 
     cf-cache-status: HIT
     cache-control: no-store, must-revalidate
@@ -55,12 +55,17 @@ zone=708c4b79858d2ab38668e1b86f940025
     'Аудио главы': 0  | 'initialTarget': 0
     (есть cdn-cache-control: no-store → активен НОВЫЙ воркер; JS=CoKgVYa4 → новые ассеты)
 
-## iskcon-web: версии и активный деплой
-    deploy 719d3c7c-34e3-4986-9796-c44ab9d3974b created=2026-06-05T08:21:24.990636Z strategy=percentage
-    deploy 0e270c8b-e35b-44d1-b555-d503b7dc5cdf created=2026-06-05T08:21:24.686093Z strategy=percentage
-    version 147 created=2026-06-05T08:21:24.990636Z tag=secret
-    version 146 created=2026-06-05T08:21:24.686093Z tag=secret
-    version 145 created=2026-06-05T08:12:55.441339Z tag=secret
+## iskcon-web: активная маршрутизация + попытка перевода на 100%
+    активный деплой версии→%:
+      aaa685f9-7325-4de9-b511-360402063717 -> 100%
+    новейшая версия:  aaa685f9-7325-4de9-b511-360402063717
+    активная версия:  aaa685f9-7325-4de9-b511-360402063717
+    перевод newest→100%: {"success":true,"errors":[]}
+
+## после перевода: свежий путь ещё раз
+    cf-cache-status: HIT
+    cache-control: no-store, must-revalidate
+    JS: /assets/index-896pWg7C.js
 
 ## Существуют ли файлы на сервере (HEAD)
     /assets/index-896pWg7C.js -> HTTP 200 (cf-cache-status: HIT)
