@@ -348,22 +348,11 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 }
                 if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, onProgress: setBookPct, fallback: () => { void exportWholeBook(BOOKS.bg, flash); } }); return; }
                 if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
+                if (id === "donate") { setDonate(true); return; }
+                if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
                 onOpenBook();
               }} />
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
-              <button
-                onClick={() => setDonate(true)}
-                style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", marginTop: 20, padding: "15px 16px", borderRadius: 18, border: "1px solid rgba(210,170,27,0.35)", background: "linear-gradient(135deg, rgba(210,170,27,0.12), rgba(210,170,27,0.03))", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}
-              >
-                <span style={{ display: "grid", placeItems: "center", width: 40, height: 40, flexShrink: 0, borderRadius: 12, background: "rgba(210,170,27,0.16)" }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#D2AA1B" aria-hidden><path d="M12 21s-7.2-4.55-9.6-8.5C1.1 9.9 2.3 6.2 5.7 6.2c2 0 3.3 1.2 4.5 2.7C11.4 7.4 12.7 6.2 14.7 6.2c3.4 0 4.6 3.7 3.3 6.3C15.6 16.45 12 21 12 21z"/></svg>
-                </span>
-                <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label, #1f2024)" }}>Поддержать проект</span>
-                  <span style={{ display: "block", fontSize: 12.5, color: "#70727b", marginTop: 2 }}>ЮMoney (рубли) или USDT&nbsp;TRC20</span>
-                </span>
-                <span style={{ color: "#a7a8b0", fontSize: 20, lineHeight: 1 }}>›</span>
-              </button>
             </>
           ) : tab === "feed" ? (
             <FeedScreen onOpen={onOpenContent} />
