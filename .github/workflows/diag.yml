@@ -101,11 +101,24 @@ jobs:
           echo "    (есть cdn-cache-control: no-store → активен НОВЫЙ воркер; JS=CoKgVYa4 → новые ассеты)" >> $R
           echo "" >> $R
 
-          echo "## iskcon-web: версии и активный деплой" >> $R
-          curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments" "${auth[@]}" \
-            | jq -r '.result.deployments[0:2][]? | "    deploy \(.id) created=\(.created_on) strategy=\(.strategy)"' >> $R 2>/dev/null
-          curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/versions?per_page=3" "${auth[@]}" \
-            | jq -r '.result.items[0:3][]? | "    version \(.number // .id) created=\(.metadata.created_on // .created_on) tag=\(.annotations["workers/triggered_by"] // "-")"' >> $R 2>/dev/null
+          echo "## iskcon-web: активная маршрутизация + попытка перевода на 100%" >> $R
+          DEP=$(curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments" "${auth[@]}")
+          echo "    активный деплой версии→%:" >> $R
+          printf '%s' "$DEP" | jq -r '.result.deployments[0]?.versions[]? | "      \(.version_id) -> \(.percentage)%"' >> $R 2>/dev/null
+          NEWEST=$(curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/versions?per_page=1" "${auth[@]}" | jq -r '.result.items[0].id')
+          ACTIVE=$(printf '%s' "$DEP" | jq -r '.result.deployments[0]?.versions[0]?.version_id')
+          echo "    новейшая версия:  $NEWEST" >> $R
+          echo "    активная версия:  $ACTIVE" >> $R
+          PROM=$(curl -s -X POST "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments?force=true" "${auth[@]}" \
+            --data "{\"strategy\":\"percentage\",\"versions\":[{\"version_id\":\"$NEWEST\",\"percentage\":100}]}")
+          echo "    перевод newest→100%: $(printf '%s' "$PROM" | jq -c '{success,errors}')" >> $R
+          echo "" >> $R
+          sleep 5
+          echo "## после перевода: свежий путь ещё раз" >> $R
+          FP2="/__after-$(date +%s)-$RANDOM"
+          curl -s -D /tmp/fp2.hdr -o /tmp/fp2.html --max-time 25 "https://gaurangers.com$FP2"
+          tr -d '\r' < /tmp/fp2.hdr | grep -iE '^cf-cache-status|^cdn-cache-control|^cloudflare-cdn|^cache-control' | sed 's/^/    /' >> $R
+          echo "    JS: $(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' /tmp/fp2.html | head -1)" >> $R
           echo "" >> $R
 
           echo "## Существуют ли файлы на сервере (HEAD)" >> $R
