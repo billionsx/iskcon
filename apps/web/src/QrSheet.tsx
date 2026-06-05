@@ -66,7 +66,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
         style={{ width: "100%", maxWidth: 332, maxHeight: "calc(100dvh - 40px)", overflowY: "auto", WebkitOverflowScrolling: "touch", background: PAPER, borderRadius: 24, padding: "26px 24px 20px", boxShadow: "0 24px 70px rgba(0,0,0,0.28)", textAlign: "center", fontFamily: "var(--font-text)" }}
       >
         {/* ── logo (эмблема уже содержит подпись ISKCON ONE LOVE) ── */}
-        <IskconMark size={40} />
+        <IskconMark size={44} />
 
         {/* ── identity (verse / chapter / book) ── */}
         <Identity data={data} />
