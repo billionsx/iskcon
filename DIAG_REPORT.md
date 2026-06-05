@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:22:50 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:27:28 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -44,6 +44,16 @@ zone=708c4b79858d2ab38668e1b86f940025
     cache-control: no-store, must-revalidate
     x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
     JS в origin-index.html: /assets/index-896pWg7C.js
+
+## ПРОБА свежий путь (никогда не запрашивался → кэш не перехватит → отработает воркер)
+    путь: /__probe-1780648049-7609
+    HTTP/2 200 
+    cf-cache-status: HIT
+    cache-control: no-store, must-revalidate
+    x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
+    JS в ответе: /assets/index-896pWg7C.js
+    'Аудио главы': 0  | 'initialTarget': 0
+    (есть cdn-cache-control: no-store → активен НОВЫЙ воркер; JS=CoKgVYa4 → новые ассеты)
 
 ## iskcon-web: версии и активный деплой
     deploy 719d3c7c-34e3-4986-9796-c44ab9d3974b created=2026-06-05T08:21:24.990636Z strategy=percentage
