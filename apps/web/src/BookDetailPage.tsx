@@ -16,7 +16,7 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
-import { exportToPdf } from "./pdf";
+import { exportToPdf, downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
@@ -503,11 +503,15 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
   const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (printing && printRef.current) {
-      exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` });
+    if (printing) {
+      void downloadServerPdf(
+        `/pdf?kind=chapter&n=${encodeURIComponent(chapter.number)}`,
+        `Бхагавад-гита — глава ${chapter.number}.pdf`,
+        { onStatus: flash, fallback: () => { if (printRef.current) exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` }); } },
+      );
       setPrinting(false);
     }
-  }, [printing, chapter.title_ru, bookTitle]);
+  }, [printing, chapter.number, chapter.title_ru, bookTitle]);
 
   useEffect(() => {
     let live = true;
@@ -747,15 +751,16 @@ export function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow
 export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
   return (
     <div>
-      {/* front matter */}
-      <div data-pdf-block style={{ textAlign: "center", padding: "6px 0 8px" }}>
-        <h1 style={{ margin: 0, fontSize: 40, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: INK }}>{book.titleLine1}</h1>
-        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em", color: INK }}>{book.titleLine2}</div>}
-        <div style={{ marginTop: 10, fontSize: 15, color: INK2 }}>{book.iast} · {book.tagline}</div>
-        <p style={{ margin: "20px auto 0", maxWidth: 520, fontSize: 15, lineHeight: 1.45, color: INK }}>{book.author}</p>
-        <p style={{ margin: "12px auto 0", maxWidth: 520, fontSize: 14.5, lineHeight: 1.5, color: INK2 }}>{book.description}</p>
-        <div style={{ marginTop: 18, fontSize: 12, letterSpacing: "1px", textTransform: "uppercase", color: GOLDT }}>{book.chips.join("  ·  ")}</div>
-        <Ornament />
+      {/* cover / title page */}
+      <div data-pdf-block style={{ textAlign: "center", breakAfter: "page", paddingTop: "30mm" }}>
+        <img src="/iskcon-one-love.svg" alt="ISKCON ONE LOVE" style={{ width: "32mm", height: "auto", display: "block", margin: "0 auto" }} />
+        <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
+          <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
+        </div>
+        <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{book.titleLine1}</h1>
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{book.titleLine2}</div>}
+        <div style={{ marginTop: "7mm", fontSize: 12.5, letterSpacing: "3px", textTransform: "uppercase", color: INK2 }}>Полное издание с комментариями</div>
+        <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
       </div>
       {/* table of contents */}
       <div data-pdf-block style={{ margin: "8px 0 4px" }}>
@@ -937,7 +942,12 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
         if (id === "share") { void shareVerse(); return; }
         if (id === "pdf") {
           const label = data?.label ?? refStr;
-          exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` });
+          const vref = data?.ref ?? refStr;
+          void downloadServerPdf(
+            `/pdf?kind=verse&ref=${encodeURIComponent(vref)}`,
+            `${label} — Бхагавад-гита.pdf`,
+            { onStatus: flash, fallback: () => exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` }) },
+          );
           return;
         }
         if (id === "qr") {
@@ -1048,9 +1058,9 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
   };
 
   useEffect(() => {
-    if (bookPrint && bookPrintRef.current) {
+    if (bookPrint) {
       const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
-      exportToPdf(bookPrintRef.current, { title: name });
+      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } });
       setBookPrint(null);
     }
   }, [bookPrint, book.titleLine1, book.titleLine2]);

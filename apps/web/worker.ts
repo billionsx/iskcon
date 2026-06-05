@@ -58,16 +58,27 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     } catch {
       /* отрисовка затянулась — печатаем что отрисовалось */
     }
+    // Колонтитул: номер страницы сверху, затем бренд (ISKCON ONE LOVE / iskcone.com) —
+    // по центру, на каждой странице. Цвет печатается принудительно (print-color-adjust).
     const footer =
-      `<div style="width:100%;padding:0 16mm;font-family:Arial,Helvetica,sans-serif;font-size:8px;color:#9a9a9e;text-align:center;">` +
-      `ISKCON ONE LOVE &middot; gaurangers.com &nbsp;&middot;&nbsp; <span class="pageNumber"></span> / <span class="totalPages"></span></div>`;
+      `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;text-align:center;line-height:1.45;color:#8a8a8e;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
+      `<div style="font-size:8px;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>` +
+      `<div style="font-size:8.5px;letter-spacing:2px;margin-top:2.5px;">ISKCON ONE LOVE</div>` +
+      `<div style="font-size:8px;letter-spacing:1px;color:#a7a8b0;">iskcone.com</div></div>`;
+    // Бегущий заголовок книги — для главы и стиха. На книге (есть титульная
+    // страница с крупным названием) бегущий заголовок не печатаем, чтобы не
+    // дублировать название на обложке.
+    const header =
+      `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:#9a9a9e;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
+      `Бхагавад-гита как она есть</div>`;
+    const isBook = kind === "book";
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
       displayHeaderFooter: true,
-      headerTemplate: "<div></div>",
+      headerTemplate: isBook ? "<div></div>" : header,
       footerTemplate: footer,
-      margin: { top: "18mm", bottom: "20mm", left: "16mm", right: "16mm" },
+      margin: { top: isBook ? "16mm" : "20mm", bottom: "22mm", left: "18mm", right: "18mm" },
     });
     return new Response(pdf, {
       headers: {
