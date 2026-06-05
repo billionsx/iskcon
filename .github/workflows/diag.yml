@@ -1,0 +1,80 @@
+name: Diagnose serving + purge cache (report to repo)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Diagnose, purge, write report
+        env:
+          T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          ACCT=d5cbe19470dc38599873eabfe148e6d1
+          API=https://api.cloudflare.com/client/v4
+          auth=(-H "Authorization: Bearer $T" -H "Content-Type: application/json")
+          R=DIAG_REPORT.md
+          echo "# Диагностика gaurangers.com — $(date -u)" > $R
+          echo "" >> $R
+
+          ZONE=$(curl -s "$API/zones?name=gaurangers.com" "${auth[@]}" | jq -r '.result[0].id')
+          echo "zone=$ZONE" >> $R
+          echo "" >> $R
+
+          echo "## DNS-записи" >> $R
+          curl -s "$API/zones/$ZONE/dns_records?per_page=100" "${auth[@]}" \
+            | jq -r '.result[]? | "- \(.type) \(.name) -> \(.content) proxied=\(.proxied)"' >> $R
+          echo "" >> $R
+
+          echo "## Worker custom domains (кто из воркеров держит хост)" >> $R
+          curl -s "$API/accounts/$ACCT/workers/domains?per_page=100" "${auth[@]}" \
+            | jq -r '.result[]? | "- \(.hostname) -> \(.service)/\(.environment)"' >> $R
+          echo "" >> $R
+
+          echo "## Pages-проекты и их домены" >> $R
+          curl -s "$API/accounts/$ACCT/pages/projects?per_page=100" "${auth[@]}" \
+            | jq -r '.result[]? | "- проект \(.name): domains=\(.domains)"' >> $R
+          echo "" >> $R
+
+          echo "## Заголовки ответа apex (до purge)" >> $R
+          curl -s -D - -o /dev/null --max-time 25 "https://gaurangers.com/" \
+            | tr -d '\r' | grep -iE "^HTTP|^server:|^cf-cache-status:|^x-robots-tag:|^cache-control:|^age:|^etag:|^last-modified:" | sed 's/^/    /' >> $R
+          echo "" >> $R
+
+          echo "## Какой JS грузит index.html (до purge)" >> $R
+          HTML=$(curl -s --max-time 25 "https://gaurangers.com/")
+          JS=$(printf '%s' "$HTML" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+          echo "    script: ${JS:-(не найден — возможно отдаётся не SPA)}" >> $R
+          if [ -n "$JS" ]; then
+            BODY=$(curl -s --max-time 30 "https://gaurangers.com$JS")
+            echo "    содержит 'Аудио главы — скоро' (меню главы, b7939c7): $(printf '%s' "$BODY" | grep -c 'Аудио главы')" >> $R
+            echo "    содержит 'initialTarget' (роутинг 80b014a): $(printf '%s' "$BODY" | grep -c 'initialTarget')" >> $R
+            echo "    содержит 'run_worker_first-маркер? (no-store)': n/a" >> $R
+          fi
+          echo "" >> $R
+
+          echo "## PURGE EVERYTHING" >> $R
+          PURGE=$(curl -s -X POST "$API/zones/$ZONE/purge_cache" "${auth[@]}" --data '{"purge_everything":true}')
+          echo "    success=$(printf '%s' "$PURGE" | jq -r '.success') errors=$(printf '%s' "$PURGE" | jq -c '.errors')" >> $R
+          echo "" >> $R
+
+          sleep 8
+          echo "## Заголовки apex (после purge)" >> $R
+          curl -s -D - -o /dev/null --max-time 25 "https://gaurangers.com/" \
+            | tr -d '\r' | grep -iE "^HTTP|^cf-cache-status:|^x-robots-tag:|^cache-control:|^age:" | sed 's/^/    /' >> $R
+          echo "" >> $R
+          HTML2=$(curl -s --max-time 25 "https://gaurangers.com/")
+          JS2=$(printf '%s' "$HTML2" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+          echo "    script после purge: ${JS2:-?}" >> $R
+
+          git config user.email "ceo@billionsx.com"
+          git config user.name "Billions X"
+          git add DIAG_REPORT.md
+          git commit -m "diag: отчёт о том, кто отдаёт gaurangers.com + purge кэша" || echo "nothing to commit"
+          git push || echo "push failed"
