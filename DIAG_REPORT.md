@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 07:55:27 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:00:17 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -14,6 +14,9 @@ zone=708c4b79858d2ab38668e1b86f940025
 - api.gaurangers.com -> iskcon-api/production
 - gaurangers.com -> iskcon-web/production
 - www.gaurangers.com -> iskcon-web/production
+
+## Cache Rules / rulesets
+    (правил кэширования в зоне нет — HTML кэшируется по умолчанию/настройкам)
 
 ## Pages-проекты и их домены
 
