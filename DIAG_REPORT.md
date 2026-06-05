@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:29:38 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:44:58 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -23,49 +23,55 @@ zone=708c4b79858d2ab38668e1b86f940025
 ## Заголовки ответа apex (до purge)
     HTTP/2 200 
     cf-cache-status: HIT
-    cache-control: public, max-age=0, must-revalidate
+    cache-control: no-store, must-revalidate
     x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
     server: cloudflare
 
 ## Какой JS грузит index.html (до purge)
-    script (обычный /): /assets/index-896pWg7C.js
+    script (обычный /): /assets/index-CoKgVYa4.js
 
 ## ПРОБА cache-buster: /?_cb=NNN (другой ключ кэша → должен дойти до воркера)
     cf-cache-status: HIT
-    cache-control:   public, max-age=0, must-revalidate
-    script при cache-buster: /assets/index-896pWg7C.js
-    'Аудио главы' в нём: 0  | 'initialTarget': 0
+    cache-control:   no-store, must-revalidate
+    script при cache-buster: /assets/index-CoKgVYa4.js
+    'Аудио главы' в нём: 1  | 'initialTarget': 1
 
 ## /__fresh: index.html напрямую из origin (минуя кэш края)
     --- все заголовки /__fresh ---
     HTTP/2 200 
-    content-type: text/html
-    cf-cache-status: HIT
-    cache-control: no-store, must-revalidate
+    content-type: text/plain; charset=utf-8
+    cache-control: no-store
+    x-asset-cc: public, max-age=0, must-revalidate
+    x-asset-etag: "550162fe0149e019fb62c0b4df949c78"
+    x-asset-status: 200
     x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
-    JS в origin-index.html: /assets/index-896pWg7C.js
+    JS в origin-index.html: /assets/index-CoKgVYa4.js
 
 ## ПРОБА свежий путь (никогда не запрашивался → кэш не перехватит → отработает воркер)
-    путь: /__probe-1780648180-32442
+    путь: /__probe-1780649100-27707
     HTTP/2 200 
     cf-cache-status: HIT
     cache-control: no-store, must-revalidate
+    cdn-cache-control: no-store
+    cloudflare-cdn-cache-control: no-store
     x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
-    JS в ответе: /assets/index-896pWg7C.js
-    'Аудио главы': 0  | 'initialTarget': 0
+    JS в ответе: /assets/index-CoKgVYa4.js
+    'Аудио главы': 1  | 'initialTarget': 1
     (есть cdn-cache-control: no-store → активен НОВЫЙ воркер; JS=CoKgVYa4 → новые ассеты)
 
 ## iskcon-web: активная маршрутизация + попытка перевода на 100%
     активный деплой версии→%:
-      aaa685f9-7325-4de9-b511-360402063717 -> 100%
-    новейшая версия:  aaa685f9-7325-4de9-b511-360402063717
-    активная версия:  aaa685f9-7325-4de9-b511-360402063717
+      f89b0a70-3941-423a-b732-ff6747bfaf07 -> 100%
+    новейшая версия:  f89b0a70-3941-423a-b732-ff6747bfaf07
+    активная версия:  f89b0a70-3941-423a-b732-ff6747bfaf07
     перевод newest→100%: {"success":true,"errors":[]}
 
 ## после перевода: свежий путь ещё раз
     cf-cache-status: HIT
     cache-control: no-store, must-revalidate
-    JS: /assets/index-896pWg7C.js
+    cdn-cache-control: no-store
+    cloudflare-cdn-cache-control: no-store
+    JS: /assets/index-CoKgVYa4.js
 
 ## Существуют ли файлы на сервере (HEAD)
     /assets/index-896pWg7C.js -> HTTP 200 (cf-cache-status: HIT)
@@ -78,7 +84,7 @@ zone=708c4b79858d2ab38668e1b86f940025
 ## Заголовки apex (после purge)
     HTTP/2 200 
     cf-cache-status: HIT
-    cache-control: public, max-age=0, must-revalidate
+    cache-control: no-store, must-revalidate
     x-robots-tag: noindex, nofollow, noarchive, nosnippet, noimageindex
 
-    script после purge: /assets/index-896pWg7C.js
+    script после purge: /assets/index-CoKgVYa4.js
