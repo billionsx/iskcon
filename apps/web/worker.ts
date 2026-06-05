@@ -52,24 +52,33 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     browser = await puppeteer.launch(env.BROWSER);
     const page = await browser.newPage();
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: 2 });
-    await page.goto(target, { waitUntil: "networkidle0", timeout: 30000 });
+    await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
     try {
-      await page.waitForFunction("window.__pdfReady === true", { timeout: 30000 });
+      // Книга тяжёлая (вся «Гита» ≈ 1100 страниц) — даём ей дорисоваться.
+      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : 45000 });
     } catch {
       /* отрисовка затянулась — печатаем что отрисовалось */
     }
-    // Колонтитул: номер страницы сверху, затем бренд (ISKCON ONE LOVE / iskcone.com) —
-    // по центру, на каждой странице. Цвет печатается принудительно (print-color-adjust).
+    // Текст верхнего колонтитула задаёт сама страница (window.__pdfHeader):
+    //   книга → «Бхагавад-гита как она есть»
+    //   глава → «… · {название главы}»
+    //   стих  → «… · {глава} · Текст N»
+    let headerText = "Бхагавад-гита как она есть";
+    try {
+      const h = await page.evaluate(() => (window as unknown as { __pdfHeader?: string }).__pdfHeader);
+      if (h && typeof h === "string") headerText = h;
+    } catch { /* ignore */ }
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // Нижний колонтитул: номер страницы сверху, затем бренд (ISKCON ONE LOVE / iskcone.com).
     const footer =
       `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;text-align:center;line-height:1.45;color:#8a8a8e;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
       `<div style="font-size:8px;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>` +
       `<div style="font-size:8.5px;letter-spacing:2px;margin-top:2.5px;">ISKCON ONE LOVE</div>` +
       `<div style="font-size:8px;letter-spacing:1px;color:#a7a8b0;">iskcone.com</div></div>`;
-    // Бегущий заголовок книги — на каждой странице (включая книгу). Структура
-    // как у футера (внешний + внутренний div), чтобы Chrome его гарантированно рисовал.
+    // Верхний колонтитул — на каждой странице. Структура как у футера, чтобы Chrome его рисовал.
     const header =
-      `<div style="width:100%;padding:0 18mm;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
-      `<div style="font-family:Georgia,'Times New Roman',serif;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#9a9a9e;">Бхагавад-гита как она есть</div></div>`;
+      `<div style="width:100%;padding:0 16mm;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
+      `<div style="font-family:Georgia,'Times New Roman',serif;font-size:8px;letter-spacing:1.5px;line-height:1.3;text-transform:uppercase;color:#9a9a9e;">${esc(headerText)}</div></div>`;
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
