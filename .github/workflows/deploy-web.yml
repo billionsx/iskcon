@@ -21,13 +21,7 @@ jobs:
       - name: Build site
         working-directory: apps/web
         run: bun run build
-      - name: Deploy to Cloudflare
-        working-directory: apps/web
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: bunx wrangler deploy 2>&1 | tee /tmp/web-deploy.log
-
-      - name: Apply ADMIN_TOKEN secret (book-loader CRM)
+      - name: Apply ADMIN_TOKEN secret (before deploy, so it persists into the deployed version)
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -38,6 +32,27 @@ jobs:
             echo "ADMIN_TOKEN applied to iskcon-web."
           else
             echo "No ADMIN_TOKEN repo secret — /api/admin/* will return 503 until you add it."
+          fi
+
+      - name: Deploy to Cloudflare + force latest version to 100%
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          bunx wrangler deploy 2>&1 | tee /tmp/web-deploy.log
+          # iskcon-web работает в режиме версий (gradual deployments): wrangler deploy
+          # заливает новую версию, но боевой трафик может оставаться на старой. Поэтому
+          # принудительно переводим САМУЮ свежую версию на 100% через API.
+          ACCT=d5cbe19470dc38599873eabfe148e6d1
+          API=https://api.cloudflare.com/client/v4
+          auth=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          LATEST=$(curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/versions?per_page=1" "${auth[@]}" | jq -r '.result.items[0].id')
+          echo "latest version = $LATEST"
+          if [ -n "$LATEST" ] && [ "$LATEST" != "null" ]; then
+            RESP=$(curl -s -X POST "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments?force=true" "${auth[@]}" \
+              --data "{\"strategy\":\"percentage\",\"annotations\":{\"workers/triggered_by\":\"ci-promote\"},\"versions\":[{\"version_id\":\"$LATEST\",\"percentage\":100}]}")
+            echo "promote-to-100%: $(printf '%s' "$RESP" | jq -c '{success,errors}')"
           fi
 
       - name: Verify (workers.dev instant + apex), record into D1
