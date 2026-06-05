@@ -63,13 +63,29 @@ jobs:
           echo "## Какой JS грузит index.html (до purge)" >> $R
           HTML=$(curl -s --max-time 25 "https://gaurangers.com/")
           JS=$(printf '%s' "$HTML" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
-          echo "    script: ${JS:-(не найден — возможно отдаётся не SPA)}" >> $R
-          if [ -n "$JS" ]; then
-            BODY=$(curl -s --max-time 30 "https://gaurangers.com$JS")
-            echo "    содержит 'Аудио главы — скоро' (меню главы, b7939c7): $(printf '%s' "$BODY" | grep -c 'Аудио главы')" >> $R
-            echo "    содержит 'initialTarget' (роутинг 80b014a): $(printf '%s' "$BODY" | grep -c 'initialTarget')" >> $R
-            echo "    содержит 'run_worker_first-маркер? (no-store)': n/a" >> $R
+          echo "    script (обычный /): ${JS:-?}" >> $R
+          echo "" >> $R
+
+          echo "## ПРОБА cache-buster: /?_cb=NNN (другой ключ кэша → должен дойти до воркера)" >> $R
+          CBQ="?_cb=$(date +%s)"
+          CBHDR=$(curl -s -D - -o /tmp/cb.html --max-time 25 "https://gaurangers.com/$CBQ")
+          echo "    cf-cache-status: $(printf '%s' "$CBHDR" | tr -d '\r' | grep -i '^cf-cache-status:' | cut -d' ' -f2-)" >> $R
+          echo "    cache-control:   $(printf '%s' "$CBHDR" | tr -d '\r' | grep -i '^cache-control:' | cut -d' ' -f2-)" >> $R
+          JSCB=$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' /tmp/cb.html | head -1)
+          echo "    script при cache-buster: ${JSCB:-?}" >> $R
+          if [ -n "$JSCB" ]; then
+            BODY=$(curl -s --max-time 30 "https://gaurangers.com$JSCB")
+            echo "    'Аудио главы' в нём: $(printf '%s' "$BODY" | grep -c 'Аудио главы')  | 'initialTarget': $(printf '%s' "$BODY" | grep -c 'initialTarget')" >> $R
           fi
+          echo "" >> $R
+
+          echo "## Существуют ли файлы на сервере (HEAD)" >> $R
+          for H in 896pWg7C CoKgVYa4; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://gaurangers.com/assets/index-$H.js")
+            ccs=$(curl -s -I --max-time 20 "https://gaurangers.com/assets/index-$H.js" | tr -d '\r' | grep -i '^cf-cache-status:' | cut -d' ' -f2-)
+            echo "    /assets/index-$H.js -> HTTP $code (cf-cache-status: ${ccs:-?})" >> $R
+          done
+          echo "    (896pWg7C = старый бандл на сайте; CoKgVYa4 = новый из сборки main)" >> $R
           echo "" >> $R
 
           echo "## PURGE EVERYTHING" >> $R
