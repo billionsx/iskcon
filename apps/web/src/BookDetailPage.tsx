@@ -632,6 +632,18 @@ function LayerRow({ label, on, onToggle }: { label: string; on: boolean; onToggl
 function LayerLabel({ children }: { children: ReactNode }) {
   return <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", textTransform: "uppercase", color: INK2 }}><span style={{ width: 18, height: 1.5, background: GOLD, borderRadius: 999 }} />{children}</div>;
 }
+
+/* Стандарт ИСККОН: метка «Комментарий» продолжается полной подписью авторства
+   Шрилы Прабхупады — в том же золотом капс-стиле, что и остальные метки слоёв. */
+const PURPORT_BYLINE = "Комментарий Его Божественной Милости Абхай Чаранаравинды Бхактиведанты Свами Шрилы Прабхупады, Ачарьи-основателя Международного общества сознания Кришны, ИСККОН";
+function CommentaryLabel({ demo }: { demo?: boolean }) {
+  return (
+    <div style={{ margin: "0 0 12px", fontSize: 11, fontWeight: 700, letterSpacing: "1.6px", lineHeight: 1.55, textTransform: "uppercase", color: GOLDT }}>
+      <span aria-hidden style={{ display: "inline-block", width: 18, height: 1.5, background: GOLD, borderRadius: 999, verticalAlign: "middle", marginRight: 10 }} />
+      {PURPORT_BYLINE}{demo && <DemoBadge />}
+    </div>
+  );
+}
 function DemoBadge() {
   return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: FILL, color: INK2, fontSize: 9.5, fontWeight: 700, letterSpacing: ".5px", verticalAlign: "middle" }}>демо</span>;
 }
@@ -704,7 +716,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
       </section>
       {hasCommentary && (
         <section>
-          <LayerLabel>Комментарий</LayerLabel>
+          <CommentaryLabel />
           <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>
             {r.purport!.split(/\n\n+/).map((para, i) => (
               <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
@@ -895,7 +907,7 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
 
               {hasCommentary && (
                 <section style={{ marginBottom: 8 }}>
-                  <LayerLabel>Комментарий{purportIsDemo && <DemoBadge />}</LayerLabel>
+                  <CommentaryLabel demo={purportIsDemo} />
                   <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>
                     {evPurport!.split(/\n\n+/).map((para, i) => (
                       <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
