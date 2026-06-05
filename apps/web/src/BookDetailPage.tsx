@@ -16,6 +16,7 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
+import { DonateModal } from "./DonateModal";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
 
@@ -994,6 +995,7 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
   const [bookPct, setBookPct] = useState(0);
+  const [donate, setDonate] = useState(false);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const openQr = (url: string, data: QrData) => setQr({ url, data });
 
@@ -1038,7 +1040,9 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
     }
   }, [chapters, initialTarget]);
 
-  // Состояние → URL: адрес всегда уникален — /book/bg, /book/bg/{ch}, /book/bg/{ch}/{v}.
+  // Состояние → URL: уникальный адрес — /book/bg, /book/bg/{ch}, /book/bg/{ch}/{v}.
+  // Глубже (открыли главу/стих) → push; прыжок стих↔стих → replace, чтобы «назад» от
+  // стиха вёл к ГЛАВЕ, а не перебирал соседние стихи.
   useEffect(() => {
     if (!chapters || navLock.current || typeof window === "undefined") return;
     let path = "/book/bg";
@@ -1050,8 +1054,24 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
     } else if (openChapter) {
       path = `/book/bg/${openChapter.number}`;
     }
-    if (window.location.pathname !== path) window.history.pushState(null, "", path);
+    const cur = window.location.pathname;
+    if (cur === path) return;
+    const isVerse = (p: string) => /^\/book\/bg\/\d+\/.+/.test(p);
+    if (isVerse(cur) && isVerse(path)) window.history.replaceState(null, "", path);
+    else window.history.pushState(null, "", path);
   }, [openChapter, readerRef, chapters]);
+
+  // Единая кнопка «назад» внутри книги: стих → глава → книга → главная.
+  // Используем настоящую историю (pop), чтобы переходы были чистыми; на холодном
+  // входе истории нет — тогда поднимаемся на уровень вверх и правим адрес на месте.
+  const histBase = useRef(typeof window !== "undefined" ? window.history.length : 0);
+  const goBack = () => {
+    if (typeof window === "undefined") return;
+    if (window.history.length > histBase.current) { window.history.back(); return; }
+    if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `/book/bg/${openChapter.number}` : "/book/bg"); }
+    else if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", "/book/bg"); }
+    else onBack();
+  };
 
   // URL → состояние при «назад/вперёд» браузера (в пределах книги).
   useEffect(() => {
@@ -1151,7 +1171,7 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
       });
       return;
     }
-    if (id === "donate") { flash("Поддержать печать — скоро"); return; }
+    if (id === "donate") { setDonate(true); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
   };
 
@@ -1192,14 +1212,15 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
           </div>
         </div>
       )}
-      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={() => setOpenChapter(null)} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} chapters={chapters} onNavigate={setReaderRef} onClose={() => setReaderRef(null)} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
         </div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
+      {donate && <DonateModal onClose={() => setDonate(false)} />}
     </div>
   );
 }
