@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import type { ReactNode } from "react";
 import QRCode from "qrcode";
 
 /* ───────── palette (matches BookDetailPage: white · graphite · gold) ───────── */
@@ -31,14 +30,6 @@ function IskconMark({ size = 40 }: { size?: number }) {
         WebkitMaskPosition: "center", maskPosition: "center",
       }}
     />
-  );
-}
-
-function Eyebrow({ children }: { children: ReactNode }) {
-  return (
-    <div style={{ marginTop: 8, fontSize: 10, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT }}>
-      {children}
-    </div>
   );
 }
 
@@ -74,9 +65,8 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
         onClick={(e) => e.stopPropagation()}
         style={{ width: "100%", maxWidth: 332, maxHeight: "calc(100dvh - 40px)", overflowY: "auto", WebkitOverflowScrolling: "touch", background: PAPER, borderRadius: 24, padding: "26px 24px 20px", boxShadow: "0 24px 70px rgba(0,0,0,0.28)", textAlign: "center", fontFamily: "var(--font-text)" }}
       >
-        {/* ── brand lockup ── */}
+        {/* ── logo (эмблема уже содержит подпись ISKCON ONE LOVE) ── */}
         <IskconMark size={40} />
-        <Eyebrow>ISKCON ONE LOVE</Eyebrow>
 
         {/* ── identity (verse / chapter / book) ── */}
         <Identity data={data} />
