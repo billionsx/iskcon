@@ -497,6 +497,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, fl
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [fav, setFav] = useState(false);
   const [printing, setPrinting] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -520,6 +521,19 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, fl
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
+  const shareChapter = async () => {
+    const label = `Глава ${chapter.number} · ${chapter.title_ru}`;
+    const url = "https://gaurangers.com/book/bg";
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
+        await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, url });
+        return;
+      }
+    } catch { /* cancelled */ }
+    try { await navigator.clipboard.writeText(url); flash("Ссылка скопирована"); }
+    catch { flash(url); }
+  };
+
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
@@ -528,6 +542,8 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, fl
           <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
+        <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио главы — скоро")} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -577,6 +593,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, fl
 
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
         setMenu(false);
+        if (id === "share") { void shareChapter(); return; }
         if (id === "pdf") {
           if (verses && verses.length) setPrinting(true);
           else flash("Глава ещё загружается…");
