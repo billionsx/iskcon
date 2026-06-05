@@ -1,4 +1,4 @@
-# Диагностика gaurangers.com — Fri Jun  5 08:16:20 UTC 2026
+# Диагностика gaurangers.com — Fri Jun  5 08:22:50 UTC 2026
 
 zone=708c4b79858d2ab38668e1b86f940025
 
@@ -46,11 +46,11 @@ zone=708c4b79858d2ab38668e1b86f940025
     JS в origin-index.html: /assets/index-896pWg7C.js
 
 ## iskcon-web: версии и активный деплой
-    deploy 59c4eb17-7e26-444f-b3a2-9a6b9451151d created=2026-06-05T08:12:55.441339Z strategy=percentage
-    deploy dc5ef58e-0985-4c5d-9843-1c3dd57127ce created=2026-06-05T08:00:18.014031Z strategy=percentage
+    deploy 719d3c7c-34e3-4986-9796-c44ab9d3974b created=2026-06-05T08:21:24.990636Z strategy=percentage
+    deploy 0e270c8b-e35b-44d1-b555-d503b7dc5cdf created=2026-06-05T08:21:24.686093Z strategy=percentage
+    version 147 created=2026-06-05T08:21:24.990636Z tag=secret
+    version 146 created=2026-06-05T08:21:24.686093Z tag=secret
     version 145 created=2026-06-05T08:12:55.441339Z tag=secret
-    version 144 created=2026-06-05T08:00:18.014031Z tag=secret
-    version 143 created=2026-06-05T07:39:11.809846Z tag=secret
 
 ## Существуют ли файлы на сервере (HEAD)
     /assets/index-896pWg7C.js -> HTTP 200 (cf-cache-status: HIT)
