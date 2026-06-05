@@ -87,6 +87,20 @@ jobs:
           echo "    JS в origin-index.html: ${JSFRESH:-?}" >> $R
           echo "" >> $R
 
+          echo "## ПРОБА свежий путь (никогда не запрашивался → кэш не перехватит → отработает воркер)" >> $R
+          FP="/__probe-$(date +%s)-$RANDOM"
+          curl -s -D /tmp/fp.hdr -o /tmp/fp.html --max-time 25 "https://gaurangers.com$FP"
+          echo "    путь: $FP" >> $R
+          tr -d '\r' < /tmp/fp.hdr | grep -iE '^HTTP|^cf-cache-status|^cache-control|^cdn-cache-control|^cloudflare-cdn|^x-robots' | sed 's/^/    /' >> $R
+          JSFP=$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' /tmp/fp.html | head -1)
+          echo "    JS в ответе: ${JSFP:-?}" >> $R
+          if [ -n "$JSFP" ]; then
+            B=$(curl -s --max-time 30 "https://gaurangers.com$JSFP")
+            echo "    'Аудио главы': $(printf '%s' "$B" | grep -c 'Аудио главы')  | 'initialTarget': $(printf '%s' "$B" | grep -c 'initialTarget')" >> $R
+          fi
+          echo "    (есть cdn-cache-control: no-store → активен НОВЫЙ воркер; JS=CoKgVYa4 → новые ассеты)" >> $R
+          echo "" >> $R
+
           echo "## iskcon-web: версии и активный деплой" >> $R
           curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments" "${auth[@]}" \
             | jq -r '.result.deployments[0:2][]? | "    deploy \(.id) created=\(.created_on) strategy=\(.strategy)"' >> $R 2>/dev/null
