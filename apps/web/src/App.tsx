@@ -319,6 +319,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
   const mainRef = useRef<HTMLElement>(null);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [bookPct, setBookPct] = useState(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => {
     setToast(m);
@@ -343,7 +344,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                   return;
                 }
-                if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, fallback: () => { void exportWholeBook(BOOKS.bg, flash); } }); return; }
+                if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, onProgress: setBookPct, fallback: () => { void exportWholeBook(BOOKS.bg, flash); } }); return; }
                 if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
                 onOpenBook();
               }} />
@@ -357,6 +358,18 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       <TabBar active={tab} onChange={onChange} />
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 90, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(31,32,36,0.95)", color: "#fff", padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontFamily: "var(--font-text)", boxShadow: "0 8px 30px rgba(0,0,0,0.25)", maxWidth: "86%", textAlign: "center" }}>{toast}</div>}
+      {bookPct > 0 && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
+          <div style={{ width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>Готовлю PDF книги</div>
+            <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1–2 минуты</div>
+            <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
+              <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
+            </div>
+            <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -382,7 +395,7 @@ export default function App() {
   const RESERVED = ["", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin"];
   function pathFromState(): string {
     if (openAdmin) return "/admin";
-    if (openBook) return "/book/bg";
+    if (openBook) return (typeof window !== "undefined" && window.location.pathname.startsWith("/book/bg")) ? window.location.pathname : "/book/bg";
     if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
     if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openCatalog) return "/bhajans";

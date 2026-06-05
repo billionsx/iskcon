@@ -134,17 +134,33 @@ export function exportToPdf(
 export async function downloadServerPdf(
   path: string,
   filename: string,
-  opts?: { onStatus?: (m: string) => void; fallback?: () => void },
+  opts?: { onStatus?: (m: string) => void; onProgress?: (pct: number) => void; fallback?: () => void },
 ): Promise<void> {
   if (typeof window === "undefined") return;
   const onStatus = opts?.onStatus;
+  const onProgress = opts?.onProgress;
   const fallback = opts?.fallback;
   onStatus?.("Готовлю PDF…");
+  // Оценочный прогресс: сервер отдаёт готовый PDF целиком (книга ≈ 1100 страниц
+  // рендерится ~1–2 мин), поэтому показываем плавно растущий процент для уверенности,
+  // а по завершении — 100%.
+  let timer: ReturnType<typeof setInterval> | undefined;
+  if (onProgress) {
+    onProgress(2);
+    const start = Date.now();
+    timer = setInterval(() => {
+      const t = (Date.now() - start) / 1000;
+      const p = Math.round((1 - Math.exp(-t / 40)) * 100);
+      onProgress(Math.max(2, Math.min(92, p)));
+    }, 400);
+  }
   try {
     const res = await fetch(path, { headers: { accept: "application/pdf" } });
     if (!res.ok) throw new Error("status " + res.status);
     const blob = await res.blob();
     if (!blob.size) throw new Error("empty");
+    if (timer) { clearInterval(timer); timer = undefined; }
+    onProgress?.(100);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -155,7 +171,10 @@ export async function downloadServerPdf(
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 8000);
     onStatus?.("Готово");
+    if (onProgress) setTimeout(() => onProgress(0), 800);
   } catch {
+    if (timer) clearInterval(timer);
+    onProgress?.(0);
     if (fallback) { onStatus?.("Готовлю PDF в браузере…"); fallback(); }
     else onStatus?.("Не удалось сформировать PDF");
   }
