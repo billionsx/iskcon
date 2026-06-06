@@ -11,22 +11,22 @@ export function PrevIcon(p: P) { return <svg {...sp(p)}><path d="M18 6v12l-9-6z"
 export function NextIcon(p: P) { return <svg {...sp(p)}><path d="M6 6v12l9-6z" fill="currentColor" /><rect x="16.6" y="6" width="2.4" height="12" rx="1.2" fill="currentColor" /></svg>; }
 export function ChevDownIcon(p: P) { return <svg {...sp(p)}><path {...S} d="M6 9l6 6 6-6" /></svg>; }
 export function QueueIcon(p: P) { return <svg {...sp(p)}><path {...S} d="M4 7h11M4 12h11M4 17h7" /><path d="M19 13.5l0 5.2M19 13.5c1.4-.3 2.4-.2 2.4.8s-1 1.3-2.4 1" {...S} /></svg>; }
-/** Apple-style gobackward.15 / goforward.15 — круговая стрелка + «15» по центру. */
+/** Apple gobackward.15 / goforward.15 — почти полный круг, аккуратная стрелка, «15» по центру. */
 export function Back15Icon(p: P) {
   return (
     <svg {...sp(p)}>
-      <path fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" d="M12 4.8 A7.2 7.2 0 1 0 19.2 12" />
-      <path fill="currentColor" d="M13 2.2 L8.4 4.8 L13 7.4 Z" />
-      <text x="12" y="15.4" textAnchor="middle" fontSize="7.6" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">15</text>
+      <path d="M8.49 5.26 A7.6 7.6 0 1 0 15.51 5.26" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" />
+      <path d="M6.18 6.46 L7.47 3.30 L9.51 7.22 Z" fill="currentColor" />
+      <text x="12" y="15.2" textAnchor="middle" fontSize="7.4" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">15</text>
     </svg>
   );
 }
 export function Fwd15Icon(p: P) {
   return (
     <svg {...sp(p)}>
-      <path fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" d="M12 4.8 A7.2 7.2 0 1 1 4.8 12" />
-      <path fill="currentColor" d="M11 2.2 L15.6 4.8 L11 7.4 Z" />
-      <text x="12" y="15.4" textAnchor="middle" fontSize="7.6" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">15</text>
+      <path d="M15.51 5.26 A7.6 7.6 0 1 1 8.49 5.26" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" />
+      <path d="M17.82 6.46 L14.49 7.22 L16.53 3.30 Z" fill="currentColor" />
+      <text x="12" y="15.2" textAnchor="middle" fontSize="7.4" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">15</text>
     </svg>
   );
 }
