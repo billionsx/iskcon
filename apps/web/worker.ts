@@ -156,9 +156,139 @@ class TitleRewriter {
   element(el: Element) { el.setInnerContent(this.title); }
 }
 
+// ── Audio: stream Bhagavad-gita recordings from Internet Archive through our origin ──
+// Two IA items hold the audio: iskcone-bg (verse-by-verse) and iskcone-bg-comments
+// (with commentary; also carries the 4 intro tracks 00.0X.*). We proxy the bytes so the
+// app stays same-origin (no CORS), Cloudflare edge-caches them, and the IA identifiers
+// stay out of the client. The playlist manifest is built live from each item's IA
+// metadata, so new uploads appear automatically without code changes.
+const AUDIO_ITEMS = { plain: "iskcone-bg", commentary: "iskcone-bg-comments" } as const;
+
+// Readable Russian titles for the commentary-only intro tracks (no chapter number).
+const BG_INTRO_TITLES: Record<string, string> = {
+  "00.01.Predystoriya": "Предыстория",
+  "00.02.Predislovie": "Предисловие",
+  "00.03.Vvedenie": "Введение",
+  "00.04.Molitvy.mangalacharana": "Мангала-ачарана",
+};
+
+interface IaFile { name: string; source?: string; format?: string; length?: string; }
+interface AudioTrack {
+  kind: "intro" | "chapter";
+  pos: number;            // 0-based position within this mode's playlist
+  chapter: number | null; // chapter number (1–18), or null for intros
+  title: string;
+  file: string;
+  url: string;            // same-origin proxy URL
+  durationSec: number | null;
+}
+
+function audioDuration(len?: string): number | null {
+  if (!len) return null;
+  if (len.includes(":")) {
+    const parts = len.split(":").map(Number);
+    return parts.some((x) => Number.isNaN(x)) ? null : parts.reduce((a, b) => a * 60 + b, 0);
+  }
+  const n = Number(len);
+  return Number.isNaN(n) ? null : Math.round(n);
+}
+
+async function audioTracks(identifier: string, origin: string, titles: Map<number, string>): Promise<AudioTrack[]> {
+  const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
+    headers: { accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!meta.ok) return [];
+  const data = (await meta.json()) as { files?: IaFile[] };
+  const originals = (data.files || []).filter((f) => f.source === "original" && /\.mp3$/i.test(f.name));
+  const intros: AudioTrack[] = [];
+  const chapters: AudioTrack[] = [];
+  for (const f of originals) {
+    const stem = f.name.replace(/\.mp3$/i, "");
+    const url = `${origin}/audio/${identifier}/${f.name}`;
+    const durationSec = audioDuration(f.length);
+    const introM = stem.match(/^00\.(\d+)\./);
+    if (introM) {
+      intros.push({
+        kind: "intro",
+        pos: parseInt(introM[1], 10),
+        chapter: null,
+        title: BG_INTRO_TITLES[stem] || stem.replace(/^[\d.]+/, "").replace(/[._-]+/g, " ").trim() || stem,
+        file: f.name,
+        url,
+        durationSec,
+      });
+    } else {
+      const chM = stem.match(/^(\d{1,2})\./);
+      const chapter = chM ? parseInt(chM[1], 10) : 0;
+      chapters.push({
+        kind: "chapter",
+        pos: chapter,
+        chapter,
+        title: titles.get(chapter) || `Глава ${chapter}`,
+        file: f.name,
+        url,
+        durationSec,
+      });
+    }
+  }
+  intros.sort((a, b) => a.pos - b.pos);
+  chapters.sort((a, b) => (a.chapter || 0) - (b.chapter || 0));
+  const ordered = [...intros, ...chapters];
+  ordered.forEach((t, i) => (t.pos = i));
+  return ordered;
+}
+
+async function audioManifest(env: Env, origin: string): Promise<Response> {
+  // Chapter titles come straight from D1 (single source of truth for the book structure).
+  const { results } = await env.DB.prepare(
+    `SELECT CAST(number AS INTEGER) AS n, json_extract(title,'$.ru') AS title_ru
+     FROM divisions WHERE work_id='bg' ORDER BY n`
+  ).all<{ n: number; title_ru: string }>();
+  const titles = new Map<number, string>();
+  for (const r of results) titles.set(r.n, r.title_ru);
+  const [plain, commentary] = await Promise.all([
+    audioTracks(AUDIO_ITEMS.plain, origin, titles),
+    audioTracks(AUDIO_ITEMS.commentary, origin, titles),
+  ]);
+  return json({
+    book: "bg",
+    modes: {
+      plain: { identifier: AUDIO_ITEMS.plain, tracks: plain },
+      commentary: { identifier: AUDIO_ITEMS.commentary, tracks: commentary },
+    },
+  });
+}
+
+// Stream one file from IA, forwarding Range (for seeking) and stamping an immutable cache.
+async function serveAudio(request: Request, identifier: string, filename: string): Promise<Response> {
+  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(filename)}`;
+  const range = request.headers.get("Range");
+  const upstream = await fetch(iaUrl, {
+    method: "GET",
+    headers: range ? { Range: range } : {},
+    redirect: "follow",
+    cf: { cacheEverything: true, cacheTtl: 31536000 },
+  });
+  const h = new Headers(upstream.headers);
+  h.set("Accept-Ranges", "bytes");
+  h.set("Cache-Control", "public, max-age=31536000, immutable");
+  h.set("X-Robots-Tag", NOINDEX);
+  h.delete("set-cookie");
+  const ct = h.get("Content-Type");
+  if (!ct || ct === "application/octet-stream") h.set("Content-Type", "audio/mpeg");
+  return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: h });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // ── Audio proxy: /audio/<ia-identifier>/<file>.mp3 → streamed from Internet Archive ──
+    const audioM = url.pathname.match(/^\/audio\/([a-z0-9][a-z0-9._-]*)\/(.+\.mp3)$/i);
+    if (audioM) {
+      return serveAudio(request, audioM[1], audioM[2]);
+    }
 
     // ── Library API (served from D1; structure + deep-links only) ──
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
@@ -176,6 +306,11 @@ export default {
          ORDER BY CAST(d.number AS INTEGER)`
       ).all();
       return json({ work: "bg", chapters: results });
+    }
+
+    // GET /api/books/bg/audio → ordered audio playlist (plain + commentary), built live from IA
+    if (url.pathname === "/api/books/bg/audio") {
+      return audioManifest(env, url.origin);
     }
 
     // GET /api/books/bg/chapters/:n/verses → verse refs + source_url for a chapter
