@@ -189,7 +189,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
                 {p.repeat === "one" ? <RepeatOneIcon size={22} /> : p.repeat === "library" ? <RepeatLibraryIcon size={22} /> : <RepeatIcon size={22} />}
               </button>
               <button type="button" aria-label="Скорость" aria-pressed={p.rate !== 1} onClick={() => p.cycleRate()}
-                style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
+                style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
             </div>
             <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
               style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", whiteSpace: "nowrap", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", transition: "color .2s", color: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.72)" }}>
