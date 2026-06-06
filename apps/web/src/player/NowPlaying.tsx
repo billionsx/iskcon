@@ -89,7 +89,7 @@ export function NowPlaying() {
           <BookHeroCard book={BOOKS.bg} presentational />
           <div style={{ marginTop: 22 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
-              Далее · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
+              Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
             </div>
             {p.tracks.map((t, i) => (
               <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
