@@ -7,7 +7,7 @@
  */
 import { useEffect, useRef, useState, type CSSProperties, type Ref } from "react";
 import { usePlayer, fmtTime, type Track } from "./store";
-import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon } from "./icons";
+import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard } from "../BookHeroCard";
 import { BOOKS } from "../books";
 
@@ -93,8 +93,16 @@ export function NowPlaying() {
                 Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
-                <button type="button" aria-label="Перемешать" aria-pressed={p.shuffle} onClick={() => p.toggleShuffle()} style={{ ...iconBtn(36), color: p.shuffle ? GOLD : "rgba(255,255,255,0.55)" }}><ShuffleIcon size={20} /></button>
-                <button type="button" aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "all" ? "Повтор книги" : "Повтор"} aria-pressed={p.repeat !== "off"} onClick={() => p.cycleRepeat()} style={{ ...iconBtn(36), color: p.repeat !== "off" ? GOLD : "rgba(255,255,255,0.55)" }}>{p.repeat === "one" ? <RepeatOneIcon size={20} /> : <RepeatIcon size={20} />}</button>
+                <button type="button" aria-pressed={p.order !== "forward"}
+                  aria-label={p.order === "shuffle" ? "Перемешать" : p.order === "reverse" ? "Обратный порядок" : "По порядку"}
+                  onClick={() => p.cycleOrder()} style={{ ...iconBtn(36), color: p.order === "forward" ? "rgba(255,255,255,0.55)" : GOLD }}>
+                  {p.order === "shuffle" ? <ShuffleIcon size={20} /> : p.order === "reverse" ? <OrderReverseIcon size={20} /> : <OrderForwardIcon size={20} />}
+                </button>
+                <button type="button" aria-pressed={p.repeat !== "off"}
+                  aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "library" ? "Повтор библиотеки" : p.repeat === "book" ? "Повтор книги" : "Повтор"}
+                  onClick={() => p.cycleRepeat()} style={{ ...iconBtn(36), color: p.repeat === "off" ? "rgba(255,255,255,0.55)" : GOLD }}>
+                  {p.repeat === "one" ? <RepeatOneIcon size={20} /> : p.repeat === "library" ? <RepeatLibraryIcon size={20} /> : <RepeatIcon size={20} />}
+                </button>
               </div>
             </div>
             {p.tracks.map((t, i) => (

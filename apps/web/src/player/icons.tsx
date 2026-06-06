@@ -66,3 +66,35 @@ export function RepeatOneIcon(p: P) {
     </svg>
   );
 }
+/** repeat для всей библиотеки — петля + «∞». */
+export function RepeatLibraryIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <polyline points="17 2 20.5 5.5 17 9" {...S} />
+      <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" {...S} />
+      <polyline points="7 22 3.5 18.5 7 15" {...S} />
+      <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" {...S} />
+      <text x="12" y="15.1" textAnchor="middle" fontSize="7.8" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">∞</text>
+    </svg>
+  );
+}
+/** Порядок по списку (1→N) — список + стрелка вниз. */
+export function OrderForwardIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <path d="M4 6h9M4 10h9M4 14h6" {...S} />
+      <path d="M17.5 6v11" {...S} />
+      <path d="M14.5 13.5 17.5 17 20.5 13.5" {...S} />
+    </svg>
+  );
+}
+/** Обратный порядок (N→1) — список + стрелка вверх. */
+export function OrderReverseIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <path d="M4 18h9M4 14h9M4 10h6" {...S} />
+      <path d="M17.5 18V7" {...S} />
+      <path d="M14.5 10.5 17.5 7 20.5 10.5" {...S} />
+    </svg>
+  );
+}
