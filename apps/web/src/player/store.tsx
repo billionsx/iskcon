@@ -60,6 +60,7 @@ export interface PlayerApi {
   // Now Playing
   open(): void;
   close(): void;
+  dismiss(): void;
 }
 
 const Ctx = createContext<PlayerApi | null>(null);
@@ -252,6 +253,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
   function jumpTo(i: number) { const m = manifestRef.current; if (m) loadIndex(m, modeRef.current, i, true); }
 
+  // полное закрытие плеера: стоп, скрыть мини-плеер, забыть позицию
+  function dismiss() {
+    engineRef.current?.pause();
+    setExpanded(false);
+    setActive(false);
+    try { localStorage.removeItem(PERSIST_KEY); } catch { /* ignore */ }
+  }
+
   // ── Media Session (локскрин / Пункт управления / AirPods) ──
   function updateMediaSession(t: Track, md: AudioMode) {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
@@ -304,6 +313,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     playBook, playChapter, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),
+    dismiss,
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
