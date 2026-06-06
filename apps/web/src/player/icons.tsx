@@ -30,3 +30,39 @@ export function Fwd15Icon(p: P) {
     </svg>
   );
 }
+
+/** SF Symbols shuffle — две перекрещивающиеся стрелки. */
+export function ShuffleIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <polyline points="16 4 20 4 20 8" {...S} />
+      <line x1="4" y1="19" x2="20" y2="4" {...S} />
+      <polyline points="20 15 20 19 16 19" {...S} />
+      <line x1="15" y1="14" x2="20" y2="19" {...S} />
+      <line x1="4" y1="5" x2="9" y2="10" {...S} />
+    </svg>
+  );
+}
+/** SF Symbols repeat — петля из двух стрелок. */
+export function RepeatIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <polyline points="17 2 20.5 5.5 17 9" {...S} />
+      <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" {...S} />
+      <polyline points="7 22 3.5 18.5 7 15" {...S} />
+      <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" {...S} />
+    </svg>
+  );
+}
+/** SF Symbols repeat.1 — петля + «1» по центру. */
+export function RepeatOneIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <polyline points="17 2 20.5 5.5 17 9" {...S} />
+      <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" {...S} />
+      <polyline points="7 22 3.5 18.5 7 15" {...S} />
+      <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" {...S} />
+      <text x="12" y="15.1" textAnchor="middle" fontSize="8.2" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">1</text>
+    </svg>
+  );
+}

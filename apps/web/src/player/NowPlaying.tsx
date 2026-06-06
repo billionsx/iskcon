@@ -7,7 +7,7 @@
  */
 import { useEffect, useRef, useState, type CSSProperties, type Ref } from "react";
 import { usePlayer, fmtTime, type Track } from "./store";
-import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon } from "./icons";
+import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon } from "./icons";
 import { BookHeroCard } from "../BookHeroCard";
 import { BOOKS } from "../books";
 
@@ -88,8 +88,14 @@ export function NowPlaying() {
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
           <BookHeroCard book={BOOKS.bg} presentational />
           <div style={{ marginTop: 22 }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
-              Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8, padding: "0 2px" }}>
+              <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+                <button type="button" aria-label="Перемешать" aria-pressed={p.shuffle} onClick={() => p.toggleShuffle()} style={{ ...iconBtn(36), color: p.shuffle ? GOLD : "rgba(255,255,255,0.55)" }}><ShuffleIcon size={20} /></button>
+                <button type="button" aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "all" ? "Повтор книги" : "Повтор"} aria-pressed={p.repeat !== "off"} onClick={() => p.cycleRepeat()} style={{ ...iconBtn(36), color: p.repeat !== "off" ? GOLD : "rgba(255,255,255,0.55)" }}>{p.repeat === "one" ? <RepeatOneIcon size={20} /> : <RepeatIcon size={20} />}</button>
+              </div>
             </div>
             {p.tracks.map((t, i) => (
               <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
