@@ -22,7 +22,7 @@ const glass = (radius: number): CSSProperties => ({
 });
 const glassBtn = (size: number): CSSProperties => ({ ...glass(999), height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0 });
 
-export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: () => void; onDonate?: () => void } = {}) {
+export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: number | null) => void; onDonate?: () => void } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -56,21 +56,31 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: () => void; 
   function onUp() { if (startY.current == null) return; const d = drag; startY.current = null; setDragging(false); setDrag(0); if (d > 110) p.close(); }
 
   const BOOK = BOOKS.bg;
-  const BOOK_URL = "https://gaurangers.com/book/bg";
+  const ORIGIN = "https://gaurangers.com";
+  const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
+  const isChapter = ch != null;
+  const chapterLabel = isChapter ? `Глава ${ch}` : undefined;
+  const bookUrl = `${ORIGIN}/book/bg?listen`;
+  const chapterUrl = isChapter ? `${ORIGIN}/book/bg/${ch}?listen` : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
-  function shareBook() {
-    if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: BOOK.titleLine1, url: BOOK_URL }).catch(() => {});
-    else { try { void navigator.clipboard?.writeText(BOOK_URL); flash("Ссылка скопирована"); } catch { /* ignore */ } }
+  function doShare(url: string, title: string) {
+    if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title, url }).catch(() => {});
+    else { try { void navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { /* ignore */ } }
   }
-  function readBook() { p.close(); onOpenBook?.(); }
-  function downloadAudio() {
+  function readBook() { p.close(); onOpenBook?.(isChapter ? ch : null); }
+  function downloadChapter() {
     const t = p.track; if (!t) return;
     try { const a = document.createElement("a"); a.href = t.url; a.download = `${t.title}.mp3`; document.body.appendChild(a); a.click(); a.remove(); flash("Скачивание…"); }
     catch { flash("Не удалось скачать"); }
   }
+  function bookQr() { setQr({ url: bookUrl, data: { kind: "book", bookTitle: BOOK.titleLine1, bookSubtitle: BOOK.titleLine2, tagline: BOOK.tagline, cover: BOOK.covers[0] } }); }
+  function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: BOOK.titleLine1, chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
   function onMenuSelect(id: string) {
-    if (id === "qr") { setQr({ url: BOOK_URL, data: { kind: "book", bookTitle: BOOK.titleLine1, bookSubtitle: BOOK.titleLine2, tagline: BOOK.tagline, cover: BOOK.covers[0] } }); return; }
-    if (id === "download") { downloadAudio(); return; }
+    if (id === "share-chapter") { doShare(chapterUrl, `${BOOK.titleLine1} — Глава ${ch}`); return; }
+    if (id === "qr-chapter") { chapterQr(); return; }
+    if (id === "download-chapter") { downloadChapter(); return; }
+    if (id === "share-book") { doShare(bookUrl, BOOK.titleLine1); return; }
+    if (id === "qr-book") { bookQr(); return; }
     if (id === "donate") { onDonate?.(); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
   }
@@ -78,7 +88,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: () => void; 
     <>
       <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
       <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>
-      <ActionBtn ariaLabel="Поделиться" onClick={shareBook}><ShareIcon size={18} /></ActionBtn>
+      <ActionBtn ariaLabel="Поделиться" onClick={() => doShare(chapterUrl, isChapter ? `${BOOK.titleLine1} — Глава ${ch}` : BOOK.titleLine1)}><ShareIcon size={18} /></ActionBtn>
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
   );
@@ -190,7 +200,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: () => void; 
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" anchorRef={moreRef} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" chapterLabel={chapterLabel} isChapter={isChapter} anchorRef={moreRef} />
     </div>
   );
 }

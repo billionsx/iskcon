@@ -139,6 +139,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       onPlaying: () => setLoading(false),
     });
     engineRef.current = eng;
+    // deep-link ?listen → авто-открытие плеера на книге/главе (приоритет над restore)
+    if (typeof location !== "undefined" && new URLSearchParams(location.search).has("listen")) {
+      const mm = location.pathname.match(/^\/book\/bg(?:\/(\d+))?/);
+      const ch = mm && mm[1] ? parseInt(mm[1], 10) : null;
+      try { history.replaceState(null, "", location.pathname); } catch { /* ignore */ }
+      if (ch) playChapter(ch, "plain"); else playBook({ mode: "plain" });
+      return () => eng.destroy();
+    }
     // восстановить последнюю позицию (пауза) — мини-плеер появится сразу
     try {
       const raw = localStorage.getItem(PERSIST_KEY);

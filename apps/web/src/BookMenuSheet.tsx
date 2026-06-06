@@ -66,17 +66,25 @@ const GROUPS: Item[][] = [
     { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
   ],
 ];
-// Меню плеера: QR · Скачать аудио · Задонатить · Сообщить об ошибке.
-const PLAYER_GROUPS: Item[][] = [
-  [
-    { id: "qr", label: "QR-код", Icon: QrGlyph },
-    { id: "download", label: "Скачать аудио", Icon: PdfGlyph },
-  ],
-  [
+type Group = { title?: string; items: Item[] };
+// Меню плеера: действия по текущей главе и по всей книге; ссылки ведут на прослушивание.
+function buildPlayerGroups(chapterLabel: string | undefined, isChapter: boolean): Group[] {
+  const g: Group[] = [];
+  if (isChapter) g.push({ title: chapterLabel, items: [
+    { id: "share-chapter", label: "Поделиться главой", Icon: ShareGlyph },
+    { id: "qr-chapter", label: "QR-код главы", Icon: QrGlyph },
+    { id: "download-chapter", label: "Скачать главу", Icon: PdfGlyph },
+  ] });
+  g.push({ title: "Вся книга", items: [
+    { id: "share-book", label: "Поделиться книгой", Icon: ShareGlyph },
+    { id: "qr-book", label: "QR-код книги", Icon: QrGlyph },
+  ] });
+  g.push({ items: [
     { id: "donate", label: "Задонатить", Icon: GiftGlyph },
     { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
-  ],
-];
+  ] });
+  return g;
+}
 
 const ROW_H = 56;
 const PAD_L = 20;
@@ -96,13 +104,13 @@ const SHEET_CSS = `
 @media (prefers-reduced-motion: reduce) { .bms-scrim, .bms-sheet { animation: none !important; } }
 `;
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book" }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", chapterLabel, isChapter = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player";
+  variant?: "book" | "player"; chapterLabel?: string; isChapter?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
-  const groups = variant === "player" ? PLAYER_GROUPS : GROUPS;
+  const data: Group[] = variant === "player" ? buildPlayerGroups(chapterLabel, isChapter) : GROUPS.map((items) => ({ items }));
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
@@ -121,10 +129,11 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book" }: {
         }}>
         <div style={{ height: 5, width: 36, borderRadius: 999, background: "rgba(60,60,67,0.3)", margin: "8px auto 12px" }} />
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {groups.map((group, gi) => (
-            <div key={gi}
-              style={{ borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.94)" }}>
-              {group.map((it) => {
+          {data.map((group, gi) => (
+            <div key={gi}>
+              {group.title && <div style={{ padding: "0 16px 6px", fontSize: 12.5, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: "rgba(60,60,67,0.55)" }}>{group.title}</div>}
+              <div style={{ borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.94)" }}>
+              {group.items.map((it) => {
                 const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
                 return (
                   <button key={it.id} role="menuitem" type="button" className="bms-row"
@@ -139,6 +148,7 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book" }: {
                   </button>
                 );
               })}
+              </div>
             </div>
           ))}
         </div>
