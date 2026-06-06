@@ -70,6 +70,11 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
           style={btn}>
           <NextIcon size={20} />
         </button>
+        <button type="button" aria-label="Закрыть плеер"
+          onClick={(e) => { e.stopPropagation(); p.dismiss(); }}
+          style={{ ...btn, width: 32, color: "rgba(255,255,255,0.55)" }}>
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
+        </button>
       </div>
     </div>
   );
