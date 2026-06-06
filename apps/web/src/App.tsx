@@ -14,6 +14,9 @@ import { exportWholeBook } from "./bookPdf";
 import { downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { PdfDoc } from "./PdfDoc";
+import { PlayerProvider } from "./player/store";
+import { MiniPlayer } from "./player/MiniPlayer";
+import { NowPlaying } from "./player/NowPlaying";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
@@ -493,7 +496,9 @@ export default function App() {
       verse: kind === "verse" ? (v ?? null) : null,
     });
   }
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openCatalog && !openContent;
   return (
+    <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         {openAdmin ? (
@@ -530,7 +535,10 @@ export default function App() {
           <Screen tab={tab} onChange={setTab} onOpenBook={() => { setBookTarget(null); setOpenBook(true); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onDonate={openDonate} />
         )}
         {donate && <DonateModal onClose={closeDonate} />}
+        <MiniPlayer tabBarVisible={tabBarVisible} />
+        <NowPlaying />
       </div>
     </div>
+    </PlayerProvider>
   );
 }
