@@ -123,9 +123,17 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
             <div style={{ flex: 1, minWidth: 0, textAlign: "center", fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s" }}>
               {BOOKS.bg?.titleLine1}
             </div>
-            <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <div aria-hidden={!collapsed}
+                style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
+                <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : "#fff" }}><HeartIcon size={17} filled={favorited} /></button>
+                <button type="button" aria-label="Читать" onClick={readBook} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>
+                <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
+              </div>
+              <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
+              </button>
+            </div>
           </div>
         </div>
 
