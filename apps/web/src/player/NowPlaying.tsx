@@ -20,7 +20,7 @@ const glass = (radius: number): CSSProperties => ({
   backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)",
   border: "0.5px solid rgba(255,255,255,0.16)", borderRadius: radius,
 });
-const glassBtn = (size: number): CSSProperties => ({ ...glass(999), height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0 });
+const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0, background: "none", border: "none", padding: 0 });
 
 export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: number | null) => void; onDonate?: () => void } = {}) {
   const p = usePlayer();
@@ -168,26 +168,23 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
             <button type="button" aria-label="Вперёд 15 секунд" onClick={() => p.skip(15)} style={iconBtn(44)}><Fwd15Icon size={30} /></button>
             <button type="button" aria-label="Следующая глава" onClick={() => p.next()} style={iconBtn(44)}><NextIcon size={27} /></button>
           </div>
-          <div style={{ marginTop: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+          <div style={{ marginTop: 12, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
               <button type="button" aria-pressed={p.order !== "forward"}
                 aria-label={p.order === "shuffle" ? "Перемешать" : p.order === "reverse" ? "Обратный порядок" : "По порядку"}
-                onClick={() => p.cycleOrder()} style={{ ...glassBtn(38), color: p.order === "forward" ? "rgba(255,255,255,0.75)" : GOLD }}>
-                {p.order === "shuffle" ? <ShuffleIcon size={21} /> : p.order === "reverse" ? <OrderReverseIcon size={21} /> : <OrderForwardIcon size={21} />}
+                onClick={() => p.cycleOrder()} style={{ ...bareBtn(34), color: p.order === "forward" ? "rgba(255,255,255,0.55)" : GOLD }}>
+                {p.order === "shuffle" ? <ShuffleIcon size={22} /> : p.order === "reverse" ? <OrderReverseIcon size={22} /> : <OrderForwardIcon size={22} />}
               </button>
               <button type="button" aria-pressed={p.repeat !== "off"}
                 aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "library" ? "Повтор библиотеки" : p.repeat === "book" ? "Повтор книги" : "Повтор"}
-                onClick={() => p.cycleRepeat()} style={{ ...glassBtn(38), color: p.repeat === "off" ? "rgba(255,255,255,0.75)" : GOLD }}>
-                {p.repeat === "one" ? <RepeatOneIcon size={21} /> : p.repeat === "library" ? <RepeatLibraryIcon size={21} /> : <RepeatIcon size={21} />}
+                onClick={() => p.cycleRepeat()} style={{ ...bareBtn(34), color: p.repeat === "off" ? "rgba(255,255,255,0.55)" : GOLD }}>
+                {p.repeat === "one" ? <RepeatOneIcon size={22} /> : p.repeat === "library" ? <RepeatLibraryIcon size={22} /> : <RepeatIcon size={22} />}
               </button>
-              <button type="button" aria-label="Скорость" onClick={() => p.cycleRate()} style={{ ...glass(999), flexShrink: 0, height: 38, padding: "0 14px", color: "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>{p.rate}×</button>
+              <button type="button" aria-label="Скорость" aria-pressed={p.rate !== 1} onClick={() => p.cycleRate()}
+                style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
             </div>
             <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
-              style={{ height: 38, padding: "0 18px", borderRadius: 999, cursor: "pointer", fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", transition: "background .2s, color .2s, border-color .2s",
-                border: p.mode === "commentary" ? "0.5px solid transparent" : "0.5px solid rgba(255,255,255,0.16)",
-                background: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.10)",
-                color: p.mode === "commentary" ? "#1a1a1d" : "#fff",
-                backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)" }}>
+              style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", whiteSpace: "nowrap", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", transition: "color .2s", color: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.72)" }}>
               С комментариями
             </button>
           </div>

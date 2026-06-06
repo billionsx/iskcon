@@ -33,12 +33,24 @@ function IskconMark({ size = 40 }: { size?: number }) {
   );
 }
 
+function CopyGlyph() {
+  return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="9" y="9" width="11" height="11" rx="2.5" /><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5" /></svg>;
+}
+function CheckGlyph() {
+  return <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12.5 10 17.5 19 6.5" /></svg>;
+}
+
 /** Rich QR card in the app's style. Light theme; QR is graphite on white. */
 export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onClose: () => void }) {
   const [src, setSrc] = useState("");
+  const [copied, setCopied] = useState(false);
+  function copyUrl() {
+    try { void navigator.clipboard?.writeText(url); setCopied(true); window.setTimeout(() => setCopied(false), 1600); }
+    catch { /* ignore */ }
+  }
 
   useEffect(() => {
-    let live = true;
+    let live = true; setCopied(false);
     QRCode.toDataURL(url, {
       margin: 1,
       width: 560,
@@ -78,11 +90,19 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
             : <span style={{ fontSize: 13, color: INK3 }}>Генерация…</span>}
         </div>
 
-        <div style={{ marginTop: 12, fontSize: 12, lineHeight: 1.4, color: INK3, wordBreak: "break-all" }}>{url}</div>
+        <button
+          onClick={copyUrl}
+          style={{ marginTop: 14, width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 14px", borderRadius: 12, border: `0.5px solid ${LINE}`, background: "#F6F6F8", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}
+        >
+          <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.35, color: INK2, wordBreak: "break-all" }}>{url}</span>
+          <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: copied ? "#1aa179" : GOLDT }}>
+            {copied ? <CheckGlyph /> : <CopyGlyph />}{copied ? "Скопировано" : "Копировать"}
+          </span>
+        </button>
 
         <button
           onClick={onClose}
-          style={{ marginTop: 16, width: "100%", height: 46, borderRadius: 14, border: "none", background: INK, color: "#fff", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)" }}
+          style={{ marginTop: 12, width: "100%", height: 46, borderRadius: 14, border: "none", background: INK, color: "#fff", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)" }}
         >
           Готово
         </button>
