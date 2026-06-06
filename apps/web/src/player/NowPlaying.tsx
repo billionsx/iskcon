@@ -11,7 +11,7 @@ import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd1
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet, type QrData } from "../QrSheet";
-import { HeartIcon, ShareIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
+import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS } from "../books";
 
 const GOLD = "#D2AA1B";
@@ -59,7 +59,6 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
   const ORIGIN = "https://gaurangers.com";
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
-  const chapterLabel = isChapter ? `Глава ${ch}` : undefined;
   const bookUrl = `${ORIGIN}/book/bg?listen`;
   const chapterUrl = isChapter ? `${ORIGIN}/book/bg/${ch}?listen` : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
@@ -88,7 +87,6 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
     <>
       <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
       <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>
-      <ActionBtn ariaLabel="Поделиться" onClick={() => doShare(chapterUrl, isChapter ? `${BOOK.titleLine1} — Глава ${ch}` : BOOK.titleLine1)}><ShareIcon size={18} /></ActionBtn>
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
   );
@@ -200,7 +198,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" chapterLabel={chapterLabel} isChapter={isChapter} anchorRef={moreRef} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" isChapter={isChapter} anchorRef={moreRef} />
     </div>
   );
 }
