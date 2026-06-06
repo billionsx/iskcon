@@ -4,6 +4,8 @@ import type { SVGProps } from "react";
 interface P extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number }
 const sp = ({ size = 24 }: P) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+// Нормализация оптического размера: центрированный масштаб + компенсация толщины штриха до 1.8.
+const norm = (k: number) => ({ transform: `translate(12 12) scale(${k}) translate(-12 -12)`, fill: "none", stroke: "currentColor", strokeWidth: +(1.8 / k).toFixed(2), strokeLinecap: "round" as const, strokeLinejoin: "round" as const });
 
 export function PlayIcon(p: P) { return <svg {...sp(p)}><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>; }
 export function PauseIcon(p: P) { return <svg {...sp(p)}><rect x="6.5" y="5" width="3.6" height="14" rx="1.2" fill="currentColor" /><rect x="13.9" y="5" width="3.6" height="14" rx="1.2" fill="currentColor" /></svg>; }
@@ -31,15 +33,18 @@ export function Fwd15Icon(p: P) {
   );
 }
 
+/* Footer-иконки нормализованы к единой оптической высоте через norm(k). */
 /** SF Symbols shuffle — две перекрещивающиеся стрелки. */
 export function ShuffleIcon(p: P) {
   return (
     <svg {...sp(p)}>
-      <polyline points="16 4 20 4 20 8" {...S} />
-      <line x1="4" y1="19" x2="20" y2="4" {...S} />
-      <polyline points="20 15 20 19 16 19" {...S} />
-      <line x1="15" y1="14" x2="20" y2="19" {...S} />
-      <line x1="4" y1="5" x2="9" y2="10" {...S} />
+      <g {...norm(0.9)}>
+        <polyline points="16 4 20 4 20 8" />
+        <line x1="4" y1="19" x2="20" y2="4" />
+        <polyline points="20 15 20 19 16 19" />
+        <line x1="15" y1="14" x2="20" y2="19" />
+        <line x1="4" y1="5" x2="9" y2="10" />
+      </g>
     </svg>
   );
 }
@@ -47,10 +52,12 @@ export function ShuffleIcon(p: P) {
 export function RepeatIcon(p: P) {
   return (
     <svg {...sp(p)}>
-      <polyline points="17 2 20.5 5.5 17 9" {...S} />
-      <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" {...S} />
-      <polyline points="7 22 3.5 18.5 7 15" {...S} />
-      <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" {...S} />
+      <g {...norm(0.675)}>
+        <polyline points="17 2 20.5 5.5 17 9" />
+        <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" />
+        <polyline points="7 22 3.5 18.5 7 15" />
+        <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" />
+      </g>
     </svg>
   );
 }
@@ -58,11 +65,13 @@ export function RepeatIcon(p: P) {
 export function RepeatOneIcon(p: P) {
   return (
     <svg {...sp(p)}>
-      <polyline points="17 2 20.5 5.5 17 9" {...S} />
-      <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" {...S} />
-      <polyline points="7 22 3.5 18.5 7 15" {...S} />
-      <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" {...S} />
-      <text x="12" y="15.1" textAnchor="middle" fontSize="8.2" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">1</text>
+      <g {...norm(0.675)}>
+        <polyline points="17 2 20.5 5.5 17 9" />
+        <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" />
+        <polyline points="7 22 3.5 18.5 7 15" />
+        <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" />
+      </g>
+      <text x="12" y="14.6" textAnchor="middle" fontSize="7.4" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">1</text>
     </svg>
   );
 }
@@ -70,11 +79,13 @@ export function RepeatOneIcon(p: P) {
 export function RepeatLibraryIcon(p: P) {
   return (
     <svg {...sp(p)}>
-      <polyline points="17 2 20.5 5.5 17 9" {...S} />
-      <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" {...S} />
-      <polyline points="7 22 3.5 18.5 7 15" {...S} />
-      <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" {...S} />
-      <text x="12" y="15.1" textAnchor="middle" fontSize="7.8" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">∞</text>
+      <g {...norm(0.675)}>
+        <polyline points="17 2 20.5 5.5 17 9" />
+        <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" />
+        <polyline points="7 22 3.5 18.5 7 15" />
+        <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" />
+      </g>
+      <text x="12" y="14.7" textAnchor="middle" fontSize="7.2" fontWeight={700} fill="currentColor" fontFamily="var(--font-text), system-ui, sans-serif">∞</text>
     </svg>
   );
 }
@@ -82,9 +93,11 @@ export function RepeatLibraryIcon(p: P) {
 export function OrderForwardIcon(p: P) {
   return (
     <svg {...sp(p)}>
-      <path d="M4 6h9M4 10h9M4 14h6" {...S} />
-      <path d="M17.5 6v11" {...S} />
-      <path d="M14.5 13.5 17.5 17 20.5 13.5" {...S} />
+      <g {...norm(1.23)}>
+        <path d="M4 6h9M4 10h9M4 14h6" />
+        <path d="M17.5 6v11" />
+        <path d="M14.5 13.5 17.5 17 20.5 13.5" />
+      </g>
     </svg>
   );
 }
@@ -92,9 +105,11 @@ export function OrderForwardIcon(p: P) {
 export function OrderReverseIcon(p: P) {
   return (
     <svg {...sp(p)}>
-      <path d="M4 18h9M4 14h9M4 10h6" {...S} />
-      <path d="M17.5 18V7" {...S} />
-      <path d="M14.5 10.5 17.5 7 20.5 10.5" {...S} />
+      <g {...norm(1.23)}>
+        <path d="M4 18h9M4 14h9M4 10h6" />
+        <path d="M17.5 18V7" />
+        <path d="M14.5 10.5 17.5 7 20.5 10.5" />
+      </g>
     </svg>
   );
 }
