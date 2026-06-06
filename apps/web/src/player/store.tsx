@@ -30,6 +30,8 @@ export interface Track {
 interface ModeData { identifier: string; tracks: Track[] }
 interface Manifest { book: string; modes: { plain: ModeData; commentary: ModeData } }
 
+export type RepeatMode = "off" | "all" | "one";
+
 export interface PlayerApi {
   ready: boolean;       // манифест загружен
   active: boolean;      // трек загружен (мини-плеер виден)
@@ -43,6 +45,8 @@ export interface PlayerApi {
   currentTime: number;
   duration: number;
   rate: number;
+  shuffle: boolean;
+  repeat: RepeatMode;
   cover: string;
   bookTitle: string;
   // точки входа
@@ -55,6 +59,8 @@ export interface PlayerApi {
   seek(sec: number): void;
   skip(delta: number): void;
   cycleRate(): void;
+  toggleShuffle(): void;
+  cycleRepeat(): void;
   setMode(mode: AudioMode): void;
   jumpTo(index: number): void;
   // Now Playing
@@ -91,6 +97,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [rate, setRate] = useState(1);
+  const [shuffle, setShuffle] = useState(false);
+  const [repeat, setRepeat] = useState<RepeatMode>("off");
 
   // Зеркала для долгоживущих обработчиков (избегаем устаревших замыканий).
   const manifestRef = useRef<Manifest | null>(null);
@@ -99,12 +107,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const timeRef = useRef(0);
   const durRef = useRef(0);
   const rateRef = useRef(1);
+  const shuffleRef = useRef(false);
+  const repeatRef = useRef<RepeatMode>("off");
+  const orderRef = useRef<number[]>([]);
   manifestRef.current = manifest;
   modeRef.current = mode;
   indexRef.current = index;
   timeRef.current = currentTime;
   durRef.current = duration;
   rateRef.current = rate;
+  shuffleRef.current = shuffle;
+  repeatRef.current = repeat;
 
   const engineRef = useRef<AudioEngine | null>(null);
   const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; expand?: boolean } | null>(null);
@@ -120,7 +133,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       onDuration: (d) => { if (d && isFinite(d)) { durRef.current = d; setDuration(d); } },
       onPlay: () => setPlaying(true),
       onPause: () => setPlaying(false),
-      onEnded: () => goNext(),
+      onEnded: () => advance(true),
       onWaiting: () => setLoading(true),
       onPlaying: () => setLoading(false),
     });
@@ -163,6 +176,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   function loadIndex(m: Manifest, md: AudioMode, i: number, autoplay: boolean) {
     const list = m.modes[md].tracks;
     if (i < 0 || i >= list.length) return;
+    if (orderRef.current.length !== list.length) orderRef.current = buildOrder(list.length, shuffleRef.current, i);
     const t = list[i];
     modeRef.current = md; setModeState(md);
     indexRef.current = i; setIndex(i);
@@ -207,17 +221,53 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     ensureManifest().then((m) => applyPending(m, true));
   }
 
-  function goNext() {
-    const m = manifestRef.current; if (!m) return;
-    const list = m.modes[modeRef.current].tracks;
-    if (indexRef.current + 1 < list.length) loadIndex(m, modeRef.current, indexRef.current + 1, true);
-    else { setPlaying(false); }
+  function buildOrder(n: number, shuffleOn: boolean, current: number): number[] {
+    const seq = Array.from({ length: n }, (_, i) => i);
+    if (!shuffleOn || n <= 1) return seq;
+    const rest = seq.filter((i) => i !== current);
+    for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]]; }
+    return current >= 0 && current < n ? [current, ...rest] : rest;
   }
+  function rebuildOrder() {
+    const m = manifestRef.current; if (!m) { orderRef.current = []; return; }
+    orderRef.current = buildOrder(m.modes[modeRef.current].tracks.length, shuffleRef.current, indexRef.current);
+  }
+  function relIndex(step: number): number {
+    const m = manifestRef.current; if (!m) return -1;
+    const list = m.modes[modeRef.current].tracks;
+    const order = orderRef.current.length === list.length ? orderRef.current : list.map((_, i) => i);
+    const pos = order.indexOf(indexRef.current);
+    if (pos < 0) return -1;
+    const np = pos + step;
+    if (np >= order.length) return repeatRef.current === "all" ? order[0] : -1;
+    if (np < 0) return repeatRef.current === "all" ? order[order.length - 1] : -1;
+    return order[np];
+  }
+  // advance: auto=true — окончание трека (учитывает «повтор одного»); false — кнопка «вперёд»
+  function advance(auto: boolean) {
+    const m = manifestRef.current; if (!m) return;
+    if (auto && repeatRef.current === "one") {
+      engineRef.current?.seek(0); timeRef.current = 0; setCurrentTime(0);
+      engineRef.current?.play().catch(() => {});
+      return;
+    }
+    const ni = relIndex(1);
+    if (ni >= 0) loadIndex(m, modeRef.current, ni, true);
+    else setPlaying(false);
+  }
+  function goNext() { advance(false); }
   function goPrev() {
     const m = manifestRef.current; if (!m) return;
     if (timeRef.current > 3) { engineRef.current?.seek(0); timeRef.current = 0; setCurrentTime(0); return; }
-    if (indexRef.current - 1 >= 0) loadIndex(m, modeRef.current, indexRef.current - 1, true);
-    else { engineRef.current?.seek(0); }
+    const pi = relIndex(-1);
+    if (pi >= 0) loadIndex(m, modeRef.current, pi, true);
+    else { engineRef.current?.seek(0); timeRef.current = 0; setCurrentTime(0); }
+  }
+  function toggleShuffle() { const ns = !shuffleRef.current; shuffleRef.current = ns; setShuffle(ns); rebuildOrder(); }
+  function cycleRepeat() {
+    const seq: RepeatMode[] = ["off", "all", "one"];
+    const r = seq[(seq.indexOf(repeatRef.current) + 1) % seq.length];
+    repeatRef.current = r; setRepeat(r);
   }
   function togglePlay() {
     const eng = engineRef.current; if (!eng) return;
@@ -309,8 +359,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const value: PlayerApi = {
     ready: !!manifest, active, expanded, loading, mode, tracks, index, track,
-    isPlaying, currentTime, duration, rate, cover: COVER, bookTitle: BOOK_TITLE,
-    playBook, playChapter, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, setMode, jumpTo,
+    isPlaying, currentTime, duration, rate, shuffle, repeat, cover: COVER, bookTitle: BOOK_TITLE,
+    playBook, playChapter, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, toggleShuffle, cycleRepeat, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),
     dismiss,
