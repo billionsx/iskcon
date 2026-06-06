@@ -37,6 +37,13 @@ const Footnote = ({ children }: { children: ReactNode }) => (
   <div style={{ fontSize: 12.5, lineHeight: 1.42, color: INK3, margin: "9px 16px 0" }}>{children}</div>
 );
 
+function CloseGlyph() {
+  return (
+    <svg width="12.5" height="12.5" viewBox="0 0 14 14" fill="none" stroke="#8a8a8e" strokeWidth="1.9" strokeLinecap="round" aria-hidden>
+      <path d="M2 2l10 10M12 2L2 12" />
+    </svg>
+  );
+}
 function CopyGlyph({ color }: { color: string }) {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -89,8 +96,15 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={{ width: "100%", maxWidth: 376, maxHeight: "calc(100dvh - 40px)", overflowY: "auto", WebkitOverflowScrolling: "touch", background: GROUPED, borderRadius: 30, padding: "32px 16px 18px", boxShadow: "0 30px 80px rgba(0,0,0,0.30)", fontFamily: "var(--font-text)" }}
+        style={{ position: "relative", width: "100%", maxWidth: 376, maxHeight: "calc(100dvh - 40px)", overflowY: "auto", WebkitOverflowScrolling: "touch", background: GROUPED, borderRadius: 30, padding: "30px 16px 22px", boxShadow: "0 30px 80px rgba(0,0,0,0.30)", fontFamily: "var(--font-text)" }}
       >
+        <button
+          onClick={onClose}
+          aria-label="Закрыть"
+          style={{ position: "absolute", top: 14, right: 14, display: "grid", placeItems: "center", width: 30, height: 30, borderRadius: "50%", border: "none", background: "rgba(120,120,128,0.16)", cursor: "pointer", padding: 0, zIndex: 2 }}
+        >
+          <CloseGlyph />
+        </button>
         {/* ── header ── */}
         <IskconMark size={56} />
         <h1 style={{ margin: "18px 0 0", fontSize: 26, lineHeight: 1.1, fontWeight: 700, letterSpacing: "-0.022em", color: INK, textAlign: "center", fontFamily: "var(--font-text)" }}>
@@ -144,13 +158,6 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
           </div>
           <Footnote>Отправляйте только USDT в сети TRC20 (Tron). Перевод в другой сети может быть утерян.</Footnote>
         </div>
-
-        <button
-          onClick={onClose}
-          style={{ marginTop: 26, width: "100%", height: 52, borderRadius: 14, border: "none", background: "#fff", color: INK, fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)" }}
-        >
-          Готово
-        </button>
       </div>
     </div>
   );
