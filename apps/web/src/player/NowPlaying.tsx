@@ -88,22 +88,8 @@ export function NowPlaying() {
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
           <BookHeroCard book={BOOKS.bg} presentational />
           <div style={{ marginTop: 22 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8, padding: "0 2px" }}>
-              <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
-                <button type="button" aria-pressed={p.order !== "forward"}
-                  aria-label={p.order === "shuffle" ? "Перемешать" : p.order === "reverse" ? "Обратный порядок" : "По порядку"}
-                  onClick={() => p.cycleOrder()} style={{ ...iconBtn(36), color: p.order === "forward" ? "rgba(255,255,255,0.55)" : GOLD }}>
-                  {p.order === "shuffle" ? <ShuffleIcon size={20} /> : p.order === "reverse" ? <OrderReverseIcon size={20} /> : <OrderForwardIcon size={20} />}
-                </button>
-                <button type="button" aria-pressed={p.repeat !== "off"}
-                  aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "library" ? "Повтор библиотеки" : p.repeat === "book" ? "Повтор книги" : "Повтор"}
-                  onClick={() => p.cycleRepeat()} style={{ ...iconBtn(36), color: p.repeat === "off" ? "rgba(255,255,255,0.55)" : GOLD }}>
-                  {p.repeat === "one" ? <RepeatOneIcon size={20} /> : p.repeat === "library" ? <RepeatLibraryIcon size={20} /> : <RepeatIcon size={20} />}
-                </button>
-              </div>
+            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
+              Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
             </div>
             {p.tracks.map((t, i) => (
               <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
@@ -136,8 +122,20 @@ export function NowPlaying() {
             <button type="button" aria-label="Вперёд 15 секунд" onClick={() => p.skip(15)} style={iconBtn(44)}><Fwd15Icon size={30} /></button>
             <button type="button" aria-label="Следующая глава" onClick={() => p.next()} style={iconBtn(44)}><NextIcon size={27} /></button>
           </div>
-          <div style={{ marginTop: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-            <button type="button" aria-label="Скорость" onClick={() => p.cycleRate()} style={{ ...glass(999), flexShrink: 0, height: 36, padding: "0 16px", color: "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>{p.rate}×</button>
+          <div style={{ marginTop: 10, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+              <button type="button" aria-pressed={p.order !== "forward"}
+                aria-label={p.order === "shuffle" ? "Перемешать" : p.order === "reverse" ? "Обратный порядок" : "По порядку"}
+                onClick={() => p.cycleOrder()} style={{ ...iconBtn(38), color: p.order === "forward" ? "rgba(255,255,255,0.6)" : GOLD }}>
+                {p.order === "shuffle" ? <ShuffleIcon size={21} /> : p.order === "reverse" ? <OrderReverseIcon size={21} /> : <OrderForwardIcon size={21} />}
+              </button>
+              <button type="button" aria-pressed={p.repeat !== "off"}
+                aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "library" ? "Повтор библиотеки" : p.repeat === "book" ? "Повтор книги" : "Повтор"}
+                onClick={() => p.cycleRepeat()} style={{ ...iconBtn(38), color: p.repeat === "off" ? "rgba(255,255,255,0.6)" : GOLD }}>
+                {p.repeat === "one" ? <RepeatOneIcon size={21} /> : p.repeat === "library" ? <RepeatLibraryIcon size={21} /> : <RepeatIcon size={21} />}
+              </button>
+              <button type="button" aria-label="Скорость" onClick={() => p.cycleRate()} style={{ ...glass(999), flexShrink: 0, height: 38, padding: "0 14px", color: "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>{p.rate}×</button>
+            </div>
             <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
               style={{ height: 36, padding: "0 18px", borderRadius: 999, cursor: "pointer", fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", transition: "background .2s, color .2s, border-color .2s",
                 border: p.mode === "commentary" ? "0.5px solid transparent" : "0.5px solid rgba(255,255,255,0.2)",
