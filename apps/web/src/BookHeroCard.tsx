@@ -14,7 +14,7 @@ import { usePlayer } from "./player/store";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
-function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { active?: boolean; activeColor?: string; ariaLabel: string; onClick: () => void; children: ReactNode }) {
+export function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { active?: boolean; activeColor?: string; ariaLabel: string; onClick: () => void; children: ReactNode }) {
   return (
     <button type="button" aria-label={ariaLabel} aria-pressed={active}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
@@ -24,7 +24,7 @@ function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { acti
   );
 }
 
-export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean }) {
+export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational, coverActions }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean; coverActions?: ReactNode }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -70,6 +70,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
             <ActionBtn active={inCart} activeColor="#4a86e8" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const v = !inCart; setInCart(v); flash?.(v ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
             <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
             </>}
+            {coverActions}
           </div>
         </div>
 

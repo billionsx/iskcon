@@ -66,6 +66,17 @@ const GROUPS: Item[][] = [
     { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
   ],
 ];
+// Меню плеера: QR · Скачать аудио · Задонатить · Сообщить об ошибке.
+const PLAYER_GROUPS: Item[][] = [
+  [
+    { id: "qr", label: "QR-код", Icon: QrGlyph },
+    { id: "download", label: "Скачать аудио", Icon: PdfGlyph },
+  ],
+  [
+    { id: "donate", label: "Задонатить", Icon: GiftGlyph },
+    { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
+  ],
+];
 
 const ROW_H = 56;
 const PAD_L = 20;
@@ -85,11 +96,13 @@ const SHEET_CSS = `
 @media (prefers-reduced-motion: reduce) { .bms-scrim, .bms-sheet { animation: none !important; } }
 `;
 
-export function BookMenuSheet({ open, onClose, onSelect }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book" }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
+  variant?: "book" | "player";
 }) {
   if (!open || typeof document === "undefined") return null;
+  const groups = variant === "player" ? PLAYER_GROUPS : GROUPS;
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
@@ -108,7 +121,7 @@ export function BookMenuSheet({ open, onClose, onSelect }: {
         }}>
         <div style={{ height: 5, width: 36, borderRadius: 999, background: "rgba(60,60,67,0.3)", margin: "8px auto 12px" }} />
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {GROUPS.map((group, gi) => (
+          {groups.map((group, gi) => (
             <div key={gi}
               style={{ borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.94)" }}>
               {group.map((it) => {
