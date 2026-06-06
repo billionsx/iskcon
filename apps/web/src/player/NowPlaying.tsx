@@ -5,10 +5,13 @@
  * Открывается всегда сверху (без скачка). Контролы закреплены снизу «стеклом».
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
-import { useEffect, useRef, useState, type CSSProperties, type Ref } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePlayer, fmtTime, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
-import { BookHeroCard } from "../BookHeroCard";
+import { BookHeroCard, ActionBtn } from "../BookHeroCard";
+import { BookMenuSheet } from "../BookMenuSheet";
+import { QrSheet, type QrData } from "../QrSheet";
+import { HeartIcon, ShareIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS } from "../books";
 
 const GOLD = "#D2AA1B";
@@ -17,14 +20,21 @@ const glass = (radius: number): CSSProperties => ({
   backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)",
   border: "0.5px solid rgba(255,255,255,0.16)", borderRadius: radius,
 });
+const glassBtn = (size: number): CSSProperties => ({ ...glass(999), height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0 });
 
-export function NowPlaying() {
+export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: () => void; onDonate?: () => void } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLSpanElement>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [favorited, setFavorited] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
   const startY = useRef<number | null>(null);
+  const toastTimer = useRef<number | null>(null);
 
   // открытие: всегда сверху, заголовок-шапка скрыт (без скачка скролла)
   useEffect(() => {
@@ -44,6 +54,34 @@ export function NowPlaying() {
   function onDown(e: React.PointerEvent) { startY.current = e.clientY; setDragging(true); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }
   function onMove(e: React.PointerEvent) { if (startY.current == null) return; const dy = e.clientY - startY.current; if (dy > 0) setDrag(dy); }
   function onUp() { if (startY.current == null) return; const d = drag; startY.current = null; setDragging(false); setDrag(0); if (d > 110) p.close(); }
+
+  const BOOK = BOOKS.bg;
+  const BOOK_URL = "https://gaurangers.com/book/bg";
+  function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
+  function shareBook() {
+    if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: BOOK.titleLine1, url: BOOK_URL }).catch(() => {});
+    else { try { void navigator.clipboard?.writeText(BOOK_URL); flash("Ссылка скопирована"); } catch { /* ignore */ } }
+  }
+  function readBook() { p.close(); onOpenBook?.(); }
+  function downloadAudio() {
+    const t = p.track; if (!t) return;
+    try { const a = document.createElement("a"); a.href = t.url; a.download = `${t.title}.mp3`; document.body.appendChild(a); a.click(); a.remove(); flash("Скачивание…"); }
+    catch { flash("Не удалось скачать"); }
+  }
+  function onMenuSelect(id: string) {
+    if (id === "qr") { setQr({ url: BOOK_URL, data: { kind: "book", bookTitle: BOOK.titleLine1, bookSubtitle: BOOK.titleLine2, tagline: BOOK.tagline, cover: BOOK.covers[0] } }); return; }
+    if (id === "download") { downloadAudio(); return; }
+    if (id === "donate") { onDonate?.(); return; }
+    if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
+  }
+  const coverActions = (
+    <>
+      <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+      <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>
+      <ActionBtn ariaLabel="Поделиться" onClick={shareBook}><ShareIcon size={18} /></ActionBtn>
+      <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
+    </>
+  );
 
   return (
     <div
@@ -86,7 +124,7 @@ export function NowPlaying() {
         {/* scroll body: ВКП cover + queue */}
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
-          <BookHeroCard book={BOOKS.bg} presentational />
+          <BookHeroCard book={BOOKS.bg} presentational coverActions={coverActions} />
           <div style={{ marginTop: 22 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
               Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
@@ -126,27 +164,33 @@ export function NowPlaying() {
             <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
               <button type="button" aria-pressed={p.order !== "forward"}
                 aria-label={p.order === "shuffle" ? "Перемешать" : p.order === "reverse" ? "Обратный порядок" : "По порядку"}
-                onClick={() => p.cycleOrder()} style={{ ...iconBtn(38), color: p.order === "forward" ? "rgba(255,255,255,0.6)" : GOLD }}>
+                onClick={() => p.cycleOrder()} style={{ ...glassBtn(38), color: p.order === "forward" ? "rgba(255,255,255,0.75)" : GOLD }}>
                 {p.order === "shuffle" ? <ShuffleIcon size={21} /> : p.order === "reverse" ? <OrderReverseIcon size={21} /> : <OrderForwardIcon size={21} />}
               </button>
               <button type="button" aria-pressed={p.repeat !== "off"}
                 aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "library" ? "Повтор библиотеки" : p.repeat === "book" ? "Повтор книги" : "Повтор"}
-                onClick={() => p.cycleRepeat()} style={{ ...iconBtn(38), color: p.repeat === "off" ? "rgba(255,255,255,0.6)" : GOLD }}>
+                onClick={() => p.cycleRepeat()} style={{ ...glassBtn(38), color: p.repeat === "off" ? "rgba(255,255,255,0.75)" : GOLD }}>
                 {p.repeat === "one" ? <RepeatOneIcon size={21} /> : p.repeat === "library" ? <RepeatLibraryIcon size={21} /> : <RepeatIcon size={21} />}
               </button>
               <button type="button" aria-label="Скорость" onClick={() => p.cycleRate()} style={{ ...glass(999), flexShrink: 0, height: 38, padding: "0 14px", color: "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>{p.rate}×</button>
             </div>
             <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
-              style={{ height: 36, padding: "0 18px", borderRadius: 999, cursor: "pointer", fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", transition: "background .2s, color .2s, border-color .2s",
-                border: p.mode === "commentary" ? "0.5px solid transparent" : "0.5px solid rgba(255,255,255,0.2)",
-                background: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.08)",
+              style={{ height: 38, padding: "0 18px", borderRadius: 999, cursor: "pointer", fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", transition: "background .2s, color .2s, border-color .2s",
+                border: p.mode === "commentary" ? "0.5px solid transparent" : "0.5px solid rgba(255,255,255,0.16)",
+                background: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.10)",
                 color: p.mode === "commentary" ? "#1a1a1d" : "#fff",
-                backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
+                backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)" }}>
               С комментариями
             </button>
           </div>
         </div>
       </div>
+
+      {toast && (
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
+      )}
+      {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" anchorRef={moreRef} />
     </div>
   );
 }

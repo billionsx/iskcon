@@ -536,7 +536,7 @@ export default function App() {
         )}
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />
-        <NowPlaying />
+        <NowPlaying onOpenBook={() => { setBookTarget(null); setOpenBook(true); }} onDonate={openDonate} />
       </div>
     </div>
     </PlayerProvider>
