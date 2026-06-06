@@ -24,7 +24,7 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
     <div
       style={{
         position: "fixed", left: "50%", transform: "translateX(-50%)",
-        width: "calc(100% - 16px)", maxWidth: 464, bottom, zIndex: 60,
+        width: "calc(100% - 16px)", maxWidth: 464, bottom, zIndex: 90,
         pointerEvents: "auto",
       }}
     >

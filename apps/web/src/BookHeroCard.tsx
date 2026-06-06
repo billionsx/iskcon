@@ -24,7 +24,7 @@ function ActionBtn({ active, activeColor, ariaLabel, onClick, children }: { acti
   );
 }
 
-export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void }) {
+export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -51,7 +51,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
         <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
         <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "78%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.6) 42%, rgba(0,0,0,0) 100%)" }} />
 
-        {onOpen && <button type="button" aria-label="Открыть книгу" onClick={() => onOpen()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />}
+        {onOpen && !presentational && <button type="button" aria-label="Открыть книгу" onClick={() => onOpen()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />}
         {n > 1 && (
           <>
             <button type="button" aria-label="Предыдущее изображение" onClick={prev} style={{ position: "absolute", top: 56, bottom: "42%", left: 0, width: "22%", zIndex: 15, background: "none", border: "none", cursor: "pointer" }} />
@@ -64,15 +64,17 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
           <span style={{ display: "flex", alignItems: "center", color: "#fff", minWidth: 0 }}>{topLeft}</span>
           <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
+            {!presentational && <>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash?.(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
             <ActionBtn ariaLabel="Слушать" onClick={() => player.playBook({ mode: "plain", chapter: 1 })}><HeadphonesIcon size={18} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="#4a86e8" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const v = !inCart; setInCart(v); flash?.(v ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
             <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
+            </>}
           </div>
         </div>
 
         {/* INFO — bottom */}
-        <div onClick={() => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: onOpen ? "pointer" : "default", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
+        <div onClick={presentational ? undefined : () => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: onOpen && !presentational ? "pointer" : "default", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
           <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", whiteSpace: "nowrap" }}>{book.titleLine1}</h3>
           {book.titleLine2 && <div style={{ marginTop: 2, fontSize: 25, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em", color: "rgba(255,255,255,.95)" }}>{book.titleLine2}</div>}
           <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>{book.iast}<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>{book.tagline}</div>
@@ -85,7 +87,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
           </div>
         </div>
       </article>
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} anchorRef={moreRef} />
+      {!presentational && <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} anchorRef={moreRef} />}
     </>
   );
 }
