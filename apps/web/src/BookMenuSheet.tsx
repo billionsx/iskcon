@@ -67,23 +67,26 @@ const GROUPS: Item[][] = [
   ],
 ];
 type Group = { title?: string; items: Item[] };
-// Меню плеера: действия по текущей главе и по всей книге; ссылки ведут на прослушивание.
-function buildPlayerGroups(chapterLabel: string | undefined, isChapter: boolean): Group[] {
-  const g: Group[] = [];
-  if (isChapter) g.push({ title: chapterLabel, items: [
-    { id: "share-chapter", label: "Поделиться главой", Icon: ShareGlyph },
-    { id: "qr-chapter", label: "QR-код главы", Icon: QrGlyph },
-    { id: "download-chapter", label: "Скачать главу", Icon: PdfGlyph },
-  ] });
-  g.push({ title: "Вся книга", items: [
-    { id: "share-book", label: "Поделиться книгой", Icon: ShareGlyph },
-    { id: "qr-book", label: "QR-код книги", Icon: QrGlyph },
-  ] });
-  g.push({ items: [
-    { id: "donate", label: "Задонатить", Icon: GiftGlyph },
-    { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
-  ] });
-  return g;
+/* Контекстные глифы: книга = раскрытая книга, глава = закладка; действие = стрелка (share) / QR. */
+const ShareBookGlyph = () => <Svg><g {...stroke}><path d="M12 9.4C10.7 8.4 9 8 6.7 8.3A.9.9 0 0 0 5.9 9.2v8.1a.9.9 0 0 0 1 .9c2-.27 3.6.08 4.8 1 1.2-.92 2.8-1.27 4.8-1a.9.9 0 0 0 1-.9V9.2a.9.9 0 0 0-.8-.9C15 8 13.3 8.4 12 9.4Z" /><path d="M12 9.4v9" /><path d="M12 2V7.4M9.8 4 12 1.8 14.2 4" /></g></Svg>;
+const ShareChapterGlyph = () => <Svg><g {...stroke}><path d="M8 6.2h8a1 1 0 0 1 1 1V19l-5-2.6L7 19V7.2a1 1 0 0 1 1-1Z" /><path d="M12 1.2V6.6M9.8 3.2 12 1 14.2 3.2" /></g></Svg>;
+const QrBookGlyph = () => <Svg><g fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinejoin="round"><rect x="4" y="4" width="5.4" height="5.4" rx="1.4" /><rect x="14.6" y="4" width="5.4" height="5.4" rx="1.4" /><rect x="4" y="14.6" width="5.4" height="5.4" rx="1.4" /></g><g {...stroke} strokeWidth={1.2}><path d="M17 15.4c-.8-.5-1.7-.6-2.6-.4v4.2c.9-.2 1.8 0 2.6.5.8-.5 1.7-.7 2.6-.5v-4.2c-.9-.2-1.8-.1-2.6.4Z" /><path d="M17 15.4v4.3" /></g></Svg>;
+const QrChapterGlyph = () => <Svg><g fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinejoin="round"><rect x="4" y="4" width="5.4" height="5.4" rx="1.4" /><rect x="14.6" y="4" width="5.4" height="5.4" rx="1.4" /><rect x="4" y="14.6" width="5.4" height="5.4" rx="1.4" /></g><path d="M15.2 14.8h3.6a.6.6 0 0 1 .6.6v4.4l-2.4-1.3-2.4 1.3v-4.4a.6.6 0 0 1 .6-.6Z" {...stroke} strokeWidth={1.2} /></Svg>;
+
+// Меню плеера — плоский список (без разделения на секции); книга и глава различаются иконками.
+function buildPlayerGroups(isChapter: boolean): Group[] {
+  const content: Item[] = [{ id: "share-book", label: "Поделиться аудио-книгой", Icon: ShareBookGlyph }];
+  if (isChapter) content.push({ id: "share-chapter", label: "Поделиться аудио-главой", Icon: ShareChapterGlyph });
+  content.push({ id: "qr-book", label: "QR-код аудио-книги", Icon: QrBookGlyph });
+  if (isChapter) content.push({ id: "qr-chapter", label: "QR-код аудио-главы", Icon: QrChapterGlyph });
+  if (isChapter) content.push({ id: "download-chapter", label: "Скачать аудио-главу", Icon: PdfGlyph });
+  return [
+    { items: content },
+    { items: [
+      { id: "donate", label: "Задонатить", Icon: GiftGlyph },
+      { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
+    ] },
+  ];
 }
 
 const ROW_H = 56;
@@ -104,13 +107,13 @@ const SHEET_CSS = `
 @media (prefers-reduced-motion: reduce) { .bms-scrim, .bms-sheet { animation: none !important; } }
 `;
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", chapterLabel, isChapter = false }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player"; chapterLabel?: string; isChapter?: boolean;
+  variant?: "book" | "player"; isChapter?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
-  const data: Group[] = variant === "player" ? buildPlayerGroups(chapterLabel, isChapter) : GROUPS.map((items) => ({ items }));
+  const data: Group[] = variant === "player" ? buildPlayerGroups(isChapter) : GROUPS.map((items) => ({ items }));
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
