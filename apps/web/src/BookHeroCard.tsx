@@ -10,6 +10,7 @@ import type { MouseEvent as ReactMouseEvent } from "react";
 import { type BookData } from "./books";
 import { HeartIcon, HeadphonesIcon, BagIcon, MoreIcon } from "./ui/icons";
 import { BookMenuSheet } from "./BookMenuSheet";
+import { usePlayer } from "./player/store";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -28,6 +29,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
+  const player = usePlayer();
   const [idx, setIdx] = useState(0);
   const n = book.covers.length;
   const next = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i + 1) % n); };
@@ -63,7 +65,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect }: { b
           <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash?.(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-            <ActionBtn ariaLabel="Слушать" onClick={() => flash?.("Аудиокнига — скоро")}><HeadphonesIcon size={18} /></ActionBtn>
+            <ActionBtn ariaLabel="Слушать" onClick={() => player.playBook({ mode: "plain", chapter: 1 })}><HeadphonesIcon size={18} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="#4a86e8" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const v = !inCart; setInCart(v); flash?.(v ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
             <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
           </div>
