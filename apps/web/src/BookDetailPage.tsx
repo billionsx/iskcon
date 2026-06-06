@@ -15,6 +15,7 @@ import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
+import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
@@ -501,6 +502,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
   const [printing, setPrinting] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
+  const player = usePlayer();
 
   useEffect(() => {
     if (printing) {
@@ -547,7 +549,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио главы — скоро")} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(Number(chapter.number) || 1, "plain")} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -797,6 +799,7 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
   const [vMenu, setVMenu] = useState(false);
   const vMoreRef = useRef<HTMLSpanElement>(null);
   const verseContentRef = useRef<HTMLDivElement>(null);
+  const player = usePlayer();
 
   useEffect(() => {
     let live = true;
@@ -849,7 +852,7 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
           <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => flash("Аудио стиха — скоро")} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(Number(chapterNo) || 1, "commentary")} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
