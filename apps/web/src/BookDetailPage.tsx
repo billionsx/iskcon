@@ -16,7 +16,6 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { BookMenuSheet } from "./BookMenuSheet";
-import { DonateModal } from "./DonateModal";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
 
@@ -981,7 +980,7 @@ function TopBtn({ solid, active, activeColor, ariaLabel, onClick, children }: { 
 }
 
 /* ═════════ MAIN ═════════ */
-export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData; onBack: () => void; initialTarget?: { chapter: string | null; verse: string | null } | null }) {
+export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book: BookData; onBack: () => void; onDonate: () => void; initialTarget?: { chapter: string | null; verse: string | null } | null }) {
   const [idx, setIdx] = useState(0);
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -995,7 +994,6 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
   const [bookPct, setBookPct] = useState(0);
-  const [donate, setDonate] = useState(false);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const openQr = (url: string, data: QrData) => setQr({ url, data });
 
@@ -1171,7 +1169,7 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
       });
       return;
     }
-    if (id === "donate") { setDonate(true); return; }
+    if (id === "donate") { onDonate(); return; }
     if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
   };
 
@@ -1220,7 +1218,6 @@ export function BookDetailPage({ book, onBack, initialTarget }: { book: BookData
         </div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
-      {donate && <DonateModal onClose={() => setDonate(false)} />}
     </div>
   );
 }

@@ -316,11 +316,10 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void }) {
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onDonate: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [donate, setDonate] = useState(false);
   const [bookPct, setBookPct] = useState(0);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => {
@@ -348,7 +347,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 }
                 if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, onProgress: setBookPct, fallback: () => { void exportWholeBook(BOOKS.bg, flash); } }); return; }
                 if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
-                if (id === "donate") { setDonate(true); return; }
+                if (id === "donate") { onDonate(); return; }
                 if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
                 onOpenBook();
               }} />
@@ -361,7 +360,6 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       </main>
       <TabBar active={tab} onChange={onChange} />
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
-      {donate && <DonateModal onClose={() => setDonate(false)} />}
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 90, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(31,32,36,0.95)", color: "#fff", padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontFamily: "var(--font-text)", boxShadow: "0 8px 30px rgba(0,0,0,0.25)", maxWidth: "86%", textAlign: "center" }}>{toast}</div>}
       {bookPct > 0 && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
@@ -391,6 +389,7 @@ export default function App() {
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
   const [openAdmin, setOpenAdmin] = useState(false);
+  const [donate, setDonate] = useState(false);
   const fromPop = useRef(false);
 
   // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере включён) ──
@@ -420,6 +419,8 @@ export default function App() {
   function applyPath(path: string) {
     fromPop.current = true;
     const clean = (path || "/").replace(/\/+$/, "") || "/";
+    if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
+    setDonate(false);
     setOpenBook(false); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
@@ -466,6 +467,18 @@ export default function App() {
     else { window.history.pushState(null, "", "/"); applyPath("/"); }
   }
 
+  // Донат — собственный адрес /donate (оверлей поверх текущего экрана; ссылку можно переслать).
+  function openDonate() {
+    if (typeof window !== "undefined" && window.location.pathname !== "/donate") window.history.pushState(null, "", "/donate");
+    setDonate(true);
+  }
+  function closeDonate() {
+    setDonate(false);
+    if (typeof window === "undefined" || window.location.pathname !== "/donate") return;
+    if (window.history.length > enteredAt.current) { window.history.back(); return; }  // вернуться откуда пришли
+    window.history.replaceState(null, "", "/");                                         // прямой вход на /donate → на главную
+  }
+
   // ссылка-цитата → действие. Адреса: book:{id} | chap:{id}:{div}:{ch} | verse:{id}:{div}:{ch}:{v}
   function openRef(href: string) {
     const [kind, work, div, ch, v] = href.split(":");
@@ -489,7 +502,7 @@ export default function App() {
           </main>
         ) : openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BookDetailPage book={BOOKS.bg} onBack={goBack} initialTarget={bookTarget} />
+            <BookDetailPage book={BOOKS.bg} onBack={goBack} onDonate={openDonate} initialTarget={bookTarget} />
           </main>
         ) : scripture ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -514,8 +527,9 @@ export default function App() {
             />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={() => { setBookTarget(null); setOpenBook(true); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={() => { setBookTarget(null); setOpenBook(true); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onDonate={openDonate} />
         )}
+        {donate && <DonateModal onClose={closeDonate} />}
       </div>
     </div>
   );
