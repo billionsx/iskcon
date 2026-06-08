@@ -155,11 +155,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     engineRef.current = eng;
     // deep-link ?listen → авто-открытие плеера на книге/главе (приоритет над restore)
     if (typeof location !== "undefined" && new URLSearchParams(location.search).has("listen")) {
-      const mm = location.pathname.match(/^\/book\/([a-z0-9]+)(?:\/(\d+))?/i);
-      const bk = mm && BOOKS[mm[1]] ? mm[1] : "bg";
-      const ch = mm && mm[2] ? parseInt(mm[2], 10) : null;
+      const seg = location.pathname.split("/").filter(Boolean);   // ["book","cc","madhya","13"] | ["book","bg","13"]
+      const bk = seg[1] && BOOKS[seg[1]] ? seg[1] : "bg";
+      const hier = !!BOOKS[bk]?.hierarchical;
+      const lila = hier ? seg[2] : undefined;
+      const chSeg = hier ? seg[3] : seg[2];
+      const ch = chSeg ? parseInt(chSeg, 10) : NaN;
       try { history.replaceState(null, "", location.pathname); } catch { /* ignore */ }
-      if (ch) playChapter(bk, ch, "plain"); else playBook({ book: bk, mode: "plain" });
+      if (ch) playChapter(bk, ch, "plain", lila); else playBook({ book: bk, mode: "plain" });
       return () => eng.destroy();
     }
     // восстановить последнюю позицию (пауза) — мини-плеер появится сразу
