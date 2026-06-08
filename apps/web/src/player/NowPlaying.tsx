@@ -11,6 +11,7 @@ import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd1
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet, type QrData } from "../QrSheet";
+import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS } from "../books";
 
@@ -32,6 +33,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
   const [favorited, setFavorited] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const startY = useRef<number | null>(null);
   const toastTimer = useRef<number | null>(null);
@@ -81,7 +83,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
     if (id === "share-book") { doShare(bookUrl, BOOK.titleLine1); return; }
     if (id === "qr-book") { bookQr(); return; }
     if (id === "donate") { onDonate?.(); return; }
-    if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
+    if (id === "report") { setReportOpen(true); return; }
   }
   const coverActions = (
     <>
@@ -204,6 +206,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
         <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
+      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
       <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" isChapter={isChapter} anchorRef={moreRef} />
     </div>
   );

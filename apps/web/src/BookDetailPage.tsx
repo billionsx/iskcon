@@ -19,6 +19,7 @@ import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
+import { ReportSheet } from "./ReportSheet";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -999,6 +1000,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const [bookPct, setBookPct] = useState(0);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const openQr = (url: string, data: QrData) => setQr({ url, data });
+  const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
     fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
@@ -1173,7 +1175,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       return;
     }
     if (id === "donate") { onDonate(); return; }
-    if (id === "report") { flash("Сообщить об ошибке — скоро"); return; }
+    if (id === "report") { setReportOpen(true); return; }
   };
 
   return (
@@ -1221,6 +1223,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
         </div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
+      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={readerRef ? readerRef : openChapter ? `${book.titleLine1}, глава ${openChapter.number}` : book.titleLine1} />
     </div>
   );
 }
