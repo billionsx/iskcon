@@ -94,7 +94,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
           onClick={copyUrl}
           style={{ marginTop: 14, width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 14px", borderRadius: 12, border: `0.5px solid ${LINE}`, background: "#F6F6F8", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}
         >
-          <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.35, color: INK2, wordBreak: "break-all" }}>{url}</span>
+          <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.35, color: INK2, overflowWrap: "anywhere" }}>{url.replace(/^https?:\/\//, "")}</span>
           <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600, color: copied ? "#1aa179" : GOLDT }}>
             {copied ? <CheckGlyph /> : <CopyGlyph />}{copied ? "Скопировано" : "Копировать"}
           </span>

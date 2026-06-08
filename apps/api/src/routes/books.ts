@@ -19,6 +19,18 @@ function stripScriptLabel(s: string | null | undefined): string | null {
   return String(s).replace(/^[\u0400-\u04FF]+\s*/, '');
 }
 
+// Срезаем хвостовые точки у глоссы (рендер сам ставит финальную точку → иначе «океан..»).
+function cleanGloss(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/[\s.\u2026]+$/u, '');
+}
+
+// Возвращаем потерянный при ингесте пробел: строчная + .!? + заглавная → с пробелом.
+function fixSentenceSpacing(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/([а-яёa-z])([.!?])([А-ЯЁA-Z])/gu, '$1$2 $3');
+}
+
 // Отображаемые названия книг (works без title) — для ридера/оглавления
 const WORK_NAMES: Record<string, string> = {
   bg: 'Бхагавад-гита',
@@ -148,7 +160,7 @@ booksRouter.get('/:work/chapters/:number/read', async (c) => {
     .all();
   const byVerse: Record<string, { term: string; gloss: string | null }[]> = {};
   for (const t of (tokRes.results as Row[]) ?? []) {
-    (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: t.gloss ?? null });
+    (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: cleanGloss(t.gloss) });
   }
 
   const out = verses.map((v) => {
@@ -160,8 +172,8 @@ booksRouter.get('/:work/chapters/:number/read', async (c) => {
       devanagari: stripScriptLabel(v.devanagari),
       translit: v.translit ?? null,
       tokens: byVerse[v.id] ?? [],
-      translation: v.translation ?? null,
-      purport: v.purport ?? null,
+      translation: fixSentenceSpacing(v.translation),
+      purport: fixSentenceSpacing(v.purport),
     };
   });
   return c.json({ work, chapter: Number(number), verses: out });
@@ -228,9 +240,9 @@ booksRouter.get('/:work/verses/:ref', async (c) => {
     uvaca: verse.uvaca ?? null,
     devanagari: stripScriptLabel(verse.devanagari),
     translit: verse.translit ?? null,
-    tokens,
-    translation: text?.translation ?? null,
-    purport: text?.purport ?? null,
+    tokens: (tokens as Row[]).map((t) => ({ term: t.term, gloss: cleanGloss(t.gloss) })),
+    translation: fixSentenceSpacing(text?.translation),
+    purport: fixSentenceSpacing(text?.purport),
     source_url: verse.source_url ?? null,
     prev: neigh?.prev ?? null,
     next: neigh?.next ?? null,
