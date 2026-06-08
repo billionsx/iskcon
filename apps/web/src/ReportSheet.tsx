@@ -84,10 +84,10 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category: cat, categoryLabel: catLabel, message: trimmed, email: email.trim() || null, ...diagnostics() }),
       });
-      let emailed = false;
-      try { const j = await res.json(); emailed = !!(j && j.emailed); } catch { /* ignore */ }
+      let delivered = false;
+      try { const j = await res.json(); delivered = !!(j && (j.delivered ?? j.emailed)); } catch { /* ignore */ }
       if (!res.ok) throw new Error("bad status");
-      if (!emailed) openMailFallback(); // сохранено в D1; доставим письмом через почтовый клиент
+      if (!delivered) openMailFallback(); // не доставлено сервером — отдадим через почтовый клиент
       setState("done");
       window.setTimeout(onClose, 1700);
     } catch {

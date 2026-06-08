@@ -20,6 +20,10 @@ interface Env {
   // быть подтверждён, а Email Routing включён на домене-отправителе gaurangers.com.
   SEB?: { send: (m: EmailMessage) => Promise<void> };
   REPORT_FROM_ADDR?: string; // напр. "noreply@gaurangers.com"
+  // Доставка отчётов в Telegram (без DNS, не зависит от домена). Секреты:
+  //   wrangler secret put TELEGRAM_BOT_TOKEN   /   wrangler secret put TELEGRAM_CHAT_ID
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_CHAT_ID?: string;
 }
 
 const NOINDEX = "noindex, nofollow, noarchive, nosnippet, noimageindex";
@@ -419,7 +423,28 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
     } catch { emailed = false; }
   }
 
-  return jsonResp({ ok: true, emailed });
+  // 3) Telegram — мгновенно, без DNS и без привязки к домену.
+  let telegrammed = false;
+  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
+    try {
+      const tg = [
+        `🔔 ISKCON ONE LOVE — отчёт: ${rec.categoryLabel}`,
+        "",
+        rec.message,
+        "",
+        ...meta.filter(([k]) => k !== "Категория").map(([k, v]) => `${k}: ${v}`),
+      ].join("\n");
+      const r = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: tg.slice(0, 3900), disable_web_page_preview: true }),
+      });
+      telegrammed = r.ok;
+    } catch { telegrammed = false; }
+  }
+
+  const delivered = emailed || telegrammed;
+  return jsonResp({ ok: true, emailed, delivered });
 }
 
 export default {
