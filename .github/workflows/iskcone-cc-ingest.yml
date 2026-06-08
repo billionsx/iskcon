@@ -26,6 +26,10 @@ on:
         description: "Бюджет времени на запуск (грейсфул-стоп)"
         required: false
         default: "50"
+      force:
+        description: "Перезагрузить даже уже залитые главы (иначе пропускаем готовые)"
+        required: false
+        default: "false"
 
 permissions:
   contents: write
@@ -44,6 +48,7 @@ jobs:
           FROM_CH: ${{ github.event.inputs.from_ch }}
           TO_CH: ${{ github.event.inputs.to_ch }}
           MAX_MIN: ${{ github.event.inputs.max_minutes }}
+          FORCE: ${{ github.event.inputs.force }}
         run: |
           python3 - <<'PY'
           import os, re, json, time, random, urllib.request
@@ -159,6 +164,7 @@ jobs:
               if s not in LMAP: raise SystemExit(f"unknown lila: {s}")
           fr=os.environ.get("FROM_CH","").strip(); to=os.environ.get("TO_CH","").strip()
           MAX=float(os.environ.get("MAX_MIN") or "50")*60.0
+          FORCE=(os.environ.get("FORCE","").strip().lower() in ("1","true","yes","on"))
           t0=time.time()
 
           # издание один раз
@@ -192,6 +198,11 @@ jobs:
                       status["missed"].append({"lila":s,"ch":ch,"reason":"no segs (empty/throttled)"})
                       time.sleep(2.0); continue
                   did=f"cc.{s}"; chid=f"cc.{s}.{ch}"
+                  if not FORCE:
+                      have=rows(f"SELECT COUNT(*) AS n FROM verses WHERE division_id='{chid}'")[0]["n"]
+                      if have and have>=len(segs):
+                          status["chapters"].append({"lila":s,"ch":ch,"skipped":True,"segs":len(segs),"existing":have})
+                          print("SKIP",s,ch,"have",have,">=",len(segs)); continue
                   verses=[]; missed=0
                   for i, seg in enumerate(segs, 1):
                       if time.time()-t0 > MAX:
@@ -264,8 +275,9 @@ jobs:
           tx=rows("SELECT COUNT(*) AS n FROM verse_texts x JOIN verses v ON v.id=x.verse_id "
                   f"WHERE v.work_id='cc' AND v.division_id LIKE '{like}' AND length(COALESCE(x.translation,''))>0")[0]
           status["db_verify"]={"verses":vr.get("verses"),"deva":vr.get("deva"),"translit":vr.get("translit"),"with_translation":tx.get("n")}
-          total_written=sum(c["written"] for c in status["chapters"])
-          status["total_written"]=total_written
+          total_written=sum(c.get("written",0) for c in status["chapters"])
+          skipped=sum(1 for c in status["chapters"] if c.get("skipped"))
+          status["total_written"]=total_written; status["skipped_chapters"]=skipped
 
           os.makedirs(".cc-ingest", exist_ok=True)
           json.dump(status, open(f".cc-ingest/status-{sel}.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
