@@ -1,0 +1,187 @@
+{
+  "ts": "2026-06-08 22:01:48Z",
+  "selection": "1",
+  "from": null,
+  "to": null,
+  "chapters": [
+    {
+      "canto": 1,
+      "ch": 1,
+      "skipped": true,
+      "segs": 23,
+      "existing": 23
+    },
+    {
+      "canto": 1,
+      "ch": 2,
+      "skipped": true,
+      "segs": 33,
+      "existing": 33
+    },
+    {
+      "canto": 1,
+      "ch": 3,
+      "skipped": true,
+      "segs": 44,
+      "existing": 44
+    },
+    {
+      "canto": 1,
+      "ch": 4,
+      "skipped": true,
+      "segs": 31,
+      "existing": 31
+    },
+    {
+      "canto": 1,
+      "ch": 5,
+      "skipped": true,
+      "segs": 40,
+      "existing": 40
+    },
+    {
+      "canto": 1,
+      "ch": 6,
+      "skipped": true,
+      "segs": 38,
+      "existing": 38
+    },
+    {
+      "canto": 1,
+      "ch": 7,
+      "skipped": true,
+      "segs": 56,
+      "existing": 56
+    },
+    {
+      "canto": 1,
+      "ch": 8,
+      "skipped": true,
+      "segs": 52,
+      "existing": 52
+    },
+    {
+      "canto": 1,
+      "ch": 9,
+      "skipped": true,
+      "segs": 48,
+      "existing": 48
+    },
+    {
+      "canto": 1,
+      "ch": 10,
+      "skipped": true,
+      "segs": 33,
+      "existing": 33
+    },
+    {
+      "canto": 1,
+      "ch": 11,
+      "skipped": true,
+      "segs": 37,
+      "existing": 37
+    },
+    {
+      "canto": 1,
+      "ch": 12,
+      "skipped": true,
+      "segs": 36,
+      "existing": 36
+    },
+    {
+      "canto": 1,
+      "ch": 13,
+      "skipped": true,
+      "segs": 59,
+      "existing": 59
+    },
+    {
+      "canto": 1,
+      "ch": 14,
+      "title": "Уход Господа Кришны",
+      "segs": 41,
+      "written": 41,
+      "deva": 41,
+      "translit": 41,
+      "translation": 41,
+      "purport": 24,
+      "tokens": 41,
+      "missed": 0
+    },
+    {
+      "canto": 1,
+      "ch": 15,
+      "title": "Своевременный уход Пандавов",
+      "segs": 48,
+      "written": 48,
+      "deva": 48,
+      "translit": 48,
+      "translation": 48,
+      "purport": 44,
+      "tokens": 48,
+      "missed": 0
+    },
+    {
+      "canto": 1,
+      "ch": 16,
+      "title": "Как Парикшит встретил век Кали",
+      "segs": 29,
+      "written": 29,
+      "deva": 29,
+      "translit": 29,
+      "translation": 29,
+      "purport": 28,
+      "tokens": 29,
+      "missed": 0
+    },
+    {
+      "canto": 1,
+      "ch": 17,
+      "title": "Наказание и помилование Кали",
+      "segs": 43,
+      "written": 43,
+      "deva": 43,
+      "translit": 43,
+      "translation": 43,
+      "purport": 42,
+      "tokens": 43,
+      "missed": 0
+    },
+    {
+      "canto": 1,
+      "ch": 18,
+      "title": "Сын брахмана проклинает Махараджу Парикшита",
+      "segs": 49,
+      "written": 49,
+      "deva": 49,
+      "translit": 49,
+      "translation": 49,
+      "purport": 47,
+      "tokens": 49,
+      "missed": 0
+    },
+    {
+      "canto": 1,
+      "ch": 19,
+      "title": "Появление Шукадевы Госвами",
+      "segs": 39,
+      "written": 39,
+      "deva": 39,
+      "translit": 39,
+      "translation": 39,
+      "purport": 36,
+      "tokens": 39,
+      "missed": 0
+    }
+  ],
+  "missed": [],
+  "stopped_early": false,
+  "db_verify": {
+    "verses": 779,
+    "deva": 778,
+    "translit": 779,
+    "with_translation": 779
+  },
+  "total_written": 249,
+  "skipped_chapters": 13
+}
