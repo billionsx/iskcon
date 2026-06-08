@@ -87,12 +87,16 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   try {
     browser = await puppeteer.launch(env.BROWSER);
     const page = await browser.newPage();
+    // page.pdf() по умолчанию ограничен 30с (через CDP Page.printToPDF). Большие
+    // лилы ЧЧ — сотни страниц, сериализация > 30с → page.pdf падал и возвращался
+    // 500 → клиент уходил в печать. Поднимаем дефолтный таймаут страницы.
+    page.setDefaultTimeout(280000);
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: (kind === "book" || kind === "lila") ? 1 : 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
     try {
       // Книга/лила тяжёлые (вся «Гита» ≈ 1100 стр.; лилы ЧЧ — сотни страниц) —
       // даём дорисоваться; по таймауту печатаем что успело отрисоваться.
-      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : kind === "lila" ? 150000 : 45000 });
+      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : kind === "lila" ? 180000 : 45000 });
     } catch {
       /* отрисовка затянулась — печатаем что отрисовалось */
     }
@@ -119,6 +123,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
+      timeout: 270000,
       displayHeaderFooter: true,
       headerTemplate: header,
       footerTemplate: footer,
