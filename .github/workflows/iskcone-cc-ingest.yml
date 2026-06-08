@@ -268,7 +268,7 @@ jobs:
           status["total_written"]=total_written
 
           os.makedirs(".cc-ingest", exist_ok=True)
-          json.dump(status, open(".cc-ingest/status.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          json.dump(status, open(f".cc-ingest/status-{sel}.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
 
           body_txt=("sel="+sel+" verses="+str(vr.get("verses"))+" tr="+str(tx.get("n"))
                     +" missed="+str(len(status["missed"]))
@@ -285,6 +285,10 @@ jobs:
         run: |
           git config user.email "ceo@billionsx.com"
           git config user.name "Billions X"
-          git add .cc-ingest/status.json 2>/dev/null || true
-          git commit -m "chore(cc-ingest): status [skip ci]" 2>/dev/null || echo "nothing to commit"
-          git push 2>/dev/null || echo "push failed"
+          git add .cc-ingest/ 2>/dev/null || true
+          git commit -m "chore(cc-ingest): status [skip ci]" 2>/dev/null || { echo "nothing to commit"; exit 0; }
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main 2>/dev/null || true
+            if git push origin main 2>/dev/null; then echo "pushed"; break; fi
+            echo "push retry $i"; sleep $((RANDOM % 5 + 2))
+          done
