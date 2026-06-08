@@ -96,42 +96,26 @@ jobs:
           BOILER=re.compile(r"(Поддержать|Support Us|Privacy|Bhaktivedanta VedaBase|Спасибо|vedabase\.io|t\.me/|facebook\.com|Settings|Настройки)", re.I)
           def parse_chapter(html):
               soup=BeautifulSoup(html,"lxml")
+              for t in soup(["script","style","nav","header","footer","aside"]): t.decompose()
               h1=soup.select_one("h1")
               title=re.sub(r"\s+"," ", h1.get_text()).strip() if h1 else ""
-              # кандидатные контейнеры прозы (vedabase): .r-paragraph, затем эвристика
+              if title: title=re.sub(r"^ГЛАВА\s+\d+\s*[:.]\s*","",title).strip()
+              # проза vedabase: блоки <div class="… s-justify …"> внутри <main>
+              cand=soup.select("main .s-justify") or soup.select(".s-justify") or soup.select("main .copy")
               paras=[]
-              cand=soup.select(".r-paragraph, .r-prose p, .r-verse-text, .av-purport, .text-justify p")
-              classes_seen=set()
-              if cand:
-                  for e in cand:
-                      classes_seen.update(e.get("class") or [])
-                      for br in e.find_all("br"): br.replace_with("\n")
-                      t=re.sub(r"[ \t]+"," ", e.get_text()).strip()
-                      if t and not BOILER.search(t): paras.append(t)
-              if not paras:
-                  # фолбэк: берём контейнер с максимумом <p>, вне nav/header/footer/aside
-                  best=None; bestn=0
-                  for div in soup.find_all(["div","article","section","main"]):
-                      if div.find_parent(["nav","header","footer","aside"]): continue
-                      ps=[p for p in div.find_all("p", recursive=False)]
-                      if len(ps)>bestn: best,bestn=div,len(ps)
-                  if best is not None:
-                      for p in best.find_all("p"):
-                          for br in p.find_all("br"): br.replace_with("\n")
-                          t=re.sub(r"[ \t]+"," ", p.get_text()).strip()
-                          if t and not BOILER.search(t): paras.append(t)
-              if not paras:
-                  # последний фолбэк: все <p> страницы минус boiler/nav
-                  for p in soup.find_all("p"):
-                      if p.find_parent(["nav","header","footer","aside"]): continue
-                      t=re.sub(r"[ \t]+"," ", p.get_text()).strip()
-                      if t and not BOILER.search(t): paras.append(t)
-              # склейка пустых и дедуп подряд
+              for e in cand:
+                  for br in e.find_all("br"): br.replace_with("\n")
+                  t=re.sub(r"[ \t]+"," ", e.get_text()).strip()
+                  t=re.sub(r"\n{2,}","\n",t)
+                  if not t or BOILER.search(t): continue
+                  if re.fullmatch(r"ГЛАВА\s+\d+", t): continue
+                  paras.append(t)
               out=[]
               for t in paras:
                   if out and t==out[-1]: continue
                   out.append(t)
-              return title, out, sorted(classes_seen)
+              classes=sorted({c for e in cand for c in (e.get("class") or [])})
+              return title, out, classes
 
           idx=chapter_index()
           print("INDEX:", len(idx), "разделов:", json.dumps(idx[:6], ensure_ascii=False), "…")
