@@ -2,6 +2,7 @@ import { handleAdmin } from "./loader/handler";
 import { BOOKS, bookShareTitle, bookShareImage } from "./src/books";
 import puppeteer from "@cloudflare/puppeteer";
 import { EmailMessage } from "cloudflare:email";
+import { createMimeMessage } from "mimetext/browser";
 
 interface Env {
   ASSETS: { fetch: (req: Request) => Promise<Response> };
@@ -302,43 +303,6 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
 }
 
-/** Minimal RFC-822 multipart/alternative message (UTF-8 safe) for Cloudflare Email Routing. */
-function buildMime(fromName: string, fromAddr: string, to: string, replyTo: string, subject: string, text: string, html: string): string {
-  const b64 = (s: string): string => {
-    const bytes = new TextEncoder().encode(s);
-    let bin = ""; for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-    return btoa(bin);
-  };
-  const wrap = (s: string): string => (s.match(/.{1,76}/g) || []).join("\r\n");
-  const boundary = "b_" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  const headers = [
-    `From: ${fromName} <${fromAddr}>`,
-    `To: ${to}`,
-    ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
-    `Message-ID: <${Math.random().toString(36).slice(2)}.${Date.now()}@gaurangers.com>`,
-    `Date: ${new Date().toUTCString()}`,
-    `Subject: =?UTF-8?B?${b64(subject)}?=`,
-    `MIME-Version: 1.0`,
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
-  ].join("\r\n");
-  const parts = [
-    ``,
-    `--${boundary}`,
-    `Content-Type: text/plain; charset=utf-8`,
-    `Content-Transfer-Encoding: base64`,
-    ``,
-    wrap(b64(text)),
-    `--${boundary}`,
-    `Content-Type: text/html; charset=utf-8`,
-    `Content-Transfer-Encoding: base64`,
-    ``,
-    wrap(b64(html)),
-    `--${boundary}--`,
-    ``,
-  ].join("\r\n");
-  return headers + "\r\n" + parts;
-}
-
 /** Bug report: persist to D1 (never lost) and email support@billionsx.com if Resend is configured. */
 async function handleReport(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return jsonResp({ error: "method" }, 405);
@@ -397,18 +361,26 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
     + `</table></div>`;
 
   let emailed = false;
+  let sebErr = "";
 
   // 1) Cloudflare Email Routing — нативно, без сторонних сервисов (основной путь).
+  const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
   if (env.SEB) {
     try {
-      const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
-      const raw = buildMime("ISKCON ONE LOVE", fromAddr, "support@billionsx.com", rec.email || "", subject, text, html);
-      await env.SEB.send(new EmailMessage(fromAddr, "support@billionsx.com", raw));
+      const mm = createMimeMessage();
+      mm.setSender({ name: "ISKCON ONE LOVE", addr: fromAddr });
+      mm.setRecipient("support@billionsx.com");
+      mm.setSubject(subject);
+      mm.addMessage({ contentType: "text/plain", data: text });
+      await env.SEB.send(new EmailMessage(fromAddr, "support@billionsx.com", mm.asRaw()));
       emailed = true;
-    } catch { emailed = false; }
+    } catch (e) { sebErr = String((e as Error)?.message || e).slice(0, 300); }
+  } else {
+    sebErr = "no SEB binding";
   }
 
   // 2) Резерв — Resend (если задан ключ и нативная отправка не сработала).
+  let resendErr = "";
   if (!emailed && env.RESEND_API_KEY) {
     try {
       const from = env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>";
@@ -420,7 +392,8 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
         body: JSON.stringify(payload),
       });
       emailed = r.ok;
-    } catch { emailed = false; }
+      if (!r.ok) resendErr = "resend http " + r.status;
+    } catch (e) { resendErr = String((e as Error)?.message || e).slice(0, 200); }
   }
 
   // 3) Telegram — мгновенно, без DNS и без привязки к домену.
@@ -444,7 +417,7 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
   }
 
   const delivered = emailed || telegrammed;
-  return jsonResp({ ok: true, emailed, delivered });
+  return jsonResp({ ok: true, emailed, delivered, dbg: { seb: !!env.SEB, sebErr, resendErr } });
 }
 
 export default {
