@@ -9,6 +9,11 @@ interface Env {
   BROWSER: Fetcher;
   // Секрет для CRM-загрузчика: wrangler secret put ADMIN_TOKEN
   ADMIN_TOKEN?: string;
+  // Отчёты об ошибках → письмо на support@billionsx.com (Resend). Без ключа отчёт
+  // только сохраняется в D1, а клиент доставляет письмо через mailto-фолбэк.
+  //   wrangler secret put RESEND_API_KEY
+  RESEND_API_KEY?: string;
+  REPORT_FROM?: string; // напр. "ISKCON ONE LOVE <noreply@gaurangers.com>"
 }
 
 const NOINDEX = "noindex, nofollow, noarchive, nosnippet, noimageindex";
@@ -280,6 +285,85 @@ async function serveAudio(request: Request, identifier: string, filename: string
   return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: h });
 }
 
+function jsonResp(obj: unknown, status = 200): Response {
+  return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": NOINDEX } });
+}
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+}
+
+/** Bug report: persist to D1 (never lost) and email support@billionsx.com if Resend is configured. */
+async function handleReport(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") return jsonResp({ error: "method" }, 405);
+  let body: Record<string, unknown>;
+  try { body = (await request.json()) as Record<string, unknown>; } catch { return jsonResp({ error: "bad json" }, 400); }
+  const clip = (v: unknown, n: number) => String(v ?? "").slice(0, n);
+  const message = clip(body.message, 4000).trim();
+  if (!message) return jsonResp({ error: "empty" }, 400);
+  const rec = {
+    category: clip(body.category, 40),
+    categoryLabel: clip(body.categoryLabel, 80) || clip(body.category, 80) || "Другое",
+    message,
+    email: clip(body.email, 200) || null,
+    context: clip(body.context, 300),
+    url: clip(body.url, 600),
+    ua: clip(body.ua, 600),
+    viewport: clip(body.viewport, 40),
+    lang: clip(body.lang, 40),
+  };
+  const cf = (request as unknown as { cf?: Record<string, unknown> }).cf || {};
+  const country = clip(cf.country, 8);
+
+  try {
+    await env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS reports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        category TEXT, category_label TEXT, message TEXT NOT NULL,
+        email TEXT, context TEXT, url TEXT, user_agent TEXT, viewport TEXT, lang TEXT, country TEXT
+      )`
+    ).run();
+    await env.DB.prepare(
+      `INSERT INTO reports (category, category_label, message, email, context, url, user_agent, viewport, lang, country)
+       VALUES (?,?,?,?,?,?,?,?,?,?)`
+    ).bind(rec.category, rec.categoryLabel, rec.message, rec.email, rec.context, rec.url, rec.ua, rec.viewport, rec.lang, country).run();
+  } catch {
+    return jsonResp({ ok: false, emailed: false, error: "store" }, 500);
+  }
+
+  let emailed = false;
+  if (env.RESEND_API_KEY) {
+    try {
+      const from = env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>";
+      const subject = `ISKCON ONE LOVE — отчёт: ${rec.categoryLabel}`;
+      const meta: Array<[string, string]> = [
+        ["Категория", rec.categoryLabel],
+        ...(rec.context ? [["Раздел", rec.context] as [string, string]] : []),
+        ...(rec.email ? [["Email для ответа", rec.email] as [string, string]] : []),
+        ["Страница", rec.url],
+        ["Устройство", rec.ua],
+        ["Экран", `${rec.viewport} · ${rec.lang} · ${country}`],
+      ];
+      const text = [rec.message, "", "————", ...meta.map(([k, v]) => `${k}: ${v}`)].join("\n");
+      const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;color:#1f2024;line-height:1.55">`
+        + `<p style="white-space:pre-wrap;margin:0 0 16px">${escapeHtml(rec.message)}</p>`
+        + `<hr style="border:none;border-top:1px solid #ececec;margin:16px 0">`
+        + `<table style="font-size:13px;color:#70727b;border-collapse:collapse">`
+        + meta.map(([k, v]) => `<tr><td style="padding:2px 12px 2px 0;vertical-align:top;color:#a7a8b0">${escapeHtml(k)}</td><td style="padding:2px 0;word-break:break-all">${escapeHtml(v)}</td></tr>`).join("")
+        + `</table></div>`;
+      const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
+      if (rec.email) payload.reply_to = rec.email;
+      const r = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      emailed = r.ok;
+    } catch { emailed = false; }
+  }
+  return jsonResp({ ok: true, emailed });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -323,6 +407,11 @@ export default {
          ORDER BY ordinal`
       ).bind(divId).all();
       return json({ work: "bg", chapter: Number(m[1]), verses: results });
+    }
+
+    // ── Bug reports → сохраняем в D1 + письмо на support@billionsx.com ──
+    if (url.pathname === "/api/report") {
+      return handleReport(request, env);
     }
 
     // ── Admin / CRM book-loader (writes to D1; protected by ADMIN_TOKEN) ──
