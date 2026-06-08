@@ -1,6 +1,7 @@
 import { handleAdmin } from "./loader/handler";
 import { BOOKS, bookShareTitle, bookShareImage } from "./src/books";
 import puppeteer from "@cloudflare/puppeteer";
+import { EmailMessage } from "cloudflare:email";
 
 interface Env {
   ASSETS: { fetch: (req: Request) => Promise<Response> };
@@ -14,6 +15,11 @@ interface Env {
   //   wrangler secret put RESEND_API_KEY
   RESEND_API_KEY?: string;
   REPORT_FROM?: string; // напр. "ISKCON ONE LOVE <noreply@gaurangers.com>"
+  // Нативная отправка через Cloudflare Email Routing (без сторонних сервисов).
+  // Биндинг send_email в wrangler.toml; destination support@billionsx.com должен
+  // быть подтверждён, а Email Routing включён на домене-отправителе gaurangers.com.
+  SEB?: { send: (m: EmailMessage) => Promise<void> };
+  REPORT_FROM_ADDR?: string; // напр. "noreply@gaurangers.com"
 }
 
 const NOINDEX = "noindex, nofollow, noarchive, nosnippet, noimageindex";
@@ -292,6 +298,43 @@ function escapeHtml(s: string): string {
   return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
 }
 
+/** Minimal RFC-822 multipart/alternative message (UTF-8 safe) for Cloudflare Email Routing. */
+function buildMime(fromName: string, fromAddr: string, to: string, replyTo: string, subject: string, text: string, html: string): string {
+  const b64 = (s: string): string => {
+    const bytes = new TextEncoder().encode(s);
+    let bin = ""; for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    return btoa(bin);
+  };
+  const wrap = (s: string): string => (s.match(/.{1,76}/g) || []).join("\r\n");
+  const boundary = "b_" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  const headers = [
+    `From: ${fromName} <${fromAddr}>`,
+    `To: ${to}`,
+    ...(replyTo ? [`Reply-To: ${replyTo}`] : []),
+    `Message-ID: <${Math.random().toString(36).slice(2)}.${Date.now()}@gaurangers.com>`,
+    `Date: ${new Date().toUTCString()}`,
+    `Subject: =?UTF-8?B?${b64(subject)}?=`,
+    `MIME-Version: 1.0`,
+    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+  ].join("\r\n");
+  const parts = [
+    ``,
+    `--${boundary}`,
+    `Content-Type: text/plain; charset=utf-8`,
+    `Content-Transfer-Encoding: base64`,
+    ``,
+    wrap(b64(text)),
+    `--${boundary}`,
+    `Content-Type: text/html; charset=utf-8`,
+    `Content-Transfer-Encoding: base64`,
+    ``,
+    wrap(b64(html)),
+    `--${boundary}--`,
+    ``,
+  ].join("\r\n");
+  return headers + "\r\n" + parts;
+}
+
 /** Bug report: persist to D1 (never lost) and email support@billionsx.com if Resend is configured. */
 async function handleReport(request: Request, env: Env): Promise<Response> {
   if (request.method !== "POST") return jsonResp({ error: "method" }, 405);
@@ -331,26 +374,40 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
     return jsonResp({ ok: false, emailed: false, error: "store" }, 500);
   }
 
+  // ── Compose the report email once (shared by Cloudflare Email Routing + Resend) ──
+  const subject = `ISKCON ONE LOVE — отчёт: ${rec.categoryLabel}`;
+  const meta: Array<[string, string]> = [
+    ["Категория", rec.categoryLabel],
+    ...(rec.context ? [["Раздел", rec.context] as [string, string]] : []),
+    ...(rec.email ? [["Email для ответа", rec.email] as [string, string]] : []),
+    ["Страница", rec.url],
+    ["Устройство", rec.ua],
+    ["Экран", `${rec.viewport} · ${rec.lang} · ${country}`],
+  ];
+  const text = [rec.message, "", "————", ...meta.map(([k, v]) => `${k}: ${v}`)].join("\n");
+  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;color:#1f2024;line-height:1.55">`
+    + `<p style="white-space:pre-wrap;margin:0 0 16px">${escapeHtml(rec.message)}</p>`
+    + `<hr style="border:none;border-top:1px solid #ececec;margin:16px 0">`
+    + `<table style="font-size:13px;color:#70727b;border-collapse:collapse">`
+    + meta.map(([k, v]) => `<tr><td style="padding:2px 12px 2px 0;vertical-align:top;color:#a7a8b0">${escapeHtml(k)}</td><td style="padding:2px 0;word-break:break-all">${escapeHtml(v)}</td></tr>`).join("")
+    + `</table></div>`;
+
   let emailed = false;
-  if (env.RESEND_API_KEY) {
+
+  // 1) Cloudflare Email Routing — нативно, без сторонних сервисов (основной путь).
+  if (env.SEB) {
+    try {
+      const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+      const raw = buildMime("ISKCON ONE LOVE", fromAddr, "support@billionsx.com", rec.email || "", subject, text, html);
+      await env.SEB.send(new EmailMessage(fromAddr, "support@billionsx.com", raw));
+      emailed = true;
+    } catch { emailed = false; }
+  }
+
+  // 2) Резерв — Resend (если задан ключ и нативная отправка не сработала).
+  if (!emailed && env.RESEND_API_KEY) {
     try {
       const from = env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>";
-      const subject = `ISKCON ONE LOVE — отчёт: ${rec.categoryLabel}`;
-      const meta: Array<[string, string]> = [
-        ["Категория", rec.categoryLabel],
-        ...(rec.context ? [["Раздел", rec.context] as [string, string]] : []),
-        ...(rec.email ? [["Email для ответа", rec.email] as [string, string]] : []),
-        ["Страница", rec.url],
-        ["Устройство", rec.ua],
-        ["Экран", `${rec.viewport} · ${rec.lang} · ${country}`],
-      ];
-      const text = [rec.message, "", "————", ...meta.map(([k, v]) => `${k}: ${v}`)].join("\n");
-      const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;color:#1f2024;line-height:1.55">`
-        + `<p style="white-space:pre-wrap;margin:0 0 16px">${escapeHtml(rec.message)}</p>`
-        + `<hr style="border:none;border-top:1px solid #ececec;margin:16px 0">`
-        + `<table style="font-size:13px;color:#70727b;border-collapse:collapse">`
-        + meta.map(([k, v]) => `<tr><td style="padding:2px 12px 2px 0;vertical-align:top;color:#a7a8b0">${escapeHtml(k)}</td><td style="padding:2px 0;word-break:break-all">${escapeHtml(v)}</td></tr>`).join("")
-        + `</table></div>`;
       const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
       if (rec.email) payload.reply_to = rec.email;
       const r = await fetch("https://api.resend.com/emails", {
@@ -361,6 +418,7 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
       emailed = r.ok;
     } catch { emailed = false; }
   }
+
   return jsonResp({ ok: true, emailed });
 }
 
