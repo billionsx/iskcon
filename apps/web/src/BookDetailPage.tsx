@@ -597,7 +597,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        {!hierarchical && <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(work, Number(chapter.number) || 1, "plain")} size={36}><HeadphonesIcon size={18} /></NavBtn>}
+        <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(work, Number(chapter.number) || 1, "plain", hierarchical ? chapter.id.split(".")[1] : undefined)} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -698,7 +698,7 @@ function DemoBadge() {
 
 interface VerseToken { term: string; gloss: string | null; }
 interface VerseDetail {
-  ref: string; label: string; uvaca: string | null;
+  ref: string; label: string; uvaca: string | null; division?: string | null;
   devanagari: string | null; translit: string | null;
   tokens: VerseToken[]; translation: string | null; purport: string | null;
   source_url: string | null; prev: string | null; next: string | null;
@@ -865,6 +865,9 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
   const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "2.13" | "2.16-17"
   const verseSeg = refDigits.includes(".") ? refDigits.slice(refDigits.indexOf(".") + 1) : "";
   const verseUrl = `https://gaurangers.com/book/${work}/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
+  const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"]
+  const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
+  const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
   const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
   const evDeva = data?.devanagari || demo?.devanagari || null;
   const evTranslit = data?.translit || demo?.translit || null;
@@ -901,7 +904,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
           <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        {work === "bg" && <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(work, Number(chapterNo) || 1, "commentary")} size={36}><HeadphonesIcon size={18} /></NavBtn>}
+        <NavBtn ariaLabel="Слушать" onClick={() => work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila)} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 

@@ -12,6 +12,13 @@ export const booksRouter = new Hono<{ Bindings: Bindings; Variables: Variables }
 
 type Row = Record<string, any>;
 
+// Ведущий кириллический токен в оригинальном тексте (деванагари/бенгали) — артефакт
+// ингеста (затёкшая подпись-ярлык «Бенгальский»/«Деванагари»); срезаем на отдаче.
+function stripScriptLabel(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/^[\u0400-\u04FF]+\s*/, '');
+}
+
 // Отображаемые названия книг (works без title) — для ридера/оглавления
 const WORK_NAMES: Record<string, string> = {
   bg: 'Бхагавад-гита',
@@ -150,7 +157,7 @@ booksRouter.get('/:work/chapters/:number/read', async (c) => {
     return {
       ref: v.ref,
       label,
-      devanagari: v.devanagari ?? null,
+      devanagari: stripScriptLabel(v.devanagari),
       translit: v.translit ?? null,
       tokens: byVerse[v.id] ?? [],
       translation: v.translation ?? null,
@@ -217,8 +224,9 @@ booksRouter.get('/:work/verses/:ref', async (c) => {
   return c.json({
     ref: verse.ref,
     label,
+    division: verse.division_id ?? null,
     uvaca: verse.uvaca ?? null,
-    devanagari: verse.devanagari ?? null,
+    devanagari: stripScriptLabel(verse.devanagari),
     translit: verse.translit ?? null,
     tokens,
     translation: text?.translation ?? null,

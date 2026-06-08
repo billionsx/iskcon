@@ -57,7 +57,7 @@ export interface PlayerApi {
   hasCommentary: boolean; // прятать тумблер «комментарии», когда их нет (ЧЧ)
   // точки входа
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
-  playChapter(book: string, chapter: number, mode: AudioMode): void;
+  playChapter(book: string, chapter: number, mode: AudioMode, lila?: string): void;
   // транспорт
   togglePlay(): void;
   next(): void;
@@ -135,7 +135,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   repeatRef.current = repeat;
 
   const engineRef = useRef<AudioEngine | null>(null);
-  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; expand?: boolean } | null>(null);
+  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; expand?: boolean } | null>(null);
   const restoreRef = useRef<{ time: number } | null>(null);
 
   const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
@@ -224,7 +224,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const list = (m.modes[p.mode] ?? m.modes.plain).tracks;
     let i = 0;
     if (p.chapter != null) {
-      const f = list.findIndex((t) => t.chapter === p.chapter);
+      const f = list.findIndex((t) => t.chapter === p.chapter && (p.lila == null || t.lila === p.lila));
       i = f >= 0 ? f : 0;
     }
     loadIndex(m, p.mode, i, autoplay);
@@ -251,9 +251,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
-  function playChapter(book: string, chapter: number, md: AudioMode) {
+  function playChapter(book: string, chapter: number, md: AudioMode, lila?: string) {
     switchBook(book);
-    pendingRef.current = { mode: md, chapter, expand: true };
+    pendingRef.current = { mode: md, chapter, lila, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }

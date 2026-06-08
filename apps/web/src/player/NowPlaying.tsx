@@ -5,7 +5,7 @@
  * Открывается всегда сверху (без скачка). Контролы закреплены снизу «стеклом».
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePlayer, fmtTime, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
@@ -148,9 +148,19 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
             <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
               Содержание{p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}
             </div>
-            {p.tracks.map((t, i) => (
-              <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
-            ))}
+            {p.tracks.map((t, i) => {
+              const showLila = !!t.lila && (i === 0 || p.tracks[i - 1].lila !== t.lila);
+              return (
+                <Fragment key={t.file}>
+                  {showLila && (
+                    <div style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: "0.3px", color: GOLD, padding: i === 0 ? "2px 4px 8px" : "16px 4px 8px", marginTop: i === 0 ? 0 : 4, borderTop: i === 0 ? "none" : "0.5px solid rgba(255,255,255,0.10)" }}>
+                      {t.lilaLabel ?? t.lila}
+                    </div>
+                  )}
+                  <QueueRow t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
+                </Fragment>
+              );
+            })}
           </div>
         </div>
 

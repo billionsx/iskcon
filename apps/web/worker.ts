@@ -487,6 +487,14 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
   return jsonResp({ ok: true, emailed, delivered, dbg: { seb: !!env.SEB, sebErr, resendErr } });
 }
 
+// Чистим оригинальный текст от затёкшей при ингесте подписи-ярлыка («Бенгальский»,
+// «Деванагари» и т.п.): в письменностях (деванагари/бенгали) кириллицы быть не может,
+// поэтому ведущий кириллический токен — всегда артефакт.
+function stripScriptLabel(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return s.replace(/^[\u0400-\u04FF]+\s*/, "");
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -558,7 +566,7 @@ export default {
       const verses = (vres.results ?? []).map((v) => {
         const tail = String(v.ref).split(".").pop() ?? "";
         const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, "-")}` : `Текст ${tail}`;
-        return { ref: v.ref, label, devanagari: v.devanagari ?? null, translit: v.translit ?? null, tokens: byVerse[v.id] ?? [], translation: v.translation ?? null, purport: v.purport ?? null };
+        return { ref: v.ref, label, devanagari: stripScriptLabel(v.devanagari), translit: v.translit ?? null, tokens: byVerse[v.id] ?? [], translation: v.translation ?? null, purport: v.purport ?? null };
       });
       return json({ work, division: divId, verses });
     }
