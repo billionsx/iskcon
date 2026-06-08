@@ -130,7 +130,7 @@ export async function downloadCcBookPdf(opts: {
     const range = j.parts > 1 ? `главы ${j.from}-${j.to}` : undefined;
     const ac = new AbortController();
     opts.abortRef.current = ac;
-    const killer = setTimeout(() => ac.abort(), 170000);
+    const killer = setTimeout(() => ac.abort(), 280000);
     let ok = false;
     try {
       ok = await downloadServerPdf(
