@@ -119,9 +119,13 @@ export const AUDIO_WORKS: Record<string, boolean> = { bg: true, cc: true };
  *   "<Название>. ISKCON ONE LOVE. ИСККОН."
  * Single source — used by the client share action and by the edge OG injector.
  */
+/** Full title as one string — joins the two title lines (no space after a trailing hyphen). */
+export function bookFullTitle(b: BookData): string {
+  return b.titleLine2 ? `${b.titleLine1}${b.titleLine1.endsWith("-") ? "" : " "}${b.titleLine2}` : b.titleLine1;
+}
+
 export function bookShareTitle(b: BookData): string {
-  const name = b.titleLine2 ? `${b.titleLine1}${b.titleLine1.endsWith("-") ? "" : " "}${b.titleLine2}` : b.titleLine1;
-  return `${name}. ISKCON ONE LOVE. ИСККОН.`;
+  return `${bookFullTitle(b)}. ISKCON ONE LOVE. ИСККОН.`;
 }
 
 /** Primary cover (absolute path on the site) used as the share/OG image for a book. */

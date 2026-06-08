@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
-import { BOOK_MENU_ITEMS, bookShareTitle, AUDIO_WORKS } from "./books";
+import { BOOK_MENU_ITEMS, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
@@ -991,7 +991,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
           return;
         }
         if (id === "qr") {
-          onQr(`https://gaurangers.com/book/${work}${hierarchical ? "" : `/${chapter.number}`}`, {
+          onQr(`https://gaurangers.com/book/${work}${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`, {
             kind: "chapter",
             bookTitle,
             chapterNumber: chapter.number,
@@ -1256,7 +1256,11 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
   const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "1.9.40" | "2.13" | "2.16-17"
   const chapterNo = divParts.length >= 2 ? divParts[divParts.length - 1] : (refDigits.split(".")[0] ?? "");
   const verseSeg = (data?.ref ?? refStr).split(".").pop() ?? "";            // "40" | "13" | "16-17"
-  const verseUrl = `https://gaurangers.com/book/${work}/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
+  const verseUrl = work !== "bg"
+    ? (divParts.length >= 3
+        ? `https://gaurangers.com/book/${work}/${divParts[1]}/${divParts[2]}${verseSeg ? `/${verseSeg}` : ""}`
+        : `https://gaurangers.com/book/${work}`)
+    : `https://gaurangers.com/book/${work}/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
   const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"] | ["sb","1","9"]
   const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
   const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
@@ -1434,7 +1438,7 @@ function TopBtn({ solid, active, activeColor, ariaLabel, onClick, children }: { 
 }
 
 /* ═════════ MAIN ═════════ */
-export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book: BookData; onBack: () => void; onDonate: () => void; initialTarget?: { chapter: string | null; verse: string | null } | null }) {
+export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book: BookData; onBack: () => void; onDonate: () => void; initialTarget?: { div?: string | null; chapter: string | null; verse: string | null } | null }) {
   const [idx, setIdx] = useState(0);
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -1464,8 +1468,36 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   // Открыть цель (глава + стих) — для холодного входа по ссылке, QR и кнопок назад/вперёд.
   // navLock не даёт эффекту состояние→URL пушить адрес во время синхронизации ИЗ URL.
   const navLock = useRef(false);
-  const openTarget = useRef<(chapter: string | null, verse: string | null) => void>(() => {});
-  openTarget.current = (chapter, verse) => {
+  const openTarget = useRef<(div: string | null, chapter: string | null, verse: string | null) => void>(() => {});
+  openTarget.current = (div, chapter, verse) => {
+    if (book.hierarchical) {
+      // ЧЧ/ШБ: лила/песнь → глава → стих, через /toc и /division/<id>/read
+      navLock.current = true;
+      if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
+      fetch(api(`/books/${book.work}/toc`))
+        .then((r) => r.json())
+        .then((d: CcToc) => {
+          const divs = d?.divisions ?? [];
+          const dv = divs.find((x) => x.id.split(".").pop() === div || x.slug === div) ?? null;
+          const c = dv?.chapters.find((x) => x.number === chapter) ?? null;
+          if (!c) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
+          setOpenChapter({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses });
+          if (verse) {
+            fetch(api(`/books/${book.work}/division/${c.id}/read`))
+              .then((r) => r.json())
+              .then((rd) => {
+                const vs = (rd.verses ?? []) as ChapterVerse[];
+                const want = verse.replace(/[–—]/g, "-");
+                const hit = vs.find((vv) => (String(vv.ref).split(".").pop() ?? "").replace(/[–—]/g, "-") === want);
+                setReaderRef(hit ? hit.ref : null);
+              })
+              .catch(() => {})
+              .finally(() => { navLock.current = false; });
+          } else { setReaderRef(null); navLock.current = false; }
+        })
+        .catch(() => { navLock.current = false; });
+      return;
+    }
     if (!chapters) return;
     navLock.current = true;
     if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
@@ -1488,22 +1520,43 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     }
   };
 
-  // Холодный вход /book/bg/{ch}/{v} (в т.ч. из QR) → открыть цель один раз, когда главы готовы.
+  // Холодный вход /book/<work>/… (в т.ч. из QR) → открыть цель один раз.
+  // ПКП (bg) ждёт загрузки оглавления; иерархические тянут TOC внутри openTarget.
   const didInitTarget = useRef(false);
   useEffect(() => {
-    if (didInitTarget.current || !chapters) return;
+    if (didInitTarget.current) return;
+    if (!book.hierarchical && !chapters) return;
     if (initialTarget?.chapter) {
       didInitTarget.current = true;
-      openTarget.current(initialTarget.chapter, initialTarget.verse);
+      openTarget.current(initialTarget.div ?? null, initialTarget.chapter, initialTarget.verse);
     }
-  }, [chapters, initialTarget]);
+  }, [chapters, initialTarget, book.hierarchical]);
 
-  // Состояние → URL: уникальный адрес — /book/bg, /book/bg/{ch}, /book/bg/{ch}/{v}.
-  // Глубже (открыли главу/стих) → push; прыжок стих↔стих → replace, чтобы «назад» от
-  // стиха вёл к ГЛАВЕ, а не перебирал соседние стихи.
+  // Состояние → URL: уникальный адрес для каждой главы/стиха.
+  //   ПКП:           /book/bg/{ch}, /book/bg/{ch}/{v}
+  //   иерархические: /book/<work>/{lila}/{ch}, /book/<work>/{lila}/{ch}/{v}
+  // Прыжок стих↔стих → replace (чтобы «назад» от стиха вёл к ГЛАВЕ, не к соседнему стиху).
   useEffect(() => {
-    if (book.hierarchical) return; // ЧЧ/ШБ: глубокие URL глав/стихов — отдельная задача; ПКП живёт на /book/<work>
-    if (!chapters || navLock.current || typeof window === "undefined") return;
+    if (navLock.current || typeof window === "undefined") return;
+    if (book.hierarchical) {
+      const base = `/book/${book.work}`;
+      let path = base;
+      if (readerRef) {
+        const pr = readerRef.split(".");                 // ["cc","madhya","6","140"]
+        path = pr.length >= 4
+          ? `${base}/${pr[1]}/${pr[2]}/${pr[3]}`
+          : (openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base);
+      } else if (openChapter) {
+        path = `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}`;
+      }
+      const cur = window.location.pathname;
+      if (cur === path) return;
+      const isVerse = (p: string) => /^\/book\/[a-z0-9]+\/[a-z0-9]+\/\d+\/.+/i.test(p);
+      if (isVerse(cur) && isVerse(path)) window.history.replaceState(null, "", path);
+      else window.history.pushState(null, "", path);
+      return;
+    }
+    if (!chapters) return;
     let path = "/book/bg";
     if (readerRef) {
       const rd = readerRef.replace(/^[^\d]*/, "");
@@ -1518,7 +1571,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     const isVerse = (p: string) => /^\/book\/bg\/\d+\/.+/.test(p);
     if (isVerse(cur) && isVerse(path)) window.history.replaceState(null, "", path);
     else window.history.pushState(null, "", path);
-  }, [openChapter, readerRef, chapters]);
+  }, [openChapter, readerRef, chapters, book.hierarchical, book.work]);
 
   // Единая кнопка «назад» внутри книги: стих → глава → книга → главная.
   // Используем настоящую историю (pop), чтобы переходы были чистыми; на холодном
@@ -1526,29 +1579,31 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const histBase = useRef(typeof window !== "undefined" ? window.history.length : 0);
   const goBack = () => {
     if (typeof window === "undefined") return;
+    if (window.history.length > histBase.current) { window.history.back(); return; }
+    const base = `/book/${book.work}`;
     if (book.hierarchical) {
-      if (readerRef) { setReaderRef(null); return; }
-      if (openChapter) { setOpenChapter(null); return; }
+      if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base); return; }
+      if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", base); return; }
       onBack(); return;
     }
-    if (window.history.length > histBase.current) { window.history.back(); return; }
-    if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `/book/bg/${openChapter.number}` : "/book/bg"); }
-    else if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", "/book/bg"); }
-    else onBack();
+    if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `/book/bg/${openChapter.number}` : "/book/bg"); return; }
+    if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", "/book/bg"); return; }
+    onBack();
   };
 
   // URL → состояние при «назад/вперёд» браузера (в пределах книги).
   useEffect(() => {
-    if (book.hierarchical) return;
     const onPop = () => {
+      const base = `/book/${book.work}`;
       const path = window.location.pathname;
-      if (!path.startsWith("/book/bg")) return;
-      const parts = path.split("/");        // ["", "book", "bg", ch?, v?]
-      openTarget.current(parts[3] || null, parts[4] || null);
+      if (!path.startsWith(base)) return;
+      const parts = path.split("/");        // ["", "book", work, a?, b?, c?]
+      if (book.hierarchical) openTarget.current(parts[3] || null, parts[4] || null, parts[5] || null);
+      else openTarget.current(null, parts[3] || null, parts[4] || null);
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
-  }, [book.hierarchical]);
+  }, [book.hierarchical, book.work]);
 
   const openChapterByNumber = (num: string) => {
     const c = chapters?.find((x) => x.number === num);
@@ -1706,8 +1761,8 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bookPctTitle} · {bookPct}%</span>
         </button>
       )}
-      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+      {openChapter && <ChapterPage chapter={openChapter} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />

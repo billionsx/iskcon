@@ -13,7 +13,7 @@ import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet, type QrData } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
-import { BOOKS } from "../books";
+import { BOOKS, bookFullTitle } from "../books";
 
 const GOLD = "#D2AA1B";
 const glass = (radius: number): CSSProperties => ({
@@ -62,7 +62,12 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
   const bookUrl = `${ORIGIN}/book/${p.book}?listen`;
-  const chapterUrl = isChapter && p.book === "bg" ? `${ORIGIN}/book/bg/${ch}?listen` : bookUrl;
+  const lila = p.track?.lila;   // ЧЧ/ШБ
+  const chapterUrl = isChapter
+    ? (p.book === "bg"
+        ? `${ORIGIN}/book/bg/${ch}?listen`
+        : (lila ? `${ORIGIN}/book/${p.book}/${lila}/${ch}?listen` : bookUrl))
+    : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
   function doShare(url: string, title: string) {
     if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title, url }).catch(() => {});
@@ -75,7 +80,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
     catch { flash("Не удалось скачать"); }
   }
   function bookQr() { setQr({ url: bookUrl, data: { kind: "book", bookTitle: BOOK.titleLine1, bookSubtitle: BOOK.titleLine2, tagline: BOOK.tagline, cover: BOOK.covers[0] } }); }
-  function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: BOOK.titleLine1, chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
+  function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: bookFullTitle(BOOK), chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
   function onMenuSelect(id: string) {
     if (id === "share-chapter") { doShare(chapterUrl, `${BOOK.titleLine1} — Глава ${ch}`); return; }
     if (id === "qr-chapter") { chapterQr(); return; }

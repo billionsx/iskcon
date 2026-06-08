@@ -440,7 +440,7 @@ export default function App() {
   }
   const [tab, setTab] = useState("home");
   const [openBook, setOpenBook] = useState<string | null>(null);
-  const [bookTarget, setBookTarget] = useState<{ chapter: string | null; verse: string | null } | null>(null);
+  const [bookTarget, setBookTarget] = useState<{ div: string | null; chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
@@ -484,10 +484,17 @@ export default function App() {
     if (["feed", "search", "map", "passport"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (seg0 === "book") {
-      const parts = clean.split("/");           // ["", "book", <work>, ch?, v?]
+      const parts = clean.split("/");           // ["", "book", <work>, a?, b?, c?]
       const work = parts[2] || "bg";
-      setBookTarget(parts[3] ? { chapter: parts[3], verse: parts[4] ?? null } : null);
-      setOpenBook(BOOKS[work] ? work : "bg");
+      const bk = BOOKS[work] ? work : "bg";
+      if (BOOKS[bk]?.hierarchical) {
+        // /book/<work>/<lila|canto>/<chapter>/<verse?>
+        setBookTarget(parts[3] ? { div: parts[3], chapter: parts[4] ?? null, verse: parts[5] ?? null } : null);
+      } else {
+        // /book/<work>/<chapter>/<verse?>
+        setBookTarget(parts[3] ? { div: null, chapter: parts[3], verse: parts[4] ?? null } : null);
+      }
+      setOpenBook(bk);
       return;
     }
     if (seg0 === "admin") { setOpenAdmin(true); return; }
