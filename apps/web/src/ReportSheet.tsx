@@ -10,7 +10,6 @@ const FILL = "#F4F4F7";
 const GOLD = "#D2AA1B";
 const GOLDT = "#9c7c15";
 
-const SUPPORT = "support@billionsx.com";
 const MAX = 2000;
 
 const CATEGORIES = [
@@ -60,21 +59,6 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
     };
   }
 
-  function openMailFallback() {
-    const d = diagnostics();
-    const body = [
-      trimmed, "", "————",
-      `Категория: ${catLabel}`,
-      context ? `Раздел: ${context}` : "",
-      email.trim() ? `Email для ответа: ${email.trim()}` : "",
-      `Страница: ${d.url}`,
-      `Устройство: ${d.ua}`,
-      `Экран: ${d.viewport}`,
-      `Время: ${d.ts}`,
-    ].filter(Boolean).join("\n");
-    window.location.href = `mailto:${SUPPORT}?subject=${encodeURIComponent(`ISKCON ONE LOVE — отчёт: ${catLabel}`)}&body=${encodeURIComponent(body)}`;
-  }
-
   async function submit() {
     if (!canSend) return;
     setState("sending");
@@ -84,19 +68,9 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category: cat, categoryLabel: catLabel, message: trimmed, email: email.trim() || null, ...diagnostics() }),
       });
-      let delivered = false;
-      try { const j = await res.json(); delivered = !!(j && (j.delivered ?? j.emailed)); } catch { /* ignore */ }
       if (!res.ok) throw new Error("bad status");
-      if (delivered) {
-        // Сервер доставил отчёт сам (почта на iskcone.com / Resend) — показываем «Спасибо».
-        setState("done");
-        window.setTimeout(onClose, 1700);
-      } else {
-        // Сервера-отправки пока нет: отчёт уже сохранён, открываем готовое письмо
-        // на support@billionsx.com и закрываем лист — дальше пользователь жмёт «Отправить».
-        openMailFallback();
-        onClose();
-      }
+      setState("done");
+      window.setTimeout(onClose, 1700);
     } catch {
       setState("error");
     }
@@ -160,7 +134,7 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
 
             {state === "error" && (
               <div style={{ marginTop: 12, fontSize: 13, color: "#c0392b", background: "rgba(192,57,43,0.08)", border: "0.5px solid rgba(192,57,43,0.25)", borderRadius: 12, padding: "10px 12px" }}>
-                Не удалось отправить. <button type="button" onClick={openMailFallback} style={{ color: GOLDT, fontWeight: 600, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 13 }}>Отправить через почту</button> или попробуйте ещё раз.
+                Не удалось отправить. Попробуйте ещё раз.
               </div>
             )}
 
