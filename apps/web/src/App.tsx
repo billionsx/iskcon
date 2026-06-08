@@ -320,7 +320,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: () => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onDonate: () => void }) {
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onDonate: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -343,7 +343,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
                 <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
               </div>
-              <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={onOpenBook} onMenuSelect={(id) => {
+              <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("bg")} onMenuSelect={(id) => {
                 if (id === "share") {
                   const url = "https://gaurangers.com/book/bg";
                   if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: BOOKS.bg.titleLine1, url }).catch(() => {}); }
@@ -354,8 +354,23 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
                 if (id === "donate") { onDonate(); return; }
                 if (id === "report") { setReportOpen(true); return; }
-                onOpenBook();
+                onOpenBook("bg");
               }} />
+              <div style={{ marginTop: 14 }}>
+                <BookHeroCard book={BOOKS.cc} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("cc")} onMenuSelect={(id) => {
+                  if (id === "share") {
+                    const url = "https://gaurangers.com/book/cc";
+                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: `${BOOKS.cc.titleLine1}${BOOKS.cc.titleLine2 ?? ""}`, url }).catch(() => {}); }
+                    else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
+                    return;
+                  }
+                  if (id === "pdf") { flash("PDF Чайтанья-чаритамриты готовится"); return; }
+                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/cc", data: { kind: "book", bookTitle: BOOKS.cc.titleLine1, bookSubtitle: BOOKS.cc.titleLine2, tagline: BOOKS.cc.tagline, cover: BOOKS.cc.covers[0] } }); return; }
+                  if (id === "donate") { onDonate(); return; }
+                  if (id === "report") { setReportOpen(true); return; }
+                  onOpenBook("cc");
+                }} />
+              </div>
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
           ) : tab === "feed" ? (
@@ -388,7 +403,7 @@ export default function App() {
     return <PdfDoc />;
   }
   const [tab, setTab] = useState("home");
-  const [openBook, setOpenBook] = useState(false);
+  const [openBook, setOpenBook] = useState<string | null>(null);
   const [bookTarget, setBookTarget] = useState<{ chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
@@ -405,7 +420,7 @@ export default function App() {
   const RESERVED = ["", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin"];
   function pathFromState(): string {
     if (openAdmin) return "/admin";
-    if (openBook) return (typeof window !== "undefined" && window.location.pathname.startsWith("/book/bg")) ? window.location.pathname : "/book/bg";
+    if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
     if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openCatalog) return "/bhajans";
@@ -427,15 +442,16 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(false); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["feed", "search", "map", "passport"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (seg0 === "book") {
-      const parts = clean.split("/");           // ["", "book", "bg", ch?, v?]
+      const parts = clean.split("/");           // ["", "book", <work>, ch?, v?]
+      const work = parts[2] || "bg";
       setBookTarget(parts[3] ? { chapter: parts[3], verse: parts[4] ?? null } : null);
-      setOpenBook(true);
+      setOpenBook(BOOKS[work] ? work : "bg");
       return;
     }
     if (seg0 === "admin") { setOpenAdmin(true); return; }
@@ -489,9 +505,11 @@ export default function App() {
   function openRef(href: string) {
     const [kind, work, div, ch, v] = href.split(":");
     if (!work) return;
-    if (work === "bg") { setOpenContent(null); setScripture(null); setBookTarget(null); setOpenBook(true); return; }
-    // ЧЧ/ШБ и прочие иерархические — референс-ридер
-    setOpenContent(null); setOpenBook(false);
+    // Карточка книги (ВКП→ПКП): любая известная книга открывается в детальной странице.
+    if (kind === "book" && BOOKS[work]) { setOpenContent(null); setScripture(null); setBookTarget(null); setOpenBook(work); return; }
+    if (work === "bg") { setOpenContent(null); setScripture(null); setBookTarget(null); setOpenBook("bg"); return; }
+    // ЧЧ/ШБ и прочие иерархические (глава/стих) — референс-ридер
+    setOpenContent(null); setOpenBook(null);
     setScripture({
       work,
       div: kind === "book" ? null : (div ?? null),
@@ -510,7 +528,7 @@ export default function App() {
           </main>
         ) : openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BookDetailPage book={BOOKS.bg} onBack={goBack} onDonate={openDonate} initialTarget={bookTarget} />
+            <BookDetailPage book={BOOKS[openBook] ?? BOOKS.bg} onBack={goBack} onDonate={openDonate} initialTarget={bookTarget} />
           </main>
         ) : scripture ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -535,11 +553,11 @@ export default function App() {
             />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={() => { setBookTarget(null); setOpenBook(true); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onDonate={openDonate} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onDonate={openDonate} />
         )}
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />
-        <NowPlaying onOpenBook={(chapter) => { setBookTarget(chapter ? { chapter: String(chapter), verse: null } : null); setOpenBook(true); }} onDonate={openDonate} />
+        <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onDonate={openDonate} />
       </div>
     </div>
     </PlayerProvider>

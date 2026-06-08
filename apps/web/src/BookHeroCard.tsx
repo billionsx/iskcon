@@ -24,7 +24,7 @@ export function ActionBtn({ active, activeColor, ariaLabel, onClick, children }:
   );
 }
 
-export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational, coverActions }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean; coverActions?: ReactNode }) {
+export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational, coverActions, onListen }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean; coverActions?: ReactNode; onListen?: () => void }) {
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,7 +66,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
             <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)" }}>{idx + 1} / {n}</span>
             {!presentational && <>
             <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash?.(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-            <ActionBtn ariaLabel="Слушать" onClick={() => player.playBook({ mode: "plain", chapter: 1 })}><HeadphonesIcon size={18} /></ActionBtn>
+            <ActionBtn ariaLabel="Слушать" onClick={onListen ?? (() => player.playBook({ book: book.work, mode: "plain", chapter: 1 }))}><HeadphonesIcon size={18} /></ActionBtn>
             <ActionBtn active={inCart} activeColor="#4a86e8" ariaLabel={inCart ? "Убрать из корзины" : "В корзину"} onClick={() => { const v = !inCart; setInCart(v); flash?.(v ? "Добавлено в корзину" : "Убрано из корзины"); }}><BagIcon size={18} cornerGlyph={inCart ? "minus" : "plus"} /></ActionBtn>
             <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
             </>}

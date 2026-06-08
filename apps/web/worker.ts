@@ -535,6 +535,34 @@ export default {
       return json({ work: "bg", chapter: Number(m[1]), verses: results });
     }
 
+    // GET /api/books/:work/division/:divId/read → стихи главы со слоями по id раздела
+    // (для ЧЧ/ШБ: номера глав повторяются между лилами/песнями, ключ — division_id)
+    const divReadM = url.pathname.match(/^\/api\/books\/([a-z0-9]+)\/division\/([a-z0-9.]+)\/read$/i);
+    if (divReadM) {
+      const work = divReadM[1];
+      const divId = divReadM[2];
+      const vres = await env.DB.prepare(
+        `SELECT v.id, v.ref, v.devanagari, v.translit, vt.translation, vt.purport
+         FROM verses v
+         LEFT JOIN verse_texts vt ON vt.verse_id = v.id AND vt.edition_id = ?1
+         WHERE v.work_id = ?2 AND v.division_id = ?3
+         ORDER BY v.ordinal`
+      ).bind(`${work}-ru`, work, divId).all<{ id: string; ref: string; devanagari: string | null; translit: string | null; translation: string | null; purport: string | null }>();
+      const tres = await env.DB.prepare(
+        `SELECT t.verse_id, t.term, t.gloss FROM verse_tokens t
+         JOIN verses v ON v.id = t.verse_id
+         WHERE v.division_id = ?1 ORDER BY t.verse_id, t.ordinal`
+      ).bind(divId).all<{ verse_id: string; term: string; gloss: string | null }>();
+      const byVerse: Record<string, { term: string; gloss: string | null }[]> = {};
+      for (const t of tres.results ?? []) (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: t.gloss ?? null });
+      const verses = (vres.results ?? []).map((v) => {
+        const tail = String(v.ref).split(".").pop() ?? "";
+        const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, "-")}` : `Текст ${tail}`;
+        return { ref: v.ref, label, devanagari: v.devanagari ?? null, translit: v.translit ?? null, tokens: byVerse[v.id] ?? [], translation: v.translation ?? null, purport: v.purport ?? null };
+      });
+      return json({ work, division: divId, verses });
+    }
+
     // ── Bug reports → сохраняем в D1 + письмо на support@billionsx.com ──
     if (url.pathname === "/api/report") {
       return handleReport(request, env);
