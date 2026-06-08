@@ -1,73 +1,52 @@
 {
   "checked": 11,
-  "fixed": [
+  "fixed": [],
+  "source_no_deva": [
     {
       "id": "sb.1.16.25",
-      "ref": "ШБ 1.16.25",
-      "url": "https://vedabase.io/ru/library/sb/1/16/25/",
-      "chars": 10
+      "ref": "ШБ 1.16.25"
     },
     {
       "id": "sb.10.42.22",
-      "ref": "ШБ 10.42.22",
-      "url": "https://vedabase.io/ru/library/sb/10/42/22/",
-      "chars": 10
+      "ref": "ШБ 10.42.22"
     },
     {
       "id": "sb.11.7.1",
-      "ref": "ШБ 11.7.1",
-      "url": "https://vedabase.io/ru/library/sb/11/7/1/",
-      "chars": 10
+      "ref": "ШБ 11.7.1"
     },
     {
       "id": "sb.2.8.8",
-      "ref": "ШБ 2.8.8",
-      "url": "https://vedabase.io/ru/library/sb/2/8/8/",
-      "chars": 10
+      "ref": "ШБ 2.8.8"
     },
     {
       "id": "sb.3.30.27",
-      "ref": "ШБ 3.30.27",
-      "url": "https://vedabase.io/ru/library/sb/3/30/27/",
-      "chars": 10
+      "ref": "ШБ 3.30.27"
     },
     {
       "id": "sb.4.20.1",
-      "ref": "ШБ 4.20.1",
-      "url": "https://vedabase.io/ru/library/sb/4/20/1/",
-      "chars": 10
+      "ref": "ШБ 4.20.1"
     },
     {
       "id": "sb.4.21.1",
-      "ref": "ШБ 4.21.1",
-      "url": "https://vedabase.io/ru/library/sb/4/21/1/",
-      "chars": 10
+      "ref": "ШБ 4.21.1"
     },
     {
       "id": "sb.4.30.22",
-      "ref": "ШБ 4.30.22",
-      "url": "https://vedabase.io/ru/library/sb/4/30/22/",
-      "chars": 10
+      "ref": "ШБ 4.30.22"
     },
     {
       "id": "sb.5.8.31",
-      "ref": "ШБ 5.8.31",
-      "url": "https://vedabase.io/ru/library/sb/5/8/31/",
-      "chars": 10
+      "ref": "ШБ 5.8.31"
     },
     {
       "id": "sb.6.9.37",
-      "ref": "ШБ 6.9.37",
-      "url": "https://vedabase.io/ru/library/sb/6/9/37/",
-      "chars": 10
+      "ref": "ШБ 6.9.37"
     },
     {
       "id": "sb.8.6.2",
-      "ref": "ШБ 8.6.2",
-      "url": "https://vedabase.io/ru/library/sb/8/6/2/",
-      "chars": 10
+      "ref": "ШБ 8.6.2"
     }
   ],
-  "source_has_no_deva": [],
+  "cleaned_artifact": [],
   "unreachable": []
 }
