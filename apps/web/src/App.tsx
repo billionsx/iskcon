@@ -371,6 +371,21 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   onOpenBook("cc");
                 }} />
               </div>
+              <div style={{ marginTop: 14 }}>
+                <BookHeroCard book={BOOKS.sb} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("sb")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
+                  if (id === "share") {
+                    const url = "https://gaurangers.com/book/sb";
+                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: `${BOOKS.sb.titleLine1}${BOOKS.sb.titleLine2 ?? ""}`, url }).catch(() => {}); }
+                    else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
+                    return;
+                  }
+                  if (id === "pdf") { flash("PDF «Шримад-Бхагаватам» готовится"); return; }
+                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/sb", data: { kind: "book", bookTitle: BOOKS.sb.titleLine1, bookSubtitle: BOOKS.sb.titleLine2, tagline: BOOKS.sb.tagline, cover: BOOKS.sb.covers[0] } }); return; }
+                  if (id === "donate") { onDonate(); return; }
+                  if (id === "report") { setReportOpen(true); return; }
+                  onOpenBook("sb");
+                }} />
+              </div>
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
           ) : tab === "feed" ? (
