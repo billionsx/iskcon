@@ -1,8 +1,8 @@
-name: iskcone SB recheck deva (verify no-deva verses at source)
+name: iskcone SB recheck deva (unicode-guarded)
 
-# Берёт из D1 все стихи ШБ без devanagari, тянет их страницы с vedabase и
-# проверяет, есть ли там .av-devanagari. Если есть — дочитывает (self-heal).
-# Если нет — фиксирует как «отсутствует в источнике». Пишет .sb-ingest/recheck-deva.json.
+# Перепроверяет стихи ШБ без деванагари у источника, но принимает ТОЛЬКО реальный
+# деванагари (есть символы U+0900–U+097F). Метку-заголовок «Деванагари» и пустую
+# секцию не считает за текст. Реальный деванагари — дочитывает; иначе чистит в NULL.
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Deps
         run: pip install --quiet beautifulsoup4 lxml
-      - name: Recheck no-deva SB verses
+      - name: Recheck no-deva SB verses (unicode-guarded)
         env:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
@@ -27,6 +27,7 @@ jobs:
           CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+          DEVA=re.compile(r"[\u0900-\u097F]")
           def d1(sql):
               body=json.dumps({"sql":sql}).encode()
               rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
@@ -47,46 +48,53 @@ jobs:
           def lines(s):
               out=[re.sub(r"[ \t]+"," ",x).strip() for x in s.split("\n")]
               s="\n".join(out); s=re.sub(r"\n{3,}","\n\n",s); return s.strip()
-          def deva_of(html):
+          def real_deva(html):
               soup=BeautifulSoup(html,"lxml")
               els=soup.select(".av-devanagari")
               if not els: return ""
               for e in els:
                   for br in e.find_all("br"): br.replace_with("\n")
-              return lines("\n".join(e.get_text() for e in els))
+              txt=lines("\n".join(e.get_text() for e in els))
+              # принимаем только если реально есть деванагари-символы
+              return txt if DEVA.search(txt) else ""
 
-          missing=d1("SELECT id, ref, source_url FROM verses WHERE work_id='sb' AND (devanagari IS NULL OR length(devanagari)=0) ORDER BY id")
-          report={"checked":len(missing),"fixed":[],"source_has_no_deva":[],"unreachable":[]}
+          # все стихи ШБ без реального деванагари (NULL, пусто или артефакт-метка)
+          missing=d1("SELECT id, ref, source_url, devanagari FROM verses WHERE work_id='sb' AND "
+                     "(devanagari IS NULL OR length(trim(devanagari))=0 OR devanagari NOT GLOB '*[ऀ-ॿ]*') ORDER BY id")
+          report={"checked":len(missing),"fixed":[],"source_no_deva":[],"cleaned_artifact":[],"unreachable":[]}
           for r in missing:
-              vid=r["id"]; ref=r["ref"]; url=r.get("source_url") or ""
+              vid=r["id"]; ref=r["ref"]; url=r.get("source_url") or ""; cur=r.get("devanagari")
               if not url:
                   report["unreachable"].append({"id":vid,"ref":ref,"reason":"no source_url"}); continue
               html=get(url)
               if not html:
                   report["unreachable"].append({"id":vid,"ref":ref,"url":url}); continue
-              dv=deva_of(html)
+              dv=real_deva(html)
               if dv:
                   d1(f"UPDATE verses SET devanagari={q(dv)} WHERE id={q(vid)}")
-                  report["fixed"].append({"id":vid,"ref":ref,"url":url,"chars":len(dv)})
+                  report["fixed"].append({"id":vid,"ref":ref,"chars":len(dv)})
               else:
-                  report["source_has_no_deva"].append({"id":vid,"ref":ref,"url":url})
+                  # источник без деванагари: чистим возможный артефакт в NULL
+                  if cur is not None and str(cur).strip()!="":
+                      d1(f"UPDATE verses SET devanagari=NULL WHERE id={q(vid)}")
+                      report["cleaned_artifact"].append({"id":vid,"ref":ref})
+                  report["source_no_deva"].append({"id":vid,"ref":ref})
               time.sleep(0.4)
 
           os.makedirs(".sb-ingest", exist_ok=True)
           json.dump(report, open(".sb-ingest/recheck-deva.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          row=d1("SELECT COUNT(*) AS verses, SUM(CASE WHEN devanagari GLOB '*[ऀ-ॿ]*' THEN 1 ELSE 0 END) AS deva FROM verses WHERE work_id='sb'")[0]
           print("RECHECK:", json.dumps({k:(len(v) if isinstance(v,list) else v) for k,v in report.items()}, ensure_ascii=False))
-          # обновлённое покрытие
-          row=d1("SELECT COUNT(*) AS verses, SUM(CASE WHEN length(COALESCE(devanagari,''))>0 THEN 1 ELSE 0 END) AS deva FROM verses WHERE work_id='sb'")[0]
-          print("AFTER:", json.dumps(row, ensure_ascii=False))
-          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone sb recheck-deva',"
-             +str(len(report["fixed"]))+",'fixed="+str(len(report['fixed']))+" still_no_deva="+str(len(report['source_has_no_deva']))+" deva="+str(row.get('deva'))+"/"+str(row.get('verses'))+"')")
+          print("AFTER deva(real):", json.dumps(row, ensure_ascii=False))
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone sb recheck-deva v2',"
+             +str(len(report["fixed"]))+",'fixed="+str(len(report['fixed']))+" source_no_deva="+str(len(report['source_no_deva']))+" cleaned="+str(len(report['cleaned_artifact']))+" deva="+str(row.get('deva'))+"/"+str(row.get('verses'))+"')")
           PY
       - name: Commit recheck report
         if: always()
         run: |
           git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
           git add .sb-ingest/recheck-deva.json 2>/dev/null || true
-          git commit -m "chore(sb-recheck): no-deva verses verified at source [skip ci]" 2>/dev/null || { echo nothing; exit 0; }
+          git commit -m "chore(sb-recheck): unicode-guarded no-deva verification [skip ci]" 2>/dev/null || { echo nothing; exit 0; }
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin main 2>/dev/null || true
             if git push origin main 2>/dev/null; then echo pushed; break; fi
