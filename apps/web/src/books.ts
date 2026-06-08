@@ -85,7 +85,34 @@ export const BOOKS: Record<string, BookData> = {
     uniformTitle: true,
     hideCardIast: true,
   },
+  sb: {
+    id: "sb",
+    work: "sb",
+    slug: "srimad-bhagavatam",
+    titleLine1: "Шримад-",
+    titleLine2: "Бхагаватам",
+    iast: "Śrīmad-Bhāgavatam",
+    tagline: "Зрелый плод древа ведической литературы",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "«Бхагавата-пурана» — сливки всех Вед: повествования о Верховной Личности Бога, Его воплощениях и преданных, ведущие к высшей цели жизни — чистой любви к Богу.",
+    publisher: "bbt",
+    covers: [
+      "/covers/sb-001.svg",
+    ],
+    chips: ["12 песней", "335 глав", "~18 000 стихов"],
+    hierarchical: true,
+    uniformTitle: true,
+    hideCardIast: true,
+  },
 };
+
+/**
+ * Книги, для которых уже подключён звук (плейлист аудиокниги).
+ * Остальные книги показывают «Аудиокнига — скоро» вместо запуска плеера.
+ */
+export const AUDIO_WORKS: Record<string, boolean> = { bg: true, cc: true };
 
 /**
  * Standard share / Open-Graph title for a book:

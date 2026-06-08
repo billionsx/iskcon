@@ -10,7 +10,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
-import { BOOK_MENU_ITEMS, bookShareTitle } from "./books";
+import { BOOK_MENU_ITEMS, bookShareTitle, AUDIO_WORKS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
@@ -626,6 +626,160 @@ function CcReviews() {
   );
 }
 
+/* ───────── О книге · ШБ ───────── */
+function SbOverview({ book }: { book: BookData }) {
+  void book;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
+        <p style={{ margin: 0, fontSize: 17.5, lineHeight: 1.55, color: INK }}>
+          «Шримад-Бхагаватам» («Бхагавата-пурана») — величайшая из восемнадцати главных Пуран и, по слову самого писания, зрелый плод древа ведической литературы. Её составил мудрец Вьясадева как свой собственный естественный комментарий к «Веданта-сутре».
+        </p>
+        <p style={{ margin: "14px 0 0", fontSize: 16, lineHeight: 1.58, color: INK2 }}>
+          В восемнадцати тысячах стихов «Бхагаватам» целиком посвящён Верховной Личности Бога — Его именам, образам, качествам, воплощениям и деяниям — и раскрывает высшую цель жизни: чистую, бескорыстную любовь к Богу (према-бхакти). Традиция называет его «чистой, безупречной Пураной» (амала-пурана).
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Кратко</SectionTitle>
+        <div>
+          <KeyVal k="Жанр" v="Маха-пурана · «чистая Пурана»" />
+          <KeyVal k="Автор" v="Вьясадева (Шрила Вьяса)" />
+          <KeyVal k="Язык оригинала" v="Санскрит" />
+          <KeyVal k="Объём" v="12 песней · 335 глав · ~18 000 стихов" />
+          <KeyVal k="Рассказана" v="Шукадевой Госвами — Махарадже Парикшиту" />
+          <KeyVal k="Обрамление" v="Беседа Суты Госвами с мудрецами в Наймишаранье" />
+          <KeyVal k="Тема" v="Верховный Господь и чистое преданное служение" last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>О чём книга</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.6, color: INK }}>
+          Узнав, что ему осталось семь дней жизни, царь Парикшит оставляет царство и садится на берегу Ганги, чтобы услышать о Высшей Истине. Ответом мудреца Шукадевы Госвами на его вопрос «в чём долг человека перед смертью?» и становится «Шримад-Бхагаватам».
+        </p>
+        <p style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.6, color: INK2 }}>
+          От сотворения мира и устройства вселенной книга ведёт к историям великих преданных и воплощений Господа — Варахи, Нрисимхи, Ваманы, Рамы — и достигает вершины в Десятой песни, целиком посвящённой играм Шри Кришны во Вриндаване и Двараке. Сквозная нить — према-бхакти как совершенство всех путей.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Структура</SectionTitle>
+        <p style={{ margin: "0 0 6px", fontSize: 15, lineHeight: 1.55, color: INK2 }}>
+          Двенадцать песней (санскр. сканда) ведут читателя от первых вопросов о смысле жизни к сокровенным играм Господа:
+        </p>
+        <div>
+          <DefRow term="Песни 1–2 · Введение" desc="Слава святого имени и преданного служения; ответ на главные вопросы жизни и смерти." />
+          <DefRow term="Песни 3–6 · Творение и закон" desc="Сотворение мира, наставления Капилы и Нарады, истории Дхрувы и Аджамилы; устройство вселенной." />
+          <DefRow term="Песни 7–9 · Преданные и династии" desc="Прахлада Махараджа, образцовые цари и преданные, царские родословные вплоть до явления Господа." />
+          <DefRow term="Песнь 10 · Сердце книги" desc="Явление и игры Шри Кришны — самая обширная и сокровенная часть «Бхагаватам»." />
+          <DefRow term="Песни 11–12 · Завершение" desc="Последние наставления Господа, уход Кришны, признаки Кали-юги и слава пения святых имён." last />
+        </div>
+        <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.5, color: INK3 }}>
+          «Бхагаватам» считается сутью всех Вед: он начинается там, где «Бхагавад-гита» завершается, — призывом всецело предаться Богу.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Происхождение и передача</SectionTitle>
+        <div>
+          <KeyVal k="Составил" v="Вьясадева" />
+          <KeyVal k="По указанию" v="своего учителя Нарады Муни" />
+          <KeyVal k="Передаётся" v="через парампару от Шукадевы Госвами" last />
+        </div>
+        <p style={{ margin: "14px 0 0", fontSize: 15, lineHeight: 1.55, color: INK2 }}>
+          Записав Веды и «Махабхарату», Вьясадева всё же не чувствовал удовлетворения. Его учитель Нарада указал причину: он ещё не прославил во всей полноте Верховную Личность Бога. Тогда в духовном озарении Вьяса составил «Шримад-Бхагаватам» и передал его сыну — освобождённому мудрецу Шукадеве, от которого книга и дошла до нас.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Это издание</SectionTitle>
+        <p style={{ margin: "0 0 14px", fontSize: 16, lineHeight: 1.58, color: INK }}>
+          Перед вами «Шримад-Бхагаватам» с переводом и развёрнутыми комментариями Его Божественной Милости А.&nbsp;Ч. Бхактиведанты Свами Прабхупады — с оригинальным санскритом, транслитерацией, пословным и литературным переводом и подробными пояснениями.
+        </p>
+        <div>
+          <KeyVal k="Перевод и комментарии" v="А. Ч. Бхактиведанта Свами Прабхупада" />
+          <KeyVal k="Издатель" v="The Bhaktivedanta Book Trust" />
+          <KeyVal k="Первые тома" v="1962, Дели (Песни 1–3)" />
+          <KeyVal k="Главный труд жизни" v="ради него принял санньясу (1959)" />
+          <KeyVal k="Язык этого издания" v="Русский" last />
+        </div>
+        <p style={{ margin: "16px 0 0", fontSize: 13, lineHeight: 1.5, color: INK3 }}>
+          «Шримад-Бхагаватам» был главным трудом жизни Шрилы Прабхупады: он перевёл и прокомментировал песни с Первой по начало Десятой; начатую им работу завершили его ученики в BBT, следуя его методу и указаниям. Многотомное издание выходит более чем на полусотне языков.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Каждый стих — пять слоёв</SectionTitle>
+        <div>
+          <DefRow term="1 · Деванагари" desc="Священный санскрит в оригинальном письме." />
+          <DefRow term="2 · Транслитерация" desc="Латинская запись для точного произношения." />
+          <DefRow term="3 · Пословный перевод" desc="Значение каждого санскритского слова." />
+          <DefRow term="4 · Литературный перевод" desc="Связный смысл стиха на русском языке." />
+          <DefRow term="5 · Комментарий" desc="Развёрнутое пояснение в духе традиции (purport)." last />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* ───────── Рецензии · ШБ ───────── */
+function SbReviews() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: INK }}>
+          О величии «Шримад-Бхагаватам» прежде всего говорит само писание и многовековая традиция вайшнавов; перевод Шрилы Прабхупады (BBT) изучают на курсах по религиям Индии в университетах по всему миру.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Слово самого писания</SectionTitle>
+        <div>
+          <Review
+            text="Это писание, «Шримад-Бхагаватам», — зрелый плод древа ведической литературы. Изойдя из уст Шукадевы Госвами, он стал ещё слаще; вкусите же этот нектар вновь и вновь."
+            name="«Шримад-Бхагаватам» 1.1.3"
+            role="Слово самого писания" />
+          <Review
+            text="Эта „Бхагавата-пурана“ сияет, как солнце: она взошла сразу после того, как Кришна вместе с религией и знанием удалился в Свою обитель. Люди, ослеплённые тьмой Кали-юги, обретут в ней свет."
+            name="«Шримад-Бхагаватам» 1.3.43"
+            role="Слово самого писания"
+            last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Место в священной литературе</SectionTitle>
+        <div>
+          <DefRow
+            term="«Чистая Пурана» (амала-пурана)"
+            desc="Естественный комментарий самого Вьясадевы к «Веданта-сутре»; традиция почитает его безупречным среди всех Пуран." />
+          <DefRow
+            term="Литературное воплощение Бога"
+            desc="Гаудия-вайшнавы чтут «Бхагаватам» как звуковое воплощение Кришны — общение с ним равносильно общению с Самим Господом." />
+          <DefRow
+            term="Венец преданного знания"
+            desc="Его изучают после «Бхагавад-гиты», и он ведёт к чистой любви к Богу — высшей цели всех ведических писаний."
+            last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Признание учёных</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.58, color: INK2 }}>
+          Многотомный перевод Шрилы Прабхупады с оригиналом, транслитерацией, пословным разбором и комментариями ценится индологами и религиоведами за точность и верность традиции; он стал одним из самых распространённых в мире изданий ведической литературы и используется как учебное пособие в университетах.
+        </p>
+      </section>
+
+      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+        Стихи писания приведены в переводе и сокращении; полные тексты с комментариями публикуются Bhaktivedanta Book Trust.
+      </p>
+    </div>
+  );
+}
+
 /* ───────── Содержание (flat rows on white) ───────── */
 export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
 function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void }) {
@@ -669,9 +823,10 @@ function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch:
     return () => { live = false; };
   }, [work]);
   const totalCh = toc ? toc.divisions.reduce((a, d) => a + d.chapters.length, 0) : 0;
+  const partWord = work === "sb" ? "песней" : "части";
   return (
     <div style={{ padding: "24px 20px 12px" }}>
-      <SectionTitle>{toc ? `${toc.divisions.length} части · ${totalCh} глав` : "Содержание"}</SectionTitle>
+      <SectionTitle>{toc ? `${toc.divisions.length} ${partWord} · ${totalCh} глав` : "Содержание"}</SectionTitle>
       {!toc && !err && <div style={{ fontSize: 15, color: INK2 }}>Загрузка оглавления…</div>}
       {err && <div style={{ fontSize: 15, color: INK2 }}>Не удалось загрузить оглавление.</div>}
       {toc && toc.divisions.map((d) => (
@@ -778,7 +933,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(work, Number(chapter.number) || 1, "plain", hierarchical ? chapter.id.split(".")[1] : undefined)} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } player.playChapter(work, Number(chapter.number) || 1, "plain", hierarchical ? chapter.id.split(".")[1] : undefined); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -1096,11 +1251,12 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
   }, [refStr]);
 
   const demo = DEMO_VERSES[data?.ref ?? refStr];
-  const chapterNo = (data?.ref ?? refStr).replace(/^[^\d]*/, "").split(".")[0];
-  const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "2.13" | "2.16-17"
-  const verseSeg = refDigits.includes(".") ? refDigits.slice(refDigits.indexOf(".") + 1) : "";
+  const divParts = (data?.division ?? "").split(".").filter(Boolean);      // ["sb","1","9"] | ["cc","adi","7"] | ["bg","2"]
+  const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "1.9.40" | "2.13" | "2.16-17"
+  const chapterNo = divParts.length >= 2 ? divParts[divParts.length - 1] : (refDigits.split(".")[0] ?? "");
+  const verseSeg = (data?.ref ?? refStr).split(".").pop() ?? "";            // "40" | "13" | "16-17"
   const verseUrl = `https://gaurangers.com/book/${work}/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
-  const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"]
+  const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"] | ["sb","1","9"]
   const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
   const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
   const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
@@ -1139,7 +1295,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
           <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila)} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -1524,7 +1680,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { if (book.hierarchical) { void downloadCcBook(); return; } void buildBookPdf(); return; }
+    if (id === "pdf") { if (book.work === "cc") { void downloadCcBook(); return; } if (book.hierarchical) { flash("PDF этой книги готовится"); return; } void buildBookPdf(); return; }
     if (id === "qr") {
       openQr(`https://gaurangers.com/book/${book.work}`, {
         kind: "book",
@@ -1550,7 +1706,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       <div ref={bookContentRef}>
         {/* HERO — the SAME card module as the feed (ВКП); single source from books.ts */}
         <div style={{ padding: "2px 16px 6px" }}>
-          <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} />
+          <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
         </div>
 
         <BookTabs active={tab} onChange={setTab} />
@@ -1559,9 +1715,9 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
           {tab === "contents" && (book.hierarchical
             ? <CcContents work={book.work} onOpenChapter={setOpenChapter} />
             : <Contents chapters={chapters} onOpenChapter={setOpenChapter} />)}
-          {tab === "overview" && (book.hierarchical ? <CcOverview book={book} /> : <Overview book={book} />)}
+          {tab === "overview" && (book.work === "sb" ? <SbOverview book={book} /> : book.hierarchical ? <CcOverview book={book} /> : <Overview book={book} />)}
           {tab === "author" && <Author />}
-          {tab === "reviews" && (book.hierarchical ? <CcReviews /> : <Reviews />)}
+          {tab === "reviews" && (book.work === "sb" ? <SbReviews /> : book.hierarchical ? <CcReviews /> : <Reviews />)}
         </div>
       </div>
 
