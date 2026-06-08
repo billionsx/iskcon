@@ -289,7 +289,7 @@ function Milestone({ year, text, last }: { year: string; text: string; last?: bo
     </li>
   );
 }
-function Author() {
+export function Author() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "28px 20px 12px" }}>
       <header>
@@ -486,6 +486,50 @@ function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; 
   );
 }
 
+/* ───────── Содержание (иерархия: лила/песнь → глава) ───────── */
+interface CcToc { name: string; divisions: { id: string; slug: string; number: string; title_ru: string; chapters: { id: string; number: string; title_ru: string; verses: number }[] }[] }
+function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch: ChapterRow) => void }) {
+  const [toc, setToc] = useState<CcToc | null>(null);
+  const [err, setErr] = useState(false);
+  useEffect(() => {
+    let live = true;
+    setToc(null); setErr(false);
+    fetch(api(`/books/${work}/toc`))
+      .then((r) => r.json())
+      .then((d) => { if (live) { if (d?.divisions) setToc(d as CcToc); else setErr(true); } })
+      .catch(() => { if (live) setErr(true); });
+    return () => { live = false; };
+  }, [work]);
+  const totalCh = toc ? toc.divisions.reduce((a, d) => a + d.chapters.length, 0) : 0;
+  return (
+    <div style={{ padding: "24px 20px 12px" }}>
+      <SectionTitle>{toc ? `${toc.divisions.length} части · ${totalCh} глав` : "Содержание"}</SectionTitle>
+      {!toc && !err && <div style={{ fontSize: 15, color: INK2 }}>Загрузка оглавления…</div>}
+      {err && <div style={{ fontSize: 15, color: INK2 }}>Не удалось загрузить оглавление.</div>}
+      {toc && toc.divisions.map((d) => (
+        <section key={d.id} style={{ marginTop: 20 }}>
+          <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: "0.2px", color: INK, margin: "4px 0 2px" }}>{d.title_ru}</div>
+          <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
+            {d.chapters.map((c, i) => (
+              <li key={c.id} style={{ position: "relative" }}>
+                <Pressable onClick={() => onOpenChapter({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses })} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
+                  <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{c.number}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: 16, lineHeight: 1.3, fontWeight: 500, color: INK }}>{c.title_ru && !/глава/i.test(c.title_ru) ? c.title_ru : `Глава ${c.number}`}</span>
+                    <span style={{ display: "block", marginTop: 2, fontSize: 13, color: INK3 }}>{c.verses} стихов</span>
+                  </span>
+                  <span style={{ color: INK3 }}><ChevronIcon size={17} /></span>
+                </Pressable>
+                {i < d.chapters.length - 1 && <span aria-hidden style={{ position: "absolute", left: 38, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+  );
+}
+
 /* ───────── verse model ───────── */
 export interface ChapterVerse {
   ref: string; label: string;
@@ -495,7 +539,7 @@ export interface ChapterVerse {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; bookTitle: string; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
+function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -506,7 +550,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
   const player = usePlayer();
 
   useEffect(() => {
-    if (printing) {
+    if (printing && !hierarchical) {
       void downloadServerPdf(
         `/pdf?kind=chapter&n=${encodeURIComponent(chapter.number)}`,
         `Бхагавад-гита как она есть. Глава ${chapter.number}.pdf`,
@@ -519,18 +563,21 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
   useEffect(() => {
     let live = true;
     setVerses(null);
-    fetch(api(`/books/bg/chapters/${chapter.number}/read`))
+    const readUrl = hierarchical
+      ? api(`/books/${work}/division/${chapter.id}/read`)
+      : api(`/books/${work}/chapters/${chapter.number}/read`);
+    fetch(readUrl)
       .then((r) => r.json())
       .then((d) => { if (live) setVerses(d.verses ?? []); })
       .catch(() => { if (live) setVerses([]); });
     return () => { live = false; };
-  }, [chapter.number]);
+  }, [chapter.id, chapter.number, work, hierarchical]);
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
   const shareChapter = async () => {
     const label = `Глава ${chapter.number} · ${chapter.title_ru}`;
-    const url = "https://gaurangers.com/book/bg";
+    const url = `https://gaurangers.com/book/${work}`;
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
         await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, url });
@@ -550,7 +597,7 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(Number(chapter.number) || 1, "plain")} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        {!hierarchical && <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(work, Number(chapter.number) || 1, "plain")} size={36}><HeadphonesIcon size={18} /></NavBtn>}
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -602,12 +649,13 @@ function ChapterPage({ chapter, bookTitle, onOpenVerse, onBack, onMenuAction, on
         setMenu(false);
         if (id === "share") { void shareChapter(); return; }
         if (id === "pdf") {
+          if (hierarchical) { flash("PDF этой книги готовится"); return; }
           if (verses && verses.length) setPrinting(true);
           else flash("Глава ещё загружается…");
           return;
         }
         if (id === "qr") {
-          onQr(`https://gaurangers.com/book/bg/${chapter.number}`, {
+          onQr(`https://gaurangers.com/book/${work}${hierarchical ? "" : `/${chapter.number}`}`, {
             kind: "chapter",
             bookTitle,
             chapterNumber: chapter.number,
@@ -793,7 +841,7 @@ function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "n
   );
 }
 
-function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; chapters: ChapterRow[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
+function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
   const [fav, setFav] = useState(false);
@@ -805,7 +853,7 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
   useEffect(() => {
     let live = true;
     setData(null); setError(false);
-    fetch(api(`/books/bg/verses/${encodeURIComponent(refStr)}`))
+    fetch(api(`/books/${work}/verses/${encodeURIComponent(refStr)}`))
       .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
       .then((d) => { if (live) setData(d as VerseDetail); })
       .catch(() => { if (live) setError(true); });
@@ -816,7 +864,7 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
   const chapterNo = (data?.ref ?? refStr).replace(/^[^\d]*/, "").split(".")[0];
   const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "2.13" | "2.16-17"
   const verseSeg = refDigits.includes(".") ? refDigits.slice(refDigits.indexOf(".") + 1) : "";
-  const verseUrl = `https://gaurangers.com/book/bg/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
+  const verseUrl = `https://gaurangers.com/book/${work}/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
   const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
   const evDeva = data?.devanagari || demo?.devanagari || null;
   const evTranslit = data?.translit || demo?.translit || null;
@@ -853,7 +901,7 @@ function VerseReader({ refStr, bookTitle, chapters, onNavigate, onClose, flash, 
           <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(Number(chapterNo) || 1, "commentary")} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        {work === "bg" && <NavBtn ariaLabel="Слушать" onClick={() => player.playChapter(work, Number(chapterNo) || 1, "commentary")} size={36}><HeadphonesIcon size={18} /></NavBtn>}
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -1003,8 +1051,9 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const [reportOpen, setReportOpen] = useState(false);
 
   useEffect(() => {
-    fetch(api("/books/bg/chapters")).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
-  }, []);
+    if (book.hierarchical) return; // иерархические книги (ЧЧ/ШБ) — оглавление через CcContents (/toc)
+    fetch(api(`/books/${book.work}/chapters`)).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
+  }, [book.work, book.hierarchical]);
 
   // Открыть цель (глава + стих) — для холодного входа по ссылке, QR и кнопок назад/вперёд.
   // navLock не даёт эффекту состояние→URL пушить адрес во время синхронизации ИЗ URL.
@@ -1047,6 +1096,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   // Глубже (открыли главу/стих) → push; прыжок стих↔стих → replace, чтобы «назад» от
   // стиха вёл к ГЛАВЕ, а не перебирал соседние стихи.
   useEffect(() => {
+    if (book.hierarchical) return; // ЧЧ/ШБ: глубокие URL глав/стихов — отдельная задача; ПКП живёт на /book/<work>
     if (!chapters || navLock.current || typeof window === "undefined") return;
     let path = "/book/bg";
     if (readerRef) {
@@ -1070,6 +1120,11 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const histBase = useRef(typeof window !== "undefined" ? window.history.length : 0);
   const goBack = () => {
     if (typeof window === "undefined") return;
+    if (book.hierarchical) {
+      if (readerRef) { setReaderRef(null); return; }
+      if (openChapter) { setOpenChapter(null); return; }
+      onBack(); return;
+    }
     if (window.history.length > histBase.current) { window.history.back(); return; }
     if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `/book/bg/${openChapter.number}` : "/book/bg"); }
     else if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", "/book/bg"); }
@@ -1078,6 +1133,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
 
   // URL → состояние при «назад/вперёд» браузера (в пределах книги).
   useEffect(() => {
+    if (book.hierarchical) return;
     const onPop = () => {
       const path = window.location.pathname;
       if (!path.startsWith("/book/bg")) return;
@@ -1086,7 +1142,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     };
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
-  }, []);
+  }, [book.hierarchical]);
 
   const openChapterByNumber = (num: string) => {
     const c = chapters?.find((x) => x.number === num);
@@ -1163,9 +1219,9 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { void buildBookPdf(); return; }
+    if (id === "pdf") { if (book.hierarchical) { flash("PDF этой книги готовится"); return; } void buildBookPdf(); return; }
     if (id === "qr") {
-      openQr("https://gaurangers.com/book/bg", {
+      openQr(`https://gaurangers.com/book/${book.work}`, {
         kind: "book",
         bookTitle: book.titleLine1,
         bookSubtitle: book.titleLine2,
@@ -1195,7 +1251,9 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
         <BookTabs active={tab} onChange={setTab} />
 
         <div>
-          {tab === "contents" && <Contents chapters={chapters} onOpenChapter={setOpenChapter} />}
+          {tab === "contents" && (book.hierarchical
+            ? <CcContents work={book.work} onOpenChapter={setOpenChapter} />
+            : <Contents chapters={chapters} onOpenChapter={setOpenChapter} />)}
           {tab === "overview" && <Overview book={book} />}
           {tab === "author" && <Author />}
           {tab === "reviews" && <Reviews />}
@@ -1215,8 +1273,8 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
           </div>
         </div>
       )}
-      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+      {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />

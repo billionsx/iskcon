@@ -12,9 +12,12 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
   if (!p.active || p.expanded) return null;
 
   const pct = p.duration > 0 ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
-  const subtitle = p.track?.kind === "intro"
+  const t = p.track;
+  const subtitle = t?.kind === "intro"
     ? (p.mode === "commentary" ? "С комментариями · вступление" : "Вступление")
-    : `Глава ${p.track?.chapter ?? ""} · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}`;
+    : t?.lilaLabel
+      ? `${t.lilaLabel} · Глава ${t.chapter ?? ""}`
+      : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
 
   const bottom = tabBarVisible
     ? "calc(52px + env(safe-area-inset-bottom))"

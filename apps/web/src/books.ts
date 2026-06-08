@@ -4,6 +4,7 @@
  */
 export interface BookData {
   id: string;            // entity/work id (matches D1 works.id)
+  work: string;          // D1 work_id used in API paths (/api/books/<work>/…): "bg", "cc"
   slug: string;          // url slug for detail route
   titleLine1: string;    // big title, one line ("Бхагавад-гита")
   titleLine2?: string;   // smaller second line ("как она есть"), future slot for canto/song
@@ -14,11 +15,13 @@ export interface BookData {
   publisher: "bbt";      // authority logo on card
   covers: string[];      // gallery; first = primary cover
   chips: string[];       // factual chips about the text
+  hierarchical?: boolean; // multi-part book (lila/canto → chapter), e.g. ЧЧ/ШБ
 }
 
 export const BOOKS: Record<string, BookData> = {
   bg: {
     id: "bhagavad_gita",
+    work: "bg",
     slug: "bhagavad-gita",
     titleLine1: "Бхагавад-гита",
     titleLine2: "как она есть",
@@ -39,6 +42,23 @@ export const BOOKS: Record<string, BookData> = {
       "/covers/bg-001.png?v=4",
     ],
     chips: ["18 глав", "700 стихов", "5 000+ лет"],
+  },
+  cc: {
+    id: "cc",
+    work: "cc",
+    slug: "chaitanya-charitamrita",
+    titleLine1: "Шри Чайтанья-",
+    titleLine2: "чаритамрита",
+    iast: "Śrī Caitanya-caritāmṛta",
+    tagline: "Нектар деяний Господа Чайтаньи",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Авторитетное жизнеописание и учение Шри Чайтаньи Махапрабху — золотого воплощения Господа: сокровенная вершина науки преданного служения, продолжение «Бхагавад-гиты».",
+    publisher: "bbt",
+    covers: ["/covers/cc-001.svg"],
+    chips: ["3 лилы", "62 главы", "11 000+ стихов"],
+    hierarchical: true,
   },
 };
 

@@ -1,0 +1,54 @@
+<svg viewBox="0 0 1080 1350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Шри Чайтанья-чаритамрита">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1322"/>
+      <stop offset="0.52" stop-color="#181b2c"/>
+      <stop offset="1" stop-color="#241a10"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.36" r="0.62">
+      <stop offset="0" stop-color="#f0d28a" stop-opacity="0.55"/>
+      <stop offset="0.42" stop-color="#c79a3a" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#c79a3a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6df9c"/>
+      <stop offset="1" stop-color="#c79a3a"/>
+    </linearGradient>
+    <radialGradient id="vig" cx="0.5" cy="0.5" r="0.75">
+      <stop offset="0.62" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.45"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1080" height="1350" fill="url(#bg)"/>
+  <rect width="1080" height="1350" fill="url(#glow)"/>
+
+  <!-- Лотос — золотые лепестки -->
+  <g transform="translate(540 486)" fill="none" stroke="url(#gold)" stroke-linejoin="round">
+    <g stroke-width="3.2" opacity="0.92">
+      <g id="petal"><path d="M0 -168 C 60 -108, 58 -40, 0 0 C -58 -40, -60 -108, 0 -168 Z"/></g>
+      <use href="#petal" transform="rotate(45)"/>
+      <use href="#petal" transform="rotate(90)"/>
+      <use href="#petal" transform="rotate(135)"/>
+      <use href="#petal" transform="rotate(180)"/>
+      <use href="#petal" transform="rotate(225)"/>
+      <use href="#petal" transform="rotate(270)"/>
+      <use href="#petal" transform="rotate(315)"/>
+    </g>
+    <g stroke-width="2" opacity="0.55">
+      <g id="petal2"><path d="M0 -118 C 40 -78, 40 -28, 0 0 C -40 -28, -40 -78, 0 -118 Z" transform="rotate(22.5)"/></g>
+      <use href="#petal2" transform="rotate(45)"/>
+      <use href="#petal2" transform="rotate(90)"/>
+      <use href="#petal2" transform="rotate(135)"/>
+      <use href="#petal2" transform="rotate(180)"/>
+      <use href="#petal2" transform="rotate(225)"/>
+      <use href="#petal2" transform="rotate(270)"/>
+      <use href="#petal2" transform="rotate(315)"/>
+    </g>
+    <circle r="196" stroke-width="1.4" opacity="0.40"/>
+    <circle r="214" stroke-width="1" opacity="0.22"/>
+    <circle r="22" fill="url(#gold)" stroke="none"/>
+  </g>
+
+  <rect width="1080" height="1350" fill="url(#vig)"/>
+</svg>

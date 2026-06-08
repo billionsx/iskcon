@@ -26,9 +26,12 @@ export interface Track {
   file: string;
   url: string;
   durationSec: number | null;
+  lila?: string;        // ЧЧ: adi|madhya|antya
+  lilaLabel?: string;   // ЧЧ: «Ади-лила»
+  part?: number | null; // ЧЧ: часть составной главы
 }
 interface ModeData { identifier: string; tracks: Track[] }
-interface Manifest { book: string; modes: { plain: ModeData; commentary: ModeData } }
+interface Manifest { book: string; modes: { plain: ModeData; commentary?: ModeData }; lilas?: { lila: string; label: string }[] }
 
 export type RepeatMode = "off" | "book" | "library" | "one";
 export type OrderMode = "forward" | "shuffle" | "reverse";
@@ -50,9 +53,11 @@ export interface PlayerApi {
   repeat: RepeatMode;
   cover: string;
   bookTitle: string;
+  book: string;           // активная книга (bg|cc|…) — для обложки Now Playing
+  hasCommentary: boolean; // прятать тумблер «комментарии», когда их нет (ЧЧ)
   // точки входа
-  playBook(opts?: { mode?: AudioMode; chapter?: number; expand?: boolean }): void;
-  playChapter(chapter: number, mode: AudioMode): void;
+  playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
+  playChapter(book: string, chapter: number, mode: AudioMode): void;
   // транспорт
   togglePlay(): void;
   next(): void;
@@ -78,9 +83,15 @@ export function usePlayer(): PlayerApi {
 }
 
 export const PLAYER_RATES = [1, 1.25, 1.5, 2];
-const BOOK_TITLE = "Бхагавад-гита как она есть";
-const COVER = BOOKS.bg?.covers?.[0] ?? "/og-default.png";
-const PERSIST_KEY = "iol.player.bg.v1";
+// Отображаемые название/обложка плеера по книге (источник — books.ts).
+const BOOK_AUDIO: Record<string, { title: string; cover: string }> = {
+  bg: { title: "Бхагавад-гита как она есть", cover: BOOKS.bg?.covers?.[0] ?? "/og-default.png" },
+  cc: { title: "Шри Чайтанья-чаритамрита", cover: BOOKS.cc?.covers?.[0] ?? "/og-default.png" },
+};
+function bookCfg(id: string) {
+  return BOOK_AUDIO[id] ?? { title: BOOKS[id]?.titleLine1 ?? "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? "/og-default.png" };
+}
+const PERSIST_KEY = "iol.player.v2"; // {book,mode,chapter,time,rate}; мигрируем со старого bg-ключа
 
 function absUrl(u: string): string {
   try { return new URL(u, typeof location !== "undefined" ? location.origin : "https://iskcone.com").href; }
@@ -89,6 +100,7 @@ function absUrl(u: string): string {
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const [manifest, setManifest] = useState<Manifest | null>(null);
+  const [bookId, setBookId] = useState("bg");
   const [mode, setModeState] = useState<AudioMode>("plain");
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(false);
@@ -103,6 +115,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   // Зеркала для долгоживущих обработчиков (избегаем устаревших замыканий).
   const manifestRef = useRef<Manifest | null>(null);
+  const bookRef = useRef("bg");
   const modeRef = useRef<AudioMode>("plain");
   const indexRef = useRef(0);
   const timeRef = useRef(0);
@@ -112,6 +125,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const repeatRef = useRef<RepeatMode>("off");
   const seqRef = useRef<number[]>([]);
   manifestRef.current = manifest;
+  bookRef.current = bookId;
   modeRef.current = mode;
   indexRef.current = index;
   timeRef.current = currentTime;
@@ -124,7 +138,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; expand?: boolean } | null>(null);
   const restoreRef = useRef<{ time: number } | null>(null);
 
-  const tracks = manifest ? manifest.modes[mode].tracks : [];
+  const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
   const track = tracks[index] ?? null;
 
   // ── engine (создаётся один раз) ──
@@ -141,18 +155,21 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     engineRef.current = eng;
     // deep-link ?listen → авто-открытие плеера на книге/главе (приоритет над restore)
     if (typeof location !== "undefined" && new URLSearchParams(location.search).has("listen")) {
-      const mm = location.pathname.match(/^\/book\/bg(?:\/(\d+))?/);
-      const ch = mm && mm[1] ? parseInt(mm[1], 10) : null;
+      const mm = location.pathname.match(/^\/book\/([a-z0-9]+)(?:\/(\d+))?/i);
+      const bk = mm && BOOKS[mm[1]] ? mm[1] : "bg";
+      const ch = mm && mm[2] ? parseInt(mm[2], 10) : null;
       try { history.replaceState(null, "", location.pathname); } catch { /* ignore */ }
-      if (ch) playChapter(ch, "plain"); else playBook({ mode: "plain" });
+      if (ch) playChapter(bk, ch, "plain"); else playBook({ book: bk, mode: "plain" });
       return () => eng.destroy();
     }
     // восстановить последнюю позицию (пауза) — мини-плеер появится сразу
     try {
-      const raw = localStorage.getItem(PERSIST_KEY);
+      const raw = localStorage.getItem(PERSIST_KEY) ?? localStorage.getItem("iol.player.bg.v1");
       if (raw) {
-        const s = JSON.parse(raw) as { mode: AudioMode; chapter: number | null; time: number; rate: number };
+        const s = JSON.parse(raw) as { book?: string; mode: AudioMode; chapter: number | null; time: number; rate: number };
         if (s && (s.mode === "plain" || s.mode === "commentary")) {
+          const bk = s.book && BOOKS[s.book] ? s.book : "bg";
+          bookRef.current = bk; setBookId(bk);
           pendingRef.current = { mode: s.mode, chapter: s.chapter, expand: false };
           restoreRef.current = { time: s.time || 0 };
           if (s.rate) { rateRef.current = s.rate; setRate(s.rate); }
@@ -165,8 +182,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function ensureManifest(): Promise<Manifest> {
-    if (manifestRef.current) return Promise.resolve(manifestRef.current);
-    return fetch(api("/books/bg/audio"))
+    const want = bookRef.current;
+    const cur = manifestRef.current;
+    if (cur && cur.book === want) return Promise.resolve(cur);
+    return fetch(api(`/books/${want}/audio`))
       .then((r) => r.json())
       .then((m: Manifest) => { manifestRef.current = m; setManifest(m); return m; });
   }
@@ -174,34 +193,35 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   function persist() {
     try {
       const m = manifestRef.current; if (!m) return;
-      const t = m.modes[modeRef.current].tracks[indexRef.current];
+      const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
       localStorage.setItem(PERSIST_KEY, JSON.stringify({
-        mode: modeRef.current, chapter: t?.chapter ?? null, time: Math.floor(timeRef.current), rate: rateRef.current,
+        book: bookRef.current, mode: modeRef.current, chapter: t?.chapter ?? null, time: Math.floor(timeRef.current), rate: rateRef.current,
       }));
     } catch { /* ignore */ }
   }
 
   // ── загрузка трека по индексу ──
   function loadIndex(m: Manifest, md: AudioMode, i: number, autoplay: boolean) {
-    const list = m.modes[md].tracks;
+    const useMode: AudioMode = m.modes[md] ? md : "plain";
+    const list = m.modes[useMode].tracks;
     if (i < 0 || i >= list.length) return;
     if (seqRef.current.length !== list.length) seqRef.current = buildOrder(list.length, orderModeRef.current, i);
     const t = list[i];
-    modeRef.current = md; setModeState(md);
+    modeRef.current = useMode; setModeState(useMode);
     indexRef.current = i; setIndex(i);
     setActive(true);
     timeRef.current = 0; setCurrentTime(0);
     durRef.current = t.durationSec ?? 0; setDuration(t.durationSec ?? 0);
     engineRef.current?.load(t.url, autoplay);
     engineRef.current?.setRate(rateRef.current);
-    updateMediaSession(t, md);
+    updateMediaSession(t, useMode);
     persist();
   }
 
   function applyPending(m: Manifest, autoplay: boolean) {
     const p = pendingRef.current; if (!p) return;
     pendingRef.current = null;
-    const list = m.modes[p.mode].tracks;
+    const list = (m.modes[p.mode] ?? m.modes.plain).tracks;
     let i = 0;
     if (p.chapter != null) {
       const f = list.findIndex((t) => t.chapter === p.chapter);
@@ -219,12 +239,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
 
   // ── точки входа ──
-  function playBook(opts?: { mode?: AudioMode; chapter?: number; expand?: boolean }) {
+  function switchBook(b: string) {
+    if (b === bookRef.current) return;
+    bookRef.current = b; setBookId(b);
+    manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги
+    seqRef.current = [];
+  }
+  function playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }) {
+    if (opts?.book) switchBook(opts.book);
     pendingRef.current = { mode: opts?.mode ?? "plain", chapter: opts?.chapter ?? null, expand: opts?.expand ?? true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
-  function playChapter(chapter: number, md: AudioMode) {
+  function playChapter(book: string, chapter: number, md: AudioMode) {
+    switchBook(book);
     pendingRef.current = { mode: md, chapter, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
@@ -241,11 +269,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
   function rebuildOrder() {
     const m = manifestRef.current; if (!m) { seqRef.current = []; return; }
-    seqRef.current = buildOrder(m.modes[modeRef.current].tracks.length, orderModeRef.current, indexRef.current);
+    seqRef.current = buildOrder((m.modes[modeRef.current] ?? m.modes.plain).tracks.length, orderModeRef.current, indexRef.current);
   }
   function relIndex(step: number): number {
     const m = manifestRef.current; if (!m) return -1;
-    const list = m.modes[modeRef.current].tracks;
+    const list = (m.modes[modeRef.current] ?? m.modes.plain).tracks;
     const seq = seqRef.current.length === list.length ? seqRef.current : list.map((_, i) => i);
     const pos = seq.indexOf(indexRef.current);
     if (pos < 0) return -1;
@@ -303,9 +331,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // ── смена режима: держим главу; вводный трек → 1-я глава ──
   function setMode(md: AudioMode) {
     const m = manifestRef.current;
-    if (!m || md === modeRef.current) { modeRef.current = md; setModeState(md); return; }
-    const cur = m.modes[modeRef.current].tracks[indexRef.current];
-    const target = m.modes[md].tracks;
+    if (!m || !m.modes[md]) return; // нет такого режима (напр. у ЧЧ нет комментариев) — игнор
+    if (md === modeRef.current) { modeRef.current = md; setModeState(md); return; }
+    const cur = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
+    const target = m.modes[md]!.tracks;
     let i = 0;
     if (cur?.chapter != null) {
       const f = target.findIndex((t) => t.chapter === cur.chapter);
@@ -324,21 +353,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     engineRef.current?.pause();
     setExpanded(false);
     setActive(false);
-    try { localStorage.removeItem(PERSIST_KEY); } catch { /* ignore */ }
+    try { localStorage.removeItem(PERSIST_KEY); localStorage.removeItem("iol.player.bg.v1"); } catch { /* ignore */ }
   }
 
   // ── Media Session (локскрин / Пункт управления / AirPods) ──
   function updateMediaSession(t: Track, md: AudioMode) {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
+    const cfg = bookCfg(bookRef.current);
+    const album = md === "commentary" ? "С комментариями" : (t.lilaLabel ?? "Стих за стихом");
     try {
       ms.metadata = new MediaMetadata({
         title: t.title,
-        artist: BOOK_TITLE,
-        album: md === "commentary" ? "С комментариями" : "Стих за стихом",
+        artist: cfg.title,
+        album,
         artwork: [
-          { src: absUrl(COVER), sizes: "512x512", type: "image/jpeg" },
-          { src: absUrl(COVER), sizes: "256x256", type: "image/jpeg" },
+          { src: absUrl(cfg.cover), sizes: "512x512", type: "image/jpeg" },
+          { src: absUrl(cfg.cover), sizes: "256x256", type: "image/jpeg" },
         ],
       });
       ms.setActionHandler("play", () => togglePlay());
@@ -375,7 +406,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   const value: PlayerApi = {
     ready: !!manifest, active, expanded, loading, mode, tracks, index, track,
-    isPlaying, currentTime, duration, rate, order: orderMode, repeat, cover: COVER, bookTitle: BOOK_TITLE,
+    isPlaying, currentTime, duration, rate, order: orderMode, repeat,
+    cover: bookCfg(bookId).cover, bookTitle: bookCfg(bookId).title, book: bookId,
+    hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     playBook, playChapter, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),

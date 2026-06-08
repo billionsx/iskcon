@@ -23,7 +23,7 @@ const glass = (radius: number): CSSProperties => ({
 });
 const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0, background: "none", border: "none", padding: 0 });
 
-export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: number | null) => void; onDonate?: () => void } = {}) {
+export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: string, chapter?: number | null) => void; onDonate?: () => void } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -51,24 +51,24 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
   if (!p.active) return null;
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
-  const sub = p.track?.kind === "intro" ? "Вступление" : `Глава ${p.track?.chapter ?? ""}`;
+  const sub = p.track?.kind === "intro" ? "Вступление" : p.track?.lilaLabel ? `${p.track.lilaLabel} · Глава ${p.track?.chapter ?? ""}` : `Глава ${p.track?.chapter ?? ""}`;
 
   function onDown(e: React.PointerEvent) { startY.current = e.clientY; setDragging(true); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }
   function onMove(e: React.PointerEvent) { if (startY.current == null) return; const dy = e.clientY - startY.current; if (dy > 0) setDrag(dy); }
   function onUp() { if (startY.current == null) return; const d = drag; startY.current = null; setDragging(false); setDrag(0); if (d > 110) p.close(); }
 
-  const BOOK = BOOKS.bg;
+  const BOOK = BOOKS[p.book] ?? BOOKS.bg;
   const ORIGIN = "https://gaurangers.com";
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
-  const bookUrl = `${ORIGIN}/book/bg?listen`;
-  const chapterUrl = isChapter ? `${ORIGIN}/book/bg/${ch}?listen` : bookUrl;
+  const bookUrl = `${ORIGIN}/book/${p.book}?listen`;
+  const chapterUrl = isChapter && p.book === "bg" ? `${ORIGIN}/book/bg/${ch}?listen` : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
   function doShare(url: string, title: string) {
     if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title, url }).catch(() => {});
     else { try { void navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { /* ignore */ } }
   }
-  function readBook() { p.close(); onOpenBook?.(isChapter ? ch : null); }
+  function readBook() { p.close(); onOpenBook?.(p.book, isChapter && p.book === "bg" ? ch : null); }
   function downloadChapter() {
     const t = p.track; if (!t) return;
     try { const a = document.createElement("a"); a.href = t.url; a.download = `${t.title}.mp3`; document.body.appendChild(a); a.click(); a.remove(); flash("Скачивание…"); }
@@ -124,7 +124,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
               <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
-              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{sub} · {BOOKS.bg?.titleLine1}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{sub} · {BOOK.titleLine1}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
@@ -143,10 +143,10 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
         {/* scroll body: ВКП cover + queue */}
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
-          <BookHeroCard book={BOOKS.bg} presentational coverActions={coverActions} />
+          <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />
           <div style={{ marginTop: 22 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
-              Содержание · {p.mode === "commentary" ? "с комментариями" : "стих за стихом"}
+              Содержание{p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}
             </div>
             {p.tracks.map((t, i) => (
               <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
@@ -194,10 +194,10 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
               <button type="button" aria-label="Скорость" aria-pressed={p.rate !== 1} onClick={() => p.cycleRate()}
                 style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
             </div>
-            <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
+            {p.hasCommentary && <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
               style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", whiteSpace: "nowrap", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", transition: "color .2s", color: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.72)" }}>
               С комментариями
-            </button>
+            </button>}
           </div>
         </div>
       </div>
