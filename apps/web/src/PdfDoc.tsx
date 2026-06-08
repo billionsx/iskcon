@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { BOOKS } from "./books";
+import { BOOKS, type BookData } from "./books";
 import { api } from "./api";
-import { BookPrint, ChapterPrint, VerseBody, type ChapterRow, type ChapterVerse } from "./BookDetailPage";
+import { BookPrint, LilaPrint, ChapterPrint, VerseBody, type ChapterRow, type ChapterVerse } from "./BookDetailPage";
 
 type Loaded =
   | { kind: "book"; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
+  | { kind: "lila"; lilaLabel: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[] }
   | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string };
 
@@ -24,6 +25,8 @@ function markReady() {
 export function PdfDoc() {
   const params = new URLSearchParams(window.location.search);
   const kind = params.get("pdf");
+  const work = params.get("work") || "bg";
+  const lila = params.get("lila") || "";
   const n = params.get("n") || "";
   const ref = params.get("ref") || "";
   const [data, setData] = useState<Loaded | null>(null);
@@ -33,7 +36,21 @@ export function PdfDoc() {
     let live = true;
     (async () => {
       try {
-        if (kind === "book") {
+        if (kind === "lila") {
+          const toc = await (await fetch(api(`/books/${work}/toc`))).json();
+          const divs = (toc.divisions ?? []) as Array<{ id: string; slug: string; title_ru: string; chapters: Array<{ id: string; number: string; title_ru: string; verses: number }> }>;
+          const div = divs.find((d) => d.id.split(".")[1] === lila || d.slug === lila);
+          const chapters: ChapterRow[] = (div?.chapters ?? []).map((c) => ({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses }));
+          const entries = await Promise.all(
+            chapters.map(async (c) => {
+              const d = await (await fetch(api(`/books/${work}/division/${encodeURIComponent(c.id)}/read`))).json();
+              return [c.id, (d.verses ?? []) as ChapterVerse[]] as const;
+            }),
+          );
+          const versesByCh: Record<string, ChapterVerse[]> = {};
+          for (const [id, vs] of entries) versesByCh[id] = vs;
+          if (live) setData({ kind: "lila", lilaLabel: div?.title_ru ?? "", chapters, versesByCh });
+        } else if (kind === "book") {
           const ch = await (await fetch(api("/books/bg/chapters"))).json();
           const chapters: ChapterRow[] = ch.chapters ?? [];
           const entries = await Promise.all(
@@ -73,7 +90,11 @@ export function PdfDoc() {
     if (data) {
       const BOOK = "Бхагавад-гита как она есть";
       let h = BOOK;
-      if (data.kind === "chapter" && data.chapter) h = `${BOOK} · ${data.chapter.title_ru}`;
+      if (data.kind === "lila") {
+        const bk = (BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc;
+        const bt = bk.titleLine2 ? `${bk.titleLine1}${bk.titleLine1.endsWith("-") ? "" : " "}${bk.titleLine2}` : bk.titleLine1;
+        h = data.lilaLabel ? `${bt} · ${data.lilaLabel}` : bt;
+      } else if (data.kind === "chapter" && data.chapter) h = `${BOOK} · ${data.chapter.title_ru}`;
       else if (data.kind === "verse") {
         const vnum = ref.match(/\.\s*(\d+)/)?.[1] ?? "";
         const parts = [BOOK];
@@ -93,6 +114,7 @@ export function PdfDoc() {
   return (
     <div className="pdf-doc-page" style={{ background: "#fff", color: "#1f2024", fontFamily: "var(--font-text)" }}>
       {data.kind === "book" && <BookPrint book={BOOKS.bg} chapters={data.chapters} versesByCh={data.versesByCh} />}
+      {data.kind === "lila" && <LilaPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc} lilaLabel={data.lilaLabel} chapters={data.chapters} versesByCh={data.versesByCh} />}
       {data.kind === "chapter" && data.chapter && <ChapterPrint chapter={data.chapter} verses={data.verses} />}
       {data.kind === "chapter" && !data.chapter && <div style={{ padding: 24 }}>Глава не найдена.</div>}
       {data.kind === "verse" && (

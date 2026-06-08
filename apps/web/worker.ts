@@ -45,6 +45,8 @@ function json(data: unknown, status = 200): Response {
 // с настоящими полями на каждой странице и колонтитулом с нумерацией.
 async function handlePdf(env: Env, url: URL): Promise<Response> {
   const kind = url.searchParams.get("kind");
+  const work = url.searchParams.get("work") || "bg";
+  const lila = url.searchParams.get("lila") || "";
   const n = url.searchParams.get("n") || "";
   const ref = url.searchParams.get("ref") || "";
   let printPath: string;
@@ -52,6 +54,11 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   if (kind === "book") {
     printPath = "/?pdf=book";
     filename = "Бхагавад-гита как она есть.pdf";
+  } else if (kind === "lila" && lila) {
+    printPath = `/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}`;
+    const lilaName = lila === "adi" ? "Ади-лила" : lila === "madhya" ? "Мадхья-лила" : lila === "antya" ? "Антья-лила" : lila;
+    const bookName = work === "cc" ? "Шри Чайтанья-чаритамрита" : "Книга";
+    filename = `${bookName}. ${lilaName}.pdf`;
   } else if (kind === "chapter" && n) {
     printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
     filename = `Бхагавад-гита как она есть. Глава ${n}.pdf`;
@@ -73,8 +80,9 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
     try {
-      // Книга тяжёлая (вся «Гита» ≈ 1100 страниц) — даём ей дорисоваться.
-      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : 45000 });
+      // Книга/лила тяжёлые (вся «Гита» ≈ 1100 стр.; лилы ЧЧ — сотни страниц) —
+      // даём дорисоваться; по таймауту печатаем что успело отрисоваться.
+      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : kind === "lila" ? 200000 : 45000 });
     } catch {
       /* отрисовка затянулась — печатаем что отрисовалось */
     }

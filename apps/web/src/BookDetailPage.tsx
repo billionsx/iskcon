@@ -1008,6 +1008,43 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
   );
 }
 
+// Печать одной лилы ЧЧ (Ади / Мадхья / Антья) — отдельный PDF на лилу.
+// Главы внутри лилы нумеруются уникально, но ключуем по c.id (надёжно).
+export function LilaPrint({ book, lilaLabel, chapters, versesByCh }: { book: BookData; lilaLabel: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
+  const fullTitle = book.titleLine2 ? `${book.titleLine1}${book.titleLine1.endsWith("-") ? "" : " "}${book.titleLine2}` : book.titleLine1;
+  return (
+    <div>
+      {/* cover / title page */}
+      <div data-pdf-block style={{ textAlign: "center", breakAfter: "page", paddingTop: "30mm" }}>
+        <img src="/iskcon-one-love-mark.svg" alt="ISKCON ONE LOVE" style={{ width: "30mm", height: "auto", display: "block", margin: "0 auto" }} />
+        <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
+          <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
+        </div>
+        <h1 style={{ margin: "16mm 0 0", fontSize: 38, lineHeight: 1.08, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{fullTitle}</h1>
+        <div style={{ marginTop: "8mm", fontSize: 14, fontWeight: 700, letterSpacing: "3px", textTransform: "uppercase", color: GOLDT }}>{lilaLabel}</div>
+        <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
+      </div>
+      {/* table of contents (this lila) */}
+      <div data-pdf-block style={{ margin: "8px 0 4px" }}>
+        <LayerLabel>{lilaLabel} · содержание</LayerLabel>
+        <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
+          {chapters.map((c) => (
+            <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
+              <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{c.number}</span>
+              <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
+              <span style={{ fontSize: 12.5, color: INK3 }}>{c.verses} стихов</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {/* chapters with all verses, each from a new page */}
+      {chapters.map((c) => (
+        <ChapterPrint key={c.id} chapter={c} verses={versesByCh[c.id] ?? []} newPage />
+      ))}
+    </div>
+  );
+}
+
 function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: ReactNode }) {
   const [pressed, setPressed] = useState(false);
   const off = () => setPressed(false);
@@ -1230,6 +1267,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
   const [bookPct, setBookPct] = useState(0);
+  const [bookPctTitle, setBookPctTitle] = useState("Готовлю PDF книги");
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const openQr = (url: string, data: QrData) => setQr({ url, data });
   const [reportOpen, setReportOpen] = useState(false);
@@ -1377,6 +1415,32 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     }
   };
 
+  // ЧЧ: книга слишком велика для одного PDF (11k стихов кладут рендер по таймауту) —
+  // отдаём тремя файлами по лилам, серверный рендер, последовательно, с прогрессом.
+  const CC_LILAS = [
+    { slug: "adi", label: "Ади-лила" },
+    { slug: "madhya", label: "Мадхья-лила" },
+    { slug: "antya", label: "Антья-лила" },
+  ];
+  const downloadCcBook = async () => {
+    let active = true;
+    // downloadServerPdf сбрасывает прогресс в 0 через 800мс после каждого файла —
+    // во время серии это бы скрыло модалку; держим минимум 1 до конца всех трёх.
+    const prog = (p: number) => { if (active) setBookPct(p <= 0 ? 1 : p); };
+    for (let i = 0; i < CC_LILAS.length; i++) {
+      const { slug, label } = CC_LILAS[i];
+      setBookPctTitle(`${label} · ${i + 1} из 3`);
+      await downloadServerPdf(
+        `/pdf?kind=lila&work=${encodeURIComponent(book.work)}&lila=${slug}`,
+        `${bookShareTitle(book)}. ${label}.pdf`,
+        { onStatus: flash, onProgress: prog },
+      );
+    }
+    active = false;
+    setBookPct(0);
+    setBookPctTitle("Готовлю PDF книги");
+  };
+
   const shareBook = async () => {
     const url = typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`;
     const payload = { title: bookShareTitle(book), text: book.description, url };
@@ -1403,7 +1467,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { if (book.hierarchical) { flash("PDF этой книги готовится"); return; } void buildBookPdf(); return; }
+    if (id === "pdf") { if (book.hierarchical) { void downloadCcBook(); return; } void buildBookPdf(); return; }
     if (id === "qr") {
       openQr(`https://gaurangers.com/book/${book.work}`, {
         kind: "book",
@@ -1448,7 +1512,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       {bookPct > 0 && (
         <div style={{ position: "fixed", inset: 0, zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
           <div style={{ width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>Готовлю PDF книги</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>{bookPctTitle}</div>
             <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1–2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
