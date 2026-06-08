@@ -873,6 +873,19 @@ interface VerseDetail {
 }
 
 /* ───────── PDF-вёрстка (стих / глава / книга) — наш дизайн на бумаге ───────── */
+
+// Разбиваем оригинальный стих (деванагари/бенгали) на поэтические строки по дандам,
+// если в данных переносов нет: одинарная данда «।» — конец полустишия; группа
+// «॥ N ॥» — конец стиха (перенос только если дальше ещё есть текст, т.е. диапазон).
+// Идемпотентно: если \n уже есть (как у БГ), строку не трогаем.
+function scriptLines(s: string | null | undefined): string {
+  if (!s) return "";
+  if (s.includes("\n")) return s;
+  let out = s.replace(/\s*।\s*/g, " ।\n");
+  out = out.replace(/॥[^॥]*॥(?=\s*\S)/g, (m) => m + "\n");
+  return out.replace(/\s+$/g, "");
+}
+
 function resolveVerse(v: ChapterVerse) {
   const demo = DEMO_VERSES[v.ref];
   return {
@@ -894,12 +907,12 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
       <div data-pdf-block>
       <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
       {r.deva && (
-        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{r.deva}</div>
+        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{scriptLines(r.deva)}</div>
       )}
       {r.translit && (
         <div style={{ marginBottom: 16 }}>
           {r.translit.split("\n").map((ln, i) => (
-            <div key={i} style={{ fontStyle: "italic", fontSize: 16.5, lineHeight: 1.4, textAlign: "center", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
+            <div key={i} style={{ fontStyle: "italic", fontSize: 15, lineHeight: 1.45, letterSpacing: "-0.01em", textAlign: "center", textWrap: "balance", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
           ))}
         </div>
       )}
@@ -1088,12 +1101,12 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
           {data && (
             <>
               {hasDeva && (
-                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{evDeva}</div>
+                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{scriptLines(evDeva)}</div>
               )}
               {hasTranslit && (
                 <div style={{ marginBottom: 16 }}>
                   {evTranslit!.split("\n").map((ln, i) => (
-                    <div key={i} style={{ fontStyle: "italic", fontSize: 16.5, lineHeight: 1.4, textAlign: "center", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
+                    <div key={i} style={{ fontStyle: "italic", fontSize: 15, lineHeight: 1.45, letterSpacing: "-0.01em", textAlign: "center", textWrap: "balance", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
                   ))}
                 </div>
               )}

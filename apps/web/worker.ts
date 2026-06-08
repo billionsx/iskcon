@@ -495,6 +495,20 @@ function stripScriptLabel(s: string | null | undefined): string | null {
   return s.replace(/^[\u0400-\u04FF]+\s*/, "");
 }
 
+// Пословный перевод: у последнего слова в исходнике остаётся точка-конец строки;
+// рендер добавляет свою точку → «океан..». Срезаем хвостовые точки у глоссы.
+function cleanGloss(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/[\s.\u2026]+$/u, "");
+}
+
+// Комментарий/перевод: при ингесте местами потерян пробел после конца предложения
+// («…Чайтаньи.Движение»). Возвращаем пробел, когда строчная буква + .!? + заглавная.
+function fixSentenceSpacing(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/([а-яёa-z])([.!?])([А-ЯЁA-Z])/gu, "$1$2 $3");
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -562,11 +576,11 @@ export default {
          WHERE v.division_id = ?1 ORDER BY t.verse_id, t.ordinal`
       ).bind(divId).all<{ verse_id: string; term: string; gloss: string | null }>();
       const byVerse: Record<string, { term: string; gloss: string | null }[]> = {};
-      for (const t of tres.results ?? []) (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: t.gloss ?? null });
+      for (const t of tres.results ?? []) (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: cleanGloss(t.gloss) });
       const verses = (vres.results ?? []).map((v) => {
         const tail = String(v.ref).split(".").pop() ?? "";
         const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, "-")}` : `Текст ${tail}`;
-        return { ref: v.ref, label, devanagari: stripScriptLabel(v.devanagari), translit: v.translit ?? null, tokens: byVerse[v.id] ?? [], translation: v.translation ?? null, purport: v.purport ?? null };
+        return { ref: v.ref, label, devanagari: stripScriptLabel(v.devanagari), translit: v.translit ?? null, tokens: byVerse[v.id] ?? [], translation: fixSentenceSpacing(v.translation), purport: fixSentenceSpacing(v.purport) };
       });
       return json({ work, division: divId, verses });
     }
