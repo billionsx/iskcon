@@ -8,6 +8,16 @@ compatibility_flags = ["nodejs_compat"]
 account_id = "d5cbe19470dc38599873eabfe148e6d1"
 workers_dev = true
 
+# Отправка писем об ошибках через Cloudflare Email Routing (нативно, без сторонних
+# сервисов). ВАЖНО: это ГЛОБАЛЬНЫЙ ключ — он обязан стоять ДО любой [секции], иначе
+# TOML относит его к предыдущей таблице (раньше превращался в browser.send_email),
+# и wrangler его игнорирует → в воркере env.SEB === undefined.
+# destination_address подтверждён в Email Routing → Destination addresses;
+# Email Routing включён на домене-отправителе gaurangers.com.
+send_email = [
+  { name = "SEB", destination_address = "support@billionsx.com" }
+]
+
 [assets]
 directory = "./dist"
 binding = "ASSETS"
@@ -19,13 +29,6 @@ run_worker_first = true
 
 [browser]
 binding = "BROWSER"
-
-# Отправка писем об ошибках через Cloudflare Email Routing (нативно, без сторонних
-# сервисов). destination_address должен быть подтверждён в Email Routing →
-# Destination addresses, а Email Routing включён на домене-отправителе gaurangers.com.
-send_email = [
-  { name = "SEB", destination_address = "support@billionsx.com" }
-]
 
 [[d1_databases]]
 binding = "DB"
