@@ -30,6 +30,10 @@ on:
         description: "Перезагрузить даже уже залитые главы (иначе пропускаем готовые)"
         required: false
         default: "false"
+      workers:
+        description: "Параллельных загрузок стихов"
+        required: false
+        default: "24"
 
 permissions:
   contents: write
@@ -49,9 +53,11 @@ jobs:
           TO_CH: ${{ github.event.inputs.to_ch }}
           MAX_MIN: ${{ github.event.inputs.max_minutes }}
           FORCE: ${{ github.event.inputs.force }}
+          WORKERS: ${{ github.event.inputs.workers }}
         run: |
           python3 - <<'PY'
           import os, re, json, time, random, urllib.request
+          from concurrent.futures import ThreadPoolExecutor
           from bs4 import BeautifulSoup
 
           CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
@@ -165,6 +171,7 @@ jobs:
           fr=os.environ.get("FROM_CH","").strip(); to=os.environ.get("TO_CH","").strip()
           MAX=float(os.environ.get("MAX_MIN") or "50")*60.0
           FORCE=(os.environ.get("FORCE","").strip().lower() in ("1","true","yes","on"))
+          WORKERS=max(1, int(os.environ.get("WORKERS") or "24"))
           t0=time.time()
 
           # издание один раз
@@ -204,18 +211,19 @@ jobs:
                           status["chapters"].append({"lila":s,"ch":ch,"skipped":True,"segs":len(segs),"existing":have})
                           print("SKIP",s,ch,"have",have,">=",len(segs)); continue
                   verses=[]; missed=0
-                  for i, seg in enumerate(segs, 1):
-                      if time.time()-t0 > MAX:
-                          stopped=True; status["stopped_early"]=True; status["stopped_at"]=f"{s}.{ch}.{seg}"; break
+                  def _one(arg):
+                      i, seg = arg
                       url=f"{BASE}/{s}/{ch}/{seg}/"
-                      html=get(url)
-                      if not html:
-                          missed+=1; continue
-                      v=parse_verse(html); v["seg"]=seg; v["ordinal"]=i; v["url"]=url
-                      if not (v["deva"] or v["translit"] or v["tr"]):
-                          missed+=1; continue
-                      verses.append(v)
-                      time.sleep(0.3+random.random()*0.2)
+                      h=get(url)
+                      if not h: return (seg, None)
+                      v=parse_verse(h); v["seg"]=seg; v["ordinal"]=i; v["url"]=url
+                      if not (v["deva"] or v["translit"] or v["tr"]): return (seg, None)
+                      return (seg, v)
+                  with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                      for seg, v in ex.map(_one, list(enumerate(segs,1))):
+                          if v is None: missed+=1
+                          else: verses.append(v)
+                  verses.sort(key=lambda x: x["ordinal"])
 
                   # ── запись главы в D1 ──
                   stmts=[]
@@ -262,7 +270,7 @@ jobs:
                        "deva":deva,"translit":trl,"translation":tr,"purport":pur,"tokens":tok,"missed":missed}
                   status["chapters"].append(rec)
                   print("CH", json.dumps(rec, ensure_ascii=False))
-                  time.sleep(1.0)
+                  time.sleep(0.3)
                   if stopped: break
               if stopped: break
 
