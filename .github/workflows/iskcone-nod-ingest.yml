@@ -144,10 +144,34 @@ jobs:
                   sample[seg]={"title":title,"n_paragraphs":len(paras),"classes_seen":classes,
                                "first_paragraphs":paras[:3], "last_paragraph":(paras[-1] if paras else "")}
                   time.sleep(0.5)
+              # структурный дамп nod/1: какие элементы несут прозу
+              html1=get(BASE+"1/")
+              soup=BeautifulSoup(html1,"lxml")
+              for t in soup(["script","style","nav","header","footer","aside"]): t.decompose()
+              struct=[]
+              for el in soup.find_all(True):
+                  # прямой текст элемента (без вложенных блоков)
+                  direct="".join(c if isinstance(c,str) else "" for c in el.contents)
+                  direct=re.sub(r"\s+"," ",direct).strip()
+                  if len(direct)>=120:
+                      struct.append({"tag":el.name,"class":" ".join(el.get("class") or []),
+                                     "id":el.get("id") or "","len":len(direct),"snip":direct[:90]})
+              struct=struct[:25]
+              # также: классы у потомков main/article/#content
+              container=soup.select_one("main, article, #content, .content, [role=main]")
+              cont_info=None
+              if container:
+                  kids={}
+                  for ch in container.find_all(True, recursive=True):
+                      cl=" ".join(ch.get("class") or [])
+                      if cl: kids[cl]=kids.get(cl,0)+1
+                  cont_info={"tag":container.name,"class":" ".join(container.get("class") or []),
+                             "child_classes":sorted(kids.items(), key=lambda x:-x[1])[:20]}
               os.makedirs(".nod-ingest", exist_ok=True)
-              json.dump({"index":idx,"index_count":len(idx),"sample":sample},
+              json.dump({"index":idx,"index_count":len(idx),"sample":sample,
+                         "struct_nod1":struct,"container_nod1":cont_info,"html1_len":len(html1)},
                         open(".nod-ingest/probe.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
-              print("PROBE written. sample segs:", list(sample.keys()))
+              print("PROBE written. sample segs:", list(sample.keys()), "struct rows:", len(struct))
               raise SystemExit
 
           # ── MODE=all: полный ингест ──
