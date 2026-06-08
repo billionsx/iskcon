@@ -28,8 +28,9 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
   const [msg, setMsg] = useState("");
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
+  const [dbg, setDbg] = useState("");
 
-  useEffect(() => { if (open) { setCat("other"); setMsg(""); setEmail(""); setState("idle"); } }, [open]);
+  useEffect(() => { if (open) { setCat("other"); setMsg(""); setEmail(""); setState("idle"); setDbg(""); } }, [open]);
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
@@ -68,9 +69,15 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category: cat, categoryLabel: catLabel, message: trimmed, email: email.trim() || null, ...diagnostics() }),
       });
+      const j = await res.json().catch(() => ({} as Record<string, unknown>));
       if (!res.ok) throw new Error("bad status");
-      setState("done");
-      window.setTimeout(onClose, 1700);
+      if (j && ((j as { delivered?: boolean; emailed?: boolean }).delivered ?? (j as { emailed?: boolean }).emailed)) {
+        setState("done");
+        window.setTimeout(onClose, 1700);
+      } else {
+        setDbg((j as { dbg?: unknown }).dbg ? JSON.stringify((j as { dbg?: unknown }).dbg) : "не доставлено");
+        setState("error");
+      }
     } catch {
       setState("error");
     }
@@ -135,6 +142,7 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
             {state === "error" && (
               <div style={{ marginTop: 12, fontSize: 13, color: "#c0392b", background: "rgba(192,57,43,0.08)", border: "0.5px solid rgba(192,57,43,0.25)", borderRadius: 12, padding: "10px 12px" }}>
                 Не удалось отправить. Попробуйте ещё раз.
+                {dbg && <div style={{ marginTop: 6, fontSize: 11, opacity: 0.8, wordBreak: "break-all", fontFamily: "ui-monospace, monospace" }}>debug: {dbg}</div>}
               </div>
             )}
 
