@@ -351,11 +351,11 @@ function CcOverview({ book }: { book: BookData }) {
         <div>
           <KeyVal k="Перевод и комментарии" v="А. Ч. Бхактиведанта Свами Прабхупада" />
           <KeyVal k="Издатель" v="The Bhaktivedanta Book Trust" />
-          <KeyVal k="Первое издание" v="1973–1975 (17 томов)" />
+          <KeyVal k="Первое издание" v="1973-1975 (17 томов)" />
           <KeyVal k="Язык этого издания" v="Русский" last />
         </div>
         <p style={{ margin: "16px 0 0", fontSize: 13, lineHeight: 1.5, color: INK3 }}>
-          Весь многотомный перевод с комментариями Шрила Прабхупада завершил всего за несколько месяцев в 1974–1975 годах. В традиции гаудия-вайшнавов святость «Чайтанья-чаритамриты» сравнивают со святостью «Бхагавад-гиты».
+          Весь многотомный перевод с комментариями Шрила Прабхупада завершил всего за несколько месяцев в 1974-1975 годах. В традиции гаудия-вайшнавов святость «Чайтанья-чаритамриты» сравнивают со святостью «Бхагавад-гиты».
         </p>
       </section>
 
@@ -560,7 +560,7 @@ function CcReviews() {
       <section>
         <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
         <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: INK }}>
-          С выходом английского издания (BBT, 1973–1975) «Шри Чайтанья-чаритамриту» в переводе Шрилы Прабхупады приветствовали ведущие индологи и религиоведы Гарварда, Корнелла, Беркли и других университетов.
+          С выходом английского издания (BBT, 1973-1975) «Шри Чайтанья-чаритамриту» в переводе Шрилы Прабхупады приветствовали ведущие индологи и религиоведы Гарварда, Корнелла, Беркли и других университетов.
         </p>
       </section>
 
@@ -718,15 +718,28 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
   const player = usePlayer();
 
   useEffect(() => {
-    if (printing && !hierarchical) {
-      void downloadServerPdf(
-        `/pdf?kind=chapter&n=${encodeURIComponent(chapter.number)}`,
-        `Бхагавад-гита как она есть. Глава ${chapter.number}.pdf`,
-        { onStatus: flash, fallback: () => { if (printRef.current) exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` }); } },
-      );
-      setPrinting(false);
-    }
-  }, [printing, chapter.number, chapter.title_ru, bookTitle]);
+    if (!printing) return;
+    let cancelled = false;
+    (async () => {
+      const common = { onStatus: flash, fallback: () => { if (printRef.current) exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` }); } };
+      if (hierarchical) {
+        const lila = ccLilaLabel(chapter.id.split(".")[1] ?? "");
+        await downloadServerPdf(
+          `/pdf?kind=chapter&work=${encodeURIComponent(work)}&div=${encodeURIComponent(chapter.id)}`,
+          `Шри Чайтанья-чаритамрита. ${lila}. Глава ${chapter.number}.pdf`,
+          common,
+        );
+      } else {
+        await downloadServerPdf(
+          `/pdf?kind=chapter&n=${encodeURIComponent(chapter.number)}`,
+          `Бхагавад-гита как она есть. Глава ${chapter.number}.pdf`,
+          common,
+        );
+      }
+      if (!cancelled) setPrinting(false);
+    })();
+    return () => { cancelled = true; };
+  }, [printing, chapter.id, chapter.number, chapter.title_ru, work, hierarchical, bookTitle]);
 
   useEffect(() => {
     let live = true;
@@ -817,7 +830,6 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
         setMenu(false);
         if (id === "share") { void shareChapter(); return; }
         if (id === "pdf") {
-          if (hierarchical) { flash("PDF этой книги готовится"); return; }
           if (verses && verses.length) setPrinting(true);
           else flash("Глава ещё загружается…");
           return;
@@ -873,6 +885,10 @@ interface VerseDetail {
 }
 
 /* ───────── PDF-вёрстка (стих / глава / книга) — наш дизайн на бумаге ───────── */
+
+// Метки лил ЧЧ для имён файлов и заголовков PDF.
+const CC_LILA_LABEL: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
+function ccLilaLabel(slug: string): string { return CC_LILA_LABEL[slug] ?? slug; }
 
 // Разбиваем оригинальный стих (деванагари/бенгали) на поэтические строки по дандам,
 // если в данных переносов нет: одинарная данда «।» — конец полустишия; группа
@@ -1010,7 +1026,7 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
 
 // Печать одной лилы ЧЧ (Ади / Мадхья / Антья) — отдельный PDF на лилу.
 // Главы внутри лилы нумеруются уникально, но ключуем по c.id (надёжно).
-export function LilaPrint({ book, lilaLabel, chapters, versesByCh }: { book: BookData; lilaLabel: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
+export function LilaPrint({ book, lilaLabel, range, chapters, versesByCh }: { book: BookData; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
   const fullTitle = book.titleLine2 ? `${book.titleLine1}${book.titleLine1.endsWith("-") ? "" : " "}${book.titleLine2}` : book.titleLine1;
   return (
     <div>
@@ -1022,6 +1038,7 @@ export function LilaPrint({ book, lilaLabel, chapters, versesByCh }: { book: Boo
         </div>
         <h1 style={{ margin: "16mm 0 0", fontSize: 38, lineHeight: 1.08, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{fullTitle}</h1>
         <div style={{ marginTop: "8mm", fontSize: 14, fontWeight: 700, letterSpacing: "3px", textTransform: "uppercase", color: GOLDT }}>{lilaLabel}</div>
+        {range && <div style={{ marginTop: "3mm", fontSize: 12.5, color: INK2 }}>{range}</div>}
         <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
       </div>
       {/* table of contents (this lila) */}
@@ -1209,11 +1226,18 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
         if (id === "pdf") {
           const label = data?.label ?? refStr;
           const vref = data?.ref ?? refStr;
-          const vfile = `Бхагавад-гита как она есть. Глава ${chapterNo}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`;
+          const isCc = work !== "bg";
+          const lilaLab = ccLilaLabel(ccLila ?? "");
+          const vfile = isCc
+            ? `Шри Чайтанья-чаритамрита. ${lilaLab}. Глава ${ccChapterNum}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`
+            : `Бхагавад-гита как она есть. Глава ${chapterNo}${verseSeg ? `. Стих ${verseSeg}` : ""}.pdf`;
+          const sub = isCc
+            ? `${lilaLab} · Глава ${ccChapterNum} · ${bookTitle}`
+            : `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}`;
           void downloadServerPdf(
-            `/pdf?kind=verse&ref=${encodeURIComponent(vref)}`,
+            `/pdf?kind=verse&work=${encodeURIComponent(work)}&ref=${encodeURIComponent(vref)}`,
             vfile,
-            { onStatus: flash, fallback: () => exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: `${chapterNo ? "Глава " + chapterNo + " · " : ""}${bookTitle}` }) },
+            { onStatus: flash, fallback: () => exportToPdf(verseContentRef.current, { title: `${label} · ${bookTitle}`, heading: label, subheading: sub }) },
           );
           return;
         }
@@ -1268,6 +1292,9 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
   const [bookPct, setBookPct] = useState(0);
   const [bookPctTitle, setBookPctTitle] = useState("Готовлю PDF книги");
+  const [pdfHidden, setPdfHidden] = useState(false);
+  const pdfCancel = useRef(false);
+  const pdfAbort = useRef<AbortController | null>(null);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const openQr = (url: string, data: QrData) => setQr({ url, data });
   const [reportOpen, setReportOpen] = useState(false);
@@ -1391,7 +1418,12 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   useEffect(() => {
     if (bookPrint) {
       const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
-      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, onProgress: setBookPct, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } });
+      pdfCancel.current = false;
+      setPdfHidden(false);
+      const ac = new AbortController();
+      pdfAbort.current = ac;
+      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, onProgress: setBookPct, signal: ac.signal, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } })
+        .finally(() => { pdfAbort.current = null; });
       setBookPrint(null);
     }
   }, [bookPrint, book.titleLine1, book.titleLine2]);
@@ -1415,31 +1447,56 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     }
   };
 
-  // ЧЧ: книга слишком велика для одного PDF (11k стихов кладут рендер по таймауту) —
-  // отдаём тремя файлами по лилам, серверный рендер, последовательно, с прогрессом.
-  const CC_LILAS = [
-    { slug: "adi", label: "Ади-лила" },
-    { slug: "madhya", label: "Мадхья-лила" },
-    { slug: "antya", label: "Антья-лила" },
-  ];
+  // ЧЧ: книга слишком велика для одного PDF (11k стихов кладут рендер по таймауту).
+  // Тянем оглавление, режем каждую лилу по числу стихов (≤ порога) на части и качаем
+  // серверным рендером последовательно, с прогрессом, отменой и сворачиванием.
+  const CC_CHUNK_VERSES = 3300; // безопасный размер части (Ади ≈2200 рендерится штатно)
   const downloadCcBook = async () => {
+    let toc: { divisions?: Array<{ id: string; chapters: Array<{ number: string; verses: number }> }> };
+    try {
+      toc = await (await fetch(api(`/books/${book.work}/toc`))).json();
+    } catch { flash("Не удалось загрузить оглавление"); return; }
+    type Job = { slug: string; label: string; from: string; to: string; part: number; parts: number };
+    const jobs: Job[] = [];
+    for (const d of toc.divisions ?? []) {
+      const slug = d.id.split(".")[1] ?? "";
+      const label = ccLilaLabel(slug);
+      const chs = d.chapters ?? [];
+      const total = chs.reduce((a, c) => a + (Number(c.verses) || 0), 0);
+      const parts = Math.max(1, Math.ceil(total / CC_CHUNK_VERSES));
+      const target = total / parts;
+      let cur: typeof chs = [], curV = 0, made = 0;
+      const flush = () => { if (cur.length) { made++; jobs.push({ slug, label, from: cur[0].number, to: cur[cur.length - 1].number, part: made, parts }); cur = []; curV = 0; } };
+      for (const c of chs) { cur.push(c); curV += Number(c.verses) || 0; if (made < parts - 1 && curV >= target) flush(); }
+      flush();
+    }
+    pdfCancel.current = false;
+    setPdfHidden(false);
     let active = true;
-    // downloadServerPdf сбрасывает прогресс в 0 через 800мс после каждого файла —
-    // во время серии это бы скрыло модалку; держим минимум 1 до конца всех трёх.
-    const prog = (p: number) => { if (active) setBookPct(p <= 0 ? 1 : p); };
-    for (let i = 0; i < CC_LILAS.length; i++) {
-      const { slug, label } = CC_LILAS[i];
-      setBookPctTitle(`${label} · ${i + 1} из 3`);
-      await downloadServerPdf(
-        `/pdf?kind=lila&work=${encodeURIComponent(book.work)}&lila=${slug}`,
-        `${bookShareTitle(book)}. ${label}.pdf`,
-        { onStatus: flash, onProgress: prog },
-      );
+    const prog = (p: number) => { if (active && !pdfCancel.current) setBookPct(p <= 0 ? 1 : p); };
+    for (let i = 0; i < jobs.length; i++) {
+      if (pdfCancel.current) break;
+      const j = jobs[i];
+      const partSfx = j.parts > 1 ? ` · ${j.part}` : "";
+      setBookPctTitle(`${j.label}${partSfx} · ${i + 1} из ${jobs.length}`);
+      const ac = new AbortController();
+      pdfAbort.current = ac;
+      const killer = setTimeout(() => ac.abort(), 200000);
+      try {
+        await downloadServerPdf(
+          `/pdf?kind=lila&work=${encodeURIComponent(book.work)}&lila=${j.slug}&from=${encodeURIComponent(j.from)}&to=${encodeURIComponent(j.to)}`,
+          `${bookShareTitle(book)}. ${j.label}${partSfx}.pdf`,
+          { onStatus: flash, onProgress: prog, signal: ac.signal },
+        );
+      } finally { clearTimeout(killer); }
     }
     active = false;
+    pdfAbort.current = null;
     setBookPct(0);
+    setPdfHidden(false);
     setBookPctTitle("Готовлю PDF книги");
   };
+  const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
 
   const shareBook = async () => {
     const url = typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`;
@@ -1509,17 +1566,25 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       </div>
 
       <Toast msg={toast} />
-      {bookPct > 0 && (
+      {bookPct > 0 && !pdfHidden && (
         <div style={{ position: "fixed", inset: 0, zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
-          <div style={{ width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>{bookPctTitle}</div>
-            <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1–2 минуты</div>
+          <div style={{ position: "relative", width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 18px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
+            <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024", padding: "0 16px" }}>{bookPctTitle}</div>
+            <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1-2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
+            <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
           </div>
         </div>
+      )}
+      {bookPct > 0 && pdfHidden && (
+        <button type="button" onClick={() => setPdfHidden(false)} style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: "calc(84px + env(safe-area-inset-bottom))", zIndex: 3000, display: "flex", alignItems: "center", gap: 9, padding: "9px 14px", borderRadius: 999, border: "none", background: "#1d1d1f", color: "#fff", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,0.3)", cursor: "pointer", maxWidth: "86vw", WebkitTapHighlightColor: "transparent" }}>
+          <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "#D2AA1B", flexShrink: 0 }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bookPctTitle} · {bookPct}%</span>
+        </button>
       )}
       {openChapter && <ChapterPage chapter={openChapter} bookTitle={book.titleLine1} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={book.titleLine1} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}

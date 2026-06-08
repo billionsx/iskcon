@@ -386,7 +386,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
           <div style={{ width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>Готовлю PDF книги</div>
-            <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1–2 минуты</div>
+            <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1-2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
