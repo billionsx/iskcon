@@ -16,6 +16,8 @@ export interface BookData {
   covers: string[];      // gallery; first = primary cover
   chips: string[];       // factual chips about the text
   hierarchical?: boolean; // multi-part book (lila/canto → chapter), e.g. ЧЧ/ШБ
+  uniformTitle?: boolean; // render titleLine2 at the same size/weight as titleLine1 (целостное название)
+  hideCardIast?: boolean; // don't print the IAST (Latin) title on the card cover
 }
 
 export const BOOKS: Record<string, BookData> = {
@@ -54,7 +56,7 @@ export const BOOKS: Record<string, BookData> = {
     author:
       "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
     description:
-      "Авторитетное жизнеописание и учение Шри Чайтаньи Махапрабху — золотого воплощения Господа: сокровенная вершина науки преданного служения, продолжение «Бхагавад-гиты».",
+      "Жизнь и учение Шри Чайтаньи Махапрабху — золотого воплощения Господа, явившего миру совместное пение святых имён.",
     publisher: "bbt",
     covers: [
       "/covers/cc-001.png?v=1",
@@ -80,6 +82,8 @@ export const BOOKS: Record<string, BookData> = {
     ],
     chips: ["3 лилы", "62 главы", "11 000+ стихов"],
     hierarchical: true,
+    uniformTitle: true,
+    hideCardIast: true,
   },
 };
 
@@ -89,7 +93,7 @@ export const BOOKS: Record<string, BookData> = {
  * Single source — used by the client share action and by the edge OG injector.
  */
 export function bookShareTitle(b: BookData): string {
-  const name = b.titleLine2 ? `${b.titleLine1} ${b.titleLine2}` : b.titleLine1;
+  const name = b.titleLine2 ? `${b.titleLine1}${b.titleLine1.endsWith("-") ? "" : " "}${b.titleLine2}` : b.titleLine1;
   return `${name}. ISKCON ONE LOVE. ИСККОН.`;
 }
 
