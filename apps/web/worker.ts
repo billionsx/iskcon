@@ -192,11 +192,14 @@ interface IaFile { name: string; source?: string; format?: string; length?: stri
 interface AudioTrack {
   kind: "intro" | "chapter";
   pos: number;            // 0-based position within this mode's playlist
-  chapter: number | null; // chapter number (1–18), or null for intros
+  chapter: number | null; // chapter number, or null for intros
   title: string;
   file: string;
   url: string;            // same-origin proxy URL
   durationSec: number | null;
+  lila?: string;          // CC only: adi|madhya|antya
+  lilaLabel?: string;     // CC only: «Ади-лила»
+  part?: number | null;   // CC only: part index when a chapter is split (else null)
 }
 
 function audioDuration(len?: string): number | null {
@@ -274,6 +277,70 @@ async function audioManifest(env: Env, origin: string): Promise<Response> {
       commentary: { identifier: AUDIO_ITEMS.commentary, tracks: commentary },
     },
   });
+}
+
+// ── Чайтанья-чаритамрита: три IA-элемента по лилам (без комментариев пока) ──
+// Файлы: «NN.CC.<Lila>-lila.mp3» (глава) или «NN.PP.CC.<Lila>-lila.mp3» (часть главы).
+const CC_AUDIO_LILAS: { lila: string; label: string; identifier: string }[] = [
+  { lila: "adi", label: "Ади-лила", identifier: "iskcone-cc-adi" },
+  { lila: "madhya", label: "Мадхья-лила", identifier: "iskcone-cc-madhya" },
+  { lila: "antya", label: "Антья-лила", identifier: "iskcone-cc-antya" },
+];
+
+async function ccLilaTracks(
+  identifier: string, origin: string, lila: string, lilaLabel: string, titles: Map<number, string>,
+): Promise<AudioTrack[]> {
+  const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
+    headers: { accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!meta.ok) return [];
+  const data = (await meta.json()) as { files?: IaFile[] };
+  const originals = (data.files || []).filter((f) => f.source === "original" && /\.mp3$/i.test(f.name));
+  const rows: { chapter: number; part: number; t: AudioTrack }[] = [];
+  for (const f of originals) {
+    const stem = f.name.replace(/\.mp3$/i, "");
+    const m = stem.match(/^(\d{1,3})(?:\.(\d{1,3}))?\.CC\./i); // NN[.PP].CC.<Lila>-lila
+    if (!m) continue;
+    const chapter = parseInt(m[1], 10);
+    const part = m[2] ? parseInt(m[2], 10) : null;
+    const base = titles.get(chapter) || `Глава ${chapter}`;
+    rows.push({
+      chapter, part: part ?? 0,
+      t: {
+        kind: "chapter", pos: 0, chapter,
+        title: part ? `${base} — часть ${part}` : base,
+        file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
+        durationSec: audioDuration(f.length), lila, lilaLabel, part,
+      },
+    });
+  }
+  rows.sort((a, b) => (a.chapter - b.chapter) || (a.part - b.part));
+  return rows.map((r) => r.t);
+}
+
+async function ccAudioManifest(env: Env, origin: string): Promise<Response> {
+  // Заголовки глав — из D1 (divisions id = cc.<lila>.<n>), единый источник структуры.
+  const { results } = await env.DB.prepare(
+    `SELECT id, CAST(number AS INTEGER) AS n, json_extract(title,'$.ru') AS title_ru
+     FROM divisions WHERE work_id='cc' AND level='chapter'`
+  ).all<{ id: string; n: number; title_ru: string }>();
+  const byLila = new Map<string, Map<number, string>>();
+  for (const r of results) {
+    const lila = String(r.id).split(".")[1]; // cc.<lila>.<n>
+    if (!byLila.has(lila)) byLila.set(lila, new Map());
+    byLila.get(lila)!.set(r.n, r.title_ru);
+  }
+  const lilas: { lila: string; label: string; identifier: string; tracks: AudioTrack[] }[] = [];
+  let flat: AudioTrack[] = [];
+  for (const L of CC_AUDIO_LILAS) {
+    const tracks = await ccLilaTracks(L.identifier, origin, L.lila, L.label, byLila.get(L.lila) || new Map());
+    lilas.push({ lila: L.lila, label: L.label, identifier: L.identifier, tracks });
+    flat = flat.concat(tracks);
+  }
+  flat.forEach((t, i) => (t.pos = i));
+  // Та же форма, что у БГ (modes.plain.tracks) + группировка по лилам для UI. Комментариев пока нет.
+  return json({ book: "cc", lilas, modes: { plain: { identifier: CC_AUDIO_LILAS[0].identifier, tracks: flat } } });
 }
 
 // Stream one file from IA, forwarding Range (for seeking) and stamping an immutable cache.
@@ -448,9 +515,12 @@ export default {
       return json({ work: "bg", chapters: results });
     }
 
-    // GET /api/books/bg/audio → ordered audio playlist (plain + commentary), built live from IA
+    // GET /api/books/:work/audio → ordered audio playlist, built live from IA
     if (url.pathname === "/api/books/bg/audio") {
       return audioManifest(env, url.origin);
+    }
+    if (url.pathname === "/api/books/cc/audio") {
+      return ccAudioManifest(env, url.origin);
     }
 
     // GET /api/books/bg/chapters/:n/verses → verse refs + source_url for a chapter
