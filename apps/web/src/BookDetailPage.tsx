@@ -18,6 +18,7 @@ import { BookHeroCard } from "./BookHeroCard";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
+import { downloadCcBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 
@@ -1603,54 +1604,17 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     }
   };
 
-  // ЧЧ: книга слишком велика для одного PDF (11k стихов кладут рендер по таймауту).
-  // Тянем оглавление, режем каждую лилу по числу стихов (≤ порога) на части и качаем
-  // серверным рендером последовательно, с прогрессом, отменой и сворачиванием.
-  const CC_CHUNK_VERSES = 3300; // безопасный размер части (Ади ≈2200 рендерится штатно)
+  // ЧЧ: книга слишком велика для одного PDF — несколько файлов по лилам (большие
+  // режутся по объёму), серверный рендер с клиентским запасным путём. Единый
+  // источник с лентой (ВКП) — см. downloadCcBookPdf.
   const downloadCcBook = async () => {
-    let toc: { divisions?: Array<{ id: string; chapters: Array<{ number: string; verses: number }> }> };
-    try {
-      toc = await (await fetch(api(`/books/${book.work}/toc`))).json();
-    } catch { flash("Не удалось загрузить оглавление"); return; }
-    type Job = { slug: string; label: string; from: string; to: string; part: number; parts: number };
-    const jobs: Job[] = [];
-    for (const d of toc.divisions ?? []) {
-      const slug = d.id.split(".")[1] ?? "";
-      const label = ccLilaLabel(slug);
-      const chs = d.chapters ?? [];
-      const total = chs.reduce((a, c) => a + (Number(c.verses) || 0), 0);
-      const parts = Math.max(1, Math.ceil(total / CC_CHUNK_VERSES));
-      const target = total / parts;
-      let cur: typeof chs = [], curV = 0, made = 0;
-      const flush = () => { if (cur.length) { made++; jobs.push({ slug, label, from: cur[0].number, to: cur[cur.length - 1].number, part: made, parts }); cur = []; curV = 0; } };
-      for (const c of chs) { cur.push(c); curV += Number(c.verses) || 0; if (made < parts - 1 && curV >= target) flush(); }
-      flush();
-    }
-    pdfCancel.current = false;
     setPdfHidden(false);
-    let active = true;
-    const prog = (p: number) => { if (active && !pdfCancel.current) setBookPct(p <= 0 ? 1 : p); };
-    for (let i = 0; i < jobs.length; i++) {
-      if (pdfCancel.current) break;
-      const j = jobs[i];
-      const partSfx = j.parts > 1 ? ` · ${j.part}` : "";
-      setBookPctTitle(`${j.label}${partSfx} · ${i + 1} из ${jobs.length}`);
-      const ac = new AbortController();
-      pdfAbort.current = ac;
-      const killer = setTimeout(() => ac.abort(), 200000);
-      try {
-        await downloadServerPdf(
-          `/pdf?kind=lila&work=${encodeURIComponent(book.work)}&lila=${j.slug}&from=${encodeURIComponent(j.from)}&to=${encodeURIComponent(j.to)}`,
-          `${bookShareTitle(book)}. ${j.label}${partSfx}.pdf`,
-          { onStatus: flash, onProgress: prog, signal: ac.signal },
-        );
-      } finally { clearTimeout(killer); }
-    }
-    active = false;
-    pdfAbort.current = null;
-    setBookPct(0);
+    await downloadCcBookPdf({
+      work: book.work, book, bookTitle: bookShareTitle(book),
+      onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle,
+      cancelRef: pdfCancel, abortRef: pdfAbort,
+    });
     setPdfHidden(false);
-    setBookPctTitle("Готовлю PDF книги");
   };
   const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
 

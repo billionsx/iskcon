@@ -8,9 +8,9 @@ import { useState, useRef, useEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { DonateModal } from "./DonateModal";
-import { BOOKS } from "./books";
+import { BOOKS, bookShareTitle } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
-import { exportWholeBook } from "./bookPdf";
+import { exportWholeBook, downloadCcBookPdf } from "./bookPdf";
 import { downloadServerPdf } from "./pdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -325,6 +325,10 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [bookPct, setBookPct] = useState(0);
+  const [bookPctTitle, setBookPctTitle] = useState("Готовлю PDF книги");
+  const [pdfHidden, setPdfHidden] = useState(false);
+  const pdfCancel = useRef(false);
+  const pdfAbort = useRef<AbortController | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => {
@@ -332,6 +336,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(null), 2400);
   };
+  const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader />
@@ -364,7 +369,15 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                     else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                     return;
                   }
-                  if (id === "pdf") { flash("PDF Чайтанья-чаритамриты готовится"); return; }
+                  if (id === "pdf") {
+                    setPdfHidden(false);
+                    void downloadCcBookPdf({
+                      work: BOOKS.cc.work, book: BOOKS.cc, bookTitle: bookShareTitle(BOOKS.cc),
+                      onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle,
+                      cancelRef: pdfCancel, abortRef: pdfAbort,
+                    });
+                    return;
+                  }
                   if (id === "qr") { setQr({ url: "https://gaurangers.com/book/cc", data: { kind: "book", bookTitle: BOOKS.cc.titleLine1, bookSubtitle: BOOKS.cc.titleLine2, tagline: BOOKS.cc.tagline, cover: BOOKS.cc.covers[0] } }); return; }
                   if (id === "donate") { onDonate(); return; }
                   if (id === "report") { setReportOpen(true); return; }
@@ -397,17 +410,25 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Главная · ${BOOKS.bg.titleLine1}`} />
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 90, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(31,32,36,0.95)", color: "#fff", padding: "10px 16px", borderRadius: 12, fontSize: 13.5, fontFamily: "var(--font-text)", boxShadow: "0 8px 30px rgba(0,0,0,0.25)", maxWidth: "86%", textAlign: "center" }}>{toast}</div>}
-      {bookPct > 0 && (
+      {bookPct > 0 && !pdfHidden && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
-          <div style={{ width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024" }}>Готовлю PDF книги</div>
+          <div style={{ position: "relative", width: 280, maxWidth: "82%", background: "#fff", borderRadius: 18, padding: "22px 22px 18px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
+            <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#1f2024", padding: "0 16px" }}>{bookPctTitle}</div>
             <div style={{ fontSize: 12.5, color: "#70727b", marginTop: 4 }}>Это может занять 1-2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
+            <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
           </div>
         </div>
+      )}
+      {bookPct > 0 && pdfHidden && (
+        <button type="button" onClick={() => setPdfHidden(false)} style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: "calc(84px + env(safe-area-inset-bottom))", zIndex: 1200, display: "flex", alignItems: "center", gap: 9, padding: "9px 14px", borderRadius: 999, border: "none", background: "#1d1d1f", color: "#fff", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,0.3)", cursor: "pointer", maxWidth: "86vw", WebkitTapHighlightColor: "transparent" }}>
+          <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "#D2AA1B", flexShrink: 0 }} />
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bookPctTitle} · {bookPct}%</span>
+        </button>
       )}
     </div>
   );
