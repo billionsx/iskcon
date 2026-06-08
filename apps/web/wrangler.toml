@@ -20,6 +20,13 @@ run_worker_first = true
 [browser]
 binding = "BROWSER"
 
+# Отправка писем об ошибках через Cloudflare Email Routing (нативно, без сторонних
+# сервисов). destination_address должен быть подтверждён в Email Routing →
+# Destination addresses, а Email Routing включён на домене-отправителе gaurangers.com.
+send_email = [
+  { name = "SEB", destination_address = "support@billionsx.com" }
+]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "iskcon"
