@@ -1,0 +1,83 @@
+name: iskcone SB verify (D1 layer coverage per canto)
+
+# Только читает D1 и считает покрытие слоёв по каждой из 12 песней ШБ:
+# стихи · деванагари · транслитерация · пословный · перевод · комментарий · главы.
+# Пишет .sb-ingest/verify.json (читаемо снаружи) + строку в deploy_checks. Без vedabase.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify SB coverage from D1
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def rows(sql):
+              body=json.dumps({"sql":sql}).encode()
+              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=90) as r:
+                  j=json.loads(r.read().decode())
+                  if not j.get("success"): raise RuntimeError(str(j)[:300])
+                  return j["result"][0]["results"]
+
+          canto_expr=("CAST(substr(substr(v.division_id,4),1,instr(substr(v.division_id,4),'.')-1) AS INTEGER)")
+          layers=rows(
+              f"SELECT {canto_expr} AS canto, COUNT(*) AS verses,"
+              "SUM(CASE WHEN length(COALESCE(v.devanagari,''))>0 THEN 1 ELSE 0 END) AS deva,"
+              "SUM(CASE WHEN length(COALESCE(v.translit,''))>0 THEN 1 ELSE 0 END) AS translit,"
+              "SUM(CASE WHEN EXISTS(SELECT 1 FROM verse_tokens t WHERE t.verse_id=v.id) THEN 1 ELSE 0 END) AS tokens,"
+              "SUM(CASE WHEN EXISTS(SELECT 1 FROM verse_texts x WHERE x.verse_id=v.id AND length(COALESCE(x.translation,''))>0) THEN 1 ELSE 0 END) AS translation,"
+              "SUM(CASE WHEN EXISTS(SELECT 1 FROM verse_texts x WHERE x.verse_id=v.id AND length(COALESCE(x.purport,''))>0) THEN 1 ELSE 0 END) AS purport "
+              "FROM verses v WHERE v.work_id='sb' GROUP BY canto ORDER BY canto")
+          chs=rows("SELECT CAST(number AS INTEGER) AS dummy, COUNT(*) AS n, "
+                   "CAST(substr(substr(id,4),1,instr(substr(id,4),'.')-1) AS INTEGER) AS canto "
+                   "FROM divisions WHERE work_id='sb' AND level='chapter' GROUP BY canto ORDER BY canto")
+          chmap={r["canto"]: r["n"] for r in chs}
+          EXP={1:19,2:10,3:33,4:31,5:26,6:19,7:15,8:24,9:24,10:90,11:31,12:13}
+
+          report={"per_canto":[], "expected_chapters":EXP}
+          gt=dict(verses=0,deva=0,translit=0,tokens=0,translation=0,purport=0,chapters=0)
+          print("Песнь | главы(есть/ожид) | стихи | deva | translit | пословный | перевод | комментарий")
+          for c in range(1,13):
+              row=next((r for r in layers if r["canto"]==c), None)
+              v=row or {}
+              rec={"canto":c,"chapters":chmap.get(c,0),"expected_chapters":EXP[c],
+                   "verses":v.get("verses",0) or 0,"deva":v.get("deva",0) or 0,"translit":v.get("translit",0) or 0,
+                   "tokens":v.get("tokens",0) or 0,"translation":v.get("translation",0) or 0,"purport":v.get("purport",0) or 0}
+              report["per_canto"].append(rec)
+              for k in gt: gt[k]+= rec.get(k if k!="chapters" else "chapters",0)
+              print(f"{c:>5} | {rec['chapters']:>2}/{EXP[c]:<2} | {rec['verses']:>5} | {rec['deva']:>4} | {rec['translit']:>5} | {rec['tokens']:>5} | {rec['translation']:>5} | {rec['purport']:>5}")
+          report["totals"]=gt
+          report["expected_chapters_total"]=sum(EXP.values())
+          print("Σ", json.dumps(gt, ensure_ascii=False), "ожидалось глав:", sum(EXP.values()))
+
+          os.makedirs(".sb-ingest", exist_ok=True)
+          json.dump(report, open(".sb-ingest/verify.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          body=(f"verses={gt['verses']} deva={gt['deva']} translit={gt['translit']} tokens={gt['tokens']} "
+                f"transl={gt['translation']} purport={gt['purport']} chapters={gt['chapters']}/{sum(EXP.values())}")
+          rows("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'iskcone sb verify',"
+               +str(gt['verses'])+",'"+body.replace("'","''")+"')")
+          PY
+      - name: Commit verify report
+        if: always()
+        run: |
+          git config user.email "ceo@billionsx.com"
+          git config user.name "Billions X"
+          git add .sb-ingest/verify.json 2>/dev/null || true
+          git commit -m "chore(sb-verify): per-canto coverage [skip ci]" 2>/dev/null || { echo "nothing"; exit 0; }
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main 2>/dev/null || true
+            if git push origin main 2>/dev/null; then echo "pushed"; break; fi
+            sleep $((RANDOM % 5 + 2))
+          done
