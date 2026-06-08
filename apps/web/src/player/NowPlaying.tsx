@@ -120,8 +120,9 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
           <div style={{ width: 38, height: 5, borderRadius: 999, background: "rgba(255,255,255,0.5)", margin: "0 auto 8px" }} />
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
-            <div style={{ flex: 1, minWidth: 0, textAlign: "center", fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s" }}>
-              {BOOKS.bg?.titleLine1}
+            <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
+              <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{sub} · {BOOKS.bg?.titleLine1}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
@@ -154,7 +155,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (chapter?: n
         {/* pinned controls (Liquid Glass) */}
         <div style={{ flexShrink: 0, padding: "12px 20px calc(env(safe-area-inset-bottom) + 12px)", borderTop: "0.5px solid rgba(255,255,255,0.10)",
           background: "rgba(16,16,18,0.62)", backdropFilter: "blur(30px) saturate(160%)", WebkitBackdropFilter: "blur(30px) saturate(160%)" }}>
-          <div style={{ minWidth: 0 }}>
+          <div style={{ minWidth: 0, maxHeight: collapsed ? 0 : 56, opacity: collapsed ? 0 : 1, overflow: "hidden", transition: "max-height .28s ease, opacity .18s ease" }}>
             <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
             <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{sub}{p.loading ? " · загрузка…" : ""}</div>
           </div>
