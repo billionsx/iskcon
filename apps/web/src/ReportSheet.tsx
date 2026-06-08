@@ -87,9 +87,16 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
       let delivered = false;
       try { const j = await res.json(); delivered = !!(j && (j.delivered ?? j.emailed)); } catch { /* ignore */ }
       if (!res.ok) throw new Error("bad status");
-      if (!delivered) openMailFallback(); // не доставлено сервером — отдадим через почтовый клиент
-      setState("done");
-      window.setTimeout(onClose, 1700);
+      if (delivered) {
+        // Сервер доставил отчёт сам (почта на iskcone.com / Resend) — показываем «Спасибо».
+        setState("done");
+        window.setTimeout(onClose, 1700);
+      } else {
+        // Сервера-отправки пока нет: отчёт уже сохранён, открываем готовое письмо
+        // на support@billionsx.com и закрываем лист — дальше пользователь жмёт «Отправить».
+        openMailFallback();
+        onClose();
+      }
     } catch {
       setState("error");
     }
