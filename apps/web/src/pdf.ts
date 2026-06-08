@@ -134,12 +134,13 @@ export function exportToPdf(
 export async function downloadServerPdf(
   path: string,
   filename: string,
-  opts?: { onStatus?: (m: string) => void; onProgress?: (pct: number) => void; fallback?: () => void },
+  opts?: { onStatus?: (m: string) => void; onProgress?: (pct: number) => void; fallback?: () => void; signal?: AbortSignal },
 ): Promise<void> {
   if (typeof window === "undefined") return;
   const onStatus = opts?.onStatus;
   const onProgress = opts?.onProgress;
   const fallback = opts?.fallback;
+  const signal = opts?.signal;
   onStatus?.("Готовлю PDF…");
   // Оценочный прогресс: сервер отдаёт готовый PDF целиком (книга ≈ 1100 страниц
   // рендерится ~1–2 мин), поэтому показываем плавно растущий процент для уверенности,
@@ -155,7 +156,7 @@ export async function downloadServerPdf(
     }, 400);
   }
   try {
-    const res = await fetch(path, { headers: { accept: "application/pdf" } });
+    const res = await fetch(path, { headers: { accept: "application/pdf" }, signal });
     if (!res.ok) throw new Error("status " + res.status);
     const blob = await res.blob();
     if (!blob.size) throw new Error("empty");
@@ -174,6 +175,7 @@ export async function downloadServerPdf(
     if (onProgress) setTimeout(() => onProgress(0), 800);
   } catch {
     if (timer) clearInterval(timer);
+    if (signal?.aborted) { onProgress?.(0); return; }
     onProgress?.(0);
     if (fallback) { onStatus?.("Готовлю PDF в браузере…"); fallback(); }
     else onStatus?.("Не удалось сформировать PDF");

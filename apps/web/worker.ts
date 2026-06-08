@@ -47,27 +47,37 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   const kind = url.searchParams.get("kind");
   const work = url.searchParams.get("work") || "bg";
   const lila = url.searchParams.get("lila") || "";
+  const from = url.searchParams.get("from") || "";
+  const to = url.searchParams.get("to") || "";
+  const div = url.searchParams.get("div") || "";
   const n = url.searchParams.get("n") || "";
   const ref = url.searchParams.get("ref") || "";
+  const ccLilaName = (s: string) => s === "adi" ? "Ади-лила" : s === "madhya" ? "Мадхья-лила" : s === "antya" ? "Антья-лила" : s;
   let printPath: string;
   let filename: string;
   if (kind === "book") {
     printPath = "/?pdf=book";
     filename = "Бхагавад-гита как она есть.pdf";
   } else if (kind === "lila" && lila) {
-    printPath = `/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}`;
-    const lilaName = lila === "adi" ? "Ади-лила" : lila === "madhya" ? "Мадхья-лила" : lila === "antya" ? "Антья-лила" : lila;
+    printPath = `/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}${from ? `&from=${encodeURIComponent(from)}` : ""}${to ? `&to=${encodeURIComponent(to)}` : ""}`;
     const bookName = work === "cc" ? "Шри Чайтанья-чаритамрита" : "Книга";
-    filename = `${bookName}. ${lilaName}.pdf`;
+    filename = `${bookName}. ${ccLilaName(lila)}.pdf`;
+  } else if (kind === "chapter" && div) {
+    // ЧЧ: глава по division id (cc.<lila>.<n>)
+    printPath = `/?pdf=chapter&work=${encodeURIComponent(work)}&div=${encodeURIComponent(div)}`;
+    const parts = div.split(".");
+    filename = `Шри Чайтанья-чаритамрита. ${ccLilaName(parts[1] ?? "")}. Глава ${parts[2] ?? ""}.pdf`;
   } else if (kind === "chapter" && n) {
     printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
     filename = `Бхагавад-гита как она есть. Глава ${n}.pdf`;
   } else if (kind === "verse" && ref) {
-    printPath = `/?pdf=verse&ref=${encodeURIComponent(ref)}`;
+    printPath = `/?pdf=verse&work=${encodeURIComponent(work)}&ref=${encodeURIComponent(ref)}`;
     const rd = ref.replace(/^[^\d]*/, "");
     const vch = rd.split(".")[0];
     const vseg = rd.includes(".") ? rd.slice(rd.indexOf(".") + 1) : "";
-    filename = `Бхагавад-гита как она есть. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`;
+    filename = work === "cc"
+      ? `Шри Чайтанья-чаритамрита. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`
+      : `Бхагавад-гита как она есть. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`;
   } else {
     return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
   }
@@ -77,12 +87,12 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   try {
     browser = await puppeteer.launch(env.BROWSER);
     const page = await browser.newPage();
-    await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: 2 });
+    await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: (kind === "book" || kind === "lila") ? 1 : 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
     try {
       // Книга/лила тяжёлые (вся «Гита» ≈ 1100 стр.; лилы ЧЧ — сотни страниц) —
       // даём дорисоваться; по таймауту печатаем что успело отрисоваться.
-      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : kind === "lila" ? 200000 : 45000 });
+      await page.waitForFunction("window.__pdfReady === true", { timeout: kind === "book" ? 110000 : kind === "lila" ? 150000 : 45000 });
     } catch {
       /* отрисовка затянулась — печатаем что отрисовалось */
     }
