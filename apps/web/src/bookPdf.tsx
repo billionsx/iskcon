@@ -221,7 +221,7 @@ export async function exportProseBook(book: BookData, onStatus?: (m: string) => 
  * запросу + edge-кэш).
  */
 type ManFile = { label: string; file: string; name: string };
-type Manifest = Record<string, { hierarchical: boolean; files: ManFile[] }>;
+type Manifest = Record<string, { hierarchical: boolean; files: ManFile[]; sig?: string }>;
 let _manifestCache: Manifest | null | undefined;
 async function loadManifest(): Promise<Manifest | null> {
   if (_manifestCache !== undefined) return _manifestCache;
@@ -250,7 +250,10 @@ async function tryStaticBookPdf(opts: {
       const f = files[i];
       opts.onTitle?.(N > 1 ? `${f.label}\u00A0·\u00A0${i + 1}\u00A0из\u00A0${N}` : "Скачиваю PDF книги");
       opts.onProgress?.(Math.max(1, Math.round((i / N) * 100)));
-      const resp = await fetch(f.file, { cache: "force-cache" });
+      // версия в URL = sig книги: после регенерации URL меняется → браузер
+      // тянет свежий файл, а не отдаёт ранее скачанный из HTTP-кэша (force-cache).
+      const url = entry.sig ? `${f.file}${f.file.includes("?") ? "&" : "?"}v=${encodeURIComponent(entry.sig)}` : f.file;
+      const resp = await fetch(url, { cache: "force-cache" });
       if (!resp.ok) throw new Error(`файл ${f.file}: ${resp.status}`);
       savePdfBytes(new Uint8Array(await resp.arrayBuffer()), f.name);
       opts.onProgress?.(Math.round(((i + 1) / N) * 100));
