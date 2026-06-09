@@ -7,7 +7,7 @@
  * Палитра фиксированная (white/graphite/gold), не зависит от темы ОС.
  * Данные книги — books.ts; стихи — API (/chapters/:n/read, /verses/:ref).
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
@@ -136,6 +136,40 @@ function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: Book
               style={{ position: "relative", flexShrink: 0, padding: "13px 18px", fontSize: 15, background: "none", border: "none", cursor: "pointer", color: on ? INK : INK2, fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0, transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
               {t.label}
               {on && <span aria-hidden style={{ position: "absolute", insetInline: 14, bottom: 0, height: 2, borderRadius: 999, background: GOLD }} />}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+/* ───────── суб-табы (Tier-3 «Подраздел») — для перехода по песням ШБ / лилам ЧЧ ─────────
+ * Идиома из apartsales (SectionSubTabs): отдельный уровень навигации от Tier-1 (золотая
+ * рейка) — здесь рейка ЧЕРНИЛЬНАЯ (INK), кегль 13; глаз не путает уровни по цвету рейки,
+ * а не по кеглю. Горизонтальная лента с автоцентровкой активного, sticky вплотную под
+ * BookTabs. Лечит «листать всё окно до нужной песни»: тап по «Песнь 7» → её главы сразу. */
+interface SubTabDef { id: string; label: string }
+function SectionSubTabs({ items, active, onChange, top, navRef }: { items: SubTabDef[]; active: string; onChange: (id: string) => void; top: number; navRef?: (el: HTMLElement | null) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  // Автоскролл активного подраздела — СТРОГО по горизонтали (не дёргаем вертикаль <main>).
+  useEffect(() => {
+    const el = itemRefs.current[active]; const c = containerRef.current;
+    if (!el || !c) return;
+    const target = el.offsetLeft - (c.clientWidth - el.clientWidth) / 2;
+    c.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [active]);
+  return (
+    <nav ref={navRef} data-pdf-no-print aria-label="Части книги" style={{ position: "sticky", top, zIndex: 15, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${LINE}` }}>
+      <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+        {items.map((it) => {
+          const on = it.id === active;
+          return (
+            <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
+              style={{ position: "relative", flexShrink: 0, padding: "11px 14px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: on ? INK : INK2, fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
+              {it.label}
+              {on && <span aria-hidden style={{ position: "absolute", insetInline: 12, bottom: 0, height: 2, borderRadius: 999, background: INK }} />}
             </button>
           );
         })}
@@ -942,27 +976,61 @@ interface CcToc { name: string; divisions: { id: string; slug: string; number: s
 function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch: ChapterRow) => void }) {
   const [toc, setToc] = useState<CcToc | null>(null);
   const [err, setErr] = useState(false);
+  const [activeDiv, setActiveDiv] = useState<string>("");   // активная песнь/лила (id раздела)
+  const [subTop, setSubTop] = useState(96);                  // sticky-офсет суб-табов = TopBar + Tier-1 табы
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const subNavEl = useRef<HTMLElement | null>(null);
+  const ready = useRef(false);                               // не сбрасывать прокрутку на первичной установке
   useEffect(() => {
     let live = true;
-    setToc(null); setErr(false);
+    setToc(null); setErr(false); ready.current = false;
     fetch(api(`/books/${work}/toc`))
       .then((r) => r.json())
-      .then((d) => { if (live) { if (d?.divisions) setToc(d as CcToc); else setErr(true); } })
+      .then((d) => { if (live) { if (d?.divisions) { setToc(d as CcToc); setActiveDiv(d.divisions[0]?.id ?? ""); } else setErr(true); } })
       .catch(() => { if (live) setErr(true); });
     return () => { live = false; };
   }, [work]);
+  // Замер: суб-табы липнут вплотную под Tier-1 табами (без шва, обе панели — одно стекло).
+  useLayoutEffect(() => {
+    const nav = document.querySelector('[aria-label="Разделы книги"]') as HTMLElement | null;
+    setSubTop(52 + (nav?.offsetHeight ?? 44));
+  }, [toc]);
+  // Смена песни/лилы → вернуть прокрутку к началу списка глав (под липкими табами), если ушли вниз.
+  useEffect(() => {
+    if (!ready.current) { if (activeDiv) ready.current = true; return; }
+    const node = listRef.current; if (!node) return;
+    let sc: HTMLElement | null = node.parentElement;
+    while (sc) { const oy = getComputedStyle(sc).overflowY; if (oy === "auto" || oy === "scroll") break; sc = sc.parentElement; }
+    requestAnimationFrame(() => {
+      if (!listRef.current) return;
+      const stickyBottom = subTop + (subNavEl.current?.offsetHeight ?? 42);
+      const delta = listRef.current.getBoundingClientRect().top - stickyBottom;
+      if (delta < -1) (sc ?? window).scrollBy({ top: delta, behavior: "auto" });
+    });
+  }, [activeDiv]);   // subTop стабилен после загрузки — намеренно не в зависимостях
   const totalCh = toc ? toc.divisions.reduce((a, d) => a + d.chapters.length, 0) : 0;
   const partWord = work === "sb" ? "песней" : "части";
+  const cur = toc?.divisions.find((d) => d.id === activeDiv) ?? null;
   return (
-    <div style={{ padding: "24px 20px 12px" }}>
-      <SectionTitle>{toc ? `${toc.divisions.length} ${partWord} · ${totalCh} глав` : "Содержание"}</SectionTitle>
-      {!toc && !err && <div style={{ fontSize: 15, color: INK2 }}>Загрузка оглавления…</div>}
-      {err && <div style={{ fontSize: 15, color: INK2 }}>Не удалось загрузить оглавление.</div>}
-      {toc && toc.divisions.map((d) => (
-        <section key={d.id} style={{ marginTop: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: "0.2px", color: INK, margin: "4px 0 2px" }}>{d.title_ru}</div>
+    <div style={{ paddingBottom: 12 }}>
+      <div style={{ padding: "24px 20px 6px" }}>
+        <SectionTitle>{toc ? `${toc.divisions.length} ${partWord} · ${totalCh} глав` : "Содержание"}</SectionTitle>
+      </div>
+      {!toc && !err && <div style={{ padding: "0 20px", fontSize: 15, color: INK2 }}>Загрузка оглавления…</div>}
+      {err && <div style={{ padding: "0 20px", fontSize: 15, color: INK2 }}>Не удалось загрузить оглавление.</div>}
+      {toc && toc.divisions.length > 1 && (
+        <SectionSubTabs
+          items={toc.divisions.map((d) => ({ id: d.id, label: d.title_ru || `Часть ${d.number}` }))}
+          active={activeDiv}
+          onChange={setActiveDiv}
+          top={subTop}
+          navRef={(el) => { subNavEl.current = el; }}
+        />
+      )}
+      {cur && (
+        <div ref={listRef} style={{ padding: "10px 20px 0" }}>
           <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
-            {d.chapters.map((c, i) => (
+            {cur.chapters.map((c, i) => (
               <li key={c.id} style={{ position: "relative" }}>
                 <Pressable onClick={() => onOpenChapter({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses })} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
                   <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{c.number}</span>
@@ -972,12 +1040,12 @@ function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch:
                   </span>
                   <span style={{ color: INK3 }}><ChevronIcon size={17} /></span>
                 </Pressable>
-                {i < d.chapters.length - 1 && <span aria-hidden style={{ position: "absolute", left: 38, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
+                {i < cur.chapters.length - 1 && <span aria-hidden style={{ position: "absolute", left: 38, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
               </li>
             ))}
           </ol>
-        </section>
-      ))}
+        </div>
+      )}
     </div>
   );
 }
