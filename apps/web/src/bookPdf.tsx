@@ -102,7 +102,11 @@ export async function downloadCcBookPdf(opts: {
   let toc: { divisions?: CcDiv[] };
   try { toc = await (await fetch(api(`/books/${work}/toc`))).json(); }
   catch { opts.onStatus?.("Не удалось загрузить оглавление"); return; }
-  const CHUNK = 3300;
+  // Размер части ≈ как у «Гиты» (~700 стихов / ~1100 стр.) — это проверенный
+  // потолок Cloudflare Browser Rendering на ОДИН рендер. Крупнее (≈3000 стихов)
+  // headless-браузер падает по памяти → 500 → клиент уходил в печать браузера.
+  // Поэтому большие лилы/песни режем на тома-части, каждая рендерится надёжно.
+  const CHUNK = 700;
   type Job = { slug: string; label: string; from: string; to: string; part: number; parts: number };
   const jobs: Job[] = [];
   for (const d of toc.divisions ?? []) {
