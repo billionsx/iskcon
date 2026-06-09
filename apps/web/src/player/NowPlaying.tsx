@@ -14,7 +14,7 @@ import { QrSheet, type QrData } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS, bookFullTitle } from "../books";
-import { SectionSubTabs, type SubTabDef } from "../SectionSubTabs";
+import { type SubTabDef } from "../SectionSubTabs";
 
 const GOLD = "#D2AA1B";
 const glass = (radius: number): CSSProperties => ({
@@ -165,16 +165,11 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
           <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />
           <div style={{ marginTop: 22 }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 4 : 6, padding: "0 4px" }}>
+            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
               Содержание{p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}
             </div>
-            {hierQueue && (
-              // full-bleed внутри 16px-падинга тела (для sticky-стекла во всю ширину)
-              <div style={{ margin: "0 -16px 2px" }}>
-                <SectionSubTabs tone="dark" items={divisions} active={activeDiv} onChange={setActiveDiv} top={0} ariaLabel="Песни и лилы" />
-              </div>
-            )}
-            <div style={{ paddingTop: hierQueue ? 6 : 0 }}>
+            {hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
+            <div style={{ paddingTop: hierQueue ? 10 : 0 }}>
               {p.tracks.map((t, i) => {
                 // иерархическая книга: показываем только активную песнь/лилу
                 // (вступление без лилы — при активной первой песне/лиле).
@@ -242,6 +237,44 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
       <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" isChapter={isChapter} anchorRef={moreRef} />
+    </div>
+  );
+}
+
+/**
+ * DivisionPills — переключатель песней/лил очереди плеера.
+ * Горизонтально-прокручиваемые сегментные пилюли (идиома iOS-чипов): без липкой
+ * стеклянной полосы поверх картины и без full-bleed-кромки, в потоке контента,
+ * выровнены с эйброу «Содержание». Активная — белая стеклянная заливка (золото
+ * закреплено за действием/прогрессом, не за положением в навигации).
+ * Прокрутка покрывает и 3 лилы ЧЧ, и 12 песней ШБ; активная сама центрируется.
+ */
+function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active: string; onChange: (id: string) => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  useEffect(() => {
+    const el = itemRefs.current[active]; const cont = scrollRef.current;
+    if (!el || !cont) return;
+    const target = el.offsetLeft - (cont.clientWidth - el.clientWidth) / 2;
+    cont.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
+  }, [active]);
+  return (
+    <div ref={scrollRef} role="tablist" aria-label="Песни и лилы"
+      style={{ display: "flex", gap: 8, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", margin: "0 -16px", padding: "0 16px 2px 20px" }}>
+      {items.map((it) => {
+        const on = it.id === active;
+        return (
+          <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" role="tab" aria-selected={on} onClick={() => onChange(it.id)}
+            style={{ flexShrink: 0, padding: "7px 15px", borderRadius: 999,
+              border: `0.5px solid ${on ? "rgba(255,255,255,0.18)" : "transparent"}`,
+              background: on ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.06)",
+              color: on ? "#fff" : "rgba(255,255,255,0.6)",
+              fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
+              cursor: "pointer", fontFamily: "var(--font-text)", transition: "background .18s, color .18s, border-color .18s", WebkitTapHighlightColor: "transparent" }}>
+            {it.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
