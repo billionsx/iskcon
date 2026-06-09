@@ -46,8 +46,8 @@ const WORKS = (process.env.GEN_WORKS || Object.keys(BOOKS).join(",")).split(",")
 // пакуем куски в файлы-тома по РЕАЛЬНОМУ размеру: Cloudflare-ассеты ≤ 25 MiB,
 // поэтому держим каждый файл ≤ SIZE_CAP (с запасом). Так лила 42 МБ режется на
 // несколько томов вместо одного неподъёмного файла.
-const CHUNK_BUDGET = 500;                  // стихов на кусок рендера (мельче → плотнее упаковка томов)
-const SIZE_CAP = 23 * 1024 * 1024;         // потолок размера PDF по СУММЕ кусков; склейка pdf-lib дедуплицирует шрифты → итог ещё меньше (надёжно < 25 MiB)
+const CHUNK_BUDGET = 1000;                 // стихов на кусок рендера
+const SIZE_CAP = 24 * 1024 * 1024;         // потолок ФАКТИЧЕСКОГО размера склеенного PDF (< 25 MiB). Заполняем том до <24 МБ по реально измеренному размеру, а не по сумме кусков.
 // Версия конвейера: входит в подпись книги. Бамп → подпись всех книг меняется →
 // принудительная пересборка ВСЕХ. Для пересборки одной книги — ручной триггер с
 // gen_works=<книга> и force_pdf=true (не трогает остальные).
@@ -145,6 +145,33 @@ async function appendInto(merged: PDFDoc, bytes: Uint8Array): Promise<void> {
   for (const p of await merged.copyPages(doc, doc.getPageIndices())) merged.addPage(p);
 }
 
+// Пакуем куски в тома по ФАКТИЧЕСКОМУ размеру склейки: добавляем кусок, сохраняем,
+// и если реальный размер превысил cap — закрываем предыдущий том (без этого куска)
+// и начинаем новый с него. Так каждый файл гарантированно ≤ cap (учтена дедупликация
+// шрифтов при склейке), а томов получается минимум. Обложка — в начале каждого тома.
+async function packVolumes(cover: Uint8Array | null, chunks: Uint8Array[], cap: number): Promise<Uint8Array[]> {
+  const out: Uint8Array[] = [];
+  const fresh = async () => { const d = await PDFDocument.create(); if (cover) await appendInto(d, cover).catch(() => {}); return d; };
+  let doc = await fresh();
+  let lastGood = await doc.save();
+  let count = 0;
+  for (const cb of chunks) {
+    await appendInto(doc, cb);
+    const bytes = await doc.save();
+    if (bytes.length > cap && count > 0) {
+      out.push(lastGood);                 // предыдущий том — без переполнившего куска
+      doc = await fresh();
+      await appendInto(doc, cb);          // переполнивший кусок — в новый том
+      lastGood = await doc.save();
+      count = 1;
+    } else {
+      lastGood = bytes; count++;
+    }
+  }
+  if (count > 0) out.push(lastGood);
+  return out;
+}
+
 type ManFile = { label: string; file: string; name: string };
 type ManEntry = { hierarchical: boolean; files: ManFile[]; sig: string; generatedAt: string };
 
@@ -191,26 +218,15 @@ async function genBook(page: Page, work: string, sig: string, toc: TocResp | und
         const [f, t] = rg.split("-");
         chunks.push(await renderBody(page, `${ORIGIN}/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(slug)}&from=${encodeURIComponent(f)}&to=${encodeURIComponent(t || f)}&bare=1`, header, footer));
       }
-      // пакуем куски в тома по размеру (каждый файл ≤ SIZE_CAP, обложка на каждом)
-      const coverSize = cover ? cover.length : 0;
-      const vols: Uint8Array[][] = [];
-      let cur: Uint8Array[] = [], curSize = 0;
-      for (const cb of chunks) {
-        if (cur.length && coverSize + curSize + cb.length > SIZE_CAP) { vols.push(cur); cur = []; curSize = 0; }
-        cur.push(cb); curSize += cb.length;
-      }
-      if (cur.length) vols.push(cur);
+      // пакуем в тома по фактическому размеру (каждый файл ≤ SIZE_CAP)
+      const vols = await packVolumes(cover, chunks, SIZE_CAP);
       const K = vols.length;
       for (let vi = 0; vi < K; vi++) {
-        const merged = await PDFDocument.create();
-        if (cover) await appendInto(merged, cover).catch(() => {});
-        for (const cb of vols[vi]) await appendInto(merged, cb);
-        if (merged.getPageCount() === 0) { continue; }
         const fname = K > 1 ? `${work}-${slug}-${vi + 1}.pdf` : `${work}-${slug}.pdf`;
         const vlabel = K > 1 ? `${label} (часть ${vi + 1} из ${K})` : label;
-        fs.writeFileSync(path.join(OUT, fname), await merged.save());
+        fs.writeFileSync(path.join(OUT, fname), vols[vi]);
         files.push({ label: vlabel, file: `/books/${fname}`, name: `${full}. ${vlabel}.pdf` });
-        console.log(`  ✓ ${fname} (${merged.getPageCount()} pages)`);
+        console.log(`  ✓ ${fname} (${(vols[vi].length / 1048576).toFixed(1)} MiB)`);
       }
     }
   } else {
