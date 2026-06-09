@@ -1503,20 +1503,20 @@ function splitEnumerated(text: string): { intro: string; items: string[]; outro:
 function ProseBlock({ text, fontSize, lineHeight, color, top }: { text: string; fontSize: number; lineHeight: number; color: string; top: number }) {
   const en = text ? splitEnumerated(text) : null;
   if (!en) {
-    return <p style={{ margin: 0, marginTop: top, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{text}</p>;
+    return <p style={{ margin: 0, marginTop: top, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{renderTerms(text)}</p>;
   }
   return (
     <div style={{ marginTop: top }}>
-      {en.intro && <p style={{ margin: 0, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{en.intro}</p>}
+      {en.intro && <p style={{ margin: 0, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{renderTerms(en.intro)}</p>}
       <ol style={{ listStyle: "none", margin: en.intro ? "14px 0 0" : 0, padding: 0 }}>
         {en.items.map((it, k) => (
           <li key={k} style={{ display: "flex", gap: 14, marginTop: k === 0 ? 0 : 11, alignItems: "baseline" }}>
             <span style={{ flexShrink: 0, minWidth: "1.7em", textAlign: "right", fontSize: fontSize - 1.5, fontWeight: 700, color: GOLDT, fontVariantNumeric: "tabular-nums", lineHeight }}>{k + 1}.</span>
-            <span style={{ flex: 1, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{it}</span>
+            <span style={{ flex: 1, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{renderTerms(it)}</span>
           </li>
         ))}
       </ol>
-      {en.outro && <p style={{ margin: "14px 0 0", fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{en.outro}</p>}
+      {en.outro && <p style={{ margin: "14px 0 0", fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{renderTerms(en.outro)}</p>}
     </div>
   );
 }
