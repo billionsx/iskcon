@@ -46,8 +46,8 @@ const WORKS = (process.env.GEN_WORKS || Object.keys(BOOKS).join(",")).split(",")
 // пакуем куски в файлы-тома по РЕАЛЬНОМУ размеру: Cloudflare-ассеты ≤ 25 MiB,
 // поэтому держим каждый файл ≤ SIZE_CAP (с запасом). Так лила 42 МБ режется на
 // несколько томов вместо одного неподъёмного файла.
-const CHUNK_BUDGET = 1000;                 // стихов на кусок рендера
-const SIZE_CAP = 24 * 1024 * 1024;         // потолок ФАКТИЧЕСКОГО размера склеенного PDF (< 25 MiB). Заполняем том до <24 МБ по реально измеренному размеру, а не по сумме кусков.
+const CHUNK_BUDGET = 700;                  // стихов на кусок рендера (гранулярность баланса томов)
+const SIZE_CAP = 24 * 1024 * 1024;         // потолок ФАКТИЧЕСКОГО размера склеенного PDF (< 25 MiB)
 // Версия конвейера: входит в подпись книги. Бамп → подпись всех книг меняется →
 // принудительная пересборка ВСЕХ. Для пересборки одной книги — ручной триггер с
 // gen_works=<книга> и force_pdf=true (не трогает остальные).
@@ -145,31 +145,39 @@ async function appendInto(merged: PDFDoc, bytes: Uint8Array): Promise<void> {
   for (const p of await merged.copyPages(doc, doc.getPageIndices())) merged.addPage(p);
 }
 
-// Пакуем куски в тома по ФАКТИЧЕСКОМУ размеру склейки: добавляем кусок, сохраняем,
-// и если реальный размер превысил cap — закрываем предыдущий том (без этого куска)
-// и начинаем новый с него. Так каждый файл гарантированно ≤ cap (учтена дедупликация
-// шрифтов при склейке), а томов получается минимум. Обложка — в начале каждого тома.
+// Пакуем куски в МИНИМУМ томов, каждый ≤ cap по ФАКТИЧЕСКОМУ размеру склейки.
+// Считаем реальный полный размер лилы (склейка всех кусков), берём
+// K = ceil(размер/cap) и раскладываем куски на K сбалансированных
+// последовательных групп. Если из-за неравномерности группа всё же >cap —
+// увеличиваем K и пробуем снова (гарантированно ≤cap). Обложка — в каждом томе.
 async function packVolumes(cover: Uint8Array | null, chunks: Uint8Array[], cap: number): Promise<Uint8Array[]> {
-  const out: Uint8Array[] = [];
-  const fresh = async () => { const d = await PDFDocument.create(); if (cover) await appendInto(d, cover).catch(() => {}); return d; };
-  let doc = await fresh();
-  let lastGood = await doc.save();
-  let count = 0;
-  for (const cb of chunks) {
-    await appendInto(doc, cb);
-    const bytes = await doc.save();
-    if (bytes.length > cap && count > 0) {
-      out.push(lastGood);                 // предыдущий том — без переполнившего куска
-      doc = await fresh();
-      await appendInto(doc, cb);          // переполнивший кусок — в новый том
-      lastGood = await doc.save();
-      count = 1;
-    } else {
-      lastGood = bytes; count++;
+  if (!chunks.length) return [];
+  const build = async (cbs: Uint8Array[]): Promise<Uint8Array> => {
+    const d = await PDFDocument.create();
+    if (cover) await appendInto(d, cover).catch(() => {});
+    for (const cb of cbs) await appendInto(d, cb);
+    return await d.save();
+  };
+  const total = (await build(chunks)).length;
+  const weights = chunks.map((c) => c.length);
+  const sumW = weights.reduce((a, b) => a + b, 0) || 1;
+  const startK = Math.max(1, Math.ceil(total / cap));
+  for (let K = startK; K <= chunks.length; K++) {
+    const groups: Uint8Array[][] = Array.from({ length: K }, () => []);
+    const target = sumW / K;
+    let gi = 0, acc = 0;
+    for (let i = 0; i < chunks.length; i++) {
+      groups[gi].push(chunks[i]); acc += weights[i];
+      if (gi < K - 1 && acc >= target * (gi + 1)) gi++;
     }
+    const nonEmpty = groups.filter((g) => g.length);
+    const built: Uint8Array[] = [];
+    let ok = true;
+    for (const g of nonEmpty) { const b = await build(g); if (b.length > cap && g.length > 1) { ok = false; break; } built.push(b); }
+    if (ok && built.length) return built;
   }
-  if (count > 0) out.push(lastGood);
-  return out;
+  // запас: по одному куску на том (каждый кусок заведомо < cap)
+  return Promise.all(chunks.map((c) => build([c])));
 }
 
 type ManFile = { label: string; file: string; name: string };
