@@ -170,6 +170,14 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     coverVolume = label || ccLilaName(lila);
     coverRange = rangeParam || undefined;
     filename = `${bookFullTitle(book)}. ${coverVolume}. Обложка.pdf`;
+  } else if (kind === "lilamerged" && lila) {
+    // Одна лила = ОДИН файл. Обложка + части (ranges) рендерятся в ОДНОЙ сессии
+    // браузера (ОДИН запуск вместо десятков → не упираемся в rate-limit Cloudflare
+    // «Unable to create new browser: 429») и склеиваются на сервере (pdf-lib).
+    printPath = "";
+    coverVolume = label || ccLilaName(lila);
+    coverRange = rangeParam || undefined;
+    filename = `${bookFullTitle(book)}. ${coverVolume}.pdf`;
   } else if (kind === "chapter" && div) {
     // ЧЧ/ШБ: глава по division id (<work>.<lila>.<n>)
     printPath = `/?pdf=chapter&work=${encodeURIComponent(work)}&div=${encodeURIComponent(div)}`;
@@ -189,7 +197,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   }
   const target = url.origin + printPath;
   const coverOnly = kind === "cover";
-  const wantCover = kind === "book" || (kind === "lila" && !bare) || coverOnly;
+  const wantCover = kind === "book" || (kind === "lila" && !bare) || coverOnly || kind === "lilamerged";
 
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
   try {
@@ -208,6 +216,33 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     if (coverOnly) {
       if (!coverBytes) return new Response("cover render failed", { status: 500, headers: { "X-Robots-Tag": NOINDEX } });
       return new Response(coverBytes, { headers: { "content-type": "application/pdf", "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`, "X-Robots-Tag": NOINDEX, "Cache-Control": "no-store" } });
+    }
+    if (kind === "lilamerged") {
+      // Рендерим части лилы по очереди в ОДНОЙ вкладке (page.goto — без новых
+      // запусков браузера) и склеиваем: обложка + части → один PDF на лилу.
+      const ranges = (url.searchParams.get("ranges") || "").split(",").map((s) => s.trim()).filter(Boolean);
+      const escH = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const headerText = `${bookFullTitle(book)}${coverVolume ? ` · ${coverVolume}` : ""}`;
+      const headerT = `<div style="width:100%;padding:0 16mm;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;"><div style="font-family:Georgia,'Times New Roman',serif;font-size:8px;letter-spacing:1.5px;line-height:1.3;text-transform:uppercase;color:#9a9a9e;">${escH(headerText)}</div></div>`;
+      const footerT = `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;text-align:center;line-height:1.45;color:#8a8a8e;-webkit-print-color-adjust:exact;print-color-adjust:exact;"><div style="font-size:8.5px;letter-spacing:2px;">ISKCON ONE LOVE</div><div style="font-size:8px;letter-spacing:1px;color:#a7a8b0;">iskcone.com</div></div>`;
+      await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: 1 });
+      const merged = await PDFDocument.create();
+      if (coverBytes) {
+        try { const c = await PDFDocument.load(coverBytes); for (const p of await merged.copyPages(c, c.getPageIndices())) merged.addPage(p); }
+        catch { /* обложка не критична */ }
+      }
+      for (const rg of ranges) {
+        const [f, t] = rg.split("-");
+        const sub = `${url.origin}/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}&from=${encodeURIComponent(f)}&to=${encodeURIComponent(t || f)}&bare=1`;
+        await page.goto(sub, { waitUntil: "domcontentloaded", timeout: 60000 });
+        try { await page.waitForFunction("window.__pdfReady === true", { timeout: 150000 }); } catch { /* печатаем что отрисовалось */ }
+        const partPdf = await page.pdf({ format: "A4", printBackground: true, timeout: 220000, displayHeaderFooter: true, headerTemplate: headerT, footerTemplate: footerT, margin: { top: "20mm", bottom: "22mm", left: "18mm", right: "18mm" } });
+        const pd = await PDFDocument.load(partPdf as unknown as Uint8Array);
+        for (const p of await merged.copyPages(pd, pd.getPageIndices())) merged.addPage(p);
+      }
+      if (merged.getPageCount() === 0) return new Response("pdf render failed: empty", { status: 500, headers: { "X-Robots-Tag": NOINDEX } });
+      const out = await merged.save();
+      return new Response(out, { headers: { "content-type": "application/pdf", "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`, "X-Robots-Tag": NOINDEX, "Cache-Control": "no-store" } });
     }
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: (kind === "book" || kind === "lila") ? 1 : 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
