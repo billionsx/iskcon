@@ -2,6 +2,16 @@ name: Deploy Web (Cloudflare)
 
 on:
   workflow_dispatch:
+    inputs:
+      gen_works:
+        description: 'Книги для пре-генерации PDF (через запятую). Напр. bg,cc,brs,sb'
+        required: false
+        default: 'bg,cc,brs'
+      force_pdf:
+        description: 'Пересобрать PDF принудительно (игнорировать кэш-подпись) — после правок текста'
+        type: boolean
+        required: false
+        default: false
   push:
     branches: [main]
     paths:
@@ -21,6 +31,39 @@ jobs:
       - name: Build site
         working-directory: apps/web
         run: bun run build
+      # ── ЗАКОН: пре-генерация PDF всех книг на хостинг ──
+      # PDF собираются здесь локальным Chromium (Playwright) — БЕЗ лимита
+      # Cloudflare Browser Rendering — и едут статикой в dist/books/*.pdf. На сайте
+      # скачивание отдаёт готовый файл (мгновенно, масштаб бесконечный). Шаг НЕ
+      # блокирует деплой: при сбое сайт работает, скачивание падает на запасной
+      # рендер-по-запросу + edge-кэш. Инкрементально: неизменные книги пропускаются.
+      - name: Restore pre-generated PDFs (incremental cache)
+        uses: actions/cache@v4
+        with:
+          path: apps/web/dist/books
+          key: pdf-books-${{ github.run_id }}
+          restore-keys: |
+            pdf-books-
+      - name: Pre-generate book PDFs (static, BBT typesetting)
+        continue-on-error: true
+        timeout-minutes: 40
+        working-directory: apps/web
+        env:
+          GEN_API_ORIGIN: https://gaurangers.com
+          GEN_WORKS: ${{ github.event.inputs.gen_works || 'bg,cc,brs' }}
+          GEN_FORCE: ${{ github.event.inputs.force_pdf == 'true' && '1' || '' }}
+        run: |
+          set +e
+          echo "== шрифты (деванагари для санскрита) =="
+          sudo apt-get update -y >/dev/null 2>&1
+          sudo apt-get install -y --no-install-recommends fonts-noto-core fonts-noto-devanagari fonts-noto-cjk fonts-noto-color-emoji >/dev/null 2>&1 \
+            || sudo apt-get install -y fonts-noto >/dev/null 2>&1 || true
+          echo "== chromium для Playwright =="
+          bunx playwright install --with-deps chromium || bunx playwright install chromium || true
+          echo "== генерация (api -> $GEN_API_ORIGIN, works=$GEN_WORKS) =="
+          bun run genpdf
+          echo "== итог =="
+          ls -la dist/books 2>/dev/null | sed -n '1,60p' || echo "нет dist/books"
       - name: Apply ADMIN_TOKEN secret (before deploy, so it persists into the deployed version)
         working-directory: apps/web
         env:

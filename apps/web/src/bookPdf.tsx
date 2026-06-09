@@ -212,13 +212,67 @@ export async function exportProseBook(book: BookData, onStatus?: (m: string) => 
 }
 
 /**
+ * Пре-генерация на хостинге (ЗАКОН). PDF всех книг/томов собираются в CI с
+ * профессиональной вёрсткой (scripts/genpdf) и лежат статикой в /books/*.pdf,
+ * перечислены в /books/manifest.json. Если для книги есть готовые файлы —
+ * скачиваем ИХ напрямую: мгновенно, без рендера на лету, без лимитов Cloudflare,
+ * масштабируется на любое число пользователей. Если файлов ещё нет (книга не
+ * пере-сгенерирована) — возвращаем false и идём запасным путём (рендер по
+ * запросу + edge-кэш).
+ */
+type ManFile = { label: string; file: string; name: string };
+type Manifest = Record<string, { hierarchical: boolean; files: ManFile[] }>;
+let _manifestCache: Manifest | null | undefined;
+async function loadManifest(): Promise<Manifest | null> {
+  if (_manifestCache !== undefined) return _manifestCache;
+  try {
+    const r = await fetch("/books/manifest.json", { cache: "no-store" });
+    _manifestCache = r.ok ? ((await r.json()) as Manifest) : null;
+  } catch { _manifestCache = null; }
+  return _manifestCache;
+}
+
+async function tryStaticBookPdf(opts: {
+  work: string;
+  onStatus?: (m: string) => void; onProgress?: (p: number) => void; onTitle?: (t: string) => void;
+  cancelRef?: { current: boolean };
+}): Promise<boolean> {
+  const man = await loadManifest();
+  const entry = man?.[opts.work];
+  if (!entry || !entry.files?.length) return false;
+  const files = entry.files;
+  const N = files.length;
+  try {
+    if (opts.cancelRef) opts.cancelRef.current = false;
+    opts.onTitle?.(N > 1 ? "Скачиваю PDF" : "Скачиваю PDF книги");
+    for (let i = 0; i < N; i++) {
+      if (opts.cancelRef?.current) { opts.onProgress?.(0); return true; }
+      const f = files[i];
+      opts.onTitle?.(N > 1 ? `${f.label}\u00A0·\u00A0${i + 1}\u00A0из\u00A0${N}` : "Скачиваю PDF книги");
+      opts.onProgress?.(Math.max(1, Math.round((i / N) * 100)));
+      const resp = await fetch(f.file, { cache: "force-cache" });
+      if (!resp.ok) throw new Error(`файл ${f.file}: ${resp.status}`);
+      savePdfBytes(new Uint8Array(await resp.arrayBuffer()), f.name);
+      opts.onProgress?.(Math.round(((i + 1) / N) * 100));
+      if (i < N - 1) await new Promise((r) => setTimeout(r, 900)); // браузеру — время на скачивание
+    }
+    opts.onProgress?.(0);
+    opts.onStatus?.("Готово");
+    return true;
+  } catch {
+    // частичная неудача статики → пусть отработает запасной серверный путь
+    opts.onProgress?.(0);
+    return false;
+  }
+}
+
+/**
  * ЕДИНЫЙ диспетчер выгрузки книги в PDF (BBT-стандарт, с обложкой) — один путь
- * для всех существующих и новых книг. Структуру берём из BookData:
- *   • hierarchical (ЧЧ, ШБ) → по томам/частям (как BBT издаёт лилы/песни),
- *     каждый файл с обложкой и плашкой тома (см. downloadCcBookPdf);
- *   • prose (Нектар преданности) → один файл, главы прозы;
- *   • иначе (БГ) → один файл со всеми стихами.
- * Обложку прикрепляет воркер (kind=book|lila) — клиентский код книго-независим.
+ * для всех существующих и новых книг.
+ *   1) СТАТИКА: если книга пре-сгенерирована (manifest) — отдаём готовый файл(ы);
+ *   2) иначе рендер по запросу + edge-кэш, по структуре из BookData:
+ *      • hierarchical (ЧЧ, ШБ) → по томам (lilamerged), файл с обложкой и плашкой;
+ *      • prose (Нектар) → один файл прозы; иначе (БГ) → один файл со всеми стихами.
  */
 export async function downloadBookPdf(opts: {
   work: string; book: BookData;
@@ -227,6 +281,9 @@ export async function downloadBookPdf(opts: {
 }): Promise<void> {
   const { work, book } = opts;
   const full = bookFullTitle(book);
+  // (1) Пре-сгенерированная статика — основной путь.
+  if (await tryStaticBookPdf({ work, onStatus: opts.onStatus, onProgress: opts.onProgress, onTitle: opts.onTitle, cancelRef: opts.cancelRef })) return;
+  // (2) Запасной путь — рендер по запросу.
   if (book.hierarchical) {
     await downloadCcBookPdf({
       work, book, bookTitle: full,
