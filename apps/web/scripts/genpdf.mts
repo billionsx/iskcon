@@ -42,7 +42,15 @@ const API_ORIGIN = (process.env.GEN_API_ORIGIN || "https://gaurangers.com").repl
 const PORT = Number(process.env.GEN_PORT || 8791);
 const ORIGIN = `http://127.0.0.1:${PORT}`;
 const WORKS = (process.env.GEN_WORKS || Object.keys(BOOKS).join(",")).split(",").map((s) => s.trim()).filter(Boolean);
-const BUDGET = 2200; // стихов на часть внутри тома (потолок памяти рендерера)
+// Рендерим лилу мелкими кусками (память + гранулярность упаковки), затем
+// пакуем куски в файлы-тома по РЕАЛЬНОМУ размеру: Cloudflare-ассеты ≤ 25 MiB,
+// поэтому держим каждый файл ≤ SIZE_CAP (с запасом). Так лила 42 МБ режется на
+// несколько томов вместо одного неподъёмного файла.
+const CHUNK_BUDGET = 1000;                 // стихов на кусок рендера
+const SIZE_CAP = 20 * 1024 * 1024;         // потолок размера одного PDF-файла (< 25 MiB)
+// Версия конвейера: входит в подпись книги. Бамп → подпись всех книг меняется →
+// принудительная пересборка при изменении логики генерации/нарезки.
+const GEN_VERSION = "2";
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
 const MIME: Record<string, string> = {
@@ -82,9 +90,9 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-function computeRanges(chs: Array<{ number: string; verses: number }>): string[] {
+function computeRanges(chs: Array<{ number: string; verses: number }>, budget: number): string[] {
   const total = chs.reduce((s, c) => s + (Number(c.verses) || 0), 0);
-  const parts = Math.max(1, Math.ceil(total / BUDGET));
+  const parts = Math.max(1, Math.ceil(total / budget));
   const tgt = total / parts;
   const ranges: string[] = [];
   let from = "", last = "", curV = 0, made = 0;
@@ -151,11 +159,11 @@ async function signature(work: string, book: BookData): Promise<{ sig: string; t
   if (book.hierarchical) {
     const toc = await (await fetch(`${ORIGIN}/api/books/${work}/toc`)).json() as TocResp;
     const skel = (toc.divisions ?? []).map((d) => [d.id, (d.chapters ?? []).map((c) => [c.id, c.number, c.verses, c.title_ru])]);
-    return { sig: sha(JSON.stringify(skel)), toc };
+    return { sig: sha(`${GEN_VERSION}|${JSON.stringify(skel)}`), toc };
   }
   const ch = await (await fetch(`${ORIGIN}/api/books/${work}/chapters`)).json() as ChaptersResp;
   const skel = (ch.chapters ?? []).map((c) => [c.id, c.number, c.verses, c.title_ru]);
-  return { sig: sha(JSON.stringify(skel)) };
+  return { sig: sha(`${GEN_VERSION}|${JSON.stringify(skel)}`) };
 }
 
 async function genBook(page: Page, work: string, sig: string, toc: TocResp | undefined): Promise<ManEntry | null> {
@@ -170,24 +178,39 @@ async function genBook(page: Page, work: string, sig: string, toc: TocResp | und
     for (const d of divisions) {
       const slug = d.id.split(".")[1] || d.slug;
       const label = d.title_ru || CC_LILA[slug] || slug;
-      const ranges = computeRanges(d.chapters ?? []);
+      const ranges = computeRanges(d.chapters ?? [], CHUNK_BUDGET);
       if (!ranges.length) continue;
-      console.log(`  ${work}/${slug} (${label}): ${ranges.length} part(s) ${ranges.join(", ")}`);
-      const merged = await PDFDocument.create();
-      const cover = await renderCover(page, book, label);
-      if (cover) await appendInto(merged, cover).catch(() => {});
+      console.log(`  ${work}/${slug} (${label}): ${ranges.length} chunk(s)`);
       const header = headerTpl(`${full} · ${label}`);
       const footer = footerTpl(false);
+      const cover = await renderCover(page, book, label);
+      // рендерим куски в байты
+      const chunks: Uint8Array[] = [];
       for (const rg of ranges) {
         const [f, t] = rg.split("-");
-        const body = await renderBody(page, `${ORIGIN}/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(slug)}&from=${encodeURIComponent(f)}&to=${encodeURIComponent(t || f)}&bare=1`, header, footer);
-        await appendInto(merged, body);
+        chunks.push(await renderBody(page, `${ORIGIN}/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(slug)}&from=${encodeURIComponent(f)}&to=${encodeURIComponent(t || f)}&bare=1`, header, footer));
       }
-      if (merged.getPageCount() === 0) { console.warn(`  ${work}/${slug}: пусто, пропуск`); continue; }
-      const fname = `${work}-${slug}.pdf`;
-      fs.writeFileSync(path.join(OUT, fname), await merged.save());
-      files.push({ label, file: `/books/${fname}`, name: `${full}. ${label}.pdf` });
-      console.log(`  ✓ ${fname} (${merged.getPageCount()} pages)`);
+      // пакуем куски в тома по размеру (каждый файл ≤ SIZE_CAP, обложка на каждом)
+      const coverSize = cover ? cover.length : 0;
+      const vols: Uint8Array[][] = [];
+      let cur: Uint8Array[] = [], curSize = 0;
+      for (const cb of chunks) {
+        if (cur.length && coverSize + curSize + cb.length > SIZE_CAP) { vols.push(cur); cur = []; curSize = 0; }
+        cur.push(cb); curSize += cb.length;
+      }
+      if (cur.length) vols.push(cur);
+      const K = vols.length;
+      for (let vi = 0; vi < K; vi++) {
+        const merged = await PDFDocument.create();
+        if (cover) await appendInto(merged, cover).catch(() => {});
+        for (const cb of vols[vi]) await appendInto(merged, cb);
+        if (merged.getPageCount() === 0) { continue; }
+        const fname = K > 1 ? `${work}-${slug}-${vi + 1}.pdf` : `${work}-${slug}.pdf`;
+        const vlabel = K > 1 ? `${label} (часть ${vi + 1} из ${K})` : label;
+        fs.writeFileSync(path.join(OUT, fname), await merged.save());
+        files.push({ label: vlabel, file: `/books/${fname}`, name: `${full}. ${vlabel}.pdf` });
+        console.log(`  ✓ ${fname} (${merged.getPageCount()} pages)`);
+      }
     }
   } else {
     console.log(`  ${work}: single file`);
@@ -245,6 +268,12 @@ async function main(): Promise<void> {
 
   const out = { ...prev, ...manifest };
   fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(out, null, 2));
+  // чистим устаревшие PDF (не упомянутые в финальном манифесте) — иначе старые
+  // версии файлов (в т.ч. слишком большие) остаются в ассетах и валят деплой
+  const keep = new Set(Object.values(out).flatMap((e) => e.files.map((f) => path.basename(f.file))));
+  for (const f of fs.readdirSync(OUT)) {
+    if (f.endsWith(".pdf") && !keep.has(f)) { try { fs.unlinkSync(path.join(OUT, f)); console.log(`  ⌫ удалён устаревший ${f}`); } catch { /* ignore */ } }
+  }
   console.log(`\nmanifest: ${Object.keys(out).join(", ") || "(пусто)"}`);
 
   await browser.close();
