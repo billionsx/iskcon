@@ -46,11 +46,11 @@ jobs:
             pdf-books-
       - name: Pre-generate book PDFs (static, BBT typesetting)
         continue-on-error: true
-        timeout-minutes: 40
+        timeout-minutes: 55
         working-directory: apps/web
         env:
           GEN_API_ORIGIN: https://gaurangers.com
-          GEN_WORKS: ${{ github.event.inputs.gen_works || 'bg,cc,brs' }}
+          GEN_WORKS: ${{ github.event.inputs.gen_works || 'bg,cc,brs,sb' }}
           GEN_FORCE: ${{ github.event.inputs.force_pdf == 'true' && '1' || '' }}
         run: |
           set +e
