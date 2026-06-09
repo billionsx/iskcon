@@ -19,7 +19,7 @@ import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 import { Skt, renderTerms } from "./ui/Skt";
-import { downloadCcBookPdf } from "./bookPdf";
+import { downloadCcBookPdf, downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 
@@ -1346,6 +1346,61 @@ export function LilaPrint({ book, lilaLabel, range, chapters, versesByCh }: { bo
   );
 }
 
+// Печать прозовой книги целиком (напр. «Нектар преданности»): титульная
+// страница + содержание + главы прозы (каждая с новой страницы). Книго-
+// независима — данные из BookData + переданные главы/абзацы.
+export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chapters: ChapterRow[]; parasByCh: Record<string, ProsePara[]> }) {
+  return (
+    <div>
+      {/* title page */}
+      <div data-pdf-block style={{ textAlign: "center", breakAfter: "page", paddingTop: "30mm" }}>
+        <img src="/iskcon-one-love-mark.svg" alt="ISKCON ONE LOVE" style={{ width: "30mm", height: "auto", display: "block", margin: "0 auto" }} />
+        <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
+          <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
+        </div>
+        <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{book.titleLine1}</h1>
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{book.titleLine2}</div>}
+        <div style={{ marginTop: "7mm", fontSize: 12.5, letterSpacing: "3px", textTransform: "uppercase", color: INK2 }}>{book.tagline}</div>
+        <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
+      </div>
+      {/* table of contents */}
+      <div data-pdf-block style={{ margin: "8px 0 4px" }}>
+        <LayerLabel>Содержание</LayerLabel>
+        <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
+          {chapters.map((c) => {
+            const num = Number(c.number);
+            const showNum = Number.isFinite(num) && num >= 1;
+            return (
+              <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
+                <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{showNum ? c.number : "◆"}</span>
+                <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+      {/* chapters of flowing prose, each from a new page */}
+      {chapters.map((c) => {
+        const num = Number(c.number);
+        const showNum = Number.isFinite(num) && num >= 1;
+        const paras = parasByCh[c.number] ?? [];
+        return (
+          <div key={c.id} style={{ breakBefore: "page" }}>
+            <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
+              {showNum && <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {c.number}</div>}
+              <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{c.title_ru}</h2>
+              <Ornament />
+            </div>
+            {paras.length === 0
+              ? <p style={{ textAlign: "center", color: INK2, fontSize: 15 }}>Текст этой главы готовится.</p>
+              : <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>{paras.map((p, i) => <p key={p.ref || i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{p.translation}</p>)}</div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: ReactNode }) {
   const [pressed, setPressed] = useState(false);
   const off = () => setPressed(false);
@@ -1361,7 +1416,7 @@ function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "n
 }
 
 /* ───────── Прозовый ридер главы (Нектар преданности и др. prose-книги) ───────── */
-interface ProsePara { ref: string; translation: string | null }
+export interface ProsePara { ref: string; translation: string | null }
 function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, onMenuAction, onQr, flash, onOpenChapter }: { chapter: ChapterRow; chapters: ChapterRow[] | null; bookTitle: string; work?: string; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; onOpenChapter: (ch: ChapterRow) => void }) {
   const [paras, setParas] = useState<ProsePara[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -1457,7 +1512,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
         setMenu(false);
         if (id === "share") { void shareChapter(); return; }
-        if (id === "pdf") { flash("PDF этой книги готовится"); return; }
+        // «Скачать PDF» из прозовой книги → единый диспетчер книги (onMenuAction).
         if (id === "qr") {
           onQr(`https://gaurangers.com/book/${work}`, { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
           return;
@@ -1939,7 +1994,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { if (book.work === "cc") { void downloadCcBook(); return; } if (book.hierarchical || book.prose) { flash("PDF этой книги готовится"); return; } void buildBookPdf(); return; }
+    if (id === "pdf") { void downloadBookPdf({ work: book.work, book, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
     if (id === "qr") {
       openQr(`https://gaurangers.com/book/${book.work}`, {
         kind: "book",

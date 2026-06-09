@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { BOOKS, type BookData } from "./books";
+import { BOOKS, bookFullTitle, type BookData } from "./books";
 import { api } from "./api";
-import { BookPrint, LilaPrint, ChapterPrint, VerseBody, type ChapterRow, type ChapterVerse } from "./BookDetailPage";
+import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
 type Loaded =
   | { kind: "book"; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
+  | { kind: "prosebook"; chapters: ChapterRow[]; parasByCh: Record<string, ProsePara[]> }
   | { kind: "lila"; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[]; lilaLabel?: string }
   | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string; lila?: string };
@@ -60,17 +61,30 @@ export function PdfDoc() {
           const range = partial && chapters.length < allCh.length ? `главы ${from}-${to}` : undefined;
           if (live) setData({ kind: "lila", lilaLabel: divObj?.title_ru ?? (CC_LILA[lila] ?? ""), range, chapters, versesByCh });
         } else if (kind === "book") {
-          const ch = await (await fetch(api("/books/bg/chapters"))).json();
+          const bk = (BOOKS as Record<string, BookData>)[work] ?? BOOKS.bg;
+          const ch = await (await fetch(api(`/books/${bk.work}/chapters`))).json();
           const chapters: ChapterRow[] = ch.chapters ?? [];
-          const entries = await Promise.all(
-            chapters.map(async (c) => {
-              const d = await (await fetch(api(`/books/bg/chapters/${c.number}/read`))).json();
-              return [c.number, (d.verses ?? []) as ChapterVerse[]] as const;
-            }),
-          );
-          const versesByCh: Record<string, ChapterVerse[]> = {};
-          for (const [num, vs] of entries) versesByCh[num] = vs;
-          if (live) setData({ kind: "book", chapters, versesByCh });
+          if (bk.prose) {
+            const entries = await Promise.all(
+              chapters.map(async (c) => {
+                const d = await (await fetch(api(`/books/${bk.work}/chapters/${c.number}/read`))).json();
+                return [c.number, ((d.verses ?? []) as Array<{ ref: string; translation: string | null }>).map((v) => ({ ref: v.ref, translation: v.translation }))] as const;
+              }),
+            );
+            const parasByCh: Record<string, ProsePara[]> = {};
+            for (const [num, ps] of entries) parasByCh[num] = ps;
+            if (live) setData({ kind: "prosebook", chapters, parasByCh });
+          } else {
+            const entries = await Promise.all(
+              chapters.map(async (c) => {
+                const d = await (await fetch(api(`/books/${bk.work}/chapters/${c.number}/read`))).json();
+                return [c.number, (d.verses ?? []) as ChapterVerse[]] as const;
+              }),
+            );
+            const versesByCh: Record<string, ChapterVerse[]> = {};
+            for (const [num, vs] of entries) versesByCh[num] = vs;
+            if (live) setData({ kind: "book", chapters, versesByCh });
+          }
         } else if (kind === "chapter") {
           if (div) {
             const lilaSlug = div.split(".")[1] ?? "";
@@ -120,21 +134,19 @@ export function PdfDoc() {
 
   useEffect(() => {
     if (data) {
-      const isCc = work !== "bg";
-      const BG = "Бхагавад-гита как она есть";
-      const CC = "Шри Чайтанья-чаритамрита";
-      let h = isCc ? CC : BG;
+      const title = bookFullTitle((BOOKS as Record<string, BookData>)[work] ?? BOOKS.bg);
+      let h = title;
       if (data.kind === "lila") {
-        h = data.lilaLabel ? `${CC} · ${data.lilaLabel}` : CC;
+        h = data.lilaLabel ? `${title} · ${data.lilaLabel}` : title;
       } else if (data.kind === "chapter" && data.chapter) {
-        const parts = [isCc ? CC : BG];
-        if (isCc && data.lilaLabel) parts.push(data.lilaLabel);
+        const parts = [title];
+        if (data.lilaLabel) parts.push(data.lilaLabel);
         parts.push(data.chapter.title_ru || `Глава ${data.chapter.number}`);
         h = parts.join(" · ");
       } else if (data.kind === "verse") {
         const vnum = ref.match(/\.\s*(\d+)/)?.[1] ?? "";
-        const parts = [isCc ? CC : BG];
-        if (isCc && data.lila) parts.push(data.lila);
+        const parts = [title];
+        if (data.lila) parts.push(data.lila);
         if (data.chapterTitle) parts.push(data.chapterTitle);
         else if (data.chapterNo) parts.push(`Глава ${data.chapterNo}`);
         if (vnum) parts.push(`Текст ${vnum}`);
@@ -150,14 +162,15 @@ export function PdfDoc() {
 
   return (
     <div className="pdf-doc-page" style={{ background: "#fff", color: "#1f2024", fontFamily: "var(--font-text)" }}>
-      {data.kind === "book" && <BookPrint book={BOOKS.bg} chapters={data.chapters} versesByCh={data.versesByCh} />}
+      {data.kind === "book" && <BookPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.bg} chapters={data.chapters} versesByCh={data.versesByCh} />}
+      {data.kind === "prosebook" && <ProsePrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.brs} chapters={data.chapters} parasByCh={data.parasByCh} />}
       {data.kind === "lila" && <LilaPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc} lilaLabel={data.lilaLabel} range={data.range} chapters={data.chapters} versesByCh={data.versesByCh} />}
       {data.kind === "chapter" && data.chapter && <ChapterPrint chapter={data.chapter} verses={data.verses} />}
       {data.kind === "chapter" && !data.chapter && <div style={{ padding: 24 }}>Глава не найдена.</div>}
       {data.kind === "verse" && (
         <>
           <div style={{ margin: "0 0 16px", paddingBottom: 10, borderBottom: "0.75pt solid rgba(0,0,0,0.18)" }}>
-            <div style={{ fontSize: 13, color: "#70727b" }}>{data.lila ? `${data.lila} · ` : ""}{data.chapterNo ? `Глава ${data.chapterNo} · ` : ""}{work !== "bg" ? "Шри Чайтанья-чаритамрита" : "Бхагавад-гита как она есть"}</div>
+            <div style={{ fontSize: 13, color: "#70727b" }}>{data.lila ? `${data.lila} · ` : ""}{data.chapterNo ? `Глава ${data.chapterNo} · ` : ""}{bookFullTitle((BOOKS as Record<string, BookData>)[work] ?? BOOKS.bg)}</div>
           </div>
           <VerseBody v={data.verse} />
         </>
