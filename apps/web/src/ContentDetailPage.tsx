@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon, HeartIcon, ShareIcon, MoreIcon, LinkIcon, TopIcon, type IconProps } from "./ui/icons";
+import { renderTerms } from "./ui/Skt";
 
 /** Круглая стеклянная кнопка навбара (как в ПКП). На hero — тёмное стекло; при
  *  скролле растворяется в фон и icon берёт цвет контента (передаётся onGlass). */
@@ -269,7 +270,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                       case "accent": {
                         // дек — крупный серый подзаголовок сразу под именем (стандарт страницы Кришны)
                         if (i === firstAccentIdx)
-                          return <p key={i} style={{ margin: "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-regular)", lineHeight: 1.4, color: "var(--color-label-2)" }}>{b.text}</p>;
+                          return <p key={i} style={{ margin: "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-regular)", lineHeight: 1.4, color: "var(--color-label-2)" }}>{renderTerms(b.text)}</p>;
                         // секционная интерлюдия — по центру, с тонкой линией сверху; пара accent'ов подряд читается как один блок
                         const prevAccent = blocks[i - 1]?.kind === "accent";
                         return (
@@ -283,14 +284,14 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                         return <PullQuote key={i} text={b.text ?? ""} ref={ref} onPerson={onOpenContent} onBook={onOpenBook} onRef={onOpenRef} />;
                       }
                       default:
-                        return <p key={i} style={{ margin: "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{b.text}</p>;
+                        return <p key={i} style={{ margin: "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{renderTerms(b.text)}</p>;
                     }
                   })}
                 </div>
               ) : (
                 <div>
                   {data.paragraphs.map((p, i) => (
-                    <p key={i} style={{ margin: i === 0 ? "var(--space-5) 0 0" : "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{p}</p>
+                    <p key={i} style={{ margin: i === 0 ? "var(--space-5) 0 0" : "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{renderTerms(p)}</p>
                   ))}
                 </div>
               )}

@@ -18,6 +18,7 @@ import { BookHeroCard } from "./BookHeroCard";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
+import { Skt, renderTerms } from "./ui/Skt";
 import { downloadCcBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -240,7 +241,7 @@ function Overview({ book }: { book: BookData }) {
           <KeyVal k="Передаётся" v="Через парампару" last />
         </div>
         <p style={{ margin: "14px 0 0", fontSize: 15, lineHeight: 1.55, color: INK2 }}>
-          «Гита» входит в «Бхишма-парву» «Махабхараты» и с древности комментировалась всеми крупнейшими школами ведической философии — Шанкарой, Рамануджей, Мадхвой. Подход «как она есть» означает передачу текста без отклонений от замысла Кришны, в неразрывной линии духовных учителей (парампаре).
+          «Гита» входит в «Бхишма-парву» «Махабхараты» и с древности комментировалась всеми крупнейшими школами ведической философии — Шанкарой, Рамануджей, Мадхвой. Подход «как она есть» означает передачу текста без отклонений от замысла Кришны, в неразрывной линии духовных учителей (<Skt>парампаре</Skt>).
         </p>
         <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.5, color: INK3 }}>
           По традиции беседа произошла в начале Кали-юги, около 5 000 лет назад; академическая наука относит складывание текста к рубежу старой и новой эры.
@@ -1247,7 +1248,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
           <CommentaryLabel />
           <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>
             {r.purport!.split(/\n\n+/).map((para, i) => (
-              <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
+              <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{renderTerms(para)}</p>
             ))}
           </div>
         </section>
@@ -1595,7 +1596,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
                   <CommentaryLabel demo={purportIsDemo} />
                   <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>
                     {evPurport!.split(/\n\n+/).map((para, i) => (
-                      <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{para}</p>
+                      <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{renderTerms(para)}</p>
                     ))}
                   </div>
                 </section>
