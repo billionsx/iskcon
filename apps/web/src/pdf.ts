@@ -185,3 +185,44 @@ export async function downloadServerPdf(
     return false;
   }
 }
+
+/**
+ * Грузит отрендеренный сервером PDF как байты (без сохранения) — для склейки
+ * частей на клиенте (pdf-lib). При ошибке читает текст ответа воркера, чтобы
+ * вернуть настоящую причину (например «pdf render failed: …»).
+ */
+export async function fetchServerPdfBytes(
+  path: string,
+  opts?: { signal?: AbortSignal; onError?: (info: string) => void },
+): Promise<Uint8Array | null> {
+  try {
+    const res = await fetch(path, { headers: { accept: "application/pdf" }, signal: opts?.signal });
+    if (!res.ok) {
+      let body = "";
+      try { body = (await res.text()).slice(0, 160); } catch { /* ignore */ }
+      throw new Error("status " + res.status + (body ? `: ${body}` : ""));
+    }
+    const buf = new Uint8Array(await res.arrayBuffer());
+    if (!buf.length) throw new Error("empty");
+    return buf;
+  } catch (e) {
+    const reason = opts?.signal?.aborted ? "таймаут" : (e instanceof Error ? e.message : "ошибка");
+    opts?.onError?.(reason);
+    return null;
+  }
+}
+
+/** Сохраняет готовые байты PDF одним действием (для склеенного файла). */
+export function savePdfBytes(bytes: Uint8Array, filename: string): void {
+  if (typeof window === "undefined") return;
+  const blob = new Blob([bytes as unknown as BlobPart], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 8000);
+}
