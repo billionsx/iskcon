@@ -1,7 +1,8 @@
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { api } from "./api";
-import { exportToPdf, downloadServerPdf } from "./pdf";
+import { PDFDocument } from "pdf-lib";
+import { exportToPdf, downloadServerPdf, fetchServerPdfBytes, savePdfBytes } from "./pdf";
 import { BookPrint, LilaPrint, ProsePrint, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
 import { bookFullTitle, type BookData } from "./books";
 
@@ -102,68 +103,105 @@ export async function downloadCcBookPdf(opts: {
   let toc: { divisions?: CcDiv[] };
   try { toc = await (await fetch(api(`/books/${work}/toc`))).json(); }
   catch { opts.onStatus?.("Не удалось загрузить оглавление"); return; }
-  // Размер части ≈ как у «Гиты» (~700 стихов / ~1100 стр.) — это проверенный
-  // потолок Cloudflare Browser Rendering на ОДИН рендер. Крупнее (≈3000 стихов)
-  // headless-браузер падает по памяти → 500 → клиент уходил в печать браузера.
-  // Поэтому большие лилы/песни режем на тома-части, каждая рендерится надёжно.
-  const CHUNK = 700;
-  type Job = { slug: string; label: string; from: string; to: string; part: number; parts: number };
-  const jobs: Job[] = [];
-  for (const d of toc.divisions ?? []) {
-    const slug = d.id.split(".")[1] ?? "";
-    const label = d.title_ru || CC_LILA[slug] || slug;
-    const chs = d.chapters ?? [];
-    const total = chs.reduce((a, c) => a + (Number(c.verses) || 0), 0);
-    const parts = Math.max(1, Math.ceil(total / CHUNK));
-    const target = total / parts;
-    let cur: CcChapter[] = [], curV = 0, made = 0;
-    const flush = () => { if (cur.length) { made++; jobs.push({ slug, label, from: cur[0].number, to: cur[cur.length - 1].number, part: made, parts }); cur = []; curV = 0; } };
-    for (const c of chs) { cur.push(c); curV += Number(c.verses) || 0; if (made < parts - 1 && curV >= target) flush(); }
-    flush();
-  }
-  if (!jobs.length) { opts.onStatus?.("Оглавление пустое"); return; }
+
+  // ОДИН файл на ЛИЛУ. Внутри лилу собираем из маленьких быстрых серверных
+  // рендеров (это надёжно даже для тяжёлых комментариев ЧЧ — не упирается в
+  // память/таймаут Cloudflare и не оставляет «висящих» сессий), затем склеиваем
+  // прямо в браузере (pdf-lib): обложка + части → один PDF. Печать НЕ используется.
+  const SUBCHUNK = 400; // стихов на один серверный рендер — быстро и надёжно
+  type Lila = { slug: string; label: string; chapters: CcChapter[] };
+  const lilas: Lila[] = (toc.divisions ?? [])
+    .map((d) => { const slug = d.id.split(".")[1] ?? ""; return { slug, label: d.title_ru || CC_LILA[slug] || slug, chapters: d.chapters ?? [] }; })
+    .filter((l) => l.chapters.length);
+  if (!lilas.length) { opts.onStatus?.("Оглавление пустое"); return; }
+
   opts.cancelRef.current = false;
   let active = true;
-  const prog = (p: number) => { if (active && !opts.cancelRef.current) opts.onProgress?.(p <= 0 ? 1 : p); };
+  const prog = (p: number) => { if (active && !opts.cancelRef.current) opts.onProgress?.(Math.max(1, Math.min(99, p))); };
   const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-  // Серверный рендер изредка падает по разовой причине (лимит Cloudflare на запуск
-  // браузеров). Тихая подстраховка: пара повторов с паузой; печать браузера НЕ
-  // используется никогда. Таймаут попытки — как у рабочей «Гиты» (280с): первая
-  // часть самая тяжёлая (холодный старт) и при 200с не успевала.
-  const BACKOFF = [8000, 20000];
-  const failed: string[] = [];
-  for (let i = 0; i < jobs.length; i++) {
-    if (opts.cancelRef.current) break;
-    const j = jobs[i];
-    const sfx = j.parts > 1 ? ` · ${j.part}` : "";
-    const fname = `${bookTitle}. ${j.label}${sfx}.pdf`;
-    const range = j.parts > 1 ? `главы ${j.from}-${j.to}` : undefined;
-    const urlPath = `/pdf?kind=lila&work=${encodeURIComponent(work)}&lila=${j.slug}&from=${encodeURIComponent(j.from)}&to=${encodeURIComponent(j.to)}&label=${encodeURIComponent(j.label)}${range ? `&range=${encodeURIComponent(range)}` : ""}`;
-    let ok = false;
-    let lastErr = "";
-    for (let attempt = 0; attempt <= BACKOFF.length && !ok && !opts.cancelRef.current; attempt++) {
-      opts.onTitle?.(`${j.label}${sfx} · ${i + 1} из ${jobs.length}`);
+
+  // суммарный прогресс по всем частям книги (+обложка на лилу)
+  const totalUnits = lilas.reduce((a, l) => a + 1 + Math.max(1, Math.ceil(l.chapters.reduce((s, c) => s + (Number(c.verses) || 0), 0) / SUBCHUNK)), 0);
+  let doneUnits = 0;
+  let crawl: ReturnType<typeof setInterval> | undefined;
+  const startCrawl = () => {
+    const base = doneUnits / Math.max(1, totalUnits), next = (doneUnits + 1) / Math.max(1, totalUnits), t0 = Date.now();
+    if (crawl) clearInterval(crawl);
+    crawl = setInterval(() => { const t = (Date.now() - t0) / 1000; prog(Math.round((base + (next - base) * (1 - Math.exp(-t / 22)) * 0.85) * 96)); }, 500);
+  };
+  const stopCrawl = () => { if (crawl) { clearInterval(crawl); crawl = undefined; } doneUnits++; prog(Math.round((doneUnits / Math.max(1, totalUnits)) * 96)); };
+
+  // одна часть с одной тихой переповторкой; вернёт байты или null + причину
+  const loadPart = async (path: string): Promise<{ bytes: Uint8Array | null; err: string }> => {
+    let err = "";
+    for (let attempt = 0; attempt < 2 && !opts.cancelRef.current; attempt++) {
       const ac = new AbortController();
       opts.abortRef.current = ac;
-      const killer = setTimeout(() => ac.abort(), 280000);
-      try {
-        ok = await downloadServerPdf(urlPath, fname, { onProgress: prog, signal: ac.signal, onError: (r) => { lastErr = r; } });
-      } finally { clearTimeout(killer); }
-      if (!ok && !opts.cancelRef.current && attempt < BACKOFF.length) {
-        opts.onTitle?.(`${j.label}${sfx} · ещё раз…`);
-        await sleep(BACKOFF[attempt]);
-      }
+      const killer = setTimeout(() => ac.abort(), 240000);
+      let bytes: Uint8Array | null = null;
+      try { bytes = await fetchServerPdfBytes(path, { signal: ac.signal, onError: (r) => { err = r; } }); }
+      finally { clearTimeout(killer); }
+      if (bytes) return { bytes, err: "" };
+      if (attempt === 0 && !opts.cancelRef.current) await sleep(5000);
     }
-    if (!ok && !opts.cancelRef.current) failed.push(`${j.label}${sfx}${lastErr ? ` (${lastErr})` : ""}`);
-    if (i < jobs.length - 1 && !opts.cancelRef.current) await sleep(1500);
+    return { bytes: null, err };
+  };
+
+  const failed: string[] = [];
+  for (const lila of lilas) {
+    if (opts.cancelRef.current) break;
+    // главы лилы → части по бюджету стихов
+    const total = lila.chapters.reduce((s, c) => s + (Number(c.verses) || 0), 0);
+    const parts = Math.max(1, Math.ceil(total / SUBCHUNK));
+    const target = total / parts;
+    const ranges: Array<{ from: string; to: string }> = [];
+    let cur: CcChapter[] = [], curV = 0, made = 0;
+    const flush = () => { if (cur.length) { made++; ranges.push({ from: cur[0].number, to: cur[cur.length - 1].number }); cur = []; curV = 0; } };
+    for (const c of lila.chapters) { cur.push(c); curV += Number(c.verses) || 0; if (made < parts - 1 && curV >= target) flush(); }
+    flush();
+
+    const merged = await PDFDocument.create();
+    let okAll = true;
+    let lilaErr = "";
+
+    // обложка (одна на лилу)
+    opts.onTitle?.(`${lila.label} · обложка`);
+    startCrawl();
+    const cover = await loadPart(`/pdf?kind=cover&work=${encodeURIComponent(work)}&lila=${lila.slug}&label=${encodeURIComponent(lila.label)}`);
+    stopCrawl();
+    if (cover.bytes) {
+      try { const cdoc = await PDFDocument.load(cover.bytes); for (const p of await merged.copyPages(cdoc, cdoc.getPageIndices())) merged.addPage(p); }
+      catch { /* обложка не критична */ }
+    }
+
+    for (let pi = 0; pi < ranges.length && !opts.cancelRef.current; pi++) {
+      const r = ranges[pi];
+      opts.onTitle?.(ranges.length > 1 ? `${lila.label} · часть ${pi + 1} из ${ranges.length}` : lila.label);
+      startCrawl();
+      const part = await loadPart(`/pdf?kind=lila&work=${encodeURIComponent(work)}&lila=${lila.slug}&from=${encodeURIComponent(r.from)}&to=${encodeURIComponent(r.to)}&label=${encodeURIComponent(lila.label)}&bare=1`);
+      stopCrawl();
+      if (!part.bytes) { okAll = false; lilaErr = part.err; break; }
+      try { const pdoc = await PDFDocument.load(part.bytes); for (const p of await merged.copyPages(pdoc, pdoc.getPageIndices())) merged.addPage(p); }
+      catch (e) { okAll = false; lilaErr = e instanceof Error ? e.message : "склейка"; break; }
+      if (pi < ranges.length - 1 && !opts.cancelRef.current) await sleep(1200);
+    }
+
+    if (opts.cancelRef.current) break;
+    if (!okAll || merged.getPageCount() === 0) { failed.push(`${lila.label}${lilaErr ? ` (${lilaErr})` : ""}`); continue; }
+    opts.onTitle?.(`${lila.label} · сохраняю`);
+    try { savePdfBytes(await merged.save(), `${bookTitle}. ${lila.label}.pdf`); }
+    catch (e) { failed.push(`${lila.label} (сохранение: ${e instanceof Error ? e.message : "ошибка"})`); }
+    await sleep(800);
   }
+
+  stopCrawl();
   active = false;
   opts.abortRef.current = null;
   opts.onProgress?.(0);
   opts.onTitle?.("Готовлю PDF книги");
-  if (failed.length && !opts.cancelRef.current) {
-    opts.onStatus?.(`Не удалось собрать: ${failed.join(", ")}. Нажмите «Скачать PDF» ещё раз.`);
-  }
+  if (opts.cancelRef.current) return;
+  if (failed.length) opts.onStatus?.(`Не удалось собрать: ${failed.join("; ")}. Нажмите «Скачать PDF» ещё раз.`);
+  else opts.onStatus?.("Готово");
 }
 
 /**

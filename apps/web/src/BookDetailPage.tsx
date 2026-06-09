@@ -1310,37 +1310,41 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
 
 // Печать одной лилы ЧЧ (Ади / Мадхья / Антья) — отдельный PDF на лилу.
 // Главы внутри лилы нумеруются уникально, но ключуем по c.id (надёжно).
-export function LilaPrint({ book, lilaLabel, range, chapters, versesByCh }: { book: BookData; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }) {
+export function LilaPrint({ book, lilaLabel, range, chapters, versesByCh, bare }: { book: BookData; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]>; bare?: boolean }) {
   const fullTitle = book.titleLine2 ? `${book.titleLine1}${book.titleLine1.endsWith("-") ? "" : " "}${book.titleLine2}` : book.titleLine1;
   return (
     <div>
-      {/* cover / title page */}
-      <div data-pdf-block style={{ textAlign: "center", breakAfter: "page", paddingTop: "30mm" }}>
-        <img src="/iskcon-one-love-mark.svg" alt="ISKCON ONE LOVE" style={{ width: "30mm", height: "auto", display: "block", margin: "0 auto" }} />
-        <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
-          <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
-        </div>
-        <h1 style={{ margin: "16mm 0 0", fontSize: 38, lineHeight: 1.08, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{fullTitle}</h1>
-        <div style={{ marginTop: "8mm", fontSize: 14, fontWeight: 700, letterSpacing: "3px", textTransform: "uppercase", color: GOLDT }}>{lilaLabel}</div>
-        {range && <div style={{ marginTop: "3mm", fontSize: 12.5, color: INK2 }}>{range}</div>}
-        <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
-      </div>
-      {/* table of contents (this lila) */}
-      <div data-pdf-block style={{ margin: "8px 0 4px" }}>
-        <LayerLabel>{lilaLabel} · содержание</LayerLabel>
-        <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
-          {chapters.map((c) => (
-            <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
-              <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{c.number}</span>
-              <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
-              <span style={{ fontSize: 12.5, color: INK3 }}>{c.verses} стихов</span>
-            </li>
-          ))}
-        </ol>
-      </div>
+      {!bare && (
+        <>
+          {/* cover / title page */}
+          <div data-pdf-block style={{ textAlign: "center", breakAfter: "page", paddingTop: "30mm" }}>
+            <img src="/iskcon-one-love-mark.svg" alt="ISKCON ONE LOVE" style={{ width: "30mm", height: "auto", display: "block", margin: "0 auto" }} />
+            <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
+              <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
+            </div>
+            <h1 style={{ margin: "16mm 0 0", fontSize: 38, lineHeight: 1.08, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{fullTitle}</h1>
+            <div style={{ marginTop: "8mm", fontSize: 14, fontWeight: 700, letterSpacing: "3px", textTransform: "uppercase", color: GOLDT }}>{lilaLabel}</div>
+            {range && <div style={{ marginTop: "3mm", fontSize: 12.5, color: INK2 }}>{range}</div>}
+            <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
+          </div>
+          {/* table of contents (this lila) */}
+          <div data-pdf-block style={{ margin: "8px 0 4px" }}>
+            <LayerLabel>{lilaLabel} · содержание</LayerLabel>
+            <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              {chapters.map((c) => (
+                <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
+                  <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{c.number}</span>
+                  <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
+                  <span style={{ fontSize: 12.5, color: INK3 }}>{c.verses} стихов</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </>
+      )}
       {/* chapters with all verses, each from a new page */}
-      {chapters.map((c) => (
-        <ChapterPrint key={c.id} chapter={c} verses={versesByCh[c.id] ?? []} newPage />
+      {chapters.map((c, i) => (
+        <ChapterPrint key={c.id} chapter={c} verses={versesByCh[c.id] ?? []} newPage={!(bare && i === 0)} />
       ))}
     </div>
   );

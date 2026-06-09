@@ -141,6 +141,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   const div = url.searchParams.get("div") || "";
   const n = url.searchParams.get("n") || "";
   const ref = url.searchParams.get("ref") || "";
+  const bare = url.searchParams.get("bare") === "1";
   // Том (название лилы/песни) и диапазон для обложки — присылает клиент, чтобы
   // воркер оставался книго-независимым (для ЧЧ есть запасной ccLilaName).
   const label = url.searchParams.get("label") || "";
@@ -159,10 +160,16 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     printPath = `/?pdf=book${work && work !== "bg" ? `&work=${encodeURIComponent(work)}` : ""}`;
     filename = `${bookFullTitle(book)}.pdf`;
   } else if (kind === "lila" && lila) {
-    printPath = `/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}${from ? `&from=${encodeURIComponent(from)}` : ""}${to ? `&to=${encodeURIComponent(to)}` : ""}`;
+    printPath = `/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}${from ? `&from=${encodeURIComponent(from)}` : ""}${to ? `&to=${encodeURIComponent(to)}` : ""}${bare ? "&bare=1" : ""}`;
     coverVolume = label || ccLilaName(lila);
     coverRange = rangeParam || undefined;
     filename = `${bookFullTitle(book)}. ${coverVolume}.pdf`;
+  } else if (kind === "cover" && lila) {
+    // Только обложка — одна на лилу при клиентской склейке частей (pdf-lib).
+    printPath = "";
+    coverVolume = label || ccLilaName(lila);
+    coverRange = rangeParam || undefined;
+    filename = `${bookFullTitle(book)}. ${coverVolume}. Обложка.pdf`;
   } else if (kind === "chapter" && div) {
     // ЧЧ/ШБ: глава по division id (<work>.<lila>.<n>)
     printPath = `/?pdf=chapter&work=${encodeURIComponent(work)}&div=${encodeURIComponent(div)}`;
@@ -181,7 +188,8 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
   }
   const target = url.origin + printPath;
-  const wantCover = kind === "book" || kind === "lila";
+  const coverOnly = kind === "cover";
+  const wantCover = kind === "book" || (kind === "lila" && !bare) || coverOnly;
 
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
   try {
@@ -196,6 +204,10 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     if (wantCover) {
       try { coverBytes = await renderCoverPdf(page, book, url.origin, coverVolume, coverRange); }
       catch { coverBytes = undefined; /* обложка не критична — лучше без неё, чем 500 */ }
+    }
+    if (coverOnly) {
+      if (!coverBytes) return new Response("cover render failed", { status: 500, headers: { "X-Robots-Tag": NOINDEX } });
+      return new Response(coverBytes, { headers: { "content-type": "application/pdf", "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`, "X-Robots-Tag": NOINDEX, "Cache-Control": "no-store" } });
     }
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: (kind === "book" || kind === "lila") ? 1 : 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
@@ -219,7 +231,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     // Нижний колонтитул: номер страницы сверху, затем бренд (ISKCON ONE LOVE / iskcone.com).
     const footer =
       `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;text-align:center;line-height:1.45;color:#8a8a8e;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
-      `<div style="font-size:8px;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>` +
+      (bare ? "" : `<div style="font-size:8px;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>`) +
       `<div style="font-size:8.5px;letter-spacing:2px;margin-top:2.5px;">ISKCON ONE LOVE</div>` +
       `<div style="font-size:8px;letter-spacing:1px;color:#a7a8b0;">iskcone.com</div></div>`;
     // Верхний колонтитул — на каждой странице. Структура как у футера, чтобы Chrome его рисовал.

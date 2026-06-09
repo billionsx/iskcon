@@ -35,6 +35,7 @@ export function PdfDoc() {
   const div = params.get("div") || "";
   const n = params.get("n") || "";
   const ref = params.get("ref") || "";
+  const bare = params.get("bare") === "1";
   const [data, setData] = useState<Loaded | null>(null);
   const [err, setErr] = useState(false);
 
@@ -164,7 +165,7 @@ export function PdfDoc() {
     <div className="pdf-doc-page" style={{ background: "#fff", color: "#1f2024", fontFamily: "var(--font-text)" }}>
       {data.kind === "book" && <BookPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.bg} chapters={data.chapters} versesByCh={data.versesByCh} />}
       {data.kind === "prosebook" && <ProsePrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.brs} chapters={data.chapters} parasByCh={data.parasByCh} />}
-      {data.kind === "lila" && <LilaPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc} lilaLabel={data.lilaLabel} range={data.range} chapters={data.chapters} versesByCh={data.versesByCh} />}
+      {data.kind === "lila" && <LilaPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc} lilaLabel={data.lilaLabel} range={data.range} chapters={data.chapters} versesByCh={data.versesByCh} bare={bare} />}
       {data.kind === "chapter" && data.chapter && <ChapterPrint chapter={data.chapter} verses={data.verses} />}
       {data.kind === "chapter" && !data.chapter && <div style={{ padding: 24 }}>Глава не найдена.</div>}
       {data.kind === "verse" && (
