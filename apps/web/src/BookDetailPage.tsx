@@ -1379,7 +1379,7 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
 // Печать одной лилы ЧЧ (Ади / Мадхья / Антья) — отдельный PDF на лилу.
 // Главы внутри лилы нумеруются уникально, но ключуем по c.id (надёжно).
 export function LilaPrint({ book, lilaLabel, range, chapters, versesByCh, bare }: { book: BookData; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]>; bare?: boolean }) {
-  const fullTitle = book.titleLine2 ? `${book.titleLine1}${book.titleLine1.endsWith("-") ? "" : " "}${book.titleLine2}` : book.titleLine1;
+  const fullTitle = bookFullTitle(book);
   return (
     <div>
       {!bare && (
@@ -1996,7 +1996,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
 
   useEffect(() => {
     if (bookPrint) {
-      const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
+      const name = bookFullTitle(book);
       pdfCancel.current = false;
       setPdfHidden(false);
       const ac = new AbortController();
@@ -2070,8 +2070,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     if (id === "qr") {
       openQr(`https://gaurangers.com/book/${book.work}`, {
         kind: "book",
-        bookTitle: book.titleLine1,
-        bookSubtitle: book.titleLine2,
+        bookTitle: bookFullTitle(book),
         tagline: book.tagline,
         cover: book.covers[0],
       });
@@ -2086,7 +2085,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       {/* scroll-aware top bar — persistent back; all actions live in the card below */}
       <header style={{ position: "sticky", top: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 14px", transition: "background .2s, border-color .2s", background: scrolled ? "rgba(255,255,255,0.82)" : "transparent", backdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", WebkitBackdropFilter: scrolled ? "blur(40px) saturate(180%)" : "none", borderBottom: "0.5px solid transparent" }}>
         <button type="button" aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.05)", color: INK, cursor: "pointer", flexShrink: 0 }}><BackIcon size={22} /></button>
-        {scrolled && <div style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{book.titleLine1}</div>}
+        {scrolled && <div style={{ flex: 1, minWidth: 0, fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bookFullTitle(book)}</div>}
       </header>
 
       <div ref={bookContentRef}>
@@ -2138,7 +2137,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
         </div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
-      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={readerRef ? readerRef : openChapter ? `${book.titleLine1}, глава ${openChapter.number}` : book.titleLine1} />
+      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={readerRef ? readerRef : openChapter ? `${bookFullTitle(book)}, глава ${openChapter.number}` : bookFullTitle(book)} />
     </div>
   );
 }

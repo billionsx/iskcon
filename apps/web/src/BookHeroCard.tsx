@@ -7,7 +7,7 @@
  */
 import { useRef, useState, type ReactNode } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
-import { type BookData } from "./books";
+import { bookFullTitle, type BookData } from "./books";
 import { HeartIcon, HeadphonesIcon, BagIcon, MoreIcon } from "./ui/icons";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { usePlayer } from "./player/store";
@@ -45,7 +45,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
         {book.covers.map((src, i) => (
-          <img key={src} src={src} alt={book.titleLine1} loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
+          <img key={src} src={src} alt={bookFullTitle(book)} loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
             style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s ease" }} />
         ))}
         <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />

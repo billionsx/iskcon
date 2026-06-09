@@ -43,7 +43,7 @@ export async function exportWholeBook(book: BookData, onStatus?: (m: string) => 
       try { await (document as Document).fonts.ready; } catch { /* ignore */ }
     }
     await new Promise((r) => requestAnimationFrame(() => r(null)));
-    const name = book.titleLine2 ? `${book.titleLine1} ${book.titleLine2}` : book.titleLine1;
+    const name = bookFullTitle(book);
     exportToPdf(host, { title: name });
     setTimeout(() => { root.unmount(); host.remove(); }, 2000);
   } catch {

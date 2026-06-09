@@ -8,7 +8,7 @@ import { useState, useRef, useEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { DonateModal } from "./DonateModal";
-import { BOOKS } from "./books";
+import { BOOKS, bookFullTitle } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
@@ -350,12 +350,12 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
               <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("bg")} onMenuSelect={(id) => {
                 if (id === "share") {
                   const url = "https://gaurangers.com/book/bg";
-                  if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: BOOKS.bg.titleLine1, url }).catch(() => {}); }
+                  if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.bg), url }).catch(() => {}); }
                   else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                   return;
                 }
                 if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: "bg", book: BOOKS.bg, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-                if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
+                if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.bg), tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
                 if (id === "donate") { onDonate(); return; }
                 if (id === "report") { setReportOpen(true); return; }
                 onOpenBook("bg");
@@ -364,7 +364,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 <BookHeroCard book={BOOKS.cc} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("cc")} onMenuSelect={(id) => {
                   if (id === "share") {
                     const url = "https://gaurangers.com/book/cc";
-                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: `${BOOKS.cc.titleLine1}${BOOKS.cc.titleLine2 ?? ""}`, url }).catch(() => {}); }
+                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.cc), url }).catch(() => {}); }
                     else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                     return;
                   }
@@ -377,7 +377,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                     });
                     return;
                   }
-                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/cc", data: { kind: "book", bookTitle: BOOKS.cc.titleLine1, bookSubtitle: BOOKS.cc.titleLine2, tagline: BOOKS.cc.tagline, cover: BOOKS.cc.covers[0] } }); return; }
+                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/cc", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.cc), tagline: BOOKS.cc.tagline, cover: BOOKS.cc.covers[0] } }); return; }
                   if (id === "donate") { onDonate(); return; }
                   if (id === "report") { setReportOpen(true); return; }
                   onOpenBook("cc");
@@ -387,12 +387,12 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 <BookHeroCard book={BOOKS.sb} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("sb")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
                   if (id === "share") {
                     const url = "https://gaurangers.com/book/sb";
-                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: `${BOOKS.sb.titleLine1}${BOOKS.sb.titleLine2 ?? ""}`, url }).catch(() => {}); }
+                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.sb), url }).catch(() => {}); }
                     else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                     return;
                   }
                   if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: BOOKS.sb.work, book: BOOKS.sb, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/sb", data: { kind: "book", bookTitle: BOOKS.sb.titleLine1, bookSubtitle: BOOKS.sb.titleLine2, tagline: BOOKS.sb.tagline, cover: BOOKS.sb.covers[0] } }); return; }
+                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/sb", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.sb), tagline: BOOKS.sb.tagline, cover: BOOKS.sb.covers[0] } }); return; }
                   if (id === "donate") { onDonate(); return; }
                   if (id === "report") { setReportOpen(true); return; }
                   onOpenBook("sb");
@@ -402,12 +402,12 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                 <BookHeroCard book={BOOKS.brs} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("brs")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
                   if (id === "share") {
                     const url = "https://gaurangers.com/book/brs";
-                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: `${BOOKS.brs.titleLine1} ${BOOKS.brs.titleLine2 ?? ""}`, url }).catch(() => {}); }
+                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.brs), url }).catch(() => {}); }
                     else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                     return;
                   }
                   if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: BOOKS.brs.work, book: BOOKS.brs, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/brs", data: { kind: "book", bookTitle: BOOKS.brs.titleLine1, bookSubtitle: BOOKS.brs.titleLine2, tagline: BOOKS.brs.tagline, cover: BOOKS.brs.covers[0] } }); return; }
+                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/brs", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.brs), tagline: BOOKS.brs.tagline, cover: BOOKS.brs.covers[0] } }); return; }
                   if (id === "donate") { onDonate(); return; }
                   if (id === "report") { setReportOpen(true); return; }
                   onOpenBook("brs");
@@ -422,7 +422,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       </main>
       <TabBar active={tab} onChange={onChange} />
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
-      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Главная · ${BOOKS.bg.titleLine1}`} />
+      <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Главная · ${bookFullTitle(BOOKS.bg)}`} />
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>}
       {bookPct > 0 && !pdfHidden && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
