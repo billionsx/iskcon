@@ -39,8 +39,16 @@ jobs:
           MAXMIN: ${{ github.event.inputs.max_minutes }}
         run: |
           python3 - <<'PY'
-          import os, re, json, time, urllib.request
+          import os, re, json, time, urllib.request, sys, traceback
           from bs4 import BeautifulSoup
+          def _hook(t,v,tb):
+              try:
+                  os.makedirs(".nod-ingest", exist_ok=True)
+                  json.dump({"fatal":"".join(traceback.format_exception(t,v,tb))[-1800:]},
+                            open(".nod-ingest/status.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
+              except Exception: pass
+              sys.__excepthook__(t,v,tb)
+          sys.excepthook=_hook
           MODE=(os.environ.get("MODE") or "probe").strip()
           FORCE=(os.environ.get("FORCE") or "false").strip()=="true"
           BUDGET=float(os.environ.get("MAXMIN") or "40")*60
@@ -162,9 +170,10 @@ jobs:
               raise SystemExit
 
           # ── MODE=all: полный ингест ──
-          d1("INSERT INTO works (id,title,verse_scheme) VALUES ('brs',json_object('ru','Нектар преданности','en','The Nectar of Devotion'),'prose') "
-             "ON CONFLICT(id) DO UPDATE SET title=excluded.title")
-          d1("INSERT INTO editions (id,work_id,language,title) VALUES ('brs-ru','brs','ru','Нектар преданности') "
+          d1("INSERT INTO works (id,kind,abbrev,verse_scheme) VALUES ('brs','scripture','НП','prose') "
+             "ON CONFLICT(id) DO UPDATE SET verse_scheme=excluded.verse_scheme")
+          d1("INSERT INTO editions (id,work_id,lang,title,translator,source,license,source_url) VALUES "
+             "('brs-ru','brs','ru','Нектар преданности','А.Ч. Бхактиведанта Свами Прабхупада','vedabase.io','pending','https://vedabase.io/ru/library/nod/') "
              "ON CONFLICT(id) DO NOTHING")
 
           def num_for(seg, i):
@@ -187,9 +196,9 @@ jobs:
                   stats["sections"].append({"seg":seg,"skipped":True,"existing":existing,"title":ttl})
                   continue
               # división upsert
-              d1("INSERT INTO divisions (id,work_id,parent_id,level,ordinal,number,title,source_url) "
-                 f"VALUES ({q(div_id)},'brs',NULL,'chapter',{i},{q(num)},json_object('ru',{q(ttl)}),{q(url)}) "
-                 "ON CONFLICT(id) DO UPDATE SET ordinal=excluded.ordinal, number=excluded.number, title=excluded.title, source_url=excluded.source_url")
+              d1("INSERT INTO divisions (id,work_id,parent_id,level,number,title,ordinal) "
+                 f"VALUES ({q(div_id)},'brs',NULL,'chapter',{q(num)},json_object('ru',{q(ttl)}),{i}) "
+                 "ON CONFLICT(id) DO UPDATE SET number=excluded.number, title=excluded.title, ordinal=excluded.ordinal")
               # чистим прежние абзацы раздела (для повторной заливки)
               d1(f"DELETE FROM verse_texts WHERE verse_id IN (SELECT id FROM verses WHERE division_id={q(div_id)})")
               d1(f"DELETE FROM verses WHERE division_id={q(div_id)}")

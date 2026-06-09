@@ -781,28 +781,155 @@ function SbReviews() {
   );
 }
 
+/* ───────── О книге · НП ───────── */
+function NodOverview({ book }: { book: BookData }) {
+  void book;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Наука преданности</div>
+        <p style={{ margin: 0, fontSize: 17.5, lineHeight: 1.55, color: INK }}>
+          «Нектар преданности» — это изложение «Бхакти-расамрита-синдху», классического труда, написанного на санскрите Шрилой Рупой Госвами, главным из шести Госвами Вриндавана и ближайшим спутником Господа Чайтаньи Махапрабху.
+        </p>
+        <p style={{ margin: "14px 0 0", fontSize: 16, lineHeight: 1.58, color: INK2 }}>
+          Это полное руководство по науке бхакти — преданного служения Богу. Книга шаг за шагом ведёт от первых проблесков веры к высшему совершенству жизни: чистой, ничем не обусловленной любви к Кришне (према) и вкусу вечных взаимоотношений с Ним (раса).
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Кратко</SectionTitle>
+        <div>
+          <KeyVal k="Жанр" v="Наука преданного служения (бхакти-шастра)" />
+          <KeyVal k="Первоисточник" v="«Бхакти-расамрита-синдху» Рупы Госвами" />
+          <KeyVal k="Автор изложения" v="А. Ч. Бхактиведанта Свами Прабхупада" />
+          <KeyVal k="Объём" v="Предисловие, вступление и 51 глава" />
+          <KeyVal k="Сквозная тема" v="Как развить чистую любовь к Богу" />
+          <KeyVal k="Венец" v="Према и расы преданного служения" last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>О чём книга</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.6, color: INK }}>
+          Рупа Госвами сравнивает преданное служение с океаном нектара (бхакти-раса-амрита-синдху). «Нектар преданности» проводит читателя по этому океану: что такое чистая бхакти, кто способен ею заниматься, как её практиковать и каких оскорблений избегать.
+        </p>
+        <p style={{ margin: "12px 0 0", fontSize: 16, lineHeight: 1.6, color: INK2 }}>
+          Вторая половина книги раскрывает самое сокровенное — как дремлющая в сердце любовь к Богу пробуждается и расцветает в пяти основных взаимоотношениях с Кришной: нейтральном, служении, дружбе, родительской любви и супружеской любви. Это наука о вечной жизни души в любви.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Структура</SectionTitle>
+        <p style={{ margin: "0 0 6px", fontSize: 15, lineHeight: 1.55, color: INK2 }}>
+          Изложение следует двум «океанам» труда Рупы Госвами — восходящему пути практики и затем расцвету любви:
+        </p>
+        <div>
+          <DefRow term="Практика бхакти" desc="Признаки чистого преданного служения, его превосходство над освобождением, как практиковать и каких оскорблений избегать." />
+          <DefRow term="Бхава и према" desc="Как регулируемое служение перерастает в спонтанную привязанность, а затем в чистую любовь к Богу." />
+          <DefRow term="Пять основных рас" desc="Нейтралитет, служение, дружба, родительская и супружеская любовь к Кришне." />
+          <DefRow term="Косвенные расы" desc="Семь второстепенных взаимоотношений — от смеха до изумления и гнева — в связи с Господом." last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Это издание</SectionTitle>
+        <p style={{ margin: "0 0 14px", fontSize: 16, lineHeight: 1.58, color: INK }}>
+          «Нектар преданности» Шрила Прабхупада составил как доступное изложение «Бхакти-расамрита-синдху», чтобы наука преданного служения стала понятна читателю наших дней. Текст приводится главами для последовательного чтения.
+        </p>
+        <div>
+          <KeyVal k="Изложение и комментарии" v="А. Ч. Бхактиведанта Свами Прабхупада" />
+          <KeyVal k="Издатель" v="The Bhaktivedanta Book Trust" />
+          <KeyVal k="Первое издание" v="1970" />
+          <KeyVal k="Язык этого издания" v="Русский" last />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* ───────── Рецензии · НП ───────── */
+function NodReviews() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: INK }}>
+          «Нектар преданности» опирается на высший авторитет гаудия-вайшнавской традиции в науке о бхакти — труд Шрилы Рупы Госвами, которому Сам Господь Чайтанья поручил раскрыть науку преданного служения.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Слово традиции</SectionTitle>
+        <div>
+          <Review
+            text="Преданное служение Господу подобно безбрежному океану нектара. Тот, кто погрузится в него, обретёт высшее счастье и более не пожелает ничего иного."
+            name="По «Бхакти-расамрита-синдху»"
+            role="Замысел Рупы Госвами" />
+          <Review
+            text="Когда любовь к Богу, дремлющая в сердце, пробуждается, обусловленная душа возвращается к своей вечной природе — служению Кришне в чистой любви."
+            name="По «Нектару преданности»"
+            role="Суть книги"
+            last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Место в священной литературе</SectionTitle>
+        <div>
+          <DefRow
+            term="Свод законов бхакти"
+            desc="«Бхакти-расамрита-синдху» — главный трактат о науке преданного служения, систематизирующий бесчисленные наставления писаний о бхакти." />
+          <DefRow
+            term="Поручение Господа Чайтаньи"
+            desc="Рупа Госвами по указанию Шри Чайтаньи Махапрабху изложил науку расы — вечных взаимоотношений души с Богом." />
+          <DefRow
+            term="Продолжение «Бхагавад-гиты»"
+            desc="Если «Гита» призывает предаться Богу, «Нектар преданности» подробно учит, как это делать и к чему это ведёт."
+            last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Зачем читать</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.58, color: INK2 }}>
+          Для практикующего «Нектар преданности» — настольное руководство: как утвердиться в преданном служении, избежать оскорблений и постепенно развить вкус к святому имени и чистую любовь к Богу. Это карта пути от первого шага до высшей цели.
+        </p>
+      </section>
+
+      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+        Цитаты приведены в изложении; полный текст с комментариями публикуется Bhaktivedanta Book Trust.
+      </p>
+    </div>
+  );
+}
+
 /* ───────── Содержание (flat rows on white) ───────── */
 export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
-function Contents({ chapters, onOpenChapter }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void }) {
+function Contents({ chapters, onOpenChapter, prose = false }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void; prose?: boolean }) {
+  const chCount = chapters ? chapters.filter((c) => { const n = Number(c.number); return n >= 1 && n <= 999; }).length : 0;
   return (
     <div style={{ padding: "24px 20px 12px" }}>
-      <SectionTitle>{chapters ? `${chapters.length} глав` : "Содержание"}</SectionTitle>
+      <SectionTitle>{chapters ? (prose ? `${chCount} глав` : `${chapters.length} глав`) : "Содержание"}</SectionTitle>
       {!chapters && <div style={{ fontSize: 15, color: INK2 }}>Загрузка оглавления…</div>}
       {chapters && (
         <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
-          {chapters.map((c, i) => (
-            <li key={c.id} style={{ position: "relative" }}>
-              <Pressable onClick={() => onOpenChapter(c)} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
-                <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{c.number}</span>
-                <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontSize: 16, lineHeight: 1.3, fontWeight: 500, color: INK }}>{c.title_ru}</span>
-                  <span style={{ display: "block", marginTop: 2, fontSize: 13, color: INK3 }}>{c.verses} стихов</span>
-                </span>
-                <span style={{ color: INK3 }}><ChevronIcon size={17} /></span>
-              </Pressable>
-              {i < chapters.length - 1 && <span aria-hidden style={{ position: "absolute", left: 38, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
-            </li>
-          ))}
+          {chapters.map((c, i) => {
+            const n = Number(c.number);
+            const showNum = !prose || (n >= 1 && n <= 999);
+            return (
+              <li key={c.id} style={{ position: "relative" }}>
+                <Pressable onClick={() => onOpenChapter(c)} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
+                  <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{showNum ? c.number : ""}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: 16, lineHeight: 1.3, fontWeight: 500, color: INK }}>{c.title_ru}</span>
+                    {!prose && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: INK3 }}>{c.verses} стихов</span>}
+                  </span>
+                  <span style={{ color: INK3 }}><ChevronIcon size={17} /></span>
+                </Pressable>
+                {i < chapters.length - 1 && <span aria-hidden style={{ position: "absolute", left: 38, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
+              </li>
+            );
+          })}
         </ol>
       )}
     </div>
@@ -1232,6 +1359,115 @@ function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "n
   );
 }
 
+/* ───────── Прозовый ридер главы (Нектар преданности и др. prose-книги) ───────── */
+interface ProsePara { ref: string; translation: string | null }
+function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, onMenuAction, onQr, flash, onOpenChapter }: { chapter: ChapterRow; chapters: ChapterRow[] | null; bookTitle: string; work?: string; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; onOpenChapter: (ch: ChapterRow) => void }) {
+  const [paras, setParas] = useState<ProsePara[] | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
+  const [menu, setMenu] = useState(false);
+  const [fav, setFav] = useState(false);
+  const moreRef = useRef<HTMLSpanElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const n = Number(chapter.number);
+  const numbered = n >= 1 && n <= 999;
+
+  useEffect(() => {
+    let live = true;
+    setParas(null);
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    fetch(api(`/books/${work}/chapters/${encodeURIComponent(chapter.number)}/read`))
+      .then((r) => r.json())
+      .then((d) => { if (live) setParas((d.verses ?? []).map((v: ProsePara) => ({ ref: v.ref, translation: v.translation }))); })
+      .catch(() => { if (live) setParas([]); });
+    return () => { live = false; };
+  }, [chapter.id, chapter.number, work]);
+
+  const idx = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
+  const prev = chapters && idx > 0 ? chapters[idx - 1] : null;
+  const next = chapters && idx >= 0 && idx < chapters.length - 1 ? chapters[idx + 1] : null;
+
+  const shareChapter = async () => {
+    const url = `https://gaurangers.com/book/${work}`;
+    try {
+      if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
+        await (navigator as Navigator).share({ title: `${chapter.title_ru} · ${bookTitle}`, text: `${chapter.title_ru} — ${bookTitle}`, url });
+        return;
+      }
+    } catch { /* cancelled */ }
+    try { await navigator.clipboard.writeText(url); flash("Ссылка скопирована"); }
+    catch { flash(url); }
+  };
+
+  return (
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
+      <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
+        <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
+        <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
+          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
+          <div style={{ fontSize: 11, color: INK2 }}>{numbered ? `Глава ${chapter.number} · ` : ""}{bookTitle}</div>
+        </div>
+        <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } }} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
+      </header>
+
+      <div ref={scrollRef} onScroll={(e) => setCollapsed((e.target as HTMLDivElement).scrollTop > 56)}
+        style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ margin: "0 auto", padding: "16px 24px calc(48px + env(safe-area-inset-bottom))" }}>
+          <div style={{ textAlign: "center", marginBottom: 2 }}>
+            {numbered && <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
+            <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{chapter.title_ru}</h1>
+          </div>
+          <Ornament />
+
+          {!paras && <div style={{ textAlign: "center", color: INK2, padding: "40px 0", fontSize: 15 }}>Загрузка главы…</div>}
+          {paras && paras.length === 0 && <div style={{ textAlign: "center", color: INK2, padding: "40px 0", fontSize: 15 }}>Текст этого раздела готовится.</div>}
+
+          {paras && paras.length > 0 && (
+            <div style={{ marginTop: 4 }}>
+              {paras.map((p, i) => (
+                <p key={p.ref || i} style={{ margin: i === 0 ? 0 : "0", marginTop: i === 0 ? 0 : 18, fontSize: 17.5, lineHeight: 1.72, color: INK, letterSpacing: "-0.003em" }}>
+                  {p.translation}
+                </p>
+              ))}
+            </div>
+          )}
+
+          {(prev || next) && (
+            <div style={{ display: "flex", gap: 10, marginTop: 34 }}>
+              {prev ? (
+                <Pressable onClick={() => onOpenChapter(prev)} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3, padding: "12px 14px", border: `0.5px solid ${LINE}`, borderRadius: 14, textAlign: "left" }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: INK3 }}>Назад</span>
+                  <span style={{ fontSize: 13.5, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prev.title_ru}</span>
+                </Pressable>
+              ) : <span style={{ flex: 1 }} />}
+              {next ? (
+                <Pressable onClick={() => onOpenChapter(next)} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3, padding: "12px 14px", border: `0.5px solid ${LINE}`, borderRadius: 14, textAlign: "right" }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLDT }}>Далее</span>
+                  <span style={{ fontSize: 13.5, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{next.title_ru}</span>
+                </Pressable>
+              ) : <span style={{ flex: 1 }} />}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
+        setMenu(false);
+        if (id === "share") { void shareChapter(); return; }
+        if (id === "pdf") { flash("PDF этой книги готовится"); return; }
+        if (id === "qr") {
+          onQr(`https://gaurangers.com/book/${work}`, { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
+          return;
+        }
+        onMenuAction(id);
+      }} anchorRef={moreRef} />
+    </div>
+  );
+}
+
+
 function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
@@ -1556,6 +1792,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       else window.history.pushState(null, "", path);
       return;
     }
+    if (book.prose) return; // прозовые книги: главы — оверлеи, URL остаётся /book/<work>
     if (!chapters) return;
     let path = "/book/bg";
     if (readerRef) {
@@ -1586,6 +1823,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", base); return; }
       onBack(); return;
     }
+    if (book.prose) { if (openChapter) { setOpenChapter(null); } else { onBack(); } return; }
     if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `/book/bg/${openChapter.number}` : "/book/bg"); return; }
     if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", "/book/bg"); return; }
     onBack();
@@ -1597,6 +1835,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       const base = `/book/${book.work}`;
       const path = window.location.pathname;
       if (!path.startsWith(base)) return;
+      if (book.prose) return; // прозовые книги не используют глубоких URL глав
       const parts = path.split("/");        // ["", "book", work, a?, b?, c?]
       if (book.hierarchical) openTarget.current(parts[3] || null, parts[4] || null, parts[5] || null);
       else openTarget.current(null, parts[3] || null, parts[4] || null);
@@ -1699,7 +1938,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "share") { void shareBook(); return; }
-    if (id === "pdf") { if (book.work === "cc") { void downloadCcBook(); return; } if (book.hierarchical) { flash("PDF этой книги готовится"); return; } void buildBookPdf(); return; }
+    if (id === "pdf") { if (book.work === "cc") { void downloadCcBook(); return; } if (book.hierarchical || book.prose) { flash("PDF этой книги готовится"); return; } void buildBookPdf(); return; }
     if (id === "qr") {
       openQr(`https://gaurangers.com/book/${book.work}`, {
         kind: "book",
@@ -1733,10 +1972,10 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
         <div>
           {tab === "contents" && (book.hierarchical
             ? <CcContents work={book.work} onOpenChapter={setOpenChapter} />
-            : <Contents chapters={chapters} onOpenChapter={setOpenChapter} />)}
-          {tab === "overview" && (book.work === "sb" ? <SbOverview book={book} /> : book.hierarchical ? <CcOverview book={book} /> : <Overview book={book} />)}
+            : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} />)}
+          {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.hierarchical ? <CcOverview book={book} /> : <Overview book={book} />)}
           {tab === "author" && <Author />}
-          {tab === "reviews" && (book.work === "sb" ? <SbReviews /> : book.hierarchical ? <CcReviews /> : <Reviews />)}
+          {tab === "reviews" && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.hierarchical ? <CcReviews /> : <Reviews />)}
         </div>
       </div>
 
@@ -1761,7 +2000,9 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bookPctTitle} · {bookPct}%</span>
         </button>
       )}
-      {openChapter && <ChapterPage chapter={openChapter} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />}
+      {openChapter && (book.prose
+        ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
+        : <ChapterPage chapter={openChapter} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
