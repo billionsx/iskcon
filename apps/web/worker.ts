@@ -199,6 +199,22 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   const coverOnly = kind === "cover";
   const wantCover = kind === "book" || (kind === "lila" && !bare) || coverOnly || kind === "lilamerged";
 
+  // ── Кэш на «крае» Cloudflare ───────────────────────────────────────────────
+  // Тяжёлые сборки (целая книга / лила) рендерятся ОДИН раз, дальше отдаются из
+  // кэша любому числу пользователей мгновенно — без запуска браузера. Это и есть
+  // масштабируемость: рендерер трогается один раз на книгу/лилу, а не на каждое
+  // скачивание. ?fresh=1 — принудительно пересобрать (после правок контента).
+  const cacheable = kind === "lilamerged" || kind === "book";
+  const cacheKey = cacheable
+    ? new Request(`https://pdfcache.internal/${encodeURIComponent(work)}/${kind === "book" ? "book" : "lila-" + encodeURIComponent(lila)}`)
+    : null;
+  const fresh = url.searchParams.get("fresh") === "1";
+  const edge = (caches as unknown as { default: Cache }).default;
+  if (cacheKey && !fresh) {
+    try { const hit = await edge.match(cacheKey); if (hit) return hit; } catch { /* промах — рендерим */ }
+  }
+  const cacheCtl = cacheable ? "public, max-age=31536000, immutable" : "no-store";
+
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
   try {
     browser = await puppeteer.launch(env.BROWSER);
@@ -242,7 +258,9 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
       }
       if (merged.getPageCount() === 0) return new Response("pdf render failed: empty", { status: 500, headers: { "X-Robots-Tag": NOINDEX } });
       const out = await merged.save();
-      return new Response(out, { headers: { "content-type": "application/pdf", "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`, "X-Robots-Tag": NOINDEX, "Cache-Control": "no-store" } });
+      const resp = new Response(out, { headers: { "content-type": "application/pdf", "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`, "X-Robots-Tag": NOINDEX, "Cache-Control": cacheCtl } });
+      if (cacheKey) { try { await edge.put(cacheKey, resp.clone()); } catch { /* кэш не критичен */ } }
+      return resp;
     }
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: (kind === "book" || kind === "lila") ? 1 : 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
@@ -294,14 +312,16 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
         out = await merged.save();
       } catch { out = bodyPdf as unknown as Uint8Array; /* при сбое склейки отдаём тело */ }
     }
-    return new Response(out, {
+    const resp = new Response(out, {
       headers: {
         "content-type": "application/pdf",
         "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
         "X-Robots-Tag": NOINDEX,
-        "Cache-Control": "no-store",
+        "Cache-Control": cacheCtl,
       },
     });
+    if (cacheKey) { try { await edge.put(cacheKey, resp.clone()); } catch { /* кэш не критичен */ } }
+    return resp;
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     return new Response("pdf render failed: " + msg, { status: 500, headers: { "X-Robots-Tag": NOINDEX } });
