@@ -138,7 +138,7 @@ export async function downloadCcBookPdf(opts: {
     if (crawl) clearInterval(crawl);
     crawl = setInterval(() => { if (opts.cancelRef.current) return; const t = (Date.now() - t0) / 1000; opts.onProgress?.(Math.max(1, Math.min(98, Math.round((base + (next - base) * (1 - Math.exp(-t / 70)) * 0.9) * 100)))); }, 500);
   };
-  const stopCrawl = (li: number) => { if (crawl) { clearInterval(crawl); crawl = undefined; } opts.onProgress?.(Math.max(1, Math.min(99, Math.round(((li + 1) / N) * 100)))); };
+  const stopCrawl = () => { if (crawl) { clearInterval(crawl); crawl = undefined; } };
 
   const failed: string[] = [];
   let rateLimited = false;
@@ -146,29 +146,25 @@ export async function downloadCcBookPdf(opts: {
     const lila = lilas[li];
     const fname = `${bookTitle}. ${lila.label}.pdf`;
     const urlPath = `/pdf?kind=lilamerged&work=${encodeURIComponent(work)}&lila=${lila.slug}&label=${encodeURIComponent(lila.label)}&ranges=${encodeURIComponent(lila.ranges.join(","))}`;
-    let ok = false, lastErr = "";
-    // до 3 попыток; на 429 — длинная пауза (лимит создания браузеров сбрасывается со временем)
-    for (let attempt = 0; attempt < 3 && !ok && !opts.cancelRef.current; attempt++) {
-      opts.onTitle?.(`${lila.label}\u00A0·\u00A0${li + 1}\u00A0из\u00A0${N}`);
-      startCrawl(li);
-      const ac = new AbortController();
-      opts.abortRef.current = ac;
-      const killer = setTimeout(() => ac.abort(), 420000);
-      let bytes: Uint8Array | null = null;
-      try { bytes = await fetchServerPdfBytes(urlPath, { signal: ac.signal, onError: (r) => { lastErr = r; } }); }
-      finally { clearTimeout(killer); }
-      stopCrawl(li);
-      if (bytes) { try { savePdfBytes(bytes, fname); ok = true; } catch (e) { lastErr = e instanceof Error ? e.message : "сохранение"; } }
-      if (ok || opts.cancelRef.current) break;
-      const is429 = /429|rate limit/i.test(lastErr);
-      if (is429) rateLimited = true;
-      if (attempt < 2) {
-        opts.onTitle?.(is429 ? `${lila.label}\u00A0·\u00A0пауза 90\u00A0с` : `${lila.label}\u00A0·\u00A0повтор`);
-        await sleep(is429 ? 90000 : 8000);
-      }
+    opts.onTitle?.(`${lila.label}\u00A0·\u00A0${li + 1}\u00A0из\u00A0${N}`);
+    startCrawl(li);
+    const ac = new AbortController();
+    opts.abortRef.current = ac;
+    const killer = setTimeout(() => ac.abort(), 420000);
+    let bytes: Uint8Array | null = null, lastErr = "";
+    try { bytes = await fetchServerPdfBytes(urlPath, { signal: ac.signal, onError: (r) => { lastErr = r; } }); }
+    finally { clearTimeout(killer); }
+    stopCrawl();
+    if (bytes) {
+      try { savePdfBytes(bytes, fname); opts.onProgress?.(Math.min(99, Math.round(((li + 1) / N) * 100))); }
+      catch { failed.push(lila.label); }
+    } else {
+      opts.onProgress?.(0);
+      failed.push(lila.label);
+      // Лимит Cloudflare на запуск браузеров — дальше пробовать бессмысленно.
+      if (/429|rate limit/i.test(lastErr)) { rateLimited = true; break; }
     }
-    if (!ok && !opts.cancelRef.current) failed.push(lila.label);
-    if (ok && li < N - 1 && !opts.cancelRef.current) await sleep(3000);
+    if (li < N - 1 && !opts.cancelRef.current) await sleep(2000);
   }
 
   if (crawl) clearInterval(crawl);
@@ -176,10 +172,13 @@ export async function downloadCcBookPdf(opts: {
   opts.onProgress?.(0);
   opts.onTitle?.("Готовлю PDF книги");
   if (opts.cancelRef.current) return;
-  if (failed.length) {
-    if (rateLimited) opts.onStatus?.("Сервис рендера временно ограничил частоту запросов. Подождите 1–2 минуты и нажмите «Скачать PDF» ещё раз.");
-    else opts.onStatus?.(`Не удалось собрать: ${failed.join(", ")}. Нажмите «Скачать PDF» ещё раз.`);
-  } else opts.onStatus?.("Готово");
+  if (rateLimited) {
+    opts.onStatus?.("Сервис рендера сейчас занят (лимит Cloudflare на запуск браузеров). Подождите несколько минут и нажмите «Скачать PDF» один раз.");
+  } else if (failed.length) {
+    opts.onStatus?.(`Не удалось собрать: ${failed.join(", ")}. Попробуйте ещё раз.`);
+  } else {
+    opts.onStatus?.("Готово");
+  }
 }
 
 /**
