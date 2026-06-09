@@ -108,7 +108,10 @@ jobs:
                   t=re.sub(r"[ \t]+"," ", e.get_text()).strip()
                   t=re.sub(r"\n{2,}","\n",t)
                   if not t or BOILER.search(t): continue
-                  if re.fullmatch(r"ГЛАВА\s+\d+", t): continue
+                  if re.match(r"^ГЛАВА\s+\d+", t): continue          # заголовок «ГЛАВА N …»
+                  if title and t==title: continue                     # повтор названия раздела
+                  if t in ("Предисловие","Вступление","Введение","Заключительные слова"): continue
+                  if t.startswith("Посвящается"): continue
                   paras.append(t)
               out=[]
               for t in paras:
@@ -206,6 +209,12 @@ jobs:
 
           ver=d1("SELECT COUNT(DISTINCT division_id) AS sections, COUNT(*) AS paras FROM verses WHERE work_id='brs'")[0]
           stats["db_verify"]=ver
+          try:
+              s1=d1("SELECT vt.translation AS t FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id='brs-ru' "
+                    "WHERE v.division_id='brs.1' ORDER BY v.ordinal LIMIT 2")
+              stats["sample_ch1"]=[(r["t"] or "")[:160] for r in s1]
+          except Exception as e:
+              stats["sample_ch1_err"]=str(e)[:120]
           os.makedirs(".nod-ingest", exist_ok=True)
           json.dump(stats, open(".nod-ingest/status.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
           print("DONE:", json.dumps({"written_paras":stats["written_paras"],"stopped_early":stats["stopped_early"],"db":ver}, ensure_ascii=False))
