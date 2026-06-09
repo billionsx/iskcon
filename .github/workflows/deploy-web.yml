@@ -64,6 +64,8 @@ jobs:
           bun run genpdf
           echo "== итог =="
           ls -la dist/books 2>/dev/null | sed -n '1,60p' || echo "нет dist/books"
+          for f in dist/books/*.pdf; do [ -f "$f" ] && echo "::warning::PDF $(basename "$f") $(du -h "$f" | cut -f1)"; done
+          [ -f dist/books/manifest.json ] && echo "::warning::MANIFEST $(tr -d '\n' < dist/books/manifest.json | cut -c1-500)" || echo "::warning::нет manifest.json"
       - name: Apply ADMIN_TOKEN secret (before deploy, so it persists into the deployed version)
         working-directory: apps/web
         env:
@@ -88,6 +90,8 @@ jobs:
           echo "wrangler deploy exit = $RC"
           if [ "$RC" != "0" ]; then
             echo "::error::wrangler deploy УПАЛ (exit $RC) — версия воркера НЕ обновлена. См. вывод выше."
+            echo "----- wrangler tail -----"; tail -n 40 /tmp/web-deploy.log || true
+            grep -iE 'error|exceed|larger|too large|asset|ENOENT|limit|failed|✘|✗' /tmp/web-deploy.log | tail -n 12 | while IFS= read -r l; do echo "::error::WD ${l}"; done
             exit "$RC"
           fi
           # iskcon-web работает в режиме версий (gradual deployments): wrangler deploy
