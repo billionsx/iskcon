@@ -79,13 +79,13 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
     try { const a = document.createElement("a"); a.href = t.url; a.download = `${t.title}.mp3`; document.body.appendChild(a); a.click(); a.remove(); flash("Скачивание…"); }
     catch { flash("Не удалось скачать"); }
   }
-  function bookQr() { setQr({ url: bookUrl, data: { kind: "book", bookTitle: BOOK.titleLine1, bookSubtitle: BOOK.titleLine2, tagline: BOOK.tagline, cover: BOOK.covers[0] } }); }
+  function bookQr() { setQr({ url: bookUrl, data: { kind: "book", bookTitle: bookFullTitle(BOOK), tagline: BOOK.tagline, cover: BOOK.covers[0] } }); }
   function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: bookFullTitle(BOOK), chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
   function onMenuSelect(id: string) {
-    if (id === "share-chapter") { doShare(chapterUrl, `${BOOK.titleLine1} — Глава ${ch}`); return; }
+    if (id === "share-chapter") { doShare(chapterUrl, `${bookFullTitle(BOOK)} — Глава ${ch}`); return; }
     if (id === "qr-chapter") { chapterQr(); return; }
     if (id === "download-chapter") { downloadChapter(); return; }
-    if (id === "share-book") { doShare(bookUrl, BOOK.titleLine1); return; }
+    if (id === "share-book") { doShare(bookUrl, bookFullTitle(BOOK)); return; }
     if (id === "qr-book") { bookQr(); return; }
     if (id === "donate") { onDonate?.(); return; }
     if (id === "report") { setReportOpen(true); return; }
@@ -129,7 +129,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
               <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
-              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{sub} · {BOOK.titleLine1}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{sub} · {bookFullTitle(BOOK)}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}

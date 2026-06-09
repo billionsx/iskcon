@@ -13,7 +13,7 @@ import {
   createContext, useContext, useEffect, useRef, useState, type ReactNode,
 } from "react";
 import { api } from "../api";
-import { BOOKS } from "../books";
+import { BOOKS, bookFullTitle } from "../books";
 import { createWebEngine, type AudioEngine } from "./engine";
 
 export type AudioMode = "plain" | "commentary";
@@ -89,7 +89,7 @@ const BOOK_AUDIO: Record<string, { title: string; cover: string }> = {
   cc: { title: "Шри Чайтанья-чаритамрита", cover: BOOKS.cc?.covers?.[0] ?? "/og-default.png" },
 };
 function bookCfg(id: string) {
-  return BOOK_AUDIO[id] ?? { title: BOOKS[id]?.titleLine1 ?? "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? "/og-default.png" };
+  return BOOK_AUDIO[id] ?? { title: BOOKS[id] ? bookFullTitle(BOOKS[id]) : "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? "/og-default.png" };
 }
 const PERSIST_KEY = "iol.player.v2"; // {book,mode,chapter,time,rate}; мигрируем со старого bg-ключа
 

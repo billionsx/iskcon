@@ -161,14 +161,32 @@ export const BOOKS: Record<string, BookData> = {
 export const AUDIO_WORKS: Record<string, boolean> = { bg: true, cc: true };
 
 /**
- * Standard share / Open-Graph title for a book:
- *   "<Название>. ISKCON ONE LOVE. ИСККОН."
- * Single source — used by the client share action and by the edge OG injector.
+ * СТАНДАРТ НАПИСАНИЯ НАЗВАНИЯ КНИГИ — единый источник истины.
+ *
+ * `titleLine1`/`titleLine2` существуют ТОЛЬКО для двухстрочной вёрстки обложки
+ * (герой-карточка и титул PDF). Везде, где название выводится как одна строка
+ * — шапка ридера, шеринг, имя PDF-файла, мини-плеер, QR, контекст «Сообщить
+ * об ошибке» — берётся ИСКЛЮЧИТЕЛЬНО `bookFullTitle()`.
+ *
+ * Правило склейки: если первая строка заканчивается дефисом — соединяем без
+ * пробела (часть одного слова), иначе через пробел.
+ *   «Шримад-» + «Бхагаватам»      → «Шримад-Бхагаватам»
+ *   «Шри Чайтанья-» + «чаритамрита» → «Шри Чайтанья-чаритамрита»
+ *   «Бхагавад-гита» + «как она есть» → «Бхагавад-гита как она есть»
+ *   «Нектар» + «преданности»       → «Нектар преданности»
+ *
+ * Канон совпадает с названиями в API (apps/api/src/routes/books.ts). Не
+ * выводить голый `titleLine1` как самостоятельное название — будет обрубок.
  */
-/** Full title as one string — joins the two title lines (no space after a trailing hyphen). */
 export function bookFullTitle(b: BookData): string {
   return b.titleLine2 ? `${b.titleLine1}${b.titleLine1.endsWith("-") ? "" : " "}${b.titleLine2}` : b.titleLine1;
 }
+
+/**
+ * Стандартный share / Open-Graph заголовок книги:
+ *   «<Полное название>. ISKCON ONE LOVE. ИСККОН.»
+ * Единый источник — клиентский шеринг и edge-инъектор OG.
+ */
 
 export function bookShareTitle(b: BookData): string {
   return `${bookFullTitle(b)}. ISKCON ONE LOVE. ИСККОН.`;
