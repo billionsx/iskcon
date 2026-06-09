@@ -8,10 +8,9 @@ import { useState, useRef, useEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { DonateModal } from "./DonateModal";
-import { BOOKS, bookShareTitle } from "./books";
+import { BOOKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
-import { exportWholeBook, downloadCcBookPdf } from "./bookPdf";
-import { downloadServerPdf } from "./pdf";
+import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { PdfDoc } from "./PdfDoc";
@@ -355,7 +354,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                   return;
                 }
-                if (id === "pdf") { void downloadServerPdf("/pdf?kind=book", "Бхагавад-гита как она есть.pdf", { onStatus: flash, onProgress: setBookPct, fallback: () => { void exportWholeBook(BOOKS.bg, flash); } }); return; }
+                if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: "bg", book: BOOKS.bg, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
                 if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: BOOKS.bg.titleLine1, bookSubtitle: BOOKS.bg.titleLine2, tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
                 if (id === "donate") { onDonate(); return; }
                 if (id === "report") { setReportOpen(true); return; }
@@ -371,8 +370,8 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   }
                   if (id === "pdf") {
                     setPdfHidden(false);
-                    void downloadCcBookPdf({
-                      work: BOOKS.cc.work, book: BOOKS.cc, bookTitle: bookShareTitle(BOOKS.cc),
+                    void downloadBookPdf({
+                      work: BOOKS.cc.work, book: BOOKS.cc,
                       onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle,
                       cancelRef: pdfCancel, abortRef: pdfAbort,
                     });
@@ -392,7 +391,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                     else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                     return;
                   }
-                  if (id === "pdf") { flash("PDF «Шримад-Бхагаватам» готовится"); return; }
+                  if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: BOOKS.sb.work, book: BOOKS.sb, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
                   if (id === "qr") { setQr({ url: "https://gaurangers.com/book/sb", data: { kind: "book", bookTitle: BOOKS.sb.titleLine1, bookSubtitle: BOOKS.sb.titleLine2, tagline: BOOKS.sb.tagline, cover: BOOKS.sb.covers[0] } }); return; }
                   if (id === "donate") { onDonate(); return; }
                   if (id === "report") { setReportOpen(true); return; }
@@ -407,7 +406,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                     else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
                     return;
                   }
-                  if (id === "pdf") { flash("PDF «Нектар преданности» готовится"); return; }
+                  if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: BOOKS.brs.work, book: BOOKS.brs, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
                   if (id === "qr") { setQr({ url: "https://gaurangers.com/book/brs", data: { kind: "book", bookTitle: BOOKS.brs.titleLine1, bookSubtitle: BOOKS.brs.titleLine2, tagline: BOOKS.brs.tagline, cover: BOOKS.brs.covers[0] } }); return; }
                   if (id === "donate") { onDonate(); return; }
                   if (id === "report") { setReportOpen(true); return; }

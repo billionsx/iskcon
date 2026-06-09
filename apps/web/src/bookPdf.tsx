@@ -2,8 +2,8 @@ import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { api } from "./api";
 import { exportToPdf, downloadServerPdf } from "./pdf";
-import { BookPrint, LilaPrint, type ChapterRow, type ChapterVerse } from "./BookDetailPage";
-import type { BookData } from "./books";
+import { BookPrint, LilaPrint, ProsePrint, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
+import { bookFullTitle, type BookData } from "./books";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 type CcChapter = { id: string; number: string; title_ru: string; verses: number };
@@ -107,7 +107,7 @@ export async function downloadCcBookPdf(opts: {
   const jobs: Job[] = [];
   for (const d of toc.divisions ?? []) {
     const slug = d.id.split(".")[1] ?? "";
-    const label = CC_LILA[slug] ?? slug;
+    const label = d.title_ru || CC_LILA[slug] || slug;
     const chs = d.chapters ?? [];
     const total = chs.reduce((a, c) => a + (Number(c.verses) || 0), 0);
     const parts = Math.max(1, Math.ceil(total / CHUNK));
@@ -134,7 +134,7 @@ export async function downloadCcBookPdf(opts: {
     let ok = false;
     try {
       ok = await downloadServerPdf(
-        `/pdf?kind=lila&work=${encodeURIComponent(work)}&lila=${j.slug}&from=${encodeURIComponent(j.from)}&to=${encodeURIComponent(j.to)}`,
+        `/pdf?kind=lila&work=${encodeURIComponent(work)}&lila=${j.slug}&from=${encodeURIComponent(j.from)}&to=${encodeURIComponent(j.to)}&label=${encodeURIComponent(j.label)}${range ? `&range=${encodeURIComponent(range)}` : ""}`,
         fname,
         { onProgress: prog, signal: ac.signal },
       );
@@ -147,4 +147,84 @@ export async function downloadCcBookPdf(opts: {
   opts.abortRef.current = null;
   opts.onProgress?.(0);
   opts.onTitle?.("Готовлю PDF книги");
+}
+
+/**
+ * Клиентский рендер прозовой книги целиком (напр. «Нектар преданности») через
+ * печать браузера — ЗАПАСНОЙ путь, когда серверный рендер не справился.
+ */
+export async function exportProseBook(book: BookData, onStatus?: (m: string) => void): Promise<void> {
+  if (typeof document === "undefined") return;
+  onStatus?.("Готовлю PDF всей книги…");
+  try {
+    const ch = await (await fetch(api(`/books/${book.work}/chapters`))).json();
+    const chapters: ChapterRow[] = ch.chapters ?? [];
+    if (!chapters.length) { onStatus?.("Книга ещё загружается…"); return; }
+    const entries = await Promise.all(chapters.map(async (c) => {
+      const d = await (await fetch(api(`/books/${book.work}/chapters/${c.number}/read`))).json();
+      return [c.number, ((d.verses ?? []) as ProsePara[]).map((v) => ({ ref: v.ref, translation: v.translation }))] as const;
+    }));
+    const parasByCh: Record<string, ProsePara[]> = {};
+    for (const [num, ps] of entries) parasByCh[num] = ps;
+    const host = document.createElement("div");
+    host.setAttribute("aria-hidden", "true");
+    host.style.cssText = "position:fixed;left:-10000px;top:0;width:760px";
+    document.body.appendChild(host);
+    const root = createRoot(host);
+    flushSync(() => { root.render(<ProsePrint book={book} chapters={chapters} parasByCh={parasByCh} />); });
+    if ((document as Document).fonts?.ready) { try { await (document as Document).fonts.ready; } catch { /* ignore */ } }
+    await new Promise((r) => requestAnimationFrame(() => r(null)));
+    exportToPdf(host, { title: bookFullTitle(book) });
+    setTimeout(() => { root.unmount(); host.remove(); }, 2000);
+  } catch { onStatus?.("Не удалось собрать книгу"); }
+}
+
+/**
+ * ЕДИНЫЙ диспетчер выгрузки книги в PDF (BBT-стандарт, с обложкой) — один путь
+ * для всех существующих и новых книг. Структуру берём из BookData:
+ *   • hierarchical (ЧЧ, ШБ) → по томам/частям (как BBT издаёт лилы/песни),
+ *     каждый файл с обложкой и плашкой тома (см. downloadCcBookPdf);
+ *   • prose (Нектар преданности) → один файл, главы прозы;
+ *   • иначе (БГ) → один файл со всеми стихами.
+ * Обложку прикрепляет воркер (kind=book|lila) — клиентский код книго-независим.
+ */
+export async function downloadBookPdf(opts: {
+  work: string; book: BookData;
+  onStatus?: (m: string) => void; onProgress?: (p: number) => void; onTitle?: (t: string) => void;
+  cancelRef?: { current: boolean }; abortRef?: { current: AbortController | null };
+}): Promise<void> {
+  const { work, book } = opts;
+  const full = bookFullTitle(book);
+  if (book.hierarchical) {
+    await downloadCcBookPdf({
+      work, book, bookTitle: full,
+      onStatus: opts.onStatus, onProgress: opts.onProgress, onTitle: opts.onTitle,
+      cancelRef: opts.cancelRef ?? { current: false }, abortRef: opts.abortRef ?? { current: null },
+    });
+    return;
+  }
+  // Одиночный файл «как у БГ» (БГ — стихи; прозовые книги — главы прозы).
+  if (opts.cancelRef) opts.cancelRef.current = false;
+  opts.onTitle?.("Готовлю PDF книги");
+  const ac = new AbortController();
+  if (opts.abortRef) opts.abortRef.current = ac;
+  const killer = setTimeout(() => ac.abort(), 280000);
+  try {
+    if (book.prose) {
+      await downloadServerPdf(
+        `/pdf?kind=book&work=${encodeURIComponent(work)}`, `${full}.pdf`,
+        { onStatus: opts.onStatus, onProgress: opts.onProgress, signal: ac.signal, fallback: () => { void exportProseBook(book, opts.onStatus); } },
+      );
+    } else {
+      await downloadServerPdf(
+        `/pdf?kind=book`, `${full}.pdf`,
+        { onStatus: opts.onStatus, onProgress: opts.onProgress, signal: ac.signal, fallback: () => { void exportWholeBook(book, opts.onStatus); } },
+      );
+    }
+  } finally {
+    clearTimeout(killer);
+    if (opts.abortRef) opts.abortRef.current = null;
+    opts.onProgress?.(0);
+    opts.onTitle?.("Готовлю PDF книги");
+  }
 }

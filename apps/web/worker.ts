@@ -1,6 +1,7 @@
 import { handleAdmin } from "./loader/handler";
-import { BOOKS, bookShareTitle, bookShareImage } from "./src/books";
+import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import puppeteer from "@cloudflare/puppeteer";
+import { PDFDocument } from "pdf-lib";
 import { EmailMessage } from "cloudflare:email";
 import { createMimeMessage } from "mimetext/browser";
 
@@ -40,9 +41,101 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+// ── Обложка по стандарту BBT (единая для всех книг) ──
+// Чистая полностраничная обложка (A4, без колонтитулов): золотая двойная рамка
+// с ◆ по углам, название (Georgia), IAST курсивом, дек-строка, иллюстрация
+// книги (covers[0]) в паспарту, плашка тома (лила/песнь) при необходимости,
+// строка автора и колофон BBT. Книго-независима: всё из BookData.
+function coverHtml(o: {
+  titleLine1: string; titleLine2?: string; iast: string; tagline: string;
+  author: string; imgUrl: string; uniformTitle?: boolean;
+  volume?: string; range?: string;
+}): string {
+  const GOLD = "#D2AA1B", GOLDT = "#9c7c15", INK = "#1f2024", INK2 = "#70727b";
+  const e = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const t2 = o.titleLine2
+    ? `<div style="margin-top:${o.uniformTitle ? "1mm" : "2mm"};font-size:${o.uniformTitle ? "33pt" : "21pt"};font-weight:700;line-height:1.04;letter-spacing:-0.01em;color:${INK}">${e(o.titleLine2)}</div>`
+    : "";
+  const volume = o.volume
+    ? `<div style="margin-bottom:6mm"><div style="font-size:12.5pt;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:${GOLDT}">${e(o.volume)}</div>${o.range ? `<div style="margin-top:1.5mm;font-size:10pt;color:${INK2}">${e(o.range)}</div>` : ""}</div>`
+    : "";
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:A4;margin:0}
+html,body{width:210mm;height:297mm}
+body{font-family:Georgia,'Times New Roman',serif;background:#ffffff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{position:relative;width:210mm;height:297mm;padding:11mm}
+.frame{position:relative;width:100%;height:100%;border:1.1pt solid #C9A227;display:flex;flex-direction:column;justify-content:space-between;padding:13mm 13mm 11mm;text-align:center}
+.frame::before{content:"";position:absolute;inset:2.4mm;border:0.5pt solid rgba(201,162,39,0.45);pointer-events:none}
+.cnr{position:absolute;color:${GOLD};font-size:9pt;line-height:1}
+.rule{display:flex;align-items:center;justify-content:center;gap:8px;color:${GOLD}}
+.rule i{display:block;width:16mm;height:0;border-top:0.8pt solid ${GOLD}}
+.art{background:#fff;padding:2.4mm;border:0.7pt solid rgba(0,0,0,0.14);box-shadow:0 6px 22px rgba(0,0,0,0.16)}
+.art img{display:block;width:112mm;height:auto;max-height:150mm;object-fit:contain}
+</style></head><body>
+<div class="sheet"><div class="frame">
+<span class="cnr" style="top:2.0mm;left:2.0mm">◆</span><span class="cnr" style="top:2.0mm;right:2.0mm">◆</span>
+<span class="cnr" style="bottom:2.0mm;left:2.0mm">◆</span><span class="cnr" style="bottom:2.0mm;right:2.0mm">◆</span>
+<div>
+<div class="rule"><i></i><span style="font-size:8pt">◆</span><i></i></div>
+<h1 style="margin-top:8mm;font-size:${o.uniformTitle ? "33pt" : "37pt"};font-weight:700;line-height:1.03;letter-spacing:-0.012em;color:${INK}">${e(o.titleLine1)}</h1>
+${t2}
+<div style="margin-top:6mm;font-style:italic;font-size:13.5pt;color:${GOLDT}">${e(o.iast)}</div>
+<div style="margin-top:3mm;font-size:9.5pt;letter-spacing:3px;text-transform:uppercase;color:${INK2}">${e(o.tagline)}</div>
+</div>
+<div style="flex:1;display:grid;place-items:center;padding:8mm 0">
+<div class="art"><img src="${o.imgUrl}"></div>
+</div>
+<div>
+${volume}
+<p style="font-size:10.5pt;line-height:1.5;color:${INK2};max-width:150mm;margin:0 auto">${e(o.author)}</p>
+<div class="rule" style="margin-top:7mm"><i style="width:10mm"></i><span style="font-size:7pt">◆</span><i style="width:10mm"></i></div>
+<div style="margin-top:4mm;font-size:8.5pt;letter-spacing:2.5px;text-transform:uppercase;color:${INK}">The Bhaktivedanta Book Trust</div>
+</div>
+</div></div></body></html>`;
+}
+
+// Рендер обложки в одностраничный PDF (без колонтитулов, на всю страницу).
+async function renderCoverPdf(
+  page: Awaited<ReturnType<Awaited<ReturnType<typeof puppeteer.launch>>["newPage"]>>,
+  book: BookData,
+  origin: string,
+  volume?: string,
+  range?: string,
+): Promise<Uint8Array> {
+  const imgUrl = origin + (book.covers[0] ?? "/og-default.png");
+  await page.setContent(
+    coverHtml({
+      titleLine1: book.titleLine1, titleLine2: book.titleLine2, iast: book.iast,
+      tagline: book.tagline, author: book.author, imgUrl, uniformTitle: book.uniformTitle,
+      volume, range,
+    }),
+    { waitUntil: "load", timeout: 60000 },
+  );
+  // Дожидаемся загрузки иллюстрации (и шрифтов), но не дольше ~8с — обложка без
+  // картинки всё равно валидна, поэтому по таймауту печатаем как есть.
+  try {
+    await Promise.race([
+      page.evaluate(() => Promise.all([
+        ...[...document.images].map((i) => i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })),
+        (document as unknown as { fonts?: { ready?: Promise<unknown> } }).fonts?.ready ?? 0,
+      ])),
+      new Promise((r) => setTimeout(r, 8000)),
+    ]);
+  } catch { /* печатаем что есть */ }
+  return await page.pdf({
+    format: "A4",
+    printBackground: true,
+    timeout: 60000,
+    displayHeaderFooter: false,
+    margin: { top: "0", bottom: "0", left: "0", right: "0" },
+  });
+}
+
 // ── Серверный рендер PDF через Cloudflare Browser Rendering ──
 // Открываем печатный режим SPA (/?pdf=…) в headless Chrome и снимаем page.pdf
-// с настоящими полями на каждой странице и колонтитулом с нумерацией.
+// с настоящими полями на каждой странице и колонтитулом с нумерацией. Для
+// уровня книги/лилы спереди прикрепляется обложка BBT (см. renderCoverPdf).
 async function handlePdf(env: Env, url: URL): Promise<Response> {
   const kind = url.searchParams.get("kind");
   const work = url.searchParams.get("work") || "bg";
@@ -52,36 +145,47 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   const div = url.searchParams.get("div") || "";
   const n = url.searchParams.get("n") || "";
   const ref = url.searchParams.get("ref") || "";
+  // Том (название лилы/песни) и диапазон для обложки — присылает клиент, чтобы
+  // воркер оставался книго-независимым (для ЧЧ есть запасной ccLilaName).
+  const label = url.searchParams.get("label") || "";
+  const rangeParam = url.searchParams.get("range") || "";
   const ccLilaName = (s: string) => s === "adi" ? "Ади-лила" : s === "madhya" ? "Мадхья-лила" : s === "antya" ? "Антья-лила" : s;
+  // Книга для обложки/имени файла — единый источник BookData (по умолчанию БГ).
+  const book: BookData = BOOKS[work] ?? BOOKS.bg;
   let printPath: string;
   let filename: string;
+  // Параметры обложки (только для уровня книги/лилы); иначе обложка не нужна.
+  let coverVolume: string | undefined;
+  let coverRange: string | undefined;
   if (kind === "book") {
-    printPath = "/?pdf=book";
-    filename = "Бхагавад-гита как она есть.pdf";
+    // Книга целиком (БГ — стихи, прозовые книги — главы прозы): печатный режим
+    // тянет содержимое по work.
+    printPath = `/?pdf=book${work && work !== "bg" ? `&work=${encodeURIComponent(work)}` : ""}`;
+    filename = `${bookFullTitle(book)}.pdf`;
   } else if (kind === "lila" && lila) {
     printPath = `/?pdf=lila&work=${encodeURIComponent(work)}&lila=${encodeURIComponent(lila)}${from ? `&from=${encodeURIComponent(from)}` : ""}${to ? `&to=${encodeURIComponent(to)}` : ""}`;
-    const bookName = work === "cc" ? "Шри Чайтанья-чаритамрита" : "Книга";
-    filename = `${bookName}. ${ccLilaName(lila)}.pdf`;
+    coverVolume = label || ccLilaName(lila);
+    coverRange = rangeParam || undefined;
+    filename = `${bookFullTitle(book)}. ${coverVolume}.pdf`;
   } else if (kind === "chapter" && div) {
-    // ЧЧ: глава по division id (cc.<lila>.<n>)
+    // ЧЧ/ШБ: глава по division id (<work>.<lila>.<n>)
     printPath = `/?pdf=chapter&work=${encodeURIComponent(work)}&div=${encodeURIComponent(div)}`;
     const parts = div.split(".");
-    filename = `Шри Чайтанья-чаритамрита. ${ccLilaName(parts[1] ?? "")}. Глава ${parts[2] ?? ""}.pdf`;
+    filename = `${bookFullTitle(book)}. ${ccLilaName(parts[1] ?? "")}. Глава ${parts[2] ?? ""}.pdf`;
   } else if (kind === "chapter" && n) {
     printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
-    filename = `Бхагавад-гита как она есть. Глава ${n}.pdf`;
+    filename = `${bookFullTitle(book)}. Глава ${n}.pdf`;
   } else if (kind === "verse" && ref) {
     printPath = `/?pdf=verse&work=${encodeURIComponent(work)}&ref=${encodeURIComponent(ref)}`;
     const rd = ref.replace(/^[^\d]*/, "");
     const vch = rd.split(".")[0];
     const vseg = rd.includes(".") ? rd.slice(rd.indexOf(".") + 1) : "";
-    filename = work === "cc"
-      ? `Шри Чайтанья-чаритамрита. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`
-      : `Бхагавад-гита как она есть. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`;
+    filename = `${bookFullTitle(book)}. Глава ${vch}${vseg ? `. Стих ${vseg}` : ""}.pdf`;
   } else {
     return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
   }
   const target = url.origin + printPath;
+  const wantCover = kind === "book" || kind === "lila";
 
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
   try {
@@ -91,6 +195,12 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     // лилы ЧЧ — сотни страниц, сериализация > 30с → page.pdf падал и возвращался
     // 500 → клиент уходил в печать. Поднимаем дефолтный таймаут страницы.
     page.setDefaultTimeout(280000);
+    // Обложку рендерим ПЕРВОЙ (setContent), пока страница не ушла на тело.
+    let coverBytes: Uint8Array | undefined;
+    if (wantCover) {
+      try { coverBytes = await renderCoverPdf(page, book, url.origin, coverVolume, coverRange); }
+      catch { coverBytes = undefined; /* обложка не критична — лучше без неё, чем 500 */ }
+    }
     await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: (kind === "book" || kind === "lila") ? 1 : 2 });
     await page.goto(target, { waitUntil: "domcontentloaded", timeout: 60000 });
     try {
@@ -120,7 +230,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     const header =
       `<div style="width:100%;padding:0 16mm;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;">` +
       `<div style="font-family:Georgia,'Times New Roman',serif;font-size:8px;letter-spacing:1.5px;line-height:1.3;text-transform:uppercase;color:#9a9a9e;">${esc(headerText)}</div></div>`;
-    const pdf = await page.pdf({
+    const bodyPdf = await page.pdf({
       format: "A4",
       printBackground: true,
       timeout: 270000,
@@ -129,7 +239,19 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
       footerTemplate: footer,
       margin: { top: "20mm", bottom: "22mm", left: "18mm", right: "18mm" },
     });
-    return new Response(pdf, {
+    // Прикрепляем обложку спереди (pdf-lib): обложка + тело → один документ.
+    let out: Uint8Array = bodyPdf as unknown as Uint8Array;
+    if (coverBytes) {
+      try {
+        const merged = await PDFDocument.create();
+        const cover = await PDFDocument.load(coverBytes);
+        const body = await PDFDocument.load(bodyPdf as unknown as Uint8Array);
+        for (const p of await merged.copyPages(cover, cover.getPageIndices())) merged.addPage(p);
+        for (const p of await merged.copyPages(body, body.getPageIndices())) merged.addPage(p);
+        out = await merged.save();
+      } catch { out = bodyPdf as unknown as Uint8Array; /* при сбое склейки отдаём тело */ }
+    }
+    return new Response(out, {
       headers: {
         "content-type": "application/pdf",
         "content-disposition": `inline; filename*=UTF-8''${encodeURIComponent(filename)}`,
