@@ -220,8 +220,9 @@ export async function exportProseBook(book: BookData, onStatus?: (m: string) => 
  * пере-сгенерирована) — возвращаем false и идём запасным путём (рендер по
  * запросу + edge-кэш).
  */
-type ManFile = { label: string; file: string; name: string };
-type Manifest = Record<string, { hierarchical: boolean; files: ManFile[]; sig?: string }>;
+type ManVolume = { label: string; name: string; parts: string[] };
+type ManEntry = { hierarchical: boolean; sig?: string; volumes?: ManVolume[]; files?: { label: string; file: string; name: string }[] };
+type Manifest = Record<string, ManEntry>;
 let _manifestCache: Manifest | null | undefined;
 async function loadManifest(): Promise<Manifest | null> {
   if (_manifestCache !== undefined) return _manifestCache;
@@ -232,6 +233,31 @@ async function loadManifest(): Promise<Manifest | null> {
   return _manifestCache;
 }
 
+// Логические тома книги. Новый манифест: volumes[{name,parts}]. Старый (на случай
+// рассинхрона деплоя): files[] → каждый файл = том из одной части.
+function volumesOf(entry: ManEntry): ManVolume[] {
+  if (entry.volumes?.length) return entry.volumes;
+  return (entry.files ?? []).map((f) => ({ label: f.label, name: f.name, parts: [f.file] }));
+}
+// version в URL = sig книги → после регенерации URL новый, кэш в обход (а та же
+// версия по-прежнему берётся из HTTP-кэша).
+async function fetchPart(url: string, sig?: string): Promise<Uint8Array> {
+  const u = sig ? `${url}${url.includes("?") ? "&" : "?"}v=${encodeURIComponent(sig)}` : url;
+  const r = await fetch(u, { cache: "force-cache" });
+  if (!r.ok) throw new Error(`файл ${url}: ${r.status}`);
+  return new Uint8Array(await r.arrayBuffer());
+}
+// Склейка частей крупного тома в ОДИН файл (pdf-lib грузим лениво — не раздуваем бандл).
+async function mergeParts(parts: Uint8Array[]): Promise<Uint8Array> {
+  const { PDFDocument } = await import("pdf-lib");
+  const out = await PDFDocument.create();
+  for (const p of parts) {
+    const doc = await PDFDocument.load(p);
+    for (const pg of await out.copyPages(doc, doc.getPageIndices())) out.addPage(pg);
+  }
+  return await out.save();
+}
+
 async function tryStaticBookPdf(opts: {
   work: string;
   onStatus?: (m: string) => void; onProgress?: (p: number) => void; onTitle?: (t: string) => void;
@@ -239,23 +265,33 @@ async function tryStaticBookPdf(opts: {
 }): Promise<boolean> {
   const man = await loadManifest();
   const entry = man?.[opts.work];
-  if (!entry || !entry.files?.length) return false;
-  const files = entry.files;
-  const N = files.length;
+  if (!entry) return false;
+  const vols = volumesOf(entry);
+  if (!vols.length) return false;
+  const N = vols.length;
   try {
     if (opts.cancelRef) opts.cancelRef.current = false;
     opts.onTitle?.(N > 1 ? "Скачиваю PDF" : "Скачиваю PDF книги");
     for (let i = 0; i < N; i++) {
       if (opts.cancelRef?.current) { opts.onProgress?.(0); return true; }
-      const f = files[i];
-      opts.onTitle?.(N > 1 ? `${f.label}\u00A0·\u00A0${i + 1}\u00A0из\u00A0${N}` : "Скачиваю PDF книги");
+      const v = vols[i];
+      const head = N > 1 ? `${v.label}\u00A0·\u00A0${i + 1}\u00A0из\u00A0${N}` : "Скачиваю PDF книги";
+      opts.onTitle?.(head);
       opts.onProgress?.(Math.max(1, Math.round((i / N) * 100)));
-      // версия в URL = sig книги: после регенерации URL меняется → браузер
-      // тянет свежий файл, а не отдаёт ранее скачанный из HTTP-кэша (force-cache).
-      const url = entry.sig ? `${f.file}${f.file.includes("?") ? "&" : "?"}v=${encodeURIComponent(entry.sig)}` : f.file;
-      const resp = await fetch(url, { cache: "force-cache" });
-      if (!resp.ok) throw new Error(`файл ${f.file}: ${resp.status}`);
-      savePdfBytes(new Uint8Array(await resp.arrayBuffer()), f.name);
+      let bytes: Uint8Array;
+      if (v.parts.length === 1) {
+        bytes = await fetchPart(v.parts[0], entry.sig);
+      } else {
+        const partBytes: Uint8Array[] = [];
+        for (let pi = 0; pi < v.parts.length; pi++) {
+          if (opts.cancelRef?.current) { opts.onProgress?.(0); return true; }
+          opts.onTitle?.(`${head} · загрузка ${pi + 1}/${v.parts.length}`);
+          partBytes.push(await fetchPart(v.parts[pi], entry.sig));
+        }
+        opts.onTitle?.(`${head} · собираю файл…`);
+        bytes = await mergeParts(partBytes);
+      }
+      savePdfBytes(bytes, v.name);
       opts.onProgress?.(Math.round(((i + 1) / N) * 100));
       if (i < N - 1) await new Promise((r) => setTimeout(r, 900)); // браузеру — время на скачивание
     }
