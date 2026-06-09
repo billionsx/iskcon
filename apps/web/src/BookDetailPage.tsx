@@ -1459,33 +1459,44 @@ export interface ProsePara { ref: string; translation: string | null }
 
 /**
  * Вычленяет нумерованный список «1) 2) 3) …» внутри прозового абзаца (стиль BBT:
- * перечни оскорблений, правил и т. п. идут одной строкой). Возвращает вступление
- * и пункты — или null, если настоящего списка нет.
+ * перечни идут одной строкой). Возвращает вступление, пункты и хвостовую прозу
+ * (текст после списка) — или null, если настоящего списка нет.
  *
- * Берётся только МОНОТОННАЯ цепочка 1,2,3,… — поэтому случайные «30)» внутри
- * скобочных пояснений («…шудры — 30).») не дробят текст и остаются в пункте.
+ * — Берётся только МОНОТОННАЯ цепочка 1,2,3,… → случайные «30)» внутри скобочных
+ *   пояснений («…шудры — 30).») не дробят текст и остаются в пункте.
+ * — Запятые-перечень (короткие фрагменты «…плодов, 2)…»): концевые запятые
+ *   снимаются, а проза после перечня выносится в отдельный абзац (outro).
+ * — Точка-перечень (полные предложения «…обуви. 2)…»): пункты сохраняются целиком.
  */
-function splitEnumerated(text: string): { intro: string; items: string[] } | null {
+function splitEnumerated(text: string): { intro: string; items: string[]; outro: string } | null {
   const re = /(\d{1,3})\)\.?/g;
   const marks: { num: number; start: number; end: number }[] = [];
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
-    // маркер пункта стоит в начале строки или сразу после пробела (граница фразы)
+    // маркер пункта стоит в начале строки или сразу после пробела (граница фразы);
+    // «(1)» в скобках не считается — перед цифрой не пробел.
     if (m.index !== 0 && text[m.index - 1] !== " ") continue;
     marks.push({ num: parseInt(m[1], 10), start: m.index, end: re.lastIndex });
   }
   const chain: { num: number; start: number; end: number }[] = [];
   let expect = 1;
   for (const mk of marks) if (mk.num === expect) { chain.push(mk); expect++; }
-  if (chain.length < 3) return null; // не список — обычный абзац
+  if (chain.length < 2) return null; // не список — обычный абзац
   const intro = text.slice(0, chain[0].start).trim();
-  const items: string[] = [];
-  for (let i = 0; i < chain.length; i++) {
-    const s = chain[i].end;
-    const e = i + 1 < chain.length ? chain[i + 1].start : text.length;
-    items.push(text.slice(s, e).trim());
+  const commaCnt = chain.slice(1).filter((mk) => text[mk.start - 2] === ",").length;
+  const commaSeries = commaCnt >= Math.ceil((chain.length - 1) / 2);
+  const raw: string[] = [];
+  for (let i = 0; i < chain.length - 1; i++) raw.push(text.slice(chain[i].end, chain[i + 1].start));
+  let lastRaw = text.slice(chain[chain.length - 1].end);
+  let outro = "";
+  if (commaSeries) {
+    const md = lastRaw.match(/\.\s/); // конец перечня — первая «. » → дальше обычная проза
+    if (md && md.index !== undefined) { outro = lastRaw.slice(md.index + 1).trim(); lastRaw = lastRaw.slice(0, md.index + 1); }
   }
-  return { intro, items };
+  raw.push(lastRaw);
+  const items = raw.map((s) => (commaSeries ? s.replace(/\s*[.,;]\s*$/, "") : s).trim()).filter(Boolean);
+  if (items.length < 2) return null;
+  return { intro, items, outro };
 }
 
 /** Прозовый абзац: обычный текст или, если внутри нумерованный перечень, — список с висячим отступом. */
@@ -1497,14 +1508,15 @@ function ProseBlock({ text, fontSize, lineHeight, color, top }: { text: string; 
   return (
     <div style={{ marginTop: top }}>
       {en.intro && <p style={{ margin: 0, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{en.intro}</p>}
-      <ol style={{ listStyle: "none", margin: en.intro ? "16px 0 0" : 0, padding: 0 }}>
+      <ol style={{ listStyle: "none", margin: en.intro ? "14px 0 0" : 0, padding: 0 }}>
         {en.items.map((it, k) => (
-          <li key={k} style={{ display: "flex", gap: 14, marginTop: k === 0 ? 0 : 12, alignItems: "baseline" }}>
+          <li key={k} style={{ display: "flex", gap: 14, marginTop: k === 0 ? 0 : 11, alignItems: "baseline" }}>
             <span style={{ flexShrink: 0, minWidth: "1.7em", textAlign: "right", fontSize: fontSize - 1.5, fontWeight: 700, color: GOLDT, fontVariantNumeric: "tabular-nums", lineHeight }}>{k + 1}.</span>
             <span style={{ flex: 1, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{it}</span>
           </li>
         ))}
       </ol>
+      {en.outro && <p style={{ margin: "14px 0 0", fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{en.outro}</p>}
     </div>
   );
 }
