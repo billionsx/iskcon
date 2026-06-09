@@ -399,6 +399,21 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   onOpenBook("sb");
                 }} />
               </div>
+              <div style={{ marginTop: 14 }}>
+                <BookHeroCard book={BOOKS.brs} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("brs")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
+                  if (id === "share") {
+                    const url = "https://gaurangers.com/book/brs";
+                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: `${BOOKS.brs.titleLine1} ${BOOKS.brs.titleLine2 ?? ""}`, url }).catch(() => {}); }
+                    else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
+                    return;
+                  }
+                  if (id === "pdf") { flash("PDF «Нектар преданности» готовится"); return; }
+                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/brs", data: { kind: "book", bookTitle: BOOKS.brs.titleLine1, bookSubtitle: BOOKS.brs.titleLine2, tagline: BOOKS.brs.tagline, cover: BOOKS.brs.covers[0] } }); return; }
+                  if (id === "donate") { onDonate(); return; }
+                  if (id === "report") { setReportOpen(true); return; }
+                  onOpenBook("brs");
+                }} />
+              </div>
               <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
           ) : tab === "feed" ? (

@@ -18,6 +18,7 @@ export interface BookData {
   hierarchical?: boolean; // multi-part book (lila/canto → chapter), e.g. ЧЧ/ШБ
   uniformTitle?: boolean; // render titleLine2 at the same size/weight as titleLine1 (целостное название)
   hideCardIast?: boolean; // don't print the IAST (Latin) title on the card cover
+  prose?: boolean;        // prose book (no 5-layer verses): chapters of flowing text, e.g. «Нектар преданности»
 }
 
 export const BOOKS: Record<string, BookData> = {
@@ -105,6 +106,27 @@ export const BOOKS: Record<string, BookData> = {
     hierarchical: true,
     uniformTitle: true,
     hideCardIast: true,
+  },
+  brs: {
+    id: "brs",
+    work: "brs",
+    slug: "nectar-of-devotion",
+    titleLine1: "Нектар",
+    titleLine2: "преданности",
+    iast: "Bhakti-rasāmṛta-sindhu",
+    tagline: "Наука преданного служения",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Изложение «Бхакти-расамрита-синдху» Шрилы Рупы Госвами — науки о том, как развить чистую любовь к Богу и вкусить нектар взаимоотношений с Кришной.",
+    publisher: "bbt",
+    covers: [
+      "/covers/brs-001.svg",
+    ],
+    chips: ["51 глава", "Изложение Рупы Госвами", "Наука бхакти-расы"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
   },
 };
 
