@@ -1432,7 +1432,7 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
             </div>
             {paras.length === 0
               ? <p style={{ textAlign: "center", color: INK2, fontSize: 15 }}>Текст этой главы готовится.</p>
-              : <div style={{ fontSize: 17, lineHeight: 1.8, color: INK }}>{paras.map((p, i) => <p key={p.ref || i} style={{ margin: i === 0 ? 0 : "14px 0 0" }}>{p.translation}</p>)}</div>}
+              : <div style={{ color: INK }}>{paras.map((p, i) => <ProseBlock key={p.ref || i} text={p.translation ?? ""} fontSize={17} lineHeight={1.8} color={INK} top={i === 0 ? 0 : 14} />)}</div>}
           </div>
         );
       })}
@@ -1456,6 +1456,58 @@ function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "n
 
 /* ───────── Прозовый ридер главы (Нектар преданности и др. prose-книги) ───────── */
 export interface ProsePara { ref: string; translation: string | null }
+
+/**
+ * Вычленяет нумерованный список «1) 2) 3) …» внутри прозового абзаца (стиль BBT:
+ * перечни оскорблений, правил и т. п. идут одной строкой). Возвращает вступление
+ * и пункты — или null, если настоящего списка нет.
+ *
+ * Берётся только МОНОТОННАЯ цепочка 1,2,3,… — поэтому случайные «30)» внутри
+ * скобочных пояснений («…шудры — 30).») не дробят текст и остаются в пункте.
+ */
+function splitEnumerated(text: string): { intro: string; items: string[] } | null {
+  const re = /(\d{1,3})\)\.?/g;
+  const marks: { num: number; start: number; end: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    // маркер пункта стоит в начале строки или сразу после пробела (граница фразы)
+    if (m.index !== 0 && text[m.index - 1] !== " ") continue;
+    marks.push({ num: parseInt(m[1], 10), start: m.index, end: re.lastIndex });
+  }
+  const chain: { num: number; start: number; end: number }[] = [];
+  let expect = 1;
+  for (const mk of marks) if (mk.num === expect) { chain.push(mk); expect++; }
+  if (chain.length < 3) return null; // не список — обычный абзац
+  const intro = text.slice(0, chain[0].start).trim();
+  const items: string[] = [];
+  for (let i = 0; i < chain.length; i++) {
+    const s = chain[i].end;
+    const e = i + 1 < chain.length ? chain[i + 1].start : text.length;
+    items.push(text.slice(s, e).trim());
+  }
+  return { intro, items };
+}
+
+/** Прозовый абзац: обычный текст или, если внутри нумерованный перечень, — список с висячим отступом. */
+function ProseBlock({ text, fontSize, lineHeight, color, top }: { text: string; fontSize: number; lineHeight: number; color: string; top: number }) {
+  const en = text ? splitEnumerated(text) : null;
+  if (!en) {
+    return <p style={{ margin: 0, marginTop: top, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{text}</p>;
+  }
+  return (
+    <div style={{ marginTop: top }}>
+      {en.intro && <p style={{ margin: 0, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{en.intro}</p>}
+      <ol style={{ listStyle: "none", margin: en.intro ? "16px 0 0" : 0, padding: 0 }}>
+        {en.items.map((it, k) => (
+          <li key={k} style={{ display: "flex", gap: 14, marginTop: k === 0 ? 0 : 12, alignItems: "baseline" }}>
+            <span style={{ flexShrink: 0, minWidth: "1.7em", textAlign: "right", fontSize: fontSize - 1.5, fontWeight: 700, color: GOLDT, fontVariantNumeric: "tabular-nums", lineHeight }}>{k + 1}.</span>
+            <span style={{ flex: 1, fontSize, lineHeight, color, letterSpacing: "-0.003em" }}>{it}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
 function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, onMenuAction, onQr, flash, onOpenChapter }: { chapter: ChapterRow; chapters: ChapterRow[] | null; bookTitle: string; work?: string; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; onOpenChapter: (ch: ChapterRow) => void }) {
   const [paras, setParas] = useState<ProsePara[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -1522,9 +1574,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
           {paras && paras.length > 0 && (
             <div style={{ marginTop: 4 }}>
               {paras.map((p, i) => (
-                <p key={p.ref || i} style={{ margin: i === 0 ? 0 : "0", marginTop: i === 0 ? 0 : 18, fontSize: 17.5, lineHeight: 1.72, color: INK, letterSpacing: "-0.003em" }}>
-                  {p.translation}
-                </p>
+                <ProseBlock key={p.ref || i} text={p.translation ?? ""} fontSize={17.5} lineHeight={1.72} color={INK} top={i === 0 ? 0 : 18} />
               ))}
             </div>
           )}
