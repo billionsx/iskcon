@@ -22,6 +22,7 @@ import { Skt, renderTerms } from "./ui/Skt";
 import { downloadCcBookPdf, downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
+import { SectionSubTabs } from "./SectionSubTabs";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -136,40 +137,6 @@ function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: Book
               style={{ position: "relative", flexShrink: 0, padding: "13px 18px", fontSize: 15, background: "none", border: "none", cursor: "pointer", color: on ? INK : INK2, fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0, transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
               {t.label}
               {on && <span aria-hidden style={{ position: "absolute", insetInline: 14, bottom: 0, height: 2, borderRadius: 999, background: GOLD }} />}
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
-
-/* ───────── суб-табы (Tier-3 «Подраздел») — для перехода по песням ШБ / лилам ЧЧ ─────────
- * Идиома из apartsales (SectionSubTabs): отдельный уровень навигации от Tier-1 (золотая
- * рейка) — здесь рейка ЧЕРНИЛЬНАЯ (INK), кегль 13; глаз не путает уровни по цвету рейки,
- * а не по кеглю. Горизонтальная лента с автоцентровкой активного, sticky вплотную под
- * BookTabs. Лечит «листать всё окно до нужной песни»: тап по «Песнь 7» → её главы сразу. */
-interface SubTabDef { id: string; label: string }
-function SectionSubTabs({ items, active, onChange, top, navRef }: { items: SubTabDef[]; active: string; onChange: (id: string) => void; top: number; navRef?: (el: HTMLElement | null) => void }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  // Автоскролл активного подраздела — СТРОГО по горизонтали (не дёргаем вертикаль <main>).
-  useEffect(() => {
-    const el = itemRefs.current[active]; const c = containerRef.current;
-    if (!el || !c) return;
-    const target = el.offsetLeft - (c.clientWidth - el.clientWidth) / 2;
-    c.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
-  }, [active]);
-  return (
-    <nav ref={navRef} data-pdf-no-print aria-label="Части книги" style={{ position: "sticky", top, zIndex: 15, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${LINE}` }}>
-      <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-        {items.map((it) => {
-          const on = it.id === active;
-          return (
-            <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "11px 14px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: on ? INK : INK2, fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
-              {it.label}
-              {on && <span aria-hidden style={{ position: "absolute", insetInline: 12, bottom: 0, height: 2, borderRadius: 999, background: INK }} />}
             </button>
           );
         })}

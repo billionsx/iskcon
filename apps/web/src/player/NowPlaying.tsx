@@ -5,7 +5,7 @@
  * Открывается всегда сверху (без скачка). Контролы закреплены снизу «стеклом».
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
-import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePlayer, fmtTime, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
@@ -14,6 +14,7 @@ import { QrSheet, type QrData } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS, bookFullTitle } from "../books";
+import { SectionSubTabs, type SubTabDef } from "../SectionSubTabs";
 
 const GOLD = "#D2AA1B";
 const glass = (radius: number): CSSProperties => ({
@@ -47,6 +48,20 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = prev; };
   }, [p.expanded]);
+
+  // Песни/лилы для суб-табов очереди — выводим из самих треков (иерархические книги).
+  const divisions: SubTabDef[] = [];
+  const seenDiv = new Set<string>();
+  for (const t of p.tracks) { if (t.lila && !seenDiv.has(t.lila)) { seenDiv.add(t.lila); divisions.push({ id: t.lila, label: t.lilaLabel ?? t.lila }); } }
+  const hierQueue = divisions.length > 1;
+  const [activeDiv, setActiveDiv] = useState("");
+  // Активный подраздел следует за играющим треком; тап пользователя сохраняется,
+  // пока воспроизведение не пересечёт границу песни/лилы.
+  useEffect(() => {
+    if (!hierQueue) return;
+    const cur = p.track?.lila;
+    setActiveDiv((prev) => cur ?? (prev || divisions[0]?.id || ""));
+  }, [p.track?.lila, hierQueue]);
 
   if (!p.active) return null;
 
@@ -150,22 +165,26 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
           <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />
           <div style={{ marginTop: 22 }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: 6, padding: "0 4px" }}>
+            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 4 : 6, padding: "0 4px" }}>
               Содержание{p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}
             </div>
-            {p.tracks.map((t, i) => {
-              const showLila = !!t.lila && (i === 0 || p.tracks[i - 1].lila !== t.lila);
-              return (
-                <Fragment key={t.file}>
-                  {showLila && (
-                    <div style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: "0.3px", color: GOLD, padding: i === 0 ? "2px 4px 8px" : "16px 4px 8px", marginTop: i === 0 ? 0 : 4, borderTop: i === 0 ? "none" : "0.5px solid rgba(255,255,255,0.10)" }}>
-                      {t.lilaLabel ?? t.lila}
-                    </div>
-                  )}
-                  <QueueRow t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />
-                </Fragment>
-              );
-            })}
+            {hierQueue && (
+              // full-bleed внутри 16px-падинга тела (для sticky-стекла во всю ширину)
+              <div style={{ margin: "0 -16px 2px" }}>
+                <SectionSubTabs tone="dark" items={divisions} active={activeDiv} onChange={setActiveDiv} top={0} ariaLabel="Песни и лилы" />
+              </div>
+            )}
+            <div style={{ paddingTop: hierQueue ? 6 : 0 }}>
+              {p.tracks.map((t, i) => {
+                // иерархическая книга: показываем только активную песнь/лилу
+                // (вступление без лилы — при активной первой песне/лиле).
+                if (hierQueue) {
+                  const show = t.lila ? t.lila === activeDiv : activeDiv === divisions[0]?.id;
+                  if (!show) return null;
+                }
+                return <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />;
+              })}
+            </div>
           </div>
         </div>
 
