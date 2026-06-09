@@ -134,7 +134,7 @@ export function exportToPdf(
 export async function downloadServerPdf(
   path: string,
   filename: string,
-  opts?: { onStatus?: (m: string) => void; onProgress?: (pct: number) => void; fallback?: () => void; signal?: AbortSignal },
+  opts?: { onStatus?: (m: string) => void; onProgress?: (pct: number) => void; fallback?: () => void; signal?: AbortSignal; onError?: (info: string) => void },
 ): Promise<boolean> {
   if (typeof window === "undefined") return false;
   const onStatus = opts?.onStatus;
@@ -174,8 +174,10 @@ export async function downloadServerPdf(
     onStatus?.("Готово");
     if (onProgress) setTimeout(() => onProgress(0), 800);
     return true;
-  } catch {
+  } catch (e) {
     if (timer) clearInterval(timer);
+    const reason = signal?.aborted ? "таймаут" : (e instanceof Error ? e.message : "ошибка");
+    opts?.onError?.(reason);
     if (signal?.aborted) { onProgress?.(0); return false; }
     onProgress?.(0);
     if (fallback) { onStatus?.("Готовлю PDF в браузере…"); fallback(); }

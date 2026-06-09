@@ -126,12 +126,11 @@ export async function downloadCcBookPdf(opts: {
   let active = true;
   const prog = (p: number) => { if (active && !opts.cancelRef.current) opts.onProgress?.(p <= 0 ? 1 : p); };
   const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-  // Серверный рендер иногда падает НЕ из-за объёма, а из-за лимита Cloudflare на
-  // запуск браузеров (всплеск / параллельные сессии) — это и был тот сбой, после
-  // которого клиент уходил в печать браузера. Поэтому: (1) НИКОГДА не печатаем
-  // браузером; (2) каждую часть повторяем с нарастающей паузой (40с перекрывают
-  // поминутный лимит); (3) держим паузу между частями.
-  const BACKOFF = [6000, 12000, 24000, 40000];
+  // Серверный рендер изредка падает по разовой причине (лимит Cloudflare на запуск
+  // браузеров). Тихая подстраховка: пара повторов с паузой; печать браузера НЕ
+  // используется никогда. Таймаут попытки — как у рабочей «Гиты» (280с): первая
+  // часть самая тяжёлая (холодный старт) и при 200с не успевала.
+  const BACKOFF = [8000, 20000];
   const failed: string[] = [];
   for (let i = 0; i < jobs.length; i++) {
     if (opts.cancelRef.current) break;
@@ -141,22 +140,22 @@ export async function downloadCcBookPdf(opts: {
     const range = j.parts > 1 ? `главы ${j.from}-${j.to}` : undefined;
     const urlPath = `/pdf?kind=lila&work=${encodeURIComponent(work)}&lila=${j.slug}&from=${encodeURIComponent(j.from)}&to=${encodeURIComponent(j.to)}&label=${encodeURIComponent(j.label)}${range ? `&range=${encodeURIComponent(range)}` : ""}`;
     let ok = false;
+    let lastErr = "";
     for (let attempt = 0; attempt <= BACKOFF.length && !ok && !opts.cancelRef.current; attempt++) {
-      const retrySfx = attempt > 0 ? ` · попытка ${attempt + 1}` : "";
-      opts.onTitle?.(`${j.label}${sfx} · ${i + 1} из ${jobs.length}${retrySfx}`);
+      opts.onTitle?.(`${j.label}${sfx} · ${i + 1} из ${jobs.length}`);
       const ac = new AbortController();
       opts.abortRef.current = ac;
-      const killer = setTimeout(() => ac.abort(), 200000);
+      const killer = setTimeout(() => ac.abort(), 280000);
       try {
-        ok = await downloadServerPdf(urlPath, fname, { onProgress: prog, signal: ac.signal });
+        ok = await downloadServerPdf(urlPath, fname, { onProgress: prog, signal: ac.signal, onError: (r) => { lastErr = r; } });
       } finally { clearTimeout(killer); }
       if (!ok && !opts.cancelRef.current && attempt < BACKOFF.length) {
-        opts.onTitle?.(`${j.label}${sfx} · повтор через ${Math.round(BACKOFF[attempt] / 1000)} с`);
+        opts.onTitle?.(`${j.label}${sfx} · ещё раз…`);
         await sleep(BACKOFF[attempt]);
       }
     }
-    if (!ok && !opts.cancelRef.current) failed.push(`${j.label}${sfx}`);
-    if (i < jobs.length - 1 && !opts.cancelRef.current) await sleep(2000);
+    if (!ok && !opts.cancelRef.current) failed.push(`${j.label}${sfx}${lastErr ? ` (${lastErr})` : ""}`);
+    if (i < jobs.length - 1 && !opts.cancelRef.current) await sleep(1500);
   }
   active = false;
   opts.abortRef.current = null;
