@@ -104,7 +104,10 @@ function Rail({ title, params, orderIds, onOpen }: { title: string; params: stri
 }
 
 /** Карточка раздела (в стиле карточки Прабхупады). */
-function SectionCard({ title, subtitle, mark, onClick }: { title: string; subtitle: string; mark: React.ReactNode; onClick: () => void }) {
+function SectionCard({ title, subtitle, mark, accent, onClick }: { title: string; subtitle: string; mark: React.ReactNode; accent?: boolean; onClick: () => void }) {
+  const ring: React.CSSProperties = accent
+    ? { border: `1.5px solid color-mix(in srgb, ${GOLD} 55%, transparent)`, background: `color-mix(in srgb, ${GOLD} 10%, transparent)` }
+    : { border: "none", background: "transparent" };
   return (
     <button type="button" onClick={onClick}
       style={{ display: "flex", alignItems: "center", gap: 15, width: "100%", padding: "16px", borderRadius: 20,
@@ -113,7 +116,7 @@ function SectionCard({ title, subtitle, mark, onClick }: { title: string; subtit
       onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
       onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
       <span style={{ flexShrink: 0, width: 64, height: 64, borderRadius: "50%", display: "grid", placeItems: "center",
-        border: `1.5px solid color-mix(in srgb, ${GOLD} 55%, transparent)`, background: `color-mix(in srgb, ${GOLD} 10%, transparent)`, color: "var(--color-label)", overflow: "hidden" }}>
+        color: "var(--color-label)", overflow: "hidden", ...ring }}>
         {mark}
       </span>
       <span style={{ minWidth: 0, flex: 1 }}>
@@ -257,24 +260,25 @@ function AcharyaLanding({ onOpen, onOpenCollection }: { onOpen: (id: string, typ
             title="Шрила Прабхупада"
             subtitle="Его Божественная Милость А.Ч. Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)"
             mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />}
+            accent
             onClick={() => onOpen("prabhupada", "personality")}
           />
           <SectionCard
             title="Радха-Кришна лила"
             subtitle="Вечные игры Господа и Его спутников во Вриндаване"
-            mark={<MaskMark src="/vraj.svg" size={42} />}
+            mark={<MaskMark src="/vraj.svg" size={48} />}
             onClick={() => openCol("radha-krishna")}
           />
           <SectionCard
             title="Гауранга лила"
             subtitle="Шри Чайтанья Махапрабху и Панча-таттва"
-            mark={<MaskMark src="/gauranga.svg" size={50} pos="center bottom" />}
+            mark={<MaskMark src="/gauranga.svg" size={48} />}
             onClick={() => openCol("gauranga")}
           />
           <SectionCard
             title="Шримад Бхагаватам"
             subtitle="Воплощения и аватары Господа, Его великие преданные"
-            mark={<MaskMark src="/bbt.svg" size={42} />}
+            mark={<MaskMark src="/bbt.svg" size={48} />}
             onClick={() => openCol("bhagavatam")}
           />
         </div>
