@@ -14,7 +14,9 @@ export interface BookData {
   description: string;   // presentation blurb, strictly per Prabhupāda framing
   publisher: "bbt";      // authority logo on card
   covers: string[];      // gallery; first = primary cover
-  chips: string[];       // factual chips about the text
+  chips: string[];       // факт-чипы герой-карточки. Стандарт: «n глав / n стихов / n лет»;
+                         // для прозы без стихов (НП) — «n глав / n лет / изначальный автор».
+                         // Подробнее: docs/STANDARD_book_chips.md
   hierarchical?: boolean; // multi-part book (lila/canto → chapter), e.g. ЧЧ/ШБ
   uniformTitle?: boolean; // render titleLine2 at the same size/weight as titleLine1 (целостное название)
   hideCardIast?: boolean; // don't print the IAST (Latin) title on the card cover
@@ -81,7 +83,7 @@ export const BOOKS: Record<string, BookData> = {
       "/covers/cc-0020.png?v=1",
       "/covers/cc-0021.png?v=1",
     ],
-    chips: ["3 лилы", "62 главы", "11 000+ стихов"],
+    chips: ["62 главы", "11 000+ стихов", "500+ лет"],
     hierarchical: true,
     uniformTitle: true,
     hideCardIast: true,
@@ -126,7 +128,7 @@ export const BOOKS: Record<string, BookData> = {
       "/covers/sb-0025.png?v=1",
       "/covers/sb-0026.png?v=1",
     ],
-    chips: ["12 песней", "335 глав", "~18 000 стихов"],
+    chips: ["335 глав", "~18 000 стихов", "5 000+ лет"],
     hierarchical: true,
     uniformTitle: true,
     hideCardIast: true,
@@ -147,7 +149,7 @@ export const BOOKS: Record<string, BookData> = {
     covers: [
       "/covers/brs-001.png",
     ],
-    chips: ["51 глава", "Рупа Госвами"],
+    chips: ["51 глава", "500+ лет", "Рупа Госвами"],
     hierarchical: false,
     uniformTitle: true,
     prose: true,
