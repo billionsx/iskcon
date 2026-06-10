@@ -31,6 +31,7 @@ interface EntityDetail {
   name_ru: string | null;
   name_en: string | null;
   name_iast: string | null;
+  image: string | null;
   aliases: string[];
   categories: string[];
   profile: { summary: string | null; biography: string | null; contribution: string | null; level: string | null } | null;
@@ -146,6 +147,14 @@ function Monogram({ ch, size = 72 }: { ch: string; size?: number }) {
   );
 }
 
+function PhotoCircle({ src, size = 72 }: { src: string; size?: number }) {
+  return (
+    <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
+      <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+    </div>
+  );
+}
+
 function Chip({ label, onClick }: { label: string; onClick?: () => void }) {
   const interactive = !!onClick;
   return (
@@ -252,7 +261,7 @@ export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack:
           <>
             {/* hero */}
             <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 6 }}>
-              <Monogram ch={initialOf(data)} />
+              {data.image ? <PhotoCircle src={data.image} size={72} /> : <Monogram ch={initialOf(data)} />}
               <div style={{ minWidth: 0 }}>
                 <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 27, fontWeight: 700, letterSpacing: "-0.4px", lineHeight: 1.12, color: "var(--color-label)" }}>{data.name_ru || data.id}</h1>
                 {data.name_iast && (

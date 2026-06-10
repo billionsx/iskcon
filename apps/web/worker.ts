@@ -781,7 +781,12 @@ export default {
         SELECT e.id, e.type, e.tattva, e.dataset, e.note,
           (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
           (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='en' AND n.kind='canonical' LIMIT 1) AS name_en,
-          (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
+          (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast,
+          (SELECT ci.hero_image FROM content_items ci
+             WHERE ci.type='personality' AND ci.lang='ru' AND ci.hero_image IS NOT NULL AND ci.hero_image != ''
+               AND (ci.slug = '/ru/' || e.id
+                    OR ci.name = (SELECT value FROM entity_names n2 WHERE n2.entity_id=e.id AND n2.lang='ru' AND n2.kind='canonical' LIMIT 1))
+             ORDER BY (ci.slug = '/ru/' || e.id) DESC LIMIT 1) AS image
         FROM entities e
         ${where.length ? "WHERE " + where.join(" AND ") : ""}
         ORDER BY (name_ru IS NULL), name_ru
@@ -823,10 +828,21 @@ export default {
       ).bind(id).all<{ relation: string; id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
       const names = namesRes.results ?? [];
       const canon = (lang: string) => names.find((n) => n.lang === lang && n.kind === "canonical")?.value ?? null;
+      const nameRu = canon("ru");
+      // фото личности из перенесённого контента iskcone (там, где есть)
+      const IMG_ALIAS: Record<string, string> = { nrisimha: "narasimha", matsya: "matsia", "baladeva-vidyabhushana": "baladeva-vidiabhushana" };
+      const cslug = "/ru/" + (IMG_ALIAS[id] ?? id);
+      const imgRow = await env.DB.prepare(
+        `SELECT hero_image FROM content_items
+         WHERE type='personality' AND lang='ru' AND hero_image IS NOT NULL AND hero_image != ''
+           AND (slug = ?1 OR (?2 IS NOT NULL AND name = ?2))
+         ORDER BY (slug = ?1) DESC LIMIT 1`,
+      ).bind(cslug, nameRu).first<{ hero_image: string }>();
       return json({
         id: ent.id, type: ent.type, tattva: ent.tattva ?? null, dataset: ent.dataset ?? null,
         note: ent.note ?? null, source_ref: ent.source_ref ?? null,
-        name_ru: canon("ru"), name_en: canon("en"), name_iast: canon("iast"),
+        name_ru: nameRu, name_en: canon("en"), name_iast: canon("iast"),
+        image: imgRow?.hero_image ?? null,
         aliases: names.filter((n) => n.kind !== "canonical").map((n) => n.value),
         categories: (catsRes.results ?? []).map((r) => r.category),
         profile: prof ? { summary: prof.summary ?? null, biography: prof.biography ?? null, contribution: prof.contribution ?? null, level: prof.level ?? null } : null,
