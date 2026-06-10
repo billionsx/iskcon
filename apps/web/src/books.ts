@@ -211,3 +211,63 @@ export const BOOK_MENU_ITEMS = [
   "Поддержать печать",
   "О книге и об авторе",
 ];
+
+/* ───────────── Библиотека-хаб: каталог всех книг реестра с разбивкой по линии ─────────────
+ * Расширяет BOOKS (читаемые издания с обложками и контентом в D1) до полного реестра
+ * книг канонического реестра (works ↔ entities). Каждая запись связана с автором-героем
+ * (entities.id) → связь «книга↔герой». readable=true → открывается в ридере (есть в BOOKS),
+ * иначе — карточка-сущность книги (страница героя книги) + метка «скоро».
+ * Источник истины совпадает с docs/entity-registry (works.author_id ↔ отношение author-of). */
+export type Lineage = "prabhupada" | "acharya" | "guru-iskcon";
+
+export interface CatalogBook {
+  id: string;          // entities/works id
+  title: string;       // одностроч. название (строка списка + поиск)
+  iast?: string;
+  note?: string;       // короткий глосс под названием
+  authorName?: string; // отображаемый автор (первоисточник)
+  authorId?: string;   // entities.id автора → EntityPage (связь книга↔герой)
+  lineage: Lineage;
+  readable: boolean;   // есть в BOOKS (ридер); иначе — «скоро»
+}
+
+export const LINEAGE_LABEL: Record<Lineage, string> = {
+  prabhupada: "Шрила Прабхупада",
+  acharya: "Ачарьи-вайшнавы",
+  "guru-iskcon": "Гуру ИСККОН",
+};
+
+export const LINEAGE_NOTE: Record<Lineage, string> = {
+  prabhupada: "Ачарья-основатель ИСККОН — канон в авторитетном переводе с пословным санскритом",
+  acharya: "Первоисточники парампары и труды предшествующих ачарьев",
+  "guru-iskcon": "Те, кто принял миссию и продолжает линию",
+};
+
+export const LIBRARY: CatalogBook[] = [
+  // — Шрила Прабхупада (читаемые сначала) —
+  { id: "bg",  title: "Бхагавад-гита как она есть", iast: "Bhagavad-gītā",        note: "Песнь Бога",                   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
+  { id: "sb",  title: "Шримад-Бхагаватам",          iast: "Śrīmad-Bhāgavatam",     note: "Зрелый плод древа Вед",        authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
+  { id: "cc",  title: "Шри Чайтанья-чаритамрита",   iast: "Śrī Caitanya-caritāmṛta", note: "Деяния Господа Чайтаньи",     authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
+  { id: "brs", title: "Нектар преданности",          iast: "Bhakti-rasāmṛta-sindhu", note: "Наука преданного служения",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
+  { id: "krishna-book", title: "Кришна. Верховная Личность Бога", iast: "Kṛṣṇa",   note: "Игры Кришны из Десятой песни", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
+  { id: "tlc", title: "Учение Шри Чайтаньи",         iast: "Teachings of Lord Caitanya",                                  authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
+  { id: "noi", title: "Нектар наставлений",          iast: "Upadeśāmṛta",           note: "Наставления Шрилы Рупы Госвами", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
+  { id: "iso", title: "Шри Ишопанишад",              iast: "Śrī Īśopaniṣad",        note: "Мантры совершенного знания",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
+  // — Ачарьи-вайшнавы и первоисточники парампары —
+  { id: "cb",  title: "Чайтанья-бхагавата",          iast: "Caitanya-bhāgavata",    authorId: "vrindavana-dasa-thakura", authorName: "Вриндаван дас Тхакур",  lineage: "acharya", readable: false },
+  { id: "cm",  title: "Чайтанья-мангала",            iast: "Caitanya-maṅgala",      authorId: "lochana-dasa-thakura",    authorName: "Лочана дас Тхакур",     lineage: "acharya", readable: false },
+  { id: "ggd", title: "Гаура-ганоддеша-дипика",      iast: "Gaura-gaṇoddeśa-dīpikā", authorId: "kavi-karnapura",         authorName: "Кави Карнапура",        lineage: "acharya", readable: false },
+  { id: "bs",  title: "Брахма-самхита",              iast: "Brahma-saṁhitā",        note: "Молитвы Господа Брахмы",                                            lineage: "acharya", readable: false },
+  { id: "hbv", title: "Хари-бхакти-виласа",          iast: "Hari-bhakti-vilāsa",    note: "Свод вайшнавской практики",                                         lineage: "acharya", readable: false },
+  { id: "vedanta-sutra", title: "Веданта-сутра",     iast: "Vedānta-sūtra",         authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false },
+  { id: "mahabharata",   title: "Махабхарата",       iast: "Mahābhārata",           authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false },
+  { id: "puranas",       title: "Пураны",            iast: "Purāṇa",                authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false },
+  { id: "ramayana",      title: "Рамаяна",           iast: "Rāmāyaṇa",              authorId: "valmiki",                 authorName: "Валмики",               lineage: "acharya", readable: false },
+  { id: "upanishads",    title: "Упанишады",         iast: "Upaniṣad",              note: "Философская вершина Вед",                                           lineage: "acharya", readable: false },
+  { id: "vedas",         title: "Веды",              iast: "Veda",                  note: "Изначальное ведическое знание",                                     lineage: "acharya", readable: false },
+  // — Гуру ИСККОН —
+  { id: "prabhupada-lilamrita", title: "Шрила Прабхупада-лиламрита", iast: "Śrīla Prabhupāda-līlāmṛta", note: "Жизнеописание Ачарьи-основателя", authorId: "satsvarupa-das-goswami", authorName: "Сатсварупа Дас Госвами", lineage: "guru-iskcon", readable: false },
+];
+
+/** Порядок секций хаба. */
+export const LINEAGE_ORDER: Lineage[] = ["prabhupada", "acharya", "guru-iskcon"];

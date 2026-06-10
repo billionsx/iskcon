@@ -185,6 +185,16 @@ const COLLECTIONS: Record<string, Collection> = {
       { title: "Личности «Бхагаватам»", params: "category=bhagavatam&limit=40" },
     ],
   },
+  "iskcon-gurus": {
+    title: "Гуру ИСККОН",
+    subtitle: "Те, кто принял миссию Шрилы Прабхупады и продолжает цепь ученической преемственности",
+    rails: [
+      { title: "Дающие посвящение", params: "category=initiating-guru&limit=200" },
+      { title: "Ученики-основатели", params: "category=founding-disciple&limit=20" },
+      { title: "Зональные ачарьи (1977)", params: "category=zonal-acharya-1977&limit=20" },
+      { title: "Духовные братья Прабхупады", params: "category=godbrother&limit=20" },
+    ],
+  },
 };
 
 export default function AcharyaScreen({ collection, onBack, onOpen, onOpenCollection }: {
