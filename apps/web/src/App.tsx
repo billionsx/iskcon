@@ -114,14 +114,15 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
   };
 
   // держим овал приклеенным к активному табу (смена таба / компакт / лейаут)
-  useLayoutEffect(moveHighlight, [active, compact]);
+  const moveRef = useRef(moveHighlight);
+  moveRef.current = moveHighlight;
+  useLayoutEffect(() => { moveHighlight(); }, [active, compact]);
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => moveHighlight());
+    const ro = new ResizeObserver(() => moveRef.current());
     ro.observe(nav);
     return () => ro.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // прокрутка → компактный размер (как в Instagram 2026)
@@ -459,6 +460,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   onOpenBook("sb");
                 }} />
               </div>
+              {tab === "books" && (
               <div style={{ marginTop: 14 }}>
                 <BookHeroCard book={BOOKS.brs} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("brs")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
                   if (id === "share") {
@@ -474,9 +476,10 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   onOpenBook("brs");
                 }} />
               </div>
+              )}
             </>
           ) : null}
-          {(tab === "home" || tab === "kirtans") && (
+          {tab === "kirtans" && (
             <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
           )}
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
