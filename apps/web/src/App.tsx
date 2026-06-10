@@ -7,6 +7,7 @@
 import { useState, useRef, useEffect, useLayoutEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
+import HomeScreen from "./HomeScreen";
 import { DonateModal } from "./DonateModal";
 import { BOOKS, bookFullTitle } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
@@ -412,7 +413,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
       <TopHeader />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ padding: "16px 16px 116px" }}>
-          {(tab === "home" || tab === "books") ? (
+          {tab === "books" ? (
             <>
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
@@ -488,6 +489,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
               )}
             </>
           ) : null}
+          {tab === "home" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} />}
           {tab === "kirtans" && (
             <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
           )}
