@@ -1,34 +1,34 @@
 /**
- * HomeScreen — «Главная». Полная точная копия домашней страницы iskcone.com
- * (весь текст, все блоки, тот же порядок), поднятая до уровня apple.com / iOS 26:
- * центрированная композиция, крупные жирные заголовки «с точкой», счётчики чисел,
- * бегущие строки, чистые фотоблоки с подписями (текст никогда не на фото),
- * стандартизированные 8pt-отступы и анимация появления при скролле.
+ * HomeScreen — «Главная». Полная копия домашней страницы iskcone.com, поднятая
+ * до уровня apple.com / iOS 26: чередующиеся полноширинные секции (белая ↔
+ * светло-серая) задают ритм панелей, полужирные (600) заголовки с точным
+ * отрицательным трекингом, щедрый воздух, изображения как аккуратные
+ * скруглённые плитки с подписями (текст никогда не на фото), счётчики чисел,
+ * бегущие строки и мягкая анимация появления при скролле.
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BOOKS } from "./books";
 
 const GOLD = "#D2AA1B";
+type Tone = "base" | "alt";
 
 /* ───────── анимации ───────── */
 function Styles() {
   return <style>{`@keyframes iskMq{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>;
 }
-
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
   const [v, setV] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el || typeof IntersectionObserver === "undefined") { setV(true); return; }
-    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { setV(true); io.disconnect(); } }), { threshold: 0.12, rootMargin: "0px 0px -5% 0px" });
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { setV(true); io.disconnect(); } }), { threshold: 0.1, rootMargin: "0px 0px -5% 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
-  return <div ref={ref} style={{ opacity: v ? 1 : 0, transform: v ? "none" : "translateY(22px)", transition: `opacity .85s cubic-bezier(.16,.7,.2,1) ${delay}ms, transform .85s cubic-bezier(.16,.7,.2,1) ${delay}ms` }}>{children}</div>;
+  return <div ref={ref} style={{ opacity: v ? 1 : 0, transform: v ? "none" : "translateY(24px)", transition: `opacity .9s cubic-bezier(.16,.7,.2,1) ${delay}ms, transform .9s cubic-bezier(.16,.7,.2,1) ${delay}ms` }}>{children}</div>;
 }
-
 function fmtNum(n: number, dec: number) {
   if (dec) { const [i, d] = n.toFixed(1).split("."); return i.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + "," + d; }
   return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
@@ -49,7 +49,7 @@ function CountUp({ value }: { value: string }) {
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) {
         io.disconnect();
-        const t0 = performance.now(), D = 1500;
+        const t0 = performance.now(), D = 1600;
         const tick = (t: number) => {
           const p = Math.min(1, (t - t0) / D);
           const e2 = 1 - Math.pow(1 - p, 3);
@@ -58,18 +58,17 @@ function CountUp({ value }: { value: string }) {
         };
         raf = requestAnimationFrame(tick);
       }
-    }), { threshold: 0.5 });
+    }), { threshold: 0.6 });
     io.observe(el);
     return () => { io.disconnect(); cancelAnimationFrame(raf); };
   }, []);
   return <span ref={ref}>{disp}</span>;
 }
-
-function Marquee({ items, dur = 40 }: { items: string[]; dur?: number }) {
-  const row = items.join("\u2003•\u2003") + "\u2003•\u2003";
-  const span = { fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 600, letterSpacing: "1.4px", textTransform: "uppercase" as const, color: "var(--color-label-3)" };
+function Marquee({ items, dur = 46 }: { items: string[]; dur?: number }) {
+  const row = items.join("\u2003·\u2003") + "\u2003·\u2003";
+  const span = { fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, letterSpacing: "1.5px", textTransform: "uppercase" as const, color: "var(--color-label-3)" };
   return (
-    <div style={{ margin: "60px -16px 0", overflow: "hidden", borderTop: "0.5px solid var(--color-hairline)", borderBottom: "0.5px solid var(--color-hairline)", padding: "15px 0", WebkitMaskImage: "linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)", maskImage: "linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)" }}>
+    <div style={{ overflow: "hidden", padding: "17px 0", borderTop: "0.5px solid var(--color-hairline)", borderBottom: "0.5px solid var(--color-hairline)", WebkitMaskImage: "linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)", maskImage: "linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)" }}>
       <div style={{ display: "inline-flex", whiteSpace: "nowrap", animation: `iskMq ${dur}s linear infinite`, willChange: "transform" }}>
         <span style={span}>{row}</span><span style={span}>{row}</span>
       </div>
@@ -77,27 +76,39 @@ function Marquee({ items, dur = 40 }: { items: string[]; dur?: number }) {
   );
 }
 
-/* ───────── атомы (центр, 8pt-ритм) ───────── */
+/* ───────── атомы (Apple: 600 вес, точный трекинг, воздух) ───────── */
 function H2({ children }: { children: React.ReactNode }) {
-  return <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(32px, 8.2vw, 50px)", fontWeight: 800, letterSpacing: "-1.4px", lineHeight: 1.05, color: "var(--color-label)", textAlign: "center" }}>{children}</h2>;
+  return <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(29px, 6.8vw, 44px)", fontWeight: 600, letterSpacing: "-0.022em", lineHeight: 1.08, color: "var(--color-label)", textAlign: "center" }}>{children}</h2>;
 }
 function Lead({ children }: { children: React.ReactNode }) {
-  return <p style={{ margin: "20px auto 0", maxWidth: 600, fontFamily: "var(--font-text)", fontSize: 17.5, lineHeight: 1.62, color: "var(--color-label-2)", textAlign: "center" }}>{children}</p>;
+  return <p style={{ margin: "18px auto 0", maxWidth: 600, fontFamily: "var(--font-text)", fontSize: "clamp(17px, 2vw, 19px)", lineHeight: 1.55, color: "var(--color-label-2)", textAlign: "center" }}>{children}</p>;
 }
-function Section({ children, top = 96 }: { children: React.ReactNode; top?: number }) {
-  return <section style={{ marginTop: top }}><Reveal><div style={{ maxWidth: 760, margin: "0 auto" }}>{children}</div></Reveal></section>;
+function Caption({ children }: { children: React.ReactNode }) {
+  return <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", textAlign: "center" }}>{children}</p>;
 }
-function Photo({ src, ratio = "3 / 2", caption, top = 36, rounded = false, pos = "center" }: { src: string; ratio?: string; caption?: string; top?: number; rounded?: boolean; pos?: string }) {
+// полноширинная секция-панель с фоном; внутри — читаемая колонка
+function Band({ tone = "base", children, padTop, narrow }: { tone?: Tone; children: React.ReactNode; padTop?: number; narrow?: boolean }) {
   return (
-    <section style={{ marginTop: top }}>
-      <Reveal>
-        <div style={{ margin: rounded ? "0 auto" : "0 -16px", maxWidth: rounded ? 760 : undefined, borderRadius: rounded ? 24 : 0, overflow: "hidden", background: "var(--color-bg-2)" }}>
-          <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover", objectPosition: pos }} />
-        </div>
-        {caption ? <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", textAlign: "center" }}>{caption}</p> : null}
-      </Reveal>
+    <section style={{ background: tone === "alt" ? "var(--color-bg-2)" : "var(--color-bg)", padding: `${padTop != null ? padTop + "px" : "clamp(66px,14vw,118px)"} 22px clamp(66px,14vw,118px)` }}>
+      <Reveal><div style={{ maxWidth: narrow ? 640 : 760, margin: "0 auto" }}>{children}</div></Reveal>
     </section>
   );
+}
+// скруглённая плитка-изображение, БЕЗ текста поверх
+function Photo({ src, ratio = "3 / 2", caption, pos = "center", radius = 28 }: { src: string; ratio?: string; caption?: string; pos?: string; radius?: number }) {
+  return (
+    <div style={{ marginTop: 34 }}>
+      <div style={{ borderRadius: radius, overflow: "hidden", background: "var(--color-fill-1)" }}>
+        <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover", objectPosition: pos }} />
+      </div>
+      {caption ? <Caption>{caption}</Caption> : null}
+    </div>
+  );
+}
+function tileStyle(tone: Tone): React.CSSProperties {
+  return tone === "alt"
+    ? { background: "var(--color-bg)", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }
+    : { background: "var(--color-bg-2)" };
 }
 
 /* ───────── данные ───────── */
@@ -168,311 +179,7 @@ const PURPOSES = [
   "Издавать и распространять журналы, книги и другие письменные материалы.",
 ];
 const MQ1 = ["Всемирное движение Харе Кришна", "ИСККОН", "Международное общество сознания Кришны", "ББТ", "Бхактиведанта Бук Траст", "Его Божественная Милость Шрила Прабхупада"];
-const MQ2 = ["Шрила Прабхупада", "Движение Харе Кришна", "ИСККОН", "Международное общество сознания Кришны", "ББТ", "Бхактиведанта Бук Траст"];
 const MQ3 = ["Харе Кришна Харе Кришна Кришна Кришна Харе Харе", "Харе Рама Харе Рама Рама Рама Харе Харе"];
-
-/* ───────── секции ───────── */
-function Hero() {
-  return (
-    <section style={{ marginTop: 26 }}>
-      <Reveal>
-        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 800, letterSpacing: "3px", color: "var(--color-label)" }}>ISKCON ONE LOVE</div>
-          <div style={{ margin: "12px auto 0", maxWidth: 460, fontFamily: "var(--font-text)", fontSize: 11.5, lineHeight: 1.5, letterSpacing: "0.3px", color: "var(--color-label-3)", textTransform: "uppercase" }}>
-            Ачарья-основатель Международного общества сознания Кришны (ИСККОН)<br />
-            Его Божественная Милость А. Ч. Бхактиведанта Свами Шрила Прабхупада
-          </div>
-          <blockquote style={{ margin: "26px auto 0", maxWidth: 560, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17, lineHeight: 1.55, color: "var(--color-label-2)" }}>
-            «Лучшее, что можно сделать для Господа, — это попытаться вдохнуть преданное служение в сердце обусловленной души, чтобы она сбросила оковы обусловленной жизни».
-          </blockquote>
-          <h1 style={{ margin: "44px 0 0", fontFamily: "var(--font-display)", fontSize: "clamp(40px, 12vw, 64px)", fontWeight: 800, letterSpacing: "-2px", lineHeight: 1.0, color: "var(--color-label)" }}>
-            Служение.<br />Преданность.<br />Любовь.
-          </h1>
-          <p style={{ margin: "22px auto 0", maxWidth: 600, fontFamily: "var(--font-text)", fontSize: 17.5, lineHeight: 1.62, color: "var(--color-label-2)" }}>
-            Великая духовная традиция, существующая более 5000 лет, была возрождена и зарегистрирована святым <b style={{ color: "var(--color-label)" }}>Шрилой Прабхупадой</b> 13 июля 1966 года. Это <b style={{ color: "var(--color-label)" }}>Всемирное Движение Харе Кришна</b>, ИСККОН, Международное общество сознания Кришны, развиваемое веками линией духовных учителей, имеет главную миссию — <b style={{ color: "var(--color-label)" }}>помочь всем душам восстановить их любовную связь с Богом</b>.
-          </p>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function Wandering() {
-  return (
-    <Section top={84}>
-      <p style={{ margin: 0, maxWidth: 620, marginInline: "auto", fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.66, color: "var(--color-label-2)", textAlign: "center" }}>
-        В одиночестве, без друзей и ресурсов, он бродил по улицам города в своих шафрановых одеждах. «Кто примет это послание, особенно в стране, настолько поглощённой материализмом? <b style={{ color: "var(--color-label)" }}>У меня нет надежды, но я попробую…</b>», — вспоминал Шрила Прабхупада.
-      </p>
-    </Section>
-  );
-}
-
-function Today() {
-  return (
-    <Section top={92}>
-      <H2>ИСККОН сегодня.</H2>
-      <Lead>Невероятная статистика. Движение Харе Кришна — мировое духовное сообщество, объединяющее миллионы людей более чем в 80 странах. Это движение милосердия и любви распространилось на все континенты.</Lead>
-      <div style={{ marginTop: 40, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "34px 16px", textAlign: "center" }}>
-        {STATS.map((s) => (
-          <div key={s.l}>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(30px, 9vw, 44px)", fontWeight: 800, letterSpacing: "-1px", color: "var(--color-label)", lineHeight: 1 }}><CountUp value={s.v} /></div>
-            <div style={{ margin: "8px auto 0", maxWidth: 150, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", lineHeight: 1.32 }}>{s.l}</div>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Mantra() {
-  return (
-    <section style={{ margin: "92px -16px 0", padding: "64px 22px", background: "var(--color-bg-2)" }}>
-      <Reveal>
-        <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
-          <H2>Харе Кришна Мантра.</H2>
-          <div style={{ marginTop: 28, fontFamily: "var(--font-scripture)", fontSize: 18, lineHeight: 1.7, color: "var(--color-label-3)" }}>
-            हरे कृष्ण हरे कृष्ण · कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम · राम राम हरे हरे
-          </div>
-          <div style={{ marginTop: 22, fontFamily: "var(--font-display)", fontSize: "clamp(22px, 6vw, 30px)", fontWeight: 700, letterSpacing: "-0.4px", lineHeight: 1.45, color: "var(--color-label)" }}>
-            Харе Кришна, Харе Кришна, Кришна Кришна, Харе Харе<br />Харе Рама, Харе Рама, Рама Рама, Харе Харе
-          </div>
-          <Lead>Каждый может получить духовное благо от повторения маха-мантры Харе Кришна. Когда звучит её трансцендентная вибрация, благо получают даже деревья, животные и насекомые. Громко повторяя мантру, человек проявляет милосердие ко всем живым существам.</Lead>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function NytStory() {
-  return (
-    <Section top={92}>
-      <Lead>
-        После года скитаний и привлечения первых последователей в Нью-Йорке Шрила Прабхупада зарегистрировал ИСККОН в июле 1966 года. Через месяц The New York Times вышла со статьёй «Свами поёт в парке в поисках экстаза» — о «50 последователях, что хлопают и качаются под гипнотическую музыку на Ист-Сайде». В мгновение ока популярность Движения Харе Кришна взлетела.
-      </Lead>
-    </Section>
-  );
-}
-
-function Goal() {
-  return (
-    <>
-      <Section top={92}>
-        <H2>Высшая цель.</H2>
-        <Lead>Движение Харе Кришна исследует науку чистой преданной любви к Богу, воплощённой в божественной паре: Кришне и Его высшей энергии любви, Шримати Радхарани (Харе).</Lead>
-      </Section>
-      <Photo src="/media/radha-krishna.webp" ratio="16 / 10" rounded top={36} caption="Божества Радхи и Кришны на алтаре" />
-    </>
-  );
-}
-
-function Lifestyle({ onChange }: { onChange: (t: string) => void }) {
-  return (
-    <Section top={92}>
-      <H2>Высший образ жизни.</H2>
-      <Lead>Духовный путь бхакти-йоги — это практика любовного преданного служения Богу, воплощённому в вечной божественной паре: Кришне и Шримати Радхарани (Харе). Образ жизни вайшнава тесно связан с преданностью этим двум прекрасным личностям.</Lead>
-      <div style={{ marginTop: 36 }}>
-        {FORMS.map((f, i) => {
-          const tap = !!f.go;
-          return (
-            <button key={f.t} type="button" disabled={!tap} onClick={() => f.go && onChange(f.go)}
-              onPointerDown={(e) => { if (tap) e.currentTarget.style.opacity = "0.6"; }}
-              onPointerUp={(e) => { if (tap) e.currentTarget.style.opacity = "1"; }}
-              onPointerLeave={(e) => { if (tap) e.currentTarget.style.opacity = "1"; }}
-              style={{ display: "flex", gap: 16, width: "100%", textAlign: "left", padding: "18px 0", borderTop: "0.5px solid var(--color-hairline)", borderBottom: i === FORMS.length - 1 ? "0.5px solid var(--color-hairline)" : "none", background: "transparent", cursor: tap ? "pointer" : "default" }}>
-              <span style={{ flexShrink: 0, fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, color: GOLD, width: 22, lineHeight: 1.8 }}>{String(i + 1).padStart(2, "0")}</span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{f.t}</span>
-                  {tap && <span style={{ marginLeft: "auto", color: GOLD, fontSize: 19, lineHeight: 1 }}>›</span>}
-                </span>
-                <span style={{ display: "block", marginTop: 6, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.52, color: "var(--color-label-2)" }}>{f.d}</span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </Section>
-  );
-}
-
-function BooksSection({ onOpenBook }: { onOpenBook: (work: string) => void }) {
-  return (
-    <Section top={92}>
-      <H2>Миллиард духовных книг.</H2>
-      <Lead>ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога.</Lead>
-      <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 14 }}>
-        {BOOKLIST.map((b) => (
-          <button key={b.work} type="button" onClick={() => onOpenBook(b.work)}
-            onPointerDown={(e) => { e.currentTarget.style.opacity = "0.6"; }}
-            onPointerUp={(e) => { e.currentTarget.style.opacity = "1"; }}
-            onPointerLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-            style={{ display: "flex", gap: 16, alignItems: "center", width: "100%", textAlign: "left", padding: "16px", borderRadius: 18, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", cursor: "pointer" }}>
-            <img src={BOOKS[b.work]?.covers?.[0]} alt="" loading="lazy" style={{ flexShrink: 0, width: 66, height: 92, objectFit: "cover", borderRadius: 8, background: "var(--color-fill-1)" }} />
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)", lineHeight: 1.2 }}>{b.t}</span>
-              <span style={{ display: "block", marginTop: 6, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{b.d}</span>
-              <span style={{ display: "inline-block", marginTop: 9, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-brand-blue)" }}>Читать онлайн →</span>
-            </span>
-          </button>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Founder({ onOpenEntity }: { onOpenEntity: (id: string, type: string | null) => void }) {
-  return (
-    <>
-      <Section top={92}>
-        <H2>Шрила Прабхупада.</H2>
-        <Lead>Основатель Движения Харе Кришна оказал значительное влияние на современную духовную историю, включая глобальное распространение ключевых концепций. Вот несколько фактов о его жизни и наследии.</Lead>
-        <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-          {[{ v: "14", l: "раз облетел весь мир с проповедью" }, { v: "108", l: "храмов основал лично" }].map((x) => (
-            <div key={x.l} style={{ padding: "20px 18px", borderRadius: 18, background: "var(--color-bg-2)", textAlign: "center" }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(30px,9vw,42px)", fontWeight: 800, color: "var(--color-label)", lineHeight: 1 }}><CountUp value={x.v} /></div>
-              <div style={{ margin: "8px auto 0", maxWidth: 150, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", lineHeight: 1.32 }}>{x.l}</div>
-            </div>
-          ))}
-        </div>
-      </Section>
-      <Photo src="/media/prabhupada.webp" ratio="3 / 2" pos="center 22%" top={36} caption="Шрила Прабхупада ведёт киртан" />
-      <section style={{ marginTop: 36 }}>
-        <Reveal>
-          <div style={{ maxWidth: 640, margin: "0 auto" }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, color: "var(--color-label-2)", textAlign: "center" }}>Его Божественная Милость А. Ч. Бхактиведанта Свами Шрила Прабхупада</p>
-            {BIO.map((p, i) => (
-              <p key={i} style={{ margin: i === 0 ? "24px 0 0" : "16px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.66, color: "var(--color-label-2)" }}>{p}</p>
-            ))}
-            <div style={{ marginTop: 32, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              {FACTS.map((f) => (
-                <div key={f.t} style={{ padding: "16px", borderRadius: 14, background: "var(--color-bg-2)" }}>
-                  <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{f.t}</div>
-                  <p style={{ margin: "6px 0 0", fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.45, color: "var(--color-label-2)" }}>{f.d}</p>
-                </div>
-              ))}
-            </div>
-            <div style={{ textAlign: "center" }}>
-              <button type="button" onClick={() => onOpenEntity("prabhupada", "personality")}
-                onPointerDown={(e) => { e.currentTarget.style.opacity = "0.7"; }}
-                onPointerUp={(e) => { e.currentTarget.style.opacity = "1"; }}
-                onPointerLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-                style={{ marginTop: 30, padding: "13px 28px", borderRadius: 999, border: "none", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>
-                Жизнь и наследие
-              </button>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-    </>
-  );
-}
-
-function Principles() {
-  return (
-    <Section top={92}>
-      <H2>Ничего лишнего.</H2>
-      <Lead>Четыре регулирующих принципа свободы.</Lead>
-      <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        {PRINCIPLES.map((p) => (
-          <div key={p.t} style={{ padding: "18px 16px", borderRadius: 16, background: "var(--color-bg-2)" }}>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{p.t}</div>
-            <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{p.d}</p>
-          </div>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Voices() {
-  return (
-    <Section top={92}>
-      <H2>Влияние на весь мир.</H2>
-      <Lead>Лидеры об ИСККОН и Движении Харе Кришна.</Lead>
-      <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 28 }}>
-        {VOICES.map((v) => (
-          <figure key={v.n} style={{ margin: 0, display: "flex", gap: 15 }}>
-            {v.img
-              ? <img src={`/media/voices/${v.img}.webp`} alt="" loading="lazy" style={{ flexShrink: 0, width: 52, height: 52, borderRadius: "50%", objectFit: "cover", background: "var(--color-bg-2)" }} />
-              : <span style={{ flexShrink: 0, width: 52, height: 52, borderRadius: "50%", background: "var(--color-bg-2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, color: GOLD }}>{v.n[0]}</span>}
-            <div style={{ minWidth: 0 }}>
-              <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17.5, lineHeight: 1.5, color: "var(--color-label)" }}>«{v.c}»</blockquote>
-              <figcaption style={{ marginTop: 8, fontFamily: "var(--font-text)" }}>
-                <span style={{ fontSize: 14.5, fontWeight: 700, color: "var(--color-label)" }}>{v.n}</span>
-                <span style={{ fontSize: 13, color: "var(--color-label-3)" }}> — {v.r}</span>
-              </figcaption>
-            </div>
-          </figure>
-        ))}
-      </div>
-      <div style={{ marginTop: 34, paddingTop: 28, borderTop: "0.5px solid var(--color-hairline)" }}>
-        <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, lineHeight: 1.6, color: "var(--color-label-2)" }}>
-          За последние полвека ИСККОН достиг впечатляющих результатов в общественном служении: помощь жертвам цунами 2004 года и урагана «Катрина», 1,2 миллиона школьников ежедневно получают питание в Индии, больница Бхактиведанты приняла более 200 000 пациентов за год.
-        </blockquote>
-        <figcaption style={{ marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: GOLD }}>Forbes</figcaption>
-      </div>
-    </Section>
-  );
-}
-
-function Purposes() {
-  return (
-    <Section top={92}>
-      <H2>7 целей ИСККОН.</H2>
-      <Lead>Семь основных целей, лично сформулированных Шрилой Прабхупадой при основании общества.</Lead>
-      <ol style={{ margin: "32px 0 0", padding: 0, listStyle: "none" }}>
-        {PURPOSES.map((p, i) => (
-          <li key={i} style={{ display: "flex", gap: 16, padding: "16px 0", borderTop: "0.5px solid var(--color-hairline)" }}>
-            <span style={{ flexShrink: 0, fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 800, color: GOLD, width: 24, lineHeight: 1.6 }}>{String(i + 1).padStart(2, "0")}</span>
-            <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>{p}</span>
-          </li>
-        ))}
-      </ol>
-    </Section>
-  );
-}
-
-function Explore({ onChange, onDonate }: { onChange: (t: string) => void; onDonate: () => void }) {
-  const items = [
-    { t: "Книги", sub: "БГ · ШБ · ЧЧ и труды ачарьев", act: () => onChange("books") },
-    { t: "Киртаны", sub: "Бхаджаны, молитвы, мантры", act: () => onChange("kirtans") },
-    { t: "Ачарья", sub: "Господь, аватары и спутники", act: () => onChange("acharya") },
-    { t: "Поддержать служение", sub: "Стать частью миссии", act: onDonate },
-  ];
-  return (
-    <Section top={92}>
-      <H2>Продолжите путь.</H2>
-      <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 10 }}>
-        {items.map((it) => (
-          <button key={it.t} type="button" onClick={it.act}
-            onPointerDown={(e) => { e.currentTarget.style.opacity = "0.6"; }}
-            onPointerUp={(e) => { e.currentTarget.style.opacity = "1"; }}
-            onPointerLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
-            style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "17px 18px", borderRadius: 16, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer" }}>
-            <span style={{ minWidth: 0, flex: 1 }}>
-              <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{it.t}</span>
-              <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)" }}>{it.sub}</span>
-            </span>
-            <span style={{ color: GOLD, fontSize: 19, lineHeight: 1 }}>›</span>
-          </button>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Footer() {
-  return (
-    <section style={{ margin: "84px -16px 0", padding: "48px 22px 8px", borderTop: "0.5px solid var(--color-hairline)", textAlign: "center" }}>
-      <div style={{ fontFamily: "var(--font-scripture)", fontSize: 14.5, color: "var(--color-label-3)", lineHeight: 1.7 }}>
-        Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare<br />Hare Rāma Hare Rāma Rāma Rāma Hare Hare
-      </div>
-      <p style={{ margin: "22px auto 0", maxWidth: 560, fontFamily: "var(--font-text)", fontSize: 11.5, lineHeight: 1.65, color: "var(--color-label-3)" }}>
-        ISKCON ONE LOVE — онлайн-ресурс последователей традиции ISKCON из разных стран, относящейся к Брахма-Мадхва-Гаудия-сампрадае, созданный как пространство вдохновения для тех, кто ценит наследие Ачарьи-основателя ИСККОН Его Божественной Милости А. Ч. Бхактиведанты Свами Шрилы Прабхупады. Ресурс не является официальным представительством какой-либо зарегистрированной организации ISKCON и не осуществляет миссионерскую деятельность. Все материалы публикуются в культурно-просветительском и личном контексте.
-      </p>
-    </section>
-  );
-}
 
 /* ───────── экран ───────── */
 export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonate }: {
@@ -482,28 +189,263 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
   onDonate: () => void;
 }) {
   useEffect(() => { fetch(api("/entities/prabhupada")).catch(() => {}); }, []);
+
+  const explore = [
+    { t: "Книги", sub: "БГ · ШБ · ЧЧ и труды ачарьев", act: () => onChange("books") },
+    { t: "Киртаны", sub: "Бхаджаны, молитвы, мантры", act: () => onChange("kirtans") },
+    { t: "Ачарья", sub: "Господь, аватары и спутники", act: () => onChange("acharya") },
+    { t: "Поддержать служение", sub: "Стать частью миссии", act: onDonate },
+  ];
+
   return (
-    <div>
+    <div style={{ margin: "0 -16px" }}>
       <Styles />
-      <Hero />
-      <Photo src="/media/prabhupada-color.webp" ratio="3 / 2" pos="center 25%" top={40} caption="Шрила Прабхупада" />
-      <Wandering />
-      <Photo src="/media/prabhupada-nyc.webp" ratio="3 / 2" pos="center 28%" top={36} caption="Нью-Йорк, 1965 — начало движения" />
+
+      {/* HERO — base */}
+      <Band tone="base" padTop={34}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, letterSpacing: "2.6px", textTransform: "uppercase", color: GOLD }}>ISKCON · One Love</div>
+          <h1 style={{ margin: "26px auto 0", maxWidth: 860, fontFamily: "var(--font-display)", fontSize: "clamp(46px, 14vw, 84px)", fontWeight: 600, letterSpacing: "-0.035em", lineHeight: 0.99, color: "var(--color-label)" }}>
+            Служение.<br />Преданность.<br />Любовь.
+          </h1>
+          <p style={{ margin: "30px auto 0", maxWidth: 560, fontFamily: "var(--font-text)", fontSize: "clamp(18px,2.3vw,21px)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
+            Великая духовная традиция, существующая более 5000 лет, была возрождена святым <b style={{ color: "var(--color-label)", fontWeight: 600 }}>Шрилой Прабхупадой</b> 13 июля 1966 года. <b style={{ color: "var(--color-label)", fontWeight: 600 }}>Всемирное Движение Харе Кришна</b>, ИСККОН, помогает каждой душе восстановить её вечную любовную связь с Богом.
+          </p>
+        </div>
+        <Photo src="/media/prabhupada-color.webp" ratio="4 / 3" pos="center 22%" caption="Ачарья-основатель ИСККОН — Его Божественная Милость А. Ч. Бхактиведанта Свами Шрила Прабхупада" />
+      </Band>
+
+      {/* Скитания — alt */}
+      <Band tone="alt" narrow>
+        <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "clamp(17px,2vw,19px)", lineHeight: 1.62, color: "var(--color-label-2)", textAlign: "center" }}>
+          В одиночестве, без друзей и ресурсов, он бродил по улицам города в своих шафрановых одеждах. «Кто примет это послание, особенно в стране, настолько поглощённой материализмом? <b style={{ color: "var(--color-label)", fontWeight: 600 }}>У меня нет надежды, но я попробую…</b>», — вспоминал Шрила Прабхупада.
+        </p>
+        <Photo src="/media/prabhupada-nyc.webp" ratio="3 / 2" pos="center 28%" caption="Нью-Йорк, 1965 — начало движения" />
+      </Band>
+
       <Marquee items={MQ1} />
-      <Today />
-      <Marquee items={MQ2} dur={44} />
-      <Goal />
-      <Mantra />
-      <NytStory />
-      <Lifestyle onChange={onChange} />
-      <Marquee items={MQ3} dur={48} />
-      <BooksSection onOpenBook={onOpenBook} />
-      <Founder onOpenEntity={onOpenEntity} />
-      <Principles />
-      <Voices />
-      <Purposes />
-      <Explore onChange={onChange} onDonate={onDonate} />
-      <Footer />
+
+      {/* ИСККОН сегодня — base */}
+      <Band tone="base">
+        <H2>ИСККОН сегодня.</H2>
+        <Lead>Невероятная статистика. Движение Харе Кришна — мировое духовное сообщество, объединяющее миллионы людей более чем в 80 странах. Это движение милосердия и любви распространилось на все континенты.</Lead>
+        <div style={{ marginTop: 44, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "38px 16px", textAlign: "center" }}>
+          {STATS.map((s) => (
+            <div key={s.l}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 12vw, 68px)", fontWeight: 600, letterSpacing: "-0.025em", color: "var(--color-label)", lineHeight: 1 }}><CountUp value={s.v} /></div>
+              <div style={{ margin: "9px auto 0", maxWidth: 150, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", lineHeight: 1.32 }}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+      </Band>
+
+      {/* Высшая цель — alt */}
+      <Band tone="alt">
+        <H2>Высшая цель.</H2>
+        <Lead>Движение Харе Кришна исследует науку чистой преданной любви к Богу, воплощённой в божественной паре: Кришне и Его высшей энергии любви, Шримати Радхарани (Харе).</Lead>
+        <Photo src="/media/radha-krishna.webp" ratio="16 / 10" caption="Божества Радхи и Кришны на алтаре" />
+      </Band>
+
+      {/* Маха-мантра — драматичная тёмная секция */}
+      <section style={{ background: "#0b0b0d", padding: "clamp(76px,16vw,136px) 22px" }}>
+        <Reveal>
+          <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, letterSpacing: "2.6px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
+            <div style={{ marginTop: 32, fontFamily: "var(--font-scripture)", fontSize: 19, lineHeight: 1.7, color: "rgba(255,255,255,0.42)" }}>
+              हरे कृष्ण हरे कृष्ण · कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम · राम राम हरे हरे
+            </div>
+            <div style={{ marginTop: 26, fontFamily: "var(--font-display)", fontSize: "clamp(24px, 6.4vw, 38px)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.42, color: "#fff" }}>
+              Харе Кришна, Харе Кришна,<br />Кришна Кришна, Харе Харе<br />Харе Рама, Харе Рама,<br />Рама Рама, Харе Харе
+            </div>
+            <p style={{ margin: "34px auto 0", maxWidth: 540, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, color: "rgba(255,255,255,0.62)" }}>
+              Когда звучит трансцендентная вибрация святого имени, благо получают все живые существа — даже деревья, животные и насекомые. Повторение маха-мантры — высшее милосердие ко всему миру.
+            </p>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* NYT — alt */}
+      <Band tone="alt" narrow>
+        <Lead>После года скитаний и привлечения первых последователей в Нью-Йорке Шрила Прабхупада зарегистрировал ИСККОН в июле 1966 года. Через месяц The New York Times вышла со статьёй «Свами поёт в парке в поисках экстаза» — о «50 последователях, что хлопают и качаются под гипнотическую музыку на Ист-Сайде». В мгновение ока популярность Движения Харе Кришна взлетела.</Lead>
+      </Band>
+
+      {/* Высший образ жизни — base */}
+      <Band tone="base">
+        <H2>Высший образ жизни.</H2>
+        <Lead>Духовный путь бхакти-йоги — это практика любовного преданного служения Богу, воплощённому в вечной божественной паре: Кришне и Шримати Радхарани (Харе). Образ жизни вайшнава тесно связан с преданностью этим двум прекрасным личностям.</Lead>
+        <div style={{ marginTop: 40 }}>
+          {FORMS.map((f, i) => {
+            const tap = !!f.go;
+            return (
+              <button key={f.t} type="button" disabled={!tap} onClick={() => f.go && onChange(f.go)}
+                onPointerDown={(e) => { if (tap) e.currentTarget.style.opacity = "0.55"; }}
+                onPointerUp={(e) => { if (tap) e.currentTarget.style.opacity = "1"; }}
+                onPointerLeave={(e) => { if (tap) e.currentTarget.style.opacity = "1"; }}
+                style={{ display: "flex", gap: 18, width: "100%", textAlign: "left", padding: "20px 0", borderTop: "0.5px solid var(--color-hairline)", borderBottom: i === FORMS.length - 1 ? "0.5px solid var(--color-hairline)" : "none", background: "transparent", cursor: tap ? "pointer" : "default" }}>
+                <span style={{ flexShrink: 0, fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 600, color: GOLD, width: 22, lineHeight: 2.1 }}>{String(i + 1).padStart(2, "0")}</span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{f.t}</span>
+                    {tap && <span style={{ marginLeft: "auto", color: "var(--color-label-3)", fontSize: 18, lineHeight: 1 }}>›</span>}
+                  </span>
+                  <span style={{ display: "block", marginTop: 6, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>{f.d}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </Band>
+
+      <Marquee items={MQ3} dur={52} />
+
+      {/* Миллиард книг — alt (белые плитки) */}
+      <Band tone="alt">
+        <H2>Миллиард духовных книг.</H2>
+        <Lead>ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога.</Lead>
+        <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 14 }}>
+          {BOOKLIST.map((b) => (
+            <button key={b.work} type="button" onClick={() => onOpenBook(b.work)}
+              onPointerDown={(e) => { e.currentTarget.style.opacity = "0.6"; }}
+              onPointerUp={(e) => { e.currentTarget.style.opacity = "1"; }}
+              onPointerLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+              style={{ display: "flex", gap: 18, alignItems: "center", width: "100%", textAlign: "left", padding: "18px", borderRadius: 22, cursor: "pointer", ...tileStyle("alt") }}>
+              <img src={BOOKS[b.work]?.covers?.[0]} alt="" loading="lazy" style={{ flexShrink: 0, width: 66, height: 92, objectFit: "cover", borderRadius: 8, background: "var(--color-fill-1)" }} />
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", lineHeight: 1.2 }}>{b.t}</span>
+                <span style={{ display: "block", marginTop: 6, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{b.d}</span>
+                <span style={{ display: "inline-block", marginTop: 9, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-brand-blue)" }}>Читать онлайн ›</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </Band>
+
+      {/* Шрила Прабхупада — base */}
+      <Band tone="base">
+        <H2>Шрила Прабхупада.</H2>
+        <Lead>Основатель Движения Харе Кришна оказал значительное влияние на современную духовную историю, включая глобальное распространение ключевых концепций. Вот несколько фактов о его жизни и наследии.</Lead>
+        <blockquote style={{ margin: "34px auto 0", maxWidth: 620, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "clamp(19px,2.6vw,23px)", lineHeight: 1.5, color: "var(--color-label)", textAlign: "center" }}>
+          «Лучшее, что можно сделать для Господа, — это попытаться вдохнуть преданное служение в сердце обусловленной души, чтобы она сбросила оковы обусловленной жизни».
+        </blockquote>
+        <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          {[{ v: "14", l: "раз облетел весь мир с проповедью" }, { v: "108", l: "храмов основал лично" }].map((x) => (
+            <div key={x.l} style={{ padding: "22px 18px", borderRadius: 22, textAlign: "center", ...tileStyle("base") }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(30px,9vw,42px)", fontWeight: 600, letterSpacing: "-0.02em", color: "var(--color-label)", lineHeight: 1 }}><CountUp value={x.v} /></div>
+              <div style={{ margin: "9px auto 0", maxWidth: 150, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", lineHeight: 1.32 }}>{x.l}</div>
+            </div>
+          ))}
+        </div>
+        <Photo src="/media/prabhupada.webp" ratio="3 / 2" pos="center 22%" caption="Шрила Прабхупада ведёт киртан" />
+        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+          <p style={{ margin: "34px 0 0", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, color: "var(--color-label-2)", textAlign: "center" }}>Его Божественная Милость А. Ч. Бхактиведанта Свами Шрила Прабхупада</p>
+          {BIO.map((p, i) => (
+            <p key={i} style={{ margin: i === 0 ? "24px 0 0" : "16px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.66, color: "var(--color-label-2)" }}>{p}</p>
+          ))}
+          <div style={{ marginTop: 34, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            {FACTS.map((f) => (
+              <div key={f.t} style={{ padding: "18px", borderRadius: 18, ...tileStyle("base") }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{f.t}</div>
+                <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.45, color: "var(--color-label-2)" }}>{f.d}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ textAlign: "center" }}>
+            <button type="button" onClick={() => onOpenEntity("prabhupada", "personality")}
+              onPointerDown={(e) => { e.currentTarget.style.opacity = "0.8"; }}
+              onPointerUp={(e) => { e.currentTarget.style.opacity = "1"; }}
+              onPointerLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+              style={{ marginTop: 32, padding: "12px 24px", borderRadius: 999, border: "none", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 500, cursor: "pointer" }}>
+              Жизнь и наследие
+            </button>
+          </div>
+        </div>
+      </Band>
+
+      {/* Принципы — alt (белые плитки) */}
+      <Band tone="alt">
+        <H2>Ничего лишнего.</H2>
+        <Lead>Четыре регулирующих принципа свободы.</Lead>
+        <div style={{ marginTop: 40, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          {PRINCIPLES.map((p) => (
+            <div key={p.t} style={{ padding: "22px 18px", borderRadius: 22, ...tileStyle("alt") }}>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{p.t}</div>
+              <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{p.d}</p>
+            </div>
+          ))}
+        </div>
+      </Band>
+
+      {/* Влияние на мир — base */}
+      <Band tone="base">
+        <H2>Влияние на весь мир.</H2>
+        <Lead>Лидеры об ИСККОН и Движении Харе Кришна.</Lead>
+        <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 30 }}>
+          {VOICES.map((v) => (
+            <figure key={v.n} style={{ margin: 0, display: "flex", gap: 16 }}>
+              {v.img
+                ? <img src={`/media/voices/${v.img}.webp`} alt="" loading="lazy" style={{ flexShrink: 0, width: 52, height: 52, borderRadius: "50%", objectFit: "cover", background: "var(--color-bg-2)" }} />
+                : <span style={{ flexShrink: 0, width: 52, height: 52, borderRadius: "50%", background: "var(--color-bg-2)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 600, color: GOLD }}>{v.n[0]}</span>}
+              <div style={{ minWidth: 0 }}>
+                <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17.5, lineHeight: 1.5, color: "var(--color-label)" }}>«{v.c}»</blockquote>
+                <figcaption style={{ marginTop: 8, fontFamily: "var(--font-text)" }}>
+                  <span style={{ fontSize: 14.5, fontWeight: 600, color: "var(--color-label)" }}>{v.n}</span>
+                  <span style={{ fontSize: 13, color: "var(--color-label-3)" }}> — {v.r}</span>
+                </figcaption>
+              </div>
+            </figure>
+          ))}
+        </div>
+        <div style={{ marginTop: 36, paddingTop: 30, borderTop: "0.5px solid var(--color-hairline)" }}>
+          <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, lineHeight: 1.6, color: "var(--color-label-2)" }}>
+            За последние полвека ИСККОН достиг впечатляющих результатов в общественном служении: помощь жертвам цунами 2004 года и урагана «Катрина», 1,2 миллиона школьников ежедневно получают питание в Индии, больница Бхактиведанты приняла более 200 000 пациентов за год.
+          </blockquote>
+          <figcaption style={{ marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: GOLD }}>Forbes</figcaption>
+        </div>
+      </Band>
+
+      {/* 7 целей — alt */}
+      <Band tone="alt">
+        <H2>7 целей ИСККОН.</H2>
+        <Lead>Семь основных целей, лично сформулированных Шрилой Прабхупадой при основании общества.</Lead>
+        <ol style={{ margin: "36px 0 0", padding: 0, listStyle: "none" }}>
+          {PURPOSES.map((p, i) => (
+            <li key={i} style={{ display: "flex", gap: 18, padding: "18px 0", borderTop: "0.5px solid var(--color-hairline)" }}>
+              <span style={{ flexShrink: 0, fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 600, color: GOLD, width: 24, lineHeight: 1.7 }}>{String(i + 1).padStart(2, "0")}</span>
+              <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>{p}</span>
+            </li>
+          ))}
+        </ol>
+      </Band>
+
+      {/* Переходы — base */}
+      <Band tone="base">
+        <H2>Продолжите путь.</H2>
+        <div style={{ marginTop: 36, display: "flex", flexDirection: "column", gap: 12 }}>
+          {explore.map((it) => (
+            <button key={it.t} type="button" onClick={it.act}
+              onPointerDown={(e) => { e.currentTarget.style.opacity = "0.6"; }}
+              onPointerUp={(e) => { e.currentTarget.style.opacity = "1"; }}
+              onPointerLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
+              style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "18px 20px", borderRadius: 18, cursor: "pointer", ...tileStyle("base") }}>
+              <span style={{ minWidth: 0, flex: 1 }}>
+                <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
+                <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)" }}>{it.sub}</span>
+              </span>
+              <span style={{ color: "var(--color-label-3)", fontSize: 18, lineHeight: 1 }}>›</span>
+            </button>
+          ))}
+        </div>
+      </Band>
+
+      {/* Футер — alt */}
+      <section style={{ background: "var(--color-bg-2)", padding: "52px 22px 40px", textAlign: "center" }}>
+        <div style={{ fontFamily: "var(--font-scripture)", fontSize: 14.5, color: "var(--color-label-3)", lineHeight: 1.7 }}>
+          Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare<br />Hare Rāma Hare Rāma Rāma Rāma Hare Hare
+        </div>
+        <p style={{ margin: "22px auto 0", maxWidth: 560, fontFamily: "var(--font-text)", fontSize: 11.5, lineHeight: 1.65, color: "var(--color-label-3)" }}>
+          ISKCON ONE LOVE — онлайн-ресурс последователей традиции ISKCON из разных стран, относящейся к Брахма-Мадхва-Гаудия-сампрадае, созданный как пространство вдохновения для тех, кто ценит наследие Ачарьи-основателя ИСККОН Его Божественной Милости А. Ч. Бхактиведанты Свами Шрилы Прабхупады. Ресурс не является официальным представительством какой-либо зарегистрированной организации ISKCON и не осуществляет миссионерскую деятельность. Все материалы публикуются в культурно-просветительском и личном контексте.
+        </p>
+      </section>
     </div>
   );
 }
