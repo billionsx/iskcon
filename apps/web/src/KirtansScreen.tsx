@@ -1,0 +1,238 @@
+/**
+ * KirtansScreen — витрина аудиотеки раздела «Киртаны».
+ *
+ * Секции:
+ *  • «Слушать сейчас»     — альбомы со звуком (Internet Archive), тап → плеер;
+ *  • «Исполнители»        — полный реестр киртания, тап → страница исполнителя;
+ *  • «Жанры и настроения» — классификации (тип/настроение), фильтруют альбомы;
+ *  • «Тексты бхаджанов»   — молитвенник (полные тексты), как было раньше.
+ *
+ * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
+ */
+import { useEffect, useMemo, useState } from "react";
+import { api } from "./api";
+import { usePlayer } from "./player/store";
+import {
+  KIRTAN_ARTISTS, playableAlbums, albumCover, albumsByArtist, artistPlayableCount,
+  artistBySlug, filterAlbums, moodsInCatalog, typesInCatalog,
+  TYPE_LABEL, MOOD_LABEL,
+  type KirtanArtist, type KirtanAlbum, type KirtanType, type KirtanMood,
+} from "./kirtans";
+
+const GOLD = "#D2AA1B";
+
+interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; }
+
+/** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
+export function ArtistMono({ artist, size = 52 }: { artist: KirtanArtist; size?: number }) {
+  const accent = artist.accent;
+  return (
+    <span aria-hidden style={{
+      width: size, height: size, flexShrink: 0, borderRadius: "50%", display: "grid", placeItems: "center",
+      fontFamily: "var(--font-text)", fontWeight: 700, letterSpacing: "-0.01em",
+      fontSize: size * (artist.mono.length > 1 ? 0.34 : 0.42),
+      color: accent ? "#3a2e05" : "var(--color-label)",
+      background: accent
+        ? "radial-gradient(120% 120% at 30% 25%, #F0D060 0%, #D2AA1B 55%, #B8901A 100%)"
+        : "var(--color-bg-3, #e9e9ee)",
+      border: accent ? "none" : "0.5px solid var(--color-hairline)",
+      boxShadow: accent ? "0 4px 14px rgba(210,170,27,0.35)" : "none",
+    }}>{artist.mono}</span>
+  );
+}
+
+function SectionHead({ eyebrow, title, action }: { eyebrow: string; title: string; action?: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
+      <div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{eyebrow}</div>
+        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{title}</h2>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+/** Карточка проигрываемого альбома в «Слушать сейчас». */
+function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }) {
+  const artist = artistBySlug(album.artist);
+  return (
+    <button onClick={onPlay} style={{ flexShrink: 0, width: 168, textAlign: "left", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-text)" }}>
+      <div style={{ position: "relative", width: 168, height: 168, borderRadius: 16, overflow: "hidden", background: "var(--color-bg-3, #e9e9ee)", boxShadow: "0 8px 26px rgba(0,0,0,0.16)", border: "0.5px solid var(--color-hairline)" }}>
+        <img src={albumCover(album)} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <span aria-hidden style={{ position: "absolute", right: 10, bottom: 10, width: 38, height: 38, borderRadius: "50%", display: "grid", placeItems: "center", background: "rgba(255,255,255,0.92)", color: "#1d1d1f", boxShadow: "0 3px 12px rgba(0,0,0,0.3)" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+        </span>
+        <span style={{ position: "absolute", left: 10, top: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#fff", fontSize: 11, fontWeight: 600, letterSpacing: "0.01em" }}>{TYPE_LABEL[album.type]}</span>
+      </div>
+      <div style={{ marginTop: 9, fontSize: 14.5, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
+      <div style={{ marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
+    </button>
+  );
+}
+
+export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalog }: {
+  onOpenArtist: (slug: string) => void;
+  onOpenBhajan: (slug: string) => void;
+  onOpenCatalog: () => void;
+}) {
+  const player = usePlayer();
+  const playable = useMemo(() => playableAlbums(), []);
+  const types = useMemo(() => typesInCatalog(), []);
+  const moods = useMemo(() => moodsInCatalog(), []);
+
+  // Классификации — выбранный фильтр (один тип ИЛИ одно настроение за раз).
+  const [fType, setFType] = useState<KirtanType | null>(null);
+  const [fMood, setFMood] = useState<KirtanMood | null>(null);
+  const filtered = useMemo(
+    () => (fType || fMood ? filterAlbums({ type: fType, mood: fMood }) : []),
+    [fType, fMood]
+  );
+
+  // Тексты бхаджанов — короткий список из D1 (как было), полный — в каталоге.
+  const [bhajans, setBhajans] = useState<BhajanListItem[] | null>(null);
+  useEffect(() => {
+    let live = true;
+    fetch(api("/bhajans"))
+      .then((r) => r.json())
+      .then((d) => { if (live) setBhajans(d.bhajans ?? []); })
+      .catch(() => { if (live) setBhajans([]); });
+    return () => { live = false; };
+  }, []);
+
+  const chip = (on: boolean): React.CSSProperties => ({
+    flexShrink: 0, padding: "8px 15px", borderRadius: 999, cursor: "pointer", fontFamily: "var(--font-text)",
+    border: `0.5px solid ${on ? "transparent" : "var(--color-hairline)"}`,
+    background: on ? "var(--color-label)" : "var(--color-bg-2)",
+    color: on ? "var(--color-bg)" : "var(--color-label)",
+    fontSize: 13.5, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
+    transition: "background .15s, color .15s, border-color .15s", WebkitTapHighlightColor: "transparent",
+  });
+
+  return (
+    <div style={{ fontFamily: "var(--font-text)" }}>
+      {/* Заголовок раздела */}
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Аудиотека</div>
+        <h1 style={{ margin: "2px 0 0", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Киртаны и бхаджаны</h1>
+        <p style={{ margin: "8px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "var(--color-label-2)", maxWidth: 520 }}>
+          Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана и фестивалей наших дней.
+        </p>
+      </div>
+
+      {/* Слушать сейчас */}
+      {playable.length > 0 && (
+        <section style={{ marginTop: 26 }}>
+          <SectionHead eyebrow="Звучит" title="Слушать сейчас" />
+          <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", margin: "0 -16px", padding: "2px 16px 4px" }}>
+            {playable.map((al) => (
+              <AlbumCard key={al.id} album={al} onPlay={() => player.playKirtan(al.id)} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Исполнители */}
+      <section style={{ marginTop: 30 }}>
+        <SectionHead eyebrow="Голоса святого имени" title="Исполнители" />
+        <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+          {KIRTAN_ARTISTS.map((a, i) => {
+            const cnt = artistPlayableCount(a.slug);
+            const total = albumsByArtist(a.slug).length;
+            const meta = cnt > 0 ? `${cnt} ${plural(cnt, "альбом", "альбома", "альбомов")} со звуком` : (total > 0 ? "Записи" : a.role);
+            return (
+              <li key={a.slug} style={{ borderBottom: i === KIRTAN_ARTISTS.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                <button onClick={() => onOpenArtist(a.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                  <ArtistMono artist={a} />
+                  <span style={{ minWidth: 0, flex: 1 }}>
+                    <span style={{ display: "block", fontSize: 15.5, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{a.name}</span>
+                    <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.role}{a.era ? ` · ${a.era}` : ""}</span>
+                  </span>
+                  {cnt > 0 && <span style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 600, color: GOLD, marginRight: 2 }}>{cnt}♪</span>}
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      {/* Жанры и настроения */}
+      <section style={{ marginTop: 30 }}>
+        <SectionHead eyebrow="Классификации" title="Жанры и настроения" action={
+          (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
+        } />
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {types.map((t) => (
+            <button key={t} onClick={() => { setFType(fType === t ? null : t); setFMood(null); }} style={chip(fType === t)}>{TYPE_LABEL[t]}</button>
+          ))}
+          <span aria-hidden style={{ width: 1, alignSelf: "stretch", margin: "2px 2px", background: "var(--color-hairline)" }} />
+          {moods.map((m) => (
+            <button key={m} onClick={() => { setFMood(fMood === m ? null : m); setFType(null); }} style={chip(fMood === m)}>{MOOD_LABEL[m]}</button>
+          ))}
+        </div>
+
+        {(fType || fMood) && (
+          <ul style={{ margin: "14px 0 0", padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+            {filtered.length === 0 && <li style={{ padding: "16px", fontSize: 14, color: "var(--color-label-2)" }}>Пока нет записей по этому фильтру.</li>}
+            {filtered.map((al, i) => {
+              const ar = artistBySlug(al.artist);
+              const can = !!al.archive;
+              return (
+                <li key={al.id} style={{ borderBottom: i === filtered.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                  <button onClick={() => can ? player.playKirtan(al.id) : onOpenArtist(al.artist)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                    <img src={albumCover(al)} alt="" loading="lazy" style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
+                    <span style={{ minWidth: 0, flex: 1 }}>
+                      <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{al.title}</span>
+                      <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{ar?.name} · {TYPE_LABEL[al.type]}</span>
+                    </span>
+                    {can
+                      ? <span aria-hidden style={{ flexShrink: 0, width: 30, height: 30, borderRadius: "50%", display: "grid", placeItems: "center", background: "var(--color-label)", color: "var(--color-bg)" }}><svg width="14" height="14" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg></span>
+                      : <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {/* Тексты бхаджанов (молитвенник) */}
+      <section style={{ marginTop: 30 }}>
+        <SectionHead eyebrow="Молитвенник" title="Тексты бхаджанов" action={
+          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+            Весь каталог
+            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        } />
+        {!bhajans && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
+        {bhajans && bhajans.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
+        {bhajans && bhajans.length > 0 && (
+          <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+            {bhajans.slice(0, 6).map((b, i, arr) => (
+              <li key={b.slug} style={{ borderBottom: i === arr.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                <button onClick={() => onOpenBhajan(b.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                  {b.hero_image
+                    ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+                    : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)" }} />}
+                  <span style={{ minWidth: 0, flex: 1 }}>
+                    <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
+                    {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
+                  </span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function plural(n: number, one: string, few: string, many: string): string {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}

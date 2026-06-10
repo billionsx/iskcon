@@ -1,5 +1,6 @@
 import { handleAdmin } from "./loader/handler";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
+import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
 import puppeteer from "@cloudflare/puppeteer";
 import { PDFDocument } from "pdf-lib";
@@ -352,9 +353,9 @@ const BG_INTRO_TITLES: Record<string, string> = {
 
 interface IaFile { name: string; source?: string; format?: string; length?: string; }
 interface AudioTrack {
-  kind: "intro" | "chapter";
+  kind: "intro" | "chapter" | "song";
   pos: number;            // 0-based position within this mode's playlist
-  chapter: number | null; // chapter number, or null for intros
+  chapter: number | null; // chapter number, or null for intros/songs
   title: string;
   file: string;
   url: string;            // same-origin proxy URL
@@ -362,6 +363,8 @@ interface AudioTrack {
   lila?: string;          // CC only: adi|madhya|antya
   lilaLabel?: string;     // CC only: «Ади-лила»
   part?: number | null;   // CC only: part index when a chapter is split (else null)
+  artist?: string;        // kirtan only: исполнитель (отображаемое имя)
+  album?: string;         // kirtan only: название альбома
 }
 
 function audioDuration(len?: string): number | null {
@@ -505,9 +508,64 @@ async function ccAudioManifest(env: Env, origin: string): Promise<Response> {
   return json({ book: "cc", lilas, modes: { plain: { identifier: CC_AUDIO_LILAS[0].identifier, tracks: flat } } });
 }
 
+// ── Киртаны и бхаджаны: альбом = IA-элемент; трек-лист строится live из метаданных ──
+// Файлы IA-альбомов идут с числовым префиксом дорожки («1896 Amara Jivana.mp3»,
+// «10 Jaya_Radha_Madhava.mp3»). Префикс — только для сортировки; в названии он
+// убирается, подчёркивания → пробелы. Имена с пробелами корректно резолвит
+// serveAudio (decode→encode). Каталог (исполнители/альбомы) — единый источник в
+// src/kirtans.ts, общий с фронтом.
+function cleanKirtanTitle(stem: string): { sort: number; title: string } {
+  const m = stem.match(/^(\d{1,4})\b[.\-_ ]*(.*)$/);
+  const sort = m ? parseInt(m[1], 10) : Number.MAX_SAFE_INTEGER;
+  let title = (m ? m[2] : stem).replace(/_/g, " ").replace(/\s+/g, " ").trim();
+  if (!title) title = stem;
+  return { sort, title };
+}
+
+async function kirtanTracks(identifier: string, origin: string, artist: string, album: string): Promise<AudioTrack[]> {
+  const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
+    headers: { accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!meta.ok) return [];
+  const data = (await meta.json()) as { files?: IaFile[] };
+  const originals = (data.files || []).filter((f) => f.source === "original" && /\.mp3$/i.test(f.name));
+  const rows = originals.map((f) => {
+    const stem = f.name.replace(/\.mp3$/i, "");
+    const { sort, title } = cleanKirtanTitle(stem);
+    return {
+      sort, name: f.name,
+      t: {
+        kind: "song" as const, pos: 0, chapter: null,
+        title, file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
+        durationSec: audioDuration(f.length), artist, album,
+      } as AudioTrack,
+    };
+  });
+  rows.sort((a, b) => (a.sort - b.sort) || a.name.localeCompare(b.name));
+  const tracks = rows.map((r) => r.t);
+  tracks.forEach((t, i) => (t.pos = i));
+  return tracks;
+}
+
+async function kirtanManifest(origin: string, albumId: string): Promise<Response> {
+  const album = kirtanAlbumById(albumId);
+  if (!album || !album.archive) {
+    return json({ book: albumId, kind: "kirtan", modes: { plain: { identifier: "", tracks: [] } } });
+  }
+  const artist = kirtanArtistBySlug(album.artist)?.name ?? "";
+  const tracks = await kirtanTracks(album.archive, origin, artist, album.title);
+  return json({ book: albumId, kind: "kirtan", modes: { plain: { identifier: album.archive, tracks } } });
+}
+
 // Stream one file from IA, forwarding Range (for seeking) and stamping an immutable cache.
 async function serveAudio(request: Request, identifier: string, filename: string): Promise<Response> {
-  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(filename)}`;
+  // Имя из пути приходит percent-кодированным. encodeURI поверх него удваивал бы
+  // кодировку (%20→%2520) и ломал файлы с пробелами (записи Прабхупады). Сначала
+  // раскодируем, затем закодируем один раз — для имён без пробелов поведение прежнее.
+  let name = filename;
+  try { name = decodeURIComponent(filename); } catch { /* keep as-is */ }
+  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(name)}`;
   const range = request.headers.get("Range");
   const upstream = await fetch(iaUrl, {
     method: "GET",
@@ -705,6 +763,12 @@ export default {
     }
     if (url.pathname === "/api/books/cc/audio") {
       return ccAudioManifest(env, url.origin);
+    }
+
+    // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)
+    const kirtanM = url.pathname.match(/^\/api\/kirtans\/([a-z0-9][a-z0-9._-]*)\/audio$/i);
+    if (kirtanM) {
+      return kirtanManifest(url.origin, kirtanM[1]);
     }
 
     // GET /api/books/bg/chapters/:n/verses → verse refs + source_url for a chapter

@@ -14,6 +14,7 @@ import { QrSheet, type QrData } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS, bookFullTitle } from "../books";
+import { albumById } from "../kirtans";
 import { type SubTabDef } from "../SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -66,7 +67,12 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   if (!p.active) return null;
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
-  const sub = p.track?.kind === "intro" ? "Вступление" : p.track?.lilaLabel ? `${p.track.lilaLabel} · Глава ${p.track?.chapter ?? ""}` : `Глава ${p.track?.chapter ?? ""}`;
+  const isKirtan = p.kind === "kirtan";
+  const sub = isKirtan
+    ? (p.artist || "Киртан")
+    : p.track?.kind === "intro" ? "Вступление"
+      : p.track?.lilaLabel ? `${p.track.lilaLabel} · Глава ${p.track?.chapter ?? ""}`
+        : `Глава ${p.track?.chapter ?? ""}`;
 
   function onDown(e: React.PointerEvent) { startY.current = e.clientY; setDragging(true); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }
   function onMove(e: React.PointerEvent) { if (startY.current == null) return; const dy = e.clientY - startY.current; if (dy > 0) setDrag(dy); }
@@ -74,6 +80,8 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
 
   const BOOK = BOOKS[p.book] ?? BOOKS.bg;
   const ORIGIN = "https://gaurangers.com";
+  const artistSlug = isKirtan ? (albumById(p.book)?.artist ?? "") : "";
+  const kirtanUrl = artistSlug ? `${ORIGIN}/kirtan/${artistSlug}` : ORIGIN;
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
   const bookUrl = `${ORIGIN}/book/${p.book}?listen`;
@@ -97,6 +105,8 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   function bookQr() { setQr({ url: bookUrl, data: { kind: "book", bookTitle: bookFullTitle(BOOK), tagline: BOOK.tagline, cover: BOOK.covers[0] } }); }
   function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: bookFullTitle(BOOK), chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
   function onMenuSelect(id: string) {
+    if (id === "share-album") { doShare(kirtanUrl, `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}`); return; }
+    if (id === "download-track") { downloadChapter(); return; }
     if (id === "share-chapter") { doShare(chapterUrl, `${bookFullTitle(BOOK)} — Глава ${ch}`); return; }
     if (id === "qr-chapter") { chapterQr(); return; }
     if (id === "download-chapter") { downloadChapter(); return; }
@@ -108,7 +118,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   const coverActions = (
     <>
       <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-      <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>
+      {!isKirtan && <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>}
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
   );
@@ -144,13 +154,13 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
               <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
-              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{sub} · {bookFullTitle(BOOK)}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isKirtan ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : `${sub} · ${bookFullTitle(BOOK)}`}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
                 style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
                 <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : "#fff" }}><HeartIcon size={17} filled={favorited} /></button>
-                <button type="button" aria-label="Читать" onClick={readBook} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>
+                {!isKirtan && <button type="button" aria-label="Читать" onClick={readBook} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
               <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
@@ -163,10 +173,12 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
         {/* scroll body: ВКП cover + queue */}
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
-          <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />
+          {isKirtan
+            ? <KirtanHero cover={p.cover} title={p.bookTitle} artist={p.artist} note={albumById(p.book)?.note} coverActions={coverActions} />
+            : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
           <div style={{ marginTop: 22 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
-              Содержание{p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}
+              {isKirtan ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
             </div>
             {hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
             <div style={{ paddingTop: hierQueue ? 10 : 0 }}>
@@ -177,7 +189,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
                   const show = t.lila ? t.lila === activeDiv : activeDiv === divisions[0]?.id;
                   if (!show) return null;
                 }
-                return <QueueRow key={t.file} t={t} active={i === p.index} onClick={() => p.jumpTo(i)} />;
+                return <QueueRow key={t.file} t={t} active={i === p.index} num={isKirtan ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
               })}
             </div>
           </div>
@@ -236,7 +248,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant="player" isChapter={isChapter} anchorRef={moreRef} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant={isKirtan ? "kirtan" : "player"} isChapter={isChapter} anchorRef={moreRef} />
     </div>
   );
 }
@@ -279,13 +291,37 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
   );
 }
 
-function QueueRow({ t, active, onClick }: { t: Track; active: boolean; onClick: () => void }) {
-  const num = t.kind === "intro" ? "•" : String(t.chapter);
+/**
+ * KirtanHero — обложка Now Playing для киртанов/бхаджанов: квадратное панно
+ * альбома (картинка IA-элемента) с мягкой тенью, под ним название, исполнитель
+ * и ряд действий (избранное · ещё). Зеркалит презентационный BookHeroCard, но
+ * квадратное под аудио-альбом, а не книжная обложка.
+ */
+function KirtanHero({ cover, title, artist, note, coverActions }: { cover: string; title: string; artist: string; note?: string | null; coverActions?: React.ReactNode }) {
+  return (
+    <div style={{ paddingTop: 6 }}>
+      <div style={{ position: "relative", width: "100%", maxWidth: 340, margin: "0 auto", aspectRatio: "1 / 1", borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}>
+        <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </div>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, marginTop: 18 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.18 }}>{title}</div>
+          {artist && <div style={{ fontSize: 15, fontWeight: 500, color: GOLD, marginTop: 3 }}>{artist}</div>}
+          {note && <div style={{ fontSize: 12.5, lineHeight: 1.45, color: "rgba(255,255,255,0.55)", marginTop: 7 }}>{note}</div>}
+        </div>
+      </div>
+      {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>{coverActions}</div>}
+    </div>
+  );
+}
+
+function QueueRow({ t, active, num, onClick }: { t: Track; active: boolean; num?: number; onClick: () => void }) {
+  const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
   return (
     <button type="button" onClick={onClick}
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
         background: active ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff" }}>
-      <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: 13, fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{num}</span>
+      <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: 13, fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
       <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: active ? 600 : 400, color: active ? "#fff" : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: 12, color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
     </button>
