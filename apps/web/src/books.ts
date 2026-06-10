@@ -145,9 +145,9 @@ export const BOOKS: Record<string, BookData> = {
       "Изложение «Бхакти-расамрита-синдху» Шрилы Рупы Госвами — науки о том, как развить чистую любовь к Богу и вкусить нектар взаимоотношений с Кришной.",
     publisher: "bbt",
     covers: [
-      "/covers/brs-001.svg",
+      "/covers/brs-001.png",
     ],
-    chips: ["51 глава", "Изложение Рупы Госвами", "Наука бхакти-расы"],
+    chips: ["51 глава", "Рупа Госвами"],
     hierarchical: false,
     uniformTitle: true,
     prose: true,
