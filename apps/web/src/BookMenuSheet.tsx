@@ -89,6 +89,20 @@ function buildPlayerGroups(isChapter: boolean): Group[] {
   ];
 }
 
+// Меню киртана — поделиться альбомом, скачать дорожку, поддержать, сообщить.
+function buildKirtanGroups(): Group[] {
+  return [
+    { items: [
+      { id: "share-album", label: "Поделиться альбомом", Icon: ShareBookGlyph },
+      { id: "download-track", label: "Скачать дорожку", Icon: PdfGlyph },
+    ] },
+    { items: [
+      { id: "donate", label: "Задонатить", Icon: GiftGlyph },
+      { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
+    ] },
+  ];
+}
+
 const ROW_H = 56;
 const PAD_L = 20;
 const ICON_BOX = 26;
@@ -110,10 +124,13 @@ const SHEET_CSS = `
 export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player"; isChapter?: boolean;
+  variant?: "book" | "player" | "kirtan"; isChapter?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
-  const data: Group[] = variant === "player" ? buildPlayerGroups(isChapter) : GROUPS.map((items) => ({ items }));
+  const data: Group[] =
+    variant === "kirtan" ? buildKirtanGroups()
+      : variant === "player" ? buildPlayerGroups(isChapter)
+        : GROUPS.map((items) => ({ items }));
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}

@@ -14,12 +14,14 @@ import {
 } from "react";
 import { api } from "../api";
 import { BOOKS, bookFullTitle } from "../books";
+import { albumById, artistBySlug, albumCover } from "../kirtans";
 import { createWebEngine, type AudioEngine } from "./engine";
 
 export type AudioMode = "plain" | "commentary";
+export type Source = "book" | "kirtan";
 
 export interface Track {
-  kind: "intro" | "chapter";
+  kind: "intro" | "chapter" | "song";
   pos: number;
   chapter: number | null;
   title: string;
@@ -29,6 +31,8 @@ export interface Track {
   lila?: string;        // ЧЧ: adi|madhya|antya
   lilaLabel?: string;   // ЧЧ: «Ади-лила»
   part?: number | null; // ЧЧ: часть составной главы
+  artist?: string;      // киртан: исполнитель
+  album?: string;       // киртан: альбом
 }
 interface ModeData { identifier: string; tracks: Track[] }
 interface Manifest { book: string; modes: { plain: ModeData; commentary?: ModeData }; lilas?: { lila: string; label: string }[] }
@@ -53,11 +57,14 @@ export interface PlayerApi {
   repeat: RepeatMode;
   cover: string;
   bookTitle: string;
-  book: string;           // активная книга (bg|cc|…) — для обложки Now Playing
-  hasCommentary: boolean; // прятать тумблер «комментарии», когда их нет (ЧЧ)
+  book: string;           // активная книга (bg|cc|…) или альбом киртанов — для обложки Now Playing
+  kind: Source;           // источник: книга или киртан
+  artist: string;         // киртан: исполнитель (для подзаголовков); "" для книг
+  hasCommentary: boolean; // прятать тумблер «комментарии», когда их нет (ЧЧ/киртаны)
   // точки входа
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string): void;
+  playKirtan(albumId: string, startIndex?: number): void;
   // транспорт
   togglePlay(): void;
   next(): void;
@@ -91,6 +98,19 @@ const BOOK_AUDIO: Record<string, { title: string; cover: string }> = {
 function bookCfg(id: string) {
   return BOOK_AUDIO[id] ?? { title: BOOKS[id] ? bookFullTitle(BOOKS[id]) : "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? "/og-default.png" };
 }
+/** Заголовок/обложка/исполнитель плеера по активному элементу (книга или альбом киртанов). */
+function cfgFor(id: string, src: Source): { title: string; cover: string; artist: string } {
+  if (src === "kirtan") {
+    const al = albumById(id);
+    return {
+      title: al?.title ?? "Киртан",
+      cover: al ? albumCover(al) : "/og-default.png",
+      artist: al ? (artistBySlug(al.artist)?.name ?? "") : "",
+    };
+  }
+  const c = bookCfg(id);
+  return { title: c.title, cover: c.cover, artist: "" };
+}
 const PERSIST_KEY = "iol.player.v2"; // {book,mode,chapter,time,rate}; мигрируем со старого bg-ключа
 
 function absUrl(u: string): string {
@@ -101,6 +121,7 @@ function absUrl(u: string): string {
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const [manifest, setManifest] = useState<Manifest | null>(null);
   const [bookId, setBookId] = useState("bg");
+  const [source, setSource] = useState<Source>("book");
   const [mode, setModeState] = useState<AudioMode>("plain");
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(false);
@@ -116,6 +137,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Зеркала для долгоживущих обработчиков (избегаем устаревших замыканий).
   const manifestRef = useRef<Manifest | null>(null);
   const bookRef = useRef("bg");
+  const sourceRef = useRef<Source>("book");
   const modeRef = useRef<AudioMode>("plain");
   const indexRef = useRef(0);
   const timeRef = useRef(0);
@@ -126,6 +148,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const seqRef = useRef<number[]>([]);
   manifestRef.current = manifest;
   bookRef.current = bookId;
+  sourceRef.current = source;
   modeRef.current = mode;
   indexRef.current = index;
   timeRef.current = currentTime;
@@ -135,7 +158,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   repeatRef.current = repeat;
 
   const engineRef = useRef<AudioEngine | null>(null);
-  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; expand?: boolean } | null>(null);
+  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; expand?: boolean; index?: number } | null>(null);
   const restoreRef = useRef<{ time: number } | null>(null);
 
   const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
@@ -186,15 +209,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   function ensureManifest(): Promise<Manifest> {
     const want = bookRef.current;
+    const src = sourceRef.current;
     const cur = manifestRef.current;
     if (cur && cur.book === want) return Promise.resolve(cur);
-    return fetch(api(`/books/${want}/audio`))
+    const path = src === "kirtan" ? `/kirtans/${want}/audio` : `/books/${want}/audio`;
+    return fetch(api(path))
       .then((r) => r.json())
       .then((m: Manifest) => { manifestRef.current = m; setManifest(m); return m; });
   }
 
   function persist() {
     try {
+      if (sourceRef.current === "kirtan") return; // киртаны не восстанавливаем (v2)
       const m = manifestRef.current; if (!m) return;
       const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
       localStorage.setItem(PERSIST_KEY, JSON.stringify({
@@ -226,7 +252,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     pendingRef.current = null;
     const list = (m.modes[p.mode] ?? m.modes.plain).tracks;
     let i = 0;
-    if (p.chapter != null) {
+    if (p.index != null) {
+      i = p.index >= 0 && p.index < list.length ? p.index : 0;
+    } else if (p.chapter != null) {
       const f = list.findIndex((t) => t.chapter === p.chapter && (p.lila == null || t.lila === p.lila));
       i = f >= 0 ? f : 0;
     }
@@ -242,21 +270,28 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
 
   // ── точки входа ──
-  function switchBook(b: string) {
-    if (b === bookRef.current) return;
+  function switchBook(b: string, src: Source = "book") {
+    if (b === bookRef.current && src === sourceRef.current) return;
     bookRef.current = b; setBookId(b);
-    manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги
+    sourceRef.current = src; setSource(src);
+    manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги/альбома
     seqRef.current = [];
   }
   function playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }) {
-    if (opts?.book) switchBook(opts.book);
+    switchBook(opts?.book ?? bookRef.current, "book");
     pendingRef.current = { mode: opts?.mode ?? "plain", chapter: opts?.chapter ?? null, expand: opts?.expand ?? true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
   function playChapter(book: string, chapter: number, md: AudioMode, lila?: string) {
-    switchBook(book);
+    switchBook(book, "book");
     pendingRef.current = { mode: md, chapter, lila, expand: true };
+    restoreRef.current = null;
+    ensureManifest().then((m) => applyPending(m, true));
+  }
+  function playKirtan(albumId: string, startIndex?: number) {
+    switchBook(albumId, "kirtan");
+    pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
@@ -363,12 +398,15 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   function updateMediaSession(t: Track, md: AudioMode) {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
-    const cfg = bookCfg(bookRef.current);
-    const album = md === "commentary" ? "С комментариями" : (t.lilaLabel ?? "Стих за стихом");
+    const isK = sourceRef.current === "kirtan";
+    const cfg = cfgFor(bookRef.current, sourceRef.current);
+    const album = isK
+      ? cfg.title
+      : (md === "commentary" ? "С комментариями" : (t.lilaLabel ?? "Стих за стихом"));
     try {
       ms.metadata = new MediaMetadata({
         title: t.title,
-        artist: cfg.title,
+        artist: isK ? (cfg.artist || "Киртан") : cfg.title,
         album,
         artwork: [
           { src: absUrl(cfg.cover), sizes: "512x512", type: "image/jpeg" },
@@ -407,12 +445,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
+  const cfg = cfgFor(bookId, source);
   const value: PlayerApi = {
     ready: !!manifest, active, expanded, loading, mode, tracks, index, track,
     isPlaying, currentTime, duration, rate, order: orderMode, repeat,
-    cover: bookCfg(bookId).cover, bookTitle: bookCfg(bookId).title, book: bookId,
+    cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
-    playBook, playChapter, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
+    playBook, playChapter, playKirtan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),
     dismiss,

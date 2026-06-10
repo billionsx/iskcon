@@ -19,6 +19,8 @@ import { PlayerProvider } from "./player/store";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
 import BhajanDetailPage from "./BhajanDetailPage";
+import KirtansScreen from "./KirtansScreen";
+import KirtanArtistPage from "./KirtanArtistPage";
 import ContentDetailPage from "./ContentDetailPage";
 import EntityPage from "./EntityPage";
 import AcharyaScreen from "./AcharyaScreen";
@@ -384,7 +386,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onDonate: () => void }) {
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenKirtanArtist: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onDonate: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   // Смена вкладки нижней навигации → новая вкладка начинается с верха
   // (прокрутка не переносится из покинутой). Первый монтаж пропускаем.
@@ -440,7 +442,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
           )}
           {tab === "home" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} />}
           {tab === "kirtans" && (
-            <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
+            <KirtansScreen onOpenArtist={onOpenKirtanArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
           )}
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
           {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
@@ -484,6 +486,7 @@ export default function App() {
   const [openBook, setOpenBook] = useState<string | null>(null);
   const [bookTarget, setBookTarget] = useState<{ div: string | null; chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
+  const [openKirtanArtist, setOpenKirtanArtist] = useState<string | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
@@ -497,12 +500,13 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity"];
+  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity"];
   function pathFromState(): string {
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
     if (openBhajan) return openBhajan;     // slug сам по себе путь
+    if (openKirtanArtist) return "/kirtan/" + openKirtanArtist;
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
     if (openEntity) return "/entity/" + openEntity;
@@ -524,7 +528,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -550,6 +554,7 @@ export default function App() {
       return;
     }
     if (seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
+    if (seg0 === "kirtan") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
     if (seg0 === "acharya") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
     if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
@@ -571,7 +576,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) window.history.pushState(null, "", next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent, openAdmin, openEntity, openCollection]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection]);
 
   // «Назад»: настоящая история, но не выходим за пределы приложения при прямом входе
   const enteredAt = useRef(typeof window !== "undefined" ? window.history.length : 0);
@@ -614,7 +619,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openCatalog && !openContent && !openEntity && !openCollection;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection;
   return (
     <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -634,6 +639,10 @@ export default function App() {
         ) : openBhajan ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BhajanDetailPage slug={openBhajan} onBack={goBack} />
+          </main>
+        ) : openKirtanArtist ? (
+          <main key={openKirtanArtist} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <KirtanArtistPage slug={openKirtanArtist} onBack={goBack} />
           </main>
         ) : openCatalog ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -658,7 +667,7 @@ export default function App() {
             />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onDonate={openDonate} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onDonate={openDonate} />
         )}
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />

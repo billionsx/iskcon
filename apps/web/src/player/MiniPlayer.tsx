@@ -13,11 +13,13 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
 
   const pct = p.duration > 0 ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
   const t = p.track;
-  const subtitle = t?.kind === "intro"
-    ? (p.mode === "commentary" ? "С комментариями · вступление" : "Вступление")
-    : t?.lilaLabel
-      ? `${t.lilaLabel} · Глава ${t.chapter ?? ""}`
-      : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
+  const subtitle = p.kind === "kirtan"
+    ? (p.artist || "Киртан")
+    : t?.kind === "intro"
+      ? (p.mode === "commentary" ? "С комментариями · вступление" : "Вступление")
+      : t?.lilaLabel
+        ? `${t.lilaLabel} · Глава ${t.chapter ?? ""}`
+        : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
 
   const bottom = tabBarVisible
     ? "calc(90px + env(safe-area-inset-bottom))"
