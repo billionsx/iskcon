@@ -383,7 +383,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onOpenEntity, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void }) {
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onDonate: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   // Смена вкладки нижней навигации → новая вкладка начинается с верха
   // (прокрутка не переносится из покинутой). Первый монтаж пропускаем.
@@ -492,7 +492,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
             <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
           )}
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
-          {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} />}
+          {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
           {tab === "dhama" && <ComingSoon src="/vraj.svg" title="Дхама" subtitle="Святые места и храмы Вриндавана. Раздел готовится." />}
           {tab === "account" && <ComingSoon title="Личный кабинет" subtitle="Профиль, закладки и пожертвования. Раздел готовится." />}
         </div>
@@ -538,6 +538,7 @@ export default function App() {
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
   const [openAdmin, setOpenAdmin] = useState(false);
   const [openEntity, setOpenEntity] = useState<string | null>(null);
+  const [openCollection, setOpenCollection] = useState<string | null>(null);
   const [donate, setDonate] = useState(false);
   const fromPop = useRef(false);
 
@@ -554,6 +555,7 @@ export default function App() {
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
     if (openEntity) return "/entity/" + openEntity;
+    if (openCollection) return "/acharya/" + openCollection;
     return tab === "home" ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
@@ -571,7 +573,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -597,6 +599,7 @@ export default function App() {
       return;
     }
     if (seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
+    if (seg0 === "acharya") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
     if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
     setTab("home");
@@ -617,7 +620,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) window.history.pushState(null, "", next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent, openAdmin, openEntity]);
+  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent, openAdmin, openEntity, openCollection]);
 
   // «Назад»: настоящая история, но не выходим за пределы приложения при прямом входе
   const enteredAt = useRef(typeof window !== "undefined" ? window.history.length : 0);
@@ -656,10 +659,11 @@ export default function App() {
   }
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
   function openEntityTarget(id: string, type: string | null) {
+    setOpenCollection(null);
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openCatalog && !openContent && !openEntity;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openCatalog && !openContent && !openEntity && !openCollection;
   return (
     <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -684,6 +688,10 @@ export default function App() {
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={goBack} />
           </main>
+        ) : openCollection ? (
+          <main key={openCollection} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+            <AcharyaScreen collection={openCollection} onBack={goBack} onOpen={openEntityTarget} />
+          </main>
         ) : openEntity ? (
           <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} />
@@ -699,7 +707,7 @@ export default function App() {
             />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onDonate={openDonate} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onDonate={openDonate} />
         )}
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />
