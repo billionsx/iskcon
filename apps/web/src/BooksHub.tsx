@@ -26,6 +26,9 @@ import { BookHeroCard } from "./BookHeroCard";
 
 const GOLD = "#D2AA1B";
 
+/** Снимает диакритику (IAST → ASCII) и регистр: «Bhāgavatam»→«bhagavatam». Кириллицу не трогает. */
+const fold = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 /* монохромный логотип через CSS-маску (цвет = currentColor родителя) */
 function MaskMark({ src, size = 56, pos = "center", color = "currentColor" }: { src: string; size?: number; pos?: string; color?: string }) {
   return (
@@ -190,16 +193,15 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
 
-  const query = q.trim().toLowerCase();
-  const searching = query.length >= 2;
+  const trimmed = q.trim();
+  const searching = trimmed.length >= 2;
   const results = useMemo(() => {
     if (!searching) return [];
+    const needle = fold(trimmed);
     return LIBRARY.filter((b) =>
-      b.title.toLowerCase().includes(query) ||
-      (b.iast ?? "").toLowerCase().includes(query) ||
-      (b.authorName ?? "").toLowerCase().includes(query),
+      fold([b.title, b.iast, b.authorName, b.note, b.also].filter(Boolean).join(" ")).includes(needle),
     );
-  }, [query, searching]);
+  }, [trimmed, searching]);
 
   // книга-строка → читаемые в ридер, остальные — на страницу сущности книги
   const openBook = (b: CatalogBook) => onOpenEntity(b.id, "scripture");
