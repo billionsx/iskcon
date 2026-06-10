@@ -1,9 +1,12 @@
 /**
  * AcharyaScreen — витрина раздела «Ачарья» поверх канонического реестра.
- * Шрила Прабхупада (избранное) + тематические полки: аватары Кришны,
- * Панча-таттва, гопи Вриндавана, спутники Гаура-лилы, ученики Прабхупады.
- * Плюс живой поиск по всем героям (GET /api/entities?q=…).
- * Каждая карточка открывает EntityPage; книги уходят в ридер через onOpen.
+ * Классификация (сверху вниз):
+ *   1. Шрила Прабхупада (Ачарья-основатель ИСККОН) — первый.
+ *   2. Радха-Кришна лила  — Божественная Чета, гопи, манджари, пастушки Враджа.
+ *   3. Гауранга лила      — Панча-таттва и спутники Шри Чайтаньи.
+ *   4. Шримад Бхагаватам  — все аватары и экспансии Кришны, личности «Бхагаватам».
+ * Плюс живой поиск по всем героям. Каждая карточка открывает EntityPage;
+ * книги-читалки уходят в ридер через onOpen.
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
@@ -58,13 +61,18 @@ function SkeletonTile() {
   return <div style={{ flexShrink: 0, width: 140, height: 132, borderRadius: 18, background: "var(--color-fill-1)", opacity: 0.6 }} />;
 }
 
-function Rail({ title, params, onOpen }: { title: string; params: string; onOpen: (id: string, type: string | null) => void }) {
+function Rail({ title, params, orderIds, onOpen }: { title: string; params: string; orderIds?: string[]; onOpen: (id: string, type: string | null) => void }) {
   const [items, setItems] = useState<Item[] | null>(null);
   useEffect(() => {
     let alive = true;
     fetch(api(`/entities?${params}`))
       .then((r) => r.json())
-      .then((d) => { if (alive) setItems((d.items as Item[]) ?? []); })
+      .then((d) => {
+        if (!alive) return;
+        let arr = (d.items as Item[]) ?? [];
+        if (orderIds) arr = [...arr].sort((a, b) => orderIds.indexOf(a.id) - orderIds.indexOf(b.id));
+        setItems(arr);
+      })
       .catch(() => { if (alive) setItems([]); });
     return () => { alive = false; };
   }, [params]);
@@ -72,12 +80,22 @@ function Rail({ title, params, onOpen }: { title: string; params: string; onOpen
   if (items && items.length === 0) return null; // пустую полку не показываем
 
   return (
-    <section style={{ marginTop: 28 }}>
-      <h2 style={{ margin: "0 0 13px", fontFamily: "var(--font-text)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{title}</h2>
+    <section style={{ marginTop: 20 }}>
+      <h3 style={{ margin: "0 0 11px", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{title}</h3>
       <div style={{ display: "flex", gap: 12, overflowX: "auto", padding: "2px 16px 4px", margin: "0 -16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {items ? items.map((it) => <EntityTile key={it.id} item={it} onOpen={onOpen} />) : Array.from({ length: 4 }).map((_, i) => <SkeletonTile key={i} />)}
       </div>
     </section>
+  );
+}
+
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+  return (
+    <div style={{ marginTop: 38 }}>
+      <span aria-hidden style={{ display: "block", width: 30, height: 3, borderRadius: 999, background: GOLD, marginBottom: 11 }} />
+      <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{title}</h2>
+      {subtitle && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)", lineHeight: 1.4 }}>{subtitle}</p>}
+    </div>
   );
 }
 
@@ -97,9 +115,9 @@ function FeaturedPrabhupada({ onOpen }: { onOpen: (id: string, type: string | nu
       </span>
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>Шрила Прабхупада</span>
-        <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.35 }}>Основатель-ачарья ИСККОН</span>
+        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", lineHeight: 1.4 }}>Его Божественная Милость А.Ч. Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)</span>
       </span>
-      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 22, lineHeight: 1 }}>›</span>
+      <span style={{ flexShrink: 0, alignSelf: "flex-start", color: "var(--color-label-3)", fontSize: 22, lineHeight: 1, marginTop: 2 }}>›</span>
     </button>
   );
 }
@@ -163,14 +181,28 @@ export default function AcharyaScreen({ onOpen }: { onOpen: (id: string, type: s
         </div>
       ) : (
         <>
+          {/* 1. Шрила Прабхупада — первый */}
           <div style={{ marginTop: 18 }}>
             <FeaturedPrabhupada onOpen={onOpen} />
           </div>
+
+          {/* 2. Радха-Кришна лила */}
+          <SectionHeader title="Радха-Кришна лила" subtitle="Вечные игры Господа во Вриндаване" />
+          <Rail title="Божественная Чета" params="ids=krishna,radharani" orderIds={["krishna", "radharani"]} onOpen={onOpen} />
+          <Rail title="Гопи" params="category=gopi&limit=30" onOpen={onOpen} />
+          <Rail title="Манджари" params="category=manjari&limit=20" onOpen={onOpen} />
+          <Rail title="Пастушки Враджа" params="category=gopa&limit=20" onOpen={onOpen} />
+
+          {/* 3. Гауранга лила (сюда же относится Шрила Прабхупада и парампара) */}
+          <SectionHeader title="Гауранга лила" subtitle="Игры Шри Чайтаньи Махапрабху и Его спутников" />
+          <Rail title="Панча-таттва" params="ids=chaitanya,nityananda,advaita,gadadhara,srivasa" orderIds={["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"]} onOpen={onOpen} />
+          <Rail title="Спутники Гауранги" params={`dataset=${GAURA_DS}&limit=24`} onOpen={onOpen} />
+
+          {/* 4. Шримад Бхагаватам — все аватары и экспансии */}
+          <SectionHeader title="Шримад Бхагаватам" subtitle="Воплощения Господа и Его великие преданные" />
           <Rail title="Аватары Кришны" params="rel=avatar-of&relTo=krishna&limit=20" onOpen={onOpen} />
-          <Rail title="Панча-таттва" params="category=pancha-tattva&limit=10" onOpen={onOpen} />
-          <Rail title="Гопи Вриндавана" params="category=gopi&limit=20" onOpen={onOpen} />
-          <Rail title="Спутники Гаура-лилы" params={`dataset=${GAURA_DS}&limit=20`} onOpen={onOpen} />
-          <Rail title="Ученики Шрилы Прабхупады" params="rel=disciple-of&relTo=prabhupada&limit=20" onOpen={onOpen} />
+          <Rail title="Экспансии Кришны" params="rel=expansion-of&relTo=krishna&limit=10" onOpen={onOpen} />
+          <Rail title="Личности «Бхагаватам»" params="category=bhagavatam&limit=24" onOpen={onOpen} />
         </>
       )}
     </div>
