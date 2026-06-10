@@ -786,7 +786,7 @@ export default {
              WHERE ci.type='personality' AND ci.lang='ru' AND ci.hero_image IS NOT NULL AND ci.hero_image != ''
                AND (ci.slug = '/ru/' || e.id
                     OR ci.name = (SELECT value FROM entity_names n2 WHERE n2.entity_id=e.id AND n2.lang='ru' AND n2.kind='canonical' LIMIT 1))
-             ORDER BY (ci.slug = '/ru/' || e.id) DESC LIMIT 1) AS image
+             LIMIT 1) AS image
         FROM entities e
         ${where.length ? "WHERE " + where.join(" AND ") : ""}
         ORDER BY (name_ru IS NULL), name_ru
