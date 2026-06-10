@@ -19,6 +19,8 @@ import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
 import BhajanDetailPage from "./BhajanDetailPage";
 import ContentDetailPage from "./ContentDetailPage";
+import EntityPage from "./EntityPage";
+import AcharyaScreen from "./AcharyaScreen";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
 import BookLoaderPage from "./BookLoaderPage";
 import { api } from "./api";
@@ -381,7 +383,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onDonate: () => void }) {
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onOpenEntity, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   // Смена вкладки нижней навигации → новая вкладка начинается с верха
   // (прокрутка не переносится из покинутой). Первый монтаж пропускаем.
@@ -490,7 +492,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
             <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
           )}
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
-          {tab === "acharya" && <ComingSoon src="/prabhupada.svg" title="Ачарья" subtitle="Шрила Прабхупада — основатель-ачарья ИСККОН. Раздел готовится." />}
+          {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} />}
           {tab === "dhama" && <ComingSoon src="/vraj.svg" title="Дхама" subtitle="Святые места и храмы Вриндавана. Раздел готовится." />}
           {tab === "account" && <ComingSoon title="Личный кабинет" subtitle="Профиль, закладки и пожертвования. Раздел готовится." />}
         </div>
@@ -535,6 +537,7 @@ export default function App() {
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
   const [openAdmin, setOpenAdmin] = useState(false);
+  const [openEntity, setOpenEntity] = useState<string | null>(null);
   const [donate, setDonate] = useState(false);
   const fromPop = useRef(false);
 
@@ -542,7 +545,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin"];
+  const RESERVED = ["", "books", "kirtans", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity"];
   function pathFromState(): string {
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
@@ -550,6 +553,7 @@ export default function App() {
     if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
+    if (openEntity) return "/entity/" + openEntity;
     return tab === "home" ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
@@ -567,7 +571,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -592,6 +596,7 @@ export default function App() {
       if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
       return;
     }
+    if (seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
     if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
     setTab("home");
@@ -612,7 +617,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) window.history.pushState(null, "", next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent, openAdmin]);
+  }, [tab, openBook, scripture, openBhajan, openCatalog, openContent, openAdmin, openEntity]);
 
   // «Назад»: настоящая история, но не выходим за пределы приложения при прямом входе
   const enteredAt = useRef(typeof window !== "undefined" ? window.history.length : 0);
@@ -649,7 +654,12 @@ export default function App() {
       verse: kind === "verse" ? (v ?? null) : null,
     });
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openCatalog && !openContent;
+  // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
+  function openEntityTarget(id: string, type: string | null) {
+    if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
+    setOpenEntity(id);
+  }
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openCatalog && !openContent && !openEntity;
   return (
     <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -674,6 +684,10 @@ export default function App() {
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={goBack} />
           </main>
+        ) : openEntity ? (
+          <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+            <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} />
+          </main>
         ) : openContent ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <ContentDetailPage
@@ -685,7 +699,7 @@ export default function App() {
             />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onDonate={openDonate} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onDonate={openDonate} />
         )}
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />

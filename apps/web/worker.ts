@@ -757,6 +757,84 @@ export default {
       return handleAdmin(request, env, url);
     }
 
+    // ── Entity registry (героев-граф) — read-only из D1 ──
+    // GET /api/entities — обзор/поиск/фильтр: type, tattva, dataset, category,
+    //   rel+relTo (id это from_id связи), rel+relFrom (id это to_id), ids, q, limit, offset
+    if (url.pathname === "/api/entities") {
+      const qp = url.searchParams;
+      const where: string[] = [];
+      const binds: unknown[] = [];
+      const type = qp.get("type"); if (type) { where.push("e.type = ?"); binds.push(type); }
+      const tattva = qp.get("tattva"); if (tattva) { where.push("e.tattva = ?"); binds.push(tattva); }
+      const dataset = qp.get("dataset"); if (dataset) { where.push("e.dataset = ?"); binds.push(dataset); }
+      const category = qp.get("category"); if (category) { where.push("EXISTS (SELECT 1 FROM entity_categories ec WHERE ec.entity_id=e.id AND ec.category=?)"); binds.push(category); }
+      const rel = qp.get("rel");
+      const relTo = qp.get("relTo"); if (rel && relTo) { where.push("e.id IN (SELECT from_id FROM entity_relations WHERE relation=? AND to_id=?)"); binds.push(rel, relTo); }
+      const relFrom = qp.get("relFrom"); if (rel && relFrom) { where.push("e.id IN (SELECT to_id FROM entity_relations WHERE relation=? AND from_id=?)"); binds.push(rel, relFrom); }
+      const idsRaw = qp.get("ids");
+      if (idsRaw) { const arr = idsRaw.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 100); if (arr.length) { where.push(`e.id IN (${arr.map(() => "?").join(",")})`); binds.push(...arr); } }
+      const q = (qp.get("q") || "").trim();
+      if (q) { where.push("EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value LIKE ?)"); binds.push(`%${q}%`); }
+      const limit = Math.min(Math.max(parseInt(qp.get("limit") || "60", 10) || 60, 1), 200);
+      const offset = Math.max(parseInt(qp.get("offset") || "0", 10) || 0, 0);
+      const sql = `
+        SELECT e.id, e.type, e.tattva, e.dataset, e.note,
+          (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
+          (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='en' AND n.kind='canonical' LIMIT 1) AS name_en,
+          (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
+        FROM entities e
+        ${where.length ? "WHERE " + where.join(" AND ") : ""}
+        ORDER BY (name_ru IS NULL), name_ru
+        LIMIT ${limit} OFFSET ${offset}`;
+      const { results } = await env.DB.prepare(sql).bind(...binds).all();
+      return json({ items: results ?? [] });
+    }
+
+    // GET /api/entities/:id — полная карточка: имена, категории, профиль, связи (обе стороны)
+    const entM = url.pathname.match(/^\/api\/entities\/([A-Za-z0-9][A-Za-z0-9-]*)$/);
+    if (entM) {
+      const id = entM[1].toLowerCase();
+      const ent = await env.DB.prepare(
+        `SELECT id, type, tattva, dataset, note, source_ref FROM entities WHERE id = ?`,
+      ).bind(id).first<{ id: string; type: string; tattva: string | null; dataset: string | null; note: string | null; source_ref: string | null }>();
+      if (!ent) return json({ error: "not_found" }, 404);
+      const namesRes = await env.DB.prepare(
+        `SELECT lang, value, kind FROM entity_names WHERE entity_id = ?`,
+      ).bind(id).all<{ lang: string; value: string; kind: string }>();
+      const catsRes = await env.DB.prepare(
+        `SELECT category FROM entity_categories WHERE entity_id = ?`,
+      ).bind(id).all<{ category: string }>();
+      const prof = await env.DB.prepare(
+        `SELECT summary, biography, contribution, level FROM entity_profiles WHERE entity_id = ?`,
+      ).bind(id).first<{ summary: string | null; biography: string | null; contribution: string | null; level: string | null }>();
+      const outRes = await env.DB.prepare(
+        `SELECT r.relation, r.to_id AS id, e.type,
+           (SELECT value FROM entity_names n WHERE n.entity_id=r.to_id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
+           (SELECT value FROM entity_names n WHERE n.entity_id=r.to_id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
+         FROM entity_relations r LEFT JOIN entities e ON e.id=r.to_id
+         WHERE r.from_id = ? ORDER BY r.relation`,
+      ).bind(id).all<{ relation: string; id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+      const inRes = await env.DB.prepare(
+        `SELECT r.relation, r.from_id AS id, e.type,
+           (SELECT value FROM entity_names n WHERE n.entity_id=r.from_id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
+           (SELECT value FROM entity_names n WHERE n.entity_id=r.from_id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
+         FROM entity_relations r LEFT JOIN entities e ON e.id=r.from_id
+         WHERE r.to_id = ? ORDER BY r.relation`,
+      ).bind(id).all<{ relation: string; id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+      const names = namesRes.results ?? [];
+      const canon = (lang: string) => names.find((n) => n.lang === lang && n.kind === "canonical")?.value ?? null;
+      return json({
+        id: ent.id, type: ent.type, tattva: ent.tattva ?? null, dataset: ent.dataset ?? null,
+        note: ent.note ?? null, source_ref: ent.source_ref ?? null,
+        name_ru: canon("ru"), name_en: canon("en"), name_iast: canon("iast"),
+        aliases: names.filter((n) => n.kind !== "canonical").map((n) => n.value),
+        categories: (catsRes.results ?? []).map((r) => r.category),
+        profile: prof ? { summary: prof.summary ?? null, biography: prof.biography ?? null, contribution: prof.contribution ?? null, level: prof.level ?? null } : null,
+        out: outRes.results ?? [],
+        in: inRes.results ?? [],
+      });
+    }
+
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
     if (url.pathname.startsWith("/api/")) {
       const target = "https://api.gaurangers.com/v1/" + url.pathname.slice(5) + url.search;
