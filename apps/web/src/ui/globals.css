@@ -192,7 +192,7 @@
 :root[data-theme='light'] {
   /* iOS 26 grouped background: main canvas is light grey, cards are pure white.
      This gives the subtle elevation that pure-white-on-white would lose. */
-  --color-bg: #f2f2f7;
+  --color-bg: #ffffff;
   --color-bg-2: #ffffff;
   --color-bg-3: #e5e5ea;
 
