@@ -143,7 +143,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
           const on = active === t.id;
           return (
             <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className="gtab-slot"
-              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => onChange(t.id)}>
+              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => { if (on) scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); onChange(t.id); }}>
               {t.src ? (
                 <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} />
               ) : (
@@ -383,6 +383,13 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
 
 function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpenContent, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onDonate: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
+  // Смена вкладки нижней навигации → новая вкладка начинается с верха
+  // (прокрутка не переносится из покинутой). Первый монтаж пропускаем.
+  const navReady = useRef(false);
+  useLayoutEffect(() => {
+    if (!navReady.current) { navReady.current = true; return; }
+    if (mainRef.current) mainRef.current.scrollTop = 0;
+  }, [tab]);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [bookPct, setBookPct] = useState(0);
