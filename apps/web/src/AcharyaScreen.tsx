@@ -27,6 +27,7 @@ interface Item {
   name_en: string | null;
   name_iast: string | null;
   note: string | null;
+  image?: string | null;
 }
 
 function Monogram({ ch, size = 54 }: { ch: string; size?: number }) {
@@ -40,8 +41,7 @@ function Monogram({ ch, size = 54 }: { ch: string; size?: number }) {
   );
 }
 
-function MaskMark({ src, size = 56, pos = "center" }: { src: string; size?: number; pos?: string }) {
-  return (
+function MaskMark({ src, size = 56, pos = "center" }: { src: string; size?: number; pos?: string }) {  return (
     <span role="img" aria-hidden style={{ display: "block", width: size, height: size, backgroundColor: "var(--color-label)",
       WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
       WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: pos, maskPosition: pos }} />
@@ -52,6 +52,17 @@ function initialOf(it: Item): string {
   return (it.name_iast || it.name_ru || "?").trim().charAt(0).toUpperCase();
 }
 
+function Avatar({ item, size }: { item: Item; size: number }) {
+  if (item.image) {
+    return (
+      <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
+        <img src={item.image} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      </div>
+    );
+  }
+  return <Monogram ch={initialOf(item)} size={size} />;
+}
+
 function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: string | null) => void }) {
   return (
     <button type="button" onClick={() => onOpen(item.id, item.type)}
@@ -60,7 +71,7 @@ function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: s
       onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")}
       onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
       onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
-      <Monogram ch={initialOf(item)} size={54} />
+      <Avatar item={item} size={54} />
       <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25,
         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", width: "100%" }}>{item.name_ru || item.id}</div>
       {item.name_iast && (
@@ -133,7 +144,7 @@ function ResultRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
     <button type="button" onClick={() => onOpen(item.id, item.type)}
       style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "11px 4px", background: "none", border: "none",
         borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", textAlign: "left" }}>
-      <Monogram ch={initialOf(item)} size={40} />
+      <Avatar item={item} size={40} />
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_ru || item.id}</span>
         {item.name_iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)" }}>{item.name_iast}</span>}
