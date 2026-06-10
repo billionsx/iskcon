@@ -15,7 +15,14 @@ type Tone = "base" | "alt";
 
 /* ───────── анимации ───────── */
 function Styles() {
-  return <style>{`@keyframes iskMq{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>;
+  return <style>{`
+@font-face{font-family:'xBillions';font-weight:400;font-style:normal;font-display:swap;src:url('https://static.tildacdn.net/tild6132-3531-4663-a332-653334316463/xBillions-Normal.woff') format('woff')}
+@font-face{font-family:'xBillions';font-weight:500;font-style:normal;font-display:swap;src:url('https://static.tildacdn.net/tild3963-3263-4966-a261-373761666536/xBillions-Medium.woff') format('woff')}
+@font-face{font-family:'xBillions';font-weight:600;font-style:normal;font-display:swap;src:url('https://static.tildacdn.net/tild6565-6133-4539-b361-366364383335/xBillions-Semibold.woff') format('woff')}
+@font-face{font-family:'xBillions';font-weight:700;font-style:normal;font-display:swap;src:url('https://static.tildacdn.net/tild6530-3232-4435-b636-653837653661/xBillions-Bold.woff') format('woff')}
+@font-face{font-family:'xBillions';font-weight:800;font-style:normal;font-display:swap;src:url('https://static.tildacdn.net/tild6263-3236-4431-a562-343531373963/xBillions-Heavy.woff') format('woff')}
+@keyframes iskMq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+`}</style>;
 }
 function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -78,7 +85,7 @@ function Marquee({ items, dur = 46 }: { items: string[]; dur?: number }) {
 
 /* ───────── атомы (Apple: 600 вес, точный трекинг, воздух) ───────── */
 function H2({ children }: { children: React.ReactNode }) {
-  return <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(29px, 6.8vw, 44px)", fontWeight: 600, letterSpacing: "-0.022em", lineHeight: 1.08, color: "var(--color-label)", textAlign: "center" }}>{children}</h2>;
+  return <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(29px, 6.8vw, 44px)", fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.08, color: "var(--color-label)", textAlign: "center" }}>{children}</h2>;
 }
 function Lead({ children }: { children: React.ReactNode }) {
   return <p style={{ margin: "18px auto 0", maxWidth: 600, fontFamily: "var(--font-text)", fontSize: "clamp(17px, 2vw, 19px)", lineHeight: 1.55, color: "var(--color-label-2)", textAlign: "center" }}>{children}</p>;
@@ -95,10 +102,10 @@ function Band({ tone = "base", children, padTop, narrow }: { tone?: Tone; childr
   );
 }
 // скруглённая плитка-изображение, БЕЗ текста поверх
-function Photo({ src, ratio = "3 / 2", caption, pos = "center", radius = 28 }: { src: string; ratio?: string; caption?: string; pos?: string; radius?: number }) {
+function Photo({ src, ratio = "3 / 2", caption, pos = "center" }: { src: string; ratio?: string; caption?: string; pos?: string }) {
   return (
-    <div style={{ marginTop: 34 }}>
-      <div style={{ borderRadius: radius, overflow: "hidden", background: "var(--color-fill-1)" }}>
+    <div style={{ marginTop: 44 }}>
+      <div style={{ marginInline: -22, overflow: "hidden", background: "var(--color-fill-1)" }}>
         <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover", objectPosition: pos }} />
       </div>
       {caption ? <Caption>{caption}</Caption> : null}
@@ -198,14 +205,14 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
   ];
 
   return (
-    <div style={{ margin: "0 -16px" }}>
+    <div style={{ margin: "0 -16px", ["--font-display" as any]: "'xBillions', -apple-system, BlinkMacSystemFont, system-ui, sans-serif", ["--font-text" as any]: "'xBillions', -apple-system, BlinkMacSystemFont, system-ui, sans-serif" }}>
       <Styles />
 
       {/* HERO — base */}
       <Band tone="base" padTop={34}>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, letterSpacing: "2.6px", textTransform: "uppercase", color: GOLD }}>ISKCON · One Love</div>
-          <h1 style={{ margin: "26px auto 0", maxWidth: 860, fontFamily: "var(--font-display)", fontSize: "clamp(46px, 14vw, 84px)", fontWeight: 600, letterSpacing: "-0.035em", lineHeight: 0.99, color: "var(--color-label)" }}>
+          <h1 style={{ margin: "26px auto 0", maxWidth: 860, fontFamily: "var(--font-display)", fontSize: "clamp(46px, 14vw, 84px)", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 0.99, color: "var(--color-label)" }}>
             Служение.<br />Преданность.<br />Любовь.
           </h1>
           <p style={{ margin: "30px auto 0", maxWidth: 560, fontFamily: "var(--font-text)", fontSize: "clamp(18px,2.3vw,21px)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
@@ -232,7 +239,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ marginTop: 44, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "38px 16px", textAlign: "center" }}>
           {STATS.map((s) => (
             <div key={s.l}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 12vw, 68px)", fontWeight: 600, letterSpacing: "-0.025em", color: "var(--color-label)", lineHeight: 1 }}><CountUp value={s.v} /></div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 12vw, 68px)", fontWeight: 700, letterSpacing: "-0.025em", color: "var(--color-label)", lineHeight: 1 }}><CountUp value={s.v} /></div>
               <div style={{ margin: "9px auto 0", maxWidth: 150, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", lineHeight: 1.32 }}>{s.l}</div>
             </div>
           ))}
