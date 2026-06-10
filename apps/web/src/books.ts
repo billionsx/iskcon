@@ -229,6 +229,7 @@ export interface CatalogBook {
   authorId?: string;   // entities.id автора → EntityPage (связь книга↔герой)
   lineage: Lineage;
   readable: boolean;   // есть в BOOKS (ридер); иначе — «скоро»
+  also?: string;       // доп. поисковые термины: первоисточный автор + латинские варианты
 }
 
 export const LINEAGE_LABEL: Record<Lineage, string> = {
@@ -245,18 +246,18 @@ export const LINEAGE_NOTE: Record<Lineage, string> = {
 
 export const LIBRARY: CatalogBook[] = [
   // — Шрила Прабхупада (читаемые сначала) —
-  { id: "bg",  title: "Бхагавад-гита как она есть", iast: "Bhagavad-gītā",        note: "Песнь Бога",                   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
-  { id: "sb",  title: "Шримад-Бхагаватам",          iast: "Śrīmad-Bhāgavatam",     note: "Зрелый плод древа Вед",        authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
-  { id: "cc",  title: "Шри Чайтанья-чаритамрита",   iast: "Śrī Caitanya-caritāmṛta", note: "Деяния Господа Чайтаньи",     authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
-  { id: "brs", title: "Нектар преданности",          iast: "Bhakti-rasāmṛta-sindhu", note: "Наука преданного служения",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true },
-  { id: "krishna-book", title: "Кришна. Верховная Личность Бога", iast: "Kṛṣṇa",   note: "Игры Кришны из Десятой песни", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
-  { id: "tlc", title: "Учение Шри Чайтаньи",         iast: "Teachings of Lord Caitanya",                                  authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
-  { id: "noi", title: "Нектар наставлений",          iast: "Upadeśāmṛta",           note: "Наставления Шрилы Рупы Госвами", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
-  { id: "iso", title: "Шри Ишопанишад",              iast: "Śrī Īśopaniṣad",        note: "Мантры совершенного знания",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false },
+  { id: "bg",  title: "Бхагавад-гита как она есть", iast: "Bhagavad-gītā",        note: "Песнь Бога",                   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Gita Гитопанишад Bhagavadgita" },
+  { id: "sb",  title: "Шримад-Бхагаватам",          iast: "Śrīmad-Bhāgavatam",     note: "Зрелый плод древа Вед",        authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Вьясадева Vyasa Бхагавата-пурана Bhagavata Purana Srimad" },
+  { id: "cc",  title: "Шри Чайтанья-чаритамрита",   iast: "Śrī Caitanya-caritāmṛta", note: "Деяния Господа Чайтаньи",     authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Кришнадас Кавираджа Krishnadasa Kaviraja Chaitanya Caitanya" },
+  { id: "brs", title: "Нектар преданности",          iast: "Bhakti-rasāmṛta-sindhu", note: "Наука преданного служения",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Рупа Госвами Rupa Goswami Gosvami Bhakti-rasamrita" },
+  { id: "krishna-book", title: "Кришна. Верховная Личность Бога", iast: "Kṛṣṇa",   note: "Игры Кришны из Десятой песни", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Krishna Кришна KRSNA" },
+  { id: "tlc", title: "Учение Шри Чайтаньи",         iast: "Teachings of Lord Caitanya",                                  authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Teachings Chaitanya Caitanya Учение" },
+  { id: "noi", title: "Нектар наставлений",          iast: "Upadeśāmṛta",           note: "Наставления Шрилы Рупы Госвами", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Рупа Госвами Rupa Goswami Upadeshamrita Upadesamrta Nectar of Instruction" },
+  { id: "iso", title: "Шри Ишопанишад",              iast: "Śrī Īśopaniṣad",        note: "Мантры совершенного знания",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Isopanishad Ishopanishad Ишопанишада Iso" },
   // — Ачарьи-вайшнавы и первоисточники парампары —
-  { id: "cb",  title: "Чайтанья-бхагавата",          iast: "Caitanya-bhāgavata",    authorId: "vrindavana-dasa-thakura", authorName: "Вриндаван дас Тхакур",  lineage: "acharya", readable: false },
-  { id: "cm",  title: "Чайтанья-мангала",            iast: "Caitanya-maṅgala",      authorId: "lochana-dasa-thakura",    authorName: "Лочана дас Тхакур",     lineage: "acharya", readable: false },
-  { id: "ggd", title: "Гаура-ганоддеша-дипика",      iast: "Gaura-gaṇoddeśa-dīpikā", authorId: "kavi-karnapura",         authorName: "Кави Карнапура",        lineage: "acharya", readable: false },
+  { id: "cb",  title: "Чайтанья-бхагавата",          iast: "Caitanya-bhāgavata",    authorId: "vrindavana-dasa-thakura", authorName: "Вриндаван дас Тхакур",  lineage: "acharya", readable: false, also: "Чайтанья-бхагавата Caitanya-bhagavata Вриндаван" },
+  { id: "cm",  title: "Чайтанья-мангала",            iast: "Caitanya-maṅgala",      authorId: "lochana-dasa-thakura",    authorName: "Лочана дас Тхакур",     lineage: "acharya", readable: false, also: "Чайтанья-мангала Caitanya-mangala Лочана" },
+  { id: "ggd", title: "Гаура-ганоддеша-дипика",      iast: "Gaura-gaṇoddeśa-dīpikā", authorId: "kavi-karnapura",         authorName: "Кави Карнапура",        lineage: "acharya", readable: false, also: "Гаура-ганоддеша Gaura-ganoddesa Карнапура" },
   { id: "bs",  title: "Брахма-самхита",              iast: "Brahma-saṁhitā",        note: "Молитвы Господа Брахмы",                                            lineage: "acharya", readable: false },
   { id: "hbv", title: "Хари-бхакти-виласа",          iast: "Hari-bhakti-vilāsa",    note: "Свод вайшнавской практики",                                         lineage: "acharya", readable: false },
   { id: "vedanta-sutra", title: "Веданта-сутра",     iast: "Vedānta-sūtra",         authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false },
