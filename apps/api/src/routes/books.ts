@@ -53,8 +53,12 @@ booksRouter.get('/:work/toc', async (c) => {
   const { results } = await c.env.DB.prepare(
     `SELECT d.id, d.parent_id, d.level, d.number,
             json_extract(d.title,'$.ru') AS title_ru,
-            (SELECT COUNT(*) FROM verses v WHERE v.division_id = d.id) AS verses
-     FROM divisions d WHERE d.work_id = ? ORDER BY d.ordinal`,
+            COUNT(v.id) AS verses
+     FROM divisions d
+     LEFT JOIN verses v ON v.division_id = d.id
+     WHERE d.work_id = ?
+     GROUP BY d.id
+     ORDER BY d.ordinal`,
   )
     .bind(work)
     .all();
@@ -92,9 +96,11 @@ booksRouter.get('/:work/chapters', async (c) => {
             json_extract(d.title,'$.ru') AS title_ru,
             json_extract(d.title,'$.en') AS title_en,
             d.source_url,
-            (SELECT COUNT(*) FROM verses v WHERE v.division_id = d.id) AS verses
+            COUNT(v.id) AS verses
      FROM divisions d
+     LEFT JOIN verses v ON v.division_id = d.id
      WHERE d.work_id = ?
+     GROUP BY d.id
      ORDER BY CAST(d.number AS INTEGER)`,
   )
     .bind(work)
