@@ -1,15 +1,21 @@
 /**
- * AcharyaScreen — витрина раздела «Ачарья» поверх канонического реестра.
- * Классификация (сверху вниз):
- *   1. Шрила Прабхупада (Ачарья-основатель ИСККОН) — первый.
- *   2. Радха-Кришна лила  — Божественная Чета, гопи, манджари, пастушки Враджа.
- *   3. Гауранга лила      — Панча-таттва и спутники Шри Чайтаньи.
- *   4. Шримад Бхагаватам  — все аватары и экспансии Кришны, личности «Бхагаватам».
- * Плюс живой поиск по всем героям. Каждая карточка открывает EntityPage;
- * книги-читалки уходят в ридер через onOpen.
+ * AcharyaScreen — раздел «Ачарья» поверх канонического реестра. Два режима:
+ *
+ *  • Лендинг (collection не задан): 4 карточки одного стиля —
+ *      1. Шрила Прабхупада (Ачарья-основатель ИСККОН) → страница героя
+ *      2. Радха-Кришна лила  → экран лилы
+ *      3. Гауранга лила       → экран лилы
+ *      4. Шримад Бхагаватам   → экран лилы
+ *    + живой поиск по всем героям.
+ *
+ *  • Экран лилы (collection = 'radha-krishna' | 'gauranga' | 'bhagavatam'):
+ *    шапка + «назад» + тематические полки героев этой лилы.
+ *
+ * Каждая карточка героя открывает EntityPage; книги-читалки уходят в ридер.
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
+import { BackIcon, BookOpenIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
 
@@ -31,6 +37,14 @@ function Monogram({ ch, size = 54 }: { ch: string; size?: number }) {
       color: GOLD, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 600, fontSize: size * 0.42, lineHeight: 1 }}>
       {ch}
     </div>
+  );
+}
+
+function MaskMark({ src, size = 56, pos = "center" }: { src: string; size?: number; pos?: string }) {
+  return (
+    <span role="img" aria-hidden style={{ display: "block", width: size, height: size, backgroundColor: "var(--color-label)",
+      WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
+      WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: pos, maskPosition: pos }} />
   );
 }
 
@@ -77,11 +91,11 @@ function Rail({ title, params, orderIds, onOpen }: { title: string; params: stri
     return () => { alive = false; };
   }, [params]);
 
-  if (items && items.length === 0) return null; // пустую полку не показываем
+  if (items && items.length === 0) return null;
 
   return (
-    <section style={{ marginTop: 20 }}>
-      <h3 style={{ margin: "0 0 11px", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{title}</h3>
+    <section style={{ marginTop: 24 }}>
+      <h3 style={{ margin: "0 0 11px", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{title}</h3>
       <div style={{ display: "flex", gap: 12, overflowX: "auto", padding: "2px 16px 4px", margin: "0 -16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {items ? items.map((it) => <EntityTile key={it.id} item={it} onOpen={onOpen} />) : Array.from({ length: 4 }).map((_, i) => <SkeletonTile key={i} />)}
       </div>
@@ -89,33 +103,22 @@ function Rail({ title, params, orderIds, onOpen }: { title: string; params: stri
   );
 }
 
-function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
+/** Карточка раздела (в стиле карточки Прабхупады). */
+function SectionCard({ title, subtitle, mark, onClick }: { title: string; subtitle: string; mark: React.ReactNode; onClick: () => void }) {
   return (
-    <div style={{ marginTop: 38 }}>
-      <span aria-hidden style={{ display: "block", width: 30, height: 3, borderRadius: 999, background: GOLD, marginBottom: 11 }} />
-      <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{title}</h2>
-      {subtitle && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)", lineHeight: 1.4 }}>{subtitle}</p>}
-    </div>
-  );
-}
-
-function FeaturedPrabhupada({ onOpen }: { onOpen: (id: string, type: string | null) => void }) {
-  return (
-    <button type="button" onClick={() => onOpen("prabhupada", "personality")}
+    <button type="button" onClick={onClick}
       style={{ display: "flex", alignItems: "center", gap: 15, width: "100%", padding: "16px", borderRadius: 20,
         border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", textAlign: "left" }}
       onPointerDown={(e) => (e.currentTarget.style.opacity = "0.7")}
       onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
       onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
       <span style={{ flexShrink: 0, width: 64, height: 64, borderRadius: "50%", display: "grid", placeItems: "center",
-        border: `1.5px solid color-mix(in srgb, ${GOLD} 55%, transparent)`, background: `color-mix(in srgb, ${GOLD} 10%, transparent)`, overflow: "hidden" }}>
-        <span role="img" aria-label="Шрила Прабхупада" style={{ display: "block", width: 56, height: 56, backgroundColor: "var(--color-label)",
-          WebkitMaskImage: "url(/prabhupada.svg)", maskImage: "url(/prabhupada.svg)", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
-          WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center bottom", maskPosition: "center bottom" }} />
+        border: `1.5px solid color-mix(in srgb, ${GOLD} 55%, transparent)`, background: `color-mix(in srgb, ${GOLD} 10%, transparent)`, color: "var(--color-label)", overflow: "hidden" }}>
+        {mark}
       </span>
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>Шрила Прабхупада</span>
-        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", lineHeight: 1.4 }}>Его Божественная Милость А.Ч. Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)</span>
+        <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{title}</span>
+        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", lineHeight: 1.4 }}>{subtitle}</span>
       </span>
       <span style={{ flexShrink: 0, alignSelf: "flex-start", color: "var(--color-label-3)", fontSize: 22, lineHeight: 1, marginTop: 2 }}>›</span>
     </button>
@@ -139,7 +142,77 @@ function ResultRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
 
 const GAURA_DS = encodeURIComponent("Гаура-ганоддеша-дипика · Гаура-лила");
 
-export default function AcharyaScreen({ onOpen }: { onOpen: (id: string, type: string | null) => void }) {
+interface Collection { title: string; subtitle: string; rails: { title: string; params: string; orderIds?: string[] }[] }
+const COLLECTIONS: Record<string, Collection> = {
+  "radha-krishna": {
+    title: "Радха-Кришна лила",
+    subtitle: "Вечные игры Господа и Его спутников во Вриндаване",
+    rails: [
+      { title: "Божественная Чета", params: "ids=krishna,radharani", orderIds: ["krishna", "radharani"] },
+      { title: "Гопи", params: "category=gopi&limit=40" },
+      { title: "Манджари", params: "category=manjari&limit=30" },
+      { title: "Пастушки Враджа", params: "category=gopa&limit=30" },
+    ],
+  },
+  gauranga: {
+    title: "Гауранга лила",
+    subtitle: "Игры Шри Чайтаньи Махапрабху и Его спутников",
+    rails: [
+      { title: "Панча-таттва", params: "ids=chaitanya,nityananda,advaita,gadadhara,srivasa", orderIds: ["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"] },
+      { title: "Спутники Гауранги", params: `dataset=${GAURA_DS}&limit=60` },
+    ],
+  },
+  bhagavatam: {
+    title: "Шримад Бхагаватам",
+    subtitle: "Воплощения и аватары Господа, Его великие преданные",
+    rails: [
+      { title: "Аватары Кришны", params: "rel=avatar-of&relTo=krishna&limit=20" },
+      { title: "Экспансии Кришны", params: "rel=expansion-of&relTo=krishna&limit=10" },
+      { title: "Личности «Бхагаватам»", params: "category=bhagavatam&limit=40" },
+    ],
+  },
+};
+
+export default function AcharyaScreen({ collection, onBack, onOpen, onOpenCollection }: {
+  collection?: string | null;
+  onBack?: () => void;
+  onOpen: (id: string, type: string | null) => void;
+  onOpenCollection?: (key: string) => void;
+}) {
+  // ── Режим экрана лилы ──
+  if (collection) {
+    const col = COLLECTIONS[collection];
+    return (
+      <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
+        <div style={{ position: "sticky", top: 0, zIndex: 10, display: "flex", alignItems: "center", height: 52, padding: "0 8px",
+          background: "color-mix(in srgb, var(--color-bg) 86%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+          borderBottom: "0.5px solid var(--color-hairline)" }}>
+          <button type="button" aria-label="Назад" onClick={onBack}
+            style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
+            <BackIcon size={22} />
+          </button>
+        </div>
+        <div style={{ padding: "8px 16px calc(48px + env(safe-area-inset-bottom,0px))" }}>
+          {col ? (
+            <>
+              <span aria-hidden style={{ display: "block", width: 30, height: 3, borderRadius: 999, background: GOLD, marginBottom: 12 }} />
+              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 27, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{col.title}</h1>
+              <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-2)", lineHeight: 1.45 }}>{col.subtitle}</p>
+              {col.rails.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
+            </>
+          ) : (
+            <p style={{ marginTop: 40, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)" }}>Раздел не найден.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Режим лендинга (4 карточки + поиск) ──
+  return <AcharyaLanding onOpen={onOpen} onOpenCollection={onOpenCollection} />;
+}
+
+function AcharyaLanding({ onOpen, onOpenCollection }: { onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Item[] | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -158,17 +231,16 @@ export default function AcharyaScreen({ onOpen }: { onOpen: (id: string, type: s
   }, [q]);
 
   const searching = q.trim().length >= 2;
+  const openCol = (k: string) => onOpenCollection?.(k);
 
   return (
     <div>
-      {/* лид */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Реестр</div>
         <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Ачарья</h2>
         <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>Господь, Его воплощения и вечные спутники</p>
       </div>
 
-      {/* поиск */}
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по героям…" inputMode="search"
         style={{ width: "100%", boxSizing: "border-box", padding: "12px 15px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
           background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none" }} />
@@ -180,30 +252,32 @@ export default function AcharyaScreen({ onOpen }: { onOpen: (id: string, type: s
           {results && results.map((it) => <ResultRow key={it.id} item={it} onOpen={onOpen} />)}
         </div>
       ) : (
-        <>
-          {/* 1. Шрила Прабхупада — первый */}
-          <div style={{ marginTop: 18 }}>
-            <FeaturedPrabhupada onOpen={onOpen} />
-          </div>
-
-          {/* 2. Радха-Кришна лила */}
-          <SectionHeader title="Радха-Кришна лила" subtitle="Вечные игры Господа во Вриндаване" />
-          <Rail title="Божественная Чета" params="ids=krishna,radharani" orderIds={["krishna", "radharani"]} onOpen={onOpen} />
-          <Rail title="Гопи" params="category=gopi&limit=30" onOpen={onOpen} />
-          <Rail title="Манджари" params="category=manjari&limit=20" onOpen={onOpen} />
-          <Rail title="Пастушки Враджа" params="category=gopa&limit=20" onOpen={onOpen} />
-
-          {/* 3. Гауранга лила (сюда же относится Шрила Прабхупада и парампара) */}
-          <SectionHeader title="Гауранга лила" subtitle="Игры Шри Чайтаньи Махапрабху и Его спутников" />
-          <Rail title="Панча-таттва" params="ids=chaitanya,nityananda,advaita,gadadhara,srivasa" orderIds={["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"]} onOpen={onOpen} />
-          <Rail title="Спутники Гауранги" params={`dataset=${GAURA_DS}&limit=24`} onOpen={onOpen} />
-
-          {/* 4. Шримад Бхагаватам — все аватары и экспансии */}
-          <SectionHeader title="Шримад Бхагаватам" subtitle="Воплощения Господа и Его великие преданные" />
-          <Rail title="Аватары Кришны" params="rel=avatar-of&relTo=krishna&limit=20" onOpen={onOpen} />
-          <Rail title="Экспансии Кришны" params="rel=expansion-of&relTo=krishna&limit=10" onOpen={onOpen} />
-          <Rail title="Личности «Бхагаватам»" params="category=bhagavatam&limit=24" onOpen={onOpen} />
-        </>
+        <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+          <SectionCard
+            title="Шрила Прабхупада"
+            subtitle="Его Божественная Милость А.Ч. Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)"
+            mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />}
+            onClick={() => onOpen("prabhupada", "personality")}
+          />
+          <SectionCard
+            title="Радха-Кришна лила"
+            subtitle="Вечные игры Господа и Его спутников во Вриндаване"
+            mark={<MaskMark src="/vraj.svg" size={42} />}
+            onClick={() => openCol("radha-krishna")}
+          />
+          <SectionCard
+            title="Гауранга лила"
+            subtitle="Шри Чайтанья Махапрабху и Панча-таттва"
+            mark={<MaskMark src="/gauranga.svg" size={50} pos="center bottom" />}
+            onClick={() => openCol("gauranga")}
+          />
+          <SectionCard
+            title="Шримад Бхагаватам"
+            subtitle="Воплощения и аватары Господа, Его великие преданные"
+            mark={<BookOpenIcon size={34} />}
+            onClick={() => openCol("bhagavatam")}
+          />
+        </div>
       )}
     </div>
   );
