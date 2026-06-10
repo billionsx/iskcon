@@ -4,7 +4,7 @@
  * Cover: graphite background for now (real BBT artwork to be wired later).
  * Text strictly per Śrīla Prabhupāda. One type family throughout.
  */
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import { DonateModal } from "./DonateModal";
@@ -82,36 +82,97 @@ function TopHeader() {
   );
 }
 
-/* ═════════ TabBar — 5 tabs, outline, active=brand-blue ═════════ */
+/* ═════════ TabBar — нижнее меню gaurangers (Instagram-2026 · liquid glass) ═════════
+ * Плавающая «таблетка», два размера (обычный ↔ компактный при прокрутке),
+ * овальное выделение активного таба, иконки — логотипы через CSS-маску
+ * (цвет = --color-label, т.е. чёрные в светлой теме / белые в тёмной). */
 const TABS = [
-  { id: "home", label: "Главная", Icon: HomeIcon, photo: null },
-  { id: "feed", label: "Лента", Icon: FeedIcon, photo: null },
-  { id: "search", label: "Поиск", Icon: AISearchIcon, photo: null },
-  { id: "map", label: "Карта", Icon: MapPinIcon, photo: null },
-  { id: "passport", label: "Паспорт", Icon: null, photo: "person" },
+  { id: "home", label: "Главная", src: "/iskcon.svg", wide: true },
+  { id: "books", label: "Книги", src: "/bbt.svg", wide: false },
+  { id: "kirtans", label: "Киртаны", src: "/gauranga.svg", wide: false },
+  { id: "acharya", label: "Ачарья", src: "/prabhupada.svg", wide: false },
+  { id: "dhama", label: "Дхама", src: "/vraj.svg", wide: false },
+  { id: "account", label: "Личный кабинет", src: null, wide: false },
 ] as const;
 
-function TabBar({ active, onChange }: { active: string; onChange: (k: string) => void }) {
+function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {
+  const navRef = useRef<HTMLElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
+  const slotRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [compact, setCompact] = useState(false);
+
+  const moveHighlight = () => {
+    const i = TABS.findIndex((t) => t.id === active);
+    const slot = slotRefs.current[i];
+    const nav = navRef.current;
+    const pill = pillRef.current;
+    if (!slot || !nav || !pill) return;
+    const nr = nav.getBoundingClientRect();
+    const sr = slot.getBoundingClientRect();
+    pill.style.width = `${sr.width}px`;
+    pill.style.transform = `translateX(${sr.left - nr.left}px)`;
+  };
+
+  // держим овал приклеенным к активному табу (смена таба / компакт / лейаут)
+  useLayoutEffect(moveHighlight, [active, compact]);
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => moveHighlight());
+    ro.observe(nav);
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // прокрутка → компактный размер (как в Instagram 2026)
+  useEffect(() => {
+    const sc = scrollRef.current;
+    if (!sc) return;
+    const onScroll = () => setCompact((c) => { const w = sc.scrollTop > 22; return c === w ? c : w; });
+    onScroll();
+    sc.addEventListener("scroll", onScroll, { passive: true });
+    return () => sc.removeEventListener("scroll", onScroll);
+  }, [scrollRef]);
+
   return (
-    <nav aria-label="Главная навигация" style={{ position: "sticky", bottom: 0, zIndex: 40, flexShrink: 0, borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", paddingBottom: "env(safe-area-inset-bottom)" }}>
-      <ul style={{ display: "flex", height: 48, margin: 0, padding: 0, listStyle: "none", alignItems: "stretch" }}>
-        {TABS.map(({ id, label, Icon }) => {
-          const on = active === id;
+    <div className="gtab-wrap">
+      <nav ref={navRef} className={compact ? "gtab compact" : "gtab"} aria-label="Главная навигация">
+        <div ref={pillRef} className="gtab-pill" aria-hidden />
+        {TABS.map((t, i) => {
+          const on = active === t.id;
           return (
-            <li key={id} style={{ flex: 1 }}>
-              <button aria-label={label} aria-current={on ? "page" : undefined} onClick={() => onChange(id)}
-                style={{ position: "relative", display: "flex", height: "100%", width: "100%", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: on ? "var(--color-brand-blue)" : "var(--color-label)", transition: "color 180ms ease-out" }}>
-                {Icon ? <Icon size={26} filled={false} /> : (
-                  <span style={{ display: "grid", height: 26, width: 26, placeItems: "center", borderRadius: "50%", background: "var(--color-glass-regular)", color: "var(--color-label-2)", boxShadow: on ? "0 0 0 2px var(--color-brand-blue)" : "0 0 0 1px var(--color-hairline)" }}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" /></svg>
-                  </span>
-                )}
-              </button>
-            </li>
+            <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className="gtab-slot"
+              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => onChange(t.id)}>
+              {t.src ? (
+                <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} />
+              ) : (
+                <span className="gtab-ava">
+                  <svg viewBox="0 0 24 24" aria-hidden><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill="currentColor" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" fill="currentColor" /></svg>
+                  <span className="gtab-dot" />
+                </span>
+              )}
+            </button>
           );
         })}
-      </ul>
-    </nav>
+      </nav>
+    </div>
+  );
+}
+
+/* ═════════ ComingSoon — экран-заглушка раздела (эмблема + название) ═════════ */
+function ComingSoon({ src, title, subtitle }: { src?: string; title: string; subtitle: string }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "72px 24px 24px" }}>
+      {src ? (
+        <LogoMark src={src} label={title} height={116} />
+      ) : (
+        <span style={{ display: "grid", placeItems: "center", width: 116, height: 116, borderRadius: "50%", background: "var(--color-glass-regular)", color: "var(--color-label-2)" }}>
+          <svg width="58" height="58" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" /></svg>
+        </span>
+      )}
+      <h1 style={{ margin: "24px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{title}</h1>
+      <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.45, maxWidth: 290 }}>{subtitle}</p>
+    </div>
   );
 }
 
@@ -337,11 +398,11 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
   };
   const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
+    <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ padding: 16 }}>
-          {tab === "home" ? (
+        <div style={{ padding: "16px 16px 116px" }}>
+          {(tab === "home" || tab === "books") ? (
             <>
               <div style={{ marginBottom: 16 }}>
                 <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
@@ -413,14 +474,18 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
                   onOpenBook("brs");
                 }} />
               </div>
-              <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
             </>
-          ) : tab === "feed" ? (
-            <FeedScreen onOpen={onOpenContent} />
           ) : null}
+          {(tab === "home" || tab === "kirtans") && (
+            <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
+          )}
+          {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
+          {tab === "acharya" && <ComingSoon src="/prabhupada.svg" title="Ачарья" subtitle="Шрила Прабхупада — основатель-ачарья ИСККОН. Раздел готовится." />}
+          {tab === "dhama" && <ComingSoon src="/vraj.svg" title="Дхама" subtitle="Святые места и храмы Вриндавана. Раздел готовится." />}
+          {tab === "account" && <ComingSoon title="Личный кабинет" subtitle="Профиль, закладки и пожертвования. Раздел готовится." />}
         </div>
       </main>
-      <TabBar active={tab} onChange={onChange} />
+      <TabBar active={tab} onChange={onChange} scrollRef={mainRef} />
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Главная · ${bookFullTitle(BOOKS.bg)}`} />
       {toast && <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>}
@@ -467,7 +532,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin"];
+  const RESERVED = ["", "books", "kirtans", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin"];
   function pathFromState(): string {
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
@@ -495,7 +560,7 @@ export default function App() {
     setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
-    if (["feed", "search", "map", "passport"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
+    if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (seg0 === "book") {
       const parts = clean.split("/");           // ["", "book", <work>, a?, b?, c?]

@@ -20,7 +20,7 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
       : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
 
   const bottom = tabBarVisible
-    ? "calc(52px + env(safe-area-inset-bottom))"
+    ? "calc(90px + env(safe-area-inset-bottom))"
     : "env(safe-area-inset-bottom)";
 
   return (
