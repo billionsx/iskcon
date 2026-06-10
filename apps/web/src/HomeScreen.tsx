@@ -212,7 +212,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       <Band tone="base" padTop={34}>
         <div style={{ textAlign: "center" }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, letterSpacing: "2.6px", textTransform: "uppercase", color: GOLD }}>ISKCON · One Love</div>
-          <h1 style={{ margin: "26px auto 0", maxWidth: 860, fontFamily: "var(--font-display)", fontSize: "clamp(46px, 14vw, 84px)", fontWeight: 700, letterSpacing: "-0.035em", lineHeight: 0.99, color: "var(--color-label)" }}>
+          <h1 style={{ margin: "24px auto 0", maxWidth: 600, fontFamily: "var(--font-display)", fontSize: "clamp(36px, 8vw, 58px)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1.04, color: "var(--color-label)" }}>
             Служение.<br />Преданность.<br />Любовь.
           </h1>
           <p style={{ margin: "30px auto 0", maxWidth: 560, fontFamily: "var(--font-text)", fontSize: "clamp(18px,2.3vw,21px)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
@@ -239,7 +239,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ marginTop: 44, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "38px 16px", textAlign: "center" }}>
           {STATS.map((s) => (
             <div key={s.l}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(38px, 12vw, 68px)", fontWeight: 700, letterSpacing: "-0.025em", color: "var(--color-label)", lineHeight: 1 }}><CountUp value={s.v} /></div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "clamp(32px, 9vw, 52px)", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--color-label)", lineHeight: 1, whiteSpace: "nowrap" }}><CountUp value={s.v} /></div>
               <div style={{ margin: "9px auto 0", maxWidth: 150, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", lineHeight: 1.32 }}>{s.l}</div>
             </div>
           ))}
@@ -254,17 +254,17 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Band>
 
       {/* Маха-мантра — драматичная тёмная секция */}
-      <section style={{ background: "#0b0b0d", padding: "clamp(76px,16vw,136px) 22px" }}>
+      <section style={{ background: "#0b0b0d", padding: "clamp(60px,11vw,96px) 22px" }}>
         <Reveal>
           <div style={{ maxWidth: 760, margin: "0 auto", textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, letterSpacing: "2.6px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
-            <div style={{ marginTop: 32, fontFamily: "var(--font-scripture)", fontSize: 19, lineHeight: 1.7, color: "rgba(255,255,255,0.42)" }}>
+            <div style={{ marginTop: 30, fontFamily: "var(--font-scripture)", fontSize: 18, lineHeight: 1.7, color: "rgba(255,255,255,0.42)" }}>
               हरे कृष्ण हरे कृष्ण · कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम · राम राम हरे हरे
             </div>
-            <div style={{ marginTop: 26, fontFamily: "var(--font-display)", fontSize: "clamp(24px, 6.4vw, 38px)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.42, color: "#fff" }}>
-              Харе Кришна, Харе Кришна,<br />Кришна Кришна, Харе Харе<br />Харе Рама, Харе Рама,<br />Рама Рама, Харе Харе
+            <div style={{ marginTop: 24, fontFamily: "var(--font-display)", fontSize: "clamp(19px, 4.6vw, 28px)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.5, color: "#fff" }}>
+              Харе Кришна, Харе Кришна, Кришна Кришна, Харе Харе<br />Харе Рама, Харе Рама, Рама Рама, Харе Харе
             </div>
-            <p style={{ margin: "34px auto 0", maxWidth: 540, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, color: "rgba(255,255,255,0.62)" }}>
+            <p style={{ margin: "30px auto 0", maxWidth: 540, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, color: "rgba(255,255,255,0.62)" }}>
               Когда звучит трансцендентная вибрация святого имени, благо получают все живые существа — даже деревья, животные и насекомые. Повторение маха-мантры — высшее милосердие ко всему миру.
             </p>
           </div>
