@@ -10,7 +10,7 @@ import { BookDetailPage } from "./BookDetailPage";
 import HomeScreen from "./HomeScreen";
 import { DonateModal } from "./DonateModal";
 import { BOOKS, bookFullTitle } from "./books";
-import { BookHeroCard } from "./BookHeroCard";
+import BooksHub from "./BooksHub";
 import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -408,87 +408,36 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenCatalog, onOpen
     toastTimer.current = setTimeout(() => setToast(null), 2400);
   };
   const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
+  // Единое меню книги (⋯) — общий обработчик для всех карточек хаба.
+  const bookMenu = (work: string, id: string) => {
+    const b = BOOKS[work];
+    if (!b) return;
+    const url = `https://gaurangers.com/book/${work}`;
+    if (id === "share") {
+      if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: bookFullTitle(b), url }).catch(() => {});
+      else if (typeof navigator !== "undefined") navigator.clipboard?.writeText(url).catch(() => {});
+      return;
+    }
+    if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: b.work, book: b, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
+    if (id === "qr") { setQr({ url, data: { kind: "book", bookTitle: bookFullTitle(b), tagline: b.tagline, cover: b.covers[0] } }); return; }
+    if (id === "donate") { onDonate(); return; }
+    if (id === "report") { setReportOpen(true); return; }
+    onOpenBook(work);
+  };
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ padding: "16px 16px 116px" }}>
-          {tab === "books" ? (
-            <>
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
-                <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Книги Прабхупады</h2>
-              </div>
-              <BookHeroCard book={BOOKS.bg} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("bg")} onMenuSelect={(id) => {
-                if (id === "share") {
-                  const url = "https://gaurangers.com/book/bg";
-                  if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.bg), url }).catch(() => {}); }
-                  else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
-                  return;
-                }
-                if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: "bg", book: BOOKS.bg, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-                if (id === "qr") { setQr({ url: "https://gaurangers.com/book/bg", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.bg), tagline: BOOKS.bg.tagline, cover: BOOKS.bg.covers[0] } }); return; }
-                if (id === "donate") { onDonate(); return; }
-                if (id === "report") { setReportOpen(true); return; }
-                onOpenBook("bg");
-              }} />
-              <div style={{ marginTop: 14 }}>
-                <BookHeroCard book={BOOKS.cc} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("cc")} onMenuSelect={(id) => {
-                  if (id === "share") {
-                    const url = "https://gaurangers.com/book/cc";
-                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.cc), url }).catch(() => {}); }
-                    else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
-                    return;
-                  }
-                  if (id === "pdf") {
-                    setPdfHidden(false);
-                    void downloadBookPdf({
-                      work: BOOKS.cc.work, book: BOOKS.cc,
-                      onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle,
-                      cancelRef: pdfCancel, abortRef: pdfAbort,
-                    });
-                    return;
-                  }
-                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/cc", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.cc), tagline: BOOKS.cc.tagline, cover: BOOKS.cc.covers[0] } }); return; }
-                  if (id === "donate") { onDonate(); return; }
-                  if (id === "report") { setReportOpen(true); return; }
-                  onOpenBook("cc");
-                }} />
-              </div>
-              <div style={{ marginTop: 14 }}>
-                <BookHeroCard book={BOOKS.sb} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("sb")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
-                  if (id === "share") {
-                    const url = "https://gaurangers.com/book/sb";
-                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.sb), url }).catch(() => {}); }
-                    else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
-                    return;
-                  }
-                  if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: BOOKS.sb.work, book: BOOKS.sb, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/sb", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.sb), tagline: BOOKS.sb.tagline, cover: BOOKS.sb.covers[0] } }); return; }
-                  if (id === "donate") { onDonate(); return; }
-                  if (id === "report") { setReportOpen(true); return; }
-                  onOpenBook("sb");
-                }} />
-              </div>
-              {tab === "books" && (
-              <div style={{ marginTop: 14 }}>
-                <BookHeroCard book={BOOKS.brs} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} />} onOpen={() => onOpenBook("brs")} onListen={() => flash("Аудиокнига — скоро")} onMenuSelect={(id) => {
-                  if (id === "share") {
-                    const url = "https://gaurangers.com/book/brs";
-                    if (typeof navigator !== "undefined" && navigator.share) { navigator.share({ title: bookFullTitle(BOOKS.brs), url }).catch(() => {}); }
-                    else if (typeof navigator !== "undefined") { navigator.clipboard?.writeText(url).catch(() => {}); }
-                    return;
-                  }
-                  if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: BOOKS.brs.work, book: BOOKS.brs, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-                  if (id === "qr") { setQr({ url: "https://gaurangers.com/book/brs", data: { kind: "book", bookTitle: bookFullTitle(BOOKS.brs), tagline: BOOKS.brs.tagline, cover: BOOKS.brs.covers[0] } }); return; }
-                  if (id === "donate") { onDonate(); return; }
-                  if (id === "report") { setReportOpen(true); return; }
-                  onOpenBook("brs");
-                }} />
-              </div>
-              )}
-            </>
-          ) : null}
+          {tab === "books" && (
+            <BooksHub
+              onOpenBook={onOpenBook}
+              onBookMenu={bookMenu}
+              onOpenEntity={onOpenEntity}
+              onOpenCollection={onOpenCollection}
+              flash={flash}
+            />
+          )}
           {tab === "home" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} />}
           {tab === "kirtans" && (
             <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
