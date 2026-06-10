@@ -11,7 +11,7 @@
  * Меню книги (PDF/QR/поделиться/поддержать/ошибка) живёт в App (там состояние PDF/QR/
  * отчёта) и приходит как onBookMenu(work, id). Визуальный язык — общий с приложением.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   BOOKS,
@@ -23,11 +23,31 @@ import {
   type Lineage,
 } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
+import { searchBooks, highlight } from "./bookSearch";
 
 const GOLD = "#D2AA1B";
 
-/** Снимает диакритику (IAST → ASCII) и регистр: «Bhāgavatam»→«bhagavatam». Кириллицу не трогает. */
-const fold = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+/* подсветка совпадения в строке результата (как нативный поиск) */
+function Hi({ text, q }: { text: string; q: string }) {
+  if (!q || !text) return <>{text}</>;
+  return (
+    <>
+      {highlight(text, q).map((s, i) =>
+        s.hit
+          ? <mark key={i} style={{ background: `color-mix(in srgb, ${GOLD} 32%, transparent)`, color: "inherit", borderRadius: 3, padding: "0 1px" }}>{s.text}</mark>
+          : <span key={i}>{s.text}</span>,
+      )}
+    </>
+  );
+}
+
+/* русское склонение счётного слова */
+function plural(n: number, one: string, few: string, many: string): string {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
 
 /* монохромный логотип через CSS-маску (цвет = currentColor родителя) */
 function MaskMark({ src, size = 56, pos = "center", color = "currentColor" }: { src: string; size?: number; pos?: string; color?: string }) {
@@ -90,8 +110,8 @@ function FilterChips({ value, onChange }: { value: "all" | Lineage; onChange: (v
 }
 
 /* строка книги: открыть книгу (оверлей) + отдельная кнопка автора (связь книга↔герой) */
-function BookRow({ book, last, onOpenBook, onOpenAuthor }: {
-  book: CatalogBook; last: boolean;
+function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
+  book: CatalogBook; last: boolean; query?: string;
   onOpenBook: (b: CatalogBook) => void;
   onOpenAuthor: (id: string) => void;
 }) {
@@ -107,10 +127,10 @@ function BookRow({ book, last, onOpenBook, onOpenAuthor }: {
           : <BookMonogram ch={initial} />}
         <span style={{ minWidth: 0, flex: 1 }}>
           <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)",
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{book.title}</span>
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}><Hi text={book.title} q={query} /></span>
           {book.iast && (
             <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12.5, color: "var(--color-label-3)",
-              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{book.iast}</span>
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}><Hi text={book.iast} q={query} /></span>
           )}
           {book.authorId ? (
             <button type="button" onClick={() => onOpenAuthor(book.authorId!)} aria-label={`Автор: ${book.authorName}`}
@@ -120,7 +140,7 @@ function BookRow({ book, last, onOpenBook, onOpenAuthor }: {
               onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")}
               onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
               onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{book.authorName}</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}><Hi text={book.authorName ?? ""} q={query} /></span>
               <span aria-hidden style={{ opacity: 0.7 }}>›</span>
             </button>
           ) : book.note ? (
@@ -136,15 +156,15 @@ function BookRow({ book, last, onOpenBook, onOpenAuthor }: {
   );
 }
 
-function BookList({ books, onOpenBook, onOpenAuthor }: {
-  books: CatalogBook[];
+function BookList({ books, query = "", onOpenBook, onOpenAuthor }: {
+  books: CatalogBook[]; query?: string;
   onOpenBook: (b: CatalogBook) => void;
   onOpenAuthor: (id: string) => void;
 }) {
   if (books.length === 0) return null;
   return (
     <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 16, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-      {books.map((b, i) => <BookRow key={b.id} book={b} last={i === books.length - 1} onOpenBook={onOpenBook} onOpenAuthor={onOpenAuthor} />)}
+      {books.map((b, i) => <BookRow key={b.id} book={b} last={i === books.length - 1} query={query} onOpenBook={onOpenBook} onOpenAuthor={onOpenAuthor} />)}
     </ul>
   );
 }
@@ -192,16 +212,17 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
 }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const trimmed = q.trim();
   const searching = trimmed.length >= 2;
+  // ранжированный фаззи-поиск + скоуп активного фильтра
   const results = useMemo(() => {
-    if (!searching) return [];
-    const needle = fold(trimmed);
-    return LIBRARY.filter((b) =>
-      fold([b.title, b.iast, b.authorName, b.note, b.also].filter(Boolean).join(" ")).includes(needle),
-    );
-  }, [trimmed, searching]);
+    if (!searching) return [] as CatalogBook[];
+    const hits = searchBooks(trimmed, LIBRARY);
+    const scoped = filter === "all" ? hits : hits.filter((h) => h.book.lineage === filter);
+    return scoped.map((h) => h.book);
+  }, [trimmed, searching, filter]);
 
   // книга-строка → читаемые в ридер, остальные — на страницу сущности книги
   const openBook = (b: CatalogBook) => onOpenEntity(b.id, "scripture");
@@ -222,21 +243,46 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         </p>
       </div>
 
-      {/* поиск */}
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск книги или автора…" inputMode="search"
-        style={{ width: "100%", boxSizing: "border-box", marginTop: 14, padding: "12px 15px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
-          background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none" }} />
+      {/* поиск — нативная строка: лупа + очистка + клавиатура (Enter → первый, Esc → сброс) */}
+      <div role="search" style={{ position: "relative", marginTop: 14 }}>
+        <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+        </span>
+        <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setQ("");
+            else if (e.key === "Enter" && results.length > 0) { e.currentTarget.blur(); openBook(results[0]); }
+          }}
+          placeholder="Поиск книги, автора или санскрита" inputMode="search" enterKeyHint="search"
+          autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по библиотеке"
+          style={{ width: "100%", boxSizing: "border-box", padding: "12px 40px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
+            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
+        {q && (
+          <button type="button" aria-label="Очистить" onClick={() => { setQ(""); inputRef.current?.focus(); }}
+            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
+              background: "var(--color-fill-1)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
+          </button>
+        )}
+      </div>
+
+      <FilterChips value={filter} onChange={setFilter} />
 
       {searching ? (
-        <div style={{ marginTop: 18 }}>
-          {results.length === 0
-            ? <div style={{ padding: "22px 0", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</div>
-            : <BookList books={results} onOpenBook={openBook} onOpenAuthor={openAuthor} />}
+        <div style={{ marginTop: 16 }} aria-live="polite">
+          {results.length === 0 ? (
+            <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.55 }}>
+              Ничего не найдено по запросу «{trimmed}».<br />Попробуйте название, автора или санскрит (IAST).
+            </div>
+          ) : (
+            <>
+              <div style={{ margin: "2px 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{results.length} {plural(results.length, "книга", "книги", "книг")}</div>
+              <BookList books={results} query={trimmed} onOpenBook={openBook} onOpenAuthor={openAuthor} />
+            </>
+          )}
         </div>
       ) : (
         <>
-          <FilterChips value={filter} onChange={setFilter} />
-
           {/* ── Шрила Прабхупада ── */}
           {(filter === "all" || filter === "prabhupada") && (
             <section>
