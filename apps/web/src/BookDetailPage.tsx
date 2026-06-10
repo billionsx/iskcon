@@ -1838,6 +1838,20 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [tab, setTab] = useState<BookTabId>("contents");
+  // Смена Tier-1 таба → если прокручено вглубь, подтянуть так, чтобы липкие табы
+  // сели под шапку (52px), а контент таба начался с верха. Если уже у верха —
+  // ничего не двигаем (контент и так свежий). Первый монтаж пропускаем.
+  const bookTabReady = useRef(false);
+  useLayoutEffect(() => {
+    if (!bookTabReady.current) { bookTabReady.current = true; return; }
+    const main = document.querySelector("main") as HTMLElement | null;
+    const nav = document.querySelector('[aria-label="Разделы книги"]') as HTMLElement | null;
+    if (!main || !nav) return;
+    let y = 0; let node: HTMLElement | null = nav;
+    while (node && node !== main) { y += node.offsetTop; node = node.offsetParent as HTMLElement | null; }
+    const pinned = Math.max(0, y - 52);
+    if (main.scrollTop > pinned) main.scrollTo({ top: pinned, behavior: "auto" });
+  }, [tab]);
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
