@@ -63,14 +63,22 @@ run("CREATE INDEX idx_places_geo ON places(kind, continent, country);")
 
 places = json.load(open(os.path.join(DATA, "iskcon-places.json"), encoding="utf-8"))
 items = places.get("items") or places.get("places") or places
+# дополнение: РФ (krishna.ru/ЦОСКР), Крым, Украина, GEV — см. iskcon-places-extra.json
+try:
+    extra = json.load(open(os.path.join(DATA, "iskcon-places-extra.json"), encoding="utf-8")).get("places") or []
+    have = {p.get("id") for p in items}
+    items = items + [p for p in extra if p.get("id") not in have]
+    print("extra places merged:", len(extra))
+except FileNotFoundError:
+    pass
 import sys as _sys
 _sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ru_geo
 rows = [[p.get("id"), p.get("kind"), p.get("name"),
-         ru_geo.ru_place_name(p.get("name") or ""),
-         ru_geo.ru_city(p.get("city") or ""),
-         ru_geo.ru_state(p.get("state") or ""),
-         ru_geo.ru_address(p.get("address") or ""),
+         p.get("name_ru") or ru_geo.ru_place_name(p.get("name") or ""),
+         p.get("city_ru") or ru_geo.ru_city(p.get("city") or ""),
+         p.get("state_ru") or ru_geo.ru_state(p.get("state") or ""),
+         p.get("address_ru") or ru_geo.ru_address(p.get("address") or ""),
          json.dumps(p.get("categories") or [], ensure_ascii=False),
          p.get("address"), p.get("city"), p.get("state"), p.get("country"),
          p.get("continent"), p.get("lat"), p.get("lng"),

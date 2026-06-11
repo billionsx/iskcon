@@ -17,9 +17,9 @@
 
   /* Interactive surfaces (header blur on scroll, button hover/active, separators) */
   --color-header-blur: rgba(0, 0, 0, 0.65);
-  /* Тинт sticky-навигации (.glass-nav). Плотнее header-blur — контент
-     под стеклом приглушён сильнее, навигация остаётся читаемой. */
-  --color-glass-nav: rgba(10, 10, 10, 0.96);
+  /* Тинт sticky-навигации (.glass-nav) — Liquid Glass (iOS 26/27):
+     материал полупрозрачный, контент читается сквозь blur(40px) saturate(180%). */
+  --color-glass-nav: rgba(12, 12, 14, 0.62);
   --color-hover: rgba(255, 255, 255, 0.05);
   --color-active: rgba(255, 255, 255, 0.10);
   --color-hairline: rgba(255, 255, 255, 0.15);
@@ -209,7 +209,7 @@
   --color-header-blur: rgba(255, 255, 255, 0.72);
   --reader-accent: #a65e18;
   --reader-accent-soft: rgba(166, 94, 24, 0.10);
-  --color-glass-nav: rgba(252, 252, 253, 0.97);
+  --color-glass-nav: rgba(250, 250, 252, 0.72);
   --color-hover: rgba(0, 0, 0, 0.04);
   --color-active: rgba(0, 0, 0, 0.08);
   --color-hairline: rgba(60, 60, 67, 0.18);
