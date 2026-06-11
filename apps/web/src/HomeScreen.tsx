@@ -18,6 +18,8 @@ import { SectionSubTabs } from "./SectionSubTabs";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeFeed } from "./HomeFeed";
+import { HomeCalendar } from "./HomeCalendar";
+import { HomeMedia, HomeEducation } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
@@ -744,6 +746,9 @@ export default function HomeScreen(props: {
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} />}
+      {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} />}
+      {homeTab === "media" && <HomeMedia />}
+      {homeTab === "education" && <HomeEducation />}
       {homeTab === "documents" && <HomeDocuments stickyTop={t1H} />}
       {homeTab === "structure" && <HomeStructure />}
       {homeTab === "links" && <HomeLinks />}

@@ -11,6 +11,9 @@ export type HomeTabId =
   | "iskcon"       // ИСККОН — презентация
   | "centres"      // Центры ИСККОН
   | "restaurants"  // Рестораны ИСККОН
+  | "calendar"     // Вайшнавский календарь
+  | "media"        // Медиа ИСККОН
+  | "education"    // Образование ИСККОН
   | "documents"    // Документы ИСККОН
   | "structure"    // Структура ИСККОН
   | "links"        // Ссылки ИСККОН
@@ -20,6 +23,9 @@ export const HOME_TABS: readonly { id: HomeTabId; label: string }[] = [
   { id: "iskcon",      label: "ИСККОН" },
   { id: "centres",     label: "Центры" },
   { id: "restaurants", label: "Рестораны" },
+  { id: "calendar",    label: "Календарь" },
+  { id: "media",       label: "Медиа" },
+  { id: "education",   label: "Образование" },
   { id: "documents",   label: "Документы" },
   { id: "structure",   label: "Структура" },
   { id: "links",       label: "Ссылки" },
