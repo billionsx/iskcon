@@ -29,7 +29,7 @@ const TONE = {
 } as const;
 
 export function SectionSubTabs({
-  items, active, onChange, top = 0, tone = "light", navRef, ariaLabel = "Части книги",
+  items, active, onChange, top = 0, tone = "light", navRef, ariaLabel = "Части книги", bleed = 0,
 }: {
   items: SubTabDef[];
   active: string;
@@ -38,6 +38,7 @@ export function SectionSubTabs({
   tone?: "light" | "dark";
   navRef?: (el: HTMLElement | null) => void;     // для замера высоты ленты вызывающей стороной
   ariaLabel?: string;
+  bleed?: number;                                // full-bleed: вынос за паддинг контейнера (px)
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -51,7 +52,7 @@ export function SectionSubTabs({
   }, [active]);
   return (
     <nav ref={navRef} data-pdf-no-print aria-label={ariaLabel}
-      style={{ position: "sticky", top, zIndex: 15, background: c.glass, backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${c.edge}` }}>
+      style={{ position: "sticky", top, zIndex: 15, marginInline: bleed ? -bleed : undefined, background: c.glass, backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${c.edge}` }}>
       <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {items.map((it) => {
           const on = it.id === active;
