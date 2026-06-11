@@ -48,19 +48,27 @@ jobs:
           cats = get_all("categories", "id,name,parent,count")
           ann("notice", "CATS", f"total={len(cats)}")
           byid = {c["id"]: c for c in cats}
-          CONT_RU = {"africa": "Африка", "asia": "Азия", "europe": "Европа",
-                     "north america": "Северная Америка", "south america": "Южная Америка",
-                     "oceania": "Океания", "australia": "Океания", "australia & oceania": "Океания",
-                     "central america": "Северная Америка", "middle east": "Азия",
-                     "caribbean": "Северная Америка"}
+          def cont_of(nm):
+              t = re.sub(r"[^a-z ]", " ", nm.lower())
+              if "oceania" in t or "australia" in t: return "Океания"
+              if "south america" in t: return "Южная Америка"
+              if "north america" in t or "central america" in t or "caribbean" in t: return "Северная Америка"
+              if "middle east" in t: return "Азия"
+              if "africa" in t: return "Африка"
+              if "europe" in t: return "Европа"
+              if "asia" in t: return "Азия"
+              return None
           def path_to_root(cid):
               out = []
               seen = set()
               while cid and cid in byid and cid not in seen:
                   seen.add(cid); c = byid[cid]; out.append(c); cid = c.get("parent", 0)
               return out  # [leaf .. root]
-          cont_roots = {c["id"]: CONT_RU[c["name"].strip().lower()] for c in cats
-                        if c.get("parent", 0) == 0 and c["name"].strip().lower() in CONT_RU}
+          cont_roots = {}
+          for c in cats:
+              if c.get("parent", 0) == 0:
+                  cr = cont_of(H.unescape(c["name"]))
+                  if cr: cont_roots[c["id"]] = cr
           type_roots = {c["id"]: c["name"] for c in cats
                         if c.get("parent", 0) == 0 and c["id"] not in cont_roots}
           ann("notice", "ROOTS", f"continents={list(set(cont_roots.values()))} types={list(type_roots.values())[:10]}")
@@ -122,7 +130,7 @@ jobs:
               places[k] = {
                   "id": re.sub(r"\W+", "-", name.lower()).strip("-")[:80],
                   "name": name,
-                  "categories": sorted(kinds) or ["Centre"],
+                  "categories": sorted(k for k in kinds if k.lower() not in ("centers", "city", "gallery") and len(k) < 40) or ["Centre"],
                   "address": address, "city": city, "state": state,
                   "country": country, "continent": continent or "Другое",
                   "lat": None, "lng": None,
