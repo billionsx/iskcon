@@ -75,7 +75,7 @@ function PlaceCard({ p, onOpen }: { p: PlaceItem; onOpen: (p: PlaceItem) => void
       {p.address && (
         <div style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
           <span style={{ color: "var(--color-label-3)", marginTop: 1 }}><Ic d={I.pin} size={15} /></span>
-          <span>{p.address}</span>
+          <span>{p.addressRu || p.address}</span>
         </div>
       )}
     </article>
@@ -120,7 +120,7 @@ function PlaceSheet({ p, onClose }: { p: PlaceItem | null; onClose: () => void }
         <div style={{ marginTop: 18, padding: 16, ...fill }}>
           <div style={{ display: "flex", gap: 9, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label)" }}>
             <span style={{ color: GOLD, marginTop: 2 }}><Ic d={I.pin} size={16} /></span>
-            <span>{p.address}</span>
+            <span>{p.addressRu || p.address}</span>
           </div>
         </div>
       )}

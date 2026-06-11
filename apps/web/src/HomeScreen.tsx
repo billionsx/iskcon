@@ -13,13 +13,13 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BOOKS, LIBRARY, AUDIO_WORKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
-import { HomeTabs, type HomeTabId } from "./HomeTabs";
+import { HomeTabs, HOME_TABS, type HomeTabId } from "./HomeTabs";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeFeed } from "./HomeFeed";
 import { HomeCalendar } from "./HomeCalendar";
-import { HomeMedia, HomeEducation } from "./HomeMore";
+import { HomeEducation } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
@@ -725,7 +725,16 @@ export default function HomeScreen(props: {
   onBookMenu: (work: string, id: string) => void;
   flash: (m: string) => void;
 }) {
-  const [homeTab, setHomeTab] = useState<HomeTabId>("iskcon");
+  // Подтаб живёт в sessionStorage: открытие героя/оверлея размонтирует HomeScreen,
+  // и «назад» должен вернуть в тот же раздел (например, «Календарь»), а не на «ИСККОН».
+  const [homeTab, setHomeTab] = useState<HomeTabId>(() => {
+    try {
+      const v = sessionStorage.getItem("home-tab") as HomeTabId | null;
+      if (v && HOME_TABS.some((t) => t.id === v)) return v;
+    } catch { /* noop */ }
+    return "iskcon";
+  });
+  useEffect(() => { try { sessionStorage.setItem("home-tab", homeTab); } catch { /* noop */ } }, [homeTab]);
   const t1Ref = useRef<HTMLElement | null>(null);
   const [t1H, setT1H] = useState(46);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -747,7 +756,6 @@ export default function HomeScreen(props: {
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} />}
       {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}
-      {homeTab === "media" && <HomeMedia />}
       {homeTab === "education" && <HomeEducation />}
       {homeTab === "documents" && <HomeDocuments stickyTop={t1H} />}
       {homeTab === "structure" && <HomeStructure />}

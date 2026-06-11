@@ -174,12 +174,48 @@ export function HomeFeed() {
   const [posts, setPosts] = useState<TgPost[] | null>(null);
   const [err, setErr] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  // Бесконечная лента: t.me/s отдаёт страницами по ~20, листаем ?before=<id самого старого>
+  const [hasMore, setHasMore] = useState(true);
+  const loadingMore = useRef(false);
+  const oldestRef = useRef<string | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     fetch(api("/tg/iskcone"))
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((j) => setPosts(j.posts || []))
+      .then((j) => {
+        const ps = (j.posts || []) as TgPost[];
+        setPosts(ps);
+        oldestRef.current = j.oldest ?? (ps.length ? ps[ps.length - 1].id : null);
+        setHasMore(j.hasMore !== false && ps.length > 0);
+      })
       .catch(() => setErr(true));
   }, []);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !posts || !hasMore) return;
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      if (loadingMore.current || !oldestRef.current) return;
+      loadingMore.current = true;
+      fetch(api("/tg/iskcone") + "?before=" + encodeURIComponent(oldestRef.current))
+        .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+        .then((j) => {
+          const more = (j.posts || []) as TgPost[];
+          setPosts((cur) => {
+            const seen = new Set((cur || []).map((x) => x.id));
+            return [...(cur || []), ...more.filter((x) => !seen.has(x.id))];
+          });
+          oldestRef.current = j.oldest ?? (more.length ? more[more.length - 1].id : null);
+          if (j.hasMore === false || more.length === 0) setHasMore(false);
+        })
+        .catch(() => setHasMore(false))
+        .finally(() => { loadingMore.current = false; });
+    }, { rootMargin: "900px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [posts, hasMore]);
 
   return (
     <div>
@@ -238,6 +274,15 @@ export function HomeFeed() {
               );
             })}
           </div>
+        )}
+        {posts && posts.length > 0 && hasMore && (
+          <div ref={sentinelRef} aria-hidden style={{ padding: "18px 0", display: "grid", placeItems: "center" }}>
+            <div style={{ width: 26, height: 26, borderRadius: "50%", border: "2.5px solid var(--color-hairline)", borderTopColor: GOLD, animation: "feedspin .8s linear infinite" }} />
+            <style>{`@keyframes feedspin { to { transform: rotate(360deg) } }`}</style>
+          </div>
+        )}
+        {posts && posts.length > 0 && !hasMore && (
+          <p style={{ margin: "18px 2px 0", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>Вы долистали до начала канала.</p>
         )}
         {posts && posts.length === 0 && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>

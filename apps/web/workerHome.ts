@@ -27,7 +27,7 @@ const jr = (data: unknown, status = 200, cache = "public, max-age=300") =>
 /* ───────────────────────── PLACES ───────────────────────── */
 
 interface RawPlace {
-  id: string; kind: string; name: string; name_ru?: string | null; city_ru?: string | null; state_ru?: string | null;
+  id: string; kind: string; name: string; name_ru?: string | null; city_ru?: string | null; state_ru?: string | null; address_ru?: string | null;
   categories?: string[] | string | null;
   address?: string; city?: string; state?: string; country?: string; continent?: string;
   lat?: number | null; lng?: number | null; phone?: string; email?: string; website?: string; source?: string;
@@ -40,7 +40,7 @@ function normPlace(r: RawPlace): PlaceItem {
   const kind = (r.kind === "restaurant" ? "restaurant" : "centre") as PlaceItem["kind"];
   return {
     id: r.id, kind, name: r.name || "", nameRu: r.name_ru || r.name || "", category: catRu(kind, cats),
-    address: r.address || "", city: r.city || "", cityRu: r.city_ru || r.city || "",
+    address: r.address || "", addressRu: r.address_ru || r.address || "", city: r.city || "", cityRu: r.city_ru || r.city || "",
     state: r.state || "", stateRu: r.state_ru || r.state || "",
     country: r.country || "", countryRu: ruCountry(r.country || ""), continent: r.continent || "Другое",
     lat: r.lat ?? null, lng: r.lng ?? null,
@@ -64,7 +64,7 @@ async function allPlacesFromAsset(env: HomeEnv, origin: string): Promise<PlaceIt
 async function allPlacesFromD1(env: HomeEnv): Promise<PlaceItem[] | null> {
   try {
     const { results } = await env.DB.prepare(
-      `SELECT id, kind, name, name_ru, city_ru, state_ru, categories, address, city, state, country, continent, lat, lng, phone, email, website, source FROM places`
+      `SELECT id, kind, name, name_ru, city_ru, state_ru, address_ru, categories, address, city, state, country, continent, lat, lng, phone, email, website, source FROM places`
     ).all();
     if (!results || results.length === 0) return null;
     return (results as unknown as RawPlace[]).map(normPlace);
@@ -91,7 +91,7 @@ function filterPlaces(items: PlaceItem[], p: URLSearchParams): PlaceItem[] {
   if (ctry) r = r.filter((x) => (x.country || "—") === ctry);
   if (q) {
     r = r.filter((x) =>
-      [x.name, x.nameRu, x.city, x.cityRu, x.state, x.stateRu, x.country, x.countryRu, x.address, x.category]
+      [x.name, x.nameRu, x.city, x.cityRu, x.state, x.stateRu, x.country, x.countryRu, x.address, x.addressRu, x.category]
         .some((f) => f && f.toLowerCase().includes(q)) ||
       enQ.some((en) => x.country.toLowerCase() === en));
   }
@@ -293,10 +293,12 @@ function parseTgBlock(b: string): TgPost | null {
   };
 }
 
-async function tgFeed(channel: string): Promise<Response> {
+async function tgFeed(channel: string, before: string): Promise<Response> {
   if (!TG_CHANNELS.has(channel)) return jr({ error: "unknown_channel" }, 404);
   try {
-    const r = await fetch(`https://t.me/s/${channel}`, {
+    // t.me/s отдаёт ~20 постов; ?before=<id> — страница более старых (бесконечная лента)
+    const qs = /^\d+$/.test(before) ? `?before=${before}` : "";
+    const r = await fetch(`https://t.me/s/${channel}${qs}`, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" },
       cf: { cacheTtl: 300, cacheEverything: true },
     } as RequestInit);
@@ -307,9 +309,12 @@ async function tgFeed(channel: string): Promise<Response> {
       if (p) posts.push(p);
     }
     posts.reverse(); // свежие сверху
-    return jr({ channel, posts: posts.slice(0, 24) }, 200, "public, max-age=300");
+    const oldest = posts.length ? posts[posts.length - 1].id : null;
+    // конец истории: страница пуста или старее уже некуда
+    const hasMore = posts.length > 0 && oldest !== null && Number(oldest) > 1;
+    return jr({ channel, posts, oldest, hasMore }, 200, "public, max-age=300");
   } catch {
-    return jr({ channel, posts: [] }, 502, "no-store");
+    return jr({ channel, posts: [], oldest: null, hasMore: false }, 502, "no-store");
   }
 }
 
@@ -324,6 +329,6 @@ export async function homeApi(request: Request, env: HomeEnv): Promise<Response 
   if (pid && pid[1] !== "facets") return placeById(env, url, pid[1]);
   if (p === "/api/documents") return documentsList(env, url);
   const tg = p.match(/^\/api\/tg\/([a-z0-9_]+)$/i);
-  if (tg) return tgFeed(tg[1].toLowerCase());
+  if (tg) return tgFeed(tg[1].toLowerCase(), url.searchParams.get("before") || "");
   return null;
 }
