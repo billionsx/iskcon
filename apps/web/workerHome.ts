@@ -27,7 +27,8 @@ const jr = (data: unknown, status = 200, cache = "public, max-age=300") =>
 /* ───────────────────────── PLACES ───────────────────────── */
 
 interface RawPlace {
-  id: string; kind: string; name: string; categories?: string[] | string | null;
+  id: string; kind: string; name: string; name_ru?: string | null; city_ru?: string | null; state_ru?: string | null;
+  categories?: string[] | string | null;
   address?: string; city?: string; state?: string; country?: string; continent?: string;
   lat?: number | null; lng?: number | null; phone?: string; email?: string; website?: string; source?: string;
 }
@@ -38,8 +39,9 @@ function normPlace(r: RawPlace): PlaceItem {
   else if (typeof r.categories === "string") { try { cats = JSON.parse(r.categories) || []; } catch { cats = []; } }
   const kind = (r.kind === "restaurant" ? "restaurant" : "centre") as PlaceItem["kind"];
   return {
-    id: r.id, kind, name: r.name || "", category: catRu(kind, cats),
-    address: r.address || "", city: r.city || "", state: r.state || "",
+    id: r.id, kind, name: r.name || "", nameRu: r.name_ru || r.name || "", category: catRu(kind, cats),
+    address: r.address || "", city: r.city || "", cityRu: r.city_ru || r.city || "",
+    state: r.state || "", stateRu: r.state_ru || r.state || "",
     country: r.country || "", countryRu: ruCountry(r.country || ""), continent: r.continent || "Другое",
     lat: r.lat ?? null, lng: r.lng ?? null,
     phone: r.phone || "", email: r.email || "", website: r.website || "", source: r.source || "",
@@ -62,7 +64,7 @@ async function allPlacesFromAsset(env: HomeEnv, origin: string): Promise<PlaceIt
 async function allPlacesFromD1(env: HomeEnv): Promise<PlaceItem[] | null> {
   try {
     const { results } = await env.DB.prepare(
-      `SELECT id, kind, name, categories, address, city, state, country, continent, lat, lng, phone, email, website, source FROM places`
+      `SELECT id, kind, name, name_ru, city_ru, state_ru, categories, address, city, state, country, continent, lat, lng, phone, email, website, source FROM places`
     ).all();
     if (!results || results.length === 0) return null;
     return (results as unknown as RawPlace[]).map(normPlace);
@@ -89,11 +91,11 @@ function filterPlaces(items: PlaceItem[], p: URLSearchParams): PlaceItem[] {
   if (ctry) r = r.filter((x) => (x.country || "—") === ctry);
   if (q) {
     r = r.filter((x) =>
-      [x.name, x.city, x.state, x.country, x.countryRu, x.address, x.category]
+      [x.name, x.nameRu, x.city, x.cityRu, x.state, x.stateRu, x.country, x.countryRu, x.address, x.category]
         .some((f) => f && f.toLowerCase().includes(q)) ||
       enQ.some((en) => x.country.toLowerCase() === en));
   }
-  const key = (x: PlaceItem) => `${x.country ? 0 : 1}|${x.countryRu}|${x.city}|${x.name}`;
+  const key = (x: PlaceItem) => `${x.country ? 0 : 1}|${x.countryRu}|${x.cityRu}|${x.nameRu}`;
   return r.sort((a, b) => key(a).localeCompare(key(b), "ru"));
 }
 

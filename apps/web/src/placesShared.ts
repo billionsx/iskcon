@@ -71,8 +71,9 @@ export function catRu(kind: string, categories: string[] | null | undefined): st
 }
 
 export interface PlaceItem {
-  id: string; kind: "centre" | "restaurant"; name: string; category: string;
-  address: string; city: string; state: string; country: string; countryRu: string; continent: string;
+  id: string; kind: "centre" | "restaurant"; name: string; nameRu: string; category: string;
+  address: string; city: string; cityRu: string; state: string; stateRu: string;
+  country: string; countryRu: string; continent: string;
   lat: number | null; lng: number | null;
   phone: string; email: string; website: string; source: string;
 }

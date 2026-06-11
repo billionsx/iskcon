@@ -54,6 +54,7 @@ print("schema: places ...")
 run("DROP TABLE IF EXISTS places;")
 run("""CREATE TABLE places (
   id TEXT PRIMARY KEY, kind TEXT NOT NULL, name TEXT NOT NULL,
+  name_ru TEXT, city_ru TEXT, state_ru TEXT,
   categories TEXT, address TEXT, city TEXT, state TEXT, country TEXT,
   continent TEXT, lat REAL, lng REAL, phone TEXT, email TEXT,
   website TEXT, source TEXT);""")
@@ -62,14 +63,21 @@ run("CREATE INDEX idx_places_geo ON places(kind, continent, country);")
 
 places = json.load(open(os.path.join(DATA, "iskcon-places.json"), encoding="utf-8"))
 items = places.get("items") or places.get("places") or places
+import sys as _sys
+_sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import ru_geo
 rows = [[p.get("id"), p.get("kind"), p.get("name"),
+         ru_geo.ru_place_name(p.get("name") or ""),
+         ru_geo.ru_city(p.get("city") or ""),
+         ru_geo.ru_state(p.get("state") or ""),
          json.dumps(p.get("categories") or [], ensure_ascii=False),
          p.get("address"), p.get("city"), p.get("state"), p.get("country"),
          p.get("continent"), p.get("lat"), p.get("lng"),
          p.get("phone"), p.get("email"), p.get("website"), p.get("source")]
         for p in items]
 n = insert("places",
-           ["id", "kind", "name", "categories", "address", "city", "state", "country",
+           ["id", "kind", "name", "name_ru", "city_ru", "state_ru",
+            "categories", "address", "city", "state", "country",
             "continent", "lat", "lng", "phone", "email", "website", "source"], rows)
 print("places:", n)
 

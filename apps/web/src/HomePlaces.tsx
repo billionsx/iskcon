@@ -63,9 +63,9 @@ function PlaceCard({ p, onOpen }: { p: PlaceItem; onOpen: (p: PlaceItem) => void
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
-          <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 800, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{p.name}</h3>
+          <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
           <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>
-            {[p.city, p.countryRu].filter(Boolean).join(" · ")}
+            {[p.cityRu || p.city, p.countryRu].filter(Boolean).join(" · ")}
           </div>
         </div>
         <span aria-hidden style={{ color: "var(--color-label-3)", marginTop: 14 }}>
@@ -97,13 +97,16 @@ function PlaceSheet({ p, onClose }: { p: PlaceItem | null; onClose: () => void }
   if (!p) return null;
   const site = p.website && /^https?:\/\//.test(p.website) ? p.website : p.website ? `http://${p.website}` : "";
   return (
-    <HomeSheet open={!!p} label={p.name} onClose={onClose}>
+    <HomeSheet open={!!p} label={p.nameRu || p.name} onClose={onClose}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
         {p.kind === "restaurant" ? "Ресторан ИСККОН" : `${p.category} ИСККОН`}
       </div>
-      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{p.name}</h2>
+      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>{p.nameRu || p.name}</h2>
+      {p.nameRu && p.nameRu !== p.name && (
+        <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{p.name}</div>
+      )}
       <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>
-        {[p.city, p.countryRu].filter(Boolean).join(" · ")}
+        {[p.cityRu || p.city, p.countryRu].filter(Boolean).join(" · ")}
       </div>
 
       <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -124,8 +127,8 @@ function PlaceSheet({ p, onClose }: { p: PlaceItem | null; onClose: () => void }
 
       <div style={{ marginTop: 14, padding: "4px 16px", ...fill }}>
         <InfoRow k="Категория" v={p.category} />
-        <InfoRow k="Город" v={p.city} />
-        <InfoRow k="Регион" v={p.state && p.state !== p.city ? p.state : ""} />
+        <InfoRow k="Город" v={p.cityRu || p.city} />
+        <InfoRow k="Регион" v={p.stateRu && p.stateRu !== (p.cityRu || p.city) ? p.stateRu : ""} />
         <InfoRow k="Страна" v={p.countryRu || "—"} />
         <InfoRow k="Континент" v={p.continent} />
         <InfoRow k="Телефон" v={p.phone} />

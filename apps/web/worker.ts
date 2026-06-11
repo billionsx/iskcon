@@ -1,5 +1,6 @@
 import { handleAdmin } from "./loader/handler";
 import { homeApi } from "./workerHome";
+import { calendarApi } from "./workerCalendar";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
@@ -774,6 +775,8 @@ export default {
 
     // Главная: каталоги (центры/рестораны/документы из D1 с фолбэком на ассеты)
     // и лента Telegram с медиа — см. workerHome.ts
+    const calRes = await calendarApi(request, url);
+    if (calRes) return calRes;
     const homeRes = await homeApi(request, env);
     if (homeRes) return homeRes;
 

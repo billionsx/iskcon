@@ -47,7 +47,7 @@ function DocSheet({ d, onClose }: { d: IskconDoc | null; onClose: () => void }) 
             <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
             <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
           </div>
-          <h3 style={{ margin: "7px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
+          <h3 style={{ margin: "7px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
           <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{d.issuer}</div>
 
           <div style={{ marginTop: 16 }}>
@@ -85,7 +85,7 @@ function DocCard({ d, onOpen }: { d: IskconDoc; onOpen: () => void }) {
         <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        <h3 style={{ flex: 1, margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 800, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
+        <h3 style={{ flex: 1, margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 600, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
         <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ marginTop: 10, flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
       <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.issuer}</div>
@@ -219,26 +219,26 @@ export function HomeStructure() {
 
 const LINKS: { group: string; items: { t: string; d: string; url: string }[] }[] = [
   { group: "Официальные ресурсы", items: [
-    { t: "ISKCON.org", d: "Главный сайт Международного общества сознания Кришны", url: "https://www.iskcon.org/" },
+    { t: "ИСККОН (iskcon.org)", d: "Главный сайт Международного общества сознания Кришны", url: "https://www.iskcon.org/" },
     { t: "Каталог центров", d: "Официальный мировой справочник центров — centres.iskcon.org", url: "https://centres.iskcon.org/" },
-    { t: "GBC", d: "Руководящий совет ИСККОН: резолюции, законы, министерства", url: "https://gbc.iskcon.org/" },
-    { t: "ISKCON News", d: "Официальное новостное издание общества", url: "https://iskconnews.org/" },
+    { t: "Руководящий совет (GBC)", d: "Руководящий совет ИСККОН: резолюции, законы, министерства", url: "https://gbc.iskcon.org/" },
+    { t: "Новости ИСККОН (ISKCON News)", d: "Официальное новостное издание общества", url: "https://iskconnews.org/" },
   ]},
   { group: "Книги и учение", items: [
-    { t: "Vedabase", d: "Все книги Шрилы Прабхупады онлайн — официальная библиотека BBT", url: "https://vedabase.io/" },
-    { t: "Bhaktivedanta Book Trust", d: "Издательство книг Шрилы Прабхупады — крупнейший издатель ведической литературы", url: "https://bbt.org/" },
-    { t: "Back to Godhead", d: "Журнал «Обратно к Богу», основанный Шрилой Прабхупадой в 1944 году", url: "https://btg.krishna.com/" },
-    { t: "Prabhupada Books", d: "Письма, лекции и беседы Шрилы Прабхупады — Bhaktivedanta Archives", url: "https://prabhupadabooks.com/" },
+    { t: "Ведабейс (Vedabase)", d: "Все книги Шрилы Прабхупады онлайн — официальная библиотека BBT", url: "https://vedabase.io/" },
+    { t: "«Бхактиведанта Бук Траст» (BBT)", d: "Издательство книг Шрилы Прабхупады — крупнейший издатель ведической литературы", url: "https://bbt.org/" },
+    { t: "«Обратно к Богу» (Back to Godhead)", d: "Журнал «Обратно к Богу», основанный Шрилой Прабхупадой в 1944 году", url: "https://btg.krishna.com/" },
+    { t: "Книги Прабхупады (prabhupadabooks.com)", d: "Письма, лекции и беседы Шрилы Прабхупады — Bhaktivedanta Archives", url: "https://prabhupadabooks.com/" },
   ]},
   { group: "Святые места", items: [
-    { t: "ISKCON Маяпур", d: "Всемирная штаб-квартира общества — Шридхама Маяпур", url: "https://www.mayapur.com/" },
+    { t: "ИСККОН Маяпур", d: "Всемирная штаб-квартира общества — Шридхама Маяпур", url: "https://www.mayapur.com/" },
     { t: "Храм ведического планетария", d: "TOVP — крупнейший храм движения, строящийся в Маяпуре", url: "https://tovp.org/" },
-    { t: "ISKCON Вриндаван", d: "Шри Кришна-Баларама-Мандир — храм Шрилы Прабхупады во Вриндаване", url: "https://iskconvrindavan.com/" },
+    { t: "ИСККОН Вриндаван", d: "Шри Кришна-Баларама-Мандир — храм Шрилы Прабхупады во Вриндаване", url: "https://iskconvrindavan.com/" },
   ]},
   { group: "Служение миру", items: [
-    { t: "Food for Life", d: "Крупнейшая в мире вегетарианская продовольственная миссия, основанная по наставлению Шрилы Прабхупады", url: "https://ffl.org/" },
-    { t: "Bhaktivedanta Hospital", d: "Госпиталь Бхактиведанты в Мумбаи — медицина с духовной заботой", url: "https://bhaktivedantahospital.com/" },
-    { t: "ISKCON Child Protection", d: "Центральный офис защиты детей ИСККОН", url: "https://iskconchildprotection.com/" },
+    { t: "«Пища жизни» (Food for Life)", d: "Крупнейшая в мире вегетарианская продовольственная миссия, основанная по наставлению Шрилы Прабхупады", url: "https://ffl.org/" },
+    { t: "Госпиталь Бхактиведанты", d: "Госпиталь Бхактиведанты в Мумбаи — медицина с духовной заботой", url: "https://bhaktivedantahospital.com/" },
+    { t: "Защита детей ИСККОН (CPO)", d: "Центральный офис защиты детей ИСККОН", url: "https://iskconchildprotection.com/" },
   ]},
 ];
 
