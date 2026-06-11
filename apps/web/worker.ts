@@ -771,6 +771,41 @@ export default {
       return kirtanManifest(url.origin, kirtanM[1]);
     }
 
+    // GET /api/tg/iskcone → лента публичного Telegram-канала @iskcone (парсинг t.me/s/)
+    if (url.pathname === "/api/tg/iskcone") {
+      try {
+        const r = await fetch("https://t.me/s/iskcone", { headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" }, cf: { cacheTtl: 600, cacheEverything: true } });
+        const html = await r.text();
+        const posts: { id: string; date: string; text: string; photo: string | null; views: string }[] = [];
+        const blocks = html.split('tgme_widget_message_wrap').slice(1);
+        for (const b of blocks) {
+          const idM = b.match(/data-post="iskcone\/(\d+)"/);
+          const dateM = b.match(/<time datetime="([^"]+)"/);
+          const photoM = b.match(/background-image:url\('([^']+)'\)/);
+          const textM = b.match(/tgme_widget_message_text js-message_text[^>]*>([\s\S]*?)<\/div>/);
+          const viewsM = b.match(/tgme_widget_message_views">([^<]+)</);
+          let text = "";
+          if (textM) {
+            text = textM[1]
+              .replace(/<br\s*\/?>/gi, "\n")
+              .replace(/<a [^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, "$2")
+              .replace(/<[^>]+>/g, "")
+              .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'")
+              .replace(/\n{3,}/g, "\n\n").trim();
+          }
+          if (idM && (text || photoM)) {
+            posts.push({ id: idM[1], date: dateM ? dateM[1] : "", text, photo: photoM ? photoM[1] : null, views: viewsM ? viewsM[1].trim() : "" });
+          }
+        }
+        posts.reverse(); // свежие сверху
+        return new Response(JSON.stringify({ channel: "iskcone", posts: posts.slice(0, 24) }), {
+          headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=600" },
+        });
+      } catch {
+        return new Response(JSON.stringify({ channel: "iskcone", posts: [] }), { status: 502, headers: { "Content-Type": "application/json" } });
+      }
+    }
+
     // GET /api/books/bg/chapters/:n/verses → verse refs + source_url for a chapter
     const m = url.pathname.match(/^\/api\/books\/bg\/chapters\/(\d+)\/verses$/);
     if (m) {

@@ -13,6 +13,11 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BOOKS, LIBRARY, AUDIO_WORKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
+import { HomeTabs, type HomeTabId } from "./HomeTabs";
+import { SectionSubTabs } from "./SectionSubTabs";
+import { HomePlaces } from "./HomePlaces";
+import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
+import { HomeFeed } from "./HomeFeed";
 import { ChevRightIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
@@ -39,8 +44,8 @@ function SectionHead({ eyebrow, title, subtitle }: { eyebrow?: string; title: st
     </div>
   );
 }
-function Section({ children, top = S }: { children: React.ReactNode; top?: number }) {
-  return <section style={{ marginTop: top }}>{children}</section>;
+function Section({ children, top = S, id }: { children: React.ReactNode; top?: number; id?: string }) {
+  return <section id={id} style={{ marginTop: top }}>{children}</section>;
 }
 function Photo({ src, ratio, pos = "center", radius = 20 }: { src: string; ratio?: string; pos?: string; radius?: number }) {
   return (
@@ -382,20 +387,64 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
 }
 
 /* ───────── экран ───────── */
-export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonate, onBookMenu, flash }: {
+function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBookMenu, flash, stickyTop, scrollRoot }: {
   onChange: (tab: string) => void;
   onOpenBook: (work: string) => void;
   onOpenEntity: (id: string, type: string | null) => void;
   onDonate: () => void;
   onBookMenu: (work: string, id: string) => void;
   flash: (m: string) => void;
+  stickyTop: number;
+  scrollRoot: () => HTMLElement | null;
 }) {
   useEffect(() => { fetch(api("/entities/prabhupada")).catch(() => {}); }, []);
   const [spOpen, setSpOpen] = useState(false);
 
+  /* ── Tier-2: якорные субтабы по блокам страницы (scroll-spy + плавный переход) ── */
+  const subRef = useRef<HTMLElement | null>(null);
+  const [subH, setSubH] = useState(44);
+  const [activeAnchor, setActiveAnchor] = useState(ISKCON_ANCHORS[0].id);
+  const clickLock = useRef(0);
+  useEffect(() => {
+    const root = scrollRoot();
+    if (!root) return;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        if (Date.now() < clickLock.current) return;
+        const stack = stickyTop + subH + 6;
+        const rootTop = root.getBoundingClientRect().top;
+        let cur = ISKCON_ANCHORS[0].id;
+        for (const a of ISKCON_ANCHORS) {
+          const el = document.getElementById(`hsec-${a.id}`);
+          if (!el) continue;
+          if (el.getBoundingClientRect().top - rootTop <= stack + 4) cur = a.id;
+        }
+        setActiveAnchor(cur);
+      });
+    };
+    root.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => { root.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, [scrollRoot, stickyTop, subH]);
+  const goAnchor = (id: string) => {
+    const root = scrollRoot(); const el = document.getElementById(`hsec-${id}`);
+    if (!root || !el) return;
+    setActiveAnchor(id);
+    clickLock.current = Date.now() + 700;
+    const top = root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top - (stickyTop + subH) + 2;
+    root.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+  };
+
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
+      <SectionSubTabs ariaLabel="Разделы страницы ИСККОН" tone="light" top={stickyTop} bleed={16}
+        navRef={(el) => { subRef.current = el; if (el) setSubH(el.offsetHeight); }}
+        items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} />
       {/* HERO */}
+      <div id="hsec-about" style={{ paddingTop: 20 }} />
       <MaskMark src="/iskcon.svg" size={50} color={GOLD} />
       <h1 style={{ margin: "16px 0 0", fontFamily: "var(--font-display)", fontSize: "clamp(27px, 7.8vw, 32px)", fontWeight: 800, letterSpacing: TR_HERO, lineHeight: 1.06, color: "var(--color-label)" }}>
         Служение.<br />Преданность. Любовь.
@@ -415,7 +464,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* ИСККОН сегодня */}
-      <Section>
+      <Section id="hsec-today">
         <SectionHead eyebrow="Сегодня" title="ИСККОН сегодня" subtitle="Движение Харе Кришна — мировое духовное сообщество, объединяющее миллионы людей более чем в 80 странах. Это движение милосердия и любви распространилось на все континенты." />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {STATS.map((s) => <StatTile key={s.l} v={s.v} l={s.l} />)}
@@ -431,7 +480,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Маха-мантра */}
-      <Section>
+      <Section id="hsec-mantra">
         <div style={{ padding: 22, ...fill }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
@@ -458,7 +507,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Высший образ жизни */}
-      <Section>
+      <Section id="hsec-practice">
         <SectionHead eyebrow="Практика" title="Высший образ жизни" subtitle="Духовный путь бхакти-йоги — это практика любовного преданного служения Богу, воплощённому в вечной божественной паре: Кришне и Шримати Радхарани (Харе)." />
         <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
           {FORMS.map((f, i) => {
@@ -486,7 +535,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Дхама — карточки-направления с лейблом поверх фото */}
-      <Section>
+      <Section id="hsec-dhama">
         <SectionHead eyebrow="Дхама" title="Святые места" subtitle="Дхамы — святые места, неотличные от духовного мира, где обитают Кришна и Радхарани. Их посещение углубляет духовное сознание и приближает к Богу." />
         <div style={{ display: "grid", gap: 12 }}>
           <PlaceCard src="/media/vrindavan.webp" title="Вриндаван" sub="Земля игр Кришны" />
@@ -501,7 +550,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Книги — слайдер всей читаемой библиотеки Шрилы Прабхупады */}
-      <Section>
+      <Section id="hsec-books">
         <SectionHead eyebrow="Библиотека" title="Миллиард духовных книг" subtitle="ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога." />
         <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch",
           margin: `4px -${PAD}px 0`, padding: `12px ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
@@ -522,8 +571,8 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Шрила Прабхупада — тизер + таймлайн; полная биография за кнопкой */}
-      <Section>
-        <SectionHead eyebrow="Ачарья-основатель" title="Шрила Прабхупада" subtitle="Выдающийся духовный учитель, принёсший сознание Кришны в западный мир и заложивший основы глобального вайшнавского возрождения. Его жизнь с любовью описана в семитомной «Шрила Прабхупада-лиламрите», читаемой по всему миру." />
+      <Section id="hsec-prabhupada">
+<SectionHead eyebrow="Ачарья-основатель" title="Шрила Прабхупада" subtitle="Выдающийся духовный учитель, принёсший сознание Кришны в западный мир и заложивший основы глобального вайшнавского возрождения. Его жизнь с любовью описана в семитомной «Шрила Прабхупада-лиламрите», читаемой по всему миру." />
         <Photo src="/media/prabhupada.webp" ratio="3 / 2" pos="center 22%" radius={22} />
         <div style={{ margin: "20px 0 0", padding: "0 8px" }}>
           <Quote center size={16}>«Лучшее, что можно сделать для Господа, — это попытаться вдохнуть преданное служение в сердце обусловленной души, чтобы она сбросила оковы обусловленной жизни».</Quote>
@@ -552,7 +601,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Принципы */}
-      <Section>
+      <Section id="hsec-principles">
         <SectionHead eyebrow="Принципы ИСККОН" title="Ничего лишнего" subtitle="Четыре регулирующих принципа свободы." />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {PRINCIPLES.map((p) => (
@@ -565,7 +614,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* На всей планете — редакторский формат с минималистическими разделителями */}
-      <Section>
+      <Section id="hsec-planet">
         <SectionHead eyebrow="На всей планете" title="Влияние на весь мир" subtitle="Лидеры об ИСККОН и Движении Харе Кришна." />
         <div>
           {VOICES.map((v, i) => (
@@ -594,7 +643,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* 7 целей */}
-      <Section>
+      <Section id="hsec-purposes">
         <SectionHead eyebrow="Миссия" title="7 целей ИСККОН" subtitle="Семь основных целей, лично сформулированных Шрилой Прабхупадой при основании общества." />
         <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
           {PURPOSES.map((p, i) => (
@@ -607,7 +656,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       {/* Великая традиция — парампара */}
-      <Section>
+      <Section id="hsec-parampara">
         <SectionHead eyebrow="Великая традиция" title="Брахма-Мадхва-Гаудия-сампрадая" subtitle="Непрерывная цепь духовных учителей и учеников, по которой вечное знание дошло до наших дней." />
         <div style={{ position: "relative", marginTop: 22, paddingLeft: 26 }}>
           <span aria-hidden style={{ position: "absolute", left: 5, top: 6, bottom: 6, width: 2, background: `linear-gradient(to bottom, ${GOLD}, color-mix(in srgb, ${GOLD} 25%, transparent))` }} />
@@ -645,6 +694,60 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
       </Section>
 
       <PrabhupadaSheet open={spOpen} onClose={() => setSpOpen(false)} />
+    </div>
+  );
+}
+
+
+/* ───────── якоря страницы ИСККОН (Tier-2) ───────── */
+const ISKCON_ANCHORS: { id: string; label: string }[] = [
+  { id: "about", label: "О движении" },
+  { id: "today", label: "Сегодня" },
+  { id: "mantra", label: "Мантра" },
+  { id: "practice", label: "Практика" },
+  { id: "dhama", label: "Дхама" },
+  { id: "books", label: "Книги" },
+  { id: "prabhupada", label: "Прабхупада" },
+  { id: "principles", label: "Принципы" },
+  { id: "planet", label: "Планета" },
+  { id: "purposes", label: "Цели" },
+  { id: "parampara", label: "Парампара" },
+];
+
+/* ───────── Главная: контейнер Tier-1 (ИСККОН | Центры | Рестораны | Документы | Структура | Ссылки | Лента) ───────── */
+export default function HomeScreen(props: {
+  onChange: (tab: string) => void;
+  onOpenBook: (work: string) => void;
+  onOpenEntity: (id: string, type: string | null) => void;
+  onDonate: () => void;
+  onBookMenu: (work: string, id: string) => void;
+  flash: (m: string) => void;
+}) {
+  const [homeTab, setHomeTab] = useState<HomeTabId>("iskcon");
+  const t1Ref = useRef<HTMLElement | null>(null);
+  const [t1H, setT1H] = useState(46);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const scrollRoot = () => {
+    let el: HTMLElement | null = rootRef.current;
+    while (el && !(el.scrollHeight > el.clientHeight + 40 && /(auto|scroll)/.test(getComputedStyle(el).overflowY))) el = el.parentElement;
+    return el;
+  };
+  const switchTab = (id: HomeTabId) => {
+    setHomeTab(id);
+    const root = scrollRoot();
+    if (root) root.scrollTo({ top: 0 });
+  };
+  return (
+    <div ref={rootRef}>
+      <HomeTabs active={homeTab} onChange={switchTab}
+        navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
+      {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
+      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} />}
+      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} />}
+      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} />}
+      {homeTab === "structure" && <HomeStructure />}
+      {homeTab === "links" && <HomeLinks />}
+      {homeTab === "feed" && <HomeFeed />}
     </div>
   );
 }
