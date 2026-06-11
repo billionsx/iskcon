@@ -92,9 +92,28 @@ function ActionPill({ href, label, icon }: { href: string; label: string; icon: 
   );
 }
 
+/* русские ярлыки категорий DT; служебные скрываем */
+const CAT_RU: Record<string, string> = {
+  "centre": "Центр", "centers": "Центр", "websites": "Центр",
+  "agriculture": "Ферма", "farms": "Ферма",
+  "farm and rural communities": "Сельская община",
+  "educational institutes": "Образование", "iskcon education": "Образование",
+};
+function catRu(p: Place): string {
+  if (p.kind === "restaurant") return "Ресторан";
+  for (const c of p.categories) {
+    const r = CAT_RU[c.trim().toLowerCase()];
+    if (r && r !== "Центр") return r;
+  }
+  return "Центр";
+}
+function sourceLabel(src: string): string {
+  try { return new URL(src).hostname.replace(/^www\./, ""); } catch { return "источник"; }
+}
+
 /* ── ВКЦ / ВКР ── */
 function PlaceCard({ p }: { p: Place }) {
-  const catLabel = p.kind === "restaurant" ? "Ресторан" : (p.categories[0] || "Центр");
+  const catLabel = catRu(p);
   return (
     <article style={{ padding: 18, ...fill }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -120,7 +139,7 @@ function PlaceCard({ p }: { p: Place }) {
       </div>
       <a href={p.source} target="_blank" rel="noopener noreferrer"
         style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, color: "var(--color-brand-blue)", textDecoration: "none" }}>
-        Подробнее на centres.iskcon.org
+        Подробнее на {sourceLabel(p.source)}
         <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </a>
     </article>
