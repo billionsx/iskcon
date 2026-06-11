@@ -87,7 +87,7 @@ jobs:
           def txt(el): return re.sub(r"\s+", " ", el.get_text(" ", strip=True)) if el else ""
 
           def parse_page(u):
-              r = S.get(u, timeout=40)
+              r = S.get(u, timeout=20)
               if r.status_code != 200: return None
               soup = BeautifulSoup(r.text, "html.parser")
               name = txt(soup.select_one("h1")) or txt(soup.select_one(".entry-title"))
@@ -146,20 +146,26 @@ jobs:
                   u = it.get("link")
                   if u: urls.add(u)
 
-          urls = sorted(urls)
-          print("total pages to parse:", len(urls))
+          urls = sorted(urls)[:1400]
+          print("total pages to parse:", len(urls)); sys.stdout.flush()
           ok = err = 0
-          for i, u in enumerate(urls):
-              try:
-                  p = parse_page(u)
-                  if p:
-                      places[p["source"]] = p; ok += 1
-                  else: err += 1
-              except Exception as e:
-                  err += 1
-                  if err < 8: print("ERR", u, e)
-              if i % 25 == 0: print(f"...{i}/{len(urls)} ok={ok} err={err}"); sys.stdout.flush()
-              time.sleep(0.25)
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+          def safe(u):
+              try: return parse_page(u)
+              except Exception as e: return ("ERR", u, str(e))
+          with ThreadPoolExecutor(max_workers=10) as ex:
+              futs = {ex.submit(safe, u): u for u in urls}
+              done = 0
+              for f in as_completed(futs):
+                  r = f.result(); done += 1
+                  if isinstance(r, tuple):
+                      err += 1
+                      if err < 8: print("ERR", r[1], r[2])
+                  elif r:
+                      places[r["source"]] = r; ok += 1
+                  else:
+                      err += 1
+                  if done % 50 == 0: print(f"...{done}/{len(urls)} ok={ok} err={err}"); sys.stdout.flush()
           print(f"PARSED ok={ok} err={err}")
 
           data = sorted(places.values(), key=lambda p: (p["continent"], p["country"], p["city"], p["name"]))
