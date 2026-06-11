@@ -442,7 +442,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
 
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
-      <SectionSubTabs ariaLabel="Разделы страницы ИСККОН" tone="light" top={stickyTop} bleed={16}
+      <SectionSubTabs variant="chips" ariaLabel="Разделы страницы ИСККОН" tone="light" top={stickyTop} bleed={16}
         navRef={(el) => { subRef.current = el; if (el) setSubH(el.offsetHeight); }}
         items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} />
       {/* HERO */}

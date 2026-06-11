@@ -149,7 +149,7 @@ export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
       </div>
 
       <div style={{ height: 10 }} />
-      <SectionSubTabs ariaLabel="Тип документа" tone="light" top={stickyTop} bleed={16}
+      <SectionSubTabs variant="chips" ariaLabel="Тип документа" tone="light" top={stickyTop} bleed={16}
         items={[{ id: "all", label: "Все" }, ...(Object.keys(DOC_TYPE_LABEL) as DocType[]).map((t) => ({ id: t, label: DOC_TYPE_LABEL[t] }))]}
         active={type} onChange={(id) => setType(id as "all" | DocType)} />
 
