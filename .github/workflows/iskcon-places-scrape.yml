@@ -22,80 +22,47 @@ jobs:
           import requests
           from bs4 import BeautifulSoup
           from concurrent.futures import ThreadPoolExecutor, as_completed
+
           def ann(level, title, msg):
-              msg = str(msg).replace("%","%25").replace("\r"," ").replace("\n"," | ")[:900]
+              msg = str(msg).replace("%", "%25").replace("\r", " ").replace("\n", " | ")[:880]
               print(f"::{level} title={title}::{msg}"); sys.stdout.flush()
-          ann("notice","SCRAPE","start v2")
-          def _hook(t,v,tb):
-              ann("error","SCRAPE-FAIL", "".join(traceback.format_exception(t,v,tb))[-850:])
-              sys.exit(1)
-          sys.excepthook=_hook
+          def _hook(t, v, tb):
+              ann("error", "SCRAPE-FAIL", "".join(traceback.format_exception(t, v, tb))[-850:]); sys.exit(1)
+          sys.excepthook = _hook
 
           S = requests.Session()
           S.headers.update({"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"})
-          BASE = "https://centres.iskcon.org"
-
-          # ── официальные регионы → континент приложения ──
-          REGION2CONT = {
-            "africa": "Африка", "europe": "Европа", "uk": "Европа", "russia": "Европа",
-            "central-asia": "Азия", "far-east-asia": "Азия", "india": "Азия", "south-asia": "Азия",
-            "southeast-asia": "Азия", "middle-east": "Азия", "asia-pacific": "Азия",
-            "oceania": "Океания", "usa-canada": "Северная Америка", "us-canada": "Северная Америка",
-            "latin-america": "Южная Америка", "latin-america-caribbean": "Южная Америка",
-          }
-          REGION_LABEL = {
-            "africa": "Африка", "europe": "Европа", "uk": "Великобритания", "russia": "Россия",
-            "central-asia": "Центральная Азия", "far-east-asia": "Дальний Восток", "india": "Индия",
-            "south-asia": "Южная Азия", "southeast-asia": "Юго-Восточная Азия", "middle-east": "Ближний Восток",
-            "asia-pacific": "Азия-Пацифика", "oceania": "Океания", "usa-canada": "США и Канада",
-            "us-canada": "США и Канада", "latin-america": "Латинская Америка",
-            "latin-america-caribbean": "Латинская Америка",
-          }
-
-          def fetch(u, t=25):
+          OFF = "https://centres.iskcon.org"
+          DT = "https://centers.iskcondesiretree.com"
+          def fetch(u, t=30):
               r = S.get(u, timeout=t); r.raise_for_status(); return r.text
+          def norm(s):
+              s = re.sub(r"\(.*?\)", " ", (s or "").lower())
+              s = re.sub(r"\b(iskcon|hare|krishna|krsna|sri|shri|sree|temple|mandir|center|centre|centers|of|the|and|new)\b", " ", s)
+              return re.sub(r"[^a-z0-9]+", " ", s).strip()
 
-          # ── 1) slug → регион: проходим страницы /centre-region/{slug}/ с пагинацией ──
-          slug_region = {}
-          for reg in REGION2CONT:
-              page = 1
-              while page < 30:
-                  u = f"{BASE}/centre-region/{reg}/" + (f"page/{page}/" if page > 1 else "")
-                  try: html = fetch(u)
-                  except Exception: break
-                  links = set(re.findall(r'href="' + re.escape(BASE) + r'/centre/([a-z0-9\-]+)/"', html))
-                  for sl in links: slug_region.setdefault(sl, reg)
-                  print(f"region {reg} p{page}: +{len(links)}"); sys.stdout.flush()
-                  if 'class="next' not in html and "›" not in html and f"/page/{page+1}/" not in html: break
-                  page += 1
-              time.sleep(0.2)
-          print("slug→region:", len(slug_region)); ann("notice","REGIONS", f"slugs={len(slug_region)}")
-
-          # ── 2) sitemap → канонические URL центров (ровно один сегмент slug) ──
-          urls = set()
+          # ═══ 1) OFFICIAL: канонические центры из sitemap (имя, lat/lng, категория, email/site) ═══
+          slugs = set()
           for sm in ["/wp-sitemap.xml", "/sitemap.xml", "/sitemap_index.xml"]:
               try:
-                  t = fetch(BASE + sm, 30)
-                  locs = re.findall(r"<loc>([^<]+)</loc>", t)
-                  for l in locs:
+                  t = fetch(OFF + sm)
+                  for l in re.findall(r"<loc>([^<]+)</loc>", t):
                       if l.endswith(".xml"):
                           try:
-                              for l2 in re.findall(r"<loc>([^<]+)</loc>", fetch(l, 30)):
-                                  m = re.match(re.escape(BASE) + r"/centre/([a-z0-9\-]+)/$", l2)
-                                  if m: urls.add(m.group(1))
+                              for l2 in re.findall(r"<loc>([^<]+)</loc>", fetch(l)):
+                                  m = re.match(re.escape(OFF) + r"/centre/([a-z0-9\-]+)/$", l2)
+                                  if m: slugs.add(m.group(1))
                           except Exception: pass
                       else:
-                          m = re.match(re.escape(BASE) + r"/centre/([a-z0-9\-]+)/$", l)
-                          if m: urls.add(m.group(1))
-              except Exception as e: print("sitemap", sm, "err", e)
-          urls |= set(slug_region)  # регионы могли дать слаги, отсутствующие в sitemap
-          slugs = sorted(urls)
-          print("centre slugs:", len(slugs)); ann("notice","SLUGS", f"total={len(slugs)}")
+                          m = re.match(re.escape(OFF) + r"/centre/([a-z0-9\-]+)/$", l)
+                          if m: slugs.add(m.group(1))
+              except Exception as e: print("sitemap err", sm, e)
+          slugs = sorted(slugs)
+          ann("notice", "SLUGS", f"official={len(slugs)}")
 
           def txt(el): return re.sub(r"\s+", " ", el.get_text(" ", strip=True)) if el else ""
-
-          def parse_centre(slug):
-              u = f"{BASE}/centre/{slug}/"
+          def parse_official(slug):
+              u = f"{OFF}/centre/{slug}/"
               html = fetch(u, 20)
               soup = BeautifulSoup(html, "html.parser")
               name = txt(soup.select_one("h1.entry-title")) or txt(soup.select_one("h1"))
@@ -103,15 +70,11 @@ jobs:
               lat = lng = None
               m = re.search(r'"lat"\s*:\s*"?(-?\d+\.\d+)"?\s*,\s*"lng"\s*:\s*"?(-?\d+\.\d+)"?', html)
               if not m: m = re.search(r'data-lat(?:itude)?="(-?\d+\.\d+)"[^>]*data-l(?:ng|ongitude)="(-?\d+\.\d+)"', html)
-              if not m: m = re.search(r'latitude["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)["\']?[,;\s]+["\']?longitude["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)', html, re.I)
               if m: lat, lng = float(m.group(1)), float(m.group(2))
-              # email/website только из основного контента (не из футера/логина)
               art = soup.select_one("article") or soup.select_one(".entry-content") or soup
-              ahtml = str(art)
               email = ""
-              em = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", ahtml)
-              if em and "iskcon.org" not in em.group(0).split("@")[1][:20]: email = em.group(0)
-              elif em: email = em.group(0)
+              em = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", str(art))
+              if em: email = em.group(0)
               website = ""
               for a in art.select("a[href^='http']"):
                   h = a.get("href", "")
@@ -119,124 +82,170 @@ jobs:
                   if any(k in h.lower() for k in ["iskcon", "harekrishna", "hare-krishna", "krishna", "govinda", "bbt"]):
                       website = h; break
               cats = sorted({txt(a) for a in soup.select("a[href*='centre-category']") if txt(a)})
-              reg = slug_region.get(slug)
-              # регион можно добрать со страницы
-              if not reg:
-                  rm = re.search(r"/centre-region/([a-z\-]+)/", html)
-                  if rm and rm.group(1) in REGION2CONT: reg = rm.group(1)
-              return {
-                  "id": slug, "name": name, "categories": cats or ["Centre"],
-                  "region": REGION_LABEL.get(reg, ""), "continent": REGION2CONT.get(reg, "Другое"),
-                  "address": "", "city": "", "state": "", "country": "",
-                  "lat": lat, "lng": lng, "phone": "", "email": email,
-                  "website": website, "source": u,
-              }
-
-          places = {}
+              return {"id": slug, "name": name, "categories": cats or ["Centre"],
+                      "lat": lat, "lng": lng, "email": email, "website": website, "source": u}
+          official = {}
           ok = err = 0
-          def safe(sl):
-              try: return parse_centre(sl)
-              except Exception as e: return ("ERR", sl, str(e))
           with ThreadPoolExecutor(max_workers=10) as ex:
-              futs = {ex.submit(safe, sl): sl for sl in slugs}
-              done = 0
-              for f in as_completed(futs):
-                  r = f.result(); done += 1
-                  if isinstance(r, tuple):
-                      err += 1
-                      if err < 8: print("ERR", r[1], r[2])
-                  elif r: places[r["id"]] = r; ok += 1
-                  else: err += 1
-                  if done % 60 == 0: print(f"...{done}/{len(slugs)} ok={ok} err={err}"); sys.stdout.flush()
-          print(f"OFFICIAL parsed ok={ok} err={err}"); ann("notice","OFFICIAL", f"ok={ok} err={err}")
+              for f in as_completed({ex.submit(lambda sl=sl: parse_official(sl)): sl for sl in slugs}):
+                  try:
+                      r = f.result()
+                      if r: official[norm(r["name"])] = r; ok += 1
+                      else: err += 1
+                  except Exception: err += 1
+          ann("notice", "OFFICIAL", f"ok={ok} err={err}")
 
-          # ── 3) iskcondesiretree: страны → адрес/телефон/email/сайт; merge по имени ──
-          DT = "https://centers.iskcondesiretree.com"
-          def norm(s):
-              s = re.sub(r"\(.*?\)", " ", s.lower())
-              s = re.sub(r"\b(iskcon|hare|krishna|krsna|sri|shri|sree|temple|mandir|center|centre|of|the|and)\b", " ", s)
-              return re.sub(r"[^a-z0-9]+", " ", s).strip()
-          dt_entries = []
+          # ═══ 2) DT: структурированные записи (Address/Phone/Email/Website) c таксономиями ═══
+          def dt_listing_entries(url):
+              """Одна листинговая страница DT: записи 'Name <br> Address: ... Phone: ...'."""
+              try: h = fetch(url, 35)
+              except Exception: return []
+              soup = BeautifulSoup(h, "html.parser")
+              body = soup.select_one(".entry-content") or soup.select_one("article") or soup
+              out = []
+              # каждая запись — параграф/элемент списка с 'Address:'
+              for blk in body.find_all(["p", "li", "div"], recursive=True):
+                  t = blk.get_text("\n", strip=True)
+                  if "Address:" not in t or len(t) > 1200: continue
+                  nm = t.split("\n")[0].split("Address:")[0].strip(" :–—-")
+                  if not nm or len(nm) > 90: continue
+                  am = re.search(r"Address:\s*(.+?)(?:\n(?:Phone|Tel|Email|E-?mail|Website|Mail)\b|$)", t, re.S | re.I)
+                  pm = re.search(r"(?:Phone|Tel)[:\s]*([+\d][\d\s()\-+,/.]{6,60})", t, re.I)
+                  em = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", t)
+                  wm = re.search(r"(?:Website|Web)[:\s]*((?:https?://)?[\w.-]+\.[a-z]{2,}\S*)", t, re.I)
+                  out.append({"name": nm,
+                              "address": re.sub(r"\s+", " ", am.group(1)).strip(" ,;") if am else "",
+                              "phone": pm.group(1).strip(" ,") if pm else "",
+                              "email": em.group(0) if em else "",
+                              "website": (wm.group(1).rstrip('.,') if wm else "")})
+              return out
+
+          dt_all = dt_listing_entries(DT + "/centers/")
+          ann("notice", "DT-CENTERS", f"entries={len(dt_all)}")
+          dt_rest = dt_listing_entries(DT + "/restaurants/")
+          ann("notice", "DT-REST", f"entries={len(dt_rest)}")
+          rest_names = {norm(e["name"]) for e in dt_rest}
+
+          # континенты: /continents/ — секции «Continent» с именами; имена → континент
+          CONT_RU = {"asia": "Азия", "europe": "Европа", "africa": "Африка", "oceania": "Океания",
+                     "australia": "Океания", "north america": "Северная Америка",
+                     "south america": "Южная Америка", "antarctica": "Другое"}
+          name_cont = {}
           try:
-              chtml = fetch(DT + "/country/", 30)
-              countries = re.findall(r'href="(' + re.escape(DT) + r'/country/[a-z0-9\-]+/)"[^>]*>([^<]+)<', chtml)
-              countries = list(dict.fromkeys(countries))
-              print("DT countries:", len(countries))
-              def dt_country(cu_cn):
-                  cu, cn = cu_cn
-                  out = []
-                  try: h = fetch(cu, 30)
-                  except Exception: return out
-                  soup = BeautifulSoup(h, "html.parser")
-                  for blk in soup.select(".entry-content p, .entry-content li, article p"):
-                      t = blk.get_text("\n", strip=True)
-                      if "Address:" not in t: continue
-                      nm = t.split("\n")[0].split("Address:")[0].strip(" :–-")
-                      am = re.search(r"Address:\s*(.+?)(?:Phone|Tel|Email|E-mail|Website|$)", t, re.S)
-                      pm = re.search(r"(?:Phone|Tel)[:\s]*([+\d][\d\s()\-+,/.]{6,60})", t)
-                      em = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", t)
-                      wm = re.search(r"(?:Website|Web)[:\s]*((?:https?://)?[\w.-]+\.[a-z]{2,}[^\s,]*)", t, re.I)
-                      out.append({"name": nm, "country": cn.strip(),
-                                  "address": re.sub(r"\s+", " ", am.group(1)).strip(" ,;") if am else "",
-                                  "phone": pm.group(1).strip(" ,") if pm else "",
-                                  "email": em.group(0) if em else "",
-                                  "website": (wm.group(1) if wm else "")})
-                  return out
-              with ThreadPoolExecutor(max_workers=10) as ex:
-                  for f in as_completed({ex.submit(dt_country, c): c for c in countries}):
-                      dt_entries += f.result()
-              print("DT entries:", len(dt_entries)); ann("notice","DT", f"entries={len(dt_entries)}")
-          except Exception as e:
-              print("DT failed:", e)
+              h = fetch(DT + "/continents/", 35)
+              soup = BeautifulSoup(h, "html.parser")
+              body = soup.select_one(".entry-content") or soup
+              cur = None
+              for el in body.descendants:
+                  if getattr(el, "name", None) in ("h1", "h2", "h3", "h4", "strong", "b"):
+                      t = el.get_text(" ", strip=True).lower()
+                      for k in CONT_RU:
+                          if k in t: cur = CONT_RU[k]; break
+                  elif getattr(el, "name", None) == "a" and cur:
+                      nm = el.get_text(" ", strip=True)
+                      if nm and len(nm) < 80: name_cont[norm(nm)] = cur
+              # fallback: plain text lines under headings
+          except Exception as e: print("continents err", e)
+          ann("notice", "DT-CONT", f"mapped={len(name_cont)}")
 
-          # merge
-          dt_index = {}
-          for e in dt_entries:
-              dt_index.setdefault(norm(e["name"]), e)
+          # страны: /country/ — единая страница с якорями-секциями
+          name_country = {}
+          try:
+              h = fetch(DT + "/country/", 35)
+              soup = BeautifulSoup(h, "html.parser")
+              body = soup.select_one(".entry-content") or soup
+              cur = None
+              COUNTRY_HDR = re.compile(r"^[A-Z][A-Za-z .()&'\-]{2,40}$")
+              for el in body.descendants:
+                  nm = getattr(el, "name", None)
+                  if nm in ("h2", "h3", "h4", "strong", "b"):
+                      t = el.get_text(" ", strip=True)
+                      if COUNTRY_HDR.match(t) and len(t.split()) <= 4: cur = t
+                  elif nm == "a" and cur:
+                      t = el.get_text(" ", strip=True)
+                      if t and len(t) < 80: name_country.setdefault(norm(t), cur)
+          except Exception as e: print("country err", e)
+          ann("notice", "DT-COUNTRY", f"mapped={len(name_country)}")
+
+          # страна → континент (карта из v1, на случай отсутствия в /continents/)
+          C2C = {}
+          def reg(c, names):
+              for n in names: C2C[n.lower()] = c
+          reg("Азия", ["India","Bangladesh","Nepal","Sri Lanka","Pakistan","China","Hong Kong","Taiwan","Japan","South Korea","Korea","Malaysia","Singapore","Indonesia","Philippines","Thailand","Vietnam","Cambodia","Myanmar","Burma","Burma(Myanmar)","Laos","Mongolia","Kazakhstan","Kyrgyzstan","Uzbekistan","Tajikistan","Turkmenistan","Azerbaijan","Armenia","Georgia","Israel","United Arab Emirates","UAE","Bahrain","Qatar","Kuwait","Oman","Saudi Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives"])
+          reg("Европа", ["United Kingdom","UK","England","Scotland","Wales","Ireland","France","Germany","Italy","Spain","Portugal","Netherlands","Belgium","Luxembourg","Switzerland","Austria","Poland","Czech Republic","Czechia","Slovakia","Hungary","Romania","Bulgaria","Greece","Croatia","Serbia","Bosnia","Slovenia","Macedonia","Albania","Montenegro","Denmark","Sweden","Norway","Finland","Iceland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Russia","Malta","Cyprus"])
+          reg("Северная Америка", ["United States","United States of America","USA","Canada","Mexico","Guatemala","Belize","Honduras","El Salvador","Nicaragua","Costa Rica","Panama","Cuba","Jamaica","Haiti","Dominican Republic","Bahamas","Barbados","Trinidad and Tobago","Puerto Rico","Guyana","Suriname"])
+          reg("Южная Америка", ["Brazil","Argentina","Chile","Peru","Colombia","Venezuela","Ecuador","Bolivia","Paraguay","Uruguay"])
+          reg("Африка", ["South Africa","Nigeria","Ghana","Kenya","Tanzania","Uganda","Ethiopia","Egypt","Morocco","Senegal","Ivory Coast","Cameroon","Congo","Zambia","Zimbabwe","Botswana","Namibia","Mozambique","Malawi","Madagascar","Mauritius","Rwanda","Benin","Togo","Sierra Leone","Liberia","Gambia","Guinea","Mali","Angola","Swaziland","Eswatini","Lesotho"])
+          reg("Океания", ["Australia","New Zealand","Fiji","Papua New Guinea","Samoa","Tonga","Vanuatu","New Caledonia","Solomon Islands"])
+          def cont_from_country(c):
+              return C2C.get((c or "").strip().lower(), "")
+
+          # ═══ 3) MERGE: official (база) + DT (контакты) → каталог ═══
+          places = {}
+          dt_index = {norm(e["name"]): e for e in dt_all}
           merged = 0
-          for p in places.values():
-              k = norm(p["name"])
+          for k, o in official.items():
               e = dt_index.get(k)
-              if not e:
-                  # пробуем по первым двум словам
-                  toks = k.split()
-                  if len(toks) >= 2:
-                      e = dt_index.get(" ".join(toks[:2]))
-              if e:
-                  merged += 1
-                  if not p["address"]: p["address"] = e["address"]
-                  if not p["phone"]: p["phone"] = e["phone"]
-                  if not p["email"]: p["email"] = e["email"]
-                  if not p["website"] and e["website"]:
-                      w = e["website"]; p["website"] = w if w.startswith("http") else "https://" + w
-                  if not p["country"]: p["country"] = e["country"]
-          print("merged with DT:", merged); ann("notice","MERGE", f"merged={merged}")
+              country = name_country.get(k, "")
+              cont = name_cont.get(k, "") or cont_from_country(country)
+              p = {"id": o["id"], "name": o["name"], "categories": o["categories"],
+                   "address": e["address"] if e else "", "city": "", "state": "",
+                   "country": country or (e and ""), "continent": cont or "Другое",
+                   "lat": o["lat"], "lng": o["lng"],
+                   "phone": (e["phone"] if e else ""), "email": o["email"] or (e["email"] if e else ""),
+                   "website": o["website"] or (e and e["website"] and ("https://" + e["website"] if not e["website"].startswith("http") else e["website"])) or "",
+                   "source": o["source"]}
+              if e: merged += 1
+              places[k] = p
+          # DT-записи, которых нет в official — добавляем (DT шире географически)
+          added = 0
+          for k, e in dt_index.items():
+              if k in places: continue
+              country = name_country.get(k, "")
+              cont = name_cont.get(k, "") or cont_from_country(country)
+              w = e["website"]
+              places[k] = {"id": re.sub(r"\W+", "-", e["name"].lower()).strip("-")[:80],
+                           "name": e["name"], "categories": ["Centre"],
+                           "address": e["address"], "city": "", "state": "",
+                           "country": country, "continent": cont or "Другое",
+                           "lat": None, "lng": None, "phone": e["phone"], "email": e["email"],
+                           "website": ("https://" + w if w and not w.startswith("http") else w),
+                           "source": DT + "/centers/"}
+              added += 1
+          ann("notice", "MERGE", f"matched={merged} added_from_dt={added}")
 
-          # страна из адреса, если ещё пусто
+          # страна из адреса (последний сегмент), затем континент
           for p in places.values():
               if not p["country"] and p["address"]:
                   parts = [x.strip() for x in p["address"].split(",") if x.strip()]
                   if parts:
-                      c = re.sub(r"[\d\-–]+$", "", parts[-1]).strip()
+                      c = re.sub(r"[\d\-– ]+$", "", parts[-1]).strip()
                       if 3 <= len(c) <= 40 and not any(ch.isdigit() for ch in c): p["country"] = c
-              # город — из адреса (второй с конца) либо из имени в скобках
+              if p["continent"] == "Другое" and p["country"]:
+                  cc = cont_from_country(p["country"])
+                  if cc: p["continent"] = cc
               if not p["city"] and p["address"]:
                   parts = [x.strip() for x in p["address"].split(",") if x.strip()]
-                  if len(parts) >= 2: p["city"] = parts[-2][:40]
+                  if len(parts) >= 3: p["city"] = parts[-2][:40]
 
-          data = sorted(places.values(), key=lambda p: (p["continent"], p["region"], p["country"], p["name"]))
+          data = sorted(places.values(), key=lambda p: (p["continent"], p["country"], p["city"], p["name"]))
           for p in data:
               cl = " ".join(p["categories"]).lower() + " " + p["name"].lower()
-              p["kind"] = "restaurant" if any(k in cl for k in ["restaurant", "govinda", "cafe", "café"]) else "centre"
+              isr = norm(p["name"]) in rest_names or any(k in cl for k in ["restaurant", "govinda", "cafe", "café"])
+              p["kind"] = "restaurant" if isr else "centre"
+              p["region"] = ""
           rest_n = sum(1 for p in data if p["kind"] == "restaurant")
-          with_reg = sum(1 for p in data if p["continent"] != "Другое")
+          with_cont = sum(1 for p in data if p["continent"] != "Другое")
           with_addr = sum(1 for p in data if p["address"])
           with_ph = sum(1 for p in data if p["phone"])
-          ann("notice","TOTAL", f"places={len(data)} rest={rest_n} regioned={with_reg} addr={with_addr} phone={with_ph}")
-          assert len(data) >= 150, f"Too few: {len(data)}"
-          assert with_reg >= len(data) * 0.6, f"Regions failed: {with_reg}/{len(data)}"
+          with_ll = sum(1 for p in data if p["lat"] is not None)
+          ann("notice", "TOTAL", f"places={len(data)} rest={rest_n} cont={with_cont} addr={with_addr} phone={with_ph} latlng={with_ll}")
+          assert len(data) >= 300, f"Too few: {len(data)}"
+          assert with_addr >= 300, f"Addresses failed: {with_addr}"
           os.makedirs("apps/web/public/data", exist_ok=True)
-          json.dump({"updated": time.strftime("%Y-%m-%d"), "source": "centres.iskcon.org + iskcondesiretree", "places": data},
+          json.dump({"updated": time.strftime("%Y-%m-%d"),
+                     "source": "centres.iskcon.org + centers.iskcondesiretree.com",
+                     "places": data},
                     open("apps/web/public/data/iskcon-places.json", "w", encoding="utf-8"),
                     ensure_ascii=False, separators=(",", ":"))
           print("WROTE", os.path.getsize("apps/web/public/data/iskcon-places.json"), "bytes")
