@@ -147,7 +147,7 @@ jobs:
               if "caturmasya" in low:
                   return "Чатурмасья: " + t.split(":", 1)[-1].strip(), "other"
               # явления/уходы
-              app = "appearance" in low; dis = "disappearance" in low
+              dis = "disappearance" in low; app = ("appearance" in low) and not dis
               if app or dis:
                   base = re.split(r"\s*--\s*", t)[0].strip()
                   nb = base.lower().replace("srila ", "").replace("sri ", "").replace("srimati ", "").strip()
