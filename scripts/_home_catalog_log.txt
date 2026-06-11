@@ -1,7 +1,8 @@
 schema: places ...
-places: 893
+extra places merged: 63
+places: 956
 schema: home_documents ...
 home_documents: 15
-verify: {"places": 893, "docs": 15}
+verify: {"places": 956, "docs": 15}
 OK
 EXIT=0
