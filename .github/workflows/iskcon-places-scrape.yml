@@ -58,6 +58,16 @@ jobs:
               if "europe" in t: return "Европа"
               if "asia" in t: return "Азия"
               return None
+          C2C = {}
+          def reg(c, names):
+              for n in names: C2C[n.lower()] = c
+          reg("Азия", ["India","Bangladesh","Nepal","Sri Lanka","Pakistan","China","Hong Kong","Taiwan","Japan","South Korea","Korea","Malaysia","Singapore","Indonesia","Philippines","Thailand","Vietnam","Cambodia","Myanmar","Burma","Laos","Mongolia","Kazakhstan","Kyrgyzstan","Uzbekistan","Tajikistan","Azerbaijan","Armenia","Georgia","Israel","United Arab Emirates","UAE","Dubai","Bahrain","Qatar","Kuwait","Oman","Saudi Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives","Abkhazia"])
+          reg("Европа", ["United Kingdom","UK","England","Scotland","Wales","Ireland","France","Germany","Italy","Spain","Portugal","Netherlands","Holland","Belgium","Luxembourg","Switzerland","Austria","Poland","Czech Republic","Czechia","Slovakia","Hungary","Romania","Bulgaria","Greece","Croatia","Serbia","Bosnia","Slovenia","Macedonia","Albania","Montenegro","Denmark","Sweden","Norway","Finland","Iceland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Russia","Malta","Cyprus","Crimea"])
+          reg("Северная Америка", ["United States","United States of America","USA","U.S.A.","Canada","Mexico","Guatemala","Belize","Honduras","El Salvador","Nicaragua","Costa Rica","Panama","Cuba","Jamaica","Haiti","Dominican Republic","Bahamas","Barbados","Trinidad and Tobago","Trinidad & Tobago","Puerto Rico","Guyana","Suriname","Curacao","Grenada","St. Lucia","Saint Lucia"])
+          reg("Южная Америка", ["Brazil","Argentina","Chile","Peru","Colombia","Venezuela","Ecuador","Bolivia","Paraguay","Uruguay"])
+          reg("Африка", ["South Africa","Nigeria","Ghana","Kenya","Tanzania","Uganda","Ethiopia","Egypt","Morocco","Senegal","Ivory Coast","Cote d'Ivoire","Cameroon","Congo","Zambia","Zimbabwe","Botswana","Namibia","Mozambique","Malawi","Madagascar","Mauritius","Rwanda","Benin","Togo","Sierra Leone","Liberia","Gambia","Guinea","Mali","Angola","Swaziland","Eswatini","Lesotho","Reunion","Seychelles"])
+          reg("Океания", ["Australia","New Zealand","Fiji","Papua New Guinea","Samoa","Tonga","Vanuatu","New Caledonia","Solomon Islands"])
+          KNOWN_COUNTRY = set(C2C.keys())
           def path_to_root(cid):
               out = []
               seen = set()
@@ -100,11 +110,19 @@ jobs:
                   root = chain[-1]
                   if root["id"] in cont_roots:
                       continent = continent or cont_roots[root["id"]]
-                      geo = list(reversed(chain))  # root..leaf: [continent, country, state?, city?]
-                      if len(geo) >= 2: country = country or H.unescape(geo[1]["name"])
-                      if len(geo) >= 3: state = state or H.unescape(geo[2]["name"])
-                      if len(geo) >= 4: city = city or H.unescape(geo[3]["name"])
-                      elif len(geo) == 3 and not city: city = H.unescape(geo[2]["name"])
+                      geo = [H.unescape(x["name"]) for x in reversed(chain)]  # root..leaf
+                      tail = geo[1:]
+                      ci = next((i for i, g in enumerate(tail) if g.lower() in KNOWN_COUNTRY), None)
+                      if ci is not None:
+                          country = country or tail[ci]
+                          rest = tail[ci + 1:]
+                          if rest:
+                              city = city or rest[-1]
+                              if len(rest) >= 2: state = state or rest[0]
+                          if ci > 0: state = state or tail[0]
+                      elif tail:
+                          country = country or tail[0]
+                          if len(tail) >= 2: city = city or tail[-1]
                   elif root["id"] in type_roots:
                       kinds.add(type_roots[root["id"]])
               text = strip_html(po["content"]["rendered"])
@@ -120,50 +138,18 @@ jobs:
                   if "iskcondesiretree" in w or "google.com/url" in w or w.startswith("mailto"): continue
                   website = w; break
               if not website:
-                  vm = re.search(r"(?:website|web)\s*[:：]\s*((?:https?://)?[\w.-]+\.[a-z]{2,}\S*)", text, re.I)
-                  if vm:
-                      website = vm.group(1).rstrip('.,')
-                      if not website.startswith("http"): website = "https://" + website
-              if not city:
-                  city = name.split("–")[0].split("-")[0].strip()[:40] if "," not in name else ""
-              k = norm(name) or name.lower()
-              places[k] = {
-                  "id": re.sub(r"\W+", "-", name.lower()).strip("-")[:80],
-                  "name": name,
-                  "categories": sorted(k for k in kinds if k.lower() not in ("centers", "city", "gallery") and len(k) < 40) or ["Centre"],
-                  "address": address, "city": city, "state": state,
-                  "country": country, "continent": continent or "Другое",
-                  "lat": None, "lng": None,
-                  "phone": phone, "email": email, "website": website,
-                  "source": po["link"],
-              }
-
-          # ── 3) Координаты + official source из предыдущего файла (без запросов к official) ──
-          prev_path = "apps/web/public/data/iskcon-places.json"
-          coords = src_official = 0
-          if os.path.exists(prev_path):
-              try:
-                  prev = json.load(open(prev_path, encoding="utf-8")).get("places", [])
-                  pidx = {}
-                  for pp in prev:
-                      pidx.setdefault(norm(pp.get("name", "")), pp)
-                  for k, p in places.items():
-                      e = pidx.get(k)
-                      if e:
-                          if e.get("lat") is not None and p["lat"] is None:
-                              p["lat"], p["lng"] = e["lat"], e["lng"]; coords += 1
-                          if "centres.iskcon.org" in (e.get("source") or ""):
-                              p["source"] = e["source"]; src_official += 1
-                          if not p["email"] and e.get("email"): p["email"] = e["email"]
-                          if not p["website"] and e.get("website"): p["website"] = e["website"]
-              except Exception as e2: print("prev merge err", e2)
-          ann("notice", "COORDS", f"latlng_from_prev={coords} official_src={src_official}")
-
-          # ── страна из адреса для постов без гео-категории; континент по карте ──
-          C2C = {}
-          def reg(c, names):
-              for n in names: C2C[n.lower()] = c
-          reg("Азия", ["India","Bangladesh","Nepal","Sri Lanka","Pakistan","China","Hong Kong","Taiwan","Japan","South Korea","Korea","Malaysia","Singapore","Indonesia","Philippines","Thailand","Vietnam","Cambodia","Myanmar","Burma","Laos","Mongolia","Kazakhstan","Kyrgyzstan","Uzbekistan","Tajikistan","Azerbaijan","Armenia","Georgia","Israel","United Arab Emirates","UAE","Dubai","Bahrain","Qatar","Kuwait","Oman","Saudi Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives","Abkhazia"])
+                  vm = re.search(r"(?:website|web)\s          # ── страна из адреса для постов без гео-категории; континент по карте ──
+          fixed = 0
+          for p in places.values():
+              if not p["country"] and p["address"]:
+                  parts = [x.strip() for x in p["address"].split(",") if x.strip()]
+                  for cand in reversed(parts[-2:]):
+                      c = re.sub(r"[\d\-– :]+$", "", cand).strip().rstrip(".")
+                      if c.lower() in C2C: p["country"] = c; break
+              if p["continent"] == "Другое" and p["country"]:
+                  cc = C2C.get(p["country"].lower())
+                  if cc: p["continent"] = cc; fixed += 1
+Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives","Abkhazia"])
           reg("Европа", ["United Kingdom","UK","England","Scotland","Wales","Ireland","France","Germany","Italy","Spain","Portugal","Netherlands","Holland","Belgium","Luxembourg","Switzerland","Austria","Poland","Czech Republic","Czechia","Slovakia","Hungary","Romania","Bulgaria","Greece","Croatia","Serbia","Bosnia","Slovenia","Macedonia","Albania","Montenegro","Denmark","Sweden","Norway","Finland","Iceland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Russia","Malta","Cyprus","Crimea"])
           reg("Северная Америка", ["United States","United States of America","USA","U.S.A.","Canada","Mexico","Guatemala","Belize","Honduras","El Salvador","Nicaragua","Costa Rica","Panama","Cuba","Jamaica","Haiti","Dominican Republic","Bahamas","Barbados","Trinidad and Tobago","Trinidad & Tobago","Puerto Rico","Guyana","Suriname","Curacao","Grenada","St. Lucia","Saint Lucia"])
           reg("Южная Америка", ["Brazil","Argentina","Chile","Peru","Colombia","Venezuela","Ecuador","Bolivia","Paraguay","Uruguay"])
