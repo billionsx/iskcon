@@ -11,7 +11,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { BOOKS, AUDIO_WORKS } from "./books";
+import { BOOKS, LIBRARY, AUDIO_WORKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { ChevRightIcon } from "./ui/icons";
 
@@ -247,6 +247,116 @@ const PURPOSES = [
   "Издавать и распространять периодические издания, журналы, книги и другие письменные материалы.",
 ];
 
+/* ───────── расширенная биография для шита «Подробнее» ───────── */
+const SP_BIO: string[] = [
+  "Шрила Прабхупада — выдающийся духовный учитель индийского происхождения, принёсший сознание Кришны в западный мир и заложивший основы глобального вайшнавского возрождения. Его необыкновенная жизнь подробно и с любовью описана его учеником Сатсварупой дасом Госвами в семитомном труде «Шрила Прабхупада-лиламрита», переведённом на многие языки и читаемом по всему миру.",
+  "Шрила Прабхупада родился 1 сентября 1896 года в Калькутте, в благочестивой вайшнавской семье. Родители дали ему имя Абхай Чаран Де — «тот, кто бесстрашен, приняв прибежище у лотосных стоп Господа Кришны». В 1920 году он окончил престижный Шотландский колледж, изучая английский язык, философию и экономику. Однако, поддержав движение Махатмы Ганди за независимость Индии, он сознательно отказался принять диплом как знак протеста против британского колониального правления.",
+  "В 1922 году произошла судьбоносная встреча Шрилы Прабхупады с его духовным учителем — Шрилой Бхактисиддхантой Сарасвати Тхакуром, великим ачарьей гаудия-вайшнавской традиции. Именно тогда он получил наставление, определившее всю его жизнь: распространить древнее ведическое знание и учение бхакти на английском языке по всему миру, прежде всего на Западе.",
+  "В 1947 году Гаудия-вайшнавское общество официально признало его глубокую учёность и духовную реализацию, присвоив ему титул «Бхактиведанта» — «тот, кто постиг, что преданное служение Верховному Господу является вершиной всего знания». В 1959 году он принял санньясу, отречённый уклад жизни, и начал главный труд своей жизни — перевод и подробный комментарий к «Шримад-Бхагаватам».",
+  "В 1965 году, в возрасте 69 лет, Шрила Прабхупада покинул Индию и на грузовом судне отправился в Соединённые Штаты Америки. Во время плавания он перенёс два сердечных приступа. Прибыв в Нью-Йорк, он имел при себе лишь несколько долларов и ящик со своими книгами. Так началась беспрецедентная волна Гауранга-лилы, ранее никогда не проявлявшаяся в истории.",
+  "Шрила Прабхупада обладал уникальной способностью передавать вечное духовное знание, учитывая менталитет, культуру и уровень сознания людей. Он вдохновлял своих учеников проповедовать разными способами: через киртан, распространение книг, лекции в университетах, фестивали, раздачу освящённой пищи, строительство храмов, создание сельских общин, защиту коров и развитие вайшнавского искусства.",
+];
+const SP_BIO_BULLETS = [
+  "основал ИСККОН, который распространился по всему миру, создав сотни храмов, центров, общин и образовательных учреждений;",
+  "вернул сознание Кришны из Запада обратно в Индию, вдохнув новую жизнь в святые места Вриндавана и Маяпура;",
+  "перевёл и прокомментировал ключевые вайшнавские писания — «Бхагавад-гиту как она есть», «Шримад-Бхагаватам», «Шри Чайтанья-чаритамриту» и многие другие;",
+  "инициировал тысячи учеников по всему миру;",
+  "четырнадцать раз облетел земной шар, проповедуя бхакти людям всех культур;",
+  "основал программу Food for Life, распространяя милосердие через освящённую пищу.",
+];
+const SP_BIO_AFTER = "В 1977 году, во Вриндаване, Шрила Прабхупада покинул этот мир, окружённый заботой и любовью своих учеников. Однако он продолжает жить через свои книги, свою миссию и через миллионы сердец, которых коснулась эта беспрецедентная волна Гауранга-лилы. Сегодня Шрила Прабхупада почитается как мировой ачарья — для всех вайшнавов, независимо от страны, культуры и языка, — как личность, исполнившая сокровенное желание Шри Чайтаньи Махапрабху: распространить святое имя Кришны и путь чистой бхакти по всей Земле.";
+const SP_FACTS = [
+  { t: "Путешествие в Америку", d: "Покинув священный Вриндаван, отправился в Нью-Йорк в 69 лет — имея 7 долларов и несколько священных писаний." },
+  { t: "Всемирная проповедь", d: "Начав с повторения мантры в парке Томпкинс-сквер, основал первые храмы — началом стремительного глобального распространения Движения." },
+  { t: "Литературное наследие", d: "Написал и перевёл более 70 книг, значительно повлияв на распространение ведических знаний на английском языке." },
+  { t: "Музыкальное влияние", d: "Представил киртан — пение святых имён — как форму медитации, завоевавшую популярность далеко за пределами Индии, включая The Beatles." },
+  { t: "Культурные концепции", d: "Сыграл ключевую роль в популяризации понятий кармы, реинкарнации и йоги среди мировой аудитории." },
+  { t: "Помощь нуждающимся", d: "Стремился, чтобы каждый в мире мог получить освящённую пищу. На сегодня роздано около 8,7 миллиарда порций прасада." },
+];
+
+/* ───────── PrabhupadaSheet — iOS-modal с подробной биографией ───────── */
+function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <div role="dialog" aria-modal="true" aria-label="О Шриле Прабхупаде" onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.42)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+        display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "ppFade .2s ease-out" }}>
+      <style>{`
+        @keyframes ppFade { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes ppSlide { from { transform: translateY(100%); } to { transform: translateY(0); } }
+      `}</style>
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ width: "100%", maxWidth: 560, maxHeight: "92vh", background: "var(--color-bg)", borderTopLeftRadius: 22, borderTopRightRadius: 22,
+          overflow: "hidden", display: "flex", flexDirection: "column", animation: "ppSlide .32s cubic-bezier(.22,1,.36,1)", boxShadow: "0 -10px 50px rgba(0,0,0,0.35)" }}>
+        {/* grab handle */}
+        <div style={{ display: "grid", placeItems: "center", padding: "10px 0 4px", flexShrink: 0 }}>
+          <span aria-hidden style={{ width: 38, height: 5, borderRadius: 3, background: "var(--color-label-3)", opacity: 0.5 }} />
+        </div>
+        {/* close button */}
+        <div style={{ display: "flex", justifyContent: "flex-end", padding: "0 14px", flexShrink: 0 }}>
+          <button type="button" aria-label="Закрыть" onClick={onClose}
+            style={{ width: 30, height: 30, borderRadius: "50%", border: "none", background: "var(--color-glass-regular)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></svg>
+          </button>
+        </div>
+        {/* scrollable content */}
+        <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "10px 22px 32px", fontFamily: "var(--font-text)" }}>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ачарья-основатель</div>
+          <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: TR_HERO, lineHeight: 1.05, color: "var(--color-label)" }}>
+            Шрила Прабхупада
+          </h2>
+          <div style={{ marginTop: 4, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 14, color: "var(--color-label-3)" }}>
+            А. Ч. Бхактиведанта Свами · 1896 — 1977
+          </div>
+          <div style={{ marginTop: 16, borderRadius: 18, overflow: "hidden", background: IMG_BG }}>
+            <img src="/media/prabhupada-color.webp" alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "4 / 3", objectFit: "cover", objectPosition: "center 22%" }} />
+          </div>
+          <div style={{ margin: "20px 0 0" }}>
+            <Quote center size={16}>«Лучшее, что можно сделать для Господа, — это попытаться вдохнуть преданное служение в сердце обусловленной души, чтобы она сбросила оковы обусловленной жизни».</Quote>
+          </div>
+
+          <div style={{ marginTop: 26, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>Жизнь</div>
+          {SP_BIO.map((p, i) => <Para key={i} mt={i ? 12 : 10}>{p}</Para>)}
+
+          <div style={{ marginTop: 26, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>За двенадцать лет проповеди</div>
+          <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)" }}>С 1965 по 1977 год Шрила Прабхупада:</p>
+          <ul style={{ margin: "10px 0 0", padding: 0, listStyle: "none" }}>
+            {SP_BIO_BULLETS.map((b, i) => (
+              <li key={i} style={{ display: "flex", gap: 10, marginTop: i ? 8 : 0, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>
+                <span aria-hidden style={{ flexShrink: 0, color: GOLD, fontWeight: 700 }}>·</span><span>{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div style={{ marginTop: 26, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>Главные ценности</div>
+          <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+            {SP_FACTS.map((f) => (
+              <div key={f.t} style={{ padding: 14, ...fill, borderRadius: 14 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 13.5, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{f.t}</div>
+                <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{f.d}</p>
+              </div>
+            ))}
+          </div>
+
+          <Para mt={22}>{SP_BIO_AFTER}</Para>
+
+          <div style={{ marginTop: 24, padding: "14px 16px", ...fill, borderRadius: 14, textAlign: "center" }}>
+            <Quote center size={15}>«Повторяйте Харе Кришна и будьте счастливы».</Quote>
+            <div style={{ marginTop: 8, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Шрила Прабхупада</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ───────── экран ───────── */
 export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonate, onBookMenu, flash }: {
   onChange: (tab: string) => void;
@@ -257,6 +367,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
   flash: (m: string) => void;
 }) {
   useEffect(() => { fetch(api("/entities/prabhupada")).catch(() => {}); }, []);
+  const [spOpen, setSpOpen] = useState(false);
 
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
@@ -365,20 +476,20 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <Mosaic items={COMMUNITY} />
       </Section>
 
-      {/* Книги — слайдер настоящих ВКП (как на витрине библиотеки) */}
+      {/* Книги — слайдер всей читаемой библиотеки Шрилы Прабхупады */}
       <Section>
         <SectionHead eyebrow="Библиотека" title="Миллиард духовных книг" subtitle="ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога." />
         <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch",
           margin: `4px -${PAD}px 0`, padding: `12px ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
-          {(["bg", "sb", "cc"] as const).map((work) => (
-            <div key={work} style={{ flex: "0 0 88%", scrollSnapAlign: "center" }}>
+          {LIBRARY.filter((b) => b.lineage === "prabhupada" && b.readable && BOOKS[b.id]).map((b) => (
+            <div key={b.id} style={{ flex: "0 0 88%", scrollSnapAlign: "center" }}>
               <BookHeroCard
-                book={BOOKS[work]}
+                book={BOOKS[b.id]}
                 topLeft={<MaskMark src="/bbt.svg" size={26} color="#fff" />}
-                onOpen={() => onOpenBook(work)}
+                onOpen={() => onOpenBook(b.id)}
                 flash={flash}
-                onListen={AUDIO_WORKS[work] ? undefined : () => flash("Аудиокнига — скоро")}
-                onMenuSelect={(id) => onBookMenu(work, id)}
+                onListen={AUDIO_WORKS[b.id] ? undefined : () => flash("Аудиокнига — скоро")}
+                onMenuSelect={(id) => onBookMenu(b.id, id)}
               />
             </div>
           ))}
@@ -405,6 +516,14 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
             </div>
           ))}
         </div>
+        {/* Apple-style ссылка-«Подробнее» — открывает iOS-шит с биографией и ценностями */}
+        <button type="button" onClick={() => setSpOpen(true)}
+          onPointerDown={(e) => (e.currentTarget.style.opacity = "0.55")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
+          style={{ marginTop: 18, padding: "8px 2px", background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4,
+            fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, letterSpacing: TR_BODY, color: "var(--color-brand-blue)", WebkitTapHighlightColor: "transparent" }}>
+          Подробнее о Шриле Прабхупаде
+          <ChevRightIcon size={16} />
+        </button>
         <SquareGrid items={SP_LIFE} />
       </Section>
 
@@ -481,10 +600,12 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
             Hare Kṛṣṇa Hare Kṛṣṇa Kṛṣṇa Kṛṣṇa Hare Hare<br />Hare Rāma Hare Rāma Rāma Rāma Hare Hare
           </div>
           <p style={{ margin: "16px auto 0", maxWidth: 360, fontFamily: "var(--font-text)", fontSize: 11, lineHeight: 1.6, letterSpacing: TR_BODY, color: "var(--color-label-3)" }}>
-            ISKCON ONE LOVE — онлайн-ресурс последователей традиции ISKCON, относящейся к Брахма-Мадхва-Гаудия-сампрадае, посвящённый наследию Ачарьи-основателя ИСККОН Шрилы Прабхупады. Не является официальным представительством зарегистрированной организации ISKCON.
+            ISKCON ONE LOVE — онлайн-ресурс последователей традиции ISKCON, относящейся к Брахма-Мадхва-Гаудия-сампрадае, посвящённый наследию Ачарьи-основателя ИСККОН Шрилы Прабхупады.
           </p>
         </div>
       </Section>
+
+      <PrabhupadaSheet open={spOpen} onClose={() => setSpOpen(false)} />
     </div>
   );
 }
