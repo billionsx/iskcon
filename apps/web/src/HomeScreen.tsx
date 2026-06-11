@@ -43,8 +43,22 @@ function Figure({ src, ratio = "4 / 3", pos = "center", caption }: { src: string
       <div style={{ borderRadius: 18, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
         <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover", objectPosition: pos }} />
       </div>
-      {caption && <figcaption style={{ margin: "10px auto 0", maxWidth: 440, textAlign: "center", fontFamily: "var(--font-text)", fontSize: 12.5, letterSpacing: TR_BODY, color: "var(--color-label-3)", lineHeight: 1.45 }}>{caption}</figcaption>}
+      {caption && <figcaption style={{ margin: "10px auto 0", maxWidth: 440, textAlign: "center", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, letterSpacing: TR_BODY, color: "var(--color-label-3)", lineHeight: 1.45 }}>{caption}</figcaption>}
     </figure>
+  );
+}
+function PhotoGrid({ items, ratio = "4 / 3", cols = 2 }: { items: { src: string; cap?: string; pos?: string }[]; ratio?: string; cols?: number }) {
+  return (
+    <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 10 }}>
+      {items.map((it, i) => (
+        <figure key={i} style={{ margin: 0 }}>
+          <div style={{ borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
+            <img src={it.src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover", objectPosition: it.pos || "center" }} />
+          </div>
+          {it.cap && <figcaption style={{ margin: "8px 4px 0", textAlign: "center", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12.5, color: "var(--color-label-3)", lineHeight: 1.4 }}>{it.cap}</figcaption>}
+        </figure>
+      ))}
+    </div>
   );
 }
 function Quote({ children, center = false, size = 15, color = "var(--color-label)" }: { children: React.ReactNode; center?: boolean; size?: number; color?: string }) {
@@ -223,12 +237,22 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {STATS.map((s) => <StatTile key={s.l} v={s.v} l={s.l} />)}
         </div>
+        <PhotoGrid ratio="4 / 3" items={[
+          { src: "/media/temple-mumbai.webp", cap: "Храм ИСККОН, Мумбаи" },
+          { src: "/media/temple-chennai.webp", cap: "Храм ИСККОН, Ченнаи" },
+          { src: "/media/temple-ahmedabad.webp", cap: "Храм ИСККОН, Ахмедабад" },
+          { src: "/media/tovp.webp", cap: "Храм ведического планетария, Маяпур" },
+        ]} />
       </Section>
 
       {/* Высшая цель */}
       <Section>
         <SectionHead eyebrow="Высшая цель" title="Чистая любовь к Богу" subtitle="Движение Харе Кришна исследует науку чистой преданной любви к Богу, воплощённой в божественной паре: Кришне и Его высшей энергии любви, Шримати Радхарани (Харе)." />
         <Figure src="/media/radha-krishna.webp" ratio="16 / 10" caption="Божества Радхи и Кришны на алтаре" />
+        <PhotoGrid ratio="3 / 4" items={[
+          { src: "/media/krishna-portrait.webp", cap: "Шри Кришна — Верховная Личность Бога", pos: "center 20%" },
+          { src: "/media/radharani.webp", cap: "Шримати Радхарани — энергия любви Господа" },
+        ]} />
       </Section>
 
       {/* Маха-мантра — карточка, 4 строки */}
@@ -247,6 +271,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
             </p>
           </div>
         </div>
+        <Figure src="/media/krishna-hero.webp" ratio="16 / 9" caption="«Кришна» — «Всепривлекающий», Верховная Личность Бога" />
       </Section>
 
       {/* История регистрации / NYT */}
@@ -282,6 +307,15 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
             );
           })}
         </ul>
+      </Section>
+
+      {/* Святые места — Дхама */}
+      <Section>
+        <SectionHead eyebrow="Дхама" title="Святые места" subtitle="Дхамы — святые места, неотличные от духовного мира, где обитают Кришна и Радхарани. Их посещение углубляет духовное сознание и приближает к Богу." />
+        <PhotoGrid ratio="4 / 3" items={[
+          { src: "/media/vrindavan.webp", cap: "Вриндаван — земля игр Кришны" },
+          { src: "/media/mayapur.webp", cap: "Маяпур — место явления Шри Чайтаньи Махапрабху" },
+        ]} />
       </Section>
 
       {/* Миллиард книг */}
