@@ -1,0 +1,193 @@
+name: Vaisnava calendar fetch (vaisnavacalendar.info GCal11 -> JSON)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch & parse ICS (Mayapur)
+        run: |
+          set -e
+          python3 - <<'PY'
+          import json, re, sys, os, traceback, urllib.request, urllib.parse
+
+          def ann(level, title, msg):
+              msg = str(msg).replace("%", "%25").replace("\r", " ").replace("\n", " | ")[:880]
+              print(f"::{level} title={title}::{msg}"); sys.stdout.flush()
+          def _hook(t, v, tb):
+              ann("error", "CAL-FAIL", "".join(traceback.format_exception(t, v, tb))[-850:]); sys.exit(1)
+          sys.excepthook = _hook
+
+          BASE = "https://www.vaisnavacalendar.info/ICS"
+          UA = {"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"}
+
+          def fetch_ics(year):
+              path = f"/{year}/Mayapur [India]-a{year}-ICS.ics"
+              url = BASE + urllib.parse.quote(path)
+              req = urllib.request.Request(url, headers=UA)
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      return r.read().decode("utf-8", "replace")
+              except Exception as e:
+                  print(year, "fetch err", e); return ""
+
+          def parse_ics(text):
+              evs = []
+              # unfold continuation lines
+              text = re.sub(r"\r?\n[ \t]", "", text)
+              for block in text.split("BEGIN:VEVENT")[1:]:
+                  block = block.split("END:VEVENT")[0]
+                  dm = re.search(r"DTSTART(?:;VALUE=DATE)?[:;][^:\n]*:?(\d{8})", block)
+                  sm = re.search(r"SUMMARY[^:\n]*:(.+)", block)
+                  if not dm or not sm: continue
+                  d = dm.group(1)
+                  date = f"{d[:4]}-{d[4:6]}-{d[6:8]}"
+                  title = sm.group(1).strip().replace("\\,", ",").replace("\\;", ";").replace("\\n", " · ")
+                  evs.append({"date": date, "title": title})
+              return evs
+
+          raw = []
+          for y in (2026, 2027):
+              t = fetch_ics(y)
+              got = parse_ics(t) if t else []
+              ann("notice", f"ICS-{y}", f"events={len(got)} bytes={len(t)}")
+              raw += got
+          assert len(raw) >= 100, f"Too few events: {len(raw)}"
+
+          # ── классификация + русские названия ──
+          FEST_RU = {
+              "gaura purnima": "Гаура-пурнима — явление Шри Чайтаньи Махапрабху",
+              "sri krsna janmastami": "Шри Кришна-джанмаштами — явление Господа Кришны",
+              "janmastami": "Шри Кришна-джанмаштами — явление Господа Кришны",
+              "radhastami": "Радхаштами — явление Шримати Радхарани",
+              "rama navami": "Рама-навами — явление Господа Шри Рамачандры",
+              "nrsimha caturdasi": "Нрисимха-чатурдаши — явление Господа Нрисимхадевы",
+              "narasimha caturdasi": "Нрисимха-чатурдаши — явление Господа Нрисимхадевы",
+              "govardhana puja": "Говардхана-пуджа",
+              "balarama purnima": "Баларама-пурнима — явление Господа Баларамы",
+              "ratha yatra": "Ратха-ятра",
+              "snana yatra": "Снана-ятра",
+              "panihati": "Панихати-чида-дахи-утсава",
+              "ganga puja": "Ганга-пуджа",
+              "tulasi": "Тулиси-пуджа",
+              "vyasa puja": "Вьяса-пуджа Шрилы Прабхупады",
+              "gita jayanti": "Гита-джаянти",
+              "vasanta pancami": "Васанта-панчами",
+              "diwali": "Дивали (Дипавали)",
+              "dipavali": "Дивали (Дипавали)",
+              "gopastami": "Гопаштами",
+              "gundica marjana": "Гундича-марджана",
+              "jagannatha misra": "Праздник Джаганнатхи Мишры",
+              "siva ratri": "Шива-ратри",
+              "advaita acarya": "Шри Адвайта Ачарья",
+              "nityananda": "Шри Нитьянанда Прабху",
+          }
+          NAME_RU = {
+              "srila prabhupada": "Шрилы Прабхупады",
+              "bhaktisiddhanta sarasvati": "Шрилы Бхактисиддханты Сарасвати Тхакура",
+              "bhaktivinoda thakura": "Шрилы Бхактивиноды Тхакура",
+              "gaura kisora dasa babaji": "Шрилы Гауракишоры даса Бабаджи",
+              "jagannatha dasa babaji": "Шрилы Джаганнатхи даса Бабаджи",
+              "madhvacarya": "Шри Мадхвачарьи",
+              "ramanujacarya": "Шри Рамануджачарьи",
+              "madhavendra puri": "Шри Мадхавендры Пури",
+              "isvara puri": "Шри Ишвары Пури",
+              "advaita acarya": "Шри Адвайты Ачарьи",
+              "nityananda": "Шри Нитьянанды Прабху",
+              "gadadhara pandita": "Шри Гададхары Пандита",
+              "srivasa pandita": "Шри Шривасы Пандита",
+              "rupa gosvami": "Шрилы Рупы Госвами",
+              "sanatana gosvami": "Шрилы Санатаны Госвами",
+              "jiva gosvami": "Шрилы Дживы Госвами",
+              "raghunatha dasa gosvami": "Шрилы Рагхунатхи даса Госвами",
+              "raghunatha bhatta gosvami": "Шрилы Рагхунатхи Бхатты Госвами",
+              "gopala bhatta gosvami": "Шрилы Гопалы Бхатты Госвами",
+              "krsnadasa kaviraja": "Шрилы Кришнадасы Кавираджи Госвами",
+              "narottama dasa thakura": "Шрилы Нароттамы даса Тхакура",
+              "visvanatha cakravarti": "Шрилы Вишванатхи Чакраварти Тхакура",
+              "baladeva vidyabhusana": "Шрилы Баладевы Видьябхушаны",
+              "vrndavana dasa thakura": "Шрилы Вриндаваны даса Тхакура",
+              "locana dasa thakura": "Шрилы Лочаны даса Тхакура",
+              "haridasa thakura": "Шрилы Харидасы Тхакура",
+              "vamsidasa babaji": "Шрилы Вамшидасы Бабаджи",
+              "sita devi": "Шримати Ситы-деви",
+              "jahnava devi": "Шримати Джахнавы-деви",
+              "visnupriya devi": "Шримати Вишнуприи-деви",
+          }
+          EKADASI_RU = {
+              "pandava nirjala": "Пандава-нирджала", "parama": "Парама", "padmini": "Падмини",
+              "yogini": "Йогини", "sayana": "Шаяна", "kamika": "Камика", "pavitropana": "Павитропана",
+              "annada": "Аннада", "parsva": "Паршва", "indira": "Индира", "pasankusa": "Пашанкуша",
+              "rama": "Рама", "utthana": "Уттхана", "utpanna": "Утпанна", "moksada": "Мокшада",
+              "saphala": "Сапхала", "putrada": "Путрада", "sat tila": "Шат-тила", "bhaimi": "Бхайми",
+              "vijaya": "Виджая", "amalaki": "Амалаки", "papamocani": "Папамочани",
+              "kamada": "Камада", "varuthini": "Варутхини", "mohini": "Мохини", "apara": "Апара",
+          }
+
+          def ru_title(t):
+              low = t.lower()
+              # экадаши
+              m = re.search(r"fasting for (.+?) ekadasi", low)
+              if m:
+                  nm = m.group(1).strip()
+                  ru = EKADASI_RU.get(nm, nm.title())
+                  return f"{ru}-экадаши — пост", "ekadasi"
+              if "break fast" in low:
+                  tm = re.search(r"break fast\s+([\d:]+)\s*-\s*([\d:]+)", low)
+                  if tm: return f"Выход из поста {tm.group(1)}–{tm.group(2)} (Маяпур)", "parana"
+                  return "Выход из поста (Маяпур)", "parana"
+              if "caturmasya" in low:
+                  return "Чатурмасья: " + t.split(":", 1)[-1].strip(), "other"
+              # явления/уходы
+              app = "appearance" in low; dis = "disappearance" in low
+              if app or dis:
+                  base = re.split(r"\s*--\s*", t)[0].strip()
+                  nb = base.lower().replace("srila ", "").replace("sri ", "").replace("srimati ", "").strip()
+                  ru_name = None
+                  for k, v in NAME_RU.items():
+                      if k in nb: ru_name = v; break
+                  if ru_name:
+                      return ("Явление " if app else "Уход ") + ru_name, ("appearance" if app else "disappearance")
+                  return ("Явление: " if app else "Уход: ") + base, ("appearance" if app else "disappearance")
+              # праздники
+              for k, v in FEST_RU.items():
+                  if k in low: return v, "festival"
+              if "ekadasi" in low: return t, "ekadasi"
+              return t, "other"
+
+          out = []
+          for e in raw:
+              ru, typ = ru_title(e["title"])
+              out.append({"date": e["date"], "title": ru, "orig": e["title"], "type": typ})
+          out.sort(key=lambda x: x["date"])
+          from collections import Counter
+          ann("notice", "TYPES", dict(Counter(x["type"] for x in out)))
+          ann("notice", "TOTAL", f"events={len(out)} range={out[0]['date']}..{out[-1]['date']}")
+          os.makedirs("apps/web/public/data", exist_ok=True)
+          json.dump({"city": "Mayapur", "tz": "Asia/Kolkata",
+                     "source": "vaisnavacalendar.info (GCal 11, GBC Calendar Committee)",
+                     "events": out},
+                    open("apps/web/public/data/vaisnava-calendar.json", "w", encoding="utf-8"),
+                    ensure_ascii=False, separators=(",", ":"))
+          print("WROTE", os.path.getsize("apps/web/public/data/vaisnava-calendar.json"), "bytes")
+          PY
+
+      - name: Commit & push
+        run: |
+          set -e
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+          git add -A apps/web/public/data/vaisnava-calendar.json
+          if git diff --cached --quiet; then echo "No changes."; else
+            git commit -m "data: вайшнавский календарь (Маяпур, GCal 11) 2026–2027"
+            git pull --rebase origin main || true
+            git push origin HEAD:main
+          fi
