@@ -20,11 +20,11 @@ export interface SubTabDef { id: string; label: string }
 const TONE = {
   light: {
     active: "#1f2024", inactive: "#70727b", rail: "#1f2024",
-    glass: "rgba(255,255,255,0.82)", edge: "rgba(0,0,0,0.08)",
+    glass: "var(--color-glass-nav)", edge: "var(--color-hairline)",
   },
   dark: {
     active: "#ffffff", inactive: "rgba(255,255,255,0.55)", rail: "#ffffff",
-    glass: "rgba(16,16,18,0.62)", edge: "rgba(255,255,255,0.12)",
+    glass: "rgba(16,16,18,0.58)", edge: "rgba(255,255,255,0.14)",
   },
 } as const;
 

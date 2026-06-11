@@ -57,6 +57,7 @@ export function enCountriesFor(q: string): string[] {
 /* русские ярлыки категорий справочника; служебные скрываем */
 export const CAT_RU: Record<string, string> = {
   "centre": "Центр", "centers": "Центр", "websites": "Центр",
+  "temples": "Храм", "temple": "Храм", "nama-hatta": "Нама-хатта", "eco village": "Эко-деревня",
   "agriculture": "Ферма", "farms": "Ферма",
   "farm and rural communities": "Сельская община",
   "educational institutes": "Образование", "iskcon education": "Образование",

@@ -58,7 +58,11 @@ async function assetJson<T>(env: HomeEnv, origin: string, path: string): Promise
 
 async function allPlacesFromAsset(env: HomeEnv, origin: string): Promise<PlaceItem[]> {
   const j = await assetJson<{ places?: RawPlace[] }>(env, origin, "/data/iskcon-places.json");
-  return (j?.places || []).map(normPlace);
+  const x = await assetJson<{ places?: RawPlace[] }>(env, origin, "/data/iskcon-places-extra.json");
+  const main = j?.places || [];
+  const have = new Set(main.map((p) => p.id));
+  const extra = (x?.places || []).filter((p) => !have.has(p.id));
+  return [...main, ...extra].map(normPlace);
 }
 
 async function allPlacesFromD1(env: HomeEnv): Promise<PlaceItem[] | null> {
