@@ -51,7 +51,7 @@ jobs:
           def cont_of(nm):
               t = re.sub(r"[^a-z ]", " ", nm.lower())
               if "oceania" in t or "australia" in t: return "Океания"
-              if "south america" in t: return "Южная Америка"
+              if "south america" in t or "latin america" in t: return "Южная Америка"
               if "north america" in t or "central america" in t or "caribbean" in t: return "Северная Америка"
               if "middle east" in t: return "Азия"
               if "africa" in t: return "Африка"
@@ -158,6 +158,28 @@ jobs:
                           if not p["website"] and e.get("website"): p["website"] = e["website"]
               except Exception as e2: print("prev merge err", e2)
           ann("notice", "COORDS", f"latlng_from_prev={coords} official_src={src_official}")
+
+          # ── страна из адреса для постов без гео-категории; континент по карте ──
+          C2C = {}
+          def reg(c, names):
+              for n in names: C2C[n.lower()] = c
+          reg("Азия", ["India","Bangladesh","Nepal","Sri Lanka","Pakistan","China","Hong Kong","Taiwan","Japan","South Korea","Korea","Malaysia","Singapore","Indonesia","Philippines","Thailand","Vietnam","Cambodia","Myanmar","Burma","Laos","Mongolia","Kazakhstan","Kyrgyzstan","Uzbekistan","Tajikistan","Azerbaijan","Armenia","Georgia","Israel","United Arab Emirates","UAE","Dubai","Bahrain","Qatar","Kuwait","Oman","Saudi Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives","Abkhazia"])
+          reg("Европа", ["United Kingdom","UK","England","Scotland","Wales","Ireland","France","Germany","Italy","Spain","Portugal","Netherlands","Holland","Belgium","Luxembourg","Switzerland","Austria","Poland","Czech Republic","Czechia","Slovakia","Hungary","Romania","Bulgaria","Greece","Croatia","Serbia","Bosnia","Slovenia","Macedonia","Albania","Montenegro","Denmark","Sweden","Norway","Finland","Iceland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Russia","Malta","Cyprus","Crimea"])
+          reg("Северная Америка", ["United States","United States of America","USA","U.S.A.","Canada","Mexico","Guatemala","Belize","Honduras","El Salvador","Nicaragua","Costa Rica","Panama","Cuba","Jamaica","Haiti","Dominican Republic","Bahamas","Barbados","Trinidad and Tobago","Trinidad & Tobago","Puerto Rico","Guyana","Suriname","Curacao","Grenada","St. Lucia","Saint Lucia"])
+          reg("Южная Америка", ["Brazil","Argentina","Chile","Peru","Colombia","Venezuela","Ecuador","Bolivia","Paraguay","Uruguay"])
+          reg("Африка", ["South Africa","Nigeria","Ghana","Kenya","Tanzania","Uganda","Ethiopia","Egypt","Morocco","Senegal","Ivory Coast","Cote d'Ivoire","Cameroon","Congo","Zambia","Zimbabwe","Botswana","Namibia","Mozambique","Malawi","Madagascar","Mauritius","Rwanda","Benin","Togo","Sierra Leone","Liberia","Gambia","Guinea","Mali","Angola","Swaziland","Eswatini","Lesotho","Reunion","Seychelles"])
+          reg("Океания", ["Australia","New Zealand","Fiji","Papua New Guinea","Samoa","Tonga","Vanuatu","New Caledonia","Solomon Islands"])
+          fixed = 0
+          for p in places.values():
+              if not p["country"] and p["address"]:
+                  parts = [x.strip() for x in p["address"].split(",") if x.strip()]
+                  for cand in reversed(parts[-2:]):
+                      c = re.sub(r"[\d\-– :]+$", "", cand).strip().rstrip(".")
+                      if c.lower() in C2C: p["country"] = c; break
+              if p["continent"] == "Другое" and p["country"]:
+                  cc = C2C.get(p["country"].lower())
+                  if cc: p["continent"] = cc; fixed += 1
+          ann("notice", "ADDR-CONT", f"fixed={fixed}")
 
           data = sorted(places.values(), key=lambda p: (p["continent"], p["country"], p["city"], p["name"]))
           for p in data:
