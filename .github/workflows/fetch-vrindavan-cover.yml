@@ -22,11 +22,12 @@ jobs:
           API = "https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&iiprop=url|size&format=json&titles="
           # Several candidates – pick the first that resolves to a reasonably large landscape JPG
           candidates = [
-              "File:At Krishna Balaram Mandir, Vrindavan, India, 2015-03-15.jpg",
               "File:Sri Krishna Balaram Temple, Vrindavan.JPG",
               "File:Krishna-Balaram-Mandir.JPG",
-              "File:In and around of Sri Krishna-Balaram Mandir, Vrindavan 01.jpg",
+              "File:In and around of Sri Krishna-Balaram Mandir, Vrindavan 22.jpg",
               "File:In and around of Sri Krishna-Balaram Mandir, Vrindavan 06.jpg",
+              "File:In and around of Sri Krishna-Balaram Mandir, Vrindavan 01.jpg",
+              "File:At Krishna Balaram Mandir, Vrindavan, India, 2015-03-15.jpg",
           ]
           chosen = None
           for title in candidates:
