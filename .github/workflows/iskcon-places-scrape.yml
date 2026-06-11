@@ -60,6 +60,7 @@ jobs:
               return None
           C2C = {}
           def reg(c, names):
+              for n in names: C2C[n.lower()] = c
           reg("Азия", ["India","Bangladesh","Nepal","Sri Lanka","Pakistan","China","Hong Kong","Taiwan","Japan","South Korea","Korea","Malaysia","Singapore","Indonesia","Philippines","Thailand","Vietnam","Cambodia","Myanmar","Burma","Laos","Mongolia","Kazakhstan","Kyrgyzstan","Uzbekistan","Tajikistan","Azerbaijan","Armenia","Georgia","Israel","United Arab Emirates","UAE","Dubai","Bahrain","Qatar","Kuwait","Oman","Saudi Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives","Abkhazia"])
           reg("Европа", ["United Kingdom","UK","England","Scotland","Wales","Ireland","France","Germany","Italy","Spain","Portugal","Netherlands","Holland","Belgium","Luxembourg","Switzerland","Austria","Poland","Czech Republic","Czechia","Slovakia","Hungary","Romania","Bulgaria","Greece","Croatia","Serbia","Bosnia","Slovenia","Macedonia","Albania","Montenegro","Denmark","Sweden","Norway","Finland","Iceland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Russia","Malta","Cyprus","Crimea"])
           reg("Северная Америка", ["United States","United States of America","USA","U.S.A.","Canada","Mexico","Guatemala","Belize","Honduras","El Salvador","Nicaragua","Costa Rica","Panama","Cuba","Jamaica","Haiti","Dominican Republic","Bahamas","Barbados","Trinidad and Tobago","Trinidad & Tobago","Puerto Rico","Guyana","Suriname","Curacao","Grenada","St. Lucia","Saint Lucia"])
