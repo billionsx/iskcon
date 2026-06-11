@@ -61,6 +61,20 @@ function PhotoGrid({ items, ratio = "4 / 3", cols = 2 }: { items: { src: string;
     </div>
   );
 }
+function Rail({ items, w = 230, ratio = "4 / 3" }: { items: { src: string; cap?: string; pos?: string }[]; w?: number; ratio?: string }) {
+  return (
+    <div style={{ marginTop: 14, display: "flex", gap: 10, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", paddingBottom: 6, margin: `14px -${PAD}px 0`, paddingLeft: PAD, paddingRight: PAD, scrollbarWidth: "none" }}>
+      {items.map((it, i) => (
+        <figure key={i} style={{ margin: 0, flex: "0 0 auto", width: w, scrollSnapAlign: "start" }}>
+          <div style={{ borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
+            <img src={it.src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover", objectPosition: it.pos || "center" }} />
+          </div>
+          {it.cap && <figcaption style={{ margin: "8px 2px 0", textAlign: "center", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.35 }}>{it.cap}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  );
+}
 function Quote({ children, center = false, size = 15, color = "var(--color-label)" }: { children: React.ReactNode; center?: boolean; size?: number; color?: string }) {
   return <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: size, lineHeight: 1.6, letterSpacing: TR_BODY, color, textAlign: center ? "center" : "left" }}>{children}</blockquote>;
 }
@@ -124,6 +138,42 @@ function StatTile({ v, l }: { v: string; l: string }) {
 }
 
 /* ───────── данные (ПОЛНЫЙ текст сайта) ───────── */
+const TEMPLES = [
+  { src: "/media/site/temple-mayapur.webp", cap: "Маяпур, Индия" },
+  { src: "/media/site/temple-tovp.webp", cap: "Храм ведического планетария" },
+  { src: "/media/site/temple-mumbai.webp", cap: "Мумбаи" },
+  { src: "/media/site/temple-chennai.webp", cap: "Ченнаи" },
+  { src: "/media/site/temple-delhi.webp", cap: "Нью-Дели" },
+  { src: "/media/site/temple-tirupati.webp", cap: "Тирупати" },
+  { src: "/media/site/temple-ahmedabad.webp", cap: "Ахмедабад" },
+  { src: "/media/site/temple-rohini.webp", cap: "Рохини" },
+  { src: "/media/site/temple-kanpur.webp", cap: "Канпур" },
+  { src: "/media/site/temple-noida.webp", cap: "Нойда" },
+  { src: "/media/site/temple-siliguri.webp", cap: "Силигури" },
+  { src: "/media/site/temple-ananthapur.webp", cap: "Анантапур" },
+  { src: "/media/site/temple-newvrindaban.webp", cap: "Нью-Вриндаван, США" },
+];
+const SP_LIFE = [
+  { src: "/media/site/sp-arrival.webp", cap: "Прибытие в Америку, 1965" },
+  { src: "/media/site/sp-japa.webp", cap: "Джапа-медитация" },
+  { src: "/media/site/sp-harmonium.webp", cap: "Киртан на фисгармонии" },
+  { src: "/media/site/sp-walk.webp", cap: "Утренняя прогулка с учениками" },
+  { src: "/media/site/sp-lecture.webp", cap: "Лекция по «Бхагавад-гите»" },
+  { src: "/media/site/sp-prasad.webp", cap: "Раздача прасада" },
+  { src: "/media/site/sp-banner.webp", cap: "Проповедь на улицах" },
+  { src: "/media/site/sp-beach.webp", cap: "С учениками у океана" },
+  { src: "/media/site/sp-portrait.webp", cap: "Шрила Прабхупада" },
+];
+const COMMUNITY = [
+  { src: "/media/site/fest-ratha1.webp", cap: "Ратха-ятра" },
+  { src: "/media/site/fest-ratha2.webp", cap: "Праздник колесниц" },
+  { src: "/media/site/fest-1.webp", cap: "Фестиваль" },
+  { src: "/media/site/fest-pandal.webp", cap: "Праздничный пандал" },
+  { src: "/media/site/fest-2.webp", cap: "Санкиртана" },
+  { src: "/media/site/prasad-thali.webp", cap: "Прасад — освящённая пища" },
+  { src: "/media/site/prasad-give.webp", cap: "Раздача прасада" },
+  { src: "/media/site/prasad-eat.webp", cap: "Праздник прасада" },
+];
 const STATS = [
   { v: "10+", l: "миллионов последователей" }, { v: "2 000+", l: "храмов по всему миру" },
   { v: "65+", l: "сельхоз-общин" }, { v: "8,7+", l: "млрд порций прасада" },
@@ -149,7 +199,7 @@ const VOICES = [
   { img: "jobs", c: "Я проходил 7 миль через весь город каждую неделю, чтобы в воскресенье вечером получить хорошее блюдо в храме Харе Кришна.", n: "Стив Джобс", r: "сооснователь Apple Inc." },
   { img: "", c: "Я прочитал 90 процентов «Бхагавад-гиты». Когда я её читаю, мой внутренний Арджуна направляется на верный путь.", n: "Уилл Смит", r: "голливудский актёр" },
   { img: "lennon", c: "Повторение мантры Харе Кришна — это вид медитации, который может действительно вызвать состояние экстаза.", n: "Джон Леннон", r: "музыкант, The Beatles" },
-  { img: "", c: "ИСККОН научил мир истинному значению веры.", n: "Нарендра Моди", r: "премьер-министр Индии" },
+  { img: "modi", c: "ИСККОН научил мир истинному значению веры.", n: "Нарендра Моди", r: "премьер-министр Индии" },
   { img: "harrison", c: "Он был идеальным примером всего, чему учил. Не имея ничего материального, но обладая сознанием Кришны, он привлёк тысячи преданных и основал целое движение, которое остаётся сильным даже после его ухода и продолжает расти с каждым днём.", n: "Джордж Харрисон", r: "музыкант, The Beatles" },
   { img: "mukherjee", c: "Я выражаю глубокую признательность и уважение Его Божественной Милости А. Ч. Бхактиведанте Свами Шриле Прабхупаде, который распространил послание сознания Кришны по всему миру. Его влияние продолжает звучать в сердцах преданных даже сегодня.", n: "Шри Пранаб Мукерджи", r: "13-й президент Индии" },
   { img: "sunak", c: "В самые трудные времена я получал учения из «Гиты», и именно «Гита» давала мне силу продолжать бороться за то, во что я верю.", n: "Риши Сунак", r: "премьер-министр Великобритании" },
@@ -237,21 +287,19 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {STATS.map((s) => <StatTile key={s.l} v={s.v} l={s.l} />)}
         </div>
-        <PhotoGrid ratio="4 / 3" items={[
-          { src: "/media/temple-mumbai.webp", cap: "Храм ИСККОН, Мумбаи" },
-          { src: "/media/temple-chennai.webp", cap: "Храм ИСККОН, Ченнаи" },
-          { src: "/media/temple-ahmedabad.webp", cap: "Храм ИСККОН, Ахмедабад" },
-          { src: "/media/tovp.webp", cap: "Храм ведического планетария, Маяпур" },
-        ]} />
+        <div style={{ marginTop: 24, fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>Храмы по всему миру</div>
+        <Rail w={230} ratio="4 / 3" items={TEMPLES} />
       </Section>
 
       {/* Высшая цель */}
       <Section>
         <SectionHead eyebrow="Высшая цель" title="Чистая любовь к Богу" subtitle="Движение Харе Кришна исследует науку чистой преданной любви к Богу, воплощённой в божественной паре: Кришне и Его высшей энергии любви, Шримати Радхарани (Харе)." />
         <Figure src="/media/radha-krishna.webp" ratio="16 / 10" caption="Божества Радхи и Кришны на алтаре" />
-        <PhotoGrid ratio="3 / 4" items={[
-          { src: "/media/krishna-portrait.webp", cap: "Шри Кришна — Верховная Личность Бога", pos: "center 20%" },
-          { src: "/media/radharani.webp", cap: "Шримати Радхарани — энергия любви Господа" },
+        <Rail w={152} ratio="3 / 4" items={[
+          { src: "/media/site/deity-radhakrishna.webp", cap: "Радха-Шьямасундара" },
+          { src: "/media/krishna-portrait.webp", cap: "Шри Кришна", pos: "center 20%" },
+          { src: "/media/radharani.webp", cap: "Шримати Радхарани" },
+          { src: "/media/site/deity-krishna.webp", cap: "Кришна с Радхарани" },
         ]} />
       </Section>
 
@@ -279,6 +327,11 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ padding: PAD, ...card }}>
           <Para>После года скитаний и привлечения первых последователей в Нью-Йорке Шрила Прабхупада зарегистрировал Международное общество сознания Кришны (ИСККОН) в июле 1966 года. Через месяц в The New York Times вышла статья «Свами поёт в парке в поисках экстаза» — о «50 последователях, которые хлопают и качаются под гипнотическую музыку на церемонии на Ист-Сайде». В мгновение ока популярность Движения Харе Кришна взлетела.</Para>
         </div>
+        <Figure src="/media/site/nyt-clip.webp" ratio="3 / 2" caption="The New York Times, 1966 — «Свами поёт в парке в поисках экстаза»" />
+        <PhotoGrid ratio="4 / 3" items={[
+          { src: "/media/site/hist-storefront.webp", cap: "Первый храм — 26 Second Avenue, Нью-Йорк" },
+          { src: "/media/site/hist-park.webp", cap: "Киртан в парке Томпкинс-сквер" },
+        ]} />
       </Section>
 
       {/* Высший образ жизни — grouped-список */}
@@ -316,6 +369,12 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
           { src: "/media/vrindavan.webp", cap: "Вриндаван — земля игр Кришны" },
           { src: "/media/mayapur.webp", cap: "Маяпур — место явления Шри Чайтаньи Махапрабху" },
         ]} />
+      </Section>
+
+      {/* Праздники, санкиртана и прасад */}
+      <Section>
+        <SectionHead eyebrow="Жизнь общины" title="Праздники и прасад" subtitle="Санкиртана, ратха-ятры и раздача освящённой пищи — живое сердце Движения Харе Кришна по всему миру." />
+        <Rail w={230} ratio="4 / 3" items={COMMUNITY} />
       </Section>
 
       {/* Миллиард книг */}
@@ -368,7 +427,9 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
           </div>
           <Para mt={16}>{BIO_AFTER}</Para>
         </div>
-        <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        <div style={{ marginTop: 22, fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>Жизнь в фотографиях</div>
+        <Rail w={230} ratio="4 / 3" items={SP_LIFE} />
+        <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {FACTS.map((f) => (
             <div key={f.t} style={{ padding: PAD, ...tile }}>
               <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{f.t}</div>
