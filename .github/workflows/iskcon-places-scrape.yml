@@ -18,10 +18,18 @@ jobs:
           set -e
           python3 -m pip install --quiet requests beautifulsoup4
           python3 - <<'PY'
-          import json, re, time, sys, os
+          import json, re, time, sys, os, traceback
           import requests
           from bs4 import BeautifulSoup
           from concurrent.futures import ThreadPoolExecutor, as_completed
+          def ann(level, title, msg):
+              msg = str(msg).replace("%","%25").replace("\r"," ").replace("\n"," | ")[:900]
+              print(f"::{level} title={title}::{msg}"); sys.stdout.flush()
+          ann("notice","SCRAPE","start v2")
+          def _hook(t,v,tb):
+              ann("error","SCRAPE-FAIL", "".join(traceback.format_exception(t,v,tb))[-850:])
+              sys.exit(1)
+          sys.excepthook=_hook
 
           S = requests.Session()
           S.headers.update({"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"})
@@ -61,7 +69,7 @@ jobs:
                   if 'class="next' not in html and "›" not in html and f"/page/{page+1}/" not in html: break
                   page += 1
               time.sleep(0.2)
-          print("slug→region:", len(slug_region))
+          print("slug→region:", len(slug_region)); ann("notice","REGIONS", f"slugs={len(slug_region)}")
 
           # ── 2) sitemap → канонические URL центров (ровно один сегмент slug) ──
           urls = set()
@@ -82,7 +90,7 @@ jobs:
               except Exception as e: print("sitemap", sm, "err", e)
           urls |= set(slug_region)  # регионы могли дать слаги, отсутствующие в sitemap
           slugs = sorted(urls)
-          print("centre slugs:", len(slugs))
+          print("centre slugs:", len(slugs)); ann("notice","SLUGS", f"total={len(slugs)}")
 
           def txt(el): return re.sub(r"\s+", " ", el.get_text(" ", strip=True)) if el else ""
 
@@ -140,7 +148,7 @@ jobs:
                   elif r: places[r["id"]] = r; ok += 1
                   else: err += 1
                   if done % 60 == 0: print(f"...{done}/{len(slugs)} ok={ok} err={err}"); sys.stdout.flush()
-          print(f"OFFICIAL parsed ok={ok} err={err}")
+          print(f"OFFICIAL parsed ok={ok} err={err}"); ann("notice","OFFICIAL", f"ok={ok} err={err}")
 
           # ── 3) iskcondesiretree: страны → адрес/телефон/email/сайт; merge по имени ──
           DT = "https://centers.iskcondesiretree.com"
@@ -177,7 +185,7 @@ jobs:
               with ThreadPoolExecutor(max_workers=10) as ex:
                   for f in as_completed({ex.submit(dt_country, c): c for c in countries}):
                       dt_entries += f.result()
-              print("DT entries:", len(dt_entries))
+              print("DT entries:", len(dt_entries)); ann("notice","DT", f"entries={len(dt_entries)}")
           except Exception as e:
               print("DT failed:", e)
 
@@ -202,7 +210,7 @@ jobs:
                   if not p["website"] and e["website"]:
                       w = e["website"]; p["website"] = w if w.startswith("http") else "https://" + w
                   if not p["country"]: p["country"] = e["country"]
-          print("merged with DT:", merged)
+          print("merged with DT:", merged); ann("notice","MERGE", f"merged={merged}")
 
           # страна из адреса, если ещё пусто
           for p in places.values():
@@ -224,7 +232,7 @@ jobs:
           with_reg = sum(1 for p in data if p["continent"] != "Другое")
           with_addr = sum(1 for p in data if p["address"])
           with_ph = sum(1 for p in data if p["phone"])
-          print(f"TOTAL={len(data)} restaurants={rest_n} regioned={with_reg} addr={with_addr} phone={with_ph}")
+          ann("notice","TOTAL", f"places={len(data)} rest={rest_n} regioned={with_reg} addr={with_addr} phone={with_ph}")
           assert len(data) >= 150, f"Too few: {len(data)}"
           assert with_reg >= len(data) * 0.6, f"Regions failed: {with_reg}/{len(data)}"
           os.makedirs("apps/web/public/data", exist_ok=True)
