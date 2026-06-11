@@ -13,9 +13,12 @@ permissions: {}
 jobs:
   probe:
     runs-on: ubuntu-latest
+    env:
+      U: ${{ github.event.inputs.url }}
+      P: ${{ github.event.inputs.pattern }}
     steps:
       - name: GREP
         run: |
-          OUT=$(curl -sL "${{ github.event.inputs.url }}" | grep -oE "${{ github.event.inputs.pattern }}" | sort | uniq -c | sort -rn | head -30 | tr '\n' ' | ')
+          OUT=$(curl -sL "$U" | grep -oE "$P" | sort | uniq -c | sort -rn | head -30 | tr '\n' '|')
           echo "$OUT"
           echo "::notice title=GREP::${OUT:0:900}"
