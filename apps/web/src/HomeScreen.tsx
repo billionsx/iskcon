@@ -11,7 +11,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { BOOKS } from "./books";
+import { BOOKS, AUDIO_WORKS } from "./books";
+import { BookHeroCard } from "./BookHeroCard";
 import { ChevRightIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
@@ -226,11 +227,6 @@ const VOICES = [
   { img: "mukherjee", c: "Я выражаю глубокую признательность и уважение Его Божественной Милости А. Ч. Бхактиведанте Свами Шриле Прабхупаде, который распространил послание сознания Кришны по всему миру. Его влияние продолжает звучать в сердцах преданных даже сегодня.", n: "Шри Пранаб Мукерджи", r: "13-й президент Индии" },
   { img: "sunak", c: "В самые трудные времена я получал учения из «Гиты», и именно «Гита» давала мне силу продолжать бороться за то, во что я верю.", n: "Риши Сунак", r: "премьер-министр Великобритании" },
 ];
-const BOOKLIST = [
-  { work: "bg", t: "Бхагавад-гита как она есть", d: "Вечный диалог между Кришной (Богом) и Арджуной (душой), в котором Кришна даёт практические наставления о том, как правильно организовать свою жизнь и достичь духовного совершенства, чтобы вернуться домой к Богу." },
-  { work: "sb", t: "Шримад-Бхагаватам", d: "Великий древний текст, который описывает, как Верховная Личность Бога, Кришна, приходит в различных формах, в разные эпохи и к людям с разной степенью преданности к Богу." },
-  { work: "cc", t: "Шри Чайтанья-чаритамрита", d: "Священный текст о божественных играх самой милостивой формы Бога — Шри Чайтаньи Махапрабху, объединённого воплощения Кришны и Шримати Радхарани (Харе), пришедшего даровать всем чистую любовь к Богу." },
-];
 const TIMELINE = [
   { y: "1896", d: "Родился в Калькутте в благочестивой вайшнавской семье; родители назвали его Абхай Чаран — «бесстрашный, принявший прибежище у лотосных стоп Господа»." },
   { y: "1922", d: "Судьбоносная встреча с духовным учителем — Шрилой Бхактисиддхантой Сарасвати, давшим наказ: нести учение бхакти на английском языке всему миру." },
@@ -252,11 +248,13 @@ const PURPOSES = [
 ];
 
 /* ───────── экран ───────── */
-export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonate }: {
+export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonate, onBookMenu, flash }: {
   onChange: (tab: string) => void;
   onOpenBook: (work: string) => void;
   onOpenEntity: (id: string, type: string | null) => void;
   onDonate: () => void;
+  onBookMenu: (work: string, id: string) => void;
+  flash: (m: string) => void;
 }) {
   useEffect(() => { fetch(api("/entities/prabhupada")).catch(() => {}); }, []);
 
@@ -367,21 +365,22 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <Mosaic items={COMMUNITY} />
       </Section>
 
-      {/* Книги — слайдер полных карточек */}
+      {/* Книги — слайдер настоящих ВКП (как на витрине библиотеки) */}
       <Section>
         <SectionHead eyebrow="Библиотека" title="Миллиард духовных книг" subtitle="ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога." />
         <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch",
           margin: `4px -${PAD}px 0`, padding: `12px ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
-          {BOOKLIST.map((b) => (
-            <button key={b.work} type="button" onClick={() => onOpenBook(b.work)}
-              onPointerDown={(e) => (e.currentTarget.style.opacity = "0.78")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
-              style={{ flex: "0 0 88%", scrollSnapAlign: "center", padding: "30px 22px 26px", textAlign: "center", cursor: "pointer", border: "none", ...fill, borderRadius: 24 }}>
-              <img src={BOOKS[b.work]?.covers?.[0]} alt="" loading="lazy"
-                style={{ height: 240, width: "auto", maxWidth: "70%", objectFit: "contain", borderRadius: 10, boxShadow: "0 22px 44px -20px rgba(0,0,0,0.5)" }} />
-              <span style={{ display: "block", margin: "22px auto 0", maxWidth: 420, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, letterSpacing: TR_TITLE, lineHeight: 1.2, color: "var(--color-label)" }}>{b.t}</span>
-              <span style={{ display: "block", margin: "10px auto 0", maxWidth: 440, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{b.d}</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 2, marginTop: 16, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 700, color: GOLD }}>Читать онлайн <ChevRightIcon size={15} /></span>
-            </button>
+          {(["bg", "sb", "cc"] as const).map((work) => (
+            <div key={work} style={{ flex: "0 0 88%", scrollSnapAlign: "center" }}>
+              <BookHeroCard
+                book={BOOKS[work]}
+                topLeft={<MaskMark src="/bbt.svg" size={26} color="#fff" />}
+                onOpen={() => onOpenBook(work)}
+                flash={flash}
+                onListen={AUDIO_WORKS[work] ? undefined : () => flash("Аудиокнига — скоро")}
+                onMenuSelect={(id) => onBookMenu(work, id)}
+              />
+            </div>
           ))}
           <div aria-hidden style={{ flex: `0 0 ${PAD - 12}px` }} />
         </div>
@@ -406,18 +405,12 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 22, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>Жизнь в фотографиях</div>
         <SquareGrid items={SP_LIFE} />
-        <button type="button" onClick={() => onOpenEntity("prabhupada", "personality")}
-          onPointerDown={(e) => (e.currentTarget.style.opacity = "0.85")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
-          style={{ marginTop: 18, width: "100%", padding: "14px 0", borderRadius: 16, border: "none", background: "var(--color-brand-blue)", color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, letterSpacing: TR_BODY, cursor: "pointer" }}>
-          Жизнь и наследие — полная биография
-        </button>
       </Section>
 
       {/* Принципы */}
       <Section>
-        <SectionHead eyebrow="Принципы" title="Ничего лишнего" subtitle="Четыре регулирующих принципа свободы." />
+        <SectionHead eyebrow="Принципы ИСККОН" title="Ничего лишнего" subtitle="Четыре регулирующих принципа свободы." />
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {PRINCIPLES.map((p) => (
             <div key={p.t} style={{ padding: PAD, ...fill, borderRadius: 16 }}>
@@ -428,12 +421,12 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         </div>
       </Section>
 
-      {/* Влияние на мир — редакторский формат */}
+      {/* На всей планете — редакторский формат с минималистическими разделителями */}
       <Section>
-        <SectionHead eyebrow="Влияние" title="Влияние на весь мир" subtitle="Лидеры об ИСККОН и Движении Харе Кришна." />
-        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-          {VOICES.map((v) => (
-            <figure key={v.n} style={{ margin: 0 }}>
+        <SectionHead eyebrow="На всей планете" title="Влияние на весь мир" subtitle="Лидеры об ИСККОН и Движении Харе Кришна." />
+        <div>
+          {VOICES.map((v, i) => (
+            <figure key={v.n} style={{ margin: 0, paddingTop: i ? 24 : 0, paddingBottom: 24, borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
               <Quote size={17.5}>«{v.c}»</Quote>
               <figcaption style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
                 <img src={`/media/voices/${v.img}.webp`} alt="" loading="lazy" style={{ flexShrink: 0, width: 40, height: 40, borderRadius: "50%", objectFit: "cover", background: IMG_BG }} />
