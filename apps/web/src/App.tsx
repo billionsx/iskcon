@@ -95,7 +95,7 @@ const TABS = [
   { id: "home", label: "Главная", src: "/iskcon.svg", wide: true },
   { id: "books", label: "Книги", src: "/bbt.svg", wide: false },
   { id: "kirtans", label: "Киртаны", src: "/gauranga.svg", wide: false },
-  { id: "acharya", label: "Ачарья", src: "/prabhupada.svg", wide: false },
+  { id: "acharya", label: "Герои", src: "/prabhupada.svg", wide: false },
   { id: "dhama", label: "Дхама", src: "/vraj.svg", wide: false },
   { id: "account", label: "Личный кабинет", src: null, wide: false },
 ] as const;

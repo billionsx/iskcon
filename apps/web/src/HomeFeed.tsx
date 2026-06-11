@@ -1,22 +1,173 @@
 /**
- * HomeFeed — «Лента ISKCON»: интеграция с публичным Telegram-каналом @iskcone.
- * Посты приходят с воркера (/api/tg/iskcone — парсинг t.me/s/iskcone, кеш 10 мин).
- * Карточка: дата · текст · фото · просмотры · «Открыть в Telegram».
+ * HomeFeed — «Лента ISKCON»: публичный Telegram-канал @iskcone полностью,
+ * как в Telegram: текст со ссылками, фото-альбомы, видео (превью + длительность,
+ * проигрывание в приложении где доступно), голосовые и аудио, превью ссылок.
+ * Данные — с воркера /api/tg/iskcone (парсинг t.me/s, кеш 5 мин).
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 
 const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
-interface TgPost { id: string; date: string; text: string; photo: string | null; views: string }
+interface TgSeg { t: "t" | "a"; v: string; href?: string }
+interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }
+interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: string; src: string | null }
+interface TgLink { href: string; title: string; desc: string; img: string | null }
+interface TgPost {
+  id: string; date: string; views: string; text: string;
+  rich: TgSeg[]; photos: string[]; videos: TgVideo[]; audios: TgAudio[]; link: TgLink | null;
+}
+
+const postUrl = (id: string) => `https://t.me/iskcone/${id}`;
 
 function fmtDate(iso: string): string {
   if (!iso) return "";
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
-  } catch { return ""; }
+  try { return new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }); }
+  catch { return ""; }
+}
+
+/* ── текст поста: сегменты с живыми ссылками ── */
+function RichText({ rich, clampTo }: { rich: TgSeg[]; clampTo: number | null }) {
+  let used = 0;
+  const out: React.ReactNode[] = [];
+  for (let i = 0; i < rich.length; i++) {
+    const s = rich[i];
+    let v = s.v;
+    if (clampTo !== null) {
+      if (used >= clampTo) break;
+      if (used + v.length > clampTo) v = v.slice(0, clampTo - used).replace(/\s+\S*$/, "") + "…";
+      used += s.v.length;
+    }
+    if (s.t === "a" && s.href) {
+      out.push(
+        <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600, wordBreak: "break-word" }}>{v}</a>
+      );
+    } else out.push(<span key={i}>{v}</span>);
+  }
+  return (
+    <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+      {out}
+    </p>
+  );
+}
+
+/* ── фото: 1 — во всю ширину, 2+ — сетка как в Telegram ── */
+function TgPhotos({ photos }: { photos: string[] }) {
+  if (photos.length === 1) {
+    return (
+      <div style={{ background: "var(--color-glass-regular)" }}>
+        <img src={photos[0]} alt="" loading="lazy" style={{ width: "100%", display: "block", maxHeight: 420, objectFit: "cover" }} />
+      </div>
+    );
+  }
+  const odd = photos.length % 2 === 1;
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: "var(--color-glass-regular)" }}>
+      {photos.map((src, i) => (
+        <img key={i} src={src} alt="" loading="lazy"
+          style={{ width: "100%", height: "100%", display: "block", objectFit: "cover",
+            aspectRatio: odd && i === 0 ? "2 / 1" : "1 / 1", gridColumn: odd && i === 0 ? "1 / -1" : undefined }} />
+      ))}
+    </div>
+  );
+}
+
+/* ── видео: превью + длительность; тап — проигрывание здесь либо пост в Telegram ── */
+function TgVideoBox({ v, id }: { v: TgVideo; id: string }) {
+  const [playing, setPlaying] = useState(false);
+  const open = () => { if (v.src) setPlaying(true); else window.open(postUrl(id), "_blank", "noopener"); };
+  if (playing && v.src) {
+    return (
+      <div style={{ background: "#000" }}>
+        <video src={v.src} poster={v.thumb || undefined} controls autoPlay playsInline
+          onError={() => { setPlaying(false); window.open(postUrl(id), "_blank", "noopener"); }}
+          style={{ width: "100%", display: "block", maxHeight: 440, ...(v.round ? { aspectRatio: "1 / 1", borderRadius: "50%", objectFit: "cover", maxWidth: 280, margin: "14px auto" } : {}) }} />
+      </div>
+    );
+  }
+  return (
+    <div role="button" tabIndex={0} aria-label="Смотреть видео" onClick={open}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } }}
+      style={{ position: "relative", cursor: "pointer", background: "#000", WebkitTapHighlightColor: "transparent",
+        ...(v.round ? { width: 240, height: 240, borderRadius: "50%", overflow: "hidden", margin: "14px auto" } : {}) }}>
+      {v.thumb
+        ? <img src={v.thumb} alt="" loading="lazy" style={{ width: "100%", height: v.round ? "100%" : undefined, display: "block", objectFit: "cover", ...(v.round ? {} : { aspectRatio: "16 / 9" }) }} />
+        : <div style={{ aspectRatio: v.round ? "1 / 1" : "16 / 9", background: "var(--color-glass-regular)" }} />}
+      <span aria-hidden style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
+        <span style={{ width: 54, height: 54, borderRadius: "50%", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", display: "grid", placeItems: "center" }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" style={{ marginLeft: 3 }}><path d="M8 5v14l11-7z" fill="#fff" /></svg>
+        </span>
+      </span>
+      {v.duration && (
+        <span style={{ position: "absolute", left: 10, bottom: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, color: "#fff", letterSpacing: "0.2px" }}>{v.duration}</span>
+      )}
+    </div>
+  );
+}
+
+/* ── голосовое с прямым src: мини-плеер в приложении ── */
+function VoicePlayer({ a }: { a: TgAudio }) {
+  const ref = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [pct, setPct] = useState(0);
+  const toggle = () => { const el = ref.current; if (!el) return; if (playing) el.pause(); else void el.play(); };
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-glass-regular)" }}>
+      <audio ref={ref} src={a.src || undefined} preload="none"
+        onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setPct(0); }}
+        onTimeUpdate={(e) => { const el = e.currentTarget; if (el.duration) setPct(el.currentTime / el.duration); }} />
+      <button type="button" aria-label={playing ? "Пауза" : "Слушать"} onClick={toggle}
+        style={{ width: 40, height: 40, flexShrink: 0, borderRadius: "50%", border: "none", background: GOLD, color: "#fff", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+        {playing
+          ? <svg width="15" height="15" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg>
+          : <svg width="15" height="15" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" fill="currentColor" /></svg>}
+      </button>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)" }}>{a.title}</div>
+        <div style={{ position: "relative", height: 4, marginTop: 7, borderRadius: 999, background: "var(--color-glass-thin)" }}>
+          <span style={{ position: "absolute", inset: 0, width: `${pct * 100}%`, borderRadius: 999, background: GOLD, transition: "width .2s linear" }} />
+        </div>
+      </div>
+      {a.meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>{a.meta}</span>}
+    </div>
+  );
+}
+
+/* ── аудио и файлы: карточка как в Telegram, открывается в Telegram ── */
+function TgAudioCard({ a, id }: { a: TgAudio; id: string }) {
+  if (a.kind === "voice" && a.src) return <VoicePlayer a={a} />;
+  return (
+    <a href={postUrl(id)} target="_blank" rel="noopener noreferrer"
+      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-glass-regular)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+      <span aria-hidden style={{ width: 40, height: 40, flexShrink: 0, borderRadius: "50%", background: GOLD, display: "grid", placeItems: "center" }}>
+        {a.kind === "file"
+          ? <svg width="17" height="17" viewBox="0 0 24 24"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinejoin="round" /><path d="M14 2v5h5" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinejoin="round" /></svg>
+          : <svg width="17" height="17" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /><circle cx="6.5" cy="18" r="2.5" fill="#fff" /><circle cx="16.5" cy="16" r="2.5" fill="#fff" /></svg>}
+      </span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</span>
+        {a.meta && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>{a.meta} · слушать в Telegram</span>}
+      </span>
+      <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </a>
+  );
+}
+
+/* ── превью ссылки ── */
+function TgLinkCard({ l }: { l: TgLink }) {
+  return (
+    <a href={l.href} target="_blank" rel="noopener noreferrer"
+      style={{ display: "block", margin: "10px 0 0", borderRadius: 16, overflow: "hidden", border: "1px solid var(--color-separator)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+      {l.img && <img src={l.img} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 8", objectFit: "cover" }} />}
+      <span style={{ display: "block", padding: "10px 14px 12px" }}>
+        {l.title && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 700, color: "var(--color-label)" }}>{l.title}</span>}
+        {l.desc && <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{l.desc}</span>}
+      </span>
+    </a>
+  );
 }
 
 export function HomeFeed() {
@@ -57,22 +208,18 @@ export function HomeFeed() {
             {posts.map((p) => {
               const long = p.text.length > 420;
               const open = expanded.has(p.id);
-              const shown = long && !open ? p.text.slice(0, 400).replace(/\s+\S*$/, "") + "…" : p.text;
               return (
                 <article key={p.id} style={{ overflow: "hidden", ...fill }}>
-                  {p.photo && (
-                    <div style={{ background: "var(--color-glass-regular)" }}>
-                      <img src={p.photo} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 10", objectFit: "cover" }} />
-                    </div>
-                  )}
+                  {p.photos.length > 0 && <TgPhotos photos={p.photos} />}
+                  {p.videos.map((v, i) => <TgVideoBox key={i} v={v} id={p.id} />)}
                   <div style={{ padding: 16 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>
                       <span>{fmtDate(p.date)}</span>
                       {p.views && <><span aria-hidden>·</span><span>{p.views} просмотров</span></>}
                     </div>
-                    {shown && (
-                      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "pre-wrap" }}>{shown}</p>
-                    )}
+                    {p.rich.length > 0 && <RichText rich={p.rich} clampTo={long && !open ? 400 : null} />}
+                    {p.audios.map((a, i) => <TgAudioCard key={i} a={a} id={p.id} />)}
+                    {p.link && <TgLinkCard l={p.link} />}
                     <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
                       {long && (
                         <button type="button" onClick={() => setExpanded((s) => { const n = new Set(s); if (open) n.delete(p.id); else n.add(p.id); return n; })}
@@ -80,10 +227,10 @@ export function HomeFeed() {
                           {open ? "Свернуть" : "Читать полностью"}
                         </button>
                       )}
-                      <a href={`https://t.me/iskcone/${p.id}`} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "inline-flex", alignItems: "center", gap: 3, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-brand-blue)", textDecoration: "none" }}>
+                      <a href={postUrl(p.id)} target="_blank" rel="noopener noreferrer"
+                        style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 4, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-brand-blue)", textDecoration: "none" }}>
                         Открыть в Telegram
-                        <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                       </a>
                     </div>
                   </div>
@@ -92,9 +239,9 @@ export function HomeFeed() {
             })}
           </div>
         )}
-        {posts && posts.length === 0 && !err && (
+        {posts && posts.length === 0 && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>
-            Постов пока нет. <a href="https://t.me/iskcone" target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a>
+            Пока нет постов. <a href="https://t.me/iskcone" target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a>
           </div>
         )}
       </div>
