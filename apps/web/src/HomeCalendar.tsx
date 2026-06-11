@@ -214,7 +214,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       )}
 
       <div style={{ height: 10 }} />
-      <SectionSubTabs ariaLabel="Фильтр календаря" tone="light" top={stickyTop} bleed={16}
+      <SectionSubTabs variant="chips" ariaLabel="Фильтр календаря" tone="light" top={stickyTop} bleed={16}
         items={[{ id: "all", label: "Все" }, { id: "ekadasi", label: "Экадаши" }, { id: "festival", label: "Праздники" }, { id: "vaisnava", label: "Вайшнавы" }]}
         active={filt} onChange={(id) => setFilt(id as typeof filt)} />
 

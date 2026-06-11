@@ -237,14 +237,14 @@ export function HomePlaces({ kind, stickyTop }: { kind: "centre" | "restaurant";
 
       {/* Tier-2: континенты */}
       <div style={{ height: 10 }} />
-      <SectionSubTabs ariaLabel="Континенты" tone="light" top={stickyTop} bleed={16}
+      <SectionSubTabs variant="chips" ariaLabel="Континенты" tone="light" top={stickyTop} bleed={16}
         navRef={(el) => { t2Ref.current = el; if (el) setT2H(el.offsetHeight); }}
         items={[{ id: "all", label: "Все" }, ...continents.map((c) => ({ id: c, label: c }))]}
         active={cont} onChange={setCont} />
 
       {/* Tier-3: страны выбранного континента */}
       {cont !== "all" && countries.length > 1 && (
-        <SectionSubTabs ariaLabel="Страны" tone="light" top={stickyTop + t2H} bleed={16}
+        <SectionSubTabs variant="chips" ariaLabel="Страны" tone="light" top={stickyTop + t2H} bleed={16}
           items={[{ id: "all", label: "Все страны" }, ...countries.map((c) => ({ id: c.id, label: c.ru }))]}
           active={ctry} onChange={setCtry} />
       )}
