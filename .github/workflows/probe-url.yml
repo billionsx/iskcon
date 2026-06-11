@@ -1,0 +1,25 @@
+name: Probe any URL
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Full URL to GET"
+        required: true
+
+permissions: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: GET
+        run: |
+          BODY=$(curl -sL -w "\nHTTPCODE=%{http_code}" "${{ github.event.inputs.url }}" | head -c 6000)
+          echo "$BODY"
+          M=$(echo "$BODY" | tr '\n' ' ' | head -c 800)
+          echo "::notice title=P1::${M}"
+          M2=$(echo "$BODY" | tr '\n' ' ' | cut -c 801-1600)
+          echo "::notice title=P2::${M2}"
+          M3=$(echo "$BODY" | tr '\n' ' ' | cut -c 1601-2400)
+          echo "::notice title=P3::${M3}"
