@@ -1,66 +1,705 @@
 {
-  "source": "vaisnavacalendar.info (GCal 11)",
-  "note": "Каждый ключ подтверждён живой пробой ICS-2026.",
-  "countries": [
-    { "country": "Святые дхамы (Индия)", "cities": [
-      { "ru": "Маяпур", "key": "Mayapur [India]" },
-      { "ru": "Вриндаван", "key": "Vrindavan [India]" }
-    ]},
-    { "country": "Индия", "cities": [
-      { "ru": "Дели", "key": "Delhi [India]" },
-      { "ru": "Мумбаи", "key": "Bombay [India]" },
-      { "ru": "Калькутта", "key": "Calcutta [India]" },
-      { "ru": "Ченнай", "key": "Madras [India]" },
-      { "ru": "Бангалор", "key": "Bangalore [India]" }
-    ]},
-    { "country": "Россия", "cities": [
-      { "ru": "Москва", "key": "Moskva [Russia]" },
-      { "ru": "Санкт-Петербург", "key": "Saint Petersburg [Russia]" },
-      { "ru": "Новосибирск", "key": "Novosibirsk [Russia]" }
-    ]},
-    { "country": "Украина", "cities": [ { "ru": "Киев", "key": "Kiev [Ukraine]" } ]},
-    { "country": "Беларусь", "cities": [ { "ru": "Минск", "key": "Minsk [Belarus]" } ]},
-    { "country": "Молдова", "cities": [ { "ru": "Кишинёв", "key": "Chisinau [Moldova]" } ]},
-    { "country": "Грузия", "cities": [ { "ru": "Тбилиси", "key": "Tbilisi [Georgia]" } ]},
-    { "country": "Армения", "cities": [ { "ru": "Ереван", "key": "Yerevan [Armenia]" } ]},
-    { "country": "Литва", "cities": [ { "ru": "Вильнюс", "key": "Vilnius [Lithuania]" } ]},
-    { "country": "Казахстан", "cities": [ { "ru": "Алматы", "key": "Almaty [Kazakhstan]" } ]},
-    { "country": "Узбекистан", "cities": [ { "ru": "Ташкент", "key": "Tashkent [Uzbekistan]" } ]},
-    { "country": "Великобритания", "cities": [ { "ru": "Лондон", "key": "London [United Kingdom]" } ]},
-    { "country": "Германия", "cities": [ { "ru": "Берлин", "key": "Berlin [Germany]" } ]},
-    { "country": "Франция", "cities": [ { "ru": "Париж", "key": "Paris [France]" } ]},
-    { "country": "Швейцария", "cities": [ { "ru": "Цюрих", "key": "Zurich [Switzerland]" } ]},
-    { "country": "Италия", "cities": [ { "ru": "Рим", "key": "Rome [Italy]" } ]},
-    { "country": "Испания", "cities": [ { "ru": "Мадрид", "key": "Madrid [Spain]" } ]},
-    { "country": "Нидерланды", "cities": [ { "ru": "Амстердам", "key": "Amsterdam [Netherlands]" } ]},
-    { "country": "Венгрия", "cities": [ { "ru": "Будапешт", "key": "Budapest [Hungary]" } ]},
-    { "country": "Польша", "cities": [ { "ru": "Варшава", "key": "Warsaw [Poland]" } ]},
-    { "country": "Болгария", "cities": [ { "ru": "София", "key": "Sofia [Bulgaria]" } ]},
-    { "country": "Швеция", "cities": [ { "ru": "Стокгольм", "key": "Stockholm [Sweden]" } ]},
-    { "country": "Финляндия", "cities": [ { "ru": "Хельсинки", "key": "Helsinki [Finland]" } ]},
-    { "country": "Бангладеш", "cities": [ { "ru": "Дакка", "key": "Dhaka [Bangladesh]" } ]},
-    { "country": "Шри-Ланка", "cities": [ { "ru": "Коломбо", "key": "Colombo [Sri Lanka]" } ]},
-    { "country": "Малайзия", "cities": [ { "ru": "Куала-Лумпур", "key": "Kuala Lumpur [Malaysia]" } ]},
-    { "country": "Сингапур", "cities": [ { "ru": "Сингапур", "key": "Singapore [Singapore]" } ]},
-    { "country": "Индонезия", "cities": [ { "ru": "Джакарта", "key": "Jakarta [Indonesia]" } ]},
-    { "country": "Таиланд", "cities": [ { "ru": "Бангкок", "key": "Bangkok [Thailand]" } ]},
-    { "country": "Гонконг", "cities": [ { "ru": "Гонконг", "key": "Hong Kong [Hong Kong]" } ]},
-    { "country": "Япония", "cities": [ { "ru": "Токио", "key": "Tokyo [Japan]" } ]},
-    { "country": "Кения", "cities": [ { "ru": "Найроби", "key": "Nairobi [Kenya]" } ]},
-    { "country": "Нигерия", "cities": [ { "ru": "Лагос", "key": "Lagos [Nigeria]" } ]},
-    { "country": "ЮАР", "cities": [ { "ru": "Дурбан", "key": "Durban [South Africa]" } ]},
-    { "country": "Канада и США (по часовым поясам)", "cities": [
-      { "ru": "Монреаль · EST", "key": "Montreal [Canada]" },
-      { "ru": "Торонто · EST", "key": "Toronto [Canada]" },
-      { "ru": "Калгари · MST", "key": "Calgary [Canada]" },
-      { "ru": "Ванкувер · PST", "key": "Vancouver [Canada]" }
-    ]},
-    { "country": "Мексика", "cities": [ { "ru": "Мехико", "key": "Mexico City [Mexico]" } ]},
-    { "country": "Бразилия", "cities": [ { "ru": "Сан-Паулу", "key": "Sao Paulo [Brazil]" } ]},
-    { "country": "Аргентина", "cities": [ { "ru": "Буэнос-Айрес", "key": "Buenos Aires [Argentina]" } ]},
-    { "country": "Перу", "cities": [ { "ru": "Лима", "key": "Lima [Peru]" } ]},
-    { "country": "Чили", "cities": [ { "ru": "Сантьяго", "key": "Santiago [Chile]" } ]},
-    { "country": "Австралия", "cities": [ { "ru": "Сидней", "key": "Sydney [Australia]" } ]},
-    { "country": "Новая Зеландия", "cities": [ { "ru": "Окленд", "key": "Auckland [New Zealand]" } ]}
-  ]
+ "source": "vaisnavacalendar.info (GCal 11)",
+ "note": "Каждый ключ подтверждён живой пробой ICS-2026. Городов: 91.",
+ "countries": [
+  {
+   "country": "Святые дхамы (Индия)",
+   "cities": [
+    {
+     "ru": "Маяпур",
+     "key": "Mayapur [India]"
+    },
+    {
+     "ru": "Вриндаван",
+     "key": "Vrindavan [India]"
+    }
+   ]
+  },
+  {
+   "country": "Индия",
+   "cities": [
+    {
+     "ru": "Бангалор",
+     "key": "Bangalore [India]"
+    },
+    {
+     "ru": "Дели",
+     "key": "Delhi [India]"
+    },
+    {
+     "ru": "Калькутта",
+     "key": "Calcutta [India]"
+    },
+    {
+     "ru": "Лакхнау",
+     "key": "Lucknow [India]"
+    },
+    {
+     "ru": "Мумбаи",
+     "key": "Bombay [India]"
+    },
+    {
+     "ru": "Нагпур",
+     "key": "Nagpur [India]"
+    },
+    {
+     "ru": "Пуна",
+     "key": "Pune [India]"
+    },
+    {
+     "ru": "Хайдарабад",
+     "key": "Hyderabad [India]"
+    },
+    {
+     "ru": "Ченнай",
+     "key": "Madras [India]"
+    }
+   ]
+  },
+  {
+   "country": "Россия",
+   "cities": [
+    {
+     "ru": "Владивосток",
+     "key": "Vladivostok [Russia]"
+    },
+    {
+     "ru": "Москва",
+     "key": "Moskva [Russia]"
+    },
+    {
+     "ru": "Новосибирск",
+     "key": "Novosibirsk [Russia]"
+    },
+    {
+     "ru": "Пермь",
+     "key": "Perm [Russia]"
+    },
+    {
+     "ru": "Санкт-Петербург",
+     "key": "Saint Petersburg [Russia]"
+    }
+   ]
+  },
+  {
+   "country": "Украина",
+   "cities": [
+    {
+     "ru": "Киев",
+     "key": "Kiev [Ukraine]"
+    }
+   ]
+  },
+  {
+   "country": "Беларусь",
+   "cities": [
+    {
+     "ru": "Минск",
+     "key": "Minsk [Belarus]"
+    }
+   ]
+  },
+  {
+   "country": "Австралия",
+   "cities": [
+    {
+     "ru": "Аделаида",
+     "key": "Adelaide [Australia]"
+    },
+    {
+     "ru": "Брисбен",
+     "key": "Brisbane [Australia]"
+    },
+    {
+     "ru": "Мельбурн",
+     "key": "Melbourne [Australia]"
+    },
+    {
+     "ru": "Перт",
+     "key": "Perth [Australia]"
+    },
+    {
+     "ru": "Сидней",
+     "key": "Sydney [Australia]"
+    }
+   ]
+  },
+  {
+   "country": "Австрия",
+   "cities": [
+    {
+     "ru": "Вена",
+     "key": "Vienna [Austria]"
+    }
+   ]
+  },
+  {
+   "country": "Аргентина",
+   "cities": [
+    {
+     "ru": "Буэнос-Айрес",
+     "key": "Buenos Aires [Argentina]"
+    }
+   ]
+  },
+  {
+   "country": "Армения",
+   "cities": [
+    {
+     "ru": "Ереван",
+     "key": "Yerevan [Armenia]"
+    }
+   ]
+  },
+  {
+   "country": "Бангладеш",
+   "cities": [
+    {
+     "ru": "Дакка",
+     "key": "Dhaka [Bangladesh]"
+    }
+   ]
+  },
+  {
+   "country": "Бельгия",
+   "cities": [
+    {
+     "ru": "Брюссель",
+     "key": "Brussels [Belgium]"
+    }
+   ]
+  },
+  {
+   "country": "Болгария",
+   "cities": [
+    {
+     "ru": "София",
+     "key": "Sofia [Bulgaria]"
+    }
+   ]
+  },
+  {
+   "country": "Боливия",
+   "cities": [
+    {
+     "ru": "Ла-Пас",
+     "key": "La Paz [Bolivia]"
+    }
+   ]
+  },
+  {
+   "country": "Бразилия",
+   "cities": [
+    {
+     "ru": "Рио-де-Жанейро",
+     "key": "Rio de Janeiro [Brazil]"
+    },
+    {
+     "ru": "Сан-Паулу",
+     "key": "Sao Paulo [Brazil]"
+    }
+   ]
+  },
+  {
+   "country": "Великобритания",
+   "cities": [
+    {
+     "ru": "Лондон",
+     "key": "London [United Kingdom]"
+    }
+   ]
+  },
+  {
+   "country": "Венгрия",
+   "cities": [
+    {
+     "ru": "Будапешт",
+     "key": "Budapest [Hungary]"
+    }
+   ]
+  },
+  {
+   "country": "Венесуэла",
+   "cities": [
+    {
+     "ru": "Каракас",
+     "key": "Caracas [Venezuela]"
+    }
+   ]
+  },
+  {
+   "country": "Гана",
+   "cities": [
+    {
+     "ru": "Аккра",
+     "key": "Accra [Ghana]"
+    }
+   ]
+  },
+  {
+   "country": "Германия",
+   "cities": [
+    {
+     "ru": "Берлин",
+     "key": "Berlin [Germany]"
+    },
+    {
+     "ru": "Мюнхен",
+     "key": "Munich [Germany]"
+    }
+   ]
+  },
+  {
+   "country": "Гонконг",
+   "cities": [
+    {
+     "ru": "Гонконг",
+     "key": "Hong Kong [Hong Kong]"
+    }
+   ]
+  },
+  {
+   "country": "Греция",
+   "cities": [
+    {
+     "ru": "Афины",
+     "key": "Athens [Greece]"
+    }
+   ]
+  },
+  {
+   "country": "Грузия",
+   "cities": [
+    {
+     "ru": "Тбилиси",
+     "key": "Tbilisi [Georgia]"
+    }
+   ]
+  },
+  {
+   "country": "Дания",
+   "cities": [
+    {
+     "ru": "Копенгаген",
+     "key": "Copenhagen [Denmark]"
+    }
+   ]
+  },
+  {
+   "country": "Доминиканская Республика",
+   "cities": [
+    {
+     "ru": "Санто-Доминго",
+     "key": "Santo Domingo [Dominican Republic]"
+    }
+   ]
+  },
+  {
+   "country": "Индонезия",
+   "cities": [
+    {
+     "ru": "Джакарта",
+     "key": "Jakarta [Indonesia]"
+    }
+   ]
+  },
+  {
+   "country": "Ирландия",
+   "cities": [
+    {
+     "ru": "Дублин",
+     "key": "Dublin [Ireland]"
+    }
+   ]
+  },
+  {
+   "country": "Испания",
+   "cities": [
+    {
+     "ru": "Мадрид",
+     "key": "Madrid [Spain]"
+    }
+   ]
+  },
+  {
+   "country": "Италия",
+   "cities": [
+    {
+     "ru": "Рим",
+     "key": "Rome [Italy]"
+    }
+   ]
+  },
+  {
+   "country": "Казахстан",
+   "cities": [
+    {
+     "ru": "Алматы",
+     "key": "Almaty [Kazakhstan]"
+    }
+   ]
+  },
+  {
+   "country": "Канада и США (по часовым поясам)",
+   "cities": [
+    {
+     "ru": "Ванкувер · PST",
+     "key": "Vancouver [Canada]"
+    },
+    {
+     "ru": "Калгари · MST",
+     "key": "Calgary [Canada]"
+    },
+    {
+     "ru": "Монреаль · EST",
+     "key": "Montreal [Canada]"
+    },
+    {
+     "ru": "Торонто · EST",
+     "key": "Toronto [Canada]"
+    }
+   ]
+  },
+  {
+   "country": "Кения",
+   "cities": [
+    {
+     "ru": "Найроби",
+     "key": "Nairobi [Kenya]"
+    }
+   ]
+  },
+  {
+   "country": "Колумбия",
+   "cities": [
+    {
+     "ru": "Богота",
+     "key": "Bogota [Colombia]"
+    }
+   ]
+  },
+  {
+   "country": "Коста-Рика",
+   "cities": [
+    {
+     "ru": "Сан-Хосе",
+     "key": "San Jose [Costa Rica]"
+    }
+   ]
+  },
+  {
+   "country": "Литва",
+   "cities": [
+    {
+     "ru": "Вильнюс",
+     "key": "Vilnius [Lithuania]"
+    }
+   ]
+  },
+  {
+   "country": "Малайзия",
+   "cities": [
+    {
+     "ru": "Куала-Лумпур",
+     "key": "Kuala Lumpur [Malaysia]"
+    }
+   ]
+  },
+  {
+   "country": "Мексика",
+   "cities": [
+    {
+     "ru": "Мехико",
+     "key": "Mexico City [Mexico]"
+    }
+   ]
+  },
+  {
+   "country": "Молдова",
+   "cities": [
+    {
+     "ru": "Кишинёв",
+     "key": "Chisinau [Moldova]"
+    }
+   ]
+  },
+  {
+   "country": "Нигерия",
+   "cities": [
+    {
+     "ru": "Лагос",
+     "key": "Lagos [Nigeria]"
+    }
+   ]
+  },
+  {
+   "country": "Нидерланды",
+   "cities": [
+    {
+     "ru": "Амстердам",
+     "key": "Amsterdam [Netherlands]"
+    }
+   ]
+  },
+  {
+   "country": "Новая Зеландия",
+   "cities": [
+    {
+     "ru": "Окленд",
+     "key": "Auckland [New Zealand]"
+    }
+   ]
+  },
+  {
+   "country": "Норвегия",
+   "cities": [
+    {
+     "ru": "Осло",
+     "key": "Oslo [Norway]"
+    }
+   ]
+  },
+  {
+   "country": "ОАЭ",
+   "cities": [
+    {
+     "ru": "Дубай",
+     "key": "Dubai [United Arab Emirates]"
+    }
+   ]
+  },
+  {
+   "country": "Пакистан",
+   "cities": [
+    {
+     "ru": "Карачи",
+     "key": "Karachi [Pakistan]"
+    }
+   ]
+  },
+  {
+   "country": "Панама",
+   "cities": [
+    {
+     "ru": "Панама",
+     "key": "Panama [Panama]"
+    }
+   ]
+  },
+  {
+   "country": "Парагвай",
+   "cities": [
+    {
+     "ru": "Асунсьон",
+     "key": "Asuncion [Paraguay]"
+    }
+   ]
+  },
+  {
+   "country": "Перу",
+   "cities": [
+    {
+     "ru": "Лима",
+     "key": "Lima [Peru]"
+    }
+   ]
+  },
+  {
+   "country": "Польша",
+   "cities": [
+    {
+     "ru": "Варшава",
+     "key": "Warsaw [Poland]"
+    }
+   ]
+  },
+  {
+   "country": "Португалия",
+   "cities": [
+    {
+     "ru": "Лиссабон",
+     "key": "Lisbon [Portugal]"
+    }
+   ]
+  },
+  {
+   "country": "Румыния",
+   "cities": [
+    {
+     "ru": "Бухарест",
+     "key": "Bucharest [Romania]"
+    }
+   ]
+  },
+  {
+   "country": "Сербия",
+   "cities": [
+    {
+     "ru": "Белград",
+     "key": "Belgrade [Serbia]"
+    }
+   ]
+  },
+  {
+   "country": "Сингапур",
+   "cities": [
+    {
+     "ru": "Сингапур",
+     "key": "Singapore [Singapore]"
+    }
+   ]
+  },
+  {
+   "country": "Таиланд",
+   "cities": [
+    {
+     "ru": "Бангкок",
+     "key": "Bangkok [Thailand]"
+    }
+   ]
+  },
+  {
+   "country": "Тайвань",
+   "cities": [
+    {
+     "ru": "Тайбэй",
+     "key": "Taipei [Taiwan]"
+    }
+   ]
+  },
+  {
+   "country": "Турция",
+   "cities": [
+    {
+     "ru": "Стамбул",
+     "key": "Istanbul [Turkey]"
+    }
+   ]
+  },
+  {
+   "country": "Уганда",
+   "cities": [
+    {
+     "ru": "Кампала",
+     "key": "Kampala [Uganda]"
+    }
+   ]
+  },
+  {
+   "country": "Узбекистан",
+   "cities": [
+    {
+     "ru": "Ташкент",
+     "key": "Tashkent [Uzbekistan]"
+    }
+   ]
+  },
+  {
+   "country": "Фиджи",
+   "cities": [
+    {
+     "ru": "Сува",
+     "key": "Suva [Fiji]"
+    }
+   ]
+  },
+  {
+   "country": "Филиппины",
+   "cities": [
+    {
+     "ru": "Манила",
+     "key": "Manila [Philippines]"
+    }
+   ]
+  },
+  {
+   "country": "Финляндия",
+   "cities": [
+    {
+     "ru": "Хельсинки",
+     "key": "Helsinki [Finland]"
+    }
+   ]
+  },
+  {
+   "country": "Франция",
+   "cities": [
+    {
+     "ru": "Париж",
+     "key": "Paris [France]"
+    }
+   ]
+  },
+  {
+   "country": "Хорватия",
+   "cities": [
+    {
+     "ru": "Загреб",
+     "key": "Zagreb [Croatia]"
+    }
+   ]
+  },
+  {
+   "country": "Чили",
+   "cities": [
+    {
+     "ru": "Сантьяго",
+     "key": "Santiago [Chile]"
+    }
+   ]
+  },
+  {
+   "country": "Швейцария",
+   "cities": [
+    {
+     "ru": "Цюрих",
+     "key": "Zurich [Switzerland]"
+    }
+   ]
+  },
+  {
+   "country": "Швеция",
+   "cities": [
+    {
+     "ru": "Стокгольм",
+     "key": "Stockholm [Sweden]"
+    }
+   ]
+  },
+  {
+   "country": "Шри-Ланка",
+   "cities": [
+    {
+     "ru": "Коломбо",
+     "key": "Colombo [Sri Lanka]"
+    }
+   ]
+  },
+  {
+   "country": "ЮАР",
+   "cities": [
+    {
+     "ru": "Дурбан",
+     "key": "Durban [South Africa]"
+    },
+    {
+     "ru": "Йоханнесбург",
+     "key": "Johannesburg [South Africa]"
+    },
+    {
+     "ru": "Кейптаун",
+     "key": "Cape Town [South Africa]"
+    }
+   ]
+  },
+  {
+   "country": "Япония",
+   "cities": [
+    {
+     "ru": "Токио",
+     "key": "Tokyo [Japan]"
+    }
+   ]
+  }
+ ]
 }

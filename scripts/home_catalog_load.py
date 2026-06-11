@@ -54,7 +54,7 @@ print("schema: places ...")
 run("DROP TABLE IF EXISTS places;")
 run("""CREATE TABLE places (
   id TEXT PRIMARY KEY, kind TEXT NOT NULL, name TEXT NOT NULL,
-  name_ru TEXT, city_ru TEXT, state_ru TEXT,
+  name_ru TEXT, city_ru TEXT, state_ru TEXT, address_ru TEXT,
   categories TEXT, address TEXT, city TEXT, state TEXT, country TEXT,
   continent TEXT, lat REAL, lng REAL, phone TEXT, email TEXT,
   website TEXT, source TEXT);""")
@@ -70,13 +70,14 @@ rows = [[p.get("id"), p.get("kind"), p.get("name"),
          ru_geo.ru_place_name(p.get("name") or ""),
          ru_geo.ru_city(p.get("city") or ""),
          ru_geo.ru_state(p.get("state") or ""),
+         ru_geo.ru_address(p.get("address") or ""),
          json.dumps(p.get("categories") or [], ensure_ascii=False),
          p.get("address"), p.get("city"), p.get("state"), p.get("country"),
          p.get("continent"), p.get("lat"), p.get("lng"),
          p.get("phone"), p.get("email"), p.get("website"), p.get("source")]
         for p in items]
 n = insert("places",
-           ["id", "kind", "name", "name_ru", "city_ru", "state_ru",
+           ["id", "kind", "name", "name_ru", "city_ru", "state_ru", "address_ru",
             "categories", "address", "city", "state", "country",
             "continent", "lat", "lng", "phone", "email", "website", "source"], rows)
 print("places:", n)

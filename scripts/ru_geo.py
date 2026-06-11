@@ -224,7 +224,7 @@ WORD_RU = {
 # ── практическая транскрипция (индийский уклон) ─────────────────────────
 _TR = [
   ("shch","щ"),("sch","ш"),("chh","чх"),("tch","ч"),("ck","к"),("kh","кх"),("gh","гх"),("jh","джх"),
-  ("ch","ч"),("sh","ш"),("zh","ж"),("th","тх"),("dh","дх"),("ph","пх"),("bh","бх"),("ts","ц"),
+  ("ch","ч"),("sh","ш"),("zh","ж"),("tth","тт"),("th","тх"),("dh","дх"),("ph","пх"),("bh","бх"),("ts","ц"),
   ("aa","а"),("ee","и"),("oo","у"),("ii","и"),("uu","у"),("ai","ай"),("au","ау"),("ay","ай"),("ey","ей"),
   ("oy","ой"),("ya","я"),("yu","ю"),("yo","йо"),("ye","е"),("yi","йи"),("ju","джу"),("ja","джа"),("je","дже"),
   ("ji","джи"),("jo","джо"),("qu","кв"),("x","кс"),("w","в"),("j","дж"),("y","й"),("q","к"),
@@ -233,13 +233,117 @@ _TR = [
 ]
 
 _CC = {
-  "australia":"Австралия","india":"Индия","usa":"США","us":"США","u.s.":"США","uk":"Великобритания",
-  "united kingdom":"Великобритания","united states":"США","russia":"Россия","ukraine":"Украина",
-  "hungary":"Венгрия","brazil":"Бразилия","peru":"Перу","kenya":"Кения","uganda":"Уганда",
-  "nigeria":"Нигерия","ghana":"Гана","new zealand":"Новая Зеландия","south africa":"ЮАР",
-  "germany":"Германия","france":"Франция","italy":"Италия","spain":"Испания","belgium":"Бельгия",
-  "netherlands":"Нидерланды","switzerland":"Швейцария","mexico":"Мексика","canada":"Канада",
-  "argentina":"Аргентина","chile":"Чили","japan":"Япония","mississippi":"Миссисипи",
+  "india":"Индия",
+  "united states":"США",
+  "united states of america":"США",
+  "usa":"США",
+  "united kingdom":"Великобритания",
+  "uk":"Великобритания",
+  "russia":"Россия",
+  "russian federation":"Россия",
+  "ukraine":"Украина",
+  "germany":"Германия",
+  "france":"Франция",
+  "italy":"Италия",
+  "spain":"Испания",
+  "canada":"Канада",
+  "australia":"Австралия",
+  "new zealand":"Новая Зеландия",
+  "brazil":"Бразилия",
+  "argentina":"Аргентина",
+  "mexico":"Мексика",
+  "south africa":"ЮАР",
+  "netherlands":"Нидерланды",
+  "belgium":"Бельгия",
+  "switzerland":"Швейцария",
+  "sweden":"Швеция",
+  "poland":"Польша",
+  "hungary":"Венгрия",
+  "czech republic":"Чехия",
+  "czechia":"Чехия",
+  "bangladesh":"Бангладеш",
+  "nepal":"Непал",
+  "sri lanka":"Шри-Ланка",
+  "malaysia":"Малайзия",
+  "singapore":"Сингапур",
+  "indonesia":"Индонезия",
+  "philippines":"Филиппины",
+  "china":"Китай",
+  "japan":"Япония",
+  "kazakhstan":"Казахстан",
+  "georgia":"Грузия",
+  "armenia":"Армения",
+  "israel":"Израиль",
+  "ireland":"Ирландия",
+  "portugal":"Португалия",
+  "austria":"Австрия",
+  "finland":"Финляндия",
+  "norway":"Норвегия",
+  "denmark":"Дания",
+  "croatia":"Хорватия",
+  "serbia":"Сербия",
+  "bulgaria":"Болгария",
+  "romania":"Румыния",
+  "greece":"Греция",
+  "turkey":"Турция",
+  "fiji":"Фиджи",
+  "mauritius":"Маврикий",
+  "kenya":"Кения",
+  "nigeria":"Нигерия",
+  "ghana":"Гана",
+  "peru":"Перу",
+  "chile":"Чили",
+  "colombia":"Колумбия",
+  "ecuador":"Эквадор",
+  "bolivia":"Боливия",
+  "venezuela":"Венесуэла",
+  "guyana":"Гайана",
+  "trinidad and tobago":"Тринидад и Тобаго",
+  "belarus":"Беларусь",
+  "latvia":"Латвия",
+  "lithuania":"Литва",
+  "estonia":"Эстония",
+  "moldova":"Молдова",
+  "slovakia":"Словакия",
+  "slovenia":"Словения",
+  "azerbaijan":"Азербайджан",
+  "balkans":"Балканы",
+  "bosina & herzegovina":"Босния и Герцеговина",
+  "bosnia & herzegovina":"Босния и Герцеговина",
+  "bosnia and herzegovina":"Босния и Герцеговина",
+  "botswana":"Ботсвана",
+  "burma(myanmar)":"Мьянма",
+  "myanmar":"Мьянма",
+  "costa rica":"Коста-Рика",
+  "dominican republic":"Доминиканская Республика",
+  "el salvador":"Сальвадор",
+  "ivory coast":"Кот-д'Ивуар",
+  "kyrgyzstan":"Кыргызстан",
+  "macedonia":"Северная Македония",
+  "north macedonia":"Северная Македония",
+  "malawi":"Малави",
+  "netherland":"Нидерланды",
+  "panama":"Панама",
+  "papua new guinea":"Папуа — Новая Гвинея",
+  "paraguay":"Парагвай",
+  "puerto rico":"Пуэрто-Рико",
+  "scotland":"Шотландия",
+  "south korea":"Южная Корея",
+  "suriname":"Суринам",
+  "swaziland":"Эсватини",
+  "eswatini":"Эсватини",
+  "taiwan":"Тайвань",
+  "tajikistan":"Таджикистан",
+  "thailand":"Таиланд",
+  "togo":"Того",
+  "uganda":"Уганда",
+  "united arab emirates":"ОАЭ",
+  "uruguay":"Уругвай",
+  "uzbekistan":"Узбекистан",
+  "wales":"Уэльс",
+  "zimbabwe":"Зимбабве",
+  "united states of america":"США","america":"США","great britain":"Великобритания",
+  "ca":"Калифорния","ny":"Нью-Йорк","tx":"Техас","fl":"Флорида","nj":"Нью-Джерси","wv":"Зап. Виргиния","pa":"Пенсильвания","dc":"округ Колумбия","ga":"Джорджия","nc":"Сев. Каролина","ut":"Юта","hi":"Гавайи","az":"Аризона","co":"Колорадо","wa":"Вашингтон","il":"Иллинойс","mi":"Мичиган","oh":"Огайо","md":"Мэриленд","ma":"Массачусетс","ct":"Коннектикут","mo":"Миссури","tn":"Теннесси","mississippi":"Миссисипи",
 }
 
 def translit(token: str) -> str:
@@ -252,6 +356,7 @@ def translit(token: str) -> str:
         else:
             out.append(src[i]); i += 1
     res = "".join(out)
+    if res.endswith("иа"): res = res[:-2] + "ия"
     return (res[:1].upper() + res[1:]) if token[:1].isupper() else res
 
 
@@ -342,3 +447,58 @@ def ru_place_name(name: str) -> str:
         return left_ru
     right_ru = _phrase_ru(parts[1].strip())
     return f"{left_ru} — {right_ru}"
+
+
+# ── адреса: уличный глоссарий + перевод по частям ────────────────────────
+_STREET = {
+  "road":"роуд","str":"стрит","str.":"стрит","ul":"ул.","ul.":"ул.","ulitsa":"улица","prospekt":"проспект","pr.":"просп.","per.":"пер.","rd":"роуд","rd.":"роуд","street":"стрит","st":"стрит","st.":"стрит","avenue":"авеню",
+  "ave":"авеню","ave.":"авеню","av.":"авеню","lane":"лейн","ln":"лейн","drive":"драйв","dr":"драйв","dr.":"драйв",
+  "boulevard":"бульвар","blvd":"бульвар","blvd.":"бульвар","highway":"хайвей","hwy":"хайвей","square":"сквер",
+  "sq":"сквер","close":"клоуз","court":"корт","place":"плейс","pl":"плейс","way":"уэй","crescent":"кресент",
+  "terrace":"террас","gardens":"гарденс","garden":"гарден","park":"парк","sector":"сектор","block":"блок",
+  "plot":"участок","house":"дом","flat":"кв.","floor":"этаж","building":"здание","bldg":"здание",
+  "of":"","near":"возле","opp":"напротив","opp.":"напротив","opposite":"напротив","behind":"за","beside":"рядом с",
+  "main":"мейн","cross":"кросс","ring":"ринг","marg":"марг","nagar":"нагар","colony":"колония","layout":"лейаут",
+  "extension":"экстеншн","phase":"фаза","stage":"стейдж","village":"деревня","district":"район","dist":"район",
+  "dist.":"район","tehsil":"техсил","taluka":"талука","post":"почта","p.o.":"п/о","po":"п/о","via":"через",
+  "no":"№","no.":"№","number":"№","off":"у","mandir":"мандир","temple":"храм","hare":"Харе","krishna":"Кришна",
+  "land":"ленд","city":"сити","town":"таун","east":"Восточный","west":"Западный","north":"Северный","south":"Южный",
+  "new":"Нью","old":"Олд","upper":"Верхний","lower":"Нижний","grand":"Гранд","royal":"Роял","green":"Грин",
+  "hill":"Хилл","hills":"Хиллс","beach":"Бич","bay":"Бэй","port":"Порт","mount":"Маунт","mt":"Маунт","mt.":"Маунт",
+  "lake":"Лейк","river":"Ривер","bridge":"Бридж","market":"маркет","bazar":"базар","bazaar":"базар","chowk":"чоук",
+  "gali":"гали","pin":"индекс","pincode":"индекс","zip":"индекс",
+}
+
+def _addr_part_ru(part: str) -> str:
+    low = part.strip().lower()
+    if not part.strip(): return ""
+    hit = GEO_RU.get(low) or _CC.get(low)
+    if hit: return hit
+    # «Страна – 94705» / «Индия – 741313»: текст + числовой хвост
+    m = re.match(r"(.+?)([\s]*[–—-][\s]*[\d][\d\s-]*)$", part.strip())
+    if m:
+        base = GEO_RU.get(m.group(1).strip().lower()) or _CC.get(m.group(1).strip().lower())
+        if base: return base + m.group(2)
+    out = []
+    for w in part.split():
+        # числа, индексы, диапазоны, №№ — без изменений
+        if re.fullmatch(r"[\d/–—#№,.:;()-]+[A-Za-z]?", w): out.append(w); continue
+        core = w.strip(",.()–—-")
+        if (re.search(r"\d", core) and re.search(r"[A-Za-z]", core)) or (core.isupper() and 1 < len(core) <= 4 and core.lower() not in _CC and core.lower() not in _STREET):
+            out.append(w); continue
+        lw = core.lower()
+        pre = w[:len(w)-len(w.lstrip("(",))] if False else ""
+        ru = _STREET.get(lw) or GEO_RU.get(lw) or _CC.get(lw) or SANS_RU.get(lw) or translit(core)
+        # сохранить хвостовую пунктуацию
+        tail = w[len(w.rstrip(",.()")):] if len(w.rstrip(",.()")) < len(w) else ""
+        head = w[:len(w)-len(w.lstrip("("))]
+        if ru == "" and not tail and not head: continue
+        out.append(head + ru + tail)
+    return " ".join(out)
+
+def ru_address(addr: str) -> str:
+    a = (addr or "").strip()
+    if not a: return ""
+    a = a.replace("–", "–")
+    parts = re.split(r",\s*", a)
+    return ", ".join(p for p in (_addr_part_ru(x) for x in parts) if p)
