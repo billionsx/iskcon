@@ -26,6 +26,18 @@ export const COUNTRY_RU: Record<string, string> = {
   "venezuela": "Венесуэла", "guyana": "Гайана", "trinidad and tobago": "Тринидад и Тобаго",
   "belarus": "Беларусь", "latvia": "Латвия", "lithuania": "Литва", "estonia": "Эстония",
   "moldova": "Молдова", "slovakia": "Словакия", "slovenia": "Словения",
+  "azerbaijan": "Азербайджан", "balkans": "Балканы", "bosina & herzegovina": "Босния и Герцеговина",
+  "bosnia & herzegovina": "Босния и Герцеговина", "bosnia and herzegovina": "Босния и Герцеговина",
+  "botswana": "Ботсвана", "burma(myanmar)": "Мьянма", "myanmar": "Мьянма",
+  "costa rica": "Коста-Рика", "dominican republic": "Доминиканская Республика", "el salvador": "Сальвадор",
+  "ivory coast": "Кот-д'Ивуар", "kyrgyzstan": "Кыргызстан", "macedonia": "Северная Македония",
+  "north macedonia": "Северная Македония", "malawi": "Малави", "netherland": "Нидерланды",
+  "panama": "Панама", "papua new guinea": "Папуа — Новая Гвинея", "paraguay": "Парагвай",
+  "puerto rico": "Пуэрто-Рико", "scotland": "Шотландия", "south korea": "Южная Корея",
+  "suriname": "Суринам", "swaziland": "Эсватини", "eswatini": "Эсватини",
+  "taiwan": "Тайвань", "tajikistan": "Таджикистан", "thailand": "Таиланд",
+  "togo": "Того", "uganda": "Уганда", "united arab emirates": "ОАЭ",
+  "uruguay": "Уругвай", "uzbekistan": "Узбекистан", "wales": "Уэльс", "zimbabwe": "Зимбабве",
 };
 export const ruCountry = (c: string) => COUNTRY_RU[(c || "").trim().toLowerCase()] || c;
 
