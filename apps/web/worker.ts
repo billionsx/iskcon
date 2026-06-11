@@ -781,7 +781,7 @@ export default {
         for (const b of blocks) {
           const idM = b.match(/data-post="iskcone\/(\d+)"/);
           const dateM = b.match(/<time datetime="([^"]+)"/);
-          const photoM = b.match(/background-image:url\('([^']+)'\)/);
+          const photoM = b.match(/tgme_widget_message_photo_wrap[^>]*style="[^"]*background-image:url\('([^']+)'\)/);
           const textM = b.match(/tgme_widget_message_text js-message_text[^>]*>([\s\S]*?)<\/div>/);
           const viewsM = b.match(/tgme_widget_message_views">([^<]+)</);
           let text = "";
