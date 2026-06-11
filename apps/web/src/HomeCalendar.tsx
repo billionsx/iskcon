@@ -60,6 +60,13 @@ export function HomeCalendar({ stickyTop }: { stickyTop: number }) {
     if (!nextEka) return null;
     return upcoming.find((e) => e.type === "parana" && e.date > nextEka.date) || null;
   }, [upcoming, nextEka]);
+  // Страховка: если в title нет времени — достаём из orig («Break fast 06:18 (sunrise) - 09:52 …»)
+  const paranaText = useMemo(() => {
+    if (!nextParana) return "";
+    if (/\d{1,2}:\d{2}/.test(nextParana.title)) return nextParana.title;
+    const m = nextParana.orig.match(/(\d{1,2}:\d{2}).*?-\s*(\d{1,2}:\d{2})/);
+    return m ? `Выход из поста ${m[1]}–${m[2]} (Маяпур)` : nextParana.title;
+  }, [nextParana]);
 
   const filtered = useMemo(() => {
     let r = upcoming.filter((e) => e.type !== "parana"); // парана показывается внутри hero и в дне экадаши не дублируем
@@ -97,7 +104,7 @@ export function HomeCalendar({ stickyTop }: { stickyTop: number }) {
           {nextParana && (
             <div style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, color: "var(--color-label)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-              {(() => { const f = fmtDay(nextParana.date); return `${f.d} ${f.m}: ${nextParana.title}`; })()}
+              {(() => { const f = fmtDay(nextParana.date); return `${f.d} ${f.m}: ${paranaText}`; })()}
             </div>
           )}
         </div>
