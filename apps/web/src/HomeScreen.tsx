@@ -321,11 +321,7 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ padding: 18, ...fill }}>
           <Para>После года скитаний и привлечения первых последователей в Нью-Йорке Шрила Прабхупада зарегистрировал Международное общество сознания Кришны (ИСККОН) в июле 1966 года. Через месяц в The New York Times вышла статья «Свами поёт в парке в поисках экстаза» — о «50 последователях, которые хлопают и качаются под гипнотическую музыку на церемонии на Ист-Сайде». В мгновение ока популярность Движения Харе Кришна взлетела.</Para>
         </div>
-        <Figure src="/media/site/nyt-clip.webp" caption="The New York Times, 1966 — «Свами поёт в парке в поисках экстаза»" />
-        <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <Photo src="/media/site/hist-storefront.webp" ratio="4 / 3" radius={16} />
-          <Photo src="/media/site/hist-park.webp" ratio="4 / 3" radius={16} />
-        </div>
+        <div style={{ marginTop: 16 }}><Photo src="/media/site/nyt-clip.webp" radius={20} /></div>
       </Section>
 
       {/* Высший образ жизни */}
@@ -371,21 +367,23 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <Mosaic items={COMMUNITY} />
       </Section>
 
-      {/* Книги — крупная презентация в духе App Store */}
+      {/* Книги — слайдер полных карточек */}
       <Section>
         <SectionHead eyebrow="Библиотека" title="Миллиард духовных книг" subtitle="ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога." />
-        <div style={{ display: "grid", gap: 14 }}>
+        <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch",
+          margin: `4px -${PAD}px 0`, padding: `12px ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
           {BOOKLIST.map((b) => (
             <button key={b.work} type="button" onClick={() => onOpenBook(b.work)}
-              onPointerDown={(e) => (e.currentTarget.style.opacity = "0.7")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
-              style={{ display: "block", width: "100%", padding: "28px 20px 24px", textAlign: "center", cursor: "pointer", border: "none", ...fill, borderRadius: 24 }}>
+              onPointerDown={(e) => (e.currentTarget.style.opacity = "0.78")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              style={{ flex: "0 0 88%", scrollSnapAlign: "center", padding: "30px 22px 26px", textAlign: "center", cursor: "pointer", border: "none", ...fill, borderRadius: 24 }}>
               <img src={BOOKS[b.work]?.covers?.[0]} alt="" loading="lazy"
-                style={{ height: 236, width: "auto", maxWidth: "70%", objectFit: "contain", borderRadius: 10, boxShadow: "0 22px 44px -20px rgba(0,0,0,0.5)" }} />
-              <span style={{ display: "block", margin: "20px auto 0", maxWidth: 420, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, letterSpacing: TR_TITLE, lineHeight: 1.2, color: "var(--color-label)" }}>{b.t}</span>
-              <span style={{ display: "block", margin: "8px auto 0", maxWidth: 440, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{b.d}</span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 2, marginTop: 14, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 700, color: GOLD }}>Читать онлайн <ChevRightIcon size={15} /></span>
+                style={{ height: 240, width: "auto", maxWidth: "70%", objectFit: "contain", borderRadius: 10, boxShadow: "0 22px 44px -20px rgba(0,0,0,0.5)" }} />
+              <span style={{ display: "block", margin: "22px auto 0", maxWidth: 420, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, letterSpacing: TR_TITLE, lineHeight: 1.2, color: "var(--color-label)" }}>{b.t}</span>
+              <span style={{ display: "block", margin: "10px auto 0", maxWidth: 440, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{b.d}</span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 2, marginTop: 16, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 700, color: GOLD }}>Читать онлайн <ChevRightIcon size={15} /></span>
             </button>
           ))}
+          <div aria-hidden style={{ flex: `0 0 ${PAD - 12}px` }} />
         </div>
       </Section>
 
@@ -396,11 +394,15 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         <div style={{ margin: "20px 0 0", padding: "0 8px" }}>
           <Quote center size={16}>«Лучшее, что можно сделать для Господа, — это попытаться вдохнуть преданное служение в сердце обусловленной души, чтобы она сбросила оковы обусловленной жизни».</Quote>
         </div>
-        <div style={{ marginTop: 22, padding: `${PAD + 4}px ${PAD}px`, ...fill }}>
+        <div style={{ marginTop: 26, position: "relative", padding: "4px 4px 4px 18px" }}>
+          {/* вертикальная хайрлайн-линия */}
+          <div aria-hidden style={{ position: "absolute", left: 3, top: 6, bottom: 6, width: 1, background: "var(--color-hairline)" }} />
           {TIMELINE.map((t, i) => (
-            <div key={t.y} style={{ display: "flex", gap: 14, marginTop: i ? 16 : 0 }}>
-              <span style={{ flexShrink: 0, width: 76, fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 800, letterSpacing: TR_TITLE, color: GOLD, lineHeight: 1.5 }}>{t.y}</span>
-              <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{t.d}</span>
+            <div key={t.y} style={{ position: "relative", marginTop: i ? 22 : 0 }}>
+              {/* золотая точка-маркер на линии */}
+              <span aria-hidden style={{ position: "absolute", left: -19, top: 6, width: 9, height: 9, borderRadius: "50%", background: GOLD, boxShadow: "0 0 0 4px var(--color-bg)" }} />
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 13, fontWeight: 800, letterSpacing: "0.4px", color: GOLD, lineHeight: 1.2 }}>{t.y}</div>
+              <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{t.d}</p>
             </div>
           ))}
         </div>
@@ -426,25 +428,31 @@ export default function HomeScreen({ onChange, onOpenBook, onOpenEntity, onDonat
         </div>
       </Section>
 
-      {/* Влияние на мир */}
+      {/* Влияние на мир — редакторский формат */}
       <Section>
         <SectionHead eyebrow="Влияние" title="Влияние на весь мир" subtitle="Лидеры об ИСККОН и Движении Харе Кришна." />
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           {VOICES.map((v) => (
-            <figure key={v.n} style={{ margin: 0, display: "flex", gap: 13, padding: PAD, ...fill }}>
-              <img src={`/media/voices/${v.img}.webp`} alt="" loading="lazy" style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", objectFit: "cover", background: IMG_BG }} />
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <Quote size={15}>«{v.c}»</Quote>
-                <figcaption style={{ marginTop: 8, fontFamily: "var(--font-text)" }}>
-                  <span style={{ fontSize: 13.5, fontWeight: 600, letterSpacing: TR_BODY, color: "var(--color-label)" }}>{v.n}</span>
-                  <span style={{ display: "block", marginTop: 1, fontSize: 12, color: "var(--color-label-3)" }}>{v.r}</span>
-                </figcaption>
-              </div>
+            <figure key={v.n} style={{ margin: 0 }}>
+              <Quote size={17.5}>«{v.c}»</Quote>
+              <figcaption style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
+                <img src={`/media/voices/${v.img}.webp`} alt="" loading="lazy" style={{ flexShrink: 0, width: 40, height: 40, borderRadius: "50%", objectFit: "cover", background: IMG_BG }} />
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, letterSpacing: TR_BODY, color: "var(--color-label)" }}>{v.n}</div>
+                  <div style={{ marginTop: 1, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{v.r}</div>
+                </div>
+              </figcaption>
             </figure>
           ))}
-          <div style={{ padding: PAD, ...fill }}>
-            <Quote size={14} color="var(--color-label-2)">За последние полвека ИСККОН достиг впечатляющих результатов в общественном служении и благотворительности: ежедневно 1,2 миллиона школьников получают питание в Индии, а больница Бхактиведанты за прошлый год приняла более 200 000 пациентов.</Quote>
-            <div style={{ marginTop: 9, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Forbes</div>
+        </div>
+      </Section>
+
+      {/* Forbes — редакторская плашка с настоящим лого */}
+      <Section>
+        <div style={{ padding: "26px 22px", ...fill, borderRadius: 22 }}>
+          <MaskMark src="/forbes.svg" size={92} color="var(--color-label)" pos="left center" />
+          <div style={{ marginTop: 16, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label)" }}>
+            «За последние полвека ИСККОН достиг впечатляющих результатов в общественном служении и благотворительности: ежедневно 1,2 миллиона школьников получают питание в Индии, а больница Бхактиведанты за прошлый год приняла более 200 000 пациентов».
           </div>
         </div>
       </Section>
