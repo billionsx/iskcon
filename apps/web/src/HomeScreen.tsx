@@ -746,7 +746,7 @@ export default function HomeScreen(props: {
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} />}
-      {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} />}
+      {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}
       {homeTab === "media" && <HomeMedia />}
       {homeTab === "education" && <HomeEducation />}
       {homeTab === "documents" && <HomeDocuments stickyTop={t1H} />}
