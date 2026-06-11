@@ -1,0 +1,193 @@
+name: ISKCON places scrape (centres.iskcon.org -> apps/web/public/data/iskcon-places.json)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scrape official directory
+        run: |
+          set -e
+          python3 -m pip install --quiet requests beautifulsoup4
+          python3 - <<'PY'
+          import json, re, time, sys
+          import requests
+          from bs4 import BeautifulSoup
+
+          S = requests.Session()
+          S.headers.update({"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"})
+          BASE = "https://centres.iskcon.org"
+
+          # ── Страны → континент ──
+          CONT = {}
+          def reg(c, names):
+              for n in names: CONT[n.lower()] = c
+          reg("Азия", ["India","Bangladesh","Nepal","Sri Lanka","Pakistan","China","Hong Kong","Taiwan","Japan","South Korea","Korea","Malaysia","Singapore","Indonesia","Philippines","Thailand","Vietnam","Cambodia","Myanmar","Burma","Laos","Mongolia","Kazakhstan","Kyrgyzstan","Uzbekistan","Tajikistan","Turkmenistan","Azerbaijan","Armenia","Georgia","Israel","United Arab Emirates","UAE","Bahrain","Qatar","Kuwait","Oman","Saudi Arabia","Lebanon","Jordan","Turkey","Iran","Iraq","Afghanistan","Bhutan","Maldives","Macau","Brunei","Timor-Leste"])
+          reg("Европа", ["United Kingdom","UK","England","Scotland","Wales","Northern Ireland","Ireland","France","Germany","Italy","Spain","Portugal","Netherlands","Belgium","Luxembourg","Switzerland","Austria","Poland","Czech Republic","Czechia","Slovakia","Hungary","Romania","Bulgaria","Greece","Croatia","Serbia","Bosnia and Herzegovina","Slovenia","North Macedonia","Macedonia","Albania","Montenegro","Kosovo","Denmark","Sweden","Norway","Finland","Iceland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Russia","Russian Federation","Malta","Cyprus","Monaco","Andorra","Liechtenstein","San Marino"])
+          reg("Северная Америка", ["United States","United States of America","USA","Canada","Mexico","Guatemala","Belize","Honduras","El Salvador","Nicaragua","Costa Rica","Panama","Cuba","Jamaica","Haiti","Dominican Republic","Bahamas","Barbados","Trinidad and Tobago","Trinidad & Tobago","Puerto Rico","Guadeloupe","Martinique","Saint Lucia","Grenada","Antigua and Barbuda","Saint Vincent and the Grenadines","Saint Kitts and Nevis","Dominica","Curacao","Aruba","Bermuda","Cayman Islands","Suriname","Guyana"])
+          reg("Южная Америка", ["Brazil","Argentina","Chile","Peru","Colombia","Venezuela","Ecuador","Bolivia","Paraguay","Uruguay","French Guiana"])
+          reg("Африка", ["South Africa","Nigeria","Ghana","Kenya","Tanzania","Uganda","Ethiopia","Egypt","Morocco","Algeria","Tunisia","Libya","Sudan","Senegal","Ivory Coast","Cote d'Ivoire","Cameroon","Congo","Democratic Republic of the Congo","DR Congo","Zambia","Zimbabwe","Botswana","Namibia","Mozambique","Malawi","Madagascar","Mauritius","Reunion","Seychelles","Rwanda","Burundi","Benin","Togo","Sierra Leone","Liberia","Gambia","Guinea","Mali","Burkina Faso","Niger","Chad","Angola","Gabon","Eswatini","Swaziland","Lesotho","Somalia","Djibouti","Eritrea","Cape Verde","Mauritania"])
+          reg("Океания", ["Australia","New Zealand","Fiji","Papua New Guinea","Samoa","Tonga","Vanuatu","Solomon Islands","New Caledonia","French Polynesia","Guam","Micronesia","Kiribati","Palau","Marshall Islands","Nauru","Tuvalu","Cook Islands"])
+          def continent(country):
+              return CONT.get((country or "").strip().lower(), "Другое")
+
+          places = {}
+
+          # ── Стратегия 1: WordPress REST ──
+          def wp_rest():
+              out = []
+              for ptype in ["centre", "centres", "center"]:
+                  page = 1
+                  while True:
+                      r = S.get(f"{BASE}/wp-json/wp/v2/{ptype}", params={"per_page": 100, "page": page}, timeout=40)
+                      if r.status_code != 200: break
+                      arr = r.json()
+                      if not isinstance(arr, list) or not arr: break
+                      out += arr
+                      print(f"wp-json {ptype} page {page}: +{len(arr)}")
+                      if len(arr) < 100: break
+                      page += 1; time.sleep(0.4)
+                  if out: return out
+              return out
+
+          rest = []
+          try:
+              rest = wp_rest()
+          except Exception as e:
+              print("wp-json failed:", e)
+          print("REST entries:", len(rest))
+
+          # ── Стратегия 2: sitemap → individual pages ──
+          urls = set()
+          for sm in ["/sitemap.xml", "/wp-sitemap.xml", "/sitemap_index.xml", "/centre-sitemap.xml", "/wp-sitemap-posts-centre-1.xml"]:
+              try:
+                  r = S.get(BASE + sm, timeout=30)
+                  if r.status_code == 200:
+                      locs = re.findall(r"<loc>([^<]+)</loc>", r.text)
+                      subs = [l for l in locs if l.endswith(".xml")]
+                      pages = [l for l in locs if "/centre/" in l]
+                      urls.update(pages)
+                      for s2 in subs:
+                          try:
+                              r2 = S.get(s2, timeout=30)
+                              urls.update(l for l in re.findall(r"<loc>([^<]+)</loc>", r2.text) if "/centre/" in l)
+                          except Exception: pass
+              except Exception as e:
+                  print("sitemap", sm, "err", e)
+          print("sitemap centre URLs:", len(urls))
+
+          def txt(el): return re.sub(r"\s+", " ", el.get_text(" ", strip=True)) if el else ""
+
+          def parse_page(u):
+              r = S.get(u, timeout=40)
+              if r.status_code != 200: return None
+              soup = BeautifulSoup(r.text, "html.parser")
+              name = txt(soup.select_one("h1")) or txt(soup.select_one(".entry-title"))
+              if not name: return None
+              body = soup.get_text("\n", strip=True)
+              # lat/lng — из data-атрибутов карты или скриптов
+              lat = lng = None
+              m = re.search(r'data-lat(?:itude)?="(-?\d+\.\d+)"[^>]*data-l(?:ng|ongitude)="(-?\d+\.\d+)"', r.text)
+              if not m: m = re.search(r'"lat"\s*:\s*"?(-?\d+\.\d+)"?\s*,\s*"lng"\s*:\s*"?(-?\d+\.\d+)"?', r.text)
+              if not m: m = re.search(r'latitude["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)["\']?[,;\s]+["\']?longitude["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)', r.text, re.I)
+              if m: lat, lng = float(m.group(1)), float(m.group(2))
+              # адрес
+              addr = ""
+              for sel in [".wpsl-location-address", ".address", "address", '[itemprop="address"]', ".centre-address", ".gmw-address"]:
+                  el = soup.select_one(sel)
+                  if el: addr = txt(el); break
+              if not addr:
+                  m = re.search(r"Address[:\s]+(.{10,160}?)(?:Phone|Tel|Email|Website|$)", body, re.I | re.S)
+                  if m: addr = re.sub(r"\s+", " ", m.group(1)).strip(" ,;")
+              phone = ""
+              m = re.search(r"(?:Phone|Tel|Telephone)[:\s]*([+\d][\d\s()\-+,/]{6,40})", body, re.I)
+              if m: phone = m.group(1).strip(" ,")
+              email = ""
+              m = re.search(r"[\w.+-]+@[\w-]+\.[\w.-]+", body)
+              if m: email = m.group(0)
+              website = ""
+              for a in soup.select("a[href^='http']"):
+                  h = a.get("href", "")
+                  if "iskcon.org" in h and "/centre" in h: continue
+                  if any(k in txt(a).lower() for k in ["website", "visit", "site"]) or (h and "centres.iskcon" not in h and any(k in h for k in ["iskcon", "harekrishna", "krishna", "govinda"])):
+                      website = h; break
+              cats = [txt(a) for a in soup.select("a[href*='centre-category']")]
+              # страна/город — последние сегменты адреса
+              country = city = state = ""
+              if addr:
+                  parts = [p.strip() for p in addr.split(",") if p.strip()]
+                  if parts:
+                      country = re.sub(r"[\d\-–]+$", "", parts[-1]).strip()
+                      if len(parts) >= 2: city = parts[-2]
+                      if len(parts) >= 3: state = parts[-3]
+              # из URL: /centre/slug/city/
+              mu = re.match(r".*/centre/([^/]+)/([^/]+)/?$", u)
+              ucity = mu.group(2).replace("-", " ").title() if mu else ""
+              if not city: city = ucity
+              return {
+                  "id": re.sub(r"\W+", "-", (name + "-" + (city or ""))).strip("-").lower()[:80],
+                  "name": name, "categories": cats or ["Centre"],
+                  "address": addr, "city": city, "state": state, "country": country,
+                  "continent": continent(country),
+                  "lat": lat, "lng": lng, "phone": phone, "email": email,
+                  "website": website, "source": u,
+              }
+
+          if rest:
+              for it in rest:
+                  u = it.get("link")
+                  if u: urls.add(u)
+
+          urls = sorted(urls)
+          print("total pages to parse:", len(urls))
+          ok = err = 0
+          for i, u in enumerate(urls):
+              try:
+                  p = parse_page(u)
+                  if p:
+                      places[p["source"]] = p; ok += 1
+                  else: err += 1
+              except Exception as e:
+                  err += 1
+                  if err < 8: print("ERR", u, e)
+              if i % 25 == 0: print(f"...{i}/{len(urls)} ok={ok} err={err}"); sys.stdout.flush()
+              time.sleep(0.25)
+          print(f"PARSED ok={ok} err={err}")
+
+          data = sorted(places.values(), key=lambda p: (p["continent"], p["country"], p["city"], p["name"]))
+          # Категория «ресторан» — по категориям и названию
+          for p in data:
+              cl = " ".join(p["categories"]).lower() + " " + p["name"].lower()
+              p["kind"] = "restaurant" if any(k in cl for k in ["restaurant", "govinda", "cafe", "café"]) else "centre"
+          rest_n = sum(1 for p in data if p["kind"] == "restaurant")
+          print(f"TOTAL places={len(data)} restaurants={rest_n}")
+          assert len(data) >= 150, f"Too few places scraped: {len(data)} — likely blocked/markup changed"
+          import os
+          os.makedirs("apps/web/public/data", exist_ok=True)
+          json.dump({"updated": time.strftime("%Y-%m-%d"), "source": "centres.iskcon.org", "places": data},
+                    open("apps/web/public/data/iskcon-places.json", "w", encoding="utf-8"),
+                    ensure_ascii=False, separators=(",", ":"))
+          print("WROTE apps/web/public/data/iskcon-places.json",
+                __import__("os").path.getsize("apps/web/public/data/iskcon-places.json"), "bytes")
+          PY
+
+      - name: Commit & push
+        run: |
+          set -e
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+          git add -A apps/web/public/data/
+          if git diff --cached --quiet; then echo "No changes."; else
+            git commit -m "data: каталог центров и ресторанов ИСККОН (официальный centres.iskcon.org)"
+            git pull --rebase origin main || true
+            git push origin HEAD:main
+          fi
+          git rev-parse HEAD
