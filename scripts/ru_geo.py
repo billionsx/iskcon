@@ -15,7 +15,7 @@ GEO_RU = {
   "ahmedabad":"Ахмадабад","ahmednagar":"Ахмаднагар","air keroh":"Аир-Керох","akluj":"Аклудж","alabama":"Алабама",
   "alachua":"Алачуа","alaminos":"Аламинос","albany":"Олбани","alberta":"Альберта","aligarh":"Алигарх",
   "allahabad":"Аллахабад","almaty":"Алматы","alor setar":"Алор-Сетар","amerikalei":"Америкалей","amlapura":"Амлапура",
-  "amravati":"Амравати","amritsar":"Амритсар","amsterdam":"Амстердам","anantapur":"Анантапур","andalusia":"Андалусия","antwerp":"Антверпен","balkans":"Балканы","andhra pradesh":"Андхра-Прадеш",
+  "amravati":"Амравати","amritsar":"Амритсар","amsterdam":"Амстердам","anantapur":"Анантапур","andalusia":"Андалусия","riverhead":"Риверхед","hertfordshire":"Хартфордшир","aldenham":"Олденхэм","edgware":"Эджвер","middlesex":"Мидлсекс","sandy ridge":"Сэнди-Ридж","ap":"Андхра-Прадеш","antwerp":"Антверпен","balkans":"Балканы","andhra pradesh":"Андхра-Прадеш",
   "andrés ibáñez":"Андрес-Ибаньес","andres ibanez":"Андрес-Ибаньес","angul":"Ангул","aravade":"Араваде",
   "arequipa":"Арекипа","arizona":"Аризона","arouca":"Ароука","artemovsk":"Артёмовск","aruppukottai":"Аруппукоттай",
   "ashanti":"Ашанти","ashcroft":"Ашкрофт","assam":"Ассам","asti":"Асти","asti province":"провинция Асти",
@@ -232,6 +232,16 @@ _TR = [
   ("l","л"),("m","м"),("n","н"),("o","о"),("p","п"),("r","р"),("s","с"),("t","т"),("u","у"),("v","в"),("z","з"),
 ]
 
+_CC = {
+  "australia":"Австралия","india":"Индия","usa":"США","us":"США","u.s.":"США","uk":"Великобритания",
+  "united kingdom":"Великобритания","united states":"США","russia":"Россия","ukraine":"Украина",
+  "hungary":"Венгрия","brazil":"Бразилия","peru":"Перу","kenya":"Кения","uganda":"Уганда",
+  "nigeria":"Нигерия","ghana":"Гана","new zealand":"Новая Зеландия","south africa":"ЮАР",
+  "germany":"Германия","france":"Франция","italy":"Италия","spain":"Испания","belgium":"Бельгия",
+  "netherlands":"Нидерланды","switzerland":"Швейцария","mexico":"Мексика","canada":"Канада",
+  "argentina":"Аргентина","chile":"Чили","japan":"Япония","mississippi":"Миссисипи",
+}
+
 def translit(token: str) -> str:
     src = token.lower().replace("’", "").replace("'", "")
     out, i = [], 0
@@ -277,6 +287,15 @@ def _phrase_ru(phrase: str) -> str:
     Индийские типы (мандир, дхама…) приклеиваются дефисом к имени по стилю BBT."""
     g = GEO_RU.get(phrase.strip().lower())
     if g: return g
+    # «Город, Регион, Страна» — каждую часть через геословарь
+    if ", " in phrase:
+        parts = [pp.strip() for pp in phrase.split(",") if pp.strip()]
+        if len(parts) >= 2:
+            out = []
+            for pp in parts:
+                low = pp.lower()
+                out.append(GEO_RU.get(low) or _CC.get(low) or _phrase_ru(pp))
+            return ", ".join(out)
     raw = [w for w in re.split(r"[ ]+", phrase.replace("/", " ").strip()) if w]
     toks, adjs, head = [], [], None
     for idx, w in enumerate(raw):
