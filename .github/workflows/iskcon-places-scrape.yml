@@ -178,7 +178,6 @@ jobs:
           ann("notice", "COORDS", f"latlng_from_prev={coords} official_src={src_official}")
 
           # ── страна из адреса для постов без гео-категории; континент по карте ──
-              for n in names: C2C[n.lower()] = c
           fixed = 0
           for p in places.values():
               if not p["country"] and p["address"]:
