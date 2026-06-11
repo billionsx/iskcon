@@ -676,7 +676,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <NavCard mark={<MaskMark src="/bbt.svg" size={28} />} title="Книги" subtitle="БГ · ШБ · ЧЧ и труды ачарьев" onClick={() => onChange("books")} />
           <NavCard mark={<MaskMark src="/gauranga.svg" size={26} />} title="Киртаны" subtitle="Бхаджаны, молитвы и мантры" onClick={() => onChange("kirtans")} />
-          <NavCard mark={<MaskMark src="/prabhupada.svg" size={30} pos="center bottom" />} title="Ачарья" subtitle="Господь, аватары и спутники" onClick={() => onChange("acharya")} />
+          <NavCard mark={<MaskMark src="/prabhupada.svg" size={30} pos="center bottom" />} title="Герои" subtitle="Господь, аватары и спутники" onClick={() => onChange("acharya")} />
           <NavCard mark={<MaskMark src="/iskcon-one-love-mark.svg" size={28} color={GOLD} />} title="Поддержать служение" subtitle="Стать частью миссии" onClick={onDonate} accent />
         </div>
       </Section>

@@ -6,8 +6,9 @@
  *   · Ссылки ИСККОН — официальные ресурсы общества по группам.
  * Все ссылки — на официальные источники (gbc.iskcon.org, iskcon.org, vedabase…).
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
+import { HomeSheet } from "./HomeSheet";
 
 const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -21,77 +22,77 @@ const DOC_TYPE_LABEL: Record<DocType, string> = {
 
 interface IskconDoc {
   id: string; type: DocType; year: string; title: string; issuer: string;
-  summary: string; url: string;
+  summary: string; body: string[]; facts: { k: string; v: string }[]; url: string;
 }
 
-const DOCS: IskconDoc[] = [
-  // — Основополагающие —
-  { id: "purposes-1966", type: "founding", year: "1966", title: "Семь целей ИСККОН", issuer: "Шрила Прабхупада",
-    summary: "Семь основных целей общества, лично сформулированных Шрилой Прабхупадой и внесённых в учредительный документ при регистрации ИСККОН в Нью-Йорке 13 июля 1966 года.",
-    url: "https://www.iskcon.org/mission/" },
-  { id: "incorporation-1966", type: "founding", year: "1966", title: "Свидетельство о регистрации (Certificate of Incorporation)", issuer: "Штат Нью-Йорк, США",
-    summary: "Учредительный документ Международного общества сознания Кришны, подписанный Шрилой Прабхупадой и первыми попечителями 13 июля 1966 года в Нью-Йорке.",
-    url: "https://prabhupadabooks.com/letters" },
-  { id: "dom-1970", type: "founding", year: "1970", title: "Direction of Management (DOM)", issuer: "Шрила Прабхупада",
-    summary: "«Направление управления» — документ от 28 июля 1970 года, которым Шрила Прабхупада учредил Руководящий совет (GBC) и определил принципы коллегиального управления обществом после его ухода.",
-    url: "https://gbc.iskcon.org/" },
-  { id: "will-1977", type: "founding", year: "1977", title: "Завещание Шрилы Прабхупады (Declaration of Will)", issuer: "Шрила Прабхупада",
-    summary: "Последняя воля Ачарьи-основателя от 4 июня 1977 года: GBC — высший управляющий орган ИСККОН; система управления, существовавшая при нём, не подлежит изменению.",
-    url: "https://gbc.iskcon.org/" },
-  { id: "constitution", type: "founding", year: "проект", title: "Конституция ИСККОН (ISKCON Constitution)", issuer: "GBC",
-    summary: "Кодификация устройства общества: миссия, духовные основы, права и обязанности членов, система управления. Разрабатывается комитетом GBC как единый основной закон ИСККОН.",
-    url: "https://gbc.iskcon.org/constitution/" },
-  // — GBC —
-  { id: "gbc-resolutions", type: "gbc", year: "1975 — н.в.", title: "Резолюции GBC (GBC Resolutions)", issuer: "Governing Body Commission",
-    summary: "Ежегодные постановления Руководящего совета ИСККОН начиная с 1975 года: законы общества, стандарты поклонения, назначения, зоны ответственности. Полный официальный архив по годам.",
-    url: "https://gbc.iskcon.org/gbc-resolutions/" },
-  { id: "iskcon-law-book", type: "gbc", year: "ред. 2010+", title: "Свод законов ИСККОН (ISKCON Law Book)", issuer: "Governing Body Commission",
-    summary: "Систематизированный свод действующих законов общества, консолидирующий резолюции GBC: духовные стандарты, управление храмами, инициации, разрешение споров.",
-    url: "https://gbc.iskcon.org/iskcon-law-book/" },
-  { id: "sppm", type: "gbc", year: "2013", title: "Положение Шрилы Прабхупады в ИСККОН (SPPM)", issuer: "GBC / ISKCON",
-    summary: "«Srila Prabhupada: The Founder-Acarya of ISKCON» — основополагающий документ Равиндры Сварупы даса, утверждённый GBC: что значит положение Ачарьи-основателя для всех поколений общества.",
-    url: "https://founderacharya.com/" },
-  // — Право и устройство —
-  { id: "child-protection", type: "law", year: "1998 — н.в.", title: "Политика защиты детей (ISKCON Child Protection)", issuer: "ISKCON CPO",
-    summary: "Обязательные для всех центров стандарты защиты детей и работы Центрального офиса защиты детей (CPO): профилактика, расследования, обучение.",
-    url: "https://iskconchildprotection.com/" },
-  { id: "deity-worship", type: "law", year: "ред. разные", title: "Стандарты поклонения Божествам (Pancaratra-pradipa)", issuer: "ISKCON Ministry of Deity Worship",
-    summary: "Официальное руководство министерства поклонения Божествам: ежедневная сева, фестивали, стандарты алтаря — единые для храмов ИСККОН по всему миру.",
-    url: "https://deityworship.com/" },
-  { id: "disciple-course", type: "law", year: "2015", title: "Стандарты инициации и курс ученика", issuer: "GBC Guru Services",
-    summary: "Требования к получению первой и второй инициации в ИСККОН: курс ученика, рекомендации, испытательный срок, отношения гуру и ученика в обществе.",
-    url: "https://gbc.iskcon.org/" },
-  // — Исторические —
-  { id: "btg-1944", type: "history", year: "1944", title: "Back to Godhead — первый выпуск", issuer: "Абхай Чаран Де (Шрила Прабхупада)",
-    summary: "Журнал «Обратно к Богу», основанный Шрилой Прабхупадой в Калькутте в 1944 году — за 22 года до регистрации ИСККОН. Издаётся его учениками по сей день.",
-    url: "https://btg.krishna.com/" },
-  { id: "nyt-1966", type: "history", year: "1966", title: "«Свами поёт в парке в поисках экстаза» — The New York Times", issuer: "The New York Times",
-    summary: "Первая публикация о Движении Харе Кришна в большой прессе (октябрь 1966): репортаж о киртане Шрилы Прабхупады в парке Томпкинс-сквер.",
-    url: "https://www.nytimes.com/1966/10/10/archives/swamis-flock-chants-in-park-to-find-ecstasy.html" },
-  { id: "sp-letters", type: "history", year: "1947–1977", title: "Письма Шрилы Прабхупады", issuer: "Bhaktivedanta Archives",
-    summary: "Более 6 000 писем Ачарьи-основателя — первоисточник по истории становления ИСККОН, наставления ученикам и руководителям центров.",
-    url: "https://prabhupadabooks.com/letters" },
-  { id: "bbt-trust", type: "history", year: "1972", title: "Учреждение Bhaktivedanta Book Trust", issuer: "Шрила Прабхупада",
-    summary: "Создание издательства BBT — «вечного» траста для публикации книг Шрилы Прабхупады; крупнейший в мире издатель ведической литературы.",
-    url: "https://bbt.org/" },
-];
-
-function DocCard({ d }: { d: IskconDoc }) {
+/* ── строка таблицы фактов в ПКД ── */
+function FactRow({ k, v, last }: { k: string; v: string; last?: boolean }) {
   return (
-    <article style={{ padding: 18, ...fill }}>
+    <div style={{ display: "flex", justifyContent: "space-between", gap: 14, padding: "11px 0",
+      borderBottom: last ? "none" : "1px solid var(--color-separator)" }}>
+      <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)", flexShrink: 0 }}>{k}</span>
+      <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", textAlign: "right" }}>{v}</span>
+    </div>
+  );
+}
+
+/* ── ПКД — полная карточка документа (читается в приложении) ── */
+function DocSheet({ d, onClose }: { d: IskconDoc | null; onClose: () => void }) {
+  return (
+    <HomeSheet open={!!d} label={d ? d.title : "Документ"} onClose={onClose}>
+      {d && (
+        <div style={{ padding: "0 20px 24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+            <span style={{ color: GOLD }}>{DOC_TYPE_LABEL[d.type]}</span>
+            <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
+            <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
+          </div>
+          <h3 style={{ margin: "7px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
+          <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{d.issuer}</div>
+
+          <div style={{ marginTop: 16 }}>
+            {d.body.map((p, i) => (
+              <p key={i} style={{ margin: i ? "12px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.62, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{p}</p>
+            ))}
+          </div>
+
+          {d.facts.length > 0 && (
+            <div style={{ marginTop: 18, padding: "4px 16px", ...fill, borderRadius: 16 }}>
+              {d.facts.map((f, i) => <FactRow key={f.k} k={f.k} v={f.v} last={i === d.facts.length - 1} />)}
+            </div>
+          )}
+
+          <a href={d.url} target="_blank" rel="noopener noreferrer"
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 16, padding: "13px 16px", borderRadius: 14,
+              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, color: "var(--color-brand-blue)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+            Официальный источник
+            <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </a>
+        </div>
+      )}
+    </HomeSheet>
+  );
+}
+
+function DocCard({ d, onOpen }: { d: IskconDoc; onOpen: () => void }) {
+  return (
+    <article role="button" tabIndex={0} onClick={onOpen}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
+      style={{ padding: 18, ...fill, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
         <span style={{ color: GOLD }}>{DOC_TYPE_LABEL[d.type]}</span>
         <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
         <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
       </div>
-      <h3 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 800, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+        <h3 style={{ flex: 1, margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 800, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ marginTop: 10, flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </div>
       <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.issuer}</div>
       <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label-2)" }}>{d.summary}</p>
-      <a href={d.url} target="_blank" rel="noopener noreferrer"
-        style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-brand-blue)", textDecoration: "none" }}>
-        Открыть документ
-        <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-      </a>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-brand-blue)" }}>
+        Читать документ
+      </span>
     </article>
   );
 }
@@ -99,13 +100,26 @@ function DocCard({ d }: { d: IskconDoc }) {
 export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
   const [q, setQ] = useState("");
   const [type, setType] = useState<"all" | DocType>("all");
+  const [docs, setDocs] = useState<IskconDoc[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const [open, setOpen] = useState<IskconDoc | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/documents")
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((j: { documents: IskconDoc[] }) => { if (alive) setDocs(j.documents || []); })
+      .catch(() => { if (alive) setFailed(true); });
+    return () => { alive = false; };
+  }, []);
+
   const trimmed = q.trim().toLowerCase();
   const filtered = useMemo(() => {
-    let r = DOCS;
+    let r = docs || [];
     if (type !== "all") r = r.filter((d) => d.type === type);
-    if (trimmed) r = r.filter((d) => [d.title, d.issuer, d.summary, d.year].some((f) => f.toLowerCase().includes(trimmed)));
+    if (trimmed) r = r.filter((d) => [d.title, d.issuer, d.summary, d.year, ...(d.body || [])].some((f) => f.toLowerCase().includes(trimmed)));
     return r;
-  }, [type, trimmed]);
+  }, [docs, type, trimmed]);
 
   return (
     <div>
@@ -113,7 +127,7 @@ export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Документы ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Основополагающие, действующие и исторические документы общества — от Семи целей и Direction of Management до резолюций GBC и Свода законов. Все ссылки ведут на официальные источники.
+          Основополагающие, действующие и исторические документы общества — от Семи целей и Direction of Management до резолюций GBC и Свода законов. Каждый документ читается прямо в приложении.
         </p>
       </div>
 
@@ -140,13 +154,23 @@ export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
         active={type} onChange={(id) => setType(id as "all" | DocType)} />
 
       <div style={{ marginTop: 14 }} aria-live="polite">
-        <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{filtered.length} документов</div>
-        {filtered.length === 0 ? (
-          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>Ничего не найдено.</div>
+        {docs === null && !failed ? (
+          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>Загрузка…</div>
+        ) : failed ? (
+          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>Не удалось загрузить документы. Проверьте связь и обновите страницу.</div>
         ) : (
-          <div style={{ display: "grid", gap: 12 }}>{filtered.map((d) => <DocCard key={d.id} d={d} />)}</div>
+          <>
+            <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{filtered.length} документов</div>
+            {filtered.length === 0 ? (
+              <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>Ничего не найдено.</div>
+            ) : (
+              <div style={{ display: "grid", gap: 12 }}>{filtered.map((d) => <DocCard key={d.id} d={d} onOpen={() => setOpen(d)} />)}</div>
+            )}
+          </>
         )}
       </div>
+
+      <DocSheet d={open} onClose={() => setOpen(null)} />
     </div>
   );
 }
