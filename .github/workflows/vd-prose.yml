@@ -111,7 +111,11 @@ jobs:
                   for br in e.find_all("br"): br.replace_with("\n")
                   t=re.sub(r"[ \t]+"," ", e.get_text()).strip(); t=re.sub(r"\n{2,}","\n",t)
                   if not t or BOILER.search(t): continue
-                  if re.match(r"^ГЛАВА\s+\d+", t): continue
+                  mh=re.match(r"^\s*глава\s+\d+\s*[:.\u2014-]?\s*(.*)$", t, re.I|re.S)
+                  if mh:
+                      rest=mh.group(1).strip()
+                      if not rest or (title and rest[:24]==title[:24]): continue
+                      t=rest
                   if title and t==title: continue
                   if t.startswith("Посвящается"): continue
                   paras.append(t)
