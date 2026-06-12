@@ -18,7 +18,7 @@ import { BookHeroCard } from "./BookHeroCard";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
-import { Skt, renderTerms } from "./ui/Skt";
+import { Skt, renderTerms, renderTitle } from "./ui/Skt";
 import { downloadCcBookPdf, downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -418,6 +418,48 @@ function Milestone({ year, text, last }: { year: string; text: string; last?: bo
     </li>
   );
 }
+/* ───────── Автор · Шрила Прабхупада-лиламрита (биограф, не Прабхупада) ───────── */
+function SplAuthor() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "28px 20px 12px" }}>
+      <header>
+        <div style={{ marginBottom: 18 }}>
+          <LogoMark src="/iskcon-sign.svg" label="ИСККОН" height={36} color={INK} />
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: INK2, marginBottom: 10 }}>Автор жизнеописания</div>
+        <h1 style={{ margin: 0, fontSize: 28, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>
+          Сатсварупа Дас<br />Госвами
+        </h1>
+        <div style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.45, color: INK2 }}>
+          Ученик Шрилы Прабхупады · один из первых его учеников на Западе и духовный наставник в ИСККОН
+        </div>
+      </header>
+
+      <section>
+        <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
+          <p style={{ margin: 0, fontSize: 18, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>
+            «Шрила Прабхупада-лиламрита» — каноническое многотомное жизнеописание Ачарьи-основателя ИСККОН. Его герой — Шрила Прабхупада; его автор — Сатсварупа Дас Госвами.
+          </p>
+        </div>
+        <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.55, color: INK3 }}>
+          Сатсварупа Дас Госвами лично знал Шрилу Прабхупаду и работал под его руководством; книга основана на письмах, дневниках, беседах и свидетельствах учеников.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>О книге</SectionTitle>
+        <div>
+          <KeyVal k="Жанр" v="Духовное жизнеописание" />
+          <KeyVal k="Герой книги" v="А. Ч. Бхактиведанта Свами Прабхупада" />
+          <KeyVal k="Автор" v="Сатсварупа Дас Госвами" />
+          <KeyVal k="Объём" v="62 главы · 2 тома" />
+          <KeyVal k="Издатель" v="Bhaktivedanta Book Trust" last />
+        </div>
+      </section>
+    </div>
+  );
+}
+
 export function Author() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "28px 20px 12px" }}>
@@ -1124,7 +1166,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
-          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
+          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
@@ -1137,7 +1179,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
         <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>
-            <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{chapter.title_ru}</h1>
+            <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
             <div style={{ marginTop: 10, fontSize: 13.5, color: INK2 }}>{verses?.length ?? chapter.verses} стихов</div>
           </div>
           <Ornament />
@@ -1328,7 +1370,7 @@ export function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow
     <div style={newPage ? { breakBefore: "page" } : undefined}>
       <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
         <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>
-        <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{chapter.title_ru}</h2>
+        <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
         <div style={{ marginTop: 8, fontSize: 13, color: INK2 }}>{verses.length} стихов</div>
         <Ornament />
       </div>
@@ -1348,8 +1390,8 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
         <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
           <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
         </div>
-        <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{book.titleLine1}</h1>
-        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{book.titleLine2}</div>}
+        <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{renderTitle(book.titleLine1)}</h1>
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{renderTitle(book.titleLine2)}</div>}
         <div style={{ marginTop: "7mm", fontSize: 12.5, letterSpacing: "3px", textTransform: "uppercase", color: INK2 }}>Полное издание с комментариями</div>
         <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
       </div>
@@ -1428,8 +1470,8 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
         <div style={{ width: "54mm", margin: "9mm auto 0", borderTop: `1px solid ${GOLD}`, position: "relative" }}>
           <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
         </div>
-        <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{book.titleLine1}</h1>
-        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{book.titleLine2}</div>}
+        <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{renderTitle(book.titleLine1)}</h1>
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{renderTitle(book.titleLine2)}</div>}
         <div style={{ marginTop: "7mm", fontSize: 12.5, letterSpacing: "3px", textTransform: "uppercase", color: INK2 }}>{book.tagline}</div>
         <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
       </div>
@@ -1594,7 +1636,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
-          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{chapter.title_ru}</div>
+          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
           <div style={{ fontSize: 11, color: INK2 }}>{numbered ? `Глава ${chapter.number} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
@@ -1607,7 +1649,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         <div style={{ margin: "0 auto", padding: "16px 24px calc(48px + env(safe-area-inset-bottom))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
             {numbered && <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
-            <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{chapter.title_ru}</h1>
+            <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
           </div>
           <Ornament />
 
@@ -2175,7 +2217,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
             ? <CcContents work={book.work} onOpenChapter={setOpenChapter} />
             : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} />)}
           {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : <GenericOverview book={book} />)}
-          {tab === "author" && <Author />}
+          {tab === "author" && (book.work === "spl" ? <SplAuthor /> : <Author />)}
           {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : <Reviews />)}
         </div>
       </div>

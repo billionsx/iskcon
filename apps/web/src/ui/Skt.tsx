@@ -41,39 +41,89 @@ export function Skt({
  * точные формы из глоссария, по границам слов (Unicode), стоп-лист имён/лоанвордов
  * исключён. Длинное совпадение — первым (составные термины не дробятся).
  */
-export function renderTerms(text: string | null | undefined): ReactNode {
-  if (!text) return text ?? null;
+const SCRIPT_MARK = /[\u0300-\u036F\u0483-\u0489\u04E3\u04EF]/;
 
+function scriptFraction(text: string): number {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (!words.length) return 0;
+  let n = 0;
+  for (const w of words) if (SCRIPT_MARK.test(w)) n++;
+  return n / words.length;
+}
+
+/** Глоссарная пометка (прежнее поведение): термины BBT из курируемого словаря. */
+function wrapGlossary(text: string, keyBase: number): ReactNode[] {
   const re = SCRIPTURE_TERM_REGEX;
   re.lastIndex = 0;
-
   const out: ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
-
   while ((m = re.exec(text)) !== null) {
     const form = m[0];
     const start = m.index;
     const end = start + form.length;
-
-    // ручная проверка границ слова (без lookbehind — ради Safari < 16.4):
-    // отвергаем совпадения внутри слова (напр. «дхарма» внутри «адхарма»).
     const before = start > 0 ? text[start - 1] : "";
     const after = end < text.length ? text[end] : "";
     const boundaryOk = !(before && IS_LETTER.test(before)) && !(after && IS_LETTER.test(after));
-
     if (!boundaryOk || SCRIPTURE_STOP_SET.has(form.toLowerCase())) {
-      re.lastIndex = start + 1; // продолжить со следующего символа (учесть перекрытия)
+      re.lastIndex = start + 1;
       continue;
     }
-
     if (start > last) out.push(text.slice(last, start));
-    out.push(<Skt key={out.length}>{form}</Skt>);
+    out.push(<Skt key={`g${keyBase}-${out.length}`}>{form}</Skt>);
     last = end;
     re.lastIndex = end;
   }
-
-  if (out.length === 0) return text;
   if (last < text.length) out.push(text.slice(last));
+  return out;
+}
+
+/**
+ * Выделяет писание georgia-курсивом (Gentium) — ЗАКОН во всём тексте:
+ *   • любое слово с комбинирующей диакритикой (транслитерация: бхагава̄н, видйа̄,
+ *     су-сукхам̇) → <Skt> (Gentium-курсив + корректные знаки над кириллицей);
+ *   • если почти весь фрагмент — транслитерация (стих-строка) → обернуть целиком;
+ *   • в русской прозе дополнительно подсвечиваем термины из глоссария BBT.
+ */
+export function renderTerms(text: string | null | undefined): ReactNode {
+  if (!text) return text ?? null;
+  if (scriptFraction(text) >= 0.45) return <Skt>{text}</Skt>;
+  const parts = text.split(/(\s+)/);
+  const out: ReactNode[] = [];
+  let plain = "";
+  const flush = () => {
+    if (!plain) return;
+    for (const node of wrapGlossary(plain, out.length)) out.push(node);
+    plain = "";
+  };
+  for (const tok of parts) {
+    if (tok && /\S/.test(tok) && SCRIPT_MARK.test(tok)) {
+      flush();
+      out.push(<Skt key={`s${out.length}`}>{tok}</Skt>);
+    } else {
+      plain += tok;
+    }
+  }
+  flush();
+  return out.length ? out : text;
+}
+
+/**
+ * Для ЗАГОЛОВКОВ: транслитерационные слова — шрифтом писания (Gentium) ради
+ * корректных диакритик, но БЕЗ курсива (заголовок остаётся прямым/полужирным).
+ */
+export function renderTitle(text: string | null | undefined): ReactNode {
+  if (!text) return text ?? null;
+  if (!SCRIPT_MARK.test(text)) return text;
+  const parts = text.split(/(\s+)/);
+  const out: ReactNode[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const tok = parts[i];
+    if (tok && /\S/.test(tok) && SCRIPT_MARK.test(tok)) {
+      out.push(<span key={i} style={{ fontFamily: "var(--font-scripture)", fontStyle: "normal" }}>{tok}</span>);
+    } else {
+      out.push(tok);
+    }
+  }
   return out;
 }
