@@ -1,0 +1,83 @@
+/**
+ * Русские подписи таттвы и классификации сущностей реестра. Единый источник
+ * для EntityPage (чипы) и PdfDoc (печатная карточка героя), чтобы латинские
+ * коды (jiva-tattva, acharya, gaudiya) не попадали в выдачу пользователю.
+ */
+export const TATTVA_RU: Record<string, string> = {
+  "vishnu-tattva": "Вишну-таттва",
+  "shakti-tattva": "Шакти-таттва",
+  "shiva-tattva": "Шива-таттва",
+  "jiva-tattva": "Джива-таттва",
+};
+
+export const CATEGORY_RU: Record<string, string> = {
+  "svayam-bhagavan": "Сваям Бхагаван",
+  "source-of-all": "Источник всего",
+  "hladini-shakti": "Хладини-шакти",
+  "pancha-tattva": "Панча-таттва",
+  "yuga-avatara": "Юга-аватара",
+  "lila-avatara": "Лила-аватара",
+  shaktyavesha: "Шактьявеша",
+  avatara: "Аватара",
+  gopi: "Гопи",
+  gopa: "Пастушок Враджа",
+  manjari: "Манджари",
+  vraja: "Враджа",
+  consort: "Супруга Господа",
+  "gaura-lila": "Гаура-лила",
+  "krishna-lila": "Кришна-лила",
+  "krishna-family": "Семья Кришны",
+  "founder-acharya": "Основатель-ачарья",
+  "initiating-guru": "Дикша-гуру ИСККОН",
+  "zonal-acharya-1977": "Зональный ачарья (1977)",
+  "founding-disciple": "Ученик-основатель",
+  gaudiya: "Гаудия-вайшнав",
+  acharya: "Ачарья",
+  "vaishnava-acharya": "Вайшнавский ачарья",
+  associate: "Спутник",
+  saint: "Святой",
+  poet: "Поэт",
+  deity: "Божество",
+  vrindavana: "Вриндаван",
+  "six-goswamis": "Шесть Госвами",
+  "madhva-parampara": "Мадхва-парампара",
+  parampara: "Парампара",
+  "maha-jana": "Маха-джана",
+  bhagavatam: "«Шримад-Бхагаватам»",
+  mahabharata: "«Махабхарата»",
+  ramayana: "«Рамаяна»",
+  gita: "«Бхагавад-гита»",
+  pandava: "Пандав",
+  kuru: "Куру",
+  raghu: "Династия Рагху",
+  king: "Царь",
+  warrior: "Воин",
+  sage: "Мудрец",
+  sannyasi: "Санньяси",
+  demigod: "Полубог",
+  demon: "Демон",
+  rakshasa: "Ракшас",
+  vanara: "Вáнара",
+  family: "Семья",
+  servant: "Слуга Господа",
+  "shuddha-bhakta": "Чистый преданный",
+  "krishna-associate": "Спутник Кришны",
+  "channa-avatara": "Скрытая аватара",
+  "prakasha-vilasa": "Пракаша-виласа",
+  iskcon: "ИСККОН",
+  godbrother: "Духовный брат",
+  pl: "Прабхупада-лиламрита",
+  "canonical-scripture": "Канон",
+  "prabhupada-book": "Книга Прабхупады",
+};
+
+/** Латинский код таттвы → русская подпись (фолбэк: исходный код). */
+export function tattvaRu(t?: string | null): string {
+  if (!t) return "";
+  return TATTVA_RU[t] ?? t;
+}
+
+/** Список категорий (латиница) → русские подписи; неизвестные коды отбрасываются. */
+export function categoriesRu(cats?: string[] | null): string[] {
+  return (cats ?? []).map((c) => CATEGORY_RU[c]).filter(Boolean) as string[];
+}
