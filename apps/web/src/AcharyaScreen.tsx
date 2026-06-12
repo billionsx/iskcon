@@ -13,6 +13,7 @@
  *
  * Каждая карточка героя открывает EntityPage; книги-читалки уходят в ридер.
  */
+import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
@@ -63,11 +64,22 @@ function Avatar({ item, size }: { item: Item; size: number }) {
   return <Monogram ch={initialOf(item)} size={size} />;
 }
 
+
+function entityCtx(item: Item) {
+  return {
+    type: "entity" as const, id: item.id, title: item.name_ru || item.id, subtitle: item.name_iast || undefined,
+    url: `https://gaurangers.com/entity/${encodeURIComponent(item.id)}`,
+    context: `Герой · ${item.name_ru || item.id} · /entity/${item.id}`,
+  };
+}
+
 function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: string | null) => void }) {
+  const { openCardMenu } = useCardActions();
   return (
-    <button type="button" onClick={() => onOpen(item.id, item.type)}
-      style={{ flexShrink: 0, width: 140, display: "flex", flexDirection: "column", alignItems: "center", gap: 9, padding: "16px 10px",
-        borderRadius: 18, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", textAlign: "center" }}
+    <div role="button" tabIndex={0} onClick={() => onOpen(item.id, item.type)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(item.id, item.type); } }}
+      style={{ flexShrink: 0, width: 140, display: "flex", flexDirection: "column", alignItems: "center", gap: 9, padding: "16px 10px 12px",
+        borderRadius: 18, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", textAlign: "center", WebkitTapHighlightColor: "transparent" }}
       onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")}
       onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
       onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
@@ -78,7 +90,8 @@ function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: s
         <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.2,
           display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", width: "100%" }}>{item.name_iast}</div>
       )}
-    </button>
+      <CardActionBtns favKey={`entity:${item.id}`} size={26} onMore={() => openCardMenu(entityCtx(item))} />
+    </div>
   );
 }
 
@@ -140,17 +153,19 @@ function SectionCard({ title, subtitle, mark, accent, onClick }: { title: string
 }
 
 function ResultRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: string | null) => void }) {
+  const { openCardMenu } = useCardActions();
   return (
-    <button type="button" onClick={() => onOpen(item.id, item.type)}
-      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "11px 4px", background: "none", border: "none",
-        borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", textAlign: "left" }}>
+    <div role="button" tabIndex={0} onClick={() => onOpen(item.id, item.type)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(item.id, item.type); } }}
+      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", boxSizing: "border-box", padding: "11px 4px",
+        borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
       <Avatar item={item} size={40} />
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_ru || item.id}</span>
         {item.name_iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)" }}>{item.name_iast}</span>}
       </span>
-      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20, lineHeight: 1 }}>›</span>
-    </button>
+      <CardActionBtns favKey={`entity:${item.id}`} size={28} onMore={() => openCardMenu(entityCtx(item))} />
+    </div>
   );
 }
 

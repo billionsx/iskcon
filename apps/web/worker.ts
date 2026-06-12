@@ -143,6 +143,15 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   } else if (kind === "chapter" && n) {
     printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
     filename = `${bookFullTitle(book)}. Глава ${n}.pdf`;
+  } else if (kind === "card") {
+    // Печатная карточка: место/ресторан/личность/документ/бхаджан/киртан.
+    const ctype = url.searchParams.get("type") || "";
+    const cid = url.searchParams.get("id") || "";
+    const cname = url.searchParams.get("name") || "Карточка";
+    if (!ctype || !cid) return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
+    const extra = ["album", "track"].map((k) => { const v = url.searchParams.get(k); return v ? `&${k}=${encodeURIComponent(v)}` : ""; }).join("");
+    printPath = `/?pdf=card&type=${encodeURIComponent(ctype)}&id=${encodeURIComponent(cid)}${extra}`;
+    filename = `${cname}.pdf`;
   } else if (kind === "verse" && ref) {
     printPath = `/?pdf=verse&work=${encodeURIComponent(work)}&ref=${encodeURIComponent(ref)}`;
     const rd = ref.replace(/^[^\d]*/, "");

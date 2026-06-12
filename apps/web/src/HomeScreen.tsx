@@ -735,6 +735,12 @@ export default function HomeScreen(props: {
     return "iskcon";
   });
   useEffect(() => { try { sessionStorage.setItem("home-tab", homeTab); } catch { /* noop */ } }, [homeTab]);
+  // Нижняя «Главная» (повторный тап) и логотип ISKCON ONE LOVE возвращают в корень главной.
+  useEffect(() => {
+    const h = (e: Event) => { if ((e as CustomEvent).detail === "home") setHomeTab("iskcon"); };
+    window.addEventListener("tab-reset", h);
+    return () => window.removeEventListener("tab-reset", h);
+  }, []);
   const t1Ref = useRef<HTMLElement | null>(null);
   const [t1H, setT1H] = useState(46);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -753,11 +759,11 @@ export default function HomeScreen(props: {
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
-      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} />}
-      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} />}
+      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={flash} />}
+      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={flash} />}
       {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}
       {homeTab === "education" && <HomeEducation />}
-      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} />}
+      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} flash={flash} />}
       {homeTab === "structure" && <HomeStructure />}
       {homeTab === "links" && <HomeLinks />}
       {homeTab === "feed" && <HomeFeed />}

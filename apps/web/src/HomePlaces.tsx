@@ -14,6 +14,7 @@
  * полную карточку места ВНУТРИ приложения (шит с контактами и маршрутом);
  * наружу ведут только действия (позвонить / написать / сайт / маршрут).
  */
+import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
@@ -53,8 +54,23 @@ function ActionPill({ href, label, icon }: { href: string; label: string; icon: 
   );
 }
 
+
+/* ── контекст действий карточки места (share/PDF/QR/ошибка) ── */
+function placeCtx(p: PlaceItem) {
+  const where = [p.cityRu || p.city, p.countryRu].filter(Boolean).join(", ");
+  return {
+    type: (p.kind === "restaurant" ? "restaurant" : "place") as "place" | "restaurant",
+    id: p.id,
+    title: p.nameRu || p.name,
+    subtitle: where || undefined,
+    url: `https://gaurangers.com/place/${encodeURIComponent(p.id)}`,
+    context: `${p.kind === "restaurant" ? "Ресторан" : "Центр"} · ${p.nameRu || p.name}${p.addressRu || p.address ? ` · ${p.addressRu || p.address}` : ""} · /place/${p.id}`,
+  };
+}
+
 /* ── ВКЦ / ВКР: тап открывает полную карточку внутри приложения ── */
-function PlaceCard({ p, onOpen }: { p: PlaceItem; onOpen: (p: PlaceItem) => void }) {
+function PlaceCard({ p, onOpen, flash }: { p: PlaceItem; onOpen: (p: PlaceItem) => void; flash?: (m: string) => void }) {
+  const { openCardMenu } = useCardActions();
   return (
     <article role="button" tabIndex={0} onClick={() => onOpen(p)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(p); } }}
@@ -68,9 +84,8 @@ function PlaceCard({ p, onOpen }: { p: PlaceItem; onOpen: (p: PlaceItem) => void
             {[p.cityRu || p.city, p.countryRu].filter(Boolean).join(" · ")}
           </div>
         </div>
-        <span aria-hidden style={{ color: "var(--color-label-3)", marginTop: 14 }}>
-          <svg width="14" height="14" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </span>
+        <CardActionBtns favKey={`${p.kind}:${p.id}`} flash={flash} size={32}
+          onMore={() => openCardMenu(placeCtx(p))} />
       </div>
       {p.address && (
         <div style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
@@ -93,7 +108,8 @@ function InfoRow({ k, v, last }: { k: string; v: string; last?: boolean }) {
   );
 }
 
-function PlaceSheet({ p, onClose }: { p: PlaceItem | null; onClose: () => void }) {
+function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () => void; flash?: (m: string) => void }) {
+  const { openCardMenu } = useCardActions();
   if (!p) return null;
   const site = p.website && /^https?:\/\//.test(p.website) ? p.website : p.website ? `http://${p.website}` : "";
   return (
@@ -101,7 +117,10 @@ function PlaceSheet({ p, onClose }: { p: PlaceItem | null; onClose: () => void }
       <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
         {p.kind === "restaurant" ? "Ресторан ИСККОН" : `${p.category} ИСККОН`}
       </div>
-      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>{p.nameRu || p.name}</h2>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+        <h2 style={{ margin: "5px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>{p.nameRu || p.name}</h2>
+        <CardActionBtns favKey={`${p.kind}:${p.id}`} flash={flash} onMore={() => openCardMenu(placeCtx(p))} />
+      </div>
       {p.nameRu && p.nameRu !== p.name && (
         <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{p.name}</div>
       )}
@@ -143,7 +162,7 @@ function PlaceSheet({ p, onClose }: { p: PlaceItem | null; onClose: () => void }
 }
 
 /* ── каталог ── */
-export function HomePlaces({ kind, stickyTop }: { kind: "centre" | "restaurant"; stickyTop: number }) {
+export function HomePlaces({ kind, stickyTop, flash }: { kind: "centre" | "restaurant"; stickyTop: number; flash?: (m: string) => void }) {
   const [facets, setFacets] = useState<Facets | null>(null);
   const [items, setItems] = useState<PlaceItem[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -158,6 +177,12 @@ export function HomePlaces({ kind, stickyTop }: { kind: "centre" | "restaurant";
   const reqSeq = useRef(0);
 
   useEffect(() => { setCont("all"); setCtry("all"); setQ(""); }, [kind]);
+  // Deep-link /place/<id>: открываем полную карточку, ключ одноразовый.
+  useEffect(() => {
+    let pid = ""; try { pid = sessionStorage.getItem("open-place") || ""; if (pid) sessionStorage.removeItem("open-place"); } catch { /* noop */ }
+    if (!pid) return;
+    fetch(`/api/places/${encodeURIComponent(pid)}`).then((r) => r.ok ? r.json() : null).then((p) => { if (p && p.id) setOpen(p as PlaceItem); }).catch(() => {});
+  }, []);
   useEffect(() => { setCtry("all"); }, [cont]);
 
   useEffect(() => {
@@ -272,7 +297,7 @@ export function HomePlaces({ kind, stickyTop }: { kind: "centre" | "restaurant";
               </div>
             ) : (
               <div style={{ display: "grid", gap: 12 }}>
-                {items.map((p) => <PlaceCard key={p.id + p.source} p={p} onOpen={setOpen} />)}
+                {items.map((p) => <PlaceCard flash={flash} key={p.id + p.source} p={p} onOpen={setOpen} />)}
               </div>
             )}
             {items.length < total && (
@@ -287,7 +312,7 @@ export function HomePlaces({ kind, stickyTop }: { kind: "centre" | "restaurant";
         )}
       </div>
 
-      <PlaceSheet p={open} onClose={() => setOpen(null)} />
+      <PlaceSheet flash={flash} p={open} onClose={() => setOpen(null)} />
     </div>
   );
 }
