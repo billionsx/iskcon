@@ -16,6 +16,7 @@ import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
+import { useFavorite } from "./cardActions";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
@@ -1104,7 +1105,8 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [fav, setFav] = useState(false);
+  const favHref = hierarchical ? `/book/${work}/${chapter.id.split(".")[1] ?? ""}/${chapter.number}` : `/book/${work}/${chapter.number}`;
+  const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: favHref });
   const [printing, setPrinting] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -1170,7 +1172,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
           <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
           <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
         </div>
-        <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
+        <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } player.playChapter(work, Number(chapter.number) || 1, "plain", hierarchical ? chapter.id.split(".")[1] : undefined); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
@@ -1598,7 +1600,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const [paras, setParas] = useState<ProsePara[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [fav, setFav] = useState(false);
+  const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: `/book/${work}/${chapter.number}` });
   const moreRef = useRef<HTMLSpanElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -1640,7 +1642,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
           <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
           <div style={{ fontSize: 11, color: INK2 }}>{numbered ? `Глава ${chapter.number} · ` : ""}{bookTitle}</div>
         </div>
-        <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Глава добавлена в избранное" : "Глава убрана из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
+        <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
@@ -1702,7 +1704,6 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
-  const [fav, setFav] = useState(false);
   const [vMenu, setVMenu] = useState(false);
   const vMoreRef = useRef<HTMLSpanElement>(null);
   const verseContentRef = useRef<HTMLDivElement>(null);
@@ -1732,6 +1733,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
   const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
   const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
   const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
+  const { on: fav, toggle: toggleFav } = useFavorite(`verse:${work}/${refStr}`, { t: data?.label ?? refStr, s: `${chapterTitle ? chapterTitle + " · " : ""}${bookTitle}`, h: verseUrl.replace(/^https?:\/\/[^/]+/, "") });
   const evDeva = data?.devanagari || demo?.devanagari || null;
   const evTranslit = data?.translit || demo?.translit || null;
   const evTokens = (data?.tokens && data.tokens.length ? data.tokens : demo?.tokens) ?? [];
@@ -1766,7 +1768,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
           <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.label ?? refStr}</div>
           <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
         </div>
-        <NavBtn ariaLabel="В избранное" onClick={() => { const nv = !fav; setFav(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); }} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
+        <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>

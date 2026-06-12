@@ -14,7 +14,7 @@
  * полную карточку места ВНУТРИ приложения (шит с контактами и маршрутом);
  * наружу ведут только действия (позвонить / написать / сайт / маршрут).
  */
-import { CardActionBtns, useCardActions } from "./cardActions";
+import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
@@ -131,7 +131,7 @@ function PlaceCard({ p, onOpen, flash, dist }: { p: PlaceItem; onOpen: (p: Place
             {[geoLine(p), dist != null ? kmLabel(dist) : ""].filter(Boolean).join(" · ")}
           </div>
         </div>
-        <CardActionBtns favKey={`${p.kind}:${p.id}`} flash={flash} size={32}
+        <CardActionBtns favKey={`${p.kind}:${p.id}`} meta={favMetaFromCtx(placeCtx(p))} flash={flash} size={32}
           onMore={() => openCardMenu(placeCtx(p))} />
       </div>
       {p.address && (
@@ -166,7 +166,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <h2 style={{ margin: "5px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>{p.nameRu || p.name}</h2>
-        <CardActionBtns favKey={`${p.kind}:${p.id}`} flash={flash} onMore={() => openCardMenu(placeCtx(p))} />
+        <CardActionBtns favKey={`${p.kind}:${p.id}`} meta={favMetaFromCtx(placeCtx(p))} flash={flash} onMore={() => openCardMenu(placeCtx(p))} />
       </div>
       {p.nameRu && p.nameRu !== p.name && (
         <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{p.name}</div>

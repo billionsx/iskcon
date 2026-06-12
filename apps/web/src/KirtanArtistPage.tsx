@@ -8,7 +8,7 @@
  *
  * Эстетика — светлый iOS-grouped-list на дизайн-токенах, как раздел книг.
  */
-import { CardActionBtns, useCardActions } from "./cardActions";
+import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { usePlayer, fmtTime } from "./player/store";
@@ -61,7 +61,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
           {album.note && <div style={{ marginTop: 5, fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-3, #8e8e93)" }}>{album.note}</div>}
         </div>
         <span style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <CardActionBtns favKey={`kirtan-album:${album.id}`} size={32} onMore={() => openCardMenu(albumCtx)} />
+          <CardActionBtns favKey={`kirtan-album:${album.id}`} meta={favMetaFromCtx(albumCtx)} size={32} onMore={() => openCardMenu(albumCtx)} />
           {playable && (
             <button aria-label="Слушать альбом" onClick={() => player.playKirtan(album.id)} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", border: "none", cursor: "pointer", display: "grid", placeItems: "center", background: GOLD, color: "#1d1d1f", boxShadow: "0 4px 14px rgba(210,170,27,0.4)" }}>
               <svg width="20" height="20" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
@@ -82,6 +82,12 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
               {tracks && tracks.length === 0 && !loading && <div style={{ padding: "14px", fontSize: 13.5, color: "var(--color-label-2)" }}>Дорожки появятся позже.</div>}
               {tracks && tracks.map((t, i) => {
                 const active = player.kind === "kirtan" && player.book === album.id && player.index === i;
+                const trackCtx = {
+                  type: "kirtan-track" as const, id: album.id, title: t.title, subtitle: `${artistName} — ${album.title}`,
+                  url: `https://gaurangers.com/kirtan/${encodeURIComponent(artistSlug)}`,
+                  context: `Киртан-дорожка · ${artistName} — ${album.title} · ${t.title}`,
+                  pdfExtra: { album: album.id, track: t.title },
+                };
                 return (
                   <div key={i} role="button" tabIndex={0} onClick={() => player.playKirtan(album.id, i)}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); player.playKirtan(album.id, i); } }}
@@ -89,12 +95,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
                     <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: 13, fontWeight: 600, color: active ? GOLD : "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{active ? "▶" : i + 1}</span>
                     <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: active ? 600 : 400, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
                     {t.durationSec ? <span style={{ flexShrink: 0, fontSize: 12, color: "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
-                    <CardActionBtns favKey={`kirtan-track:${album.id}:${i}`} size={28} onMore={() => openCardMenu({
-                      type: "kirtan-track", id: album.id, title: t.title, subtitle: `${artistName} — ${album.title}`,
-                      url: `https://gaurangers.com/kirtan/${encodeURIComponent(artistSlug)}`,
-                      context: `Киртан-дорожка · ${artistName} — ${album.title} · ${t.title}`,
-                      pdfExtra: { album: album.id, track: t.title },
-                    })} />
+                    <CardActionBtns favKey={`kirtan-track:${album.id}:${i}`} meta={favMetaFromCtx(trackCtx)} size={28} onMore={() => openCardMenu(trackCtx)} />
                   </div>
                 );
               })}
