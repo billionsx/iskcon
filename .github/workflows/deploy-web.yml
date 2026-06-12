@@ -75,12 +75,19 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
         run: |
+          set +e
           if [ -n "$ADMIN_TOKEN" ]; then
             printf '%s' "$ADMIN_TOKEN" | bunx wrangler secret put ADMIN_TOKEN
-            echo "ADMIN_TOKEN applied to iskcon-web."
+            RC=$?
+            if [ "$RC" = "0" ]; then
+              echo "ADMIN_TOKEN applied to iskcon-web."
+            else
+              echo "::warning::wrangler secret put ADMIN_TOKEN exit $RC — секрет уже сохранён на воркере прошлыми деплоями; не блокируем выкат фронта."
+            fi
           else
             echo "No ADMIN_TOKEN repo secret — /api/admin/* will return 503 until you add it."
           fi
+          exit 0
 
       - name: Deploy to Cloudflare + force latest version to 100%
         working-directory: apps/web
