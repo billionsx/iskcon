@@ -1,0 +1,77 @@
+{
+  "bg": {
+    "chapters": 18,
+    "verses": 657,
+    "scheme": "chapter.verse"
+  },
+  "sb": {
+    "chapters": 335,
+    "verses": 13000,
+    "scheme": "canto.chapter.verse"
+  },
+  "cc": {
+    "chapters": 62,
+    "verses": 11359,
+    "scheme": "chapter.verse"
+  },
+  "brs": {
+    "chapters": 55,
+    "verses": 1682,
+    "scheme": "prose"
+  },
+  "iso": {
+    "chapters": 1,
+    "verses": 19,
+    "scheme": "mantra"
+  },
+  "noi": {
+    "chapters": 1,
+    "verses": 11,
+    "scheme": "mantra"
+  },
+  "lob": {
+    "chapters": 1,
+    "verses": 0,
+    "scheme": "mantra"
+  },
+  "owk": {
+    "chapters": 5,
+    "verses": 221,
+    "scheme": "prose"
+  },
+  "rv": {
+    "chapters": 8,
+    "verses": 313,
+    "scheme": "prose"
+  },
+  "pop": {
+    "chapters": 11,
+    "verses": 548,
+    "scheme": "prose"
+  },
+  "bbd": {
+    "chapters": 5,
+    "verses": 172,
+    "scheme": "prose"
+  },
+  "poy": {
+    "chapters": 8,
+    "verses": 139,
+    "scheme": "prose"
+  },
+  "sc": {
+    "chapters": 23,
+    "verses": 708,
+    "scheme": "prose"
+  },
+  "tqk": {
+    "chapters": 24,
+    "verses": 644,
+    "scheme": "prose"
+  },
+  "spl": {
+    "chapters": 0,
+    "verses": 0,
+    "scheme": null
+  }
+}
