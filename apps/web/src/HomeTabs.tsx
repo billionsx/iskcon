@@ -9,25 +9,25 @@ const GOLD = "#D2AA1B";
 
 export type HomeTabId =
   | "iskcon"       // ИСККОН — презентация
+  | "calendar"     // Вайшнавский календарь
+  | "feed"         // Лента ISKCON (@iskcone)
   | "centres"      // Центры ИСККОН
   | "restaurants"  // Рестораны ИСККОН
-  | "calendar"     // Вайшнавский календарь
   | "education"    // Образование ИСККОН
-  | "documents"    // Документы ИСККОН
   | "structure"    // Структура ИСККОН
-  | "links"        // Ссылки ИСККОН
-  | "feed";        // Лента ISKCON (@iskcone)
+  | "documents"    // Документы ИСККОН
+  | "links";       // Ссылки ИСККОН
 
 export const HOME_TABS: readonly { id: HomeTabId; label: string }[] = [
   { id: "iskcon",      label: "ИСККОН" },
+  { id: "calendar",    label: "Календарь" },
+  { id: "feed",        label: "Лента" },
   { id: "centres",     label: "Центры" },
   { id: "restaurants", label: "Рестораны" },
-  { id: "calendar",    label: "Календарь" },
   { id: "education",   label: "Образование" },
-  { id: "documents",   label: "Документы" },
   { id: "structure",   label: "Структура" },
+  { id: "documents",   label: "Документы" },
   { id: "links",       label: "Ссылки" },
-  { id: "feed",        label: "Лента" },
 ] as const;
 
 export function HomeTabs({ active, onChange, navRef }: {

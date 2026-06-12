@@ -436,7 +436,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
     if (!root || !el) return;
     setActiveAnchor(id);
     clickLock.current = Date.now() + 700;
-    const top = root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top - (stickyTop + subH) + 2;
+    const top = root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top - (stickyTop + subH) - 6;
     root.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   };
 
