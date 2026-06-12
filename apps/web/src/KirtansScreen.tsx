@@ -22,7 +22,7 @@ import {
 
 const GOLD = "#D2AA1B";
 
-interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; }
+interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; category: string | null; }
 
 /** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
 export function ArtistMono({ artist, size = 52 }: { artist: KirtanArtist; size?: number }) {
@@ -216,7 +216,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
             {bhajans.slice(0, 3).map((b) => (
               <BhajanHeroCard
                 key={b.slug}
-                bhajan={{ slug: b.slug, name: b.name, author: b.author, heroImage: b.hero_image, sourceText: null, section: null }}
+                bhajan={{ slug: b.slug, name: b.name, author: b.author, heroImage: b.hero_image, category: b.category, sourceText: null, section: null }}
                 topLeft={<span aria-hidden style={{ display: "block", height: 26, width: 26, backgroundColor: "currentColor", WebkitMaskImage: "url(/iskcon-sign.svg)", maskImage: "url(/iskcon-sign.svg)", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />}
                 onOpen={() => onOpenBhajan(b.slug)}
                 flash={flash}

@@ -22,6 +22,7 @@ export interface BhajanHeroData {
   name: string;
   author: string | null;
   heroImage: string | null;
+  category?: string | null;
   sourceText: string | null;
   section: string | null;
 }
@@ -35,7 +36,7 @@ export function BhajanHeroCard({ bhajan, topLeft, onOpen, flash, presentational 
 }) {
   const { on: favorited, toggle: toggleFav } = useFavorite(`bhajan:${bhajan.slug}`);
   const { openCardMenu } = useCardActions();
-  const chips = [bhajan.sourceText, bhajan.section].filter(Boolean) as string[];
+  const chips = [...new Set([bhajan.category, bhajan.sourceText, bhajan.section].filter(Boolean) as string[])];
   // Реальная обложка — только если это не общий дженерик-плейсхолдер ингеста
   // (один iskcon.png на все бхаджаны). Иначе — тёмное панно GRAPHITE с маской-лого.
   const realCover = !!bhajan.heroImage && !/iskcon\.png/i.test(bhajan.heroImage);
