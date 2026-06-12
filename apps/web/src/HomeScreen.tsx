@@ -557,7 +557,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch",
           margin: `4px -${PAD}px 0`, padding: `12px ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
           {LIBRARY.filter((b) => b.lineage === "prabhupada" && b.readable && BOOKS[b.id]).map((b) => (
-            <div key={b.id} style={{ flex: "0 0 88%", scrollSnapAlign: "center" }}>
+            <div key={b.id} style={{ flex: `0 0 calc(100% - ${PAD * 2}px)`, scrollSnapAlign: "start" }}>
               <BookHeroCard
                 book={BOOKS[b.id]}
                 topLeft={<MaskMark src="/bbt.svg" size={26} color="#fff" />}
@@ -759,11 +759,11 @@ export default function HomeScreen(props: {
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
-      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={flash} />}
-      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={flash} />}
+      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} />}
+      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} />}
       {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}
       {homeTab === "education" && <HomeEducation />}
-      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} flash={flash} />}
+      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} flash={props.flash} />}
       {homeTab === "structure" && <HomeStructure />}
       {homeTab === "links" && <HomeLinks />}
       {homeTab === "feed" && <HomeFeed />}
