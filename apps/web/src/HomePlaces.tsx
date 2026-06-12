@@ -55,9 +55,20 @@ function ActionPill({ href, label, icon }: { href: string; label: string; icon: 
 }
 
 
+
+/* Гео-подпись без дублей: отбрасываем город/страну, если они уже в названии. */
+function geoLine(p: PlaceItem, sep = " · "): string {
+  const nm = `${p.nameRu || ""} ${p.name || ""}`;
+  const has = (x: string) => !!x && nm.toLowerCase().includes(x.toLowerCase());
+  const city = p.cityRu || p.city;
+  return [city, p.stateRu && p.stateRu !== city ? p.stateRu : "", p.countryRu]
+    .filter((x) => x && !has(x))
+    .join(sep);
+}
+
 /* ── контекст действий карточки места (share/PDF/QR/ошибка) ── */
 function placeCtx(p: PlaceItem) {
-  const where = [p.cityRu || p.city, p.countryRu].filter(Boolean).join(", ");
+  const where = geoLine(p, ", ");
   return {
     type: (p.kind === "restaurant" ? "restaurant" : "place") as "place" | "restaurant",
     id: p.id,
@@ -81,7 +92,7 @@ function PlaceCard({ p, onOpen, flash }: { p: PlaceItem; onOpen: (p: PlaceItem) 
           <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
           <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
           <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>
-            {[p.cityRu || p.city, p.countryRu].filter(Boolean).join(" · ")}
+            {geoLine(p)}
           </div>
         </div>
         <CardActionBtns favKey={`${p.kind}:${p.id}`} flash={flash} size={32}
@@ -125,7 +136,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
         <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{p.name}</div>
       )}
       <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>
-        {[p.cityRu || p.city, p.countryRu].filter(Boolean).join(" · ")}
+        {geoLine(p)}
       </div>
 
       <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -162,7 +173,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
 }
 
 /* ── каталог ── */
-export function HomePlaces({ kind, stickyTop, flash }: { kind: "centre" | "restaurant"; stickyTop: number; flash?: (m: string) => void }) {
+export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre" | "restaurant"; stickyTop: number; flash?: (m: string) => void; openSig?: number }) {
   const [facets, setFacets] = useState<Facets | null>(null);
   const [items, setItems] = useState<PlaceItem[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -178,11 +189,12 @@ export function HomePlaces({ kind, stickyTop, flash }: { kind: "centre" | "resta
 
   useEffect(() => { setCont("all"); setCtry("all"); setQ(""); }, [kind]);
   // Deep-link /place/<id>: открываем полную карточку, ключ одноразовый.
+  // openSig растёт при каждом home-open → повторный заход открывает снова.
   useEffect(() => {
     let pid = ""; try { pid = sessionStorage.getItem("open-place") || ""; if (pid) sessionStorage.removeItem("open-place"); } catch { /* noop */ }
     if (!pid) return;
     fetch(`/api/places/${encodeURIComponent(pid)}`).then((r) => r.ok ? r.json() : null).then((j) => { const p = j?.place; if (p && p.id) setOpen(p as PlaceItem); }).catch(() => {});
-  }, []);
+  }, [openSig]);
   useEffect(() => { setCtry("all"); }, [cont]);
 
   useEffect(() => {

@@ -559,11 +559,16 @@ export default function App() {
     if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
     if (seg0 === "place" || seg0 === "doc") {
       const pid = clean.split("/")[2] ?? "";
+      const sub = seg0 === "place" ? "centres" : "documents";
       setTab("home");
       try {
-        sessionStorage.setItem("home-tab", seg0 === "place" ? "centres" : "documents");
+        sessionStorage.setItem("home-tab", sub);
         if (pid) sessionStorage.setItem(seg0 === "place" ? "open-place" : "open-doc", pid);
       } catch { /* noop */ }
+      // Сигнал смонтированному HomeScreen переключить подтаб (sessionStorage уже
+      // прочитан при инициализации, поэтому одного его мало). Дочерние эффекты
+      // регистрируют слушатель раньше, чем сработает этот applyPath из App.
+      try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: sub, id: pid } })); } catch { /* noop */ }
       return;
     }
     if (seg0 === "kirtan") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
