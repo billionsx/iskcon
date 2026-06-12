@@ -1,0 +1,44 @@
+name: tx-cleanup
+on:
+  workflow_dispatch:
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: delete bare-number prose paragraphs
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql):
+              rq=urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                  headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=90) as r:
+                  j=json.loads(r.read().decode())
+                  if not j.get("success"): raise RuntimeError(str(j)[:300])
+                  return j["result"][0]["results"]
+          # Кандидаты: прозовые абзацы, чей перевод — голое число (1–2 цифры). Это
+          # паразитные номера сносок, попавшие в .s-justify. Легитимный абзац голым
+          # числом не бывает, поэтому условие безопасно.
+          cand=d1("""
+            SELECT v.id AS id, v.work_id AS w, v.ref AS ref, t.translation AS tr
+            FROM verses v JOIN verse_texts t ON t.verse_id=v.id
+            JOIN works w2 ON w2.id=v.work_id
+            WHERE w2.verse_scheme='prose'
+              AND (trim(t.translation) GLOB '[0-9]' OR trim(t.translation) GLOB '[0-9][0-9]')
+          """)
+          print(f"кандидатов к удалению: {len(cand)}")
+          for c in cand: print(f"  {c['w']} {c['ref']}  tr={c['tr']!r}")
+          if not cand:
+              print("::notice title=TXCLEAN::nothing to delete"); raise SystemExit
+          ids=",".join("'"+c["id"].replace("'","''")+"'" for c in cand)
+          d1(f"DELETE FROM verse_tokens WHERE verse_id IN ({ids})")
+          d1(f"DELETE FROM verse_texts  WHERE verse_id IN ({ids})")
+          d1(f"DELETE FROM verses       WHERE id       IN ({ids})")
+          # проверка
+          left=d1(f"SELECT COUNT(*) AS n FROM verses WHERE id IN ({ids})")[0]["n"]
+          print("::notice title=TXCLEAN::deleted "+str(len(cand))+" paras ("+", ".join(sorted(set(c['w'] for c in cand)))+"); remaining matching="+str(left))
+          PY
