@@ -8,6 +8,7 @@
  * Визуальный язык — общий с приложением (SF для UI, Georgia для транслитерации,
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
+import { TATTVA_RU, CATEGORY_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useState } from "react";
 import { api } from "./api";
@@ -40,66 +41,7 @@ interface EntityDetail {
   in: RelItem[];
 }
 
-const TATTVA_RU: Record<string, string> = {
-  "vishnu-tattva": "Вишну-таттва",
-  "shakti-tattva": "Шакти-таттва",
-  "shiva-tattva": "Шива-таттва",
-  "jiva-tattva": "Джива-таттва",
-};
-
-const CATEGORY_RU: Record<string, string> = {
-  "svayam-bhagavan": "Сваям Бхагаван",
-  "source-of-all": "Источник всего",
-  "hladini-shakti": "Хладини-шакти",
-  "pancha-tattva": "Панча-таттва",
-  "yuga-avatara": "Юга-аватара",
-  "lila-avatara": "Лила-аватара",
-  "shaktyavesha": "Шактьявеша",
-  avatara: "Аватара",
-  gopi: "Гопи",
-  gopa: "Пастушок Враджа",
-  manjari: "Манджари",
-  vraja: "Враджа",
-  consort: "Супруга Господа",
-  "gaura-lila": "Гаура-лила",
-  "krishna-lila": "Кришна-лила",
-  "founder-acharya": "Основатель-ачарья",
-  "initiating-guru": "Дикша-гуру ИСККОН",
-  "zonal-acharya-1977": "Зональный ачарья (1977)",
-  "founding-disciple": "Ученик-основатель",
-  gaudiya: "Гаудия-вайшнав",
-  acharya: "Ачарья",
-  "six-goswamis": "Шесть Госвами",
-  "madhva-parampara": "Мадхва-парампара",
-  parampara: "Парампара",
-  "maha-jana": "Маха-джана",
-  bhagavatam: "«Шримад-Бхагаватам»",
-  mahabharata: "«Махабхарата»",
-  ramayana: "«Рамаяна»",
-  gita: "«Бхагавад-гита»",
-  pandava: "Пандав",
-  kuru: "Куру",
-  raghu: "Династия Рагху",
-  king: "Царь",
-  warrior: "Воин",
-  sage: "Мудрец",
-  sannyasi: "Санньяси",
-  demigod: "Полубог",
-  demon: "Демон",
-  rakshasa: "Ракшас",
-  vanara: "Вáнара",
-  family: "Семья",
-  servant: "Слуга Господа",
-  "shuddha-bhakta": "Чистый преданный",
-  "krishna-associate": "Спутник Кришны",
-  "channa-avatara": "Скрытая аватара",
-  "prakasha-vilasa": "Пракаша-виласа",
-  iskcon: "ИСККОН",
-  godbrother: "Духовный брат",
-  pl: "Прабхупада-лиламрита",
-  "canonical-scripture": "Канон",
-  "prabhupada-book": "Книга Прабхупады",
-};
+// Русские подписи таттвы/категорий — общий модуль (entityLabels).
 
 // Связь (отношение + направление) → заголовок группы и порядок вывода.
 // dir = 'out': текущая сущность это from_id; dir = 'in': текущая это to_id.

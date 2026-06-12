@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BOOKS, bookFullTitle, type BookData } from "./books";
 import { api } from "./api";
 import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
+import { tattvaRu, categoriesRu } from "./entityLabels";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
@@ -222,8 +223,9 @@ async function loadCard(ctype: string, cid: string, album: string, track: string
       const rows: Array<[string, string]> = [];
       if (e.name_iast) rows.push(["IAST", e.name_iast]);
       if (e.name_en) rows.push(["EN", e.name_en]);
-      if (e.tattva) rows.push(["Таттва", e.tattva]);
-      if (e.categories?.length) rows.push(["Классификация", e.categories.join(", ")]);
+      if (e.tattva) rows.push(["Таттва", tattvaRu(e.tattva)]);
+      const catsR = categoriesRu(e.categories);
+      if (catsR.length) rows.push(["Классификация", catsR.join(", ")]);
       const body: string[] = [];
       const pr = e.profile;
       const clean = (t?: string | null) => (t && !/^_/.test(t.trim()) ? t.trim() : "");

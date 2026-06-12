@@ -72,7 +72,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
   return (
     <div
       onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+      style={{ position: "fixed", inset: 0, zIndex: 2100, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
     >
       <div
         onClick={(e) => e.stopPropagation()}

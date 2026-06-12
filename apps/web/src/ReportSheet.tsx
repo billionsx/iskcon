@@ -87,7 +87,7 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
 
   return (
     <div onClick={() => { if (state !== "sending") onClose(); }}
-      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.42)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 2100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.42)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
       <div onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Сообщить об ошибке"
         style={{ width: "min(440px, 100%)", maxHeight: "92vh", overflowY: "auto", background: PAPER, borderRadius: 24, padding: 22, fontFamily: "var(--font-text)", boxShadow: "0 1px 0 rgba(0,0,0,.04), 0 30px 70px rgba(0,0,0,.28)", animation: "none" }}>
 

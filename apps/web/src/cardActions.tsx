@@ -130,8 +130,10 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
   const pick = (id: string) => {
     const c = ctx; if (!c) return;
     if (id === "share") {
-      const payload = { title: c.title, text: c.subtitle ? `${c.title} — ${c.subtitle}` : c.title, url: c.url };
-      if (typeof navigator !== "undefined" && navigator.share) navigator.share(payload).catch(() => {});
+      // ВАЖНО: без поля text — иначе при «Копировать» из системного листа ОС
+      // склеивает заголовок с URL, и вставленная строка перестаёт быть ссылкой.
+      // Делимся ровно адресом (+title как подпись), копируем — только URL.
+      if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: c.title, url: c.url }).catch(() => {});
       else { navigator.clipboard?.writeText(c.url).catch(() => {}); flash("Ссылка скопирована"); }
       return;
     }
