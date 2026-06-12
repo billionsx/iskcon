@@ -171,8 +171,12 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   // масштабируемость: рендерер трогается один раз на книгу/лилу, а не на каждое
   // скачивание. ?fresh=1 — принудительно пересобрать (после правок контента).
   const cacheable = kind === "lilamerged" || kind === "book";
+  // PDF_CACHE_REV — версия edge-ключа. Бамп орфанит ВСЕ ранее закэшированные
+  // book/lila-PDF (они immutable на год), заставляя пересобрать с актуальной
+  // обложкой/контентом. Поднимать при смене обложек или вёрстки печати.
+  const PDF_CACHE_REV = "c2";
   const cacheKey = cacheable
-    ? new Request(`https://pdfcache.internal/${encodeURIComponent(work)}/${kind === "book" ? "book" : "lila-" + encodeURIComponent(lila)}`)
+    ? new Request(`https://pdfcache.internal/${PDF_CACHE_REV}/${encodeURIComponent(work)}/${kind === "book" ? "book" : "lila-" + encodeURIComponent(lila)}`)
     : null;
   const fresh = url.searchParams.get("fresh") === "1";
   const edge = (caches as unknown as { default: Cache }).default;
