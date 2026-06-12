@@ -1984,7 +1984,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     const ch = chapters.find((x) => x.number === chapter) ?? null;
     setOpenChapter(ch);
     if (ch && verse) {
-      fetch(api(`/books/bg/chapters/${chapter}/read`))
+      fetch(api(`/books/${book.work}/chapters/${chapter}/read`))
         .then((r) => r.json())
         .then((d) => {
           const vs = (d.verses ?? []) as ChapterVerse[];
@@ -2013,7 +2013,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
   }, [chapters, initialTarget, book.hierarchical]);
 
   // Состояние → URL: уникальный адрес для каждой главы/стиха.
-  //   ПКП:           /book/bg/{ch}, /book/bg/{ch}/{v}
+  //   ПКП:           /book/<work>/{ch}, /book/<work>/{ch}/{v}
   //   иерархические: /book/<work>/{lila}/{ch}, /book/<work>/{lila}/{ch}/{v}
   // Прыжок стих↔стих → replace (чтобы «назад» от стиха вёл к ГЛАВЕ, не к соседнему стиху).
   useEffect(() => {
@@ -2036,23 +2036,23 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       else window.history.pushState(null, "", path);
       return;
     }
-    if (book.prose) return; // прозовые книги: главы — оверлеи, URL остаётся /book/<work>
     if (!chapters) return;
-    let path = "/book/bg";
+    const base = `/book/${book.work}`;
+    let path = base;
     if (readerRef) {
       const rd = readerRef.replace(/^[^\d]*/, "");
       const ch = rd.split(".")[0];
       const v = rd.includes(".") ? rd.slice(rd.indexOf(".") + 1) : "";
-      path = v ? `/book/bg/${ch}/${v}` : `/book/bg/${ch}`;
+      path = v ? `${base}/${ch}/${v}` : `${base}/${ch}`;
     } else if (openChapter) {
-      path = `/book/bg/${openChapter.number}`;
+      path = `${base}/${openChapter.number}`;
     }
     const cur = window.location.pathname;
     if (cur === path) return;
-    const isVerse = (p: string) => /^\/book\/bg\/\d+\/.+/.test(p);
+    const isVerse = (p: string) => new RegExp(`^/book/${book.work}/\\d+/.+`).test(p);
     if (isVerse(cur) && isVerse(path)) window.history.replaceState(null, "", path);
     else window.history.pushState(null, "", path);
-  }, [openChapter, readerRef, chapters, book.hierarchical, book.work]);
+  }, [openChapter, readerRef, chapters, book.hierarchical, book.work, book.prose]);
 
   // Единая кнопка «назад» внутри книги: стих → глава → книга → главная.
   // Используем настоящую историю (pop), чтобы переходы были чистыми; на холодном
@@ -2067,9 +2067,8 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", base); return; }
       onBack(); return;
     }
-    if (book.prose) { if (openChapter) { setOpenChapter(null); } else { onBack(); } return; }
-    if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `/book/bg/${openChapter.number}` : "/book/bg"); return; }
-    if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", "/book/bg"); return; }
+    if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `${base}/${openChapter.number}` : base); return; }
+    if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", base); return; }
     onBack();
   };
 
@@ -2129,7 +2128,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     try {
       const entries = await Promise.all(
         chapters.map(async (c) => {
-          const r = await fetch(api(`/books/bg/chapters/${c.number}/read`));
+          const r = await fetch(api(`/books/${book.work}/chapters/${c.number}/read`));
           const d = await r.json();
           return [c.number, (d.verses ?? []) as ChapterVerse[]] as const;
         }),
