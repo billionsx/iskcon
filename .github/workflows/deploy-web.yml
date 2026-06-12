@@ -50,7 +50,11 @@ jobs:
         working-directory: apps/web
         env:
           GEN_API_ORIGIN: https://gaurangers.com
-          GEN_WORKS: ${{ github.event.inputs.gen_works || 'bg,cc,brs,sb' }}
+          # Пусто на push → genpdf берёт ВСЕ книги из BOOKS (закон: новая книга = запись
+          # в BOOKS, без правки workflow). Инкрементально по sig — неизменные пропускаются,
+          # поэтому штатный push пересобирает только реально изменившиеся книги.
+          # Ручной запуск (workflow_dispatch) может сузить набор через поле gen_works.
+          GEN_WORKS: ${{ github.event.inputs.gen_works || '' }}
           GEN_FORCE: ${{ github.event.inputs.force_pdf == 'true' && '1' || '' }}
         run: |
           set +e
