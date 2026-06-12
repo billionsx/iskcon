@@ -4,6 +4,7 @@ import { calendarApi } from "./workerCalendar";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
+import { PDF_CACHE_REV } from "./src/pdfRev";
 import puppeteer from "@cloudflare/puppeteer";
 import { PDFDocument } from "pdf-lib";
 import { EmailMessage } from "cloudflare:email";
@@ -171,10 +172,9 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
   // масштабируемость: рендерер трогается один раз на книгу/лилу, а не на каждое
   // скачивание. ?fresh=1 — принудительно пересобрать (после правок контента).
   const cacheable = kind === "lilamerged" || kind === "book";
-  // PDF_CACHE_REV — версия edge-ключа. Бамп орфанит ВСЕ ранее закэшированные
-  // book/lila-PDF (они immutable на год), заставляя пересобрать с актуальной
-  // обложкой/контентом. Поднимать при смене обложек или вёрстки печати.
-  const PDF_CACHE_REV = "c2";
+  // PDF_CACHE_REV (см. src/pdfRev.ts) — версия edge-ключа. Бамп орфанит ВСЕ ранее
+  // закэшированные book/lila-PDF (они immutable на год), заставляя пересобрать с
+  // актуальной обложкой/контентом. Тот же ключ клиент шлёт как ?v=, пробивая и кэш браузера.
   const cacheKey = cacheable
     ? new Request(`https://pdfcache.internal/${PDF_CACHE_REV}/${encodeURIComponent(work)}/${kind === "book" ? "book" : "lila-" + encodeURIComponent(lila)}`)
     : null;

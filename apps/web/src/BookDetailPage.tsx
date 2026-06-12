@@ -11,6 +11,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
+import { PDF_CACHE_REV } from "./pdfRev";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
@@ -2116,7 +2117,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       setPdfHidden(false);
       const ac = new AbortController();
       pdfAbort.current = ac;
-      void downloadServerPdf("/pdf?kind=book", `${name}.pdf`, { onStatus: flash, onProgress: setBookPct, signal: ac.signal, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } })
+      void downloadServerPdf(`/pdf?kind=book&work=${encodeURIComponent(book.work)}&v=${PDF_CACHE_REV}`, `${name}.pdf`, { onStatus: flash, onProgress: setBookPct, signal: ac.signal, fallback: () => { if (bookPrintRef.current) exportToPdf(bookPrintRef.current, { title: name }); } })
         .finally(() => { pdfAbort.current = null; });
       setBookPrint(null);
     }
