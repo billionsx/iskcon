@@ -30,9 +30,9 @@
     "scheme": "mantra"
   },
   "lob": {
-    "chapters": 1,
-    "verses": 0,
-    "scheme": "mantra"
+    "chapters": 49,
+    "verses": 213,
+    "scheme": "prose"
   },
   "owk": {
     "chapters": 5,
@@ -65,13 +65,13 @@
     "scheme": "prose"
   },
   "tqk": {
-    "chapters": 24,
-    "verses": 644,
+    "chapters": 27,
+    "verses": 766,
     "scheme": "prose"
   },
   "spl": {
-    "chapters": 0,
-    "verses": 0,
-    "scheme": null
+    "chapters": 31,
+    "verses": 3913,
+    "scheme": "prose"
   }
 }
