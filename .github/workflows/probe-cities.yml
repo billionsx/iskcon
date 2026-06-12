@@ -1,56 +1,71 @@
 name: probe-cities
 on:
   workflow_dispatch: {}
-
+permissions:
+  contents: write
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Probe calendar API for candidate cities
+      - name: Probe vaisnavacalendar.info ICS (index + RU/CIS candidates)
         run: |
-          KEYS=(
-            "Moskva [Russia]"
-            "Vladivostok [Russia]"
-            "Kiev [Ukraine]"
-            "Krasnodar [Russia]"
-            "Simferopol [Russia]"
-            "Simferopol [Ukraine]"
-            "Sevastopol [Russia]"
-            "Yalta [Russia]"
-            "Sochi [Russia]"
-            "Rostov-on-Don [Russia]"
-            "Rostov-na-Donu [Russia]"
-            "Yekaterinburg [Russia]"
-            "Ekaterinburg [Russia]"
-            "Kazan [Russia]"
-            "Samara [Russia]"
-            "Chelyabinsk [Russia]"
-            "Novosibirsk [Russia]"
-            "Prague [Czech Republic]"
-            "Kathmandu [Nepal]"
-            "New York [USA]"
-            "Ahmedabad [India]"
-          )
-          echo "[" > CITY_PROBE.json
-          first=1
-          for k in "${KEYS[@]}"; do
-            code=$(curl -s -o /tmp/r.json -w "%{http_code}" -G "https://gaurangers.com/api/calendar" --data-urlencode "loc=$k" --max-time 60 || echo "000")
-            n=$(python3 -c "import json;d=json.load(open('/tmp/r.json'));print(len(d.get('events',[])))" 2>/dev/null || echo 0)
-            keyjson=$(python3 -c "import json,sys;print(json.dumps(sys.argv[1]))" "$k")
-            [ $first -eq 0 ] && echo "," >> CITY_PROBE.json
-            first=0
-            printf '  {"key": %s, "http": "%s", "events": %s}' "$keyjson" "$code" "$n" >> CITY_PROBE.json
-            echo "probed: $k -> http=$code events=$n"
-          done
-          echo "" >> CITY_PROBE.json
-          echo "]" >> CITY_PROBE.json
-          echo "=== CITY_PROBE.json ==="
-          cat CITY_PROBE.json
+          python3 - <<'PY'
+          import json, re, time, urllib.request, urllib.parse, urllib.error
+          BASE = "https://www.vaisnavacalendar.info/ICS"
+          UA = {"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"}
+          def get(url, timeout=60):
+              req = urllib.request.Request(url, headers=UA)
+              try:
+                  with urllib.request.urlopen(req, timeout=timeout) as r:
+                      return getattr(r, "status", 200), r.read().decode("utf-8", "replace")
+              except urllib.error.HTTPError as e:
+                  return e.code, ""
+              except Exception as e:
+                  return 0, ""
+          # 1) directory index for 2026 -> authoritative key list
+          st_idx, idx = get(f"{BASE}/2026/")
+          keys = []
+          if idx:
+              dec = urllib.parse.unquote(idx)
+              for m in re.findall(r'([^"\'<>]+?)-a2026-ICS\.ics', dec):
+                  k = m.strip().lstrip("/").split("/")[-1].strip()
+                  if k and k not in keys:
+                      keys.append(k)
+          print("INDEX status", st_idx, "html_len", len(idx), "keys_found", len(keys))
+          # 2) probe RU/CIS candidates explicitly (verify VEVENT count)
+          RU = ["Krasnodar","Simferopol","Sevastopol","Yalta","Sochi","Rostov-on-Don","Yekaterinburg",
+                "Kazan","Samara","Ufa","Chelyabinsk","Omsk","Krasnoyarsk","Irkutsk","Khabarovsk","Volgograd",
+                "Saratov","Tyumen","Kaliningrad","Izhevsk","Kemerovo","Novokuznetsk","Astrakhan","Arkhangelsk",
+                "Bryansk","Lipetsk","Orenburg","Pskov","Yaroslavl","Vladikavkaz","Surgut","Chita","Ulan-Ude",
+                "Abakan","Yuzhno-Sakhalinsk","Kirov","Bratsk","Nizhny Novgorod","Voronezh","Tomsk","Barnaul",
+                "Tula","Ryazan","Penza","Cheboksary","Sterlitamak","Magnitogorsk","Tver"]
+          UA_C = ["Odessa","Odesa","Kharkiv","Kharkov","Dnipropetrovsk","Dnipro","Lviv","Zaporizhia",
+                  "Mykolaiv","Nikolajev","Kherson","Ternopil","Zhytomyr","Kirovohrad","Vinnytsia","Poltava"]
+          BY = ["Gomel","Homyel","Brest","Vitebsk","Grodno","Mogilev"]
+          KZ = ["Almaty","Astana","Nur-Sultan","Shymkent","Karaganda"]
+          OTH = [("Riga","Latvia"),("Tallinn","Estonia"),("Kaunas","Lithuania"),("Klaipeda","Lithuania"),
+                 ("Wroclaw","Poland"),("Gdansk","Poland"),("Krakow","Poland"),("Baku","Azerbaijan"),
+                 ("Balti","Moldova"),("Beltsy","Moldova")]
+          cand = [(c,"Russia") for c in RU] + [(c,"Ukraine") for c in UA_C] + \
+                 [("Simferopol","Ukraine"),("Sevastopol","Ukraine"),("Yalta","Ukraine")] + \
+                 [(c,"Belarus") for c in BY] + [(c,"Kazakhstan") for c in KZ] + OTH
+          probe = []
+          for city, country in cand:
+              key = f"{city} [{country}]"
+              st, txt = get(BASE + urllib.parse.quote(f"/2026/{key}-a2026-ICS.ics"))
+              n = txt.count("BEGIN:VEVENT") if txt else 0
+              probe.append({"key": key, "status": st, "vevents": n})
+              print("probe", key, st, n)
+              time.sleep(0.25)
+          json.dump({"index_status": st_idx, "index_keys": sorted(keys), "probe": probe},
+                    open("CITY_PROBE.json", "w"), ensure_ascii=False, indent=1)
+          print("WROTE CITY_PROBE.json ; index_keys", len(keys), "; probed", len(probe))
+          PY
       - name: Commit results
         run: |
           git config user.email "ceo@billionsx.com"
           git config user.name "Billions X"
           git add CITY_PROBE.json
-          git commit -m "probe: city calendar availability [skip ci]" || echo "nothing to commit"
+          git commit -m "probe: vaisnavacalendar.info city keys [skip ci]" || echo "nothing to commit"
           git push || echo "push failed"
