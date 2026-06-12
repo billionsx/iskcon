@@ -12,7 +12,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { usePlayer } from "./player/store";
-import { BhajanHeroCard } from "./BhajanHeroCard";
+import { BhajanCard } from "./BhajanCard";
 import {
   KIRTAN_ARTISTS, playableAlbums, albumCover, albumsByArtist, artistPlayableCount,
   artistBySlug, filterAlbums, moodsInCatalog, typesInCatalog,
@@ -212,12 +212,11 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         {!bhajans && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
         {bhajans && bhajans.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
         {bhajans && bhajans.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-            {bhajans.slice(0, 3).map((b) => (
-              <BhajanHeroCard
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {bhajans.slice(0, 6).map((b) => (
+              <BhajanCard
                 key={b.slug}
-                bhajan={{ slug: b.slug, name: b.name, author: b.author, heroImage: b.hero_image, category: b.category, sourceText: null, section: null }}
-                topLeft={<span aria-hidden style={{ display: "block", height: 26, width: 26, backgroundColor: "currentColor", WebkitMaskImage: "url(/iskcon-sign.svg)", maskImage: "url(/iskcon-sign.svg)", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />}
+                bhajan={{ slug: b.slug, name: b.name, author: b.author, category: b.category }}
                 onOpen={() => onOpenBhajan(b.slug)}
                 flash={flash}
               />
