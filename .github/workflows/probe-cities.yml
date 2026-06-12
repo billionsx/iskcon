@@ -1,0 +1,56 @@
+name: probe-cities
+on:
+  workflow_dispatch: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe calendar API for candidate cities
+        run: |
+          KEYS=(
+            "Moskva [Russia]"
+            "Vladivostok [Russia]"
+            "Kiev [Ukraine]"
+            "Krasnodar [Russia]"
+            "Simferopol [Russia]"
+            "Simferopol [Ukraine]"
+            "Sevastopol [Russia]"
+            "Yalta [Russia]"
+            "Sochi [Russia]"
+            "Rostov-on-Don [Russia]"
+            "Rostov-na-Donu [Russia]"
+            "Yekaterinburg [Russia]"
+            "Ekaterinburg [Russia]"
+            "Kazan [Russia]"
+            "Samara [Russia]"
+            "Chelyabinsk [Russia]"
+            "Novosibirsk [Russia]"
+            "Prague [Czech Republic]"
+            "Kathmandu [Nepal]"
+            "New York [USA]"
+            "Ahmedabad [India]"
+          )
+          echo "[" > CITY_PROBE.json
+          first=1
+          for k in "${KEYS[@]}"; do
+            code=$(curl -s -o /tmp/r.json -w "%{http_code}" -G "https://gaurangers.com/api/calendar" --data-urlencode "loc=$k" --max-time 60 || echo "000")
+            n=$(python3 -c "import json;d=json.load(open('/tmp/r.json'));print(len(d.get('events',[])))" 2>/dev/null || echo 0)
+            keyjson=$(python3 -c "import json,sys;print(json.dumps(sys.argv[1]))" "$k")
+            [ $first -eq 0 ] && echo "," >> CITY_PROBE.json
+            first=0
+            printf '  {"key": %s, "http": "%s", "events": %s}' "$keyjson" "$code" "$n" >> CITY_PROBE.json
+            echo "probed: $k -> http=$code events=$n"
+          done
+          echo "" >> CITY_PROBE.json
+          echo "]" >> CITY_PROBE.json
+          echo "=== CITY_PROBE.json ==="
+          cat CITY_PROBE.json
+      - name: Commit results
+        run: |
+          git config user.email "ceo@billionsx.com"
+          git config user.name "Billions X"
+          git add CITY_PROBE.json
+          git commit -m "probe: city calendar availability [skip ci]" || echo "nothing to commit"
+          git push || echo "push failed"
