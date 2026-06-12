@@ -114,7 +114,7 @@ function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash
   );
 }
 
-export function HomeDocuments({ stickyTop, flash }: { stickyTop: number; flash?: (m: string) => void }) {
+export function HomeDocuments({ stickyTop, flash, openSig }: { stickyTop: number; flash?: (m: string) => void; openSig?: number }) {
   const [q, setQ] = useState("");
   const [type, setType] = useState<"all" | DocType>("all");
   const [docs, setDocs] = useState<IskconDoc[] | null>(null);
@@ -129,13 +129,13 @@ export function HomeDocuments({ stickyTop, flash }: { stickyTop: number; flash?:
       .catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };
   }, []);
-  // Deep-link /doc/<id>
+  // Deep-link /doc/<id> (openSig растёт при home-open → повторный заход открывает снова)
   useEffect(() => {
     if (!docs) return;
     let did = ""; try { did = sessionStorage.getItem("open-doc") || ""; if (did) sessionStorage.removeItem("open-doc"); } catch { /* noop */ }
     if (!did) return;
     const d = docs.find((x) => x.id === did); if (d) setOpen(d);
-  }, [docs]);
+  }, [docs, openSig]);
 
   const trimmed = q.trim().toLowerCase();
   const filtered = useMemo(() => {

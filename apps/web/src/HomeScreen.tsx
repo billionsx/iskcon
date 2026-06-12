@@ -741,6 +741,21 @@ export default function HomeScreen(props: {
     window.addEventListener("tab-reset", h);
     return () => window.removeEventListener("tab-reset", h);
   }, []);
+  // Deep-link /place/<id> и /doc/<id>: applySpec из App шлёт сигнал переключить
+  // подтаб (его одного достаточно, т.к. id уже положен в sessionStorage и будет
+  // прочитан при монтировании HomePlaces/HomeDocuments). На повторный заход с тем
+  // же подтабом дублируем id в sessionStorage и ре-дёргаем mount-эффект.
+  const [openSig, setOpenSig] = useState(0);
+  useEffect(() => {
+    const h = (e: Event) => {
+      const d = (e as CustomEvent).detail as { tab?: HomeTabId; id?: string } | undefined;
+      if (!d?.tab) return;
+      setHomeTab(d.tab);
+      setOpenSig((n) => n + 1);
+    };
+    window.addEventListener("home-open", h as EventListener);
+    return () => window.removeEventListener("home-open", h as EventListener);
+  }, []);
   const t1Ref = useRef<HTMLElement | null>(null);
   const [t1H, setT1H] = useState(46);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -759,11 +774,11 @@ export default function HomeScreen(props: {
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
-      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} />}
-      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} />}
+      {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
+      {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}
       {homeTab === "education" && <HomeEducation />}
-      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} flash={props.flash} />}
+      {homeTab === "documents" && <HomeDocuments stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "structure" && <HomeStructure />}
       {homeTab === "links" && <HomeLinks />}
       {homeTab === "feed" && <HomeFeed />}
