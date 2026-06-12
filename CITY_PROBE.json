@@ -1,0 +1,446 @@
+{
+ "index_status": 403,
+ "index_keys": [],
+ "probe": [
+  {
+   "key": "Krasnodar [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Simferopol [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Sevastopol [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Yalta [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Sochi [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Rostov-on-Don [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Yekaterinburg [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kazan [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Samara [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Ufa [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Chelyabinsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Omsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Krasnoyarsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Irkutsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Khabarovsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Volgograd [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Saratov [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Tyumen [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kaliningrad [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Izhevsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kemerovo [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Novokuznetsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Astrakhan [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Arkhangelsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Bryansk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Lipetsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Orenburg [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Pskov [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Yaroslavl [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Vladikavkaz [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Surgut [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Chita [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Ulan-Ude [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Abakan [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Yuzhno-Sakhalinsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kirov [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Bratsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Nizhny Novgorod [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Voronezh [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Tomsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Barnaul [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Tula [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Ryazan [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Penza [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Cheboksary [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Sterlitamak [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Magnitogorsk [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Tver [Russia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Odessa [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Odesa [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kharkiv [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kharkov [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Dnipropetrovsk [Ukraine]",
+   "status": 200,
+   "vevents": 229
+  },
+  {
+   "key": "Dnipro [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Lviv [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Zaporizhia [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Mykolaiv [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Nikolajev [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kherson [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Ternopil [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Zhytomyr [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kirovohrad [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Vinnytsia [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Poltava [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Simferopol [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Sevastopol [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Yalta [Ukraine]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Gomel [Belarus]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Homyel [Belarus]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Brest [Belarus]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Vitebsk [Belarus]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Grodno [Belarus]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Mogilev [Belarus]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Almaty [Kazakhstan]",
+   "status": 200,
+   "vevents": 230
+  },
+  {
+   "key": "Astana [Kazakhstan]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Nur-Sultan [Kazakhstan]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Shymkent [Kazakhstan]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Karaganda [Kazakhstan]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Riga [Latvia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Tallinn [Estonia]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Kaunas [Lithuania]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Klaipeda [Lithuania]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Wroclaw [Poland]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Gdansk [Poland]",
+   "status": 200,
+   "vevents": 234
+  },
+  {
+   "key": "Krakow [Poland]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Baku [Azerbaijan]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Balti [Moldova]",
+   "status": 404,
+   "vevents": 0
+  },
+  {
+   "key": "Beltsy [Moldova]",
+   "status": 404,
+   "vevents": 0
+  }
+ ]
+}
