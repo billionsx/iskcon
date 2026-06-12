@@ -933,6 +933,30 @@ export default {
       });
     }
 
+    // GET /api/geocode?q=<город> → ближайшее совпадение (Open-Meteo; серверный прокси, без CORS).
+    // Питает «умный» подбор в календаре: если города нет в базе — берём его координаты и
+    // предлагаем ближайшие города из базы (тот же восход → тот же вайшнавский календарь).
+    if (url.pathname === "/api/geocode") {
+      const name = (url.searchParams.get("q") || "").trim();
+      if (name.length < 2) return json({ result: null });
+      try {
+        const r = await fetch(
+          "https://geocoding-api.open-meteo.com/v1/search?count=1&format=json&language=ru&name=" + encodeURIComponent(name),
+          { headers: { accept: "application/json" } },
+        );
+        if (r.ok) {
+          const j = (await r.json()) as { results?: Array<{ name: string; latitude: number; longitude: number; timezone?: string; country?: string; admin1?: string }> };
+          const h = j.results?.[0];
+          if (h) {
+            const out = json({ result: { name: h.name, lat: h.latitude, lng: h.longitude, tz: h.timezone ?? null, country: h.country ?? null, admin1: h.admin1 ?? null } });
+            out.headers.set("Cache-Control", "public, max-age=86400");
+            return out;
+          }
+        }
+      } catch { /* сеть */ }
+      return json({ result: null });
+    }
+
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
     if (url.pathname.startsWith("/api/")) {
       const target = "https://api.gaurangers.com/v1/" + url.pathname.slice(5) + url.search;
