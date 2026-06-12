@@ -1,0 +1,84 @@
+name: tx-check
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install --quiet beautifulsoup4 lxml
+      - name: probe vedabase /ru pages
+        run: |
+          python3 - <<'PY'
+          import json, re, time, urllib.request
+          from bs4 import BeautifulSoup
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+          rows=json.load(open("docs/diag/tx-missing.json"))
+          def get(url):
+              for a in range(4):
+                  try:
+                      rq=urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"ru,en;q=0.8","accept":"text/html"})
+                      with urllib.request.urlopen(rq, timeout=40) as r:
+                          if r.status==200: return r.read().decode("utf-8","replace")
+                  except Exception as e:
+                      last=e
+                  time.sleep(2+a)
+              return ""
+          CYR=re.compile(r"[А-Яа-яЁё]")
+          def cyr_ratio(s):
+              s=s or ""; letters=[c for c in s if c.isalpha()]
+              if not letters: return 0.0
+              return sum(1 for c in letters if CYR.match(c))/len(letters)
+          cache={}
+          out=[]
+          for r in rows:
+              w=r["w"]; ref=r["ref"]; url=r["url"]; db_tr=r["tr"] or ""
+              if url not in cache: cache[url]=get(url); time.sleep(0.7)
+              html=cache[url]
+              if not html:
+                  out.append({"w":w,"ref":ref,"verdict":"FETCH_FAIL","url":url}); continue
+              soup=BeautifulSoup(html,"lxml")
+              for t in soup(["script","style","nav","header","footer","aside"]): t.decompose()
+              avt=soup.select(".av-translation")
+              if avt and len(avt)<=2:
+                  # одиночная стиховая страница (ЧЧ): прямой перевод
+                  txt=" ".join(re.sub(r"\s+"," ",e.get_text()).strip() for e in avt)
+                  ratio=cyr_ratio(txt)
+                  out.append({"w":w,"ref":ref,"type":"verse",
+                              "ru_on_vedabase": ratio>=0.5,
+                              "cyr_ratio":round(ratio,2),
+                              "av_tr_sample":txt[:80]})
+              else:
+                  # прозовая глава: ищем, присутствует ли захваченный (англ.) абзац на /ru
+                  paras=[re.sub(r"\s+"," ",e.get_text()).strip() for e in soup.select("main .s-justify, .s-justify")]
+                  page_text=" ".join(paras)
+                  probe=re.sub(r"\s+"," ",db_tr).strip()[:50]
+                  found_en = probe and probe in page_text
+                  cyr_paras=sum(1 for p in paras if cyr_ratio(p)>=0.5)
+                  out.append({"w":w,"ref":ref,"type":"prose",
+                              "captured_en_present_on_ru": bool(found_en),
+                              "paras_total":len(paras),"paras_russian":cyr_paras,
+                              "ru_on_vedabase": (cyr_paras>0 and not found_en)})
+          json.dump(out, open("docs/diag/tx-check.json","w",encoding="utf-8"), ensure_ascii=False, indent=1)
+          # сводка
+          verse_ru=[o for o in out if o.get("type")=="verse" and o.get("ru_on_vedabase")]
+          verse_en=[o for o in out if o.get("type")=="verse" and not o.get("ru_on_vedabase")]
+          prose_en=[o for o in out if o.get("type")=="prose" and o.get("captured_en_present_on_ru")]
+          prose_other=[o for o in out if o.get("type")=="prose" and not o.get("captured_en_present_on_ru")]
+          fail=[o for o in out if o.get("verdict")=="FETCH_FAIL"]
+          print("::notice title=TXCHECK::"
+                f"verse: RU-есть={len(verse_ru)} EN-только={len(verse_en)} | "
+                f"prose: захвач-EN-на-/ru={len(prose_en)} иное={len(prose_other)} | fail={len(fail)}")
+          PY
+      - name: commit
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add docs/diag/tx-check.json
+          git commit -m "diag: tx-check.json — статус русского на vedabase [skip ci]" || { echo none; exit 0; }
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main 2>/dev/null || true
+            git push origin main 2>/dev/null && break
+            sleep 3
+          done
