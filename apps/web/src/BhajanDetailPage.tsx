@@ -27,7 +27,7 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
 interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; }
 interface BhajanDetail {
   slug: string; name: string; author: string | null; hero_image: string | null;
-  source_text: string | null; section: string | null;
+  category: string | null; source_text: string | null; section: string | null;
   verses: Verse[]; translit: string | null; translation: string | null;
   body: string; pending: boolean;
 }
@@ -123,7 +123,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
             {/* HERO — тот же карточный модуль, что и на витрине (ВКБ) */}
             <div style={{ padding: "2px 16px 6px" }}>
               <BhajanHeroCard
-                bhajan={{ slug, name: data.name, author: data.author, heroImage: data.hero_image, sourceText: data.source_text, section: data.section }}
+                bhajan={{ slug, name: data.name, author: data.author, heroImage: data.hero_image, category: data.category, sourceText: data.source_text, section: data.section }}
                 topLeft={<LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />}
                 flash={flash}
               />
