@@ -339,6 +339,27 @@ export const BOOKS: Record<string, BookData> = {
     uniformTitle: true,
     prose: true,
   },
+  lob: {
+    id: "lob",
+    work: "lob",
+    slug: "light-of-the-bhagavata",
+    titleLine1: "Свет",
+    titleLine2: "Бхагаваты",
+    iast: "Light of the Bhāgavata",
+    tagline: "Сорок восемь медитаций",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Сорок восемь поэтических зарисовок сезона дождей и осени из «Шримад-Бхагаватам» с комментариями Шрилы Прабхупады: красота природы как отражение духовной реальности.",
+    publisher: "bbt",
+    covers: [
+      "/covers/lob-001.png",
+    ],
+    chips: ["48 текстов", "по «Бхагаватам»", "5 000+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
 };
 
 /**
@@ -446,7 +467,7 @@ export const LIBRARY: CatalogBook[] = [
   { id: "poy", title: "Совершенство йоги",            iast: "The Perfection of Yoga",                                      authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Perfection of Yoga Совершенство йоги Прабхупада Bhaktivedanta" },
   { id: "sc",  title: "Ещё один шанс",                iast: "A Second Chance",       note: "История Аджамилы",             authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Second Chance Ещё один шанс Аджамила Ajamila Прабхупада Bhaktivedanta" },
   { id: "tqk", title: "Молитвы царицы Кунти",         iast: "Teachings of Queen Kuntī", note: "Молитвы из «Бхагаватам»",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Teachings of Queen Kunti Молитвы царицы Кунти Kuntidevi Прабхупада Bhaktivedanta" },
-  { id: "lob", title: "Свет Бхагаваты",               iast: "Light of the Bhāgavata",                                      authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Light of the Bhagavata Свет Бхагаваты Прабхупада Bhaktivedanta" },
+  { id: "lob", title: "Свет Бхагаваты",               iast: "Light of the Bhāgavata",  note: "48 медитаций",                authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Light of the Bhagavata Свет Бхагаваты Прабхупада Bhaktivedanta" },
   { id: "spl", title: "Шрила Прабхупада-лиламрита",   iast: "Śrīla Prabhupāda-līlāmṛta", note: "Жизнеописание Ачарьи-основателя", authorId: "satsvarupa-das-goswami", authorName: "Сатсварупа Дас Госвами", lineage: "prabhupada", readable: false, also: "Prabhupada-lilamrita Лиламрита Satsvarupa Прабхупада" },
   // — Ачарьи-вайшнавы и первоисточники парампары —
   { id: "cb",  title: "Чайтанья-бхагавата",          iast: "Caitanya-bhāgavata",    authorId: "vrindavana-dasa-thakura", authorName: "Вриндаван дас Тхакур",  lineage: "acharya", readable: false, also: "Чайтанья-бхагавата Caitanya-bhagavata Вриндаван" },
