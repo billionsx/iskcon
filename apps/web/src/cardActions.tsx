@@ -109,14 +109,23 @@ async function downloadCardPdf(ctx: CardCtx, flash: (m: string) => void) {
 }
 
 /**
- * Провайдер: монтируется один раз в Screen; владеет шитом меню, QR, формой
- * ошибки и исполнением действий. Donate — глобальный оверлей приложения.
+ * Провайдер: монтируется один раз НА УРОВНЕ App (оборачивает и Screen, и все
+ * полноэкранные оверлеи — личность/бхаджан/киртан/коллекция), поэтому ⋯ доступен
+ * везде. Владеет шитом меню, QR, формой ошибки, собственным тостом и исполнением
+ * действий. Donate — глобальный оверлей приложения.
  */
-export function CardActionsProvider({ children, onDonate, flash }: { children: ReactNode; onDonate: () => void; flash: (m: string) => void }) {
+export function CardActionsProvider({ children, onDonate }: { children: ReactNode; onDonate: () => void }) {
   const [ctx, setCtx] = useState<CardCtx | null>(null);
   const [menu, setMenu] = useState(false);
   const [qr, setQr] = useState<CardCtx | null>(null);
   const [report, setReport] = useState<CardCtx | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const tRef = useState<{ id: ReturnType<typeof setTimeout> | null }>({ id: null })[0];
+  const flash = useCallback((m: string) => {
+    setToast(m);
+    if (tRef.id) clearTimeout(tRef.id);
+    tRef.id = setTimeout(() => setToast(null), 2400);
+  }, [tRef]);
   const api = useMemo<CardActionsApi>(() => ({ openCardMenu: (c) => { setCtx(c); setMenu(true); } }), []);
   const pick = (id: string) => {
     const c = ctx; if (!c) return;
@@ -137,6 +146,9 @@ export function CardActionsProvider({ children, onDonate, flash }: { children: R
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} />
       {qr && <QrSheet url={qr.url} data={{ kind: "card", title: qr.title, subtitle: qr.subtitle }} onClose={() => setQr(null)} />}
       <ReportSheet open={!!report} onClose={() => setReport(null)} context={report ? report.context : ""} />
+      {toast && (
+        <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
+      )}
     </Ctx.Provider>
   );
 }

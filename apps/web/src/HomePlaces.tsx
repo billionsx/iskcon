@@ -181,7 +181,7 @@ export function HomePlaces({ kind, stickyTop, flash }: { kind: "centre" | "resta
   useEffect(() => {
     let pid = ""; try { pid = sessionStorage.getItem("open-place") || ""; if (pid) sessionStorage.removeItem("open-place"); } catch { /* noop */ }
     if (!pid) return;
-    fetch(`/api/places/${encodeURIComponent(pid)}`).then((r) => r.ok ? r.json() : null).then((p) => { if (p && p.id) setOpen(p as PlaceItem); }).catch(() => {});
+    fetch(`/api/places/${encodeURIComponent(pid)}`).then((r) => r.ok ? r.json() : null).then((j) => { const p = j?.place; if (p && p.id) setOpen(p as PlaceItem); }).catch(() => {});
   }, []);
   useEffect(() => { setCtry("all"); }, [cont]);
 

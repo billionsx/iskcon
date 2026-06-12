@@ -429,7 +429,6 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     onOpenBook(work);
   };
   return (
-    <CardActionsProvider onDonate={onDonate} flash={flash}>
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader onHome={() => { onChange("home"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "home" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -478,7 +477,6 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
         </button>
       )}
     </div>
-    </CardActionsProvider>
   );
 }
 
@@ -504,7 +502,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity"];
+  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person"];
   function pathFromState(): string {
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
@@ -513,7 +511,7 @@ export default function App() {
     if (openKirtanArtist) return "/kirtan/" + openKirtanArtist;
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
-    if (openEntity) return "/entity/" + openEntity;
+    if (openEntity) return "/person/" + openEntity;
     if (openCollection) return "/acharya/" + openCollection;
     return tab === "home" ? "/" : "/" + tab;
   }
@@ -557,7 +555,7 @@ export default function App() {
       if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
       return;
     }
-    if (seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
+    if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
     if (seg0 === "place" || seg0 === "doc") {
       const pid = clean.split("/")[2] ?? "";
@@ -638,6 +636,7 @@ export default function App() {
     <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
+        <CardActionsProvider onDonate={openDonate}>
         {openAdmin ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <BookLoaderPage onBack={goBack} />
@@ -683,6 +682,7 @@ export default function App() {
         ) : (
           <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onDonate={openDonate} />
         )}
+        </CardActionsProvider>
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />
         <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onDonate={openDonate} />
