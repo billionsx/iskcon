@@ -13,7 +13,7 @@
  *
  * Каждая карточка героя открывает EntityPage; книги-читалки уходят в ридер.
  */
-import { CardActionBtns, useCardActions } from "./cardActions";
+import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
@@ -90,7 +90,7 @@ function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: s
         <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.2,
           display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", width: "100%" }}>{item.name_iast}</div>
       )}
-      <CardActionBtns favKey={`entity:${item.id}`} size={26} onMore={() => openCardMenu(entityCtx(item))} />
+      <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={26} onMore={() => openCardMenu(entityCtx(item))} />
     </div>
   );
 }
@@ -164,7 +164,7 @@ function ResultRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
         <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_ru || item.id}</span>
         {item.name_iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)" }}>{item.name_iast}</span>}
       </span>
-      <CardActionBtns favKey={`entity:${item.id}`} size={28} onMore={() => openCardMenu(entityCtx(item))} />
+      <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={28} onMore={() => openCardMenu(entityCtx(item))} />
     </div>
   );
 }

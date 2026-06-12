@@ -15,28 +15,94 @@
  *   const { openCardMenu } = useCardActions();
  *   …<CardActionBtns fav={fav} onMore={() => openCardMenu(ctx)} />
  */
-import { createContext, useCallback, useContext, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { HeartIcon, MoreIcon } from "./ui/icons";
 
-/* ── Избранное: localStorage `fav:<key>`; key = `<type>:<id>` ─────────────── */
+/* ── Избранное: localStorage `fav:<key>`; key = `<type>:<id>`.
+ *  Значение — JSON {ts,t,s,h}: момент добавления + снимок для экрана «Избранное»
+ *  (заголовок · подзаголовок · относительная in-app ссылка). Старые записи "1"
+ *  читаются как избранные без метаданных (обратная совместимость). Авторизации
+ *  нет → избранное по природе per-device; localStorage и есть «база» клиента. ── */
+export type FavMeta = { t?: string; s?: string; h?: string };
+export interface FavItem { key: string; type: string; id: string; title: string; subtitle?: string; href?: string; addedAt: number }
+
+const FAV_PREFIX = "fav:";
 const favListeners = new Set<() => void>();
-function favEmit() { favListeners.forEach((l) => l()); }
-function favRead(key: string): boolean { try { return localStorage.getItem(`fav:${key}`) === "1"; } catch { return false; } }
-export function useFavorite(key: string): { on: boolean; toggle: (flash?: (m: string) => void) => void } {
+let favCache: FavItem[] | null = null;
+const EMPTY_FAVS: FavItem[] = [];
+function favInvalidate() { favCache = null; favListeners.forEach((l) => l()); }
+function favOn(key: string): boolean { try { return localStorage.getItem(FAV_PREFIX + key) != null; } catch { return false; } }
+function favWrite(key: string, meta?: FavMeta) {
+  try { localStorage.setItem(FAV_PREFIX + key, JSON.stringify({ ts: Date.now(), t: meta?.t, s: meta?.s, h: meta?.h })); } catch { /* приватный режим */ }
+  favInvalidate();
+}
+function favDelete(key: string) { try { localStorage.removeItem(FAV_PREFIX + key); } catch { /* noop */ } favInvalidate(); }
+
+/** Метаданные избранного из контекста карточки (title/subtitle + относительная ссылка). */
+export function favMetaFromCtx(ctx: { title?: string; subtitle?: string; url?: string }): FavMeta {
+  return { t: ctx.title, s: ctx.subtitle, h: ctx.url ? ctx.url.replace(/^https?:\/\/[^/]+/, "") : undefined };
+}
+
+/** Снять из избранного по ключу (для свайпа на экране «Избранное»). */
+export function removeFavorite(key: string) { favDelete(key); }
+
+export function useFavorite(key: string, meta?: FavMeta): { on: boolean; toggle: (flash?: (m: string) => void) => void } {
   const on = useSyncExternalStore(
     useCallback((cb) => { favListeners.add(cb); return () => favListeners.delete(cb); }, []),
-    () => favRead(key),
+    () => favOn(key),
+    () => false,
   );
+  const metaRef = useRef(meta);
+  metaRef.current = meta;
   const toggle = useCallback((flash?: (m: string) => void) => {
-    const v = !favRead(key);
-    try { if (v) localStorage.setItem(`fav:${key}`, "1"); else localStorage.removeItem(`fav:${key}`); } catch { /* приватный режим */ }
-    favEmit();
-    flash?.(v ? "Добавлено в избранное" : "Убрано из избранного");
+    const next = !favOn(key);
+    if (next) favWrite(key, metaRef.current); else favDelete(key);
+    flash?.(next ? "Добавлено в избранное" : "Убрано из избранного");
   }, [key]);
   return { on, toggle };
+}
+
+function favSnapshot(): FavItem[] {
+  if (favCache) return favCache;
+  const out: FavItem[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(FAV_PREFIX)) continue;
+      const key = k.slice(FAV_PREFIX.length);
+      const ci = key.indexOf(":");
+      let rec: { ts?: number; t?: string; s?: string; h?: string } | null = null;
+      try { rec = JSON.parse(localStorage.getItem(k) || ""); } catch { /* legacy "1" */ }
+      out.push({
+        key,
+        type: ci >= 0 ? key.slice(0, ci) : key,
+        id: ci >= 0 ? key.slice(ci + 1) : "",
+        title: rec?.t || "",
+        subtitle: rec?.s || undefined,
+        href: rec?.h || undefined,
+        addedAt: typeof rec?.ts === "number" ? rec.ts : 0,
+      });
+    }
+  } catch { /* noop */ }
+  favCache = out;
+  return out;
+}
+
+/** Все избранные клиента (реактивно, из всех ключей `fav:*`). */
+export function useFavorites(): FavItem[] {
+  return useSyncExternalStore(
+    useCallback((cb) => { favListeners.add(cb); return () => favListeners.delete(cb); }, []),
+    favSnapshot,
+    () => EMPTY_FAVS,
+  );
+}
+
+// Синхронизация между вкладками.
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => { if (!e.key || e.key.startsWith(FAV_PREFIX)) favInvalidate(); });
 }
 
 /* ── Круглая стеклянная кнопка — копия книжного ActionBtn (34px на карточках) ── */
@@ -56,10 +122,10 @@ export function RoundBtn({ ariaLabel, onClick, active, activeColor, dark, size =
 }
 
 /* ── Пара ♥ + ⋯ — стандартный блок действий карточки ─────────────────────── */
-export function CardActionBtns({ favKey, onMore, flash, dark, size = 34 }: {
-  favKey: string; onMore: () => void; flash?: (m: string) => void; dark?: boolean; size?: number;
+export function CardActionBtns({ favKey, onMore, meta, flash, dark, size = 34 }: {
+  favKey: string; onMore: () => void; meta?: FavMeta; flash?: (m: string) => void; dark?: boolean; size?: number;
 }) {
-  const fav = useFavorite(favKey);
+  const fav = useFavorite(favKey, meta);
   return (
     <span style={{ display: "inline-flex", gap: 8 }} onClick={(e) => e.stopPropagation()}>
       <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" dark={dark} size={size} onClick={() => fav.toggle(flash)}>

@@ -192,7 +192,9 @@ export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack:
         </button>
         <span style={{ flex: 1 }} />
         {data && (
-          <CardActionBtns favKey={`entity:${id}`} onMore={() => openCardMenu({
+          <CardActionBtns favKey={`entity:${id}`}
+            meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/person/${encodeURIComponent(id)}` }}
+            onMore={() => openCardMenu({
             type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
             url: `https://gaurangers.com/person/${encodeURIComponent(id)}`,
             context: `Герой · ${data.name_ru || id} · /entity/${id}`,

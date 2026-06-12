@@ -6,7 +6,7 @@
  *   · Ссылки ИСККОН — официальные ресурсы общества по группам.
  * Все ссылки — на официальные источники (gbc.iskcon.org, iskcon.org, vedabase…).
  */
-import { CardActionBtns, useCardActions } from "./cardActions";
+import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { useEffect, useMemo, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
@@ -62,7 +62,7 @@ function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => v
           </div>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <h3 style={{ margin: "7px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
-            <CardActionBtns favKey={`doc:${d.id}`} flash={flash} onMore={() => openCardMenu(docCtx(d))} />
+            <CardActionBtns favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} onMore={() => openCardMenu(docCtx(d))} />
           </div>
           <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{d.issuer}</div>
 
@@ -103,7 +103,7 @@ function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <h3 style={{ flex: 1, margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 600, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
-        <CardActionBtns favKey={`doc:${d.id}`} flash={flash} size={32} onMore={() => openCardMenu(docCtx(d))} />
+        <CardActionBtns favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} size={32} onMore={() => openCardMenu(docCtx(d))} />
       </div>
       <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.issuer}</div>
       <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label-2)" }}>{d.summary}</p>
