@@ -1,26 +1,25 @@
 /**
- * BhajanDetailPage — карточка бхаджана/молитвы.
- * Стандарт: Apple HIG / iOS 26 — интерфейс шрифтом SF (var(--font-text/display)),
- * священный текст (транслитерация + стих) шрифтом Georgia (var(--font-scripture)),
- * как на iskcone.com. Размеры/цвета/радиусы — из ui/globals.css токенов.
+ * BhajanDetailPage — ПКБ (Подробная Карточка Бхаджана).
+ * Зеркало BookDetailPage: scroll-aware шапка (только «Назад» + титул при скролле,
+ * все действия живут в карточке-герое ниже) → BhajanHeroCard (4/5, тот же
+ * карточный модуль, что и на витрине) → читаемая колонка стихов.
  *
- * Архитектура совпадает с BookDetailPage: scroll-aware прозрачная шапка над hero,
- * hero-панно с маской-логотипом (адаптив к теме), затем читаемая колонка стихов.
- * Каждый стих — отдельный блок: транслитерация (Georgia курсив) → перевод (SF) →
- * подпись (автор · произведение · стих N).
+ * Стандарт: Apple HIG / iOS 26 — интерфейс шрифтом SF (var(--font-text/display)),
+ * священный текст (транслитерация) — Georgia (var(--font-scripture)). Размеры/цвета/
+ * радиусы — токены ui/globals.css. Каждый стих: транслитерация (Georgia курсив) →
+ * перевод (SF) → подпись (автор · произведение · стих N).
  */
-import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
+import { BhajanHeroCard } from "./BhajanHeroCard";
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; }
 const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
-function PlayIcon(p: IconProps) { return <svg {...sp(p)}><path d="M8 5v14l11-7z" fill="currentColor" /></svg>; }
 
-/** Логотип-маска в currentColor — подхватывает цвет темы (как в BookDetailPage). */
+/** Логотип-маска в currentColor — подхватывает цвет (белый на герое). */
 function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
   return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
 }
@@ -74,11 +73,18 @@ function Layer({ label, text, scripture }: { label: string; text: string; script
 }
 
 export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBack: () => void }) {
-  const { openCardMenu } = useCardActions();
   const [data, setData] = useState<BhajanDetail | null>(null);
   const [err, setErr] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flash = (m: string) => {
+    setToast(m);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 1800);
+  };
 
   useEffect(() => {
     let live = true;
@@ -99,21 +105,13 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
 
   const hasVerses = !!(data && data.verses.length > 0);
   const hasLayers = !!(data && (data.translit || data.translation));
-  const meta = data ? [data.source_text, data.section].filter(Boolean).join(" · ") : "";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
-      {/* scroll-aware top bar над hero */}
-      <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", gap: 2, padding: "0 6px", transition: "background var(--duration-base) var(--ease-standard), border-color var(--duration-base)", background: scrolled ? "var(--color-glass-nav)" : "transparent", backdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", WebkitBackdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", borderBottom: scrolled ? "0.5px solid var(--color-glass-stroke)" : "0.5px solid transparent" }}>
-        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: scrolled ? "transparent" : "var(--color-glass-regular)", color: scrolled ? "var(--color-label)" : "var(--color-label)", backdropFilter: scrolled ? "none" : "blur(12px)", WebkitBackdropFilter: scrolled ? "none" : "blur(12px)", transition: "background var(--duration-base)" }}><BackIcon size={22} /></button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: scrolled ? 1 : 0, transition: "opacity var(--duration-base)" }}>{data?.name ?? ""}</div>
-        {data && (
-          <CardActionBtns favKey={`bhajan:${slug}`} size={36} onMore={() => openCardMenu({
-            type: "bhajan", id: slug, title: data.name, subtitle: data.author || undefined,
-            url: `https://gaurangers.com/bhajan/${encodeURIComponent(slug)}`,
-            context: `Бхаджан · ${data.name} · /bhajan/${slug}`,
-          })} />
-        )}
+      {/* scroll-aware шапка — только «Назад» + титул; действия живут в карточке ниже */}
+      <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 14px", transition: "background var(--duration-base) var(--ease-standard), border-color var(--duration-base)", background: scrolled ? "var(--color-glass-nav)" : "transparent", backdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", WebkitBackdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", borderBottom: scrolled ? "0.5px solid var(--color-glass-stroke)" : "0.5px solid transparent" }}>
+        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: "var(--color-glass-regular)", color: "var(--color-label)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", flexShrink: 0 }}><BackIcon size={22} /></button>
+        {scrolled && data && <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.name}</div>}
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -122,48 +120,40 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
 
         {data && (
           <>
-            {/* hero-панно: тёмная подложка, маска-логотип по центру */}
-            <div style={{ position: "relative", height: 220, display: "grid", placeItems: "center", background: "var(--color-bg-3)", overflow: "hidden" }}>
-              <div style={{ color: "var(--color-label-3)" }}><LogoMark src="/iskcon-sign.svg" label="ISKCON" height={96} /></div>
-              {/* мягкое затемнение к низу — заголовок-«шапка» при скролле читается */}
-              <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0) 38%)" }} />
+            {/* HERO — тот же карточный модуль, что и на витрине (ВКБ) */}
+            <div style={{ padding: "2px 16px 6px" }}>
+              <BhajanHeroCard
+                bhajan={{ slug, name: data.name, author: data.author, heroImage: data.hero_image, sourceText: data.source_text, section: data.section }}
+                topLeft={<LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />}
+                flash={flash}
+              />
             </div>
 
-            <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8))" }}>
-              {/* заголовочный блок */}
-              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{data.name}</h1>
-              {data.author && <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)" }}>{data.author}</div>}
-              {meta && <div style={{ marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{meta}</div>}
-
-              {/* тело */}
-              <div style={{ marginTop: "var(--space-8)" }}>
-                {data.pending ? (
-                  <div style={{ padding: "var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-normal)" }}>
-                    Текст готовится к публикации.
-                  </div>
-                ) : hasVerses ? (
-                  <div>{data.verses.map((v, i) => <VerseBlock key={v.ord} v={v} first={i === 0} />)}</div>
-                ) : hasLayers ? (
-                  <>
-                    {data.translit && <Layer label="Транслитерация" text={data.translit} scripture />}
-                    {data.translation && <Layer label="Перевод" text={data.translation} />}
-                  </>
-                ) : (
-                  <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
-                )}
-              </div>
-
-              {/* аудио-плейсхолдер (скрыт для pending) */}
-              {!data.pending && (
-                <button disabled style={{ marginTop: "var(--space-8)", display: "flex", width: "100%", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4) var(--space-4)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)", cursor: "default", fontFamily: "var(--font-text)" }}>
-                  <span style={{ display: "grid", placeItems: "center", height: 32, width: 32, borderRadius: "50%", background: "var(--color-glass-regular)", color: "var(--color-label-2)" }}><PlayIcon size={16} /></span>
-                  <span style={{ fontSize: "var(--text-subhead)" }}>Аудио — скоро</span>
-                </button>
+            {/* ТЕКСТ */}
+            <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-7) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8))" }}>
+              {data.pending ? (
+                <div style={{ padding: "var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-normal)" }}>
+                  Текст готовится к публикации.
+                </div>
+              ) : hasVerses ? (
+                <div>{data.verses.map((v, i) => <VerseBlock key={v.ord} v={v} first={i === 0} />)}</div>
+              ) : hasLayers ? (
+                <>
+                  {data.translit && <Layer label="Транслитерация" text={data.translit} scripture />}
+                  {data.translation && <Layer label="Перевод" text={data.translation} />}
+                </>
+              ) : (
+                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
             </div>
           </>
         )}
       </div>
+
+      {/* лёгкий тост (напр. «Аудио — скоро») */}
+      {toast && (
+        <div role="status" style={{ position: "absolute", left: "50%", bottom: "calc(env(safe-area-inset-bottom,0px) + 24px)", transform: "translateX(-50%)", zIndex: 50, padding: "10px 16px", borderRadius: 999, background: "rgba(0,0,0,.82)", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", boxShadow: "0 8px 30px rgba(0,0,0,.3)", pointerEvents: "none" }}>{toast}</div>
+      )}
     </div>
   );
 }

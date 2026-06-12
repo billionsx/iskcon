@@ -9,9 +9,10 @@
  *
  * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { usePlayer } from "./player/store";
+import { BhajanHeroCard } from "./BhajanHeroCard";
 import {
   KIRTAN_ARTISTS, playableAlbums, albumCover, albumsByArtist, artistPlayableCount,
   artistBySlug, filterAlbums, moodsInCatalog, typesInCatalog,
@@ -91,6 +92,9 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
   // Тексты бхаджанов — короткий список из D1 (как было), полный — в каталоге.
   const [bhajans, setBhajans] = useState<BhajanListItem[] | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
   useEffect(() => {
     let live = true;
     fetch(api("/bhajans"))
@@ -208,24 +212,22 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         {!bhajans && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
         {bhajans && bhajans.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
         {bhajans && bhajans.length > 0 && (
-          <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-            {bhajans.slice(0, 6).map((b, i, arr) => (
-              <li key={b.slug} style={{ borderBottom: i === arr.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                <button onClick={() => onOpenBhajan(b.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                  {b.hero_image
-                    ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
-                    : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)" }} />}
-                  <span style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
-                    {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
-                  </span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </button>
-              </li>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            {bhajans.slice(0, 3).map((b) => (
+              <BhajanHeroCard
+                key={b.slug}
+                bhajan={{ slug: b.slug, name: b.name, author: b.author, heroImage: b.hero_image, sourceText: null, section: null }}
+                topLeft={<span aria-hidden style={{ display: "block", height: 26, width: 26, backgroundColor: "currentColor", WebkitMaskImage: "url(/iskcon-sign.svg)", maskImage: "url(/iskcon-sign.svg)", WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />}
+                onOpen={() => onOpenBhajan(b.slug)}
+                flash={flash}
+              />
             ))}
-          </ul>
+          </div>
         )}
       </section>
+      {toast && (
+        <div role="status" style={{ position: "fixed", left: "50%", bottom: "calc(env(safe-area-inset-bottom,0px) + 84px)", transform: "translateX(-50%)", zIndex: 60, padding: "10px 16px", borderRadius: 999, background: "rgba(0,0,0,.82)", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote, 13px)", fontWeight: 500, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", boxShadow: "0 8px 30px rgba(0,0,0,.3)", pointerEvents: "none" }}>{toast}</div>
+      )}
     </div>
   );
 }
