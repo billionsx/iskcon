@@ -109,7 +109,7 @@ export function PdfDoc() {
           } else {
             const ch = await (await fetch(api("/books/bg/chapters"))).json();
             const chapter = ((ch.chapters ?? []) as ChapterRow[]).find((c) => String(c.number) === String(n)) ?? null;
-            const d = await (await fetch(api(`/books/bg/chapters/${n}/read`))).json();
+            const d = await (await fetch(api(`/books/${work || "bg"}/chapters/${n}/read`))).json();
             if (live) setData({ kind: "chapter", chapter, verses: (d.verses ?? []) as ChapterVerse[] });
           }
         } else if (kind === "verse") {

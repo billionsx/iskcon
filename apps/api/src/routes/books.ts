@@ -56,6 +56,21 @@ const WORK_NAMES: Record<string, string> = {
   'krishna-book': 'Кришна',
 };
 
+/**
+ * Метка стиха для читалки — единая для всех книг. Снимает ведущую аббревиатуру
+ * («БГ 1.8»→«1.8», «ИШО 1»→«1», «ИШО invocation»→обращение), берёт хвост после
+ * последней точки, маппит мангалачарану/обращение. НЕ зависит от конкретной книги.
+ */
+function verseLabel(refRaw: string): string {
+  const ref = String(refRaw || '');
+  const stripped = ref.replace(/^[^\d.]*\s+/, '').trim() || ref;
+  const tail = stripped.split('.').pop() ?? '';
+  const low = tail.toLowerCase();
+  if (/^(invocation|mangala|обращ|мангал)/.test(low)) return 'Обращение';
+  if (/[-–—]/.test(tail)) return `Тексты ${tail.replace(/[–—]/g, '-')}`;
+  return `Текст ${tail}`;
+}
+
 // GET /v1/books/:work/toc — оглавление с учётом уровней (лила/песнь → глава)
 booksRouter.get('/:work/toc', async (c) => {
   const work = c.req.param('work');
@@ -179,8 +194,7 @@ booksRouter.get('/:work/chapters/:number/read', async (c) => {
   }
 
   const out = verses.map((v) => {
-    const tail = String(v.ref).split('.').pop() ?? '';
-    const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, '-')}` : `Текст ${tail}`;
+    const label = verseLabel(String(v.ref));
     return {
       ref: v.ref,
       label,
@@ -245,8 +259,7 @@ booksRouter.get('/:work/verses/:ref', async (c) => {
     .first<Row>();
 
   // Метка: последний дотированный сегмент. "БГ 2.13" → "13"; "БГ 2.16-17" → "16-17".
-  const tail = String(verse.ref).split('.').pop() ?? '';
-  const label = /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, '-')}` : `Текст ${tail}`;
+  const label = verseLabel(String(verse.ref));
 
   return c.json({
     ref: verse.ref,

@@ -10,7 +10,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
-import { BOOK_MENU_ITEMS, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
+import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
@@ -112,13 +112,16 @@ function KeyVal({ k, v, last }: { k: string; v: string; last?: boolean }) {
 
 /* ───────── tabs (white, gold underline) ───────── */
 type BookTabId = "contents" | "overview" | "author" | "reviews";
+/** Книги с собственными курируемыми рецензиями. У прочих вкладка «Рецензии» скрыта
+ * (не показываем чужие отзывы; добавится, когда появятся свои). */
+const REVIEWED_WORKS = new Set(["bg", "cc", "sb", "brs"]);
 const BOOK_TABS: { id: BookTabId; label: string }[] = [
   { id: "contents", label: "Содержание" },
   { id: "overview", label: "О книге" },
   { id: "author", label: "Автор" },
   { id: "reviews", label: "Рецензии" },
 ];
-function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: BookTabId) => void }) {
+function BookTabs({ active, onChange, tabs }: { active: BookTabId; onChange: (id: BookTabId) => void; tabs: { id: BookTabId; label: string }[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   useEffect(() => {
@@ -130,7 +133,7 @@ function BookTabs({ active, onChange }: { active: BookTabId; onChange: (id: Book
   return (
     <nav data-pdf-no-print aria-label="Разделы книги" style={{ position: "sticky", top: 52, zIndex: 20, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: `0.5px solid ${LINE}` }}>
       <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-        {BOOK_TABS.map((t) => {
+        {tabs.map((t) => {
           const on = t.id === active;
           return (
             <button key={t.id} ref={(el) => { tabRefs.current[t.id] = el; }} type="button" onClick={() => onChange(t.id)}
@@ -178,6 +181,34 @@ function DefRow({ term, desc, last }: { term: string; desc: string; last?: boole
     <div style={{ padding: "13px 0", borderBottom: last ? "none" : `0.5px solid ${LINE}` }}>
       <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.2px", color: GOLDT, marginBottom: 4 }}>{term}</div>
       <div style={{ fontSize: 15, lineHeight: 1.5, color: INK }}>{desc}</div>
+    </div>
+  );
+}
+
+/* ───────── О книге · универсальная (data-driven из BOOK_ABOUT) ───────── */
+function GenericOverview({ book }: { book: BookData }) {
+  const paras = BOOK_ABOUT[book.work] ?? [book.description];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>{book.prose ? "Книга Шрилы Прабхупады" : "Ведическое писание"}</div>
+        {paras.map((t, i) => (
+          <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0", fontSize: i === 0 ? 17.5 : 16, lineHeight: 1.58, color: i === 0 ? INK : INK2 }}>{renderTerms(t)}</p>
+        ))}
+      </section>
+      <section>
+        <SectionTitle>Кратко</SectionTitle>
+        <div>
+          {book.chips.map((c, i) => (
+            <KeyVal key={i} k={["Объём", "Источник", "Эпоха"][i] ?? "—"} v={c} last={i === book.chips.length - 1 && false} />
+          ))}
+          <KeyVal k="Издатель" v="Bhaktivedanta Book Trust" last />
+        </div>
+      </section>
+      <section>
+        <SectionTitle>Автор</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: INK2 }}>{book.author}</p>
+      </section>
     </div>
   );
 }
@@ -1050,8 +1081,8 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
         );
       } else {
         await downloadServerPdf(
-          `/pdf?kind=chapter&n=${encodeURIComponent(chapter.number)}`,
-          `Бхагавад-гита как она есть. Глава ${chapter.number}.pdf`,
+          `/pdf?kind=chapter&work=${encodeURIComponent(work)}&n=${encodeURIComponent(chapter.number)}`,
+          `${bookTitle}. Глава ${chapter.number}.pdf`,
           common,
         );
       }
@@ -1270,7 +1301,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
         <LayerLabel>Перевод</LayerLabel>
         {r.translation ? (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
-            <p style={{ margin: 0, fontSize: 20, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>{r.translation}</p>
+            <p style={{ margin: 0, fontSize: 20, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>{renderTerms(r.translation)}</p>
           </div>
         ) : (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${LINE}` }}>
@@ -2137,15 +2168,15 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
           <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
         </div>
 
-        <BookTabs active={tab} onChange={setTab} />
+        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => t.id !== "reviews" || REVIEWED_WORKS.has(book.work))} />
 
         <div>
           {tab === "contents" && (book.hierarchical
             ? <CcContents work={book.work} onOpenChapter={setOpenChapter} />
             : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} />)}
-          {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.hierarchical ? <CcOverview book={book} /> : <Overview book={book} />)}
+          {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : <GenericOverview book={book} />)}
           {tab === "author" && <Author />}
-          {tab === "reviews" && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.hierarchical ? <CcReviews /> : <Reviews />)}
+          {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : <Reviews />)}
         </div>
       </div>
 

@@ -141,7 +141,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     const parts = div.split(".");
     filename = `${bookFullTitle(book)}. ${ccLilaName(parts[1] ?? "")}. Глава ${parts[2] ?? ""}.pdf`;
   } else if (kind === "chapter" && n) {
-    printPath = `/?pdf=chapter&n=${encodeURIComponent(n)}`;
+    printPath = `/?pdf=chapter&work=${encodeURIComponent(work)}&n=${encodeURIComponent(n)}`;
     filename = `${bookFullTitle(book)}. Глава ${n}.pdf`;
   } else if (kind === "card") {
     // Печатная карточка: место/ресторан/личность/документ/бхаджан/киртан.
