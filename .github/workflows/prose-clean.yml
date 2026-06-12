@@ -1,0 +1,52 @@
+name: prose-clean
+on:
+  workflow_dispatch:
+    inputs:
+      work:
+        description: "work_id (например spl). Удаляет абзацы-заголовки «ГЛАВА N…»/«Глава N…»."
+        required: true
+        default: "spl"
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clean heading-leak paragraphs
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          WORK: ${{ github.event.inputs.work }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          CF=os.environ["CF"]; WORK=os.environ["WORK"].strip()
+          ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql):
+              rq=urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                  headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=90) as r:
+                  j=json.loads(r.read().decode())
+                  if not j.get("success"): raise RuntimeError(str(j)[:400])
+                  return j["result"][0]["results"]
+          def q(v): return "'"+str(v).replace("'","''")+"'"
+          # абзацы, чей перевод начинается с заголовка главы (чистый дубль «ГЛАВА N…» / «Глава N…»)
+          rows=d1(f"""SELECT v.id AS id, t.translation AS tr FROM verses v
+                      JOIN verse_texts t ON t.verse_id=v.id
+                      WHERE v.work_id={q(WORK)}
+                        AND (t.translation GLOB 'ГЛАВА [0-9]*' OR t.translation GLOB 'Глава [0-9]*'
+                             OR t.translation GLOB 'ГЛABA [0-9]*')""")
+          ids=[r["id"] for r in rows]
+          print("found heading-leak paragraphs:", len(ids))
+          for r in rows[:8]:
+              print("  ·", (r.get("tr") or "")[:60])
+          for i in range(0, len(ids), 50):
+              chunk=ids[i:i+50]; inlist=",".join(q(x) for x in chunk)
+              d1(f"DELETE FROM verse_tokens WHERE verse_id IN ({inlist})")
+              d1(f"DELETE FROM verse_texts  WHERE verse_id IN ({inlist})")
+              d1(f"DELETE FROM verses       WHERE id IN ({inlist})")
+          # контроль: сколько осталось
+          left=d1(f"""SELECT COUNT(*) AS n FROM verses v JOIN verse_texts t ON t.verse_id=v.id
+                      WHERE v.work_id={q(WORK)} AND (t.translation GLOB 'ГЛАВА [0-9]*' OR t.translation GLOB 'Глава [0-9]*')""")[0]["n"]
+          tot=d1(f"SELECT COUNT(*) AS n FROM verses WHERE work_id={q(WORK)}")[0]["n"]
+          print(f"removed={len(ids)} remaining_heading={left} total_paragraphs_now={tot}")
+          print(f"::notice title=CLEAN {WORK}::removed={len(ids)} remaining={left} total={tot}")
+          PY
