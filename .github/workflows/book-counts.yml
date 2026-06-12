@@ -1,0 +1,47 @@
+name: book counts (D1 → один JSON)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  counts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql):
+              rq=urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                  headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=90) as r:
+                  return json.loads(r.read().decode())["result"][0]["results"]
+          works=["bg","sb","cc","brs","iso","noi","lob","owk","rv","pop","bbd","poy","sc","tqk","spl"]
+          out={}
+          for w in works:
+              ch=d1(f"SELECT COUNT(*) AS n FROM divisions WHERE work_id='{w}' AND level='chapter'")[0]["n"]
+              vs=d1(f"SELECT COUNT(*) AS n FROM verses WHERE work_id='{w}'")[0]["n"]
+              sc=d1(f"SELECT verse_scheme AS s FROM works WHERE id='{w}'")
+              out[w]={"chapters":ch,"verses":vs,"scheme":(sc[0]["s"] if sc else None)}
+          os.makedirs("apps/web/public/data/book-stats", exist_ok=True)
+          json.dump(out, open("apps/web/public/data/book-stats/all.json","w",encoding="utf-8"), ensure_ascii=False, indent=2)
+          print(json.dumps(out, ensure_ascii=False, indent=2))
+          PY
+      - name: Commit
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add apps/web/public/data/book-stats/all.json
+          git commit -m "chore: book counts snapshot [skip ci]" || { echo none; exit 0; }
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main 2>/dev/null || true
+            git push origin main 2>/dev/null && break
+            sleep 3
+          done
