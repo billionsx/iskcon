@@ -41,37 +41,37 @@
   },
   "rv": {
     "chapters": 8,
-    "verses": 313,
+    "verses": 305,
     "scheme": "prose"
   },
   "pop": {
     "chapters": 11,
-    "verses": 548,
+    "verses": 538,
     "scheme": "prose"
   },
   "bbd": {
     "chapters": 5,
-    "verses": 172,
+    "verses": 167,
     "scheme": "prose"
   },
   "poy": {
     "chapters": 8,
-    "verses": 139,
+    "verses": 131,
     "scheme": "prose"
   },
   "sc": {
     "chapters": 23,
-    "verses": 708,
+    "verses": 686,
     "scheme": "prose"
   },
   "tqk": {
     "chapters": 27,
-    "verses": 766,
+    "verses": 740,
     "scheme": "prose"
   },
   "spl": {
     "chapters": 62,
-    "verses": 8638,
+    "verses": 8585,
     "scheme": "prose"
   }
 }
