@@ -128,15 +128,12 @@ function PlaceCard({ src, title, sub, pos = "center" }: { src: string; title: st
   );
 }
 
-function NavCard({ mark, title, subtitle, onClick, accent }: { mark: React.ReactNode; title: string; subtitle: string; onClick: () => void; accent?: boolean }) {
-  const ring: React.CSSProperties = accent
-    ? { background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }
-    : { background: "var(--color-glass-regular)" };
+function NavCard({ mark, title, subtitle, onClick }: { mark: React.ReactNode; title: string; subtitle: string; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick}
       onPointerDown={(e) => (e.currentTarget.style.opacity = "0.65")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
       style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", padding: PAD, textAlign: "left", cursor: "pointer", border: "none", ...fill }}>
-      <span style={{ flexShrink: 0, width: 52, height: 52, borderRadius: "50%", display: "grid", placeItems: "center", ...ring }}>{mark}</span>
+      <span style={{ flexShrink: 0, width: 48, display: "grid", placeItems: "center" }}>{mark}</span>
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{title}</span>
         <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.4, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{subtitle}</span>
@@ -677,10 +674,10 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
       <Section id="hsec-next">
         <SectionHead title="Продолжите путь" />
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <NavCard mark={<MaskMark src="/bbt.svg" size={27} />} title="Книги" subtitle="Бхагавад-гита, Шримад-Бхагаватам и наследие ачарьев" onClick={() => onChange("books")} />
-          <NavCard mark={<MaskMark src="/gauranga.svg" size={27} />} title="Киртаны" subtitle="Бхаджаны, молитвы и мантры" onClick={() => onChange("kirtans")} />
-          <NavCard mark={<MaskMark src="/prabhupada.svg" size={27} />} title="Герои" subtitle="Господь, аватары и спутники" onClick={() => onChange("acharya")} />
-          <NavCard mark={<MaskMark src="/iskcon.svg" size={27} />} title="Поддержать служение" subtitle="Стать частью миссии" onClick={onDonate} />
+          <NavCard mark={<MaskMark src="/bbt.svg" size={44} />} title="Книги" subtitle="Бхагавад-гита, Шримад-Бхагаватам и наследие ачарьев" onClick={() => onChange("books")} />
+          <NavCard mark={<MaskMark src="/gauranga.svg" size={44} />} title="Киртаны" subtitle="Бхаджаны, молитвы и мантры" onClick={() => onChange("kirtans")} />
+          <NavCard mark={<MaskMark src="/prabhupada.svg" size={44} />} title="Герои" subtitle="Господь, аватары и спутники" onClick={() => onChange("acharya")} />
+          <NavCard mark={<MaskMark src="/iskcon.svg" size={44} />} title="Поддержать служение" subtitle="Стать частью миссии" onClick={onDonate} />
         </div>
       </Section>
 
