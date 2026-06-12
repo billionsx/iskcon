@@ -1,3 +1,4 @@
+import { renderTitle } from "./ui/Skt";
 /**
  * BookHeroCard — the ONE card module (юнит-стандарт).
  * Used identically by the showcase card on the feed (ВКП) and by the
@@ -77,10 +78,10 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
 
         {/* INFO — bottom */}
         <div onClick={presentational ? undefined : () => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: onOpen && !presentational ? "pointer" : "default", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
-          <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", whiteSpace: "nowrap" }}>{book.titleLine1}</h3>
+          <h3 style={{ margin: 0, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff", whiteSpace: "nowrap" }}>{renderTitle(book.titleLine1)}</h3>
           {book.titleLine2 && <div style={book.uniformTitle
             ? { marginTop: 2, fontSize: 36, lineHeight: 1.04, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }
-            : { marginTop: 2, fontSize: 25, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em", color: "rgba(255,255,255,.95)" }}>{book.titleLine2}</div>}
+            : { marginTop: 2, fontSize: 25, lineHeight: 1.1, fontWeight: 600, letterSpacing: "-0.02em", color: "rgba(255,255,255,.95)" }}>{renderTitle(book.titleLine2)}</div>}
           <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.3, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.72)" }}>{book.hideCardIast ? book.tagline : <>{book.iast}<span style={{ margin: "0 6px", color: "rgba(255,255,255,.4)" }}>·</span>{book.tagline}</>}</div>
           <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.35, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.92)" }}>{book.author}</p>
           <p style={{ margin: "10px 0 0", fontSize: 14, lineHeight: 1.35, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)" }}>{book.description}</p>
