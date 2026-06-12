@@ -154,6 +154,191 @@ export const BOOKS: Record<string, BookData> = {
     uniformTitle: true,
     prose: true,
   },
+  iso: {
+    id: "iso",
+    work: "iso",
+    slug: "sri-isopanisad",
+    titleLine1: "Шри",
+    titleLine2: "Ишопанишад",
+    iast: "Śrī Īśopaniṣad",
+    tagline: "Мантры совершенного знания",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Главная из Упанишад: всё живое и неживое принадлежит Господу. Путь к освобождению — знание о Верховной Личности Бога и отказ от ложного обладания.",
+    publisher: "bbt",
+    covers: [
+      "/covers/iso-001.png",
+    ],
+    chips: ["18 мантр", "Упанишада", "5 000+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+  },
+  noi: {
+    id: "noi",
+    work: "noi",
+    slug: "nectar-of-instruction",
+    titleLine1: "Нектар",
+    titleLine2: "наставлений",
+    iast: "Upadeśāmṛta",
+    tagline: "Наставления Рупы Госвами",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Одиннадцать наставлений Шрилы Рупы Госвами: как обуздать ум и язык, кого избегать и кому служить, и как достичь высших ступеней любви к Кришне.",
+    publisher: "bbt",
+    covers: [
+      "/covers/noi-001.png",
+    ],
+    chips: ["11 стихов", "Рупа Госвами", "500+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+  },
+  owk: {
+    id: "owk",
+    work: "owk",
+    slug: "on-the-way-to-krishna",
+    titleLine1: "На пути",
+    titleLine2: "к Кришне",
+    iast: "On the Way to Kṛṣṇa",
+    tagline: "Путь к высшему счастью",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Как обрести подлинное, непреходящее счастье: природа сознания, преодоление иллюзии материального наслаждения и практика любви к Богу.",
+    publisher: "bbt",
+    covers: [
+      "/covers/owk-001.png",
+    ],
+    chips: ["5 глав", "беседы Прабхупады", "XX век"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
+  rv: {
+    id: "rv",
+    work: "rv",
+    slug: "raja-vidya",
+    titleLine1: "Раджа-видья",
+    iast: "Rāja-vidyā",
+    tagline: "Царь знания",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Сокровенное знание девятой главы «Бхагавад-гиты» — самый царственный и сокровенный путь: прямое преданное служение Верховной Личности Бога.",
+    publisher: "bbt",
+    covers: [
+      "/covers/rv-001.png",
+    ],
+    chips: ["8 глав", "по «Бхагавад-гите»", "5 000+ лет"],
+    hierarchical: false,
+    prose: true,
+  },
+  pop: {
+    id: "pop",
+    work: "pop",
+    slug: "path-of-perfection",
+    titleLine1: "Путь",
+    titleLine2: "к совершенству",
+    iast: "The Path of Perfection",
+    tagline: "Совершенство по «Гите»",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Система подлинной йоги по шестой главе «Бхагавад-гиты»: сосредоточение ума на Кришне как высшая ступень и цель всех методов йоги.",
+    publisher: "bbt",
+    covers: [
+      "/covers/pop-001.png",
+    ],
+    chips: ["11 глав", "по «Бхагавад-гите»", "5 000+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
+  bbd: {
+    id: "bbd",
+    work: "bbd",
+    slug: "beyond-birth-and-death",
+    titleLine1: "По ту сторону",
+    titleLine2: "рождения и смерти",
+    iast: "Beyond Birth and Death",
+    tagline: "Тайна жизни и смерти",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Что происходит с душой после смерти и как выйти за пределы рождения и смерти. Природа вечного «я» согласно ведическим писаниям.",
+    publisher: "bbt",
+    covers: [
+      "/covers/bbd-001.png",
+    ],
+    chips: ["5 глав", "лекции Прабхупады", "XX век"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
+  poy: {
+    id: "poy",
+    work: "poy",
+    slug: "perfection-of-yoga",
+    titleLine1: "Совершенство",
+    titleLine2: "йоги",
+    iast: "The Perfection of Yoga",
+    tagline: "Истинная йога",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Совершенство йоги — не телесные упражнения, а сосредоточение ума на Верховной Личности Бога, как учит «Бхагавад-гита».",
+    publisher: "bbt",
+    covers: [
+      "/covers/poy-001.png",
+    ],
+    chips: ["8 глав", "по «Бхагавад-гите»", "5 000+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
+  sc: {
+    id: "sc",
+    work: "sc",
+    slug: "second-chance",
+    titleLine1: "Ещё",
+    titleLine2: "один шанс",
+    iast: "A Second Chance",
+    tagline: "Второй шанс для души",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "История Аджамилы из «Шримад-Бхагаватам»: даже величайший грешник обретает спасение, повторяя святое имя Господа. Каждой душе дан второй шанс.",
+    publisher: "bbt",
+    covers: [
+      "/covers/sc-001.png",
+    ],
+    chips: ["23 главы", "по «Шримад-Бхагаватам»", "5 000+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
+  tqk: {
+    id: "tqk",
+    work: "tqk",
+    slug: "teachings-of-queen-kunti",
+    titleLine1: "Молитвы",
+    titleLine2: "царицы Кунти",
+    iast: "Teachings of Queen Kuntī",
+    tagline: "Молитвы царицы",
+    author:
+      "Его Божественная Милость А.\u00a0Ч. Бхактиведанта Свами Прабхупада, Ачарья-основатель Международного общества сознания Кришны, ИСККОН",
+    description:
+      "Молитвы царицы Кунти из «Шримад-Бхагаватам» в изложении Шрилы Прабхупады: смирение, преданность и благодарность Господу за посланные испытания.",
+    publisher: "bbt",
+    covers: [
+      "/covers/tqk-001.png",
+    ],
+    chips: ["24 главы", "по «Шримад-Бхагаватам»", "5 000+ лет"],
+    hierarchical: false,
+    uniformTitle: true,
+    prose: true,
+  },
 };
 
 /**
@@ -252,8 +437,17 @@ export const LIBRARY: CatalogBook[] = [
   { id: "brs", title: "Нектар преданности",          iast: "Bhakti-rasāmṛta-sindhu", note: "Наука преданного служения",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Рупа Госвами Rupa Goswami Gosvami Bhakti-rasamrita Prabhupada Bhaktivedanta" },
   { id: "krishna-book", title: "Кришна. Верховная Личность Бога", iast: "Kṛṣṇa",   note: "Игры Кришны из Десятой песни", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Krishna Кришна KRSNA Prabhupada Bhaktivedanta" },
   { id: "tlc", title: "Учение Шри Чайтаньи",         iast: "Teachings of Lord Caitanya",                                  authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Teachings Chaitanya Caitanya Учение Prabhupada Bhaktivedanta" },
-  { id: "noi", title: "Нектар наставлений",          iast: "Upadeśāmṛta",           note: "Наставления Шрилы Рупы Госвами", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Рупа Госвами Rupa Goswami Upadeshamrita Upadesamrta Nectar of Instruction Prabhupada Bhaktivedanta" },
-  { id: "iso", title: "Шри Ишопанишад",              iast: "Śrī Īśopaniṣad",        note: "Мантры совершенного знания",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Isopanishad Ishopanishad Ишопанишада Iso Prabhupada Bhaktivedanta" },
+  { id: "noi", title: "Нектар наставлений",          iast: "Upadeśāmṛta",           note: "Наставления Шрилы Рупы Госвами", authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Рупа Госвами Rupa Goswami Upadeshamrita Upadesamrta Nectar of Instruction Prabhupada Bhaktivedanta" },
+  { id: "iso", title: "Шри Ишопанишад",              iast: "Śrī Īśopaniṣad",        note: "Мантры совершенного знания",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true, also: "Isopanishad Ishopanishad Ишопанишада Iso Prabhupada Bhaktivedanta" },
+  { id: "owk", title: "На пути к Кришне",             iast: "On the Way to Kṛṣṇa",                                         authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "On the Way to Krishna Путь Прабхупада Bhaktivedanta" },
+  { id: "rv",  title: "Раджа-видья. Царь знания",     iast: "Rāja-vidyā",            note: "Царь знания",                  authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Raja-vidya King of Knowledge Раджа-видья Прабхупада Bhaktivedanta" },
+  { id: "pop", title: "Путь к совершенству",          iast: "The Path of Perfection", note: "Йога по «Бхагавад-гите»",      authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Path of Perfection Путь к совершенству Прабхупада Bhaktivedanta" },
+  { id: "bbd", title: "По ту сторону рождения и смерти", iast: "Beyond Birth and Death",                                   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Beyond Birth and Death По ту сторону Прабхупада Bhaktivedanta" },
+  { id: "poy", title: "Совершенство йоги",            iast: "The Perfection of Yoga",                                      authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Perfection of Yoga Совершенство йоги Прабхупада Bhaktivedanta" },
+  { id: "sc",  title: "Ещё один шанс",                iast: "A Second Chance",       note: "История Аджамилы",             authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Second Chance Ещё один шанс Аджамила Ajamila Прабхупада Bhaktivedanta" },
+  { id: "tqk", title: "Молитвы царицы Кунти",         iast: "Teachings of Queen Kuntī", note: "Молитвы из «Бхагаватам»",   authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: true,  also: "Teachings of Queen Kunti Молитвы царицы Кунти Kuntidevi Прабхупада Bhaktivedanta" },
+  { id: "lob", title: "Свет Бхагаваты",               iast: "Light of the Bhāgavata",                                      authorId: "prabhupada", authorName: "Шрила Прабхупада", lineage: "prabhupada", readable: false, also: "Light of the Bhagavata Свет Бхагаваты Прабхупада Bhaktivedanta" },
+  { id: "spl", title: "Шрила Прабхупада-лиламрита",   iast: "Śrīla Prabhupāda-līlāmṛta", note: "Жизнеописание Ачарьи-основателя", authorId: "satsvarupa-das-goswami", authorName: "Сатсварупа Дас Госвами", lineage: "prabhupada", readable: false, also: "Prabhupada-lilamrita Лиламрита Satsvarupa Прабхупада" },
   // — Ачарьи-вайшнавы и первоисточники парампары —
   { id: "cb",  title: "Чайтанья-бхагавата",          iast: "Caitanya-bhāgavata",    authorId: "vrindavana-dasa-thakura", authorName: "Вриндаван дас Тхакур",  lineage: "acharya", readable: false, also: "Чайтанья-бхагавата Caitanya-bhagavata Вриндаван" },
   { id: "cm",  title: "Чайтанья-мангала",            iast: "Caitanya-maṅgala",      authorId: "lochana-dasa-thakura",    authorName: "Лочана дас Тхакур",     lineage: "acharya", readable: false, also: "Чайтанья-мангала Caitanya-mangala Лочана" },
