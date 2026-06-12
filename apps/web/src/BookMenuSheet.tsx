@@ -134,7 +134,7 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isCha
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
-      style={{ position: "fixed", inset: 0, zIndex: 1000, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 2000, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
       <style>{SHEET_CSS}</style>
       <div className="bms-sheet" role="menu" onClick={(e) => e.stopPropagation()}
         style={{

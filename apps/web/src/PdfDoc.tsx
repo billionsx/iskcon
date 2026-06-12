@@ -197,7 +197,8 @@ type CardLoaded = Extract<Loaded, { kind: "card" }>;
 async function loadCard(ctype: string, cid: string, album: string, track: string): Promise<CardLoaded | null> {
   try {
     if (ctype === "place" || ctype === "restaurant") {
-      const p = await (await fetch(`/api/places/${encodeURIComponent(cid)}`)).json() as Record<string, string | null>;
+      const wrap = await (await fetch(`/api/places/${encodeURIComponent(cid)}`)).json() as { place?: Record<string, string | null> };
+      const p = wrap?.place;
       if (!p || !p.nameRu) return null;
       const rows: Array<[string, string]> = [];
       if (p.category) rows.push(["Тип", String(p.category)]);
