@@ -36,6 +36,9 @@ export function BhajanHeroCard({ bhajan, topLeft, onOpen, flash, presentational 
   const { on: favorited, toggle: toggleFav } = useFavorite(`bhajan:${bhajan.slug}`);
   const { openCardMenu } = useCardActions();
   const chips = [bhajan.sourceText, bhajan.section].filter(Boolean) as string[];
+  // Реальная обложка — только если это не общий дженерик-плейсхолдер ингеста
+  // (один iskcon.png на все бхаджаны). Иначе — тёмное панно GRAPHITE с маской-лого.
+  const realCover = !!bhajan.heroImage && !/iskcon\.png/i.test(bhajan.heroImage);
   const openMore = () => openCardMenu({
     type: "bhajan", id: bhajan.slug, title: bhajan.name, subtitle: bhajan.author || undefined,
     url: `https://gaurangers.com/bhajan/${encodeURIComponent(bhajan.slug)}`,
@@ -50,8 +53,8 @@ export function BhajanHeroCard({ bhajan, topLeft, onOpen, flash, presentational 
         boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
         display: "flex", flexDirection: "column", justifyContent: "flex-end",
       }}>
-      {bhajan.heroImage ? (
-        <img src={bhajan.heroImage} alt={bhajan.name} loading="eager" decoding="async" draggable={false}
+      {realCover ? (
+        <img src={bhajan.heroImage!} alt={bhajan.name} loading="eager" decoding="async" draggable={false}
           style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover" }} />
       ) : (
         <div aria-hidden style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: "rgba(255,255,255,.07)" }}>
