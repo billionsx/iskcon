@@ -4,6 +4,7 @@ import { api } from "./api";
 import { exportToPdf, downloadServerPdf, fetchServerPdfBytes, savePdfBytes } from "./pdf";
 import { BookPrint, LilaPrint, ProsePrint, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
 import { bookFullTitle, type BookData } from "./books";
+import { PDF_CACHE_REV } from "./pdfRev";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 type CcChapter = { id: string; number: string; title_ru: string; verses: number };
@@ -145,7 +146,7 @@ export async function downloadCcBookPdf(opts: {
   for (let li = 0; li < N && !opts.cancelRef.current; li++) {
     const lila = lilas[li];
     const fname = `${bookTitle}. ${lila.label}.pdf`;
-    const urlPath = `/pdf?kind=lilamerged&work=${encodeURIComponent(work)}&lila=${lila.slug}&label=${encodeURIComponent(lila.label)}&ranges=${encodeURIComponent(lila.ranges.join(","))}`;
+    const urlPath = `/pdf?kind=lilamerged&work=${encodeURIComponent(work)}&lila=${lila.slug}&label=${encodeURIComponent(lila.label)}&ranges=${encodeURIComponent(lila.ranges.join(","))}&v=${PDF_CACHE_REV}`;
     opts.onTitle?.(`${lila.label}\u00A0·\u00A0${li + 1}\u00A0из\u00A0${N}`);
     startCrawl(li);
     const ac = new AbortController();
@@ -340,12 +341,12 @@ export async function downloadBookPdf(opts: {
   try {
     if (book.prose) {
       await downloadServerPdf(
-        `/pdf?kind=book&work=${encodeURIComponent(work)}`, `${full}.pdf`,
+        `/pdf?kind=book&work=${encodeURIComponent(work)}&v=${PDF_CACHE_REV}`, `${full}.pdf`,
         { onStatus: opts.onStatus, onProgress: opts.onProgress, signal: ac.signal, fallback: () => { void exportProseBook(book, opts.onStatus); } },
       );
     } else {
       await downloadServerPdf(
-        `/pdf?kind=book`, `${full}.pdf`,
+        `/pdf?kind=book&work=${encodeURIComponent(work)}&v=${PDF_CACHE_REV}`, `${full}.pdf`,
         { onStatus: opts.onStatus, onProgress: opts.onProgress, signal: ac.signal, fallback: () => { void exportWholeBook(book, opts.onStatus); } },
       );
     }
