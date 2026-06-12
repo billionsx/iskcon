@@ -449,7 +449,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
           {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
           {tab === "dhama" && <ComingSoon src="/vraj.svg" title="Дхама" subtitle="Святые места и храмы Вриндавана. Раздел готовится." />}
-          {tab === "account" && <ComingSoon title="Личный кабинет" subtitle="Профиль, закладки и пожертвования. Раздел готовится." />}
+          {tab === "account" && <ComingSoon title="Личный кабинет" subtitle="Профиль, садхана, закладки и заметки, прогресс чтения и пожертвования. Раздел готовится." />}
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} scrollRef={mainRef} />
