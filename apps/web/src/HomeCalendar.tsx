@@ -101,8 +101,10 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
       <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
         Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Если вашего города нет, выберите ближайший крупный в вашем часовом поясе (для США — города Канады).
       </p>
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
-        style={{ marginTop: 12, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)", outline: "none" }} />
+      <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-bg)", padding: "12px 0 8px" }}>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
+          style={{ width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)", outline: "none" }} />
+      </div>
       <div style={{ marginTop: 12 }}>
         {!locs && <div style={{ height: 120, ...fill, opacity: 0.6 }} />}
         {locs && filtered.length === 0 && (
