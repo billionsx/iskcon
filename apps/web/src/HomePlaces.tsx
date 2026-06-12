@@ -25,6 +25,42 @@ const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 interface Facets { total: number; continents: { id: string; n: number; countries: { id: string; ru: string; n: number }[] }[] }
+interface GeoHit { name: string; lat: number; lng: number; tz: string | null; country: string | null; admin1: string | null }
+
+function haversine(aLat: number, aLng: number, bLat: number, bLng: number): number {
+  const R = 6371, toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(bLat - aLat), dLng = toRad(bLng - aLng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+function kmLabel(km: number): string {
+  return km < 1 ? "рядом" : "~" + Math.round(km).toLocaleString("ru-RU") + " км";
+}
+
+// Полный список мест вида — для подбора ближайших, когда поиск не дал прямых совпадений.
+// Грузим один раз и кэшируем; только проверенные параметры /api/places (kind/limit/offset).
+const allPlacesCache: Record<string, PlaceItem[]> = {};
+const allPlacesPending: Record<string, Promise<PlaceItem[]>> = {};
+async function loadAllPlaces(kind: string): Promise<PlaceItem[]> {
+  if (allPlacesCache[kind]) return allPlacesCache[kind];
+  if (allPlacesPending[kind]) return allPlacesPending[kind];
+  const job = (async () => {
+    const out: PlaceItem[] = [];
+    const LIM = 100;
+    for (let off = 0, page = 0; page < 20; page++, off += LIM) {
+      const r = await fetch(api(`/places?kind=${encodeURIComponent(kind)}&limit=${LIM}&offset=${off}`));
+      if (!r.ok) break;
+      const j = await r.json();
+      const items = (j.items || []) as PlaceItem[];
+      out.push(...items);
+      if (items.length < LIM || (j.total && out.length >= j.total)) break;
+    }
+    allPlacesCache[kind] = out;
+    return out;
+  })();
+  allPlacesPending[kind] = job;
+  try { return await job; } finally { delete allPlacesPending[kind]; }
+}
 
 function mapsUrl(p: PlaceItem): string {
   if (p.lat != null && p.lng != null) return `https://maps.google.com/?q=${p.lat},${p.lng}`;
@@ -80,7 +116,7 @@ function placeCtx(p: PlaceItem) {
 }
 
 /* ── ВКЦ / ВКР: тап открывает полную карточку внутри приложения ── */
-function PlaceCard({ p, onOpen, flash }: { p: PlaceItem; onOpen: (p: PlaceItem) => void; flash?: (m: string) => void }) {
+function PlaceCard({ p, onOpen, flash, dist }: { p: PlaceItem; onOpen: (p: PlaceItem) => void; flash?: (m: string) => void; dist?: number }) {
   const { openCardMenu } = useCardActions();
   return (
     <article role="button" tabIndex={0} onClick={() => onOpen(p)}
@@ -92,7 +128,7 @@ function PlaceCard({ p, onOpen, flash }: { p: PlaceItem; onOpen: (p: PlaceItem) 
           <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
           <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
           <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>
-            {geoLine(p)}
+            {[geoLine(p), dist != null ? kmLabel(dist) : ""].filter(Boolean).join(" · ")}
           </div>
         </div>
         <CardActionBtns favKey={`${p.kind}:${p.id}`} flash={flash} size={32}
@@ -186,6 +222,11 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
   const t2Ref = useRef<HTMLElement | null>(null);
   const [t2H, setT2H] = useState(44);
   const reqSeq = useRef(0);
+  const [geo, setGeo] = useState<GeoHit | null>(null);
+  const [near, setNear] = useState<{ p: PlaceItem; km: number }[] | null>(null);
+  const [nearBusy, setNearBusy] = useState(false);
+  const sRef = useRef<HTMLDivElement | null>(null);
+  const [sH, setSH] = useState(56);
 
   useEffect(() => { setCont("all"); setCtry("all"); setQ(""); }, [kind]);
   // Deep-link /place/<id>: открываем полную карточку, ключ одноразовый.
@@ -225,6 +266,35 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kind, cont, ctry, q]);
 
+  // Умный подбор: текстовый поиск не дал совпадений → геокодим запрос и предлагаем
+  // ближайшие центры/рестораны (по координатам базы, гаверсинус).
+  useEffect(() => {
+    const t = q.trim();
+    const miss = !!items && items.length === 0 && t.length >= 2;
+    if (!miss) { setGeo(null); setNear(null); setNearBusy(false); return; }
+    let alive = true; setGeo(null); setNear(null); setNearBusy(true);
+    (async () => {
+      try {
+        const gr = await fetch("/api/geocode?q=" + encodeURIComponent(t));
+        const gj = await gr.json();
+        const hit: GeoHit | null = gj && gj.result ? gj.result : null;
+        if (!alive) return;
+        setGeo(hit);
+        if (!hit) { setNear([]); setNearBusy(false); return; }
+        const all = await loadAllPlaces(kind);
+        if (!alive) return;
+        const ranked = all
+          .filter((p) => p.lat != null && p.lng != null)
+          .map((p) => ({ p, km: haversine(hit.lat, hit.lng, p.lat as number, p.lng as number) }))
+          .sort((a, b) => a.km - b.km)
+          .slice(0, 8);
+        setNear(ranked); setNearBusy(false);
+      } catch { if (alive) { setNear([]); setNearBusy(false); } }
+    })();
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items, q, kind]);
+
   const loadMore = () => {
     if (!items || loadingMore) return;
     setLoadingMore(true);
@@ -253,35 +323,37 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
       </div>
 
-      {/* поиск */}
-      <div role="search" style={{ position: "relative", marginTop: 14 }}>
-        <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
-          <svg width="17" height="17" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-        </span>
-        <input value={q} onChange={(e) => setQ(e.target.value)}
-          placeholder={kind === "restaurant" ? "Город, страна или название" : "Город, страна или название центра"}
-          inputMode="search" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по каталогу"
-          style={{ width: "100%", boxSizing: "border-box", padding: "12px 38px", borderRadius: 14, border: "none",
-            background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
-        {q && (
-          <button type="button" aria-label="Очистить" onClick={() => setQ("")}
-            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
-              background: "var(--color-glass-regular)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
-            <svg width="12" height="12" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
-          </button>
-        )}
+      {/* поиск — липкий к верху (как в календаре), над фильтрами */}
+      <div ref={(el) => { sRef.current = el; if (el) setSH(el.offsetHeight); }}
+        style={{ position: "sticky", top: stickyTop, zIndex: 18, marginTop: 14, paddingBottom: 10, background: "var(--color-bg)" }}>
+        <div role="search" style={{ position: "relative" }}>
+          <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
+            <svg width="17" height="17" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+          </span>
+          <input value={q} onChange={(e) => setQ(e.target.value)}
+            placeholder={kind === "restaurant" ? "Город, страна или название" : "Город, страна или название центра"}
+            inputMode="search" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по каталогу"
+            style={{ width: "100%", boxSizing: "border-box", padding: "12px 38px", borderRadius: 14, border: "none",
+              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
+          {q && (
+            <button type="button" aria-label="Очистить" onClick={() => setQ("")}
+              style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
+                background: "var(--color-glass-regular)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Tier-2: континенты */}
-      <div style={{ height: 10 }} />
-      <SectionSubTabs variant="chips" ariaLabel="Континенты" tone="light" top={stickyTop} bleed={16}
+      <SectionSubTabs variant="chips" ariaLabel="Континенты" tone="light" top={stickyTop + sH} bleed={16}
         navRef={(el) => { t2Ref.current = el; if (el) setT2H(el.offsetHeight); }}
         items={[{ id: "all", label: "Все" }, ...continents.map((c) => ({ id: c, label: c }))]}
         active={cont} onChange={setCont} />
 
       {/* Tier-3: страны выбранного континента */}
       {cont !== "all" && countries.length > 1 && (
-        <SectionSubTabs variant="chips" ariaLabel="Страны" tone="light" top={stickyTop + t2H} bleed={16}
+        <SectionSubTabs variant="chips" ariaLabel="Страны" tone="light" top={stickyTop + sH + t2H} bleed={16}
           items={[{ id: "all", label: "Все страны" }, ...countries.map((c) => ({ id: c.id, label: c.ru }))]}
           active={ctry} onChange={setCtry} />
       )}
@@ -300,13 +372,30 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
         )}
         {items && (
           <>
-            <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>
-              {total} {kind === "restaurant" ? "ресторанов" : "центров"}
-            </div>
-            {items.length === 0 ? (
-              <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
-                Ничего не найдено{q.trim() ? <> по запросу «{q.trim()}»</> : ""}.
+            {items.length > 0 && (
+              <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>
+                {total} {kind === "restaurant" ? "ресторанов" : "центров"}
               </div>
+            )}
+            {items.length === 0 ? (
+              nearBusy ? (
+                <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+                  Ищем ближайшие {kind === "restaurant" ? "рестораны" : "центры"}…
+                </div>
+              ) : near && near.length > 0 ? (
+                <>
+                  <div style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+                    {geo ? `В «${geo.name}» ${kind === "restaurant" ? "ресторанов" : "центров"} нет — вот ближайшие:` : "Ближайшие:"}
+                  </div>
+                  <div style={{ display: "grid", gap: 12 }}>
+                    {near.map(({ p, km }) => <PlaceCard flash={flash} key={p.id + p.source} p={p} onOpen={setOpen} dist={km} />)}
+                  </div>
+                </>
+              ) : (
+                <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+                  Ничего не найдено{q.trim() ? <> по запросу «{q.trim()}»</> : ""}.
+                </div>
+              )
             ) : (
               <div style={{ display: "grid", gap: 12 }}>
                 {items.map((p) => <PlaceCard flash={flash} key={p.id + p.source} p={p} onOpen={setOpen} />)}
