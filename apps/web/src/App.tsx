@@ -15,6 +15,7 @@ import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { PdfDoc } from "./PdfDoc";
+import { CardActionsProvider } from "./cardActions";
 import { PlayerProvider } from "./player/store";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
@@ -65,20 +66,21 @@ function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
 }
 
 /* ═════════ TopHeader — bag / wordmark / heart ═════════ */
-function TopHeader() {
+function TopHeader({ onHome }: { onHome?: () => void }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, flexShrink: 0, background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div style={{ display: "grid", height: "100%", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 12px" }}>
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           <button aria-label="Корзина" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><BagIcon size={26} /></button>
         </div>
-        <span style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px" }}>
-          <span aria-label="ISKCON ONE LOVE" role="img" style={{
+        <button type="button" aria-label="ISKCON ONE LOVE — на главную" onClick={onHome}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          <span role="img" style={{
             display: "block", width: 132, height: 132 * 73 / 1067, backgroundColor: "var(--color-label)",
             WebkitMaskImage: "url(/iskcon-one-love.svg)", maskImage: "url(/iskcon-one-love.svg)",
             WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center",
           }} />
-        </span>
+        </button>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
           <button aria-label="Избранное" style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><HeartIcon size={24} /></button>
         </div>
@@ -148,7 +150,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
           const on = active === t.id;
           return (
             <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className="gtab-slot"
-              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => { if (on) scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); onChange(t.id); }}>
+              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => { if (on) { scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); window.dispatchEvent(new CustomEvent("tab-reset", { detail: t.id })); } onChange(t.id); }}>
               {t.src ? (
                 <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} />
               ) : (
@@ -427,8 +429,9 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     onOpenBook(work);
   };
   return (
+    <CardActionsProvider onDonate={onDonate} flash={flash}>
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
-      <TopHeader />
+      <TopHeader onHome={() => { onChange("home"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "home" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ padding: "16px 16px 116px" }}>
           {tab === "books" && (
@@ -475,6 +478,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
         </button>
       )}
     </div>
+    </CardActionsProvider>
   );
 }
 
@@ -554,6 +558,16 @@ export default function App() {
       return;
     }
     if (seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
+    if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
+    if (seg0 === "place" || seg0 === "doc") {
+      const pid = clean.split("/")[2] ?? "";
+      setTab("home");
+      try {
+        sessionStorage.setItem("home-tab", seg0 === "place" ? "centres" : "documents");
+        if (pid) sessionStorage.setItem(seg0 === "place" ? "open-place" : "open-doc", pid);
+      } catch { /* noop */ }
+      return;
+    }
     if (seg0 === "kirtan") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
     if (seg0 === "acharya") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa

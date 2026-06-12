@@ -8,6 +8,7 @@
  * Визуальный язык — общий с приложением (SF для UI, Georgia для транслитерации,
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
+import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useState } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
@@ -200,6 +201,7 @@ function GroupSection({ group, onOpen }: { group: { label: string; order: number
 }
 
 export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void }) {
+  const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
 
@@ -246,6 +248,14 @@ export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack:
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
         </button>
+        <span style={{ flex: 1 }} />
+        {data && (
+          <CardActionBtns favKey={`entity:${id}`} onMore={() => openCardMenu({
+            type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
+            url: `https://gaurangers.com/entity/${encodeURIComponent(id)}`,
+            context: `Герой · ${data.name_ru || id} · /entity/${id}`,
+          })} />
+        )}
       </div>
 
       <div style={{ padding: "12px 16px calc(48px + env(safe-area-inset-bottom,0px))" }}>

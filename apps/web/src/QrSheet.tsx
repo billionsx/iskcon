@@ -14,7 +14,8 @@ const GOLDT = "#9c7c15";
 export type QrData =
   | { kind: "book"; bookTitle: string; bookSubtitle?: string; tagline?: string; cover?: string }
   | { kind: "chapter"; bookTitle: string; chapterNumber: string; chapterTitle: string }
-  | { kind: "verse"; bookTitle: string; chapterNumber: string; chapterTitle?: string; verseLabel: string; verseText?: string | null };
+  | { kind: "verse"; bookTitle: string; chapterNumber: string; chapterTitle?: string; verseLabel: string; verseText?: string | null }
+  | { kind: "card"; title: string; subtitle?: string };
 
 /** ISKCON emblem, graphite on white, painted via CSS mask (any solid colour). */
 function IskconMark({ size = 40 }: { size?: number }) {
@@ -122,6 +123,18 @@ function Ornament() {
 }
 
 function Identity({ data }: { data: QrData }) {
+  if (data.kind === "card") {
+    return (
+      <>
+        <h1 style={{ margin: "20px 0 0", fontSize: 22, lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
+          {data.title}
+        </h1>
+        {data.subtitle && <div style={{ marginTop: 6, fontSize: 14, fontWeight: 600, color: INK2 }}>{data.subtitle}</div>}
+        <Ornament />
+      </>
+    );
+  }
+
   if (data.kind === "book") {
     return (
       <>

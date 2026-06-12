@@ -6,6 +6,7 @@
  *   · Ссылки ИСККОН — официальные ресурсы общества по группам.
  * Все ссылки — на официальные источники (gbc.iskcon.org, iskcon.org, vedabase…).
  */
+import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useMemo, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
@@ -37,7 +38,19 @@ function FactRow({ k, v, last }: { k: string; v: string; last?: boolean }) {
 }
 
 /* ── ПКД — полная карточка документа (читается в приложении) ── */
-function DocSheet({ d, onClose }: { d: IskconDoc | null; onClose: () => void }) {
+
+/* ── контекст действий документа ── */
+function docCtx(d: IskconDoc) {
+  return {
+    type: "doc" as const, id: d.id, title: d.title,
+    subtitle: `${DOC_TYPE_LABEL[d.type]} · ${d.year}`,
+    url: `https://gaurangers.com/doc/${encodeURIComponent(d.id)}`,
+    context: `Документ · ${d.title} (${d.year}) · /doc/${d.id}`,
+  };
+}
+
+function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => void; flash?: (m: string) => void }) {
+  const { openCardMenu } = useCardActions();
   return (
     <HomeSheet open={!!d} label={d ? d.title : "Документ"} onClose={onClose}>
       {d && (
@@ -47,7 +60,10 @@ function DocSheet({ d, onClose }: { d: IskconDoc | null; onClose: () => void }) 
             <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
             <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
           </div>
-          <h3 style={{ margin: "7px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <h3 style={{ margin: "7px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
+            <CardActionBtns favKey={`doc:${d.id}`} flash={flash} onMore={() => openCardMenu(docCtx(d))} />
+          </div>
           <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{d.issuer}</div>
 
           <div style={{ marginTop: 16 }}>
@@ -74,7 +90,8 @@ function DocSheet({ d, onClose }: { d: IskconDoc | null; onClose: () => void }) 
   );
 }
 
-function DocCard({ d, onOpen }: { d: IskconDoc; onOpen: () => void }) {
+function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash?: (m: string) => void }) {
+  const { openCardMenu } = useCardActions();
   return (
     <article role="button" tabIndex={0} onClick={onOpen}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
@@ -86,7 +103,7 @@ function DocCard({ d, onOpen }: { d: IskconDoc; onOpen: () => void }) {
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <h3 style={{ flex: 1, margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 17.5, fontWeight: 600, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
-        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ marginTop: 10, flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <CardActionBtns favKey={`doc:${d.id}`} flash={flash} size={32} onMore={() => openCardMenu(docCtx(d))} />
       </div>
       <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.issuer}</div>
       <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label-2)" }}>{d.summary}</p>
@@ -97,7 +114,7 @@ function DocCard({ d, onOpen }: { d: IskconDoc; onOpen: () => void }) {
   );
 }
 
-export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
+export function HomeDocuments({ stickyTop, flash }: { stickyTop: number; flash?: (m: string) => void }) {
   const [q, setQ] = useState("");
   const [type, setType] = useState<"all" | DocType>("all");
   const [docs, setDocs] = useState<IskconDoc[] | null>(null);
@@ -112,6 +129,13 @@ export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
       .catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };
   }, []);
+  // Deep-link /doc/<id>
+  useEffect(() => {
+    if (!docs) return;
+    let did = ""; try { did = sessionStorage.getItem("open-doc") || ""; if (did) sessionStorage.removeItem("open-doc"); } catch { /* noop */ }
+    if (!did) return;
+    const d = docs.find((x) => x.id === did); if (d) setOpen(d);
+  }, [docs]);
 
   const trimmed = q.trim().toLowerCase();
   const filtered = useMemo(() => {
@@ -164,13 +188,13 @@ export function HomeDocuments({ stickyTop }: { stickyTop: number }) {
             {filtered.length === 0 ? (
               <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>Ничего не найдено.</div>
             ) : (
-              <div style={{ display: "grid", gap: 12 }}>{filtered.map((d) => <DocCard key={d.id} d={d} onOpen={() => setOpen(d)} />)}</div>
+              <div style={{ display: "grid", gap: 12 }}>{filtered.map((d) => <DocCard key={d.id} d={d} flash={flash} onOpen={() => setOpen(d)} />)}</div>
             )}
           </>
         )}
       </div>
 
-      <DocSheet d={open} onClose={() => setOpen(null)} />
+      <DocSheet d={open} flash={flash} onClose={() => setOpen(null)} />
     </div>
   );
 }

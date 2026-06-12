@@ -10,7 +10,8 @@ type Loaded =
   | { kind: "prosebook"; chapters: ChapterRow[]; parasByCh: Record<string, ProsePara[]> }
   | { kind: "lila"; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[]; lilaLabel?: string }
-  | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string; lila?: string };
+  | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string; lila?: string }
+  | { kind: "card"; header: string; title: string; subtitle?: string; rows: Array<[string, string]>; body?: string[]; footer?: string };
 
 /** Сообщаем headless-браузеру (page.waitForFunction), что контент готов к печати. */
 function markReady() {
@@ -36,6 +37,10 @@ export function PdfDoc() {
   const n = params.get("n") || "";
   const ref = params.get("ref") || "";
   const bare = params.get("bare") === "1";
+  const ctype = params.get("type") || "";
+  const cid = params.get("id") || "";
+  const album = params.get("album") || "";
+  const track = params.get("track") || "";
   const [data, setData] = useState<Loaded | null>(null);
   const [err, setErr] = useState(false);
 
@@ -123,6 +128,9 @@ export function PdfDoc() {
             const chapterTitle = ((chRes.chapters ?? []) as ChapterRow[]).find((c) => String(c.number) === chapterNo)?.title_ru ?? "";
             if (live) setData({ kind: "verse", verse: vRes as ChapterVerse, chapterNo, chapterTitle });
           }
+        } else if (kind === "card") {
+          const card = await loadCard(ctype, cid, album, track);
+          if (live) { if (card) setData(card); else setErr(true); }
         } else if (live) {
           setErr(true);
         }
@@ -131,7 +139,7 @@ export function PdfDoc() {
       }
     })();
     return () => { live = false; };
-  }, [kind, n, ref, work, lila, from, to, div]);
+  }, [kind, n, ref, work, lila, from, to, div, ctype, cid, album, track]);
 
   useEffect(() => {
     if (data) {
@@ -153,6 +161,7 @@ export function PdfDoc() {
         if (vnum) parts.push(`Текст ${vnum}`);
         h = parts.join(" · ");
       }
+      if (data.kind === "card") h = data.header;
       (window as unknown as { __pdfHeader?: string }).__pdfHeader = h;
     }
     if (data || err) markReady();
@@ -168,6 +177,7 @@ export function PdfDoc() {
       {data.kind === "lila" && <LilaPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc} lilaLabel={data.lilaLabel} range={data.range} chapters={data.chapters} versesByCh={data.versesByCh} bare={bare} />}
       {data.kind === "chapter" && data.chapter && <ChapterPrint chapter={data.chapter} verses={data.verses} />}
       {data.kind === "chapter" && !data.chapter && <div style={{ padding: 24 }}>Глава не найдена.</div>}
+      {data.kind === "card" && <CardPrint d={data} />}
       {data.kind === "verse" && (
         <>
           <div style={{ margin: "0 0 16px", paddingBottom: 10, borderBottom: "0.75pt solid rgba(0,0,0,0.18)" }}>
@@ -176,6 +186,120 @@ export function PdfDoc() {
           <VerseBody v={data.verse} />
         </>
       )}
+    </div>
+  );
+}
+
+
+/* ── Печатная карточка справочника (место/личность/документ/бхаджан/киртан) ── */
+type CardLoaded = Extract<Loaded, { kind: "card" }>;
+
+async function loadCard(ctype: string, cid: string, album: string, track: string): Promise<CardLoaded | null> {
+  try {
+    if (ctype === "place" || ctype === "restaurant") {
+      const p = await (await fetch(`/api/places/${encodeURIComponent(cid)}`)).json() as Record<string, string | null>;
+      if (!p || !p.nameRu) return null;
+      const rows: Array<[string, string]> = [];
+      if (p.category) rows.push(["Тип", String(p.category)]);
+      if (p.addressRu || p.address) rows.push(["Адрес", String(p.addressRu || p.address)]);
+      if (p.address && p.addressRu && p.address !== p.addressRu) rows.push(["Адрес (ориг.)", String(p.address)]);
+      const geo = [p.cityRu || p.city, p.stateRu || p.state, p.countryRu || p.country].filter(Boolean).join(", ");
+      if (geo) rows.push(["Расположение", geo]);
+      if (p.phone) rows.push(["Телефон", String(p.phone)]);
+      if (p.email) rows.push(["E-mail", String(p.email)]);
+      if (p.website) rows.push(["Сайт", String(p.website)]);
+      return { kind: "card", header: ctype === "restaurant" ? "Вегетарианские рестораны ИСККОН" : "Центры и храмы ИСККОН",
+        title: String(p.nameRu), subtitle: p.name && p.name !== p.nameRu ? String(p.name) : undefined, rows,
+        footer: p.source ? `Источник: ${p.source}` : undefined };
+    }
+    if (ctype === "entity") {
+      const e = await (await fetch(`/api/entities/${encodeURIComponent(cid)}`)).json() as {
+        name_ru?: string; name_en?: string; name_iast?: string; note?: string | null; tattva?: string | null;
+        categories?: string[]; profile?: { summary?: string | null; biography?: string | null; contribution?: string | null } | null;
+      };
+      if (!e || !e.name_ru) return null;
+      const rows: Array<[string, string]> = [];
+      if (e.name_iast) rows.push(["IAST", e.name_iast]);
+      if (e.name_en) rows.push(["EN", e.name_en]);
+      if (e.tattva) rows.push(["Таттва", e.tattva]);
+      if (e.categories?.length) rows.push(["Классификация", e.categories.join(", ")]);
+      const body: string[] = [];
+      const pr = e.profile;
+      const clean = (t?: string | null) => (t && !/^_/.test(t.trim()) ? t.trim() : "");
+      if (clean(pr?.summary)) body.push(clean(pr?.summary));
+      if (clean(pr?.biography)) body.push("Биография\n" + clean(pr?.biography));
+      if (clean(pr?.contribution)) body.push("Вклад и учение\n" + clean(pr?.contribution));
+      return { kind: "card", header: "Герои · ISKCON ONE LOVE", title: e.name_ru, subtitle: e.note || undefined, rows, body };
+    }
+    if (ctype === "doc") {
+      const j = await (await fetch("/api/documents")).json() as { documents?: Array<{ id: string; type: string; year: string; title: string; issuer: string; summary: string; body?: string[]; facts?: Array<{ k: string; v: string }>; url?: string }> };
+      const d = (j.documents ?? []).find((x) => x.id === cid);
+      if (!d) return null;
+      const rows: Array<[string, string]> = [["Год", d.year], ["Орган", d.issuer]];
+      for (const f of d.facts ?? []) rows.push([f.k, f.v]);
+      if (d.url) rows.push(["Первоисточник", d.url]);
+      return { kind: "card", header: "Официальные документы ИСККОН", title: d.title, subtitle: d.summary, rows, body: d.body ?? [] };
+    }
+    if (ctype === "bhajan") {
+      const b = await (await fetch(api(`/bhajans/detail?slug=${encodeURIComponent(cid)}`))).json() as {
+        name?: string; author?: string | null; meaning?: string | null; verses?: Array<{ lines?: string[]; translation?: string | null }>;
+      };
+      if (!b || !b.name) return null;
+      const rows: Array<[string, string]> = [];
+      if (b.author) rows.push(["Автор", b.author]);
+      const body: string[] = [];
+      for (const v of (b.verses ?? []).slice(0, 24)) {
+        const t = (v.lines ?? []).join("\n");
+        if (t) body.push(t + (v.translation ? `\n— ${v.translation}` : ""));
+      }
+      return { kind: "card", header: "Бхаджаны · ISKCON ONE LOVE", title: b.name, subtitle: b.meaning || undefined, rows, body };
+    }
+    if (ctype === "kirtan-album" || ctype === "kirtan-track") {
+      const mod = await import("./kirtans");
+      const artists = (mod as unknown as { KIRTAN_ARTISTS: Array<{ slug: string; name: string; albums: Array<{ id: string; title: string; year?: string; source?: string; tracks?: Array<{ title: string; duration?: string }> }> }> }).KIRTAN_ARTISTS;
+      for (const a of artists) for (const al of a.albums) {
+        if (al.id !== (album || cid)) continue;
+        const rows: Array<[string, string]> = [["Исполнитель", a.name]];
+        if (al.year) rows.push(["Год", al.year]);
+        rows.push(["Источник", "Internet Archive"]);
+        if (ctype === "kirtan-track") {
+          const t = (al.tracks ?? []).find((x) => x.title === track) || null;
+          return { kind: "card", header: "Киртаны · ISKCON ONE LOVE", title: track || cid,
+            subtitle: `Альбом «${al.title}»`, rows: t?.duration ? [...rows, ["Длительность", t.duration]] : rows };
+        }
+        const body = (al.tracks ?? []).map((t, i) => `${i + 1}. ${t.title}${t.duration ? ` · ${t.duration}` : ""}`);
+        return { kind: "card", header: "Киртаны · ISKCON ONE LOVE", title: al.title, subtitle: a.name, rows, body: [body.join("\n")] };
+      }
+      return null;
+    }
+  } catch { return null; }
+  return null;
+}
+
+function CardPrint({ d }: { d: CardLoaded }) {
+  return (
+    <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      <div style={{ fontSize: "10pt", letterSpacing: "2px", textTransform: "uppercase", color: "#9a7a14", fontFamily: "Georgia, serif" }}>{d.header}</div>
+      <h1 style={{ margin: "10pt 0 0", fontSize: "22pt", lineHeight: 1.16, letterSpacing: "-0.01em", fontWeight: 800 }}>{d.title}</h1>
+      {d.subtitle && <div style={{ marginTop: "5pt", fontSize: "12.5pt", color: "#55565c" }}>{d.subtitle}</div>}
+      {d.rows.length > 0 && (
+        <table style={{ marginTop: "14pt", borderCollapse: "collapse", width: "100%", fontSize: "11pt" }}>
+          <tbody>
+            {d.rows.map(([k, v]) => (
+              <tr key={k + v} style={{ borderTop: "0.75pt solid rgba(0,0,0,0.14)" }}>
+                <td style={{ padding: "6pt 14pt 6pt 0", color: "#70727b", whiteSpace: "nowrap", verticalAlign: "top", width: "1%" }}>{k}</td>
+                <td style={{ padding: "6pt 0", wordBreak: "break-word" }}>{v}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {d.body && d.body.length > 0 && (
+        <div style={{ marginTop: "16pt", fontSize: "11.5pt", lineHeight: 1.62 }}>
+          {d.body.map((b, i) => <p key={i} style={{ margin: "0 0 10pt", whiteSpace: "pre-wrap" }}>{b}</p>)}
+        </div>
+      )}
+      {d.footer && <div style={{ marginTop: "16pt", fontSize: "9.5pt", color: "#8a8a8e" }}>{d.footer}</div>}
     </div>
   );
 }

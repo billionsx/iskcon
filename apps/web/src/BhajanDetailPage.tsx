@@ -9,6 +9,7 @@
  * Каждый стих — отдельный блок: транслитерация (Georgia курсив) → перевод (SF) →
  * подпись (автор · произведение · стих N).
  */
+import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
@@ -73,6 +74,7 @@ function Layer({ label, text, scripture }: { label: string; text: string; script
 }
 
 export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBack: () => void }) {
+  const { openCardMenu } = useCardActions();
   const [data, setData] = useState<BhajanDetail | null>(null);
   const [err, setErr] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -105,6 +107,13 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
       <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", gap: 2, padding: "0 6px", transition: "background var(--duration-base) var(--ease-standard), border-color var(--duration-base)", background: scrolled ? "var(--color-glass-nav)" : "transparent", backdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", WebkitBackdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", borderBottom: scrolled ? "0.5px solid var(--color-glass-stroke)" : "0.5px solid transparent" }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", background: scrolled ? "transparent" : "var(--color-glass-regular)", color: scrolled ? "var(--color-label)" : "var(--color-label)", backdropFilter: scrolled ? "none" : "blur(12px)", WebkitBackdropFilter: scrolled ? "none" : "blur(12px)", transition: "background var(--duration-base)" }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: scrolled ? 1 : 0, transition: "opacity var(--duration-base)" }}>{data?.name ?? ""}</div>
+        {data && (
+          <CardActionBtns favKey={`bhajan:${slug}`} size={36} onMore={() => openCardMenu({
+            type: "bhajan", id: slug, title: data.name, subtitle: data.author || undefined,
+            url: `https://gaurangers.com/bhajan/${encodeURIComponent(slug)}`,
+            context: `Бхаджан · ${data.name} · /bhajan/${slug}`,
+          })} />
+        )}
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
