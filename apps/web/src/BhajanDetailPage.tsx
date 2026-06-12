@@ -1,8 +1,8 @@
 /**
  * BhajanDetailPage — ПКБ (Подробная Карточка Бхаджана).
  * Зеркало BookDetailPage: scroll-aware шапка (только «Назад» + титул при скролле,
- * все действия живут в карточке-герое ниже) → BhajanHeroCard (4/5, тот же
- * карточный модуль, что и на витрине) → читаемая колонка стихов.
+ * все действия живут в карточке ниже) → BhajanCard (компактная карточка-шапка,
+ * тот же модуль, что и на витрине) → читаемая колонка стихов.
  *
  * Стандарт: Apple HIG / iOS 26 — интерфейс шрифтом SF (var(--font-text/display)),
  * священный текст (транслитерация) — Georgia (var(--font-scripture)). Размеры/цвета/
@@ -12,17 +12,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
-import { BhajanHeroCard } from "./BhajanHeroCard";
+import { BhajanCard } from "./BhajanCard";
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; }
 const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
-
-/** Логотип-маска в currentColor — подхватывает цвет (белый на герое). */
-function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
-  return <span role="img" aria-label={label} style={{ display: "block", height, width: height, backgroundColor: "currentColor", WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center" }} />;
-}
 
 interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; }
 interface BhajanDetail {
@@ -120,11 +115,10 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
 
         {data && (
           <>
-            {/* HERO — тот же карточный модуль, что и на витрине (ВКБ) */}
-            <div style={{ padding: "2px 16px 6px" }}>
-              <BhajanHeroCard
-                bhajan={{ slug, name: data.name, author: data.author, heroImage: data.hero_image, category: data.category, sourceText: data.source_text, section: data.section }}
-                topLeft={<LogoMark src="/iskcon-sign.svg" label="ISKCON" height={26} />}
+            {/* HERO — компактная карточка (тот же модуль, что на витрине, ВКБ) */}
+            <div style={{ padding: "10px 16px 4px" }}>
+              <BhajanCard
+                bhajan={{ slug, name: data.name, author: data.author, category: data.category, sourceText: data.source_text, section: data.section }}
                 flash={flash}
               />
             </div>
