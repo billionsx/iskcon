@@ -18,8 +18,9 @@ const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 interface CalEvent { date: string; title: string; orig: string; type: "ekadasi" | "parana" | "festival" | "appearance" | "disappearance" | "other"; entityId?: string }
-interface LocCity { ru: string; key: string }
+interface LocCity { ru: string; key: string; lat?: number | null; lng?: number | null; tz?: string | null }
 interface LocCountry { country: string; cities: LocCity[] }
+interface GeoHit { name: string; lat: number; lng: number; tz: string | null; country: string | null; admin1: string | null }
 
 const DEFAULT_LOC: LocCity = { ru: "Маяпур", key: "Mayapur [India]" };
 const LS_KEY = "cal-loc";
@@ -60,6 +61,17 @@ async function loadLocs(): Promise<LocCountry[]> {
   return locsCache;
 }
 
+/* Гаверсинус (км) — подбор ближайшего города, если введённого нет в базе. */
+function haversine(aLat: number, aLng: number, bLat: number, bLng: number): number {
+  const R = 6371, toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(bLat - aLat), dLng = toRad(bLng - aLng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+function fmtKm(km: number): string {
+  return km < 1 ? "рядом" : "~" + Math.round(km).toLocaleString("ru-RU") + " км";
+}
+
 const MONTH_RU = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
 const MONTH_H = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
 const WD_RU = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
@@ -85,7 +97,10 @@ const TYPE_META: Record<CalEvent["type"], { label: string; color: string }> = {
 function LocationSheet({ open, current, onPick, onClose }: { open: boolean; current: LocCity; onPick: (c: LocCity) => void; onClose: () => void }) {
   const [locs, setLocs] = useState<LocCountry[] | null>(null);
   const [q, setQ] = useState("");
+  const [geo, setGeo] = useState<GeoHit | null>(null);
+  const [geoBusy, setGeoBusy] = useState(false);
   useEffect(() => { if (open) loadLocs().then(setLocs).catch(() => setLocs([])); }, [open]);
+  useEffect(() => { if (!open) { setQ(""); setGeo(null); setGeoBusy(false); } }, [open]);
   const filtered = useMemo(() => {
     if (!locs) return [];
     const t = q.trim().toLowerCase();
@@ -94,12 +109,38 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
       .map((c) => ({ country: c.country, cities: c.cities.filter((x) => x.ru.toLowerCase().includes(t) || x.key.toLowerCase().includes(t) || c.country.toLowerCase().includes(t)) }))
       .filter((c) => c.cities.length > 0);
   }, [locs, q]);
+  const hasDirect = filtered.length > 0;
+  const allCities = useMemo(() => (locs || []).flatMap((c) => c.cities.map((x) => ({ ...x, country: c.country }))), [locs]);
+  // Умный подбор: введён город не из базы → геокодим его (/api/geocode) и предлагаем ближайшие
+  // города из базы — у них тот же восход, значит тот же вайшнавский календарь.
+  useEffect(() => {
+    const t = q.trim();
+    if (!locs || hasDirect || t.length < 2) { setGeo(null); setGeoBusy(false); return; }
+    let alive = true; setGeoBusy(true);
+    const id = setTimeout(async () => {
+      try {
+        const r = await fetch("/api/geocode?q=" + encodeURIComponent(t));
+        const j = await r.json();
+        if (alive) setGeo(j && j.result ? (j.result as GeoHit) : null);
+      } catch { if (alive) setGeo(null); }
+      finally { if (alive) setGeoBusy(false); }
+    }, 350);
+    return () => { alive = false; clearTimeout(id); };
+  }, [q, hasDirect, locs]);
+  const nearby = useMemo(() => {
+    if (!geo) return [] as { c: LocCity & { country: string }; km: number }[];
+    return allCities
+      .filter((c) => typeof c.lat === "number" && typeof c.lng === "number")
+      .map((c) => ({ c, km: haversine(geo.lat, geo.lng, c.lat as number, c.lng as number) }))
+      .sort((a, b) => a.km - b.km)
+      .slice(0, 5);
+  }, [geo, allCities]);
   return (
     <HomeSheet open={open} label="Выбор города" onClose={onClose}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
       <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите город</h2>
       <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-        Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Если вашего города нет, выберите ближайший крупный в вашем часовом поясе (для США — города Канады).
+        Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Если вашего города нет, начните вводить — предложим ближайшие города с тем же календарём.
       </p>
       <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-bg)", padding: "12px 0 8px" }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
@@ -107,7 +148,29 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
       </div>
       <div style={{ marginTop: 12 }}>
         {!locs && <div style={{ height: 120, ...fill, opacity: 0.6 }} />}
-        {locs && filtered.length === 0 && (
+        {locs && !hasDirect && geoBusy && (
+          <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Ищем ближайшие города…</div>
+        )}
+        {locs && !hasDirect && !geoBusy && nearby.length > 0 && (
+          <section style={{ marginTop: 4 }}>
+            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>
+              {geo ? `«${geo.name}» нет в базе. Ближайшие города с тем же календарём:` : "Ближайшие города:"}
+            </div>
+            <div style={{ overflow: "hidden", ...fill }}>
+              {nearby.map(({ c, km }, i) => {
+                const on = c.key === current.key;
+                return (
+                  <button key={c.key} type="button" onClick={() => { onPick({ ru: c.ru, key: c.key, lat: c.lat, lng: c.lng, tz: c.tz }); onClose(); }}
+                    style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "12px 14px", textAlign: "left", background: "none", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                    <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: on ? 700 : 500, color: on ? GOLD : "var(--color-label)" }}>{c.ru}</span>
+                    <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{fmtKm(km)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+        {locs && !hasDirect && !geoBusy && nearby.length === 0 && (
           <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Город не найден. Попробуйте ближайший крупный город.</div>
         )}
         {filtered.map((c) => (

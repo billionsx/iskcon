@@ -1,17 +1,23 @@
 {
  "source": "vaisnavacalendar.info (GCal 11)",
- "note": "Каждый ключ подтверждён живой пробой ICS-2026. Городов: 91.",
+ "note": "Каждый ключ подтверждён живой пробой ICS-2026. Городов: 91. Координаты+таймзона — для умного подбора ближайшего города (тот же календарь).",
  "countries": [
   {
    "country": "Святые дхамы (Индия)",
    "cities": [
     {
      "ru": "Маяпур",
-     "key": "Mayapur [India]"
+     "key": "Mayapur [India]",
+     "lat": 23.4248,
+     "lng": 88.3882,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Вриндаван",
-     "key": "Vrindavan [India]"
+     "key": "Vrindavan [India]",
+     "lat": 27.565,
+     "lng": 77.6593,
+     "tz": "Asia/Kolkata"
     }
    ]
   },
@@ -20,39 +26,66 @@
    "cities": [
     {
      "ru": "Бангалор",
-     "key": "Bangalore [India]"
+     "key": "Bangalore [India]",
+     "lat": 12.9719,
+     "lng": 77.5937,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Дели",
-     "key": "Delhi [India]"
+     "key": "Delhi [India]",
+     "lat": 28.6519,
+     "lng": 77.2315,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Калькутта",
-     "key": "Calcutta [India]"
+     "key": "Calcutta [India]",
+     "lat": 22.5626,
+     "lng": 88.363,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Лакхнау",
-     "key": "Lucknow [India]"
+     "key": "Lucknow [India]",
+     "lat": 26.8393,
+     "lng": 80.9231,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Мумбаи",
-     "key": "Bombay [India]"
+     "key": "Bombay [India]",
+     "lat": 19.0728,
+     "lng": 72.8826,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Нагпур",
-     "key": "Nagpur [India]"
+     "key": "Nagpur [India]",
+     "lat": 21.1463,
+     "lng": 79.0849,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Пуна",
-     "key": "Pune [India]"
+     "key": "Pune [India]",
+     "lat": 18.5196,
+     "lng": 73.8554,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Хайдарабад",
-     "key": "Hyderabad [India]"
+     "key": "Hyderabad [India]",
+     "lat": 17.384,
+     "lng": 78.4564,
+     "tz": "Asia/Kolkata"
     },
     {
      "ru": "Ченнай",
-     "key": "Madras [India]"
+     "key": "Madras [India]",
+     "lat": 13.0878,
+     "lng": 80.2785,
+     "tz": "Asia/Kolkata"
     }
    ]
   },
@@ -61,23 +94,38 @@
    "cities": [
     {
      "ru": "Владивосток",
-     "key": "Vladivostok [Russia]"
+     "key": "Vladivostok [Russia]",
+     "lat": 43.1056,
+     "lng": 131.8735,
+     "tz": "Asia/Vladivostok"
     },
     {
      "ru": "Москва",
-     "key": "Moskva [Russia]"
+     "key": "Moskva [Russia]",
+     "lat": 55.7522,
+     "lng": 37.6156,
+     "tz": "Europe/Moscow"
     },
     {
      "ru": "Новосибирск",
-     "key": "Novosibirsk [Russia]"
+     "key": "Novosibirsk [Russia]",
+     "lat": 55.0344,
+     "lng": 82.9434,
+     "tz": "Asia/Novosibirsk"
     },
     {
      "ru": "Пермь",
-     "key": "Perm [Russia]"
+     "key": "Perm [Russia]",
+     "lat": 58.0105,
+     "lng": 56.2502,
+     "tz": "Asia/Yekaterinburg"
     },
     {
      "ru": "Санкт-Петербург",
-     "key": "Saint Petersburg [Russia]"
+     "key": "Saint Petersburg [Russia]",
+     "lat": 59.9386,
+     "lng": 30.3141,
+     "tz": "Europe/Moscow"
     }
    ]
   },
@@ -86,7 +134,10 @@
    "cities": [
     {
      "ru": "Киев",
-     "key": "Kiev [Ukraine]"
+     "key": "Kiev [Ukraine]",
+     "lat": 50.4547,
+     "lng": 30.5238,
+     "tz": "Europe/Kyiv"
     }
    ]
   },
@@ -95,7 +146,10 @@
    "cities": [
     {
      "ru": "Минск",
-     "key": "Minsk [Belarus]"
+     "key": "Minsk [Belarus]",
+     "lat": 53.9002,
+     "lng": 27.5665,
+     "tz": "Europe/Minsk"
     }
    ]
   },
@@ -104,23 +158,38 @@
    "cities": [
     {
      "ru": "Аделаида",
-     "key": "Adelaide [Australia]"
+     "key": "Adelaide [Australia]",
+     "lat": -34.9287,
+     "lng": 138.5986,
+     "tz": "Australia/Adelaide"
     },
     {
      "ru": "Брисбен",
-     "key": "Brisbane [Australia]"
+     "key": "Brisbane [Australia]",
+     "lat": -27.4679,
+     "lng": 153.0281,
+     "tz": "Australia/Brisbane"
     },
     {
      "ru": "Мельбурн",
-     "key": "Melbourne [Australia]"
+     "key": "Melbourne [Australia]",
+     "lat": -37.814,
+     "lng": 144.9633,
+     "tz": "Australia/Melbourne"
     },
     {
      "ru": "Перт",
-     "key": "Perth [Australia]"
+     "key": "Perth [Australia]",
+     "lat": -31.9522,
+     "lng": 115.8614,
+     "tz": "Australia/Perth"
     },
     {
      "ru": "Сидней",
-     "key": "Sydney [Australia]"
+     "key": "Sydney [Australia]",
+     "lat": -33.8678,
+     "lng": 151.2073,
+     "tz": "Australia/Sydney"
     }
    ]
   },
@@ -129,7 +198,10 @@
    "cities": [
     {
      "ru": "Вена",
-     "key": "Vienna [Austria]"
+     "key": "Vienna [Austria]",
+     "lat": 48.2085,
+     "lng": 16.3721,
+     "tz": "Europe/Vienna"
     }
    ]
   },
@@ -138,7 +210,10 @@
    "cities": [
     {
      "ru": "Буэнос-Айрес",
-     "key": "Buenos Aires [Argentina]"
+     "key": "Buenos Aires [Argentina]",
+     "lat": -34.6131,
+     "lng": -58.3772,
+     "tz": "America/Argentina/Buenos_Aires"
     }
    ]
   },
@@ -147,7 +222,10 @@
    "cities": [
     {
      "ru": "Ереван",
-     "key": "Yerevan [Armenia]"
+     "key": "Yerevan [Armenia]",
+     "lat": 40.1776,
+     "lng": 44.5126,
+     "tz": "Asia/Yerevan"
     }
    ]
   },
@@ -156,7 +234,10 @@
    "cities": [
     {
      "ru": "Дакка",
-     "key": "Dhaka [Bangladesh]"
+     "key": "Dhaka [Bangladesh]",
+     "lat": 23.7104,
+     "lng": 90.4074,
+     "tz": "Asia/Dhaka"
     }
    ]
   },
@@ -165,7 +246,10 @@
    "cities": [
     {
      "ru": "Брюссель",
-     "key": "Brussels [Belgium]"
+     "key": "Brussels [Belgium]",
+     "lat": 50.8505,
+     "lng": 4.3488,
+     "tz": "Europe/Brussels"
     }
    ]
   },
@@ -174,7 +258,10 @@
    "cities": [
     {
      "ru": "София",
-     "key": "Sofia [Bulgaria]"
+     "key": "Sofia [Bulgaria]",
+     "lat": 42.6975,
+     "lng": 23.3241,
+     "tz": "Europe/Sofia"
     }
    ]
   },
@@ -183,7 +270,10 @@
    "cities": [
     {
      "ru": "Ла-Пас",
-     "key": "La Paz [Bolivia]"
+     "key": "La Paz [Bolivia]",
+     "lat": -16.5,
+     "lng": -68.15,
+     "tz": "America/La_Paz"
     }
    ]
   },
@@ -192,11 +282,17 @@
    "cities": [
     {
      "ru": "Рио-де-Жанейро",
-     "key": "Rio de Janeiro [Brazil]"
+     "key": "Rio de Janeiro [Brazil]",
+     "lat": -22.9064,
+     "lng": -43.1822,
+     "tz": "America/Sao_Paulo"
     },
     {
      "ru": "Сан-Паулу",
-     "key": "Sao Paulo [Brazil]"
+     "key": "Sao Paulo [Brazil]",
+     "lat": -23.5475,
+     "lng": -46.6361,
+     "tz": "America/Sao_Paulo"
     }
    ]
   },
@@ -205,7 +301,10 @@
    "cities": [
     {
      "ru": "Лондон",
-     "key": "London [United Kingdom]"
+     "key": "London [United Kingdom]",
+     "lat": 51.5085,
+     "lng": -0.1257,
+     "tz": "Europe/London"
     }
    ]
   },
@@ -214,7 +313,10 @@
    "cities": [
     {
      "ru": "Будапешт",
-     "key": "Budapest [Hungary]"
+     "key": "Budapest [Hungary]",
+     "lat": 47.4984,
+     "lng": 19.0404,
+     "tz": "Europe/Budapest"
     }
    ]
   },
@@ -223,7 +325,10 @@
    "cities": [
     {
      "ru": "Каракас",
-     "key": "Caracas [Venezuela]"
+     "key": "Caracas [Venezuela]",
+     "lat": 10.488,
+     "lng": -66.8792,
+     "tz": "America/Caracas"
     }
    ]
   },
@@ -232,7 +337,10 @@
    "cities": [
     {
      "ru": "Аккра",
-     "key": "Accra [Ghana]"
+     "key": "Accra [Ghana]",
+     "lat": 5.556,
+     "lng": -0.1969,
+     "tz": "Africa/Accra"
     }
    ]
   },
@@ -241,11 +349,17 @@
    "cities": [
     {
      "ru": "Берлин",
-     "key": "Berlin [Germany]"
+     "key": "Berlin [Germany]",
+     "lat": 52.5244,
+     "lng": 13.4105,
+     "tz": "Europe/Berlin"
     },
     {
      "ru": "Мюнхен",
-     "key": "Munich [Germany]"
+     "key": "Munich [Germany]",
+     "lat": 48.1374,
+     "lng": 11.5755,
+     "tz": "Europe/Berlin"
     }
    ]
   },
@@ -254,7 +368,10 @@
    "cities": [
     {
      "ru": "Гонконг",
-     "key": "Hong Kong [Hong Kong]"
+     "key": "Hong Kong [Hong Kong]",
+     "lat": 22.2783,
+     "lng": 114.1747,
+     "tz": "Asia/Hong_Kong"
     }
    ]
   },
@@ -263,7 +380,10 @@
    "cities": [
     {
      "ru": "Афины",
-     "key": "Athens [Greece]"
+     "key": "Athens [Greece]",
+     "lat": 37.9838,
+     "lng": 23.7278,
+     "tz": "Europe/Athens"
     }
    ]
   },
@@ -272,7 +392,10 @@
    "cities": [
     {
      "ru": "Тбилиси",
-     "key": "Tbilisi [Georgia]"
+     "key": "Tbilisi [Georgia]",
+     "lat": 41.6914,
+     "lng": 44.8341,
+     "tz": "Asia/Tbilisi"
     }
    ]
   },
@@ -281,7 +404,10 @@
    "cities": [
     {
      "ru": "Копенгаген",
-     "key": "Copenhagen [Denmark]"
+     "key": "Copenhagen [Denmark]",
+     "lat": 55.6759,
+     "lng": 12.5655,
+     "tz": "Europe/Copenhagen"
     }
    ]
   },
@@ -290,7 +416,10 @@
    "cities": [
     {
      "ru": "Санто-Доминго",
-     "key": "Santo Domingo [Dominican Republic]"
+     "key": "Santo Domingo [Dominican Republic]",
+     "lat": 18.4719,
+     "lng": -69.8923,
+     "tz": "America/Santo_Domingo"
     }
    ]
   },
@@ -299,7 +428,10 @@
    "cities": [
     {
      "ru": "Джакарта",
-     "key": "Jakarta [Indonesia]"
+     "key": "Jakarta [Indonesia]",
+     "lat": -6.2146,
+     "lng": 106.8451,
+     "tz": "Asia/Jakarta"
     }
    ]
   },
@@ -308,7 +440,10 @@
    "cities": [
     {
      "ru": "Дублин",
-     "key": "Dublin [Ireland]"
+     "key": "Dublin [Ireland]",
+     "lat": 53.3331,
+     "lng": -6.2489,
+     "tz": "Europe/Dublin"
     }
    ]
   },
@@ -317,7 +452,10 @@
    "cities": [
     {
      "ru": "Мадрид",
-     "key": "Madrid [Spain]"
+     "key": "Madrid [Spain]",
+     "lat": 40.4165,
+     "lng": -3.7026,
+     "tz": "Europe/Madrid"
     }
    ]
   },
@@ -326,7 +464,10 @@
    "cities": [
     {
      "ru": "Рим",
-     "key": "Rome [Italy]"
+     "key": "Rome [Italy]",
+     "lat": 41.8919,
+     "lng": 12.5113,
+     "tz": "Europe/Rome"
     }
    ]
   },
@@ -335,7 +476,10 @@
    "cities": [
     {
      "ru": "Алматы",
-     "key": "Almaty [Kazakhstan]"
+     "key": "Almaty [Kazakhstan]",
+     "lat": 43.2525,
+     "lng": 76.9115,
+     "tz": "Asia/Almaty"
     }
    ]
   },
@@ -344,19 +488,31 @@
    "cities": [
     {
      "ru": "Ванкувер · PST",
-     "key": "Vancouver [Canada]"
+     "key": "Vancouver [Canada]",
+     "lat": 49.2497,
+     "lng": -123.1193,
+     "tz": "America/Vancouver"
     },
     {
      "ru": "Калгари · MST",
-     "key": "Calgary [Canada]"
+     "key": "Calgary [Canada]",
+     "lat": 51.0501,
+     "lng": -114.0853,
+     "tz": "America/Edmonton"
     },
     {
      "ru": "Монреаль · EST",
-     "key": "Montreal [Canada]"
+     "key": "Montreal [Canada]",
+     "lat": 45.5088,
+     "lng": -73.5878,
+     "tz": "America/Toronto"
     },
     {
      "ru": "Торонто · EST",
-     "key": "Toronto [Canada]"
+     "key": "Toronto [Canada]",
+     "lat": 43.7064,
+     "lng": -79.3986,
+     "tz": "America/Toronto"
     }
    ]
   },
@@ -365,7 +521,10 @@
    "cities": [
     {
      "ru": "Найроби",
-     "key": "Nairobi [Kenya]"
+     "key": "Nairobi [Kenya]",
+     "lat": -1.2833,
+     "lng": 36.8167,
+     "tz": "Africa/Nairobi"
     }
    ]
   },
@@ -374,7 +533,10 @@
    "cities": [
     {
      "ru": "Богота",
-     "key": "Bogota [Colombia]"
+     "key": "Bogota [Colombia]",
+     "lat": 4.6097,
+     "lng": -74.0817,
+     "tz": "America/Bogota"
     }
    ]
   },
@@ -383,7 +545,10 @@
    "cities": [
     {
      "ru": "Сан-Хосе",
-     "key": "San Jose [Costa Rica]"
+     "key": "San Jose [Costa Rica]",
+     "lat": 9.9339,
+     "lng": -84.0849,
+     "tz": "America/Costa_Rica"
     }
    ]
   },
@@ -392,7 +557,10 @@
    "cities": [
     {
      "ru": "Вильнюс",
-     "key": "Vilnius [Lithuania]"
+     "key": "Vilnius [Lithuania]",
+     "lat": 54.6892,
+     "lng": 25.2798,
+     "tz": "Europe/Vilnius"
     }
    ]
   },
@@ -401,7 +569,10 @@
    "cities": [
     {
      "ru": "Куала-Лумпур",
-     "key": "Kuala Lumpur [Malaysia]"
+     "key": "Kuala Lumpur [Malaysia]",
+     "lat": 3.1412,
+     "lng": 101.6865,
+     "tz": "Asia/Kuala_Lumpur"
     }
    ]
   },
@@ -410,7 +581,10 @@
    "cities": [
     {
      "ru": "Мехико",
-     "key": "Mexico City [Mexico]"
+     "key": "Mexico City [Mexico]",
+     "lat": 19.4285,
+     "lng": -99.1277,
+     "tz": "America/Mexico_City"
     }
    ]
   },
@@ -419,7 +593,10 @@
    "cities": [
     {
      "ru": "Кишинёв",
-     "key": "Chisinau [Moldova]"
+     "key": "Chisinau [Moldova]",
+     "lat": 47.009,
+     "lng": 28.8594,
+     "tz": "Europe/Chisinau"
     }
    ]
   },
@@ -428,7 +605,10 @@
    "cities": [
     {
      "ru": "Лагос",
-     "key": "Lagos [Nigeria]"
+     "key": "Lagos [Nigeria]",
+     "lat": 6.4541,
+     "lng": 3.3947,
+     "tz": "Africa/Lagos"
     }
    ]
   },
@@ -437,7 +617,10 @@
    "cities": [
     {
      "ru": "Амстердам",
-     "key": "Amsterdam [Netherlands]"
+     "key": "Amsterdam [Netherlands]",
+     "lat": 52.374,
+     "lng": 4.8897,
+     "tz": "Europe/Amsterdam"
     }
    ]
   },
@@ -446,7 +629,10 @@
    "cities": [
     {
      "ru": "Окленд",
-     "key": "Auckland [New Zealand]"
+     "key": "Auckland [New Zealand]",
+     "lat": -36.8485,
+     "lng": 174.7635,
+     "tz": "Pacific/Auckland"
     }
    ]
   },
@@ -455,7 +641,10 @@
    "cities": [
     {
      "ru": "Осло",
-     "key": "Oslo [Norway]"
+     "key": "Oslo [Norway]",
+     "lat": 59.9127,
+     "lng": 10.7461,
+     "tz": "Europe/Oslo"
     }
    ]
   },
@@ -464,7 +653,10 @@
    "cities": [
     {
      "ru": "Дубай",
-     "key": "Dubai [United Arab Emirates]"
+     "key": "Dubai [United Arab Emirates]",
+     "lat": 25.0772,
+     "lng": 55.3093,
+     "tz": "Asia/Dubai"
     }
    ]
   },
@@ -473,7 +665,10 @@
    "cities": [
     {
      "ru": "Карачи",
-     "key": "Karachi [Pakistan]"
+     "key": "Karachi [Pakistan]",
+     "lat": 24.8608,
+     "lng": 67.0104,
+     "tz": "Asia/Karachi"
     }
    ]
   },
@@ -482,7 +677,10 @@
    "cities": [
     {
      "ru": "Панама",
-     "key": "Panama [Panama]"
+     "key": "Panama [Panama]",
+     "lat": 8.9936,
+     "lng": -79.5197,
+     "tz": "America/Panama"
     }
    ]
   },
@@ -491,7 +689,10 @@
    "cities": [
     {
      "ru": "Асунсьон",
-     "key": "Asuncion [Paraguay]"
+     "key": "Asuncion [Paraguay]",
+     "lat": -25.2865,
+     "lng": -57.647,
+     "tz": "America/Asuncion"
     }
    ]
   },
@@ -500,7 +701,10 @@
    "cities": [
     {
      "ru": "Лима",
-     "key": "Lima [Peru]"
+     "key": "Lima [Peru]",
+     "lat": -12.0432,
+     "lng": -77.0282,
+     "tz": "America/Lima"
     }
    ]
   },
@@ -509,7 +713,10 @@
    "cities": [
     {
      "ru": "Варшава",
-     "key": "Warsaw [Poland]"
+     "key": "Warsaw [Poland]",
+     "lat": 52.2298,
+     "lng": 21.0118,
+     "tz": "Europe/Warsaw"
     }
    ]
   },
@@ -518,7 +725,10 @@
    "cities": [
     {
      "ru": "Лиссабон",
-     "key": "Lisbon [Portugal]"
+     "key": "Lisbon [Portugal]",
+     "lat": 38.7251,
+     "lng": -9.1498,
+     "tz": "Europe/Lisbon"
     }
    ]
   },
@@ -527,7 +737,10 @@
    "cities": [
     {
      "ru": "Бухарест",
-     "key": "Bucharest [Romania]"
+     "key": "Bucharest [Romania]",
+     "lat": 44.4323,
+     "lng": 26.1063,
+     "tz": "Europe/Bucharest"
     }
    ]
   },
@@ -536,7 +749,10 @@
    "cities": [
     {
      "ru": "Белград",
-     "key": "Belgrade [Serbia]"
+     "key": "Belgrade [Serbia]",
+     "lat": 44.804,
+     "lng": 20.4651,
+     "tz": "Europe/Belgrade"
     }
    ]
   },
@@ -545,7 +761,10 @@
    "cities": [
     {
      "ru": "Сингапур",
-     "key": "Singapore [Singapore]"
+     "key": "Singapore [Singapore]",
+     "lat": 1.2897,
+     "lng": 103.8501,
+     "tz": "Asia/Singapore"
     }
    ]
   },
@@ -554,7 +773,10 @@
    "cities": [
     {
      "ru": "Бангкок",
-     "key": "Bangkok [Thailand]"
+     "key": "Bangkok [Thailand]",
+     "lat": 13.754,
+     "lng": 100.5014,
+     "tz": "Asia/Bangkok"
     }
    ]
   },
@@ -563,7 +785,10 @@
    "cities": [
     {
      "ru": "Тайбэй",
-     "key": "Taipei [Taiwan]"
+     "key": "Taipei [Taiwan]",
+     "lat": 25.0531,
+     "lng": 121.5264,
+     "tz": "Asia/Taipei"
     }
    ]
   },
@@ -572,7 +797,10 @@
    "cities": [
     {
      "ru": "Стамбул",
-     "key": "Istanbul [Turkey]"
+     "key": "Istanbul [Turkey]",
+     "lat": 41.0138,
+     "lng": 28.9497,
+     "tz": "Europe/Istanbul"
     }
    ]
   },
@@ -581,7 +809,10 @@
    "cities": [
     {
      "ru": "Кампала",
-     "key": "Kampala [Uganda]"
+     "key": "Kampala [Uganda]",
+     "lat": 0.3163,
+     "lng": 32.5822,
+     "tz": "Africa/Kampala"
     }
    ]
   },
@@ -590,7 +821,10 @@
    "cities": [
     {
      "ru": "Ташкент",
-     "key": "Tashkent [Uzbekistan]"
+     "key": "Tashkent [Uzbekistan]",
+     "lat": 41.2647,
+     "lng": 69.2163,
+     "tz": "Asia/Tashkent"
     }
    ]
   },
@@ -599,7 +833,10 @@
    "cities": [
     {
      "ru": "Сува",
-     "key": "Suva [Fiji]"
+     "key": "Suva [Fiji]",
+     "lat": -18.1368,
+     "lng": 178.4253,
+     "tz": "Pacific/Fiji"
     }
    ]
   },
@@ -608,7 +845,10 @@
    "cities": [
     {
      "ru": "Манила",
-     "key": "Manila [Philippines]"
+     "key": "Manila [Philippines]",
+     "lat": 14.6042,
+     "lng": 120.9822,
+     "tz": "Asia/Manila"
     }
    ]
   },
@@ -617,7 +857,10 @@
    "cities": [
     {
      "ru": "Хельсинки",
-     "key": "Helsinki [Finland]"
+     "key": "Helsinki [Finland]",
+     "lat": 60.1695,
+     "lng": 24.9354,
+     "tz": "Europe/Helsinki"
     }
    ]
   },
@@ -626,7 +869,10 @@
    "cities": [
     {
      "ru": "Париж",
-     "key": "Paris [France]"
+     "key": "Paris [France]",
+     "lat": 48.8534,
+     "lng": 2.3488,
+     "tz": "Europe/Paris"
     }
    ]
   },
@@ -635,7 +881,10 @@
    "cities": [
     {
      "ru": "Загреб",
-     "key": "Zagreb [Croatia]"
+     "key": "Zagreb [Croatia]",
+     "lat": 45.8144,
+     "lng": 15.978,
+     "tz": "Europe/Zagreb"
     }
    ]
   },
@@ -644,7 +893,10 @@
    "cities": [
     {
      "ru": "Сантьяго",
-     "key": "Santiago [Chile]"
+     "key": "Santiago [Chile]",
+     "lat": -33.4569,
+     "lng": -70.6483,
+     "tz": "America/Santiago"
     }
    ]
   },
@@ -653,7 +905,10 @@
    "cities": [
     {
      "ru": "Цюрих",
-     "key": "Zurich [Switzerland]"
+     "key": "Zurich [Switzerland]",
+     "lat": 47.3667,
+     "lng": 8.55,
+     "tz": "Europe/Zurich"
     }
    ]
   },
@@ -662,7 +917,10 @@
    "cities": [
     {
      "ru": "Стокгольм",
-     "key": "Stockholm [Sweden]"
+     "key": "Stockholm [Sweden]",
+     "lat": 59.3294,
+     "lng": 18.0687,
+     "tz": "Europe/Stockholm"
     }
    ]
   },
@@ -671,7 +929,10 @@
    "cities": [
     {
      "ru": "Коломбо",
-     "key": "Colombo [Sri Lanka]"
+     "key": "Colombo [Sri Lanka]",
+     "lat": 6.9355,
+     "lng": 79.8487,
+     "tz": "Asia/Colombo"
     }
    ]
   },
@@ -680,15 +941,24 @@
    "cities": [
     {
      "ru": "Дурбан",
-     "key": "Durban [South Africa]"
+     "key": "Durban [South Africa]",
+     "lat": -29.8579,
+     "lng": 31.0292,
+     "tz": "Africa/Johannesburg"
     },
     {
      "ru": "Йоханнесбург",
-     "key": "Johannesburg [South Africa]"
+     "key": "Johannesburg [South Africa]",
+     "lat": -26.2023,
+     "lng": 28.0436,
+     "tz": "Africa/Johannesburg"
     },
     {
      "ru": "Кейптаун",
-     "key": "Cape Town [South Africa]"
+     "key": "Cape Town [South Africa]",
+     "lat": -33.9258,
+     "lng": 18.4232,
+     "tz": "Africa/Johannesburg"
     }
    ]
   },
@@ -697,7 +967,10 @@
    "cities": [
     {
      "ru": "Токио",
-     "key": "Tokyo [Japan]"
+     "key": "Tokyo [Japan]",
+     "lat": 35.6895,
+     "lng": 139.6917,
+     "tz": "Asia/Tokyo"
     }
    ]
   }
