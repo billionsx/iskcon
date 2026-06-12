@@ -9,6 +9,7 @@ const GOLD = "#D2AA1B";
 
 export type HomeTabId =
   | "iskcon"       // ИСККОН — презентация
+  | "sadhana"      // Садхана — хаб ежедневной практики
   | "calendar"     // Вайшнавский календарь
   | "feed"         // Лента ISKCON (@iskcone)
   | "centres"      // Центры ИСККОН
@@ -20,6 +21,7 @@ export type HomeTabId =
 
 export const HOME_TABS: readonly { id: HomeTabId; label: string }[] = [
   { id: "iskcon",      label: "ИСККОН" },
+  { id: "sadhana",     label: "Садхана" },
   { id: "calendar",    label: "Календарь" },
   { id: "feed",        label: "Лента" },
   { id: "centres",     label: "Центры" },
