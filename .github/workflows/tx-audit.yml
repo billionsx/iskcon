@@ -1,0 +1,40 @@
+name: tx-audit
+on:
+  workflow_dispatch:
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: audit russian translation completeness
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql):
+              rq=urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                  headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=90) as r:
+                  j=json.loads(r.read().decode())
+                  if not j.get("success"): raise RuntimeError(str(j)[:300])
+                  return j["result"][0]["results"]
+          rows=d1("""
+            SELECT v.work_id AS w,
+                   COUNT(*) AS total,
+                   SUM(CASE WHEN t.translation IS NULL OR t.translation='' THEN 1 ELSE 0 END) AS no_tr,
+                   SUM(CASE WHEN t.translation IS NOT NULL AND t.translation NOT GLOB '*[А-Яа-яЁё]*' THEN 1 ELSE 0 END) AS no_cyr
+            FROM verses v LEFT JOIN verse_texts t ON t.verse_id=v.id
+            GROUP BY v.work_id ORDER BY v.work_id
+          """)
+          print(f"{'work':6} {'total':>7} {'no_translation':>15} {'no_cyrillic':>12}")
+          flagged=[]
+          for r in rows:
+              w=r['w']; tot=r['total']; ntr=r['no_tr'] or 0; ncy=r['no_cyr'] or 0
+              gap=ntr+ncy
+              mark=' ⚠' if gap>0 else ''
+              print(f"{w:6} {tot:>7} {ntr:>15} {ncy:>12}{mark}")
+              if gap>0: flagged.append(f"{w}:{gap}")
+          print("::notice title=TX-AUDIT::" + ("gaps → "+", ".join(flagged) if flagged else "all works: every verse has a Russian translation ✓"))
+          PY
