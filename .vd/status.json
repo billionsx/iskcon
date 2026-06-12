@@ -1,6 +1,36 @@
 {
-  "written_paras": 8638,
-  "chapters": 62,
-  "stopped_early": true,
-  "stopped_at": "2/50"
+  "work": "bbd",
+  "sections": [
+    {
+      "seg": "1",
+      "paras": 40,
+      "title": "Познание себя"
+    },
+    {
+      "seg": "2",
+      "paras": 34,
+      "title": "Возвышение в момент смерти"
+    },
+    {
+      "seg": "3",
+      "paras": 18,
+      "title": "Освобождение из тюрьмы материального мира"
+    },
+    {
+      "seg": "4",
+      "paras": 45,
+      "title": "Небо за пределами вселенной"
+    },
+    {
+      "seg": "5",
+      "paras": 30,
+      "title": "Общение с Кришной"
+    }
+  ],
+  "written_paras": 167,
+  "stopped_early": false,
+  "db": {
+    "chapters": 5,
+    "verses": 167
+  }
 }
