@@ -8,49 +8,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Discover vaisnavacalendar.info city list + verify RU controls
+      - name: Dump vaisnavacalendar.info homepage + scripts
         run: |
           python3 - <<'PY'
-          import json, re, urllib.request, urllib.parse, urllib.error
+          import re, urllib.request, urllib.parse, urllib.error
           UA = {"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"}
+          ORIGIN = "https://www.vaisnavacalendar.info"
           def get(url, timeout=60):
               try:
                   with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=timeout) as r:
-                      return getattr(r, "status", 200), r.read().decode("utf-8", "replace")
+                      return getattr(r,"status",200), r.read().decode("utf-8","replace")
               except urllib.error.HTTPError as e:
-                  try: body = e.read().decode("utf-8","replace")
-                  except Exception: body = ""
-                  return e.code, body
-              except Exception:
-                  return 0, ""
-          pages = {}
-          for u in ["https://www.vaisnavacalendar.info/",
-                    "https://www.vaisnavacalendar.info/index.php",
-                    "https://www.vaisnavacalendar.info/ICS",
-                    "https://www.vaisnavacalendar.info/sitemap.xml"]:
-              st, html = get(u)
-              dec = urllib.parse.unquote(html)
-              ics = sorted(set(m.strip() for m in re.findall(r'([^"\'<>]+?\[[^\]]+\])-a20\d\d-ICS', dec)))
-              opts = sorted(set(m.strip() for m in re.findall(r'<option[^>]*>([^<]+)</option>', html)))
-              brk = sorted(set(m.strip() for m in re.findall(r'([A-Za-z][A-Za-z .\'-]+ \[[A-Za-z .]+\])', dec)))
-              pages[u] = {"status": st, "len": len(html), "ics_keys": ics[:600],
-                          "options": opts[:600], "bracket_texts": brk[:600], "head": html[:1200]}
-              print(u, "->", st, "len", len(html), "ics", len(ics), "options", len(opts), "brackets", len(brk))
-          controls = ["Moskva [Russia]","Vladivostok [Russia]","Novosibirsk [Russia]","Perm [Russia]","Saint Petersburg [Russia]"]
-          variants = ["Ekaterinburg [Russia]","Yekaterinburg [Russia]","Nizhniy Novgorod [Russia]","Rostov on Don [Russia]",
-                      "Rostov-na-Donu [Russia]","Sochi [Russia]","Krasnodar [Russia]","Kazan [Russia]","Samara [Russia]",
-                      "Ufa [Russia]","Chelyabinsk [Russia]","Simferopol [Ukraine]","Sevastopol [Ukraine]"]
-          probe = []
-          for k in controls + variants:
-              st, txt = get("https://www.vaisnavacalendar.info/ICS" + urllib.parse.quote(f"/2026/{k}-a2026-ICS.ics"))
-              probe.append({"key": k, "status": st, "vevents": txt.count("BEGIN:VEVENT")})
-              print("probe", k, st, txt.count("BEGIN:VEVENT"))
-          json.dump({"pages": pages, "probe": probe}, open("CITY_PROBE.json","w"), ensure_ascii=False, indent=1)
-          print("WROTE CITY_PROBE.json")
+                  return e.code, ""
+              except Exception as e:
+                  return 0, str(e)
+          st, html = get(ORIGIN + "/")
+          open("VC_HOME.html","w",encoding="utf-8").write(html)
+          print("home", st, len(html))
+          # all script srcs + any .js / .json paths mentioned
+          srcs = re.findall(r'<script[^>]+src=["\']([^"\']+)["\']', html)
+          paths = set(re.findall(r'["\']([^"\']+\.(?:js|json))["\']', html))
+          paths |= set(srcs)
+          # also guess common town files
+          for g in ["/js/towns.js","/towns.js","/js/cities.js","/cities.js","/data/towns.js","/js/town.js","/ajax.php","/js/main.js","/js/script.js"]:
+              paths.add(g)
+          print("candidate assets:", sorted(paths)[:60])
+          out = []
+          seen = set()
+          for p in sorted(paths):
+              url = p if p.startswith("http") else ORIGIN + ("/" + p.lstrip("/"))
+              if url in seen: continue
+              seen.add(url)
+              s, body = get(url)
+              has_bracket = len(re.findall(r'\[[A-Za-z .]+\]', body))
+              out.append(f"\n===== {url}  (status {s}, len {len(body)}, brackets {has_bracket}) =====\n")
+              if 200 <= s < 300 and body:
+                  out.append(body[:200000])
+              print("asset", url, s, len(body), "brackets", has_bracket)
+          open("VC_SCRIPTS.txt","w",encoding="utf-8").write("".join(out))
+          print("WROTE VC_HOME.html + VC_SCRIPTS.txt")
           PY
-      - name: Commit results
+      - name: Commit
         run: |
           git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
-          git add CITY_PROBE.json
-          git commit -m "probe: discover vaisnavacalendar.info city list [skip ci]" || echo "nothing"
+          git add VC_HOME.html VC_SCRIPTS.txt
+          git commit -m "probe: dump vaisnavacalendar.info assets [skip ci]" || echo "nothing"
           git push || echo "push failed"
