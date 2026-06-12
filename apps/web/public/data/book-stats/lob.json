@@ -1,6 +1,7 @@
 {
   "work": "lob",
-  "chapters": 1,
-  "verses": 0,
-  "prose": false
+  "chapters": 49,
+  "verses": 213,
+  "prose": true,
+  "stopped_early": false
 }
