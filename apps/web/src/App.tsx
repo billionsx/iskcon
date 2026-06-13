@@ -697,7 +697,7 @@ export default function App() {
           </main>
         ) : openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <BookDetailPage key={openBook} book={BOOKS[openBook] ?? BOOKS.bg} onBack={goBack} onDonate={openDonate} initialTarget={bookTarget} />
+            <BookDetailPage key={openBook} book={BOOKS[openBook] ?? BOOKS.bg} onBack={goBack} onDonate={openDonate} onOpenCart={() => navigate("/cart")} initialTarget={bookTarget} />
           </main>
         ) : scripture ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
