@@ -723,6 +723,102 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
   return jsonResp({ ok: true, emailed, delivered, dbg: { seb: !!env.SEB, sebErr, resendErr } });
 }
 
+/** Заказ магазина: сохраняем в D1 (никогда не теряем) и шлём письмо на support@billionsx.com. */
+async function handleOrder(request: Request, env: Env): Promise<Response> {
+  if (request.method !== "POST") return jsonResp({ error: "method" }, 405);
+  let body: Record<string, unknown>;
+  try { body = (await request.json()) as Record<string, unknown>; } catch { return jsonResp({ error: "bad json" }, 400); }
+  const clip = (v: unknown, n: number) => String(v ?? "").slice(0, n);
+  const num = (v: unknown) => Math.max(0, Math.round(Number(v) || 0));
+  const orderNo = clip(body.orderNo, 40) || ("IOL-" + Date.now().toString(36).toUpperCase());
+  type OI = { title: string; kind: string; qty: number; sum: number };
+  const items: OI[] = (Array.isArray(body.items) ? body.items : []).slice(0, 60).map((it) => {
+    const o = (it || {}) as Record<string, unknown>;
+    return { title: clip(o.title, 160), kind: clip(o.kind, 20), qty: Math.max(1, Math.min(99, Math.round(Number(o.qty) || 1))), sum: num(o.sum) };
+  }).filter((it) => it.title);
+  if (!items.length) return jsonResp({ error: "empty" }, 400);
+  const total = num(body.total), goods = num(body.goods), shipping = num(body.shipping);
+  const method = clip(body.method, 60) || "—";
+  const c = (body.contact || {}) as Record<string, unknown>;
+  const contact = {
+    name: clip(c.name, 120), phone: clip(c.phone, 60), email: clip(c.email, 200),
+    method: clip(c.method, 20), country: clip(c.country, 80), city: clip(c.city, 120),
+    street: clip(c.street, 240), zip: clip(c.zip, 20), note: clip(c.note, 300),
+  };
+  const cf = (request as unknown as { cf?: Record<string, unknown> }).cf || {};
+  const country = clip(cf.country, 8);
+
+  try {
+    await env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        order_no TEXT, total INTEGER, goods INTEGER, shipping INTEGER, method TEXT,
+        items TEXT, contact TEXT, url TEXT, user_agent TEXT, lang TEXT, country TEXT
+      )`
+    ).run();
+    await env.DB.prepare(
+      `INSERT INTO orders (order_no, total, goods, shipping, method, items, contact, url, user_agent, lang, country)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?)`
+    ).bind(orderNo, total, goods, shipping, method, JSON.stringify(items), JSON.stringify(contact), clip(body.url, 600), clip(body.ua, 600), clip(body.lang, 40), country).run();
+  } catch { /* не валим заказ из-за БД — продолжаем письмо */ }
+
+  const fmt = (n: number) => n.toLocaleString("ru-RU") + " \u20bd";
+  const ship = contact.method === "pickup" ? "Самовывоз" : ([contact.country, contact.city, contact.street, contact.zip].filter(Boolean).join(", ") || "—");
+  const subject = `ISKCON ONE LOVE — заказ ${orderNo} · ${fmt(total)}`;
+  const lns = items.map((it) => `• ${it.title}${it.kind === "physical" && it.qty > 1 ? ` ×${it.qty}` : ""} — ${fmt(it.sum)}`);
+  const meta: Array<[string, string]> = [
+    ["Сумма", fmt(total)], ["Товары", fmt(goods)], ...(shipping ? [["Доставка", fmt(shipping)] as [string, string]] : []),
+    ["Оплата", method],
+    ["Имя", contact.name || "—"], ["Телефон", contact.phone || "—"], ...(contact.email ? [["Email", contact.email] as [string, string]] : []),
+    ["Получение", contact.method === "pickup" ? "Самовывоз" : "Доставка"], ["Адрес", ship],
+    ...(contact.note ? [["Комментарий", contact.note] as [string, string]] : []),
+    ["Страна (IP)", country],
+  ];
+  const text = [`Заказ ${orderNo}`, "", ...lns, "", "————", ...meta.map(([k, v]) => `${k}: ${v}`)].join("\n");
+  const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;color:#1f2024;line-height:1.55">`
+    + `<h2 style="margin:0 0 4px;font-size:18px">Заказ ${escapeHtml(orderNo)}</h2>`
+    + `<div style="font-size:20px;font-weight:800;margin:0 0 14px">${escapeHtml(fmt(total))}</div>`
+    + `<table style="font-size:14px;border-collapse:collapse;margin:0 0 14px">`
+    + items.map((it) => `<tr><td style="padding:3px 14px 3px 0">${escapeHtml(it.title)}${it.kind === "physical" && it.qty > 1 ? ` ×${it.qty}` : ""}</td><td style="padding:3px 0;font-weight:600;text-align:right">${escapeHtml(fmt(it.sum))}</td></tr>`).join("")
+    + `</table><hr style="border:none;border-top:1px solid #ececec;margin:14px 0">`
+    + `<table style="font-size:13px;color:#70727b;border-collapse:collapse">`
+    + meta.map(([k, v]) => `<tr><td style="padding:2px 12px 2px 0;vertical-align:top;color:#a7a8b0">${escapeHtml(k)}</td><td style="padding:2px 0;word-break:break-word">${escapeHtml(v)}</td></tr>`).join("")
+    + `</table></div>`;
+
+  let emailed = false;
+  const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+  if (env.SEB) {
+    try {
+      const mm = createMimeMessage();
+      mm.setSender({ name: "ISKCON ONE LOVE", addr: fromAddr });
+      mm.setRecipient("support@billionsx.com");
+      mm.setSubject(subject);
+      mm.addMessage({ contentType: "text/plain", data: text });
+      await env.SEB.send(new EmailMessage(fromAddr, "support@billionsx.com", mm.asRaw()));
+      emailed = true;
+    } catch { /* fallthrough */ }
+  }
+  if (!emailed && env.RESEND_API_KEY) {
+    try {
+      const from = env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>";
+      const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
+      if (contact.email) payload.reply_to = contact.email;
+      const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      emailed = r.ok;
+    } catch { /* noop */ }
+  }
+  let telegrammed = false;
+  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
+    try {
+      const tg = [`🛒 ISKCON ONE LOVE — заказ ${orderNo} · ${fmt(total)}`, "", ...lns, "", ...meta.filter(([k]) => k !== "Сумма").map(([k, v]) => `${k}: ${v}`)].join("\n");
+      const r = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: env.TELEGRAM_CHAT_ID, text: tg.slice(0, 3900), disable_web_page_preview: true }) });
+      telegrammed = r.ok;
+    } catch { telegrammed = false; }
+  }
+  return jsonResp({ ok: true, orderNo, emailed, delivered: emailed || telegrammed });
+}
+
 // Чистим оригинальный текст от затёкшей при ингесте подписи-ярлыка («Бенгальский»,
 // «Деванагари» и т.п.): в письменностях (деванагари/бенгали) кириллицы быть не может,
 // поэтому ведущий кириллический токен — всегда артефакт.
@@ -843,6 +939,11 @@ export default {
     // ── Bug reports → сохраняем в D1 + письмо на support@billionsx.com ──
     if (url.pathname === "/api/report") {
       return handleReport(request, env);
+    }
+
+    // ── Заказы магазина → сохраняем в D1 + письмо на support@billionsx.com ──
+    if (url.pathname === "/api/order") {
+      return handleOrder(request, env);
     }
 
     // ── Admin / CRM book-loader (writes to D1; protected by ADMIN_TOKEN) ──
