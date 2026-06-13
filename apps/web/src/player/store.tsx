@@ -15,6 +15,7 @@ import {
 import { api } from "../api";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById, artistBySlug, albumCover } from "../kirtans";
+import { recordListen } from "../account/track";
 import { createWebEngine, type AudioEngine } from "./engine";
 
 export type AudioMode = "plain" | "commentary";
@@ -244,6 +245,28 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     engineRef.current?.load(t.url, autoplay);
     engineRef.current?.setRate(rateRef.current);
     updateMediaSession(t, useMode);
+    // Телеметрия прослушивания: только при реальном старте (autoplay), не при
+    // тихом восстановлении позиции на старте приложения. No-op для гостя.
+    if (autoplay) {
+      const isK = sourceRef.current === "kirtan";
+      const cfg = cfgFor(bookRef.current, sourceRef.current);
+      let listenRef = t.url;
+      try { listenRef = new URL(t.url).pathname; } catch { /* оставляем абсолютный url */ }
+      recordListen({
+        source: isK ? "kirtan" : "book",
+        ref: listenRef,
+        title: t.title,
+        subtitle: isK
+          ? (t.artist || cfg.artist || cfg.title)
+          : (t.lilaLabel ?? (useMode === "commentary" ? "С комментариями" : "Стих за стихом")),
+        cover: cfg.cover,
+        album: bookRef.current, // машинный id книги/альбома — для «продолжить слушать»
+        artist: isK ? (t.artist || cfg.artist || null) : null,
+        href: isK ? null : `/book/${bookRef.current}`,
+        durationSec: t.durationSec ?? null,
+        positionSec: 0,
+      });
+    }
     persist();
   }
 

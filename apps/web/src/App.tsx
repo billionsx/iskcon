@@ -28,6 +28,9 @@ import AcharyaScreen from "./AcharyaScreen";
 import FavoritesScreen from "./FavoritesScreen";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
 import BookLoaderPage from "./BookLoaderPage";
+import AccountScreen from "./AccountScreen";
+import { AuthProvider } from "./account/store";
+import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { api } from "./api";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -389,7 +392,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onFavorites, onDonate }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenKirtanArtist: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onFavorites: () => void; onDonate: () => void }) {
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onFavorites, onDonate, onOpenPath }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenKirtanArtist: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onFavorites: () => void; onDonate: () => void; onOpenPath: (path: string) => void }) {
   const mainRef = useRef<HTMLElement>(null);
   // Смена вкладки нижней навигации → новая вкладка начинается с верха
   // (прокрутка не переносится из покинутой). Первый монтаж пропускаем.
@@ -450,7 +453,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
           {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
           {tab === "dhama" && <ComingSoon src="/vraj.svg" title="Дхама" subtitle="Святые места и храмы Вриндавана. Раздел готовится." />}
-          {tab === "account" && <ComingSoon title="Личный кабинет" subtitle="Профиль, садхана, закладки и заметки, прогресс чтения и пожертвования. Раздел готовится." />}
+          {tab === "account" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} scrollRef={mainRef} />
@@ -591,6 +594,14 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Гость попытался сохранить закладку из ридера → ведём в кабинет (вход).
+  useEffect(() => {
+    const onAuthReq = () => navigate("/account");
+    window.addEventListener(AUTH_REQUIRED_EVENT, onAuthReq);
+    return () => window.removeEventListener(AUTH_REQUIRED_EVENT, onAuthReq);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // состояние → URL (pushState), кроме случаев применения из popstate
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
@@ -648,6 +659,7 @@ export default function App() {
   }
   const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites;
   return (
+    <AuthProvider>
     <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
@@ -699,7 +711,7 @@ export default function App() {
             <FavoritesScreen onBack={goBack} onNavigate={navigate} />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} />
         )}
         </CardActionsProvider>
         {donate && <DonateModal onClose={closeDonate} />}
@@ -708,5 +720,6 @@ export default function App() {
       </div>
     </div>
     </PlayerProvider>
+    </AuthProvider>
   );
 }
