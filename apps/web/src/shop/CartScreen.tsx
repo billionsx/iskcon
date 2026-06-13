@@ -530,12 +530,27 @@ function Barcode({ seed }: { seed: string }) {
 function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
   const itemsCount = units(o.lines);
   const where = o.physical ? (o.contact.method === "pickup" ? "Самовывоз" : `Доставка · ${[o.contact.city, o.contact.street].filter(Boolean).join(", ") || "адрес уточняется"}`) : "Цифровая доставка";
+  const [paid, setPaid] = useState(false);
+  // Живой опрос статуса: «Ожидает оплаты» → «Оплата получена», когда команда/верификатор подтвердит.
+  useEffect(() => {
+    if (paid) return;
+    let stop = false, n = 0;
+    const tick = () => {
+      if (stop) return;
+      fetch(`/api/order/${encodeURIComponent(o.orderNo)}`, { headers: { accept: "application/json" } })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j: { status?: string } | null) => { if (j && j.status === "paid") { setPaid(true); return; } if (++n < 40 && !stop) timer = window.setTimeout(tick, 5000); })
+        .catch(() => { if (++n < 40 && !stop) timer = window.setTimeout(tick, 5000); });
+    };
+    let timer = window.setTimeout(tick, 4000);
+    return () => { stop = true; clearTimeout(timer); };
+  }, [o.orderNo, paid]);
   return (
     <div style={{ padding: "8px 16px calc(28px + env(safe-area-inset-bottom,0px))", maxWidth: 420, margin: "0 auto" }}>
       <div style={{ textAlign: "center", padding: "14px 0 22px" }}>
         <span style={{ display: "grid", placeItems: "center", width: 74, height: 74, borderRadius: "50%", background: GOLD, margin: "0 auto", boxShadow: "0 10px 30px rgba(210,170,27,0.4)" }}><CheckMark size={42} color="#fff" /></span>
         <h1 style={{ margin: "18px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>Заказ оформлен</h1>
-        <p style={{ margin: "9px auto 0", maxWidth: 300, fontSize: 14, lineHeight: 1.5, color: INK2 }}>Состав заказа отправлен команде. Менеджер подтвердит оплату и доставку.</p>
+        <p style={{ margin: "9px auto 0", maxWidth: 300, fontSize: 14, lineHeight: 1.5, color: INK2 }}>{paid ? "Оплата получена. Мы приступаем к обработке заказа." : "Состав заказа отправлен команде. Подтвердим оплату — статус обновится здесь."}</p>
       </div>
 
       <div style={{ borderRadius: 20, overflow: "hidden", boxShadow: "0 18px 50px rgba(0,0,0,0.18)", background: CARD }}>
@@ -546,7 +561,7 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
               <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>ISKCON ONE LOVE</div>
               <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700 }}>Заказ {o.orderNo}</div>
             </div>
-            <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999, background: "rgba(210,170,27,0.25)", color: "#f2cf4f" }}>Ожидает оплаты</span>
+            <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999, ...(paid ? { background: "rgba(52,199,89,0.25)", color: "#5ee07f" } : { background: "rgba(210,170,27,0.25)", color: "#f2cf4f" }) }}>{paid ? "Оплата получена" : "Ожидает оплаты"}</span>
           </div>
           <div style={{ display: "flex", gap: 26, marginTop: 18 }}>
             <div><div style={{ fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Сумма</div><div style={{ fontSize: 21, fontWeight: 800, letterSpacing: "-0.02em" }}>{fmtRub(o.total)}</div></div>

@@ -754,18 +754,26 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         order_no TEXT, total INTEGER, goods INTEGER, shipping INTEGER, method TEXT,
-        items TEXT, contact TEXT, url TEXT, user_agent TEXT, lang TEXT, country TEXT
+        items TEXT, contact TEXT, url TEXT, user_agent TEXT, lang TEXT, country TEXT,
+        status TEXT NOT NULL DEFAULT 'pending', paid_at TEXT, pay_ref TEXT
       )`
     ).run();
+    // Идемпотентная миграция для уже существующей таблицы (ALTER падает, если колонка есть).
+    for (const ddl of [
+      "ALTER TABLE orders ADD COLUMN status TEXT NOT NULL DEFAULT 'pending'",
+      "ALTER TABLE orders ADD COLUMN paid_at TEXT",
+      "ALTER TABLE orders ADD COLUMN pay_ref TEXT",
+    ]) { try { await env.DB.prepare(ddl).run(); } catch { /* колонка уже есть */ } }
     await env.DB.prepare(
-      `INSERT INTO orders (order_no, total, goods, shipping, method, items, contact, url, user_agent, lang, country)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?)`
+      `INSERT INTO orders (order_no, total, goods, shipping, method, items, contact, url, user_agent, lang, country, status)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,'pending')`
     ).bind(orderNo, total, goods, shipping, method, JSON.stringify(items), JSON.stringify(contact), clip(body.url, 600), clip(body.ua, 600), clip(body.lang, 40), country).run();
   } catch { /* не валим заказ из-за БД — продолжаем письмо */ }
 
   const fmt = (n: number) => n.toLocaleString("ru-RU") + " \u20bd";
   const ship = contact.method === "pickup" ? "Самовывоз" : ([contact.country, contact.city, contact.street, contact.zip].filter(Boolean).join(", ") || "—");
   const subject = `ISKCON ONE LOVE — заказ ${orderNo} · ${fmt(total)}`;
+  const confirmUrl = env.ADMIN_TOKEN ? `https://gaurangers.com/api/order/confirm?no=${encodeURIComponent(orderNo)}&token=${encodeURIComponent(env.ADMIN_TOKEN)}` : "";
   const lns = items.map((it) => `• ${it.title}${it.kind === "physical" && it.qty > 1 ? ` ×${it.qty}` : ""} — ${fmt(it.sum)}`);
   const meta: Array<[string, string]> = [
     ["Сумма", fmt(total)], ["Товары", fmt(goods)], ...(shipping ? [["Доставка", fmt(shipping)] as [string, string]] : []),
@@ -775,7 +783,7 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
     ...(contact.note ? [["Комментарий", contact.note] as [string, string]] : []),
     ["Страна (IP)", country],
   ];
-  const text = [`Заказ ${orderNo}`, "", ...lns, "", "————", ...meta.map(([k, v]) => `${k}: ${v}`)].join("\n");
+  const text = [`Заказ ${orderNo}`, "", ...lns, "", "————", ...meta.map(([k, v]) => `${k}: ${v}`), ...(confirmUrl ? ["", `Подтвердить оплату: ${confirmUrl}`] : [])].join("\n");
   const html = `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:15px;color:#1f2024;line-height:1.55">`
     + `<h2 style="margin:0 0 4px;font-size:18px">Заказ ${escapeHtml(orderNo)}</h2>`
     + `<div style="font-size:20px;font-weight:800;margin:0 0 14px">${escapeHtml(fmt(total))}</div>`
@@ -784,7 +792,9 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
     + `</table><hr style="border:none;border-top:1px solid #ececec;margin:14px 0">`
     + `<table style="font-size:13px;color:#70727b;border-collapse:collapse">`
     + meta.map(([k, v]) => `<tr><td style="padding:2px 12px 2px 0;vertical-align:top;color:#a7a8b0">${escapeHtml(k)}</td><td style="padding:2px 0;word-break:break-word">${escapeHtml(v)}</td></tr>`).join("")
-    + `</table></div>`;
+    + `</table>`
+    + (confirmUrl ? `<div style="margin-top:18px"><a href="${confirmUrl}" style="display:inline-block;background:#34c759;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px">Подтвердить оплату</a><div style="margin-top:6px;font-size:11px;color:#a7a8b0">Нажмите после поступления средств — клиент увидит «Оплачено».</div></div>` : "")
+    + `</div>`;
 
   let emailed = false;
   const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
@@ -817,6 +827,79 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
     } catch { telegrammed = false; }
   }
   return jsonResp({ ok: true, orderNo, emailed, delivered: emailed || telegrammed });
+}
+
+/** Статус заказа по номеру (публичное чтение): { status, total, method, paidAt }. */
+async function handleOrderStatus(orderNo: string, env: Env): Promise<Response> {
+  if (!orderNo) return jsonResp({ error: "no_order" }, 400);
+  try {
+    const row = await env.DB.prepare("SELECT order_no, status, total, method, paid_at FROM orders WHERE order_no = ? LIMIT 1")
+      .bind(orderNo).first<{ order_no: string; status: string; total: number; method: string; paid_at: string | null }>();
+    if (!row) return jsonResp({ error: "not_found" }, 404);
+    return jsonResp({ orderNo: row.order_no, status: row.status || "pending", total: row.total, method: row.method, paidAt: row.paid_at });
+  } catch { return jsonResp({ error: "db" }, 500); }
+}
+
+/**
+ * Подтверждение оплаты — РУЧНАЯ сверка (мост до автоматической). Защита: ADMIN_TOKEN
+ * (заголовок X-Admin-Token или ?token= для ссылки из письма). GET/POST; номер из ?no=
+ * или тела. Помечает заказ оплаченным и шлёт клиенту письмо «оплата подтверждена».
+ */
+async function handleOrderConfirm(request: Request, env: Env, url: URL): Promise<Response> {
+  if (typeof env.ADMIN_TOKEN === "undefined") return jsonResp({ error: "admin_not_configured" }, 503);
+  let bodyNo = "", bodyRef = "";
+  if (request.method === "POST") {
+    try { const b = (await request.json()) as Record<string, unknown>; bodyNo = String(b.orderNo ?? b.no ?? ""); bodyRef = String(b.ref ?? ""); } catch { /* пусто */ }
+  }
+  const token = request.headers.get("x-admin-token") ?? url.searchParams.get("token") ?? "";
+  if (token !== env.ADMIN_TOKEN) return jsonResp({ error: "unauthorized" }, 401);
+  const orderNo = (url.searchParams.get("no") || bodyNo || "").slice(0, 40);
+  const ref = (url.searchParams.get("ref") || bodyRef || "").slice(0, 120);
+  if (!orderNo) return jsonResp({ error: "no_order" }, 400);
+
+  let row: { order_no: string; status: string; total: number; contact: string | null } | null = null;
+  try {
+    row = await env.DB.prepare("SELECT order_no, status, total, contact FROM orders WHERE order_no = ? LIMIT 1")
+      .bind(orderNo).first();
+    if (!row) return jsonResp({ error: "not_found" }, 404);
+    if (row.status !== "paid") {
+      await env.DB.prepare("UPDATE orders SET status='paid', paid_at=datetime('now'), pay_ref=? WHERE order_no = ?").bind(ref || null, orderNo).run();
+    }
+  } catch { return jsonResp({ error: "db" }, 500); }
+
+  // письмо клиенту (если оставил email) — best-effort
+  let custEmail = "", custName = "";
+  try { const c = JSON.parse(row.contact || "{}") as { email?: string; name?: string }; custEmail = String(c.email || "").trim(); custName = String(c.name || "").trim(); } catch { /* noop */ }
+  if (custEmail) {
+    const fmt = (n: number) => n.toLocaleString("ru-RU") + " \u20bd";
+    const subj = `Оплата получена — заказ ${orderNo}`;
+    const txt = `${custName ? custName + ", о" : "О"}плата по заказу ${orderNo} на сумму ${fmt(row.total)} получена. Спасибо! Мы приступаем к обработке.\n\nISKCON ONE LOVE · support@billionsx.com`;
+    const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+    let sent = false;
+    if (env.SEB) {
+      try {
+        const mm = createMimeMessage();
+        mm.setSender({ name: "ISKCON ONE LOVE", addr: fromAddr });
+        mm.setRecipient(custEmail);
+        mm.setSubject(subj);
+        mm.addMessage({ contentType: "text/plain", data: txt });
+        await env.SEB.send(new EmailMessage(fromAddr, custEmail, mm.asRaw()));
+        sent = true;
+      } catch { /* fallthrough */ }
+    }
+    if (!sent && env.RESEND_API_KEY) {
+      try {
+        await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>", to: [custEmail], subject: subj, text: txt }) });
+      } catch { /* noop */ }
+    }
+  }
+
+  // если открыли ссылку из письма в браузере — показываем человекочитаемую страницу
+  const wantsHtml = (request.headers.get("accept") || "").includes("text/html");
+  if (request.method === "GET" && wantsHtml) {
+    return new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Оплата подтверждена</title><div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:420px;margin:18vh auto;text-align:center;color:#1d1d1f"><div style="width:72px;height:72px;border-radius:50%;background:#34c759;margin:0 auto 18px;display:grid;place-items:center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4.5 4.5L19 7"/></svg></div><h1 style="font-size:22px;margin:0 0 6px">Оплата подтверждена</h1><p style="color:#6e6e73;font-size:15px;margin:0">Заказ ${escapeHtml(orderNo)} помечен оплаченным. Клиент уведомлён.</p></div>`, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+  }
+  return jsonResp({ ok: true, orderNo, status: "paid" });
 }
 
 // Чистим оригинальный текст от затёкшей при ингесте подписи-ярлыка («Бенгальский»,
@@ -944,6 +1027,14 @@ export default {
     // ── Заказы магазина → сохраняем в D1 + письмо на support@billionsx.com ──
     if (url.pathname === "/api/order") {
       return handleOrder(request, env);
+    }
+    // Подтверждение оплаты (ручная сверка, ADMIN_TOKEN). До префиксного статус-роута.
+    if (url.pathname === "/api/order/confirm") {
+      return handleOrderConfirm(request, env, url);
+    }
+    // Статус заказа по номеру: GET /api/order/IOL-XXXXX
+    if (url.pathname.startsWith("/api/order/")) {
+      return handleOrderStatus(decodeURIComponent(url.pathname.slice("/api/order/".length)), env);
     }
 
     // ── Admin / CRM book-loader (writes to D1; protected by ADMIN_TOKEN) ──
