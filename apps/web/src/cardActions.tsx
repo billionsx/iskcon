@@ -219,7 +219,7 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
   return (
     <Ctx.Provider value={api}>
       {children}
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} />
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} variant={ctx?.type === "bhajan" ? "bhajan" : "book"} />
       {qr && <QrSheet url={qr.url} data={{ kind: "card", title: qr.title, subtitle: qr.subtitle }} onClose={() => setQr(null)} />}
       <ReportSheet open={!!report} onClose={() => setReport(null)} context={report ? report.context : ""} />
       {toast && (
