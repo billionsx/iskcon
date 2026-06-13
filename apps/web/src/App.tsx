@@ -31,6 +31,7 @@ import BookLoaderPage from "./BookLoaderPage";
 import AccountScreen from "./AccountScreen";
 import { AuthProvider } from "./account/store";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
+import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
 import { api } from "./api";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -502,6 +503,9 @@ export default function App() {
   const [openCollection, setOpenCollection] = useState<string | null>(null);
   const [donate, setDonate] = useState(false);
   const fromPop = useRef(false);
+  // Текущий открытый код книги — для делегирования внутрикнижного popstate (замыкание onPop иначе видит устаревшее значение).
+  const openBookRef = useRef<string | null>(null);
+  openBookRef.current = openBook;
 
   // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере включён) ──
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
@@ -585,9 +589,19 @@ export default function App() {
     setTab("home");
   }
 
-  // инициализация из URL + кнопки назад/вперёд
+  // инициализация из URL + кнопки назад/вперёд (единственный popstate на приложение)
   useEffect(() => {
-    const onPop = () => { fromPop.current = true; applyPath(window.location.pathname); };
+    navInit();
+    const onPop = (e: PopStateEvent) => {
+      navSetIdxFromState(e.state);
+      const path = window.location.pathname;
+      // Внутрикнижная навигация (глава/стих) — за неё отвечает BookDetailPage.
+      // Глобальный роутер её НЕ трогает, иначе двойная обработка одного popstate.
+      const ob = openBookRef.current;
+      if (ob && (path === `/book/${ob}` || path.startsWith(`/book/${ob}/`))) return;
+      fromPop.current = true;
+      applyPath(path);
+    };
     window.addEventListener("popstate", onPop);
     applyPath(window.location.pathname);
     return () => window.removeEventListener("popstate", onPop);
@@ -602,37 +616,39 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // состояние → URL (pushState), кроме случаев применения из popstate
+  // состояние → URL (push нового уровня), кроме случаев применения из popstate
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
     const next = pathFromState();
-    if (window.location.pathname !== next) window.history.pushState(null, "", next);
+    if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites]);
 
-  // «Назад»: настоящая история, но не выходим за пределы приложения при прямом входе
-  const enteredAt = useRef(typeof window !== "undefined" ? window.history.length : 0);
+  // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
+  // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
   function goBack() {
-    if (typeof window !== "undefined" && window.history.length > enteredAt.current) { window.history.back(); }
-    else { window.history.pushState(null, "", "/"); applyPath("/"); }
+    if (canGoBack()) { window.history.back(); return; }
+    fromPop.current = true;
+    replaceUrl("/");
+    applyPath("/");
   }
 
-  // Переход по in-app пути (строки «Избранного»): пушим адрес и применяем тот же роутер.
+  // Переход по in-app пути (строки «Избранного» и пр.): пушим уровень и применяем тот же роутер.
   function navigate(href: string) {
-    if (typeof window !== "undefined" && window.location.pathname !== href) window.history.pushState(null, "", href);
+    if (typeof window !== "undefined" && window.location.pathname !== href) pushUrl(href);
     applyPath(href);
   }
 
   // Донат — собственный адрес /donate (оверлей поверх текущего экрана; ссылку можно переслать).
   function openDonate() {
-    if (typeof window !== "undefined" && window.location.pathname !== "/donate") window.history.pushState(null, "", "/donate");
+    if (typeof window !== "undefined" && window.location.pathname !== "/donate") pushUrl("/donate");
     setDonate(true);
   }
   function closeDonate() {
     setDonate(false);
     if (typeof window === "undefined" || window.location.pathname !== "/donate") return;
-    if (window.history.length > enteredAt.current) { window.history.back(); return; }  // вернуться откуда пришли
-    window.history.replaceState(null, "", "/");                                         // прямой вход на /donate → на главную
+    if (canGoBack()) { window.history.back(); return; }   // снять запись /donate, вернуться откуда пришли
+    replaceUrl("/"); fromPop.current = true; applyPath("/"); // прямой вход на /donate → на главную
   }
 
   // ссылка-цитата → действие. Адреса: book:{id} | chap:{id}:{div}:{ch} | verse:{id}:{div}:{ch}:{v}

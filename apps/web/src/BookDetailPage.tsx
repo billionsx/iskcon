@@ -18,6 +18,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { recordRead } from "./account/track";
+import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
@@ -2055,8 +2056,8 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       const cur = window.location.pathname;
       if (cur === path) return;
       const isVerse = (p: string) => /^\/book\/[a-z0-9]+\/[a-z0-9]+\/\d+\/.+/i.test(p);
-      if (isVerse(cur) && isVerse(path)) window.history.replaceState(null, "", path);
-      else window.history.pushState(null, "", path);
+      if (isVerse(cur) && isVerse(path)) replaceUrl(path);
+      else pushUrl(path);
       return;
     }
     if (!chapters) return;
@@ -2073,25 +2074,24 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
     const cur = window.location.pathname;
     if (cur === path) return;
     const isVerse = (p: string) => new RegExp(`^/book/${book.work}/\\d+/.+`).test(p);
-    if (isVerse(cur) && isVerse(path)) window.history.replaceState(null, "", path);
-    else window.history.pushState(null, "", path);
+    if (isVerse(cur) && isVerse(path)) replaceUrl(path);
+    else pushUrl(path);
   }, [openChapter, readerRef, chapters, book.hierarchical, book.work, book.prose]);
 
-  // Единая кнопка «назад» внутри книги: стих → глава → книга → главная.
-  // Используем настоящую историю (pop), чтобы переходы были чистыми; на холодном
-  // входе истории нет — тогда поднимаемся на уровень вверх и правим адрес на месте.
-  const histBase = useRef(typeof window !== "undefined" ? window.history.length : 0);
+  // Единая кнопка «назад» внутри книги: стих → глава → книга → откуда пришли.
+  // Обычный случай — pop общего стека (canGoBack). На холодном входе (прямой
+  // URL/QR, под нами нет записи приложения) спускаемся на уровень вручную через replace.
   const goBack = () => {
     if (typeof window === "undefined") return;
-    if (window.history.length > histBase.current) { window.history.back(); return; }
+    if (canGoBack()) { window.history.back(); return; }
     const base = `/book/${book.work}`;
     if (book.hierarchical) {
-      if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base); return; }
-      if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", base); return; }
+      if (readerRef) { setReaderRef(null); replaceUrl(openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base); return; }
+      if (openChapter) { setOpenChapter(null); replaceUrl(base); return; }
       onBack(); return;
     }
-    if (readerRef) { setReaderRef(null); window.history.replaceState(null, "", openChapter ? `${base}/${openChapter.number}` : base); return; }
-    if (openChapter) { setOpenChapter(null); window.history.replaceState(null, "", base); return; }
+    if (readerRef) { setReaderRef(null); replaceUrl(openChapter ? `${base}/${openChapter.number}` : base); return; }
+    if (openChapter) { setOpenChapter(null); replaceUrl(base); return; }
     onBack();
   };
 
