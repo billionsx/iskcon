@@ -53,6 +53,8 @@ const GiftGlyph = () => (
 );
 /* exclamationmark.triangle */
 const ReportGlyph = () => <Svg><g {...stroke}><path d="M12 4.5 20.5 19 3.5 19Z" /><path d="M12 10v3.8" /></g><circle cx="12" cy="16.4" r="0.6" fill="currentColor" /></Svg>;
+/* bag — «заказать печатное издание»; iOS bag, отличается от подарка-доната. */
+const BagGlyph = () => <Svg><g {...stroke}><path d="M6 8.6h12a.8.8 0 0 1 .8.86l-.78 9.4A1.5 1.5 0 0 1 16.53 20.2H7.47a1.5 1.5 0 0 1-1.49-1.34l-.78-9.4A.8.8 0 0 1 6 8.6Z" /><path d="M9 9V7a3 3 0 0 1 6 0v2" /></g></Svg>;
 
 type Item = { id: string; label: string; Icon: () => ReactNode; danger?: boolean };
 const GROUPS: Item[][] = [
@@ -135,17 +137,21 @@ const SHEET_CSS = `
 @media (prefers-reduced-motion: reduce) { .bms-scrim, .bms-sheet { animation: none !important; } }
 `;
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean; canOrder?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
     variant === "kirtan" ? buildKirtanGroups()
       : variant === "bhajan" ? buildBhajanGroups()
         : variant === "player" ? buildPlayerGroups(isChapter)
-          : GROUPS.map((items) => ({ items }));
+          : (() => {
+              const groups: Group[] = GROUPS.map((items) => ({ items }));
+              if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
+              return groups;
+            })();
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}

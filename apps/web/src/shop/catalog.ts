@@ -48,3 +48,20 @@ export const DONATION_PRESETS = [300, 500, 1000, 2000];
 export function donationProduct(amount: number): Product {
   return { id: "donation", kind: "donation", title: "Пожертвование", subtitle: "ISKCON ONE LOVE", price: amount, emblem: true };
 }
+
+/**
+ * Печатный товар для книги по её work-коду (bg/sb/cc/…).
+ * Сперва ищем в каталоге-сиде (выверенные цены), иначе строим карточку из BOOKS
+ * со стартовой ценой — чтобы любую книгу реестра можно было заказать. undefined —
+ * только для неизвестного work.
+ */
+export function bookProduct(work: string): Product | undefined {
+  for (const g of CATALOG) {
+    const hit = g.items.find((p) => p.id === `bk-${work}`);
+    if (hit) return hit;
+  }
+  const b = BOOKS[work];
+  if (!b) return undefined;
+  const title = [b.titleLine1, b.titleLine2].filter(Boolean).join(" ");
+  return { id: `bk-${work}`, kind: "physical", title, subtitle: "Печатное издание · BBT", price: 590, cover: b.covers?.[0], weightG: 700 };
+}

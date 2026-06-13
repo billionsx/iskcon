@@ -21,6 +21,8 @@ import { recordRead } from "./account/track";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
+import { addToCart } from "./shop/cart";
+import { bookProduct } from "./shop/catalog";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 import { Skt, renderTerms, renderTitle } from "./ui/Skt";
 import { downloadCcBookPdf, downloadBookPdf } from "./bookPdf";
@@ -1928,7 +1930,7 @@ function TopBtn({ solid, active, activeColor, ariaLabel, onClick, children }: { 
 }
 
 /* ═════════ MAIN ═════════ */
-export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book: BookData; onBack: () => void; onDonate: () => void; initialTarget?: { div?: string | null; chapter: string | null; verse: string | null } | null }) {
+export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarget }: { book: BookData; onBack: () => void; onDonate: () => void; onOpenCart: () => void; initialTarget?: { div?: string | null; chapter: string | null; verse: string | null } | null }) {
   const [idx, setIdx] = useState(0);
   const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
@@ -2214,6 +2216,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       });
       return;
     }
+    if (id === "order") { const p = bookProduct(book.work); if (p) addToCart(p); onOpenCart(); return; }
     if (id === "donate") { onDonate(); return; }
     if (id === "report") { setReportOpen(true); return; }
   };
@@ -2229,7 +2232,7 @@ export function BookDetailPage({ book, onBack, onDonate, initialTarget }: { book
       <div ref={bookContentRef}>
         {/* HERO — the SAME card module as the feed (ВКП); single source from books.ts */}
         <div style={{ padding: "2px 16px 6px" }}>
-          <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
+          <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} canOrder={!!bookProduct(book.work)} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
         </div>
 
         <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => t.id !== "reviews" || REVIEWED_WORKS.has(book.work))} />
