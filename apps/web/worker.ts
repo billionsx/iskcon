@@ -1,6 +1,7 @@
 import { handleAdmin } from "./loader/handler";
 import { homeApi } from "./workerHome";
 import { calendarApi } from "./workerCalendar";
+import { accountApi } from "./src/account/server";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
@@ -785,6 +786,12 @@ export default {
     if (kirtanM) {
       return kirtanManifest(url.origin, kirtanM[1]);
     }
+
+    // ── Личный кабинет: регистрация/вход/сессия (cookie) + закладки, прогресс
+    // чтения, история прослушивания. Та же база D1, тот же origin. Матчим ДО
+    // общего /api-прокси, иначе cookie-маршруты ушли бы на api.gaurangers.com.
+    const accRes = await accountApi(request, env, url);
+    if (accRes) return accRes;
 
     // Главная: каталоги (центры/рестораны/документы из D1 с фолбэком на ассеты)
     // и лента Telegram с медиа — см. workerHome.ts

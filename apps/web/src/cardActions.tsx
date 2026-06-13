@@ -15,10 +15,11 @@
  *   const { openCardMenu } = useCardActions();
  *   …<CardActionBtns fav={fav} onMore={() => openCardMenu(ctx)} />
  */
-import { createContext, useCallback, useContext, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
+import { mirrorFavorite, syncFavoritesToServer, useAuthed } from "./account/track";
 import { HeartIcon, MoreIcon } from "./ui/icons";
 
 /* ── Избранное: localStorage `fav:<key>`; key = `<type>:<id>`.
@@ -37,9 +38,10 @@ function favInvalidate() { favCache = null; favListeners.forEach((l) => l()); }
 function favOn(key: string): boolean { try { return localStorage.getItem(FAV_PREFIX + key) != null; } catch { return false; } }
 function favWrite(key: string, meta?: FavMeta) {
   try { localStorage.setItem(FAV_PREFIX + key, JSON.stringify({ ts: Date.now(), t: meta?.t, s: meta?.s, h: meta?.h })); } catch { /* приватный режим */ }
+  mirrorFavorite(key, true, meta);   // зеркало в личный кабинет (если вошёл)
   favInvalidate();
 }
-function favDelete(key: string) { try { localStorage.removeItem(FAV_PREFIX + key); } catch { /* noop */ } favInvalidate(); }
+function favDelete(key: string) { try { localStorage.removeItem(FAV_PREFIX + key); } catch { /* noop */ } mirrorFavorite(key, false); favInvalidate(); }
 
 /** Метаданные избранного из контекста карточки (title/subtitle + относительная ссылка). */
 export function favMetaFromCtx(ctx: { title?: string; subtitle?: string; url?: string }): FavMeta {
@@ -186,6 +188,12 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
   const [qr, setQr] = useState<CardCtx | null>(null);
   const [report, setReport] = useState<CardCtx | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  // При входе разово переносим локальное «Избранное» в личный кабинет.
+  const authed = useAuthed();
+  useEffect(() => {
+    if (!authed) return;
+    syncFavoritesToServer(favSnapshot().map((it) => ({ key: it.key, meta: { t: it.title, s: it.subtitle, h: it.href } })));
+  }, [authed]);
   const tRef = useState<{ id: ReturnType<typeof setTimeout> | null }>({ id: null })[0];
   const flash = useCallback((m: string) => {
     setToast(m);

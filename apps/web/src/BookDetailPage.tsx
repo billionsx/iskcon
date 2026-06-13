@@ -17,6 +17,7 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
+import { recordRead } from "./account/track";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
@@ -981,6 +982,17 @@ function NodReviews() {
 }
 
 /* ───────── Содержание (flat rows on white) ───────── */
+/** Путь стиха для кабинета (прогресс чтения): /book/<work>/<lila|ch>/<verse?>. */
+function versePathFor(work: string, division: string | undefined, ref: string): string {
+  const dv = (division ?? "").split(".").filter(Boolean); // ["sb","1","9"] | ["cc","adi","7"] | ["bg","2"]
+  const vseg = ref.split(".").pop() ?? "";
+  if (work !== "bg") {
+    return dv.length >= 3 ? `/book/${work}/${dv[1]}/${dv[2]}${vseg ? `/${vseg}` : ""}` : `/book/${work}`;
+  }
+  const ch = dv.length >= 2 ? dv[dv.length - 1] : (ref.split(".")[0] ?? "");
+  return `/book/${work}/${ch}${vseg ? `/${vseg}` : ""}`;
+}
+
 export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
 function Contents({ chapters, onOpenChapter, prose = false }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void; prose?: boolean }) {
   const chCount = chapters ? chapters.filter((c) => { const n = Number(c.number); return n >= 1 && n <= 999; }).length : 0;
@@ -1139,6 +1151,13 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
   useEffect(() => {
     let live = true;
     setVerses(null);
+    recordRead({
+      work,
+      ref: hierarchical ? chapter.id : String(chapter.number),
+      label: chapter.title_ru ? `Глава ${chapter.number} · ${chapter.title_ru}` : `Глава ${chapter.number}`,
+      href: favHref,
+      kind: "chapter",
+    });
     const readUrl = hierarchical
       ? api(`/books/${work}/division/${chapter.id}/read`)
       : api(`/books/${work}/chapters/${chapter.number}/read`);
@@ -1611,6 +1630,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
     let live = true;
     setParas(null);
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    recordRead({ work, ref: chapter.id, label: chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle), href: numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`, kind: "prose" });
     fetch(api(`/books/${work}/chapters/${encodeURIComponent(chapter.number)}/read`))
       .then((r) => r.json())
       .then((d) => { if (live) setParas((d.verses ?? []).map((v: ProsePara) => ({ ref: v.ref, translation: v.translation }))); })
@@ -1714,7 +1734,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
     setData(null); setError(false);
     fetch(api(`/books/${work}/verses/${encodeURIComponent(refStr)}`))
       .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
-      .then((d) => { if (live) setData(d as VerseDetail); })
+      .then((d) => { if (live) { setData(d as VerseDetail); recordRead({ work, ref: (d.ref || refStr), label: (d.label ?? refStr), href: versePathFor(work, d.division, d.ref || refStr), kind: "verse" }); } })
       .catch(() => { if (live) setError(true); });
     return () => { live = false; };
   }, [refStr]);
