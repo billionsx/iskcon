@@ -128,7 +128,7 @@ function Tile({ it }: { it: FavItem }) {
     return (
       <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 11, display: "grid", placeItems: "center",
         background: "linear-gradient(135deg, #fbf4d8 0%, #f1e1a4 100%)", border: `0.5px solid ${GOLD}55`, boxShadow: "inset 0 1px 2px rgba(255,255,255,.5)" }}>
-        <span style={{ fontFamily: "var(--font-scripture)", fontSize: 21, fontWeight: 700, color: GOLDT, lineHeight: 1 }}>{initial}</span>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700, color: GOLDT, lineHeight: 1, letterSpacing: "-0.02em" }}>{initial}</span>
       </span>
     );
   }
@@ -141,7 +141,6 @@ function Tile({ it }: { it: FavItem }) {
 
 /* ── строка со свайпом «Убрать» ── */
 function Row({ it, first, last, onTap, reduce }: { it: FavItem; first: boolean; last: boolean; onTap: () => void; reduce: boolean }) {
-  const cat = catOf(it.type);
   const [dx, setDx] = useState(0);
   const [removing, setRemoving] = useState(false);
   const drag = useRef(false);
@@ -169,7 +168,7 @@ function Row({ it, first, last, onTap, reduce }: { it: FavItem; first: boolean; 
   const tap = () => { if (moved.current || dx !== 0) { setDx(0); return; } onTap(); };
 
   const title = titleFor(it);
-  const serif = cat === "book" || cat === "chapter" || cat === "verse";
+
 
   return (
     <div style={{ position: "relative", maxHeight: removing ? 0 : 240, opacity: removing ? 0 : 1, overflow: "hidden",
@@ -190,8 +189,8 @@ function Row({ it, first, last, onTap, reduce }: { it: FavItem; first: boolean; 
           transition: drag.current ? "none" : "transform .26s cubic-bezier(.22,.61,.36,1)", touchAction: "pan-y", WebkitTapHighlightColor: "transparent" }}>
         <Tile it={it} />
         <span style={{ minWidth: 0, flex: 1 }}>
-          <span style={{ display: "block", fontFamily: serif ? "var(--font-scripture)" : "var(--font-display)", fontSize: 16, fontWeight: serif ? 600 : 600,
-            letterSpacing: serif ? "0" : "-0.012em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
+          <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 16.5, fontWeight: 600,
+            letterSpacing: "-0.014em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
           {it.subtitle && (
             <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13, color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.subtitle}</span>
           )}
