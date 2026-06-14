@@ -49,29 +49,8 @@ jobs:
           OUT=$(bunx wrangler d1 execute iskcon-db --remote --json \
             --command "SELECT COUNT(*) AS n FROM gcal_days WHERE location_std='vrindavan';")
           echo "$OUT"
-          N=$(printf '%s' "$OUT" | python3 -c "
-import sys,json,re
-t=sys.stdin.read()
-def find(o):
-    if isinstance(o,dict):
-        if isinstance(o.get('n'),int): return o['n']
-        for v in o.values():
-            r=find(v)
-            if r is not None: return r
-    elif isinstance(o,list):
-        for v in o:
-            r=find(v)
-            if r is not None: return r
-    return None
-try:
-    n=find(json.loads(t))
-except Exception:
-    n=None
-if n is None:
-    m=re.findall(r'\"n\"\s*:\s*(\d+)', t)
-    n=int(m[0]) if m else -1
-print(n)
-")
+          N=$(printf '%s' "$OUT" | tr -d ' \n' | grep -oE '"n":[0-9]+' | head -1 | grep -oE '[0-9]+')
+          [ -z "$N" ] && N=0
           echo "::notice title=GCal calendar rows in D1::$N"
           if [ "$N" -lt 400 ]; then echo "::error::expected >=400 rows, got $N"; exit 1; fi
           echo "ingest ok: $N rows"
