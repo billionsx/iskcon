@@ -1,0 +1,4 @@
+# GCAL / Gaurabda Calendar algorithm (MIT) — Python port of GCAL by Gopalapriya das,
+# (c) ISKCON GBC Vaishnava Calendar Committee. Used to generate the authoritative
+# dated Vaisnava calendar (Vrindavan standard) ingested into D1.
+gaurabda @ git+https://github.com/gopa810/gaurabda-calendar.git
