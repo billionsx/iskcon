@@ -20,6 +20,51 @@ calendarRouter.get('/festivals', async (c) => {
   });
 });
 
+// GET /v1/calendar/days?from=ISO&to=ISO&kind=... — датированный календарь (GCal, стандарт Вриндаван)
+const daysQuery = z.object({
+  from: z.string().optional(),
+  to: z.string().optional(),
+  kind: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(2000).default(800),
+});
+
+calendarRouter.get('/days', zValidator('query', daysQuery), async (c) => {
+  const q = c.req.valid('query');
+  const where: string[] = ["location_std = 'vrindavan'"];
+  const binds: unknown[] = [];
+  if (q.from) {
+    where.push('date >= ?');
+    binds.push(q.from);
+  }
+  if (q.to) {
+    where.push('date <= ?');
+    binds.push(q.to);
+  }
+  if (q.kind) {
+    where.push('kind = ?');
+    binds.push(q.kind);
+  }
+  const sql =
+    `SELECT date, kind, name_en, name_i18n, gaurabda_year, fast_code, mahadvadasi,
+            masa, tithi, naksatra, sunrise, sunset, paran_start, paran_end,
+            paran_start_reason, paran_end_reason, rasi, raw_text
+     FROM gcal_days WHERE ${where.join(' AND ')} ORDER BY date, kind LIMIT ?`;
+  try {
+    const { results } = await c.env.DB.prepare(sql)
+      .bind(...binds, q.limit)
+      .all();
+    return c.json({
+      items: (results as Record<string, any>[]).map((r) => ({
+        ...r,
+        name_i18n: parseJson(r.name_i18n, {}),
+      })),
+    });
+  } catch {
+    // таблица ещё не создана/наполнена ингестом — отдаём пусто, чтобы эндпоинт не падал
+    return c.json({ items: [], note: 'calendar not yet ingested' });
+  }
+});
+
 // GET /v1/calendar/events?center=slug&from=ISO&to=ISO — локальные события
 const evQuery = z.object({
   center: z.string().optional(),

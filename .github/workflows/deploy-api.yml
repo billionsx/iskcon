@@ -36,6 +36,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0004_user_accounts.sql
 
+      - name: Ensure calendar schema (idempotent)
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0005_gcal_calendar.sql
+
       - name: Smoke test live /v1/health and record into D1
         working-directory: apps/api
         env:
