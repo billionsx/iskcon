@@ -34,6 +34,32 @@ export interface Overview {
   bookmarks: BookmarkItem[];
 }
 
+export interface SadhanaDay { day: string; rounds: number; reading_min: number; rose_at: string | null; note: string | null }
+export interface SadhanaWeekDay { day: string; rounds: number; done: boolean; today: boolean }
+export interface SadhanaState {
+  goal: number;
+  today: string;
+  todayRow: SadhanaDay;
+  stats: {
+    todayRounds: number;
+    currentStreak: number;
+    longestStreak: number;
+    totalRounds: number;
+    daysPracticed: number;
+    totalReadingMin: number;
+  };
+  week: SadhanaWeekDay[];
+  history: SadhanaDay[];
+}
+export interface SadhanaPatch {
+  day?: string;
+  today?: string;
+  readingMin?: number;
+  roseAt?: string | null;
+  note?: string | null;
+  goal?: number;
+}
+
 class ApiError extends Error {
   code: string;
   status: number;
@@ -74,6 +100,11 @@ export const accountClient = {
   updateProfile: (patch: { name?: string; spiritualName?: string }) =>
     request<{ user: AccountUser }>("PATCH", "/me/profile", patch).then((d) => d.user),
   overview: () => request<Overview>("GET", "/me/overview"),
+  sadhana: {
+    get: (today: string, days = 21) =>
+      request<SadhanaState>("GET", `/me/sadhana?today=${encodeURIComponent(today)}&days=${days}`),
+    save: (patch: SadhanaPatch) => request<SadhanaState>("POST", "/me/sadhana", patch),
+  },
 };
 
 export { ApiError };

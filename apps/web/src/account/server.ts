@@ -212,6 +212,22 @@ async function ensureSchema(env: DB): Promise<void> {
       )`,
     ),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_japa_user_day ON japa_round(user_id, day)`),
+    // Дневник садханы — чтение/подъём/заметка на (преданный, день). Круги НЕ тут:
+    // они берутся из japa_round (источник — счётчик джапы), чтобы метрика была
+    // одна. `day` — локальный день «YYYY-MM-DD». Зеркалирует 0007_sadhana_day.sql.
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS sadhana_day (
+        user_id     TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        day         TEXT NOT NULL,
+        reading_min INTEGER NOT NULL DEFAULT 0,
+        rose_at     TEXT,
+        note        TEXT,
+        created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
+        PRIMARY KEY (user_id, day)
+      )`,
+    ),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sadhana_day_user ON sadhana_day(user_id, day)`),
   ]);
   schemaReady = true;
 }
@@ -272,6 +288,127 @@ async function sessionUser(env: DB, req: Request): Promise<{ user: UserRow; veri
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const normEmail = (s: unknown) => String(s ?? "").trim().toLowerCase().slice(0, 200);
 const clip = (s: unknown, n: number) => String(s ?? "").trim().slice(0, n);
+
+/* ─────────────────────────── садхана · дневник ─────────────────────────── */
+// Круги берём из japa_round (источник — счётчик джапы), а чтение/подъём/заметки —
+// из sadhana_day. Здесь только агрегация и стрики; запись кругов идёт в /api/me/japa.
+
+const SADHANA_GOAL_DEFAULT = 16;
+const dayStr = (d: Date) => d.toISOString().slice(0, 10);
+const isYmd = (s: unknown): s is string => typeof s === "string" && /^\d{4}-\d{2}-\d{2}$/.test(s);
+// Сдвиг «YYYY-MM-DD» на n дней. Строку трактуем как полночь UTC — арифметика без
+// часовых поясов/DST (на отображаемый локальный день не влияет).
+function addDays(ymd: string, n: number): string {
+  const [y, m, d] = ymd.split("-").map(Number);
+  return new Date(Date.UTC(y, (m || 1) - 1, d || 1) + n * 86_400_000).toISOString().slice(0, 10);
+}
+
+async function readGoal(env: DB, uid: string): Promise<number> {
+  const row = await env.DB.prepare(`SELECT data FROM user_prefs WHERE user_id = ?1`).bind(uid).first<{ data: string }>();
+  if (row?.data) {
+    try {
+      const g = Number((JSON.parse(row.data) as { sadhanaGoal?: unknown }).sadhanaGoal);
+      if (Number.isFinite(g) && g >= 1 && g <= 64) return Math.round(g);
+    } catch { /* default */ }
+  }
+  return SADHANA_GOAL_DEFAULT;
+}
+async function writeGoal(env: DB, uid: string, goal: number): Promise<void> {
+  const g = Math.min(Math.max(Math.round(goal), 1), 64);
+  const row = await env.DB.prepare(`SELECT data FROM user_prefs WHERE user_id = ?1`).bind(uid).first<{ data: string }>();
+  let data: Record<string, unknown> = {};
+  if (row?.data) { try { data = JSON.parse(row.data) as Record<string, unknown>; } catch { data = {}; } }
+  data.sadhanaGoal = g;
+  await env.DB.prepare(
+    `INSERT INTO user_prefs (user_id, data, updated_at) VALUES (?1, ?2, datetime('now'))
+     ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`,
+  ).bind(uid, JSON.stringify(data)).run();
+}
+
+interface DiaryRow { day: string; reading_min: number; rose_at: string | null; note: string | null }
+
+/** Полное состояние дневника: цель, сегодня, стрики, неделя, история. */
+async function sadhanaState(env: DB, uid: string, today: string, histDays: number) {
+  const goal = await readGoal(env, uid);
+  const [jt, jDaysRes, dRowsRes, readAgg] = await Promise.all([
+    env.DB.prepare(
+      `SELECT COUNT(*) AS rounds, COUNT(DISTINCT day) AS days FROM japa_round WHERE user_id = ?1`,
+    ).bind(uid).first<{ rounds: number; days: number }>(),
+    env.DB.prepare(
+      `SELECT day, COUNT(*) AS rounds FROM japa_round WHERE user_id = ?1 GROUP BY day`,
+    ).bind(uid).all<{ day: string; rounds: number }>(),
+    env.DB.prepare(
+      `SELECT day, reading_min, rose_at, note FROM sadhana_day WHERE user_id = ?1`,
+    ).bind(uid).all<DiaryRow>(),
+    env.DB.prepare(
+      `SELECT COALESCE(SUM(reading_min),0) AS reading FROM sadhana_day WHERE user_id = ?1`,
+    ).bind(uid).first<{ reading: number }>(),
+  ]);
+
+  const roundsByDay = new Map<string, number>();
+  for (const r of jDaysRes.results ?? []) roundsByDay.set(r.day, r.rounds);
+  const diaryByDay = new Map<string, DiaryRow>();
+  for (const r of dRowsRes.results ?? []) diaryByDay.set(r.day, r);
+
+  const done = new Set<string>();
+  for (const [day, rounds] of roundsByDay) if (rounds >= goal) done.add(day);
+
+  // Текущий стрик: от сегодня (или вчера, если сегодня ещё не закрыто — незавершённый
+  // день не рвёт серию) — назад по подряд идущим закрытым дням (круги ≥ цель).
+  let current = 0;
+  let cursor = done.has(today) ? today : addDays(today, -1);
+  while (done.has(cursor)) { current++; cursor = addDays(cursor, -1); }
+
+  // Рекорд: самый длинный отрезок подряд идущих закрытых дней.
+  let longest = 0, run = 0, prev: string | null = null;
+  for (const d of [...done].sort()) {
+    run = prev && addDays(prev, 1) === d ? run + 1 : 1;
+    if (run > longest) longest = run;
+    prev = d;
+  }
+
+  const cell = (day: string) => {
+    const dr = diaryByDay.get(day);
+    return {
+      day,
+      rounds: roundsByDay.get(day) ?? 0,
+      reading_min: dr?.reading_min ?? 0,
+      rose_at: dr?.rose_at ?? null,
+      note: dr?.note ?? null,
+    };
+  };
+
+  const week: { day: string; rounds: number; done: boolean; today: boolean }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = addDays(today, -i);
+    const rounds = roundsByDay.get(d) ?? 0;
+    week.push({ day: d, rounds, done: rounds >= goal, today: d === today });
+  }
+
+  // История: дни с любой активностью (круги/чтение/подъём/заметка), свежие сверху.
+  const allDays = new Set<string>([...roundsByDay.keys(), ...diaryByDay.keys()]);
+  const history = [...allDays]
+    .map(cell)
+    .filter((c) => c.rounds > 0 || c.reading_min > 0 || c.rose_at || c.note)
+    .sort((a, b) => (a.day < b.day ? 1 : -1))
+    .slice(0, Math.min(Math.max(histDays, 1), 90));
+
+  return {
+    goal,
+    today,
+    todayRow: cell(today),
+    stats: {
+      todayRounds: roundsByDay.get(today) ?? 0,
+      currentStreak: current,
+      longestStreak: longest,
+      totalRounds: jt?.rounds ?? 0,
+      daysPracticed: jt?.days ?? 0,
+      totalReadingMin: readAgg?.reading ?? 0,
+    },
+    week,
+    history,
+  };
+}
 
 /* ─────────────────────────── маршрутизатор ─────────────────────────── */
 
@@ -575,6 +712,51 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
         totals: totals ?? { rounds: 0, beads: 0, seconds: 0, days: 0 },
         days: days.results ?? [],
       });
+    }
+  }
+
+  // садхана · дневник — чтение/подъём/заметка дня + агрегация со счётчиком джапы
+  // (круги → стрики и статистика). Запись кругов идёт через /api/me/japa.
+  if (p === "/api/me/sadhana") {
+    const qToday = url.searchParams.get("today");
+    const today = isYmd(qToday) ? qToday : dayStr(new Date());
+
+    if (method === "GET") {
+      const days = Math.min(Math.max(parseInt(url.searchParams.get("days") || "21", 10) || 21, 1), 90);
+      return jres(await sadhanaState(env, uid, today, days));
+    }
+
+    if (method === "POST") {
+      const b = await body();
+      const anchor = isYmd(b.today) ? b.today : today;   // якорь стриков (реальное «сегодня»)
+      const day = isYmd(b.day) ? b.day : anchor;         // день, в который пишем
+
+      let touched = false;
+      if ("goal" in b && Number.isFinite(Number(b.goal))) { await writeGoal(env, uid, Number(b.goal)); touched = true; }
+
+      const hasReading = "readingMin" in b && Number.isFinite(Number(b.readingMin));
+      const hasRose = "roseAt" in b;
+      const hasNote = "note" in b;
+      if (hasReading || hasRose || hasNote) {
+        const cur = await env.DB.prepare(
+          `SELECT reading_min, rose_at, note FROM sadhana_day WHERE user_id = ?1 AND day = ?2`,
+        ).bind(uid, day).first<{ reading_min: number; rose_at: string | null; note: string | null }>();
+        const reading = hasReading ? Math.min(Math.max(Math.round(Number(b.readingMin)), 0), 1440) : (cur?.reading_min ?? 0);
+        let rose: string | null;
+        if (hasRose) { const v = clip(b.roseAt, 5); rose = /^\d{1,2}:\d{2}$/.test(v) ? v : null; }
+        else rose = cur?.rose_at ?? null;
+        const note = hasNote ? (clip(b.note, 500) || null) : (cur?.note ?? null);
+        await env.DB.prepare(
+          `INSERT INTO sadhana_day (user_id, day, reading_min, rose_at, note, updated_at)
+           VALUES (?1,?2,?3,?4,?5, datetime('now'))
+           ON CONFLICT(user_id, day) DO UPDATE SET
+             reading_min = ?3, rose_at = ?4, note = ?5, updated_at = datetime('now')`,
+        ).bind(uid, day, reading, rose, note).run();
+        touched = true;
+      }
+
+      if (!touched) return err("bad_request");
+      return jres(await sadhanaState(env, uid, anchor, 21));
     }
   }
 
