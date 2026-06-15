@@ -34,6 +34,7 @@ import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
 import { api } from "./api";
 import CartScreen from "./shop/CartScreen";
+import JapaScreen from "./JapaScreen";
 import { useCartCount } from "./shop/cart";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -511,6 +512,7 @@ export default function App() {
   const [openCollection, setOpenCollection] = useState<string | null>(null);
   const [donate, setDonate] = useState(false);
   const [openCart, setOpenCart] = useState(false);
+  const [openJapa, setOpenJapa] = useState(false);
   const fromPop = useRef(false);
   // Текущий открытый код книги — для делегирования внутрикнижного popstate (замыкание onPop иначе видит устаревшее значение).
   const openBookRef = useRef<string | null>(null);
@@ -520,9 +522,10 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "cart"];
+  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "cart", "practice"];
   function pathFromState(): string {
     if (openCart) return "/cart";
+    if (openJapa) return "/practice/japa";
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
@@ -550,13 +553,14 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false); setOpenJapa(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
     if (clean === "/cart") { setOpenCart(true); return; }
+    if (clean === "/practice/japa") { setOpenJapa(true); return; }
     if (seg0 === "book") {
       const parts = clean.split("/");           // ["", "book", <work>, a?, b?, c?]
       const work = parts[2] || "bg";
@@ -627,13 +631,23 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Открытие счётчика джапы из хаба «Садхана» (вложен глубоко в HomeScreen) —
+  // через событие, чтобы не пробрасывать navigate сквозь дерево. Идём через
+  // navigate → корректный URL /practice/japa, история и кнопка «назад».
+  useEffect(() => {
+    const onJapa = () => navigate("/practice/japa");
+    window.addEventListener("iol:open-japa", onJapa);
+    return () => window.removeEventListener("iol:open-japa", onJapa);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // состояние → URL (push нового уровня), кроме случаев применения из popstate
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart, openJapa]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -684,7 +698,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart && !openJapa;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -732,6 +746,10 @@ export default function App() {
               onOpenBook={(workId) => openRef(`book:${workId}`)}
               onOpenRef={(href) => openRef(href)}
             />
+          </main>
+        ) : openJapa ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <JapaScreen onBack={goBack} />
           </main>
         ) : openCart ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

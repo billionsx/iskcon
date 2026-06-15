@@ -195,6 +195,23 @@ async function ensureSchema(env: DB): Promise<void> {
         updated_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`,
     ),
+    // Садхана · джапа: строка на завершённый круг. Источник правды — localStorage
+    // на устройстве; здесь зеркало вошедшего пользователя. Идемпотентность по
+    // (user_id, client_id). Зеркалирует apps/api/migrations/0006_japa.sql.
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS japa_round (
+        id TEXT PRIMARY KEY DEFAULT (lower(hex(randomblob(16)))),
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        day TEXT NOT NULL,
+        at TEXT NOT NULL DEFAULT (datetime('now')),
+        beads INTEGER NOT NULL DEFAULT 108,
+        duration_sec INTEGER,
+        client_id TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE (user_id, client_id)
+      )`,
+    ),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_japa_user_day ON japa_round(user_id, day)`),
   ]);
   schemaReady = true;
 }
@@ -507,6 +524,58 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
     }
     const { results } = await env.DB.prepare(sql).bind(uid).all();
     return jres({ items: results ?? [] });
+  }
+
+  // садхана · джапа — приём завершённых кругов (зеркало локального счётчика) и
+  // выдача дневной агрегации за последний год (для сводки кабинета и кросс-
+  // устройства). На устройстве источник правды — localStorage; сюда летят только
+  // новые круги, идемпотентно по (user_id, client_id).
+  if (p === "/api/me/japa") {
+    if (method === "POST") {
+      const b = await body();
+      const raw = Array.isArray(b.rounds) ? (b.rounds as unknown[]) : [];
+      if (!raw.length) return jres({ ok: true, saved: 0 });
+      // Жёсткий потолок на одну отправку — защита от мусора.
+      const items = raw.slice(0, 500).map((r) => {
+        const o = (r && typeof r === "object" ? r : {}) as Record<string, unknown>;
+        const day = clip(o.day, 10); // YYYY-MM-DD
+        const at = clip(o.at, 32) || new Date().toISOString().slice(0, 19).replace("T", " ");
+        const beads = Number.isFinite(Number(o.beads)) ? Math.min(100000, Math.max(1, Math.round(Number(o.beads)))) : 108;
+        const dur = Number.isFinite(Number(o.durationSec)) ? Math.min(86400, Math.max(0, Math.round(Number(o.durationSec)))) : null;
+        const cid = clip(o.id, 80) || null;
+        return { day, at, beads, dur, cid };
+      }).filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x.day));
+      if (!items.length) return err("bad_request");
+      await env.DB.batch(
+        items.map((x) =>
+          env.DB.prepare(
+            `INSERT INTO japa_round (user_id, day, at, beads, duration_sec, client_id)
+             VALUES (?1,?2,?3,?4,?5,?6)
+             ON CONFLICT(user_id, client_id) DO NOTHING`,
+          ).bind(uid, x.day, x.at, x.beads, x.dur, x.cid),
+        ),
+      );
+      return jres({ ok: true, saved: items.length });
+    }
+    if (method === "GET") {
+      const since = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const [totals, days] = await Promise.all([
+        env.DB.prepare(
+          `SELECT COUNT(*) AS rounds, COALESCE(SUM(beads),0) AS beads, COALESCE(SUM(duration_sec),0) AS seconds,
+                  COUNT(DISTINCT day) AS days
+           FROM japa_round WHERE user_id = ?1`,
+        ).bind(uid).first<{ rounds: number; beads: number; seconds: number; days: number }>(),
+        env.DB.prepare(
+          `SELECT day, COUNT(*) AS rounds, COALESCE(SUM(beads),0) AS beads, COALESCE(SUM(duration_sec),0) AS seconds
+           FROM japa_round WHERE user_id = ?1 AND day >= ?2
+           GROUP BY day ORDER BY day`,
+        ).bind(uid, since).all(),
+      ]);
+      return jres({
+        totals: totals ?? { rounds: 0, beads: 0, seconds: 0, days: 0 },
+        days: days.results ?? [],
+      });
+    }
   }
 
   return err("not_found", 404);
