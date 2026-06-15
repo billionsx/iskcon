@@ -967,17 +967,20 @@ export default {
       return kirtanManifest(url.origin, kirtanM[1]);
     }
 
+    // Центры (Ятра): публичный локатор/карточка + управление на той же
+    // cookie-сессии (создание/правка/публикация). Матчим ДО кабинета: его guard
+    // ловит весь префикс /api/me (включая /api/me/centers) и при отсутствии своего
+    // маршрута вернул бы 404 раньше нас. centersApi отдаёт null на всё, кроме
+    // /api/centers* и /api/me/centers — поэтому остальные /api/me/* и /api/auth/*
+    // спокойно доходят до кабинета ниже. См. apps/web/src/centers/server.ts.
+    const cenRes = await centersApi(request, env, url);
+    if (cenRes) return cenRes;
+
     // ── Личный кабинет: регистрация/вход/сессия (cookie) + закладки, прогресс
     // чтения, история прослушивания. Та же база D1, тот же origin. Матчим ДО
     // общего /api-прокси, иначе cookie-маршруты ушли бы на api.gaurangers.com.
     const accRes = await accountApi(request, env, url);
     if (accRes) return accRes;
-
-    // Центры (Ятра): публичный локатор/карточка + управление на той же
-    // cookie-сессии (создание/правка/публикация). Тоже ДО общего /api-прокси —
-    // см. apps/web/src/centers/server.ts.
-    const cenRes = await centersApi(request, env, url);
-    if (cenRes) return cenRes;
 
     // Главная: каталоги (центры/рестораны/документы из D1 с фолбэком на ассеты)
     // и лента Telegram с медиа — см. workerHome.ts
