@@ -7,6 +7,7 @@
  * пошаговое приготовление, девотический совет и переход к «Как предлагать».
  */
 import { recipeBySlug, deityById, DIFFICULTY_LABEL, DIETS, type Recipe } from "./prasad";
+import { chapterForRecipe } from "./cookbook";
 
 const GOLD = "#D2AA1B";
 
@@ -33,11 +34,12 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{children}</h2>;
 }
 
-export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering }: {
+export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering, onOpenBookChapter }: {
   slug: string;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onOpenOffering: () => void;
+  onOpenBookChapter?: (chapterId: string) => void;
 }) {
   const recipe: Recipe | undefined = recipeBySlug(slug);
 
@@ -156,6 +158,25 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
           </span>
           <ChevR />
         </button>
+
+        {/* Читать в книге «Кухня прасада» */}
+        {onOpenBookChapter && (() => {
+          const ch = chapterForRecipe(recipe.slug);
+          if (!ch) return null;
+          return (
+            <button type="button" onClick={() => onOpenBookChapter(ch.id)}
+              style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", marginTop: 10, padding: "16px 16px", borderRadius: 18, border: "none", background: "var(--color-glass-thin)", color: "var(--color-label)", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+              <span aria-hidden style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" /><path d="M8 4v14" /></svg>
+              </span>
+              <span style={{ minWidth: 0, flex: 1 }}>
+                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>Читать в книге</span>
+                <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>«Кухня прасада» · {ch.title}</span>
+              </span>
+              <ChevR />
+            </button>
+          );
+        })()}
       </div>
     </div>
   );
