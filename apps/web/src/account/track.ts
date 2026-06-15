@@ -141,6 +141,31 @@ export function recordListen(ev: ListenEvent): void {
   });
 }
 
+/* ─────────────────────── джапа (садхана) ─────────────────────── */
+
+export interface JapaRoundDTO {
+  /** Стабильный id круга с устройства (<device>:<ts>) — идемпотентность на сервере. */
+  id: string;
+  /** Локальная дата завершения круга, YYYY-MM-DD. */
+  day: string;
+  /** Момент завершения, ISO. */
+  at: string;
+  /** Бусин в круге (обычно 108). */
+  beads: number;
+  /** Длительность круга в секундах (если измерена). */
+  durationSec?: number | null;
+}
+
+/**
+ * Зеркалит завершённые круги джапы на сервер (для вошедшего — кросс-устройство и
+ * сводка кабинета). Локальный счётчик остаётся источником правды на устройстве;
+ * сюда летят только новые круги, идемпотентно по id. No-op для гостя.
+ */
+export function recordJapa(rounds: JapaRoundDTO[]): void {
+  if (!authed || !rounds.length) return;
+  post("/me/japa", { rounds });
+}
+
 /* ─────────────────────── закладки/избранное (хук) ─────────────────────── */
 
 export interface BookmarkInput {
