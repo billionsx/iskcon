@@ -2,6 +2,7 @@ import { handleAdmin } from "./loader/handler";
 import { homeApi } from "./workerHome";
 import { calendarApi } from "./workerCalendar";
 import { accountApi } from "./src/account/server";
+import { centersApi } from "./src/centers/server";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
@@ -971,6 +972,12 @@ export default {
     // общего /api-прокси, иначе cookie-маршруты ушли бы на api.gaurangers.com.
     const accRes = await accountApi(request, env, url);
     if (accRes) return accRes;
+
+    // Центры (Ятра): публичный локатор/карточка + управление на той же
+    // cookie-сессии (создание/правка/публикация). Тоже ДО общего /api-прокси —
+    // см. apps/web/src/centers/server.ts.
+    const cenRes = await centersApi(request, env, url);
+    if (cenRes) return cenRes;
 
     // Главная: каталоги (центры/рестораны/документы из D1 с фолбэком на ассеты)
     // и лента Telegram с медиа — см. workerHome.ts

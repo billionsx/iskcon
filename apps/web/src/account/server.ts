@@ -283,6 +283,17 @@ async function sessionUser(env: DB, req: Request): Promise<{ user: UserRow; veri
   return { user: u as UserRow, verified };
 }
 
+/**
+ * Id вошедшего пользователя (users.id) по cookie-сессии, либо null.
+ * Тонкая обёртка над sessionUser для других подсистем того же воркера
+ * (например, управление центрами — apps/web/src/centers/server.ts), чтобы они
+ * жили на той же сессии и не дублировали разбор cookie.
+ */
+export async function currentUserId(env: DB, req: Request): Promise<string | null> {
+  const s = await sessionUser(env, req);
+  return s ? s.user.id : null;
+}
+
 /* ─────────────────────────── валидация ─────────────────────────── */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
