@@ -38,6 +38,7 @@ import JapaScreen from "./JapaScreen";
 import { useCartCount } from "./shop/cart";
 import PrasadamScreen from "./prasad/PrasadamScreen";
 import RecipeDetail from "./prasad/RecipeDetail";
+import CookbookScreen from "./prasad/CookbookScreen";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -517,6 +518,8 @@ export default function App() {
   const [openJapa, setOpenJapa] = useState(false);
   const [prasadamSection, setPrasadamSection] = useState<"recipes" | "match" | "deities" | "offering" | null>(null);
   const [prasadamRecipe, setPrasadamRecipe] = useState<string | null>(null);
+  const [openCookbook, setOpenCookbook] = useState(false);
+  const [cookbookChapter, setCookbookChapter] = useState<string | null>(null);
   const fromPop = useRef(false);
   // Текущий открытый код книги — для делегирования внутрикнижного popstate (замыкание onPop иначе видит устаревшее значение).
   const openBookRef = useRef<string | null>(null);
@@ -531,6 +534,8 @@ export default function App() {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
     if (prasadamRecipe) return "/prasadam/recipe/" + prasadamRecipe;
+    if (cookbookChapter) return "/prasadam/book/" + cookbookChapter;
+    if (openCookbook) return "/prasadam/book";
     if (prasadamSection) return prasadamSection === "offering" ? "/prasadam/offering" : "/prasadam";
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
@@ -559,7 +564,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false); setOpenJapa(false); setPrasadamSection(null); setPrasadamRecipe(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false); setOpenJapa(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -568,8 +573,9 @@ export default function App() {
     if (clean === "/cart") { setOpenCart(true); return; }
     if (clean === "/practice/japa") { setOpenJapa(true); return; }
     if (seg0 === "prasadam") {
-      const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering")?, <slug>?]
+      const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
       if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
+      if (parts[2] === "book") { if (parts[3]) setCookbookChapter(parts[3]); else setOpenCookbook(true); return; }
       setPrasadamSection(parts[2] === "offering" ? "offering" : "recipes");
       return;
     }
@@ -659,7 +665,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart, openJapa, prasadamSection, prasadamRecipe]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart, openJapa, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -710,7 +716,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart && !openJapa && !prasadamSection && !prasadamRecipe;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart && !openJapa && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -773,11 +779,19 @@ export default function App() {
           </main>
         ) : prasadamRecipe ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} />
+            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} onOpenBookChapter={(id) => navigate("/prasadam/book/" + id)} />
+          </main>
+        ) : cookbookChapter ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} />
+          </main>
+        ) : openCookbook ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} />
           </main>
         ) : prasadamSection ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} />
+            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} />
           </main>
         ) : (
           <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onCart={() => setOpenCart(true)} />

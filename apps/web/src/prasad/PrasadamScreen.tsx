@@ -43,12 +43,13 @@ const SECTIONS: { id: SectionId; label: string }[] = [
 ];
 
 export default function PrasadamScreen({
-  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange,
+  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange, onOpenBook,
 }: {
   initialSection?: SectionId;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onSectionChange?: (id: SectionId) => void;
+  onOpenBook: () => void;
 }) {
   const [section, setSection] = useState<SectionId>(initialSection);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -77,7 +78,7 @@ export default function PrasadamScreen({
       </div>
 
       <div style={{ padding: "18px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
-        {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} />}
+        {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} />}
         {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
         {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} />}
         {section === "offering" && <OfferingSection />}
@@ -169,7 +170,7 @@ function GroupedList({ children }: { children: ReactNode[] }) {
 }
 
 /* ═══════════════════ РАЗДЕЛ: РЕЦЕПТЫ ═══════════════════ */
-function RecipesSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }) {
+function RecipesSection({ onOpenRecipe, onOpenBook }: { onOpenRecipe: (slug: string) => void; onOpenBook: () => void }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [diet, setDiet] = useState<DietTag | null>(null);
   const results = useMemo(() => filterRecipes(category, diet), [category, diet]);
@@ -177,6 +178,18 @@ function RecipesSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void
   return (
     <>
       <SectionTitle sub={`${RECIPE_COUNT} рецептов прасада — традиционная саттвичная кухня без лука и чеснока.`}>Библиотека рецептов</SectionTitle>
+
+      <button type="button" onClick={onOpenBook}
+        style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", marginBottom: 4, padding: "16px 16px", borderRadius: 18, border: "none", background: `color-mix(in srgb, ${GOLD} 9%, transparent)`, cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+        <span aria-hidden style={{ flexShrink: 0, width: 42, height: 42, borderRadius: 12, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, color: GOLD }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" /><path d="M8 4v14" /></svg>
+        </span>
+        <span style={{ minWidth: 0, flex: 1 }}>
+          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>Книга «Кухня прасада»</span>
+          <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>Философия, продукты и специи, техники, рецепты и подношение</span>
+        </span>
+        <ChevR />
+      </button>
 
       <Eyebrow>Категории</Eyebrow>
       <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "10px 0 2px", marginInline: -16, paddingInline: 16, scrollbarWidth: "none" }}>
