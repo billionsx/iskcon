@@ -1,7 +1,7 @@
 # iskcon-gcal — on-demand Gaudiya Vaisnava (Gaurabda) calendar compute service.
 # Runs the official GBC Vaisnava Calendar Committee engine (gaurabda) in a
-# Cloudflare Python Worker (Pyodide) to compute an authoritative calendar for
-# ANY coordinates + timezone. Data embedded (res_data.py) via an open() shim.
+# Cloudflare Python Worker (Pyodide). Computes an authoritative calendar for ANY
+# coordinates + timezone. Data embedded (res_data.py) via an open() shim.
 #
 # GET /compute?lat=<f>&lng=<f>&tz=<IANA>[&start="1 jan 2026"][&days=int][&name=str]
 
@@ -10,6 +10,8 @@ import io
 import json
 import os
 import traceback
+
+from workers import WorkerEntrypoint
 
 # ── guarded init: import engine + build tz table; capture any failure ──
 _INIT_ERR = None
@@ -34,7 +36,7 @@ try:
         _p = _t.split(" ", 1)
         if len(_p) == 2:
             _IANA2FULL.setdefault(_p[1], _t)
-except Exception:
+except BaseException:
     _INIT_ERR = traceback.format_exc()
 
 _ALIAS = {
@@ -95,37 +97,41 @@ def _compute(lat, lng, full_tz, name, start, days):
     return events
 
 
-async def on_fetch(request, env):
-    from js import Response
+def _handle(url):
+    if _INIT_ERR:
+        return {"error": "init failed", "detail": _INIT_ERR[-1600:]}
+    if "/compute" not in url:
+        return {"service": "iskcon-gcal", "ok": True}
+    p = _qs(url)
     try:
-        if _INIT_ERR:
-            return Response.new(json.dumps({"error": "init failed", "detail": _INIT_ERR[-1600:]}))
-        url = str(request.url)
-        if "/compute" not in url:
-            return Response.new(json.dumps({"service": "iskcon-gcal", "ok": True}))
-        p = _qs(url)
+        lat = float(p.get("lat", ""))
+        lng = float(p.get("lng", ""))
+    except (TypeError, ValueError):
+        return {"error": "lat and lng required floats"}
+    full = _resolve_tz(p.get("tz", ""))
+    if not full:
+        return {"error": "tz not resolvable", "tz": p.get("tz", "")}
+    start = p.get("start", "1 jan 2026")
+    try:
+        days = int(p.get("days", "765"))
+    except ValueError:
+        days = 765
+    days = max(1, min(days, 1100))
+    name = p.get("name", "city")
+    events = _compute(lat, lng, full, name, start, days)
+    return {
+        "location": {"lat": lat, "lng": lng, "tz": p.get("tz", ""), "name": name},
+        "source": "GCAL gaurabda (GBC Vaishnava Calendar Committee)",
+        "count": len(events),
+        "events": events,
+    }
+
+
+class Default(WorkerEntrypoint):
+    async def fetch(self, request):
+        from js import Response
         try:
-            lat = float(p.get("lat", ""))
-            lng = float(p.get("lng", ""))
-        except (TypeError, ValueError):
-            return Response.new(json.dumps({"error": "lat and lng required floats"}))
-        full = _resolve_tz(p.get("tz", ""))
-        if not full:
-            return Response.new(json.dumps({"error": "tz not resolvable", "tz": p.get("tz", "")}))
-        start = p.get("start", "1 jan 2026")
-        try:
-            days = int(p.get("days", "765"))
-        except ValueError:
-            days = 765
-        days = max(1, min(days, 1100))
-        name = p.get("name", "city")
-        events = _compute(lat, lng, full, name, start, days)
-        body = json.dumps({
-            "location": {"lat": lat, "lng": lng, "tz": p.get("tz", ""), "name": name},
-            "source": "GCAL gaurabda (GBC Vaishnava Calendar Committee)",
-            "count": len(events),
-            "events": events,
-        })
-        return Response.new(body)
-    except Exception:
-        return Response.new(json.dumps({"error": "handler crashed", "detail": traceback.format_exc()[-1600:]}))
+            payload = _handle(str(request.url))
+        except BaseException:
+            payload = {"error": "handler crashed", "detail": traceback.format_exc()[-1600:]}
+        return Response.new(json.dumps(payload))
