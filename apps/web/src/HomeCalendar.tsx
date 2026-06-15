@@ -1,11 +1,12 @@
 /**
  * HomeCalendar — «Календарь»: вайшнавские праздники, экадаши и дни ачарьев
- * по любому городу мира (расчёты GCal 11 — официального софта Календарного
- * комитета GBC; источник пер-городских ICS — vaisnavacalendar.info).
+ * по любому городу мира. Расчёты — GCal (Гаурабда), официальный движок
+ * Календарного комитета GBC; фиды self-hosted (/data/gcal/<slug>.json),
+ * посчитаны по координатам каждого города. Без внешних рантайм-зависимостей.
  *
- *  · Город: пилюля → шит выбора (страна → город, живой поиск, ~190 городов);
- *    выбор хранится в localStorage, данные — /api/calendar?loc=…
- *    (для Маяпура есть мгновенный статический фолбэк /data/vaisnava-calendar.json).
+ *  · Город: пилюля → шит выбора (страна → город, живой поиск, 215 городов
+ *    + геокодинг любого города мира → ближайший); выбор хранится в localStorage,
+ *    данные — /api/calendar?loc=… (воркер локализует фид на лету). Дефолт — Вриндаван.
  *  · Hero: ближайший экадаши + парана следующего дня.
  *  · Нативный поиск по событиям (русский и оригинал) + фильтр-сабтабы.
  *  · Личности связаны с Героями: явления/уходы с entityId открывают EntityPage.
@@ -22,7 +23,7 @@ interface LocCity { ru: string; key: string; lat?: number | null; lng?: number |
 interface LocCountry { country: string; cities: LocCity[] }
 interface GeoHit { name: string; lat: number; lng: number; tz: string | null; country: string | null; admin1: string | null }
 
-const DEFAULT_LOC: LocCity = { ru: "Маяпур", key: "Mayapur [India]" };
+const DEFAULT_LOC: LocCity = { ru: "Вриндаван", key: "Vrindavan [India]" };
 const LS_KEY = "cal-loc";
 
 function loadStoredLoc(): LocCity {
@@ -45,10 +46,6 @@ async function loadCal(loc: LocCity): Promise<CalEvent[]> {
       if (evs.length > 50) { calCache.set(loc.key, evs); return evs; }
     }
   } catch { /* сеть */ }
-  if (loc.key === DEFAULT_LOC.key) {
-    const r = await fetch("/data/vaisnava-calendar.json");
-    if (r.ok) { const j = await r.json(); const evs = (j.events || []) as CalEvent[]; calCache.set(loc.key, evs); return evs; }
-  }
   throw new Error("calendar unavailable");
 }
 
@@ -291,7 +288,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Календарь для города «{loc.ru}» сейчас недоступен.{" "}
             {loc.key !== DEFAULT_LOC.key && (
-              <button type="button" onClick={() => setLoc(DEFAULT_LOC)} style={{ padding: 0, border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--color-brand-blue)" }}>Показать Маяпур</button>
+              <button type="button" onClick={() => setLoc(DEFAULT_LOC)} style={{ padding: 0, border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--color-brand-blue)" }}>Показать Вриндаван</button>
             )}
           </div>
         )}
@@ -348,7 +345,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         })}
         {all && (
           <p style={{ margin: "18px 2px 0", fontFamily: "var(--font-text)", fontSize: 11.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
-            Время параны указано по местному времени города «{loc.ru}». Расчёты — vaisnavacalendar.info (GCal 11, Календарный комитет GBC).
+            Время параны указано по местному времени города «{loc.ru}». Расчёты — GCal (Гаурабда), официальный движок Календарного комитета GBC.
           </p>
         )}
       </div>
