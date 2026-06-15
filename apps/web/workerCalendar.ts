@@ -1,18 +1,16 @@
 /**
  * workerCalendar — вайшнавский календарь по любому городу мира.
  *
- * GET /api/calendar?loc=Mayapur%20[India]
- *   → { loc, year: [2026, 2027], events: [{ date, title, orig, type, entityId? }] }
+ * GET /api/calendar?loc=Vrindavan%20[India]
+ *   → { loc, events: [{ date, title, orig, type, entityId? }] }
  *
- * Источник: vaisnavacalendar.info — пер-городские ICS, рассчитанные GCal 11
- * (официальная программа Календарного комитета GBC). Воркер тянет ICS на лету,
- * полностью русифицирует (полный словарь: экадаши, праздники, санкранти,
- * Чатурмасья, посты, 70+ вайшнавов в родительном падеже) и связывает личности
- * с реестром Героев (entityId → EntityPage). Кэш — caches.default, 12 часов.
+ * Источник: self-hosted фиды GCal (Гаурабда — официальный движок Календарного
+ * комитета GBC), посчитанные по координатам каждого города и лежащие как ассеты
+ * /data/gcal/<slug>.json. Воркер читает их через биндинг ASSETS, полностью
+ * русифицирует (полный словарь: экадаши, праздники, санкранти, Чатурмасья, посты,
+ * 70+ вайшнавов в родительном падеже) и связывает личности с реестром Героев
+ * (entityId → EntityPage). Без внешних рантайм-зависимостей. Кэш — caches.default.
  */
-
-const ICS_BASE = "https://www.vaisnavacalendar.info/ICS";
-const UA = "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)";
 
 type CalType = "ekadasi" | "parana" | "festival" | "appearance" | "disappearance" | "other";
 interface CalEvent { date: string; title: string; orig: string; type: CalType; entityId?: string }
@@ -260,35 +258,16 @@ function ruTitle(t: string): { title: string; type: CalType; entityId?: string }
   return { title: t, type: "other" };
 }
 
-/* ── ICS ────────────────────────────────────────────────────────────── */
-function parseIcs(text: string): { date: string; title: string }[] {
-  const out: { date: string; title: string }[] = [];
-  const unfolded = text.replace(/\r?\n[ \t]/g, "");
-  for (const block of unfolded.split("BEGIN:VEVENT").slice(1)) {
-    const body = block.split("END:VEVENT")[0];
-    const dm = body.match(/DTSTART(?:;VALUE=DATE)?[:;][^:\n]*:?(\d{8})/);
-    const sm = body.match(/SUMMARY[^:\n]*:(.+)/);
-    if (!dm || !sm) continue;
-    const d = dm[1];
-    const title = sm[1].trim().replace(/\\,/g, ",").replace(/\\;/g, ";").replace(/\\n/g, " · ").replace(/\\'/g, "'");
-    out.push({ date: `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`, title });
-  }
-  return out;
+/* ── self-hosted GCal-фид по городу ─────────────────────────────────── */
+type CalAssetsEnv = { ASSETS: { fetch: (req: Request) => Promise<Response> } };
+
+function citySlug(key: string): string {
+  return key.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
-async function fetchIcs(loc: string, year: number): Promise<string | null> {
-  const path = `/${year}/${loc}-a${year}-ICS.ics`;
-  const url = ICS_BASE + encodeURI(path).replace(/\[/g, "%5B").replace(/\]/g, "%5D");
-  try {
-    const res = await fetch(url, { headers: { "User-Agent": UA } });
-    if (!res.ok) return null;
-    return await res.text();
-  } catch { return null; }
-}
-
-export async function calendarApi(request: Request, url: URL): Promise<Response | null> {
+export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv): Promise<Response | null> {
   if (url.pathname !== "/api/calendar") return null;
-  const loc = (url.searchParams.get("loc") || "Mayapur [India]").trim().slice(0, 80);
+  const loc = (url.searchParams.get("loc") || "Vrindavan [India]").trim().slice(0, 80);
   if (!/^[A-Za-z .()'-]+ \[[A-Za-z .]+\]$/.test(loc)) {
     return new Response(JSON.stringify({ error: "bad loc" }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
@@ -298,11 +277,15 @@ export async function calendarApi(request: Request, url: URL): Promise<Response 
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
-  const now = new Date();
-  const years = [now.getUTCFullYear(), now.getUTCFullYear() + 1];
-  const texts = await Promise.all(years.map((y) => fetchIcs(loc, y)));
-  const raw: { date: string; title: string }[] = [];
-  texts.forEach((t) => { if (t) raw.push(...parseIcs(t)); });
+  // Источник — self-hosted фид GCal (Гаурабда, Календарный комитет GBC): ассет
+  // /data/gcal/<slug>.json, посчитанный движком GCAL по координатам города.
+  // Без внешних рантайм-зависимостей. Читаем напрямую через биндинг ASSETS.
+  let feed: { events?: { date: string; summary: string }[] } | null = null;
+  try {
+    const fres = await env.ASSETS.fetch(new Request(url.origin + "/data/gcal/" + citySlug(loc) + ".json"));
+    if (fres.ok) feed = await fres.json();
+  } catch { /* ассет недоступен */ }
+  const raw: { date: string; title: string }[] = (feed?.events || []).map((e) => ({ date: e.date, title: e.summary }));
   if (raw.length < 50) {
     return new Response(JSON.stringify({ error: "no calendar for location", loc }), {
       status: 404, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
@@ -324,8 +307,8 @@ export async function calendarApi(request: Request, url: URL): Promise<Response 
     events.push({ date: e.date, title: r.title, orig: e.title, type: r.type, ...(r.entityId ? { entityId: r.entityId } : {}) });
   }
 
-  const res = new Response(JSON.stringify({ loc, years, events }), {
-    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=43200" },
+  const res = new Response(JSON.stringify({ loc, events }), {
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=86400" },
   });
   await cache.put(cacheKey, res.clone());
   return res;

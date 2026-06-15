@@ -974,7 +974,7 @@ export default {
 
     // Главная: каталоги (центры/рестораны/документы из D1 с фолбэком на ассеты)
     // и лента Telegram с медиа — см. workerHome.ts
-    const calRes = await calendarApi(request, url);
+    const calRes = await calendarApi(request, url, env);
     if (calRes) return calRes;
     const homeRes = await homeApi(request, env);
     if (homeRes) return homeRes;
