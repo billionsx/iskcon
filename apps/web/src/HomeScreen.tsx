@@ -724,6 +724,7 @@ export default function HomeScreen(props: {
   onDonate: () => void;
   onBookMenu: (work: string, id: string) => void;
   flash: (m: string) => void;
+  onOpenPath: (path: string) => void;
 }) {
   // Подтаб живёт в sessionStorage: открытие героя/оверлея размонтирует HomeScreen,
   // и «назад» должен вернуть в тот же раздел (например, «Календарь»), а не на «ИСККОН».
@@ -774,7 +775,7 @@ export default function HomeScreen(props: {
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
-      {homeTab === "sadhana" && <PracticeHub />}
+      {homeTab === "sadhana" && <PracticeHub onOpen={props.onOpenPath} />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}

@@ -25,8 +25,9 @@ const ICON = {
   bookmark: I(<><path d="M7 4h10v16l-5-3-5 3z" /></>),
   path: I(<><circle cx="6" cy="18" r="1.6" /><circle cx="18" cy="6" r="1.6" /><path d="M7.5 16.5l9-9" strokeDasharray="2 2.4" /></>),
 };
+const ChevR = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="M9 5l7 7-7 7" /></svg>;
 
-interface Row { icon: Glyph; t: string; d: string; pri?: boolean; go?: () => void }
+interface Row { icon: Glyph; t: string; d: string; pri?: boolean; to?: string; go?: () => void }
 interface Group { group: string; items: Row[] }
 
 const GROUPS: Group[] = [
@@ -40,7 +41,7 @@ const GROUPS: Group[] = [
     { icon: ICON.moon, t: "Экадаши и посты", d: "Когда следующий, правила, время выхода (парана)" },
   ] },
   { group: "Прасад", items: [
-    { icon: ICON.bowl, t: "Рецепты прасада", d: "Умный подбор по продуктам и диете + молитвы подношения" },
+    { icon: ICON.bowl, t: "Рецепты прасада", d: "Умный подбор по продуктам и диете + молитвы подношения", to: "/prasadam" },
   ] },
   { group: "Узнавать", items: [
     { icon: ICON.news, t: "Новости ИСККОН", d: "Мировые новости движения, переведённые на русский" },
@@ -54,14 +55,14 @@ const GROUPS: Group[] = [
   ] },
 ];
 
-export default function PracticeHub() {
+export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => void }) {
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
       <div style={{ padding: "20px 0 0" }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Личное пространство ежедневной практики: джапа, дневник, стих и даршан дня, прасад, новости и путь. Разделы готовятся — здесь будет ваш ежедневный заход в храм.
+          Личное пространство ежедневной практики: джапа, дневник, стих и даршан дня, прасад, новости и путь. Разделы открываются постепенно — здесь будет ваш ежедневный заход в храм.
         </p>
       </div>
 
@@ -69,30 +70,39 @@ export default function PracticeHub() {
         <section key={g.group} style={{ marginTop: 26 }}>
           <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
           <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
-            {g.items.map((it, i) => (
-              <li
-                key={it.t}
-                onClick={it.go}
-                role={it.go ? "button" : undefined}
-                tabIndex={it.go ? 0 : undefined}
-                onKeyDown={it.go ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); it.go!(); } } : undefined}
-                style={{ display: "flex", alignItems: "center", gap: 13, padding: "14px 16px", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", cursor: it.go ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}
-              >
-                <span aria-hidden style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}>{it.icon}</span>
-                <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
-                    {it.pri && <span title="Приоритет" aria-label="приоритет" style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: GOLD }} />}
+            {g.items.map((it, i) => {
+              const activate = it.to ? () => onOpen?.(it.to!) : it.go;
+              const nav = !!activate;
+              const inner = (
+                <>
+                  <span aria-hidden style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}>{it.icon}</span>
+                  <span style={{ minWidth: 0, flex: 1 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
+                      {it.pri && <span title="Приоритет" aria-label="приоритет" style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: GOLD }} />}
+                    </span>
+                    <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
                   </span>
-                  <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
-                </span>
-                {it.go ? (
-                  <svg width="9" height="15" viewBox="0 0 9 15" fill="none" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="M1.5 1.5L7 7.5l-5.5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                ) : (
-                  <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Скоро</span>
-                )}
-              </li>
-            ))}
+                  {nav
+                    ? <ChevR />
+                    : <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Скоро</span>}
+                </>
+              );
+              return (
+                <li key={it.t} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
+                  {nav ? (
+                    <button type="button" onClick={activate}
+                      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "14px 16px", border: "none", background: "none", cursor: "pointer", textAlign: "left", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
+                      {inner}
+                    </button>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 13, padding: "14px 16px" }}>
+                      {inner}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </section>
       ))}
