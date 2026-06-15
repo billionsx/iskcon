@@ -45,10 +45,12 @@ jobs:
           WD=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/gcal-deploy.log | head -1)
           echo "workers.dev = $WD"
           if [ -z "$WD" ]; then echo "::error::no workers.dev URL in deploy log"; exit 1; fi
-          for i in 1 2 3 4 5 6; do
+          code=000
+          for i in 1 2 3 4 5 6 7 8; do
             code=$(curl -s -o /tmp/sm.json -w '%{http_code}' --max-time 60 "$WD/compute?lat=45.1903&lng=33.3667&tz=Europe/Simferopol&days=400")
             echo "[$i] HTTP $code bytes=$(wc -c < /tmp/sm.json)"
             [ "$code" = "200" ] && break
             sleep 8
           done
+          echo "::warning::GCAL resp HTTP=$code body=$(head -c 500 /tmp/sm.json | tr '\n\r\t' '   ')"
           python3 apps/gcal/smoke_check.py /tmp/sm.json

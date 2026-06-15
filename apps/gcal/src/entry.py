@@ -1,59 +1,51 @@
 # iskcon-gcal — on-demand Gaudiya Vaisnava (Gaurabda) calendar compute service.
+# Runs the official GBC Vaisnava Calendar Committee engine (gaurabda) in a
+# Cloudflare Python Worker (Pyodide) to compute an authoritative calendar for
+# ANY coordinates + timezone. Data embedded (res_data.py) via an open() shim.
 #
-# Runs the OFFICIAL GBC Vaisnava Calendar Committee engine (GCal / gaurabda, by
-# Gopalapriya das, "as defined in Hari Bhakti Vilasa") inside a Cloudflare Python
-# Worker (Pyodide). It computes the authoritative calendar for ANY coordinates +
-# timezone, so the site can serve an exact per-city calendar for any place on
-# Earth (geocoded under the hood via Open-Meteo) instead of a nearest-proxy.
-#
-# Data note: gaurabda normally loads gaurabda/res/*.json from disk. To be fully
-# Pyodide-safe (no filesystem reliance) the small res payloads are EMBEDDED in
-# res_data.py and an open() shim feeds them to gaurabda's loaders. locations.json
-# is stubbed ([]) — it is not needed for coordinate-based calculation.
-#
-# Endpoint:  GET /compute?lat=<f>&lng=<f>&tz=<IANA>[&start=<"1 jan 2026">][&days=<int>][&name=<str>]
-# Returns:   {"location":{lat,lng,tz}, "source":..., "events":[{"date":"YYYY-MM-DD","summary":...}]}
+# GET /compute?lat=<f>&lng=<f>&tz=<IANA>[&start="1 jan 2026"][&days=int][&name=str]
 
 import builtins
 import io
 import json
 import os
+import traceback
 
-from res_data import RES
-
-# ── open() shim: serve gaurabda's res/*.json from the embedded payload ──
-_orig_open = builtins.open
-
-
-def _shim_open(file, mode="r", *args, **kwargs):
-    base = os.path.basename(str(file))
-    if base in RES and "r" in mode and "b" not in mode:
-        return io.StringIO(RES[base])
-    return _orig_open(file, mode, *args, **kwargs)
-
-
-builtins.open = _shim_open
-
-# Import the engine AFTER the shim is installed (its loaders run on import).
-import gaurabda as gcal  # noqa: E402
-
-# ── timezone resolver: IANA -> GCal full tzname ("+5:30 Asia/Calcutta") ──
+# ── guarded init: import engine + build tz table; capture any failure ──
+_INIT_ERR = None
+gcal = None
 _IANA2FULL = {}
-for _t in gcal.GetTimeZones():
-    _p = _t.split(" ", 1)
-    if len(_p) == 2:
-        _IANA2FULL.setdefault(_p[1], _t)
+try:
+    from res_data import RES
 
-# Zones absent from GCal's table -> a zone with identical UTC offset & DST rule.
+    _orig_open = builtins.open
+
+    def _shim_open(file, mode="r", *args, **kwargs):
+        base = os.path.basename(str(file))
+        if base in RES and "r" in mode and "b" not in mode:
+            return io.StringIO(RES[base])
+        return _orig_open(file, mode, *args, **kwargs)
+
+    builtins.open = _shim_open
+
+    import gaurabda as gcal  # noqa: E402
+
+    for _t in gcal.GetTimeZones():
+        _p = _t.split(" ", 1)
+        if len(_p) == 2:
+            _IANA2FULL.setdefault(_p[1], _t)
+except Exception:
+    _INIT_ERR = traceback.format_exc()
+
 _ALIAS = {
     "Asia/Kolkata": "Asia/Calcutta",
     "Europe/Kyiv": "Europe/Kiev",
-    "Europe/Saratov": "Europe/Samara",      # +4, no DST
-    "Asia/Barnaul": "Asia/Krasnoyarsk",      # +7, no DST
-    "Asia/Tomsk": "Asia/Krasnoyarsk",        # +7, no DST
-    "Europe/Astrakhan": "Europe/Samara",     # +4, no DST
-    "Europe/Ulyanovsk": "Europe/Samara",     # +4, no DST
-    "Asia/Atyrau": "Asia/Aqtau",             # +5, no DST
+    "Europe/Saratov": "Europe/Samara",
+    "Asia/Barnaul": "Asia/Krasnoyarsk",
+    "Asia/Tomsk": "Asia/Krasnoyarsk",
+    "Europe/Astrakhan": "Europe/Samara",
+    "Europe/Ulyanovsk": "Europe/Samara",
+    "Asia/Atyrau": "Asia/Aqtau",
 }
 
 
@@ -77,7 +69,6 @@ def _qs(url):
             k, v = part.split("=", 1)
         else:
             k, v = part, ""
-        # minimal percent-decode (commas/spaces in start=)
         v = v.replace("+", " ")
         try:
             from urllib.parse import unquote
@@ -106,42 +97,35 @@ def _compute(lat, lng, full_tz, name, start, days):
 
 async def on_fetch(request, env):
     from js import Response
-
-    url = str(request.url)
-    if "/compute" not in url:
-        return Response.new(
-            json.dumps({"service": "iskcon-gcal", "engine": "GCal gaurabda (GBC Vaishnava Calendar Committee)"})
-        )
-
-    p = _qs(url)
     try:
-        lat = float(p.get("lat", ""))
-        lng = float(p.get("lng", ""))
-    except (TypeError, ValueError):
-        return Response.new(json.dumps({"error": "lat and lng are required floats"}))
-
-    tz = p.get("tz", "")
-    full = _resolve_tz(tz)
-    if not full:
-        return Response.new(json.dumps({"error": "timezone not resolvable", "tz": tz}))
-
-    start = p.get("start", "1 jan 2026")
-    try:
-        days = int(p.get("days", "765"))
-    except ValueError:
-        days = 765
-    days = max(1, min(days, 1100))
-    name = p.get("name", "city")
-
-    try:
+        if _INIT_ERR:
+            return Response.new(json.dumps({"error": "init failed", "detail": _INIT_ERR[-1600:]}))
+        url = str(request.url)
+        if "/compute" not in url:
+            return Response.new(json.dumps({"service": "iskcon-gcal", "ok": True}))
+        p = _qs(url)
+        try:
+            lat = float(p.get("lat", ""))
+            lng = float(p.get("lng", ""))
+        except (TypeError, ValueError):
+            return Response.new(json.dumps({"error": "lat and lng required floats"}))
+        full = _resolve_tz(p.get("tz", ""))
+        if not full:
+            return Response.new(json.dumps({"error": "tz not resolvable", "tz": p.get("tz", "")}))
+        start = p.get("start", "1 jan 2026")
+        try:
+            days = int(p.get("days", "765"))
+        except ValueError:
+            days = 765
+        days = max(1, min(days, 1100))
+        name = p.get("name", "city")
         events = _compute(lat, lng, full, name, start, days)
-    except Exception as ex:  # surface compute errors as JSON (never 500 the caller)
-        return Response.new(json.dumps({"error": "compute failed", "detail": str(ex)[:200]}))
-
-    body = json.dumps({
-        "location": {"lat": lat, "lng": lng, "tz": tz, "name": name},
-        "source": "GCAL gaurabda (GBC Vaishnava Calendar Committee)",
-        "count": len(events),
-        "events": events,
-    })
-    return Response.new(body)
+        body = json.dumps({
+            "location": {"lat": lat, "lng": lng, "tz": p.get("tz", ""), "name": name},
+            "source": "GCAL gaurabda (GBC Vaishnava Calendar Committee)",
+            "count": len(events),
+            "events": events,
+        })
+        return Response.new(body)
+    except Exception:
+        return Response.new(json.dumps({"error": "handler crashed", "detail": traceback.format_exc()[-1600:]}))
