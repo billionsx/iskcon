@@ -1,0 +1,54 @@
+name: Deploy GCal compute (Cloudflare Python Worker)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/gcal/**'
+      - '.github/workflows/deploy-gcal.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Deploy Python Worker
+        working-directory: apps/gcal
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          bunx wrangler deploy 2>&1 | tee /tmp/gcal-deploy.log
+          RC=${PIPESTATUS[0]}
+          echo "wrangler deploy exit = $RC"
+          if [ "$RC" != "0" ]; then
+            echo "::error::wrangler deploy (gcal) FAILED exit $RC"
+            grep -iE 'error|exceed|larger|too large|module|ENOENT|limit|failed|python|pyodide' /tmp/gcal-deploy.log | tail -n 20 | while IFS= read -r l; do echo "::error::GC ${l}"; done
+            exit "$RC"
+          fi
+          ACCT=d5cbe19470dc38599873eabfe148e6d1
+          API=https://api.cloudflare.com/client/v4
+          LATEST=$(curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-gcal/versions?per_page=1" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" | jq -r '.result.items[0].id')
+          echo "latest version = $LATEST"
+          if [ -n "$LATEST" ] && [ "$LATEST" != "null" ]; then
+            curl -s -X POST "$API/accounts/$ACCT/workers/scripts/iskcon-gcal/deployments?force=true" -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data "{\"strategy\":\"percentage\",\"versions\":[{\"version_id\":\"$LATEST\",\"percentage\":100}]}" | jq -c '{success,errors}' || true
+          fi
+
+      - name: Smoke test /compute (Yevpatoria, Crimea)
+        run: |
+          set +e
+          WD=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/gcal-deploy.log | head -1)
+          echo "workers.dev = $WD"
+          if [ -z "$WD" ]; then echo "::error::no workers.dev URL in deploy log"; exit 1; fi
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o /tmp/sm.json -w '%{http_code}' --max-time 60 "$WD/compute?lat=45.1903&lng=33.3667&tz=Europe/Simferopol&days=400")
+            echo "[$i] HTTP $code bytes=$(wc -c < /tmp/sm.json)"
+            [ "$code" = "200" ] && break
+            sleep 8
+          done
+          python3 apps/gcal/smoke_check.py /tmp/sm.json
