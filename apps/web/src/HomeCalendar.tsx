@@ -4,9 +4,9 @@
  * Календарного комитета GBC; фиды self-hosted (/data/gcal/<slug>.json),
  * посчитаны по координатам каждого города. Без внешних рантайм-зависимостей.
  *
- *  · Город: пилюля → шит выбора (страна → город, живой поиск, 215 городов
- *    + геокодинг любого города мира → ближайший); выбор хранится в localStorage,
- *    данные — /api/calendar?loc=… (воркер локализует фид на лету). Дефолт — Вриндаван.
+ *  · Город: пилюля → шит выбора (страна → город, живой поиск; нет в списке —
+ *    геокодинг любого города мира → расчёт по координатам, воркер берёт ближайший
+ *    предрасчитанный фид); выбор хранится в localStorage. Дефолт — Вриндаван.
  *  · Hero: ближайший экадаши + парана следующего дня.
  *  · Нативный поиск по событиям (русский и оригинал) + фильтр-сабтабы.
  *  · Личности связаны с Героями: явления/уходы с entityId открывают EntityPage.
@@ -39,7 +39,14 @@ async function loadCal(loc: LocCity): Promise<CalEvent[]> {
   const hit = calCache.get(loc.key);
   if (hit) return hit;
   try {
-    const r = await fetch("/api/calendar?loc=" + encodeURIComponent(loc.key));
+    const params = new URLSearchParams();
+    const latin = /^[A-Za-z .()'-]+ \[[A-Za-z .]+\]$/.test(loc.key);
+    if (latin) params.set("loc", loc.key);
+    if (typeof loc.lat === "number" && typeof loc.lng === "number") {
+      params.set("lat", String(loc.lat)); params.set("lng", String(loc.lng));
+    }
+    if (![...params.keys()].length) params.set("loc", loc.key);
+    const r = await fetch("/api/calendar?" + params.toString());
     if (r.ok) {
       const j = await r.json();
       const evs = (j.events || []) as CalEvent[];
@@ -56,17 +63,6 @@ async function loadLocs(): Promise<LocCountry[]> {
   const j = await r.json();
   locsCache = (j.countries || []) as LocCountry[];
   return locsCache;
-}
-
-/* Гаверсинус (км) — подбор ближайшего города, если введённого нет в базе. */
-function haversine(aLat: number, aLng: number, bLat: number, bLng: number): number {
-  const R = 6371, toRad = (d: number) => (d * Math.PI) / 180;
-  const dLat = toRad(bLat - aLat), dLng = toRad(bLng - aLng);
-  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(s));
-}
-function fmtKm(km: number): string {
-  return km < 1 ? "рядом" : "~" + Math.round(km).toLocaleString("ru-RU") + " км";
 }
 
 const MONTH_RU = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
@@ -107,9 +103,8 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
       .filter((c) => c.cities.length > 0);
   }, [locs, q]);
   const hasDirect = filtered.length > 0;
-  const allCities = useMemo(() => (locs || []).flatMap((c) => c.cities.map((x) => ({ ...x, country: c.country }))), [locs]);
-  // Умный подбор: введён город не из базы → геокодим его (/api/geocode) и предлагаем ближайшие
-  // города из базы — у них тот же восход, значит тот же вайшнавский календарь.
+  // Город не из базы → геокодим (/api/geocode → русское имя + координаты) и предлагаем
+  // сам город; расчёт идёт по координатам — воркер берёт ближайший предрасчитанный фид.
   useEffect(() => {
     const t = q.trim();
     if (!locs || hasDirect || t.length < 2) { setGeo(null); setGeoBusy(false); return; }
@@ -124,20 +119,12 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
     }, 350);
     return () => { alive = false; clearTimeout(id); };
   }, [q, hasDirect, locs]);
-  const nearby = useMemo(() => {
-    if (!geo) return [] as { c: LocCity & { country: string }; km: number }[];
-    return allCities
-      .filter((c) => typeof c.lat === "number" && typeof c.lng === "number")
-      .map((c) => ({ c, km: haversine(geo.lat, geo.lng, c.lat as number, c.lng as number) }))
-      .sort((a, b) => a.km - b.km)
-      .slice(0, 5);
-  }, [geo, allCities]);
   return (
     <HomeSheet open={open} label="Выбор города" onClose={onClose}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
       <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите город</h2>
       <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-        Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Если вашего города нет, начните вводить — предложим ближайшие города с тем же календарём.
+        Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Нет в списке? Введите любой город мира — рассчитаем календарь по нему.
       </p>
       <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-bg)", padding: "12px 0 8px" }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
@@ -146,29 +133,28 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
       <div style={{ marginTop: 12 }}>
         {!locs && <div style={{ height: 120, ...fill, opacity: 0.6 }} />}
         {locs && !hasDirect && geoBusy && (
-          <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Ищем ближайшие города…</div>
+          <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Ищем город…</div>
         )}
-        {locs && !hasDirect && !geoBusy && nearby.length > 0 && (
+        {locs && !hasDirect && !geoBusy && geo && (
           <section style={{ marginTop: 4 }}>
-            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>
-              {geo ? `«${geo.name}» нет в базе. Ближайшие города с тем же календарём:` : "Ближайшие города:"}
-            </div>
+            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>Найден город:</div>
             <div style={{ overflow: "hidden", ...fill }}>
-              {nearby.map(({ c, km }, i) => {
-                const on = c.key === current.key;
-                return (
-                  <button key={c.key} type="button" onClick={() => { onPick({ ru: c.ru, key: c.key, lat: c.lat, lng: c.lng, tz: c.tz }); onClose(); }}
-                    style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "12px 14px", textAlign: "left", background: "none", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                    <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: on ? 700 : 500, color: on ? GOLD : "var(--color-label)" }}>{c.ru}</span>
-                    <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{fmtKm(km)}</span>
-                  </button>
-                );
-              })}
+              <button type="button" onClick={() => { onPick({ ru: geo.name, key: `@${geo.lat.toFixed(4)},${geo.lng.toFixed(4)}`, lat: geo.lat, lng: geo.lng, tz: geo.tz }); onClose(); }}
+                style={{ display: "flex", width: "100%", alignItems: "center", gap: 11, padding: "13px 14px", textAlign: "left", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}><path d="M12 21s-6.7-5.4-6.7-10.3A6.7 6.7 0 0 1 12 4a6.7 6.7 0 0 1 6.7 6.7C18.7 15.6 12 21 12 21Z" fill="none" stroke={GOLD} strokeWidth="1.8" /><circle cx="12" cy="10.6" r="2.3" fill="none" stroke={GOLD} strokeWidth="1.8" /></svg>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{geo.name}</span>
+                  <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>
+                    {[geo.admin1, geo.country].filter(Boolean).join(", ") || "календарь по этому городу"}
+                  </span>
+                </span>
+                <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              </button>
             </div>
           </section>
         )}
-        {locs && !hasDirect && !geoBusy && nearby.length === 0 && (
-          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Город не найден. Попробуйте ближайший крупный город.</div>
+        {locs && !hasDirect && !geoBusy && !geo && q.trim().length >= 2 && (
+          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Город не найден. Проверьте написание.</div>
         )}
         {filtered.map((c) => (
           <section key={c.country} style={{ marginTop: 16 }}>
