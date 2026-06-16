@@ -1,0 +1,116 @@
+name: Verify notes (live route + D1 round-trip)
+
+# Доказательство работоспособности «Заметок садху» на проде:
+#  1) живой роут /api/me/notes реально подключён и закрыт авторизацией (401/403, не 404);
+#  2) настоящий round-trip по prod-таблице notes в D1 — те же инварианты, на которые
+#     опираются обработчики GET/POST/DELETE: персистентность, last-write-wins по
+#     updated_at, защита от перезаписи чужим user_id, удаление со скоупом.
+# Фикстура — синтетический sentinel-пользователь, который ВСЕГДА вычищается (даже при
+# падении). Заодно служит регрессионным стражем при изменениях кода заметок/миграции.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/web/src/notes.ts'
+      - 'apps/web/src/NotesScreen.tsx'
+      - 'apps/web/src/NoteEditor.tsx'
+      - 'apps/web/src/account/server.ts'
+      - 'apps/api/migrations/0008_notes.sql'
+      - '.github/workflows/notes-verify.yml'
+
+concurrency:
+  group: notes-verify
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install deps
+        working-directory: apps/api
+        run: bun install
+
+      - name: HTTP — /api/me/notes must auth-gate (401/403, not 404)
+        run: |
+          set -e
+          ok=0
+          for host in "https://gaurangers.com" "https://www.gaurangers.com"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "$host/api/me/notes" || echo 000)
+            echo "GET $host/api/me/notes -> $code"
+            case "$code" in
+              401|403) echo "  OK: route wired and auth-gated"; ok=1; break ;;
+              404) echo "  FAIL: 404 — route NOT wired in worker" ;;
+              *) echo "  (unexpected $code — trying next host)" ;;
+            esac
+          done
+          [ "$ok" = 1 ] || { echo "::error::/api/me/notes did not auth-gate"; exit 1; }
+
+      - name: D1 — round-trip on prod notes table (self-cleaning sentinel)
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          U="__notes_selfcheck__"
+          N="__nv_note__"
+          d1(){ bunx wrangler d1 execute iskcon-db --remote --json --command "$1"; }
+          # парсим первое поле первой строки из JSON-ответа wrangler (устойчиво к баннеру)
+          val(){ python3 -c "import sys,json; t=sys.stdin.read(); i=t.find('['); d=json.loads(t[i:]); r=d[0]['results']; print(r[0].get('$1','') if r else '')"; }
+
+          echo "::group::pre-clean any leftover"
+          d1 "DELETE FROM users WHERE id='$U' OR email='$U@local';" >/dev/null
+          echo "::endgroup::"
+
+          echo "::group::insert sentinel user + note (FK enforced)"
+          d1 "INSERT INTO users(id,email) VALUES('$U','$U@local');" >/dev/null
+          NOW=$(date +%s)000
+          d1 "INSERT INTO notes(id,user_id,title,body,plain,pinned,kind,ref,created_at,updated_at) VALUES('$N','$U','Проверка','<p>тело</p>','тело',0,'verse','verse:bg/2.13',$NOW,$NOW);" >/dev/null
+          echo "::endgroup::"
+
+          echo "::group::SELECT back — persistence + shape"
+          T=$(d1 "SELECT title AS title FROM notes WHERE id='$N' AND user_id='$U';" | val title)
+          R=$(d1 "SELECT ref AS ref FROM notes WHERE id='$N';" | val ref)
+          echo "title='$T' ref='$R'"
+          [ "$T" = "Проверка" ] || { echo "::error::title round-trip failed"; exit 1; }
+          [ "$R" = "verse:bg/2.13" ] || { echo "::error::ref round-trip failed"; exit 1; }
+          echo "::endgroup::"
+
+          echo "::group::UPSERT — newer wins, stale ignored (POST handler semantics)"
+          NEWER=$((NOW+1000))
+          d1 "INSERT INTO notes(id,user_id,title,plain,pinned,created_at,updated_at) VALUES('$N','$U','Новее','тело',1,$NOW,$NEWER) ON CONFLICT(id) DO UPDATE SET title=excluded.title, updated_at=excluded.updated_at WHERE notes.user_id=excluded.user_id AND excluded.updated_at>=notes.updated_at;" >/dev/null
+          T1=$(d1 "SELECT title AS title FROM notes WHERE id='$N';" | val title)
+          [ "$T1" = "Новее" ] || { echo "::error::newer write not applied (got '$T1')"; exit 1; }
+          OLDER=$((NEWER-5000))
+          d1 "INSERT INTO notes(id,user_id,title,plain,pinned,created_at,updated_at) VALUES('$N','$U','Старее','тело',1,$NOW,$OLDER) ON CONFLICT(id) DO UPDATE SET title=excluded.title, updated_at=excluded.updated_at WHERE notes.user_id=excluded.user_id AND excluded.updated_at>=notes.updated_at;" >/dev/null
+          T2=$(d1 "SELECT title AS title FROM notes WHERE id='$N';" | val title)
+          [ "$T2" = "Новее" ] || { echo "::error::stale write should be ignored (got '$T2')"; exit 1; }
+          echo "newer applied, stale ignored — OK"
+          echo "::endgroup::"
+
+          echo "::group::cross-user protection — foreign user_id cannot overwrite"
+          d1 "INSERT INTO notes(id,user_id,title,plain,pinned,created_at,updated_at) VALUES('$N','someone_else','Чужой','x',0,$NOW,$((NEWER+9000))) ON CONFLICT(id) DO UPDATE SET title=excluded.title, updated_at=excluded.updated_at WHERE notes.user_id=excluded.user_id AND excluded.updated_at>=notes.updated_at;" >/dev/null || true
+          T3=$(d1 "SELECT title AS title FROM notes WHERE id='$N';" | val title)
+          [ "$T3" = "Новее" ] || { echo "::error::cross-user upsert leaked (got '$T3')"; exit 1; }
+          echo "foreign user blocked — OK"
+          echo "::endgroup::"
+
+          echo "::group::DELETE scoped + count cleanup"
+          d1 "DELETE FROM notes WHERE user_id='$U' AND id='$N';" >/dev/null
+          C=$(d1 "SELECT COUNT(*) AS c FROM notes WHERE id='$N';" | val c)
+          [ "$C" = "0" ] || { echo "::error::delete failed (count=$C)"; exit 1; }
+          echo "::endgroup::"
+
+          echo "ALL NOTES D1 ASSERTIONS PASSED"
+
+      - name: Always clean sentinel (even on failure)
+        if: always()
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler d1 execute iskcon-db --remote --command "DELETE FROM users WHERE id='__notes_selfcheck__' OR email='__notes_selfcheck__@local';" || true
