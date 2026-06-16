@@ -1118,7 +1118,7 @@ export interface ChapterVerse {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, chapters, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
+function ChapterPage({ chapter, chapters, hierOrder, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -1164,9 +1164,12 @@ function ChapterPage({ chapter, chapters, bookTitle, work = "bg", hierarchical =
       kind: "chapter",
     });
     {
-      // Локальный прогресс (полка «Продолжить», и для гостя). Процент — по плоскому
-      // оглавлению (BG и пр.); у иерархических (ЧЧ/ШБ) chapters нет → без процента.
-      const cIdx = chapters ? chapters.findIndex((c) => String(c.number) === String(chapter.number)) : -1;
+      // Локальный прогресс (полка «Продолжить», и для гостя). Процент по главам:
+      // плоские книги (BG…) — из chapters, иерархические (ЧЧ/ШБ) — из hierOrder.
+      const cIdx = hierarchical
+        ? (hierOrder ? hierOrder.indexOf(chapter.id) : -1)
+        : (chapters ? chapters.findIndex((c) => String(c.number) === String(chapter.number)) : -1);
+      const cTotal = hierarchical ? (hierOrder ? hierOrder.length : 0) : (chapters ? chapters.length : 0);
       noteRead({
         work,
         ref: hierarchical ? chapter.id : String(chapter.number),
@@ -1174,7 +1177,7 @@ function ChapterPage({ chapter, chapters, bookTitle, work = "bg", hierarchical =
         href: favHref,
         kind: "chapter",
         idx: cIdx >= 0 ? cIdx + 1 : 0,
-        total: chapters ? chapters.length : 0,
+        total: cTotal,
       });
     }
     const readUrl = hierarchical
@@ -1185,7 +1188,7 @@ function ChapterPage({ chapter, chapters, bookTitle, work = "bg", hierarchical =
       .then((d) => { if (live) setVerses(d.verses ?? []); })
       .catch(() => { if (live) setVerses([]); });
     return () => { live = false; };
-  }, [chapter.id, chapter.number, work, hierarchical, chapters]);
+  }, [chapter.id, chapter.number, work, hierarchical, chapters, hierOrder]);
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
@@ -1772,7 +1775,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 }
 
 
-function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
+function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
   const [vMenu, setVMenu] = useState(false);
@@ -1793,7 +1796,12 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
         // Глава стиха → позиция в плоском оглавлении (BG); у иерархических chapters нет.
         const dp = (d.division ?? "").split(".").filter(Boolean);                 // ["bg","2"] | ["sb","1","9"]
         const chNo = dp.length >= 2 ? dp[dp.length - 1] : (d.ref || refStr).replace(/^[^\d]*/, "").split(".")[0];
-        const vIdx = chapters ? chapters.findIndex((c) => String(c.number) === String(chNo)) : -1;
+        // hierOrder задан только для иерархических книг → стих относим к его главе по
+        // division (он же id главы в оглавлении); у плоских книг — по номеру главы.
+        const vIdx = hierOrder
+          ? hierOrder.indexOf(d.division || "")
+          : (chapters ? chapters.findIndex((c) => String(c.number) === String(chNo)) : -1);
+        const vTotal = hierOrder ? hierOrder.length : (chapters ? chapters.length : 0);
         noteRead({
           work,
           ref: (d.ref || refStr),
@@ -1801,7 +1809,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
           href,
           kind: "verse",
           idx: vIdx >= 0 ? vIdx + 1 : 0,
-          total: chapters ? chapters.length : 0,
+          total: vTotal,
         });
       })
       .catch(() => { if (live) setError(true); });
@@ -2028,6 +2036,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     if (main.scrollTop > pinned) main.scrollTo({ top: pinned, behavior: "auto" });
   }, [tab]);
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
+  const [hierOrder, setHierOrder] = useState<string[] | null>(null); // главы ЧЧ/ШБ в порядке чтения → процент прогресса
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
   const bookContentRef = useRef<HTMLDivElement>(null);
@@ -2045,6 +2054,23 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   useEffect(() => {
     if (book.hierarchical) return; // иерархические книги (ЧЧ/ШБ) — оглавление через CcContents (/toc)
     fetch(api(`/books/${book.work}/chapters`)).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
+  }, [book.work, book.hierarchical]);
+
+  // Для иерархических книг — плоский список id глав в порядке чтения (divisions.ordinal):
+  // даёт процент прогресса так же, как chapters.length у плоских книг. Грузим всегда
+  // (а не только при открытом «Содержании»), чтобы процент был и при прямом входе на стих.
+  useEffect(() => {
+    if (!book.hierarchical) { setHierOrder(null); return; }
+    let live = true;
+    setHierOrder(null);
+    fetch(api(`/books/${book.work}/toc`))
+      .then((r) => r.json())
+      .then((d: { divisions?: { chapters?: { id: string }[] }[] }) => {
+        if (!live || !d?.divisions) return;
+        setHierOrder(d.divisions.flatMap((dv) => (dv.chapters ?? []).map((c) => c.id)));
+      })
+      .catch(() => {});
+    return () => { live = false; };
   }, [book.work, book.hierarchical]);
 
   // Открыть цель (глава + стих) — для холодного входа по ссылке, QR и кнопок назад/вперёд.
@@ -2350,8 +2376,8 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       )}
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
-        : <ChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
