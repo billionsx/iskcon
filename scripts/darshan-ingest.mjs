@@ -21,14 +21,14 @@ const SOURCES = [
     slug: "mayapur",
     channel: "ISKCONMayapurGroup",
     name: "ИСККОН Маяпур · Шри Дхама Маяпур",
-    deities: "Шри Шри Радха-Мадхава и Аштасакхи · Панча-таттва",
+    deities: "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
     srcLabel: "ISKCON Mayapur",
   },
   {
     slug: "vrindavan",
     channel: "iskconvrindavanofficial",
     name: "ИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир",
-    deities: "Шри Шри Кришна-Баларам · Радха-Шьямасундар · Гаура-Нитай",
+    deities: "Джайа Гаура Нитай · Кришна Баларам · Лалита Вишакха Радхе Шьям",
     srcLabel: "ISKCON Vrindavan",
   },
 ];
@@ -90,10 +90,11 @@ function ymd(iso) {
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 function composeCaption(src) {
-  // По требованию: без эмодзи, без «Даршан дня», без даты, без строки источника.
-  // Остаётся: Божества (жирным) · храм · «ISKCON ONE LOVE» ссылкой на канал.
+  // Без эмодзи/заголовка/даты/источника. Абзацы (пустые строки) между блоками.
+  // Инвокация Божеств (жирным) · храм · «ISKCON ONE LOVE» ссылкой на канал.
   return [
     `<b>${esc(src.deities)}</b>`,
+    "",
     esc(src.name),
     "",
     '<a href="https://t.me/iskcone">ISKCON ONE LOVE</a>',
