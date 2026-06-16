@@ -7,13 +7,16 @@ import { getDhama, getTirthaById, KIND_RU } from "./dhama/dhamas";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
+/** Структурированная секция печатной карточки: заголовок + подзаголовок + абзацы. */
+type PrintSection = { h?: string; sub?: string; lines: string[] };
+
 type Loaded =
   | { kind: "book"; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "prosebook"; chapters: ChapterRow[]; parasByCh: Record<string, ProsePara[]> }
   | { kind: "lila"; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[]; lilaLabel?: string }
   | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string; lila?: string }
-  | { kind: "card"; header: string; title: string; subtitle?: string; rows: Array<[string, string]>; body?: string[]; footer?: string };
+  | { kind: "card"; header: string; title: string; subtitle?: string; rows: Array<[string, string]>; body?: string[]; footer?: string; sections?: PrintSection[] };
 
 /** Сообщаем headless-браузеру (page.waitForFunction), что контент готов к печати. */
 function markReady() {
@@ -313,6 +316,47 @@ async function loadCard(ctype: string, cid: string, album: string, track: string
       if (r.note) body.push(r.note);
       return { kind: "card", header: "Кухня прасада · Прасадам", title: r.title, subtitle: r.subtitle, rows, body };
     }
+    if (ctype === "cookbook") {
+      const cb = await import("./prasad/cookbook");
+      const pr = await import("./prasad/prasad");
+      const COOKBOOK = cb.COOKBOOK;
+      const sections: PrintSection[] = [];
+      let lastPart = "";
+      for (const ch of COOKBOOK.chapters) {
+        if (ch.part && ch.part !== lastPart) { sections.push({ h: ch.part.toUpperCase(), lines: [] }); lastPart = ch.part; }
+        let cur: PrintSection = { h: (ch.number ? ch.number + ". " : "") + ch.title, sub: ch.subtitle, lines: [] };
+        for (const b of ch.blocks || []) {
+          if (b.type === "h") { sections.push(cur); cur = { h: b.text, lines: [] }; }
+          else if (b.type === "p") cur.lines.push(b.text);
+          else if (b.type === "ul") for (const it of b.items) cur.lines.push("•  " + it);
+          else if (b.type === "dl") for (const it of b.items) cur.lines.push(it.t + " — " + it.d);
+          else if (b.type === "note") cur.lines.push(b.text);
+        }
+        sections.push(cur);
+        if (ch.recipesOf) {
+          for (const r of cb.chapterRecipes(ch.recipesOf)) {
+            const meta = `${r.minutes} мин · ${pr.DIFFICULTY_LABEL[r.difficulty]} · ${r.servings}${r.region ? " · " + r.region : ""}`;
+            const ing = r.ingredients.map((i) => (i.amount ? `${i.item} — ${i.amount}` : i.item)).join("\n");
+            const steps = r.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+            const lines = [meta, "Ингредиенты:\n" + ing, "Приготовление:\n" + steps];
+            if (r.note) lines.push(r.note);
+            sections.push({ h: r.title, sub: r.sanskrit || undefined, lines });
+          }
+        }
+        if (ch.prayers) {
+          for (const p of pr.OFFERING_PRAYERS) sections.push({ h: p.to, lines: [p.lines.join("\n"), p.meaning] });
+        }
+      }
+      return {
+        kind: "card",
+        header: "ISKCON ONE LOVE · Прасадам",
+        title: COOKBOOK.title, subtitle: COOKBOOK.subtitle,
+        rows: [["Автор", COOKBOOK.author], ["Разделов", String(COOKBOOK.chapters.length)], ["Рецептов", String(pr.RECIPE_COUNT)]],
+        body: [COOKBOOK.blurb],
+        sections,
+        footer: "Кухня прасада · gaurangers.com · оригинальное руководство в традиции ИСККОН",
+      };
+    }
   } catch { return null; }
   return null;
 }
@@ -338,6 +382,17 @@ function CardPrint({ d }: { d: CardLoaded }) {
       {d.body && d.body.length > 0 && (
         <div style={{ marginTop: "16pt", fontSize: "11.5pt", lineHeight: 1.62 }}>
           {d.body.map((b, i) => <p key={i} style={{ margin: "0 0 10pt", whiteSpace: "pre-wrap" }}>{b}</p>)}
+        </div>
+      )}
+      {d.sections && d.sections.length > 0 && (
+        <div style={{ marginTop: "16pt" }}>
+          {d.sections.map((s, i) => (
+            <div key={i} style={{ marginTop: i ? "15pt" : 0, breakInside: "avoid" }}>
+              {s.h && <div style={{ fontSize: "13.5pt", fontWeight: 800, letterSpacing: "-0.01em", color: "#1a1a1a", fontFamily: "Georgia, serif" }}>{s.h}</div>}
+              {s.sub && <div style={{ marginTop: "2pt", fontSize: "10.5pt", fontStyle: "italic", color: "#70727b" }}>{s.sub}</div>}
+              {s.lines.map((ln, j) => <p key={j} style={{ margin: "6pt 0 0", fontSize: "11pt", lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{ln}</p>)}
+            </div>
+          ))}
         </div>
       )}
       {d.footer && <div style={{ marginTop: "16pt", fontSize: "9.5pt", color: "#8a8a8e" }}>{d.footer}</div>}
