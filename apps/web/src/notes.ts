@@ -393,19 +393,20 @@ export function resetNotesSync(): void {
 /* ─────────────────────────── мост быстрой записи ─────────────────────────── */
 
 export const OPEN_NOTES_EVENT = "iol:open-notes";
-let pending: { attach?: NoteAttach; openId?: string; nonce: number } | null = null;
+type PendingNotes = { attach?: NoteAttach; openId?: string; create?: boolean; nonce: number };
+let pending: PendingNotes | null = null;
 let nonceSeq = 0;
 
 /**
  * Глобальный вызов «записать в заметки» из любого ⋯-меню (карточка, стих,
- * плеер). App слушает OPEN_NOTES_EVENT, открывает экран «Заметки» и сразу
- * раскрывает редактор с привязкой к источнику.
+ * плеер). App слушает OPEN_NOTES_EVENT: создаёт заметку с привязкой к источнику
+ * и открывает её подробную карточку (ПКП), которая сразу раскрывает редактор.
  */
 export function requestNote(attach?: NoteAttach): void {
-  pending = { attach, nonce: ++nonceSeq };
+  pending = { create: true, attach, nonce: ++nonceSeq };
   emitOpen();
 }
-/** Открыть «Заметки» на конкретной заметке (deep-link/из «Избранного»). */
+/** Открыть подробную карточку конкретной заметки (deep-link/из «Избранного»). */
 export function requestOpenNote(id: string): void {
   pending = { openId: id, nonce: ++nonceSeq };
   emitOpen();
@@ -424,10 +425,20 @@ function emitOpen(): void {
   }
 }
 /** App забирает отложенное намерение при открытии экрана (одноразово). */
-export function takePendingNotes(): { attach?: NoteAttach; openId?: string; nonce: number } | null {
+export function takePendingNotes(): PendingNotes | null {
   const p = pending;
   pending = null;
   return p;
+}
+
+/** Поделиться заметкой (системный лист): плоский текст + подпись источника. */
+export function shareNote(n: Note): void {
+  if (typeof navigator === "undefined") return;
+  const title = noteTitle(n);
+  const sign = n.srcTitle ? `\n\n— из «${n.srcTitle}» · ISKCON ONE LOVE` : "\n\n— ISKCON ONE LOVE";
+  const text = `${title}${n.plain && n.plain !== title ? "\n\n" + n.plain : ""}${sign}`;
+  if (navigator.share) navigator.share({ text }).catch(() => {});
+  else { try { void navigator.clipboard?.writeText(text); } catch { /* noop */ } }
 }
 
 /* синхронизация между вкладками */

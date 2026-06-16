@@ -121,6 +121,31 @@ function buildBhajanGroups(): Group[] {
   ];
 }
 
+/* Глифы для меню заметки. */
+const PencilGlyph = () => <Svg><g {...stroke}><path d="M4.5 19.5 4 20l.5-3.4L15.2 5.9a1.8 1.8 0 0 1 2.5 0l.4.4a1.8 1.8 0 0 1 0 2.5L7.4 19.5Z" /><path d="M14.2 6.9 17.1 9.8" /></g></Svg>;
+const PinGlyph = () => <Svg><g {...stroke}><path d="M9 3.6h6l-.7 5.1 2.6 2.7v1.7H7.1v-1.7l2.6-2.7L9 3.6Z" /><path d="M12 13.8V20.4" /></g></Svg>;
+const SourceGlyph = () => <Svg><g {...stroke}><path d="M11 7H6.5A1.5 1.5 0 0 0 5 8.5v9A1.5 1.5 0 0 0 6.5 19h9a1.5 1.5 0 0 0 1.5-1.5V13" /><path d="M14 5h5v5" /><path d="M19 5l-7.5 7.5" /></g></Svg>;
+const TrashGlyph = () => <Svg><g {...stroke}><path d="M5 7h14M9.5 7V5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V7M7 7l.8 12a1 1 0 0 0 1 .9h6.4a1 1 0 0 0 1-.9L18 7" /></g></Svg>;
+
+// Меню заметки — подробная карточка (ПКП). Редактирование первично; «В источник»
+// — только если заметка к чему-то привязана; удаление — danger.
+function buildNoteGroups(pinned: boolean, hasSource: boolean): Group[] {
+  const groups: Group[] = [
+    { items: [
+      { id: "edit", label: "Редактировать", Icon: PencilGlyph },
+      { id: "share", label: "Поделиться", Icon: ShareGlyph },
+      { id: "pdf", label: "Скачать PDF", Icon: PdfGlyph },
+      { id: "qr", label: "QR-код", Icon: QrGlyph },
+    ] },
+    { items: [
+      { id: "pin", label: pinned ? "Открепить" : "Закрепить", Icon: PinGlyph },
+      { id: "delete", label: "Удалить", Icon: TrashGlyph, danger: true },
+    ] },
+  ];
+  if (hasSource) groups.splice(1, 0, { items: [{ id: "source", label: "Перейти к источнику", Icon: SourceGlyph }] });
+  return groups;
+}
+
 const ROW_H = 56;
 const PAD_L = 20;
 const ICON_BOX = 26;
@@ -141,21 +166,23 @@ const SHEET_CSS = `
 
 export { NoteGlyph };
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false, notePinned = false, noteHasSource = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan" | "note"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
+  notePinned?: boolean; noteHasSource?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
-    variant === "kirtan" ? buildKirtanGroups()
-      : variant === "bhajan" ? buildBhajanGroups()
-        : variant === "player" ? buildPlayerGroups(isChapter)
-          : (() => {
-              const groups: Group[] = GROUPS.map((items) => ({ items: noPdf ? items.filter((it) => it.id !== "pdf") : items }));
-              if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
-              return groups;
-            })();
+    variant === "note" ? buildNoteGroups(notePinned, noteHasSource)
+      : variant === "kirtan" ? buildKirtanGroups()
+        : variant === "bhajan" ? buildBhajanGroups()
+          : variant === "player" ? buildPlayerGroups(isChapter)
+            : (() => {
+                const groups: Group[] = GROUPS.map((items) => ({ items: noPdf ? items.filter((it) => it.id !== "pdf") : items }));
+                if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
+                return groups;
+              })();
   // «В заметки» — отдельной верхней группой: жест садху «сохранить ценное» первичен.
   if (withNote) data.unshift({ items: [{ id: "note", label: "В заметки", Icon: NoteGlyph }] });
   const onPick = (id: string) => { onClose(); onSelect(id); };
