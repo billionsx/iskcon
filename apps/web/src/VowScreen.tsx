@@ -8,7 +8,7 @@
 import { useMemo, useState } from "react";
 import {
   PRESET_COMMITMENTS, DURATION_PRESETS, ymd, addDays, fmtDate, vowStats, vowReportText,
-  useActiveVow, useArchive, createVow, toggleCommitment, closeVow, deleteArchived,
+  useActiveVow, useArchive, createVow, toggleCommitment, setCount, isNumeric, closeVow, deleteArchived,
   type Commitment, type Vow,
 } from "./vows";
 
@@ -26,6 +26,8 @@ const Back = () => <svg width={24} height={24} viewBox="0 0 24 24" aria-hidden><
 const Check = ({ size = 15 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" d="M5 12.5l4.5 4.5L19 6.5" /></svg>;
 
 function pluralDays(n: number): string { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "день"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "дня"; return "дней"; }
+function roundsWord(r: number): string { const m10 = r % 10, m100 = r % 100; if (m10 === 1 && m100 !== 11) return "круг"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "круга"; return "кругов"; }
+function japaCommitment(r: number): Commitment { return { id: "japa", label: "Джапа", detail: `${r} ${roundsWord(r)}`, target: r, unit: "кругов" }; }
 
 function Ring({ pct, size = 88, stroke = 9, accent = SAFFRON }: { pct: number; size?: number; stroke?: number; accent?: string }) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(100, pct)) / 100);
@@ -87,6 +89,8 @@ function VowDashboard({ vow }: { vow: Vow }) {
   };
 
   const card: React.CSSProperties = { borderRadius: 18, border: `0.5px solid ${HAIR}`, background: BG2, padding: 16 };
+  const stepBtn: React.CSSProperties = { width: 38, height: 36, border: "none", background: "none", color: L2, fontSize: 22, fontWeight: 400, cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
+  const stepNum: React.CSSProperties = { minWidth: 30, height: 36, border: "none", borderLeft: `0.5px solid ${HAIR}`, borderRight: `0.5px solid ${HAIR}`, background: "none", fontFamily: FD, fontSize: 16, fontWeight: 700, cursor: "pointer", padding: "0 8px" };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -113,17 +117,30 @@ function VowDashboard({ vow }: { vow: Vow }) {
         ) : (
           <div>
             {vow.commitments.map((c, i) => {
+              const numeric = isNumeric(c);
+              const cnt = (vow.log[today] || {})[c.id] || 0;
               const done = s.todayDone.includes(c.id);
+              const target = c.target || 1;
               return (
-                <button key={c.id} type="button" onClick={() => toggleCommitment(today, c.id)}
-                  style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "11px 0", background: "none", border: "none",
-                    borderTop: i === 0 ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                  <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 26, height: 26, borderRadius: "50%", border: done ? "none" : `2px solid ${HAIR}`, background: done ? SAFFRON : "transparent", transition: "background .15s" }}>{done && <Check />}</span>
+                <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 0", borderTop: i === 0 ? "none" : `0.5px solid ${HAIR}` }}>
+                  {numeric ? (
+                    <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 26, height: 26, borderRadius: "50%", border: done ? "none" : `2px solid ${HAIR}`, background: done ? SAFFRON : "transparent" }}>{done && <Check />}</span>
+                  ) : (
+                    <button type="button" aria-label={done ? "Снять отметку" : "Отметить выполнено"} onClick={() => toggleCommitment(today, c.id)}
+                      style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 26, height: 26, borderRadius: "50%", border: done ? "none" : `2px solid ${HAIR}`, background: done ? SAFFRON : "transparent", cursor: "pointer", padding: 0, transition: "background .15s", WebkitTapHighlightColor: "transparent" }}>{done && <Check />}</button>
+                  )}
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span style={{ display: "block", fontFamily: FT, fontSize: 15.5, fontWeight: 600, color: L1, letterSpacing: "-0.1px" }}>{c.label}</span>
-                    {c.detail && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{c.detail}</span>}
+                    {(c.detail || numeric) && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{numeric ? `${cnt} из ${target}${c.unit ? " " + c.unit : ""}` : c.detail}</span>}
                   </span>
-                </button>
+                  {numeric && (
+                    <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", borderRadius: 10, border: `0.5px solid ${HAIR}`, overflow: "hidden" }}>
+                      <button type="button" aria-label="Меньше" onClick={() => setCount(today, c.id, Math.max(0, cnt - 1))} style={stepBtn}>−</button>
+                      <button type="button" aria-label="Отметить полностью" onClick={() => setCount(today, c.id, cnt >= target ? 0 : target)} style={{ ...stepNum, color: done ? SAFFRON : L1 }}>{cnt}</button>
+                      <button type="button" aria-label="Больше" onClick={() => setCount(today, c.id, Math.min(target, cnt + 1))} style={stepBtn}>+</button>
+                    </span>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -146,7 +163,7 @@ function VowDashboard({ vow }: { vow: Vow }) {
             <div key={p.id}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 5 }}>
                 <span style={{ fontFamily: FT, fontSize: 13.5, fontWeight: 600, color: L1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 8 }}>{p.label}</span>
-                <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 12.5, fontWeight: 700, color: L2 }}>{p.done}/{p.total} · {p.pct}%</span>
+                <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 12.5, fontWeight: 700, color: L2 }}>{p.numeric ? `${p.sum}${p.unit ? " " + p.unit : ""} · ${p.pct}%` : `${p.done}/${p.total} · ${p.pct}%`}</span>
               </div>
               <div style={{ height: 7, borderRadius: 999, background: HAIR, overflow: "hidden" }}>
                 <div style={{ height: "100%", width: `${p.pct}%`, borderRadius: 999, background: SAFFRON, transition: "width .5s ease" }} />
@@ -193,14 +210,16 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
   const [title, setTitle] = useState("");
   const [dur, setDur] = useState<string>("30");
   const [customEnd, setCustomEnd] = useState("");
-  const [sel, setSel] = useState<Record<string, Commitment>>(() => ({ japa: PRESET_COMMITMENTS[0], reading: PRESET_COMMITMENTS[1] }));
+  const [sel, setSel] = useState<Record<string, Commitment>>(() => ({ japa: japaCommitment(16), reading: PRESET_COMMITMENTS[1] }));
+  const [japaRounds, setJapaRounds] = useState(16);
   const [customLabel, setCustomLabel] = useState("");
 
   const tomorrow = addDays(ymd(), 1);
   const count = Object.keys(sel).length;
   const valid = count > 0 && (dur !== "custom" || !!customEnd);
 
-  const toggle = (c: Commitment) => setSel((s) => { const n = { ...s }; if (n[c.id]) delete n[c.id]; else n[c.id] = c; return n; });
+  const toggle = (c: Commitment) => setSel((s) => { const n = { ...s }; if (n[c.id]) delete n[c.id]; else n[c.id] = c.id === "japa" ? japaCommitment(japaRounds) : c; return n; });
+  const changeRounds = (val: number) => { const r = Math.max(1, Math.min(192, Math.round(val))); setJapaRounds(r); setSel((s) => (s.japa ? { ...s, japa: japaCommitment(r) } : s)); };
   const addCustom = () => {
     const label = customLabel.trim(); if (!label) return;
     const id = `c_${Date.now().toString(36)}`;
@@ -251,18 +270,33 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
       <div>
         <h3 style={sectionTitle}>Служения <span style={{ fontWeight: 500, color: L3, fontSize: 13 }}>· {count} выбрано</span></h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {PRESET_COMMITMENTS.map((c) => {
+          {PRESET_COMMITMENTS.flatMap((c) => {
             const on = !!sel[c.id];
-            return (
+            const detail = c.id === "japa" ? `${japaRounds} ${roundsWord(japaRounds)}` : c.detail;
+            const stepBtn: React.CSSProperties = { width: 40, height: 38, border: "none", background: "none", color: L2, fontSize: 22, cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
+            const nodes = [
               <button key={c.id} type="button" onClick={() => toggle(c)}
-                style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 13, border: on ? `1.5px solid ${SAFFRON}` : `0.5px solid ${HAIR}`, background: on ? `color-mix(in srgb, ${SAFFRON} 7%, transparent)` : BG2, cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 13, border: on ? `1.5px solid ${SAFFRON}` : `0.5px solid ${HAIR}`, background: on ? `color-mix(in srgb, ${SAFFRON} 7%, transparent)` : BG2, cursor: "pointer", textAlign: "left" as const, WebkitTapHighlightColor: "transparent" }}>
                 <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 24, height: 24, borderRadius: "50%", border: on ? "none" : `2px solid ${HAIR}`, background: on ? SAFFRON : "transparent" }}>{on && <Check size={13} />}</span>
                 <span style={{ minWidth: 0, flex: 1 }}>
                   <span style={{ display: "block", fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1 }}>{c.label}</span>
-                  {c.detail && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{c.detail}</span>}
+                  {detail && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{detail}</span>}
                 </span>
-              </button>
-            );
+              </button>,
+            ];
+            if (c.id === "japa" && on) {
+              nodes.push(
+                <div key="japa-rounds" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 14px", borderRadius: 13, background: "color-mix(in srgb, var(--color-label) 4%, transparent)" }}>
+                  <span style={{ fontFamily: FT, fontSize: 13.5, color: L2 }}>Кругов в день</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 10, border: `0.5px solid ${HAIR}`, overflow: "hidden", background: BG2 }}>
+                    <button type="button" aria-label="Меньше" onClick={() => changeRounds(japaRounds - 1)} style={stepBtn}>−</button>
+                    <span style={{ minWidth: 46, textAlign: "center", fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1 }}>{japaRounds}</span>
+                    <button type="button" aria-label="Больше" onClick={() => changeRounds(japaRounds + 1)} style={stepBtn}>+</button>
+                  </span>
+                </div>,
+              );
+            }
+            return nodes;
           })}
           {/* свои служения */}
           {Object.values(sel).filter((c) => !PRESET_COMMITMENTS.some((p) => p.id === c.id)).map((c) => (

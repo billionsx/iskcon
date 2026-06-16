@@ -10,7 +10,7 @@
  */
 import { useCallback, useSyncExternalStore } from "react";
 
-export type Commitment = { id: string; label: string; detail?: string };
+export type Commitment = { id: string; label: string; detail?: string; target?: number; unit?: string };
 export type VowStatus = "active" | "completed" | "abandoned";
 export interface Vow {
   id: string;
@@ -18,15 +18,21 @@ export interface Vow {
   startDate: string;            // YYYY-MM-DD (локальная дата)
   endDate: string;              // YYYY-MM-DD включительно
   commitments: Commitment[];
-  log: Record<string, string[]>; // дата → id выполненных служений в этот день
+  log: Record<string, Record<string, number>>; // дата → { id служения: достигнутое число (булевые служения: 0/1) }
   createdAt: number;
   status: VowStatus;
   closedAt?: number;
 }
 
+/** Служение засчитано за день: числовое — по достижении цели, булевое — по факту. */
+export function satisfied(c: Commitment, n: number): boolean {
+  return c.target && c.target > 1 ? n >= c.target : n >= 1;
+}
+export function isNumeric(c: Commitment): boolean { return !!(c.target && c.target > 1); }
+
 /* ── Пресеты ─────────────────────────────────────────────────────────────── */
 export const PRESET_COMMITMENTS: Commitment[] = [
-  { id: "japa", label: "Джапа", detail: "16 кругов" },
+  { id: "japa", label: "Джапа", detail: "16 кругов", target: 16, unit: "кругов" },
   { id: "reading", label: "Чтение священных текстов", detail: "ежедневно" },
   { id: "kirtan", label: "Киртан · слушание святого имени", detail: "ежедневно" },
   { id: "arati", label: "Мангала-арати · служба", detail: "ежедневно" },
@@ -74,14 +80,26 @@ function invalidate() { activeCache = undefined; archiveCache = null; listeners.
 function readJson<T>(key: string, fallback: T): T { try { const s = localStorage.getItem(key); return s ? (JSON.parse(s) as T) : fallback; } catch { return fallback; } }
 function writeJson(key: string, val: unknown) { try { localStorage.setItem(key, JSON.stringify(val)); } catch { /* приватный режим */ } }
 
+/** Миграция старого формата лога (id[] → {id:1}) для обратной совместимости. */
+function normalizeVow(v: Vow): Vow {
+  let changed = false;
+  const log: Record<string, Record<string, number>> = {};
+  for (const [day, val] of Object.entries(v.log || {})) {
+    if (Array.isArray(val)) { changed = true; const o: Record<string, number> = {}; for (const id of val as string[]) o[id] = 1; log[day] = o; }
+    else log[day] = val as Record<string, number>;
+  }
+  return changed ? { ...v, log } : v;
+}
+
 export function getActiveVow(): Vow | null {
   if (activeCache !== undefined) return activeCache;
-  activeCache = readJson<Vow | null>(K_ACTIVE, null);
+  const raw = readJson<Vow | null>(K_ACTIVE, null);
+  activeCache = raw ? normalizeVow(raw) : null;
   return activeCache;
 }
 export function getArchive(): Vow[] {
   if (archiveCache) return archiveCache;
-  archiveCache = readJson<Vow[]>(K_ARCHIVE, []);
+  archiveCache = readJson<Vow[]>(K_ARCHIVE, []).map(normalizeVow);
   return archiveCache;
 }
 function setActive(v: Vow | null) { if (v) writeJson(K_ACTIVE, v); else { try { localStorage.removeItem(K_ACTIVE); } catch { /* noop */ } } invalidate(); }
@@ -120,9 +138,15 @@ export function createVow(input: { title: string; days?: number; endDate?: strin
 }
 export function toggleCommitment(date: string, commitmentId: string) {
   const v = getActiveVow(); if (!v) return;
-  const day = v.log[date] ? [...v.log[date]] : [];
-  const i = day.indexOf(commitmentId);
-  if (i >= 0) day.splice(i, 1); else day.push(commitmentId);
+  const day = { ...(v.log[date] || {}) };
+  day[commitmentId] = day[commitmentId] ? 0 : 1;
+  setActive({ ...v, log: { ...v.log, [date]: day } });
+}
+/** Задать число для числового служения за день (например, круги джапы). */
+export function setCount(date: string, commitmentId: string, n: number) {
+  const v = getActiveVow(); if (!v) return;
+  const day = { ...(v.log[date] || {}) };
+  day[commitmentId] = Math.max(0, Math.round(n));
   setActive({ ...v, log: { ...v.log, [date]: day } });
 }
 export function closeVow(status: "completed" | "abandoned") {
@@ -138,7 +162,7 @@ export interface VowStats {
   dayTotal: number; elapsed: number; remaining: number; started: boolean; overdue: boolean;
   doneSlots: number; expectedSlots: number; pct: number;
   current: number; longest: number;
-  per: { id: string; label: string; detail?: string; done: number; total: number; pct: number }[];
+  per: { id: string; label: string; detail?: string; done: number; total: number; pct: number; sum: number; target?: number; unit?: string; numeric: boolean }[];
   todayDone: string[]; fullDays: Set<string>; dayDone: Record<string, number>;
 }
 export function vowStats(vow: Vow, today: string = ymd()): VowStats {
@@ -149,16 +173,21 @@ export function vowStats(vow: Vow, today: string = ymd()): VowStats {
   const overdue = diffDays(today, vow.endDate) < 0;
   const lastObserved = !started ? null : (overdue ? vow.endDate : today);
   const elapsedRange = lastObserved ? enumerateDays(vow.startDate, lastObserved) : [];
-  const per = vow.commitments.map((c) => ({ id: c.id, label: c.label, detail: c.detail, done: 0, total: elapsedRange.length, pct: 0 }));
+  const per = vow.commitments.map((c) => ({ id: c.id, label: c.label, detail: c.detail, done: 0, total: elapsedRange.length, pct: 0, sum: 0, target: c.target, unit: c.unit, numeric: isNumeric(c) }));
   const fullDays = new Set<string>();
   const dayDone: Record<string, number> = {};
   let doneSlots = 0;
   for (const day of elapsedRange) {
-    const done = (vow.log[day] || []).filter((x) => ids.includes(x));
-    dayDone[day] = done.length;
-    doneSlots += done.length;
-    for (const p of per) if (done.includes(p.id)) p.done++;
-    if (ids.length > 0 && ids.every((id) => done.includes(id))) fullDays.add(day);
+    const dayLog = vow.log[day] || {};
+    let sat = 0;
+    vow.commitments.forEach((c, i) => {
+      const n = dayLog[c.id] || 0;
+      per[i].sum += n;
+      if (satisfied(c, n)) { per[i].done++; sat++; }
+    });
+    dayDone[day] = sat;
+    doneSlots += sat;
+    if (vow.commitments.length > 0 && sat === vow.commitments.length) fullDays.add(day);
   }
   for (const p of per) p.pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
   const expectedSlots = elapsedRange.length * M;
@@ -170,7 +199,7 @@ export function vowStats(vow: Vow, today: string = ymd()): VowStats {
   if (started && !overdue) { let d = today; while (diffDays(vow.startDate, d) >= 0 && fullDays.has(d)) { current++; d = addDays(d, -1); } }
   const remaining = !started ? dayTotal : Math.max(0, diffDays(today, vow.endDate));
   const elapsed = elapsedRange.length;
-  const todayDone = (vow.log[today] || []).filter((x) => ids.includes(x));
+  const todayDone = vow.commitments.filter((c) => satisfied(c, (vow.log[today] || {})[c.id] || 0)).map((c) => c.id);
   return { dayTotal, elapsed, remaining, started, overdue, doneSlots, expectedSlots, pct, current, longest, per, todayDone, fullDays, dayDone };
 }
 
@@ -182,7 +211,7 @@ export function vowReportText(vow: Vow): string {
     `Срок: ${fmtDate(vow.startDate, true)} — ${fmtDate(vow.endDate, true)} (${s.dayTotal} дн.)`,
     `Выполнено: ${s.pct}% · серия ${s.current}, лучшая ${s.longest}`,
     "Служения:",
-    ...vow.commitments.map((c) => { const p = s.per.find((x) => x.id === c.id); return `• ${c.label}${c.detail ? ` (${c.detail})` : ""} — ${p?.pct ?? 0}%`; }),
+    ...vow.commitments.map((c) => { const p = s.per.find((x) => x.id === c.id); return `• ${c.label}${c.detail ? ` (${c.detail})` : ""} — ${p?.pct ?? 0}%${p?.numeric ? ` · ${p.sum} ${c.unit || ""}`.trimEnd() : ""}`; }),
     "gaurangers.com",
   ];
   return lines.join("\n");
