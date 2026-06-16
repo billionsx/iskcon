@@ -257,7 +257,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
   const linkGroups: [string, LinkItem[]][] = (() => {
     const map = new Map<string, LinkItem[]>();
-    for (const l of data?.links ?? []) { if (l.kind === "darshan") continue; const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
+    for (const l of data?.links ?? []) { if (l.kind === "darshan" || l.kind === "appearance" || l.kind === "disappearance") continue; const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
     return [...map.entries()].sort((a, b) => {
       const ia = KIND_ORDER.indexOf(a[0]); const ib = KIND_ORDER.indexOf(b[0]);
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
@@ -338,6 +338,22 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
                 <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
                 <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
                 <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
+              </div>
+            )}
+
+            {/* тайминг — день явления/ухода (канонично, из entity_links) */}
+            {(data?.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 6 }}>Тайминг</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  {(data?.links ?? []).filter((l) => l.kind === "appearance" || l.kind === "disappearance").map((t) => (
+                    <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }}>
+                      <span style={{ color: "var(--color-label-3)" }}>{t.kind === "appearance" ? "Явление" : "Уход"}</span>
+                      {t.title && <span style={{ fontWeight: 600 }}> · {t.title}</span>}
+                      {t.subtitle && <span style={{ color: "var(--color-label-3)" }}> · {t.subtitle}</span>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
