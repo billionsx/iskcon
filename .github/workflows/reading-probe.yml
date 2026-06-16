@@ -26,15 +26,13 @@ jobs:
           set -e
           mkdir -p docs/diag /tmp/q
           run() { npx --yes wrangler@latest d1 execute iskcon --remote --json --config apps/web/wrangler.toml --command "$2" > "/tmp/q/$1.json" 2>/dev/null || echo "[]" > "/tmp/q/$1.json"; }
-          run works "SELECT id, kind, abbrev, verse_scheme, sort FROM works ORDER BY sort"
-          run editions "SELECT id, work_id, lang FROM editions WHERE work_id IN ('bg','sb','cc') ORDER BY work_id, lang"
-          run counts "SELECT work_id, COUNT(*) n, MIN(ordinal) mn, MAX(ordinal) mx, COUNT(DISTINCT ordinal) d FROM verses WHERE work_id IN ('bg','sb','cc') GROUP BY work_id"
-          run purported "SELECT v.work_id, COUNT(*) purported FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id = v.work_id || '-ru' WHERE TRIM(COALESCE(vt.purport,'')) <> '' GROUP BY v.work_id"
-          run sb0 "SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14"
-          run sb5000 "SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14 OFFSET 5000"
-          run cc0 "SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='cc' ORDER BY ordinal LIMIT 10"
-          run bgfirst "SELECT id, ref, ordinal FROM verses WHERE work_id='bg' ORDER BY ordinal LIMIT 4"
-          run bg16 "SELECT v.id, v.ref, v.ordinal, CASE WHEN TRIM(COALESCE(vt.purport,''))<>'' THEN 1 ELSE 0 END has_purport, LENGTH(COALESCE(vt.translation,'')) tlen FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id='bg-ru' WHERE v.work_id='bg' ORDER BY v.ordinal LIMIT 16"
+          run divsb "SELECT id, parent_id, level, number, ordinal FROM divisions WHERE work_id='sb' ORDER BY ordinal LIMIT 22"
+          run divcc "SELECT id, parent_id, level, number, ordinal FROM divisions WHERE work_id='cc' ORDER BY ordinal LIMIT 22"
+          run divbg "SELECT id, parent_id, level, number, ordinal FROM divisions WHERE work_id='bg' ORDER BY ordinal LIMIT 20"
+          run divlevels "SELECT work_id, level, COUNT(*) n, MIN(ordinal) mn, MAX(ordinal) mx, SUM(CASE WHEN ordinal IS NULL THEN 1 ELSE 0 END) nulls FROM divisions WHERE work_id IN ('bg','sb','cc') GROUP BY work_id, level"
+          run orderchk "SELECT v.id, d.ordinal dord, v.ordinal vord FROM verses v JOIN divisions d ON d.id=v.division_id WHERE v.work_id='sb' AND d.level='chapter' ORDER BY d.ordinal, v.ordinal LIMIT 18"
+          run orderchk_cc "SELECT v.id, d.ordinal dord, v.ordinal vord FROM verses v JOIN divisions d ON d.id=v.division_id WHERE v.work_id='cc' AND d.level='chapter' ORDER BY d.ordinal, v.ordinal LIMIT 14"
+          run chapdiv_counts "SELECT work_id, COUNT(*) chapters FROM divisions WHERE work_id IN ('bg','sb','cc') AND level='chapter' GROUP BY work_id"
           python3 - << 'PY'
           import json, glob, os
           out={}
