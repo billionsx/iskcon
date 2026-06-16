@@ -146,6 +146,60 @@ function StreakCard({ icon, value, label, tone }: { icon: ReactNode; value: numb
 }
 
 /* ───────────────────────── экран ───────────────────────── */
+const HM_WEEKS = 10;
+const HM_WD = ["Пн", "", "Ср", "", "Пт", "", ""];
+
+/** Карта практики: тепловая сетка кругов за последние недели (столбец = неделя). */
+function Heatmap({ roundsByDay, goal }: { roundsByDay: Map<string, number>; goal: number }) {
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const dow = (t.getDay() + 6) % 7; // 0=Пн … 6=Вс
+  const firstMon = new Date(t); firstMon.setDate(t.getDate() - dow - (HM_WEEKS - 1) * 7);
+
+  const cells: { key: string; rounds: number; future: boolean; today: boolean }[] = [];
+  for (let c = 0; c < HM_WEEKS; c++) {
+    for (let r = 0; r < 7; r++) {
+      const d = new Date(firstMon); d.setDate(firstMon.getDate() + c * 7 + r);
+      const key = ymd(d);
+      cells.push({ key, rounds: roundsByDay.get(key) ?? 0, future: d.getTime() > t.getTime(), today: d.getTime() === t.getTime() });
+    }
+  }
+  const tone = (rounds: number, future: boolean) => {
+    if (future) return "transparent";
+    if (rounds <= 0) return "color-mix(in srgb, var(--color-label) 8%, transparent)";
+    if (rounds >= goal) return GOLD;
+    return `color-mix(in srgb, ${GOLD} ${30 + Math.round((rounds / goal) * 45)}%, transparent)`;
+  };
+
+  return (
+    <div style={{ padding: 16, borderRadius: 18, background: FILL, marginTop: 12 }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
+        <span style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3 }}>Карта практики</span>
+        <span style={{ fontFamily: FT, fontSize: 10.5, color: L3 }}>10 недель</span>
+      </div>
+      <div style={{ display: "flex", gap: 7, alignItems: "stretch" }}>
+        <div style={{ display: "grid", gridTemplateRows: "repeat(7, 1fr)", gap: 3, flexShrink: 0 }}>
+          {HM_WD.map((w, i) => (
+            <span key={i} style={{ fontFamily: FT, fontSize: 8.5, color: L3, display: "flex", alignItems: "center", lineHeight: 1 }}>{w}</span>
+          ))}
+        </div>
+        <div style={{ flex: 1, display: "grid", gridTemplateColumns: `repeat(${HM_WEEKS}, 1fr)`, gridTemplateRows: "repeat(7, 1fr)", gridAutoFlow: "column", gap: 3 }}>
+          {cells.map((c) => (
+            <div key={c.key} title={c.future ? "" : `${prettyDate(c.key)}: ${c.rounds} кр.`}
+              style={{ aspectRatio: "1 / 1", borderRadius: 4, background: tone(c.rounds, c.future), outline: c.today ? `1.5px solid ${GOLD}` : "none", outlineOffset: 1 }} />
+          ))}
+        </div>
+      </div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, marginTop: 12 }}>
+        <span style={{ fontFamily: FT, fontSize: 10, color: L3 }}>меньше</span>
+        {["color-mix(in srgb, var(--color-label) 8%, transparent)", `color-mix(in srgb, ${GOLD} 45%, transparent)`, `color-mix(in srgb, ${GOLD} 70%, transparent)`, GOLD].map((bg, i) => (
+          <span key={i} style={{ width: 11, height: 11, borderRadius: 3, background: bg }} />
+        ))}
+        <span style={{ fontFamily: FT, fontSize: 10, color: L3 }}>больше</span>
+      </div>
+    </div>
+  );
+}
+
 const sheetBtn: CSSProperties = { minWidth: 56, height: 40, padding: "0 14px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent", display: "inline-grid", placeItems: "center" };
 
 /** Лист редактирования любого дня дневника: чтение/подъём/заметка (круги — read-only). */
@@ -223,7 +277,7 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
     try {
       // Дозалить локальные круги (до входа/офлайн) — идемпотентно; затем читать.
       try { const r = localRounds(); if (r.length) await accountClient.japa.sync(r); } catch { /* не критично */ }
-      const s = await accountClient.sadhana.get(ymd(), 30);
+      const s = await accountClient.sadhana.get(ymd(), 90);
       setSt(s); syncLocalGoal(s.goal);
       setReadMin(s.todayRow.reading_min); setRoseAt(s.todayRow.rose_at ?? ""); setNote(s.todayRow.note ?? ""); setGoal(s.goal);
     } catch { setFailed(true); } finally { setLoading(false); }
@@ -273,6 +327,14 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
   const R = 76, C = 2 * Math.PI * R;
 
   const weekMax = useMemo(() => Math.max(goal, ...(st?.week.map((w) => w.rounds) ?? [1])), [st, goal]);
+
+  // Карта кругов по дням (для тепловой сетки): активные дни из истории + неделя.
+  const roundsByDay = useMemo(() => {
+    const m = new Map<string, number>();
+    st?.history.forEach((d) => m.set(d.day, d.rounds));
+    st?.week.forEach((w) => { if (!m.has(w.day)) m.set(w.day, w.rounds); });
+    return m;
+  }, [st]);
 
   /* ── стили ── */
   const navStyle: CSSProperties = {
@@ -456,6 +518,9 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
                 </div>
               </div>
 
+              {/* карта практики */}
+              <Heatmap roundsByDay={roundsByDay} goal={goal} />
+
               {/* статистика всего */}
               <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
                 <Tile value={st.stats.totalRounds.toLocaleString("ru-RU")} label="Кругов всего" />
@@ -468,7 +533,7 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
                 <>
                   <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "22px 2px 10px" }}>История</div>
                   <div style={{ borderRadius: 16, background: FILL, overflow: "hidden" }}>
-                    {st.history.map((d, i) => (
+                    {st.history.slice(0, 30).map((d, i) => (
                       <button type="button" key={d.day} onClick={() => setEditDay(d)} aria-label={`Изменить день: ${relDay(d.day)}`}
                         style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 15px", borderTop: i ? `0.5px solid ${HAIR}` : "none", background: "none", border: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", font: "inherit" }}>
                         <span style={{ flexShrink: 0, width: 64 }}>
