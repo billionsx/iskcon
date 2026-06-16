@@ -1,0 +1,367 @@
+/**
+ * DarshanStories — даршан дня в формате «историй» (Instagram-паттерн, наш стиль).
+ *
+ *  · DarshanRings — горизонтальный трей колец вверху лендинга «ИСККОН». Одно
+ *    кольцо = сегодняшний даршан одного храма (живьём из публичных каналов
+ *    Маяпур/Вриндаван через /api/darshan). Просмотренные кольца гаснут (память
+ *    в localStorage по дате+храму), как в IG. Завершает трей кольцо «Архив» →
+ *    открывает экран «Даршан дня» (сетка архива) сигналом iol:open-darshan.
+ *  · DarshanStoryViewer — полноэкранный просмотр: прогресс-бары по кадрам,
+ *    авто-перелистывание (кадр = STORY_MS), тап слева/справа — назад/вперёд,
+ *    удержание — пауза (хром гаснет), свайп вниз — закрыть, стрелки/Esc с
+ *    клавиатуры. Фото Божеств показываем целиком (object-fit: contain — не
+ *    обрезаем мурти), хром поверх лёгких градиентных скримов.
+ *
+ * Эстетика iOS-26: токены темы, золото, только инлайн-SVG. Модуль публичный —
+ * вход не требуется (даршан открыт каждому). Изображения — прямые URL
+ * Telegram-CDN, как в Ленте и на экране «Даршан дня».
+ */
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { darshanClient, type DarshanItem } from "./darshan/api";
+
+/* ── токены ── */
+const GOLD = "#D2AA1B";
+const FT = "var(--font-text)";
+const FD = "var(--font-display)";
+const L1 = "var(--color-label)";
+const L2 = "var(--color-label-2)";
+const L3 = "var(--color-label-3)";
+const HAIR = "var(--color-hairline)";
+const FILL2 = "var(--color-glass-regular)";
+
+const STORY_MS = 6000;            // длительность одного кадра
+const RING_GRAD = "conic-gradient(from 135deg, #F4C430, #FF7A00, #E0451F, #D2AA1B, #F4C430)";
+
+/* ── короткое имя храма для подписи кольца ── */
+function shortTemple(slug: string, name: string): string {
+  if (slug === "mayapur") return "Маяпур";
+  if (slug === "vrindavan") return "Вриндаван";
+  return (name.split("·")[0] || name).replace(/^ИСККОН\s+/, "").trim() || slug;
+}
+
+/* ── человекочитаемая дата кадра ── */
+const RU_MON = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+function humanDate(ymd: string): string {
+  const [y, m, d] = ymd.split("-").map(Number);
+  if (!y) return "";
+  const dt = new Date(y, (m || 1) - 1, d || 1);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((today.getTime() - dt.getTime()) / 86400000);
+  const base = `${d} ${RU_MON[(m || 1) - 1]}`;
+  if (diff === 0) return `Сегодня · ${base}`;
+  if (diff === 1) return `Вчера · ${base}`;
+  return base;
+}
+
+/* ── «просмотрено» — память по дате+храму (как у IG гаснут кольца) ── */
+const seenId = (it: DarshanItem) => `${it.date}:${it.templeSlug}`;
+function readSeen(it: DarshanItem): boolean {
+  try { return localStorage.getItem(`darshan-seen:${seenId(it)}`) === "1"; } catch { return false; }
+}
+function writeSeen(it: DarshanItem): void {
+  try { localStorage.setItem(`darshan-seen:${seenId(it)}`, "1"); } catch { /* noop */ }
+}
+
+/* ── сессионный кеш «сегодня», чтобы переключение вкладок не дёргало сеть ── */
+let CACHE: { at: number; items: DarshanItem[] } | null = null;
+
+/* ── иконки ── */
+const Lotus = ({ s = 22 }: { s?: number }) => (
+  <svg width={s} height={s} viewBox="0 0 24 24" fill="none" aria-hidden>
+    <path d="M12 3c1.8 2.2 1.8 4.6 0 7-1.8-2.4-1.8-4.8 0-7Z" fill="currentColor" />
+    <path d="M12 10c2.8-.6 5 .6 6.5 3.4-3 1-5.2.2-6.5-2M12 10c-2.8-.6-5 .6-6.5 3.4 3 1 5.2.2 6.5-2" fill="currentColor" opacity="0.6" />
+    <path d="M5 13.5C5 17 8 19.5 12 19.5S19 17 19 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+const ArchiveGlyph = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M12 7.5V12l3 1.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const CloseGlyph = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+);
+const TgGlyph = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21.5 4.3 2.9 11.4c-1 .4-1 1.8.1 2.1l4.6 1.4 1.8 5.6c.2.7 1.1.9 1.6.3l2.5-2.6 4.7 3.5c.6.4 1.5.1 1.7-.7L23 5.6c.2-1-.7-1.7-1.5-1.3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
+);
+
+/* ── общий стиль трея (bleed к краям контейнера Home, паддинг 16) ── */
+const tray: CSSProperties = {
+  display: "flex", gap: 14, overflowX: "auto", WebkitOverflowScrolling: "touch",
+  scrollbarWidth: "none", margin: "6px -16px 0", padding: "4px 16px 6px",
+};
+const ringLabel = (on: boolean): CSSProperties => ({
+  fontFamily: FT, fontSize: 11.5, fontWeight: on ? 600 : 500, color: on ? L1 : L2,
+  maxWidth: 74, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em",
+});
+const ringBtn: CSSProperties = {
+  flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 7,
+  width: 76, border: "none", background: "none", padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent",
+};
+
+/* ── одно кольцо храма ── */
+function Ring({ item, seen, onClick }: { item: DarshanItem; seen: boolean; onClick: () => void }) {
+  const [ok, setOk] = useState(true);
+  const cover = item.images[0];
+  return (
+    <button type="button" onClick={onClick} role="listitem" style={ringBtn}
+      aria-label={`Даршан · ${shortTemple(item.templeSlug, item.templeName)}`}>
+      <span style={{ width: 68, height: 68, borderRadius: "50%", padding: seen ? 1.5 : 2.5, background: seen ? HAIR : RING_GRAD, boxSizing: "border-box" }}>
+        <span style={{ display: "block", width: "100%", height: "100%", borderRadius: "50%", padding: 2.5, background: "var(--color-bg)", boxSizing: "border-box" }}>
+          {ok && cover
+            ? <img src={cover} alt="" loading="lazy" onError={() => setOk(false)} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%", display: "block" }} />
+            : <span style={{ display: "grid", placeItems: "center", width: "100%", height: "100%", borderRadius: "50%", background: FILL2, color: L3 }}><Lotus /></span>}
+        </span>
+      </span>
+      <span style={ringLabel(!seen)}>{shortTemple(item.templeSlug, item.templeName)}</span>
+    </button>
+  );
+}
+
+/* ── завершающее кольцо «Архив» ── */
+function ArchiveRing({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} role="listitem" style={ringBtn} aria-label="Архив даршанов">
+      <span style={{ width: 68, height: 68, borderRadius: "50%", border: `1.5px dashed ${HAIR}`, display: "grid", placeItems: "center", color: L2, boxSizing: "border-box" }}>
+        <ArchiveGlyph />
+      </span>
+      <span style={ringLabel(false)}>Архив</span>
+    </button>
+  );
+}
+
+/* ── скелетон загрузки ── */
+function RingsSkeleton() {
+  return (
+    <div style={tray} aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <div key={i} style={{ flex: "0 0 auto", display: "flex", flexDirection: "column", alignItems: "center", gap: 7, width: 76 }}>
+          <div style={{ width: 68, height: 68, borderRadius: "50%", background: FILL2, animation: "darPulse 1.4s ease-in-out infinite" }} />
+          <div style={{ width: 50, height: 9, borderRadius: 5, background: FILL2, animation: "darPulse 1.4s ease-in-out infinite" }} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ── трей колец (экспорт; ставится вверху лендинга) ── */
+export function DarshanRings() {
+  const fresh = CACHE && Date.now() - CACHE.at < 600_000 ? CACHE.items : null;
+  const [items, setItems] = useState<DarshanItem[] | null>(fresh);
+  const [start, setStart] = useState<number | null>(null);
+  const [seen, setSeen] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (items) return;
+    let alive = true;
+    darshanClient.get()
+      .then((r) => { if (!alive) return; const list = r.today.filter((x) => x.images.length); CACHE = { at: Date.now(), items: list }; setItems(list); })
+      .catch(() => { if (alive) setItems([]); });
+    return () => { alive = false; };
+  }, [items]);
+
+  // инициализируем «просмотрено» из localStorage при появлении данных
+  useEffect(() => {
+    if (!items) return;
+    const init: Record<string, boolean> = {};
+    for (const it of items) if (readSeen(it)) init[seenId(it)] = true;
+    setSeen((s) => ({ ...init, ...s }));
+  }, [items]);
+
+  if (items === null) return <><RingsSkeleton /><Keyframes /></>;
+  if (items.length === 0) return null;
+
+  const openArchive = () => window.dispatchEvent(new CustomEvent("iol:open-darshan"));
+
+  return (
+    <>
+      <div style={tray} role="list" aria-label="Даршан дня">
+        {items.map((it, i) => (
+          <Ring key={it.srcUrl} item={it} seen={!!seen[seenId(it)]} onClick={() => setStart(i)} />
+        ))}
+        <ArchiveRing onClick={openArchive} />
+      </div>
+      {start !== null && (
+        <DarshanStoryViewer
+          items={items}
+          start={start}
+          onSeen={(it) => { writeSeen(it); setSeen((s) => ({ ...s, [seenId(it)]: true })); }}
+          onClose={() => setStart(null)}
+        />
+      )}
+      <Keyframes />
+    </>
+  );
+}
+
+/* ── полноэкранный просмотр историй ── */
+function DarshanStoryViewer({ items, start, onSeen, onClose }: {
+  items: DarshanItem[];
+  start: number;
+  onSeen: (it: DarshanItem) => void;
+  onClose: () => void;
+}) {
+  const [ti, setTi] = useState(start);   // индекс храма
+  const [ii, setII] = useState(0);       // индекс кадра внутри храма
+  const [paused, setPaused] = useState(false);
+  const [capOpen, setCapOpen] = useState(false);
+
+  const item = items[ti];
+  const imgs = item.images;
+  const total = imgs.length;
+
+  const barRef = useRef<HTMLSpanElement | null>(null);
+  const accRef = useRef(0);
+  const goNextRef = useRef<() => void>(() => {});
+
+  /* блокируем скролл body на время просмотра */
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  const goNext = useCallback(() => {
+    setCapOpen(false);
+    if (ii < total - 1) { setII(ii + 1); return; }
+    onSeen(item);                                   // храм досмотрен
+    if (ti < items.length - 1) { setTi(ti + 1); setII(0); return; }
+    onClose();                                      // конец всех историй
+  }, [ii, total, ti, items, item, onSeen, onClose]);
+
+  const goPrev = useCallback(() => {
+    setCapOpen(false);
+    if (ii > 0) { setII(ii - 1); return; }
+    if (ti > 0) { const pt = items[ti - 1]; setTi(ti - 1); setII(Math.max(0, pt.images.length - 1)); return; }
+    accRef.current = 0; if (barRef.current) barRef.current.style.width = "0%";  // рестарт первого кадра
+  }, [ii, ti, items]);
+
+  useEffect(() => { goNextRef.current = goNext; }, [goNext]);
+
+  /* сброс прогресса при смене кадра/храма */
+  useEffect(() => { accRef.current = 0; if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+
+  /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps) */
+  useEffect(() => {
+    if (paused) return;
+    let raf = 0; let last = performance.now();
+    const tick = (now: number) => {
+      const dt = now - last; last = now;
+      accRef.current += dt;
+      const frac = Math.min(1, accRef.current / STORY_MS);
+      if (barRef.current) barRef.current.style.width = (frac * 100).toFixed(2) + "%";
+      if (frac >= 1) { goNextRef.current(); return; }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [ti, ii, paused]);
+
+  /* клавиатура */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowRight") goNext();
+      else if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goNext, goPrev, onClose]);
+
+  /* жесты: тап = навигация по зонам, удержание = пауза, свайп вниз = закрыть */
+  const press = useRef<{ x: number; y: number; hold: boolean } | null>(null);
+  const holdTimer = useRef(0);
+  const onDown = (e: React.PointerEvent) => {
+    press.current = { x: e.clientX, y: e.clientY, hold: false };
+    window.clearTimeout(holdTimer.current);
+    holdTimer.current = window.setTimeout(() => { if (press.current) press.current.hold = true; setPaused(true); }, 220);
+  };
+  const onUp = (e: React.PointerEvent) => {
+    window.clearTimeout(holdTimer.current);
+    const pr = press.current; press.current = null;
+    if (!pr) return;
+    if (pr.hold) { setPaused(false); return; }
+    const dx = e.clientX - pr.x, dy = e.clientY - pr.y;
+    if (dy > 90 && Math.abs(dx) < 70) { onClose(); return; }
+    if (e.clientX < window.innerWidth * 0.32) goPrev(); else goNext();
+  };
+  const onCancel = () => { window.clearTimeout(holdTimer.current); if (press.current?.hold) setPaused(false); press.current = null; };
+  const stop = (e: React.PointerEvent | React.MouseEvent) => e.stopPropagation();
+
+  const longCap = !!item.caption && (item.caption.length > 140 || item.caption.includes("\n"));
+  const nextSrc = ii < total - 1 ? imgs[ii + 1] : (ti < items.length - 1 ? items[ti + 1].images[0] : null);
+
+  const chrome = (extra: CSSProperties = {}): CSSProperties => ({ opacity: paused ? 0 : 1, transition: "opacity .2s ease", ...extra });
+
+  return (
+    <div role="dialog" aria-modal="true" aria-label={`Даршан · ${item.templeName}`}
+      onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={onCancel}
+      style={{ position: "fixed", inset: 0, zIndex: 95, background: "#000", overflow: "hidden", touchAction: "none", userSelect: "none", WebkitUserSelect: "none", animation: "storyIn .22s ease" }}>
+
+      {/* фото — целиком, по центру */}
+      <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1 }}>
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+          style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+      </div>
+      {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
+
+      {/* скримы для читабельности хрома */}
+      <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 150, background: "linear-gradient(rgba(0,0,0,0.55), transparent)", zIndex: 2, pointerEvents: "none", ...chrome() }} />
+
+      {/* прогресс-бары */}
+      <div style={chrome({ position: "absolute", top: "max(10px, env(safe-area-inset-top,0px))", left: 10, right: 10, display: "flex", gap: 4, zIndex: 4 })}>
+        {imgs.map((_, i) => (
+          <span key={i} style={{ flex: 1, height: 2.5, borderRadius: 2, background: "rgba(255,255,255,0.32)", overflow: "hidden" }}>
+            <span ref={i === ii ? barRef : null} style={{ display: "block", height: "100%", borderRadius: 2, background: "#fff", width: i < ii ? "100%" : "0%" }} />
+          </span>
+        ))}
+      </div>
+
+      {/* шапка: храм + дата + закрыть */}
+      <div style={chrome({ position: "absolute", top: "calc(max(10px, env(safe-area-inset-top,0px)) + 16px)", left: 12, right: 12, display: "flex", alignItems: "center", gap: 10, zIndex: 4 })}>
+        <span style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "rgba(255,255,255,0.14)", display: "grid", placeItems: "center" }}>
+          {imgs[0] ? <img src={imgs[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff" }}><Lotus s={18} /></span>}
+        </span>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{ fontFamily: FT, fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {shortTemple(item.templeSlug, item.templeName)}
+          </div>
+          <div style={{ fontFamily: FT, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{humanDate(item.date)}</div>
+        </div>
+        <button type="button" aria-label="Закрыть" onClick={onClose} onPointerDown={stop} onPointerUp={stop}
+          style={{ flexShrink: 0, width: 38, height: 38, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.14)", color: "#fff", display: "grid", placeItems: "center", cursor: "pointer", backdropFilter: "blur(8px)", WebkitTapHighlightColor: "transparent" }}>
+          <CloseGlyph />
+        </button>
+      </div>
+
+      {/* низ: имя Божеств, подпись, ссылка в Telegram */}
+      <div style={chrome({ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 4, padding: "44px 16px calc(20px + env(safe-area-inset-bottom,0px))", background: "linear-gradient(transparent, rgba(0,0,0,0.72))" })}>
+        {item.deities && (
+          <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.caption ? 7 : 0 }}>{item.deities}</div>
+        )}
+        {item.caption && (
+          <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
+            ...(capOpen ? {} : { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }) }}>
+            {item.caption}
+          </p>
+        )}
+        {longCap && (
+          <button type="button" onClick={() => setCapOpen((v) => !v)} onPointerDown={stop} onPointerUp={stop}
+            style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: "rgba(255,255,255,0.7)", fontFamily: FT, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
+            {capOpen ? "Свернуть" : "Ещё"}
+          </button>
+        )}
+        <a href={item.channelUrl || item.srcUrl} target="_blank" rel="noopener noreferrer" onPointerDown={stop} onPointerUp={stop}
+          style={{ marginTop: 13, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,0.16)", color: "#fff", fontFamily: FT, fontSize: 12.5, fontWeight: 600, textDecoration: "none", backdropFilter: "blur(8px)" }}>
+          <TgGlyph /> Открыть в Telegram
+        </a>
+      </div>
+    </div>
+  );
+}
+
+/* ── keyframes (один раз) ── */
+function Keyframes() {
+  return <style>{`@keyframes darPulse{0%,100%{opacity:.45}50%{opacity:.8}}@keyframes storyIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}`}</style>;
+}
