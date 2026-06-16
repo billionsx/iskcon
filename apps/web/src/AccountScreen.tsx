@@ -12,7 +12,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
-import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem } from "./account/api";
+import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState } from "./account/api";
 import { usePlayer } from "./player/store";
 import { BOOKS, bookFullTitle } from "./books";
 import { albumById } from "./kirtans";
@@ -538,10 +538,63 @@ function SettingsCard({ onEdit, onDonate, onLogout }: { onEdit: () => void; onDo
   );
 }
 
+function ymdLocal(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function fmtMinShort(min: number): string {
+  const m = Math.max(0, Math.round(min));
+  if (m < 60) return `${m} мин`;
+  const h = Math.floor(m / 60); const r = m % 60;
+  return r ? `${h} ч ${r} мин` : `${h} ч`;
+}
+function pluralDays(n: number): string {
+  const a = Math.abs(n) % 100; const b = a % 10;
+  if (a > 10 && a < 20) return "дней";
+  if (b > 1 && b < 5) return "дня";
+  if (b === 1) return "день";
+  return "дней";
+}
+
+/** Карточка «Садхана сегодня» в кабинете: кольцо кругов, серия, чтение → дневник. */
+function SadhanaCard({ state, onOpen }: { state: SadhanaState; onOpen: () => void }) {
+  const r = state.stats.todayRounds, g = state.goal;
+  const done = r >= g;
+  const tone = done ? "#34C759" : GOLD;
+  const RAD = 58, CIRC = 2 * Math.PI * RAD;
+  const frac = Math.min(1, r / Math.max(1, g));
+  const read = state.todayRow.reading_min;
+  const bits: string[] = [`серия ${state.stats.currentStreak} ${pluralDays(state.stats.currentStreak)}`];
+  if (read > 0) bits.push(`чтение ${fmtMinShort(read)}`);
+  return (
+    <button onClick={onOpen} aria-label="Открыть дневник садханы"
+      style={{ width: "100%", display: "flex", alignItems: "center", gap: 16, padding: 16, borderRadius: 18, background: SURFACE, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", fontFamily: FONT }}>
+      <div style={{ position: "relative", flexShrink: 0, width: 76, height: 76 }}>
+        <svg viewBox="0 0 140 140" width="76" height="76" style={{ transform: "rotate(-90deg)" }} aria-hidden>
+          <circle cx="70" cy="70" r={RAD} fill="none" stroke="color-mix(in srgb, var(--color-label) 9%, transparent)" strokeWidth="10" />
+          <circle cx="70" cy="70" r={RAD} fill="none" stroke={tone} strokeWidth="10" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - frac)} style={{ transition: "stroke-dashoffset .35s ease" }} />
+        </svg>
+        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: INK }}>{r}</span>
+          <span style={{ fontFamily: FONT, fontSize: 10, color: INK2, marginTop: 1 }}>из {g}</span>
+        </div>
+      </div>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, letterSpacing: "-0.02em", color: done ? "#34C759" : INK }}>
+          {done ? "Норма выполнена" : "Круги сегодня"}
+        </div>
+        <div style={{ marginTop: 3, fontFamily: FONT, fontSize: 12.5, color: INK2, textTransform: "lowercase" }}>{bits.join(" · ")}</div>
+      </div>
+      <svg width="9" height="15" viewBox="0 0 9 15" fill="none" aria-hidden style={{ flexShrink: 0, color: INK3 }}><path d="M1.5 1.5 7 7.5l-5.5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+    </button>
+  );
+}
+
 function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) => void; onDonate: () => void; flash: (m: string) => void }) {
   const { logout } = useAuth();
   const player = usePlayer();
   const [ov, setOv] = useState<Overview | null>(null);
+  const [sad, setSad] = useState<SadhanaState | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -551,6 +604,8 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       .then((d) => setOv(d))
       .catch(() => setOv(null))
       .finally(() => setLoaded(true));
+    // Садхана — параллельно; своя сводка кругов/серии для карточки кабинета.
+    accountClient.sadhana.get(ymdLocal()).then((d) => setSad(d)).catch(() => setSad(null));
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -588,6 +643,13 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <ProfileHeader onEdit={() => setEditing(true)} />
 
       {ov && <StatStrip stats={ov.stats} />}
+
+      {sad && (
+        <section>
+          <SectionTitle title="Садхана сегодня" action={{ label: "Дневник", onClick: () => onOpenPath("/practice/diary") }} />
+          <SadhanaCard state={sad} onOpen={() => onOpenPath("/practice/diary")} />
+        </section>
+      )}
 
       <NotesSection onOpenPath={onOpenPath} />
 
