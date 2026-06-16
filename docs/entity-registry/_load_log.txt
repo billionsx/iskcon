@@ -1,12 +1,12 @@
 applying schema ...
 entities: 722
-names: 2407 | categories: 1551
+names: 2407 | categories: 1555
 relations: 1959
 profiles seeded (bronze): 722
 links: 68
   D1 entities: 722
   D1 entity_names: 2407
-  D1 entity_categories: 1551
+  D1 entity_categories: 1555
   D1 entity_relations: 1957
   D1 entity_profiles: 722
   D1 entity_links: 68
