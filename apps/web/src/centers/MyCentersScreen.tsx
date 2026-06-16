@@ -40,6 +40,11 @@ const Temple = ({ size = 26, color = GOLD }: { size?: number; color?: string }) 
 const Chev = () => (
   <svg width="8" height="13" viewBox="0 0 9 15" fill="none" aria-hidden><path d="M1.5 1.5L7 7.5l-5.5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
 );
+const Shield = ({ size = 22 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M12 3l7 3v5c0 4.2-2.9 7.4-7 8.5-4.1-1.1-7-4.3-7-8.5V6l7-3z" /><path d="M9 12l2 2 4-4" />
+  </svg>
+);
 
 const STATUS_TONE: Record<CenterStatus, { bg: string; fg: string }> = {
   draft: { bg: "color-mix(in srgb, var(--color-label) 10%, transparent)", fg: L2 },
@@ -59,6 +64,8 @@ export default function MyCentersScreen({
 }) {
   const authed = useAuthed();
   const [items, setItems] = useState<MyCenterItem[] | null>(null);
+  const [ge, setGe] = useState(false);
+  const [reviewCount, setReviewCount] = useState(0);
   const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
 
   const load = useCallback(() => {
@@ -67,6 +74,8 @@ export default function MyCentersScreen({
       .mine()
       .then((d) => {
         setItems(d.items);
+        setGe(!!d.is_global_editor);
+        setReviewCount(d.review_count ?? 0);
         setPhase("ready");
       })
       .catch(() => setPhase("error"));
@@ -147,12 +156,29 @@ export default function MyCentersScreen({
   }
 
   const list = items ?? [];
+  const modEntry = ge ? (
+    <button
+      type="button"
+      onClick={() => onOpenPath("/centers/review")}
+      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: 14, borderRadius: 18, border: "none", background: `color-mix(in srgb, ${GOLD} 12%, var(--color-glass-thin))`, cursor: "pointer", textAlign: "left", fontFamily: FT, marginBottom: 12, WebkitTapHighlightColor: "transparent" }}
+    >
+      <span style={{ display: "grid", placeItems: "center", width: 44, height: 44, flexShrink: 0, borderRadius: 13, background: `color-mix(in srgb, ${GOLD} 20%, transparent)`, color: GOLDT }}><Shield size={22} /></span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", fontFamily: FD, fontSize: 15.5, fontWeight: 800, letterSpacing: "-0.01em", color: L1 }}>Модерация центров</span>
+        <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3 }}>{reviewCount > 0 ? `${reviewCount} на проверке` : "Очередь пуста"}</span>
+      </span>
+      {reviewCount > 0 && (
+        <span style={{ display: "grid", placeItems: "center", minWidth: 22, height: 22, padding: "0 6px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FD, fontSize: 12, fontWeight: 800 }}>{reviewCount}</span>
+      )}
+      <span style={{ color: L3, flexShrink: 0 }}><Chev /></span>
+    </button>
+  ) : null;
 
-  /* ── пусто ── */
-  if (list.length === 0) {
-    return (
-      <Shell>
-        <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
+  return (
+    <Shell showAdd={list.length > 0}>
+      {modEntry}
+      {list.length === 0 ? (
+        <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: modEntry ? 0 : 8 }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Temple size={26} /></span>
           <div style={{ fontFamily: FD, fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Здесь будут ваши центры</div>
           <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>
@@ -162,40 +188,36 @@ export default function MyCentersScreen({
             <Plus size={18} />Добавить центр
           </button>
         </div>
-      </Shell>
-    );
-  }
-
-  return (
-    <Shell showAdd>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {list.map((it) => {
-          const tone = STATUS_TONE[it.status];
-          const place = [it.city, it.country].filter(Boolean).join(", ");
-          return (
-            <button
-              key={it.id}
-              type="button"
-              onClick={() => onOpenPath(`/center/${it.slug}`)}
-              style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: 14, borderRadius: 18, border: "none", background: FILL, cursor: "pointer", textAlign: "left", fontFamily: FT, WebkitTapHighlightColor: "transparent" }}
-            >
-              <span style={{ display: "grid", placeItems: "center", width: 50, height: 50, flexShrink: 0, borderRadius: 14, overflow: "hidden", background: it.photos[0] ? `center/cover no-repeat url("${it.photos[0]}")` : `color-mix(in srgb, ${GOLD} 13%, transparent)`, color: GOLDT }}>
-                {!it.photos[0] && <Temple size={24} />}
-              </span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: "block", fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.name}</span>
-                <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {CENTER_TYPE_LABEL[it.type]}{place ? ` · ${place}` : ""}
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {list.map((it) => {
+            const tone = STATUS_TONE[it.status];
+            const place = [it.city, it.country].filter(Boolean).join(", ");
+            return (
+              <button
+                key={it.id}
+                type="button"
+                onClick={() => onOpenPath(`/center/${it.slug}`)}
+                style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: 14, borderRadius: 18, border: "none", background: FILL, cursor: "pointer", textAlign: "left", fontFamily: FT, WebkitTapHighlightColor: "transparent" }}
+              >
+                <span style={{ display: "grid", placeItems: "center", width: 50, height: 50, flexShrink: 0, borderRadius: 14, overflow: "hidden", background: it.photos[0] ? `center/cover no-repeat url("${it.photos[0]}")` : `color-mix(in srgb, ${GOLD} 13%, transparent)`, color: GOLDT }}>
+                  {!it.photos[0] && <Temple size={24} />}
                 </span>
-                <span style={{ display: "inline-block", marginTop: 7, fontFamily: FT, fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: tone.bg, color: tone.fg }}>
-                  {STATUS_LABEL[it.status]}
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.name}</span>
+                  <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {CENTER_TYPE_LABEL[it.type]}{place ? ` · ${place}` : ""}
+                  </span>
+                  <span style={{ display: "inline-block", marginTop: 7, fontFamily: FT, fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: tone.bg, color: tone.fg }}>
+                    {STATUS_LABEL[it.status]}
+                  </span>
                 </span>
-              </span>
-              <span style={{ color: L3, flexShrink: 0 }}><Chev /></span>
-            </button>
-          );
-        })}
-      </div>
+                <span style={{ color: L3, flexShrink: 0 }}><Chev /></span>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </Shell>
   );
 }
