@@ -37,7 +37,7 @@ const GROUPS: Group[] = [
   ] },
   { group: "Моя практика", items: [
     { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-japa")) },
-    { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true },
+    { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-diary")) },
     { icon: ICON.moon, t: "Экадаши и посты", d: "Когда следующий, правила, время выхода (парана)" },
   ] },
   { group: "Прасад", items: [

@@ -35,6 +35,7 @@ import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./n
 import { api } from "./api";
 import CartScreen from "./shop/CartScreen";
 import JapaScreen from "./JapaScreen";
+import SadhanaScreen from "./SadhanaScreen";
 import { useCartCount } from "./shop/cart";
 import PrasadamScreen from "./prasad/PrasadamScreen";
 import RecipeDetail from "./prasad/RecipeDetail";
@@ -516,6 +517,7 @@ export default function App() {
   const [donate, setDonate] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openJapa, setOpenJapa] = useState(false);
+  const [openDiary, setOpenDiary] = useState(false);
   const [prasadamSection, setPrasadamSection] = useState<"recipes" | "match" | "deities" | "offering" | null>(null);
   const [prasadamRecipe, setPrasadamRecipe] = useState<string | null>(null);
   const [openCookbook, setOpenCookbook] = useState(false);
@@ -533,6 +535,7 @@ export default function App() {
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
+    if (openDiary) return "/practice/diary";
     if (prasadamRecipe) return "/prasadam/recipe/" + prasadamRecipe;
     if (cookbookChapter) return "/prasadam/book/" + cookbookChapter;
     if (openCookbook) return "/prasadam/book";
@@ -564,7 +567,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false); setOpenJapa(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -572,6 +575,7 @@ export default function App() {
     if (clean === "/favorites") { setOpenFavorites(true); return; }
     if (clean === "/cart") { setOpenCart(true); return; }
     if (clean === "/practice/japa") { setOpenJapa(true); return; }
+    if (clean === "/practice/diary") { setOpenDiary(true); return; }
     if (seg0 === "prasadam") {
       const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
       if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
@@ -659,13 +663,22 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Открытие дневника садханы из хаба «Садхана» — через событие (как джапа):
+  // navigate → /practice/diary, корректная история и кнопка «назад».
+  useEffect(() => {
+    const onDiary = () => navigate("/practice/diary");
+    window.addEventListener("iol:open-diary", onDiary);
+    return () => window.removeEventListener("iol:open-diary", onDiary);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // состояние → URL (push нового уровня), кроме случаев применения из popstate
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart, openJapa, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -716,7 +729,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart && !openJapa && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -768,6 +781,10 @@ export default function App() {
         ) : openJapa ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <JapaScreen onBack={goBack} />
+          </main>
+        ) : openDiary ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <SadhanaScreen onBack={goBack} />
           </main>
         ) : openCart ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
