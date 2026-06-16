@@ -257,7 +257,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
   const linkGroups: [string, LinkItem[]][] = (() => {
     const map = new Map<string, LinkItem[]>();
-    for (const l of data?.links ?? []) { if (l.kind === "darshan" || l.kind === "appearance" || l.kind === "disappearance") continue; const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
+    for (const l of data?.links ?? []) { if (l.kind === "darshan" || l.kind === "appearance" || l.kind === "disappearance" || l.kind === "scripture") continue; const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
     return [...map.entries()].sort((a, b) => {
       const ia = KIND_ORDER.indexOf(a[0]); const ib = KIND_ORDER.indexOf(b[0]);
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
@@ -372,6 +372,22 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
             {data.source_ref && (
               <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {data.source_ref}</div>
+            )}
+
+            {/* писания — канонические цитаты с диплинком в ридер (entity_links kind=scripture) */}
+            {(data?.links ?? []).some((l) => l.kind === "scripture") && (
+              <section style={{ marginTop: 26 }}>
+                <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 10 }}>Писания</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {(data?.links ?? []).filter((l) => l.kind === "scripture").map((c) => (
+                    <button key={c.ref} type="button" onClick={() => onNavigate?.("/" + c.ref)}
+                      style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 2, padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</span>
+                      {c.subtitle && <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.subtitle}</span>}
+                    </button>
+                  ))}
+                </div>
+              </section>
             )}
 
             {/* даршан дня — показывается только если в БД есть фото (иначе секции нет) */}
