@@ -4,3 +4,8 @@ compatibility_date = "2026-06-01"
 compatibility_flags = ["python_workers"]
 account_id = "d5cbe19470dc38599873eabfe148e6d1"
 workers_dev = true
+
+# gaurabda is astronomy-heavy; Pyodide runs it well but slower than native CPython.
+# Raise the per-request CPU budget so a full multi-year calc completes (then cached).
+[limits]
+cpu_ms = 300000
