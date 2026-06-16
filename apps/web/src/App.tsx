@@ -802,7 +802,7 @@ export default function App() {
           </main>
         ) : openEntity ? (
           <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-            <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} />
+            <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} onNavigate={navigate} />
           </main>
         ) : openContent ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>

@@ -1133,6 +1133,15 @@ export default {
            AND (slug = ?1 OR (?2 IS NOT NULL AND name = ?2))
          ORDER BY (slug = ?1) DESC LIMIT 1`,
       ).bind(cslug, nameRu).first<{ hero_image: string }>();
+      // кросс-силос фасет-связи (блюда/киртаны/храмы/…). Таблица неразрушающая;
+      // try/catch — чтобы гонка деплоя (воркер раньше загрузчика) не уронила выдачу.
+      let linksRows: { kind: string; ref: string; title: string | null; subtitle: string | null }[] = [];
+      try {
+        const lr = await env.DB.prepare(
+          `SELECT kind, ref, title, subtitle FROM entity_links WHERE entity_id = ? ORDER BY kind, sort, ref`,
+        ).bind(id).all<{ kind: string; ref: string; title: string | null; subtitle: string | null }>();
+        linksRows = lr.results ?? [];
+      } catch { linksRows = []; }
       return json({
         id: ent.id, type: ent.type, tattva: ent.tattva ?? null, dataset: ent.dataset ?? null,
         note: ent.note ?? null, source_ref: ent.source_ref ?? null,
@@ -1143,6 +1152,7 @@ export default {
         profile: prof ? { summary: prof.summary ?? null, biography: prof.biography ?? null, contribution: prof.contribution ?? null, level: prof.level ?? null } : null,
         out: outRes.results ?? [],
         in: inRes.results ?? [],
+        links: linksRows,
       });
     }
 

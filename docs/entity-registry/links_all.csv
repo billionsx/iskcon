@@ -1,0 +1,30 @@
+entity_id,kind,ref,title,subtitle,sort,dataset
+radharani,dish,malai-kofta,Малай-кофта,,0,Прасад · любимые блюда
+radharani,dish,sandesh,Сандеш,,1,Прасад · любимые блюда
+radharani,dish,coconut-burfi,Кокосовая бурфи,,2,Прасад · любимые блюда
+radharani,dish,pulao,Овощной пулао,,3,Прасад · любимые блюда
+radharani,dish,fruit-offering,Фруктовое подношение,,4,Прасад · любимые блюда
+krishna,dish,sweet-rice,Сладкий рис,,0,Прасад · любимые блюда
+krishna,dish,matar-paneer,Матар-панир,,1,Прасад · любимые блюда
+krishna,dish,palak-paneer,Палак-панир,,2,Прасад · любимые блюда
+krishna,dish,ghee,Гхи (топлёное масло),,3,Прасад · любимые блюда
+krishna,dish,paneer,Панир (свежий сыр),,4,Прасад · любимые блюда
+krishna,dish,thandai,Тхандай,,5,Прасад · любимые блюда
+krishna,dish,gulab-jamun,Гулаб джамун,,6,Прасад · любимые блюда
+balarama,dish,chira-dadhi,Чира-дадхи (плоский рис с йогуртом),,0,Прасад · любимые блюда
+balarama,dish,sweet-lassi,Сладкий ласси,,1,Прасад · любимые блюда
+balarama,dish,khichri,Кичри,,2,Прасад · любимые блюда
+chaitanya,dish,sandesh,Сандеш,,0,Прасад · любимые блюда
+chaitanya,dish,puri,Пури,,1,Прасад · любимые блюда
+chaitanya,dish,khichri,Кичри,,2,Прасад · любимые блюда
+chaitanya,dish,toor-dal,Дал из тур-дала,,3,Прасад · любимые блюда
+chaitanya,dish,gulab-jamun,Гулаб джамун,,4,Прасад · любимые блюда
+nityananda,dish,chira-dadhi,Чира-дадхи (плоский рис с йогуртом),,0,Прасад · любимые блюда
+nityananda,dish,sweet-lassi,Сладкий ласси,,1,Прасад · любимые блюда
+nityananda,dish,fruit-offering,Фруктовое подношение,,2,Прасад · любимые блюда
+prabhupada,dish,semolina-halava,Манная халава,,0,Прасад · любимые блюда
+prabhupada,dish,kachori,Качори,,1,Прасад · любимые блюда
+prabhupada,dish,sweet-rice,Сладкий рис,,2,Прасад · любимые блюда
+prabhupada,dish,carrot-halava,Морковная халава,,3,Прасад · любимые блюда
+prabhupada,dish,simply-wonderful,Молочные шарики «Просто чудо»,,4,Прасад · любимые блюда
+prabhupada,dish,khichri,Кичри,,5,Прасад · любимые блюда
