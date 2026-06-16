@@ -18,6 +18,10 @@ on:
         description: '1 = игнорировать дедуп и перепостить заново. По расписанию всегда 0'
         required: false
         default: '0'
+      diag:
+        description: '1 = только диагностика: список свежих постов канала (ничего не постит)'
+        required: false
+        default: '0'
   schedule:
     - cron: '0 6 * * *'   # 06:00 UTC ≈ 11:30 IST — стартуем в dry-run
 
@@ -40,6 +44,7 @@ jobs:
           DRY_RUN: ${{ github.event.inputs.dry_run || '1' }}
           ONLY: ${{ github.event.inputs.only || 'vrindavan' }}
           FORCE: ${{ github.event.inputs.force || '0' }}
+          DIAG: ${{ github.event.inputs.diag || '0' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: '@iskcone'
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

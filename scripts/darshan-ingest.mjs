@@ -175,6 +175,26 @@ function alreadyPosted(src) {
 async function run() {
   const dry = (process.env.DRY_RUN ?? "1") !== "0";
   const only = (process.env.ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
+
+  if (process.env.DIAG === "1") {
+    const out = [];
+    for (const src of SOURCES) {
+      if (only.length && !only.includes(src.slug)) continue;
+      let posts;
+      try { posts = await fetchChannel(src.channel); } catch (e) { out.push({ slug: src.slug, error: String(e) }); continue; }
+      const list = posts.slice(0, 20).filter((p) => p.photos.length).map((p) => {
+        const d = p.date ? new Date(p.date) : null;
+        const ist = d ? new Intl.DateTimeFormat("ru-RU", { weekday: "short", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit", timeZone: "Asia/Kolkata" }).format(d) : "";
+        return { id: p.id, ist_time: ist, photos: p.photos.length, head: (p.text || "").slice(0, 80), url: `https://t.me/${src.channel}/${p.id}` };
+      });
+      out.push({ slug: src.slug, posts: list });
+    }
+    mkdirSync("data/darshan", { recursive: true });
+    writeFileSync("data/darshan/_dryrun.json", JSON.stringify({ mode: "diag", at: new Date().toISOString(), sources: out }, null, 2));
+    console.log("diag written");
+    return;
+  }
+
   const preview = [];
 
   for (const src of SOURCES) {
