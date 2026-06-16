@@ -1,12 +1,7 @@
 name: Deploy GCal compute (Cloudflare Python Worker)
 
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/gcal/**'
-      - '.github/workflows/deploy-gcal.yml'
+  workflow_dispatch:   # parked: live per-request compute hits CF CPU limits on this plan; see PRECOMPUTE plan
 
 jobs:
   deploy:
