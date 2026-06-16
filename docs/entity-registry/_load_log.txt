@@ -3,12 +3,12 @@ entities: 674
 names: 2254 | categories: 1332
 relations: 1959
 profiles seeded (bronze): 674
-links: 63
+links: 68
   D1 entities: 674
   D1 entity_names: 2254
   D1 entity_categories: 1332
   D1 entity_relations: 1957
   D1 entity_profiles: 674
-  D1 entity_links: 63
+  D1 entity_links: 68
 done.
 EXIT=0
