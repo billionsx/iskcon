@@ -212,12 +212,107 @@ const COLLECTIONS: Record<string, Collection> = {
   },
 };
 
-export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpenCollection }: {
+/** Заголовок грани (нама·рупа·гуна·лила·дхама): санскритский кикер + русское имя. */
+function FacetHead({ kicker, title, sub }: { kicker: string; title: string; sub?: string }) {
+  return (
+    <div style={{ marginTop: 30, marginBottom: 4 }}>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 9 }}>
+        <span aria-hidden style={{ width: 22, height: 3, borderRadius: 999, background: GOLD }} />
+        <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, letterSpacing: "0.3px", color: GOLD }}>{kicker}</span>
+      </div>
+      <h2 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{title}</h2>
+      {sub && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.45 }}>{sub}</p>}
+    </div>
+  );
+}
+
+/** Зал Кришны / Гауранги: единый движок графа, разложенный по пяти граням. */
+function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
+  realm: "krishna" | "gauranga";
+  onOpen: (id: string, type: string | null) => void;
+  onOpenCollection?: (key: string) => void;
+  onOpenPath?: (path: string) => void;
+}) {
+  const K = realm === "krishna";
+  const hub = K ? "krishna" : "chaitanya";
+  return (
+    <div>
+      {/* Порог пред Личностью */}
+      <div style={{ marginBottom: 6 }}>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга-лилы"}</div>
+        <h1 style={{ margin: "3px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: "-0.5px", color: "var(--color-label)" }}>{K ? "Шри Кришна" : "Шри Гауранга"}</h1>
+        <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>
+          {K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гаура-лиле."}
+        </p>
+      </div>
+
+      {/* НАМА */}
+      <FacetHead kicker="nāma" title="Имена" sub={K ? "Святые имена Господа неотличны от Него Самого." : "Имена Гауранги и Гаура-нама."} />
+      <SectionCard title={K ? "Святые имена Кришны" : "Имена Шри Чайтаньи"} subtitle={K ? "Маха-мантра Харе Кришна и тысячи имён Господа" : "Гаурахари, Нимай, Вишвамбхара, Шачинандана"}
+        mark={<MaskMark src={K ? "/vraj.svg" : "/gauranga.svg"} size={44} />} onClick={() => onOpen(hub, "personality")} />
+
+      {/* РУПА */}
+      <FacetHead kicker="rūpa" title="Формы" sub={K ? "Изначальная форма, аватары и экспансии Господа." : "Гауранга и Панча-таттва."} />
+      {K ? (
+        <>
+          <Rail title="Божественная Чета" params="ids=krishna,radharani" orderIds={["krishna", "radharani"]} onOpen={onOpen} />
+          <Rail title="Аватары" params="rel=avatar-of&relTo=krishna&limit=24" onOpen={onOpen} />
+          <Rail title="Экспансии" params="rel=expansion-of&relTo=krishna&limit=16" onOpen={onOpen} />
+          <Rail title="Шактьявеша-аватары" params="rel=shaktyavesha-of&relTo=krishna&limit=16" onOpen={onOpen} />
+        </>
+      ) : (
+        <Rail title="Панча-таттва" params="ids=chaitanya,nityananda,advaita,gadadhara,srivasa" orderIds={["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"]} onOpen={onOpen} />
+      )}
+
+      {/* ГУНА */}
+      <FacetHead kicker="guṇa" title="Качества" sub={K ? "Шестьдесят четыре трансцендентных качества Господа." : "Безграничная милость и сладость Махапрабху."} />
+      <SectionCard title={K ? "Качества Шри Кришны" : "Качества Махапрабху"} subtitle={K ? "Всепривлекающий — описан в «Нектаре преданности»" : "Самый великодушный аватар, дарующий чистую любовь"}
+        mark={<MaskMark src="/bbt.svg" size={44} />} onClick={() => onOpen(hub, "personality")} />
+
+      {/* ЛИЛА */}
+      <FacetHead kicker="līlā" title={K ? "Игры и спутники" : "Игры и спутники Гауранга-лилы"} sub={K ? "Вечные спутники Враджа по пяти расам." : "Волны Гауранга-лилы — от Панча-таттвы до ИСККОН."} />
+      {K ? (
+        <>
+          <Rail title="Мадхурья · гопи" params="category=gopi&limit=40" onOpen={onOpen} />
+          <Rail title="Мадхурья · манджари" params="category=manjari&limit=30" onOpen={onOpen} />
+          <Rail title="Ватсалья · старшие Враджа" params="category=krishna-family&limit=24" onOpen={onOpen} />
+          <Rail title="Сакхья · пастушки Враджа" params="category=gopa&limit=30" onOpen={onOpen} />
+          <Rail title="Шанта · Враджа-дхама" params="category=vraja&limit=24" onOpen={onOpen} />
+          <div style={{ marginTop: 16 }}>
+            <SectionCard title="Радха-Кришна лила" subtitle="Войти в вечные игры Господа во Вриндаване" mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenCollection?.("radha-krishna")} />
+          </div>
+        </>
+      ) : (
+        <>
+          <div style={{ marginTop: 4 }}>
+            <SectionCard title="Шрила Прабхупада" subtitle="Ачарья-основатель ИСККОН — последняя волна Гауранга-лилы" mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />} accent onClick={() => onOpen("prabhupada", "personality")} />
+          </div>
+          <Rail title="Спутники Гауранги" params={`dataset=${GAURA_DS}&limit=60`} onOpen={onOpen} />
+          <Rail title="Шесть Госвами Вриндавана" params="category=six-goswamis&limit=10" onOpen={onOpen} />
+          <Rail title="Брахма-Мадхва-Гаудия-парампара" params="category=parampara&limit=40" onOpen={onOpen} />
+          <div style={{ marginTop: 16 }}>
+            <SectionCard title="Гауранга лила" subtitle="Шри Чайтанья Махапрабху и Панча-таттва" mark={<MaskMark src="/gauranga.svg" size={44} />} onClick={() => onOpenCollection?.("gauranga")} />
+          </div>
+        </>
+      )}
+
+      {/* ДХАМА */}
+      <FacetHead kicker="dhāma" title="Обители" sub={K ? "Святые места Враджа-мандалы, неотличные от Господа." : "Навадвипа-дхама и Нилачала (Джаганнатха Пури)."} />
+      <SectionCard title={K ? "Враджа-мандала" : "Навадвипа и Нилачала"} subtitle={K ? "Двенадцать лесов Враджа, Говардхан, Радха-кунда" : "Девять островов Навадвипы; Джаганнатха Пури"}
+        mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenPath?.("/dhama")} />
+
+      <div style={{ height: 12 }} />
+    </div>
+  );
+}
+
+export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpenCollection, onOpenPath }: {
   collection?: string | null;
   realm?: "krishna" | "gauranga" | null;
   onBack?: () => void;
   onOpen: (id: string, type: string | null) => void;
   onOpenCollection?: (key: string) => void;
+  onOpenPath?: (path: string) => void;
 }) {
   // ── Режим экрана лилы ──
   if (collection) {
@@ -248,8 +343,11 @@ export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpe
     );
   }
 
+  // ── Зал Кришны / Гауранги: пять граней (нама·рупа·гуна·лила·дхама) ──
+  if (realm) return <RealmHall realm={realm} onOpen={onOpen} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} />;
+
   // ── Режим лендинга (карточки разделов + поиск) ──
-  return <AcharyaLanding realm={realm} onOpen={onOpen} onOpenCollection={onOpenCollection} />;
+  return <AcharyaLanding onOpen={onOpen} onOpenCollection={onOpenCollection} />;
 }
 
 function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void }) {
