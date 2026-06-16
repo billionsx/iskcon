@@ -468,6 +468,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
               onBookMenu={bookMenu}
               onOpenEntity={onOpenEntity}
               onOpenCollection={onOpenCollection}
+              onOpenPath={onOpenPath}
               flash={flash}
             />
           )}
