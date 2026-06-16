@@ -215,6 +215,8 @@ export default function CenterScreen({
   // Точный флаг управления с сервера (админ/редактор или глоб. редактор); запасной —
   // эвристика по статусу (на случай старого ответа без поля).
   const canManage = !!data?.can_manage || isManager;
+  // Право публикации/возврата — у глобального редактора (модератора ИСККОН).
+  const canPublish = !!data?.can_publish;
 
   const submitReview = useCallback(() => {
     if (!c || busy) return;
@@ -228,6 +230,23 @@ export default function CenterScreen({
       .catch(() => flash?.("Не удалось отправить заявку"))
       .finally(() => setBusy(false));
   }, [c, busy, flash, load]);
+
+  // Модерация (глобальный редактор): публикация / возврат / снятие.
+  const moderate = useCallback(
+    (next: "live" | "draft", okMsg: string) => {
+      if (!c || busy) return;
+      setBusy(true);
+      centersClient
+        .update(c.id, { status: next })
+        .then(() => {
+          flash?.(okMsg);
+          load();
+        })
+        .catch(() => flash?.("Не удалось обновить статус"))
+        .finally(() => setBusy(false));
+    },
+    [c, busy, flash, load],
+  );
 
   const onShare = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -336,14 +355,20 @@ export default function CenterScreen({
         {canManage && (
           <div style={{ marginTop: 16, padding: 15, borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 9%, var(--color-glass-thin))` }}>
             <div style={{ fontFamily: FT, fontSize: 13.5, fontWeight: 700, color: GOLDT }}>
-              {c.status === "review" ? "Заявка на проверке ИСККОН" : c.status === "draft" ? "Это превью" : "Вы управляете центром"}
+              {canPublish && c.status !== "live"
+                ? c.status === "review" ? "Заявка на модерации" : "Черновик центра"
+                : c.status === "review" ? "Заявка на проверке ИСККОН" : c.status === "draft" ? "Это превью" : "Вы управляете центром"}
             </div>
             <p style={{ margin: "5px 0 0", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L2 }}>
-              {c.status === "review"
-                ? "Центр виден только вам, пока ИСККОН не подтвердит публикацию."
-                : c.status === "draft"
-                  ? "Центр виден только вам. Заполните профиль и расписание, затем отправьте на проверку."
-                  : "Центр опубликован. Изменения видны всем сразу."}
+              {canPublish && c.status !== "live"
+                ? c.status === "review"
+                  ? "Проверьте профиль и расписание, затем опубликуйте либо верните на доработку."
+                  : "Центр ещё не отправлен на проверку. Вы можете опубликовать его сразу."
+                : c.status === "review"
+                  ? "Центр виден только вам, пока ИСККОН не подтвердит публикацию."
+                  : c.status === "draft"
+                    ? "Центр виден только вам. Заполните профиль и расписание, затем отправьте на проверку."
+                    : "Центр опубликован. Изменения видны всем сразу."}
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
               {[
@@ -357,11 +382,24 @@ export default function CenterScreen({
                 </button>
               ))}
             </div>
-            {c.status === "draft" && (
+            {canPublish ? (
+              <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                {c.status !== "live" ? (
+                  <>
+                    <button type="button" onClick={() => moderate("live", "Центр опубликован")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Опубликовать</button>
+                    {c.status === "review" && (
+                      <button type="button" onClick={() => moderate("draft", "Возвращено на доработку")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Вернуть</button>
+                    )}
+                  </>
+                ) : (
+                  <button type="button" onClick={() => moderate("draft", "Снято с публикации")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Снять с публикации</button>
+                )}
+              </div>
+            ) : c.status === "draft" ? (
               <button type="button" onClick={submitReview} disabled={busy} style={{ marginTop: 10, width: "100%", padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
                 Отправить на проверку
               </button>
-            )}
+            ) : null}
           </div>
         )}
 

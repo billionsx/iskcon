@@ -111,6 +111,8 @@ export interface CenterCard {
   events: CenterEvent[];
   /** Может ли текущий зритель управлять центром (админ/редактор или глоб. редактор). */
   can_manage?: boolean;
+  /** Может ли текущий зритель публиковать/снимать (глобальный редактор). */
+  can_publish?: boolean;
 }
 
 /** Поля программы расписания (создание/правка). */
@@ -241,7 +243,10 @@ export const centersClient = {
   update: (id: string, patch: CenterPatch) =>
     request<{ id: string; updated: boolean }>("PATCH", `/centers/${encodeURIComponent(id)}`, patch),
   /** Центры, которыми управляет вошедший преданный. */
-  mine: () => request<{ items: MyCenterItem[] }>("GET", "/me/centers"),
+  mine: () =>
+    request<{ items: MyCenterItem[]; is_global_editor?: boolean; review_count?: number }>("GET", "/me/centers"),
+  /** Очередь модерации (центры на проверке) — только глобальный редактор. */
+  reviewQueue: () => request<{ items: MyCenterItem[] }>("GET", "/centers/review"),
   /** Добавить программу расписания (админ центра). */
   addProgram: (centerId: string, input: ProgramInput) =>
     request<{ id: string }>("POST", `/centers/${encodeURIComponent(centerId)}/programs`, input),

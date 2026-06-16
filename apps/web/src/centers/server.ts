@@ -295,7 +295,13 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
       ...r,
       photos: parse<string[]>(r.photos, []),
     }));
-    return jres({ items });
+    const ge = await isGlobalEditor(env, uid);
+    let reviewCount = 0;
+    if (ge) {
+      const rc = await env.DB.prepare(`SELECT COUNT(*) AS n FROM centers WHERE status = 'review'`).first<{ n: number }>();
+      reviewCount = rc?.n ?? 0;
+    }
+    return jres({ items, is_global_editor: ge, review_count: reviewCount });
   }
 
   /* ───────── публичный локатор ───────── */
@@ -419,6 +425,22 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
       return err("slug_taken", 409);
     }
     return jres({ id, slug, status: "draft" }, 201);
+  }
+
+  /* ───────── очередь модерации (глобальный редактор) ───────── */
+  if (p === "/api/centers/review" && method === "GET") {
+    const uid = await currentUserId(env, request);
+    if (!uid) return err("unauthorized", 401);
+    if (!(await isGlobalEditor(env, uid))) return err("forbidden", 403);
+    const { results } = await env.DB.prepare(
+      `SELECT id, type, name, slug, city, country, status, photos, updated_at
+       FROM centers WHERE status = 'review' ORDER BY updated_at ASC`,
+    ).all();
+    const items = (results as Record<string, any>[]).map((r) => ({
+      ...r,
+      photos: parse<string[]>(r.photos, []),
+    }));
+    return jres({ items });
   }
 
   /* ───────── /api/centers/<slug|id> ───────── */
@@ -684,9 +706,14 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         .first<Record<string, any>>();
       if (!center) return err("center_not_found", 404);
       // Может ли зритель управлять: админ/редактор центра ИЛИ глобальный редактор.
+      // can_publish — только глобальный редактор (право публикации/возврата).
       const viewer = await currentUserId(env, request);
       let canManage = false;
-      if (viewer) canManage = !!(await adminRole(env, center.id, viewer)) || (await isGlobalEditor(env, viewer));
+      let canPublish = false;
+      if (viewer) {
+        canPublish = await isGlobalEditor(env, viewer);
+        canManage = canPublish || !!(await adminRole(env, center.id, viewer));
+      }
       // черновик/review виден только тем, кто может управлять (превью/модерация).
       if (center.status !== "live" && !canManage) return err("center_not_found", 404);
       const [programs, deities, events] = await Promise.all([
@@ -738,6 +765,7 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
           images: parse<string[]>(x.images, []),
         })),
         can_manage: canManage,
+        can_publish: canPublish,
       });
     }
 
@@ -747,7 +775,8 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
       if (!uid) return err("unauthorized", 401);
       const id = rest;
       const role = await adminRole(env, id, uid);
-      if (!role) return err("forbidden", 403);
+      const ge = await isGlobalEditor(env, uid);
+      if (!role && !ge) return err("forbidden", 403);
 
       const b = await body();
       const fields: string[] = [];
@@ -787,7 +816,7 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         const st = clip(b.status, 12);
         if (!(STATUSES as readonly string[]).includes(st)) return err("bad_status");
         // Публикация — прерогатива глобального редактора (верификация ИСККОН).
-        if (st === "live" && !(await isGlobalEditor(env, uid))) return err("publish_forbidden", 403);
+        if (st === "live" && !ge) return err("publish_forbidden", 403);
         set("status", st);
       }
 
