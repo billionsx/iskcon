@@ -35,9 +35,9 @@ jobs:
 
       - name: Ingest darshan
         env:
-          # По расписанию (inputs пустые) — LIVE и только vrindavan, пока не подтверждена строка Маяпура.
-          # Ручной запуск через UI по умолчанию остаётся dry (input default '1') — безопасно.
-          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+          # ВРЕМЕННО НА ПАУЗЕ: расписание идёт в dry (не постит), пока дорабатываем
+          # источник (время Шрингары, все три алтаря, качество). Включим обратно через '0'.
+          DRY_RUN: ${{ github.event.inputs.dry_run || '1' }}
           ONLY: ${{ github.event.inputs.only || 'vrindavan' }}
           FORCE: ${{ github.event.inputs.force || '0' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
