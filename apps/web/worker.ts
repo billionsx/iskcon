@@ -1146,6 +1146,23 @@ export default {
         ).bind(id).all<{ kind: string; ref: string; title: string | null; subtitle: string | null }>();
         linksRows = lr.results ?? [];
       } catch { linksRows = []; }
+      // «Даршан дня»: по связям kind=darshan берём свежий даршан каждого храма из таблицы darshan.
+      // Таблица может быть пуста (ингест в dry-run) или отсутствовать — try/catch, тогда [].
+      let darshansArr: { temple_slug: string; temple_name: string; deities: string | null; image: string | null; date: string; url: string | null }[] = [];
+      try {
+        const slugs = [...new Set(linksRows.filter((l) => l.kind === "darshan").map((l) => l.ref))];
+        for (const slug of slugs) {
+          const d = await env.DB.prepare(
+            `SELECT temple_slug, temple_name, deities, images_json, tg_message_id, src_channel, src_post_id, date
+             FROM darshan WHERE temple_slug = ? ORDER BY date DESC, id DESC LIMIT 1`,
+          ).bind(slug).first<{ temple_slug: string; temple_name: string; deities: string | null; images_json: string; tg_message_id: number | null; src_channel: string; src_post_id: string; date: string }>();
+          if (!d) continue;
+          let image: string | null = null;
+          try { const arr = JSON.parse(d.images_json || "[]"); if (Array.isArray(arr) && arr.length) image = arr[0] as string; } catch { image = null; }
+          const url = d.tg_message_id ? `https://t.me/iskcone/${d.tg_message_id}` : (d.src_channel && d.src_post_id ? `https://t.me/${d.src_channel}/${d.src_post_id}` : null);
+          darshansArr.push({ temple_slug: d.temple_slug, temple_name: d.temple_name, deities: d.deities ?? null, image, date: d.date, url });
+        }
+      } catch { darshansArr = []; }
       return json({
         id: ent.id, type: ent.type, tattva: ent.tattva ?? null, dataset: ent.dataset ?? null,
         note: ent.note ?? null, source_ref: ent.source_ref ?? null,
@@ -1157,6 +1174,7 @@ export default {
         out: outRes.results ?? [],
         in: inRes.results ?? [],
         links: linksRows,
+        darshans: darshansArr,
       });
     }
 
