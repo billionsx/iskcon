@@ -91,6 +91,10 @@ export interface CenterDeity {
   local_name_i18n: Record<string, string>;
   darshan_times: Record<string, string>;
   photos: string[];
+  /** Сущность-Божество в графе (сквозная связь). */
+  deity_entity_id?: string | null;
+  /** Каноничное имя связанной сущности (из графа), если связано. */
+  deity_entity_name?: string | null;
 }
 export interface CenterEvent {
   id: string;
@@ -101,6 +105,9 @@ export interface CenterEvent {
   ends_at: string | null;
   images: string[];
   livestream_url: string | null;
+  /** Сущность-праздник в графе (сквозная связь). */
+  festival_entity_id?: string | null;
+  festival_entity_name?: string | null;
 }
 
 /** Полная карточка центра (профиль + расписание + божества + события). */
@@ -132,6 +139,7 @@ export interface DeityInput {
   photos?: string[];
   installed_on?: string | null;
   deity_id?: string | null;
+  deity_entity_id?: string | null;
 }
 
 /** Поля события (создание/правка). starts_at — «YYYY-MM-DDTHH:MM». */
@@ -143,6 +151,7 @@ export interface EventInput {
   images?: string[];
   livestream_url?: string | null;
   festival_id?: string | null;
+  festival_entity_id?: string | null;
 }
 
 /** Поля, принимаемые при создании. */
@@ -230,12 +239,39 @@ function qs(params: Record<string, unknown>): string {
   return s ? `?${s}` : "";
 }
 
+/** Совпадение поиска по графу сущностей (для привязки Божеств/праздников). */
+export interface EntityHit {
+  id: string;
+  type: string | null;
+  name_ru: string | null;
+  name_en?: string | null;
+  name_iast: string | null;
+  image?: string | null;
+}
+
+/** Центр, найденный по связи с сущностью (для страницы сущности). */
+export interface EntityCenterHit {
+  id: string;
+  type: CenterType;
+  name: string;
+  slug: string;
+  city: string | null;
+  country: string | null;
+  photos: string[];
+}
+
 export const centersClient = {
   /** Публичный локатор (только опубликованные центры). */
   list: (query: LocatorQuery = {}) =>
     request<{ items: CenterListItem[]; count: number }>("GET", `/centers${qs(query as Record<string, unknown>)}`),
   /** Карточка по slug (черновик виден только админу этого центра). */
   get: (slug: string) => request<CenterCard>("GET", `/centers/${encodeURIComponent(slug)}`),
+  /** Поиск по графу сущностей — для привязки Божества/праздника центра. */
+  searchEntities: (q: string) =>
+    request<{ items: EntityHit[] }>("GET", `/entities${qs({ q, limit: 8 })}`),
+  /** Опубликованные центры, связанные с сущностью (Божество/праздник). */
+  centersForEntity: (entityId: string) =>
+    request<{ items: EntityCenterHit[] }>("GET", `/centers${qs({ entity: entityId })}`),
   /** Создать центр → 'draft', текущий пользователь становится админом. */
   create: (input: CenterCreateInput) =>
     request<{ id: string; slug: string; status: CenterStatus }>("POST", "/centers", input),
