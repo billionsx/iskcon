@@ -7,12 +7,14 @@
  * Ридер зовёт оба: recordRead (зеркало в кабинет, если вошёл) и noteRead (локально,
  * всегда). Серверная сводка и локальная полка дополняют друг друга, не мешая.
  *
- * Прогресс — по главам (грубая, честная гранулярность, как в книжных читалках):
- * процент = самая дальняя достигнутая глава ÷ всего глав. Точку возобновления
- * («где я был») держим отдельно от максимума прогресса (как Apple Books): тап по
+ * Прогресс — по охвату глав (честно, как в книжных читалках): процент = число
+ * РЕАЛЬНО открытых глав ÷ всего глав. Это НЕ «самая дальняя позиция»: если открыть
+ * одну главу в середине или в конце и прочитать пару стихов, охват равен 1 главе
+ * (а не «до середины книги»), и процент будет маленьким — как и должно быть.
+ * Перечитывание уже открытой главы процент не меняет (главы учитываются без
+ * повторов). Точку возобновления («где я был») держим отдельно от охвата: тап по
  * полке открывает последнюю позицию, а полоска отражает дочитанность в целом.
- * Для иерархических книг (ЧЧ/ШБ) всего глав на клиенте неизвестно → процента нет,
- * но есть возобновление с подписью места.
+ * Для иерархических книг (ЧЧ/ШБ) всего глав и индекс берём из оглавления (/toc).
  */
 
 const KEY = "iol:reading:v1";
@@ -31,8 +33,8 @@ export interface ReadingRec {
   href: string;
   /** chapter|prose|verse. */
   kind: string;
-  /** Самая дальняя достигнутая глава (1-based) — для полоски прогресса. */
-  maxIdx: number;
+  /** Индексы реально открытых глав (1-based), без повторов — честный охват для полоски. */
+  read: number[];
   /** Всего глав в книге (0 — неизвестно, процент не показываем). */
   total: number;
   /** Метка последнего обновления, мс. */
@@ -80,8 +82,8 @@ export interface NoteReadInput {
 }
 
 /**
- * Отметить открытие главы/стиха. Точка возобновления = последнее открытие;
- * максимум прогресса не регрессирует при переходе к более ранней главе.
+ * Отметить открытие главы/стиха. Точка возобновления = последнее открытие; в охват
+ * добавляется текущая глава (без повторов) — процент растёт только за новые главы.
  */
 export function noteRead(input: NoteReadInput): void {
   if (!input.work || !input.ref || !input.href) return;
@@ -89,13 +91,15 @@ export function noteRead(input: NoteReadInput): void {
   const prev = s[input.work];
   const idx = Number.isFinite(input.idx) ? Math.max(0, input.idx as number) : 0;
   const total = Number.isFinite(input.total) ? Math.max(0, input.total as number) : 0;
+  const prevRead = Array.isArray(prev?.read) ? prev!.read : [];
+  const read = idx > 0 && !prevRead.includes(idx) ? [...prevRead, idx].sort((a, b) => a - b) : prevRead;
   s[input.work] = {
     work: input.work,
     ref: input.ref,
     label: input.label ?? prev?.label ?? input.ref,
     href: input.href,
     kind: input.kind ?? prev?.kind ?? "chapter",
-    maxIdx: Math.max(prev?.maxIdx ?? 0, idx),
+    read,
     total: total > 0 ? total : prev?.total ?? 0,
     at: Date.now(),
   };
@@ -116,10 +120,12 @@ export function recentReadings(limit = 4): ReadingRec[] {
     .slice(0, Math.max(0, limit));
 }
 
-/** Процент дочитанности 0..100 (или null, если всего глав неизвестно). */
+/** Процент дочитанности 0..100 = открытые главы ÷ всего глав (или null). */
 export function pctOf(rec: ReadingRec | null | undefined): number | null {
-  if (!rec || rec.total <= 0 || rec.maxIdx <= 0) return null;
-  return Math.min(100, Math.max(1, Math.round((rec.maxIdx / rec.total) * 100)));
+  if (!rec || rec.total <= 0) return null;
+  const n = Array.isArray(rec.read) ? rec.read.length : 0;
+  if (n <= 0) return null;
+  return Math.min(100, Math.max(1, Math.round((n / rec.total) * 100)));
 }
 
 /** Забыть прогресс по книге (для будущего смахивания/«убрать с полки»). */
