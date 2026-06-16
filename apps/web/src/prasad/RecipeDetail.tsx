@@ -9,6 +9,7 @@
 import { recipeBySlug, deityById, DIFFICULTY_LABEL, DIETS, type Recipe } from "./prasad";
 import { chapterForRecipe } from "./cookbook";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
+import { RecipeCover } from "./covers";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
 export function recipeCtx(r: { slug: string; title: string; subtitle: string }): CardCtx {
@@ -74,6 +75,10 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
       <Header onBack={onBack} title="Прасадам" right={<CardActionBtns favKey={`recipe:${recipe.slug}`} meta={favMetaFromCtx(recipeCtx(recipe))} flash={flash} size={32} onMore={() => openCardMenu(recipeCtx(recipe))} />} />
 
       <div style={{ padding: "8px 16px 56px", maxWidth: 560, margin: "0 auto" }}>
+        {/* Обложка-герой (стиль Apple) */}
+        <div style={{ position: "relative", height: 188, borderRadius: 20, overflow: "hidden", marginBottom: 18 }}>
+          <RecipeCover category={recipe.category} slug={recipe.slug} glyphSize={66} />
+        </div>
         {/* Заголовок */}
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
           {recipe.region ?? "Прасад"}

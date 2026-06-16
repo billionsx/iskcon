@@ -12,6 +12,7 @@
 import { recipeBySlug, DIFFICULTY_LABEL, CATEGORIES } from "./prasad";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
 import { recipeCtx } from "./RecipeDetail";
+import { RecipeCover, coverFor } from "./covers";
 
 const GOLD = "#D2AA1B";
 const ic = (s: number) => ({ width: s, height: s, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true as const });
@@ -33,16 +34,15 @@ export default function RecipeCard({ slug, onOpen, flash, width = 172 }: {
     <div role="button" tabIndex={0} onClick={open}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } }}
       style={{ width, flexShrink: 0, borderRadius: 18, overflow: "hidden", background: "var(--color-glass-thin)", cursor: "pointer", WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
-      {/* типографическая обложка */}
-      <div style={{ position: "relative", height: 126, display: "grid", placeItems: "center", padding: "12px 14px",
-        background: `radial-gradient(130% 120% at 28% 0%, color-mix(in srgb, ${GOLD} 32%, #1b1408) 0%, #0c0a06 78%)` }}>
+      {/* обложка в стиле Apple */}
+      <div style={{ position: "relative", height: 126, overflow: "hidden" }}>
+        <RecipeCover category={r.category} slug={r.slug} name={r.sanskrit || r.title} glyphSize={40} />
         {cat && (
-          <span style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.32)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>{cat}</span>
+          <span style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.34)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: coverFor(r.category).accent }}>{cat}</span>
         )}
         <span style={{ position: "absolute", top: 8, right: 8 }}>
           <CardActionBtns favKey={`recipe:${r.slug}`} meta={favMetaFromCtx(recipeCtx(r))} flash={flash} dark size={30} onMore={() => openCardMenu(recipeCtx(r))} />
         </span>
-        <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 20, lineHeight: 1.15, textAlign: "center", color: "rgba(255,255,255,0.92)", paddingTop: 14 }}>{r.sanskrit || r.title}</span>
       </div>
       {/* подпись */}
       <div style={{ padding: "11px 13px 13px" }}>
