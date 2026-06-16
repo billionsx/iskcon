@@ -84,14 +84,29 @@ run("""CREATE TABLE IF NOT EXISTS entity_citations (
 np = insert("entity_profiles", ["entity_id","summary"], [[e["id"], e.get("note","")] for e in ents])
 print("profiles seeded (bronze):", np)
 
-# curated profiles — UPSERT (gold): overwrites the bronze seed for listed entities
+# auto-enriched summaries (bronze): batched UPSERT of composed summaries for non-curated personalities
+auto_path = os.path.join(BASE, "profiles_auto.csv")
+if os.path.exists(auto_path):
+    ar = list(csv.DictReader(open(auto_path, encoding="utf-8")))
+    for i in range(0, len(ar), 60):
+        chunk = ar[i:i+60]
+        vals = ",".join(f"({q(r['entity_id'])},{q(r.get('summary',''))},datetime('now'))" for r in chunk)
+        run(f"INSERT INTO entity_profiles (entity_id,summary,updated_at) VALUES {vals} "
+            "ON CONFLICT(entity_id) DO UPDATE SET summary=excluded.summary, updated_at=datetime('now');")
+    print("auto summaries upserted:", len(ar))
+else:
+    print("auto summaries: profiles_auto.csv not found — skipped")
+
+# curated profiles — batched UPSERT (gold): full summary+biography+contribution for listed entities
 prof_path = os.path.join(BASE, "profiles_curated.csv")
 if os.path.exists(prof_path):
     pr = list(csv.DictReader(open(prof_path, encoding="utf-8")))
-    for row in pr:
-        run("INSERT INTO entity_profiles (entity_id,summary,biography,contribution,level,updated_at) "
-            f"VALUES ({q(row['entity_id'])},{q(row.get('summary',''))},{q(row.get('biography',''))},"
-            f"{q(row.get('contribution',''))},{q(row.get('level','gold') or 'gold')},datetime('now')) "
+    for i in range(0, len(pr), 60):
+        chunk = pr[i:i+60]
+        vals = ",".join(
+            f"({q(r['entity_id'])},{q(r.get('summary',''))},{q(r.get('biography',''))},"
+            f"{q(r.get('contribution',''))},{q(r.get('level','gold') or 'gold')},datetime('now'))" for r in chunk)
+        run(f"INSERT INTO entity_profiles (entity_id,summary,biography,contribution,level,updated_at) VALUES {vals} "
             "ON CONFLICT(entity_id) DO UPDATE SET summary=excluded.summary, biography=excluded.biography, "
             "contribution=excluded.contribution, level=excluded.level, updated_at=datetime('now');")
     print("curated profiles upserted:", len(pr))
