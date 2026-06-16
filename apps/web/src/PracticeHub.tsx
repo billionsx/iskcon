@@ -52,7 +52,7 @@ const GROUPS: Group[] = [
     { icon: ICON.news, t: "Новости ИСККОН", d: "Мировые новости движения, переведённые на русский" },
   ] },
   { group: "Изучение", items: [
-    { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано и прослушано: книги, главы, стихи, лекции" },
+    { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано: системное чтение, книги, время и стрик", go: () => window.dispatchEvent(new CustomEvent("iol:open-progress")) },
     { icon: ICON.bookmark, t: "Закладки и заметки", d: "Сохранённые стихи, выделения и личные пометки" },
   ] },
   { group: "Рост", items: [
