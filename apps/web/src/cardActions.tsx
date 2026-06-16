@@ -144,7 +144,7 @@ export function CardActionBtns({ favKey, onMore, meta, flash, dark, size = 34 }:
 /* ── Контекст карточки для меню ──────────────────────────────────────────── */
 export type CardCtx = {
   /** тип печатной карточки и deep-link */
-  type: "place" | "restaurant" | "entity" | "doc" | "bhajan" | "kirtan-album" | "kirtan-track";
+  type: "place" | "restaurant" | "entity" | "doc" | "bhajan" | "kirtan-album" | "kirtan-track" | "dhama" | "tirtha";
   id: string;
   /** заголовок (для QR-подписи, share-текста и имени PDF-файла) */
   title: string;

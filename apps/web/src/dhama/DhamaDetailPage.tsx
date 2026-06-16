@@ -7,10 +7,11 @@
  * Тап по месту → страница тиртхи.
  */
 import { useEffect, useRef, useState } from "react";
-import { BackIcon, ShareIcon, ChevRightIcon } from "../ui/icons";
+import { BackIcon } from "../ui/icons";
 import { SectionSubTabs } from "../SectionSubTabs";
 import DhamaMap from "./DhamaMap";
-import { KIND_RU, type Dhama, type Tirtha } from "./dhamas";
+import { KIND_RU, dhamaCtx, tirthaCtx, type Dhama, type Tirtha } from "./dhamas";
+import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
 
 const NAV_H = 52;
 
@@ -24,12 +25,14 @@ function KindChip({ d, kind }: { d: Dhama; kind: Tirtha["kind"] }) {
 }
 
 function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string) => void }) {
+  const { openCardMenu } = useCardActions();
   return (
-    <button type="button" onClick={() => onOpen(t.id)}
+    <div role="button" tabIndex={0} onClick={() => onOpen(t.id)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(t.id); } }}
       onPointerDown={(e) => (e.currentTarget.style.background = "var(--color-fill-1)")}
       onPointerUp={(e) => (e.currentTarget.style.background = "transparent")}
       onPointerLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      style={{ display: "flex", alignItems: "flex-start", gap: 12, width: "100%", textAlign: "left", padding: "13px 4px", background: "transparent", border: "none",
+      style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "13px 4px", background: "transparent",
         borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
@@ -39,27 +42,18 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
         {t.iast && <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)" }}>{t.iast}</span>}
         <span style={{ display: "block", marginTop: 4, fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.4, color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
-      <span style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)" }}><ChevRightIcon size={16} /></span>
-    </button>
+      <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={28} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
+    </div>
   );
 }
 
 export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama: Dhama; onBack: () => void; onOpenTirtha: (id: string) => void }) {
   const [sub, setSub] = useState<"places" | "map" | "about">("places");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [toast, setToast] = useState<string | null>(null);
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
+  const { openCardMenu } = useCardActions();
 
   // сброс позиции при смене вкладки на карту/о дхаме нежелателен; сбрасываем при входе
   useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [dhama.id]);
-
-  const pageUrl = `https://gaurangers.com/dhama/${dhama.id}`;
-  const share = async () => {
-    const payload = { title: dhama.name, text: `${dhama.name} — ${dhama.tagline} · gaurangers.com`, url: pageUrl };
-    try { if (typeof navigator !== "undefined" && (navigator as Navigator).share) { await (navigator as Navigator).share(payload); return; } } catch { /* cancelled */ }
-    try { await navigator.clipboard.writeText(pageUrl); flash("Ссылка скопирована"); } catch { flash(pageUrl); }
-  };
 
   const hasPhoto = !!dhama.hero;
   const byCluster = dhama.clusters
@@ -76,9 +70,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
           <BackIcon size={22} />
         </button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{dhama.name}</div>
-        <button aria-label="Поделиться" onClick={() => void share()} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
-          <ShareIcon size={18} />
-        </button>
+        <CardActionBtns favKey={`dhama:${dhama.id}`} meta={favMetaFromCtx(dhamaCtx(dhama))} size={32} onMore={() => openCardMenu(dhamaCtx(dhama))} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -144,8 +136,6 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
           )}
         </div>
       </div>
-
-      {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: 999, background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)" }}>{toast}</div>}
     </div>
   );
 }

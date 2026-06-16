@@ -3,6 +3,7 @@ import { BOOKS, bookFullTitle, type BookData } from "./books";
 import { api } from "./api";
 import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
 import { tattvaRu, categoriesRu } from "./entityLabels";
+import { getDhama, getTirthaById, KIND_RU } from "./dhama/dhamas";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
@@ -197,6 +198,26 @@ type CardLoaded = Extract<Loaded, { kind: "card" }>;
 
 async function loadCard(ctype: string, cid: string, album: string, track: string): Promise<CardLoaded | null> {
   try {
+    if (ctype === "dhama") {
+      const d = getDhama(cid);
+      if (!d) return null;
+      const rows: Array<[string, string]> = [["Божество", d.deity], ["Расположение", d.region]];
+      for (const f of d.facts) rows.push([f.k, f.v]);
+      return { kind: "card", header: "Святые дхамы · ISKCON ONE LOVE", title: d.name, subtitle: d.tagline, rows, body: d.intro };
+    }
+    if (ctype === "tirtha") {
+      const found = getTirthaById(cid);
+      if (!found) return null;
+      const { dhama: d, tirtha: t } = found;
+      const clusterTitle = d.clusters.find((c) => c.id === t.cluster)?.title;
+      const rows: Array<[string, string]> = [["Категория", KIND_RU[t.kind]], ["Дхама", d.name]];
+      if (clusterTitle) rows.push(["Район", clusterTitle]);
+      const body: string[] = [t.about];
+      if (t.lila) body.push("Лила\n" + t.lila);
+      if (t.persons && t.persons.length) body.push("Связанные личности: " + t.persons.map((p) => p.name).join(", "));
+      return { kind: "card", header: `${d.name} · святое место`, title: t.name, subtitle: t.iast || undefined, rows, body,
+        footer: "Источник: редакция gaurangers.com · координаты приблизительны" };
+    }
     if (ctype === "place" || ctype === "restaurant") {
       const wrap = await (await fetch(`/api/places/${encodeURIComponent(cid)}`)).json() as { place?: Record<string, string | null> };
       const p = wrap?.place;

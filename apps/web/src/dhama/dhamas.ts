@@ -770,9 +770,31 @@ export function getTirtha(dhamaId: string, tirthaId: string): Tirtha | undefined
   return BY_ID[dhamaId]?.tirthas.find((t) => t.id === tirthaId);
 }
 
+/** Поиск тиртхи по её id среди всех дхам (id тиртх глобально уникальны). */
+export function getTirthaById(id: string): { dhama: Dhama; tirtha: Tirtha } | undefined {
+  for (const d of DHAMAS) { const t = d.tirthas.find((x) => x.id === id); if (t) return { dhama: d, tirtha: t }; }
+  return undefined;
+}
+
 /** Поисковый запрос для внешних карт (Google Maps). */
 export function mapsQuery(t: Tirtha): string {
   return t.maps ?? `${t.name} ${getDhama(t.dhama)?.name ?? ""}`.trim();
+}
+
+/* ── Контекст карточки (♥/⋯-меню, share, QR, PDF) — единый книжный стандарт ── */
+export function dhamaCtx(d: Dhama) {
+  return {
+    type: "dhama" as const, id: d.id, title: d.name, subtitle: d.tagline,
+    url: `https://gaurangers.com/dhama/${d.id}`,
+    context: `Дхама · ${d.name} · /dhama/${d.id}`,
+  };
+}
+export function tirthaCtx(dhamaId: string, t: Tirtha) {
+  return {
+    type: "tirtha" as const, id: t.id, title: t.name, subtitle: t.iast || undefined,
+    url: `https://gaurangers.com/dhama/${dhamaId}/${t.id}`,
+    context: `Тиртха · ${t.name} · /dhama/${dhamaId}/${t.id}`,
+  };
 }
 
 export { vrindavan, navadvipa, nilachala };
