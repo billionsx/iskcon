@@ -79,6 +79,15 @@ const clipTime = (v: unknown): string | null => {
   const s = Math.min(59, parseInt(m[3] || "0", 10));
   return `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 };
+/** «YYYY-MM-DD[ T]HH:MM[:SS]» или «YYYY-MM-DD» → «YYYY-MM-DD HH:MM:SS» либо null. */
+const clipDateTime = (v: unknown): string | null => {
+  const s = String(v ?? "").trim();
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]} ${m[4]}:${m[5]}:${m[6] || "00"}`;
+  const d = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (d) return `${d[1]}-${d[2]}-${d[3]} 00:00:00`;
+  return null;
+};
 /** i18n-карта: только строковые значения, ключи-коды ≤8, значения ≤280. */
 const cleanI18n = (v: unknown): Record<string, string> => {
   if (!v || typeof v !== "object") return {};
@@ -500,6 +509,168 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         return jres({ id: pid, deleted: true });
       }
 
+      return err("method_not_allowed", 405);
+    }
+
+    // ── божества: /api/centers/:id/deities[/:did] ──
+    if (segs[1] === "deities") {
+      const centerId = segs[0];
+      const did = segs[2] || null;
+      const uid = await currentUserId(env, request);
+      if (!uid) return err("unauthorized", 401);
+      if (!(await adminRole(env, centerId, uid))) return err("forbidden", 403);
+
+      if (method === "POST" && !did) {
+        const b = await body();
+        const name = cleanI18n(b.local_name_i18n);
+        if (Object.keys(name).length === 0) return err("bad_deity");
+        const id = crypto.randomUUID();
+        await env.DB.prepare(
+          `INSERT INTO center_deities (id, center_id, deity_id, local_name_i18n, installed_on, darshan_times, photos)
+           VALUES (?1,?2,?3,?4,?5,?6,?7)`,
+        )
+          .bind(
+            id,
+            centerId,
+            clip(b.deity_id, 64) || null,
+            JSON.stringify(name),
+            clip(b.installed_on, 20) || null,
+            JSON.stringify(cleanI18n(b.darshan_times)),
+            JSON.stringify(asArr(b.photos)),
+          )
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id }, 201);
+      }
+      if (method === "PATCH" && did) {
+        const b = await body();
+        const fields: string[] = [];
+        const binds: unknown[] = [];
+        if ("local_name_i18n" in b) {
+          const n = cleanI18n(b.local_name_i18n);
+          if (Object.keys(n).length === 0) return err("bad_deity");
+          fields.push("local_name_i18n = ?");
+          binds.push(JSON.stringify(n));
+        }
+        if ("darshan_times" in b) {
+          fields.push("darshan_times = ?");
+          binds.push(JSON.stringify(cleanI18n(b.darshan_times)));
+        }
+        if ("photos" in b) {
+          fields.push("photos = ?");
+          binds.push(JSON.stringify(asArr(b.photos)));
+        }
+        if ("installed_on" in b) {
+          fields.push("installed_on = ?");
+          binds.push(clip(b.installed_on, 20) || null);
+        }
+        if ("deity_id" in b) {
+          fields.push("deity_id = ?");
+          binds.push(clip(b.deity_id, 64) || null);
+        }
+        if (fields.length === 0) return jres({ id: did, updated: false });
+        binds.push(did, centerId);
+        await env.DB.prepare(`UPDATE center_deities SET ${fields.join(", ")} WHERE id = ? AND center_id = ?`)
+          .bind(...binds)
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id: did, updated: true });
+      }
+      if (method === "DELETE" && did) {
+        await env.DB.prepare(`DELETE FROM center_deities WHERE id = ?1 AND center_id = ?2`)
+          .bind(did, centerId)
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id: did, deleted: true });
+      }
+      return err("method_not_allowed", 405);
+    }
+
+    // ── события: /api/centers/:id/events[/:eid] ──
+    if (segs[1] === "events") {
+      const centerId = segs[0];
+      const eid = segs[2] || null;
+      const uid = await currentUserId(env, request);
+      if (!uid) return err("unauthorized", 401);
+      if (!(await adminRole(env, centerId, uid))) return err("forbidden", 403);
+
+      if (method === "POST" && !eid) {
+        const b = await body();
+        const title = cleanI18n(b.title_i18n);
+        if (Object.keys(title).length === 0) return err("bad_event");
+        const starts = clipDateTime(b.starts_at);
+        if (!starts) return err("bad_event_date");
+        const id = crypto.randomUUID();
+        await env.DB.prepare(
+          `INSERT INTO center_events (id, center_id, festival_id, title_i18n, description_i18n, starts_at, ends_at, images, livestream_url)
+           VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)`,
+        )
+          .bind(
+            id,
+            centerId,
+            clip(b.festival_id, 64) || null,
+            JSON.stringify(title),
+            JSON.stringify(cleanI18n(b.description_i18n)),
+            starts,
+            clipDateTime(b.ends_at),
+            JSON.stringify(asArr(b.images)),
+            clip(b.livestream_url, 300) || null,
+          )
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id }, 201);
+      }
+      if (method === "PATCH" && eid) {
+        const b = await body();
+        const fields: string[] = [];
+        const binds: unknown[] = [];
+        if ("title_i18n" in b) {
+          const t = cleanI18n(b.title_i18n);
+          if (Object.keys(t).length === 0) return err("bad_event");
+          fields.push("title_i18n = ?");
+          binds.push(JSON.stringify(t));
+        }
+        if ("description_i18n" in b) {
+          fields.push("description_i18n = ?");
+          binds.push(JSON.stringify(cleanI18n(b.description_i18n)));
+        }
+        if ("starts_at" in b) {
+          const s = clipDateTime(b.starts_at);
+          if (!s) return err("bad_event_date");
+          fields.push("starts_at = ?");
+          binds.push(s);
+        }
+        if ("ends_at" in b) {
+          fields.push("ends_at = ?");
+          binds.push(clipDateTime(b.ends_at));
+        }
+        if ("images" in b) {
+          fields.push("images = ?");
+          binds.push(JSON.stringify(asArr(b.images)));
+        }
+        if ("livestream_url" in b) {
+          fields.push("livestream_url = ?");
+          binds.push(clip(b.livestream_url, 300) || null);
+        }
+        if ("festival_id" in b) {
+          fields.push("festival_id = ?");
+          binds.push(clip(b.festival_id, 64) || null);
+        }
+        if (fields.length === 0) return jres({ id: eid, updated: false });
+        binds.push(eid, centerId);
+        await env.DB.prepare(`UPDATE center_events SET ${fields.join(", ")} WHERE id = ? AND center_id = ?`)
+          .bind(...binds)
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id: eid, updated: true });
+      }
+      if (method === "DELETE" && eid) {
+        await env.DB.prepare(`DELETE FROM center_events WHERE id = ?1 AND center_id = ?2`)
+          .bind(eid, centerId)
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id: eid, deleted: true });
+      }
       return err("method_not_allowed", 405);
     }
 

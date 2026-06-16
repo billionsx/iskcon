@@ -123,6 +123,26 @@ export interface ProgramInput {
   sort_order?: number;
 }
 
+/** Поля божества (создание/правка). */
+export interface DeityInput {
+  local_name_i18n?: Record<string, string>;
+  darshan_times?: Record<string, string>;
+  photos?: string[];
+  installed_on?: string | null;
+  deity_id?: string | null;
+}
+
+/** Поля события (создание/правка). starts_at — «YYYY-MM-DDTHH:MM». */
+export interface EventInput {
+  title_i18n?: Record<string, string>;
+  description_i18n?: Record<string, string>;
+  starts_at?: string;
+  ends_at?: string | null;
+  images?: string[];
+  livestream_url?: string | null;
+  festival_id?: string | null;
+}
+
 /** Поля, принимаемые при создании. */
 export interface CenterCreateInput {
   name: string;
@@ -238,6 +258,34 @@ export const centersClient = {
       "DELETE",
       `/centers/${encodeURIComponent(centerId)}/programs/${encodeURIComponent(programId)}`,
     ),
+  /** Добавить божество. */
+  addDeity: (centerId: string, input: DeityInput) =>
+    request<{ id: string }>("POST", `/centers/${encodeURIComponent(centerId)}/deities`, input),
+  updateDeity: (centerId: string, deityId: string, patch: DeityInput) =>
+    request<{ id: string; updated: boolean }>(
+      "PATCH",
+      `/centers/${encodeURIComponent(centerId)}/deities/${encodeURIComponent(deityId)}`,
+      patch,
+    ),
+  deleteDeity: (centerId: string, deityId: string) =>
+    request<{ id: string; deleted: boolean }>(
+      "DELETE",
+      `/centers/${encodeURIComponent(centerId)}/deities/${encodeURIComponent(deityId)}`,
+    ),
+  /** Добавить событие. */
+  addEvent: (centerId: string, input: EventInput) =>
+    request<{ id: string }>("POST", `/centers/${encodeURIComponent(centerId)}/events`, input),
+  updateEvent: (centerId: string, eventId: string, patch: EventInput) =>
+    request<{ id: string; updated: boolean }>(
+      "PATCH",
+      `/centers/${encodeURIComponent(centerId)}/events/${encodeURIComponent(eventId)}`,
+      patch,
+    ),
+  deleteEvent: (centerId: string, eventId: string) =>
+    request<{ id: string; deleted: boolean }>(
+      "DELETE",
+      `/centers/${encodeURIComponent(centerId)}/events/${encodeURIComponent(eventId)}`,
+    ),
 };
 
 /* ─────────────────────── ярлыки/хелперы отображения ─────────────────────── */
@@ -274,6 +322,12 @@ export function centerErrorText(code: string): string {
       return "Адрес: латиница, цифры и дефис, 2–64 символа.";
     case "bad_type":
       return "Выберите тип центра.";
+    case "bad_deity":
+      return "Укажите имя Божества.";
+    case "bad_event":
+      return "Укажите название события.";
+    case "bad_event_date":
+      return "Укажите дату и время события.";
     case "bad_status":
       return "Недопустимый статус.";
     case "slug_taken":
