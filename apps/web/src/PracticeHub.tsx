@@ -24,6 +24,7 @@ const ICON = {
   progress: I(<><path d="M5 19V9M12 19V5M19 19v-7" /></>),
   bookmark: I(<><path d="M7 4h10v16l-5-3-5 3z" /></>),
   path: I(<><circle cx="6" cy="18" r="1.6" /><circle cx="18" cy="6" r="1.6" /><path d="M7.5 16.5l9-9" strokeDasharray="2 2.4" /></>),
+  pin: I(<><path d="M12 21s7-6.3 7-11a7 7 0 0 0-14 0c0 4.7 7 11 7 11z" /><circle cx="12" cy="10" r="2.4" /></>),
 };
 const ChevR = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="M9 5l7 7-7 7" /></svg>;
 
@@ -43,6 +44,9 @@ const GROUPS: Group[] = [
   { group: "Прасад", items: [
     { icon: ICON.bowl, t: "Рецепты прасада", d: "100 рецептов, подбор по продуктам и диете, что дорого Божествам, подношение", to: "/prasadam" },
     { icon: ICON.bookmark, t: "Книга «Кухня прасада»", d: "Философия, продукты и специи, техники, рецепты и подношение", to: "/prasadam/book" },
+  ] },
+  { group: "Сообщество", items: [
+    { icon: ICON.pin, t: "Центры ИСККОН рядом", d: "Локатор Ятры: поиск и карта храмов, нама-хатт, ферм и ресторанов", to: "/centers" },
   ] },
   { group: "Узнавать", items: [
     { icon: ICON.news, t: "Новости ИСККОН", d: "Мировые новости движения, переведённые на русский" },
