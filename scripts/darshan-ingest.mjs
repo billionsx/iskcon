@@ -46,6 +46,17 @@ const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 function istToday() {
   return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
 }
+// Отбор k фото из всех: выкидываем (n-k) равномерно вразброс, порядок сохраняем.
+// Так при 23→20 удаляются лишь 3 кадра «через равные промежутки» — все алтари остаются.
+function pickSpread(arr, k) {
+  const n = arr.length;
+  if (n <= k) return arr.slice();
+  const dropCount = n - k;
+  const drop = new Set();
+  for (let i = 0; i < dropCount; i++) drop.add(Math.round(((i + 1) * n) / (dropCount + 1)));
+  let j = 0; while (drop.size < dropCount && j < n) { if (!drop.has(j)) drop.add(j); j++; }
+  return arr.filter((_, i) => !drop.has(i));
+}
 // Тянет галерею даршана за дату (DARSHAN_DATE или сегодня IST). Возвращает порядок фото как на сайте.
 async function fetchSiteGallery(src) {
   const date = process.env.DARSHAN_DATE || istToday();
@@ -202,7 +213,7 @@ async function sendAlbumChunk(urls, captionHtml) {
     ok.push({ name, url: urls[i] });
   }
   if (ok.length === 0) throw new Error("no photos downloaded");
-  if (ok.length === 1) return sendDarshanPhoto(ok[0].url, captionHtml || "");
+  if (ok.length === 1) { const m = await sendDarshanPhoto(ok[0].url, captionHtml || ""); return [m]; }
   const media = ok.map((o, idx) => {
     const it = { type: "photo", media: `attach://${o.name}` };
     if (idx === 0 && captionHtml) { it.caption = captionHtml; it.parse_mode = "HTML"; }
@@ -210,20 +221,22 @@ async function sendAlbumChunk(urls, captionHtml) {
   });
   fd.append("media", JSON.stringify(media));
   const res = await tg("sendMediaGroup", { method: "POST", body: fd });
-  return Array.isArray(res) ? res[0] : res;
+  return Array.isArray(res) ? res : [res];
 }
 async function sendDarshanAlbums(urls, captionHtml, perAlbum = 10, maxAlbums = 2) {
   const sel = urls.slice(0, perAlbum * maxAlbums);
   const chunks = [];
   for (let i = 0; i < sel.length; i += perAlbum) chunks.push(sel.slice(i, i + perAlbum));
-  const msgs = [];
+  let anchorId = 0; const ids = [];
   for (let ci = 0; ci < chunks.length; ci++) {
-    const m = await sendAlbumChunk(chunks[ci], ci === 0 ? captionHtml : null);
-    msgs.push(m);
-    RESULT.progress.push({ album: ci + 1, message_id: m && m.message_id, count: chunks[ci].length });
+    const msgs2 = await sendAlbumChunk(chunks[ci], ci === 0 ? captionHtml : null);
+    const albIds = msgs2.map((m) => m && m.message_id).filter(Boolean);
+    if (ci === 0 && albIds.length) anchorId = albIds[0];
+    ids.push(...albIds);
+    RESULT.progress.push({ album: ci + 1, ids: albIds, count: chunks[ci].length });
     if (ci < chunks.length - 1) await new Promise((res) => setTimeout(res, 4000));
   }
-  return msgs;
+  return { anchorId, ids };
 }
 
 // D1 через wrangler (CLOUDFLARE_API_TOKEN + account_id из env). База биндится в apps/web/wrangler.toml как «iskcon».
@@ -251,16 +264,20 @@ async function run() {
   const only = (process.env.ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
 
   if (process.env.DELETE_IDS) {
-    const ids = process.env.DELETE_IDS.split(",").map((s) => s.trim()).filter(Boolean);
+    const raw = process.env.DELETE_IDS.split(",").map((s) => s.trim()).filter(Boolean);
+    const ids = [];
+    for (const tok of raw) { const m = tok.match(/^(\d+)-(\d+)$/); if (m) { for (let n = +m[1]; n <= +m[2]; n++) ids.push(String(n)); } else ids.push(tok); }
     const res = [];
     for (const id of ids) {
       try { await tg("deleteMessage", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat_id: CHANNEL, message_id: Number(id) }) }); res.push({ id, ok: true }); }
-      catch (e) { res.push({ id, err: String(e).slice(0, 160) }); }
+      catch (e) { res.push({ id, err: String(e).slice(0, 120) }); }
+      await new Promise((r) => setTimeout(r, 200));
     }
-    RESULT.mode = "cleanup"; RESULT.at = new Date().toISOString(); RESULT.deleted = res;
+    const okN = res.filter((x) => x.ok).length;
+    RESULT.mode = "cleanup"; RESULT.at = new Date().toISOString(); RESULT.deleted = res; RESULT.deleted_ok = okN;
     mkdirSync("data/darshan", { recursive: true });
     writeFileSync("data/darshan/_dryrun.json", JSON.stringify(RESULT, null, 2));
-    console.log("deleted", JSON.stringify(res));
+    console.log("deleted ok:", okN, "of", ids.length);
     return;
   }
 
@@ -296,7 +313,7 @@ async function run() {
       if (!gal.images.length) { preview.push({ slug: src.slug, date: gal.date, error: `site gallery empty for ${gal.date}` }); continue; }
       src._postId = `${gal.date}/${src.galleryType}`;
       const caption = composeCaption(src);
-      const imgs20 = gal.images.slice(0, 20);
+      const imgs20 = pickSpread(gal.images, 20);
       const row = {
         slug: src.slug, kind: "site", date: gal.date, temple_name: src.name, deities: src.deities,
         src_channel: src.srcKey, src_post_id: src._postId, src_url: gal.pageUrl, gallery_name: gal.name,
@@ -305,9 +322,9 @@ async function run() {
       };
       if (dry) { preview.push(row); continue; }
       if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
-      const msgs = await sendDarshanAlbums(gal.images, caption, 10, 2);
-      const anchorId = (msgs[0] && msgs[0].message_id) || 0;
-      const msgIds = msgs.map((mm) => mm && mm.message_id).filter(Boolean);
+      const sent = await sendDarshanAlbums(imgs20, caption, 10, 2);
+      const anchorId = sent.anchorId || 0;
+      const msgIds = sent.ids;
       const imagesJson = JSON.stringify(imgs20).replace(/'/g, "''");
       const capSql = caption.replace(/'/g, "''");
       try {
