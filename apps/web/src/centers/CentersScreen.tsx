@@ -7,6 +7,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { centersClient, CENTER_TYPE_LABEL, type CenterListItem, type CenterType } from "./api";
 import { CenterHeroCard, centerMapsHref } from "./CenterHeroCard";
+import CentersMap from "./CentersMap";
 import { requestNote } from "../notes";
 
 const GOLD = "#D2AA1B";
@@ -33,9 +34,16 @@ const TYPES: { id: CenterType | "all"; label: string }[] = [
 export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => void; onOpenPath: (p: string) => void }) {
   const [q, setQ] = useState("");
   const [type, setType] = useState<CenterType | "all">("all");
+  const [view, setView] = useState<"list" | "map">("list");
   const [items, setItems] = useState<CenterListItem[]>([]);
   const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
   const reqId = useRef(0);
+
+  // карта: отдельная, более широкая выборка (пины лёгкие — можно больше, чем карточек)
+  const MAP_LIMIT = 600;
+  const [mapItems, setMapItems] = useState<CenterListItem[]>([]);
+  const [mapPhase, setMapPhase] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const mapReqId = useRef(0);
 
   useEffect(() => {
     const id = ++reqId.current;
@@ -48,6 +56,20 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
     }, q ? 280 : 0);
     return () => clearTimeout(t);
   }, [q, type]);
+
+  // подгружаем выборку для карты лениво — при первом открытии и смене фильтра
+  useEffect(() => {
+    if (view !== "map") return;
+    const id = ++mapReqId.current;
+    const t = setTimeout(() => {
+      setMapPhase((p) => (p === "ready" ? "ready" : "loading"));
+      centersClient
+        .list({ q: q.trim() || undefined, type: type === "all" ? undefined : type, limit: MAP_LIMIT })
+        .then((r) => { if (id === mapReqId.current) { setMapItems(r.items); setMapPhase("ready"); } })
+        .catch(() => { if (id === mapReqId.current) setMapPhase("error"); });
+    }, q ? 280 : 0);
+    return () => clearTimeout(t);
+  }, [view, q, type]);
 
   const onMenu = (it: CenterListItem) => (id: string) => {
     const url = (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com") + "/center/" + it.slug;
@@ -104,9 +126,39 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
             })}
           </div>
 
+          {/* вид: список / карта */}
+          <div style={{ padding: "0 16px 6px" }}>
+            <div style={{ display: "inline-flex", padding: 3, borderRadius: 11, background: "rgba(120,120,128,0.12)", gap: 2 }}>
+              {([["list", "Список"], ["map", "Карта"]] as const).map(([id, label]) => {
+                const on = view === id;
+                return (
+                  <button key={id} type="button" onClick={() => setView(id)}
+                    style={{ height: 30, padding: "0 18px", borderRadius: 9, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 13.5, fontWeight: 600,
+                      background: on ? "var(--color-bg)" : "transparent", color: on ? L1 : L2, boxShadow: on ? "0 1px 3px rgba(0,0,0,0.12)" : "none", WebkitTapHighlightColor: "transparent" }}>{label}</button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* результаты */}
           <div style={{ padding: "4px 16px" }}>
-            {phase === "loading" ? (
+            {view === "map" ? (
+              mapPhase === "loading" && mapItems.length === 0 ? (
+                <div style={{ display: "grid", placeItems: "center", padding: "80px 0", color: L3 }}>
+                  <span style={{ width: 26, height: 26, borderRadius: "50%", border: `2.5px solid ${HAIR}`, borderTopColor: GOLD, animation: "cenSpin .8s linear infinite" }} />
+                  <style>{`@keyframes cenSpin{to{transform:rotate(360deg)}}`}</style>
+                </div>
+              ) : mapPhase === "error" ? (
+                <div style={{ textAlign: "center", padding: "48px 20px", color: L2, fontFamily: FT, fontSize: 14.5 }}>Не удалось загрузить карту. Проверьте соединение.</div>
+              ) : (
+                <>
+                  <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, margin: "2px 2px 12px" }}>
+                    {mapItems.filter((c) => c.lat != null && c.lng != null).length} на карте{mapItems.length >= MAP_LIMIT ? " · уточните поиск, чтобы увидеть все" : ""}. Коснитесь метки, чтобы открыть центр.
+                  </div>
+                  <CentersMap items={mapItems} onOpen={(slug) => onOpenPath(`/center/${slug}`)} />
+                </>
+              )
+            ) : phase === "loading" ? (
               <div style={{ display: "grid", placeItems: "center", padding: "60px 0", color: L3 }}>
                 <span style={{ width: 26, height: 26, borderRadius: "50%", border: `2.5px solid ${HAIR}`, borderTopColor: GOLD, animation: "cenSpin .8s linear infinite" }} />
                 <style>{`@keyframes cenSpin{to{transform:rotate(360deg)}}`}</style>
