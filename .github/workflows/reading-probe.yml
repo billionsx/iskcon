@@ -1,0 +1,49 @@
+name: reading-probe
+
+# Разовый замер модели данных для «Стих дня» (системное чтение БГ→ШБ→ЧЧ):
+# порядок works, издания, плотность/монотонность verses.ordinal, покрытие пурпортами.
+# Результат — в ветку ci/reading-probe (НЕ в main), чтобы не триггерить деплой.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Probe D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: 'd5cbe19470dc38599873eabfe148e6d1'
+        run: |
+          set -e
+          mkdir -p docs/diag
+          cat > /tmp/probe.sql << 'SQL'
+          SELECT id, kind, abbrev, verse_scheme, sort FROM works ORDER BY sort;
+          SELECT id, work_id, lang FROM editions WHERE work_id IN ('bg','sb','cc') ORDER BY work_id, lang;
+          SELECT work_id, COUNT(*) n, MIN(ordinal) mn, MAX(ordinal) mx, COUNT(DISTINCT ordinal) d FROM verses WHERE work_id IN ('bg','sb','cc') GROUP BY work_id;
+          SELECT v.work_id, COUNT(*) purported FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id = v.work_id || '-ru' WHERE TRIM(COALESCE(vt.purport,'')) <> '' GROUP BY v.work_id;
+          SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14;
+          SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14 OFFSET 5000;
+          SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='cc' ORDER BY ordinal LIMIT 10;
+          SELECT id, ref, ordinal FROM verses WHERE work_id='bg' ORDER BY ordinal LIMIT 4;
+          SELECT v.id, v.ref, v.ordinal, CASE WHEN TRIM(COALESCE(vt.purport,''))<>'' THEN 1 ELSE 0 END has_purport, LENGTH(COALESCE(vt.translation,'')) tlen FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id='bg-ru' WHERE v.work_id='bg' ORDER BY v.ordinal LIMIT 16;
+          SQL
+          npx --yes wrangler@latest d1 execute iskcon --remote --json --config apps/web/wrangler.toml --file /tmp/probe.sql > docs/diag/reading_probe.json 2>/tmp/err.txt || { echo "WRANGLER FAILED"; cat /tmp/err.txt; cp /tmp/err.txt docs/diag/reading_probe.json; }
+          head -c 4000 docs/diag/reading_probe.json
+
+      - name: Publish to side branch
+        run: |
+          git config user.name "ci-reading"
+          git config user.email "ci@local"
+          git checkout -B ci/reading-probe
+          git add -f docs/diag/reading_probe.json
+          git commit -m "ci: reading-plan D1 probe [skip ci]" || echo "nothing to commit"
+          git push -f origin ci/reading-probe
