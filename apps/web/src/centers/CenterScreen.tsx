@@ -90,6 +90,11 @@ const CalG = ({ size = 17 }: { size?: number }) => (
     <rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 9.5h17M8 3v4M16 3v4" />
   </svg>
 );
+const ImageG = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="3" y="4.5" width="18" height="15" rx="2.5" /><circle cx="8.5" cy="9.5" r="1.6" /><path d="M21 16l-5-5L5 19" />
+  </svg>
+);
 
 /* ───────────────────── формат ───────────────────── */
 function fmtDays(days: number[]): string {
@@ -373,6 +378,7 @@ export default function CenterScreen({
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
               {[
                 { icon: <Pencil size={16} />, label: "Профиль", to: `/center/${slug}/edit` },
+                { icon: <ImageG size={16} />, label: "Фото", to: `/center/${slug}/photos` },
                 { icon: <ClockG size={16} />, label: "Расписание", to: `/center/${slug}/schedule` },
                 { icon: <LotusG size={16} />, label: "Божества", to: `/center/${slug}/deities` },
                 { icon: <CalG size={16} />, label: "События", to: `/center/${slug}/events` },
