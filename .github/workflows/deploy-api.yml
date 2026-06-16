@@ -60,6 +60,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0008_notes.sql
 
+      - name: Ensure darshan schema (idempotent)
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0009_darshan.sql
+
       - name: Verify notes table is live in D1
         working-directory: apps/api
         env:
