@@ -47,8 +47,37 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
   );
 }
 
+/* ── Остановка парикрамы: нумерованная точка маршрута с таймлайн-линией ── */
+function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; n: number; lastInGroup: boolean; onOpen: (id: string) => void }) {
+  const { openCardMenu } = useCardActions();
+  return (
+    <div role="button" tabIndex={0} onClick={() => onOpen(t.id)}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(t.id); } }}
+      onPointerDown={(e) => (e.currentTarget.style.background = "var(--color-fill-1)")}
+      onPointerUp={(e) => (e.currentTarget.style.background = "transparent")}
+      onPointerLeave={(e) => (e.currentTarget.style.background = "transparent")}
+      style={{ display: "flex", alignItems: "stretch", gap: 12, width: "100%", textAlign: "left", padding: "10px 4px", background: "transparent",
+        cursor: "pointer", WebkitTapHighlightColor: "transparent", borderRadius: 10 }}>
+      <div style={{ position: "relative", width: 28, flexShrink: 0 }}>
+        {!lastInGroup && <span aria-hidden style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", top: 28, bottom: -12, width: 2, background: `color-mix(in srgb, ${d.accent} 26%, transparent)` }} />}
+        <span style={{ position: "relative", zIndex: 1, display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: "50%", background: d.accent, color: "#fff", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700 }}>{n}</span>
+      </div>
+      <span style={{ minWidth: 0, flex: 1, paddingBottom: 4 }}>
+        <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 16.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{t.name}</span>
+          <KindChip d={d} kind={t.kind} />
+        </span>
+        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.42, color: "var(--color-label-2)" }}>{t.blurb}</span>
+      </span>
+      <span style={{ alignSelf: "center" }}>
+        <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={26} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
+      </span>
+    </div>
+  );
+}
+
 export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama: Dhama; onBack: () => void; onOpenTirtha: (id: string) => void }) {
-  const [sub, setSub] = useState<"places" | "map" | "about">("places");
+  const [sub, setSub] = useState<"places" | "parikrama" | "map" | "about">("places");
   const scrollRef = useRef<HTMLDivElement>(null);
   const { openCardMenu } = useCardActions();
 
@@ -91,7 +120,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
 
         {/* sub-tabs */}
         <SectionSubTabs
-          items={[{ id: "places", label: "Места" }, { id: "map", label: "Карта" }, { id: "about", label: "О дхаме" }]}
+          items={[{ id: "places", label: "Места" }, { id: "parikrama", label: "Парикрама" }, { id: "map", label: "Карта" }, { id: "about", label: "О дхаме" }]}
           active={sub} onChange={(id) => setSub(id as typeof sub)} variant="chips" tone="light" top={NAV_H} bleed={16} ariaLabel="Разделы дхамы"
         />
 
@@ -109,6 +138,39 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
               ))}
             </div>
           )}
+
+          {sub === "parikrama" && (() => {
+            const route = byCluster.flatMap((g) => g.items);
+            let offset = 0;
+            const groups = byCluster.map((g) => { const start = offset; offset += g.items.length; return { ...g, start }; });
+            return (
+              <div style={{ marginTop: 14 }}>
+                <p style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.5 }}>
+                  Рекомендуемый маршрут по святым местам — {route.length} {plural(route.length, "остановка", "остановки", "остановок")}, сгруппированы по районам. Двигайтесь по порядку или коснитесь номера на карте.
+                </p>
+                <DhamaMap dhama={dhama} stops={route} ordered onOpen={onOpenTirtha} />
+                <div style={{ marginTop: 18 }}>
+                  {groups.map((g) => (
+                    <section key={g.cluster.id} style={{ marginTop: 16 }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
+                        <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{g.cluster.title}</h3>
+                        <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: dhama.accent }}>
+                          {g.items.length > 1 ? `${g.start + 1}–${g.start + g.items.length}` : `${g.start + 1}`}
+                        </span>
+                      </div>
+                      {g.cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.4 }}>{g.cluster.note}</p>}
+                      <div>
+                        {g.items.map((t, i) => <ParikramaStop key={t.id} d={dhama} t={t} n={g.start + i + 1} lastInGroup={i === g.items.length - 1} onOpen={onOpenTirtha} />)}
+                      </div>
+                    </section>
+                  ))}
+                </div>
+                <p style={{ margin: "20px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.5 }}>
+                  Это удобный обзорный порядок обхода, а не канонический маршрут парикрамы. Координаты приблизительны.
+                </p>
+              </div>
+            );
+          })()}
 
           {sub === "map" && (
             <div style={{ marginTop: 14 }}>

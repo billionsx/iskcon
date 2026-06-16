@@ -42,7 +42,7 @@ function loadLeaflet(): Promise<unknown> {
   return leafletPromise;
 }
 
-export default function DhamaMap({ dhama, height = 340, onOpen }: { dhama: Dhama; height?: number; onOpen: (id: string) => void }) {
+export default function DhamaMap({ dhama, height = 340, onOpen, ordered = false, stops }: { dhama: Dhama; height?: number; onOpen: (id: string) => void; ordered?: boolean; stops?: Tirtha[] }) {
   const elRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<unknown>(null);
   const [failed, setFailed] = useState(false);
@@ -72,18 +72,34 @@ export default function DhamaMap({ dhama, height = 340, onOpen }: { dhama: Dhama
         }).addTo(map);
 
         const accent = dhama.accent;
-        const pts: [number, number][] = [];
-        for (const t of dhama.tirthas) {
-          pts.push([t.lat, t.lng]);
-          const m = L.circleMarker([t.lat, t.lng], {
-            radius: 7,
-            color: "#ffffff",
-            weight: 2,
-            fillColor: accent,
-            fillOpacity: 1,
-          }).addTo(map);
-          m.bindTooltip(`${t.name}`, { direction: "top", offset: [0, -6] });
-          m.on("click", () => onOpenRef.current(t.id));
+        const list = stops && stops.length ? stops : dhama.tirthas;
+        const pts: [number, number][] = list.map((t) => [t.lat, t.lng]);
+
+        if (ordered) {
+          // маршрут-парикрама: пунктирная линия + нумерованные пины поверх неё
+          if (!document.querySelector("style[data-dhama-pin]")) {
+            const st = document.createElement("style");
+            st.setAttribute("data-dhama-pin", "1");
+            st.textContent = ".leaflet-div-icon.dhama-seq-pin{background:transparent;border:0;}";
+            document.head.appendChild(st);
+          }
+          if (pts.length > 1) L.polyline(pts, { color: accent, weight: 3, opacity: 0.72, dashArray: "1 7", lineCap: "round" }).addTo(map);
+          list.forEach((t, i) => {
+            const icon = L.divIcon({
+              className: "dhama-seq-pin",
+              html: `<div style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:${accent};color:#fff;font:700 12px/1 var(--font-text,sans-serif);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35)">${i + 1}</div>`,
+              iconSize: [24, 24], iconAnchor: [12, 12],
+            });
+            const m = L.marker([t.lat, t.lng], { icon }).addTo(map);
+            m.bindTooltip(`${i + 1}. ${t.name}`, { direction: "top", offset: [0, -12] });
+            m.on("click", () => onOpenRef.current(t.id));
+          });
+        } else {
+          for (const t of list) {
+            const m = L.circleMarker([t.lat, t.lng], { radius: 7, color: "#ffffff", weight: 2, fillColor: accent, fillOpacity: 1 }).addTo(map);
+            m.bindTooltip(`${t.name}`, { direction: "top", offset: [0, -6] });
+            m.on("click", () => onOpenRef.current(t.id));
+          }
         }
         if (pts.length > 1) {
           try { map.fitBounds(pts, { padding: [40, 40], maxZoom: 13 }); } catch { /* noop */ }
@@ -101,7 +117,7 @@ export default function DhamaMap({ dhama, height = 340, onOpen }: { dhama: Dhama
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dhama.id]);
+  }, [dhama.id, ordered]);
 
   if (failed) return <FallbackList dhama={dhama} onOpen={onOpen} />;
 
