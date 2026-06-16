@@ -84,8 +84,25 @@ run("""CREATE TABLE IF NOT EXISTS entity_citations (
 np = insert("entity_profiles", ["entity_id","summary"], [[e["id"], e.get("note","")] for e in ents])
 print("profiles seeded (bronze):", np)
 
+# 4c) cross-silo facet links — non-destructive (NOT dropped on reload; NO FK to entities,
+#     иначе DROP entities из schema.sql каскадно стёр бы связи). Источник: links_all.csv.
+run("""CREATE TABLE IF NOT EXISTS entity_links (
+  id INTEGER PRIMARY KEY AUTOINCREMENT, entity_id TEXT NOT NULL, kind TEXT NOT NULL,
+  ref TEXT NOT NULL, title TEXT, subtitle TEXT, sort INTEGER NOT NULL DEFAULT 0, dataset TEXT,
+  UNIQUE(entity_id, kind, ref) );""")
+run("CREATE INDEX IF NOT EXISTS idx_links_entity ON entity_links(entity_id);")
+links_path = os.path.join(BASE, "links_all.csv")
+if os.path.exists(links_path):
+    links = list(csv.DictReader(open(links_path, encoding="utf-8")))
+    lrows = [[l["entity_id"], l["kind"], l["ref"], l.get("title",""), l.get("subtitle",""),
+              l.get("sort","0"), l.get("dataset","")] for l in links]
+    nl = insert("entity_links", ["entity_id","kind","ref","title","subtitle","sort","dataset"], lrows)
+    print("links:", nl)
+else:
+    print("links: links_all.csv not found — skipped")
+
 # 5) verify
-for t in ("entities","entity_names","entity_categories","entity_relations","entity_profiles"):
+for t in ("entities","entity_names","entity_categories","entity_relations","entity_profiles","entity_links"):
     res = run(f"SELECT COUNT(*) AS n FROM {t};")
     print(f"  D1 {t}:", res[0]["results"][0]["n"])
 print("done.")

@@ -23,6 +23,12 @@ export interface RelItem {
   name_ru: string | null;
   name_iast: string | null;
 }
+export interface LinkItem {
+  kind: string;
+  ref: string;
+  title: string | null;
+  subtitle: string | null;
+}
 interface EntityDetail {
   id: string;
   type: string;
@@ -39,6 +45,7 @@ interface EntityDetail {
   profile: { summary: string | null; biography: string | null; contribution: string | null; level: string | null } | null;
   out: RelItem[];
   in: RelItem[];
+  links?: LinkItem[];
 }
 
 // Русские подписи таттвы/категорий — общий модуль (entityLabels).
@@ -167,7 +174,40 @@ function GroupSection({ group, onOpen }: { group: { label: string; order: number
   );
 }
 
-export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void }) {
+/* Кросс-силос фасеты: вид связи → подпись и маршрут открытия силос-элемента. */
+const KIND_LABEL: Record<string, string> = {
+  dish: "Любимые блюда",
+  kirtan: "Киртаны",
+  temple: "Храмы",
+  festival: "Праздники",
+  gallery: "Галерея",
+  video: "Видео",
+};
+const KIND_ORDER = ["dish", "kirtan", "temple", "festival", "gallery", "video"];
+
+function kindHref(kind: string, ref: string): string | null {
+  switch (kind) {
+    case "dish": return "/prasadam/recipe/" + ref;
+    default: return null; // остальные виды получат маршруты по мере ввода рефов
+  }
+}
+
+function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkItem[]; onNavigate?: (href: string) => void }) {
+  return (
+    <section style={{ marginTop: 26 }}>
+      <Eyebrow count={items.length}>{KIND_LABEL[kind] ?? kind}</Eyebrow>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {items.map((it) => {
+          const href = kindHref(it.kind, it.ref);
+          const go = href && onNavigate ? () => onNavigate(href) : undefined;
+          return <Chip key={it.kind + it.ref} label={it.title || it.ref} onClick={go} />;
+        })}
+      </div>
+    </section>
+  );
+}
+
+export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
@@ -199,6 +239,15 @@ export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack:
         .sort((a, b) => (a.name_ru || a.id).localeCompare(b.name_ru || b.id, "ru"));
       return { label, order: g.order, items };
     }).sort((a, b) => a.order - b.order);
+  })();
+
+  const linkGroups: [string, LinkItem[]][] = (() => {
+    const map = new Map<string, LinkItem[]>();
+    for (const l of data?.links ?? []) { const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
+    return [...map.entries()].sort((a, b) => {
+      const ia = KIND_ORDER.indexOf(a[0]); const ib = KIND_ORDER.indexOf(b[0]);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
   })();
 
   const tattvaLabel = data?.tattva ? TATTVA_RU[data.tattva] ?? null : null;
@@ -278,10 +327,15 @@ export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack:
               <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {data.source_ref}</div>
             )}
 
+            {/* кросс-силос фасеты: блюда/киртаны/храмы/… */}
+            {linkGroups.map(([kind, items]) => (
+              <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
+            ))}
+
             {/* связи */}
             {groups.map((g) => <GroupSection key={g.label} group={g} onOpen={onOpen} />)}
 
-            {groups.length === 0 && !lead && (
+            {groups.length === 0 && linkGroups.length === 0 && !lead && (
               <p style={{ margin: "24px 0 0", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-3)" }}>Профиль готовится.</p>
             )}
           </>
