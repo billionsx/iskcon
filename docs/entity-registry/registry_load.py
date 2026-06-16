@@ -84,6 +84,20 @@ run("""CREATE TABLE IF NOT EXISTS entity_citations (
 np = insert("entity_profiles", ["entity_id","summary"], [[e["id"], e.get("note","")] for e in ents])
 print("profiles seeded (bronze):", np)
 
+# curated profiles — UPSERT (gold): overwrites the bronze seed for listed entities
+prof_path = os.path.join(BASE, "profiles_curated.csv")
+if os.path.exists(prof_path):
+    pr = list(csv.DictReader(open(prof_path, encoding="utf-8")))
+    for row in pr:
+        run("INSERT INTO entity_profiles (entity_id,summary,biography,contribution,level,updated_at) "
+            f"VALUES ({q(row['entity_id'])},{q(row.get('summary',''))},{q(row.get('biography',''))},"
+            f"{q(row.get('contribution',''))},{q(row.get('level','gold') or 'gold')},datetime('now')) "
+            "ON CONFLICT(entity_id) DO UPDATE SET summary=excluded.summary, biography=excluded.biography, "
+            "contribution=excluded.contribution, level=excluded.level, updated_at=datetime('now');")
+    print("curated profiles upserted:", len(pr))
+else:
+    print("curated profiles: profiles_curated.csv not found — skipped")
+
 # 4c) cross-silo facet links — non-destructive (NOT dropped on reload; NO FK to entities,
 #     иначе DROP entities из schema.sql каскадно стёр бы связи). Источник: links_all.csv.
 run("""CREATE TABLE IF NOT EXISTS entity_links (
