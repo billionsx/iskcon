@@ -273,11 +273,10 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
       <FacetHead kicker="līlā" title={K ? "Игры и спутники" : "Игры и спутники Гауранга-лилы"} sub={K ? "Вечные спутники Враджа по пяти расам." : "Волны Гауранга-лилы — от Панча-таттвы до ИСККОН."} />
       {K ? (
         <>
-          <Rail title="Мадхурья · гопи" params="category=gopi&limit=40" onOpen={onOpen} />
-          <Rail title="Мадхурья · манджари" params="category=manjari&limit=30" onOpen={onOpen} />
-          <Rail title="Ватсалья · старшие Враджа" params="category=krishna-family&limit=24" onOpen={onOpen} />
-          <Rail title="Сакхья · пастушки Враджа" params="category=gopa&limit=30" onOpen={onOpen} />
-          <Rail title="Шанта · Враджа-дхама" params="category=vraja&limit=24" onOpen={onOpen} />
+          <Rail title="Мадхурья · супружеская любовь" params="category=rasa%3Amadhurya&limit=60" onOpen={onOpen} />
+          <Rail title="Ватсалья · родительская любовь" params="category=rasa%3Avatsalya&limit=20" onOpen={onOpen} />
+          <Rail title="Сакхья · дружеская любовь" params="category=rasa%3Asakhya&limit=30" onOpen={onOpen} />
+          <Rail title="Шанта · обители и святыни Враджа" params="category=rasa%3Ashanta&limit=40" onOpen={onOpen} />
           <div style={{ marginTop: 16 }}>
             <SectionCard title="Радха-Кришна лила" subtitle="Войти в вечные игры Господа во Вриндаване" mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenCollection?.("radha-krishna")} />
           </div>
@@ -287,8 +286,11 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
           <div style={{ marginTop: 4 }}>
             <SectionCard title="Шрила Прабхупада" subtitle="Ачарья-основатель ИСККОН — последняя волна Гауранга-лилы" mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />} accent onClick={() => onOpen("prabhupada", "personality")} />
           </div>
-          <Rail title="Спутники Гауранги" params={`dataset=${GAURA_DS}&limit=60`} onOpen={onOpen} />
-          <Rail title="Шесть Госвами Вриндавана" params="category=six-goswamis&limit=10" onOpen={onOpen} />
+          <Rail title="Волна I · Панча-таттва" params="ids=chaitanya,nityananda,advaita,gadadhara,srivasa" orderIds={["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"]} onOpen={onOpen} />
+          <Rail title="Спутники Махапрабху" params={`dataset=${GAURA_DS}&limit=60`} onOpen={onOpen} />
+          <Rail title="Волна II · Шесть Госвами Вриндавана" params="category=six-goswamis&limit=10" onOpen={onOpen} />
+          <Rail title="Волна III · Шринивас · Нароттама · Шьямананда" params="ids=srinivasa-acharya,narottama-dasa-thakura,shyamananda-pandita" orderIds={["srinivasa-acharya", "narottama-dasa-thakura", "shyamananda-pandita"]} onOpen={onOpen} />
+          <Rail title="Волна IV · Гаудия-ачарьи" params="ids=vishvanatha-chakravarti,baladeva-vidyabhushana,jagannatha-dasa-babaji,bhaktivinoda-thakura,gaurakishora-dasa-babaji,bhaktisiddhanta-sarasvati" orderIds={["vishvanatha-chakravarti", "baladeva-vidyabhushana", "jagannatha-dasa-babaji", "bhaktivinoda-thakura", "gaurakishora-dasa-babaji", "bhaktisiddhanta-sarasvati"]} onOpen={onOpen} />
           <Rail title="Брахма-Мадхва-Гаудия-парампара" params="category=parampara&limit=40" onOpen={onOpen} />
           <div style={{ marginTop: 16 }}>
             <SectionCard title="Гауранга лила" subtitle="Шри Чайтанья Махапрабху и Панча-таттва" mark={<MaskMark src="/gauranga.svg" size={44} />} onClick={() => onOpenCollection?.("gauranga")} />
