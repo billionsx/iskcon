@@ -8,6 +8,16 @@
  */
 import { recipeBySlug, deityById, DIFFICULTY_LABEL, DIETS, type Recipe } from "./prasad";
 import { chapterForRecipe } from "./cookbook";
+import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
+
+const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
+export function recipeCtx(r: { slug: string; title: string; subtitle: string }): CardCtx {
+  return {
+    type: "recipe", id: r.slug, title: r.title, subtitle: r.subtitle,
+    url: `${ORIGIN}/prasadam/recipe/${r.slug}`,
+    context: `Рецепт · ${r.title} · /prasadam/recipe/${r.slug}`,
+  };
+}
 
 const GOLD = "#D2AA1B";
 
@@ -34,13 +44,15 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{children}</h2>;
 }
 
-export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering, onOpenBookChapter }: {
+export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering, onOpenBookChapter, flash }: {
   slug: string;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onOpenOffering: () => void;
   onOpenBookChapter?: (chapterId: string) => void;
+  flash?: (m: string) => void;
 }) {
+  const { openCardMenu } = useCardActions();
   const recipe: Recipe | undefined = recipeBySlug(slug);
 
   if (!recipe) {
@@ -77,6 +89,11 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
         <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>
           {recipe.subtitle}
         </p>
+
+        {/* Действия карточки (как у книг): ♥ избранное · ⋯ меню */}
+        <div style={{ marginTop: 16 }}>
+          <CardActionBtns favKey={`recipe:${recipe.slug}`} meta={favMetaFromCtx(recipeCtx(recipe))} flash={flash} size={38} onMore={() => openCardMenu(recipeCtx(recipe))} />
+        </div>
 
         {/* Метаданные */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>
