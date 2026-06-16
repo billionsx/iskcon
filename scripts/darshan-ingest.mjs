@@ -125,6 +125,34 @@ async function sendDarshanPhoto(photoUrl, captionHtml) {
   return tg("sendPhoto", { method: "POST", body: fd });
 }
 
+// Альбом (медиагруппа): все фото даршана; подпись — на первом элементе.
+async function sendDarshanAlbum(photoUrls, captionHtml) {
+  const urls = photoUrls.slice(0, 10); // Telegram: максимум 10 в группе
+  const fd = new FormData();
+  fd.append("chat_id", CHANNEL);
+  const ok = [];
+  for (let i = 0; i < urls.length; i++) {
+    let img;
+    try { img = await fetch(urls[i], { headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" } }); }
+    catch { continue; }
+    if (!img.ok) continue;
+    const buf = Buffer.from(await img.arrayBuffer());
+    const name = `photo${i}`;
+    fd.append(name, new Blob([buf], { type: img.headers.get("content-type") || "image/jpeg" }), `${name}.jpg`);
+    ok.push({ name, url: urls[i] });
+  }
+  if (ok.length === 0) throw new Error("no photos downloaded");
+  if (ok.length === 1) return sendDarshanPhoto(ok[0].url, captionHtml);
+  const media = ok.map((o, idx) => {
+    const it = { type: "photo", media: `attach://${o.name}` };
+    if (idx === 0) { it.caption = captionHtml; it.parse_mode = "HTML"; }
+    return it;
+  });
+  fd.append("media", JSON.stringify(media));
+  const res = await tg("sendMediaGroup", { method: "POST", body: fd });
+  return Array.isArray(res) ? res[0] : res;
+}
+
 // D1 через wrangler (CLOUDFLARE_API_TOKEN + account_id из env). База биндится в apps/web/wrangler.toml как «iskcon».
 function d1(sql) {
   const out = execFileSync("npx", ["wrangler", "d1", "execute", "iskcon", "--remote", "--json", "--config", "apps/web/wrangler.toml", "--command", sql], {
@@ -135,6 +163,7 @@ function d1(sql) {
   try { return JSON.parse(out); } catch { return null; }
 }
 function alreadyPosted(src) {
+  if (process.env.FORCE === "1") return false;
   try {
     const res = d1(`SELECT 1 FROM darshan WHERE src_channel='${src.channel}' AND src_post_id='${src._postId}' LIMIT 1`);
     const rows = res?.[0]?.results || [];
@@ -177,13 +206,13 @@ async function run() {
 
     // LIVE
     if (alreadyPosted(src)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
-    const hero = post.photos[0];
-    const msg = await sendDarshanPhoto(hero, caption);
+    const msg = await sendDarshanAlbum(post.photos, caption);
     const imagesJson = JSON.stringify(post.photos).replace(/'/g, "''");
     const capSql = caption.replace(/'/g, "''");
     try {
-      d1(`INSERT OR IGNORE INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-          VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',${msg.message_id})`);
+      d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
+          VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',${msg.message_id})
+          ON CONFLICT(src_channel,src_post_id) DO UPDATE SET tg_message_id=excluded.tg_message_id, images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
     } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
     preview.push({ ...row, posted: `ok msg_id=${msg.message_id}` });
   }
