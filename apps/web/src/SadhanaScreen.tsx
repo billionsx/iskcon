@@ -21,7 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
 import { requireAuth } from "./account/track";
-import { accountClient, type SadhanaState, type SadhanaPatch, type JapaSyncRound } from "./account/api";
+import { accountClient, type SadhanaState, type SadhanaPatch, type SadhanaDay, type JapaSyncRound } from "./account/api";
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
 const GOLD = "#D2AA1B";
@@ -146,12 +146,70 @@ function StreakCard({ icon, value, label, tone }: { icon: ReactNode; value: numb
 }
 
 /* ───────────────────────── экран ───────────────────────── */
+const sheetBtn: CSSProperties = { minWidth: 56, height: 40, padding: "0 14px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent", display: "inline-grid", placeItems: "center" };
+
+/** Лист редактирования любого дня дневника: чтение/подъём/заметка (круги — read-only). */
+function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; initial: SadhanaDay; goal: number; onClose: () => void; onSaved: (s: SadhanaState, day: string) => void }) {
+  const [read, setRead] = useState(initial.reading_min);
+  const [rose, setRose] = useState(initial.rose_at ?? "");
+  const [note, setNote] = useState(initial.note ?? "");
+  const [busy, setBusy] = useState(false);
+  const done = initial.rounds >= goal;
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      const s = await accountClient.sadhana.save({ today: ymd(), day, readingMin: read, roseAt: rose || null, note });
+      onSaved(s, day); onClose();
+    } catch { setBusy(false); }
+  };
+
+  const lbl: CSSProperties = { display: "block", fontFamily: FT, fontSize: 12, fontWeight: 700, color: L2, marginBottom: 7 };
+  const field: CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL, fontFamily: FT, outline: "none" };
+
+  return (
+    <div role="dialog" aria-modal="true" onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 60, background: "rgba(0,0,0,0.42)", display: "flex", alignItems: "flex-end", justifyContent: "center", animation: "sadFade .2s ease" }}>
+      <div onClick={(e) => e.stopPropagation()}
+        style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2)", borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: "8px 18px calc(20px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 44px rgba(0,0,0,0.32)", animation: "sadSheet .28s cubic-bezier(.32,.72,0,1)" }}>
+        <div style={{ width: 38, height: 5, borderRadius: 3, background: HAIR, margin: "0 auto 14px" }} />
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
+          <span style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{relDay(day)}</span>
+          <span style={{ fontFamily: FT, fontSize: 12.5, fontWeight: 700, color: done ? GREEN : L2 }}>{initial.rounds} {pluralRu(initial.rounds, "круг", "круга", "кругов")}</span>
+        </div>
+        <p style={{ margin: "3px 0 16px", fontFamily: FT, fontSize: 11.5, color: L3 }}>Круги берутся из счётчика и здесь не меняются.</p>
+
+        <label style={lbl}>Чтение Прабхупады</label>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+          <button type="button" onClick={() => setRead((v) => Math.max(0, v - 15))} disabled={read <= 0} style={{ ...sheetBtn, opacity: read <= 0 ? 0.5 : 1 }}>−15</button>
+          <span style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 800, color: read > 0 ? L1 : L3 }}>{read > 0 ? fmtMin(read) : "—"}</span>
+          <button type="button" onClick={() => setRead((v) => Math.min(1440, v + 15))} style={sheetBtn}>+15</button>
+          <button type="button" onClick={() => setRead((v) => Math.min(1440, v + 30))} style={sheetBtn}>+30</button>
+        </div>
+
+        <label style={lbl}>Подъём (мангала-арати)</label>
+        <input type="time" value={rose} onChange={(e) => setRose(e.target.value)} style={{ ...field, color: rose ? L1 : L3, fontSize: 15, fontWeight: 600, marginBottom: 16, colorScheme: "dark light" }} />
+
+        <label style={lbl}>Заметка дня</label>
+        <textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 500))} rows={3} placeholder="Реализации, благодарности, планы…"
+          style={{ ...field, resize: "none", color: L1, fontSize: 14, lineHeight: 1.5, marginBottom: 18 }} />
+
+        <div style={{ display: "flex", gap: 10 }}>
+          <button type="button" onClick={onClose} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Отмена</button>
+          <button type="button" onClick={save} disabled={busy} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.7 : 1, boxShadow: "0 8px 22px rgba(210,170,27,0.4)" }}>{busy ? "Сохранение…" : "Сохранить"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
   const { status } = useAuth();
   const [st, setSt] = useState<SadhanaState | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [showSet, setShowSet] = useState(false);
+  const [editDay, setEditDay] = useState<SadhanaDay | null>(null);
 
   // Локальные «черновики» редактируемых полей — мгновенный отклик; на сервер
   // улетают сами (чтение/цель — с дебаунсом, подъём — сразу, заметка — на blur).
@@ -411,7 +469,8 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
                   <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "22px 2px 10px" }}>История</div>
                   <div style={{ borderRadius: 16, background: FILL, overflow: "hidden" }}>
                     {st.history.map((d, i) => (
-                      <div key={d.day} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 15px", borderTop: i ? `0.5px solid ${HAIR}` : "none" }}>
+                      <button type="button" key={d.day} onClick={() => setEditDay(d)} aria-label={`Изменить день: ${relDay(d.day)}`}
+                        style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 15px", borderTop: i ? `0.5px solid ${HAIR}` : "none", background: "none", border: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", font: "inherit" }}>
                         <span style={{ flexShrink: 0, width: 64 }}>
                           <span style={{ display: "block", fontFamily: FD, fontSize: 13.5, fontWeight: 700, color: L1, lineHeight: 1.2 }}>{relDay(d.day)}</span>
                         </span>
@@ -424,7 +483,8 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
                           {d.note && <span style={{ flexBasis: "100%", fontFamily: FT, fontSize: 12, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.note}</span>}
                         </span>
                         {d.rounds >= goal && <span style={{ flexShrink: 0, color: GREEN, display: "inline-flex" }}><Check /></span>}
-                      </div>
+                        <span style={{ flexShrink: 0, display: "inline-flex" }}><Chevron /></span>
+                      </button>
                     ))}
                   </div>
                 </>
@@ -437,6 +497,21 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
           )}
         </div>
       </div>
+
+      {editDay && (
+        <DayEditor
+          day={editDay.day}
+          initial={editDay}
+          goal={goal}
+          onClose={() => setEditDay(null)}
+          onSaved={(s, d) => {
+            setSt(s);
+            if (d === ymd()) { setReadMin(s.todayRow.reading_min); setRoseAt(s.todayRow.rose_at ?? ""); setNote(s.todayRow.note ?? ""); }
+          }}
+        />
+      )}
+
+      <style>{`@keyframes sadFade{from{opacity:0}to{opacity:1}}@keyframes sadSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}`}</style>
     </div>
   );
 }
