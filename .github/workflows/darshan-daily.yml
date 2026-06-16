@@ -31,8 +31,10 @@ jobs:
 
       - name: Ingest darshan
         env:
-          DRY_RUN: ${{ github.event.inputs.dry_run || '1' }}
-          ONLY: ${{ github.event.inputs.only || '' }}
+          # По расписанию (inputs пустые) — LIVE и только vrindavan, пока не подтверждена строка Маяпура.
+          # Ручной запуск через UI по умолчанию остаётся dry (input default '1') — безопасно.
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+          ONLY: ${{ github.event.inputs.only || 'vrindavan' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: '@iskcone'
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
