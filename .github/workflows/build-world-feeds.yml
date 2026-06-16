@@ -22,6 +22,9 @@ jobs:
           python3 scripts/gen_world_feeds.py _gaurabda apps/web/public/data
           echo "feeds now: $(ls apps/web/public/data/gcal | wc -l)"
           echo "index entries: $(python3 -c "import json;print(len(json.load(open('apps/web/public/data/gcal-index.json'))))")"
+      - name: GBC verification gate (output must match official GCal to the minute)
+        run: python3 scripts/verify_gbc.py _gaurabda
+
       - name: Commit feeds
         run: |
           git config user.name "Billions X"
