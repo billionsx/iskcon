@@ -1,16 +1,16 @@
 applying schema ...
-entities: 773
-names: 2562 | categories: 1611
-relations: 2071
-profiles seeded (bronze): 773
+entities: 815
+names: 2692 | categories: 1653
+relations: 2107
+profiles seeded (bronze): 815
 auto summaries upserted: 581
-curated profiles upserted: 75
+curated profiles upserted: 81
 links: 68
-  D1 entities: 773
-  D1 entity_names: 2562
-  D1 entity_categories: 1611
-  D1 entity_relations: 2069
-  D1 entity_profiles: 773
+  D1 entities: 815
+  D1 entity_names: 2692
+  D1 entity_categories: 1653
+  D1 entity_relations: 2105
+  D1 entity_profiles: 815
   D1 entity_links: 68
 done.
 EXIT=0
