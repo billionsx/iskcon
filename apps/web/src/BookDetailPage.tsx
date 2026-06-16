@@ -18,7 +18,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { recordRead } from "./account/track";
-import { noteOpen, noteProgress } from "./reading";
+import { getReading, noteOpen, noteProgress, notePosition } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
@@ -1133,12 +1133,16 @@ function useReadProgress(o: {
   floor?: number;
   minDwellMs?: number;
   countScroll?: boolean;
+  savePos?: string;
 }): void {
   const { work, enabled, idx, total, weight, totalWeight } = o;
   const floor = o.floor ?? 0;
   const minDwell = o.minDwellMs ?? 5000;
   const countScroll = o.countScroll !== false;
+  const savePos = o.savePos;
   const maxDepth = useRef(0);
+  const curFrac = useRef(0);
+  const lastSave = useRef(0);
   const activeMs = useRef(0);
   const lastStart = useRef(0);
   // держим живую ссылку на getScrollEl, чтобы не перезапускать эффект каждый рендер
@@ -1160,7 +1164,9 @@ function useReadProgress(o: {
       if (denom > 4) d = node.scrollTop / denom;
       else if (node.scrollHeight > 240) d = 1; // помещается на экран и контент реально загружен → видно целиком
       else return; // контент ещё не загрузился — не измеряем (иначе ложное «прочитано»)
-      maxDepth.current = Math.max(maxDepth.current, Math.min(1, Math.max(0, d)));
+      const cl = Math.min(1, Math.max(0, d));
+      curFrac.current = cl;
+      maxDepth.current = Math.max(maxDepth.current, cl);
     };
 
     const dwellNow = () => activeMs.current + (lastStart.current ? Date.now() - lastStart.current : 0);
@@ -1177,9 +1183,18 @@ function useReadProgress(o: {
       noteProgress({ work, idx, frac, weight, total, totalWeight });
     };
 
+    const persistPos = (force = false) => {
+      if (!savePos || !countScroll) return;
+      const now = Date.now();
+      if (!force && now - lastSave.current < 800) return;
+      lastSave.current = now;
+      notePosition({ work, ref: savePos, frac: curFrac.current });
+    };
+
     const onScroll = () => {
       measure();
       report();
+      persistPos();
     };
     const onVis = () => {
       if (document.visibilityState === "hidden") {
@@ -1188,6 +1203,7 @@ function useReadProgress(o: {
           lastStart.current = 0;
         }
         report();
+        persistPos(true);
       } else if (!lastStart.current) {
         lastStart.current = Date.now();
       }
@@ -1198,6 +1214,7 @@ function useReadProgress(o: {
         lastStart.current = 0;
       }
       report();
+      persistPos(true);
     };
     const onFocus = () => {
       if (!lastStart.current) lastStart.current = Date.now();
@@ -1217,10 +1234,11 @@ function useReadProgress(o: {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("blur", onBlur);
       window.removeEventListener("focus", onFocus);
-      report(); // финальная фиксация при уходе с главы
+      persistPos(true); // сохранить точную позицию ухода
+      report(); // финальная фиксация прогресса
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [work, enabled, idx, total, weight, totalWeight, floor, minDwell, countScroll]);
+  }, [work, enabled, idx, total, weight, totalWeight, floor, minDwell, countScroll, savePos]);
 }
 
 /* ───────── Глава ───────── */
@@ -1249,6 +1267,14 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, wor
     const tw = chapters ? chapters.reduce((a, c) => a + (Number(c.verses) || 0), 0) : 0;
     return { idx: i >= 0 ? i + 1 : 0, total: chapters ? chapters.length : 0, weight: chapters && i >= 0 ? Number(chapters[i]?.verses) || 0 : 0, totalWeight: tw };
   }, [hierarchical, hierOrder, hierWeights, chapters, chapter.id, chapter.number]);
+
+  // возобновление точно по месту: фиксируем сохранённое смещение при монтировании (до noteOpen)
+  const resumeAnchor = useRef<{ ref: string; frac: number } | null>(null);
+  if (resumeAnchor.current === null) {
+    const r = getReading(work);
+    resumeAnchor.current = r && r.ref === chRef ? { ref: chRef, frac: r.posFrac || 0 } : { ref: "", frac: 0 };
+  }
+  const restoredRef = useRef(false);
 
   useEffect(() => {
     if (!printing) return;
@@ -1295,7 +1321,27 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, wor
   }, [work, chRef, chLabel, favHref, prog]);
 
   // Прогресс главы по скроллу + времени.
-  useReadProgress({ work, enabled: prog.idx > 0 && prog.total > 0, idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight, getScrollEl: () => scrollElRef.current });
+  useReadProgress({ work, enabled: prog.idx > 0 && prog.total > 0, idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight, savePos: chRef, getScrollEl: () => scrollElRef.current });
+
+  // Восстановить позицию после загрузки стихов (один раз, только для главы возобновления).
+  useEffect(() => {
+    if (verses === null || restoredRef.current) return;
+    const a = resumeAnchor.current;
+    if (!a || a.ref !== chRef || a.frac <= 0.02) { restoredRef.current = true; return; }
+    let r1 = 0;
+    let r2 = 0;
+    r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        const el = scrollElRef.current;
+        if (el) {
+          const denom = el.scrollHeight - el.clientHeight;
+          if (denom > 4) el.scrollTop = Math.min(denom, a.frac * denom);
+        }
+        restoredRef.current = true;
+      });
+    });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [verses, chRef]);
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
@@ -1788,7 +1834,33 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
     noteOpen({ work, ref: chapter.id, label: prLabel, href: prHref, kind: "prose", idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight });
   }, [work, chapter.id, prLabel, prHref, prog]);
 
-  useReadProgress({ work, enabled: prog.idx > 0 && prog.total > 0, idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight, getScrollEl: () => scrollRef.current });
+  const resumeAnchor = useRef<{ ref: string; frac: number } | null>(null);
+  if (resumeAnchor.current === null) {
+    const r = getReading(work);
+    resumeAnchor.current = r && r.ref === chapter.id ? { ref: chapter.id, frac: r.posFrac || 0 } : { ref: "", frac: 0 };
+  }
+  const restoredRef = useRef(false);
+
+  useReadProgress({ work, enabled: prog.idx > 0 && prog.total > 0, idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight, savePos: chapter.id, getScrollEl: () => scrollRef.current });
+
+  useEffect(() => {
+    if (paras === null || restoredRef.current) return;
+    const a = resumeAnchor.current;
+    if (!a || a.ref !== chapter.id || a.frac <= 0.02) { restoredRef.current = true; return; }
+    let r1 = 0;
+    let r2 = 0;
+    r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        const el = scrollRef.current;
+        if (el) {
+          const denom = el.scrollHeight - el.clientHeight;
+          if (denom > 4) el.scrollTop = Math.min(denom, a.frac * denom);
+        }
+        restoredRef.current = true;
+      });
+    });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [paras, chapter.id]);
 
   const idx = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
   const prev = chapters && idx > 0 ? chapters[idx - 1] : null;

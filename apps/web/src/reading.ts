@@ -46,6 +46,8 @@ export interface ReadingRec {
   total: number;
   /** Σ стихов по всем главам (0 — неизвестно → равный вес глав). */
   totalWeight: number;
+  /** Текущее смещение скролла в главе `ref` (0..1) — возобновление точно по месту. */
+  posFrac: number;
   /** Метка последнего обновления, мс. */
   at: number;
 }
@@ -64,13 +66,14 @@ function loadAll(): Store {
   }
 }
 
-function saveAll(s: Store): void {
+function saveAll(s: Store, silent = false): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(KEY, JSON.stringify(s));
   } catch {
     /* приватный режим / квота — телеметрия не должна ломать чтение */
   }
+  if (silent) return; // тихое сохранение позиции скролла — без перерисовки полок
   try {
     window.dispatchEvent(new Event(READING_CHANGED_EVENT));
   } catch {
@@ -120,6 +123,8 @@ export function noteOpen(i: OpenInput): void {
     const ex = chapters[idx];
     chapters[idx] = { frac: ex?.frac ?? 0, w: weight > 0 ? weight : ex?.w ?? 0 };
   }
+  // смещение скролла привязано к ref: возвращаемся в ту же главу — храним, в новую — с начала
+  const posFrac = prev && prev.ref === i.ref ? prev.posFrac ?? 0 : 0;
   s[i.work] = {
     work: i.work,
     ref: i.ref,
@@ -129,6 +134,7 @@ export function noteOpen(i: OpenInput): void {
     chapters,
     total: total > 0 ? total : prev?.total ?? 0,
     totalWeight: totalWeight > 0 ? totalWeight : prev?.totalWeight ?? 0,
+    posFrac,
     at: Date.now(),
   };
   saveAll(s);
@@ -168,6 +174,22 @@ export function noteProgress(i: ProgressInput): void {
     at: Date.now(),
   };
   saveAll(s);
+}
+
+/**
+ * Сохранить текущее смещение скролла внутри читаемой главы (возобновление точно по
+ * месту). Пишем тихо (без перерисовки полок) и только для главы, которая сейчас —
+ * точка возобновления (ref совпадает). `at` не трогаем: это не новое событие чтения.
+ */
+export function notePosition(i: { work: string; ref: string; frac: number }): void {
+  if (!i.work || !i.ref) return;
+  const s = loadAll();
+  const prev = s[i.work];
+  if (!prev || prev.ref !== i.ref) return;
+  const frac = Math.min(1, Math.max(0, i.frac));
+  if (Math.abs((prev.posFrac ?? 0) - frac) < 0.005) return; // микродвижения не пишем
+  s[i.work] = { ...prev, posFrac: frac };
+  saveAll(s, true);
 }
 
 /** Прогресс по конкретной книге (или null). */
