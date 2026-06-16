@@ -21,6 +21,7 @@ import { HomeFeed } from "./HomeFeed";
 import { HomeCalendar } from "./HomeCalendar";
 import { HomeEducation } from "./HomeMore";
 import PracticeHub from "./PracticeHub";
+import { DarshanRings } from "./DarshanStories";
 import { ChevRightIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
@@ -774,7 +775,12 @@ export default function HomeScreen(props: {
     <div ref={rootRef}>
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
-      {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
+      {homeTab === "iskcon" && (
+        <>
+          <DarshanRings />
+          <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />
+        </>
+      )}
       {homeTab === "sadhana" && <PracticeHub onOpen={props.onOpenPath} />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
