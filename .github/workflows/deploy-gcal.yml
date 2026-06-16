@@ -13,22 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+      - uses: astral-sh/setup-uv@v5
 
-      - name: Deploy Python Worker
+      - name: Deploy Python Worker (pywrangler)
         working-directory: apps/gcal
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set +e
-          bunx wrangler deploy 2>&1 | tee /tmp/gcal-deploy.log
+          uvx --from workers-py pywrangler deploy 2>&1 | tee /tmp/gcal-deploy.log
           RC=${PIPESTATUS[0]}
-          echo "wrangler deploy exit = $RC"
+          echo "pywrangler deploy exit = $RC"
           if [ "$RC" != "0" ]; then
-            echo "::error::wrangler deploy (gcal) FAILED exit $RC"
-            grep -iE 'error|exceed|larger|too large|module|ENOENT|limit|failed|python|pyodide' /tmp/gcal-deploy.log | tail -n 20 | while IFS= read -r l; do echo "::error::GC ${l}"; done
+            echo "::error::pywrangler deploy (gcal) FAILED exit $RC"
+            grep -iE 'error|exceed|larger|module|ENOENT|limit|failed|python|pyodide|workers|traceback' /tmp/gcal-deploy.log | tail -n 25 | while IFS= read -r l; do echo "::error::GC ${l}"; done
             exit "$RC"
           fi
           ACCT=d5cbe19470dc38599873eabfe148e6d1
@@ -44,7 +42,7 @@ jobs:
           set +e
           WD=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/gcal-deploy.log | head -1)
           echo "workers.dev = $WD"
-          if [ -z "$WD" ]; then echo "::error::no workers.dev URL in deploy log"; exit 1; fi
+          if [ -z "$WD" ]; then echo "::error::no workers.dev URL in deploy log"; tail -n 30 /tmp/gcal-deploy.log; exit 1; fi
           code=000
           for i in 1 2 3 4 5 6 7 8; do
             code=$(curl -s -o /tmp/sm.json -w '%{http_code}' --max-time 60 "$WD/compute?lat=45.1903&lng=33.3667&tz=Europe/Simferopol&days=400")
