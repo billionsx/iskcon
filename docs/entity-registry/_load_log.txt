@@ -1,15 +1,15 @@
 applying schema ...
-entities: 771
-names: 2556 | categories: 1605
-relations: 2069
-profiles seeded (bronze): 771
-curated profiles upserted: 24
+entities: 773
+names: 2562 | categories: 1611
+relations: 2071
+profiles seeded (bronze): 773
+curated profiles upserted: 35
 links: 68
-  D1 entities: 771
-  D1 entity_names: 2556
-  D1 entity_categories: 1605
-  D1 entity_relations: 2067
-  D1 entity_profiles: 771
+  D1 entities: 773
+  D1 entity_names: 2562
+  D1 entity_categories: 1611
+  D1 entity_relations: 2069
+  D1 entity_profiles: 773
   D1 entity_links: 68
 done.
 EXIT=0
