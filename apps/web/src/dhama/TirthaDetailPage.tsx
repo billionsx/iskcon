@@ -12,8 +12,10 @@
 import { useEffect, useRef, useState } from "react";
 import { BackIcon } from "../ui/icons";
 import { api } from "../api";
-import { KIND_RU, mapsQuery, tirthaCtx, type Dhama, type Person, type Tirtha } from "./dhamas";
-import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
+import { mapsQuery, type Dhama, type Person, type Tirtha } from "./dhamas";
+import { TirthaHeroCard } from "./TirthaHeroCard";
+import { QrSheet } from "../QrSheet";
+import { requestNote } from "../notes";
 
 const NAV_H = 52;
 
@@ -82,7 +84,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
-  const { openCardMenu } = useCardActions();
+  const [qr, setQr] = useState(false);
 
   const t: Tirtha | undefined = dhama.tirthas.find((x) => x.id === tirthaId);
 
@@ -94,6 +96,18 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
   const clusterTitle = dhama.clusters.find((c) => c.id === t.cluster)?.title;
   const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(mapsQuery(t))}`;
 
+  const onMenu = (id: string) => {
+    if (id === "share") {
+      const url = `${window.location.origin}/dhama/${dhama.id}/${t.id}`;
+      const nav = window.navigator as Navigator & { share?: (d: { title: string; url: string }) => Promise<void> };
+      if (nav.share) void nav.share({ title: t.name, url }).catch(() => undefined);
+      else { try { void window.navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { flash(url); } }
+    } else if (id === "qr") setQr(true);
+    else if (id === "route") { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }
+    else if (id === "note") requestNote({ kind: "place", ref: t.id, title: t.name, subtitle: dhama.name, href: `/dhama/${dhama.id}/${t.id}` });
+    else if (id === "report") flash("Спасибо! Передадим редакции.");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
       {/* sticky навбар «жидкое стекло» */}
@@ -104,20 +118,13 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           <BackIcon size={22} />
         </button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-        <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(dhama.id, t))} size={32} onMore={() => openCardMenu(tirthaCtx(dhama.id, t))} />
+        <span style={{ width: 38, flexShrink: 0 }} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        {/* hero — градиент акцента дхамы */}
-        <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 10", maxHeight: 320, background: "var(--color-bg-3)", overflow: "hidden" }}>
-          <span aria-hidden style={{ position: "absolute", inset: 0, background: `radial-gradient(125% 95% at 28% 6%, color-mix(in srgb, ${accent} 82%, #000) 0%, ${accent} 48%, color-mix(in srgb, ${accent} 46%, #000) 100%)` }} />
-          <span aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--color-bg) 0%, rgba(0,0,0,0) 36%), linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.04) 44%, rgba(0,0,0,0.12) 100%)" }} />
-          <span style={{ position: "absolute", left: 16, right: 16, bottom: 14, color: "#fff" }}>
-            <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 999, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.3px", textTransform: "uppercase", background: "rgba(255,255,255,0.22)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}>{KIND_RU[t.kind]}</span>
-            {t.iast && <span style={{ display: "block", marginTop: 8, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 14, opacity: 0.86 }}>{t.iast}</span>}
-            <span style={{ display: "block", marginTop: t.iast ? 1 : 8, fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: "-0.6px", lineHeight: 1.05, textShadow: "0 1px 14px rgba(0,0,0,0.4)" }}>{t.name}</span>
-            {clusterTitle && <span style={{ display: "block", marginTop: 4, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, opacity: 0.9 }}>{dhama.name} · {clusterTitle}</span>}
-          </span>
+        {/* hero (ПКП) */}
+        <div style={{ padding: "16px 16px 0" }}>
+          <TirthaHeroCard dhamaId={dhama.id} tirtha={t} accent={accent} dhamaName={dhama.name} clusterTitle={clusterTitle} onMenuSelect={onMenu} flash={flash} />
         </div>
 
         <div style={{ padding: "20px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
@@ -170,6 +177,9 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
       </div>
 
       {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: 999, maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)" }}>{toast}</div>}
+      {qr && typeof window !== "undefined" && (
+        <QrSheet url={`${window.location.origin}/dhama/${dhama.id}/${t.id}`} data={{ kind: "card", title: t.name, subtitle: [dhama.name, clusterTitle].filter(Boolean).join(" · ") }} onClose={() => setQr(false)} />
+      )}
     </div>
   );
 }

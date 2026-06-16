@@ -10,8 +10,11 @@ import { useEffect, useRef, useState } from "react";
 import { BackIcon } from "../ui/icons";
 import { SectionSubTabs } from "../SectionSubTabs";
 import DhamaMap from "./DhamaMap";
-import { KIND_RU, dhamaCtx, tirthaCtx, type Dhama, type Tirtha } from "./dhamas";
+import { KIND_RU, tirthaCtx, type Dhama, type Tirtha } from "./dhamas";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
+import { DhamaHeroCard } from "./DhamaHeroCard";
+import { QrSheet } from "../QrSheet";
+import { requestNote } from "../notes";
 
 const NAV_H = 52;
 
@@ -79,12 +82,25 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
 export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama: Dhama; onBack: () => void; onOpenTirtha: (id: string) => void }) {
   const [sub, setSub] = useState<"places" | "parikrama" | "map" | "about">("places");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { openCardMenu } = useCardActions();
+  const [qr, setQr] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
+  const onMenu = (id: string) => {
+    if (id === "share") {
+      const url = `${window.location.origin}/dhama/${dhama.id}`;
+      const nav = window.navigator as Navigator & { share?: (d: { title: string; url: string }) => Promise<void> };
+      if (nav.share) void nav.share({ title: dhama.name, url }).catch(() => undefined);
+      else { try { void window.navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { flash(url); } }
+    } else if (id === "qr") setQr(true);
+    else if (id === "route") { try { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(dhama.name + " " + dhama.region)}`, "_blank", "noopener"); } catch { /* noop */ } }
+    else if (id === "note") requestNote({ kind: "place", ref: dhama.id, title: dhama.name, subtitle: dhama.region, href: `/dhama/${dhama.id}` });
+    else if (id === "report") flash("Спасибо! Передадим редакции.");
+  };
 
   // сброс позиции при смене вкладки на карту/о дхаме нежелателен; сбрасываем при входе
   useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [dhama.id]);
 
-  const hasPhoto = !!dhama.hero;
   const byCluster = dhama.clusters
     .map((c) => ({ cluster: c, items: dhama.tirthas.filter((t) => t.cluster === c.id) }))
     .filter((g) => g.items.length > 0);
@@ -99,23 +115,13 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
           <BackIcon size={22} />
         </button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{dhama.name}</div>
-        <CardActionBtns favKey={`dhama:${dhama.id}`} meta={favMetaFromCtx(dhamaCtx(dhama))} size={32} onMore={() => openCardMenu(dhamaCtx(dhama))} />
+        <span style={{ width: 38, flexShrink: 0 }} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        {/* hero */}
-        <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 10", maxHeight: 360, background: "var(--color-bg-3)", overflow: "hidden" }}>
-          {hasPhoto ? (
-            <img src={dhama.hero} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-          ) : (
-            <span aria-hidden style={{ position: "absolute", inset: 0, background: `radial-gradient(120% 90% at 30% 8%, color-mix(in srgb, ${dhama.accent} 80%, #000) 0%, ${dhama.accent} 46%, color-mix(in srgb, ${dhama.accent} 48%, #000) 100%)` }} />
-          )}
-          <span aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, var(--color-bg) 0%, rgba(0,0,0,0) 34%), linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.15) 100%)" }} />
-          <span style={{ position: "absolute", left: 16, right: 16, bottom: 14, color: "#fff" }}>
-            <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 14, opacity: 0.85 }}>{dhama.iast}</span>
-            <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800, letterSpacing: "-0.6px", lineHeight: 1.04, textShadow: "0 1px 14px rgba(0,0,0,0.4)" }}>{dhama.name}</span>
-            <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 500, opacity: 0.94 }}>{dhama.deity}</span>
-          </span>
+        {/* hero (ПКП) */}
+        <div style={{ padding: "16px 16px 0" }}>
+          <DhamaHeroCard dhama={dhama} onMenuSelect={onMenu} flash={flash} />
         </div>
 
         {/* sub-tabs */}
@@ -198,6 +204,10 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
           )}
         </div>
       </div>
+      {qr && typeof window !== "undefined" && (
+        <QrSheet url={`${window.location.origin}/dhama/${dhama.id}`} data={{ kind: "card", title: dhama.name, subtitle: dhama.region }} onClose={() => setQr(false)} />
+      )}
+      {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: 999, maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)" }}>{toast}</div>}
     </div>
   );
 }
