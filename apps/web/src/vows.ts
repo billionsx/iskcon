@@ -1,0 +1,189 @@
+/**
+ * vows — обет (санкальпа/врата): обещание на срок и на конкретные служения,
+ * с ежедневным контролем и отчётностью. Хранение локальное (localStorage,
+ * без авторизации — как прогресс чтения): один активный обет + архив прошлых.
+ * Реактивность — через useSyncExternalStore (как «Избранное»).
+ *
+ * Принцип заботы: пресеты служений — только созидательные духовные практики
+ * (джапа, чтение, киртан, служба, прасад, экадаши, сева). Никаких практик,
+ * поощряющих вред здоровью или крайнюю аскезу.
+ */
+import { useCallback, useSyncExternalStore } from "react";
+
+export type Commitment = { id: string; label: string; detail?: string };
+export type VowStatus = "active" | "completed" | "abandoned";
+export interface Vow {
+  id: string;
+  title: string;
+  startDate: string;            // YYYY-MM-DD (локальная дата)
+  endDate: string;              // YYYY-MM-DD включительно
+  commitments: Commitment[];
+  log: Record<string, string[]>; // дата → id выполненных служений в этот день
+  createdAt: number;
+  status: VowStatus;
+  closedAt?: number;
+}
+
+/* ── Пресеты ─────────────────────────────────────────────────────────────── */
+export const PRESET_COMMITMENTS: Commitment[] = [
+  { id: "japa", label: "Джапа", detail: "16 кругов" },
+  { id: "reading", label: "Чтение священных текстов", detail: "ежедневно" },
+  { id: "kirtan", label: "Киртан · слушание святого имени", detail: "ежедневно" },
+  { id: "arati", label: "Мангала-арати · служба", detail: "ежедневно" },
+  { id: "prasad", label: "Почитание прасада", detail: "без лука и чеснока" },
+  { id: "ekadashi", label: "Соблюдение экадаши", detail: "в дни экадаши" },
+  { id: "seva", label: "Служение (сева)", detail: "ежедневно" },
+];
+
+export const DURATION_PRESETS: { id: string; label: string; days: number }[] = [
+  { id: "7", label: "1 неделя", days: 7 },
+  { id: "14", label: "2 недели", days: 14 },
+  { id: "30", label: "1 месяц", days: 30 },
+  { id: "108", label: "108 дней", days: 108 },
+];
+
+/* ── Даты ────────────────────────────────────────────────────────────────── */
+const z = (n: number) => String(n).padStart(2, "0");
+export function ymd(d: Date = new Date()): string { return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`; }
+function parts(s: string): [number, number, number] { const [y, m, d] = s.split("-").map(Number); return [y, m, d]; }
+export function diffDays(a: string, b: string): number {
+  const [ay, am, ad] = parts(a), [by, bm, bd] = parts(b);
+  return Math.round((Date.UTC(by, bm - 1, bd) - Date.UTC(ay, am - 1, ad)) / 86400000);
+}
+export function addDays(s: string, n: number): string {
+  const [y, m, d] = parts(s); const dt = new Date(y, m - 1, d + n); return ymd(dt);
+}
+export function enumerateDays(start: string, end: string): string[] {
+  const out: string[] = []; if (diffDays(start, end) < 0) return out;
+  let cur = start; for (let i = 0; i <= diffDays(start, end); i++) { out.push(cur); cur = addDays(cur, 1); }
+  return out;
+}
+/** Человекочитаемая дата: 16 июня 2026 / 16 июн. */
+const MON = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+const MON_FULL = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+export function fmtDate(s: string, full = false): string { const [y, m, d] = parts(s); return full ? `${d} ${MON_FULL[m - 1]} ${y}` : `${d} ${MON[m - 1]}`; }
+
+/* ── Хранилище (localStorage, реактивное) ────────────────────────────────── */
+const K_ACTIVE = "vow:active";
+const K_ARCHIVE = "vow:archive";
+const listeners = new Set<() => void>();
+let activeCache: Vow | null | undefined;
+let archiveCache: Vow[] | null;
+const EMPTY: Vow[] = [];
+function invalidate() { activeCache = undefined; archiveCache = null; listeners.forEach((l) => l()); }
+function readJson<T>(key: string, fallback: T): T { try { const s = localStorage.getItem(key); return s ? (JSON.parse(s) as T) : fallback; } catch { return fallback; } }
+function writeJson(key: string, val: unknown) { try { localStorage.setItem(key, JSON.stringify(val)); } catch { /* приватный режим */ } }
+
+export function getActiveVow(): Vow | null {
+  if (activeCache !== undefined) return activeCache;
+  activeCache = readJson<Vow | null>(K_ACTIVE, null);
+  return activeCache;
+}
+export function getArchive(): Vow[] {
+  if (archiveCache) return archiveCache;
+  archiveCache = readJson<Vow[]>(K_ARCHIVE, []);
+  return archiveCache;
+}
+function setActive(v: Vow | null) { if (v) writeJson(K_ACTIVE, v); else { try { localStorage.removeItem(K_ACTIVE); } catch { /* noop */ } } invalidate(); }
+function setArchive(a: Vow[]) { writeJson(K_ARCHIVE, a); invalidate(); }
+
+export function useActiveVow(): Vow | null {
+  return useSyncExternalStore(
+    useCallback((cb) => { listeners.add(cb); return () => listeners.delete(cb); }, []),
+    getActiveVow, () => null,
+  );
+}
+export function useArchive(): Vow[] {
+  return useSyncExternalStore(
+    useCallback((cb) => { listeners.add(cb); return () => listeners.delete(cb); }, []),
+    getArchive, () => EMPTY,
+  );
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("storage", (e) => { if (!e.key || e.key === K_ACTIVE || e.key === K_ARCHIVE) invalidate(); });
+}
+
+/* ── Мутации ─────────────────────────────────────────────────────────────── */
+export function createVow(input: { title: string; days?: number; endDate?: string; commitments: Commitment[] }): Vow {
+  const start = ymd();
+  const end = input.endDate && diffDays(start, input.endDate) >= 0 ? input.endDate : addDays(start, Math.max(1, input.days ?? 7) - 1);
+  const vow: Vow = {
+    id: `vow_${Date.now().toString(36)}`,
+    title: input.title.trim() || "Мой обет",
+    startDate: start, endDate: end,
+    commitments: input.commitments.length ? input.commitments : [PRESET_COMMITMENTS[0]],
+    log: {}, createdAt: Date.now(), status: "active",
+  };
+  setActive(vow);
+  return vow;
+}
+export function toggleCommitment(date: string, commitmentId: string) {
+  const v = getActiveVow(); if (!v) return;
+  const day = v.log[date] ? [...v.log[date]] : [];
+  const i = day.indexOf(commitmentId);
+  if (i >= 0) day.splice(i, 1); else day.push(commitmentId);
+  setActive({ ...v, log: { ...v.log, [date]: day } });
+}
+export function closeVow(status: "completed" | "abandoned") {
+  const v = getActiveVow(); if (!v) return;
+  const arch = getArchive();
+  setArchive([{ ...v, status, closedAt: Date.now() }, ...arch]);
+  setActive(null);
+}
+export function deleteArchived(id: string) { setArchive(getArchive().filter((v) => v.id !== id)); }
+
+/* ── Отчётность ──────────────────────────────────────────────────────────── */
+export interface VowStats {
+  dayTotal: number; elapsed: number; remaining: number; started: boolean; overdue: boolean;
+  doneSlots: number; expectedSlots: number; pct: number;
+  current: number; longest: number;
+  per: { id: string; label: string; detail?: string; done: number; total: number; pct: number }[];
+  todayDone: string[]; fullDays: Set<string>; dayDone: Record<string, number>;
+}
+export function vowStats(vow: Vow, today: string = ymd()): VowStats {
+  const ids = vow.commitments.map((c) => c.id);
+  const M = ids.length || 1;
+  const dayTotal = diffDays(vow.startDate, vow.endDate) + 1;
+  const started = diffDays(vow.startDate, today) >= 0;
+  const overdue = diffDays(today, vow.endDate) < 0;
+  const lastObserved = !started ? null : (overdue ? vow.endDate : today);
+  const elapsedRange = lastObserved ? enumerateDays(vow.startDate, lastObserved) : [];
+  const per = vow.commitments.map((c) => ({ id: c.id, label: c.label, detail: c.detail, done: 0, total: elapsedRange.length, pct: 0 }));
+  const fullDays = new Set<string>();
+  const dayDone: Record<string, number> = {};
+  let doneSlots = 0;
+  for (const day of elapsedRange) {
+    const done = (vow.log[day] || []).filter((x) => ids.includes(x));
+    dayDone[day] = done.length;
+    doneSlots += done.length;
+    for (const p of per) if (done.includes(p.id)) p.done++;
+    if (ids.length > 0 && ids.every((id) => done.includes(id))) fullDays.add(day);
+  }
+  for (const p of per) p.pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
+  const expectedSlots = elapsedRange.length * M;
+  const pct = expectedSlots ? Math.round((doneSlots / expectedSlots) * 100) : 0;
+  // серии
+  let longest = 0, run = 0;
+  for (const day of enumerateDays(vow.startDate, vow.endDate)) { if (fullDays.has(day)) { run++; if (run > longest) longest = run; } else run = 0; }
+  let current = 0;
+  if (started && !overdue) { let d = today; while (diffDays(vow.startDate, d) >= 0 && fullDays.has(d)) { current++; d = addDays(d, -1); } }
+  const remaining = !started ? dayTotal : Math.max(0, diffDays(today, vow.endDate));
+  const elapsed = elapsedRange.length;
+  const todayDone = (vow.log[today] || []).filter((x) => ids.includes(x));
+  return { dayTotal, elapsed, remaining, started, overdue, doneSlots, expectedSlots, pct, current, longest, per, todayDone, fullDays, dayDone };
+}
+
+/** Текстовый отчёт для шаринга/копирования. */
+export function vowReportText(vow: Vow): string {
+  const s = vowStats(vow);
+  const lines = [
+    `Обет: ${vow.title}`,
+    `Срок: ${fmtDate(vow.startDate, true)} — ${fmtDate(vow.endDate, true)} (${s.dayTotal} дн.)`,
+    `Выполнено: ${s.pct}% · серия ${s.current}, лучшая ${s.longest}`,
+    "Служения:",
+    ...vow.commitments.map((c) => { const p = s.per.find((x) => x.id === c.id); return `• ${c.label}${c.detail ? ` (${c.detail})` : ""} — ${p?.pct ?? 0}%`; }),
+    "gaurangers.com",
+  ];
+  return lines.join("\n");
+}
