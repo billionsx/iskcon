@@ -71,7 +71,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
 
   return (
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <Header onBack={onBack} title="Прасадам" />
+      <Header onBack={onBack} title="Прасадам" right={<CardActionBtns favKey={`recipe:${recipe.slug}`} meta={favMetaFromCtx(recipeCtx(recipe))} flash={flash} size={32} onMore={() => openCardMenu(recipeCtx(recipe))} />} />
 
       <div style={{ padding: "8px 16px 56px", maxWidth: 560, margin: "0 auto" }}>
         {/* Заголовок */}
@@ -89,11 +89,6 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
         <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>
           {recipe.subtitle}
         </p>
-
-        {/* Действия карточки (как у книг): ♥ избранное · ⋯ меню */}
-        <div style={{ marginTop: 16 }}>
-          <CardActionBtns favKey={`recipe:${recipe.slug}`} meta={favMetaFromCtx(recipeCtx(recipe))} flash={flash} size={38} onMore={() => openCardMenu(recipeCtx(recipe))} />
-        </div>
 
         {/* Метаданные */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>
@@ -200,14 +195,15 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
 }
 
 /* ───────── sticky-шапка ───────── */
-function Header({ onBack, title }: { onBack: () => void; title: string }) {
+function Header({ onBack, title, right }: { onBack: () => void; title: string; right?: React.ReactNode }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 30, display: "flex", alignItems: "center", gap: 4, padding: "10px 8px", background: "var(--color-glass-nav)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <button type="button" aria-label="Назад" onClick={onBack}
         style={{ display: "grid", placeItems: "center", width: 40, height: 40, borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <Back />
       </button>
-      <span style={{ fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+      {right && <span style={{ flexShrink: 0, marginRight: 4 }}>{right}</span>}
     </header>
   );
 }

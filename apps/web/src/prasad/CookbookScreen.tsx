@@ -9,6 +9,7 @@
  *
  * Контент — модуль cookbook.ts (оригинальная проза). См. шапку cookbook.ts.
  */
+import type { ReactNode } from "react";
 import { COOKBOOK, chapterById, chapterRecipes, COOKBOOK_PRAYERS, type Block, type Chapter } from "./cookbook";
 import { DIFFICULTY_LABEL } from "./prasad";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
@@ -29,14 +30,15 @@ const Clock = ({ size = 15 }: { size?: number }) => <svg {...ic(size)}><circle {
 const Gauge = ({ size = 15 }: { size?: number }) => <svg {...ic(size)}><path {...S} d="M4 18a8 8 0 0 1 16 0" /><path {...S} d="M12 18l4-5" /></svg>;
 const ChevR = ({ size = 18 }: { size?: number }) => <svg {...ic(size)} style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path {...S} d="M9 5l7 7-7 7" /></svg>;
 
-function Header({ onBack, title }: { onBack: () => void; title: string }) {
+function Header({ onBack, title, right }: { onBack: () => void; title: string; right?: ReactNode }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 30, display: "flex", alignItems: "center", gap: 4, padding: "10px 8px", background: "var(--color-glass-nav)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <button type="button" aria-label="Назад" onClick={onBack}
         style={{ display: "grid", placeItems: "center", width: 40, height: 40, borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <Back />
       </button>
-      <span style={{ fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+      {right && <span style={{ flexShrink: 0, marginRight: 4 }}>{right}</span>}
     </header>
   );
 }
@@ -72,17 +74,12 @@ function Contents({ onBack, onOpenChapter, flash }: { onBack: () => void; onOpen
   }
   return (
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <Header onBack={onBack} title="Кухня прасада" />
+      <Header onBack={onBack} title="Кухня прасада" right={<CardActionBtns favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={32} onMore={() => openCardMenu(cookbookCtx)} />} />
       <div style={{ padding: "8px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Книга библиотеки</div>
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.05, color: "var(--color-label)" }}>{COOKBOOK.title}</h1>
         <div style={{ margin: "6px 0 0", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17, color: "var(--color-label-3)" }}>{COOKBOOK.iast}</div>
         <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.6, color: "var(--color-label-2)" }}>{COOKBOOK.blurb}</p>
-
-        {/* Действия книги (как у всех книг): ♥ избранное · ⋯ меню */}
-        <div style={{ marginTop: 16 }}>
-          <CardActionBtns favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={38} onMore={() => openCardMenu(cookbookCtx)} />
-        </div>
 
         {parts.map((g) => (
           <section key={g.part} style={{ marginTop: 28 }}>
