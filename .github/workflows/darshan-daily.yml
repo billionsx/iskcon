@@ -47,9 +47,9 @@ jobs:
 
       - name: Ingest darshan
         env:
-          # ВРЕМЕННО НА ПАУЗЕ: расписание идёт в dry (не постит), пока дорабатываем
-          # источник (время Шрингары, все три алтаря, качество). Включим обратно через '0'.
-          DRY_RUN: ${{ github.event.inputs.dry_run || '1' }}
+          # Боевой режим: по расписанию (14:30 IST) публикует даршан Вриндавана в @iskcone
+          # двумя альбомами по 10. Ручной запуск из UI по умолчанию dry (input default '1').
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
           ONLY: ${{ github.event.inputs.only || 'vrindavan' }}
           FORCE: ${{ github.event.inputs.force || '0' }}
           DIAG: ${{ github.event.inputs.diag || '0' }}
