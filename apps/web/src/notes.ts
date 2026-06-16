@@ -111,6 +111,46 @@ function writeLocal(n: Note): void {
   }
 }
 
+/* ── tombstones удалений: помним, что заметка удалена, чтобы синхронизация её
+   не воскрешала (например, если серверный DELETE не дошёл из-за оффлайна). ── */
+const TOMB_KEY = "notes:tombstones";
+function readTombs(): Record<string, number> {
+  try {
+    const v = JSON.parse(localStorage.getItem(TOMB_KEY) || "{}");
+    return v && typeof v === "object" ? (v as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+function writeTombs(t: Record<string, number>): void {
+  try {
+    if (Object.keys(t).length === 0) localStorage.removeItem(TOMB_KEY);
+    else localStorage.setItem(TOMB_KEY, JSON.stringify(t));
+  } catch {
+    /* приватный режим */
+  }
+}
+function addTomb(id: string): void {
+  const t = readTombs();
+  t[id] = Date.now();
+  writeTombs(t);
+}
+function dropTomb(id: string): void {
+  const t = readTombs();
+  if (id in t) {
+    delete t[id];
+    writeTombs(t);
+  }
+}
+function deleteOnServer(id: string): void {
+  if (!isAuthed()) return;
+  try {
+    void fetch(api(`/me/notes?id=${encodeURIComponent(id)}`), { method: "DELETE", credentials: "same-origin", keepalive: true }).catch(() => undefined);
+  } catch {
+    /* noop */
+  }
+}
+
 /* ─────────────────────────── id / plain / sanitize ─────────────────────────── */
 
 export function newId(): string {
@@ -238,18 +278,9 @@ export function deleteNote(id: string): void {
   } catch {
     /* noop */
   }
+  addTomb(id);
   invalidate();
-  if (isAuthed()) {
-    try {
-      void fetch(api(`/me/notes?id=${encodeURIComponent(id)}`), {
-        method: "DELETE",
-        credentials: "same-origin",
-        keepalive: true,
-      }).catch(() => undefined);
-    } catch {
-      /* noop */
-    }
-  }
+  deleteOnServer(id);
 }
 
 /* ─────────────────────────── хуки ─────────────────────────── */
@@ -366,8 +397,18 @@ export async function syncNotesWithServer(): Promise<void> {
   for (const n of local) byId.set(n.id, { ...(byId.get(n.id) || {}), local: n });
   for (const n of server) byId.set(n.id, { ...(byId.get(n.id) || {}), server: n });
 
+  // Реконсиляция удалений: если заметка ещё на сервере — повторяем DELETE; если
+  // сервер её больше не отдаёт — удаление подтверждено, снимаем tombstone.
+  const tombs = readTombs();
+  const serverIds = new Set(server.map((n) => n.id));
+  for (const id of Object.keys(tombs)) {
+    if (serverIds.has(id)) deleteOnServer(id);
+    else dropTomb(id);
+  }
+
   let changedLocal = false;
-  for (const { local: l, server: s } of byId.values()) {
+  for (const [id, { local: l, server: s }] of byId.entries()) {
+    if (tombs[id]) continue; // удалено локально — не воскрешаем и не выгружаем заново
     if (l && s) {
       if (s.updatedAt > l.updatedAt) {
         writeLocal(s);
