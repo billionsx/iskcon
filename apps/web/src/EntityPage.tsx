@@ -221,6 +221,8 @@ function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkIte
   );
 }
 
+interface LiveDarshan { source: string; date: string; templeSlug: string; templeName: string; deities: string | null; images: string[]; caption: string | null; srcUrl: string; channelUrl: string | null; postId: string }
+
 export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
@@ -235,6 +237,21 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
       .catch(() => { if (alive) setError(true); });
     return () => { alive = false; };
   }, [id]);
+
+  // Живой даршан: если у героя есть связи kind=darshan (храмы), берём сегодняшний
+  // даршан этих храмов из /api/darshan (живьём из каналов, кэш на воркере). Не зависит
+  // от ингеста в @iskcone и не пишет в канал — только показывает свежее фото-даршан.
+  const [liveDarshans, setLiveDarshans] = useState<LiveDarshan[] | null>(null);
+  useEffect(() => {
+    const temples = (data?.links ?? []).filter((l) => l.kind === "darshan").map((l) => l.ref);
+    if (temples.length === 0) { setLiveDarshans(null); return; }
+    let alive = true;
+    fetch(api("/darshan"))
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (alive && d && Array.isArray(d.today)) setLiveDarshans(d.today as LiveDarshan[]); })
+      .catch(() => { /* живой даршан необязателен */ });
+    return () => { alive = false; };
+  }, [data]);
 
   const groups = (() => {
     if (!data) return [];
@@ -390,24 +407,32 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               </section>
             )}
 
-            {/* даршан дня — показывается только если в БД есть фото (иначе секции нет) */}
-            {(data.darshans ?? []).filter((d) => d.image).length > 0 && (
-              <section style={{ marginTop: 26 }}>
-                <Eyebrow>Даршан</Eyebrow>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {(data.darshans ?? []).filter((d) => d.image).map((d) => (
-                    <a key={d.temple_slug} href={d.url ?? undefined} target="_blank" rel="noopener noreferrer"
-                      style={{ display: "block", borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", textDecoration: "none", color: "inherit" }}>
-                      <img src={d.image!} alt={d.deities ?? d.temple_name} loading="lazy" style={{ width: "100%", height: 220, objectFit: "cover", display: "block" }} />
-                      <div style={{ padding: "10px 13px" }}>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.temple_name}</div>
-                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.temple_name} · {d.date}</div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </section>
-            )}
+            {/* даршан дня — живьём из каналов храмов по связям kind=darshan (нет фото → секции нет) */}
+            {(() => {
+              const temples = (data.links ?? []).filter((l) => l.kind === "darshan").map((l) => l.ref);
+              const byTemple = new Map((liveDarshans ?? []).map((d) => [d.templeSlug, d] as const));
+              const seen = new Set<string>();
+              const cards: LiveDarshan[] = [];
+              for (const t of temples) { const d = byTemple.get(t); if (d && d.images.length && !seen.has(t)) { seen.add(t); cards.push(d); } }
+              if (cards.length === 0) return null;
+              return (
+                <section style={{ marginTop: 26 }}>
+                  <Eyebrow>Даршан</Eyebrow>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {cards.map((d) => (
+                      <a key={d.templeSlug} href={d.srcUrl} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "block", borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", textDecoration: "none", color: "inherit" }}>
+                        <img src={d.images[0]} alt={d.deities ?? d.templeName} loading="lazy" style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
+                        <div style={{ padding: "10px 13px" }}>
+                          <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.templeName}</div>
+                          <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.templeName} · {d.date}</div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </section>
+              );
+            })()}
 
             {/* кросс-силос фасеты: блюда/киртаны/храмы/… */}
             {linkGroups.map(([kind, items]) => (
