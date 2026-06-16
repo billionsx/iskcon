@@ -1,26 +1,33 @@
 /**
  * reading.ts — прогресс чтения книг на устройстве (без сервера, работает и для гостя).
  *
- * Зачем отдельно от account/track.ts: серверный recordRead пишет «продолжить
- * чтение» в кабинет ТОЛЬКО для вошедшего. Полка «Продолжить» в библиотеке нужна
- * каждому, мгновенно и офлайн, поэтому источник правды на устройстве — localStorage.
- * Ридер зовёт оба: recordRead (зеркало в кабинет, если вошёл) и noteRead (локально,
- * всегда). Серверная сводка и локальная полка дополняют друг друга, не мешая.
+ * Модель сверена с эталонными читалками (Kindle, Apple Books, Readwise Reader):
  *
- * Прогресс — по охвату глав (честно, как в книжных читалках): процент = число
- * РЕАЛЬНО открытых глав ÷ всего глав. Это НЕ «самая дальняя позиция»: если открыть
- * одну главу в середине или в конце и прочитать пару стихов, охват равен 1 главе
- * (а не «до середины книги»), и процент будет маленьким — как и должно быть.
- * Перечитывание уже открытой главы процент не меняет (главы учитываются без
- * повторов). Точку возобновления («где я был») держим отдельно от охвата: тап по
- * полке открывает последнюю позицию, а полоска отражает дочитанность в целом.
- * Для иерархических книг (ЧЧ/ШБ) всего глав и индекс берём из оглавления (/toc).
+ *  1. Прогресс пропорционален ОБЪЁМУ, а не числу глав (как «локации» Kindle):
+ *     процент = Σ(дочитанность главы × вес главы) ÷ Σ(вес всех глав), где вес —
+ *     число стихов в главе. Глава на 78 стихов весит больше, чем на 5.
+ *  2. Дочитанность главы (frac 0..1) растёт по ГЛУБИНE СКРОЛЛА внутри главы, а не
+ *     от факта открытия. Открыл главу и ушёл — это 0, а не «прочитано».
+ *  3. Учитывается ВРЕМЯ: глубина скролла засчитывается только после порога активного
+ *     чтения (dwell); мгновенная прокрутка до конца и простой во вкладке не считаются.
+ *  4. «Самая дальняя точка» (furthest-read) отделена от текущей: возврат к ранней
+ *     главе или перечитывание процент не снижают (frac берём по максимуму). Точка
+ *     возобновления = последнее открытие.
+ *
+ * Источник правды — на устройстве (localStorage). Серверный recordRead (кабинет
+ * вошедшего) живёт отдельно и не мешает этой полке.
  */
 
-const KEY = "iol:reading:v1";
+const KEY = "iol:reading:v2";
 
 /** Событие «прогресс изменился» — полки/карточки перечитывают состояние. */
 export const READING_CHANGED_EVENT = "iol:reading-changed";
+
+/** Дочитанность одной главы: frac 0..1 + вес (число стихов) для взвешивания. */
+interface ChapProgress {
+  frac: number;
+  w: number;
+}
 
 export interface ReadingRec {
   /** Машинный id книги (bg|cc|sb|brs|…). */
@@ -33,10 +40,12 @@ export interface ReadingRec {
   href: string;
   /** chapter|prose|verse. */
   kind: string;
-  /** Индексы реально открытых глав (1-based), без повторов — честный охват для полоски. */
-  read: number[];
-  /** Всего глав в книге (0 — неизвестно, процент не показываем). */
+  /** Дочитанность по главам: ключ — индекс главы (1-based строкой). */
+  chapters: Record<string, ChapProgress>;
+  /** Всего глав в книге (0 — неизвестно). */
   total: number;
+  /** Σ стихов по всем главам (0 — неизвестно → равный вес глав). */
+  totalWeight: number;
   /** Метка последнего обновления, мс. */
   at: number;
 }
@@ -69,38 +78,93 @@ function saveAll(s: Store): void {
   }
 }
 
-export interface NoteReadInput {
+function posInt(n: number | undefined): number {
+  return Number.isFinite(n) ? Math.max(0, Math.floor(n as number)) : 0;
+}
+
+function chaptersOf(rec: ReadingRec | undefined): Record<string, ChapProgress> {
+  return rec && rec.chapters && typeof rec.chapters === "object" ? rec.chapters : {};
+}
+
+export interface OpenInput {
   work: string;
   ref: string;
   label?: string | null;
   href?: string | null;
   kind?: string;
-  /** Позиция текущей главы в оглавлении (1-based). 0/undefined — неизвестно. */
+  /** Индекс открываемой главы в порядке чтения (1-based). 0 — неизвестно. */
   idx?: number;
-  /** Всего глав в книге. 0/undefined — неизвестно. */
+  /** Всего глав в книге. */
   total?: number;
+  /** Вес открываемой главы (число стихов). */
+  weight?: number;
+  /** Σ стихов по всем главам книги. */
+  totalWeight?: number;
 }
 
 /**
- * Отметить открытие главы/стиха. Точка возобновления = последнее открытие; в охват
- * добавляется текущая глава (без повторов) — процент растёт только за новые главы.
+ * Открытие главы/стиха: задаёт точку возобновления и РЕГИСТРИРУЕТ главу (frac не
+ * трогаем — растёт отдельно по скроллу). Перезапись более ранней главой процент не
+ * снижает: существующий frac сохраняется.
  */
-export function noteRead(input: NoteReadInput): void {
-  if (!input.work || !input.ref || !input.href) return;
+export function noteOpen(i: OpenInput): void {
+  if (!i.work || !i.ref || !i.href) return;
   const s = loadAll();
-  const prev = s[input.work];
-  const idx = Number.isFinite(input.idx) ? Math.max(0, input.idx as number) : 0;
-  const total = Number.isFinite(input.total) ? Math.max(0, input.total as number) : 0;
-  const prevRead = Array.isArray(prev?.read) ? prev!.read : [];
-  const read = idx > 0 && !prevRead.includes(idx) ? [...prevRead, idx].sort((a, b) => a - b) : prevRead;
-  s[input.work] = {
-    work: input.work,
-    ref: input.ref,
-    label: input.label ?? prev?.label ?? input.ref,
-    href: input.href,
-    kind: input.kind ?? prev?.kind ?? "chapter",
-    read,
+  const prev = s[i.work];
+  const idx = posInt(i.idx);
+  const weight = posInt(i.weight);
+  const total = posInt(i.total);
+  const totalWeight = posInt(i.totalWeight);
+  const chapters: Record<string, ChapProgress> = { ...chaptersOf(prev) };
+  if (idx > 0) {
+    const ex = chapters[idx];
+    chapters[idx] = { frac: ex?.frac ?? 0, w: weight > 0 ? weight : ex?.w ?? 0 };
+  }
+  s[i.work] = {
+    work: i.work,
+    ref: i.ref,
+    label: i.label ?? prev?.label ?? i.ref,
+    href: i.href,
+    kind: i.kind ?? prev?.kind ?? "chapter",
+    chapters,
     total: total > 0 ? total : prev?.total ?? 0,
+    totalWeight: totalWeight > 0 ? totalWeight : prev?.totalWeight ?? 0,
+    at: Date.now(),
+  };
+  saveAll(s);
+}
+
+export interface ProgressInput {
+  work: string;
+  /** Индекс читаемой главы (1-based). */
+  idx: number;
+  /** Достигнутая дочитанность главы 0..1. */
+  frac: number;
+  weight?: number;
+  total?: number;
+  totalWeight?: number;
+}
+
+/**
+ * Прогресс чтения главы (по скроллу, уже после порога времени). frac берём по
+ * максимуму — назад не откатывается. Открытие всегда предшествует прогрессу.
+ */
+export function noteProgress(i: ProgressInput): void {
+  if (!i.work || !(i.idx > 0)) return;
+  const frac = Math.min(1, Math.max(0, i.frac));
+  if (frac <= 0) return;
+  const s = loadAll();
+  const prev = s[i.work];
+  if (!prev) return;
+  const chapters: Record<string, ChapProgress> = { ...chaptersOf(prev) };
+  const ex = chapters[i.idx];
+  const weight = posInt(i.weight);
+  chapters[i.idx] = { frac: Math.max(ex?.frac ?? 0, frac), w: weight > 0 ? weight : ex?.w ?? 0 };
+  s[i.work] = {
+    ...prev,
+    chapters,
+    total: posInt(i.total) > 0 ? posInt(i.total) : prev.total,
+    totalWeight: posInt(i.totalWeight) > 0 ? posInt(i.totalWeight) : prev.totalWeight,
     at: Date.now(),
   };
   saveAll(s);
@@ -120,12 +184,28 @@ export function recentReadings(limit = 4): ReadingRec[] {
     .slice(0, Math.max(0, limit));
 }
 
-/** Процент дочитанности 0..100 = открытые главы ÷ всего глав (или null). */
+/**
+ * Процент дочитанности 0..100, взвешенный по объёму глав (или null, если ничего
+ * ещё не прочитано / нет данных). Открытая, но не читанная глава (frac 0) в числитель
+ * не идёт — открытие само по себе процент не поднимает.
+ */
 export function pctOf(rec: ReadingRec | null | undefined): number | null {
-  if (!rec || rec.total <= 0) return null;
-  const n = Array.isArray(rec.read) ? rec.read.length : 0;
-  if (n <= 0) return null;
-  return Math.min(100, Math.max(1, Math.round((n / rec.total) * 100)));
+  if (!rec) return null;
+  const list = Object.values(chaptersOf(rec));
+  if (list.length === 0) return null;
+  let num = 0;
+  let den = 0;
+  if (rec.totalWeight > 0) {
+    for (const c of list) num += (c.frac || 0) * (c.w || 0);
+    den = rec.totalWeight;
+  } else if (rec.total > 0) {
+    for (const c of list) num += c.frac || 0;
+    den = rec.total;
+  } else {
+    return null;
+  }
+  if (den <= 0 || num <= 0) return null;
+  return Math.min(100, Math.max(1, Math.round((num / den) * 100)));
 }
 
 /** Забыть прогресс по книге (для будущего смахивания/«убрать с полки»). */

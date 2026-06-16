@@ -7,7 +7,7 @@
  * Палитра фиксированная (white/graphite/gold), не зависит от темы ОС.
  * Данные книги — books.ts; стихи — API (/chapters/:n/read, /verses/:ref).
  */
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
@@ -18,7 +18,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { recordRead } from "./account/track";
-import { noteRead } from "./reading";
+import { noteOpen, noteProgress } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
@@ -1117,8 +1117,113 @@ export interface ChapterVerse {
   translation: string | null; purport: string | null;
 }
 
+/* ───────── трекер чтения: глубина скролла + время (dwell) → noteProgress ─────────
+ * Сверено с эталонными читалками: прогресс главы растёт по глубине прокрутки и
+ * засчитывается лишь после порога активного чтения; простой/скрытая вкладка не идут
+ * в зачёт. countScroll=false (ридер одного стиха) — глубину не учитываем, кладём floor. */
+function useReadProgress(o: {
+  work: string;
+  enabled: boolean;
+  idx: number;
+  total: number;
+  weight: number;
+  totalWeight: number;
+  getScrollEl: () => HTMLElement | null;
+  floor?: number;
+  minDwellMs?: number;
+  countScroll?: boolean;
+}): void {
+  const { work, enabled, idx, total, weight, totalWeight } = o;
+  const floor = o.floor ?? 0;
+  const minDwell = o.minDwellMs ?? 5000;
+  const countScroll = o.countScroll !== false;
+  const maxDepth = useRef(0);
+  const activeMs = useRef(0);
+  const lastStart = useRef(0);
+  // держим живую ссылку на getScrollEl, чтобы не перезапускать эффект каждый рендер
+  const getEl = useRef(o.getScrollEl);
+  getEl.current = o.getScrollEl;
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+    if (!enabled || idx <= 0 || total <= 0 || !work) return;
+    maxDepth.current = 0;
+    activeMs.current = 0;
+    lastStart.current = Date.now();
+
+    const measure = () => {
+      const node = getEl.current();
+      if (!node) return;
+      const denom = node.scrollHeight - node.clientHeight;
+      let d: number;
+      if (denom > 4) d = node.scrollTop / denom;
+      else if (node.scrollHeight > 240) d = 1; // помещается на экран и контент реально загружен → видно целиком
+      else return; // контент ещё не загрузился — не измеряем (иначе ложное «прочитано»)
+      maxDepth.current = Math.max(maxDepth.current, Math.min(1, Math.max(0, d)));
+    };
+
+    const dwellNow = () => activeMs.current + (lastStart.current ? Date.now() - lastStart.current : 0);
+
+    const report = () => {
+      if (dwellNow() < minDwell) return;
+      let depth = 0;
+      if (countScroll) {
+        measure();
+        depth = maxDepth.current >= 0.9 ? 1 : maxDepth.current;
+      }
+      const frac = Math.max(floor, depth);
+      if (frac <= 0) return;
+      noteProgress({ work, idx, frac, weight, total, totalWeight });
+    };
+
+    const onScroll = () => {
+      measure();
+      report();
+    };
+    const onVis = () => {
+      if (document.visibilityState === "hidden") {
+        if (lastStart.current) {
+          activeMs.current += Date.now() - lastStart.current;
+          lastStart.current = 0;
+        }
+        report();
+      } else if (!lastStart.current) {
+        lastStart.current = Date.now();
+      }
+    };
+    const onBlur = () => {
+      if (lastStart.current) {
+        activeMs.current += Date.now() - lastStart.current;
+        lastStart.current = 0;
+      }
+      report();
+    };
+    const onFocus = () => {
+      if (!lastStart.current) lastStart.current = Date.now();
+    };
+
+    const node = getEl.current();
+    if (node && countScroll) node.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("visibilitychange", onVis);
+    window.addEventListener("blur", onBlur);
+    window.addEventListener("focus", onFocus);
+    // зафиксировать «прочитано» по истечении порога, даже если не скроллил (глава влезла на экран / floor)
+    const t = window.setTimeout(report, minDwell + 60);
+
+    return () => {
+      window.clearTimeout(t);
+      if (node && countScroll) node.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onVis);
+      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("focus", onFocus);
+      report(); // финальная фиксация при уходе с главы
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [work, enabled, idx, total, weight, totalWeight, floor, minDwell, countScroll]);
+}
+
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, chapters, hierOrder, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
+function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -1127,7 +1232,22 @@ function ChapterPage({ chapter, chapters, hierOrder, bookTitle, work = "bg", hie
   const [printing, setPrinting] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
+  const scrollElRef = useRef<HTMLDivElement>(null);
   const player = usePlayer();
+
+  const chLabel = chapter.title_ru ? `Глава ${chapter.number} · ${chapter.title_ru}` : `Глава ${chapter.number}`;
+  const chRef = hierarchical ? chapter.id : String(chapter.number);
+  // позиция + вес главы (число стихов) для взвешенного процента
+  const prog = useMemo(() => {
+    if (hierarchical) {
+      const i = hierOrder ? hierOrder.indexOf(chapter.id) : -1;
+      const tw = hierWeights ? hierWeights.reduce((a, n) => a + (Number(n) || 0), 0) : 0;
+      return { idx: i >= 0 ? i + 1 : 0, total: hierOrder ? hierOrder.length : 0, weight: hierWeights && i >= 0 ? Number(hierWeights[i]) || 0 : 0, totalWeight: tw };
+    }
+    const i = chapters ? chapters.findIndex((c) => String(c.number) === String(chapter.number)) : -1;
+    const tw = chapters ? chapters.reduce((a, c) => a + (Number(c.verses) || 0), 0) : 0;
+    return { idx: i >= 0 ? i + 1 : 0, total: chapters ? chapters.length : 0, weight: chapters && i >= 0 ? Number(chapters[i]?.verses) || 0 : 0, totalWeight: tw };
+  }, [hierarchical, hierOrder, hierWeights, chapters, chapter.id, chapter.number]);
 
   useEffect(() => {
     if (!printing) return;
@@ -1156,30 +1276,7 @@ function ChapterPage({ chapter, chapters, hierOrder, bookTitle, work = "bg", hie
   useEffect(() => {
     let live = true;
     setVerses(null);
-    recordRead({
-      work,
-      ref: hierarchical ? chapter.id : String(chapter.number),
-      label: chapter.title_ru ? `Глава ${chapter.number} · ${chapter.title_ru}` : `Глава ${chapter.number}`,
-      href: favHref,
-      kind: "chapter",
-    });
-    {
-      // Локальный прогресс (полка «Продолжить», и для гостя). Процент по главам:
-      // плоские книги (BG…) — из chapters, иерархические (ЧЧ/ШБ) — из hierOrder.
-      const cIdx = hierarchical
-        ? (hierOrder ? hierOrder.indexOf(chapter.id) : -1)
-        : (chapters ? chapters.findIndex((c) => String(c.number) === String(chapter.number)) : -1);
-      const cTotal = hierarchical ? (hierOrder ? hierOrder.length : 0) : (chapters ? chapters.length : 0);
-      noteRead({
-        work,
-        ref: hierarchical ? chapter.id : String(chapter.number),
-        label: chapter.title_ru ? `Глава ${chapter.number} · ${chapter.title_ru}` : `Глава ${chapter.number}`,
-        href: favHref,
-        kind: "chapter",
-        idx: cIdx >= 0 ? cIdx + 1 : 0,
-        total: cTotal,
-      });
-    }
+    recordRead({ work, ref: chRef, label: chLabel, href: favHref, kind: "chapter" });
     const readUrl = hierarchical
       ? api(`/books/${work}/division/${chapter.id}/read`)
       : api(`/books/${work}/chapters/${chapter.number}/read`);
@@ -1188,7 +1285,16 @@ function ChapterPage({ chapter, chapters, hierOrder, bookTitle, work = "bg", hie
       .then((d) => { if (live) setVerses(d.verses ?? []); })
       .catch(() => { if (live) setVerses([]); });
     return () => { live = false; };
-  }, [chapter.id, chapter.number, work, hierarchical, chapters, hierOrder]);
+  }, [chapter.id, chapter.number, work, hierarchical]);
+
+  // Открытие (точка возобновления + регистрация главы) — отдельно, чтобы переустановиться,
+  // когда подгрузится оглавление (prog обновится), не перезапуская загрузку стихов.
+  useEffect(() => {
+    noteOpen({ work, ref: chRef, label: chLabel, href: favHref, kind: "chapter", idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight });
+  }, [work, chRef, chLabel, favHref, prog]);
+
+  // Прогресс главы по скроллу + времени.
+  useReadProgress({ work, enabled: prog.idx > 0 && prog.total > 0, idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight, getScrollEl: () => scrollElRef.current });
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
@@ -1218,7 +1324,7 @@ function ChapterPage({ chapter, chapters, hierOrder, bookTitle, work = "bg", hie
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
-      <div onScroll={(e) => setCollapsed((e.target as HTMLDivElement).scrollTop > 56)}
+      <div ref={scrollElRef} onScroll={(e) => setCollapsed((e.target as HTMLDivElement).scrollTop > 56)}
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
@@ -1657,30 +1763,31 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 
   const n = Number(chapter.number);
   const numbered = n >= 1 && n <= 999;
+  const prHref = numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`;
+  const prLabel = chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle);
+  const prog = useMemo(() => {
+    const i = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
+    const tw = chapters ? chapters.reduce((a, c) => a + (Number(c.verses) || 0), 0) : 0;
+    return { idx: i >= 0 ? i + 1 : 0, total: chapters ? chapters.length : 0, weight: chapters && i >= 0 ? Number(chapters[i]?.verses) || 0 : 0, totalWeight: tw };
+  }, [chapters, chapter.id]);
 
   useEffect(() => {
     let live = true;
     setParas(null);
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
-    recordRead({ work, ref: chapter.id, label: chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle), href: numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`, kind: "prose" });
-    {
-      const pIdx = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
-      noteRead({
-        work,
-        ref: chapter.id,
-        label: chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle),
-        href: numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`,
-        kind: "prose",
-        idx: pIdx >= 0 ? pIdx + 1 : 0,
-        total: chapters ? chapters.length : 0,
-      });
-    }
+    recordRead({ work, ref: chapter.id, label: prLabel, href: prHref, kind: "prose" });
     fetch(api(`/books/${work}/chapters/${encodeURIComponent(chapter.number)}/read`))
       .then((r) => r.json())
       .then((d) => { if (live) setParas((d.verses ?? []).map((v: ProsePara) => ({ ref: v.ref, translation: v.translation }))); })
       .catch(() => { if (live) setParas([]); });
     return () => { live = false; };
-  }, [chapter.id, chapter.number, work, chapters, bookTitle]);
+  }, [chapter.id, chapter.number, work]);
+
+  useEffect(() => {
+    noteOpen({ work, ref: chapter.id, label: prLabel, href: prHref, kind: "prose", idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight });
+  }, [work, chapter.id, prLabel, prHref, prog]);
+
+  useReadProgress({ work, enabled: prog.idx > 0 && prog.total > 0, idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight, getScrollEl: () => scrollRef.current });
 
   const idx = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
   const prev = chapters && idx > 0 ? chapters[idx - 1] : null;
@@ -1775,12 +1882,14 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 }
 
 
-function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
+function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hierWeights, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
   const [vMenu, setVMenu] = useState(false);
   const vMoreRef = useRef<HTMLSpanElement>(null);
   const verseContentRef = useRef<HTMLDivElement>(null);
+  const vScrollRef = useRef<HTMLDivElement>(null);
+  const [vProg, setVProg] = useState<{ idx: number; total: number; weight: number; totalWeight: number } | null>(null);
   const player = usePlayer();
 
   useEffect(() => {
@@ -1793,28 +1902,41 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, onNa
         setData(d as VerseDetail);
         const href = versePathFor(work, d.division, d.ref || refStr);
         recordRead({ work, ref: (d.ref || refStr), label: (d.label ?? refStr), href, kind: "verse" });
-        // Глава стиха → позиция в плоском оглавлении (BG); у иерархических chapters нет.
+        // Глава стиха → позиция в оглавлении. У иерархических — по division (он же id
+        // главы), у плоских — по номеру главы. Вес = число стихов в этой главе.
         const dp = (d.division ?? "").split(".").filter(Boolean);                 // ["bg","2"] | ["sb","1","9"]
         const chNo = dp.length >= 2 ? dp[dp.length - 1] : (d.ref || refStr).replace(/^[^\d]*/, "").split(".")[0];
-        // hierOrder задан только для иерархических книг → стих относим к его главе по
-        // division (он же id главы в оглавлении); у плоских книг — по номеру главы.
         const vIdx = hierOrder
           ? hierOrder.indexOf(d.division || "")
           : (chapters ? chapters.findIndex((c) => String(c.number) === String(chNo)) : -1);
-        const vTotal = hierOrder ? hierOrder.length : (chapters ? chapters.length : 0);
-        noteRead({
-          work,
-          ref: (d.ref || refStr),
-          label: (d.label ?? refStr),
-          href,
-          kind: "verse",
-          idx: vIdx >= 0 ? vIdx + 1 : 0,
-          total: vTotal,
-        });
+        const total = hierOrder ? hierOrder.length : (chapters ? chapters.length : 0);
+        const weight = hierOrder
+          ? (hierWeights && vIdx >= 0 ? Number(hierWeights[vIdx]) || 0 : 0)
+          : (chapters && vIdx >= 0 ? Number(chapters[vIdx]?.verses) || 0 : 0);
+        const totalWeight = hierOrder
+          ? (hierWeights ? hierWeights.reduce((a, n) => a + (Number(n) || 0), 0) : 0)
+          : (chapters ? chapters.reduce((a, c) => a + (Number(c.verses) || 0), 0) : 0);
+        const idx = vIdx >= 0 ? vIdx + 1 : 0;
+        noteOpen({ work, ref: (d.ref || refStr), label: (d.label ?? refStr), href, kind: "verse", idx, total, weight, totalWeight });
+        setVProg({ idx, total, weight, totalWeight });
       })
       .catch(() => { if (live) setError(true); });
     return () => { live = false; };
   }, [refStr]);
+
+  // Прогресс по стиху: глубину скролла НЕ учитываем (это один стих, а не вся глава) —
+  // после порога времени засчитываем вклад «один стих из N» в дочитанность главы.
+  useReadProgress({
+    work,
+    enabled: !!vProg && vProg.idx > 0 && vProg.total > 0,
+    idx: vProg?.idx ?? 0,
+    total: vProg?.total ?? 0,
+    weight: vProg?.weight ?? 0,
+    totalWeight: vProg?.totalWeight ?? 0,
+    countScroll: false,
+    floor: vProg && vProg.weight > 0 ? 1 / vProg.weight : 0.12,
+    getScrollEl: () => vScrollRef.current,
+  });
 
   const demo = DEMO_VERSES[data?.ref ?? refStr];
   const divParts = (data?.division ?? "").split(".").filter(Boolean);      // ["sb","1","9"] | ["cc","adi","7"] | ["bg","2"]
@@ -1870,7 +1992,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, onNa
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
-      <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+      <div ref={vScrollRef} style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div ref={verseContentRef} style={{ margin: "0 auto", padding: "22px 20px 40px" }}>
           {!data && !error && <div style={{ textAlign: "center", color: INK2, padding: "40px 0", fontSize: 15 }}>Загрузка стиха…</div>}
           {error && (
@@ -2037,6 +2159,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   }, [tab]);
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   const [hierOrder, setHierOrder] = useState<string[] | null>(null); // главы ЧЧ/ШБ в порядке чтения → процент прогресса
+  const [hierWeights, setHierWeights] = useState<number[] | null>(null); // число стихов по главам ЧЧ/ШБ → вес для процента
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
   const bookContentRef = useRef<HTMLDivElement>(null);
@@ -2060,14 +2183,17 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   // даёт процент прогресса так же, как chapters.length у плоских книг. Грузим всегда
   // (а не только при открытом «Содержании»), чтобы процент был и при прямом входе на стих.
   useEffect(() => {
-    if (!book.hierarchical) { setHierOrder(null); return; }
+    if (!book.hierarchical) { setHierOrder(null); setHierWeights(null); return; }
     let live = true;
     setHierOrder(null);
+    setHierWeights(null);
     fetch(api(`/books/${book.work}/toc`))
       .then((r) => r.json())
-      .then((d: { divisions?: { chapters?: { id: string }[] }[] }) => {
+      .then((d: { divisions?: { chapters?: { id: string; verses?: number }[] }[] }) => {
         if (!live || !d?.divisions) return;
-        setHierOrder(d.divisions.flatMap((dv) => (dv.chapters ?? []).map((c) => c.id)));
+        const chs = d.divisions.flatMap((dv) => dv.chapters ?? []);
+        setHierOrder(chs.map((c) => c.id));
+        setHierWeights(chs.map((c) => Number(c.verses) || 0));
       })
       .catch(() => {});
     return () => { live = false; };
@@ -2376,8 +2502,8 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       )}
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
-        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
