@@ -8,6 +8,7 @@ on:
       - docs/entity-registry/links_all.csv
       - docs/entity-registry/schema.sql
       - docs/entity-registry/profiles_curated.csv
+      - docs/entity-registry/profiles_auto.csv
       - docs/entity-registry/registry_load.py
       - .github/workflows/registry-load.yml
 
