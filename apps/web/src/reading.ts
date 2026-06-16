@@ -239,3 +239,68 @@ export function forgetReading(work: string): void {
     saveAll(s);
   }
 }
+
+/* ───────── личная скорость чтения → оценка «осталось ~N мин» (как Kindle) ─────────
+ * Копим активное время чтения и пройденный объём (в стихах). Окно «забывающее»: при
+ * переполнении масштабируем оба счётчика, чтобы оценка подстраивалась под недавний темп. */
+const SPEED_KEY = "iol:reading-speed:v1";
+
+interface SpeedRec {
+  ms: number;
+  verses: number;
+}
+
+function loadSpeed(): SpeedRec {
+  if (typeof window === "undefined") return { ms: 0, verses: 0 };
+  try {
+    const raw = window.localStorage.getItem(SPEED_KEY);
+    if (!raw) return { ms: 0, verses: 0 };
+    const o = JSON.parse(raw) as Partial<SpeedRec>;
+    return { ms: Number(o.ms) || 0, verses: Number(o.verses) || 0 };
+  } catch {
+    return { ms: 0, verses: 0 };
+  }
+}
+
+function saveSpeed(r: SpeedRec): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(SPEED_KEY, JSON.stringify(r));
+  } catch {
+    /* noop */
+  }
+}
+
+/** Учесть сессию чтения: активное время (мс) и пройденный объём (стихов). */
+export function noteReadingTime(i: { ms: number; verses: number }): void {
+  if (!(i.ms > 0) || !(i.verses > 0)) return;
+  const r = loadSpeed();
+  let ms = r.ms + i.ms;
+  let verses = r.verses + i.verses;
+  const CAP_MS = 6 * 60 * 60 * 1000; // окно ~6 ч активного чтения
+  if (ms > CAP_MS) {
+    const k = CAP_MS / ms;
+    ms *= k;
+    verses *= k;
+  }
+  saveSpeed({ ms, verses });
+}
+
+/** Минут на один стих по личной истории, или null если данных пока мало. */
+export function minutesPerVerse(): number | null {
+  const r = loadSpeed();
+  if (r.ms < 45000 || r.verses < 3) return null; // мало данных — не гадаем
+  const mpv = r.ms / 60000 / r.verses;
+  return Math.min(8, Math.max(0.15, mpv));
+}
+
+/** Оценка «осталось минут» до конца книги (или null, если объём/скорость неизвестны). */
+export function etaMinutesForBook(rec: ReadingRec | null | undefined): number | null {
+  if (!rec || rec.totalWeight <= 0) return null;
+  const mpv = minutesPerVerse();
+  if (mpv == null) return null;
+  let read = 0;
+  for (const c of Object.values(chaptersOf(rec))) read += (c.frac || 0) * (c.w || 0);
+  const remaining = Math.max(0, rec.totalWeight - read);
+  return remaining <= 0 ? 0 : Math.round(remaining * mpv);
+}

@@ -25,7 +25,7 @@ import {
 } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
-import { recentReadings, pctOf, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
+import { recentReadings, pctOf, etaMinutesForBook, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 
 const GOLD = "#D2AA1B";
 
@@ -208,6 +208,12 @@ function SectionHeader({ title, note }: { title: string; note: string }) {
 /* Полка «Продолжить чтение» — личная, офлайн, работает и для гостя. Тап ведёт в
  * точную точку, где читатель остановился (router App по сохранённому href). */
 function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath: (p: string) => void }) {
+  const fmtEta = (m: number) => {
+    if (m <= 0) return "дочитано";
+    if (m < 60) return `~${Math.max(5, Math.round(m / 5) * 5)} мин`;
+    const h = m / 60;
+    return h < 10 ? `~${(Math.round(h * 2) / 2).toString().replace(".", ",")} ч` : `~${Math.round(h)} ч`;
+  };
   return (
     <section style={{ marginTop: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
@@ -220,6 +226,7 @@ function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath:
           const cover = b?.covers[0];
           const title = b ? bookFullTitle(b) : r.label;
           const pct = pctOf(r);
+          const eta = etaMinutesForBook(r);
           const initial = (b?.iast || title || "?").trim().charAt(0).toUpperCase();
           return (
             <li key={r.work} style={{ position: "relative", borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
@@ -239,7 +246,7 @@ function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath:
                       <span aria-hidden style={{ flex: 1, height: 4, borderRadius: 999, background: "var(--color-fill-1)", overflow: "hidden" }}>
                         <span style={{ display: "block", height: "100%", width: `${pct}%`, background: GOLD, borderRadius: 999 }} />
                       </span>
-                      <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
+                      <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{pct}%{eta != null ? ` · ${fmtEta(eta)}` : ""}</span>
                     </span>
                   )}
                 </span>

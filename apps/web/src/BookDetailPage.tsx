@@ -18,7 +18,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { recordRead } from "./account/track";
-import { getReading, noteOpen, noteProgress, notePosition } from "./reading";
+import { getReading, noteOpen, noteProgress, notePosition, noteReadingTime } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
@@ -1155,6 +1155,12 @@ function useReadProgress(o: {
     maxDepth.current = 0;
     activeMs.current = 0;
     lastStart.current = Date.now();
+    // дочитанность главы на старте сессии — чтобы посчитать пройденный за сессию объём (для скорости)
+    const startFrac = (() => {
+      const rr = getReading(work);
+      const c = rr && rr.chapters ? rr.chapters[idx] : undefined;
+      return c && typeof c.frac === "number" ? c.frac : 0;
+    })();
 
     const measure = () => {
       const node = getEl.current();
@@ -1236,6 +1242,12 @@ function useReadProgress(o: {
       window.removeEventListener("focus", onFocus);
       persistPos(true); // сохранить точную позицию ухода
       report(); // финальная фиксация прогресса
+      // личная скорость чтения: время сессии × пройденный за неё объём (только по скроллу)
+      if (countScroll && weight > 0) {
+        const covered = Math.max(0, maxDepth.current - startFrac) * weight;
+        const ms = dwellNow();
+        if (covered >= 0.5 && ms >= 3000) noteReadingTime({ ms, verses: covered });
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [work, enabled, idx, total, weight, totalWeight, floor, minDwell, countScroll, savePos]);
