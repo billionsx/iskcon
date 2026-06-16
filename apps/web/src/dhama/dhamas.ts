@@ -797,4 +797,14 @@ export function tirthaCtx(dhamaId: string, t: Tirtha) {
   };
 }
 
+/** Все тиртхи всех дхам в стабильном порядке (для «места дня» и поиска). */
+export const ALL_TIRTHAS: Tirtha[] = DHAMAS.flatMap((d) => d.tirthas);
+
+/** Святое место дня — детерминированный выбор по календарной дате (UTC). */
+export function tirthaOfDay(date: Date = new Date()): { dhama: Dhama; tirtha: Tirtha } {
+  const dayIndex = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
+  const t = ALL_TIRTHAS[((dayIndex % ALL_TIRTHAS.length) + ALL_TIRTHAS.length) % ALL_TIRTHAS.length];
+  return { dhama: getDhama(t.dhama)!, tirtha: t };
+}
+
 export { vrindavan, navadvipa, nilachala };

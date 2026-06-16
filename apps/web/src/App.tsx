@@ -479,7 +479,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
           )}
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
           {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
-          {tab === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} />}
+          {tab === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
           {tab === "account" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
         </div>
       </main>
