@@ -73,6 +73,11 @@ const Pin = ({ size = 18 }: { size?: number }) => (
     <path d="M12 21s-6.5-5.6-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" /><circle cx="12" cy="10.5" r="2.4" />
   </svg>
 );
+const ClockG = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="9" /><path d="M12 7.5v5l3 2" />
+  </svg>
+);
 
 /* ───────────────────── формат ───────────────────── */
 function fmtDays(days: number[]): string {
@@ -194,6 +199,9 @@ export default function CenterScreen({
   const c = data?.center;
   // Если статус не live, а карточка пришла — значит зритель админ этого центра.
   const isManager = !!c && c.status !== "live";
+  // Точный флаг управления с сервера (админ/редактор или глоб. редактор); запасной —
+  // эвристика по статусу (на случай старого ответа без поля).
+  const canManage = !!data?.can_manage || isManager;
 
   const submitReview = useCallback(() => {
     if (!c || busy) return;
@@ -335,27 +343,32 @@ export default function CenterScreen({
       </div>
 
       <div style={{ padding: "0 16px" }}>
-        {/* ─── баннер превью (для админа черновика) ─── */}
-        {isManager && (
+        {/* ─── управление (админ/редактор) ─── */}
+        {canManage && (
           <div style={{ marginTop: 16, padding: 15, borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 9%, var(--color-glass-thin))` }}>
             <div style={{ fontFamily: FT, fontSize: 13.5, fontWeight: 700, color: GOLDT }}>
-              {c.status === "review" ? "Заявка на проверке ИСККОН" : "Это превью"}
+              {c.status === "review" ? "Заявка на проверке ИСККОН" : c.status === "draft" ? "Это превью" : "Вы управляете центром"}
             </div>
             <p style={{ margin: "5px 0 0", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L2 }}>
               {c.status === "review"
                 ? "Центр виден только вам, пока ИСККОН не подтвердит публикацию."
-                : "Центр виден только вам. Заполните профиль и отправьте на проверку — после подтверждения он появится в каталоге."}
+                : c.status === "draft"
+                  ? "Центр виден только вам. Заполните профиль и расписание, затем отправьте на проверку."
+                  : "Центр опубликован. Изменения видны всем сразу."}
             </p>
             <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
               <button type="button" onClick={() => onOpenPath(`/center/${slug}/edit`)} style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                <Pencil size={16} />Редактировать
+                <Pencil size={16} />Профиль
               </button>
-              {c.status === "draft" && (
-                <button type="button" onClick={submitReview} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
-                  На проверку
-                </button>
-              )}
+              <button type="button" onClick={() => onOpenPath(`/center/${slug}/schedule`)} style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                <ClockG size={16} />Расписание
+              </button>
             </div>
+            {c.status === "draft" && (
+              <button type="button" onClick={submitReview} disabled={busy} style={{ marginTop: 10, width: "100%", padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
+                Отправить на проверку
+              </button>
+            )}
           </div>
         )}
 
@@ -399,10 +412,13 @@ export default function CenterScreen({
               ))}
             </div>
           </Section>
-        ) : isManager ? (
+        ) : canManage ? (
           <Section title="Расписание">
-            <div style={{ ...card, fontFamily: FT, fontSize: 13.5, color: L3, textAlign: "center" }}>
-              Расписание программ пока не заполнено.
+            <div style={{ ...card, textAlign: "center" }}>
+              <div style={{ fontFamily: FT, fontSize: 13.5, color: L3 }}>Расписание программ пока не заполнено.</div>
+              <button type="button" onClick={() => onOpenPath(`/center/${slug}/schedule`)} style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 11, border: "none", background: FILL2, color: GOLDT, fontFamily: FT, fontSize: 13.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                <ClockG size={15} />Заполнить расписание
+              </button>
             </div>
           </Section>
         ) : null}

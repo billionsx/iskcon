@@ -65,6 +65,31 @@ const asArr = (v: unknown): string[] =>
   Array.isArray(v) ? v.map((x) => clip(x, 40)).filter(Boolean).slice(0, 50) : [];
 const isType = (s: string): boolean => (CENTER_TYPES as readonly string[]).includes(s);
 const num = (v: unknown): number | null => (Number.isFinite(Number(v)) ? Number(v) : null);
+/** Дни недели → уникальные целые 0–6 (0=Вс), по возрастанию. */
+const normDays = (v: unknown): number[] =>
+  Array.isArray(v)
+    ? [...new Set(v.map(Number).filter((n) => Number.isInteger(n) && n >= 0 && n <= 6))].sort((a, b) => a - b)
+    : [];
+/** «HH:MM[:SS]» → «HH:MM:SS» либо null. */
+const clipTime = (v: unknown): string | null => {
+  const m = String(v ?? "").trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  if (!m) return null;
+  const h = Math.min(23, parseInt(m[1], 10));
+  const mi = Math.min(59, parseInt(m[2], 10));
+  const s = Math.min(59, parseInt(m[3] || "0", 10));
+  return `${String(h).padStart(2, "0")}:${String(mi).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+};
+/** i18n-карта: только строковые значения, ключи-коды ≤8, значения ≤280. */
+const cleanI18n = (v: unknown): Record<string, string> => {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    const kk = clip(k, 8);
+    const vv = clip(val, 280);
+    if (kk && vv) out[kk] = vv;
+  }
+  return out;
+};
 function parse<T>(s: unknown, fb: T): T {
   if (s == null) return fb;
   try {
@@ -113,6 +138,13 @@ async function isGlobalEditor(env: DB, userId: string): Promise<boolean> {
 // `users` НЕ создаём: её владелец — слой идентичности, и она гарантированно есть
 // (регистрация в кабинете уже пишет в неё в проде).
 let schemaReady = false;
+/** Обновить updated_at центра (после правки расписания и т.п.). */
+async function touchCenter(env: DB, centerId: string): Promise<void> {
+  await env.DB.prepare(`UPDATE centers SET updated_at = ?2 WHERE id = ?1`)
+    .bind(centerId, new Date().toISOString().slice(0, 19).replace("T", " "))
+    .run();
+}
+
 async function ensureSchema(env: DB): Promise<void> {
   if (schemaReady) return;
   await env.DB.batch([
@@ -382,7 +414,96 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
 
   /* ───────── /api/centers/<slug|id> ───────── */
   if (p.startsWith("/api/centers/")) {
-    const rest = decodeURIComponent(p.slice("/api/centers/".length)).replace(/\/+$/, "");
+    const segs = p.slice("/api/centers/".length).split("/").map((s) => decodeURIComponent(s)).filter(Boolean);
+
+    // ── расписание программ: /api/centers/:id/programs[/:pid] ──
+    if (segs[1] === "programs") {
+      const centerId = segs[0];
+      const pid = segs[2] || null;
+      const uid = await currentUserId(env, request);
+      if (!uid) return err("unauthorized", 401);
+      if (!(await adminRole(env, centerId, uid))) return err("forbidden", 403);
+
+      if (method === "POST" && !pid) {
+        const b = await body();
+        const type = clip(b.type, 40);
+        if (!type) return err("bad_program");
+        const mx = await env.DB.prepare(
+          `SELECT COALESCE(MAX(sort_order), 0) AS m FROM center_programs WHERE center_id = ?1`,
+        )
+          .bind(centerId)
+          .first<{ m: number }>();
+        const id = crypto.randomUUID();
+        await env.DB.prepare(
+          `INSERT INTO center_programs (id, center_id, type, days_of_week, start_time, end_time, notes_i18n, sort_order)
+           VALUES (?1,?2,?3,?4,?5,?6,?7,?8)`,
+        )
+          .bind(
+            id,
+            centerId,
+            type,
+            JSON.stringify(normDays(b.days_of_week)),
+            clipTime(b.start_time),
+            clipTime(b.end_time),
+            JSON.stringify(cleanI18n(b.notes_i18n)),
+            (mx?.m ?? 0) + 1,
+          )
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id }, 201);
+      }
+
+      if (method === "PATCH" && pid) {
+        const b = await body();
+        const fields: string[] = [];
+        const binds: unknown[] = [];
+        if ("type" in b) {
+          const v = clip(b.type, 40);
+          if (!v) return err("bad_program");
+          fields.push("type = ?");
+          binds.push(v);
+        }
+        if ("days_of_week" in b) {
+          fields.push("days_of_week = ?");
+          binds.push(JSON.stringify(normDays(b.days_of_week)));
+        }
+        if ("start_time" in b) {
+          fields.push("start_time = ?");
+          binds.push(clipTime(b.start_time));
+        }
+        if ("end_time" in b) {
+          fields.push("end_time = ?");
+          binds.push(clipTime(b.end_time));
+        }
+        if ("notes_i18n" in b) {
+          fields.push("notes_i18n = ?");
+          binds.push(JSON.stringify(cleanI18n(b.notes_i18n)));
+        }
+        if ("sort_order" in b) {
+          fields.push("sort_order = ?");
+          binds.push(num(b.sort_order) ?? 0);
+        }
+        if (fields.length === 0) return jres({ id: pid, updated: false });
+        binds.push(pid, centerId);
+        await env.DB.prepare(`UPDATE center_programs SET ${fields.join(", ")} WHERE id = ? AND center_id = ?`)
+          .bind(...binds)
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id: pid, updated: true });
+      }
+
+      if (method === "DELETE" && pid) {
+        await env.DB.prepare(`DELETE FROM center_programs WHERE id = ?1 AND center_id = ?2`)
+          .bind(pid, centerId)
+          .run();
+        await touchCenter(env, centerId);
+        return jres({ id: pid, deleted: true });
+      }
+
+      return err("method_not_allowed", 405);
+    }
+
+    const rest = segs.join("/");
     if (!rest || rest.includes("/")) return err("not_found", 404);
 
     // GET /api/centers/:slug — публичная карточка (+ программы, божества, события).
@@ -391,11 +512,12 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         .bind(rest)
         .first<Record<string, any>>();
       if (!center) return err("center_not_found", 404);
-      if (center.status !== "live") {
-        // черновик/review — только админу этого центра (превью)
-        const uid = await currentUserId(env, request);
-        if (!uid || !(await adminRole(env, center.id, uid))) return err("center_not_found", 404);
-      }
+      // Может ли зритель управлять: админ/редактор центра ИЛИ глобальный редактор.
+      const viewer = await currentUserId(env, request);
+      let canManage = false;
+      if (viewer) canManage = !!(await adminRole(env, center.id, viewer)) || (await isGlobalEditor(env, viewer));
+      // черновик/review виден только тем, кто может управлять (превью/модерация).
+      if (center.status !== "live" && !canManage) return err("center_not_found", 404);
       const [programs, deities, events] = await Promise.all([
         env.DB.prepare(
           `SELECT id, type, days_of_week, start_time, end_time, notes_i18n, sort_order
@@ -444,6 +566,7 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
           description_i18n: parse(x.description_i18n, {}),
           images: parse<string[]>(x.images, []),
         })),
+        can_manage: canManage,
       });
     }
 
