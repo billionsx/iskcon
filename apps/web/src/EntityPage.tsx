@@ -10,7 +10,7 @@
  */
 import { TATTVA_RU, CATEGORY_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 
@@ -115,6 +115,34 @@ function Chip({ label, onClick }: { label: string; onClick?: () => void }) {
   );
 }
 
+/* Золотой eyebrow — единая грамматика секций (как в HomeMore/LayerLabel). */
+function Eyebrow({ children, count }: { children: ReactNode; count?: number }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
+      <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{children}</h3>
+      {count != null && count > 1 && <span style={{ fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 700, color: GOLD, opacity: 0.55 }}>{count}</span>}
+    </div>
+  );
+}
+
+/* Заголовок повествовательного раздела профиля: божественные таттвы → «Лила»,
+   джива-таттва и без таттвы → «Жизнеописание». */
+function bioLabel(d: EntityDetail): string {
+  const t = d.tattva || "";
+  const divine = t === "vishnu-tattva" || t === "shakti-tattva" || t === "shiva-tattva";
+  return divine ? "Лила" : "Жизнеописание";
+}
+
+/* Повествовательный раздел: eyebrow + проза. pre-line сохраняет абзацы источника. */
+function ProseSection({ label, text }: { label: string; text: string }) {
+  return (
+    <section style={{ marginTop: 26 }}>
+      <Eyebrow>{label}</Eyebrow>
+      <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.55, color: "var(--color-label)", whiteSpace: "pre-line" }}>{text}</p>
+    </section>
+  );
+}
+
 function GroupSection({ group, onOpen }: { group: { label: string; order: number; items: RelItem[] }; onOpen: (id: string, type: string | null) => void }) {
   const [open, setOpen] = useState(false);
   const CAP = 24;
@@ -122,10 +150,7 @@ function GroupSection({ group, onOpen }: { group: { label: string; order: number
   const more = group.items.length - items.length;
   return (
     <section style={{ marginTop: 26 }}>
-      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
-        <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{group.label}</h3>
-        {group.items.length > 1 && <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-label-3)", opacity: 0.7 }}>{group.items.length}</span>}
-      </div>
+      <Eyebrow count={group.items.length}>{group.label}</Eyebrow>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {items.map((it) => (
           <Chip key={it.relation + it.id} label={it.name_ru || it.id} onClick={() => onOpen(it.id, it.type)} />
@@ -236,15 +261,21 @@ export default function EntityPage({ id, onBack, onOpen }: { id: string; onBack:
               </div>
             )}
 
-            {/* лид-текст */}
+            {/* лид (summary) — стендфирст под мета-чипами */}
             {lead && (
               <p style={{ margin: "20px 0 0", fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.5, color: "var(--color-label)" }}>{lead}</p>
             )}
+
+            {/* профиль: Лила/Жизнеописание + Вклад — секции с золотым eyebrow */}
             {data.profile?.biography && data.profile.biography !== lead && (
-              <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.5, color: "var(--color-label-2)" }}>{data.profile.biography}</p>
+              <ProseSection label={bioLabel(data)} text={data.profile.biography} />
             )}
+            {data.profile?.contribution && data.profile.contribution !== lead && data.profile.contribution !== data.profile.biography && (
+              <ProseSection label="Вклад" text={data.profile.contribution} />
+            )}
+
             {data.source_ref && (
-              <div style={{ marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {data.source_ref}</div>
+              <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {data.source_ref}</div>
             )}
 
             {/* связи */}
