@@ -31,6 +31,20 @@ def main():
         for e in json.load(open(locp, encoding="utf-8")):
             idx.setdefault(slug("%s %s" % (e["city"], e["country"])),
                            {"lat": e["latitude"], "lng": e["longitude"]})
+    # Add any feed present on disk but not derived from the sources above
+    # (e.g. GeoNames-densified feeds), reading coords from the feed itself.
+    for fn in os.listdir(out_dir):
+        if not fn.endswith(".json"):
+            continue
+        s = fn[:-5]
+        if s in idx:
+            continue
+        try:
+            loc = (json.load(open(os.path.join(out_dir, fn), encoding="utf-8")).get("location") or {})
+            if loc.get("lat") is not None and loc.get("lng") is not None:
+                idx[s] = {"lat": loc["lat"], "lng": loc["lng"]}
+        except Exception:
+            pass
     index = [{"slug": k, "lat": v["lat"], "lng": v["lng"]}
              for k, v in idx.items()
              if os.path.exists(os.path.join(out_dir, k + ".json"))]
