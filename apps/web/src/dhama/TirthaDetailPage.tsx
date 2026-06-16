@@ -10,9 +10,10 @@
  * лила→место→личность традиционны и общеизвестны.
  */
 import { useEffect, useRef, useState } from "react";
-import { BackIcon, ShareIcon } from "../ui/icons";
+import { BackIcon } from "../ui/icons";
 import { api } from "../api";
-import { KIND_RU, mapsQuery, type Dhama, type Person, type Tirtha } from "./dhamas";
+import { KIND_RU, mapsQuery, tirthaCtx, type Dhama, type Person, type Tirtha } from "./dhamas";
+import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
 
 const NAV_H = 52;
 
@@ -81,6 +82,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
+  const { openCardMenu } = useCardActions();
 
   const t: Tirtha | undefined = dhama.tirthas.find((x) => x.id === tirthaId);
 
@@ -90,14 +92,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
   const accent = dhama.accent;
   const clusterTitle = dhama.clusters.find((c) => c.id === t.cluster)?.title;
-  const pageUrl = `https://gaurangers.com/dhama/${dhama.id}/${t.id}`;
   const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(mapsQuery(t))}`;
-
-  const share = async () => {
-    const payload = { title: t.name, text: `${t.name} — ${dhama.name} · gaurangers.com`, url: pageUrl };
-    try { if (typeof navigator !== "undefined" && (navigator as Navigator).share) { await (navigator as Navigator).share(payload); return; } } catch { /* cancelled */ }
-    try { await navigator.clipboard.writeText(pageUrl); flash("Ссылка скопирована"); } catch { flash(pageUrl); }
-  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
@@ -109,9 +104,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           <BackIcon size={22} />
         </button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-        <button aria-label="Поделиться" onClick={() => void share()} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
-          <ShareIcon size={18} />
-        </button>
+        <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(dhama.id, t))} size={32} onMore={() => openCardMenu(tirthaCtx(dhama.id, t))} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
