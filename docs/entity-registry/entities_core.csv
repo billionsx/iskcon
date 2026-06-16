@@ -25,10 +25,10 @@ sita,personality,shakti-tattva,ramayana,Sita,Sītā,Сита,Janaki|Vaidehi,Су
 gadadhara,personality,shakti-tattva,pancha-tattva,Gadadhara Pandita,Gadādhara Paṇḍita,Гададхара Пандит,,Энергия преданности (шакти) в Панча-таттве,Ч.-ч. Ади 7.5,verified,verified
 subhadra,personality,shakti-tattva,krishna-family,Subhadra,Subhadrā,Субхадра,,Сестра Кришны и Баларамы,,review,verified
 shiva,personality,shiva-tattva,guna-avatara|maha-jana,Shiva,Śiva,Шива,Mahadeva|Shambhu|Rudra|Mahesha,Гуна-аватара невежества; не Вишну-таттва и не обычная джива,Б.-с. 5.45,verified,verified
-nanda,personality,jiva-tattva,vraja|krishna-family|eternal-associate,Nanda Maharaja,Nanda Mahārāja,Нанда Махарадж,,Приёмный отец Кришны во Вриндаване,,verified,verified
-yashoda,personality,jiva-tattva,vraja|krishna-family|eternal-associate,Yashoda,Yaśodā,Яшода,,Приёмная мать Кришны во Вриндаване,,verified,verified
-vasudeva,personality,jiva-tattva,krishna-family|bhagavatam,Vasudeva,Vasudeva,Васудева,Anakadundubhi,Отец Кришны,,verified,verified
-devaki,personality,jiva-tattva,krishna-family|bhagavatam,Devaki,Devakī,Деваки,,Мать Кришны,,verified,verified
+nanda,personality,jiva-tattva,vraja|krishna-family|eternal-associate|rasa:vatsalya,Nanda Maharaja,Nanda Mahārāja,Нанда Махарадж,,Приёмный отец Кришны во Вриндаване,,verified,verified
+yashoda,personality,jiva-tattva,vraja|krishna-family|eternal-associate|rasa:vatsalya,Yashoda,Yaśodā,Яшода,,Приёмная мать Кришны во Вриндаване,,verified,verified
+vasudeva,personality,jiva-tattva,krishna-family|bhagavatam|rasa:vatsalya,Vasudeva,Vasudeva,Васудева,Anakadundubhi,Отец Кришны,,verified,verified
+devaki,personality,jiva-tattva,krishna-family|bhagavatam|rasa:vatsalya,Devaki,Devakī,Деваки,,Мать Кришны,,verified,verified
 uddhava,personality,jiva-tattva,krishna-associate|bhagavatam,Uddhava,Uddhava,Уддхава,,Близкий друг Кришны,СБ 3.4; 11.6-29,verified,verified
 akrura,personality,jiva-tattva,krishna-associate|bhagavatam,Akrura,Akrūra,Акрура,,"Преданный, привёзший Кришну в Матхуру",,verified,verified
 arjuna,personality,jiva-tattva,mahabharata|gita|pandava,Arjuna,Arjuna,Арджуна,Partha|Dhananjaya|Gudakesha|Kaunteya,Слушатель Бхагавад-гиты; вечный спутник Кришны,Б.-г.,verified,verified
