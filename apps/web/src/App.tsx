@@ -42,6 +42,7 @@ import SadhanaScreen from "./SadhanaScreen";
 import DarshanScreen from "./DarshanScreen";
 import CenterScreen from "./centers/CenterScreen";
 import MyCentersScreen from "./centers/MyCentersScreen";
+import CentersScreen from "./centers/CentersScreen";
 import CenterEditor from "./centers/CenterEditor";
 import CenterSchedule from "./centers/CenterSchedule";
 import CenterDeities from "./centers/CenterDeities";
@@ -389,7 +390,7 @@ function ContentSection({ eyebrow, title, endpoint, onOpen }: { eyebrow: string;
                   ? <img src={it.hero_image} alt="" loading="lazy" style={{ width: 56, height: 56, borderRadius: "var(--radius-md)", objectFit: "cover", flexShrink: 0 }} />
                   : <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, borderRadius: "var(--radius-md)", flexShrink: 0, background: "var(--color-bg-3)", color: "var(--color-label-3)" }}><LogoMark src="/iskcon-sign.svg" label="" height={30} /></span>}
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: "var(--weight-semibold)", lineHeight: 1.3, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{it.name}</span>
+                  <span style={{ fontSize: "var(--text-callout)", fontWeight: "var(--weight-semibold)", lineHeight: 1.3, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{it.name}</span>
                   {(it.kind || it.n_quotes) ? (
                     <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>
                       {[it.kind, it.n_quotes ? `${it.n_quotes} цитат` : null].filter(Boolean).join(" · ")}
@@ -540,6 +541,7 @@ export default function App() {
   const [openDarshan, setOpenDarshan] = useState(false);
   const [openCenter, setOpenCenter] = useState<string | null>(null);
   const [openMyCenters, setOpenMyCenters] = useState(false);
+  const [openCenters, setOpenCenters] = useState(false);
   const [openCenterNew, setOpenCenterNew] = useState(false);
   const [openCenterEdit, setOpenCenterEdit] = useState<string | null>(null);
   const [openCenterSchedule, setOpenCenterSchedule] = useState<string | null>(null);
@@ -578,6 +580,7 @@ export default function App() {
     if (openCenterDeities) return `/center/${openCenterDeities}/deities`;
     if (openCenterEvents) return `/center/${openCenterEvents}/events`;
     if (openCenterEdit) return `/center/${openCenterEdit}/edit`;
+    if (openCenters) return "/centers";
     if (openMyCenters) return "/my/centers";
     if (openCenter) return `/center/${openCenter}`;
     if (prasadamRecipe) return "/prasadam/recipe/" + prasadamRecipe;
@@ -615,7 +618,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenDarshan(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenDhama(null); setOpenTirtha(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenDarshan(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenDhama(null); setOpenTirtha(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -639,6 +642,7 @@ export default function App() {
     if (clean === "/practice/darshan") { setOpenDarshan(true); return; }
     if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
     if (clean === "/my/centers") { setOpenMyCenters(true); return; }
+    if (clean === "/centers") { setOpenCenters(true); return; }
     if (seg0 === "prasadam") {
       const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
       if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
@@ -773,7 +777,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openDarshan, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openDhama, openTirtha]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openDarshan, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openDhama, openTirtha]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -824,7 +828,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openDarshan && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openDhama && !openTirtha;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openDarshan && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openDhama && !openTirtha;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -945,6 +949,10 @@ export default function App() {
           <main key={openCenterEvents} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <CenterEvents slug={openCenterEvents} onBack={goBack} flash={flash} />
           </main>
+        ) : openCenters ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CentersScreen onBack={goBack} onOpenPath={navigate} />
+          </main>
         ) : openMyCenters ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <MyCentersScreen onBack={goBack} onOpenPath={navigate} flash={flash} />
@@ -959,7 +967,7 @@ export default function App() {
         </CardActionsProvider>
         {donate && <DonateModal onClose={closeDonate} />}
         <MiniPlayer tabBarVisible={tabBarVisible} />
-        <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onDonate={openDonate} />
+        <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { div: null, chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onDonate={openDonate} />
         {appToast && (
           <div role="status" aria-live="polite" style={{ position: "fixed", left: "50%", bottom: "calc(94px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 4000, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 92%, transparent)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, lineHeight: 1.35, boxShadow: "var(--shadow-card)", pointerEvents: "none", textAlign: "center" }}>
             {appToast}

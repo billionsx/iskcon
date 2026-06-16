@@ -644,7 +644,17 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <section>
         <SectionTitle title="Служение" />
         <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-          <button onClick={() => onOpenPath("/my/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+          <button onClick={() => onOpenPath("/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+            <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(76,110,245,0.14)", color: "#4C6EF5" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></svg>
+            </span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: "block", fontSize: 16, color: INK, fontWeight: 500 }}>Каталог Ятры</span>
+              <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храмы, нама-хатты, рестораны и фермы ИСККОН рядом</span>
+            </span>
+            <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
+          </button>
+          <button onClick={() => onOpenPath("/my/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", borderTop: `0.5px solid ${HAIR}`, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
             <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><TempleIco size={18} /></span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: "block", fontSize: 16, color: INK, fontWeight: 500 }}>Мои центры</span>

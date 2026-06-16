@@ -146,6 +146,30 @@ function buildNoteGroups(pinned: boolean, hasSource: boolean): Group[] {
   return groups;
 }
 
+/* Глифы для меню центра (Ятра). */
+const RouteGlyph = () => <Svg><g {...stroke}><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></Svg>;
+const ClockGlyph = () => <Svg><g {...stroke}><circle cx="12" cy="12" r="8" /><path d="M12 7.5V12l3 1.8" /></g></Svg>;
+
+// Меню центра — подробная карточка (ПКП) Ятры. Маршрут — только при координатах;
+// управление (профиль/расписание) — только редактору/админу центра.
+function buildCenterGroups(canManage: boolean, hasMaps: boolean): Group[] {
+  const top: Item[] = [
+    { id: "share", label: "Поделиться", Icon: ShareGlyph },
+    { id: "qr", label: "QR-код", Icon: QrGlyph },
+  ];
+  if (hasMaps) top.push({ id: "route", label: "Маршрут", Icon: RouteGlyph });
+  const groups: Group[] = [
+    { items: top },
+    { items: [{ id: "note", label: "В заметки", Icon: NoteGlyph }] },
+  ];
+  if (canManage) groups.push({ items: [
+    { id: "edit", label: "Профиль центра", Icon: PencilGlyph },
+    { id: "schedule", label: "Расписание", Icon: ClockGlyph },
+  ] });
+  groups.push({ items: [{ id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph }] });
+  return groups;
+}
+
 const ROW_H = 56;
 const PAD_L = 20;
 const ICON_BOX = 26;
@@ -166,23 +190,24 @@ const SHEET_CSS = `
 
 export { NoteGlyph };
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false, notePinned = false, noteHasSource = false }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false, notePinned = false, noteHasSource = false, centerCanManage = false, centerHasMaps = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan" | "note"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
-  notePinned?: boolean; noteHasSource?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan" | "note" | "center"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
+  notePinned?: boolean; noteHasSource?: boolean; centerCanManage?: boolean; centerHasMaps?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
     variant === "note" ? buildNoteGroups(notePinned, noteHasSource)
-      : variant === "kirtan" ? buildKirtanGroups()
-        : variant === "bhajan" ? buildBhajanGroups()
-          : variant === "player" ? buildPlayerGroups(isChapter)
-            : (() => {
-                const groups: Group[] = GROUPS.map((items) => ({ items: noPdf ? items.filter((it) => it.id !== "pdf") : items }));
-                if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
-                return groups;
-              })();
+      : variant === "center" ? buildCenterGroups(centerCanManage, centerHasMaps)
+        : variant === "kirtan" ? buildKirtanGroups()
+          : variant === "bhajan" ? buildBhajanGroups()
+            : variant === "player" ? buildPlayerGroups(isChapter)
+              : (() => {
+                  const groups: Group[] = GROUPS.map((items) => ({ items: noPdf ? items.filter((it) => it.id !== "pdf") : items }));
+                  if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
+                  return groups;
+                })();
   // «В заметки» — отдельной верхней группой: жест садху «сохранить ценное» первичен.
   if (withNote) data.unshift({ items: [{ id: "note", label: "В заметки", Icon: NoteGlyph }] });
   const onPick = (id: string) => { onClose(); onSelect(id); };
