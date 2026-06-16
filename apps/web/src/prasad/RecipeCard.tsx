@@ -22,7 +22,7 @@ export default function RecipeCard({ slug, onOpen, flash, width = 172 }: {
   slug: string;
   onOpen: (slug: string) => void;
   flash?: (m: string) => void;
-  width?: number;
+  width?: number | string;
 }) {
   const { openCardMenu } = useCardActions();
   const r = recipeBySlug(slug);
