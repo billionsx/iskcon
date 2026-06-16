@@ -180,17 +180,19 @@ function GroupSection({ group, onOpen }: { group: { label: string; order: number
 /* Кросс-силос фасеты: вид связи → подпись и маршрут открытия силос-элемента. */
 const KIND_LABEL: Record<string, string> = {
   dish: "Любимые блюда",
+  dhama: "Дхама",
   kirtan: "Киртаны",
   temple: "Храмы",
   festival: "Праздники",
   gallery: "Галерея",
   video: "Видео",
 };
-const KIND_ORDER = ["dish", "kirtan", "temple", "festival", "gallery", "video"];
+const KIND_ORDER = ["dhama", "dish", "kirtan", "temple", "festival", "gallery", "video"];
 
 function kindHref(kind: string, ref: string): string | null {
   switch (kind) {
     case "dish": return "/prasadam/recipe/" + ref;
+    case "dhama": return "/dhama/" + ref;
     default: return null; // остальные виды получат маршруты по мере ввода рефов
   }
 }
