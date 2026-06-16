@@ -10,6 +10,7 @@ import { usePlayer, fmtTime, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
+import { requestNote } from "../notes";
 import { QrSheet, type QrData } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
@@ -105,6 +106,26 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   function bookQr() { setQr({ url: bookUrl, data: { kind: "book", bookTitle: bookFullTitle(BOOK), tagline: BOOK.tagline, cover: BOOK.covers[0] } }); }
   function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: bookFullTitle(BOOK), chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
   function onMenuSelect(id: string) {
+    if (id === "note") {
+      if (isKirtan) {
+        requestNote({
+          kind: "kirtan",
+          ref: `kirtan:${p.book}`,
+          title: p.bookTitle,
+          subtitle: `${p.track?.title ? p.track.title + " · " : ""}${p.artist || "Киртан"}`,
+          href: kirtanUrl.replace(ORIGIN, "") || "/kirtans",
+        });
+      } else {
+        requestNote({
+          kind: "book",
+          ref: `book:${p.book}`,
+          title: bookFullTitle(BOOK),
+          subtitle: p.track?.title || sub,
+          href: `/book/${p.book}`,
+        });
+      }
+      return;
+    }
     if (id === "share-album") { doShare(kirtanUrl, `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}`); return; }
     if (id === "download-track") { downloadChapter(); return; }
     if (id === "share-chapter") { doShare(chapterUrl, `${bookFullTitle(BOOK)} — Глава ${ch}`); return; }
@@ -248,7 +269,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} variant={isKirtan ? "kirtan" : "player"} isChapter={isChapter} anchorRef={moreRef} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} withNote variant={isKirtan ? "kirtan" : "player"} isChapter={isChapter} anchorRef={moreRef} />
     </div>
   );
 }

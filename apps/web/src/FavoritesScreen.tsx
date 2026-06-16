@@ -16,6 +16,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useFavorites, removeFavorite, type FavItem } from "./cardActions";
+import { useNotes, requestNote, requestOpenNote, type Note } from "./notes";
 import { BOOKS } from "./books";
 
 /* ── палитра (зеркало книжного эталона) ── */
@@ -87,6 +88,7 @@ function CatIcon({ cat, size = 22 }: { cat: CatKey; size?: number }) {
 function Back({ size = 22 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
 function SortIcon({ size = 17 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path {...STROKE} d="M7 5v14M7 19l-3-3M7 5l3 3M17 19V5M17 5l3 3M17 19l-3-3" /></svg>; }
 function Chevron({ size = 17 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden style={{ color: INK3, flexShrink: 0 }}><path {...STROKE} d="M9 5l7 7-7 7" /></svg>; }
+function NoteMark({ size = 17 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><g {...STROKE}><path d="M6 3.6h7.4L18.4 8.6V20a.9.9 0 0 1-.9.9H6a.9.9 0 0 1-.9-.9V4.5A.9.9 0 0 1 6 3.6Z" /><path d="M13.2 3.7v4.6a.6.6 0 0 0 .6.6h4.4" /><path d="M8 12.6h6.6M8 15.6h4.4" /></g></svg>; }
 function HeartOutline({ size = 30 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path {...STROKE} d="M12 21c-1.6-1.5-7.5-7-7.5-12 0-3 2.2-5 4.8-5 1.7 0 3 1 2.7 1 .9-1 2-1 2.7-1 2.6 0 4.8 2 4.8 5 0 5-5.9 10.5-7.5 12Z" /></svg>; }
 
 /* ── навигация и заголовки для legacy-записей без снимка ── */
@@ -140,7 +142,7 @@ function Tile({ it }: { it: FavItem }) {
 }
 
 /* ── строка со свайпом «Убрать» ── */
-function Row({ it, first, last, onTap, reduce }: { it: FavItem; first: boolean; last: boolean; onTap: () => void; reduce: boolean }) {
+function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: boolean; last: boolean; onTap: () => void; reduce: boolean; notes: Note[] }) {
   const [dx, setDx] = useState(0);
   const [removing, setRemoving] = useState(false);
   const drag = useRef(false);
@@ -150,6 +152,12 @@ function Row({ it, first, last, onTap, reduce }: { it: FavItem; first: boolean; 
   const THRESH = 132;
 
   const commit = () => { if (reduce) { removeFavorite(it.key); return; } setRemoving(true); window.setTimeout(() => removeFavorite(it.key), 240); };
+  const onNote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (dx !== 0) { setDx(0); return; }
+    if (notes.length > 0) requestOpenNote(notes[0].id);
+    else requestNote({ kind: it.type, ref: it.key, title: titleFor(it), subtitle: it.subtitle, href: hrefFor(it) ?? undefined });
+  };
   const onDown = (e: React.PointerEvent) => { drag.current = true; moved.current = false; start.current = e.clientX - dx; try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* noop */ } };
   const onMove = (e: React.PointerEvent) => {
     if (!drag.current) return;
@@ -195,6 +203,17 @@ function Row({ it, first, last, onTap, reduce }: { it: FavItem; first: boolean; 
             <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13, color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.subtitle}</span>
           )}
         </span>
+        <button type="button" onClick={onNote}
+          aria-label={notes.length > 0 ? `Заметки (${notes.length})` : "Добавить заметку"}
+          style={{ flexShrink: 0, position: "relative", display: "grid", placeItems: "center", height: 30, width: 30, borderRadius: "50%", cursor: "pointer",
+            border: notes.length ? "none" : `0.5px solid ${LINE}`, background: notes.length ? `${GOLD}1f` : "transparent",
+            color: notes.length ? GOLDT : INK3, WebkitTapHighlightColor: "transparent" }}>
+          <NoteMark size={16} />
+          {notes.length > 1 && (
+            <span style={{ position: "absolute", top: -3, right: -3, minWidth: 15, height: 15, padding: "0 3px", borderRadius: 999, background: GOLD, color: "#fff",
+              fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, lineHeight: "15px", textAlign: "center", border: "1.5px solid var(--color-bg-2)", fontVariantNumeric: "tabular-nums" }}>{notes.length}</span>
+          )}
+        </button>
         <Chevron />
         {!last && <span aria-hidden style={{ position: "absolute", left: 73, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
       </div>
@@ -219,7 +238,7 @@ function Pill({ label, count, active, accent, onClick }: { label: string; count:
 }
 
 /* ── секция категории (inset-карточка) ── */
-function Section({ title, accent, items, onNavigate, reduce }: { title?: string; accent?: string; items: FavItem[]; onNavigate: (h: string) => void; reduce: boolean }) {
+function Section({ title, accent, items, onNavigate, reduce, notesByRef }: { title?: string; accent?: string; items: FavItem[]; onNavigate: (h: string) => void; reduce: boolean; notesByRef: Map<string, Note[]> }) {
   return (
     <div style={{ margin: "0 0 22px" }}>
       {title && (
@@ -231,17 +250,28 @@ function Section({ title, accent, items, onNavigate, reduce }: { title?: string;
       )}
       <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${LINE}`, background: "var(--color-bg-2)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
         {items.map((it, i) => (
-          <Row key={it.key} it={it} first={i === 0} last={i === items.length - 1} reduce={reduce}
+          <Row key={it.key} it={it} first={i === 0} last={i === items.length - 1} reduce={reduce} notes={notesByRef.get(it.key) ?? EMPTY_NOTES}
             onTap={() => { const h = hrefFor(it); if (h) onNavigate(h); }} />
         ))}
       </div>
     </div>
   );
 }
+const EMPTY_NOTES: Note[] = [];
 
 /* ═════════ экран ═════════ */
 export default function FavoritesScreen({ onBack, onNavigate }: { onBack: () => void; onNavigate: (href: string) => void }) {
   const favs = useFavorites();
+  const notes = useNotes();
+  const notesByRef = useMemo(() => {
+    const m = new Map<string, Note[]>();
+    for (const n of notes) {
+      if (!n.ref) continue;
+      const a = m.get(n.ref);
+      if (a) a.push(n); else m.set(n.ref, [n]);
+    }
+    return m;
+  }, [notes]);
   const [sel, setSel] = useState<CatKey | "all">("all");
   const [sort, setSort] = useState<"recent" | "az">("recent");
   const [q, setQ] = useState("");
@@ -327,10 +357,10 @@ export default function FavoritesScreen({ onBack, onNavigate }: { onBack: () => 
               visibleCats.map((k) => {
                 const items = shown.filter((f) => catOf(f.type) === k);
                 if (!items.length) return null;
-                return <Section key={k} title={CAT_META[k].label} accent={CAT_META[k].accent} items={items} onNavigate={onNavigate} reduce={!!reduce} />;
+                return <Section key={k} title={CAT_META[k].label} accent={CAT_META[k].accent} items={items} onNavigate={onNavigate} reduce={!!reduce} notesByRef={notesByRef} />;
               })
             ) : (
-              <Section items={shown} onNavigate={onNavigate} reduce={!!reduce} />
+              <Section items={shown} onNavigate={onNavigate} reduce={!!reduce} notesByRef={notesByRef} />
             )}
           </div>
         </div>

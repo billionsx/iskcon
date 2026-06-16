@@ -92,7 +92,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
           </div>
         </div>
       </article>
-      {!presentational && <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} anchorRef={moreRef} canOrder={canOrder} />}
+      {!presentational && <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenuSelect?.(id)} anchorRef={moreRef} canOrder={canOrder} withNote />}
     </>
   );
 }

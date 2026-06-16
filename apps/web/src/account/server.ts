@@ -228,6 +228,28 @@ async function ensureSchema(env: DB): Promise<void> {
       )`,
     ),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sadhana_day_user ON sadhana_day(user_id, day)`),
+    // Заметки садху. created_at/updated_at — epoch-ms (INTEGER): один с часами
+    // клиента, чтобы синк решал конфликт «новее побеждает» детерминированно.
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS notes (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title TEXT,
+        body TEXT,
+        plain TEXT,
+        pinned INTEGER NOT NULL DEFAULT 0,
+        color TEXT,
+        kind TEXT,
+        ref TEXT,
+        src_title TEXT,
+        src_subtitle TEXT,
+        src_href TEXT,
+        created_at INTEGER NOT NULL,
+        updated_at INTEGER NOT NULL
+      )`,
+    ),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_notes_user ON notes(user_id, updated_at)`),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_notes_ref ON notes(user_id, kind, ref)`),
   ]);
   schemaReady = true;
 }
@@ -613,6 +635,56 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
       const ref = clip(url.searchParams.get("ref"), 200);
       await env.DB.prepare(`DELETE FROM bookmarks WHERE user_id = ?1 AND kind = ?2 AND ref = ?3`).bind(uid, kind, ref).run();
       return jres({ saved: false });
+    }
+  }
+
+  // заметки садху — local-first на клиенте; здесь бэкап + кросс-устройство.
+  // POST — upsert по id с защитой «не затирать более свежее» (updated_at, epoch-ms).
+  if (p === "/api/me/notes") {
+    if (method === "GET") {
+      const { results } = await env.DB.prepare(
+        `SELECT id, title, body, plain, pinned, color, kind, ref, src_title, src_subtitle, src_href, created_at, updated_at
+         FROM notes WHERE user_id = ?1 ORDER BY updated_at DESC LIMIT 2000`,
+      ).bind(uid).all();
+      return jres({ items: results ?? [] });
+    }
+    if (method === "POST") {
+      const b = await body();
+      const id = clip(b.id, 64);
+      if (!id) return err("bad_request");
+      const num = (v: unknown, d: number) => { const n = Math.floor(Number(v)); return Number.isFinite(n) && n > 0 ? n : d; };
+      const now = Date.now();
+      await env.DB.prepare(
+        `INSERT INTO notes (id, user_id, title, body, plain, pinned, color, kind, ref, src_title, src_subtitle, src_href, created_at, updated_at)
+         VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)
+         ON CONFLICT(id) DO UPDATE SET
+           title = excluded.title, body = excluded.body, plain = excluded.plain,
+           pinned = excluded.pinned, color = excluded.color, kind = excluded.kind, ref = excluded.ref,
+           src_title = excluded.src_title, src_subtitle = excluded.src_subtitle, src_href = excluded.src_href,
+           updated_at = excluded.updated_at
+         WHERE notes.user_id = excluded.user_id AND excluded.updated_at >= notes.updated_at`,
+      ).bind(
+        id, uid,
+        clip(b.title, 200) || null,
+        clip(b.body, 100000) || null,
+        clip(b.plain, 100000) || null,
+        b.pinned ? 1 : 0,
+        clip(b.color, 24) || null,
+        clip(b.kind, 24) || null,
+        clip(b.ref, 200) || null,
+        clip(b.srcTitle, 200) || null,
+        clip(b.srcSubtitle, 200) || null,
+        clip(b.srcHref, 300) || null,
+        num(b.createdAt, now),
+        num(b.updatedAt, now),
+      ).run();
+      return jres({ ok: true });
+    }
+    if (method === "DELETE") {
+      const id = clip(url.searchParams.get("id"), 64);
+      if (!id) return err("bad_request");
+      await env.DB.prepare(`DELETE FROM notes WHERE user_id = ?1 AND id = ?2`).bind(uid, id).run();
+      return jres({ ok: true });
     }
   }
 
