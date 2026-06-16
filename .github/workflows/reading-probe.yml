@@ -24,20 +24,31 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: 'd5cbe19470dc38599873eabfe148e6d1'
         run: |
           set -e
-          mkdir -p docs/diag
-          cat > /tmp/probe.sql << 'SQL'
-          SELECT id, kind, abbrev, verse_scheme, sort FROM works ORDER BY sort;
-          SELECT id, work_id, lang FROM editions WHERE work_id IN ('bg','sb','cc') ORDER BY work_id, lang;
-          SELECT work_id, COUNT(*) n, MIN(ordinal) mn, MAX(ordinal) mx, COUNT(DISTINCT ordinal) d FROM verses WHERE work_id IN ('bg','sb','cc') GROUP BY work_id;
-          SELECT v.work_id, COUNT(*) purported FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id = v.work_id || '-ru' WHERE TRIM(COALESCE(vt.purport,'')) <> '' GROUP BY v.work_id;
-          SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14;
-          SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14 OFFSET 5000;
-          SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='cc' ORDER BY ordinal LIMIT 10;
-          SELECT id, ref, ordinal FROM verses WHERE work_id='bg' ORDER BY ordinal LIMIT 4;
-          SELECT v.id, v.ref, v.ordinal, CASE WHEN TRIM(COALESCE(vt.purport,''))<>'' THEN 1 ELSE 0 END has_purport, LENGTH(COALESCE(vt.translation,'')) tlen FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id='bg-ru' WHERE v.work_id='bg' ORDER BY v.ordinal LIMIT 16;
-          SQL
-          npx --yes wrangler@latest d1 execute iskcon --remote --json --config apps/web/wrangler.toml --file /tmp/probe.sql > docs/diag/reading_probe.json 2>/tmp/err.txt || { echo "WRANGLER FAILED"; cat /tmp/err.txt; cp /tmp/err.txt docs/diag/reading_probe.json; }
-          head -c 4000 docs/diag/reading_probe.json
+          mkdir -p docs/diag /tmp/q
+          run() { npx --yes wrangler@latest d1 execute iskcon --remote --json --config apps/web/wrangler.toml --command "$2" > "/tmp/q/$1.json" 2>/dev/null || echo "[]" > "/tmp/q/$1.json"; }
+          run works "SELECT id, kind, abbrev, verse_scheme, sort FROM works ORDER BY sort"
+          run editions "SELECT id, work_id, lang FROM editions WHERE work_id IN ('bg','sb','cc') ORDER BY work_id, lang"
+          run counts "SELECT work_id, COUNT(*) n, MIN(ordinal) mn, MAX(ordinal) mx, COUNT(DISTINCT ordinal) d FROM verses WHERE work_id IN ('bg','sb','cc') GROUP BY work_id"
+          run purported "SELECT v.work_id, COUNT(*) purported FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id = v.work_id || '-ru' WHERE TRIM(COALESCE(vt.purport,'')) <> '' GROUP BY v.work_id"
+          run sb0 "SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14"
+          run sb5000 "SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='sb' ORDER BY ordinal LIMIT 14 OFFSET 5000"
+          run cc0 "SELECT id, division_id, ordinal, ref FROM verses WHERE work_id='cc' ORDER BY ordinal LIMIT 10"
+          run bgfirst "SELECT id, ref, ordinal FROM verses WHERE work_id='bg' ORDER BY ordinal LIMIT 4"
+          run bg16 "SELECT v.id, v.ref, v.ordinal, CASE WHEN TRIM(COALESCE(vt.purport,''))<>'' THEN 1 ELSE 0 END has_purport, LENGTH(COALESCE(vt.translation,'')) tlen FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id AND vt.edition_id='bg-ru' WHERE v.work_id='bg' ORDER BY v.ordinal LIMIT 16"
+          python3 - << 'PY'
+          import json, glob, os
+          out={}
+          for f in glob.glob('/tmp/q/*.json'):
+              name=os.path.basename(f)[:-5]
+              raw=open(f, encoding='utf-8', errors='replace').read()
+              i=raw.find('[')
+              try: d=json.loads(raw[i:]) if i>=0 else []
+              except Exception: d=[]
+              res=d[0].get('results') if (isinstance(d,list) and d and isinstance(d[0],dict)) else d
+              out[name]=res
+          json.dump(out, open('docs/diag/reading_probe.json','w'), ensure_ascii=False, indent=2)
+          print(json.dumps(out, ensure_ascii=False)[:3500])
+          PY
 
       - name: Publish to side branch
         run: |
