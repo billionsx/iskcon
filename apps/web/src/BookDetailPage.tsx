@@ -1424,6 +1424,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, wor
               Перевод, помеченный «демо», — демонстрационный текст прототипа; он будет заменён лицензированным текстом издания. Откройте стих, чтобы увидеть санскрит, транслитерацию, пословный перевод и комментарий.
             </p>
           )}
+          <div style={{ marginTop: 14 }}><NotesAtSource kind="chapter" refId={`chapter:${work}/${chapter.id || chapter.number}`} accent={GOLD} /></div>
         </div>
       </div>
 

@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
 import { RoundBtn, useFavorite, useCardActions } from "./cardActions";
+import { NotesAtSource } from "./NotesAtSource";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; }
@@ -156,6 +157,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
+              <NotesAtSource kind="bhajan" refId={`bhajan:${slug}`} accent="#7048E8" />
             </div>
           </div>
         )}

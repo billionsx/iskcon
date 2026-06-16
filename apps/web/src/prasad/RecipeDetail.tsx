@@ -9,6 +9,7 @@
 import { recipeBySlug, deityById, DIFFICULTY_LABEL, DIETS, type Recipe } from "./prasad";
 import { chapterForRecipe } from "./cookbook";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
+import { NotesAtSource } from "../NotesAtSource";
 import { RecipeCover } from "./covers";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
@@ -177,6 +178,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
         </button>
 
         {/* Читать в книге «Кухня прасада» */}
+        <div style={{ marginTop: 14 }}><NotesAtSource kind="recipe" refId={`recipe:${recipe.slug}`} accent={GOLD} /></div>
         {onOpenBookChapter && (() => {
           const ch = chapterForRecipe(recipe.slug);
           if (!ch) return null;
