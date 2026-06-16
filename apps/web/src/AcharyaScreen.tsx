@@ -212,8 +212,9 @@ const COLLECTIONS: Record<string, Collection> = {
   },
 };
 
-export default function AcharyaScreen({ collection, onBack, onOpen, onOpenCollection }: {
+export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpenCollection }: {
   collection?: string | null;
+  realm?: "krishna" | "gauranga" | null;
   onBack?: () => void;
   onOpen: (id: string, type: string | null) => void;
   onOpenCollection?: (key: string) => void;
@@ -247,11 +248,11 @@ export default function AcharyaScreen({ collection, onBack, onOpen, onOpenCollec
     );
   }
 
-  // ── Режим лендинга (4 карточки + поиск) ──
-  return <AcharyaLanding onOpen={onOpen} onOpenCollection={onOpenCollection} />;
+  // ── Режим лендинга (карточки разделов + поиск) ──
+  return <AcharyaLanding realm={realm} onOpen={onOpen} onOpenCollection={onOpenCollection} />;
 }
 
-function AcharyaLanding({ onOpen, onOpenCollection }: { onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void }) {
+function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Item[] | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -275,9 +276,9 @@ function AcharyaLanding({ onOpen, onOpenCollection }: { onOpen: (id: string, typ
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Личности</div>
-        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Герои</h2>
-        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>Господь, Его воплощения и вечные спутники</p>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{realm === "gauranga" ? "Гаура-лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
+        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{realm === "gauranga" ? "Гауранга" : realm === "krishna" ? "Кришна" : "Герои"}</h2>
+        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Шри Чайтанья Махапрабху, Панча-таттва и все спутники Гауранга-лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
       </div>
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по героям…" inputMode="search"
@@ -292,6 +293,7 @@ function AcharyaLanding({ onOpen, onOpenCollection }: { onOpen: (id: string, typ
         </div>
       ) : (
         <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+          {(!realm || realm === "gauranga") && (
           <SectionCard
             title="Шрила Прабхупада"
             subtitle="Его Божественная Милость А.Ч. Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)"
@@ -299,24 +301,31 @@ function AcharyaLanding({ onOpen, onOpenCollection }: { onOpen: (id: string, typ
             accent
             onClick={() => onOpen("prabhupada", "personality")}
           />
+          )}
+          {(!realm || realm === "krishna") && (
           <SectionCard
             title="Радха-Кришна лила"
             subtitle="Вечные игры Господа и Его спутников во Вриндаване"
             mark={<MaskMark src="/vraj.svg" size={48} />}
             onClick={() => openCol("radha-krishna")}
           />
+          )}
+          {(!realm || realm === "gauranga") && (
           <SectionCard
             title="Гауранга лила"
             subtitle="Шри Чайтанья Махапрабху и Панча-таттва"
             mark={<MaskMark src="/gauranga.svg" size={48} />}
             onClick={() => openCol("gauranga")}
           />
+          )}
+          {(!realm || realm === "krishna") && (
           <SectionCard
             title="Шримад Бхагаватам"
             subtitle="Воплощения и аватары Господа, Его великие преданные"
             mark={<MaskMark src="/bbt.svg" size={48} />}
             onClick={() => openCol("bhagavatam")}
           />
+          )}
         </div>
       )}
     </div>

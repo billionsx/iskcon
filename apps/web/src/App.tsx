@@ -25,6 +25,9 @@ import KirtanArtistPage from "./KirtanArtistPage";
 import ContentDetailPage from "./ContentDetailPage";
 import EntityPage from "./EntityPage";
 import AcharyaScreen from "./AcharyaScreen";
+import PracticeHub from "./PracticeHub";
+import { HomeCalendar } from "./HomeCalendar";
+import SearchScreen from "./SearchScreen";
 import FavoritesScreen from "./FavoritesScreen";
 import NotesScreen from "./NotesScreen";
 import NoteDetail from "./NoteDetail";
@@ -97,21 +100,17 @@ function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
   return <svg {...sp(rest)} overflow="visible"><path {...STROKE} d="M5.4 7.5h13.2a1 1 0 0 1 1 1.1l-1.2 11.4a1.5 1.5 0 0 1-1.5 1.4H7.1a1.5 1.5 0 0 1-1.5-1.4L4.4 8.6a1 1 0 0 1 1-1.1Z" /><path {...STROKE} d="M8 9V6.5a4 4 0 0 1 8 0V9" />{corner}</svg>;
 }
 
-/* ═════════ TopHeader — bag / wordmark / heart ═════════ */
-function TopHeader({ onHome, onFavorites, onCart }: { onHome?: () => void; onFavorites?: () => void; onCart?: () => void }) {
-  const cartCount = useCartCount();
+/* ═════════ TopHeader — search / wordmark / favorites ═════════ */
+function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onFavorites?: () => void; onSearch?: () => void }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, flexShrink: 0, background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div style={{ display: "grid", height: "100%", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 12px" }}>
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
-          <button aria-label={cartCount ? `Корзина · ${cartCount}` : "Корзина"} onClick={onCart} style={{ position: "relative", display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-            <BagIcon size={26} />
-            {cartCount > 0 && (
-              <span aria-hidden style={{ position: "absolute", top: 3, right: 2, minWidth: 17, height: 17, padding: "0 4px", display: "grid", placeItems: "center", borderRadius: 999, background: "#FF3B30", color: "#fff", fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, lineHeight: 1, fontVariantNumeric: "tabular-nums", boxShadow: "0 0 0 2px var(--color-bg)" }}>{cartCount > 99 ? "99+" : cartCount}</span>
-            )}
+          <button aria-label="Поиск" onClick={onSearch} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+            <AISearchIcon size={25} />
           </button>
         </div>
-        <button type="button" aria-label="ISKCON ONE LOVE — на главную" onClick={onHome}
+        <button type="button" aria-label="ISKCON ONE LOVE" onClick={onHome}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <span role="img" style={{
             display: "block", width: 132, height: 132 * 73 / 1067, backgroundColor: "var(--color-label)",
@@ -132,12 +131,11 @@ function TopHeader({ onHome, onFavorites, onCart }: { onHome?: () => void; onFav
  * овальное выделение активного таба, иконки — логотипы через CSS-маску
  * (цвет = --color-label, т.е. чёрные в светлой теме / белые в тёмной). */
 const TABS = [
-  { id: "home", label: "Главная", src: "/iskcon.svg", wide: true },
-  { id: "books", label: "Книги", src: "/bbt.svg", wide: false },
-  { id: "kirtans", label: "Киртаны", src: "/gauranga.svg", wide: false },
-  { id: "acharya", label: "Герои", src: "/prabhupada.svg", wide: false },
-  { id: "dhama", label: "Дхама", src: "/vraj.svg", wide: false },
-  { id: "account", label: "Личный кабинет", src: null, wide: false },
+  { id: "krishna", label: "Кришна", src: "/vraj.svg", wide: false },
+  { id: "gauranga", label: "Гауранга", src: "/gauranga.svg", wide: false },
+  { id: "iskcon", label: "ИСККОН", src: "/iskcon.svg", wide: true },
+  { id: "bogatstva", label: "Богатства", src: "/bbt.svg", wide: false },
+  { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
 ] as const;
 
 function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {
@@ -426,7 +424,54 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onFavorites, onDonate, onOpenPath, onCart }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenKirtanArtist: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onFavorites: () => void; onDonate: () => void; onOpenPath: (path: string) => void; onCart: () => void }) {
+function SegRow({ value, onChange, items }: { value: string; onChange: (v: string) => void; items: [string, string][] }) {
+  return (
+    <div role="tablist" style={{ display: "flex", gap: 8, marginBottom: 18, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+      {items.map(([id, label]) => {
+        const on = value === id;
+        return (
+          <button key={id} role="tab" aria-selected={on} onClick={() => onChange(id)}
+            style={{ flexShrink: 0, padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer",
+              fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.2px",
+              background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label-2)" }}>
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
+  onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
+  onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
+  onOpenArtist: (slug: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void;
+}) {
+  const [sub, setSub] = useState("books");
+  return (
+    <div>
+      <SegRow value={sub} onChange={setSub} items={[["books", "Книги"], ["audio", "Аудио"]]} />
+      {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
+      {sub === "audio" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+    </div>
+  );
+}
+
+function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
+  onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void; flash?: string | null;
+}) {
+  const [sub, setSub] = useState("practice");
+  return (
+    <div>
+      <SegRow value={sub} onChange={setSub} items={[["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
+      {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
+      {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
+      {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
+    </div>
+  );
+}
+
+function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, onOpenCatalog, onOpenContent, onOpenEntity, onOpenCollection, onFavorites, onDonate, onOpenPath, onSearch }: { tab: string; onChange: (k: string) => void; onOpenBook: (work: string) => void; onOpenBhajan: (slug: string) => void; onOpenKirtanArtist: (slug: string) => void; onOpenCatalog: () => void; onOpenContent: (slug: string) => void; onOpenEntity: (id: string, type: string | null) => void; onOpenCollection: (key: string) => void; onFavorites: () => void; onDonate: () => void; onOpenPath: (path: string) => void; onSearch: () => void }) {
   const mainRef = useRef<HTMLElement>(null);
   // Смена вкладки нижней навигации → новая вкладка начинается с верха
   // (прокрутка не переносится из покинутой). Первый монтаж пропускаем.
@@ -469,9 +514,14 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   };
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
-      <TopHeader onFavorites={onFavorites} onCart={onCart} onHome={() => { onChange("home"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "home" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
+      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("krishna"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "krishna" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ padding: "16px 16px 116px" }}>
+          {tab === "krishna" && <AcharyaScreen realm="krishna" onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
+          {tab === "gauranga" && <AcharyaScreen realm="gauranga" onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
+          {tab === "iskcon" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} onBookMenu={bookMenu} flash={flash} onOpenPath={onOpenPath} />}
+          {tab === "bogatstva" && <BogatstvaHall onOpenBook={onOpenBook} onBookMenu={bookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} onOpenArtist={onOpenKirtanArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+          {tab === "sadhana" && <SadhanaHall onOpenPath={onOpenPath} onOpenEntity={onOpenEntity} onDonate={onDonate} flash={flash} />}
           {tab === "books" && (
             <BooksHub
               onOpenBook={onOpenBook}
@@ -524,12 +574,13 @@ export default function App() {
   if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pdf")) {
     return <PdfDoc />;
   }
-  const [tab, setTab] = useState("home");
+  const [tab, setTab] = useState("krishna");
   const [openBook, setOpenBook] = useState<string | null>(null);
   const [bookTarget, setBookTarget] = useState<{ div: string | null; chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openKirtanArtist, setOpenKirtanArtist] = useState<string | null>(null);
   const [openFavorites, setOpenFavorites] = useState(false);
+  const [openSearch, setOpenSearch] = useState(false);
   const [openNotes, setOpenNotes] = useState(false);
   const [openNoteId, setOpenNoteId] = useState<string | null>(null);
   const [notesInitial, setNotesInitial] = useState<{ attach?: NoteAttach; openId?: string; nonce: number } | null>(null);
@@ -633,10 +684,10 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null);
     const seg0 = clean.split("/")[1] ?? "";
-    if (clean === "/") { setTab("home"); return; }
-    if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
+    if (clean === "/") { setTab("krishna"); return; }
+    if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (seg0 === "dhama") {
       const parts = clean.split("/");               // ["", "dhama", <id>, <tirthaId>?]
       const did = parts[2];
@@ -649,6 +700,7 @@ export default function App() {
     }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
+    if (clean === "/search") { setOpenSearch(true); return; }
     if (clean === "/notes") { setOpenNotes(true); return; }
     if (seg0 === "note") { const nid = clean.split("/")[2]; if (nid) { setOpenNoteId(nid); return; } }
     if (clean === "/cart") { setOpenCart(true); return; }
@@ -872,7 +924,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -953,6 +1005,10 @@ export default function App() {
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <MyProgressScreen onBack={goBack} onOpen={navigate} />
           </main>
+        ) : openSearch ? (
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+            <SearchScreen onBack={goBack} onOpenEntity={openEntityTarget} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} />
+          </main>
         ) : openCart ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <CartScreen onClose={goBack} />
@@ -1026,7 +1082,7 @@ export default function App() {
             <CenterScreen slug={openCenter} onBack={goBack} onOpenPath={navigate} flash={flash} />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onCart={() => setOpenCart(true)} />
+          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onSearch={() => navigate("/search")} />
         )}
         </CardActionsProvider>
         {donate && <DonateModal onClose={closeDonate} />}
