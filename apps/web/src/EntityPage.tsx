@@ -8,13 +8,16 @@
  * Визуальный язык — общий с приложением (SF для UI, Georgia для транслитерации,
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
-import { TATTVA_RU, CATEGORY_RU } from "./entityLabels";
+import { TATTVA_RU, CATEGORY_RU, RASA_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useState, type ReactNode } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
+
+// Канонический вывод расы из категорий реестра: гопи/манджари → мадхурья, гопа → сакхья.
+const CATEGORY_RASA: Record<string, string> = { gopi: "madhurya", manjari: "madhurya", gopa: "sakhya" };
 
 export interface RelItem {
   relation: string;
@@ -252,6 +255,14 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
   const tattvaLabel = data?.tattva ? TATTVA_RU[data.tattva] ?? null : null;
   const catLabels = (data?.categories ?? []).map((c) => CATEGORY_RU[c]).filter(Boolean).slice(0, 4) as string[];
+  const rasaKey = (() => {
+    const cats = data?.categories ?? [];
+    const explicit = cats.find((c) => c.startsWith("rasa:"));
+    if (explicit) return explicit.slice(5);
+    for (const c of cats) if (CATEGORY_RASA[c]) return CATEGORY_RASA[c];
+    return null;
+  })();
+  const rasa = rasaKey ? RASA_RU[rasaKey] ?? null : null;
   const lead = data?.profile?.summary || data?.note || null;
 
   return (
@@ -307,6 +318,15 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
                 {catLabels.map((c) => (
                   <span key={c} style={{ display: "inline-flex", alignItems: "center", padding: "6px 11px", borderRadius: 999, background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 500 }}>{c}</span>
                 ))}
+              </div>
+            )}
+
+            {/* раса — настроение в отношениях с Богом */}
+            {rasa && (
+              <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
+                <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
+                <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
               </div>
             )}
 

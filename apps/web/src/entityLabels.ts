@@ -10,6 +10,15 @@ export const TATTVA_RU: Record<string, string> = {
   "jiva-tattva": "Джива-таттва",
 };
 
+// Раса — настроение в вечных отношениях с Богом. Подпись + краткий смысл.
+export const RASA_RU: Record<string, { label: string; gloss: string }> = {
+  shanta: { label: "Шанта", gloss: "нейтральное почитание" },
+  dasya: { label: "Дасья", gloss: "настроение служения" },
+  sakhya: { label: "Сакхья", gloss: "дружеская любовь" },
+  vatsalya: { label: "Ватсалья", gloss: "родительская любовь" },
+  madhurya: { label: "Мадхурья", gloss: "супружеская любовь" },
+};
+
 export const CATEGORY_RU: Record<string, string> = {
   "svayam-bhagavan": "Сваям Бхагаван",
   "source-of-all": "Источник всего",
