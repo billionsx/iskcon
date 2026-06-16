@@ -98,6 +98,9 @@ function relGroup(relation: string, dir: "out" | "in"): { label: string; order: 
     case "narrator-of": return O ? { label: "Поведал", order: 60 } : { label: "Рассказчик", order: 60 };
     case "hearer-of": return O ? { label: "Услышал", order: 61 } : { label: "Слушатель", order: 61 };
     case "appears-in": return O ? { label: "Упоминается в", order: 70 } : { label: "Действующие лица", order: 70 };
+    case "abode-of": return O ? { label: "Господь обители", order: 6 } : { label: "Обители и дхамы", order: 7 };
+    case "part-of": return O ? { label: "Часть дхамы", order: 8 } : { label: "Святые места", order: 9 };
+    case "near": return { label: "Поблизости", order: 10 };
     default: return null;
   }
 }
