@@ -5,18 +5,13 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 const headers = { "user-agent": UA, accept: "*/*", referer: "https://iskconvrindavan.com/daily-darshan-gallery" };
 
 const endpoints = [
-  "https://iskconvrindavan.com/api/create-todaydarshan.data",
   `https://iskconvrindavan.com/daily-darshan-gallery/${istDate}/2/sringar-darshan.data`,
-  `https://iskconvrindavan.com/daily-darshan-gallery/${istDate}/3/mangala-darshan.data`,
+  "https://iskconvrindavan.com/api/create-todaydarshan.data",
 ];
 
-const reFull = /https?:\/\/[^"\\\s)]+\.(?:jpe?g|png|webp)/gi;
 const reFile = /[A-Za-z0-9_-]+_[0-9a-f]{8,}\.(?:jpe?g|png|webp)/gi;
-const rePath = /(?:gallery_image|page|today_darshan|todaydarshan|darshan|upload[s]?)\/[A-Za-z0-9_\/-]+\.(?:jpe?g|png|webp)/gi;
-
-function windows(t, needle, n = 3, pad = 230) {
-  const out = []; let i = -1; let c = 0;
-  const low = t.toLowerCase(); const nd = needle.toLowerCase();
+function windows(t, needle, n = 3, pad = 200) {
+  const out = []; let i = -1; let c = 0; const low = t.toLowerCase(); const nd = needle.toLowerCase();
   while (c < n) { i = low.indexOf(nd, i + 1); if (i < 0) break; out.push(t.slice(Math.max(0, i - pad), i + pad)); c++; }
   return out;
 }
@@ -31,32 +26,33 @@ for (const u of endpoints) {
   const e = { url: u };
   try {
     const r = await fetch(u, { headers, redirect: "follow" });
-    e.status = r.status; e.ct = r.headers.get("content-type");
-    const t = await r.text();
-    e.len = t.length;
-    e.full = [...new Set(t.match(reFull) || [])].filter((x) => !/\/assets\//.test(x)).slice(0, 30);
-    e.paths = [...new Set(t.match(rePath) || [])].slice(0, 30);
-    e.files = [...new Set(t.match(reFile) || [])].slice(0, 30);
-    e.win_jpg = windows(t, ".jpg", 3);
-    e.win_gallery = windows(t, "gallery_image", 2);
-    e.win_darshan = windows(t, "darshan_", 2);
+    e.status = r.status; const t = await r.text(); e.len = t.length;
+    e.files = [...new Set(t.match(reFile) || [])];
+    e.statics = e.files.filter((f) => /^static-_/.test(f));
+    e.win_static = windows(t, "static-_", 2);
+    e.win_imageList = windows(t, "image_list", 2);
+    e.win_imageField = windows(t, "\"image\"", 3, 160);
   } catch (err) { e.error = String(err).slice(0, 200); }
   out.push(e);
 }
 
-function toUrl(tok) {
-  if (/^https?:\/\//i.test(tok)) return tok;
-  if (tok.startsWith("/")) return "https://cdn.iskconvrindavan.com" + tok;
-  if (tok.includes("/")) return "https://cdn.iskconvrindavan.com/" + tok;
-  return "https://cdn.iskconvrindavan.com/gallery_image/" + tok;
+let statics = [];
+for (const e of out) { if (/sringar/.test(e.url) && e.statics && e.statics.length) statics = e.statics; }
+const f0 = statics[0];
+const candidates = f0 ? [
+  `https://cdn.iskconvrindavan.com/static/${f0}`,
+  `https://cdn.iskconvrindavan.com/gallery_image/${f0}`,
+  `https://cdn.iskconvrindavan.com/${f0}`,
+  `https://iskconstatic.s3.ap-south-1.amazonaws.com/static/${f0}`,
+  `https://iskconstatic.s3.ap-south-1.amazonaws.com/${f0}`,
+] : [];
+const probes = [];
+for (const c of candidates) {
+  try { const r = await fetch(c, { headers }); let dim = null, bytes = 0; if (r.status === 200) { const buf = Buffer.from(await r.arrayBuffer()); bytes = buf.length; dim = imgSize(buf); } probes.push({ url: c, status: r.status, bytes, dim }); }
+  catch (e) { probes.push({ url: c, error: String(e).slice(0, 80) }); }
 }
-let sample = null;
-for (const e of out) { const cand = (e.full && e.full[0]) || (e.paths && e.paths[0]) || (e.files && e.files[0]); if (cand) { sample = toUrl(cand); break; } }
-let measured = null;
-if (sample) { try { const r = await fetch(sample, { headers }); const buf = Buffer.from(await r.arrayBuffer()); measured = { url: sample, status: r.status, bytes: buf.length, ct: r.headers.get("content-type"), dim: imgSize(buf) }; } catch (e) { measured = { url: sample, error: String(e).slice(0, 150) }; } }
 
 mkdirSync("data/darshan", { recursive: true });
-writeFileSync("data/darshan/_api.json", JSON.stringify({ at: new Date().toISOString(), istDate, endpoints: out, measured }, null, 2));
-console.log("date", istDate);
-for (const e of out) console.log(e.status ?? e.error, "full:", (e.full || []).length, "paths:", (e.paths || []).length, "files:", (e.files || []).length, "|", e.url);
-if (measured) console.log("sample", measured.bytes, "bytes", measured.dim, measured.url);
+writeFileSync("data/darshan/_api.json", JSON.stringify({ at: new Date().toISOString(), istDate, sringar_static_count: statics.length, statics, endpoints: out, probes }, null, 2));
+console.log("date", istDate, "| sringar statics:", statics.length);
+for (const p of probes) console.log(p.status, p.bytes || "", JSON.stringify(p.dim || p.error || ""), p.url);
