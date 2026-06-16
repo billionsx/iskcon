@@ -32,7 +32,7 @@ interface Group { group: string; items: Row[] }
 
 const GROUPS: Group[] = [
   { group: "Каждый день", items: [
-    { icon: ICON.verse, t: "Стих дня", d: "Короткий стих с переводом — каждое утро" },
+    { icon: ICON.verse, t: "Стих дня", d: "Системное чтение Прабхупады — стих за стихом, БГ → ШБ → ЧЧ", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-daily-verse")) },
     { icon: ICON.darshan, t: "Даршан дня", d: "Божества из храмов Маяпура и Вриндавана", go: () => window.dispatchEvent(new CustomEvent("iol:open-darshan")) },
   ] },
   { group: "Моя практика", items: [
