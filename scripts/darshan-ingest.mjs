@@ -19,19 +19,47 @@ import { execFileSync } from "node:child_process";
 const SOURCES = [
   {
     slug: "mayapur",
+    kind: "tg",
     channel: "ISKCONMayapurGroup",
     name: "ИСККОН Маяпур · Шри Дхама Маяпур",
     deities: "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
     srcLabel: "ISKCON Mayapur",
   },
   {
+    // Вриндаван: источник — собственный сайт храма (галерея «Sringar Darshan»).
+    // Оригиналы 2048px со всех трёх алтарей; чистый JSON .data, без браузера.
     slug: "vrindavan",
-    channel: "iskconvrindavanofficial",
+    kind: "site",
+    srcKey: "site:iskconvrindavan",
+    galleryType: "2",
+    gallerySlug: "sringar-darshan",
+    galleryName: "Sringar Darshan",
     name: "ИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир",
     deities: "Джайа Гаура Нитай · Кришна Баларам · Лалита Вишакха Радхе Шьям",
     srcLabel: "ISKCON Vrindavan",
   },
 ];
+
+/* ───────── источник: сайт храма (галерея даршана) ───────── */
+const SITE_CDN = "https://cdn.iskconvrindavan.com";
+const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+function istToday() {
+  return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
+}
+// Тянет галерею даршана за дату (DARSHAN_DATE или сегодня IST). Возвращает порядок фото как на сайте.
+async function fetchSiteGallery(src) {
+  const date = process.env.DARSHAN_DATE || istToday();
+  const url = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}.data`;
+  const pageUrl = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}`;
+  const r = await fetch(url, { headers: { "User-Agent": SITE_UA, accept: "*/*", referer: "https://iskconvrindavan.com/daily-darshan-gallery" } });
+  if (!r.ok) throw new Error(`${url} → HTTP ${r.status}`);
+  const t = await r.text();
+  const re = /static\/static-_[0-9a-zA-Z]+\.(?:jpe?g|png|webp)/g;
+  const seen = new Set(); const paths = []; let m;
+  while ((m = re.exec(t))) { if (!seen.has(m[0])) { seen.add(m[0]); paths.push(m[0]); } }
+  const name = (t.match(/"gallery_name","([^"]+)"/) || [])[1] || src.galleryName || "Darshan";
+  return { date, name, pageUrl, images: paths.map((p) => `${SITE_CDN}/${p}`) };
+}
 
 /* ───────── парсер t.me/s (порт из workerHome.ts) ───────── */
 const deent = (s) => s
@@ -119,8 +147,7 @@ async function sendDarshanPhoto(photoUrl, captionHtml) {
   const buf = Buffer.from(await img.arrayBuffer());
   const fd = new FormData();
   fd.append("chat_id", CHANNEL);
-  fd.append("caption", captionHtml);
-  fd.append("parse_mode", "HTML");
+  if (captionHtml) { fd.append("caption", captionHtml); fd.append("parse_mode", "HTML"); }
   fd.append("photo", new Blob([buf], { type: img.headers.get("content-type") || "image/jpeg" }), "darshan.jpg");
   return tg("sendPhoto", { method: "POST", body: fd });
 }
@@ -153,6 +180,39 @@ async function sendDarshanAlbum(photoUrls, captionHtml) {
   return Array.isArray(res) ? res[0] : res;
 }
 
+// Несколько альбомов подряд (сайт: до 20 фото → 2 группы по 10). Подпись — только на первом альбоме.
+async function sendAlbumChunk(urls, captionHtml) {
+  const fd = new FormData();
+  fd.append("chat_id", CHANNEL);
+  const ok = [];
+  for (let i = 0; i < urls.length; i++) {
+    let img; try { img = await fetch(urls[i], { headers: { "User-Agent": SITE_UA } }); } catch { continue; }
+    if (!img.ok) continue;
+    const buf = Buffer.from(await img.arrayBuffer());
+    const name = `photo${i}`;
+    fd.append(name, new Blob([buf], { type: img.headers.get("content-type") || "image/jpeg" }), `${name}.jpg`);
+    ok.push({ name, url: urls[i] });
+  }
+  if (ok.length === 0) throw new Error("no photos downloaded");
+  if (ok.length === 1) return sendDarshanPhoto(ok[0].url, captionHtml || "");
+  const media = ok.map((o, idx) => {
+    const it = { type: "photo", media: `attach://${o.name}` };
+    if (idx === 0 && captionHtml) { it.caption = captionHtml; it.parse_mode = "HTML"; }
+    return it;
+  });
+  fd.append("media", JSON.stringify(media));
+  const res = await tg("sendMediaGroup", { method: "POST", body: fd });
+  return Array.isArray(res) ? res[0] : res;
+}
+async function sendDarshanAlbums(urls, captionHtml, perAlbum = 10, maxAlbums = 2) {
+  const sel = urls.slice(0, perAlbum * maxAlbums);
+  const chunks = [];
+  for (let i = 0; i < sel.length; i += perAlbum) chunks.push(sel.slice(i, i + perAlbum));
+  const msgs = [];
+  for (let ci = 0; ci < chunks.length; ci++) msgs.push(await sendAlbumChunk(chunks[ci], ci === 0 ? captionHtml : null));
+  return msgs;
+}
+
 // D1 через wrangler (CLOUDFLARE_API_TOKEN + account_id из env). База биндится в apps/web/wrangler.toml как «iskcon».
 function d1(sql) {
   const out = execFileSync("npx", ["wrangler", "d1", "execute", "iskcon", "--remote", "--json", "--config", "apps/web/wrangler.toml", "--command", sql], {
@@ -162,14 +222,15 @@ function d1(sql) {
   });
   try { return JSON.parse(out); } catch { return null; }
 }
-function alreadyPosted(src) {
+function alreadyPostedKey(channel, postId) {
   if (process.env.FORCE === "1") return false;
   try {
-    const res = d1(`SELECT 1 FROM darshan WHERE src_channel='${src.channel}' AND src_post_id='${src._postId}' LIMIT 1`);
+    const res = d1(`SELECT 1 FROM darshan WHERE src_channel='${channel}' AND src_post_id='${postId}' LIMIT 1`);
     const rows = res?.[0]?.results || [];
     return rows.length > 0;
   } catch { return false; }
 }
+function alreadyPosted(src) { return alreadyPostedKey(src.channel, src._postId); }
 
 /* ───────── режимы ───────── */
 async function run() {
@@ -178,7 +239,7 @@ async function run() {
 
   if (process.env.DIAG === "1") {
     const dc = (process.env.DIAG_CHANNELS || "").split(",").map((s) => s.trim()).filter(Boolean);
-    const targets = dc.length ? dc.map((c) => ({ slug: c, channel: c })) : SOURCES.filter((s) => !only.length || only.includes(s.slug));
+    const targets = dc.length ? dc.map((c) => ({ slug: c, channel: c })) : SOURCES.filter((s) => s.kind === "tg" && (!only.length || only.includes(s.slug)));
     const out = [];
     for (const src of targets) {
       let posts;
@@ -200,6 +261,37 @@ async function run() {
 
   for (const src of SOURCES) {
     if (only.length && !only.includes(src.slug)) continue;
+
+    if (src.kind === "site") {
+      let gal;
+      try { gal = await fetchSiteGallery(src); }
+      catch (e) { preview.push({ slug: src.slug, error: String(e) }); continue; }
+      if (!gal.images.length) { preview.push({ slug: src.slug, date: gal.date, error: `site gallery empty for ${gal.date}` }); continue; }
+      src._postId = `${gal.date}/${src.galleryType}`;
+      const caption = composeCaption(src);
+      const imgs20 = gal.images.slice(0, 20);
+      const row = {
+        slug: src.slug, kind: "site", date: gal.date, temple_name: src.name, deities: src.deities,
+        src_channel: src.srcKey, src_post_id: src._postId, src_url: gal.pageUrl, gallery_name: gal.name,
+        photo_count: gal.images.length, albums_planned: Math.ceil(imgs20.length / 10),
+        photos: imgs20, caption_preview: caption,
+      };
+      if (dry) { preview.push(row); continue; }
+      if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
+      const msgs = await sendDarshanAlbums(gal.images, caption, 10, 2);
+      const anchorId = (msgs[0] && msgs[0].message_id) || 0;
+      const msgIds = msgs.map((mm) => mm && mm.message_id).filter(Boolean);
+      const imagesJson = JSON.stringify(imgs20).replace(/'/g, "''");
+      const capSql = caption.replace(/'/g, "''");
+      try {
+        d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
+            VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',${anchorId})
+            ON CONFLICT(src_channel,src_post_id) DO UPDATE SET tg_message_id=excluded.tg_message_id, images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
+      } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
+      preview.push({ ...row, posted: `ok msgs=${msgIds.join(",")}` });
+      continue;
+    }
+
     let posts;
     try { posts = await fetchChannel(src.channel); }
     catch (e) { preview.push({ slug: src.slug, error: String(e) }); continue; }
