@@ -4,6 +4,7 @@ import { calendarApi } from "./workerCalendar";
 import { accountApi } from "./src/account/server";
 import { centersApi } from "./src/centers/server";
 import { darshanApi } from "./src/darshan/server";
+import { readingApi } from "./src/reading/server";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
@@ -992,6 +993,9 @@ export default {
     // Даршан дня — публичный read (сегодня живьём из храмовых каналов + архив из D1).
     const darRes = await darshanApi(request, env, url);
     if (darRes) return darRes;
+    // «Стих дня» — системное чтение БГ→ШБ→ЧЧ (единица до первого пурпорта).
+    const readRes = await readingApi(request, env, url);
+    if (readRes) return readRes;
 
     // GET /api/books/bg/chapters/:n/verses → verse refs + source_url for a chapter
     const m = url.pathname.match(/^\/api\/books\/bg\/chapters\/(\d+)\/verses$/);
