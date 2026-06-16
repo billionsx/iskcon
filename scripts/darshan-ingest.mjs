@@ -177,9 +177,10 @@ async function run() {
   const only = (process.env.ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
 
   if (process.env.DIAG === "1") {
+    const dc = (process.env.DIAG_CHANNELS || "").split(",").map((s) => s.trim()).filter(Boolean);
+    const targets = dc.length ? dc.map((c) => ({ slug: c, channel: c })) : SOURCES.filter((s) => !only.length || only.includes(s.slug));
     const out = [];
-    for (const src of SOURCES) {
-      if (only.length && !only.includes(src.slug)) continue;
+    for (const src of targets) {
       let posts;
       try { posts = await fetchChannel(src.channel); } catch (e) { out.push({ slug: src.slug, error: String(e) }); continue; }
       const list = posts.slice(0, 20).filter((p) => p.photos.length).map((p) => {
