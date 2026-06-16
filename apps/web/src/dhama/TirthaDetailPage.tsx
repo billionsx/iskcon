@@ -16,6 +16,7 @@ import { mapsQuery, type Dhama, type Person, type Tirtha } from "./dhamas";
 import { TirthaHeroCard } from "./TirthaHeroCard";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
+import { NotesAtSource } from "../NotesAtSource";
 
 const NAV_H = 52;
 
@@ -128,6 +129,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
         </div>
 
         <div style={{ padding: "20px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
+          <div style={{ marginBottom: 18 }}><NotesAtSource kind="place" refId={t.id} accent={accent} /></div>
           {/* описание */}
           <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{t.about}</p>
 

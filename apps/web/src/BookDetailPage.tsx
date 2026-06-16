@@ -22,6 +22,7 @@ import { noteOpen, noteProgress } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
+import { NotesAtSource } from "./NotesAtSource";
 import { requestNote } from "./notes";
 import { addToCart } from "./shop/cart";
 import { bookProduct } from "./shop/catalog";
@@ -2058,6 +2059,10 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
                   Санскрит и транслитерация — общественное достояние. Перевод и комментарий помечены «демо»: это демонстрационный текст прототипа; он будет заменён лицензированным текстом издания.
                 </div>
               )}
+
+              <div style={{ marginTop: 28 }}>
+                <NotesAtSource kind="verse" refId={`verse:${work}/${refStr}`} accent={GOLD} />
+              </div>
             </>
           )}
         </div>
