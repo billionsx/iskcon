@@ -18,6 +18,7 @@ import {
 import { CenterHeroCard } from "./CenterHeroCard";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
+import { NotesAtSource } from "../NotesAtSource";
 
 /* ───────────────────── палитра / токены ───────────────────── */
 const GOLD = "#D2AA1B";
@@ -356,6 +357,7 @@ export default function CenterScreen({
       </div>
 
       <div style={{ padding: "0 16px" }}>
+        <div style={{ marginTop: 16 }}><NotesAtSource kind="centre" refId={c.id} /></div>
         {/* ─── управление (админ/редактор) ─── */}
         {canManage && (
           <div style={{ marginTop: 16, padding: 15, borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 9%, var(--color-glass-thin))` }}>

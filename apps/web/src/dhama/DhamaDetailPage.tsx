@@ -15,6 +15,7 @@ import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
 import { DhamaHeroCard } from "./DhamaHeroCard";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
+import { NotesAtSource } from "../NotesAtSource";
 
 const NAV_H = 52;
 
@@ -122,6 +123,10 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         {/* hero (ПКП) */}
         <div style={{ padding: "16px 16px 0" }}>
           <DhamaHeroCard dhama={dhama} onMenuSelect={onMenu} flash={flash} />
+        </div>
+
+        <div style={{ padding: "12px 16px 0" }}>
+          <NotesAtSource kind="place" refId={dhama.id} accent={dhama.accent} />
         </div>
 
         {/* sub-tabs */}
