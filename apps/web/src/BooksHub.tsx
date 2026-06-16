@@ -408,6 +408,19 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
               />
             </section>
           )}
+
+          {/* ── Практические книги ── */}
+          {filter === "all" && (
+            <section>
+              <SectionHeader title="Кухня прасада" note="Практическая книга по прасаду — в дополнение к священным текстам" />
+              <SectionCard
+                title="Кухня прасада"
+                subtitle="Философия, продукты и специи, техники, 100 рецептов и подношение"
+                mark={<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 11h18a8 8 0 0 1-16 0z" /><path d="M8.5 7.5c0-1.6 1-2.4 1-3.6M12.5 7.5c0-1.6 1-2.4 1-3.6" /></svg>}
+                onClick={() => onOpenPath("/prasadam/book")}
+              />
+            </section>
+          )}
         </>
       )}
     </div>
