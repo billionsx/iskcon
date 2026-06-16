@@ -57,6 +57,7 @@ jobs:
         run: node scripts/darshan-ingest.mjs
 
       - name: Publish run result to side branch
+        if: always()
         run: |
           git config user.name "ci-darshan"
           git config user.email "ci@local"

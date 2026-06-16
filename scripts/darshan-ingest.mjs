@@ -132,6 +132,7 @@ function composeCaption(src) {
 /* ───────── Telegram + D1 (только LIVE) ───────── */
 const TG = process.env.TELEGRAM_BOT_TOKEN;
 const CHANNEL = process.env.TELEGRAM_CHANNEL || "@iskcone";
+const RESULT = { mode: null, at: null, channel: CHANNEL, db_rows: null, progress: [], items: [] };
 
 async function tg(method, body) {
   const r = await fetch(`https://api.telegram.org/bot${TG}/${method}`, body);
@@ -209,7 +210,11 @@ async function sendDarshanAlbums(urls, captionHtml, perAlbum = 10, maxAlbums = 2
   const chunks = [];
   for (let i = 0; i < sel.length; i += perAlbum) chunks.push(sel.slice(i, i + perAlbum));
   const msgs = [];
-  for (let ci = 0; ci < chunks.length; ci++) msgs.push(await sendAlbumChunk(chunks[ci], ci === 0 ? captionHtml : null));
+  for (let ci = 0; ci < chunks.length; ci++) {
+    const m = await sendAlbumChunk(chunks[ci], ci === 0 ? captionHtml : null);
+    msgs.push(m);
+    RESULT.progress.push({ album: ci + 1, message_id: m && m.message_id, count: chunks[ci].length });
+  }
   return msgs;
 }
 
@@ -338,10 +343,20 @@ async function run() {
     } catch (e) { dbRows = "error: " + String(e).slice(0, 140); }
   }
 
+  RESULT.mode = dry ? "dry-run" : "live";
+  RESULT.at = new Date().toISOString();
+  RESULT.db_rows = dbRows;
+  RESULT.items = preview;
   mkdirSync("data/darshan", { recursive: true });
-  const result = { mode: dry ? "dry-run" : "live", at: new Date().toISOString(), channel: CHANNEL, db_rows: dbRows, items: preview };
-  writeFileSync("data/darshan/_dryrun.json", JSON.stringify(result, null, 2));
-  console.log(JSON.stringify(result, null, 2));
+  writeFileSync("data/darshan/_dryrun.json", JSON.stringify(RESULT, null, 2));
+  console.log(JSON.stringify(RESULT, null, 2));
 }
 
-run().catch((e) => { console.error(e); process.exit(1); });
+run().catch((e) => {
+  RESULT.error = String((e && e.stack) || e).slice(0, 1400);
+  RESULT.mode = RESULT.mode || ((process.env.DRY_RUN ?? "1") !== "0" ? "dry-run" : "live");
+  RESULT.at = new Date().toISOString();
+  try { mkdirSync("data/darshan", { recursive: true }); writeFileSync("data/darshan/_dryrun.json", JSON.stringify(RESULT, null, 2)); } catch {}
+  console.error(e);
+  process.exit(1);
+});
