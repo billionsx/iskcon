@@ -82,7 +82,7 @@ export default function PrasadamScreen({
       <div style={{ padding: "18px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
         {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} flash={flash} />}
         {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
-        {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} />}
+        {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} flash={flash} />}
         {section === "offering" && <OfferingSection />}
       </div>
     </div>
@@ -139,24 +139,6 @@ function SectionTitle({ children, sub }: { children: ReactNode; sub?: string }) 
       <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 800, letterSpacing: "-0.025em", color: "var(--color-label)" }}>{children}</h2>
       {sub && <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>}
     </div>
-  );
-}
-
-function RecipeRow({ recipe, onOpen, trailing }: { recipe: Recipe; onOpen: (slug: string) => void; trailing?: ReactNode }) {
-  return (
-    <button type="button" onClick={() => onOpen(recipe.slug)}
-      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "13px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
-      <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{recipe.title}</span>
-        <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{recipe.subtitle}</span>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 12, marginTop: 6, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ color: GOLD, display: "inline-flex" }}><Clock /></span>{recipe.minutes} мин</span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ color: GOLD, display: "inline-flex" }}><Gauge /></span>{DIFFICULTY_LABEL[recipe.difficulty]}</span>
-        </span>
-      </span>
-      {trailing}
-      <ChevR />
-    </button>
   );
 }
 
@@ -221,9 +203,9 @@ function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (sl
       </div>
 
       {results.length > 0 && (
-        <GroupedList>
-          {results.map((r) => <RecipeRow key={r.slug} recipe={r} onOpen={onOpenRecipe} />)}
-        </GroupedList>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+          {results.map((r) => <RecipeCard key={r.slug} slug={r.slug} onOpen={onOpenRecipe} flash={flash} width="100%" />)}
+        </div>
       )}
     </>
   );
@@ -323,7 +305,7 @@ function MatchSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }
 }
 
 /* ═══════════════════ РАЗДЕЛ: КОМУ ДОРОГО ═══════════════════ */
-function DeitiesSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }) {
+function DeitiesSection({ onOpenRecipe, flash }: { onOpenRecipe: (slug: string) => void; flash?: (m: string) => void }) {
   return (
     <>
       <SectionTitle sub="Что особенно дорого Божествам и ачарьям — и рецепты из библиотеки, которыми можно Их порадовать.">Кому подносим</SectionTitle>
@@ -351,14 +333,8 @@ function DeitiesSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void
               {recipes.length > 0 && (
                 <>
                   <div style={{ marginTop: 16, marginBottom: 9, fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: "var(--color-label-3)" }}>Чем порадовать</div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {recipes.map((r) => (
-                      <button key={r.slug} type="button" onClick={() => onOpenRecipe(r.slug)}
-                        style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-regular)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 500, color: "var(--color-label)", WebkitTapHighlightColor: "transparent" }}>
-                        {r.title}
-                        <span style={{ display: "inline-flex", color: "var(--color-label-3)" }}><ChevR size={14} /></span>
-                      </button>
-                    ))}
+                  <div style={{ display: "flex", gap: 11, overflowX: "auto", paddingBottom: 4, marginInline: -18, paddingInline: 18, scrollbarWidth: "none" }}>
+                    {recipes.map((r) => <RecipeCard key={r.slug} slug={r.slug} onOpen={onOpenRecipe} flash={flash} width={150} />)}
                   </div>
                 </>
               )}
