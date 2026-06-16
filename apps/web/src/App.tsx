@@ -862,19 +862,19 @@ export default function App() {
           </main>
         ) : prasadamRecipe ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} onOpenBookChapter={(id) => navigate("/prasadam/book/" + id)} />
+            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} onOpenBookChapter={(id) => navigate("/prasadam/book/" + id)} flash={flash} />
           </main>
         ) : cookbookChapter ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} />
+            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} flash={flash} />
           </main>
         ) : openCookbook ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} />
+            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} flash={flash} />
           </main>
         ) : prasadamSection ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} />
+            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} flash={flash} />
           </main>
         ) : openNotes ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

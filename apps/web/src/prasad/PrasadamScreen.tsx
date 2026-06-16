@@ -14,6 +14,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
+import RecipeCard from "./RecipeCard";
 import {
   CATEGORIES, DIETS, DIFFICULTY_LABEL, PANTRY, PANTRY_LABEL,
   DEITIES, OFFERING_PRINCIPLES, OFFERING_STEPS, OFFERING_PRAYERS, CLASSICS,
@@ -43,13 +44,14 @@ const SECTIONS: { id: SectionId; label: string }[] = [
 ];
 
 export default function PrasadamScreen({
-  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange, onOpenBook,
+  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange, onOpenBook, flash,
 }: {
   initialSection?: SectionId;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onSectionChange?: (id: SectionId) => void;
   onOpenBook: () => void;
+  flash?: (m: string) => void;
 }) {
   const [section, setSection] = useState<SectionId>(initialSection);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -78,7 +80,7 @@ export default function PrasadamScreen({
       </div>
 
       <div style={{ padding: "18px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
-        {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} />}
+        {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} flash={flash} />}
         {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
         {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} />}
         {section === "offering" && <OfferingSection />}
@@ -170,7 +172,9 @@ function GroupedList({ children }: { children: ReactNode[] }) {
 }
 
 /* ═══════════════════ РАЗДЕЛ: РЕЦЕПТЫ ═══════════════════ */
-function RecipesSection({ onOpenRecipe, onOpenBook }: { onOpenRecipe: (slug: string) => void; onOpenBook: () => void }) {
+const FEATURED = ["sweet-rice", "gulab-jamun", "paneer-butter-masala", "khichri", "masala-dosa", "rasmalai", "makhan-mishri", "malai-kofta"];
+
+function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (slug: string) => void; onOpenBook: () => void; flash?: (m: string) => void }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [diet, setDiet] = useState<DietTag | null>(null);
   const results = useMemo(() => filterRecipes(category, diet), [category, diet]);
@@ -191,7 +195,12 @@ function RecipesSection({ onOpenRecipe, onOpenBook }: { onOpenRecipe: (slug: str
         <ChevR />
       </button>
 
-      <Eyebrow>Категории</Eyebrow>
+      <div style={{ marginTop: 18 }}><Eyebrow>Рекомендуем</Eyebrow></div>
+      <div style={{ display: "flex", gap: 12, overflowX: "auto", padding: "12px 0 4px", marginInline: -16, paddingInline: 16, scrollbarWidth: "none" }}>
+        {FEATURED.map((s) => <RecipeCard key={s} slug={s} onOpen={onOpenRecipe} flash={flash} />)}
+      </div>
+
+      <div style={{ marginTop: 14 }}><Eyebrow>Категории</Eyebrow></div>
       <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "10px 0 2px", marginInline: -16, paddingInline: 16, scrollbarWidth: "none" }}>
         <FilterChip on={category === null} onClick={() => setCategory(null)}>Все</FilterChip>
         {CATEGORIES.map((c) => (

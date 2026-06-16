@@ -144,7 +144,7 @@ export function CardActionBtns({ favKey, onMore, meta, flash, dark, size = 34 }:
 /* ── Контекст карточки для меню ──────────────────────────────────────────── */
 export type CardCtx = {
   /** тип печатной карточки и deep-link */
-  type: "place" | "restaurant" | "entity" | "doc" | "bhajan" | "kirtan-album" | "kirtan-track" | "dhama" | "tirtha";
+  type: "place" | "restaurant" | "entity" | "doc" | "bhajan" | "kirtan-album" | "kirtan-track" | "dhama" | "tirtha" | "recipe" | "cookbook";
   id: string;
   /** заголовок (для QR-подписи, share-текста и имени PDF-файла) */
   title: string;
@@ -227,7 +227,7 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
   return (
     <Ctx.Provider value={api}>
       {children}
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} withNote variant={ctx?.type === "bhajan" ? "bhajan" : "book"} />
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} withNote noPdf={ctx?.type === "cookbook"} variant={ctx?.type === "bhajan" ? "bhajan" : "book"} />
       {qr && <QrSheet url={qr.url} data={{ kind: "card", title: qr.title, subtitle: qr.subtitle }} onClose={() => setQr(null)} />}
       <ReportSheet open={!!report} onClose={() => setReport(null)} context={report ? report.context : ""} />
       {toast && (

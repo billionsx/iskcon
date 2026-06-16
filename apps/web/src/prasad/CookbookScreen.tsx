@@ -11,8 +11,15 @@
  */
 import { COOKBOOK, chapterById, chapterRecipes, COOKBOOK_PRAYERS, type Block, type Chapter } from "./cookbook";
 import { DIFFICULTY_LABEL } from "./prasad";
+import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
 
 const GOLD = "#D2AA1B";
+
+const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
+const cookbookCtx: CardCtx = {
+  type: "cookbook", id: "cookbook", title: COOKBOOK.title, subtitle: COOKBOOK.subtitle,
+  url: `${ORIGIN}/prasadam/book`, context: `Книга · ${COOKBOOK.title} · /prasadam/book`,
+};
 
 /* ───────── иконки ───────── */
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -34,11 +41,12 @@ function Header({ onBack, title }: { onBack: () => void; title: string }) {
   );
 }
 
-export default function CookbookScreen({ chapterId, onBack, onOpenChapter, onOpenRecipe }: {
+export default function CookbookScreen({ chapterId, onBack, onOpenChapter, onOpenRecipe, flash }: {
   chapterId: string | null;
   onBack: () => void;
   onOpenChapter: (id: string) => void;
   onOpenRecipe: (slug: string) => void;
+  flash?: (m: string) => void;
 }) {
   const chapter = chapterId ? chapterById(chapterId) : null;
   if (chapterId && !chapter) {
@@ -49,11 +57,12 @@ export default function CookbookScreen({ chapterId, onBack, onOpenChapter, onOpe
       </div>
     );
   }
-  return chapter ? <ChapterView chapter={chapter} onBack={onBack} onOpenChapter={onOpenChapter} onOpenRecipe={onOpenRecipe} /> : <Contents onBack={onBack} onOpenChapter={onOpenChapter} />;
+  return chapter ? <ChapterView chapter={chapter} onBack={onBack} onOpenChapter={onOpenChapter} onOpenRecipe={onOpenRecipe} /> : <Contents onBack={onBack} onOpenChapter={onOpenChapter} flash={flash} />;
 }
 
 /* ═══════════════════ ОГЛАВЛЕНИЕ ═══════════════════ */
-function Contents({ onBack, onOpenChapter }: { onBack: () => void; onOpenChapter: (id: string) => void }) {
+function Contents({ onBack, onOpenChapter, flash }: { onBack: () => void; onOpenChapter: (id: string) => void; flash?: (m: string) => void }) {
+  const { openCardMenu } = useCardActions();
   // Группировка глав по рубрике (part) с сохранением порядка.
   const parts: { part: string; items: Chapter[] }[] = [];
   for (const ch of COOKBOOK.chapters) {
@@ -69,6 +78,11 @@ function Contents({ onBack, onOpenChapter }: { onBack: () => void; onOpenChapter
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.05, color: "var(--color-label)" }}>{COOKBOOK.title}</h1>
         <div style={{ margin: "6px 0 0", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17, color: "var(--color-label-3)" }}>{COOKBOOK.iast}</div>
         <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.6, color: "var(--color-label-2)" }}>{COOKBOOK.blurb}</p>
+
+        {/* Действия книги (как у всех книг): ♥ избранное · ⋯ меню */}
+        <div style={{ marginTop: 16 }}>
+          <CardActionBtns favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={38} onMore={() => openCardMenu(cookbookCtx)} />
+        </div>
 
         {parts.map((g) => (
           <section key={g.part} style={{ marginTop: 28 }}>

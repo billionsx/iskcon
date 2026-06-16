@@ -296,6 +296,23 @@ async function loadCard(ctype: string, cid: string, album: string, track: string
       }
       return null;
     }
+    if (ctype === "recipe") {
+      const mod = await import("./prasad/prasad");
+      const r = mod.recipeBySlug(cid);
+      if (!r) return null;
+      const catLabel = mod.CATEGORIES.find((c) => c.id === r.category)?.label || "";
+      const rows: Array<[string, string]> = [];
+      if (catLabel) rows.push(["Категория", catLabel]);
+      rows.push(["Время", `${r.minutes} мин`]);
+      rows.push(["Сложность", mod.DIFFICULTY_LABEL[r.difficulty]]);
+      rows.push(["Порций", r.servings]);
+      if (r.region) rows.push(["Регион", r.region]);
+      const ing = r.ingredients.map((i) => (i.amount ? `${i.item} — ${i.amount}` : i.item)).join("\n");
+      const steps = r.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+      const body: string[] = ["Ингредиенты\n" + ing, "Приготовление\n" + steps];
+      if (r.note) body.push(r.note);
+      return { kind: "card", header: "Кухня прасада · Прасадам", title: r.title, subtitle: r.subtitle, rows, body };
+    }
   } catch { return null; }
   return null;
 }

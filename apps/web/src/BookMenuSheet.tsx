@@ -141,10 +141,10 @@ const SHEET_CSS = `
 
 export { NoteGlyph };
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
@@ -152,7 +152,7 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isCha
       : variant === "bhajan" ? buildBhajanGroups()
         : variant === "player" ? buildPlayerGroups(isChapter)
           : (() => {
-              const groups: Group[] = GROUPS.map((items) => ({ items }));
+              const groups: Group[] = GROUPS.map((items) => ({ items: noPdf ? items.filter((it) => it.id !== "pdf") : items }));
               if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
               return groups;
             })();
