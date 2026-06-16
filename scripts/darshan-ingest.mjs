@@ -134,10 +134,17 @@ const TG = process.env.TELEGRAM_BOT_TOKEN;
 const CHANNEL = process.env.TELEGRAM_CHANNEL || "@iskcone";
 const RESULT = { mode: null, at: null, channel: CHANNEL, db_rows: null, progress: [], items: [] };
 
-async function tg(method, body) {
+async function tg(method, body, _retry = 0) {
   const r = await fetch(`https://api.telegram.org/bot${TG}/${method}`, body);
-  const j = await r.json();
-  if (!j.ok) throw new Error(`${method}: ${JSON.stringify(j)}`);
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) {
+    const ra = j.parameters && j.parameters.retry_after;
+    if ((r.status === 429 || ra) && _retry < 3) {
+      await new Promise((res) => setTimeout(res, ((ra ? ra : 2) * 1000) + 500));
+      return tg(method, body, _retry + 1);
+    }
+    throw new Error(`${method}: HTTP ${r.status} ${JSON.stringify(j)}`);
+  }
   return j.result;
 }
 
@@ -214,6 +221,7 @@ async function sendDarshanAlbums(urls, captionHtml, perAlbum = 10, maxAlbums = 2
     const m = await sendAlbumChunk(chunks[ci], ci === 0 ? captionHtml : null);
     msgs.push(m);
     RESULT.progress.push({ album: ci + 1, message_id: m && m.message_id, count: chunks[ci].length });
+    if (ci < chunks.length - 1) await new Promise((res) => setTimeout(res, 4000));
   }
   return msgs;
 }
@@ -241,6 +249,20 @@ function alreadyPosted(src) { return alreadyPostedKey(src.channel, src._postId);
 async function run() {
   const dry = (process.env.DRY_RUN ?? "1") !== "0";
   const only = (process.env.ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
+
+  if (process.env.DELETE_IDS) {
+    const ids = process.env.DELETE_IDS.split(",").map((s) => s.trim()).filter(Boolean);
+    const res = [];
+    for (const id of ids) {
+      try { await tg("deleteMessage", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ chat_id: CHANNEL, message_id: Number(id) }) }); res.push({ id, ok: true }); }
+      catch (e) { res.push({ id, err: String(e).slice(0, 160) }); }
+    }
+    RESULT.mode = "cleanup"; RESULT.at = new Date().toISOString(); RESULT.deleted = res;
+    mkdirSync("data/darshan", { recursive: true });
+    writeFileSync("data/darshan/_dryrun.json", JSON.stringify(RESULT, null, 2));
+    console.log("deleted", JSON.stringify(res));
+    return;
+  }
 
   if (process.env.DIAG === "1") {
     const dc = (process.env.DIAG_CHANNELS || "").split(",").map((s) => s.trim()).filter(Boolean);
