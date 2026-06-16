@@ -42,6 +42,39 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0005_gcal_calendar.sql
 
+      - name: Ensure japa schema (idempotent)
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0006_japa.sql
+
+      - name: Ensure sadhana-day schema (idempotent)
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0007_sadhana_day.sql
+
+      - name: Ensure notes schema (idempotent)
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: bunx wrangler d1 execute iskcon-db --remote --file migrations/0008_notes.sql
+
+      - name: Verify notes table is live in D1
+        working-directory: apps/api
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "— columns of notes —"
+          bunx wrangler d1 execute iskcon-db --remote \
+            --command "SELECT group_concat(name) AS cols FROM pragma_table_info('notes');"
+          echo "— indexes on notes —"
+          bunx wrangler d1 execute iskcon-db --remote \
+            --command "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='notes';"
+          echo "— row count (sanity) —"
+          bunx wrangler d1 execute iskcon-db --remote \
+            --command "SELECT COUNT(*) AS notes_rows FROM notes;"
+
       - name: Smoke test live /v1/health and record into D1
         working-directory: apps/api
         env:
