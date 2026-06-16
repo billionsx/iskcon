@@ -11,7 +11,6 @@
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createNote, deleteNote, noteTitle, notePreview, togglePin, useNotes, type Note, type NoteAttach } from "./notes";
-import NoteEditor from "./NoteEditor";
 
 const INK = "#1f2024";
 const INK2 = "#70727b";
@@ -123,16 +122,16 @@ interface Initial { attach?: NoteAttach; openId?: string; nonce: number }
 export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: () => void; onNavigate: (href: string) => void; initial?: Initial | null }) {
   const notes = useNotes();
   const [q, setQ] = useState("");
-  const [editId, setEditId] = useState<string | null>(null);
   const lastNonce = useRef<number>(-1);
   const reduce = useMemo(() => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches, []);
 
-  // намерение из App: создать с привязкой / открыть конкретную
+  // намерение из App (страховка — обычно App сам уводит на /note/:id)
   useEffect(() => {
     if (!initial || initial.nonce === lastNonce.current) return;
     lastNonce.current = initial.nonce;
-    if (initial.openId) setEditId(initial.openId);
-    else if (initial.attach) setEditId(createNote(initial.attach).id);
+    if (initial.openId) onNavigate("/note/" + initial.openId);
+    else if (initial.attach) onNavigate("/note/" + createNote(initial.attach).id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial]);
 
   const filtered = useMemo(() => {
@@ -144,7 +143,7 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
   const groups = useMemo(() => groupByDate(filtered), [filtered]);
 
   function openNew(): void {
-    setEditId(createNote().id);
+    onNavigate("/note/" + createNote().id);
   }
 
   return (
@@ -177,7 +176,7 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
             {filtered.length === 0 ? (
               <div style={{ textAlign: "center", padding: "48px 20px", color: INK3, fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</div>
             ) : (
-              groups.map((g) => <Section key={g.title} title={g.title} items={g.items} onOpen={(n) => setEditId(n.id)} reduce={!!reduce} />)
+              groups.map((g) => <Section key={g.title} title={g.title} items={g.items} onOpen={(n) => onNavigate("/note/" + n.id)} reduce={!!reduce} />)
             )}
           </div>
         </div>
@@ -189,8 +188,6 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
           border: "none", cursor: "pointer", color: "#fff", background: GOLD, boxShadow: "0 8px 26px rgba(210,170,27,0.5)", WebkitTapHighlightColor: "transparent" }}>
         <Compose size={25} />
       </button>
-
-      {editId && <NoteEditor id={editId} onClose={() => setEditId(null)} onNavigate={onNavigate} />}
     </div>
   );
 }
