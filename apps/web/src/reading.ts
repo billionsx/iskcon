@@ -304,3 +304,98 @@ export function etaMinutesForBook(rec: ReadingRec | null | undefined): number | 
   const remaining = Math.max(0, rec.totalWeight - read);
   return remaining <= 0 ? 0 : Math.round(remaining * mpv);
 }
+
+/* ───────── дневник минут чтения → дневная цель и серия дней (как Apple Books) ─────────
+ * Активное время чтения (из ридера) копится по календарным дням; от этого считаем
+ * «сегодня прочитано», прогресс к дневной цели и серию выполненных дней подряд. */
+const DAYS_KEY = "iol:reading-days:v1";
+const GOAL_KEY = "iol:reading-goal:v1";
+const DEFAULT_GOAL_MIN = 10;
+
+function ymdLocal(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+function dayKeyOffset(k: number): string {
+  return ymdLocal(new Date(Date.now() - k * 86400000));
+}
+function loadDays(): Record<string, number> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(DAYS_KEY);
+    const o = raw ? JSON.parse(raw) : {};
+    return o && typeof o === "object" ? (o as Record<string, number>) : {};
+  } catch {
+    return {};
+  }
+}
+function saveDays(m: Record<string, number>): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DAYS_KEY, JSON.stringify(m));
+  } catch {
+    /* noop */
+  }
+  try {
+    window.dispatchEvent(new Event(READING_CHANGED_EVENT));
+  } catch {
+    /* noop */
+  }
+}
+
+/** Добавить активное время чтения за сегодня (мс). Старше ~140 дней — чистим. */
+export function addReadingMs(ms: number): void {
+  if (!(ms > 0)) return;
+  const m = loadDays();
+  const key = dayKeyOffset(0);
+  m[key] = (m[key] || 0) + ms;
+  const cutoff = dayKeyOffset(140);
+  for (const k of Object.keys(m)) if (k < cutoff) delete m[k];
+  saveDays(m);
+}
+
+/** Минут прочитано сегодня. */
+export function readingMinutesToday(): number {
+  return Math.round((loadDays()[dayKeyOffset(0)] || 0) / 60000);
+}
+
+/** Дневная цель чтения, минут (по умолчанию 10). */
+export function readingGoalMin(): number {
+  if (typeof window === "undefined") return DEFAULT_GOAL_MIN;
+  try {
+    const v = Number(window.localStorage.getItem(GOAL_KEY));
+    return v >= 1 ? Math.min(180, Math.round(v)) : DEFAULT_GOAL_MIN;
+  } catch {
+    return DEFAULT_GOAL_MIN;
+  }
+}
+export function setReadingGoalMin(min: number): void {
+  if (typeof window === "undefined") return;
+  const v = Math.min(180, Math.max(1, Math.round(min)));
+  try {
+    window.localStorage.setItem(GOAL_KEY, String(v));
+  } catch {
+    /* noop */
+  }
+  try {
+    window.dispatchEvent(new Event(READING_CHANGED_EVENT));
+  } catch {
+    /* noop */
+  }
+}
+
+/** Серия дней подряд с выполненной целью (сегодня не обрывает серию до конца суток). */
+export function readingStreakDays(goalMin?: number): number {
+  const goalMs = Math.max(1, goalMin ?? readingGoalMin()) * 60000;
+  const m = loadDays();
+  const met = (k: number) => (m[dayKeyOffset(k)] || 0) >= goalMs;
+  const start = met(0) ? 0 : 1; // если сегодня ещё не дотянул — считаем серию по вчерашний день
+  let streak = 0;
+  for (let k = start; k < 400; k++) {
+    if (met(k)) streak++;
+    else break;
+  }
+  return streak;
+}

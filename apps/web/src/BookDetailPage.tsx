@@ -18,7 +18,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { recordRead } from "./account/track";
-import { getReading, noteOpen, noteProgress, notePosition, noteReadingTime } from "./reading";
+import { getReading, noteOpen, noteProgress, notePosition, noteReadingTime, addReadingMs } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
@@ -1242,11 +1242,12 @@ function useReadProgress(o: {
       window.removeEventListener("focus", onFocus);
       persistPos(true); // сохранить точную позицию ухода
       report(); // финальная фиксация прогресса
+      const sessMs = dwellNow();
+      if (sessMs >= 3000) addReadingMs(sessMs); // дневные минуты — любое активное чтение (главы и стихи)
       // личная скорость чтения: время сессии × пройденный за неё объём (только по скроллу)
       if (countScroll && weight > 0) {
         const covered = Math.max(0, maxDepth.current - startFrac) * weight;
-        const ms = dwellNow();
-        if (covered >= 0.5 && ms >= 3000) noteReadingTime({ ms, verses: covered });
+        if (covered >= 0.5 && sessMs >= 3000) noteReadingTime({ ms: sessMs, verses: covered });
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

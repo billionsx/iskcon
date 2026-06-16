@@ -12,7 +12,7 @@
  * отчёта) и приходит как onBookMenu(work, id). Визуальный язык — общий с приложением.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   BOOKS,
   LIBRARY,
@@ -25,7 +25,7 @@ import {
 } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
-import { recentReadings, pctOf, etaMinutesForBook, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
+import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 
 const GOLD = "#D2AA1B";
 
@@ -260,6 +260,61 @@ function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath:
   );
 }
 
+/* Дневная цель чтения (минуты) + серия дней — как Reading Goals в Apple Books.
+ * Минуты копятся автоматически из ридера (активное время), офлайн и для гостя. */
+function ReadingGoalCard() {
+  const [min, setMin] = useState(() => readingMinutesToday());
+  const [goal, setGoal] = useState(() => readingGoalMin());
+  const [streak, setStreak] = useState(() => readingStreakDays());
+  useEffect(() => {
+    const refresh = () => { setMin(readingMinutesToday()); setGoal(readingGoalMin()); setStreak(readingStreakDays()); };
+    const onVis = () => { if (document.visibilityState === "visible") refresh(); };
+    window.addEventListener(READING_CHANGED_EVENT, refresh);
+    window.addEventListener("focus", refresh);
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener(READING_CHANGED_EVENT, refresh);
+      window.removeEventListener("focus", refresh);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, []);
+  const pct = Math.min(1, min / Math.max(1, goal));
+  const done = min >= goal;
+  const adjust = (d: number) => { const g = Math.min(120, Math.max(5, goal + d)); setReadingGoalMin(g); setGoal(g); setStreak(readingStreakDays(g)); };
+  const stepBtn: CSSProperties = { width: 34, height: 28, borderRadius: 9, border: "none", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
+  return (
+    <section style={{ marginTop: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
+        <span aria-hidden style={{ width: 18, height: 3, borderRadius: 999, background: GOLD }} />
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Чтение сегодня</h2>
+        {streak >= 1 && (
+          <span style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 600, color: "var(--color-label-2)" }}>
+            <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD }} />
+            серия {streak} {plural(streak, "день", "дня", "дней")}
+          </span>
+        )}
+      </div>
+      <div style={{ borderRadius: 16, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "14px 15px" }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: "var(--color-label)", fontVariantNumeric: "tabular-nums" }}>{min}</span>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, color: done ? GOLD : "var(--color-label-2)" }}>{done ? `норма ${goal} мин выполнена` : `из ${goal} мин`}</span>
+        </div>
+        <div aria-hidden style={{ marginTop: 9, height: 6, borderRadius: 999, background: "var(--color-fill-1)", overflow: "hidden" }}>
+          <span style={{ display: "block", height: "100%", width: `${Math.round(pct * 100)}%`, background: GOLD, borderRadius: 999, transition: "width .3s ease" }} />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 11 }}>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>Дневная цель</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 9 }}>
+            <button type="button" aria-label="Уменьшить цель на 5 минут" onClick={() => adjust(-5)} disabled={goal <= 5} style={{ ...stepBtn, opacity: goal <= 5 ? 0.5 : 1 }}>−5</button>
+            <span style={{ minWidth: 52, textAlign: "center", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 700, color: "var(--color-label)", fontVariantNumeric: "tabular-nums" }}>{goal} мин</span>
+            <button type="button" aria-label="Увеличить цель на 5 минут" onClick={() => adjust(5)} disabled={goal >= 120} style={{ ...stepBtn, opacity: goal >= 120 ? 0.5 : 1 }}>+5</button>
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash }: {
   onOpenBook: (work: string) => void;
   onBookMenu: (work: string, id: string) => void;
@@ -355,6 +410,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         </div>
       ) : (
         <>
+          <ReadingGoalCard />
           {continueItems.length > 0 && <ContinueShelf items={continueItems} onOpenPath={onOpenPath} />}
           {/* ── Шрила Прабхупада ── */}
           {(filter === "all" || filter === "prabhupada") && (

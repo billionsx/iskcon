@@ -22,6 +22,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { useAuth } from "./account/store";
 import { requireAuth } from "./account/track";
 import { accountClient, type SadhanaState, type SadhanaPatch, type SadhanaDay, type JapaSyncRound } from "./account/api";
+import { readingMinutesToday } from "./reading";
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
 const GOLD = "#D2AA1B";
@@ -280,6 +281,13 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
       const s = await accountClient.sadhana.get(ymd(), 90);
       setSt(s); syncLocalGoal(s.goal);
       setReadMin(s.todayRow.reading_min); setRoseAt(s.todayRow.rose_at ?? ""); setNote(s.todayRow.note ?? ""); setGoal(s.goal);
+      // Связка с чтением в приложении: минуты, намеренные ридером, подмешиваем в дневник
+      // как нижнюю границу (никогда не занижаем ручной ввод) — чтобы шли в серию садханы.
+      const auto = readingMinutesToday();
+      if (auto > s.todayRow.reading_min) {
+        setReadMin(auto);
+        try { const s2 = await accountClient.sadhana.save({ today: ymd(), day: ymd(), readingMin: auto }); setSt(s2); } catch { /* не критично */ }
+      }
     } catch { setFailed(true); } finally { setLoading(false); }
   }, []);
 
