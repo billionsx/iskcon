@@ -276,6 +276,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
           <Rail title="Мадхурья · супружеская любовь" params="category=rasa%3Amadhurya&limit=60" onOpen={onOpen} />
           <Rail title="Ватсалья · родительская любовь" params="category=rasa%3Avatsalya&limit=20" onOpen={onOpen} />
           <Rail title="Сакхья · дружеская любовь" params="category=rasa%3Asakhya&limit=30" onOpen={onOpen} />
+          <Rail title="Дасья · настроение служения" params="category=rasa%3Adasya&limit=20" onOpen={onOpen} />
           <Rail title="Шанта · обители и святыни Враджа" params="category=rasa%3Ashanta&limit=40" onOpen={onOpen} />
           <div style={{ marginTop: 16 }}>
             <SectionCard title="Радха-Кришна лила" subtitle="Войти в вечные игры Господа во Вриндаване" mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenCollection?.("radha-krishna")} />
