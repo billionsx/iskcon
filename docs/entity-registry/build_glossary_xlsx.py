@@ -14,6 +14,7 @@ ENT = [
  ("prabhupada_lilamrita_entities.csv","Прабхупада-лиламрита"),
  ("mahabharata_entities.csv","Махабхарата"),
  ("ramayana_entities.csv","Рамаяна"),
+ ("dhama_entities.csv","Дхама"),
 ]
 REL = [
  ("relations_core.csv","Ядро"),

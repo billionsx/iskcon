@@ -298,8 +298,21 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
 
       {/* ДХАМА */}
       <FacetHead kicker="dhāma" title="Обители" sub={K ? "Святые места Враджа-мандалы, неотличные от Господа." : "Навадвипа-дхама и Нилачала (Джаганнатха Пури)."} />
-      <SectionCard title={K ? "Враджа-мандала" : "Навадвипа и Нилачала"} subtitle={K ? "Двенадцать лесов Враджа, Говардхан, Радха-кунда" : "Девять островов Навадвипы; Джаганнатха Пури"}
-        mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenPath?.("/dhama")} />
+      {K ? (
+        <>
+          <Rail title="Двенадцать лесов Враджа" params="category=vraja-vana&limit=12" onOpen={onOpen} />
+          <Rail title="Святые места Враджа" params="category=vraja-tirtha&limit=40" onOpen={onOpen} />
+        </>
+      ) : (
+        <>
+          <Rail title="Девять островов Навадвипы" params="category=navadvipa&limit=12" onOpen={onOpen} />
+          <Rail title="Нилачала · Джаганнатха Пури" params="category=nilachala&limit=12" onOpen={onOpen} />
+        </>
+      )}
+      <div style={{ marginTop: 16 }}>
+        <SectionCard title={K ? "Враджа-мандала на карте" : "Дхамы на карте"} subtitle={K ? "Двенадцать лесов Враджа, Говардхан, Радха-кунда" : "Навадвипа, Джаганнатха Пури и святые дхамы"}
+          mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenPath?.("/dhama")} />
+      </div>
 
       <div style={{ height: 12 }} />
     </div>
