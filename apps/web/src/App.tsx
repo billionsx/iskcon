@@ -42,6 +42,7 @@ import SadhanaScreen from "./SadhanaScreen";
 import VowScreen from "./VowScreen";
 import DarshanScreen from "./DarshanScreen";
 import DailyVerseScreen from "./DailyVerseScreen";
+import MyProgressScreen from "./MyProgressScreen";
 import CenterScreen from "./centers/CenterScreen";
 import MyCentersScreen from "./centers/MyCentersScreen";
 import CentersScreen from "./centers/CentersScreen";
@@ -545,6 +546,7 @@ export default function App() {
   const [openVow, setOpenVow] = useState(false);
   const [openDarshan, setOpenDarshan] = useState(false);
   const [openDailyVerse, setOpenDailyVerse] = useState(false);
+  const [openProgress, setOpenProgress] = useState(false);
   const [openCenter, setOpenCenter] = useState<string | null>(null);
   const [openMyCenters, setOpenMyCenters] = useState(false);
   const [openCenters, setOpenCenters] = useState(false);
@@ -585,6 +587,7 @@ export default function App() {
     if (openVow) return "/practice/vow";
     if (openDarshan) return "/practice/darshan";
     if (openDailyVerse) return "/practice/verse";
+    if (openProgress) return "/practice/progress";
     if (openCenterNew) return "/my/centers/new";
     if (openModeration) return "/centers/review";
     if (openCenterSchedule) return `/center/${openCenterSchedule}/schedule`;
@@ -630,7 +633,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -654,6 +657,7 @@ export default function App() {
     if (clean === "/practice/vow") { setOpenVow(true); return; }
     if (clean === "/practice/darshan") { setOpenDarshan(true); return; }
     if (clean === "/practice/verse") { setOpenDailyVerse(true); return; }
+    if (clean === "/practice/progress") { setOpenProgress(true); return; }
     if (clean === "/centers/review") { setOpenModeration(true); return; }
     if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
     if (clean === "/my/centers") { setOpenMyCenters(true); return; }
@@ -782,6 +786,14 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Открытие «Моего прогресса» (дашборд чтения) из хаба «Садхана».
+  useEffect(() => {
+    const onProg = () => navigate("/practice/progress");
+    window.addEventListener("iol:open-progress", onProg);
+    return () => window.removeEventListener("iol:open-progress", onProg);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Быстрый захват заметки из любого меню (⋯ / плеер / стих / избранное).
   useEffect(() => {
     const onOpenNotes = () => {
@@ -801,7 +813,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -860,7 +872,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -936,6 +948,10 @@ export default function App() {
         ) : openDailyVerse ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <DailyVerseScreen onBack={goBack} onOpenVerse={openVerseId} />
+          </main>
+        ) : openProgress ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <MyProgressScreen onBack={goBack} onOpen={navigate} />
           </main>
         ) : openCart ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
