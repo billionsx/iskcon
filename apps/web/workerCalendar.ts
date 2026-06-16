@@ -265,29 +265,75 @@ function citySlug(key: string): string {
   return key.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
+const LOC_RE = /^[A-Za-z .()'-]+ \[[A-Za-z .]+\]$/;
+
+// Индекс «slug → координаты» всех предрасчитанных фидов (ассет /data/gcal-index.json).
+// Кэшируется на время жизни изолята воркера.
+let _gcalIndex: { slug: string; lat: number; lng: number }[] | null = null;
+async function loadGcalIndex(env: CalAssetsEnv, origin: string): Promise<{ slug: string; lat: number; lng: number }[]> {
+  if (_gcalIndex) return _gcalIndex;
+  try {
+    const r = await env.ASSETS.fetch(new Request(origin + "/data/gcal-index.json"));
+    if (r.ok) { _gcalIndex = (await r.json()) as { slug: string; lat: number; lng: number }[]; return _gcalIndex; }
+  } catch { /* индекса нет */ }
+  return [];
+}
+function havKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
+  const R = 6371, rad = (d: number) => (d * Math.PI) / 180;
+  const dLat = rad(bLat - aLat), dLng = rad(bLng - aLng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(rad(aLat)) * Math.cos(rad(bLat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+async function nearestSlug(env: CalAssetsEnv, origin: string, lat: number, lng: number): Promise<string | null> {
+  const idx = await loadGcalIndex(env, origin);
+  let best: string | null = null, bestD = Infinity;
+  for (const c of idx) { const d = havKm(lat, lng, c.lat, c.lng); if (d < bestD) { bestD = d; best = c.slug; } }
+  return best;
+}
+type GcalFeed = { events?: { date: string; summary: string }[]; location?: { name?: string } };
+async function fetchFeed(env: CalAssetsEnv, origin: string, slug: string): Promise<GcalFeed | null> {
+  try {
+    const r = await env.ASSETS.fetch(new Request(origin + "/data/gcal/" + slug + ".json"));
+    if (r.ok) return (await r.json()) as GcalFeed;
+  } catch { /* ассет недоступен */ }
+  return null;
+}
+
 export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv): Promise<Response | null> {
   if (url.pathname !== "/api/calendar") return null;
-  const loc = (url.searchParams.get("loc") || "Vrindavan [India]").trim().slice(0, 80);
-  if (!/^[A-Za-z .()'-]+ \[[A-Za-z .]+\]$/.test(loc)) {
+  const rawLoc = (url.searchParams.get("loc") || "").trim().slice(0, 80);
+  const lat = parseFloat(url.searchParams.get("lat") || "");
+  const lng = parseFloat(url.searchParams.get("lng") || "");
+  const hasCoords = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+  const locValid = !!rawLoc && LOC_RE.test(rawLoc);
+  if (rawLoc && !locValid && !hasCoords) {
     return new Response(JSON.stringify({ error: "bad loc" }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
 
   const cache = (caches as unknown as { default: Cache }).default;
-  const cacheKey = new Request(url.origin + "/api/calendar?loc=" + encodeURIComponent(loc));
+  const ckId = locValid ? "loc=" + encodeURIComponent(rawLoc)
+    : hasCoords ? "nc=" + lat.toFixed(3) + "," + lng.toFixed(3)
+      : "loc=" + encodeURIComponent("Vrindavan [India]");
+  const cacheKey = new Request(url.origin + "/api/calendar?" + ckId);
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
   // Источник — self-hosted фид GCal (Гаурабда, Календарный комитет GBC): ассет
-  // /data/gcal/<slug>.json, посчитанный движком GCAL по координатам города.
-  // Без внешних рантайм-зависимостей. Читаем напрямую через биндинг ASSETS.
-  let feed: { events?: { date: string; summary: string }[] } | null = null;
-  try {
-    const fres = await env.ASSETS.fetch(new Request(url.origin + "/data/gcal/" + citySlug(loc) + ".json"));
-    if (fres.ok) feed = await fres.json();
-  } catch { /* ассет недоступен */ }
+  // /data/gcal/<slug>.json, посчитанный движком GCAL по координатам города. Точный
+  // город — по slug; если фида нет, а есть координаты — ближайший предрасчитанный
+  // фид (тот же восход → тот же вайшнавский календарь). Без рантайм-зависимостей.
+  let feed: GcalFeed | null = null;
+  if (locValid) { feed = await fetchFeed(env, url.origin, citySlug(rawLoc)); }
+  if ((!feed || (feed.events || []).length < 50) && hasCoords) {
+    const ns = await nearestSlug(env, url.origin, lat, lng);
+    if (ns) feed = await fetchFeed(env, url.origin, ns);
+  }
+  if ((!feed || (feed.events || []).length < 50) && !locValid && !hasCoords) {
+    feed = await fetchFeed(env, url.origin, citySlug("Vrindavan [India]"));
+  }
   const raw: { date: string; title: string }[] = (feed?.events || []).map((e) => ({ date: e.date, title: e.summary }));
   if (raw.length < 50) {
-    return new Response(JSON.stringify({ error: "no calendar for location", loc }), {
+    return new Response(JSON.stringify({ error: "no calendar for location", loc: rawLoc || (hasCoords ? `${lat},${lng}` : "") }), {
       status: 404, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
     });
   }
@@ -307,7 +353,8 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
     events.push({ date: e.date, title: r.title, orig: e.title, type: r.type, ...(r.entityId ? { entityId: r.entityId } : {}) });
   }
 
-  const res = new Response(JSON.stringify({ loc, events }), {
+  const label = locValid ? rawLoc : (feed?.location?.name || rawLoc || "");
+  const res = new Response(JSON.stringify({ loc: label, events }), {
     headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=86400" },
   });
   await cache.put(cacheKey, res.clone());
