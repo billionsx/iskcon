@@ -10,6 +10,7 @@
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuthed, requireAuth } from "./../account/track";
 import { centersClient, pickI18n, type CenterCard, type CenterEvent } from "./api";
+import EntityPicker from "./EntityPicker";
 
 const GOLD = "#D2AA1B";
 const GOLDT = "#9c7c15";
@@ -68,6 +69,7 @@ export default function CenterEvents({ slug, onBack, flash }: { slug: string; on
   const [fEnd, setFEnd] = useState("");
   const [fLive, setFLive] = useState("");
   const [fImage, setFImage] = useState("");
+  const [fEntity, setFEntity] = useState<{ id: string; name: string } | null>(null);
 
   const load = useCallback(() => {
     setPhase("loading");
@@ -77,7 +79,7 @@ export default function CenterEvents({ slug, onBack, flash }: { slug: string; on
   }, [slug]);
   useEffect(() => { if (!authed) { setPhase("ready"); return; } load(); }, [authed, load]);
 
-  const openNew = () => { setErr(null); setFTitle(""); setFDesc(""); setFStart(""); setFEnd(""); setFLive(""); setFImage(""); setEditing({ mode: "new" }); };
+  const openNew = () => { setErr(null); setFTitle(""); setFDesc(""); setFStart(""); setFEnd(""); setFLive(""); setFImage(""); setFEntity(null); setEditing({ mode: "new" }); };
   const openEdit = (e: CenterEvent) => {
     setErr(null);
     setFTitle(pickI18n(e.title_i18n));
@@ -86,6 +88,7 @@ export default function CenterEvents({ slug, onBack, flash }: { slug: string; on
     setFEnd(toInput(e.ends_at));
     setFLive(e.livestream_url || "");
     setFImage(e.images[0] || "");
+    setFEntity(e.festival_entity_id ? { id: e.festival_entity_id, name: e.festival_entity_name || e.festival_entity_id } : null);
     setEditing({ mode: "edit", event: e });
   };
 
@@ -102,12 +105,13 @@ export default function CenterEvents({ slug, onBack, flash }: { slug: string; on
       ends_at: fEnd || null,
       livestream_url: fLive.trim() || null,
       images: fImage.trim() ? [fImage.trim()] : [],
+      festival_entity_id: fEntity?.id || null,
     };
     const op = editing.mode === "new" ? centersClient.addEvent(centerId, payload) : centersClient.updateEvent(centerId, editing.event.id, payload);
     op.then(() => { flash?.(editing.mode === "new" ? "Событие добавлено" : "Сохранено"); setEditing(null); load(); })
       .catch((e: { code?: string }) => setErr(e?.code === "bad_event_date" ? "Проверьте дату и время." : "Не удалось сохранить."))
       .finally(() => setSaving(false));
-  }, [saving, centerId, editing, fTitle, fDesc, fStart, fEnd, fLive, fImage, flash, load]);
+  }, [saving, centerId, editing, fTitle, fDesc, fStart, fEnd, fLive, fImage, fEntity, flash, load]);
 
   const remove = useCallback(() => {
     if (saving || !centerId || !editing || editing.mode !== "edit") return;
@@ -181,6 +185,11 @@ export default function CenterEvents({ slug, onBack, flash }: { slug: string; on
         <section style={{ marginTop: 20 }}>
           <div style={eyebrow}>Фото (ссылка)</div>
           <input style={inputStyle} value={fImage} onChange={(e) => setFImage(e.target.value)} placeholder="https://…" maxLength={300} autoCapitalize="off" />
+        </section>
+        <section style={{ marginTop: 20 }}>
+          <div style={eyebrow}>Связь с реестром</div>
+          <EntityPicker value={fEntity} onChange={setFEntity} placeholder="Найти праздник в реестре…" />
+          <p style={{ margin: "9px 4px 0", fontFamily: FT, fontSize: 12.5, lineHeight: 1.5, color: L3 }}>Свяжите с праздником из реестра — со страницы события можно перейти к нему, а на его странице появится этот центр.</p>
         </section>
         {err && <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{err}</div>}
         <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>{saving ? "Сохраняю…" : "Сохранить"}</button>

@@ -500,7 +500,14 @@ export default function CenterScreen({
                     {fmtEventDate(ev.starts_at).split(" ").slice(0, 2).join(" ")}
                   </span>
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{pickI18n(ev.title_i18n)}</div>
+                    {ev.festival_entity_id ? (
+                      <button type="button" onClick={() => onOpenPath(`/entity/${ev.festival_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                        {pickI18n(ev.title_i18n)}
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg>
+                      </button>
+                    ) : (
+                      <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{pickI18n(ev.title_i18n)}</div>
+                    )}
                     {pickI18n(ev.description_i18n) && (
                       <p style={{ margin: "3px 0 0", fontFamily: FT, fontSize: 13, lineHeight: 1.45, color: L2 }}>{pickI18n(ev.description_i18n)}</p>
                     )}
