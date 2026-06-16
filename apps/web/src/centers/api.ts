@@ -109,6 +109,18 @@ export interface CenterCard {
   programs: CenterProgram[];
   deities: CenterDeity[];
   events: CenterEvent[];
+  /** Может ли текущий зритель управлять центром (админ/редактор или глоб. редактор). */
+  can_manage?: boolean;
+}
+
+/** Поля программы расписания (создание/правка). */
+export interface ProgramInput {
+  type: string;
+  days_of_week?: number[];
+  start_time?: string | null;
+  end_time?: string | null;
+  notes_i18n?: Record<string, string>;
+  sort_order?: number;
 }
 
 /** Поля, принимаемые при создании. */
@@ -210,6 +222,22 @@ export const centersClient = {
     request<{ id: string; updated: boolean }>("PATCH", `/centers/${encodeURIComponent(id)}`, patch),
   /** Центры, которыми управляет вошедший преданный. */
   mine: () => request<{ items: MyCenterItem[] }>("GET", "/me/centers"),
+  /** Добавить программу расписания (админ центра). */
+  addProgram: (centerId: string, input: ProgramInput) =>
+    request<{ id: string }>("POST", `/centers/${encodeURIComponent(centerId)}/programs`, input),
+  /** Правка программы. */
+  updateProgram: (centerId: string, programId: string, patch: Partial<ProgramInput>) =>
+    request<{ id: string; updated: boolean }>(
+      "PATCH",
+      `/centers/${encodeURIComponent(centerId)}/programs/${encodeURIComponent(programId)}`,
+      patch,
+    ),
+  /** Удалить программу. */
+  deleteProgram: (centerId: string, programId: string) =>
+    request<{ id: string; deleted: boolean }>(
+      "DELETE",
+      `/centers/${encodeURIComponent(centerId)}/programs/${encodeURIComponent(programId)}`,
+    ),
 };
 
 /* ─────────────────────── ярлыки/хелперы отображения ─────────────────────── */

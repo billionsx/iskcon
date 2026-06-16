@@ -41,6 +41,7 @@ import SadhanaScreen from "./SadhanaScreen";
 import CenterScreen from "./centers/CenterScreen";
 import MyCentersScreen from "./centers/MyCentersScreen";
 import CenterEditor from "./centers/CenterEditor";
+import CenterSchedule from "./centers/CenterSchedule";
 import { useCartCount } from "./shop/cart";
 import PrasadamScreen from "./prasad/PrasadamScreen";
 import RecipeDetail from "./prasad/RecipeDetail";
@@ -534,6 +535,7 @@ export default function App() {
   const [openMyCenters, setOpenMyCenters] = useState(false);
   const [openCenterNew, setOpenCenterNew] = useState(false);
   const [openCenterEdit, setOpenCenterEdit] = useState<string | null>(null);
+  const [openCenterSchedule, setOpenCenterSchedule] = useState<string | null>(null);
   const [prasadamSection, setPrasadamSection] = useState<"recipes" | "match" | "deities" | "offering" | null>(null);
   const [prasadamRecipe, setPrasadamRecipe] = useState<string | null>(null);
   const [openCookbook, setOpenCookbook] = useState(false);
@@ -555,6 +557,7 @@ export default function App() {
     if (openJapa) return "/practice/japa";
     if (openDiary) return "/practice/diary";
     if (openCenterNew) return "/my/centers/new";
+    if (openCenterSchedule) return `/center/${openCenterSchedule}/schedule`;
     if (openCenterEdit) return `/center/${openCenterEdit}/edit`;
     if (openMyCenters) return "/my/centers";
     if (openCenter) return `/center/${openCenter}`;
@@ -592,7 +595,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenDhama(null); setOpenTirtha(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenDhama(null); setOpenTirtha(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -641,6 +644,7 @@ export default function App() {
       const cslug = parts[2] ?? "";
       if (!cslug) { setTab("home"); return; }
       if (parts[3] === "edit") setOpenCenterEdit(cslug);
+      else if (parts[3] === "schedule") setOpenCenterSchedule(cslug);
       else setOpenCenter(cslug);
       return;
     }
@@ -732,7 +736,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit, openDhama, openTirtha]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit, openCenterSchedule, openDhama, openTirtha]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -783,7 +787,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openDhama && !openTirtha;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openDhama && !openTirtha;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -883,6 +887,10 @@ export default function App() {
         ) : openCenterEdit ? (
           <main key={openCenterEdit} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <CenterEditor slug={openCenterEdit} onBack={goBack} onOpenPath={navigate} />
+          </main>
+        ) : openCenterSchedule ? (
+          <main key={openCenterSchedule} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CenterSchedule slug={openCenterSchedule} onBack={goBack} />
           </main>
         ) : openMyCenters ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
