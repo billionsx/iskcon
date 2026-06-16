@@ -27,6 +27,7 @@ REL = [
  ("ramayana_relations.csv","Рамаяна"),
  ("book_relations.csv","Книги (appears-in/author)"),
  ("granthas_relations.csv","Грантхи ачарьев"),
+ ("dhama_relations.csv","Дхама"),
 ]
 REL_RU = {
  "avatar-of":"аватар (из)","expansion-of":"экспансия (из)","shaktyavesha-of":"шактьявеша (из)",
