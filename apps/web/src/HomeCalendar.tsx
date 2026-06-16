@@ -92,8 +92,9 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
   const [q, setQ] = useState("");
   const [geo, setGeo] = useState<GeoHit | null>(null);
   const [geoBusy, setGeoBusy] = useState(false);
+  const [geoMe, setGeoMe] = useState<"idle" | "busy" | "denied" | "error">("idle");
   useEffect(() => { if (open) loadLocs().then(setLocs).catch(() => setLocs([])); }, [open]);
-  useEffect(() => { if (!open) { setQ(""); setGeo(null); setGeoBusy(false); } }, [open]);
+  useEffect(() => { if (!open) { setQ(""); setGeo(null); setGeoBusy(false); setGeoMe("idle"); } }, [open]);
   const filtered = useMemo(() => {
     if (!locs) return [];
     const t = q.trim().toLowerCase();
@@ -119,6 +120,19 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
     }, 350);
     return () => { alive = false; clearTimeout(id); };
   }, [q, hasDirect, locs]);
+  function useMyLocation() {
+    if (!("geolocation" in navigator)) { setGeoMe("error"); return; }
+    setGeoMe("busy");
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        onPick({ ru: "Моё местоположение", key: `@${lat.toFixed(4)},${lng.toFixed(4)}`, lat, lng, tz: null });
+        setGeoMe("idle"); onClose();
+      },
+      (err) => setGeoMe(err.code === err.PERMISSION_DENIED ? "denied" : "error"),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 },
+    );
+  }
   return (
     <HomeSheet open={open} label="Выбор города" onClose={onClose}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
@@ -130,6 +144,25 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
           style={{ width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)", outline: "none" }} />
       </div>
+      {!q.trim() && (
+        <button type="button" onClick={useMyLocation} disabled={geoMe === "busy"} aria-label="Определить календарь по моей геолокации"
+          style={{ display: "flex", width: "100%", alignItems: "center", gap: 11, padding: "13px 14px", borderRadius: 14, border: `1px solid color-mix(in srgb, ${GOLD} 35%, transparent)`, background: `color-mix(in srgb, ${GOLD} 8%, transparent)`, cursor: geoMe === "busy" ? "default" : "pointer", WebkitTapHighlightColor: "transparent" }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="3.1" fill="none" stroke={GOLD} strokeWidth="1.8" />
+            <path d="M12 2.2v3.1M12 18.7v3.1M2.2 12h3.1M18.7 12h3.1" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" />
+            <circle cx="12" cy="12" r="7.8" fill="none" stroke={GOLD} strokeWidth="1.3" opacity="0.5" />
+          </svg>
+          <span style={{ flex: 1, textAlign: "left", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>
+            {geoMe === "busy" ? "Определяем местоположение…" : "По моей геолокации"}
+          </span>
+        </button>
+      )}
+      {!q.trim() && geoMe === "denied" && (
+        <div style={{ margin: "8px 2px 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-3)" }}>Доступ к геолокации запрещён. Разрешите его в настройках браузера или выберите город вручную.</div>
+      )}
+      {!q.trim() && geoMe === "error" && (
+        <div style={{ margin: "8px 2px 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-3)" }}>Не удалось определить местоположение. Выберите город вручную.</div>
+      )}
       <div style={{ marginTop: 12 }}>
         {!locs && <div style={{ height: 120, ...fill, opacity: 0.6 }} />}
         {locs && !hasDirect && geoBusy && (
