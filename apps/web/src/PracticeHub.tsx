@@ -33,7 +33,7 @@ interface Group { group: string; items: Row[] }
 const GROUPS: Group[] = [
   { group: "Каждый день", items: [
     { icon: ICON.verse, t: "Стих дня", d: "Короткий стих с переводом — каждое утро" },
-    { icon: ICON.darshan, t: "Даршан дня", d: "Божества из храмов Маяпура и Вриндавана" },
+    { icon: ICON.darshan, t: "Даршан дня", d: "Божества из храмов Маяпура и Вриндавана", go: () => window.dispatchEvent(new CustomEvent("iol:open-darshan")) },
   ] },
   { group: "Моя практика", items: [
     { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-japa")) },
