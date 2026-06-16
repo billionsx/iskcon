@@ -16,6 +16,7 @@ ENT = [
  ("ramayana_entities.csv","Рамаяна"),
  ("dhama_entities.csv","Дхама"),
  ("extra_entities.csv","Гаудия-вайшнавы"),
+ ("granthas_entities.csv","Грантхи ачарьев"),
 ]
 REL = [
  ("relations_core.csv","Ядро"),
@@ -25,6 +26,7 @@ REL = [
  ("mahabharata_relations.csv","Махабхарата"),
  ("ramayana_relations.csv","Рамаяна"),
  ("book_relations.csv","Книги (appears-in/author)"),
+ ("granthas_relations.csv","Грантхи ачарьев"),
 ]
 REL_RU = {
  "avatar-of":"аватар (из)","expansion-of":"экспансия (из)","shaktyavesha-of":"шактьявеша (из)",
