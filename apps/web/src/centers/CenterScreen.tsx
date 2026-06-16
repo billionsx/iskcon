@@ -11,11 +11,13 @@ import { useCallback, useEffect, useMemo, useState, type CSSProperties, type Rea
 import {
   centersClient,
   CENTER_TYPE_LABEL,
-  STATUS_LABEL,
   pickI18n,
   type CenterCard,
   type CenterProgram,
 } from "./api";
+import { CenterHeroCard } from "./CenterHeroCard";
+import { QrSheet } from "../QrSheet";
+import { requestNote } from "../notes";
 
 /* ───────────────────── палитра / токены ───────────────────── */
 const GOLD = "#D2AA1B";
@@ -187,6 +189,7 @@ export default function CenterScreen({
   const [data, setData] = useState<CenterCard | null>(null);
   const [phase, setPhase] = useState<"loading" | "ready" | "notfound" | "error">("loading");
   const [busy, setBusy] = useState(false);
+  const [qr, setQr] = useState(false);
 
   const load = useCallback(() => {
     setPhase("loading");
@@ -301,7 +304,6 @@ export default function CenterScreen({
     );
   }
 
-  const photo = c.photos[0];
   const place = [c.city, c.country].filter(Boolean).join(", ");
   const mapsHref = c.lat != null && c.lng != null
     ? `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}`
@@ -312,44 +314,21 @@ export default function CenterScreen({
   const site = c.website ? (c.website.startsWith("http") ? c.website : `https://${c.website}`) : null;
   const hasActions = !!(c.phone || waHref || site || mapsHref);
 
+  const onMenu = (id: string) => {
+    if (id === "share") onShare();
+    else if (id === "qr") setQr(true);
+    else if (id === "route" && mapsHref) { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }
+    else if (id === "note") requestNote({ kind: "centre", ref: c.id, title: c.name, subtitle: place || CENTER_TYPE_LABEL[c.type], href: `/center/${slug}` });
+    else if (id === "edit") onOpenPath(`/center/${slug}/edit`);
+    else if (id === "schedule") onOpenPath(`/center/${slug}/schedule`);
+    else if (id === "report") flash?.("Спасибо! Передадим команде ИСККОН.");
+  };
+
   return (
     <Shell title={c.name}>
-      {/* ─── герой ─── */}
-      <div style={{ position: "relative", padding: "16px 16px 0" }}>
-        <div
-          style={{
-            position: "relative", borderRadius: 20, overflow: "hidden", minHeight: photo ? 220 : 150,
-            background: photo
-              ? `linear-gradient(180deg, rgba(0,0,0,0) 38%, rgba(0,0,0,0.62) 100%), center/cover no-repeat url("${photo}")`
-              : `linear-gradient(135deg, color-mix(in srgb, ${GOLD} 22%, var(--color-glass-thin)), var(--color-glass-thin))`,
-            display: "flex", flexDirection: "column", justifyContent: "flex-end",
-            padding: 16, boxShadow: photo ? "var(--shadow-card)" : "none",
-          }}
-        >
-          {!photo && (
-            <span style={{ position: "absolute", top: 16, left: 16, display: "grid", placeItems: "center", width: 52, height: 52, borderRadius: 15, background: `color-mix(in srgb, ${GOLD} 18%, transparent)` }}>
-              <Temple size={26} />
-            </span>
-          )}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-            <span style={{ fontFamily: FT, fontSize: 11.5, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: photo ? "rgba(255,255,255,0.9)" : GOLDT }}>
-              {CENTER_TYPE_LABEL[c.type]}
-            </span>
-            {c.status !== "live" && (
-              <span style={{ fontFamily: FT, fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: c.status === "review" ? "color-mix(in srgb, #ff9f0a 22%, transparent)" : "color-mix(in srgb, var(--color-label) 14%, transparent)", color: photo ? "#fff" : c.status === "review" ? "#9a6200" : L2 }}>
-                {STATUS_LABEL[c.status]}
-              </span>
-            )}
-          </div>
-          <h1 style={{ margin: 0, fontFamily: FD, fontSize: "clamp(24px, 7vw, 30px)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08, color: photo ? "#fff" : L1 }}>
-            {c.name}
-          </h1>
-          {place && (
-            <div style={{ marginTop: 6, display: "inline-flex", alignItems: "center", gap: 5, fontFamily: FT, fontSize: 13.5, color: photo ? "rgba(255,255,255,0.92)" : L2 }}>
-              <Pin size={14} />{place}
-            </div>
-          )}
-        </div>
+      {/* ─── герой (ПКП) ─── */}
+      <div style={{ padding: "16px 16px 0" }}>
+        <CenterHeroCard center={c} onMenuSelect={onMenu} canManage={canManage} flash={flash} />
       </div>
 
       <div style={{ padding: "0 16px" }}>
@@ -490,6 +469,13 @@ export default function CenterScreen({
         </button>
         <p style={{ textAlign: "center", fontFamily: FT, fontSize: 12, color: L3, margin: "18px 0 0" }}>gaurangers.com · ИСККОН</p>
       </div>
+      {qr && typeof window !== "undefined" && (
+        <QrSheet
+          url={`${window.location.origin}/center/${slug}`}
+          data={{ kind: "card", title: c.name, subtitle: place || CENTER_TYPE_LABEL[c.type] }}
+          onClose={() => setQr(false)}
+        />
+      )}
     </Shell>
   );
 }
