@@ -10,6 +10,10 @@ on:
         description: '1 = только собрать превью (ничего не постить); 0 = публиковать в @iskcone'
         required: false
         default: '1'
+      only:
+        description: 'Только эти источники через запятую (vrindavan,mayapur). Пусто = все'
+        required: false
+        default: ''
   schedule:
     - cron: '0 6 * * *'   # 06:00 UTC ≈ 11:30 IST — стартуем в dry-run
 
@@ -28,18 +32,18 @@ jobs:
       - name: Ingest darshan
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || '1' }}
+          ONLY: ${{ github.event.inputs.only || '' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: '@iskcone'
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 'd5cbe19470dc38599873eabfe148e6d1'
         run: node scripts/darshan-ingest.mjs
 
-      - name: Publish preview to side branch (dry-run only)
-        if: ${{ (github.event.inputs.dry_run || '1') == '1' }}
+      - name: Publish run result to side branch
         run: |
           git config user.name "ci-darshan"
           git config user.email "ci@local"
           git checkout -B ci/darshan-dryrun
           git add -f data/darshan/_dryrun.json
-          git commit -m "ci: darshan dry-run preview" || echo "nothing to commit"
+          git commit -m "ci: darshan run result" || echo "nothing to commit"
           git push -f origin ci/darshan-dryrun
