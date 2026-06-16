@@ -102,6 +102,20 @@ function relGroup(relation: string, dir: "out" | "in"): { label: string; order: 
   }
 }
 
+/** Раскрытие аббревиатур цитат в полные названия писаний (для читаемости). */
+function expandRefs(s: string): string {
+  return s
+    .replace(/Ч\.-ч\. /g, "Чайтанья-чаритамрита ")
+    .replace(/Б\.-с\. /g, "Брахма-самхита ")
+    .replace(/Бр\.-с\. /g, "Брахма-самхита ")
+    .replace(/ГГД /g, "Гаура-ганоддеша-дипика ")
+    .replace(/ЧБ /g, "Чайтанья-Бхагавата ")
+    .replace(/ЧЧ /g, "Чайтанья-чаритамрита ")
+    .replace(/ШБ /g, "Шримад-Бхагаватам ")
+    .replace(/СБ /g, "Шримад-Бхагаватам ")
+    .replace(/БГ /g, "Бхагавад-гита ");
+}
+
 function initialOf(d: EntityDetail): string {
   const s = (d.name_iast || d.name_ru || "?").trim();
   return s.charAt(0).toUpperCase();
@@ -408,7 +422,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
             )}
 
             {data.source_ref && (
-              <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {data.source_ref}</div>
+              <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {expandRefs(data.source_ref)}</div>
             )}
 
             {/* писания — канонические цитаты с диплинком в ридер (entity_links kind=scripture) */}
