@@ -16,10 +16,12 @@ import { accountClient, ApiError, type Overview, type ReadingItem, type ListenIt
 import { usePlayer } from "./player/store";
 import { BOOKS, bookFullTitle } from "./books";
 import { albumById } from "./kirtans";
+import { useNotes, noteTitle, notePreview, requestNote, requestOpenNote, type Note } from "./notes";
 
 /* ─────────────────────────── палитра/токены ─────────────────────────── */
 
 const GOLD = "#D2AA1B";
+const GOLDT = "#9c7c15";
 const GROUPED = "#f2f2f7";
 const SURFACE = "var(--color-bg-2)";
 const INK = "var(--color-label)";
@@ -59,6 +61,12 @@ const EyeIco = ({ size = 20, off }: IcoProps & { off?: boolean }) =>
   ) : (
     <svg {...ico(size)}><path {...STR} d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z" /><circle {...STR} cx="12" cy="12" r="3" /></svg>
   );
+const NoteIco = ({ size = 20 }: IcoProps) => (
+  <svg {...ico(size)}><path {...STR} d="M6 3.6h7.4L18.4 8.6V20a.9.9 0 0 1-.9.9H6a.9.9 0 0 1-.9-.9V4.5A.9.9 0 0 1 6 3.6Z" /><path {...STR} d="M13.2 3.7v4.6a.6.6 0 0 0 .6.6h4.4" /><path {...STR} d="M8 12.4h6.6M8 15.4h6.6M8 18.2h3.8" /></svg>
+);
+const PlusIco = ({ size = 16 }: IcoProps) => (
+  <svg {...ico(size)}><path {...STR} d="M12 5v14M5 12h14" /></svg>
+);
 
 /* ─────────────────────────── утилиты ─────────────────────────── */
 
@@ -128,6 +136,66 @@ function SectionTitle({ title, action }: { title: string; action?: { label: stri
         </button>
       )}
     </div>
+  );
+}
+
+/* ─────────────────────────── заметки садху ─────────────────────────── */
+
+function fmtNoteDate(ms: number): string {
+  const d = new Date(ms);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+  const y = new Date(now); y.setDate(now.getDate() - 1);
+  if (d.toDateString() === y.toDateString()) return "Вчера";
+  const sameYear = d.getFullYear() === now.getFullYear();
+  return d.toLocaleDateString("ru-RU", sameYear ? { day: "numeric", month: "long" } : { day: "numeric", month: "short", year: "numeric" });
+}
+
+function NoteRow({ n, last, onOpen }: { n: Note; last: boolean; onOpen: (id: string) => void }) {
+  const [press, setPress] = useState(false);
+  return (
+    <button
+      onClick={() => onOpen(n.id)}
+      onPointerDown={() => setPress(true)} onPointerUp={() => setPress(false)} onPointerLeave={() => setPress(false)}
+      style={{ display: "flex", width: "100%", gap: 12, alignItems: "flex-start", textAlign: "left", background: press ? "rgba(120,120,128,0.10)" : "none", border: "none", padding: "13px 16px", cursor: "pointer", borderTop: last ? "none" : "none", fontFamily: FONT, WebkitTapHighlightColor: "transparent", transition: "background-color .12s ease" }}
+    >
+      <span style={{ flexShrink: 0, width: 34, height: 34, borderRadius: 9, marginTop: 1, display: "grid", placeItems: "center", color: GOLDT, background: "linear-gradient(135deg, #fbf4d8 0%, #f1e1a4 100%)", border: `0.5px solid ${GOLD}55` }}><NoteIco size={18} /></span>
+      <span style={{ minWidth: 0, flex: 1 }}>
+        <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: INK, letterSpacing: -0.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{noteTitle(n)}</span>
+        <span style={{ display: "-webkit-box", marginTop: 2, fontSize: 13, color: INK2, lineHeight: 1.35, overflow: "hidden", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{notePreview(n) || "Пустая заметка"}</span>
+      </span>
+      <span style={{ flexShrink: 0, fontSize: 12, color: INK3, marginTop: 2, fontVariantNumeric: "tabular-nums" }}>{fmtNoteDate(n.updatedAt)}</span>
+    </button>
+  );
+}
+
+function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
+  const notes = useNotes();
+  const recent = [...notes]
+    .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.updatedAt - a.updatedAt)
+    .slice(0, 3);
+  const cardStyle: CSSProperties = { background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" };
+  return (
+    <section>
+      <SectionTitle title="Заметки садху" action={notes.length ? { label: notes.length > 3 ? `Все · ${notes.length}` : "Все", onClick: () => onOpenPath("/notes") } : undefined} />
+      {recent.length > 0 ? (
+        <div style={cardStyle}>
+          {recent.map((n, i) => (
+            <div key={n.id} style={{ borderTop: i ? `0.5px solid ${HAIR}` : "none" }}><NoteRow n={n} last={i === recent.length - 1} onOpen={requestOpenNote} /></div>
+          ))}
+          <button onClick={() => requestNote()} style={{ display: "flex", width: "100%", gap: 8, alignItems: "center", justifyContent: "center", background: "none", border: "none", borderTop: `0.5px solid ${HAIR}`, padding: "12px 16px", cursor: "pointer", color: GOLD, fontWeight: 600, fontSize: 14.5, fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+            <PlusIco size={16} /> Новая заметка
+          </button>
+        </div>
+      ) : (
+        <div style={{ ...cardStyle, padding: "20px 18px", textAlign: "center" }}>
+          <div style={{ width: 46, height: 46, margin: "0 auto 12px", borderRadius: 12, background: "linear-gradient(135deg, #fbf4d8 0%, #f1e1a4 100%)", color: GOLDT, display: "grid", placeItems: "center", border: `0.5px solid ${GOLD}55` }}><NoteIco size={24} /></div>
+          <div style={{ fontSize: 15.5, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.1 }}>Записывайте ценное</div>
+          <p style={{ margin: "6px auto 16px", fontSize: 13.5, lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 264 }}>Услышали стих или мысль, которую хочется сохранить, — добавьте её из меню «…» в любом разделе или начните прямо сейчас.</p>
+          <button onClick={() => requestNote()} style={{ height: 44, padding: "0 20px", borderRadius: 13, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: 14.5, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Новая заметка</button>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -520,6 +588,8 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <ProfileHeader onEdit={() => setEditing(true)} />
 
       {ov && <StatStrip stats={ov.stats} />}
+
+      <NotesSection onOpenPath={onOpenPath} />
 
       {!loaded && (
         <div style={{ display: "flex", justifyContent: "center", padding: "30px 0", color: INK3, fontSize: 14, fontFamily: FONT }}>Загружаю…</div>

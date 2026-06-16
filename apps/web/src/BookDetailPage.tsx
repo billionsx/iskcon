@@ -21,6 +21,7 @@ import { recordRead } from "./account/track";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
+import { requestNote } from "./notes";
 import { addToCart } from "./shop/cart";
 import { bookProduct } from "./shop/catalog";
 import { exportToPdf, downloadServerPdf } from "./pdf";
@@ -1243,8 +1244,18 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
         </div>
       </div>
 
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} withNote onSelect={(id) => {
         setMenu(false);
+        if (id === "note") {
+          requestNote({
+            kind: "chapter",
+            ref: `chapter:${work}/${chapter.id || chapter.number}`,
+            title: chapter.title_ru,
+            subtitle: `Глава ${chapter.number} · ${bookTitle}`,
+            href: `/book/${work}${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`,
+          });
+          return;
+        }
         if (id === "share") { void shareChapter(); return; }
         if (id === "pdf") {
           if (verses && verses.length) setPrinting(true);
@@ -1709,8 +1720,18 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         </div>
       </div>
 
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={(id) => {
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} withNote onSelect={(id) => {
         setMenu(false);
+        if (id === "note") {
+          requestNote({
+            kind: "chapter",
+            ref: `chapter:${work}/${chapter.id || chapter.number}`,
+            title: chapter.title_ru,
+            subtitle: `Глава ${chapter.number} · ${bookTitle}`,
+            href: `/book/${work}/${chapter.number}`,
+          });
+          return;
+        }
         if (id === "share") { void shareChapter(); return; }
         // «Скачать PDF» из прозовой книги → единый диспетчер книги (onMenuAction).
         if (id === "qr") {
@@ -1873,8 +1894,18 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
         <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
 
-      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} onSelect={(id) => {
+      <BookMenuSheet open={vMenu} onClose={() => setVMenu(false)} withNote onSelect={(id) => {
         setVMenu(false);
+        if (id === "note") {
+          requestNote({
+            kind: "verse",
+            ref: `verse:${work}/${refStr}`,
+            title: data?.label ?? refStr,
+            subtitle: `${chapterTitle ? chapterTitle + " · " : ""}${bookTitle}`,
+            href: verseUrl.replace(/^https?:\/\/[^/]+/, ""),
+          });
+          return;
+        }
         if (id === "share") { void shareVerse(); return; }
         if (id === "pdf") {
           const label = data?.label ?? refStr;
@@ -2205,6 +2236,10 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
 
   const menuAction = (id: string) => {
     setMoreOpen(false);
+    if (id === "note") {
+      requestNote({ kind: "book", ref: `book:${book.work}`, title: bookFullTitle(book), subtitle: book.tagline, href: `/book/${book.work}` });
+      return;
+    }
     if (id === "share") { void shareBook(); return; }
     if (id === "pdf") { void downloadBookPdf({ work: book.work, book, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
     if (id === "qr") {

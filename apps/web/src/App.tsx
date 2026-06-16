@@ -26,6 +26,8 @@ import ContentDetailPage from "./ContentDetailPage";
 import EntityPage from "./EntityPage";
 import AcharyaScreen from "./AcharyaScreen";
 import FavoritesScreen from "./FavoritesScreen";
+import NotesScreen from "./NotesScreen";
+import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, type NoteAttach } from "./notes";
 import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
 import BookLoaderPage from "./BookLoaderPage";
 import AccountScreen from "./AccountScreen";
@@ -444,6 +446,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     if (id === "qr") { setQr({ url, data: { kind: "book", bookTitle: bookFullTitle(b), tagline: b.tagline, cover: b.covers[0] } }); return; }
     if (id === "donate") { onDonate(); return; }
     if (id === "report") { setReportOpen(true); return; }
+    if (id === "note") { requestNote({ kind: "book", ref: `book:${work}`, title: bookFullTitle(b), subtitle: b.tagline, href: `/book/${work}` }); return; }
     onOpenBook(work);
   };
   return (
@@ -508,6 +511,8 @@ export default function App() {
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
   const [openKirtanArtist, setOpenKirtanArtist] = useState<string | null>(null);
   const [openFavorites, setOpenFavorites] = useState(false);
+  const [openNotes, setOpenNotes] = useState(false);
+  const [notesInitial, setNotesInitial] = useState<{ attach?: NoteAttach; openId?: string; nonce: number } | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
@@ -531,7 +536,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "cart", "practice", "prasadam"];
+  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "notes", "cart", "practice", "prasadam"];
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
@@ -546,6 +551,7 @@ export default function App() {
     if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openKirtanArtist) return "/kirtan/" + openKirtanArtist;
     if (openFavorites) return "/favorites";
+    if (openNotes) return "/notes";
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
     if (openEntity) return "/person/" + openEntity;
@@ -567,12 +573,13 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
+    if (clean === "/notes") { setOpenNotes(true); return; }
     if (clean === "/cart") { setOpenCart(true); return; }
     if (clean === "/practice/japa") { setOpenJapa(true); return; }
     if (clean === "/practice/diary") { setOpenDiary(true); return; }
@@ -672,13 +679,21 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Быстрый захват заметки из любого меню (⋯ / плеер / стих / избранное).
+  useEffect(() => {
+    const onOpenNotes = () => { setNotesInitial(takePendingNotes()); navigate("/notes"); };
+    window.addEventListener(OPEN_NOTES_EVENT, onOpenNotes);
+    return () => window.removeEventListener(OPEN_NOTES_EVENT, onOpenNotes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // состояние → URL (push нового уровня), кроме случаев применения из popstate
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -729,7 +744,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -809,6 +824,10 @@ export default function App() {
         ) : prasadamSection ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} />
+          </main>
+        ) : openNotes ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <NotesScreen onBack={goBack} onNavigate={navigate} initial={notesInitial} />
           </main>
         ) : (
           <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onCart={() => setOpenCart(true)} />

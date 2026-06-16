@@ -20,6 +20,7 @@ import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { mirrorFavorite, syncFavoritesToServer, useAuthed } from "./account/track";
+import { syncNotesWithServer, resetNotesSync, requestNote } from "./notes";
 import { HeartIcon, MoreIcon } from "./ui/icons";
 
 /* ── Избранное: localStorage `fav:<key>`; key = `<type>:<id>`.
@@ -191,8 +192,9 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
   // При входе разово переносим локальное «Избранное» в личный кабинет.
   const authed = useAuthed();
   useEffect(() => {
-    if (!authed) return;
+    if (!authed) { resetNotesSync(); return; }
     syncFavoritesToServer(favSnapshot().map((it) => ({ key: it.key, meta: { t: it.title, s: it.subtitle, h: it.href } })));
+    void syncNotesWithServer();
   }, [authed]);
   const tRef = useState<{ id: ReturnType<typeof setTimeout> | null }>({ id: null })[0];
   const flash = useCallback((m: string) => {
@@ -215,11 +217,17 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
     if (id === "qr") { setQr(c); return; }
     if (id === "donate") { onDonate(); return; }
     if (id === "report") { setReport(c); return; }
+    if (id === "note") {
+      let href = c.url;
+      try { href = new URL(c.url, typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com").pathname; } catch { /* keep as-is */ }
+      requestNote({ kind: c.type, ref: `${c.type}:${c.id}`, title: c.title, subtitle: c.subtitle, href });
+      return;
+    }
   };
   return (
     <Ctx.Provider value={api}>
       {children}
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} variant={ctx?.type === "bhajan" ? "bhajan" : "book"} />
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={pick} withNote variant={ctx?.type === "bhajan" ? "bhajan" : "book"} />
       {qr && <QrSheet url={qr.url} data={{ kind: "card", title: qr.title, subtitle: qr.subtitle }} onClose={() => setQr(null)} />}
       <ReportSheet open={!!report} onClose={() => setReport(null)} context={report ? report.context : ""} />
       {toast && (

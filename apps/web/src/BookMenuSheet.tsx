@@ -55,6 +55,8 @@ const GiftGlyph = () => (
 const ReportGlyph = () => <Svg><g {...stroke}><path d="M12 4.5 20.5 19 3.5 19Z" /><path d="M12 10v3.8" /></g><circle cx="12" cy="16.4" r="0.6" fill="currentColor" /></Svg>;
 /* bag — «заказать печатное издание»; iOS bag, отличается от подарка-доната. */
 const BagGlyph = () => <Svg><g {...stroke}><path d="M6 8.6h12a.8.8 0 0 1 .8.86l-.78 9.4A1.5 1.5 0 0 1 16.53 20.2H7.47a1.5 1.5 0 0 1-1.49-1.34l-.78-9.4A.8.8 0 0 1 6 8.6Z" /><path d="M9 9V7a3 3 0 0 1 6 0v2" /></g></Svg>;
+/* note.text — «в заметки»: страница с линиями текста и загнутым уголком. */
+const NoteGlyph = () => <Svg><g {...stroke}><path d="M6 3.6h7.4L18.4 8.6V20a.9.9 0 0 1-.9.9H6a.9.9 0 0 1-.9-.9V4.5A.9.9 0 0 1 6 3.6Z" /><path d="M13.2 3.7v4.6a.6.6 0 0 0 .6.6h4.4" /><path d="M8 12.4h6.6M8 15.4h6.6M8 18.2h3.8" /></g></Svg>;
 
 type Item = { id: string; label: string; Icon: () => ReactNode; danger?: boolean };
 const GROUPS: Item[][] = [
@@ -137,10 +139,12 @@ const SHEET_CSS = `
 @media (prefers-reduced-motion: reduce) { .bms-scrim, .bms-sheet { animation: none !important; } }
 `;
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false }: {
+export { NoteGlyph };
+
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean; canOrder?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
@@ -152,6 +156,8 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isCha
               if (canOrder) groups.splice(1, 0, { items: [{ id: "order", label: "Заказать печатное издание", Icon: BagGlyph }] });
               return groups;
             })();
+  // «В заметки» — отдельной верхней группой: жест садху «сохранить ценное» первичен.
+  if (withNote) data.unshift({ items: [{ id: "note", label: "В заметки", Icon: NoteGlyph }] });
   const onPick = (id: string) => { onClose(); onSelect(id); };
   return createPortal(
     <div className="bms-scrim" onClick={(e) => { e.stopPropagation(); onClose(); }}
