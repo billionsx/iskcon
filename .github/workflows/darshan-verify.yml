@@ -1,0 +1,43 @@
+name: darshan-verify
+
+# Разовая проверка: кто бот, существует ли канал, админ ли бот с правом постинга.
+# Результат пишется в ветку ci/telegram-verify (НЕ в main) — чтобы не триггерить деплой.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Probe Telegram bot + channel
+        env:
+          TG: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHANNEL: '@iskcone'
+        run: |
+          set -e
+          mkdir -p data/darshan
+          curl -s "https://api.telegram.org/bot${TG}/getMe" -o /tmp/getme.json
+          BOTID=$(python3 -c "import json;print(json.load(open('/tmp/getme.json')).get('result',{}).get('id',''))")
+          curl -s --get "https://api.telegram.org/bot${TG}/getChat" --data-urlencode "chat_id=${CHANNEL}" -o /tmp/chat.json
+          curl -s --get "https://api.telegram.org/bot${TG}/getChatMember" --data-urlencode "chat_id=${CHANNEL}" --data-urlencode "user_id=${BOTID}" -o /tmp/member.json
+          python3 -c "import json
+def load(p):
+ try: return json.load(open(p))
+ except Exception as e: return {'_error': str(e)}
+o={'getMe':load('/tmp/getme.json'),'getChat':load('/tmp/chat.json'),'getChatMember':load('/tmp/member.json')}
+json.dump(o,open('data/darshan/_verify.json','w'),ensure_ascii=False,indent=2)
+print(json.dumps(o,ensure_ascii=False,indent=2))"
+
+      - name: Publish result to side branch
+        run: |
+          git config user.name "ci-verify"
+          git config user.email "ci@local"
+          git checkout -B ci/telegram-verify
+          git add -f data/darshan/_verify.json
+          git commit -m "ci: telegram bot+channel verify" || echo "nothing to commit"
+          git push -f origin ci/telegram-verify
