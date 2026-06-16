@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuthed, requireAuth } from "./../account/track";
 import { centersClient, pickI18n, type CenterCard, type CenterDeity } from "./api";
+import EntityPicker from "./EntityPicker";
 
 const GOLD = "#D2AA1B";
 const GOLDT = "#9c7c15";
@@ -53,6 +54,7 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
   const [fName, setFName] = useState("");
   const [fDarshan, setFDarshan] = useState("");
   const [fPhoto, setFPhoto] = useState("");
+  const [fEntity, setFEntity] = useState<{ id: string; name: string } | null>(null);
 
   const load = useCallback(() => {
     setPhase("loading");
@@ -63,12 +65,13 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
 
   useEffect(() => { if (!authed) { setPhase("ready"); return; } load(); }, [authed, load]);
 
-  const openNew = () => { setErr(null); setFName(""); setFDarshan(""); setFPhoto(""); setEditing({ mode: "new" }); };
+  const openNew = () => { setErr(null); setFName(""); setFDarshan(""); setFPhoto(""); setFEntity(null); setEditing({ mode: "new" }); };
   const openEdit = (d: CenterDeity) => {
     setErr(null);
     setFName(pickI18n(d.local_name_i18n));
     setFDarshan(pickI18n(d.darshan_times));
     setFPhoto(d.photos[0] || "");
+    setFEntity(d.deity_entity_id ? { id: d.deity_entity_id, name: d.deity_entity_name || d.deity_entity_id } : null);
     setEditing({ mode: "edit", deity: d });
   };
 
@@ -81,12 +84,13 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
       local_name_i18n: { ru: fName.trim() },
       darshan_times: fDarshan.trim() ? { ru: fDarshan.trim() } : {},
       photos: fPhoto.trim() ? [fPhoto.trim()] : [],
+      deity_entity_id: fEntity?.id || null,
     };
     const op = editing.mode === "new" ? centersClient.addDeity(centerId, payload) : centersClient.updateDeity(centerId, editing.deity.id, payload);
     op.then(() => { flash?.(editing.mode === "new" ? "Божество добавлено" : "Сохранено"); setEditing(null); load(); })
       .catch(() => setErr("Не удалось сохранить."))
       .finally(() => setSaving(false));
-  }, [saving, centerId, editing, fName, fDarshan, fPhoto, flash, load]);
+  }, [saving, centerId, editing, fName, fDarshan, fPhoto, fEntity, flash, load]);
 
   const remove = useCallback(() => {
     if (saving || !centerId || !editing || editing.mode !== "edit") return;
@@ -150,6 +154,11 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
           <div style={eyebrow}>Фото (ссылка)</div>
           <input style={inputStyle} value={fPhoto} onChange={(e) => setFPhoto(e.target.value)} placeholder="https://…" maxLength={300} autoCapitalize="off" />
           {fPhoto.trim() && <div style={{ marginTop: 10, width: 90, height: 90, borderRadius: 14, background: `center/cover no-repeat url("${fPhoto.trim()}")` }} />}
+        </section>
+        <section style={{ marginTop: 20 }}>
+          <div style={eyebrow}>Связь с реестром</div>
+          <EntityPicker value={fEntity} onChange={setFEntity} placeholder="Найти Божество в реестре…" />
+          <p style={{ margin: "9px 4px 0", fontFamily: FT, fontSize: 12.5, lineHeight: 1.5, color: L3 }}>Свяжите с Божеством из общего реестра — со страницы центра можно будет перейти к Нему, а на Его странице появится этот центр.</p>
         </section>
         {err && <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{err}</div>}
         <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>{saving ? "Сохраняю…" : "Сохранить"}</button>

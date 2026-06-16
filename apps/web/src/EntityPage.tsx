@@ -32,6 +32,15 @@ export interface LinkItem {
   title: string | null;
   subtitle: string | null;
 }
+interface CenterHit {
+  id: string;
+  type: string;
+  name: string;
+  slug: string;
+  city: string | null;
+  country: string | null;
+  photos: string[];
+}
 export interface DarshanItem {
   temple_slug: string;
   temple_name: string;
@@ -227,6 +236,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
+  const [centers, setCenters] = useState<CenterHit[]>([]);
 
   useEffect(() => {
     let alive = true;
@@ -252,6 +262,16 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
       .catch(() => { /* живой даршан необязателен */ });
     return () => { alive = false; };
   }, [data]);
+  // Сквозная связь: центры, где есть это Божество/праздник (источник — раздел «Ятра»).
+  useEffect(() => {
+    let alive = true;
+    setCenters([]);
+    fetch(api(`/centers?entity=${encodeURIComponent(id)}`))
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("http " + r.status))))
+      .then((d) => { if (alive) setCenters(((d?.items as CenterHit[]) ?? [])); })
+      .catch(() => { /* раздел просто не показывается */ });
+    return () => { alive = false; };
+  }, [id]);
 
   const groups = (() => {
     if (!data) return [];
@@ -433,6 +453,35 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
                 </section>
               );
             })()}
+            {/* центры (Ятра): где есть это Божество/праздник — сквозная связь */}
+            {centers.length > 0 && (
+              <section style={{ marginTop: 26 }}>
+                <Eyebrow count={centers.length}>Центры</Eyebrow>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {centers.map((c) => {
+                    const href = `/center/${c.slug}`;
+                    const go = onNavigate ? () => onNavigate(href) : undefined;
+                    const loc = [c.city, c.country].filter(Boolean).join(", ");
+                    return (
+                      <button key={c.id} type="button" onClick={go}
+                        style={{ display: "flex", alignItems: "center", gap: 0, width: "100%", padding: 0, border: "0.5px solid var(--color-hairline)", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", textAlign: "left", cursor: go ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>
+                        {c.photos[0] ? (
+                          <span style={{ width: 64, height: 64, flexShrink: 0, background: `center/cover no-repeat url("${c.photos[0]}")` }} />
+                        ) : (
+                          <span style={{ width: 64, height: 64, flexShrink: 0, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 13%, transparent)` }}>
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 21h18M5 21V10l7-5 7 5v11M9.5 21v-5h5v5" /></svg>
+                          </span>
+                        )}
+                        <span style={{ minWidth: 0, flex: 1, padding: "0 13px" }}>
+                          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</span>
+                          {loc && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{loc}</span>}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
 
             {/* кросс-силос фасеты: блюда/киртаны/храмы/… */}
             {linkGroups.map(([kind, items]) => (

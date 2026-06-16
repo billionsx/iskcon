@@ -257,6 +257,13 @@ async function ensureSchema(env: DB): Promise<void> {
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_events_center ON center_events(center_id)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_events_starts ON center_events(starts_at)`),
   ]);
+  // Неразрушающие миграции колонок-связей с графом сущностей (idempotent: бросает, если уже есть).
+  for (const sql of [
+    `ALTER TABLE center_deities ADD COLUMN deity_entity_id TEXT`,
+    `ALTER TABLE center_events ADD COLUMN festival_entity_id TEXT`,
+  ]) {
+    try { await env.DB.prepare(sql).run(); } catch { /* колонка уже существует */ }
+  }
   schemaReady = true;
 }
 
@@ -307,6 +314,23 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
   /* ───────── публичный локатор ───────── */
   if (p === "/api/centers" && method === "GET") {
     const sp = url.searchParams;
+
+    // Сквозная связь с графом: центры, где есть это Божество или праздник (entity-id).
+    const entity = (clip(sp.get("entity"), 64) || "").toLowerCase();
+    if (entity) {
+      const { results } = await env.DB.prepare(
+        `SELECT DISTINCT c.id, c.type, c.name, c.slug, c.country, c.city, c.photos
+         FROM centers c
+         WHERE c.status = 'live' AND (
+           EXISTS (SELECT 1 FROM center_deities d WHERE d.center_id = c.id AND d.deity_entity_id = ?1)
+           OR EXISTS (SELECT 1 FROM center_events e WHERE e.center_id = c.id AND e.festival_entity_id = ?1)
+         )
+         ORDER BY c.name LIMIT 50`,
+      ).bind(entity).all();
+      const items = (results as Record<string, any>[]).map((r) => ({ ...r, photos: parse<string[]>(r.photos, []) }));
+      return jres({ items });
+    }
+
     const where: string[] = ["status = 'live'"];
     const binds: unknown[] = [];
 
@@ -548,8 +572,8 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         if (Object.keys(name).length === 0) return err("bad_deity");
         const id = crypto.randomUUID();
         await env.DB.prepare(
-          `INSERT INTO center_deities (id, center_id, deity_id, local_name_i18n, installed_on, darshan_times, photos)
-           VALUES (?1,?2,?3,?4,?5,?6,?7)`,
+          `INSERT INTO center_deities (id, center_id, deity_id, local_name_i18n, installed_on, darshan_times, photos, deity_entity_id)
+           VALUES (?1,?2,?3,?4,?5,?6,?7,?8)`,
         )
           .bind(
             id,
@@ -559,6 +583,7 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
             clip(b.installed_on, 20) || null,
             JSON.stringify(cleanI18n(b.darshan_times)),
             JSON.stringify(asArr(b.photos)),
+            (clip(b.deity_entity_id, 64) || "").toLowerCase() || null,
           )
           .run();
         await touchCenter(env, centerId);
@@ -589,6 +614,10 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         if ("deity_id" in b) {
           fields.push("deity_id = ?");
           binds.push(clip(b.deity_id, 64) || null);
+        }
+        if ("deity_entity_id" in b) {
+          fields.push("deity_entity_id = ?");
+          binds.push((clip(b.deity_entity_id, 64) || "").toLowerCase() || null);
         }
         if (fields.length === 0) return jres({ id: did, updated: false });
         binds.push(did, centerId);
@@ -624,8 +653,8 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         if (!starts) return err("bad_event_date");
         const id = crypto.randomUUID();
         await env.DB.prepare(
-          `INSERT INTO center_events (id, center_id, festival_id, title_i18n, description_i18n, starts_at, ends_at, images, livestream_url)
-           VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)`,
+          `INSERT INTO center_events (id, center_id, festival_id, title_i18n, description_i18n, starts_at, ends_at, images, livestream_url, festival_entity_id)
+           VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)`,
         )
           .bind(
             id,
@@ -637,6 +666,7 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
             clipDateTime(b.ends_at),
             JSON.stringify(asArr(b.images)),
             clip(b.livestream_url, 300) || null,
+            (clip(b.festival_entity_id, 64) || "").toLowerCase() || null,
           )
           .run();
         await touchCenter(env, centerId);
@@ -677,6 +707,10 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
         if ("festival_id" in b) {
           fields.push("festival_id = ?");
           binds.push(clip(b.festival_id, 64) || null);
+        }
+        if ("festival_entity_id" in b) {
+          fields.push("festival_entity_id = ?");
+          binds.push((clip(b.festival_entity_id, 64) || "").toLowerCase() || null);
         }
         if (fields.length === 0) return jres({ id: eid, updated: false });
         binds.push(eid, centerId);
@@ -725,20 +759,55 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
           .all(),
         env.DB.prepare(
           `SELECT cd.id, cd.local_name_i18n, cd.darshan_times, cd.photos,
-                  d.id AS deity_id, d.canonical_name
+                  d.id AS deity_id, d.canonical_name, cd.deity_entity_id
            FROM center_deities cd LEFT JOIN deities d ON d.id = cd.deity_id
            WHERE cd.center_id = ?1`,
         )
           .bind(center.id)
           .all(),
         env.DB.prepare(
-          `SELECT id, festival_id, title_i18n, description_i18n, starts_at, ends_at, images, livestream_url
+          `SELECT id, festival_id, title_i18n, description_i18n, starts_at, ends_at, images, livestream_url,
+                  festival_entity_id
            FROM center_events WHERE center_id = ?1 AND (ends_at IS NULL OR ends_at >= datetime('now'))
            ORDER BY starts_at LIMIT 20`,
         )
           .bind(center.id)
           .all(),
       ]);
+
+      const deitiesArr = (deities.results as Record<string, any>[]).map((x) => ({
+        ...x,
+        local_name_i18n: parse(x.local_name_i18n, {}),
+        darshan_times: parse(x.darshan_times, {}),
+        photos: parse<string[]>(x.photos, []),
+        deity_entity_id: (x.deity_entity_id ?? null) as string | null,
+        deity_entity_name: null as string | null,
+      }));
+      const eventsArr = (events.results as Record<string, any>[]).map((x) => ({
+        ...x,
+        title_i18n: parse(x.title_i18n, {}),
+        description_i18n: parse(x.description_i18n, {}),
+        images: parse<string[]>(x.images, []),
+        festival_entity_id: (x.festival_entity_id ?? null) as string | null,
+        festival_entity_name: null as string | null,
+      }));
+      // Обогащаем именами связанных сущностей графа. Таблица может отсутствовать в свежей БД —
+      // try/catch, тогда имена остаются null (как с entity_links/darshan в основном воркере).
+      try {
+        const ids = [...new Set([
+          ...deitiesArr.map((d) => d.deity_entity_id),
+          ...eventsArr.map((e) => e.festival_entity_id),
+        ].filter(Boolean))] as string[];
+        if (ids.length) {
+          const nm = await env.DB.prepare(
+            `SELECT entity_id, value FROM entity_names WHERE lang='ru' AND kind='canonical' AND entity_id IN (${ids.map(() => "?").join(",")})`,
+          ).bind(...ids).all<{ entity_id: string; value: string }>();
+          const nameMap = new Map<string, string>();
+          for (const r of nm.results ?? []) nameMap.set(r.entity_id, r.value);
+          for (const d of deitiesArr) if (d.deity_entity_id) d.deity_entity_name = nameMap.get(d.deity_entity_id) ?? null;
+          for (const e of eventsArr) if (e.festival_entity_id) e.festival_entity_name = nameMap.get(e.festival_entity_id) ?? null;
+        }
+      } catch { /* граф сущностей недоступен */ }
 
       return jres({
         center: {
@@ -752,18 +821,8 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
           days_of_week: parse<number[]>(x.days_of_week, []),
           notes_i18n: parse(x.notes_i18n, {}),
         })),
-        deities: (deities.results as Record<string, any>[]).map((x) => ({
-          ...x,
-          local_name_i18n: parse(x.local_name_i18n, {}),
-          darshan_times: parse(x.darshan_times, {}),
-          photos: parse<string[]>(x.photos, []),
-        })),
-        events: (events.results as Record<string, any>[]).map((x) => ({
-          ...x,
-          title_i18n: parse(x.title_i18n, {}),
-          description_i18n: parse(x.description_i18n, {}),
-          images: parse<string[]>(x.images, []),
-        })),
+        deities: deitiesArr,
+        events: eventsArr,
         can_manage: canManage,
         can_publish: canPublish,
       });

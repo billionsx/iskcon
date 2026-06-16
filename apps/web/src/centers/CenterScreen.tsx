@@ -473,7 +473,14 @@ export default function CenterScreen({
                   <div key={d.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderBottom: i === data.deities.length - 1 ? "none" : `0.5px solid ${HAIR}` }}>
                     {d.photos[0] && <span style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: `center/cover no-repeat url("${d.photos[0]}")` }} />}
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{name}</div>
+                      {d.deity_entity_id ? (
+                        <button type="button" onClick={() => onOpenPath(`/entity/${d.deity_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                          {name}
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg>
+                        </button>
+                      ) : (
+                        <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{name}</div>
+                      )}
                       {times && <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, marginTop: 2 }}>Даршан: {times}</div>}
                     </div>
                   </div>
