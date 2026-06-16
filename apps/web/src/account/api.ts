@@ -59,6 +59,8 @@ export interface SadhanaPatch {
   note?: string | null;
   goal?: number;
 }
+/** Круг джапы для дозаливки на сервер (идемпотентно по id). Совпадает с /api/me/japa. */
+export interface JapaSyncRound { id: string; day: string; at: string; beads: number; durationSec?: number | null }
 
 class ApiError extends Error {
   code: string;
@@ -104,6 +106,11 @@ export const accountClient = {
     get: (today: string, days = 21) =>
       request<SadhanaState>("GET", `/me/sadhana?today=${encodeURIComponent(today)}&days=${days}`),
     save: (patch: SadhanaPatch) => request<SadhanaState>("POST", "/me/sadhana", patch),
+  },
+  japa: {
+    // Дозаливка кругов с устройства (локальный счётчик) на сервер — идемпотентно
+    // по client_id; нужна, чтобы дневник учёл круги, отмеченные до входа/офлайн.
+    sync: (rounds: JapaSyncRound[]) => request<{ ok: true; saved: number }>("POST", "/me/japa", { rounds }),
   },
 };
 
