@@ -38,6 +38,9 @@ import { api } from "./api";
 import CartScreen from "./shop/CartScreen";
 import JapaScreen from "./JapaScreen";
 import SadhanaScreen from "./SadhanaScreen";
+import CenterScreen from "./centers/CenterScreen";
+import MyCentersScreen from "./centers/MyCentersScreen";
+import CenterEditor from "./centers/CenterEditor";
 import { useCartCount } from "./shop/cart";
 import PrasadamScreen from "./prasad/PrasadamScreen";
 import RecipeDetail from "./prasad/RecipeDetail";
@@ -523,6 +526,10 @@ export default function App() {
   const [openCart, setOpenCart] = useState(false);
   const [openJapa, setOpenJapa] = useState(false);
   const [openDiary, setOpenDiary] = useState(false);
+  const [openCenter, setOpenCenter] = useState<string | null>(null);
+  const [openMyCenters, setOpenMyCenters] = useState(false);
+  const [openCenterNew, setOpenCenterNew] = useState(false);
+  const [openCenterEdit, setOpenCenterEdit] = useState<string | null>(null);
   const [prasadamSection, setPrasadamSection] = useState<"recipes" | "match" | "deities" | "offering" | null>(null);
   const [prasadamRecipe, setPrasadamRecipe] = useState<string | null>(null);
   const [openCookbook, setOpenCookbook] = useState(false);
@@ -536,11 +543,15 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "notes", "cart", "practice", "prasadam"];
+  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "notes", "cart", "practice", "prasadam", "center", "centers", "my"];
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
     if (openDiary) return "/practice/diary";
+    if (openCenterNew) return "/my/centers/new";
+    if (openCenterEdit) return `/center/${openCenterEdit}/edit`;
+    if (openMyCenters) return "/my/centers";
+    if (openCenter) return `/center/${openCenter}`;
     if (prasadamRecipe) return "/prasadam/recipe/" + prasadamRecipe;
     if (cookbookChapter) return "/prasadam/book/" + cookbookChapter;
     if (openCookbook) return "/prasadam/book";
@@ -573,7 +584,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -583,6 +594,8 @@ export default function App() {
     if (clean === "/cart") { setOpenCart(true); return; }
     if (clean === "/practice/japa") { setOpenJapa(true); return; }
     if (clean === "/practice/diary") { setOpenDiary(true); return; }
+    if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
+    if (clean === "/my/centers") { setOpenMyCenters(true); return; }
     if (seg0 === "prasadam") {
       const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
       if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
@@ -605,6 +618,14 @@ export default function App() {
       return;
     }
     if (seg0 === "admin") { setOpenAdmin(true); return; }
+    if (seg0 === "center") {
+      const parts = clean.split("/");        // ["", "center", <slug>, "edit"?]
+      const cslug = parts[2] ?? "";
+      if (!cslug) { setTab("home"); return; }
+      if (parts[3] === "edit") setOpenCenterEdit(cslug);
+      else setOpenCenter(cslug);
+      return;
+    }
     if (seg0 === "read") {
       const [, , work, div, ch, v] = clean.split("/");
       if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
@@ -693,7 +714,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -744,7 +765,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -828,6 +849,22 @@ export default function App() {
         ) : openNotes ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <NotesScreen onBack={goBack} onNavigate={navigate} initial={notesInitial} />
+          </main>
+        ) : openCenterNew ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CenterEditor onBack={goBack} onOpenPath={navigate} />
+          </main>
+        ) : openCenterEdit ? (
+          <main key={openCenterEdit} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CenterEditor slug={openCenterEdit} onBack={goBack} onOpenPath={navigate} />
+          </main>
+        ) : openMyCenters ? (
+          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <MyCentersScreen onBack={goBack} onOpenPath={navigate} />
+          </main>
+        ) : openCenter ? (
+          <main key={openCenter} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <CenterScreen slug={openCenter} onBack={goBack} onOpenPath={navigate} />
           </main>
         ) : (
           <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onCart={() => setOpenCart(true)} />

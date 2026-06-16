@@ -55,6 +55,9 @@ const HeartGift = ({ size = 20 }: IcoProps) => (
 const SignOutIco = ({ size = 20 }: IcoProps) => (
   <svg {...ico(size)}><path {...STR} d="M15 4h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-3" /><path {...STR} d="M10 8l-4 4 4 4" /><path {...STR} d="M6 12h11" /></svg>
 );
+const TempleIco = ({ size = 20 }: IcoProps) => (
+  <svg {...ico(size)}><path {...STR} d="M12 3l5 3.2H7L12 3Z" /><path {...STR} d="M7 6.2v2.5M17 6.2v2.5M5 20v-7M19 20v-7M9.5 20v-4.5a2.5 2.5 0 0 1 5 0V20" /><path {...STR} d="M3.5 20h17M4.5 13h15" /></svg>
+);
 const EyeIco = ({ size = 20, off }: IcoProps & { off?: boolean }) =>
   off ? (
     <svg {...ico(size)}><path {...STR} d="M3 3l18 18" /><path {...STR} d="M10.6 5.1A9.7 9.7 0 0 1 12 5c5 0 9 5 9 7a12 12 0 0 1-2.2 2.7M6.3 6.3C3.7 7.9 2 10.7 2 12c0 2 4 7 9 7a9.7 9.7 0 0 0 3.6-.7" /><path {...STR} d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
@@ -650,6 +653,20 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
           <SadhanaCard state={sad} onOpen={() => onOpenPath("/practice/diary")} />
         </section>
       )}
+
+      <section>
+        <SectionTitle title="Служение" />
+        <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+          <button onClick={() => onOpenPath("/my/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+            <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><TempleIco size={18} /></span>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: "block", fontSize: 16, color: INK, fontWeight: 500 }}>Мои центры</span>
+              <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на gaurangers.com</span>
+            </span>
+            <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
+          </button>
+        </div>
+      </section>
 
       <NotesSection onOpenPath={onOpenPath} />
 
