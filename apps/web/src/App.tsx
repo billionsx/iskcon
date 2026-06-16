@@ -45,6 +45,10 @@ import { useCartCount } from "./shop/cart";
 import PrasadamScreen from "./prasad/PrasadamScreen";
 import RecipeDetail from "./prasad/RecipeDetail";
 import CookbookScreen from "./prasad/CookbookScreen";
+import DhamaScreen from "./dhama/DhamaScreen";
+import DhamaDetailPage from "./dhama/DhamaDetailPage";
+import TirthaDetailPage from "./dhama/TirthaDetailPage";
+import { getDhama } from "./dhama/dhamas";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -472,7 +476,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
           )}
           {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
           {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
-          {tab === "dhama" && <ComingSoon src="/vraj.svg" title="Дхама" subtitle="Святые места и храмы Вриндавана. Раздел готовится." />}
+          {tab === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} />}
           {tab === "account" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
         </div>
       </main>
@@ -534,6 +538,8 @@ export default function App() {
   const [prasadamRecipe, setPrasadamRecipe] = useState<string | null>(null);
   const [openCookbook, setOpenCookbook] = useState(false);
   const [cookbookChapter, setCookbookChapter] = useState<string | null>(null);
+  const [openDhama, setOpenDhama] = useState<string | null>(null);
+  const [openTirtha, setOpenTirtha] = useState<{ dhama: string; id: string } | null>(null);
   const fromPop = useRef(false);
   // Текущий открытый код книги — для делегирования внутрикнижного popstate (замыкание onPop иначе видит устаревшее значение).
   const openBookRef = useRef<string | null>(null);
@@ -567,6 +573,8 @@ export default function App() {
     if (openContent) return openContent;   // slug сам по себе путь
     if (openEntity) return "/person/" + openEntity;
     if (openCollection) return "/acharya/" + openCollection;
+    if (openTirtha) return "/dhama/" + openTirtha.dhama + "/" + openTirtha.id;
+    if (openDhama) return "/dhama/" + openDhama;
     return tab === "home" ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
@@ -584,10 +592,20 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null);
+    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenNotes(false); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenDhama(null); setOpenTirtha(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("home"); return; }
     if (["books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
+    if (seg0 === "dhama") {
+      const parts = clean.split("/");               // ["", "dhama", <id>, <tirthaId>?]
+      const did = parts[2];
+      if (did && getDhama(did)) {
+        setTab("dhama");
+        if (parts[3]) setOpenTirtha({ dhama: did, id: parts[3] });
+        else setOpenDhama(did);
+      } else { setTab("dhama"); }
+      return;
+    }
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
     if (clean === "/notes") { setOpenNotes(true); return; }
@@ -714,7 +732,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit]);
+  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openCart, openJapa, openDiary, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit, openDhama, openTirtha]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -765,7 +783,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit;
+  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openNotes && !openCart && !openJapa && !openDiary && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openDhama && !openTirtha;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -803,6 +821,14 @@ export default function App() {
         ) : openEntity ? (
           <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} onNavigate={navigate} />
+          </main>
+        ) : openTirtha && getDhama(openTirtha.dhama) ? (
+          <main key={openTirtha.dhama + "/" + openTirtha.id} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <TirthaDetailPage dhama={getDhama(openTirtha.dhama)!} tirthaId={openTirtha.id} onBack={goBack} onOpenEntity={openEntityTarget} />
+          </main>
+        ) : openDhama && getDhama(openDhama) ? (
+          <main key={openDhama} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
+            <DhamaDetailPage dhama={getDhama(openDhama)!} onBack={goBack} onOpenTirtha={(tid) => setOpenTirtha({ dhama: openDhama!, id: tid })} />
           </main>
         ) : openContent ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
