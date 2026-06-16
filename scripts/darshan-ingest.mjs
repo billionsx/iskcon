@@ -145,9 +145,11 @@ function alreadyPosted(src) {
 /* ───────── режимы ───────── */
 async function run() {
   const dry = (process.env.DRY_RUN ?? "1") !== "0";
+  const only = (process.env.ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
   const preview = [];
 
   for (const src of SOURCES) {
+    if (only.length && !only.includes(src.slug)) continue;
     let posts;
     try { posts = await fetchChannel(src.channel); }
     catch (e) { preview.push({ slug: src.slug, error: String(e) }); continue; }
@@ -186,8 +188,16 @@ async function run() {
     preview.push({ ...row, posted: `ok msg_id=${msg.message_id}` });
   }
 
+  let dbRows = null;
+  if (!dry) {
+    try {
+      const res = d1("SELECT COUNT(*) AS n FROM darshan");
+      dbRows = res?.[0]?.results?.[0]?.n ?? null;
+    } catch (e) { dbRows = "error: " + String(e).slice(0, 140); }
+  }
+
   mkdirSync("data/darshan", { recursive: true });
-  const result = { mode: dry ? "dry-run" : "live", at: new Date().toISOString(), channel: CHANNEL, items: preview };
+  const result = { mode: dry ? "dry-run" : "live", at: new Date().toISOString(), channel: CHANNEL, db_rows: dbRows, items: preview };
   writeFileSync("data/darshan/_dryrun.json", JSON.stringify(result, null, 2));
   console.log(JSON.stringify(result, null, 2));
 }
