@@ -78,6 +78,16 @@ const ClockG = ({ size = 17 }: { size?: number }) => (
     <circle cx="12" cy="12" r="9" /><path d="M12 7.5v5l3 2" />
   </svg>
 );
+const LotusG = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M12 12c0-3 1.6-6 0-8-1.6 2 0 5 0 8z" /><path d="M12 12c2.1-2.1 5.4-2.4 7.5-1.6-.6 2.6-3.4 4.1-5.6 3.6M12 12c-2.1-2.1-5.4-2.4-7.5-1.6.6 2.6 3.4 4.1 5.6 3.6" /><path d="M5 13c1 3.5 4 5 7 5s6-1.5 7-5" />
+  </svg>
+);
+const CalG = ({ size = 17 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="3.5" y="5" width="17" height="15" rx="2.5" /><path d="M3.5 9.5h17M8 3v4M16 3v4" />
+  </svg>
+);
 
 /* ───────────────────── формат ───────────────────── */
 function fmtDays(days: number[]): string {
@@ -356,13 +366,17 @@ export default function CenterScreen({
                   ? "Центр виден только вам. Заполните профиль и расписание, затем отправьте на проверку."
                   : "Центр опубликован. Изменения видны всем сразу."}
             </p>
-            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-              <button type="button" onClick={() => onOpenPath(`/center/${slug}/edit`)} style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                <Pencil size={16} />Профиль
-              </button>
-              <button type="button" onClick={() => onOpenPath(`/center/${slug}/schedule`)} style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                <ClockG size={16} />Расписание
-              </button>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
+              {[
+                { icon: <Pencil size={16} />, label: "Профиль", to: `/center/${slug}/edit` },
+                { icon: <ClockG size={16} />, label: "Расписание", to: `/center/${slug}/schedule` },
+                { icon: <LotusG size={16} />, label: "Божества", to: `/center/${slug}/deities` },
+                { icon: <CalG size={16} />, label: "События", to: `/center/${slug}/events` },
+              ].map((m) => (
+                <button key={m.label} type="button" onClick={() => onOpenPath(m.to)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                  {m.icon}{m.label}
+                </button>
+              ))}
             </div>
             {c.status === "draft" && (
               <button type="button" onClick={submitReview} disabled={busy} style={{ marginTop: 10, width: "100%", padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
