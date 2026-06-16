@@ -89,17 +89,14 @@ function ymd(iso) {
 }
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-function composeCaption(src, post) {
+function composeCaption(src) {
+  // По требованию: без эмодзи, без «Даршан дня», без даты, без строки источника.
+  // Остаётся: Божества (жирным) · храм · «ISKCON ONE LOVE» ссылкой на канал.
   return [
-    "🪷 <b>Даршан дня</b>",
-    "",
     `<b>${esc(src.deities)}</b>`,
     esc(src.name),
-    humanDate(post.date),
     "",
-    `📍 Источник: ${esc(src.srcLabel)}`,
-    "",
-    '🦚 <a href="https://t.me/iskcone">ISKCON ONE LOVE</a>',
+    '<a href="https://t.me/iskcone">ISKCON ONE LOVE</a>',
   ].join("\n");
 }
 
@@ -158,7 +155,7 @@ async function run() {
     if (!post) { preview.push({ slug: src.slug, error: "no darshan post with photo found" }); continue; }
     src._postId = post.id;
 
-    const caption = composeCaption(src, post);
+    const caption = composeCaption(src);
     const row = {
       slug: src.slug,
       date: ymd(post.date),
@@ -181,8 +178,10 @@ async function run() {
     const msg = await sendDarshanPhoto(hero, caption);
     const imagesJson = JSON.stringify(post.photos).replace(/'/g, "''");
     const capSql = caption.replace(/'/g, "''");
-    d1(`INSERT OR IGNORE INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-        VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',${msg.message_id})`);
+    try {
+      d1(`INSERT OR IGNORE INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
+          VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',${msg.message_id})`);
+    } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
     preview.push({ ...row, posted: `ok msg_id=${msg.message_id}` });
   }
 
