@@ -11,7 +11,7 @@
  * Меню книги (PDF/QR/поделиться/поддержать/ошибка) живёт в App (там состояние PDF/QR/
  * отчёта) и приходит как onBookMenu(work, id). Визуальный язык — общий с приложением.
  */
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   BOOKS,
@@ -19,11 +19,13 @@ import {
   LINEAGE_LABEL,
   LINEAGE_NOTE,
   AUDIO_WORKS,
+  bookFullTitle,
   type CatalogBook,
   type Lineage,
 } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
+import { recentReadings, pctOf, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 
 const GOLD = "#D2AA1B";
 
@@ -203,16 +205,79 @@ function SectionHeader({ title, note }: { title: string; note: string }) {
   );
 }
 
-export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, flash }: {
+/* Полка «Продолжить чтение» — личная, офлайн, работает и для гостя. Тап ведёт в
+ * точную точку, где читатель остановился (router App по сохранённому href). */
+function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath: (p: string) => void }) {
+  return (
+    <section style={{ marginTop: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
+        <span aria-hidden style={{ width: 18, height: 3, borderRadius: 999, background: GOLD }} />
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Продолжить чтение</h2>
+      </div>
+      <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 16, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+        {items.map((r, i) => {
+          const b = BOOKS[r.work];
+          const cover = b?.covers[0];
+          const title = b ? bookFullTitle(b) : r.label;
+          const pct = pctOf(r);
+          const initial = (b?.iast || title || "?").trim().charAt(0).toUpperCase();
+          return (
+            <li key={r.work} style={{ position: "relative", borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+              <button type="button" aria-label={`Продолжить: ${title}`} onClick={() => onOpenPath(r.href)}
+                style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "11px 13px", background: "none", border: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}
+                onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")}
+                onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
+                onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
+                {cover
+                  ? <img src={cover} alt="" loading="lazy" style={{ width: 50, height: 50, borderRadius: 11, objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
+                  : <BookMonogram ch={initial} />}
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+                  <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.label}</span>
+                  {pct != null && (
+                    <span style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 7 }}>
+                      <span aria-hidden style={{ flex: 1, height: 4, borderRadius: 999, background: "var(--color-fill-1)", overflow: "hidden" }}>
+                        <span style={{ display: "block", height: "100%", width: `${pct}%`, background: GOLD, borderRadius: 999 }} />
+                      </span>
+                      <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
+                    </span>
+                  )}
+                </span>
+                <Chevron />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash }: {
   onOpenBook: (work: string) => void;
   onBookMenu: (work: string, id: string) => void;
   onOpenEntity: (id: string, type: string | null) => void;
   onOpenCollection: (key: string) => void;
+  onOpenPath: (path: string) => void;
   flash: (m: string) => void;
 }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Полка «Продолжить»: локальный прогресс, обновляется при чтении (событие) и
+  // при возврате в приложение (focus) — хаб остаётся смонтирован под ридером.
+  const [continueItems, setContinueItems] = useState<ReadingRec[]>(() => recentReadings(4));
+  useEffect(() => {
+    const refresh = () => setContinueItems(recentReadings(4));
+    refresh();
+    window.addEventListener(READING_CHANGED_EVENT, refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.removeEventListener(READING_CHANGED_EVENT, refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, []);
 
   const trimmed = q.trim();
   const searching = trimmed.length >= 2;
@@ -283,6 +348,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         </div>
       ) : (
         <>
+          {continueItems.length > 0 && <ContinueShelf items={continueItems} onOpenPath={onOpenPath} />}
           {/* ── Шрила Прабхупада ── */}
           {(filter === "all" || filter === "prabhupada") && (
             <section>

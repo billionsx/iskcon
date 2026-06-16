@@ -18,6 +18,7 @@ import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/i
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { recordRead } from "./account/track";
+import { noteRead } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
 import { usePlayer } from "./player/store";
 import { BookMenuSheet } from "./BookMenuSheet";
@@ -1117,7 +1118,7 @@ export interface ChapterVerse {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
+function ChapterPage({ chapter, chapters, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -1162,6 +1163,20 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
       href: favHref,
       kind: "chapter",
     });
+    {
+      // Локальный прогресс (полка «Продолжить», и для гостя). Процент — по плоскому
+      // оглавлению (BG и пр.); у иерархических (ЧЧ/ШБ) chapters нет → без процента.
+      const cIdx = chapters ? chapters.findIndex((c) => String(c.number) === String(chapter.number)) : -1;
+      noteRead({
+        work,
+        ref: hierarchical ? chapter.id : String(chapter.number),
+        label: chapter.title_ru ? `Глава ${chapter.number} · ${chapter.title_ru}` : `Глава ${chapter.number}`,
+        href: favHref,
+        kind: "chapter",
+        idx: cIdx >= 0 ? cIdx + 1 : 0,
+        total: chapters ? chapters.length : 0,
+      });
+    }
     const readUrl = hierarchical
       ? api(`/books/${work}/division/${chapter.id}/read`)
       : api(`/books/${work}/chapters/${chapter.number}/read`);
@@ -1170,7 +1185,7 @@ function ChapterPage({ chapter, bookTitle, work = "bg", hierarchical = false, on
       .then((d) => { if (live) setVerses(d.verses ?? []); })
       .catch(() => { if (live) setVerses([]); });
     return () => { live = false; };
-  }, [chapter.id, chapter.number, work, hierarchical]);
+  }, [chapter.id, chapter.number, work, hierarchical, chapters]);
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
@@ -1645,12 +1660,24 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
     setParas(null);
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
     recordRead({ work, ref: chapter.id, label: chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle), href: numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`, kind: "prose" });
+    {
+      const pIdx = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
+      noteRead({
+        work,
+        ref: chapter.id,
+        label: chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle),
+        href: numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`,
+        kind: "prose",
+        idx: pIdx >= 0 ? pIdx + 1 : 0,
+        total: chapters ? chapters.length : 0,
+      });
+    }
     fetch(api(`/books/${work}/chapters/${encodeURIComponent(chapter.number)}/read`))
       .then((r) => r.json())
       .then((d) => { if (live) setParas((d.verses ?? []).map((v: ProsePara) => ({ ref: v.ref, translation: v.translation }))); })
       .catch(() => { if (live) setParas([]); });
     return () => { live = false; };
-  }, [chapter.id, chapter.number, work]);
+  }, [chapter.id, chapter.number, work, chapters, bookTitle]);
 
   const idx = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
   const prev = chapters && idx > 0 ? chapters[idx - 1] : null;
@@ -1758,7 +1785,25 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, onNavigate, onC
     setData(null); setError(false);
     fetch(api(`/books/${work}/verses/${encodeURIComponent(refStr)}`))
       .then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
-      .then((d) => { if (live) { setData(d as VerseDetail); recordRead({ work, ref: (d.ref || refStr), label: (d.label ?? refStr), href: versePathFor(work, d.division, d.ref || refStr), kind: "verse" }); } })
+      .then((d) => {
+        if (!live) return;
+        setData(d as VerseDetail);
+        const href = versePathFor(work, d.division, d.ref || refStr);
+        recordRead({ work, ref: (d.ref || refStr), label: (d.label ?? refStr), href, kind: "verse" });
+        // Глава стиха → позиция в плоском оглавлении (BG); у иерархических chapters нет.
+        const dp = (d.division ?? "").split(".").filter(Boolean);                 // ["bg","2"] | ["sb","1","9"]
+        const chNo = dp.length >= 2 ? dp[dp.length - 1] : (d.ref || refStr).replace(/^[^\d]*/, "").split(".")[0];
+        const vIdx = chapters ? chapters.findIndex((c) => String(c.number) === String(chNo)) : -1;
+        noteRead({
+          work,
+          ref: (d.ref || refStr),
+          label: (d.label ?? refStr),
+          href,
+          kind: "verse",
+          idx: vIdx >= 0 ? vIdx + 1 : 0,
+          total: chapters ? chapters.length : 0,
+        });
+      })
       .catch(() => { if (live) setError(true); });
     return () => { live = false; };
   }, [refStr]);
@@ -2305,7 +2350,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       )}
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
-        : <ChapterPage chapter={openChapter} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
+        : <ChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
