@@ -32,6 +32,14 @@ export interface LinkItem {
   title: string | null;
   subtitle: string | null;
 }
+export interface DarshanItem {
+  temple_slug: string;
+  temple_name: string;
+  deities: string | null;
+  image: string | null;
+  date: string;
+  url: string | null;
+}
 interface EntityDetail {
   id: string;
   type: string;
@@ -49,6 +57,7 @@ interface EntityDetail {
   out: RelItem[];
   in: RelItem[];
   links?: LinkItem[];
+  darshans?: DarshanItem[];
 }
 
 // Русские подписи таттвы/категорий — общий модуль (entityLabels).
@@ -248,7 +257,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
   const linkGroups: [string, LinkItem[]][] = (() => {
     const map = new Map<string, LinkItem[]>();
-    for (const l of data?.links ?? []) { const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
+    for (const l of data?.links ?? []) { if (l.kind === "darshan") continue; const a = map.get(l.kind) ?? []; a.push(l); map.set(l.kind, a); }
     return [...map.entries()].sort((a, b) => {
       const ia = KIND_ORDER.indexOf(a[0]); const ib = KIND_ORDER.indexOf(b[0]);
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
@@ -347,6 +356,25 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
             {data.source_ref && (
               <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {data.source_ref}</div>
+            )}
+
+            {/* даршан дня — показывается только если в БД есть фото (иначе секции нет) */}
+            {(data.darshans ?? []).filter((d) => d.image).length > 0 && (
+              <section style={{ marginTop: 26 }}>
+                <Eyebrow>Даршан</Eyebrow>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {(data.darshans ?? []).filter((d) => d.image).map((d) => (
+                    <a key={d.temple_slug} href={d.url ?? undefined} target="_blank" rel="noopener noreferrer"
+                      style={{ display: "block", borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", textDecoration: "none", color: "inherit" }}>
+                      <img src={d.image!} alt={d.deities ?? d.temple_name} loading="lazy" style={{ width: "100%", height: 220, objectFit: "cover", display: "block" }} />
+                      <div style={{ padding: "10px 13px" }}>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.temple_name}</div>
+                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.temple_name} · {d.date}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </section>
             )}
 
             {/* кросс-силос фасеты: блюда/киртаны/храмы/… */}
