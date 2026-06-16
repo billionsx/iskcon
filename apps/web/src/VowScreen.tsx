@@ -213,6 +213,8 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
   const [sel, setSel] = useState<Record<string, Commitment>>(() => ({ japa: japaCommitment(16), reading: PRESET_COMMITMENTS[1] }));
   const [japaRounds, setJapaRounds] = useState(16);
   const [customLabel, setCustomLabel] = useState("");
+  const [customTarget, setCustomTarget] = useState("");
+  const [customUnit, setCustomUnit] = useState("");
 
   const tomorrow = addDays(ymd(), 1);
   const count = Object.keys(sel).length;
@@ -223,8 +225,12 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
   const addCustom = () => {
     const label = customLabel.trim(); if (!label) return;
     const id = `c_${Date.now().toString(36)}`;
-    setSel((s) => ({ ...s, [id]: { id, label } }));
-    setCustomLabel("");
+    const t = parseInt(customTarget, 10);
+    const target = Number.isFinite(t) && t > 1 ? t : undefined;
+    const unit = target ? (customUnit.trim() || undefined) : undefined;
+    const detail = target ? `${target}${unit ? " " + unit : ""}` : undefined;
+    setSel((s) => ({ ...s, [id]: { id, label, target, unit, detail } }));
+    setCustomLabel(""); setCustomTarget(""); setCustomUnit("");
   };
   const submit = () => {
     if (!valid) return;
@@ -303,15 +309,27 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
             <button key={c.id} type="button" onClick={() => toggle(c)}
               style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 13, border: `1.5px solid ${SAFFRON}`, background: `color-mix(in srgb, ${SAFFRON} 7%, transparent)`, cursor: "pointer", textAlign: "left" }}>
               <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 24, height: 24, borderRadius: "50%", background: SAFFRON }}><Check size={13} /></span>
-              <span style={{ flex: 1, fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1 }}>{c.label}</span>
+              <span style={{ minWidth: 0, flex: 1 }}>
+                <span style={{ display: "block", fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1 }}>{c.label}</span>
+                {c.detail && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{c.detail}</span>}
+              </span>
               <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 12.5, color: L3 }}>убрать</span>
             </button>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-          <input value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} placeholder="Своё служение"
-            style={{ flex: 1, minWidth: 0, height: 44, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 14.5, color: L1, outline: "none" }} />
-          <button type="button" onClick={addCustom} disabled={!customLabel.trim()} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: "none", background: customLabel.trim() ? SAFFRON : HAIR, color: "#fff", fontSize: 24, fontWeight: 400, cursor: customLabel.trim() ? "pointer" : "default", lineHeight: 1 }}>+</button>
+        <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <input value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} placeholder="Своё служение"
+              style={{ flex: 1, minWidth: 0, height: 44, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 14.5, color: L1, outline: "none" }} />
+            <button type="button" onClick={addCustom} disabled={!customLabel.trim()} aria-label="Добавить служение" style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: "none", background: customLabel.trim() ? SAFFRON : HAIR, color: "#fff", fontSize: 24, fontWeight: 400, cursor: customLabel.trim() ? "pointer" : "default", lineHeight: 1 }}>+</button>
+          </div>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input type="number" inputMode="numeric" min={2} value={customTarget} onChange={(e) => setCustomTarget(e.target.value)} placeholder="цель/день"
+              style={{ width: 112, height: 40, boxSizing: "border-box", padding: "0 12px", borderRadius: 10, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 14, color: L1, outline: "none" }} />
+            <input value={customUnit} onChange={(e) => setCustomUnit(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} placeholder="единица (поклонов, страниц…)" disabled={!(parseInt(customTarget, 10) > 1)}
+              style={{ flex: 1, minWidth: 0, height: 40, padding: "0 12px", borderRadius: 10, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 14, color: L1, outline: "none", opacity: parseInt(customTarget, 10) > 1 ? 1 : 0.5 }} />
+          </div>
+          <div style={{ fontFamily: FT, fontSize: 12, color: L3, lineHeight: 1.45 }}>Цель и единица — необязательно. С целью служение считается числом (например, 108 · поклонов).</div>
         </div>
       </div>
 
