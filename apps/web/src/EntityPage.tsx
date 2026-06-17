@@ -15,7 +15,7 @@ import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
 import { Rail } from "./AcharyaScreen";
-import { renderTerms } from "./ui/Skt";
+import { renderTerms, Skt } from "./ui/Skt";
 import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -220,6 +220,16 @@ function expandCiteRef(ref: string): string {
   if (m) return ["Бхагавад-гита", ...lvl(m[1].split("."), ["глава", "стих"])].join(", ");
   return ref;
 }
+// Курсивит помеченные в данных санскритские термины (*…*) шрифтом писания;
+// непомеченный текст всё равно прогоняется через renderTerms (диакритика/глоссарий).
+function renderSanskrit(text: string | null | undefined): ReactNode {
+  if (!text) return text ?? null;
+  if (!text.includes("*")) return renderTerms(text);
+  const parts = text.split(/\*([^*]+)\*/g);
+  return parts.map((seg, i) =>
+    seg ? (i % 2 === 1 ? <Skt key={i}>{seg}</Skt> : <span key={i}>{renderTerms(seg)}</span>) : null
+  );
+}
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-3)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1.4, textAlign: "left" };
   return (
@@ -228,11 +238,11 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
         <section key={i} style={{ marginTop: i === 0 ? 26 : 34 }}>
           {s.h && <Eyebrow>{s.h}</Eyebrow>}
           {(s.p ?? []).map((para, j) => (
-            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderTerms(para)}</p>
+            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderSanskrit(para)}</p>
           ))}
           {s.quote && (
             <blockquote style={{ margin: "20px 0 0", padding: "10px 0 10px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
-              <span>“{renderTerms(s.quote.t)}”</span>
+              <span>“{renderSanskrit(s.quote.t)}”</span>
               {(s.quote.by || s.quote.ref) && (
                 <footer style={{ marginTop: 9, fontStyle: "normal", fontSize: 12.5, color: "var(--color-label-3)" }}>
                   {s.quote.by}{s.quote.by && s.quote.ref ? " · " : ""}{s.quote.ref}
