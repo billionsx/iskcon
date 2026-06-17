@@ -10,7 +10,7 @@
  */
 import { TATTVA_RU, CATEGORY_RU, RASA_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
