@@ -15,6 +15,7 @@ import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
 import { Rail } from "./AcharyaScreen";
+import { renderTerms } from "./ui/Skt";
 import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -22,7 +23,7 @@ const GOLD = "#D2AA1B";
 // Канонический вывод расы из категорий реестра: гопи/манджари → мадхурья, гопа → сакхья.
 const CATEGORY_RASA: Record<string, string> = { gopi: "madhurya", manjari: "madhurya", gopa: "sakhya" };
 // Кураторские факт-чипы для ВКЛ (то, что не выводится из категорий).
-const FACT_CHIPS: Record<string, string[]> = { krishna: ["Явился в этом мире 5\u202F000+ лет назад"] };
+const FACT_CHIPS: Record<string, string[]> = { krishna: ["Лично явился в этом мире 5 252 года назад"] };
 
 export interface RelItem {
   relation: string;
@@ -220,18 +221,18 @@ function expandCiteRef(ref: string): string {
   return ref;
 }
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
-  const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 28%, transparent)", borderRadius: 7, padding: "4px 10px", display: "inline-flex", alignItems: "center", gap: 5 };
+  const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, letterSpacing: "-0.01em", color: GOLD, background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1.4, textAlign: "left" };
   return (
     <div>
       {sections.map((s, i) => (
         <section key={i} style={{ marginTop: i === 0 ? 26 : 34 }}>
           {s.h && <Eyebrow>{s.h}</Eyebrow>}
           {(s.p ?? []).map((para, j) => (
-            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{para}</p>
+            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderTerms(para)}</p>
           ))}
           {s.quote && (
             <blockquote style={{ margin: "20px 0 0", padding: "10px 0 10px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
-              <span>“{s.quote.t}”</span>
+              <span>“{renderTerms(s.quote.t)}”</span>
               {(s.quote.by || s.quote.ref) && (
                 <footer style={{ marginTop: 9, fontStyle: "normal", fontSize: 12.5, color: "var(--color-label-3)" }}>
                   {s.quote.by}{s.quote.by && s.quote.ref ? " · " : ""}{s.quote.ref}
@@ -240,15 +241,15 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
             </blockquote>
           )}
           {(s.cite ?? []).length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 14 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 7, marginTop: 16 }}>
               {(s.cite ?? []).map((c, k) => {
                 const go = c.to && onNavigate ? () => onNavigate!(c.to!) : undefined;
                 return go ? (
                   <button key={k} type="button" onClick={go} style={{ ...citeBase, cursor: "pointer" }}>
-                    {expandCiteRef(c.ref)}<span aria-hidden style={{ opacity: 0.6, fontSize: 10 }}>›</span>
+                    {expandCiteRef(c.ref)}<span aria-hidden style={{ opacity: 0.5, fontSize: 13, marginLeft: 1 }}>›</span>
                   </button>
                 ) : (
-                  <span key={k} style={citeBase}>{expandCiteRef(c.ref)}</span>
+                  <span key={k} style={{ ...citeBase, color: "var(--color-label-3)" }}>{expandCiteRef(c.ref)}</span>
                 );
               })}
             </div>
