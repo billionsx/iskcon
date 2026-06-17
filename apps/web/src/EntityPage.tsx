@@ -530,8 +530,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
     const heroChips = Array.from(new Set(rest.map((c) => CATEGORY_RU[c]))).slice(0, 4);
     return { eyebrow, heroChips };
   })();
-  // Краткий эпитет на карточке: предпочитаем короткую заметку; полное summary — только если нет досье/статьи (без дублей).
-  const heroSummary = data?.note || ((dossier || article) ? null : lead);
+  // Эпитет на карточке (ВКЛ): профильное summary как авторитетная «надпись», иначе короткая заметка.
+  const heroSummary = data?.profile?.summary || data?.note || null;
   const hasScripture = (data?.links ?? []).some((l) => l.kind === "scripture") || linkGroups.length > 0;
   const hasPlaces = (liveDarshans?.length ?? 0) > 0 || centers.length > 0;
   const hasBio = !!article || !!data?.profile?.biography;

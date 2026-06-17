@@ -77,7 +77,7 @@ export function PersonHeroCard({
         )}
         {identity && <p style={{ margin: "16px 0 0", fontSize: 15.5, lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{identity}</p>}
         {summary && (
-          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: 14, lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{summary}</p>
+          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: 14, lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{summary}</p>
         )}
         {chips && chips.length > 0 && (
           <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
