@@ -62,7 +62,7 @@ interface EntityDetail {
   image: string | null;
   aliases: string[];
   categories: string[];
-  profile: { summary: string | null; biography: string | null; contribution: string | null; level: string | null } | null;
+  profile: { summary: string | null; biography: string | null; contribution: string | null; level: string | null; longform?: string | null } | null;
   out: RelItem[];
   in: RelItem[];
   links?: LinkItem[];
@@ -185,6 +185,45 @@ function ProseSection({ label, text }: { label: string; text: string }) {
       <Eyebrow>{label}</Eyebrow>
       <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.55, color: "var(--color-label)", whiteSpace: "pre-line" }}>{text}</p>
     </section>
+  );
+}
+
+type LfSee = { id: string; t: string };
+type LfSection = { h?: string; p?: string[]; cite?: string[]; quote?: { t: string; by?: string; ref?: string }; see?: LfSee[] };
+function LongformArticle({ sections, onOpen }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void }) {
+  return (
+    <div>
+      {sections.map((s, i) => (
+        <section key={i} style={{ marginTop: i === 0 ? 28 : 30 }}>
+          {s.h && <Eyebrow>{s.h}</Eyebrow>}
+          {(s.p ?? []).map((para, j) => (
+            <p key={j} style={{ margin: j === 0 ? 0 : "12px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.62, color: "var(--color-label)" }}>{para}</p>
+          ))}
+          {s.quote && (
+            <blockquote style={{ margin: "18px 0 0", padding: "4px 0 4px 16px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
+              <span>{s.quote.t}</span>
+              {(s.quote.by || s.quote.ref) && (
+                <footer style={{ marginTop: 8, fontStyle: "normal", fontSize: 13, color: "var(--color-label-3)" }}>
+                  {s.quote.by}{s.quote.by && s.quote.ref ? " · " : ""}{s.quote.ref}
+                </footer>
+              )}
+            </blockquote>
+          )}
+          {(s.cite ?? []).length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
+              {(s.cite ?? []).map((c, k) => (
+                <span key={k} style={{ fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 26%, transparent)", borderRadius: 6, padding: "3px 9px" }}>{c}</span>
+              ))}
+            </div>
+          )}
+          {(s.see ?? []).length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+              {(s.see ?? []).map((x) => <Chip key={x.id} label={x.t} onClick={() => onOpen(x.id, null)} />)}
+            </div>
+          )}
+        </section>
+      ))}
+    </div>
   );
 }
 
@@ -329,6 +368,11 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
   })();
   const rasa = rasaKey ? RASA_RU[rasaKey] ?? null : null;
   const lead = data?.profile?.summary || data?.note || null;
+  const article: LfSection[] | null = (() => {
+    const raw = data?.profile?.longform;
+    if (!raw) return null;
+    try { const a = JSON.parse(raw); return Array.isArray(a) && a.length > 0 ? a as LfSection[] : null; } catch { return null; }
+  })();
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -416,12 +460,18 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               <p style={{ margin: "20px 0 0", fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.5, color: "var(--color-label)" }}>{lead}</p>
             )}
 
-            {/* профиль: Лила/Жизнеописание + Вклад — секции с золотым eyebrow */}
-            {data.profile?.biography && data.profile.biography !== lead && (
-              <ProseSection label={bioLabel(data)} text={data.profile.biography} />
-            )}
-            {data.profile?.contribution && data.profile.contribution !== lead && data.profile.contribution !== data.profile.biography && (
-              <ProseSection label="Вклад" text={data.profile.contribution} />
+            {/* профиль: длинная статья (если есть) либо Лила/Жизнеописание + Вклад */}
+            {article ? (
+              <LongformArticle sections={article} onOpen={onOpen} />
+            ) : (
+              <>
+                {data.profile?.biography && data.profile.biography !== lead && (
+                  <ProseSection label={bioLabel(data)} text={data.profile.biography} />
+                )}
+                {data.profile?.contribution && data.profile.contribution !== lead && data.profile.contribution !== data.profile.biography && (
+                  <ProseSection label="Вклад" text={data.profile.contribution} />
+                )}
+              </>
             )}
 
             {data.source_ref && (

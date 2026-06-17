@@ -1115,6 +1115,13 @@ export default {
       const prof = await env.DB.prepare(
         `SELECT summary, biography, contribution, level FROM entity_profiles WHERE entity_id = ?`,
       ).bind(id).first<{ summary: string | null; biography: string | null; contribution: string | null; level: string | null }>();
+      let longform: string | null = null;
+      try {
+        const lf = await env.DB.prepare(
+          `SELECT longform FROM entity_profiles WHERE entity_id = ?`,
+        ).bind(id).first<{ longform: string | null }>();
+        longform = lf?.longform ?? null;
+      } catch { longform = null; }
       const outRes = await env.DB.prepare(
         `SELECT r.relation, r.to_id AS id, e.type,
            (SELECT value FROM entity_names n WHERE n.entity_id=r.to_id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
@@ -1174,7 +1181,7 @@ export default {
         image: imgRow?.hero_image ?? null,
         aliases: names.filter((n) => n.kind !== "canonical").map((n) => n.value),
         categories: (catsRes.results ?? []).map((r) => r.category),
-        profile: prof ? { summary: prof.summary ?? null, biography: prof.biography ?? null, contribution: prof.contribution ?? null, level: prof.level ?? null } : null,
+        profile: prof ? { summary: prof.summary ?? null, biography: prof.biography ?? null, contribution: prof.contribution ?? null, level: prof.level ?? null, longform: longform } : (longform ? { summary: null, biography: null, contribution: null, level: null, longform } : null),
         out: outRes.results ?? [],
         in: inRes.results ?? [],
         links: linksRows,

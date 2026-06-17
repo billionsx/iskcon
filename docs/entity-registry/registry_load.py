@@ -116,6 +116,23 @@ if os.path.exists(prof_path):
 else:
     print("curated profiles: profiles_curated.csv not found — skipped")
 
+# longform articles — rich hero pages stored as JSON in entity_profiles.longform
+try:
+    run("ALTER TABLE entity_profiles ADD COLUMN longform TEXT;")
+    print("longform column: added")
+except Exception:
+    print("longform column: present")
+lf_path = os.path.join(BASE, "profiles_longform.csv")
+if os.path.exists(lf_path):
+    lr = list(csv.DictReader(open(lf_path, encoding="utf-8")))
+    for row in lr:
+        run("INSERT INTO entity_profiles (entity_id,longform,updated_at) "
+            f"VALUES ({q(row['entity_id'])},{q(row.get('longform',''))},datetime('now')) "
+            "ON CONFLICT(entity_id) DO UPDATE SET longform=excluded.longform, updated_at=datetime('now');")
+    print("longform articles upserted:", len(lr))
+else:
+    print("longform: profiles_longform.csv not found — skipped")
+
 # 4c) cross-silo facet links — non-destructive (NOT dropped on reload; NO FK to entities,
 #     иначе DROP entities из schema.sql каскадно стёр бы связи). Источник: links_all.csv.
 run("""CREATE TABLE IF NOT EXISTS entity_links (
