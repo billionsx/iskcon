@@ -559,13 +559,28 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               </section>
             )}
 
-            {/* кросс-силос фасеты: блюда/киртаны/храмы/… */}
-            {linkGroups.map(([kind, items]) => (
-              <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
+            {/* связи и кросс-фасеты: при статье — в сворачиваемом блоке (чистая страница), иначе раскрыто */}
+            {(linkGroups.length > 0 || groups.length > 0) && (article ? (
+              <details style={{ marginTop: 30, borderTop: "0.5px solid var(--color-hairline)", paddingTop: 18 }}>
+                <summary style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+                  <span>Все связи в графе</span>
+                  <span aria-hidden style={{ fontSize: 13, opacity: 0.6 }}>▾</span>
+                </summary>
+                <div style={{ marginTop: 10 }}>
+                  {linkGroups.map(([kind, items]) => (
+                    <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
+                  ))}
+                  {groups.map((g) => <GroupSection key={g.label} group={g} onOpen={onOpen} />)}
+                </div>
+              </details>
+            ) : (
+              <>
+                {linkGroups.map(([kind, items]) => (
+                  <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
+                ))}
+                {groups.map((g) => <GroupSection key={g.label} group={g} onOpen={onOpen} />)}
+              </>
             ))}
-
-            {/* связи */}
-            {groups.map((g) => <GroupSection key={g.label} group={g} onOpen={onOpen} />)}
 
             {groups.length === 0 && linkGroups.length === 0 && !lead && (
               <p style={{ margin: "24px 0 0", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-3)" }}>Профиль готовится.</p>

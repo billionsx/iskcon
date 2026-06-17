@@ -22,6 +22,7 @@ export interface ScriptureTarget { work: string; div: string | null; chapter: st
 interface ChapterT { id: string; number: string; title_ru: string; verses: number }
 interface DivisionT { id: string; slug: string; number: string; title_ru: string; chapters: ChapterT[] }
 interface Toc { work: string; name: string; hierarchical: boolean; divisions?: DivisionT[]; chapters?: ChapterT[] }
+interface VerseT { ref: string; label?: string; devanagari: string | null; translit: string | null; translation: string | null; purport: string | null }
 
 function verseLabel(v: string): string {
   if (!/\d/.test(v)) return v.charAt(0).toUpperCase() + v.slice(1); // «введение»
@@ -38,6 +39,9 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
   const [divSlug, setDivSlug] = useState<string | null>(target.div);
   const [chapter, setChapter] = useState<string | null>(target.chapter);
   const [verse] = useState<string | null>(target.verse);
+  const [chId, setChId] = useState<string | null>(null);
+  const [verses, setVerses] = useState<VerseT[] | null>(null);
+  const [vLoading, setVLoading] = useState(false);
   // если открыли без конкретной главы — режим оглавления
   const [mode, setMode] = useState<"toc" | "chapter">(target.chapter ? "chapter" : "toc");
 
@@ -50,6 +54,31 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
       .catch(() => { if (live) setErr(true); });
     return () => { live = false; };
   }, [target.work]);
+
+  // диплинк-цитата → определить division главы (по slug или номеру) и подгрузить стихи
+  useEffect(() => {
+    if (!toc || !target.chapter) return;
+    if (toc.hierarchical) {
+      const div = (toc.divisions ?? []).find((d) => d.slug === target.div || d.number === target.div) ?? null;
+      const ch = div?.chapters.find((c) => c.number === target.chapter);
+      if (div && ch) { setDivSlug(div.slug); setChId(ch.id); }
+    } else {
+      const ch = (toc.chapters ?? []).find((c) => c.number === target.chapter);
+      if (ch) setChId(ch.id);
+    }
+  }, [toc]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // загрузка стихов активной главы (оригинал: деванагари + транслитерация)
+  useEffect(() => {
+    if (!chId) { setVerses(null); return; }
+    let live = true; setVLoading(true); setVerses(null);
+    fetch(api(`/books/${target.work}/division/${chId}/read`))
+      .then((r) => r.json())
+      .then((d) => { if (live) setVerses(Array.isArray(d?.verses) ? d.verses : []); })
+      .catch(() => { if (live) setVerses([]); })
+      .finally(() => { if (live) setVLoading(false); });
+    return () => { live = false; };
+  }, [chId, target.work]);
 
   useEffect(() => {
     const el = scrollRef.current; if (!el) return;
@@ -78,8 +107,8 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
   }, [flatChapters, mode, chapter, divSlug]);
 
   const navTitle = toc?.name ?? "";
-  const openChapter = (slug: string | null, num: string) => { setDivSlug(slug); setChapter(num); setMode("chapter"); };
-  const gotoFlat = (i: number) => { const x = flatChapters[i]; if (x) openChapter(x.div?.slug ?? null, x.ch.number); };
+  const openChapter = (slug: string | null, num: string, id: string) => { setDivSlug(slug); setChapter(num); setChId(id); setMode("chapter"); };
+  const gotoFlat = (i: number) => { const x = flatChapters[i]; if (x) openChapter(x.div?.slug ?? null, x.ch.number, x.ch.id); };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
@@ -114,7 +143,7 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
                       <h2 style={{ margin: "0 0 var(--space-2)", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{d.title_ru}</h2>
                       <div style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", overflow: "hidden" }}>
                         {d.chapters.map((ch, i) => (
-                          <ChapterRow key={ch.id} label={`Глава ${ch.number}`} sub={ch.title_ru && !/глава/i.test(ch.title_ru) ? ch.title_ru : ""} last={i === d.chapters.length - 1} onClick={() => openChapter(d.slug, ch.number)} />
+                          <ChapterRow key={ch.id} label={`Глава ${ch.number}`} sub={ch.title_ru && !/глава/i.test(ch.title_ru) ? ch.title_ru : ""} last={i === d.chapters.length - 1} onClick={() => openChapter(d.slug, ch.number, ch.id)} />
                         ))}
                       </div>
                     </section>
@@ -122,7 +151,7 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
                 ) : (
                   <div style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", overflow: "hidden", marginTop: "var(--space-2)" }}>
                     {(toc.chapters ?? []).map((ch, i) => (
-                      <ChapterRow key={ch.id} label={`Глава ${ch.number}`} sub={ch.title_ru && !/глава/i.test(ch.title_ru) ? ch.title_ru : ""} last={i === (toc.chapters ?? []).length - 1} onClick={() => openChapter(null, ch.number)} />
+                      <ChapterRow key={ch.id} label={`Глава ${ch.number}`} sub={ch.title_ru && !/глава/i.test(ch.title_ru) ? ch.title_ru : ""} last={i === (toc.chapters ?? []).length - 1} onClick={() => openChapter(null, ch.number, ch.id)} />
                     ))}
                   </div>
                 )}
@@ -137,19 +166,45 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
                   Глава {chapter}
                 </h1>
 
-                {/* стих (если указан) — каноническая метка + статус */}
-                <div style={{ marginTop: "var(--space-8)" }}>
-                  {verse && (
-                    <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", color: "var(--color-label)", marginBottom: "var(--space-3)" }}>
-                      {verseLabel(verse)}
+                {/* стихи главы — оригинал (деванагари + транслитерация) из библиотеки */}
+                <div style={{ marginTop: "var(--space-7)" }}>
+                  {vLoading && (
+                    <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "60px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Загрузка стихов…</div>
+                  )}
+                  {!vLoading && verses && verses.length > 0 && (
+                    <>
+                      {verses.map((v, i) => {
+                        const active = verse != null && (v.ref === verse || String(v.ref).split(".").pop() === verse);
+                        return (
+                          <article key={v.ref + i} style={{ padding: "var(--space-5)", marginBottom: "var(--space-4)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: active ? `1px solid ${"color-mix(in srgb, var(--color-brand-blue) 60%, transparent)"}` : "0.5px solid var(--color-hairline)" }}>
+                            <div style={{ fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: "var(--space-3)" }}>
+                              {v.label || verseLabel(v.ref)}
+                            </div>
+                            {v.devanagari && (
+                              <div style={{ fontFamily: "Gentium Book Plus, Georgia, serif", fontSize: 21, lineHeight: 1.75, color: "var(--color-label)", textAlign: "center", whiteSpace: "pre-line" }}>{v.devanagari}</div>
+                            )}
+                            {v.translit && (
+                              <div style={{ marginTop: v.devanagari ? "var(--space-3)" : 0, fontFamily: "Georgia, serif", fontStyle: "italic", fontSize: 15.5, lineHeight: 1.7, color: "var(--color-label-2)", textAlign: "center", whiteSpace: "pre-line" }}>{v.translit}</div>
+                            )}
+                            {!v.devanagari && !v.translit && (
+                              <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)", textAlign: "center" }}>Текст стиха готовится</div>
+                            )}
+                          </article>
+                        );
+                      })}
+                      <div style={{ marginTop: "var(--space-4)", padding: "var(--space-4)", borderRadius: "var(--radius-lg)", background: "color-mix(in srgb, var(--color-label) 4%, transparent)", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
+                        Дан оригинал стиха. Русский перевод и комментарий готовятся к публикации.
+                      </div>
+                    </>
+                  )}
+                  {!vLoading && verses && verses.length === 0 && (
+                    <div style={{ padding: "var(--space-6) var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", textAlign: "center" }}>
+                      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>Текст готовится</div>
+                      <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
+                        Стихи этой главы появятся здесь после подготовки издания.
+                      </div>
                     </div>
                   )}
-                  <div style={{ padding: "var(--space-6) var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", textAlign: "center" }}>
-                    <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>Текст готовится</div>
-                    <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
-                      Перевод и комментарий этого стиха появятся здесь после подготовки издания.
-                    </div>
-                  </div>
                 </div>
 
                 {/* навигация по главам */}
