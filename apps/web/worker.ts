@@ -1077,7 +1077,19 @@ export default {
       const idsRaw = qp.get("ids");
       if (idsRaw) { const arr = idsRaw.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 100); if (arr.length) { where.push(`e.id IN (${arr.map(() => "?").join(",")})`); binds.push(...arr); } }
       const q = (qp.get("q") || "").trim();
-      if (q) { where.push("EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value LIKE ?)"); binds.push(`%${q}%`); }
+      if (q) {
+        // Регистронезависимый поиск для кириллицы: SQLite LIKE чувствителен к регистру
+        // для не-ASCII, поэтому строим GLOB-шаблон с классом [строчн.ЗАГЛ.] по каждой букве.
+        let g = "*";
+        for (const ch of q) {
+          if (ch === "*" || ch === "?" || ch === "[") { g += "[" + ch + "]"; continue; }
+          const lo = ch.toLowerCase(), up = ch.toUpperCase();
+          g += lo !== up ? "[" + lo + up + "]" : ch;
+        }
+        g += "*";
+        where.push("EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?)");
+        binds.push(g);
+      }
       const limit = Math.min(Math.max(parseInt(qp.get("limit") || "60", 10) || 60, 1), 200);
       const offset = Math.max(parseInt(qp.get("offset") || "0", 10) || 0, 0);
       const sql = `
