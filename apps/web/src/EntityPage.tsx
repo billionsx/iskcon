@@ -308,7 +308,7 @@ function PersonTabs({ tabs, active, onChange }: { tabs: { id: string; label: str
     c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
   }, [active]);
   return (
-    <nav aria-label="Разделы личности" style={{ position: "sticky", top: 52, zIndex: 9, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+    <nav aria-label="Разделы личности" style={{ position: "sticky", top: 52, zIndex: 9, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", padding: "0 6px" }}>
         {tabs.map((t) => {
           const on = t.id === active;
@@ -498,11 +498,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               })}
             />
 
-            {tabs.length > 1 && (
-              <div style={{ marginInline: -16, marginTop: 16 }}>
-                <PersonTabs tabs={tabs} active={tab} onChange={setTab} />
-              </div>
-            )}
+            {tabs.length > 1 && <PersonTabs tabs={tabs} active={tab} onChange={setTab} />}
 
             <div style={{ marginTop: tabs.length > 1 ? 18 : 22 }}>
               {tab === "obzor" && (

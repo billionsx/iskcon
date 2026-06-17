@@ -34,6 +34,7 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const activeVerseRef = useRef<HTMLElement | null>(null);
 
   // активная глава/лила (навигация внутри ридера)
   const [divSlug, setDivSlug] = useState<string | null>(target.div);
@@ -88,6 +89,12 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
   }, [toc, mode]);
 
   useEffect(() => { if (scrollRef.current) scrollRef.current.scrollTop = 0; setT(0); }, [mode, chapter, divSlug]);
+  // доводка к процитированному стиху (ссылка вида ШБ 1.3.28 → стих 28 в нашей книге)
+  useEffect(() => {
+    if (!verse || !verses || verses.length === 0) return;
+    const id = requestAnimationFrame(() => { activeVerseRef.current?.scrollIntoView({ block: "start", behavior: "auto" }); });
+    return () => cancelAnimationFrame(id);
+  }, [verses, verse]);
 
   const divisions = toc?.divisions ?? [];
   const activeDiv = useMemo<DivisionT | null>(() => {
@@ -176,7 +183,7 @@ export default function ScriptureReader({ target, onBack }: { target: ScriptureT
                       {verses.map((v, i) => {
                         const active = verse != null && (v.ref === verse || String(v.ref).split(".").pop() === verse);
                         return (
-                          <article key={v.ref + i} style={{ padding: "var(--space-5)", marginBottom: "var(--space-4)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: active ? `1px solid ${"color-mix(in srgb, var(--color-brand-blue) 60%, transparent)"}` : "0.5px solid var(--color-hairline)" }}>
+                          <article ref={active ? activeVerseRef : undefined} key={v.ref + i} style={{ scrollMarginTop: 80, padding: "var(--space-5)", marginBottom: "var(--space-4)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: active ? `1px solid ${"color-mix(in srgb, var(--color-brand-blue) 60%, transparent)"}` : "0.5px solid var(--color-hairline)" }}>
                             <div style={{ fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: "var(--space-3)" }}>
                               {v.label || verseLabel(v.ref)}
                             </div>
