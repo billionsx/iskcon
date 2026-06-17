@@ -99,7 +99,7 @@ function SkeletonTile() {
   return <div style={{ flexShrink: 0, width: 140, height: 132, borderRadius: 18, background: "var(--color-fill-1)", opacity: 0.6 }} />;
 }
 
-function Rail({ title, params, orderIds, onOpen }: { title: string; params: string; orderIds?: string[]; onOpen: (id: string, type: string | null) => void }) {
+export function Rail({ title, params, orderIds, onOpen }: { title: string; params: string; orderIds?: string[]; onOpen: (id: string, type: string | null) => void }) {
   const [items, setItems] = useState<Item[] | null>(null);
   useEffect(() => {
     let alive = true;

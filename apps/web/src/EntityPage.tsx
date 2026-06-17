@@ -14,6 +14,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
+import { Rail } from "./AcharyaScreen";
 import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -195,8 +196,10 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
 type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: { t: string; by?: string; ref?: string }; see?: LfSee[] };
-type DossierSub = { id: string; label: string; sections: LfSection[] };
-type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[] };
+type RailDef = { title: string; params: string; orderIds?: string[] };
+type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
+type DossierSub = { id: string; label: string; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
+type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
 type Dossier = { tabs: DossierTab[] };
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 28%, transparent)", borderRadius: 7, padding: "4px 10px", display: "inline-flex", alignItems: "center", gap: 5 };
@@ -305,6 +308,23 @@ function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkIte
 interface LiveDarshan { source: string; date: string; templeSlug: string; templeName: string; deities: string | null; images: string[]; caption: string | null; srcUrl: string; channelUrl: string | null; postId: string }
 
 /* ───────── Tier-1 табы ПКЛ (золотое подчёркивание, sticky под навбаром) ───────── */
+function NavCards({ cards, onNavigate, onOpenCollection }: { cards: NavCard[]; onNavigate?: (href: string) => void; onOpenCollection?: (key: string) => void }) {
+  return (
+    <div style={{ display: "grid", gap: 10, marginTop: 18 }}>
+      {cards.map((c) => (
+        <button key={c.title} type="button" onClick={() => { if (c.collection) onOpenCollection?.(c.collection); else if (c.to) onNavigate?.(c.to); }}
+          style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "13px 15px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</div>
+            {c.subtitle && <div style={{ fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", marginTop: 2, lineHeight: 1.4 }}>{c.subtitle}</div>}
+          </div>
+          <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 22, lineHeight: 1 }}>›</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function PersonTabs({ tabs, active, onChange, stickyTop = 52 }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void; stickyTop?: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -376,7 +396,7 @@ function PersonSubTabs({ items, active, onChange, stickyTop = 96 }: { items: { i
   );
 }
 
-export default function EntityPage({ id, onBack, onOpen, onNavigate, embedded }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; embedded?: boolean }) {
+export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenCollection, embedded }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; onOpenCollection?: (key: string) => void; embedded?: boolean }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
@@ -471,7 +491,10 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, embedded }:
   const dossierTabs = dossier ? dossier.tabs.map((t) => ({ id: t.id, label: t.label })) : [];
   const activeTabObj = dossier?.tabs.find((t) => t.id === tab) ?? (dossier ? dossier.tabs[0] : undefined);
   const subItems = (activeTabObj?.subtabs ?? []).map((st) => ({ id: st.id, label: st.label }));
-  const subSections = activeTabObj?.subtabs?.find((st) => st.id === sub)?.sections ?? [];
+  const activeSub = activeTabObj?.subtabs?.find((st) => st.id === sub);
+  const subSections = activeSub?.sections ?? [];
+  const subRails = activeSub?.rails ?? [];
+  const subCards = activeSub?.cards ?? [];
 
   // тождество Гаура↔Кришна-лила одной строкой (для ВКЛ)
   const idRel = [
@@ -529,7 +552,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, embedded }:
     const SCRIPT = new Set(["bhagavatam", "gita", "cc", "ramayana", "mahabharata"]);
     const W = (c: string) => (c === "source-of-all" ? 3 : SCRIPT.has(c) ? 2 : c === "vraja" ? -1 : 0);
     const rest = cats.filter((c) => !used.has(c) && !c.startsWith("rasa:") && CATEGORY_RU[c]).sort((a, b) => W(b) - W(a));
-    const heroChips = Array.from(new Set([...(FACT_CHIPS[id] ?? []), ...rest.map((c) => CATEGORY_RU[c])])).slice(0, 4);
+    const heroChips = FACT_CHIPS[id] ?? Array.from(new Set(rest.map((c) => CATEGORY_RU[c]))).slice(0, 4);
     return { eyebrow, heroChips };
   })();
   // Эпитет на карточке (ВКЛ): профильное summary как авторитетная «надпись», иначе короткая заметка.
@@ -609,12 +632,16 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, embedded }:
                   {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
                     <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
                   )}
+                  {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
+                  {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
                   {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} stickyTop={embedded ? 46 : 96} />}
                   {subSections.length > 0 && (
                     <div style={{ marginTop: 18 }}>
                       <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
                     </div>
                   )}
+                  {subRails.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
+                  {subCards.length > 0 && <NavCards cards={subCards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
                 </div>
               </>
             ) : (
