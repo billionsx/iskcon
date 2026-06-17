@@ -213,7 +213,7 @@ function expandCiteRef(ref: string): string {
       return lab + " " + x;
     });
   let m = ref.match(/^Ч\.-ч\.,\s*(Ади|Мадхья|Антья)\s+(.+)$/);
-  if (m) return ["Чайтанья-чаритамрита", m[1] + "-лила", ...lvl(m[2].split("."), ["глава", "стих"])].join(", ");
+  if (m) return ["Шри Чайтанья-чаритамрита", m[1] + "-лила", ...lvl(m[2].split("."), ["глава", "стих"])].join(", ");
   m = ref.match(/^ШБ\s+(.+)$/);
   if (m) return ["Шримад-Бхагаватам", ...lvl(m[1].split("."), ["песнь", "глава", "стих"])].join(", ");
   m = ref.match(/^Брахма-самхита\s+(.+)$/);
@@ -273,7 +273,7 @@ function stripWrap(t: string): string {
 }
 // Единая ссылка-источник: для стихов и для cite. Серый текст + шеврон (если кликабельно).
 function SourceLink({ label, to, onNavigate, size = 14 }: { label: string; to?: string; onNavigate?: (href: string) => void; size?: number }) {
-  const base: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: size, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-3)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "baseline", gap: 3, lineHeight: 1.45, textAlign: "left" };
+  const base: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: size, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-2)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "baseline", gap: 3, lineHeight: 1.45, textAlign: "left" };
   if (to && onNavigate) return (
     <button type="button" onClick={() => onNavigate(to)} style={{ ...base, cursor: "pointer" }}>
       <span>{label}</span><span aria-hidden style={{ opacity: 0.45, fontSize: size - 1 }}>›</span>
