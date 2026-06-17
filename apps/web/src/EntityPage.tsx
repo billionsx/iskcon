@@ -13,6 +13,7 @@ import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useState, type ReactNode } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
+import { PersonHeroCard } from "./PersonHeroCard";
 
 const GOLD = "#D2AA1B";
 
@@ -297,11 +298,58 @@ function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkIte
 
 interface LiveDarshan { source: string; date: string; templeSlug: string; templeName: string; deities: string | null; images: string[]; caption: string | null; srcUrl: string; channelUrl: string | null; postId: string }
 
+/* ───────── Tier-1 табы ПКЛ (золотое подчёркивание, sticky под навбаром) ───────── */
+function PersonTabs({ tabs, active, onChange }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  useEffect(() => {
+    const el = tabRefs.current[active]; const c = containerRef.current;
+    if (!el || !c) return;
+    c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
+  }, [active]);
+  return (
+    <nav aria-label="Разделы личности" style={{ position: "sticky", top: 52, zIndex: 9, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+      <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", padding: "0 6px" }}>
+        {tabs.map((t) => {
+          const on = t.id === active;
+          return (
+            <button key={t.id} ref={(el) => { tabRefs.current[t.id] = el; }} type="button" onClick={() => onChange(t.id)}
+              style={{ position: "relative", flexShrink: 0, padding: "13px 14px", fontSize: 15, fontFamily: "var(--font-text)", background: "none", border: "none", cursor: "pointer", color: on ? "var(--color-label)" : "var(--color-label-3)", fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0, transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
+              {t.label}
+              {on && <span aria-hidden style={{ position: "absolute", insetInline: 10, bottom: 0, height: 2, borderRadius: 999, background: GOLD }} />}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+/* связи строками — полный список (без обрезки), удобная вертикальная прокрутка */
+function RelRows({ group, onOpen }: { group: { label: string; order: number; items: RelItem[] }; onOpen: (id: string, type: string | null) => void }) {
+  return (
+    <section style={{ marginTop: 22 }}>
+      <Eyebrow count={group.items.length}>{group.label}</Eyebrow>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {group.items.map((it) => (
+          <button key={it.relation + it.id} type="button" onClick={() => onOpen(it.id, it.type)}
+            style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 13px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
+            <span style={{ display: "grid", placeItems: "center", height: 34, width: 34, flexShrink: 0, borderRadius: "50%", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15 }}>{(it.name_ru || it.id).trim().charAt(0).toUpperCase()}</span>
+            <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.name_ru || it.id}</span>
+            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 18, flexShrink: 0 }}>›</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
   const [centers, setCenters] = useState<CenterHit[]>([]);
+  const [tab, setTab] = useState<string>("obzor");
 
   useEffect(() => {
     let alive = true;
@@ -383,6 +431,24 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
     try { const a = JSON.parse(raw); return Array.isArray(a) && a.length > 0 ? a as LfSection[] : null; } catch { return null; }
   })();
 
+  // тождество Гаура↔Кришна-лила одной строкой (для ВКЛ)
+  const idRel = [
+    ...(data?.out ?? []).map((r) => ({ r, dir: "out" as const })),
+    ...(data?.in ?? []).map((r) => ({ r, dir: "in" as const })),
+  ].find((x) => x.r.relation === "gaura-lila-identity" && x.r.id);
+  const identity = idRel ? (idRel.dir === "out" ? `В лиле Кришны — ${idRel.r.name_ru || idRel.r.id}` : `В лиле Шри Чайтаньи — ${idRel.r.name_ru || idRel.r.id}`) : null;
+  const kicker = catLabels[0] || tattvaLabel || null;
+  const heroChips = Array.from(new Set([tattvaLabel, rasa?.label, ...catLabels].filter(Boolean) as string[])).slice(0, 4);
+  const hasScripture = (data?.links ?? []).some((l) => l.kind === "scripture") || linkGroups.length > 0;
+  const hasPlaces = (liveDarshans?.length ?? 0) > 0 || centers.length > 0;
+  const hasBio = !!article || !!data?.profile?.biography;
+  const tabs: { id: string; label: string }[] = [{ id: "obzor", label: "Обзор" }];
+  if (data && hasBio) tabs.push({ id: "zhizn", label: bioLabel(data) });
+  if (groups.length > 0) tabs.push({ id: "svyazi", label: "Связи" });
+  if (hasScripture) tabs.push({ id: "pisaniya", label: "Писания" });
+  if (hasPlaces) tabs.push({ id: "mesta", label: "Места" });
+  useEffect(() => { if (data) setTab((data.profile?.longform || data.profile?.biography) ? "zhizn" : "obzor"); }, [id, data?.id]);
+
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       {/* навбар */}
@@ -393,7 +459,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
         </button>
-        <span style={{ flex: 1 }} />
+        <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingInline: 6 }}>{data?.name_ru || ""}</span>
         {data && (
           <CardActionBtns favKey={`entity:${id}`}
             meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/person/${encodeURIComponent(id)}` }}
@@ -416,175 +482,138 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
         )}
         {data && (
           <>
-            {/* hero */}
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 6 }}>
-              {data.image ? <PhotoCircle src={data.image} size={72} /> : <Monogram ch={initialOf(data)} />}
-              <div style={{ minWidth: 0 }}>
-                <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 27, fontWeight: 700, letterSpacing: "-0.4px", lineHeight: 1.12, color: "var(--color-label)" }}>{data.name_ru || data.id}</h1>
-                {data.name_iast && (
-                  <div style={{ marginTop: 3, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16, color: "var(--color-label-2)" }}>{data.name_iast}</div>
-                )}
-              </div>
-            </div>
+            <PersonHeroCard
+              id={id}
+              nameRu={data.name_ru || data.id}
+              nameIast={data.name_iast}
+              image={data.image}
+              kicker={kicker}
+              identity={identity}
+              summary={article ? null : lead}
+              chips={heroChips}
+              onMore={() => openCardMenu({
+                type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
+                url: `https://gaurangers.com/person/${encodeURIComponent(id)}`,
+                context: `Герой · ${data.name_ru || id} · /entity/${id}`,
+              })}
+            />
 
-            {/* мета-чипы */}
-            {(tattvaLabel || catLabels.length > 0) && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 16 }}>
-                {tattvaLabel && (
-                  <span style={{ display: "inline-flex", alignItems: "center", padding: "6px 11px", borderRadius: 999, background: `color-mix(in srgb, ${GOLD} 12%, transparent)`, color: GOLD, fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600 }}>{tattvaLabel}</span>
-                )}
-                {catLabels.map((c) => (
-                  <span key={c} style={{ display: "inline-flex", alignItems: "center", padding: "6px 11px", borderRadius: 999, background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 500 }}>{c}</span>
-                ))}
-              </div>
-            )}
-
-            {/* раса — настроение в отношениях с Богом */}
-            {rasa && (
-              <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
+            {tabs.length > 1 && (
+              <div style={{ marginInline: -16, marginTop: 16 }}>
+                <PersonTabs tabs={tabs} active={tab} onChange={setTab} />
               </div>
             )}
 
-            {/* тайминг — день явления/ухода (канонично, из entity_links) */}
-            {(data?.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
-              <div style={{ marginTop: 16 }}>
-                <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 6 }}>Тайминг</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  {(data?.links ?? []).filter((l) => l.kind === "appearance" || l.kind === "disappearance").map((t) => (
-                    <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }}>
-                      <span style={{ color: "var(--color-label-3)" }}>{t.kind === "appearance" ? "Явление" : "Уход"}</span>
-                      {t.title && <span style={{ fontWeight: 600 }}> · {t.title}</span>}
-                      {t.subtitle && <span style={{ color: "var(--color-label-3)" }}> · {t.subtitle}</span>}
+            <div style={{ marginTop: tabs.length > 1 ? 18 : 22 }}>
+              {tab === "obzor" && (
+                <>
+                  {lead && (
+                    <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.5, color: "var(--color-label)" }}>{lead}</p>
+                  )}
+                  {rasa && (
+                    <div style={{ marginTop: lead ? 18 : 0, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                  )}
+                  {(data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
+                    <div style={{ marginTop: (lead || rasa) ? 18 : 0 }}>
+                      <Eyebrow>Тайминг</Eyebrow>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        {(data.links ?? []).filter((l) => l.kind === "appearance" || l.kind === "disappearance").map((t) => (
+                          <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }}>
+                            <span style={{ color: "var(--color-label-3)" }}>{t.kind === "appearance" ? "Явление" : "Уход"}</span>
+                            {t.title && <span style={{ fontWeight: 600 }}> · {t.title}</span>}
+                            {t.subtitle && <span style={{ color: "var(--color-label-3)" }}> · {t.subtitle}</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {!lead && !rasa && !hasBio && !(data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
+                    <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-3)" }}>Профиль готовится.</p>
+                  )}
+                </>
+              )}
 
-            {/* лид (summary) — стендфирст под мета-чипами */}
-            {lead && !article && (
-              <p style={{ margin: "20px 0 0", fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.5, color: "var(--color-label)" }}>{lead}</p>
-            )}
+              {tab === "zhizn" && (article ? (
+                <LongformArticle sections={article} onOpen={onOpen} onNavigate={onNavigate} />
+              ) : (
+                <>
+                  {data.profile?.biography && <ProseSection label={bioLabel(data)} text={data.profile.biography} />}
+                  {data.profile?.contribution && data.profile.contribution !== data.profile.biography && <ProseSection label="Вклад" text={data.profile.contribution} />}
+                </>
+              ))}
 
-            {/* профиль: длинная статья (если есть) либо Лила/Жизнеописание + Вклад */}
-            {article ? (
-              <LongformArticle sections={article} onOpen={onOpen} onNavigate={onNavigate} />
-            ) : (
-              <>
-                {data.profile?.biography && data.profile.biography !== lead && (
-                  <ProseSection label={bioLabel(data)} text={data.profile.biography} />
-                )}
-                {data.profile?.contribution && data.profile.contribution !== lead && data.profile.contribution !== data.profile.biography && (
-                  <ProseSection label="Вклад" text={data.profile.contribution} />
-                )}
-              </>
-            )}
+              {tab === "svyazi" && groups.map((g) => <RelRows key={g.label} group={g} onOpen={onOpen} />)}
 
-            {data.source_ref && !article && (
-              <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {expandRefs(data.source_ref)}</div>
-            )}
-
-            {/* писания — канонические цитаты с диплинком в ридер (entity_links kind=scripture) */}
-            {(data?.links ?? []).some((l) => l.kind === "scripture") && (
-              <section style={{ marginTop: 26 }}>
-                <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 10 }}>Писания</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {(data?.links ?? []).filter((l) => l.kind === "scripture").map((c) => (
-                    <button key={c.ref} type="button" onClick={() => onNavigate?.("/" + c.ref)}
-                      style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 2, padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</span>
-                      {c.subtitle && <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.subtitle}</span>}
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* даршан дня — живьём из каналов храмов по связям kind=darshan (нет фото → секции нет) */}
-            {(() => {
-              const temples = (data.links ?? []).filter((l) => l.kind === "darshan").map((l) => l.ref);
-              const byTemple = new Map((liveDarshans ?? []).map((d) => [d.templeSlug, d] as const));
-              const seen = new Set<string>();
-              const cards: LiveDarshan[] = [];
-              for (const t of temples) { const d = byTemple.get(t); if (d && d.images.length && !seen.has(t)) { seen.add(t); cards.push(d); } }
-              if (cards.length === 0) return null;
-              return (
-                <section style={{ marginTop: 26 }}>
-                  <Eyebrow>Даршан</Eyebrow>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    {cards.map((d) => (
-                      <a key={d.templeSlug} href={d.srcUrl} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "block", borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", textDecoration: "none", color: "inherit" }}>
-                        <img src={d.images[0]} alt={d.deities ?? d.templeName} loading="lazy" style={{ width: "100%", height: 240, objectFit: "cover", display: "block" }} />
-                        <div style={{ padding: "10px 13px" }}>
-                          <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.templeName}</div>
-                          <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.templeName} · {d.date}</div>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </section>
-              );
-            })()}
-            {/* центры (Ятра): где есть это Божество/праздник — сквозная связь */}
-            {centers.length > 0 && (
-              <section style={{ marginTop: 26 }}>
-                <Eyebrow count={centers.length}>Центры</Eyebrow>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {centers.map((c) => {
-                    const href = `/center/${c.slug}`;
-                    const go = onNavigate ? () => onNavigate(href) : undefined;
-                    const loc = [c.city, c.country].filter(Boolean).join(", ");
-                    return (
-                      <button key={c.id} type="button" onClick={go}
-                        style={{ display: "flex", alignItems: "center", gap: 0, width: "100%", padding: 0, border: "0.5px solid var(--color-hairline)", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", textAlign: "left", cursor: go ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>
-                        {c.photos[0] ? (
-                          <span style={{ width: 64, height: 64, flexShrink: 0, background: `center/cover no-repeat url("${c.photos[0]}")` }} />
-                        ) : (
-                          <span style={{ width: 64, height: 64, flexShrink: 0, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 13%, transparent)` }}>
-                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 21h18M5 21V10l7-5 7 5v11M9.5 21v-5h5v5" /></svg>
-                          </span>
-                        )}
-                        <span style={{ minWidth: 0, flex: 1, padding: "0 13px" }}>
-                          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</span>
-                          {loc && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{loc}</span>}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
-            )}
-
-            {/* связи и кросс-фасеты: при статье — в сворачиваемом блоке (чистая страница), иначе раскрыто */}
-            {(linkGroups.length > 0 || groups.length > 0) && (article ? (
-              <details style={{ marginTop: 30, borderTop: "0.5px solid var(--color-hairline)", paddingTop: 18 }}>
-                <summary style={{ cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
-                  <span>Все связи в графе</span>
-                  <span aria-hidden style={{ fontSize: 13, opacity: 0.6 }}>▾</span>
-                </summary>
-                <div style={{ marginTop: 10 }}>
+              {tab === "pisaniya" && (
+                <>
+                  {(data.links ?? []).some((l) => l.kind === "scripture") && (
+                    <section>
+                      <Eyebrow>Писания</Eyebrow>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {(data.links ?? []).filter((l) => l.kind === "scripture").map((c) => (
+                          <button key={c.ref} type="button" onClick={() => onNavigate?.("/" + c.ref)}
+                            style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 2, padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+                            <span style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</span>
+                            {c.subtitle && <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.subtitle}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
                   {linkGroups.map(([kind, items]) => (
                     <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
                   ))}
-                  {groups.map((g) => <GroupSection key={g.label} group={g} onOpen={onOpen} />)}
-                </div>
-              </details>
-            ) : (
-              <>
-                {linkGroups.map(([kind, items]) => (
-                  <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
-                ))}
-                {groups.map((g) => <GroupSection key={g.label} group={g} onOpen={onOpen} />)}
-              </>
-            ))}
+                </>
+              )}
 
-            {groups.length === 0 && linkGroups.length === 0 && !lead && (
-              <p style={{ margin: "24px 0 0", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-3)" }}>Профиль готовится.</p>
-            )}
+              {tab === "mesta" && (
+                <>
+                  {(() => {
+                    const byTemple = new Map((liveDarshans ?? []).map((d) => [d.templeSlug, d] as const));
+                    const cards: LiveDarshan[] = [];
+                    for (const t of (data.links ?? []).filter((l) => l.kind === "darshan")) { const d = byTemple.get(t.ref); if (d && d.images.length) cards.push(d); }
+                    if (cards.length === 0) return null;
+                    return (
+                      <section>
+                        <Eyebrow>Даршан сегодня</Eyebrow>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                          {cards.map((d) => (
+                            <div key={d.templeSlug} style={{ overflow: "hidden", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
+                              <img src={d.images[0]} alt={d.deities || d.templeName} loading="lazy" style={{ width: "100%", display: "block" }} />
+                              <div style={{ padding: "10px 13px" }}>
+                                <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.templeName}</div>
+                                <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.templeName} · {d.date}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    );
+                  })()}
+                  {centers.length > 0 && (
+                    <section style={{ marginTop: 22 }}>
+                      <Eyebrow count={centers.length}>Центры</Eyebrow>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        {centers.map((c) => (
+                          <button key={c.id} type="button" onClick={onNavigate ? () => onNavigate(`/center/${c.slug}`) : undefined}
+                            style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
+                            <span style={{ minWidth: 0, flex: 1 }}>
+                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{c.name}</span>
+                              {c.city && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.city}</span>}
+                            </span>
+                            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 18, flexShrink: 0 }}>›</span>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
+                </>
+              )}
+            </div>
           </>
         )}
       </div>
