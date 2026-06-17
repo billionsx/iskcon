@@ -5,8 +5,8 @@ relations: 2107
 profiles seeded (bronze): 815
 auto profiles upserted: 496
 curated profiles upserted: 166
-longform column: added
-longform articles upserted: 2
+longform column: present
+longform articles upserted: 9
 links: 68
   D1 entities: 815
   D1 entity_names: 2692
