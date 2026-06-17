@@ -197,7 +197,8 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 
 type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
-type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: { t: string; by?: string; ref?: string }; see?: LfSee[] };
+type LfQuote = { t: string; by?: string; ref?: string; to?: string };
+type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
@@ -267,16 +268,19 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
           {(s.p ?? []).map((para, j) => (
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderSanskrit(para)}</p>
           ))}
-          {s.quote && (
-            <blockquote style={{ margin: "20px 0 0", padding: "10px 0 10px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
-              <span>“{renderSanskrit(s.quote.t)}”</span>
-              {(s.quote.by || s.quote.ref) && (
+          {[...(s.quote ? [s.quote] : []), ...(s.quotes ?? [])].map((q, qi) => (
+            <blockquote key={qi} style={{ margin: "20px 0 0", padding: "10px 0 10px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
+              <span>“{renderSanskrit(q.t)}”</span>
+              {(q.by || q.ref) && (
                 <footer style={{ marginTop: 9, fontStyle: "normal", fontSize: 12.5, color: "var(--color-label-3)" }}>
-                  {s.quote.by}{s.quote.by && s.quote.ref ? " · " : ""}{s.quote.ref}
+                  {q.by}{q.by && q.ref ? " · " : ""}
+                  {q.ref ? (q.to && onNavigate
+                    ? <button type="button" onClick={() => onNavigate!(q.to!)} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", cursor: "pointer", textDecoration: "underline", textDecorationColor: "#c7c7cc", textUnderlineOffset: 2 }}>{q.ref}</button>
+                    : <span>{q.ref}</span>) : null}
                 </footer>
               )}
             </blockquote>
-          )}
+          ))}
           {(s.cite ?? []).length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 7, marginTop: 16 }}>
               {(s.cite ?? []).map((c, k) => {
