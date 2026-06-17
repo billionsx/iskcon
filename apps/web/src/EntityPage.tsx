@@ -189,35 +189,44 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 }
 
 type LfSee = { id: string; t: string };
-type LfSection = { h?: string; p?: string[]; cite?: string[]; quote?: { t: string; by?: string; ref?: string }; see?: LfSee[] };
-function LongformArticle({ sections, onOpen }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void }) {
+type LfCite = { ref: string; to?: string };
+type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: { t: string; by?: string; ref?: string }; see?: LfSee[] };
+function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
+  const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 28%, transparent)", borderRadius: 7, padding: "4px 10px", display: "inline-flex", alignItems: "center", gap: 5 };
   return (
     <div>
       {sections.map((s, i) => (
-        <section key={i} style={{ marginTop: i === 0 ? 28 : 30 }}>
+        <section key={i} style={{ marginTop: i === 0 ? 26 : 34 }}>
           {s.h && <Eyebrow>{s.h}</Eyebrow>}
           {(s.p ?? []).map((para, j) => (
-            <p key={j} style={{ margin: j === 0 ? 0 : "12px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.62, color: "var(--color-label)" }}>{para}</p>
+            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{para}</p>
           ))}
           {s.quote && (
-            <blockquote style={{ margin: "18px 0 0", padding: "4px 0 4px 16px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
-              <span>{s.quote.t}</span>
+            <blockquote style={{ margin: "20px 0 0", padding: "10px 0 10px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
+              <span>“{s.quote.t}”</span>
               {(s.quote.by || s.quote.ref) && (
-                <footer style={{ marginTop: 8, fontStyle: "normal", fontSize: 13, color: "var(--color-label-3)" }}>
+                <footer style={{ marginTop: 9, fontStyle: "normal", fontSize: 12.5, color: "var(--color-label-3)" }}>
                   {s.quote.by}{s.quote.by && s.quote.ref ? " · " : ""}{s.quote.ref}
                 </footer>
               )}
             </blockquote>
           )}
           {(s.cite ?? []).length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 12 }}>
-              {(s.cite ?? []).map((c, k) => (
-                <span key={k} style={{ fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 26%, transparent)", borderRadius: 6, padding: "3px 9px" }}>{c}</span>
-              ))}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 14 }}>
+              {(s.cite ?? []).map((c, k) => {
+                const go = c.to && onNavigate ? () => onNavigate!(c.to!) : undefined;
+                return go ? (
+                  <button key={k} type="button" onClick={go} style={{ ...citeBase, cursor: "pointer" }}>
+                    {c.ref}<span aria-hidden style={{ opacity: 0.6, fontSize: 10 }}>›</span>
+                  </button>
+                ) : (
+                  <span key={k} style={citeBase}>{c.ref}</span>
+                );
+              })}
             </div>
           )}
           {(s.see ?? []).length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
               {(s.see ?? []).map((x) => <Chip key={x.id} label={x.t} onClick={() => onOpen(x.id, null)} />)}
             </div>
           )}
@@ -456,13 +465,13 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
             )}
 
             {/* лид (summary) — стендфирст под мета-чипами */}
-            {lead && (
+            {lead && !article && (
               <p style={{ margin: "20px 0 0", fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.5, color: "var(--color-label)" }}>{lead}</p>
             )}
 
             {/* профиль: длинная статья (если есть) либо Лила/Жизнеописание + Вклад */}
             {article ? (
-              <LongformArticle sections={article} onOpen={onOpen} />
+              <LongformArticle sections={article} onOpen={onOpen} onNavigate={onNavigate} />
             ) : (
               <>
                 {data.profile?.biography && data.profile.biography !== lead && (
@@ -474,7 +483,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               </>
             )}
 
-            {data.source_ref && (
+            {data.source_ref && !article && (
               <div style={{ marginTop: 18, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Источник: {expandRefs(data.source_ref)}</div>
             )}
 
