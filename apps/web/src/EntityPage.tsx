@@ -221,7 +221,7 @@ function expandCiteRef(ref: string): string {
   return ref;
 }
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
-  const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, letterSpacing: "-0.01em", color: GOLD, background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1.4, textAlign: "left" };
+  const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-3)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1.4, textAlign: "left" };
   return (
     <div>
       {sections.map((s, i) => (
