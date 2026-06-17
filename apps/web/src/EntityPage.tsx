@@ -8,7 +8,7 @@
  * Визуальный язык — общий с приложением (SF для UI, Georgia для транслитерации,
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
-import { TATTVA_RU, CATEGORY_RU, RASA_RU } from "./entityLabels";
+import { CATEGORY_RU, RASA_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./api";
@@ -445,7 +445,6 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
     });
   })();
 
-  const tattvaLabel = data?.tattva ? TATTVA_RU[data.tattva] ?? null : null;
   const catLabels = (data?.categories ?? []).map((c) => CATEGORY_RU[c]).filter(Boolean).slice(0, 4) as string[];
   const rasaKey = (() => {
     const cats = data?.categories ?? [];
@@ -478,8 +477,61 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
     ...(data?.in ?? []).map((r) => ({ r, dir: "in" as const })),
   ].find((x) => x.r.relation === "gaura-lila-identity" && x.r.id);
   const identity = idRel ? (idRel.dir === "out" ? `В лиле Кришны — ${idRel.r.name_ru || idRel.r.id}` : `В лиле Шри Чайтаньи — ${idRel.r.name_ru || idRel.r.id}`) : null;
-  const kicker = catLabels[0] || tattvaLabel || null;
-  const heroChips = Array.from(new Set([tattvaLabel, rasa?.label, ...catLabels].filter(Boolean) as string[])).slice(0, 4);
+  // Классификация для ВКЛ: авторитетная «надпись» (eyebrow) + вторичные чипы без дублей.
+  const { eyebrow, heroChips } = (() => {
+    const cats = data?.categories ?? [];
+    const t = data?.tattva;
+    const has = (c: string) => cats.includes(c);
+    const used = new Set<string>();
+    const eat = (...cs: string[]) => { for (const c of cs) used.add(c); };
+    let primary = "";
+    if (has("svayam-bhagavan")) { primary = "Верховная Личность Бога"; eat("svayam-bhagavan", "yuga-avatara", "channa-avatara"); }
+    else if (t === "vishnu-tattva") {
+      if (has("first-expansion") || has("prakasha-vilasa")) { primary = "Полная экспансия Господа"; eat("first-expansion", "prakasha-vilasa"); }
+      else if (has("avatara") || has("lila-avatara")) { primary = "Аватара Господа"; eat("avatara", "lila-avatara"); }
+      else primary = "Вишну-таттва";
+    }
+    else if (t === "shakti-tattva") {
+      if (has("hladini-shakti")) { primary = "Хладини-шакти"; eat("hladini-shakti"); }
+      else if (has("krishna-consort") || has("consort")) { primary = "Супруга Господа"; eat("krishna-consort", "consort"); }
+      else if (has("gopi")) { primary = "Гопи Враджа"; eat("gopi"); }
+      else primary = "Шакти-таттва";
+    }
+    else if (data?.type === "place") {
+      if (has("vraja-vana")) { primary = "Лес Враджа"; eat("vraja-vana", "vraja", "dham"); }
+      else if (has("vraja-tirtha")) { primary = "Святое место Враджа"; eat("vraja-tirtha", "vraja", "dham"); }
+      else if (has("gaura-tirtha")) { primary = "Святое место Гауры"; eat("gaura-tirtha", "dham"); }
+      else if (has("navadvipa") || has("gaura-dham")) { primary = "Гаура-дхама"; eat("navadvipa", "gaura-dham", "dham"); }
+      else if (has("dham")) { primary = "Святая дхама"; eat("dham"); }
+      else primary = "Святое место";
+    }
+    else {
+      if (has("founder-acharya")) { primary = "Основатель-ачарья"; eat("founder-acharya"); }
+      else if (has("acharya") || has("vaishnava-acharya")) { primary = "Ачарья"; eat("acharya", "vaishnava-acharya"); }
+      else if (has("six-goswamis")) { primary = "Шесть Госвами Вриндавана"; eat("six-goswamis"); }
+      else if (has("chaitanya-associate")) { primary = "Спутник Шри Чайтаньи"; eat("chaitanya-associate"); }
+      else if (has("gopi")) { primary = "Гопи Враджа"; eat("gopi"); }
+      else if (has("manjari")) { primary = "Манджари Враджа"; eat("manjari"); }
+      else if (has("gopa")) { primary = "Пастушок Враджа"; eat("gopa"); }
+      else if (has("krishna-family")) { primary = "Семья Кришны"; eat("krishna-family", "eternal-associate"); }
+      else if (has("krishna-associate") || has("krishna-lila") || has("eternal-associate")) { primary = "Вечный спутник Кришны"; eat("krishna-associate", "krishna-lila", "eternal-associate"); }
+      else if (has("king")) primary = "Царь";
+      else if (has("sage")) primary = "Мудрец";
+      else if (has("demon") || has("rakshasa")) primary = "Душа, обретшая освобождение";
+      else primary = catLabels[0] ?? "Вайшнавская традиция";
+    }
+    let qualifier = "";
+    if (rasa && data?.type !== "place" && !/таттва|Личность/.test(primary)) qualifier = `${rasa.label}-раса`;
+    else if (has("gaudiya")) { qualifier = "Гаудия-сампрадая"; eat("gaudiya"); }
+    const eyebrow = qualifier ? `${primary} · ${qualifier}` : primary;
+    const SCRIPT = new Set(["bhagavatam", "gita", "cc", "ramayana", "mahabharata"]);
+    const W = (c: string) => (c === "source-of-all" ? 3 : SCRIPT.has(c) ? 2 : c === "vraja" ? -1 : 0);
+    const rest = cats.filter((c) => !used.has(c) && !c.startsWith("rasa:") && CATEGORY_RU[c]).sort((a, b) => W(b) - W(a));
+    const heroChips = Array.from(new Set(rest.map((c) => CATEGORY_RU[c]))).slice(0, 4);
+    return { eyebrow, heroChips };
+  })();
+  // Краткий эпитет на карточке: предпочитаем короткую заметку; полное summary — только если нет досье/статьи (без дублей).
+  const heroSummary = data?.note || ((dossier || article) ? null : lead);
   const hasScripture = (data?.links ?? []).some((l) => l.kind === "scripture") || linkGroups.length > 0;
   const hasPlaces = (liveDarshans?.length ?? 0) > 0 || centers.length > 0;
   const hasBio = !!article || !!data?.profile?.biography;
@@ -536,9 +588,9 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               nameRu={data.name_ru || data.id}
               nameIast={data.name_iast}
               image={data.image}
-              kicker={kicker}
+              eyebrow={eyebrow}
               identity={identity}
-              summary={article ? null : lead}
+              summary={heroSummary}
               chips={heroChips}
               onMore={() => openCardMenu({
                 type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
