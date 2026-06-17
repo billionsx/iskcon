@@ -14,6 +14,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
+import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
 
@@ -192,6 +193,9 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
 type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: { t: string; by?: string; ref?: string }; see?: LfSee[] };
+type DossierSub = { id: string; label: string; sections: LfSection[] };
+type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[] };
+type Dossier = { tabs: DossierTab[] };
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 28%, transparent)", borderRadius: 7, padding: "4px 10px", display: "inline-flex", alignItems: "center", gap: 5 };
   return (
@@ -344,12 +348,39 @@ function RelRows({ group, onOpen }: { group: { label: string; order: number; ite
   );
 }
 
+/* Tier-3 суб-табы (капсулы, тема-адаптивные, липкие под Tier-1) */
+function PersonSubTabs({ items, active, onChange }: { items: { id: string; label: string }[]; active: string; onChange: (id: string) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  useEffect(() => {
+    const el = itemRefs.current[active]; const c = containerRef.current;
+    if (!el || !c) return;
+    c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
+  }, [active]);
+  return (
+    <nav aria-label="Подразделы" style={{ position: "sticky", top: 96, zIndex: 8, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
+      <div ref={containerRef} style={{ display: "flex", gap: 8, alignItems: "center", overflowX: "auto", padding: "10px 16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+        {items.map((it) => {
+          const on = it.id === active;
+          return (
+            <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
+              style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 999, border: on ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)", cursor: "pointer", fontSize: 13.5, fontFamily: "var(--font-text)", fontWeight: 600, whiteSpace: "nowrap", background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label-2)", transition: "background .18s, color .18s", WebkitTapHighlightColor: "transparent" }}>
+              {it.label}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
 export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
   const [centers, setCenters] = useState<CenterHit[]>([]);
   const [tab, setTab] = useState<string>("obzor");
+  const [sub, setSub] = useState<string>("");
 
   useEffect(() => {
     let alive = true;
@@ -430,6 +461,16 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
     if (!raw) return null;
     try { const a = JSON.parse(raw); return Array.isArray(a) && a.length > 0 ? a as LfSection[] : null; } catch { return null; }
   })();
+  // Досье личности: новый формат {tabs:[...]} (богословские табы Таттва/Нама/Рупа/…)
+  const dossier: Dossier | null = (() => {
+    const raw = data?.profile?.longform;
+    if (!raw) return null;
+    try { const o = JSON.parse(raw); return (o && !Array.isArray(o) && Array.isArray(o.tabs) && o.tabs.length > 0) ? o as Dossier : null; } catch { return null; }
+  })();
+  const dossierTabs = dossier ? dossier.tabs.map((t) => ({ id: t.id, label: t.label })) : [];
+  const activeTabObj = dossier?.tabs.find((t) => t.id === tab) ?? (dossier ? dossier.tabs[0] : undefined);
+  const subItems = (activeTabObj?.subtabs ?? []).map((st) => ({ id: st.id, label: st.label }));
+  const subSections = activeTabObj?.subtabs?.find((st) => st.id === sub)?.sections ?? [];
 
   // тождество Гаура↔Кришна-лила одной строкой (для ВКЛ)
   const idRel = [
@@ -447,7 +488,15 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
   if (groups.length > 0) tabs.push({ id: "svyazi", label: "Связи" });
   if (hasScripture) tabs.push({ id: "pisaniya", label: "Писания" });
   if (hasPlaces) tabs.push({ id: "mesta", label: "Места" });
-  useEffect(() => { if (data) setTab((data.profile?.longform || data.profile?.biography) ? "zhizn" : "obzor"); }, [id, data?.id]);
+  useEffect(() => {
+    if (!data) return;
+    const raw = data.profile?.longform;
+    let dos: Dossier | null = null;
+    try { const o = raw ? JSON.parse(raw) : null; if (o && !Array.isArray(o) && Array.isArray(o.tabs) && o.tabs.length) dos = o; } catch { /* not dossier */ }
+    setTab(dos ? dos.tabs[0].id : (raw || data.profile?.biography) ? "zhizn" : "obzor");
+  }, [id, data?.id]);
+  // при смене Tier-1 таба в досье — выставить первый суб-таб
+  useEffect(() => { const t = dossier?.tabs.find((x) => x.id === tab); setSub(t?.subtabs?.[0]?.id ?? ""); }, [tab, data?.id]);
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -498,6 +547,23 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               })}
             />
 
+            {dossier ? (
+              <>
+                <PersonTabs tabs={dossierTabs} active={tab} onChange={setTab} />
+                <div style={{ marginTop: 18 }}>
+                  {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
+                    <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
+                  )}
+                  {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} />}
+                  {subSections.length > 0 && (
+                    <div style={{ marginTop: 18 }}>
+                      <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
             {tabs.length > 1 && <PersonTabs tabs={tabs} active={tab} onChange={setTab} />}
 
             <div style={{ marginTop: tabs.length > 1 ? 18 : 22 }}>
@@ -610,6 +676,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
                 </>
               )}
             </div>
+            </>
+            )}
           </>
         )}
       </div>
