@@ -16,6 +16,7 @@ import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
 import { Rail } from "./AcharyaScreen";
 import { renderTerms, Skt } from "./ui/Skt";
+import { IS_LETTER } from "./ui/scripture";
 import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -222,13 +223,39 @@ function expandCiteRef(ref: string): string {
 }
 // Курсивит помеченные в данных санскритские термины (*…*) шрифтом писания;
 // непомеченный текст всё равно прогоняется через renderTerms (диакритика/глоссарий).
+// Санскритские термины ПКЛ — Georgia-курсивом (шире глоссария BBT и поверх его
+// стоп-листа; имена собственные сюда НЕ входят). Книги не затронуты.
+const PKL_TERMS = [
+  "кришнас ту бхагаван свайам", "сач-чид-ананда-виграха",
+  "шактьявеша-аватары", "пуруша-аватары", "гуна-аватары", "лила-аватары", "юга-аватары",
+  "лила-мадхурья", "према-мадхурья", "вену-мадхурья", "рупа-мадхурья",
+  "арча-виграха", "маха-мантра",
+  "трибханга", "парикары", "параматма", "бхагаван", "брахман",
+  "расами", "расе", "раса", "шанта", "шастры", "сурабхи",
+  "аватари", "аватары", "гопов", "гопи", "лилы", "манвантара",
+].sort((a, b) => b.length - a.length);
+const PKL_RE = new RegExp(`(?:${PKL_TERMS.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "giu");
 function renderSanskrit(text: string | null | undefined): ReactNode {
   if (!text) return text ?? null;
-  if (!text.includes("*")) return renderTerms(text);
-  const parts = text.split(/\*([^*]+)\*/g);
-  return parts.map((seg, i) =>
-    seg ? (i % 2 === 1 ? <Skt key={i}>{seg}</Skt> : <span key={i}>{renderTerms(seg)}</span>) : null
-  );
+  PKL_RE.lastIndex = 0;
+  const out: ReactNode[] = [];
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = PKL_RE.exec(text)) !== null) {
+    const form = m[0];
+    const start = m.index;
+    const end = start + form.length;
+    const before = start > 0 ? text[start - 1] : "";
+    const after = end < text.length ? text[end] : "";
+    if ((before && IS_LETTER.test(before)) || (after && IS_LETTER.test(after))) { PKL_RE.lastIndex = start + 1; continue; }
+    if (start > last) out.push(<span key={`p${out.length}`}>{renderTerms(text.slice(last, start))}</span>);
+    out.push(<Skt key={`t${out.length}`}>{form}</Skt>);
+    last = end;
+    PKL_RE.lastIndex = end;
+  }
+  if (out.length === 0) return renderTerms(text);
+  if (last < text.length) out.push(<span key={`p${out.length}`}>{renderTerms(text.slice(last))}</span>);
+  return out;
 }
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-3)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1.4, textAlign: "left" };
