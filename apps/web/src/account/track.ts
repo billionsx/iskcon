@@ -88,7 +88,7 @@ export interface ReadEvent {
   ref: string;
   /** Человеко-читаемая подпись для карточки «продолжить»: «Глава 2 · Стих 13». */
   label?: string | null;
-  /** Путь для открытия: /book/bg/2 либо /read/cc/madhya/8. */
+  /** Путь для открытия: /book/bg/2 либо /book/cc/madhya/8. */
   href?: string | null;
   /** chapter|verse|prose — тип единицы (по умолчанию chapter). */
   kind?: string;
