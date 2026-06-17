@@ -47,14 +47,17 @@ jobs:
 
       - name: Ingest darshan
         env:
-          # Боевой режим: по расписанию (14:30 IST) публикует даршан Вриндавана в @iskcone
-          # двумя альбомами по 10. Ручной запуск из UI по умолчанию dry (input default '1').
+          # Боевой режим по расписанию (14:30 IST): Вриндаван — один пост из 10 фото
+          # (Гаура-Нитай + Кришна-Баларам + Радхе-Шьям/сакхи), Маяпур — своим постом.
+          # Ручной запуск из UI по умолчанию dry (input default '1').
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
-          ONLY: ${{ github.event.inputs.only || 'vrindavan' }}
+          ONLY: ${{ github.event.inputs.only || 'vrindavan,mayapur' }}
           FORCE: ${{ github.event.inputs.force || '0' }}
           DIAG: ${{ github.event.inputs.diag || '0' }}
           DIAG_CHANNELS: ${{ github.event.inputs.diag_channels || '' }}
           DELETE_IDS: ${{ github.event.inputs.delete_ids || '' }}
+          # Раскладка Вриндавана по алтарям (индексы фото). Пусто = равномерный спред из 10.
+          VRINDAVAN_LAYOUT: ${{ vars.VRINDAVAN_LAYOUT || '' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHANNEL: '@iskcone'
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

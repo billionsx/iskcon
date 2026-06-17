@@ -57,6 +57,21 @@ function pickSpread(arr, k) {
   let j = 0; while (drop.size < dropCount && j < n) { if (!drop.has(j)) drop.add(j); j++; }
   return arr.filter((_, i) => !drop.has(i));
 }
+// Один пост Вриндавана = 10 фото. Сайт отдаёт неразмеченный упорядоченный список (все три
+// алтаря, без тегов по Божеству). Если порядок на сайте стабилен по алтарям — задаём раскладку
+// по позициям (Гаура-Нитай → Кришна-Баларам → Радхе-Шьям/сакхи) и берём ровно те кадры; иначе —
+// равномерный спред из 10, гарантирующий присутствие всех трёх алтарей.
+// Желаемая раскладка: 2 Гаура-Нитай + 2 Кришна-Баларам + 6 Радхе-Шьям (2 ракурса + 2 портрета + 2 Лалита-Вишакха).
+const VRINDAVAN_LAYOUT = process.env.VRINDAVAN_LAYOUT ? JSON.parse(process.env.VRINDAVAN_LAYOUT) : null; // { "gn":[..], "kb":[..], "rs":[..] } — индексы в галерее
+function selectVrindavan(images) {
+  const L = VRINDAVAN_LAYOUT;
+  if (L) {
+    const order = [...(L.gn || []), ...(L.kb || []), ...(L.rs || [])];
+    const picked = order.map((i) => images[i]).filter(Boolean);
+    if (picked.length >= Math.min(10, images.length)) return picked.slice(0, 10);
+  }
+  return pickSpread(images, 10);
+}
 // Тянет галерею даршана за дату (DARSHAN_DATE или сегодня IST). Возвращает порядок фото как на сайте.
 async function fetchSiteGallery(src) {
   const date = process.env.DARSHAN_DATE || istToday();
@@ -313,19 +328,19 @@ async function run() {
       if (!gal.images.length) { preview.push({ slug: src.slug, date: gal.date, error: `site gallery empty for ${gal.date}` }); continue; }
       src._postId = `${gal.date}/${src.galleryType}`;
       const caption = composeCaption(src);
-      const imgs20 = pickSpread(gal.images, 20);
+      const imgsSel = selectVrindavan(gal.images);
       const row = {
         slug: src.slug, kind: "site", date: gal.date, temple_name: src.name, deities: src.deities,
         src_channel: src.srcKey, src_post_id: src._postId, src_url: gal.pageUrl, gallery_name: gal.name,
-        photo_count: gal.images.length, albums_planned: Math.ceil(imgs20.length / 10),
-        photos: imgs20, caption_preview: caption,
+        photo_count: gal.images.length, albums_planned: 1,
+        photos: imgsSel, caption_preview: caption,
       };
       if (dry) { preview.push(row); continue; }
       if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
-      const sent = await sendDarshanAlbums(imgs20, caption, 10, 2);
+      const sent = await sendDarshanAlbums(imgsSel, caption, 10, 1);
       const anchorId = sent.anchorId || 0;
       const msgIds = sent.ids;
-      const imagesJson = JSON.stringify(imgs20).replace(/'/g, "''");
+      const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
       const capSql = caption.replace(/'/g, "''");
       try {
         d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
