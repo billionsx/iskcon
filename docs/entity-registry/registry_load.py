@@ -90,10 +90,13 @@ if os.path.exists(auto_path):
     ar = list(csv.DictReader(open(auto_path, encoding="utf-8")))
     for i in range(0, len(ar), 60):
         chunk = ar[i:i+60]
-        vals = ",".join(f"({q(r['entity_id'])},{q(r.get('summary',''))},datetime('now'))" for r in chunk)
-        run(f"INSERT INTO entity_profiles (entity_id,summary,updated_at) VALUES {vals} "
-            "ON CONFLICT(entity_id) DO UPDATE SET summary=excluded.summary, updated_at=datetime('now');")
-    print("auto summaries upserted:", len(ar))
+        vals = ",".join(
+            f"({q(r['entity_id'])},{q(r.get('summary',''))},{q(r.get('biography',''))},"
+            f"{q(r.get('contribution',''))},{q(r.get('level','auto') or 'auto')},datetime('now'))" for r in chunk)
+        run(f"INSERT INTO entity_profiles (entity_id,summary,biography,contribution,level,updated_at) VALUES {vals} "
+            "ON CONFLICT(entity_id) DO UPDATE SET summary=excluded.summary, biography=excluded.biography, "
+            "contribution=excluded.contribution, level=excluded.level, updated_at=datetime('now');")
+    print("auto profiles upserted:", len(ar))
 else:
     print("auto summaries: profiles_auto.csv not found — skipped")
 
