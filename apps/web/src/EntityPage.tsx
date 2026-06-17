@@ -201,6 +201,24 @@ type NavCard = { title: string; subtitle?: string; to?: string; collection?: str
 type DossierSub = { id: string; label: string; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
 type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
 type Dossier = { tabs: DossierTab[] };
+function expandCiteRef(ref: string): string {
+  const isRange = (x: string) => /[\u2013\u2014-]/.test(x);
+  const lvl = (parts: string[], labels: string[]) =>
+    parts.map((x, i) => {
+      const base = labels[i] ?? "стих";
+      const lab = isRange(x) ? (base === "стих" ? "стихи" : base === "глава" ? "главы" : base) : base;
+      return lab + " " + x;
+    });
+  let m = ref.match(/^Ч\.-ч\.,\s*(Ади|Мадхья|Антья)\s+(.+)$/);
+  if (m) return ["Чайтанья-чаритамрита", m[1] + "-лила", ...lvl(m[2].split("."), ["глава", "стих"])].join(", ");
+  m = ref.match(/^ШБ\s+(.+)$/);
+  if (m) return ["Шримад-Бхагаватам", ...lvl(m[1].split("."), ["песнь", "глава", "стих"])].join(", ");
+  m = ref.match(/^Брахма-самхита\s+(.+)$/);
+  if (m) return ["Брахма-самхита", ...lvl(m[1].split("."), ["глава", "стих"])].join(", ");
+  m = ref.match(/^БГ\s+(.+)$/);
+  if (m) return ["Бхагавад-гита", ...lvl(m[1].split("."), ["глава", "стих"])].join(", ");
+  return ref;
+}
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, letterSpacing: "0.2px", color: GOLD, background: "color-mix(in srgb, " + GOLD + " 11%, transparent)", border: "1px solid color-mix(in srgb, " + GOLD + " 28%, transparent)", borderRadius: 7, padding: "4px 10px", display: "inline-flex", alignItems: "center", gap: 5 };
   return (
@@ -227,17 +245,12 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
                 const go = c.to && onNavigate ? () => onNavigate!(c.to!) : undefined;
                 return go ? (
                   <button key={k} type="button" onClick={go} style={{ ...citeBase, cursor: "pointer" }}>
-                    {c.ref}<span aria-hidden style={{ opacity: 0.6, fontSize: 10 }}>›</span>
+                    {expandCiteRef(c.ref)}<span aria-hidden style={{ opacity: 0.6, fontSize: 10 }}>›</span>
                   </button>
                 ) : (
-                  <span key={k} style={citeBase}>{c.ref}</span>
+                  <span key={k} style={citeBase}>{expandCiteRef(c.ref)}</span>
                 );
               })}
-            </div>
-          )}
-          {(s.see ?? []).length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
-              {(s.see ?? []).map((x) => <Chip key={x.id} label={x.t} onClick={() => onOpen(x.id, null)} />)}
             </div>
           )}
         </section>
