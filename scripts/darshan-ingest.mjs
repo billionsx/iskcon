@@ -57,20 +57,21 @@ function pickSpread(arr, k) {
   let j = 0; while (drop.size < dropCount && j < n) { if (!drop.has(j)) drop.add(j); j++; }
   return arr.filter((_, i) => !drop.has(i));
 }
-// Один пост Вриндавана = 10 фото. Сайт отдаёт неразмеченный упорядоченный список (все три
-// алтаря, без тегов по Божеству). Если порядок на сайте стабилен по алтарям — задаём раскладку
-// по позициям (Гаура-Нитай → Кришна-Баларам → Радхе-Шьям/сакхи) и берём ровно те кадры; иначе —
-// равномерный спред из 10, гарантирующий присутствие всех трёх алтарей.
-// Желаемая раскладка: 2 Гаура-Нитай + 2 Кришна-Баларам + 6 Радхе-Шьям (2 ракурса + 2 портрета + 2 Лалита-Вишакха).
-const VRINDAVAN_LAYOUT = process.env.VRINDAVAN_LAYOUT ? JSON.parse(process.env.VRINDAVAN_LAYOUT) : null; // { "gn":[..], "kb":[..], "rs":[..] } — индексы в галерее
+// Один пост Вриндавана = выбранные кадры. Сайт отдаёт неразмеченный упорядоченный список
+// (все три алтаря, ~21 фото, без тегов по Божеству). Раскладка задана позициями в галерее
+// (порядок на сайте у храма стабильный изо дня в день). Индексы получены из отбора основателя:
+// Гаура-Нитай [0,1] · Кришна-Баларам [4,3] · Радхе-Шьям и сакхи [6,9,10,7,8] — итог 9 фото в этом порядке.
+// Переопределить можно переменной репозитория VRINDAVAN_LAYOUT (JSON с gn/kb/rs).
+const DEFAULT_VRINDAVAN_LAYOUT = { gn: [0, 1], kb: [4, 3], rs: [6, 9, 10, 7, 8] };
+const VRINDAVAN_LAYOUT = process.env.VRINDAVAN_LAYOUT ? JSON.parse(process.env.VRINDAVAN_LAYOUT) : DEFAULT_VRINDAVAN_LAYOUT;
 function selectVrindavan(images) {
   const L = VRINDAVAN_LAYOUT;
   if (L) {
     const order = [...(L.gn || []), ...(L.kb || []), ...(L.rs || [])];
-    const picked = order.map((i) => images[i]).filter(Boolean);
-    if (picked.length >= Math.min(10, images.length)) return picked.slice(0, 10);
+    const picked = order.map((i) => images[i]).filter((x) => typeof x === "string");
+    if (picked.length === order.length && picked.length > 0) return picked.slice(0, 10); // все позиции на месте — берём ровно выбранное
   }
-  return pickSpread(images, 10);
+  return pickSpread(images, 10); // запас: порядок сменился/мало фото — равномерный спред всех алтарей
 }
 // Тянет галерею даршана за дату (DARSHAN_DATE или сегодня IST). Возвращает порядок фото как на сайте.
 async function fetchSiteGallery(src) {
