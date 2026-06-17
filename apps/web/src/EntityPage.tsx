@@ -20,6 +20,8 @@ const GOLD = "#D2AA1B";
 
 // Канонический вывод расы из категорий реестра: гопи/манджари → мадхурья, гопа → сакхья.
 const CATEGORY_RASA: Record<string, string> = { gopi: "madhurya", manjari: "madhurya", gopa: "sakhya" };
+// Кураторские факт-чипы для ВКЛ (то, что не выводится из категорий).
+const FACT_CHIPS: Record<string, string[]> = { krishna: ["Явился в этом мире 5\u202F000+ лет назад"] };
 
 export interface RelItem {
   relation: string;
@@ -303,7 +305,7 @@ function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkIte
 interface LiveDarshan { source: string; date: string; templeSlug: string; templeName: string; deities: string | null; images: string[]; caption: string | null; srcUrl: string; channelUrl: string | null; postId: string }
 
 /* ───────── Tier-1 табы ПКЛ (золотое подчёркивание, sticky под навбаром) ───────── */
-function PersonTabs({ tabs, active, onChange }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void }) {
+function PersonTabs({ tabs, active, onChange, stickyTop = 52 }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void; stickyTop?: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   useEffect(() => {
@@ -312,7 +314,7 @@ function PersonTabs({ tabs, active, onChange }: { tabs: { id: string; label: str
     c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
   }, [active]);
   return (
-    <nav aria-label="Разделы личности" style={{ position: "sticky", top: 52, zIndex: 9, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+    <nav aria-label="Разделы личности" style={{ position: "sticky", top: stickyTop, zIndex: 9, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", padding: "0 6px" }}>
         {tabs.map((t) => {
           const on = t.id === active;
@@ -349,7 +351,7 @@ function RelRows({ group, onOpen }: { group: { label: string; order: number; ite
 }
 
 /* Tier-3 суб-табы (капсулы, тема-адаптивные, липкие под Tier-1) */
-function PersonSubTabs({ items, active, onChange }: { items: { id: string; label: string }[]; active: string; onChange: (id: string) => void }) {
+function PersonSubTabs({ items, active, onChange, stickyTop = 96 }: { items: { id: string; label: string }[]; active: string; onChange: (id: string) => void; stickyTop?: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   useEffect(() => {
@@ -358,7 +360,7 @@ function PersonSubTabs({ items, active, onChange }: { items: { id: string; label
     c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
   }, [active]);
   return (
-    <nav aria-label="Подразделы" style={{ position: "sticky", top: 96, zIndex: 8, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
+    <nav aria-label="Подразделы" style={{ position: "sticky", top: stickyTop, zIndex: 8, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
       <div ref={containerRef} style={{ display: "flex", gap: 8, alignItems: "center", overflowX: "auto", padding: "10px 16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {items.map((it) => {
           const on = it.id === active;
@@ -374,7 +376,7 @@ function PersonSubTabs({ items, active, onChange }: { items: { id: string; label
   );
 }
 
-export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
+export default function EntityPage({ id, onBack, onOpen, onNavigate, embedded }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; embedded?: boolean }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
@@ -527,7 +529,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
     const SCRIPT = new Set(["bhagavatam", "gita", "cc", "ramayana", "mahabharata"]);
     const W = (c: string) => (c === "source-of-all" ? 3 : SCRIPT.has(c) ? 2 : c === "vraja" ? -1 : 0);
     const rest = cats.filter((c) => !used.has(c) && !c.startsWith("rasa:") && CATEGORY_RU[c]).sort((a, b) => W(b) - W(a));
-    const heroChips = Array.from(new Set(rest.map((c) => CATEGORY_RU[c]))).slice(0, 4);
+    const heroChips = Array.from(new Set([...(FACT_CHIPS[id] ?? []), ...rest.map((c) => CATEGORY_RU[c])])).slice(0, 4);
     return { eyebrow, heroChips };
   })();
   // Эпитет на карточке (ВКЛ): профильное summary как авторитетная «надпись», иначе короткая заметка.
@@ -552,7 +554,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      {/* навбар */}
+      {!embedded && (
       <div style={{ position: "sticky", top: 0, zIndex: 10, display: "flex", alignItems: "center", height: 52, padding: "0 8px",
         background: "color-mix(in srgb, var(--color-bg) 86%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
         borderBottom: "0.5px solid var(--color-hairline)" }}>
@@ -571,8 +573,9 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
           })} />
         )}
       </div>
+      )}
 
-      <div style={{ padding: "12px 16px calc(48px + env(safe-area-inset-bottom,0px))" }}>
+      <div style={{ padding: embedded ? "0 0 10px" : "12px 16px calc(48px + env(safe-area-inset-bottom,0px))" }}>
         {error && (
           <div style={{ marginTop: 40, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>
             Не удалось загрузить. Потяните назад и попробуйте снова.
@@ -601,12 +604,12 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
 
             {dossier ? (
               <>
-                <PersonTabs tabs={dossierTabs} active={tab} onChange={setTab} />
+                <PersonTabs tabs={dossierTabs} active={tab} onChange={setTab} stickyTop={embedded ? 0 : 52} />
                 <div style={{ marginTop: 18 }}>
                   {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
                     <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
                   )}
-                  {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} />}
+                  {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} stickyTop={embedded ? 46 : 96} />}
                   {subSections.length > 0 && (
                     <div style={{ marginTop: 18 }}>
                       <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
@@ -616,7 +619,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate }: { id: str
               </>
             ) : (
               <>
-            {tabs.length > 1 && <PersonTabs tabs={tabs} active={tab} onChange={setTab} />}
+            {tabs.length > 1 && <PersonTabs tabs={tabs} active={tab} onChange={setTab} stickyTop={embedded ? 0 : 52} />}
 
             <div style={{ marginTop: tabs.length > 1 ? 18 : 22 }}>
               {tab === "obzor" && (
