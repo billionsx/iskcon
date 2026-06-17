@@ -1,0 +1,58 @@
+name: verse coverage (D1 → JSON)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Coverage
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql):
+              rq=urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                  headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=120) as r:
+                  return json.loads(r.read().decode())["result"][0]["results"]
+          out={}
+          for w in ["bg","cc","sb","brs"]:
+              tot=d1(f"SELECT COUNT(*) AS n FROM verses WHERE work_id='{w}'")[0]["n"]
+              tr=d1(f"SELECT COUNT(*) AS n FROM verse_texts x JOIN verses v ON v.id=x.verse_id WHERE v.work_id='{w}' AND length(COALESCE(x.translation,''))>0")[0]["n"]
+              out[w]={"verses":tot,"translated":tr}
+          # по каждой главе-division для cc/sb: покрытие текста (number+parent для пути ридера)
+          for w in ["cc","sb"]:
+              try:
+                  rows=d1(
+                    "SELECT d.id AS id, d.number AS ch, p.number AS parent, "
+                    "(SELECT COUNT(*) FROM verses v JOIN verse_texts x ON x.verse_id=v.id "
+                    " WHERE v.division_id=d.id AND length(COALESCE(x.translation,''))>0) AS tr "
+                    f"FROM divisions d LEFT JOIN divisions p ON p.id=d.parent_id "
+                    f"WHERE d.work_id='{w}' AND d.level='chapter'")
+                  cov=[{"parent":r.get("parent"),"ch":r.get("ch"),"tr":r.get("tr")} for r in rows if (r.get("tr") or 0)>0]
+                  out[w]["covered_chapters"]=cov
+              except Exception as e:
+                  out[w]["covered_error"]=str(e)
+          os.makedirs("docs/diag", exist_ok=True)
+          json.dump(out, open("docs/diag/verse-coverage.json","w",encoding="utf-8"), ensure_ascii=False, indent=1)
+          print(json.dumps({k:(v if k=='summary' else {kk:vv for kk,vv in v.items() if kk!='covered_chapters'}) for k,v in out.items()}, ensure_ascii=False, indent=1))
+          PY
+      - name: Commit
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add docs/diag/verse-coverage.json
+          git commit -m "chore: verse coverage snapshot [skip ci]" || { echo none; exit 0; }
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main 2>/dev/null || true
+            git push origin main 2>/dev/null && break
+            sleep 3
+          done
