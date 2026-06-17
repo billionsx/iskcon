@@ -3,7 +3,7 @@ entities: 815
 names: 2692 | categories: 1653
 relations: 2107
 profiles seeded (bronze): 815
-auto summaries upserted: 581
+auto profiles upserted: 496
 curated profiles upserted: 166
 links: 68
   D1 entities: 815
