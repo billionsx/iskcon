@@ -32,7 +32,6 @@ import FavoritesScreen from "./FavoritesScreen";
 import NotesScreen from "./NotesScreen";
 import NoteDetail from "./NoteDetail";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
-import ScriptureReader, { type ScriptureTarget } from "./ScriptureReader";
 import BookLoaderPage from "./BookLoaderPage";
 import AccountScreen from "./AccountScreen";
 import { AuthProvider } from "./account/store";
@@ -586,7 +585,6 @@ export default function App() {
   const [notesInitial, setNotesInitial] = useState<{ attach?: NoteAttach; openId?: string; nonce: number } | null>(null);
   const [openCatalog, setOpenCatalog] = useState(false);
   const [openContent, setOpenContent] = useState<string | null>(null);
-  const [scripture, setScripture] = useState<ScriptureTarget | null>(null);
   const [openAdmin, setOpenAdmin] = useState(false);
   const [openEntity, setOpenEntity] = useState<string | null>(null);
   const [openCollection, setOpenCollection] = useState<string | null>(null);
@@ -629,7 +627,7 @@ export default function App() {
   // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере включён) ──
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
-  // /book/{id}, /read/{work}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
+  // /book/{id}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
   const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "entity", "person", "favorites", "notes", "note", "cart", "practice", "prasadam", "center", "centers", "my"];
   function pathFromState(): string {
     if (openCart) return "/cart";
@@ -655,7 +653,6 @@ export default function App() {
     if (prasadamSection) return prasadamSection === "offering" ? "/prasadam/offering" : "/prasadam";
     if (openAdmin) return "/admin";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
-    if (scripture) return ["/read", scripture.work, scripture.div, scripture.chapter, scripture.verse].filter((x) => x != null && x !== "").join("/");
     if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openKirtanArtist) return "/kirtan/" + openKirtanArtist;
     if (openFavorites) return "/favorites";
@@ -684,7 +681,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setScripture(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("krishna"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -749,8 +746,14 @@ export default function App() {
       return;
     }
     if (seg0 === "read") {
-      const [, , work, div, ch, v] = clean.split("/");
-      if (work) setScripture({ work, div: div ?? null, chapter: ch ?? null, verse: v ?? null });
+      // /read устарел — открываем то же место в загруженной книге /book/
+      const [, , work, a, b, c] = clean.split("/");
+      if (work) {
+        const bk = BOOKS[work] ? work : "bg";
+        if (BOOKS[bk]?.hierarchical) setBookTarget(a ? { div: a, chapter: b ?? null, verse: c ?? null } : null);
+        else setBookTarget(a ? { div: null, chapter: a, verse: b ?? null } : null);
+        setOpenBook(bk);
+      }
       return;
     }
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
@@ -865,7 +868,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, scripture, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha]);
+  }, [tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -898,17 +901,11 @@ export default function App() {
   function openRef(href: string) {
     const [kind, work, div, ch, v] = href.split(":");
     if (!work) return;
-    // Карточка книги (ВКП→ПКП): любая известная книга открывается в детальной странице.
-    if (kind === "book" && BOOKS[work]) { setOpenContent(null); setScripture(null); setBookTarget(null); setOpenBook(work); return; }
-    if (work === "bg") { setOpenContent(null); setScripture(null); setBookTarget(null); setOpenBook("bg"); return; }
-    // ЧЧ/ШБ и прочие иерархические (глава/стих) — референс-ридер
-    setOpenContent(null); setOpenBook(null);
-    setScripture({
-      work,
-      div: kind === "book" ? null : (div ?? null),
-      chapter: kind === "chap" || kind === "verse" ? (ch ?? null) : null,
-      verse: kind === "verse" ? (v ?? null) : null,
-    });
+    // Любое место писания открывается в загруженной книге /book/ (стаб /read удалён).
+    if (kind === "book") { navigate(`/book/${BOOKS[work] ? work : "bg"}`); return; }
+    if (work === "bg") { navigate("/book/bg"); return; }
+    const seg = kind === "verse" ? `/${div ?? ""}/${ch ?? ""}/${v ?? ""}` : kind === "chap" ? `/${div ?? ""}/${ch ?? ""}` : "";
+    navigate(`/book/${work}${seg}`.replace(/\/+$/, ""));
   }
   // Открыть конкретный стих по его id («Стих дня» → читалка): БГ — книга, ШБ/ЧЧ — референс-ридер.
   function openVerseId(id: string) {
@@ -916,7 +913,7 @@ export default function App() {
     const work = p[0];
     if (!work) return;
     if (work === "bg") navigate(`/book/bg/${p[1] ?? ""}/${p[2] ?? ""}`.replace(/\/+$/, ""));
-    else navigate(`/read/${work}/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`.replace(/\/+$/, ""));
+    else navigate(`/book/${work}/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`.replace(/\/+$/, ""));
   }
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
   function openEntityTarget(id: string, type: string | null) {
@@ -924,7 +921,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !scripture && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
+  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
   return (
     <AuthProvider>
     <PlayerProvider>
@@ -938,10 +935,6 @@ export default function App() {
         ) : openBook ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
             <BookDetailPage key={openBook} book={BOOKS[openBook] ?? BOOKS.bg} onBack={goBack} onDonate={openDonate} onOpenCart={() => navigate("/cart")} initialTarget={bookTarget} />
-          </main>
-        ) : scripture ? (
-          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <ScriptureReader target={scripture} onBack={goBack} />
           </main>
         ) : openBhajan ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
