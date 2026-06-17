@@ -197,7 +197,7 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 
 type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
-type LfQuote = { t: string; by?: string; ref?: string; to?: string };
+type LfQuote = { t: string; by?: string; byId?: string; ref?: string; to?: string };
 type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
@@ -258,8 +258,48 @@ function renderSanskrit(text: string | null | undefined): ReactNode {
   if (last < text.length) out.push(<span key={`p${out.length}`}>{renderTerms(text.slice(last))}</span>);
   return out;
 }
+// === Стандарт отображения стиха (ПКЛ/ВКЛ модуль) ===
+// Снимает ВНЕШНИЕ обрамляющие кавычки (« » “ ” " „) только если стих ими обёрнут
+// целиком (начинается с открывающей). Внутренние цитаты сохраняются. Текст в БД
+// остаётся дословным — нормализуется лишь представление, чтобы все стихи выглядели
+// единообразно (золотая граница + курсив = знак цитаты, без двойных кавычек).
+function stripWrap(t: string): string {
+  let s = (t || "").trim();
+  if (/^[«“"„]/.test(s)) {
+    s = s.replace(/^[«“"„]\s*/, "");
+    s = s.replace(/\s*([.!?…]?)\s*[»”"]\s*([.!?…]*)\s*$/u, (_m, inner: string, outer: string) => inner || outer || "");
+  }
+  return s;
+}
+// Единая ссылка-источник: для стихов и для cite. Серый текст + шеврон (если кликабельно).
+function SourceLink({ label, to, onNavigate, size = 14 }: { label: string; to?: string; onNavigate?: (href: string) => void; size?: number }) {
+  const base: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: size, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-3)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "baseline", gap: 3, lineHeight: 1.45, textAlign: "left" };
+  if (to && onNavigate) return (
+    <button type="button" onClick={() => onNavigate(to)} style={{ ...base, cursor: "pointer" }}>
+      <span>{label}</span><span aria-hidden style={{ opacity: 0.45, fontSize: size - 1 }}>›</span>
+    </button>
+  );
+  return <span style={base}>{label}</span>;
+}
+// Стандартный блок стиха: курсив + золотая граница, без кавычек; подпись «— Кто говорит»
+// со ссылкой на карточку личности (byId) и единая ссылка-источник.
+function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
+  const speaker = q.byId
+    ? <button type="button" onClick={() => onOpen(q.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer", textDecoration: "underline", textDecorationColor: "rgba(210,170,27,0.5)", textUnderlineOffset: 3 }}>{q.by}</button>
+    : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{q.by}</span>;
+  return (
+    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.62, fontStyle: "italic", color: "var(--color-label)" }}>
+      <span>{renderSanskrit(stripWrap(q.t))}</span>
+      {(q.by || q.ref) && (
+        <footer style={{ marginTop: 11, fontStyle: "normal" }}>
+          {q.by && <div>— {speaker}</div>}
+          {q.ref && <div style={{ marginTop: q.by ? 3 : 0 }}><SourceLink label={q.ref} to={q.to} onNavigate={onNavigate} size={13} /></div>}
+        </footer>
+      )}
+    </blockquote>
+  );
+}
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
-  const citeBase: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-3)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "center", gap: 4, lineHeight: 1.4, textAlign: "left" };
   return (
     <div>
       {sections.map((s, i) => (
@@ -269,30 +309,13 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderSanskrit(para)}</p>
           ))}
           {[...(s.quote ? [s.quote] : []), ...(s.quotes ?? [])].map((q, qi) => (
-            <blockquote key={qi} style={{ margin: "20px 0 0", padding: "10px 0 10px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
-              <span>“{renderSanskrit(q.t)}”</span>
-              {(q.by || q.ref) && (
-                <footer style={{ marginTop: 9, fontStyle: "normal", fontSize: 12.5, color: "var(--color-label-3)" }}>
-                  {q.by}{q.by && q.ref ? " · " : ""}
-                  {q.ref ? (q.to && onNavigate
-                    ? <button type="button" onClick={() => onNavigate!(q.to!)} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", cursor: "pointer", textDecoration: "underline", textDecorationColor: "#c7c7cc", textUnderlineOffset: 2 }}>{q.ref}</button>
-                    : <span>{q.ref}</span>) : null}
-                </footer>
-              )}
-            </blockquote>
+            <QuoteBlock key={qi} q={q} onOpen={onOpen} onNavigate={onNavigate} />
           ))}
           {(s.cite ?? []).length > 0 && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 7, marginTop: 16 }}>
-              {(s.cite ?? []).map((c, k) => {
-                const go = c.to && onNavigate ? () => onNavigate!(c.to!) : undefined;
-                return go ? (
-                  <button key={k} type="button" onClick={go} style={{ ...citeBase, cursor: "pointer" }}>
-                    {expandCiteRef(c.ref)}<span aria-hidden style={{ opacity: 0.5, fontSize: 13, marginLeft: 1 }}>›</span>
-                  </button>
-                ) : (
-                  <span key={k} style={{ ...citeBase, color: "var(--color-label-3)" }}>{expandCiteRef(c.ref)}</span>
-                );
-              })}
+              {(s.cite ?? []).map((c, k) => (
+                <SourceLink key={k} label={expandCiteRef(c.ref)} to={c.to} onNavigate={onNavigate} size={14} />
+              ))}
             </div>
           )}
         </section>
