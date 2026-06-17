@@ -1,0 +1,20 @@
+name: dd-probe
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/_dd_probe.mjs
+      - run: |
+          git config user.name "ci-dd"; git config user.email "ci@local"
+          git checkout -B ci/dd-probe
+          git add -f data/darshan/_dd.json
+          git commit -m "ci: dd probe [skip ci]" || echo "no changes"
+          git push -f origin ci/dd-probe
