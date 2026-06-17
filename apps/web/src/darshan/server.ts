@@ -18,22 +18,64 @@ interface DarshanEnv {
 }
 
 /* ── якорные храмы (метаданные синхронны scripts/darshan-ingest.mjs) ── */
-const SOURCES = [
+interface Src {
+  slug: string;
+  kind: "tg" | "site";
+  channel: string;
+  name: string;
+  deities: string;
+  srcLabel: string;
+  galleryType?: string;
+  gallerySlug?: string;
+  galleryName?: string;
+}
+const SOURCES: Src[] = [
   {
     slug: "mayapur",
+    kind: "tg",
     channel: "ISKCONMayapurGroup",
     name: "ИСККОН Маяпур · Шри Дхама Маяпур",
     deities: "Шри Шри Радха-Мадхава и Аштасакхи · Панча-таттва",
     srcLabel: "ISKCON Mayapur",
   },
   {
+    // Вриндаван: для «сегодня» берём ВСЮ галерею Шрингара с сайта храма (≈21 фото,
+    // все три алтаря) — чтобы в сторис был полный даршан, а не один альбом канала.
     slug: "vrindavan",
+    kind: "site",
     channel: "iskconvrindavanofficial",
+    galleryType: "2",
+    gallerySlug: "sringar-darshan",
+    galleryName: "Sringar Darshan",
     name: "ИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир",
     deities: "Шри Шри Кришна-Баларам · Радха-Шьямасундар · Гаура-Нитай",
     srcLabel: "ISKCON Vrindavan",
   },
-] as const;
+];
+
+/* ── источник: сайт храма (полная галерея даршана за сегодня IST) ── */
+const SITE_CDN = "https://cdn.iskconvrindavan.com";
+const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+const istToday = () => new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
+async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
+  const date = istToday();
+  const u = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}.data`;
+  const pageUrl = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}`;
+  try {
+    const r = await fetch(u, {
+      headers: { "User-Agent": SITE_UA, accept: "*/*", referer: "https://iskconvrindavan.com/daily-darshan-gallery" },
+      cf: { cacheTtl: 600, cacheEverything: true },
+    } as RequestInit);
+    if (!r.ok) return null;
+    const t = await r.text();
+    const re = /static\/static-_[0-9a-zA-Z]+\.(?:jpe?g|png|webp)/g;
+    const seen = new Set<string>(); const paths: string[] = []; let m: RegExpExecArray | null;
+    while ((m = re.exec(t))) { if (!seen.has(m[0])) { seen.add(m[0]); paths.push(m[0]); } }
+    if (!paths.length) return null;
+    const name = (t.match(/"gallery_name","([^"]+)"/) || [])[1] || src.galleryName || "Darshan";
+    return { date, name, pageUrl, images: paths.map((p) => `${SITE_CDN}/${p}`) };
+  } catch { return null; }
+}
 
 // Приоритет постам с фото и «даршанной» лексикой, иначе — свежайший пост с фото.
 const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|arati|abhishek|rajbhog|raj bhog|sandhya|deity|deities|gaura|nitai|radha|krishna|kṛṣṇa|balaram|madhava/i;
@@ -100,7 +142,7 @@ interface DarshanItem {
   postId: string;
 }
 
-function liveItem(src: (typeof SOURCES)[number], post: RawPost): DarshanItem {
+function liveItem(src: Src, post: RawPost): DarshanItem {
   const cap = post.text ? post.text.slice(0, 400) : null;
   return {
     source: "live",
@@ -108,11 +150,27 @@ function liveItem(src: (typeof SOURCES)[number], post: RawPost): DarshanItem {
     templeSlug: src.slug,
     templeName: src.name,
     deities: src.deities,
-    images: post.photos.slice(0, 10),
+    images: post.photos.slice(0, 30),
     caption: cap,
     srcUrl: `https://t.me/${src.channel}/${post.id}`,
     channelUrl: null,
     postId: post.id,
+  };
+}
+
+// Карточка из полной галереи сайта (Вриндаван) — все фото сегодняшнего даршана.
+function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; images: string[] }): DarshanItem {
+  return {
+    source: "live",
+    date: gal.date,
+    templeSlug: src.slug,
+    templeName: src.name,
+    deities: src.deities,
+    images: gal.images.slice(0, 30),
+    caption: null,
+    srcUrl: gal.pageUrl,
+    channelUrl: null,
+    postId: `${gal.date}/${src.galleryType}`,
   };
 }
 
@@ -188,10 +246,17 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
     }
   }
 
-  // Сегодня — живьём из храмовых каналов (архив отдаётся отдельно /archive,
-  // чтобы пагинировать по id строки D1).
+  // Сегодня — живьём: Вриндаван берём полной галереей с сайта (все фото даршана),
+  // Маяпур — свежайшим даршанным постом канала. Архив — отдельно /archive.
   const live = await Promise.all(
     SOURCES.map(async (s) => {
+      if (s.kind === "site") {
+        const gal = await fetchSiteGallery(s);
+        if (gal && gal.images.length) return siteItem(s, gal);
+        // запас: если сайт недоступен — пробуем канал храма
+        const post = await latestDarshan(s.channel);
+        return post ? liveItem(s, post) : null;
+      }
       const post = await latestDarshan(s.channel);
       return post ? liveItem(s, post) : null;
     }),
