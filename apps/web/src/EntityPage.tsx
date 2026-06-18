@@ -198,8 +198,9 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
+type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; by?: string; byId?: string; ref?: string; to?: string };
-type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
+type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
@@ -282,21 +283,29 @@ function SourceLink({ label, to, onNavigate, size = 14 }: { label: string; to?: 
   );
   return <span style={base}>{label}</span>;
 }
-// Стандартный блок стиха: курсив + золотая граница, без кавычек; подпись «— Кто говорит»
-// со ссылкой на карточку личности (byId) и единая ссылка-источник.
+// Единый стандарт атрибуции источника: «— Кто сказал» (ссылка на карточку
+// личности, если есть byId) + ссылка-источник «где сказал». Применяется под
+// цитатами и под перечнями (списками). fontStyle:normal — чтобы корректно
+// смотреться и внутри курсивного blockquote, и отдельно.
+function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSource; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; marginTop?: number }) {
+  if (!src.by && !src.ref) return null;
+  const speaker = src.byId
+    ? <button type="button" onClick={() => onOpen(src.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer" }}>{src.by}</button>
+    : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{src.by}</span>;
+  return (
+    <div style={{ marginTop, fontFamily: "var(--font-text)", fontStyle: "normal" }}>
+      {src.by && <div>— {speaker}</div>}
+      {src.ref && <div style={{ marginTop: src.by ? 3 : 0 }}><SourceLink label={src.ref} to={src.to} onNavigate={onNavigate} size={13} /></div>}
+    </div>
+  );
+}
+// Стандартный блок стиха: курсив + золотая граница, без кавычек; подпись-атрибуция
+// «— Кто говорит» (ссылка на карточку, byId) и единая ссылка-источник.
 function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
-  const speaker = q.byId
-    ? <button type="button" onClick={() => onOpen(q.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer" }}>{q.by}</button>
-    : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{q.by}</span>;
   return (
     <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "Georgia, 'Gentium Book Plus', 'Times New Roman', serif", fontSizeAdjust: "none", fontSize: 18, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
       <span>{stripWrap(q.t)}</span>
-      {(q.by || q.ref) && (
-        <footer style={{ marginTop: 12, fontFamily: "var(--font-text)", fontStyle: "normal" }}>
-          {q.by && <div>— {speaker}</div>}
-          {q.ref && <div style={{ marginTop: q.by ? 3 : 0 }}><SourceLink label={q.ref} to={q.to} onNavigate={onNavigate} size={13} /></div>}
-        </footer>
-      )}
+      <Attribution src={q} onOpen={onOpen} onNavigate={onNavigate} marginTop={12} />
     </blockquote>
   );
 }
@@ -332,6 +341,7 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
               </div>
             );
           })()}
+          {s.listSource && <Attribution src={s.listSource} onOpen={onOpen} onNavigate={onNavigate} marginTop={16} />}
           {[...(s.quote ? [s.quote] : []), ...(s.quotes ?? [])].map((q, qi) => (
             <QuoteBlock key={qi} q={q} onOpen={onOpen} onNavigate={onNavigate} />
           ))}
