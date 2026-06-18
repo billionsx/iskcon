@@ -288,10 +288,10 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
     ? <button type="button" onClick={() => onOpen(q.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer", textDecoration: "underline", textDecorationColor: "rgba(210,170,27,0.5)", textUnderlineOffset: 3 }}>{q.by}</button>
     : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{q.by}</span>;
   return (
-    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 16.5, lineHeight: 1.62, fontStyle: "italic", color: "var(--color-label)" }}>
+    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-scripture)", fontSize: 17, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
       <span>{renderSanskrit(stripWrap(q.t))}</span>
       {(q.by || q.ref) && (
-        <footer style={{ marginTop: 11, fontStyle: "normal" }}>
+        <footer style={{ marginTop: 12, fontFamily: "var(--font-text)", fontStyle: "normal" }}>
           {q.by && <div>— {speaker}</div>}
           {q.ref && <div style={{ marginTop: q.by ? 3 : 0 }}><SourceLink label={q.ref} to={q.to} onNavigate={onNavigate} size={13} /></div>}
         </footer>
