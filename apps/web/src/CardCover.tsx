@@ -15,8 +15,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent as ReactMouseEvent } from "react";
 
-/** Стандарт: обложка-слайдер меняется раз в 3 секунды. */
-export const COVER_INTERVAL_MS = 3000;
+/** Стандарт: обложка-слайдер меняется раз в 7 секунд. */
+export const COVER_INTERVAL_MS = 7000;
 /** Длительность кросс-фейда между кадрами. */
 export const COVER_FADE_MS = 600;
 
