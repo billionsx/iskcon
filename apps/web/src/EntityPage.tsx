@@ -12,6 +12,7 @@ import { CATEGORY_RU, RASA_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./api";
+import { replaceUrl } from "./nav";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
 import { Rail } from "./AcharyaScreen";
@@ -539,6 +540,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const [tab, setTab] = useState<string>("obzor");
   const [sub, setSub] = useState<string>("");
   const [realm, setRealm] = useState<"material" | "spiritual">("material");
+  // Хеш-под-таб ждёт применения после установки tab (см. эффекты ниже).
+  const pendingSubFromHash = useRef<string | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -704,26 +707,63 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   if (groups.length > 0) tabs.push({ id: "svyazi", label: "Связи" });
   if (hasScripture) tabs.push({ id: "pisaniya", label: "Писания" });
   if (hasPlaces) tabs.push({ id: "mesta", label: "Места" });
+  // На первичной загрузке героя: tab/sub берём из URL-хеша (#tab/sub), если
+  // он валидный — иначе из дефолта. Это даёт восстановление позиции при
+  // back-навигации: /krishna#parikary/shanta → клик в обитель → /person/...
+  // → Back → /krishna#parikary/shanta → EntityPage перемонтируется и читает
+  // хеш. Также делает URL шеринг-дружелюбным.
   useEffect(() => {
     if (!data) return;
     const raw = data.profile?.longform;
     let dos: Dossier | null = null;
     try { const o = raw ? JSON.parse(raw) : null; if (o && !Array.isArray(o) && Array.isArray(o.tabs) && o.tabs.length) dos = o; } catch { /* not dossier */ }
-    setTab(dos ? dos.tabs[0].id : (raw || data.profile?.biography) ? "zhizn" : "obzor");
-  }, [id, data?.id]);
-  // при смене Tier-1 таба в досье — выставить первый суб-таб
+    // Парсим хеш только для embedded режима (/krishna, /gauranga) — там
+    // ПКЛ долгоживущий. В оверлее /person/<id> хеш не используем.
+    let hashTab = "", hashSub = "";
+    if (embedded && typeof window !== "undefined") {
+      const m = (window.location.hash || "").replace(/^#/, "").split("/");
+      hashTab = decodeURIComponent(m[0] || "");
+      hashSub = decodeURIComponent(m[1] || "");
+    }
+    const defaultTab = dos ? dos.tabs[0].id : (raw || data.profile?.biography) ? "zhizn" : "obzor";
+    const tabExists = dos ? dos.tabs.some((t) => t.id === hashTab) : (hashTab === "obzor" || hashTab === "zhizn");
+    const nextTab = tabExists ? hashTab : defaultTab;
+    setTab(nextTab);
+    // sub применим позже в эффекте на смену tab. Сохраним хеш-под-таб в реф
+    // для одноразового применения.
+    pendingSubFromHash.current = tabExists && hashSub ? hashSub : null;
+  }, [id, data?.id, embedded]);
+  // при смене Tier-1 таба в досье — выставить первый суб-таб (либо из хеша
+  // если он валиден для этого таба и это первое монтирование).
   useEffect(() => {
     const t = dossier?.tabs.find((x) => x.id === tab);
     const subs = t?.subtabs ?? [];
     const split = subs.some((st) => st.realm);
-    const first = (split ? subs.filter((st) => !st.realm || st.realm === realm) : subs)[0];
-    setSub(first?.id ?? "");
+    const visible = (split ? subs.filter((st) => !st.realm || st.realm === realm) : subs);
+    const pending = pendingSubFromHash.current;
+    if (pending && visible.some((st) => st.id === pending)) {
+      setSub(pending);
+    } else {
+      setSub(visible[0]?.id ?? "");
+    }
+    pendingSubFromHash.current = null;
   }, [tab, data?.id]);
   // при смене realm — если текущий sub не виден, переключить на первый видимый
   useEffect(() => {
     if (!hasRealmSplit) return;
     if (!visibleSubs.find((st) => st.id === sub)) setSub(visibleSubs[0]?.id ?? "");
   }, [realm, hasRealmSplit]);
+  // Синхронизация tab/sub → URL-хеш (embedded режим): /krishna#parikary/shanta.
+  // replaceUrl, а не pushUrl — переключение внутри карточки не должно засорять
+  // back-стек. При клике на «Барсана» pushUrl("/person/barsana") сохраняет
+  // ТЕКУЩИЙ URL (с хешем) в истории — Back вернёт сюда же.
+  useEffect(() => {
+    if (!embedded || typeof window === "undefined") return;
+    if (!tab) return;
+    const path = window.location.pathname;
+    const hash = sub ? `#${encodeURIComponent(tab)}/${encodeURIComponent(sub)}` : `#${encodeURIComponent(tab)}`;
+    if (window.location.hash !== hash) replaceUrl(path + hash);
+  }, [tab, sub, embedded]);
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -785,7 +825,14 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                   {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
                   {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
                   {hasRealmSplit && <RealmSegment realm={realm} onChange={setRealm} stickyTop={embedded ? 46 : 96} />}
-                  {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} stickyTop={embedded ? 100 : 150} />}
+                  {subItems.length > 0 && (
+                    <PersonSubTabs
+                      items={subItems}
+                      active={sub}
+                      onChange={setSub}
+                      stickyTop={embedded ? (hasRealmSplit ? 100 : 46) : (hasRealmSplit ? 150 : 96)}
+                    />
+                  )}
                   {subSections.length > 0 && (
                     <div style={{ marginTop: 18 }}>
                       <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
