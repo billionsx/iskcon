@@ -6,28 +6,13 @@ profiles seeded (bronze): 816
 auto profiles upserted: 496
 curated profiles upserted: 166
 longform column: present
-Traceback (most recent call last):
-  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/registry_load.py", line 129, in <module>
-    run("INSERT INTO entity_profiles (entity_id,longform,updated_at) "
-  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/registry_load.py", line 20, in run
-    with urllib.request.urlopen(req, timeout=120) as r:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 215, in urlopen
-    return opener.open(url, data, timeout)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 521, in open
-    response = meth(req, response)
-               ^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 630, in http_response
-    response = self.parent.error(
-               ^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 559, in error
-    return self._call_chain(*args)
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 492, in _call_chain
-    result = func(*args)
-             ^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 639, in http_error_default
-    raise HTTPError(req.full_url, code, msg, hdrs, fp)
-urllib.error.HTTPError: HTTP Error 400: Bad Request
-EXIT=1
+longform articles upserted: 9
+links: 68
+  D1 entities: 816
+  D1 entity_names: 2697
+  D1 entity_categories: 1655
+  D1 entity_relations: 2105
+  D1 entity_profiles: 816
+  D1 entity_links: 68
+done.
+EXIT=0
