@@ -1255,7 +1255,7 @@ function useReadProgress(o: {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
+function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; divisionInfo?: { num: string; title: string; slug: string } | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -1269,6 +1269,20 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, wor
 
   const chLabel = chapter.title_ru ? `Глава ${chapter.number} · ${chapter.title_ru}` : `Глава ${chapter.number}`;
   const chRef = hierarchical ? chapter.id : String(chapter.number);
+  // Метка раздела (Песнь N / Ади-лила и т.п.) — для шапки и героя.
+  // Для ШБ: «Песнь 1: Творение». Для ЧЧ: «Ади-лила». Для плоских книг (БГ) — null.
+  const divEyebrow = (() => {
+    if (!hierarchical || !divisionInfo) return null;
+    if (work === "sb") return divisionInfo.title ? `Песнь ${divisionInfo.num}: ${divisionInfo.title}` : `Песнь ${divisionInfo.num}`;
+    if (work === "cc") return divisionInfo.title || ccLilaLabel(divisionInfo.slug);
+    return divisionInfo.title || null;
+  })();
+  const divShort = (() => {
+    if (!hierarchical || !divisionInfo) return null;
+    if (work === "sb") return `Песнь ${divisionInfo.num}`;
+    if (work === "cc") return ccLilaLabel(divisionInfo.slug);
+    return divisionInfo.title || null;
+  })();
   // позиция + вес главы (число стихов) для взвешенного процента
   const prog = useMemo(() => {
     if (hierarchical) {
@@ -1375,9 +1389,9 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, wor
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
-        <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
-          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
-          <div style={{ fontSize: 11, color: INK2 }}>Глава {chapter.number} · {bookTitle}</div>
+        <div style={{ flex: 1, minWidth: 0, textAlign: "left", paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
+          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{renderTitle(chapter.title_ru)}</div>
+          <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Глава {chapter.number}{divShort ? ` · ${divShort}` : ""} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } player.playChapter(work, Number(chapter.number) || 1, "plain", hierarchical ? chapter.id.split(".")[1] : undefined); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
@@ -1388,7 +1402,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, bookTitle, wor
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}{divEyebrow ? ` · ${divEyebrow}` : ""}</div>
             <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
             <div style={{ marginTop: 10, fontSize: 13.5, color: INK2 }}>{verses?.length ?? chapter.verses} стихов</div>
           </div>
@@ -2251,6 +2265,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const [chapters, setChapters] = useState<ChapterRow[] | null>(null);
   const [hierOrder, setHierOrder] = useState<string[] | null>(null); // главы ЧЧ/ШБ в порядке чтения → процент прогресса
   const [hierWeights, setHierWeights] = useState<number[] | null>(null); // число стихов по главам ЧЧ/ШБ → вес для процента
+  const [hierDivByCh, setHierDivByCh] = useState<Record<string, { num: string; title: string; slug: string }> | null>(null);
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
   const bookContentRef = useRef<HTMLDivElement>(null);
@@ -2274,17 +2289,21 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   // даёт процент прогресса так же, как chapters.length у плоских книг. Грузим всегда
   // (а не только при открытом «Содержании»), чтобы процент был и при прямом входе на стих.
   useEffect(() => {
-    if (!book.hierarchical) { setHierOrder(null); setHierWeights(null); return; }
+    if (!book.hierarchical) { setHierOrder(null); setHierWeights(null); setHierDivByCh(null); return; }
     let live = true;
     setHierOrder(null);
     setHierWeights(null);
+    setHierDivByCh(null);
     fetch(api(`/books/${book.work}/toc`))
       .then((r) => r.json())
-      .then((d: { divisions?: { chapters?: { id: string; verses?: number }[] }[] }) => {
+      .then((d: { divisions?: { id: string; slug: string; number: string; title_ru: string; chapters?: { id: string; verses?: number }[] }[] }) => {
         if (!live || !d?.divisions) return;
         const chs = d.divisions.flatMap((dv) => dv.chapters ?? []);
         setHierOrder(chs.map((c) => c.id));
         setHierWeights(chs.map((c) => Number(c.verses) || 0));
+        const map: Record<string, { num: string; title: string; slug: string }> = {};
+        for (const dv of d.divisions) for (const c of (dv.chapters ?? [])) map[c.id] = { num: dv.number, title: dv.title_ru, slug: dv.slug };
+        setHierDivByCh(map);
       })
       .catch(() => {});
     return () => { live = false; };
@@ -2616,7 +2635,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       )}
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
-        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
+        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} divisionInfo={hierDivByCh && openChapter ? (hierDivByCh[openChapter.id] ?? null) : null} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} onNavigate={setReaderRef} onClose={goBack} onToChapter={goToChapter} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
