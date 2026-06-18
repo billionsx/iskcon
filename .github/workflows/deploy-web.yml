@@ -41,7 +41,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: apps/web/dist/books
-          key: pdf-books-${{ github.run_id }}
+          # СТАБИЛЬНЫЙ ключ: один кэш на неизменный набор книг и вёрстку, а не новая
+          # запись на каждый ран (раньше ключ с run_id плодил по 0.23 ГБ за деплой,
+          # 40+ записей упирались в лимит 10 ГБ → вытеснение → restore промахивался →
+          # полная пересборка всех книг ~30 мин). Хэш инвалидирует кэш при правке
+          # набора книг/вёрстки; правки текста книг ловит sig внутри genpdf и поле
+          # force_pdf. restore-keys — фолбэк-сидинг с последнего кэша при смене хэша.
+          key: pdf-books-v4-${{ hashFiles('apps/web/scripts/genpdf.mts', 'apps/web/src/books.ts', 'apps/web/src/pdfCover.ts') }}
           restore-keys: |
             pdf-books-
       - name: Pre-generate book PDFs (static, BBT typesetting)
