@@ -559,6 +559,26 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const [tab, setTab] = useState<string>("obzor");
   const [sub, setSub] = useState<string>("");
   const [realm, setRealm] = useState<"material" | "spiritual">("material");
+  // Якоря для скролла к верху раздела при смене realm-сегмента/подтаба.
+  const realmAnchorRef = useRef<HTMLDivElement>(null);
+  const subAnchorRef = useRef<HTMLDivElement>(null);
+  const scrollToAnchor = (ref: React.RefObject<HTMLDivElement>, stickyTop: number) => {
+    requestAnimationFrame(() => {
+      const el = ref.current;
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.pageYOffset - stickyTop + 1;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    });
+  };
+  const handleRealmChange = (v: "material" | "spiritual") => {
+    setRealm(v);
+    scrollToAnchor(realmAnchorRef, embedded ? 46 : 96);
+  };
+  const handleSubChange = (v: string) => {
+    setSub(v);
+    // Подтабы липнут под realm-сегментом — высоту учитываем в stickyTop.
+    scrollToAnchor(subAnchorRef, embedded ? (hasRealmSplit ? 100 : 46) : (hasRealmSplit ? 150 : 96));
+  };
   // Хеш-под-таб ждёт применения после установки tab (см. эффекты ниже).
   const pendingSubFromHash = useRef<string | null>(null);
 
@@ -843,12 +863,14 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                   )}
                   {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
                   {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
-                  {hasRealmSplit && <RealmSegment realm={realm} onChange={setRealm} stickyTop={embedded ? 46 : 96} />}
+                  {hasRealmSplit && <div ref={realmAnchorRef} aria-hidden style={{ height: 0 }} />}
+                  {hasRealmSplit && <RealmSegment realm={realm} onChange={handleRealmChange} stickyTop={embedded ? 46 : 96} />}
+                  {subItems.length > 0 && <div ref={subAnchorRef} aria-hidden style={{ height: 0 }} />}
                   {subItems.length > 0 && (
                     <PersonSubTabs
                       items={subItems}
                       active={sub}
-                      onChange={setSub}
+                      onChange={handleSubChange}
                       stickyTop={embedded ? (hasRealmSplit ? 100 : 46) : (hasRealmSplit ? 150 : 96)}
                     />
                   )}
