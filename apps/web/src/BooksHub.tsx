@@ -87,7 +87,7 @@ function Chevron({ muted = true }: { muted?: boolean }) {
 function FilterChips({ value, onChange }: { value: "all" | Lineage; onChange: (v: "all" | Lineage) => void }) {
   const opts: { id: "all" | Lineage; label: string }[] = [
     { id: "all", label: "Все" },
-    { id: "prabhupada", label: "Прабхупада" },
+    { id: "prabhupada", label: "Шрила Прабхупада" },
     { id: "acharya", label: "Ачарьи" },
     { id: "guru-iskcon", label: "Гуру ИСККОН" },
   ];

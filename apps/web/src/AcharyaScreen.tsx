@@ -290,10 +290,10 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
     <div>
       {/* Порог пред Личностью */}
       <div style={{ marginBottom: 6 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга-лилы"}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга Лилы"}</div>
         <h1 style={{ margin: "3px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: "-0.5px", color: "var(--color-label)" }}>{K ? "Шри Кришна" : "Шри Гауранга"}</h1>
         <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>
-          {K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гаура-лиле."}
+          {K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гауранга Лиле."}
         </p>
       </div>
 
@@ -321,7 +321,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
         mark={<MaskMark src="/bbt.svg" size={44} />} onClick={() => onOpen(hub, "personality")} />
 
       {/* ЛИЛА */}
-      <FacetHead kicker="līlā" title={K ? "Игры и спутники" : "Игры и спутники Гауранга-лилы"} sub={K ? "Вечные спутники Враджа по пяти расам." : "Волны Гауранга-лилы — от Панча-таттвы до ИСККОН."} />
+      <FacetHead kicker="līlā" title={K ? "Игры и спутники" : "Игры и спутники Гауранга Лилы"} sub={K ? "Вечные спутники Враджа по пяти расам." : "Волны Гауранга Лилы — от Панча-таттвы до ИСККОН."} />
       {K ? (
         <>
           <Rail title="Мадхурья · супружеская любовь" params="category=rasa%3Amadhurya&limit=60" onOpen={onOpen} />
@@ -336,7 +336,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
       ) : (
         <>
           <div style={{ marginTop: 4 }}>
-            <SectionCard title="Шрила Прабхупада" subtitle="Ачарья-основатель ИСККОН — последняя волна Гауранга-лилы" mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />} accent onClick={() => onOpen("prabhupada", "personality")} />
+            <SectionCard title="Шрила Прабхупада" subtitle="Ачарья-основатель ИСККОН — последняя волна Гауранга Лилы" mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />} accent onClick={() => onOpen("prabhupada", "personality")} />
           </div>
           <Rail title="Волна I · Панча-таттва" params="ids=chaitanya,nityananda,advaita,gadadhara,srivasa" orderIds={["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"]} onOpen={onOpen} />
           <Rail title="Спутники Махапрабху" params={`dataset=${GAURA_DS}&limit=60`} onOpen={onOpen} />
@@ -345,7 +345,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
           <Rail title="Волна IV · Гаудия-ачарьи" params="ids=vishvanatha-chakravarti,baladeva-vidyabhushana,jagannatha-dasa-babaji,bhaktivinoda-thakura,gaurakishora-dasa-babaji,bhaktisiddhanta-sarasvati" orderIds={["vishvanatha-chakravarti", "baladeva-vidyabhushana", "jagannatha-dasa-babaji", "bhaktivinoda-thakura", "gaurakishora-dasa-babaji", "bhaktisiddhanta-sarasvati"]} onOpen={onOpen} />
           <Rail title="Брахма-Мадхва-Гаудия-парампара" params="category=parampara&limit=40" onOpen={onOpen} />
           <div style={{ marginTop: 16 }}>
-            <SectionCard title="Гауранга лила" subtitle="Шри Чайтанья Махапрабху и Панча-таттва" mark={<MaskMark src="/gauranga.svg" size={44} />} onClick={() => onOpenCollection?.("gauranga")} />
+            <SectionCard title="Гауранга Лила" subtitle="Гауранга Махапрабху и Панча-таттва" mark={<MaskMark src="/gauranga.svg" size={44} />} onClick={() => onOpenCollection?.("gauranga")} />
           </div>
         </>
       )}
@@ -441,9 +441,9 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna"
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{realm === "gauranga" ? "Гаура-лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{realm === "gauranga" ? "Гауранга Лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
         <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{realm === "gauranga" ? "Гауранга" : realm === "krishna" ? "Кришна" : "Герои"}</h2>
-        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Шри Чайтанья Махапрабху, Панча-таттва и все спутники Гауранга-лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
+        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Гауранга Махапрабху, Панча-таттва и все спутники Гауранга Лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
       </div>
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по героям…" inputMode="search"
@@ -477,8 +477,8 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna"
           )}
           {(!realm || realm === "gauranga") && (
           <SectionCard
-            title="Гауранга лила"
-            subtitle="Шри Чайтанья Махапрабху и Панча-таттва"
+            title="Гауранга Лила"
+            subtitle="Гауранга Махапрабху и Панча-таттва"
             mark={<MaskMark src="/gauranga.svg" size={48} />}
             onClick={() => openCol("gauranga")}
           />

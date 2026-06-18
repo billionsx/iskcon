@@ -76,7 +76,7 @@ export interface KirtanArtist {
   origin?: string;       // место / традиция
   bio: string;           // 1–2 предложения
   mono: string;          // 1–2 буквы для монограммы-аватара
-  accent?: boolean;      // флагман (Прабхупада) — золотой акцент
+  accent?: boolean;      // флагман (Шрила Прабхупада) — золотой акцент
 }
 
 export interface KirtanAlbum {
@@ -97,7 +97,7 @@ export const KIRTAN_ARTISTS: KirtanArtist[] = [
   {
     slug: "srila-prabhupada",
     name: "Шрила Прабхупада",
-    full: "А.Ч. Бхактиведанта Свами Прабхупада",
+    full: "А.Ч. Бхактиведанта Свами Шрила Прабхупада",
     role: "Ачарья-основатель ИСККОН",
     era: "1896–1977",
     origin: "Калькутта · Вриндаван · весь мир",
