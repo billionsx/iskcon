@@ -1273,15 +1273,20 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
   // Для ШБ: «Песнь 1: Творение». Для ЧЧ: «Ади-лила». Для плоских книг (БГ) — null.
   const divEyebrow = (() => {
     if (!hierarchical || !divisionInfo) return null;
-    if (work === "sb") return divisionInfo.title ? `Песнь ${divisionInfo.num}: ${divisionInfo.title}` : `Песнь ${divisionInfo.num}`;
-    if (work === "cc") return divisionInfo.title || ccLilaLabel(divisionInfo.slug);
-    return divisionInfo.title || null;
+    const t = (divisionInfo.title || "").trim();
+    if (work === "sb") {
+      // title из БД для ШБ — это уже «Песнь N» (или «Песнь N: Творение»). Не дублируем.
+      if (/^Песнь/i.test(t)) return t;
+      return t ? `Песнь ${divisionInfo.num}: ${t}` : `Песнь ${divisionInfo.num}`;
+    }
+    if (work === "cc") return t || ccLilaLabel(divisionInfo.slug);
+    return t || null;
   })();
   const divShort = (() => {
     if (!hierarchical || !divisionInfo) return null;
     if (work === "sb") return `Песнь ${divisionInfo.num}`;
     if (work === "cc") return ccLilaLabel(divisionInfo.slug);
-    return divisionInfo.title || null;
+    return (divisionInfo.title || "").trim() || null;
   })();
   // позиция + вес главы (число стихов) для взвешенного процента
   const prog = useMemo(() => {
@@ -1983,7 +1988,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 }
 
 
-function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hierWeights, onNavigate, onClose, onToChapter, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; onNavigate: (ref: string) => void; onClose: () => void; onToChapter: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
+function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hierWeights, hierDivByCh, onNavigate, onClose, onToChapter, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; hierDivByCh?: Record<string, { num: string; title: string; slug: string }> | null; onNavigate: (ref: string) => void; onClose: () => void; onToChapter: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
   const [vMenu, setVMenu] = useState(false);
@@ -2086,7 +2091,17 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
         <NavBtn ariaLabel="Закрыть" onClick={onClose}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>
           <div style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.label ?? refStr}</div>
-          <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chapterNo ? `Глава ${chapterNo} · ` : ""}{bookTitle}</div>
+          <div style={{ fontSize: 11, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{(() => {
+            const parts: string[] = [];
+            if (chapterNo) parts.push(`Глава ${chapterNo}`);
+            // Песнь/лила — берём из hierDivByCh по data.division (или из ccLila для ЧЧ).
+            const div = data?.division || "";
+            const info = hierDivByCh && div ? hierDivByCh[div] : null;
+            if (work === "sb" && info) parts.push(`Песнь ${info.num}`);
+            else if (work === "cc") { const sl = info?.slug || ccLila; if (sl) parts.push(ccLilaLabel(sl)); }
+            parts.push(bookTitle);
+            return parts.join(" · ");
+          })()}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
         <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
@@ -2636,7 +2651,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
         : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} divisionInfo={hierDivByCh && openChapter ? (hierDivByCh[openChapter.id] ?? null) : null} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} onNavigate={setReaderRef} onClose={goBack} onToChapter={goToChapter} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} hierDivByCh={hierDivByCh} onNavigate={setReaderRef} onClose={goBack} onToChapter={goToChapter} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
