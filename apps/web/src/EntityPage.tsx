@@ -200,7 +200,7 @@ type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
-type LfQuote = { t: string; by?: string; byId?: string; ref?: string; to?: string };
+type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string };
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
@@ -331,10 +331,23 @@ function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSourc
 // внутри подсвечиваются через renderSanskrit → .skt (Georgia-курсив) и выделяются на
 // фоне русского. Весь блок Georgia-курсивом НЕ делаем — иначе перевод читается как
 // сплошной санскрит и выделение терминов пропадает. Золотая граница = знак цитаты.
+// Стандартный блок стиха/цитаты. Если есть transliteration (q.translit) — она
+// идёт ПЕРВОЙ строкой ЦЕЛИКОМ шрифтом писания (var(--font-scripture), курсив):
+// это санскрит/бенгали, и он весь выделяется единым законом, а не кусочной
+// подсветкой. Перевод (q.t) — прямым UI-шрифтом, как в BBT; санскритские ТЕРМИНЫ
+// внутри перевода подсвечиваются через renderSanskrit → .skt (Georgia-курсив).
+// Золотая граница объединяет транслитерацию и перевод в один стих.
 function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   return (
-    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 18, lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)", whiteSpace: "pre-line" }}>
-      <span>{renderSanskrit(stripWrap(q.t))}</span>
+    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, whiteSpace: "pre-line" }}>
+      {q.translit && (
+        <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, lineHeight: 1.5, letterSpacing: "0.01em", color: "var(--color-label-2)", marginBottom: 10 }}>
+          {stripWrap(q.translit)}
+        </div>
+      )}
+      <div style={{ fontFamily: "var(--font-text)", fontSize: 18, lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)" }}>
+        {renderSanskrit(stripWrap(q.t))}
+      </div>
       <Attribution src={q} onOpen={onOpen} onNavigate={onNavigate} marginTop={12} />
     </blockquote>
   );
