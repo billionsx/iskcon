@@ -206,59 +206,23 @@ type NavCard = { title: string; subtitle?: string; to?: string; collection?: str
 type DossierSub = { id: string; label: string; realm?: "material" | "spiritual"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
 type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
 type Dossier = { tabs: DossierTab[] };
-type RefParts = { book: string; loc?: string; to?: string };
-
-// Единый разбор шастрической ссылки: книга + локатор + (опц.) deep-link
-// внутрь читалки. Поддерживает компактные коды (ШБ 1.3.28, ЧЧ Мадхья 20.4),
-// БРС, БГ, и крупные книги без deep-link (Брахма-самхита, Кришна-сандарбха,
-// Лагху-бхагаватамрита, Говинда-лиламрита, Гита-говинда).
-// Все ref в данных приводятся к одному компактному виду без запятых.
-function expandRef(ref: string): RefParts {
-  const r0 = ref.trim();
-  const r = r0.replace(/^[«"]+|[»"]+$/g, "").replace(/^Шри\s+/, "").trim();
-  // Шримад-Бхагаватам — компакт и развёрнутый
-  let m = r.match(/^(?:ШБ|Шримад-Бхагаватам)\s+(\d+)\.(\d+)\.(\d+)$/);
-  if (m) return { book: "Шримад-Бхагаватам", loc: m[1]+"."+m[2]+"."+m[3], to: "/book/sb/"+m[1]+"/"+m[2]+"/"+m[3] };
-  m = r.match(/^(?:ШБ|Шримад-Бхагаватам)\s+(\d+)\.(\d+)$/);
-  if (m) return { book: "Шримад-Бхагаватам", loc: m[1]+"."+m[2], to: "/book/sb/"+m[1]+"/"+m[2] };
-  // Бхагавад-гита
-  m = r.match(/^(?:БГ|Бхагавад-гита)\s+(\d+)\.(\d+)$/);
-  if (m) return { book: "Бхагавад-гита", loc: m[1]+"."+m[2], to: "/book/bg/"+m[1]+"/"+m[2] };
-  // Чайтанья-чаритамрита: ЧЧ Мадхья 20[.396]
-  m = r.match(/^(?:ЧЧ|Чайтанья-чаритамрита)\s+(Ади|Мадхья|Антья)\s+(\d+)(?:\.(\d+))?$/);
-  if (m) {
-    const lila = m[1] === "Ади" ? "adi" : m[1] === "Мадхья" ? "madhya" : "antya";
-    const loc = m[3] ? m[1]+" "+m[2]+"."+m[3] : m[1]+" "+m[2];
-    const to = m[3] ? "/book/cc/"+lila+"/"+m[2]+"/"+m[3] : "/book/cc/"+lila+"/"+m[2];
-    return { book: "Чайтанья-чаритамрита", loc, to };
-  }
-  // Бхакти-расамрита-синдху
-  m = r.match(/^(?:БРС|Бхакти-расамрита-синдху)\s+(\d+)\.(\d+)(?:\.(\d+))?$/);
-  if (m) {
-    const loc = m[3] ? m[1]+"."+m[2]+"."+m[3] : m[1]+"."+m[2];
-    return { book: "Бхакти-расамрита-синдху", loc };
-  }
-  // Брахма-самхита
-  m = r.match(/^Брахма-самхита\s+(\d+)\.(\d+)$/);
-  if (m) return { book: "Брахма-самхита", loc: m[1]+"."+m[2] };
-  // Кришна-сандарбха
-  m = r.match(/^Кришна-сандарбха\s+(.+)$/);
-  if (m) return { book: "Кришна-сандарбха", loc: "ануч. " + m[1].replace(/^ануч[.\s]*/i, "") };
-  // Лагху-бхагаватамрита
-  m = r.match(/^Лагху-бхагаватамрита\s+(.+)$/);
-  if (m) return { book: "Лагху-бхагаватамрита", loc: m[1] };
-  // Говинда-лиламрита
-  m = r.match(/^Говинда-лиламрита(?:\s+(.+))?$/);
-  if (m) return { book: "Говинда-лиламрита", loc: m[1] };
-  // Гита-говинда
-  m = r.match(/^Гита-говинда\s+(.+)$/);
-  if (m) return { book: "Гита-говинда", loc: m[1] };
-  return { book: r0 };
-}
-// Совместимость со старым именем (используется в одной точке для cite).
 function expandCiteRef(ref: string): string {
-  const p = expandRef(ref);
-  return p.loc ? p.book + " " + p.loc : p.book;
+  const isRange = (x: string) => /[\u2013\u2014-]/.test(x);
+  const lvl = (parts: string[], labels: string[]) =>
+    parts.map((x, i) => {
+      const base = labels[i] ?? "стих";
+      const lab = isRange(x) ? (base === "стих" ? "стихи" : base === "глава" ? "главы" : base) : base;
+      return lab + " " + x;
+    });
+  let m = ref.match(/^Ч\.-ч\.,\s*(Ади|Мадхья|Антья)\s+(.+)$/);
+  if (m) return ["Шри Чайтанья-чаритамрита", m[1] + "-лила", ...lvl(m[2].split("."), ["глава", "стих"])].join(", ");
+  m = ref.match(/^ШБ\s+(.+)$/);
+  if (m) return ["Шримад-Бхагаватам", ...lvl(m[1].split("."), ["песнь", "глава", "стих"])].join(", ");
+  m = ref.match(/^Брахма-самхита\s+(.+)$/);
+  if (m) return ["Брахма-самхита", ...lvl(m[1].split("."), ["глава", "стих"])].join(", ");
+  m = ref.match(/^БГ\s+(.+)$/);
+  if (m) return ["Бхагавад-гита", ...lvl(m[1].split("."), ["глава", "стих"])].join(", ");
+  return ref;
 }
 // Все санскритские/бенгальские термины подсвечиваются единым законом —
 // см. ui/scripture.ts (TERMS + COMPOUNDS) и ui/Skt.tsx (renderTerms).
@@ -281,35 +245,49 @@ function stripWrap(t: string): string {
   return s;
 }
 // Единая ссылка-источник: для стихов и для cite. Серый текст + шеврон (если кликабельно).
-function SourceLink({ parts, onNavigate, size = 12.5 }: { parts: RefParts; onNavigate?: (href: string) => void; size?: number }) {
-  const base: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: size, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-2)", background: "none", border: "none", padding: 0, lineHeight: 1.4, textAlign: "left" };
-  const linked = !!(parts.to && onNavigate);
-  const inner = (
-    <span style={{ display: "inline-flex", flexWrap: "wrap", columnGap: 5, rowGap: 0, alignItems: "baseline" }}>
-      <span style={{ whiteSpace: "nowrap" }}>{parts.book}</span>
-      {parts.loc && <span style={{ whiteSpace: "nowrap" }}>{parts.loc}</span>}
-      {linked && <span aria-hidden style={{ opacity: 0.45, fontSize: size - 1 }}>›</span>}
-    </span>
+function SourceLink({ label, to, onNavigate, size = 14 }: { label: string; to?: string; onNavigate?: (href: string) => void; size?: number }) {
+  const base: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: size, fontWeight: 400, letterSpacing: "-0.01em", color: "var(--color-label-2)", background: "none", border: "none", padding: 0, display: "inline-flex", alignItems: "baseline", gap: 3, lineHeight: 1.45, textAlign: "left" };
+  if (to && onNavigate) return (
+    <button type="button" onClick={() => onNavigate(to)} style={{ ...base, cursor: "pointer" }}>
+      <span>{label}</span><span aria-hidden style={{ opacity: 0.45, fontSize: size - 1 }}>›</span>
+    </button>
   );
-  if (linked) return <button type="button" onClick={() => onNavigate!(parts.to!)} style={{ ...base, cursor: "pointer" }}>{inner}</button>;
-  return <span style={base}>{inner}</span>;
+  return <span style={base}>{label}</span>;
 }
-// Единый стандарт атрибуции цитаты: «— Кто сказал» (ссылка на ПКЛ если есть
-// byId) + ссылка-источник «где сказал» одной строкой; название книги и
-// локатор не разрываются внутри. Если есть deep-link в читалке (ШБ/БГ/ЧЧ)
-// — добавляется «›». Размер 12.5/lineHeight 1.4 — компактно, без переносов
-// на мобильном для большинства ссылок.
+// Стандарт подписи к стиху — три раздельные строки:
+//   1) «— Кто говорит цитату»  (ссылка на ПКЛ, если есть byId)
+//   2) Название источника,     (книга — отдельной строкой)
+//   3) Часть, глава и стих     (всё, что идёт после первой запятой)
+// splitRef режет ref на «книга» + «остальное» по первой запятой. Если запятой
+// нет (короткая ссылка) — возвращает один блок.
+function splitRef(ref: string): { title: string; rest: string } {
+  const i = ref.indexOf(",");
+  if (i < 0) return { title: ref, rest: "" };
+  return { title: ref.slice(0, i + 1).trim(), rest: ref.slice(i + 1).trim() };
+}
+// Единый стандарт атрибуции источника: «— Кто сказал» (ссылка на карточку
+// личности, если есть byId) + ссылка-источник «где сказал». Применяется под
+// цитатами и под перечнями (списками). fontStyle:normal — чтобы корректно
+// смотреться и внутри курсивного blockquote, и отдельно.
 function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSource; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; marginTop?: number }) {
   if (!src.by && !src.ref) return null;
   const speaker = src.byId
     ? <button type="button" onClick={() => onOpen(src.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer" }}>{src.by}</button>
     : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{src.by}</span>;
-  const parts = src.ref ? expandRef(src.ref) : null;
-  if (parts && src.to) parts.to = src.to;
+  const parts = src.ref ? splitRef(src.ref) : null;
   return (
     <div style={{ marginTop, fontFamily: "var(--font-text)", fontStyle: "normal" }}>
       {src.by && <div>— {speaker}</div>}
-      {parts && <div style={{ marginTop: src.by ? 4 : 0 }}><SourceLink parts={parts} onNavigate={onNavigate} size={12.5} /></div>}
+      {parts && parts.title && (
+        <div style={{ marginTop: src.by ? 3 : 0 }}>
+          <SourceLink label={parts.title} to={parts.rest ? undefined : src.to} onNavigate={parts.rest ? undefined : onNavigate} size={13} />
+        </div>
+      )}
+      {parts && parts.rest && (
+        <div style={{ marginTop: 1 }}>
+          <SourceLink label={parts.rest} to={src.to} onNavigate={onNavigate} size={13} />
+        </div>
+      )}
     </div>
   );
 }
@@ -317,7 +295,7 @@ function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSourc
 // «— Кто говорит» (ссылка на карточку, byId) и единая ссылка-источник.
 function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   return (
-    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "Georgia, 'Gentium Book Plus', 'Times New Roman', serif", fontSizeAdjust: "none", fontSize: 18, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)" }}>
+    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "Georgia, 'Gentium Book Plus', 'Times New Roman', serif", fontSizeAdjust: "none", fontSize: 18, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)", whiteSpace: "pre-line" }}>
       <span>{stripWrap(q.t)}</span>
       <Attribution src={q} onOpen={onOpen} onNavigate={onNavigate} marginTop={12} />
     </blockquote>
@@ -360,11 +338,19 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
             <QuoteBlock key={qi} q={q} onOpen={onOpen} onNavigate={onNavigate} />
           ))}
           {(s.cite ?? []).length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, marginTop: 16 }}>
               {(s.cite ?? []).map((c, k) => {
-                const parts = expandRef(c.ref);
-                if (c.to) parts.to = c.to;
-                return <SourceLink key={k} parts={parts} onNavigate={onNavigate} size={12.5} />;
+                const parts = splitRef(expandCiteRef(c.ref));
+                return (
+                  <div key={k} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <SourceLink label={parts.title} to={parts.rest ? undefined : c.to} onNavigate={parts.rest ? undefined : onNavigate} size={14} />
+                    {parts.rest && (
+                      <div style={{ marginTop: 1 }}>
+                        <SourceLink label={parts.rest} to={c.to} onNavigate={onNavigate} size={14} />
+                      </div>
+                    )}
+                  </div>
+                );
               })}
             </div>
           )}
