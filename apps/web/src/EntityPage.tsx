@@ -204,7 +204,7 @@ type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: 
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; realm?: "material" | "spiritual"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
-type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
+type DossierTab = { id: string; label: string; kicker?: string; title?: string; lead?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
 type Dossier = { tabs: DossierTab[] };
 type RefParts = { book: string; lila?: string; loc?: string; to?: string };
 
@@ -551,6 +551,32 @@ function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "material" |
   );
 }
 
+/* TabHeader — контекстный заголовок таба в стиле «Библиотека / Книги».
+   На каждом разделе ПКЛ (Таттва, Нама, Рупа, Гуна, …) показывает что это
+   за раздел — kicker (золотом), крупный title и короткий lead. */
+function TabHeader({ tab }: { tab: { kicker?: string; title?: string; lead?: string; label: string } }) {
+  if (!tab.kicker && !tab.title && !tab.lead) return null;
+  return (
+    <header style={{ marginTop: 18, marginBottom: 2 }}>
+      {tab.kicker && (
+        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+          {tab.kicker}
+        </div>
+      )}
+      {(tab.title || !tab.kicker) && (
+        <h1 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>
+          {tab.title || tab.label}
+        </h1>
+      )}
+      {tab.lead && (
+        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-2)", lineHeight: 1.45 }}>
+          {tab.lead}
+        </p>
+      )}
+    </header>
+  );
+}
+
 export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenCollection, embedded }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; onOpenCollection?: (key: string) => void; embedded?: boolean }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
@@ -857,7 +883,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
             {dossier ? (
               <>
                 <PersonTabs tabs={dossierTabs} active={tab} onChange={setTab} stickyTop={embedded ? 0 : 52} />
-                <div style={{ marginTop: 18 }}>
+                <div style={{ marginTop: 4 }}>
+                  {activeTabObj && <TabHeader tab={activeTabObj} />}
                   {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
                     <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
                   )}
