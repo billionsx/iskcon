@@ -15,8 +15,7 @@ import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
 import { Rail } from "./AcharyaScreen";
-import { renderTerms, Skt } from "./ui/Skt";
-import { IS_LETTER } from "./ui/scripture";
+import { renderTerms } from "./ui/Skt";
 import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -224,41 +223,12 @@ function expandCiteRef(ref: string): string {
   if (m) return ["Бхагавад-гита", ...lvl(m[1].split("."), ["глава", "стих"])].join(", ");
   return ref;
 }
-// Курсивит помеченные в данных санскритские термины (*…*) шрифтом писания;
-// непомеченный текст всё равно прогоняется через renderTerms (диакритика/глоссарий).
-// Санскритские термины ПКЛ — Georgia-курсивом (шире глоссария BBT и поверх его
-// стоп-листа; имена собственные сюда НЕ входят). Книги не затронуты.
-const PKL_TERMS = [
-  "кришнас ту бхагаван свайам", "сат-чит-ананда-виграха",
-  "шактьявеша-аватары", "пуруша-аватары", "гуна-аватары", "лила-аватары", "юга-аватары",
-  "лила-мадхурья", "према-мадхурья", "вену-мадхурья", "рупа-мадхурья",
-  "арча-виграха", "маха-мантра",
-  "трибханга", "парикары", "параматма", "бхагаван", "брахман",
-  "расами", "расе", "раса", "шанта", "шастры", "сурабхи",
-  "аватари", "аватары", "гопов", "гопи", "лилы", "манвантара",
-].sort((a, b) => b.length - a.length);
-const PKL_RE = new RegExp(`(?:${PKL_TERMS.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "giu");
+// Все санскритские/бенгальские термины подсвечиваются единым законом —
+// см. ui/scripture.ts (TERMS + COMPOUNDS) и ui/Skt.tsx (renderTerms).
+// ПКЛ-специфичный список составных терминов был промоутирован в COMPOUNDS,
+// так что один и тот же словарь работает по всему приложению.
 function renderSanskrit(text: string | null | undefined): ReactNode {
-  if (!text) return text ?? null;
-  PKL_RE.lastIndex = 0;
-  const out: ReactNode[] = [];
-  let last = 0;
-  let m: RegExpExecArray | null;
-  while ((m = PKL_RE.exec(text)) !== null) {
-    const form = m[0];
-    const start = m.index;
-    const end = start + form.length;
-    const before = start > 0 ? text[start - 1] : "";
-    const after = end < text.length ? text[end] : "";
-    if ((before && IS_LETTER.test(before)) || (after && IS_LETTER.test(after))) { PKL_RE.lastIndex = start + 1; continue; }
-    if (start > last) out.push(<span key={`p${out.length}`}>{renderTerms(text.slice(last, start))}</span>);
-    out.push(<Skt key={`t${out.length}`}>{form}</Skt>);
-    last = end;
-    PKL_RE.lastIndex = end;
-  }
-  if (out.length === 0) return renderTerms(text);
-  if (last < text.length) out.push(<span key={`p${out.length}`}>{renderTerms(text.slice(last))}</span>);
-  return out;
+  return renderTerms(text);
 }
 // === Стандарт отображения стиха (ПКЛ/ВКЛ модуль) ===
 // Снимает ВНЕШНИЕ обрамляющие кавычки (« » “ ” " „) только если стих ими обёрнут
@@ -283,6 +253,17 @@ function SourceLink({ label, to, onNavigate, size = 14 }: { label: string; to?: 
   );
   return <span style={base}>{label}</span>;
 }
+// Стандарт подписи к стиху — три раздельные строки:
+//   1) «— Кто говорит цитату»  (ссылка на ПКЛ, если есть byId)
+//   2) Название источника,     (книга — отдельной строкой)
+//   3) Часть, глава и стих     (всё, что идёт после первой запятой)
+// splitRef режет ref на «книга» + «остальное» по первой запятой. Если запятой
+// нет (короткая ссылка) — возвращает один блок.
+function splitRef(ref: string): { title: string; rest: string } {
+  const i = ref.indexOf(",");
+  if (i < 0) return { title: ref, rest: "" };
+  return { title: ref.slice(0, i + 1).trim(), rest: ref.slice(i + 1).trim() };
+}
 // Единый стандарт атрибуции источника: «— Кто сказал» (ссылка на карточку
 // личности, если есть byId) + ссылка-источник «где сказал». Применяется под
 // цитатами и под перечнями (списками). fontStyle:normal — чтобы корректно
@@ -292,10 +273,20 @@ function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSourc
   const speaker = src.byId
     ? <button type="button" onClick={() => onOpen(src.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer" }}>{src.by}</button>
     : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{src.by}</span>;
+  const parts = src.ref ? splitRef(src.ref) : null;
   return (
     <div style={{ marginTop, fontFamily: "var(--font-text)", fontStyle: "normal" }}>
       {src.by && <div>— {speaker}</div>}
-      {src.ref && <div style={{ marginTop: src.by ? 3 : 0 }}><SourceLink label={src.ref} to={src.to} onNavigate={onNavigate} size={13} /></div>}
+      {parts && parts.title && (
+        <div style={{ marginTop: src.by ? 3 : 0 }}>
+          <SourceLink label={parts.title} to={parts.rest ? undefined : src.to} onNavigate={parts.rest ? undefined : onNavigate} size={13} />
+        </div>
+      )}
+      {parts && parts.rest && (
+        <div style={{ marginTop: 1 }}>
+          <SourceLink label={parts.rest} to={src.to} onNavigate={onNavigate} size={13} />
+        </div>
+      )}
     </div>
   );
 }
@@ -346,10 +337,20 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
             <QuoteBlock key={qi} q={q} onOpen={onOpen} onNavigate={onNavigate} />
           ))}
           {(s.cite ?? []).length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 7, marginTop: 16 }}>
-              {(s.cite ?? []).map((c, k) => (
-                <SourceLink key={k} label={expandCiteRef(c.ref)} to={c.to} onNavigate={onNavigate} size={14} />
-              ))}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10, marginTop: 16 }}>
+              {(s.cite ?? []).map((c, k) => {
+                const parts = splitRef(expandCiteRef(c.ref));
+                return (
+                  <div key={k} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                    <SourceLink label={parts.title} to={parts.rest ? undefined : c.to} onNavigate={parts.rest ? undefined : onNavigate} size={14} />
+                    {parts.rest && (
+                      <div style={{ marginTop: 1 }}>
+                        <SourceLink label={parts.rest} to={c.to} onNavigate={onNavigate} size={14} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </section>

@@ -14,7 +14,7 @@
  * и лоанворды остаются прямым шрифтом. См. scripture.ts про конвенцию и охват.
  */
 import type { ReactNode } from "react";
-import { SCRIPTURE_TERM_REGEX, SCRIPTURE_STOP_SET, IS_LETTER } from "./scripture";
+import { SCRIPTURE_TERM_REGEX, SCRIPTURE_COMPOUND_REGEX, SCRIPTURE_STOP_SET, IS_LETTER } from "./scripture";
 
 export function Skt({
   children,
@@ -51,11 +51,49 @@ function scriptFraction(text: string): number {
   return n / words.length;
 }
 
-/** Глоссарная пометка (прежнее поведение): термины BBT из курируемого словаря. */
+/** Глоссарная пометка: сначала составные термины (минуют стоп-лист, т.к.
+ * это явный override для нашего корпуса), затем — точечные термины BBT
+ * с учётом стоп-листа. Два прохода гарантируют, что «лила-мадхурья» и
+ * «сач-чид-ананда» подсвечиваются наравне с «бхакти» — единый закон. */
 function wrapGlossary(text: string, keyBase: number): ReactNode[] {
+  // ── Pass 1: составные термины (без проверки стоп-листа) ──
+  const compoundRe = SCRIPTURE_COMPOUND_REGEX;
+  compoundRe.lastIndex = 0;
+  type Hit = { start: number; end: number; form: string };
+  const hits: Hit[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = compoundRe.exec(text)) !== null) {
+    const form = m[0];
+    const start = m.index;
+    const end = start + form.length;
+    const before = start > 0 ? text[start - 1] : "";
+    const after = end < text.length ? text[end] : "";
+    if ((before && IS_LETTER.test(before)) || (after && IS_LETTER.test(after))) {
+      compoundRe.lastIndex = start + 1;
+      continue;
+    }
+    hits.push({ start, end, form });
+    compoundRe.lastIndex = end;
+  }
+  // ── Pass 2: глоссарий BBT (со стоп-листом), но только в зонах ВНЕ pass-1 ──
+  const out: ReactNode[] = [];
+  let cursor = 0;
+  for (const h of hits) {
+    if (h.start > cursor) {
+      wrapGlossaryInner(text.slice(cursor, h.start), keyBase, out);
+    }
+    out.push(<Skt key={`c${keyBase}-${out.length}`}>{h.form}</Skt>);
+    cursor = h.end;
+  }
+  if (cursor < text.length) {
+    wrapGlossaryInner(text.slice(cursor), keyBase, out);
+  }
+  return out;
+}
+
+function wrapGlossaryInner(text: string, keyBase: number, out: ReactNode[]): void {
   const re = SCRIPTURE_TERM_REGEX;
   re.lastIndex = 0;
-  const out: ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
@@ -75,7 +113,6 @@ function wrapGlossary(text: string, keyBase: number): ReactNode[] {
     re.lastIndex = end;
   }
   if (last < text.length) out.push(text.slice(last));
-  return out;
 }
 
 /**
