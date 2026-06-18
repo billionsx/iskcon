@@ -197,8 +197,9 @@ function ProseSection({ label, text }: { label: string; text: string }) {
 
 type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
+type LfListGroup = { label?: string; items: string[] };
 type LfQuote = { t: string; by?: string; byId?: string; ref?: string; to?: string };
-type LfSection = { h?: string; p?: string[]; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
+type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
@@ -308,6 +309,29 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
           {(s.p ?? []).map((para, j) => (
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderSanskrit(para)}</p>
           ))}
+          {(s.list ?? []).length > 0 && (() => {
+            let n = 0;
+            return (
+              <div style={{ marginTop: 18 }}>
+                {(s.list ?? []).map((grp, gi) => (
+                  <div key={gi} style={{ marginTop: gi === 0 ? 0 : 22 }}>
+                    {grp.label && (
+                      <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 9 }}>{grp.label}</div>
+                    )}
+                    {grp.items.map((it) => {
+                      n += 1;
+                      return (
+                        <div key={n} style={{ display: "flex", gap: 12, alignItems: "baseline", padding: "4px 0" }}>
+                          <span style={{ flexShrink: 0, minWidth: 22, textAlign: "right", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, color: GOLD, fontVariantNumeric: "tabular-nums", lineHeight: 1.5 }}>{n}</span>
+                          <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.5, color: "var(--color-label)" }}>{renderSanskrit(it)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
           {[...(s.quote ? [s.quote] : []), ...(s.quotes ?? [])].map((q, qi) => (
             <QuoteBlock key={qi} q={q} onOpen={onOpen} onNavigate={onNavigate} />
           ))}
