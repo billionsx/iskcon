@@ -319,12 +319,15 @@ function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSourc
     </div>
   );
 }
-// Стандартный блок стиха: курсив + золотая граница, без кавычек; подпись-атрибуция
-// «— Кто говорит» (ссылка на карточку, byId) и единая ссылка-источник.
+// Стандартный блок стиха/цитаты. ЗАКОН подсветки (551d47c): текст перевода — прямым
+// UI-шрифтом var(--font-text), как перевод в BBT; санскритские/бенгальские ТЕРМИНЫ
+// внутри подсвечиваются через renderSanskrit → .skt (Georgia-курсив) и выделяются на
+// фоне русского. Весь блок Georgia-курсивом НЕ делаем — иначе перевод читается как
+// сплошной санскрит и выделение терминов пропадает. Золотая граница = знак цитаты.
 function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   return (
-    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "Georgia, 'Gentium Book Plus', 'Times New Roman', serif", fontSizeAdjust: "none", fontSize: 18, lineHeight: 1.6, fontStyle: "italic", color: "var(--color-label)", whiteSpace: "pre-line" }}>
-      <span>{stripWrap(q.t)}</span>
+    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, fontFamily: "var(--font-text)", fontSize: 18, lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)", whiteSpace: "pre-line" }}>
+      <span>{renderSanskrit(stripWrap(q.t))}</span>
       <Attribution src={q} onOpen={onOpen} onNavigate={onNavigate} marginTop={12} />
     </blockquote>
   );
