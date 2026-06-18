@@ -1255,8 +1255,10 @@ function useReadProgress(o: {
 }
 
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; divisionInfo?: { num: string; title: string; slug: string } | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void }) {
+/* ───────── Глава ───────── */
+function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash, scrollToVerse, onConsumeScroll }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; divisionInfo?: { num: string; title: string; slug: string } | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; scrollToVerse?: string | null; onConsumeScroll?: () => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
+  const [flashVref, setFlashVref] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
   const favHref = hierarchical ? `/book/${work}/${chapter.id.split(".")[1] ?? ""}/${chapter.number}` : `/book/${work}/${chapter.number}`;
@@ -1358,6 +1360,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
   // Восстановить позицию после загрузки стихов (один раз, только для главы возобновления).
   useEffect(() => {
     if (verses === null || restoredRef.current) return;
+    if (scrollToVerse) { restoredRef.current = true; return; } // явный таргет «К главе» — не восстанавливаем сохранённую позицию
     const a = resumeAnchor.current;
     if (!a || a.ref !== chRef || a.frac <= 0.02) { restoredRef.current = true; return; }
     let r1 = 0;
@@ -1374,6 +1377,30 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
     });
     return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
   }, [verses, chRef]);
+
+  // «К главе» из стиха → проскроллить к этому стиху в списке главы и коротко подсветить.
+  // Работает во всех книгах со стихами (компонент один). Контейнер главы уже
+  // смонтирован под читалкой, поэтому реагируем на смену scrollToVerse/verses.
+  useEffect(() => {
+    if (!scrollToVerse || !verses) return;
+    const cont = scrollElRef.current;
+    if (!cont) { onConsumeScroll?.(); return; }
+    let r1 = 0, r2 = 0;
+    r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        const el = cont.querySelector(`[data-vref="${(window.CSS && CSS.escape) ? CSS.escape(scrollToVerse) : scrollToVerse}"]`) as HTMLElement | null;
+        if (el) {
+          const top = cont.scrollTop + (el.getBoundingClientRect().top - cont.getBoundingClientRect().top) - 14;
+          cont.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+          setFlashVref(scrollToVerse);
+          setTimeout(() => setFlashVref((c) => (c === scrollToVerse ? null : c)), 1300);
+        }
+        restoredRef.current = true;
+        onConsumeScroll?.();
+      });
+    });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [scrollToVerse, verses]);
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
@@ -1422,7 +1449,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
                 const tr = v.translation || DEMO_VERSES[v.ref]?.translation || null;
                 const isDemo = !v.translation && !!DEMO_VERSES[v.ref]?.translation;
                 return (
-                  <li key={v.ref} style={{ position: "relative" }}>
+                  <li key={v.ref} data-vref={v.ref} style={{ position: "relative", background: flashVref === v.ref ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 14 }}>
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: "block", fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
@@ -2283,6 +2310,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const [hierDivByCh, setHierDivByCh] = useState<Record<string, { num: string; title: string; slug: string }> | null>(null);
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
+  const [chapterScrollTo, setChapterScrollTo] = useState<string | null>(null); // стих, к которому проскроллить главу при «К главе»
   const bookContentRef = useRef<HTMLDivElement>(null);
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
@@ -2456,6 +2484,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   // (редкий случай межглавной навигации) — выводим её из ссылки стиха.
   const goToChapter = () => {
     if (!readerRef) return;
+    setChapterScrollTo(readerRef); // проскроллить главу к этому стиху
     const base = `/book/${book.work}`;
     if (openChapter) {
       replaceUrl(book.hierarchical ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : `${base}/${openChapter.number}`);
@@ -2650,7 +2679,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       )}
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
-        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} divisionInfo={hierDivByCh && openChapter ? (hierDivByCh[openChapter.id] ?? null) : null} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
+        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} divisionInfo={hierDivByCh && openChapter ? (hierDivByCh[openChapter.id] ?? null) : null} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} scrollToVerse={chapterScrollTo} onConsumeScroll={() => setChapterScrollTo(null)} />)}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} hierDivByCh={hierDivByCh} onNavigate={setReaderRef} onClose={goBack} onToChapter={goToChapter} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
