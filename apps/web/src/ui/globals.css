@@ -78,10 +78,11 @@
   /* Typography */
   --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  /* Священный текст (транслитерация, термины): Gentium Book Plus — корректно
-     ставит диакритику над кириллицей; Georgia/Times — крайний случай. Цитаты на
-     страницах личностей (чистая кириллица) рендерятся Georgia — см. QuoteBlock. */
-  --font-scripture: 'Gentium Book Plus', Georgia, 'Times New Roman', serif;
+  /* Священный текст (стихи, цитаты, транслитерация, термины): Georgia — даёт
+     красивый книжный курсив и корректно несёт диакритику над кириллицей в
+     современных браузерах (кр̣па̄, кр̣шн̣а — как на iskcone.com). Gentium Book Plus —
+     запасной для редких глифов, которых нет в Georgia; Times — крайний случай. */
+  --font-scripture: Georgia, 'Gentium Book Plus', 'Times New Roman', serif;
 
   /* Radius */
   --radius-glass: 20px;
