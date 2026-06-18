@@ -1969,7 +1969,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 }
 
 
-function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hierWeights, onNavigate, onClose, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; onNavigate: (ref: string) => void; onClose: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
+function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hierWeights, onNavigate, onClose, onToChapter, flash, onMenuAction, onQr }: { refStr: string; bookTitle: string; work?: string; chapters: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; onNavigate: (ref: string) => void; onClose: () => void; onToChapter: () => void; flash: (m: string) => void; onMenuAction: (label: string) => void; onQr: (url: string, data: QrData) => void }) {
   const [data, setData] = useState<VerseDetail | null>(null);
   const [error, setError] = useState(false);
   const [vMenu, setVMenu] = useState(false);
@@ -2156,7 +2156,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
 
       <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
         <NavAction arrow="prev" disabled={!data?.prev} onClick={() => data?.prev && onNavigate(data.prev)}>Назад</NavAction>
-        <NavAction onClick={onClose}>К главе</NavAction>
+        <NavAction onClick={onToChapter}>К главе</NavAction>
         <NavAction arrow="next" disabled={!data?.next} onClick={() => data?.next && onNavigate(data.next)}>Вперёд</NavAction>
       </nav>
 
@@ -2416,6 +2416,29 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     onBack();
   };
 
+  // «К главе»: детерминированный переход стих → глава (НЕ history.back, который на
+  // холодном входе/из карточки уводит к источнику, а не в главу). Закрываем стих,
+  // оставляя открытую главу; URL заменяем на адрес главы. Если глава не задана
+  // (редкий случай межглавной навигации) — выводим её из ссылки стиха.
+  const goToChapter = () => {
+    if (!readerRef) return;
+    const base = `/book/${book.work}`;
+    if (openChapter) {
+      replaceUrl(book.hierarchical ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : `${base}/${openChapter.number}`);
+      setReaderRef(null);
+      return;
+    }
+    if (book.hierarchical) {
+      const pr = readerRef.split(".");           // ["cc","adi","2","45"]
+      if (pr.length >= 4) { openTarget.current(pr[1], pr[2], null); return; }
+    } else {
+      const rd = readerRef.replace(/^[^\d]*/, "");
+      openTarget.current(null, rd.split(".")[0] || null, null);
+      return;
+    }
+    setReaderRef(null);
+  };
+
   // URL → состояние при «назад/вперёд» браузера (в пределах книги).
   useEffect(() => {
     const onPop = () => {
@@ -2594,7 +2617,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       {openChapter && (book.prose
         ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
         : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} />)}
-      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} onNavigate={setReaderRef} onClose={goBack} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
+      {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} onNavigate={setReaderRef} onClose={goBack} onToChapter={goToChapter} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
           <BookPrint book={book} chapters={bookPrint.chapters} versesByCh={bookPrint.versesByCh} />
