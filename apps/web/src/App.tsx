@@ -980,7 +980,7 @@ export default function App() {
           </main>
         ) : openDiary ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <SadhanaScreen onBack={goBack} />
+            <SadhanaScreen onBack={goBack} onOpenPath={navigate} />
           </main>
         ) : openVow ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
