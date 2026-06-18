@@ -31,12 +31,15 @@ interface Item {
   image?: string | null;
 }
 
-function Monogram({ ch, size = 54 }: { ch: string; size?: number }) {
+function Monogram({ ch, size = 72 }: { ch: string; size?: number }) {
+  // Apple-2026: монограмма как буквица манускрипта — мягкая нейтральная
+  // заливка, без золотой обводки. Буква IAST с диакритикой в Georgia-курсиве,
+  // в неброском цвете label-2 — символ остаётся достойным, не «контактной
+  // плиткой». Размер буквы — 38% круга (тоньше, читабельнее на iOS).
   return (
     <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", display: "grid", placeItems: "center",
-      border: `1.5px solid color-mix(in srgb, ${GOLD} 55%, transparent)`,
-      background: `color-mix(in srgb, ${GOLD} 9%, transparent)`,
-      color: GOLD, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 600, fontSize: size * 0.42, lineHeight: 1 }}>
+      background: "var(--color-fill-1)",
+      color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 500, fontSize: size * 0.38, lineHeight: 1, letterSpacing: "-0.01em" }}>
       {ch}
     </div>
   );
@@ -49,14 +52,26 @@ function MaskMark({ src, size = 56, pos = "center" }: { src: string; size?: numb
   );
 }
 
+/** Первая буква IAST с диакритикой (Ā, Ś, Ṛ, Ṇ — сохраняются); fallback — русская. */
 function initialOf(it: Item): string {
-  return (it.name_iast || it.name_ru || "?").trim().charAt(0).toUpperCase();
+  const s = (it.name_iast || it.name_ru || "?").trim();
+  if (!s) return "?";
+  // Берём первый «графемный кластер» через Intl.Segmenter (поддерживается во
+  // всех современных iOS/Safari), чтобы не разорвать диакритику. Fallback —
+  // первая кодовая точка.
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const seg = new (Intl as any).Segmenter(undefined, { granularity: "grapheme" });
+    const it0 = seg.segment(s)[Symbol.iterator]().next().value;
+    if (it0?.segment) return (it0.segment as string).toUpperCase();
+  } catch { /* noop */ }
+  return s.charAt(0).toUpperCase();
 }
 
 function Avatar({ item, size }: { item: Item; size: number }) {
   if (item.image) {
     return (
-      <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
+      <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", overflow: "hidden", background: "var(--color-fill-1)" }}>
         <img src={item.image} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       </div>
     );
@@ -73,30 +88,52 @@ function entityCtx(item: Item) {
   };
 }
 
+/* EntityTile — Apple-2026 стандарт «герой в рейле».
+ * ──────────────────────────────────────────────────
+ * Чистый круг + имя + IAST — без рамки, без фона карточки, без сердечка/трёх
+ * точек на тайле. Действия (избранное, поделиться, заметка) — на экране ПКП
+ * героя или через long-press (контекст-меню iOS-стиля). Так Apple Music
+ * показывает артистов, Apple News — темы: тайл — тихий, действия — на детали.
+ * Это снимает визуальный шум рейла и позволяет глазу читать сетку
+ * как ритм портретов, а не как «панель управления». */
 function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: string | null) => void }) {
   const { openCardMenu } = useCardActions();
+  const longPressTimer = useRef<number | null>(null);
+  const clearTimer = () => { if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; } };
+  const startTimer = () => {
+    clearTimer();
+    longPressTimer.current = window.setTimeout(() => { openCardMenu(entityCtx(item)); longPressTimer.current = null; }, 500);
+  };
   return (
     <div role="button" tabIndex={0} onClick={() => onOpen(item.id, item.type)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(item.id, item.type); } }}
-      style={{ flexShrink: 0, width: 140, display: "flex", flexDirection: "column", alignItems: "center", gap: 9, padding: "16px 10px 12px",
-        borderRadius: 18, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", textAlign: "center", WebkitTapHighlightColor: "transparent" }}
-      onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")}
-      onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
-      onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
-      <Avatar item={item} size={54} />
-      <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25,
-        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", width: "100%" }}>{item.name_ru || item.id}</div>
-      {item.name_iast && (
-        <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.2,
-          display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", width: "100%" }}>{item.name_iast}</div>
-      )}
-      <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={26} onMore={() => openCardMenu(entityCtx(item))} />
+      onPointerDown={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "0.55"; startTimer(); }}
+      onPointerUp={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "1"; clearTimer(); }}
+      onPointerLeave={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "1"; clearTimer(); }}
+      onContextMenu={(e) => { e.preventDefault(); openCardMenu(entityCtx(item)); }}
+      style={{ flexShrink: 0, width: 108, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+        background: "transparent", cursor: "pointer", textAlign: "center", WebkitTapHighlightColor: "transparent",
+        transition: "opacity .15s ease" }}>
+      <Avatar item={item} size={72} />
+      <div style={{ width: "100%" }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em",
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name_ru || item.id}</div>
+        {item.name_iast && (
+          <div style={{ marginTop: 2, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 11.5, color: "var(--color-label-3)", lineHeight: 1.2,
+            display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name_iast}</div>
+        )}
+      </div>
     </div>
   );
 }
 
 function SkeletonTile() {
-  return <div style={{ flexShrink: 0, width: 140, height: 132, borderRadius: 18, background: "var(--color-fill-1)", opacity: 0.6 }} />;
+  return (
+    <div style={{ flexShrink: 0, width: 108, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+      <div style={{ width: 72, height: 72, borderRadius: "50%", background: "var(--color-fill-1)", opacity: 0.6 }} />
+      <div style={{ width: "70%", height: 11, borderRadius: 4, background: "var(--color-fill-1)", opacity: 0.5 }} />
+    </div>
+  );
 }
 
 export function Rail({ title, params, orderIds, onOpen }: { title: string; params: string; orderIds?: string[]; onOpen: (id: string, type: string | null) => void }) {
@@ -118,10 +155,17 @@ export function Rail({ title, params, orderIds, onOpen }: { title: string; param
   if (items && items.length === 0) return null;
 
   return (
-    <section style={{ marginTop: 24 }}>
-      <h3 style={{ margin: "0 0 11px", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{title}</h3>
-      <div style={{ display: "flex", gap: 12, overflowX: "auto", padding: "2px 16px 4px", margin: "0 -16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-        {items ? items.map((it) => <EntityTile key={it.id} item={it} onOpen={onOpen} />) : Array.from({ length: 4 }).map((_, i) => <SkeletonTile key={i} />)}
+    <section style={{ marginTop: 26 }}>
+      {/* Apple-style заголовок рейла: имя + тонкий счётчик. Без декоративных
+       * линий — заголовок поднимается, рейл становится воздушным. */}
+      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 13 }}>
+        <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{title}</h3>
+        {items && items.length > 1 && (
+          <span style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{items.length}</span>
+        )}
+      </div>
+      <div style={{ display: "flex", gap: 18, overflowX: "auto", padding: "2px 16px 6px", margin: "0 -16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+        {items ? items.map((it) => <EntityTile key={it.id} item={it} onOpen={onOpen} />) : Array.from({ length: 5 }).map((_, i) => <SkeletonTile key={i} />)}
       </div>
     </section>
   );
