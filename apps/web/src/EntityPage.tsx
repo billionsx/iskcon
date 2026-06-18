@@ -202,7 +202,7 @@ type LfQuote = { t: string; by?: string; byId?: string; ref?: string; to?: strin
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
-type DossierSub = { id: string; label: string; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
+type DossierSub = { id: string; label: string; realm?: "earth" | "eternal"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
 type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
 type Dossier = { tabs: DossierTab[] };
 function expandCiteRef(ref: string): string {
@@ -509,6 +509,28 @@ function PersonSubTabs({ items, active, onChange, stickyTop = 96 }: { items: { i
   );
 }
 
+function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "earth" | "eternal"; onChange: (v: "earth" | "eternal") => void; stickyTop?: number }) {
+  const opts: { id: "earth" | "eternal"; label: string }[] = [
+    { id: "earth",   label: "На Земле" },
+    { id: "eternal", label: "В вечности" },
+  ];
+  return (
+    <nav aria-label="Аспект" style={{ position: "sticky", top: stickyTop, zIndex: 9, marginInline: -16, marginTop: 14, padding: "8px 16px 0", background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
+      <div role="tablist" style={{ display: "flex", padding: 2, borderRadius: 9, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+        {opts.map((o) => {
+          const on = o.id === realm;
+          return (
+            <button key={o.id} role="tab" aria-selected={on} type="button" onClick={() => onChange(o.id)}
+              style={{ flex: 1, padding: "7px 10px", borderRadius: 7, border: "none", cursor: "pointer", fontSize: 13.5, fontFamily: "var(--font-text)", fontWeight: 600, whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1px 3px rgba(0,0,0,0.10), 0 0 0 0.5px var(--color-hairline)" : "none", transition: "background .18s, color .18s, box-shadow .18s", WebkitTapHighlightColor: "transparent" }}>
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
 export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenCollection, embedded }: { id: string; onBack: () => void; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; onOpenCollection?: (key: string) => void; embedded?: boolean }) {
   const { openCardMenu } = useCardActions();
   const [data, setData] = useState<EntityDetail | null>(null);
@@ -516,6 +538,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const [centers, setCenters] = useState<CenterHit[]>([]);
   const [tab, setTab] = useState<string>("obzor");
   const [sub, setSub] = useState<string>("");
+  const [realm, setRealm] = useState<"earth" | "eternal">("earth");
 
   useEffect(() => {
     let alive = true;
@@ -603,8 +626,11 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   })();
   const dossierTabs = dossier ? dossier.tabs.map((t) => ({ id: t.id, label: t.label })) : [];
   const activeTabObj = dossier?.tabs.find((t) => t.id === tab) ?? (dossier ? dossier.tabs[0] : undefined);
-  const subItems = (activeTabObj?.subtabs ?? []).map((st) => ({ id: st.id, label: st.label }));
-  const activeSub = activeTabObj?.subtabs?.find((st) => st.id === sub);
+  const allSubs = activeTabObj?.subtabs ?? [];
+  const hasRealmSplit = allSubs.some((st) => st.realm);
+  const visibleSubs = hasRealmSplit ? allSubs.filter((st) => !st.realm || st.realm === realm) : allSubs;
+  const subItems = visibleSubs.map((st) => ({ id: st.id, label: st.label }));
+  const activeSub = visibleSubs.find((st) => st.id === sub) ?? visibleSubs[0];
   const subSections = activeSub?.sections ?? [];
   const subRails = activeSub?.rails ?? [];
   const subCards = activeSub?.cards ?? [];
@@ -686,7 +712,18 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     setTab(dos ? dos.tabs[0].id : (raw || data.profile?.biography) ? "zhizn" : "obzor");
   }, [id, data?.id]);
   // при смене Tier-1 таба в досье — выставить первый суб-таб
-  useEffect(() => { const t = dossier?.tabs.find((x) => x.id === tab); setSub(t?.subtabs?.[0]?.id ?? ""); }, [tab, data?.id]);
+  useEffect(() => {
+    const t = dossier?.tabs.find((x) => x.id === tab);
+    const subs = t?.subtabs ?? [];
+    const split = subs.some((st) => st.realm);
+    const first = (split ? subs.filter((st) => !st.realm || st.realm === realm) : subs)[0];
+    setSub(first?.id ?? "");
+  }, [tab, data?.id]);
+  // при смене realm — если текущий sub не виден, переключить на первый видимый
+  useEffect(() => {
+    if (!hasRealmSplit) return;
+    if (!visibleSubs.find((st) => st.id === sub)) setSub(visibleSubs[0]?.id ?? "");
+  }, [realm, hasRealmSplit]);
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
@@ -747,7 +784,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                   )}
                   {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
                   {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
-                  {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} stickyTop={embedded ? 46 : 96} />}
+                  {hasRealmSplit && <RealmSegment realm={realm} onChange={setRealm} stickyTop={embedded ? 46 : 96} />}
+                  {subItems.length > 0 && <PersonSubTabs items={subItems} active={sub} onChange={setSub} stickyTop={embedded ? 100 : 150} />}
                   {subSections.length > 0 && (
                     <div style={{ marginTop: 18 }}>
                       <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
