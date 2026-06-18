@@ -15,6 +15,7 @@ import { api } from "./api";
 import { replaceUrl } from "./nav";
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
+import { galleryFor } from "./personaGallery";
 import { Rail } from "./AcharyaScreen";
 import { renderTerms } from "./ui/Skt";
 import { SectionSubTabs } from "./SectionSubTabs";
@@ -869,6 +870,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               nameRu={data.name_ru || data.id}
               nameIast={data.name_iast}
               image={data.image}
+              images={galleryFor(id, data.image)}
               eyebrow={eyebrow}
               identity={identity}
               summary={heroSummary}

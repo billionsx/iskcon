@@ -7,12 +7,12 @@ import { renderTitle } from "./ui/Skt";
  * Standard action set: избранное · наушники · в корзину · ⋯.
  */
 import { useRef, useState, type ReactNode } from "react";
-import type { MouseEvent as ReactMouseEvent } from "react";
 import { bookFullTitle, type BookData } from "./books";
 import { HeartIcon, HeadphonesIcon, BagIcon, MoreIcon } from "./ui/icons";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { useFavorite } from "./cardActions";
 import { usePlayer } from "./player/store";
+import { useCoverSlider } from "./CardCover";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -32,10 +32,8 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   const player = usePlayer();
-  const [idx, setIdx] = useState(0);
   const n = book.covers.length;
-  const next = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i + 1) % n); };
-  const prev = (e?: ReactMouseEvent) => { e?.stopPropagation(); setIdx(i => (i - 1 + n) % n); };
+  const { idx, next, prev } = useCoverSlider(n);
 
   return (
     <>
