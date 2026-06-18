@@ -207,7 +207,7 @@ function SectionHeader({ title, note }: { title: string; note: string }) {
 
 /* Полка «Продолжить чтение» — личная, офлайн, работает и для гостя. Тап ведёт в
  * точную точку, где читатель остановился (router App по сохранённому href). */
-function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath: (p: string) => void }) {
+export function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath: (p: string) => void }) {
   const fmtEta = (m: number) => {
     if (m <= 0) return "дочитано";
     if (m < 60) return `~${Math.max(5, Math.round(m / 5) * 5)} мин`;
@@ -262,7 +262,7 @@ function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOpenPath:
 
 /* Дневная цель чтения (минуты) + серия дней — как Reading Goals в Apple Books.
  * Минуты копятся автоматически из ридера (активное время), офлайн и для гостя. */
-function ReadingGoalCard() {
+export function ReadingGoalCard() {
   const [min, setMin] = useState(() => readingMinutesToday());
   const [goal, setGoal] = useState(() => readingGoalMin());
   const [streak, setStreak] = useState(() => readingStreakDays());
@@ -326,20 +326,6 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Полка «Продолжить»: локальный прогресс, обновляется при чтении (событие) и
-  // при возврате в приложение (focus) — хаб остаётся смонтирован под ридером.
-  const [continueItems, setContinueItems] = useState<ReadingRec[]>(() => recentReadings(4));
-  useEffect(() => {
-    const refresh = () => setContinueItems(recentReadings(4));
-    refresh();
-    window.addEventListener(READING_CHANGED_EVENT, refresh);
-    window.addEventListener("focus", refresh);
-    return () => {
-      window.removeEventListener(READING_CHANGED_EVENT, refresh);
-      window.removeEventListener("focus", refresh);
-    };
-  }, []);
 
   const trimmed = q.trim();
   const searching = trimmed.length >= 2;
@@ -410,8 +396,6 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         </div>
       ) : (
         <>
-          <ReadingGoalCard />
-          {continueItems.length > 0 && <ContinueShelf items={continueItems} onOpenPath={onOpenPath} />}
           {/* ── Шрила Прабхупада ── */}
           {(filter === "all" || filter === "prabhupada") && (
             <section>

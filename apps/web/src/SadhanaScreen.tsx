@@ -22,7 +22,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, 
 import { useAuth } from "./account/store";
 import { requireAuth } from "./account/track";
 import { accountClient, type SadhanaState, type SadhanaPatch, type SadhanaDay, type JapaSyncRound } from "./account/api";
-import { readingMinutesToday } from "./reading";
+import { readingMinutesToday, recentReadings, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
+import { ContinueShelf, ReadingGoalCard } from "./BooksHub";
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
 const GOLD = "#D2AA1B";
@@ -258,13 +259,25 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
   );
 }
 
-export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
+export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => void; onOpenPath: (path: string) => void }) {
   const { status } = useAuth();
   const [st, setSt] = useState<SadhanaState | null>(null);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
   const [showSet, setShowSet] = useState(false);
   const [editDay, setEditDay] = useState<SadhanaDay | null>(null);
+  // Полка «Продолжить чтение»: локальный прогресс, офлайн и для гостя.
+  const [continueItems, setContinueItems] = useState<ReadingRec[]>(() => recentReadings(4));
+  useEffect(() => {
+    const refresh = () => setContinueItems(recentReadings(4));
+    refresh();
+    window.addEventListener(READING_CHANGED_EVENT, refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      window.removeEventListener(READING_CHANGED_EVENT, refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, []);
 
   // Локальные «черновики» редактируемых полей — мгновенный отклик; на сервер
   // улетают сами (чтение/цель — с дебаунсом, подъём — сразу, заметка — на blur).
@@ -499,6 +512,10 @@ export default function SadhanaScreen({ onBack }: { onBack: () => void }) {
                     style={{ flex: 1, minWidth: 0, resize: "none", padding: "9px 11px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL2, color: L1, fontFamily: FT, fontSize: 13.5, lineHeight: 1.5, outline: "none" }} />
                 </div>
               </div>
+
+              {/* чтение: дневная цель (минуты) + полка «Продолжить» — переехали из «Книг» */}
+              <ReadingGoalCard />
+              {continueItems.length > 0 && <ContinueShelf items={continueItems} onOpenPath={onOpenPath} />}
 
               {/* стрики */}
               <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
