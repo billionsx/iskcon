@@ -31,15 +31,14 @@ interface Item {
   image?: string | null;
 }
 
-function Monogram({ ch, size = 72 }: { ch: string; size?: number }) {
-  // Apple-2026: монограмма как буквица манускрипта — мягкая нейтральная
-  // заливка, без золотой обводки. Буква IAST с диакритикой в Georgia-курсиве,
-  // в неброском цвете label-2 — символ остаётся достойным, не «контактной
-  // плиткой». Размер буквы — 38% круга (тоньше, читабельнее на iOS).
+function Monogram({ ch, size = 44 }: { ch: string; size?: number }) {
+  // Монограмма-буквица: первая графема IAST (с диакритикой) в Georgia-курсиве,
+  // мягкая нейтральная заливка. Не «контактный аватар» с золотым ободком, а
+  // буквица манускрипта — достойно и неброско.
   return (
     <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", display: "grid", placeItems: "center",
       background: "var(--color-fill-1)",
-      color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 500, fontSize: size * 0.38, lineHeight: 1, letterSpacing: "-0.01em" }}>
+      color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 500, fontSize: size * 0.42, lineHeight: 1, letterSpacing: "-0.01em" }}>
       {ch}
     </div>
   );
@@ -52,13 +51,10 @@ function MaskMark({ src, size = 56, pos = "center" }: { src: string; size?: numb
   );
 }
 
-/** Первая буква IAST с диакритикой (Ā, Ś, Ṛ, Ṇ — сохраняются); fallback — русская. */
+/** Первая графема IAST (с диакритикой) для буквицы. Intl.Segmenter не рвёт диакритику. */
 function initialOf(it: Item): string {
   const s = (it.name_iast || it.name_ru || "?").trim();
   if (!s) return "?";
-  // Берём первый «графемный кластер» через Intl.Segmenter (поддерживается во
-  // всех современных iOS/Safari), чтобы не разорвать диакритику. Fallback —
-  // первая кодовая точка.
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const seg = new (Intl as any).Segmenter(undefined, { granularity: "grapheme" });
@@ -88,56 +84,55 @@ function entityCtx(item: Item) {
   };
 }
 
-/* EntityTile — Apple-2026 стандарт «герой в рейле».
- * ──────────────────────────────────────────────────
- * Чистый круг + имя + IAST — без рамки, без фона карточки, без сердечка/трёх
- * точек на тайле. Действия (избранное, поделиться, заметка) — на экране ПКП
- * героя или через long-press (контекст-меню iOS-стиля). Так Apple Music
- * показывает артистов, Apple News — темы: тайл — тихий, действия — на детали.
- * Это снимает визуальный шум рейла и позволяет глазу читать сетку
- * как ритм портретов, а не как «панель управления». */
-function EntityTile({ item, onOpen }: { item: Item; onOpen: (id: string, type: string | null) => void }) {
+/* EntityRow — стандарт «герой/обитель в списке» по Apple-2026.
+ * ────────────────────────────────────────────────────────────
+ * Замещает прежний горизонтальный мини-скролл монограмм. Для перечня из 30
+ * имён горизонтальный рейл — антипаттерн: большая часть имён за кадром,
+ * сканировать невозможно. Вертикальный список (как Apple Music
+ * «Похожие исполнители», Apple News «Похожие темы», Контакты) показывает
+ * все имена сразу и оставляет действия (сердечко, меню, шеврон) на местах.
+ * Граница строки — тонкий hairline, без «карточного» фона. */
+function EntityRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: string | null) => void }) {
   const { openCardMenu } = useCardActions();
-  const longPressTimer = useRef<number | null>(null);
-  const clearTimer = () => { if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; } };
-  const startTimer = () => {
-    clearTimer();
-    longPressTimer.current = window.setTimeout(() => { openCardMenu(entityCtx(item)); longPressTimer.current = null; }, 500);
-  };
   return (
     <div role="button" tabIndex={0} onClick={() => onOpen(item.id, item.type)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(item.id, item.type); } }}
-      onPointerDown={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "0.55"; startTimer(); }}
-      onPointerUp={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "1"; clearTimer(); }}
-      onPointerLeave={(e) => { (e.currentTarget as HTMLDivElement).style.opacity = "1"; clearTimer(); }}
-      onContextMenu={(e) => { e.preventDefault(); openCardMenu(entityCtx(item)); }}
-      style={{ flexShrink: 0, width: 108, display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
-        background: "transparent", cursor: "pointer", textAlign: "center", WebkitTapHighlightColor: "transparent",
-        transition: "opacity .15s ease" }}>
-      <Avatar item={item} size={72} />
-      <div style={{ width: "100%" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em",
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name_ru || item.id}</div>
+      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", boxSizing: "border-box",
+        padding: "11px 4px", borderBottom: "0.5px solid var(--color-hairline)",
+        cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", transition: "opacity .15s ease" }}
+      onPointerDown={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = "0.55")}
+      onPointerUp={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = "1")}
+      onPointerLeave={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = "1")}>
+      <Avatar item={item} size={44} />
+      <span style={{ minWidth: 0, flex: 1 }}>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_ru || item.id}</span>
         {item.name_iast && (
-          <div style={{ marginTop: 2, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 11.5, color: "var(--color-label-3)", lineHeight: 1.2,
-            display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.name_iast}</div>
+          <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12.5, color: "var(--color-label-3)", lineHeight: 1.25,
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_iast}</span>
         )}
-      </div>
+      </span>
+      <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={26} onMore={() => openCardMenu(entityCtx(item))} />
+      <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 18, marginLeft: 2 }}>›</span>
     </div>
   );
 }
 
-function SkeletonTile() {
+function SkeletonRow() {
   return (
-    <div style={{ flexShrink: 0, width: 108, display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-      <div style={{ width: 72, height: 72, borderRadius: "50%", background: "var(--color-fill-1)", opacity: 0.6 }} />
-      <div style={{ width: "70%", height: 11, borderRadius: 4, background: "var(--color-fill-1)", opacity: 0.5 }} />
+    <div style={{ display: "flex", alignItems: "center", gap: 13, padding: "11px 4px", borderBottom: "0.5px solid var(--color-hairline)" }}>
+      <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--color-fill-1)", opacity: 0.6 }} />
+      <div style={{ flex: 1 }}>
+        <div style={{ width: "55%", height: 13, borderRadius: 4, background: "var(--color-fill-1)", opacity: 0.6 }} />
+        <div style={{ marginTop: 6, width: "35%", height: 10, borderRadius: 4, background: "var(--color-fill-1)", opacity: 0.4 }} />
+      </div>
     </div>
   );
 }
 
 export function Rail({ title, params, orderIds, onOpen }: { title: string; params: string; orderIds?: string[]; onOpen: (id: string, type: string | null) => void }) {
   const [items, setItems] = useState<Item[] | null>(null);
+  const [expanded, setExpanded] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch(api(`/entities?${params}`))
@@ -154,19 +149,31 @@ export function Rail({ title, params, orderIds, onOpen }: { title: string; param
 
   if (items && items.length === 0) return null;
 
+  // Длинные перечни (>8) сворачиваем за «Показать всё» — экран не задыхается,
+  // но кнопка раскрывает полный список прямо здесь, без перехода.
+  const INITIAL = 8;
+  const visible = items && !expanded ? items.slice(0, INITIAL) : items;
+  const hidden = items ? Math.max(0, items.length - INITIAL) : 0;
+
   return (
     <section style={{ marginTop: 26 }}>
-      {/* Apple-style заголовок рейла: имя + тонкий счётчик. Без декоративных
-       * линий — заголовок поднимается, рейл становится воздушным. */}
-      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 13 }}>
+      {/* Apple-стиль заголовка: имя + тонкий счётчик, без декоративных линий. */}
+      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
         <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{title}</h3>
         {items && items.length > 1 && (
           <span style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{items.length}</span>
         )}
       </div>
-      <div style={{ display: "flex", gap: 18, overflowX: "auto", padding: "2px 16px 6px", margin: "0 -16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-        {items ? items.map((it) => <EntityTile key={it.id} item={it} onOpen={onOpen} />) : Array.from({ length: 5 }).map((_, i) => <SkeletonTile key={i} />)}
+      <div>
+        {visible ? visible.map((it) => <EntityRow key={it.id} item={it} onOpen={onOpen} />) : Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}
       </div>
+      {items && !expanded && hidden > 0 && (
+        <button type="button" onClick={() => setExpanded(true)}
+          style={{ marginTop: 12, padding: "10px 16px", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)",
+            borderRadius: 999, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          Показать всё <span style={{ color: "var(--color-label-3)", fontWeight: 500, marginLeft: 4 }}>{hidden}</span>
+        </button>
+      )}
     </section>
   );
 }
