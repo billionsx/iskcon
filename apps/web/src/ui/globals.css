@@ -19,6 +19,19 @@
   src: url('../../fonts/GentiumBookPlus-Bold.ttf') format('truetype');
   font-weight: 700; font-style: normal; font-display: swap;
 }
+/* EB Garamond — основной «книжный» курсив для стихов, цитат и санскрита.
+   Полное покрытие: кириллица + IAST-диакритика (ā ī ū ṛ ṃ ḥ ṅ ñ ṭ ḍ ṇ ś ṣ).
+   Variable (вес 400–800); Gentium остаётся запасным. OFL: fonts/OFL-EBGaramond.txt. */
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../../fonts/EBGaramond-Roman.woff2') format('woff2');
+  font-weight: 400 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../../fonts/EBGaramond-Italic.woff2') format('woff2');
+  font-weight: 400 800; font-style: italic; font-display: swap;
+}
 
 
 :root {
@@ -78,9 +91,10 @@
   /* Typography */
   --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  /* Священный текст (стихи, транслитерация): Gentium Book Plus — корректные
-     диакритики над кириллицей; Georgia/Times — запасные. */
-  --font-scripture: 'Gentium Book Plus', Georgia, 'Times New Roman', serif;
+  /* Священный текст (стихи, цитаты, транслитерация): EB Garamond — красивый
+     книжный курсив с полным покрытием кириллицы и IAST; Gentium — запасной
+     (корректные диакритики), Georgia/Times — крайний случай. */
+  --font-scripture: 'EB Garamond', 'Gentium Book Plus', Georgia, 'Times New Roman', serif;
 
   /* Radius */
   --radius-glass: 20px;
