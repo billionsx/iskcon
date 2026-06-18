@@ -202,7 +202,7 @@ type LfQuote = { t: string; by?: string; byId?: string; ref?: string; to?: strin
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
-type DossierSub = { id: string; label: string; realm?: "earth" | "eternal"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
+type DossierSub = { id: string; label: string; realm?: "material" | "spiritual"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
 type DossierTab = { id: string; label: string; kicker?: string; sections?: LfSection[]; subtabs?: DossierSub[]; rails?: RailDef[]; cards?: NavCard[] };
 type Dossier = { tabs: DossierTab[] };
 function expandCiteRef(ref: string): string {
@@ -509,19 +509,19 @@ function PersonSubTabs({ items, active, onChange, stickyTop = 96 }: { items: { i
   );
 }
 
-function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "earth" | "eternal"; onChange: (v: "earth" | "eternal") => void; stickyTop?: number }) {
-  const opts: { id: "earth" | "eternal"; label: string }[] = [
-    { id: "earth",   label: "На Земле" },
-    { id: "eternal", label: "В вечности" },
+function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "material" | "spiritual"; onChange: (v: "material" | "spiritual") => void; stickyTop?: number }) {
+  const opts: { id: "material" | "spiritual"; label: string }[] = [
+    { id: "material",  label: "Материальный мир" },
+    { id: "spiritual", label: "Духовный мир" },
   ];
   return (
-    <nav aria-label="Аспект" style={{ position: "sticky", top: stickyTop, zIndex: 9, marginInline: -16, marginTop: 14, padding: "8px 16px 0", background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
-      <div role="tablist" style={{ display: "flex", padding: 2, borderRadius: 9, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+    <nav aria-label="Аспект бытия Господа" style={{ position: "sticky", top: stickyTop, zIndex: 9, marginInline: -16, marginTop: 14, padding: "10px 16px 0", background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
+      <div role="tablist" style={{ display: "flex", padding: 3, borderRadius: 12, background: "var(--color-fill-1)" }}>
         {opts.map((o) => {
           const on = o.id === realm;
           return (
             <button key={o.id} role="tab" aria-selected={on} type="button" onClick={() => onChange(o.id)}
-              style={{ flex: 1, padding: "7px 10px", borderRadius: 7, border: "none", cursor: "pointer", fontSize: 13.5, fontFamily: "var(--font-text)", fontWeight: 600, whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1px 3px rgba(0,0,0,0.10), 0 0 0 0.5px var(--color-hairline)" : "none", transition: "background .18s, color .18s, box-shadow .18s", WebkitTapHighlightColor: "transparent" }}>
+              style={{ flex: 1, padding: "10px 14px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: 14, fontFamily: "var(--font-text)", fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1.5px 4px rgba(0,0,0,0.10), 0 0 0 0.5px color-mix(in srgb, var(--color-label) 5%, transparent)" : "none", transition: "background .22s ease, color .18s ease, box-shadow .22s ease", WebkitTapHighlightColor: "transparent" }}>
               {o.label}
             </button>
           );
@@ -538,7 +538,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const [centers, setCenters] = useState<CenterHit[]>([]);
   const [tab, setTab] = useState<string>("obzor");
   const [sub, setSub] = useState<string>("");
-  const [realm, setRealm] = useState<"earth" | "eternal">("earth");
+  const [realm, setRealm] = useState<"material" | "spiritual">("material");
 
   useEffect(() => {
     let alive = true;
