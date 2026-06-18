@@ -10,6 +10,7 @@ import { BookMenuSheet } from "../BookMenuSheet";
 import { HeartIcon, MoreIcon } from "../ui/icons";
 import { useFavorite } from "../cardActions";
 import { CENTER_TYPE_LABEL, type CenterType } from "./api";
+import { useCoverSlider, CoverImages, CoverTapZones, CoverCounter } from "../CardCover";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -61,7 +62,8 @@ export function CenterHeroCard({ center, topLeft, onOpen, presentational, onMenu
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
   const accent = centerAccent(center.type);
-  const photo = center.photos?.[0];
+  const photos = center.photos ?? [];
+  const { idx, next, prev } = useCoverSlider(photos.length);
   const place = [center.city, center.region, center.country].filter(Boolean).join(" · ");
   const mapsHref = centerMapsHref(center);
   const { on: favorited, toggle: toggleFav } = useFavorite(`center:${center.slug}`, { t: center.name, s: place || CENTER_TYPE_LABEL[center.type], h: `/center/${center.slug}` });
@@ -72,26 +74,32 @@ export function CenterHeroCard({ center, topLeft, onOpen, presentational, onMenu
         style={{
           position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20,
           border: "0.5px solid var(--color-hairline, rgba(0,0,0,.08))",
-          background: photo ? `center/cover no-repeat url("${photo}")` : GRAPHITE,
+          background: GRAPHITE,
           boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
-        {!photo && <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(130% 90% at 50% -8%, ${accent}45 0%, ${accent}16 34%, transparent 60%)` }} />}
+        {photos.length
+          ? <CoverImages images={photos} alt={center.name} idx={idx} />
+          : <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", background: `radial-gradient(130% 90% at 50% -8%, ${accent}45 0%, ${accent}16 34%, transparent 60%)` }} />}
         <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.5) 0%, rgba(0,0,0,0) 100%)" }} />
         <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "74%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.86) 0%, rgba(0,0,0,.42) 46%, rgba(0,0,0,0) 100%)" }} />
 
         {onOpen && !presentational && <button type="button" aria-label="Открыть центр" onClick={() => onOpen()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />}
+        {photos.length > 1 && !presentational && <CoverTapZones onPrev={prev} onNext={next} />}
 
         {/* TOP */}
         <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
           <span style={{ display: "flex", alignItems: "center", color: "#fff", minWidth: 0 }}>{topLeft}</span>
-          {!presentational && (
-            <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => toggleFav(flash)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-              {mapsHref && <ActionBtn ariaLabel="Маршрут" onClick={() => { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }}><PinIcon size={18} /></ActionBtn>}
-              <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
-            </div>
-          )}
+          <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {photos.length > 1 && <CoverCounter idx={idx} total={photos.length} />}
+            {!presentational && (
+              <>
+                <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => toggleFav(flash)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+                {mapsHref && <ActionBtn ariaLabel="Маршрут" onClick={() => { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }}><PinIcon size={18} /></ActionBtn>}
+                <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
+              </>
+            )}
+          </div>
         </div>
 
         {/* INFO */}
