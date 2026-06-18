@@ -13,10 +13,13 @@ TOKEN   = os.environ.get("CLOUDFLARE_API_TOKEN")
 if not TOKEN: sys.exit("CLOUDFLARE_API_TOKEN not set")
 URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT}/d1/database/{DB}/query"
 
-def run(sql):
+def run(sql, params=None):
+    body = {"sql": sql}
+    if params is not None:
+        body["params"] = params
     req = urllib.request.Request(URL, method="POST",
         headers={"Authorization":f"Bearer {TOKEN}","Content-Type":"application/json"},
-        data=json.dumps({"sql":sql}).encode())
+        data=json.dumps(body).encode())
     with urllib.request.urlopen(req, timeout=120) as r:
         out = json.loads(r.read())
     if not out.get("success"):
@@ -126,9 +129,12 @@ lf_path = os.path.join(BASE, "profiles_longform.csv")
 if os.path.exists(lf_path):
     lr = list(csv.DictReader(open(lf_path, encoding="utf-8")))
     for row in lr:
+        # Параметризованный INSERT/UPSERT — обходит лимит длины inline-SQL D1 API
+        # (некоторые longform-JSON > 50KB при экранировании одинарных кавычек).
         run("INSERT INTO entity_profiles (entity_id,longform,updated_at) "
-            f"VALUES ({q(row['entity_id'])},{q(row.get('longform',''))},datetime('now')) "
-            "ON CONFLICT(entity_id) DO UPDATE SET longform=excluded.longform, updated_at=datetime('now');")
+            "VALUES (?, ?, datetime('now')) "
+            "ON CONFLICT(entity_id) DO UPDATE SET longform=excluded.longform, updated_at=datetime('now');",
+            params=[row['entity_id'], row.get('longform','') or ''])
     print("longform articles upserted:", len(lr))
 else:
     print("longform: profiles_longform.csv not found — skipped")
