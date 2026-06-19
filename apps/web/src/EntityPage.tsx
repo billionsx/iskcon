@@ -578,6 +578,56 @@ function NavCards({ cards, onNavigate, onOpenCollection }: { cards: NavCard[]; o
   );
 }
 
+const LF_ANIM = "@keyframes lf-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}";
+
+/* Подсказка прокрутки: мягкое затухание у того края, за которым есть ещё контент. */
+function useEdgeFades(ref: React.RefObject<HTMLDivElement>, dep: unknown) {
+  const [edges, setEdges] = useState<{ l: boolean; r: boolean }>({ l: false, r: false });
+  useEffect(() => {
+    const c = ref.current; if (!c) return;
+    const update = () => {
+      const max = c.scrollWidth - c.clientWidth;
+      setEdges({ l: c.scrollLeft > 6, r: c.scrollLeft < max - 6 });
+    };
+    update();
+    const raf = requestAnimationFrame(update);
+    c.addEventListener("scroll", update, { passive: true });
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") { ro = new ResizeObserver(update); ro.observe(c); }
+    window.addEventListener("resize", update);
+    return () => { cancelAnimationFrame(raf); c.removeEventListener("scroll", update); if (ro) ro.disconnect(); window.removeEventListener("resize", update); };
+  }, [ref, dep]);
+  return edges;
+}
+
+function EdgeFade({ side, show }: { side: "left" | "right"; show: boolean }) {
+  const isLeft = side === "left";
+  const style: React.CSSProperties = { position: "absolute", top: 0, bottom: 0, width: 30, pointerEvents: "none", zIndex: 1, background: `linear-gradient(to ${isLeft ? "right" : "left"}, var(--color-bg), transparent)`, opacity: show ? 1 : 0, transition: "opacity .2s ease" };
+  if (isLeft) style.left = 0; else style.right = 0;
+  return <span aria-hidden style={style} />;
+}
+
+/* Линейная навигация по разделу: «Назад» (тихая) и «Далее» (контрастная капсула). */
+function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: string | null; nextLabel?: string | null; onPrev?: (() => void) | null; onNext?: (() => void) | null }) {
+  if (!onPrev && !onNext) return null;
+  return (
+    <nav aria-label="Листать раздел" style={{ display: "flex", gap: 10, marginTop: 40, paddingTop: 22, borderTop: "0.5px solid var(--color-hairline)" }}>
+      {onPrev ? (
+        <button type="button" onClick={onPrev} style={{ flex: 1, minWidth: 0, textAlign: "left", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
+          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>← Назад</span>
+          <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{prevLabel}</span>
+        </button>
+      ) : <span style={{ flex: 1 }} aria-hidden />}
+      {onNext ? (
+        <button type="button" onClick={onNext} style={{ flex: 1, minWidth: 0, textAlign: "right", padding: "11px 14px", borderRadius: 14, border: "0.5px solid transparent", background: "var(--color-label)", cursor: "pointer", color: "var(--color-bg)", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
+          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", opacity: 0.7 }}>Далее →</span>
+          <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{nextLabel}</span>
+        </button>
+      ) : <span style={{ flex: 1 }} aria-hidden />}
+    </nav>
+  );
+}
+
 function PersonTabs({ tabs, active, onChange, stickyTop = 52 }: { tabs: { id: string; label: string }[]; active: string; onChange: (id: string) => void; stickyTop?: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -586,6 +636,7 @@ function PersonTabs({ tabs, active, onChange, stickyTop = 52 }: { tabs: { id: st
     if (!el || !c) return;
     c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
   }, [active]);
+  const fades = useEdgeFades(containerRef, tabs.length + ":" + active);
   return (
     <nav aria-label="Разделы личности" style={{ position: "sticky", top: stickyTop, zIndex: 9, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", padding: "0 6px" }}>
@@ -600,6 +651,8 @@ function PersonTabs({ tabs, active, onChange, stickyTop = 52 }: { tabs: { id: st
           );
         })}
       </div>
+      <EdgeFade side="left" show={fades.l} />
+      <EdgeFade side="right" show={fades.r} />
     </nav>
   );
 }
@@ -632,8 +685,11 @@ function PersonSubTabs({ items, active, onChange, stickyTop = 96 }: { items: { i
     if (!el || !c) return;
     c.scrollTo({ left: Math.max(0, el.offsetLeft - (c.clientWidth - el.clientWidth) / 2), behavior: "smooth" });
   }, [active]);
+  const fades = useEdgeFades(containerRef, items.length + ":" + active);
   return (
     <nav aria-label="Подразделы" style={{ position: "sticky", top: stickyTop, zIndex: 8, marginInline: -16, marginTop: 14, background: "color-mix(in srgb, var(--color-bg) 84%, transparent)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
+      <EdgeFade side="left" show={fades.l} />
+      <EdgeFade side="right" show={fades.r} />
       <div ref={containerRef} style={{ display: "flex", gap: 8, alignItems: "center", overflowX: "auto", padding: "10px 16px", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {items.map((it) => {
           const on = it.id === active;
@@ -708,6 +764,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   // Якоря для скролла к верху раздела при смене realm-сегмента/подтаба.
   const realmAnchorRef = useRef<HTMLDivElement>(null);
   const subAnchorRef = useRef<HTMLDivElement>(null);
+  const tabContentRef = useRef<HTMLDivElement>(null);
   const scrollToAnchor = (ref: React.RefObject<HTMLDivElement>, stickyTop: number) => {
     requestAnimationFrame(() => {
       const el = ref.current;
@@ -724,6 +781,10 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     setSub(v);
     // Подтабы липнут под realm-сегментом — высоту учитываем в stickyTop.
     scrollToAnchor(subAnchorRef, embedded ? (hasRealmSplit ? 100 : 46) : (hasRealmSplit ? 150 : 96));
+  };
+  const goToTab = (v: string) => {
+    setTab(v);
+    scrollToAnchor(tabContentRef, embedded ? 8 : 60);
   };
   // Хеш-под-таб ждёт применения после установки tab (см. эффекты ниже).
   const pendingSubFromHash = useRef<string | null>(null);
@@ -822,6 +883,19 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const subSections = activeSub?.sections ?? [];
   const subRails = activeSub?.rails ?? [];
   const subCards = activeSub?.cards ?? [];
+  // Линейная навигация: следующий/предыдущий подтаб, затем переход на соседний таб.
+  const tabIdx = dossierTabs.findIndex((t) => t.id === tab);
+  const subIdx = visibleSubs.findIndex((st) => st.id === (activeSub?.id ?? sub));
+  const nextSub = subIdx > -1 ? visibleSubs[subIdx + 1] : undefined;
+  const nextTabObj = tabIdx > -1 ? dossierTabs[tabIdx + 1] : undefined;
+  const prevSub = subIdx > 0 ? visibleSubs[subIdx - 1] : undefined;
+  const prevTabObj = tabIdx > 0 ? dossierTabs[tabIdx - 1] : undefined;
+  const pagerNext = nextSub ? { on: true, label: nextSub.label, go: () => handleSubChange(nextSub.id) }
+    : nextTabObj ? { on: true, label: nextTabObj.label, go: () => goToTab(nextTabObj.id) }
+    : { on: false, label: "", go: () => {} };
+  const pagerPrev = prevSub ? { on: true, label: prevSub.label, go: () => handleSubChange(prevSub.id) }
+    : prevTabObj ? { on: true, label: prevTabObj.label, go: () => goToTab(prevTabObj.id) }
+    : { on: false, label: "", go: () => {} };
 
   // тождество Гаура↔Кришна-лила одной строкой (для ВКЛ)
   const idRel = [
@@ -1004,13 +1078,16 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
             {dossier ? (
               <>
                 <PersonTabs tabs={dossierTabs} active={tab} onChange={setTab} stickyTop={embedded ? 0 : 52} />
-                <div style={{ marginTop: 4 }}>
-                  {activeTabObj && <TabHeader tab={activeTabObj} />}
-                  {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
-                    <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
-                  )}
-                  {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
-                  {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
+                <div ref={tabContentRef} style={{ marginTop: 4 }}>
+                  <style>{LF_ANIM}</style>
+                  <div key={"t:" + tab} style={{ animation: "lf-in .26s ease both" }}>
+                    {activeTabObj && <TabHeader tab={activeTabObj} />}
+                    {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
+                      <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
+                    )}
+                    {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
+                    {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
+                  </div>
                   {hasRealmSplit && <div ref={realmAnchorRef} aria-hidden style={{ height: 0 }} />}
                   {hasRealmSplit && <RealmSegment realm={realm} onChange={handleRealmChange} stickyTop={embedded ? 46 : 96} />}
                   {subItems.length > 0 && <div ref={subAnchorRef} aria-hidden style={{ height: 0 }} />}
@@ -1023,12 +1100,15 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                     />
                   )}
                   {subSections.length > 0 && (
-                    <div style={{ marginTop: 18 }}>
+                    <div key={"s:" + tab + "/" + sub} style={{ marginTop: 18, animation: "lf-in .26s ease both" }}>
                       <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
                     </div>
                   )}
                   {subRails.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
                   {subCards.length > 0 && <NavCards cards={subCards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
+                  {(pagerPrev.on || pagerNext.on) && (
+                    <ReaderPager prevLabel={pagerPrev.label} nextLabel={pagerNext.label} onPrev={pagerPrev.on ? pagerPrev.go : null} onNext={pagerNext.on ? pagerNext.go : null} />
+                  )}
                 </div>
               </>
             ) : (
