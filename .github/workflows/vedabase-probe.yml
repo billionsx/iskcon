@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        default: "https://gitabase.com/rus/BS/5/1"
+        default: "https://gitabase.com/rus/BS/5/29"
 permissions:
   contents: read
 jobs:
@@ -22,17 +22,14 @@ jobs:
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
           URL=os.environ["URL"].strip()
-          rq=urllib.request.Request(URL, headers={"user-agent":UA,"accept-language":"ru"})
-          html=urllib.request.urlopen(rq, timeout=30).read().decode("utf-8","replace")
+          html=urllib.request.urlopen(urllib.request.Request(URL, headers={"user-agent":UA,"accept-language":"ru"}), timeout=30).read().decode("utf-8","replace")
           def d1(sql):
               urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
                 headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read()
           def q(v): return "'"+str(v).replace("'","''")+"'"
-          # окно сырого HTML вокруг русского перевода (там же выше — транслит)
-          i=html.find("Кришна, известный")
-          raw = html[max(0,i-2200):i+120] if i>0 else html[:2200]
-          # порежем на части по 1900, запишем 2 куска
-          for k in range(0, min(len(raw),3800), 1900):
-              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'graw "+str(k)+"',200,"+q(raw[k:k+1900])+")")
-          print("dumped", len(raw))
+          i=html.find("Текст</center></div>")
+          raw=html[i:i+1700] if i>0 else html[:1700]
+          for k in range(0,min(len(raw),3400),1700):
+              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'h4raw "+str(k)+"',200,"+q(raw[k:k+1700])+")")
+          print("ok",len(raw))
           PY
