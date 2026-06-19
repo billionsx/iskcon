@@ -201,7 +201,9 @@ type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string };
-type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[] };
+type HierTier = { abode: string; beings: string; note?: string; count?: string; countNote?: string; apex?: boolean };
+type HierGroup = { realm: string; tiers: HierTier[] };
+type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; realm?: "material" | "spiritual"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
@@ -362,6 +364,89 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
     </blockquote>
   );
 }
+// === Лестница нисхождения (ПКЛ-модуль) ===
+// Иерархия живых существ и форм Бога по мере проявления 64 трансцендентных
+// качеств и по обители. На вершине — Кришна (Голока). Единый «позвоночник»
+// нисхождения (золото вверху → серое внизу) кодирует убывание полноты качеств.
+// Apple-quiet: тихие заливки карточек, золото только на вершине и в осях.
+// Шрифт — var(--font-text); writ-курсив здесь не используется (не стихи).
+function HierarchyDescent({ groups }: { groups: HierGroup[] }) {
+  const PAD = 30;       // отступ слева под ось + узлы
+  const SX = 11.5;      // центр оси (позвоночника) от левого края контейнера
+  const tiers = groups.flatMap((g) => g.tiers);
+  const N = Math.max(1, tiers.length);
+  // Цвет узла/коннектора: золото на вершине → серое внизу (доля полноты).
+  const tone = (i: number) => {
+    const pct = Math.max(14, Math.round(100 - (i / Math.max(1, N - 1)) * 84));
+    return `color-mix(in srgb, ${GOLD} ${pct}%, var(--color-label-3))`;
+  };
+  let run = -1; // сквозной индекс уровня
+  return (
+    <div style={{ marginTop: 18 }}>
+      <div style={{ position: "relative", paddingLeft: PAD }}>
+        {/* Позвоночник нисхождения — единая ось от вершины вниз */}
+        <div aria-hidden style={{ position: "absolute", left: SX - 0.75, top: 24, bottom: 10, width: 1.5, borderRadius: 1,
+          background: `linear-gradient(180deg, ${GOLD} 0%, color-mix(in srgb, ${GOLD} 32%, var(--color-label-3)) 46%, var(--color-label-3) 100%)` }} />
+        {groups.map((g, gi) => (
+          <div key={gi}>
+            {/* Заголовок обители (мира) — золотая засечка на оси */}
+            <div style={{ position: "relative", marginTop: gi === 0 ? 0 : 22, marginBottom: 11 }}>
+              <span aria-hidden style={{ position: "absolute", left: SX - PAD - 3, top: 1, width: 6, height: 6, borderRadius: "50%", background: GOLD, opacity: 0.55 }} />
+              <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.realm}</div>
+            </div>
+            {g.tiers.map((tier, ti) => {
+              run += 1; const i = run; const apex = !!tier.apex;
+              const r = apex ? 8 : 4;                 // радиус узла
+              const dotTop = apex ? 19 : 21;          // выравнивание узла к строке обители
+              const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
+              const numSize = apex ? 27 : multi ? 16.5 : Math.max(18.5, 24 - i * 1.3);
+              return (
+                <div key={ti} style={{ position: "relative", marginTop: ti === 0 ? 0 : 9 }}>
+                  {/* горизонтальный «отвод» от оси к карточке */}
+                  <span aria-hidden style={{ position: "absolute", left: SX - PAD, top: dotTop + r - 0.75, width: PAD - SX - 4, height: 1.5, background: tone(i), opacity: apex ? 0.9 : 0.5 }} />
+                  {/* узел на оси */}
+                  {apex ? (
+                    <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: GOLD, boxShadow: `0 0 0 5px color-mix(in srgb, ${GOLD} 18%, transparent)` }} />
+                  ) : (
+                    <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: tone(i), border: "2px solid var(--color-bg)" }} />
+                  )}
+                  {/* карточка уровня */}
+                  <div style={{ position: "relative", padding: "13px 15px", borderRadius: 14,
+                    border: apex ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)",
+                    background: "var(--color-bg-2)",
+                    boxShadow: apex ? `0 0 0 1px color-mix(in srgb, ${GOLD} 50%, transparent), 0 10px 30px -14px color-mix(in srgb, ${GOLD} 65%, transparent)` : "none" }}>
+                    {apex && <span aria-hidden style={{ position: "absolute", left: 0, right: 0, top: 0, height: 2.5, borderRadius: "14px 14px 0 0", background: `linear-gradient(90deg, transparent, ${GOLD} 50%, transparent)` }} />}
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 4 }}>Вершина</div>}
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25 }}>{tier.abode}</div>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 3, lineHeight: 1.35 }}>{renderSanskrit(tier.beings)}</div>
+                        {tier.note && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", marginTop: 6, lineHeight: 1.45 }}>{renderSanskrit(tier.note)}</div>}
+                      </div>
+                      {/* бейдж: сколько из 64 качеств */}
+                      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", width: 54, paddingTop: apex ? 13 : 1 }}>
+                        {tier.count ? (
+                          <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: apex ? 700 : 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>{tier.count}</div>
+                        ) : (
+                          <div aria-hidden style={{ width: 26, height: 26, borderRadius: "50%", background: `radial-gradient(circle at 50% 42%, color-mix(in srgb, ${GOLD} 52%, transparent), transparent 72%)`, border: `1px solid color-mix(in srgb, ${GOLD} 32%, transparent)` }} />
+                        )}
+                        {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 600, letterSpacing: "0.2px", textTransform: "uppercase", color: "var(--color-label-3)", marginTop: 5, textAlign: "center", lineHeight: 1.25 }}>{tier.countNote}</div>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 15, paddingLeft: PAD, fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-3)", lineHeight: 1.5 }}>
+        Число — сколько из шестидесяти четырёх трансцендентных качеств проявлено на этом уровне.
+      </div>
+    </div>
+  );
+}
+
 function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   return (
     <div>
@@ -371,6 +456,7 @@ function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection
           {(s.p ?? []).map((para, j) => (
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderSanskrit(para)}</p>
           ))}
+          {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} />}
           {(s.list ?? []).length > 0 && (() => {
             let n = 0;
             return (
