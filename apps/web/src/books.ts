@@ -174,6 +174,26 @@ export const BOOKS: Record<string, BookData> = {
     hierarchical: false,
     uniformTitle: true,
   },
+  vp: {
+    id: "vp",
+    work: "vp",
+    slug: "vishnu-purana",
+    titleLine1: "Вишну-",
+    titleLine2: "пурана",
+    iast: "Viṣṇu-purāṇa",
+    tagline: "Пурана о Господе Вишну",
+    author:
+      "Изложена мудрецом Парашарой Муни своему ученику Майтрее. Избранные стихи с пословным санскритом и переводом.",
+    description:
+      "Одна из главных Пуран, повествующая о Господе Вишну, Его энергиях и устройстве творения. Здесь даны классические определения шести достояний Бхагавана и трёх духовных энергий Господа — хладини, сандхини и самвит.",
+    publisher: "bbt",
+    covers: [
+      "/covers/vp-001.png?v=1",
+    ],
+    chips: ["Книги 1 и 6", "Парашара Муни", "ключевые стихи"],
+    hierarchical: true,
+    uniformTitle: true,
+  },
   bs: {
     id: "bs",
     work: "bs",
@@ -452,6 +472,10 @@ export function bookShareImage(b: BookData): string {
  * книга несёт собственный текст; никакого дефолта на «Бхагавад-гиту».
  */
 export const BOOK_ABOUT: Record<string, string[]> = {
+  vp: [
+    "«Вишну-пурана» — одна из восемнадцати главных Пуран и одна из самых почитаемых, целиком посвящённая Господу Вишну. Мудрец Парашара Муни, отец Вьясадевы, излагает её своему ученику Майтрее: о творении и устройстве мироздания, о династиях, обителях и величии Верховного Господа.",
+    "Для богословия гаудия-вайшнавов «Вишну-пурана» особенно ценна двумя определениями: шести достояний (бхага), которыми в полноте обладает Бхагаван, и трёх духовных энергий Господа — хладини (блаженство), сандхини (бытие) и самвит (знание). Стихи приводятся с пословным санскритом и переводом.",
+  ],
   bs: [
     "«Брахма-самхита» — древний санскритский текст, молитвы которого вознёс Господь Брахма Говинде, изначальной Личности Бога, в начале творения. Шри Чайтанья Махапрабху, найдя рукопись Пятой песни в Южной Индии, признал её непревзойдённым изложением науки о Кришне и передал Своим преданным.",
     "Пятая песнь раскрывает облик Кришны как сач-чид-ананда-виграхи, Его вечную обитель Голоку Вриндавану, природу Его энергий и то, как единый Господь пребывает и в каждой вселенной, и в каждом атоме. Стихи приводятся с пословным санскритом и переводом.",
@@ -571,6 +595,7 @@ export const LIBRARY: CatalogBook[] = [
   { id: "cm",  title: "Чайтанья-мангала",            iast: "Caitanya-maṅgala",      authorId: "lochana-dasa-thakura",    authorName: "Лочана дас Тхакур",     lineage: "acharya", readable: false, also: "Чайтанья-мангала Caitanya-mangala Лочана" },
   { id: "ggd", title: "Гаура-ганоддеша-дипика",      iast: "Gaura-gaṇoddeśa-dīpikā", authorId: "kavi-karnapura",         authorName: "Кави Карнапура",        lineage: "acharya", readable: false, also: "Гаура-ганоддеша Gaura-ganoddesa Карнапура" },
   { id: "bs",  title: "Брахма-самхита",              iast: "Brahma-saṁhitā",        note: "Молитвы Господа Брахмы",     authorId: "brahma", authorName: "Господь Брахма",                                            lineage: "acharya", readable: true, also: "Brahma Brahmasamhita Брахма-самхита Говинда сач-чид-ананда" },
+  { id: "vp",  title: "Вишну-пурана",                 iast: "Viṣṇu-purāṇa",          note: "Пурана о Господе Вишну",     authorName: "Парашара Муни",                                       lineage: "acharya", readable: true, also: "Vishnu Purana Вишну-пурана Парашара хладини сандхини самвит бхага" },
   { id: "hbv", title: "Хари-бхакти-виласа",          iast: "Hari-bhakti-vilāsa",    note: "Свод вайшнавской практики",                                         lineage: "acharya", readable: false, also: "Sanatana" },
   { id: "vedanta-sutra", title: "Веданта-сутра",     iast: "Vedānta-sūtra",         authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false, also: "Vyasa Vyasadeva Baladeva Vedanta" },
   { id: "mahabharata",   title: "Махабхарата",       iast: "Mahābhārata",           authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false, also: "Vyasa Vyasadeva" },
