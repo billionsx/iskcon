@@ -145,6 +145,30 @@ function ftsMatchOr(q: string): string | null {
   return toks.map((t) => t + "*").join(" OR ");
 }
 
+// Сниппет вокруг совпадения в произвольном тексте (молитвы/страницы — без FTS).
+// Регистронезависимо: JS toLowerCase знает кириллицу. Окно ~160 символов вокруг
+// первого совпадения фразы целиком, иначе — первого токена.
+function bodySnippet(body: string, q: string, max = 160): string | null {
+  if (!body) return null;
+  const lc = body.toLowerCase();
+  const ql = q.toLowerCase().trim();
+  let idx = ql ? lc.indexOf(ql) : -1;
+  if (idx < 0) {
+    const tok = ql.match(/[\p{L}\p{N}]+/u)?.[0];
+    if (tok) idx = lc.indexOf(tok);
+  }
+  if (idx < 0) return null;
+  const start = Math.max(0, idx - 50);
+  const slice = body.slice(start, start + max).replace(/\s+/g, " ").trim();
+  if (!slice) return null;
+  return (start > 0 ? "…" : "") + slice + (start + max < body.length ? "…" : "");
+}
+// Начало текста как запасной контекст (для статей без подзаголовка).
+function introOf(body: string, max = 140): string {
+  const o = (body || "").replace(/\s+/g, " ").trim();
+  return o.length > max ? o.slice(0, max) + "…" : o;
+}
+
 // ── Обложка по стандарту BBT (единая для всех книг) ──
 // Вёрстка обложки вынесена в общий модуль src/pdfCover.ts — её переиспользуют и
 // серверный рендер (этот воркер), и пре-генерация PDF в CI (scripts/genpdf).
@@ -1417,23 +1441,25 @@ export default {
 
       // 4) Молитвы и киртаны — content_items типа prayer (+ тело страницы page_text).
       const prayers = await env.DB.prepare(
-        `SELECT ci.slug, ci.name, ci.subtitle
+        `SELECT ci.slug, ci.name, ci.subtitle,
+                (SELECT substr(pt.text,1,4000) FROM page_text pt WHERE pt.slug=ci.slug) AS body
          FROM content_items ci
          WHERE ci.lang='ru' AND ci.type='prayer'
            AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
                 OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
          ORDER BY (ci.name GLOB ?1) DESC LIMIT 20`,
-      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null }>();
+      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; body: string | null }>();
 
       // 5) Страницы и разделы — прочий контент (хабы, статьи).
       const pages = await env.DB.prepare(
-        `SELECT ci.slug, ci.name, ci.subtitle, ci.type
+        `SELECT ci.slug, ci.name, ci.subtitle, ci.type,
+                (SELECT substr(pt.text,1,4000) FROM page_text pt WHERE pt.slug=ci.slug) AS body
          FROM content_items ci
          WHERE ci.lang='ru' AND ci.type IN ('hub','article')
            AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
                 OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
          ORDER BY (ci.name GLOB ?1) DESC LIMIT 20`,
-      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null }>();
+      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null; body: string | null }>();
 
       // 6) Центры — опубликованные храмы/ятры.
       const centers = await env.DB.prepare(
@@ -1446,6 +1472,7 @@ export default {
       const tail = (id: string, work: string) =>
         (id.startsWith(work + ".") ? id.slice(work.length + 1) : id).replace(/\./g, "/");
       const oneLine = (s: string) => s.replace(/\s+/g, " ").trim();
+      const ql = q.toLowerCase();
 
       return noStore(json({
         q,
@@ -1460,8 +1487,20 @@ export default {
           return { book: full ?? (r.ref || ""), ref: full ? loc : "", work: r.work_id, snippet, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` };
         }),
         chapters: (chapters.results ?? []).map((r) => ({ title: r.title, work: r.work_id, level: r.level, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
-        prayers: (prayers.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, href: r.slug })),
-        pages: (pages.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, type: r.type, href: r.slug })),
+        prayers: (prayers.results ?? []).map((r) => {
+          const sub = r.subtitle ?? "";
+          const subHit = !!sub && sub.toLowerCase().includes(ql);
+          const bs = bodySnippet(r.body ?? "", q);
+          const snippet = subHit ? sub : (bs ?? (sub || introOf(r.body ?? "")));
+          return { name: r.name, subtitle: r.subtitle ?? null, snippet: snippet || null, href: r.slug };
+        }),
+        pages: (pages.results ?? []).map((r) => {
+          const sub = r.subtitle ?? "";
+          const subHit = !!sub && sub.toLowerCase().includes(ql);
+          const bs = bodySnippet(r.body ?? "", q);
+          const snippet = subHit ? sub : (bs ?? (sub || introOf(r.body ?? "")));
+          return { name: r.name, subtitle: r.subtitle ?? null, snippet: snippet || null, type: r.type, href: r.slug };
+        }),
         centers: (centers.results ?? []).map((r) => ({ name: r.name, city: r.city ?? null, href: `/center/${r.slug}` })),
       }));
     }

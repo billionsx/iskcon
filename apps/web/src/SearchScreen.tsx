@@ -14,7 +14,7 @@ import { searchBooks } from "./bookSearch";
 type Person = { id: string; type: string | null; name_ru: string | null; name_iast: string | null };
 type Verse = { book: string; ref: string; work?: string; snippet: string; href: string };
 type Chapter = { title: string | null; work: string; level: string | null; href: string };
-type Page = { name: string | null; subtitle: string | null; type?: string | null; href: string };
+type Page = { name: string | null; subtitle: string | null; snippet?: string | null; type?: string | null; href: string };
 type Center = { name: string; city: string | null; href: string };
 type ExactHit = { kind: "verse" | "chapter"; book: string; ref?: string; snippet?: string; title?: string; level?: string | null; href: string };
 type Results = {
@@ -382,7 +382,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("prayers") && (
           <Section title="Молитвы и киртаны" count={counts.prayers}>
             {r.prayers.slice(0, vis("prayers")).map((p, i) => (
-              <Row key={"pr" + i + p.href} active={activeId === "pr:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
+              <Row key={"pr" + i + p.href} active={activeId === "pr:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.snippet || p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
             {activeFilter === "all" && counts.prayers > PREVIEW && <MoreLink n={counts.prayers} active={activeId === "more:prayers"} onTap={() => setFilter("prayers")} />}
           </Section>
@@ -400,7 +400,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("pages") && (
           <Section title="Страницы и разделы" count={counts.pages}>
             {r.pages.slice(0, vis("pages")).map((p, i) => (
-              <Row key={"pg" + i + p.href} active={activeId === "pg:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
+              <Row key={"pg" + i + p.href} active={activeId === "pg:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.snippet || p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
             {activeFilter === "all" && counts.pages > PREVIEW && <MoreLink n={counts.pages} active={activeId === "more:pages"} onTap={() => setFilter("pages")} />}
           </Section>
