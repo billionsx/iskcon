@@ -16,9 +16,9 @@ type Verse = { book: string; ref: string; work?: string; snippet: string; href: 
 type Chapter = { title: string | null; work: string; level: string | null; href: string };
 type Page = { name: string | null; subtitle: string | null; type?: string | null; href: string };
 type Center = { name: string; city: string | null; href: string };
-type ExactVerse = { book: string; ref: string; snippet: string; href: string };
+type ExactHit = { kind: "verse" | "chapter"; book: string; ref?: string; snippet?: string; title?: string; level?: string | null; href: string };
 type Results = {
-  exact?: ExactVerse | null;
+  exact?: ExactHit | null;
   personalities: Person[]; verses: Verse[]; chapters: Chapter[];
   prayers: Page[]; pages: Page[]; centers: Center[];
 };
@@ -264,26 +264,31 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</p>
         )}
 
-        {searching && r.exact && (activeFilter === "all" || activeFilter === "verses") && (
-          <button type="button" onClick={() => goNav(r.exact!.href)}
-            style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", textAlign: "left", marginTop: 14,
-              padding: "13px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer" }}>
-            <span style={{ flexShrink: 0, width: 42, height: 42, borderRadius: 11, display: "grid", placeItems: "center", background: "var(--color-bg-3)", color: "var(--color-label-2)" }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
-                <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM5 17a3 3 0 0 1 3-3h11" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <span style={{ minWidth: 0, flex: 1 }}>
-              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>Стих</span>
-              <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.exact.book}</span>
-                {r.exact.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{r.exact.ref}</span>}
+        {searching && r.exact && activeFilter === "all" && (() => {
+          const ex = r.exact!;
+          const eyebrow = ex.kind === "verse" ? "Стих" : ex.level === "chapter" ? "Глава" : "Раздел";
+          const second = ex.kind === "verse" ? ex.snippet : ex.title;
+          return (
+            <button type="button" onClick={() => goNav(ex.href)}
+              style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", textAlign: "left", marginTop: 14,
+                padding: "13px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer" }}>
+              <span style={{ flexShrink: 0, width: 42, height: 42, borderRadius: 11, display: "grid", placeItems: "center", background: "var(--color-bg-3)", color: "var(--color-label-2)" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM5 17a3 3 0 0 1 3-3h11" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
               </span>
-              {r.exact.snippet && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" } as React.CSSProperties}>{r.exact.snippet}</span>}
-            </span>
-            <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
-          </button>
-        )}
+              <span style={{ minWidth: 0, flex: 1 }}>
+                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>{eyebrow}</span>
+                <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
+                  {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
+                </span>
+                {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
+              </span>
+              <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
+            </button>
+          );
+        })()}
 
         {show("people") && (
           <Section title="Личности" count={counts.people}>
