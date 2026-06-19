@@ -1,15 +1,11 @@
 name: vedabase probe (диагностика структуры книги)
-
 on:
   workflow_dispatch:
     inputs:
-      base:
-        description: "base URL prefix to probe"
-        default: "https://gitabase.com/rus/BS"
-
+      url:
+        default: "https://gitabase.com/rus/BS/5/1"
 permissions:
   contents: read
-
 jobs:
   probe:
     runs-on: ubuntu-latest
@@ -18,36 +14,25 @@ jobs:
       - name: Probe
         env:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          BASE: ${{ github.event.inputs.base }}
+          URL: ${{ github.event.inputs.url }}
         run: |
           python3 - <<'PY'
           import os, re, json, urllib.request
           CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
-          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
-          B=(os.environ.get("BASE") or "").strip().rstrip("/")
-          def get(url):
-              try:
-                  rq=urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"ru,en;q=0.8","accept":"text/html"})
-                  with urllib.request.urlopen(rq, timeout=30) as r:
-                      return r.status, r.read().decode("utf-8","replace")
-              except Exception as e:
-                  return 0, f"ERR:{type(e).__name__}:{str(e)[:80]}"
-          def vis(html):
-              t=re.sub(r"<(script|style)[^>]*>.*?</\1>"," ", html, flags=re.S|re.I)
-              t=re.sub(r"<[^>]+>"," ", t); t=re.sub(r"\s+"," ", t)
-              return t.strip()
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
+          URL=os.environ["URL"].strip()
+          rq=urllib.request.Request(URL, headers={"user-agent":UA,"accept-language":"ru"})
+          html=urllib.request.urlopen(rq, timeout=30).read().decode("utf-8","replace")
           def d1(sql):
-              body=json.dumps({"sql":sql}).encode()
-              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
-              urllib.request.urlopen(rq, timeout=60).read()
+              urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read()
           def q(v): return "'"+str(v).replace("'","''")+"'"
-          urls=[("index",B), ("ch5",B+"/5"), ("v51",B+"/5/1"), ("v529",B+"/5/29"), ("eng51",B.replace("/rus/","/eng/")+"/5/1")]
-          for label,url in urls:
-              st,html=get(url)
-              links=sorted(set(re.findall(r'/(?:rus|ru)/BS/(\d+)(?:/(\d+))?', html)))[:8] if st==200 else []
-              snip=vis(html)[:700] if st==200 else html[:120]
-              blob=json.dumps({"url":url,"status":st,"len":len(html) if st==200 else 0,"links":links,"snip":snip}, ensure_ascii=False)[:1900]
-              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'gprobe "+label+"',"+str(st)+","+q(blob)+")")
-              print(label, st, len(html) if st==200 else html[:80])
+          # окно сырого HTML вокруг русского перевода (там же выше — транслит)
+          i=html.find("Кришна, известный")
+          raw = html[max(0,i-2200):i+120] if i>0 else html[:2200]
+          # порежем на части по 1900, запишем 2 куска
+          for k in range(0, min(len(raw),3800), 1900):
+              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'graw "+str(k)+"',200,"+q(raw[k:k+1900])+")")
+          print("dumped", len(raw))
           PY
