@@ -6,12 +6,13 @@ profiles seeded (bronze): 824
 auto profiles upserted: 496
 curated profiles upserted: 166
 longform column: present
-Traceback (most recent call last):
-  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/registry_load.py", line 130, in <module>
-    lr = list(csv.DictReader(open(lf_path, encoding="utf-8")))
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/csv.py", line 116, in __next__
-    row = next(self.reader)
-          ^^^^^^^^^^^^^^^^^
-_csv.Error: field larger than field limit (131072)
-EXIT=1
+longform articles upserted: 9
+links: 68
+  D1 entities: 824
+  D1 entity_names: 2724
+  D1 entity_categories: 1672
+  D1 entity_relations: 2114
+  D1 entity_profiles: 824
+  D1 entity_links: 68
+done.
+EXIT=0
