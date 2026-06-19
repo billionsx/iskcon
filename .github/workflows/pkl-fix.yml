@@ -109,9 +109,9 @@ jobs:
                     joined=" ".join(dmap[v]["tn"] for v in use).strip()
                     sim=difflib.SequenceMatcher(None,norm(q.get("t","")),norm(joined)).ratio()
                     loc=f"{tab['id']}/{sub['id']}"
-                    ww=lambda s:set(re.findall(r'[а-яё]{6,}',(s or '').lower()))
-                    ov=len(ww(q.get("t",""))&ww(joined))
-                    do=(loc=="nama/shikshashtaka") or (sim>=GATE) or (ov>=4 and sim>=0.2)
+                    stems=lambda s:[w[:5] for w in re.findall(r'[а-яё]{4,}',(s or '').lower())]
+                    ss=difflib.SequenceMatcher(None," ".join(sorted(stems(q.get("t","")))), " ".join(sorted(stems(joined)))).ratio()
+                    do=(loc=="nama/shikshashtaka") or (sim>=GATE) or (ss>=0.45)
                     if do:
                         nt=joined.replace('«','„').replace('»','\u201c')
                         q["t"]="«"+nt+"»"
@@ -122,7 +122,7 @@ jobs:
                             q["to"]="/book/"+re.sub(r'-\d+$','',use[0]).replace(".","/")
                         st["replaced"]+=1
                     else:
-                        st["lowsim"]+=1; lowlist.append(f"{tab['id']}/{sub['id']} {q.get('ref')} sim={round(sim,2)}")
+                        st["lowsim"]+=1; lowlist.append(f"{loc} {q.get('ref')} s{round(sim,2)}/ss{round(ss,2)}")
                     keep.append(q)
                 if keep: s["quotes"]=keep
                 elif "quotes" in s: del s["quotes"]
