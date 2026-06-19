@@ -83,6 +83,31 @@ const WORK_TITLES: Record<string, string> = {
   spl: "Шрила Прабхупада-лиламрита",
 };
 
+// Распознавание прямой ссылки на стих в запросе: «БГ 2.13», «ШБ 1.2.6», «ЧЧ Ади 1.1».
+const REF_TO_WORK: Record<string, string> = {
+  "бг": "bg", "шб": "sb", "чч": "cc", "нп": "brs", "ишо": "iso", "бс": "bs",
+  "нн": "noi", "вп": "vp", "гл": "gl", "кс": "ks", "рв": "rv", "пс": "pop",
+  "пл": "spl", "птс": "bbd", "сй": "poy", "мцк": "tqk", "еош": "sc", "нпк": "owk", "свет": "lob",
+  "bg": "bg", "sb": "sb", "cc": "cc", "iso": "iso", "bs": "bs",
+  "бхагавад-гита": "bg", "бхагаватам": "sb", "шримад-бхагаватам": "sb",
+  "чайтанья-чаритамрита": "cc", "ишопанишад": "iso", "брахма-самхита": "bs", "вишну-пурана": "vp",
+};
+const DIV_SLUG: Record<string, string> = {
+  "ади": "adi", "мадхья": "madhya", "антья": "antya", "adi": "adi", "madhya": "madhya", "antya": "antya",
+};
+function resolveRef(query: string): { work: string; id: string } | null {
+  const parts = query.trim().toLowerCase().replace(/[.,:]/g, " ").replace(/\s+/g, " ").split(" ").filter(Boolean);
+  if (parts.length < 2) return null;
+  const work = REF_TO_WORK[parts[0]];
+  if (!work) return null;
+  let i = 1;
+  const div = DIV_SLUG[parts[i]];
+  if (div) i++;
+  const nums = parts.slice(i);
+  if (!nums.length || !nums.every((n) => /^\d+(?:[-–]\d+)?$/.test(n))) return null;
+  return { work, id: [work, ...(div ? [div] : []), ...nums].join(".") };
+}
+
 // Регистронезависимый GLOB-шаблон для кириллицы: SQLite LIKE не складывает регистр
 // для не-ASCII, поэтому по каждой букве строим класс [строчн.ЗАГЛ.].
 function ciGlob(q: string): string {
@@ -1301,10 +1326,26 @@ export default {
     // компактным таблицам. Каждая группа лимитирована; запросы — последовательно.
     if (url.pathname === "/api/search") {
       const q = (url.searchParams.get("q") || "").trim();
-      const empty = { q, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
+      const empty = { q, exact: null, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
       if (q.length < 2) return noStore(json(empty));
       const g = ciGlob(q);
       const m = ftsMatch(q);
+
+      // 0) Прямая ссылка на стих («БГ 2.13», «ЧЧ Ади 1.1») — точная карточка сверху.
+      let exact: { book: string; ref: string; snippet: string; href: string } | null = null;
+      const rr = resolveRef(q);
+      if (rr) {
+        const row = await env.DB.prepare(
+          `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS snippet
+           FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id WHERE v.id = ?1 LIMIT 1`
+        ).bind(rr.id).first<{ id: string; work_id: string; ref: string; snippet: string | null }>();
+        if (row) {
+          const full = WORK_TITLES[row.work_id];
+          const sp = (row.ref || "").indexOf(" ");
+          const loc = sp > 0 ? (row.ref || "").slice(sp + 1) : (row.ref || "");
+          exact = { book: full ?? (row.ref || ""), ref: full ? loc : "", snippet: row.snippet ?? "", href: `/book/${row.work_id}/${tail(row.id, row.work_id)}` };
+        }
+      }
 
       // 1) Личности — по именам и псевдонимам (точно, без флуда описаниями).
       const people = await env.DB.prepare(
@@ -1399,6 +1440,7 @@ export default {
 
       return noStore(json({
         q,
+        exact,
         personalities: (people.results ?? []).map((r) => ({ id: r.id, type: r.type ?? null, name_ru: r.name_ru, name_iast: r.name_iast })),
         verses: (verses.results ?? []).map((r) => {
           const full = WORK_TITLES[r.work_id];
