@@ -40,6 +40,8 @@ jobs:
           rows={r[0]:r[1] for r in csv.reader(open(CSVP,encoding="utf-8"))}
           dos=json.loads(rows["krishna"])
           COMMENTARY={"из комментария Шрилы Прабхупады","из наставлений Шрилы Прабхупады","по «Чайтанья-чаритамрите» (Рамананда-самвада)"}
+          FORCE={("avatara/lila-avatara","ШБ 1.3.26"),("avatara/shaktyavesha","ЧЧ Мадхья 20.367"),("nama/smysl","ЧЧ Мадхья 17.133"),("rupa/pastushok","ШБ 10.21.5"),("rupa/pastushok","ШБ 10.21.9"),("rupa/prekrasnyy","ЧЧ Мадхья 8.287"),("rupa/bozhestva","ШБ 11.27.12"),("guna/g64","ЧЧ Мадхья 15.138"),("guna/g64","ШБ 10.14.3"),("guna/shad-aishvarya","ЧЧ Мадхья 21.110"),("parikara/obzor","ШБ 9.4.68"),("parikara/obzor","ШБ 10.14.3"),("parikara/shanta","ШБ 10.13.59"),("parikara/shanta","ШБ 10.21.15-16"),("parikara/dasya","ШБ 9.4.63"),("parikara/vatsalya","ШБ 10.9.13-14"),("parikara/vatsalya","ШБ 10.9.12"),("parikara/vatsalya","ШБ 10.8.37-39"),("parikara/madhurya","ЧЧ Мадхья 21.119"),("parikara/madhurya","ЧЧ Мадхья 8.194"),("parikara/madhurya","ШБ 10.31.9"),("lila/vraja","ШБ 10.14.34"),("lila/vraja","ШБ 10.13.30"),("lila/vraja","ШБ 10.25.19-23"),("lila/classic-episodes","ШБ 10.8.37-39"),("lila/classic-episodes","ШБ 10.16.30"),("lila/kurukshetra","БГ 11.54"),("dhama/mathura-gokula","Упадешамрита 11"),("dhama/radha-kunda","Упадешамрита 11")}
+          PROSE_REFS={("tattva/svayam","ЧЧ Мадхья 8.250"),("nama/epithets","БГ 10.8"),("rupa/bozhestva","ШБ 11.27.22"),("guna/g64","ШБ 10.14.8"),("parikara/madhurya","ЧЧ Мадхья 8.83")}
           def to_id(to):
               if not to: return None
               p=[x for x in to.strip('/').split('/') if x]
@@ -94,7 +96,8 @@ jobs:
                 keep=[]
                 for q in qs:
                     by=q.get("by","")
-                    if by in COMMENTARY:
+                    loc=f"{tab['id']}/{sub['id']}"; ref=q.get("ref","")
+                    if by in COMMENTARY or (loc,ref) in PROSE_REFS:
                         txt=clean_prose(q.get("t",""))
                         if txt:
                             s.setdefault("p",[]).append(txt); st["prose"]+=1
@@ -108,10 +111,9 @@ jobs:
                         st["unverif"]+=1; keep.append(q); continue
                     joined=" ".join(dmap[v]["tn"] for v in use).strip()
                     sim=difflib.SequenceMatcher(None,norm(q.get("t","")),norm(joined)).ratio()
-                    loc=f"{tab['id']}/{sub['id']}"
                     stems=lambda s:[w[:5] for w in re.findall(r'[а-яё]{4,}',(s or '').lower())]
                     ss=difflib.SequenceMatcher(None," ".join(sorted(stems(q.get("t","")))), " ".join(sorted(stems(joined)))).ratio()
-                    do=(loc=="nama/shikshashtaka") or (sim>=GATE) or (ss>=0.45)
+                    do=(loc=="nama/shikshashtaka") or (sim>=GATE) or (ss>=0.45) or ((loc,ref) in FORCE)
                     if do:
                         nt=joined.replace('«','„').replace('»','\u201c')
                         q["t"]="«"+nt+"»"
