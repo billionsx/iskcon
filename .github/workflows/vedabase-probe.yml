@@ -2,19 +2,18 @@ name: vedabase probe (диагностика структуры книги)
 on:
   workflow_dispatch:
     inputs:
-      verses:
-        default: "2,3,4,6,7,8"
+      mode:
+        default: "all"
 permissions:
   contents: read
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
-      - name: Deva scrape
+      - name: Deva full rescrape
         env:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          VERSES: ${{ github.event.inputs.verses }}
         run: |
           python3 - <<'PY'
           import os, re, json, time, urllib.request
@@ -22,7 +21,6 @@ jobs:
           CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
-          verses=[int(x) for x in os.environ["VERSES"].split(",") if x.strip()]
           def get(url):
               try:
                   with urllib.request.urlopen(urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"ru"}), timeout=30) as r:
@@ -38,24 +36,23 @@ jobs:
                   except Exception: time.sleep(2)
           def vis(html):
               t=re.sub(r"<(script|style)[^>]*>.*?</\1>"," ", html, flags=re.S|re.I)
-              t=re.sub(r"<[^>]+>"," ", t); t=H.unescape(t); return re.sub(r"[ \t]+"," ",t)
-          rep=[]
-          for n in verses:
+              t=re.sub(r"<[^>]+>"," ", t); t=H.unescape(t); return t
+          changed=0; thin=[]
+          for n in range(1,63):
               st,html=get(f"https://gitabase.com/rus/BS/5/{n}")
-              if st!=200: rep.append(f"{n}:HTTP{st}"); continue
+              if st!=200: thin.append(f"{n}:HTTP{st}"); continue
               v=vis(html)
               i=v.find("След. >>")
               tail=v[i+8:] if i>=0 else v
+              # самый длинный деванагари-ран (включая \n/пробелы/запятые/пайпы/данды)
               runs=re.findall(r'[\u0900-\u097F][\u0900-\u097F\s.,|॥।ॐ–-]*', tail)
               dev=max(runs, key=len) if runs else ""
               dev=re.sub(r'\s+',' ',dev).strip()
-              dev=re.sub(r'\s*\|\s*','|',dev) if False else dev
-              if not dev or len(re.findall(r'[\u0900-\u097F]',dev))<10:
-                  rep.append(f"{n}:THIN"); continue
+              if len(re.findall(r'[\u0900-\u097F]',dev))<10:
+                  thin.append(f"{n}:THIN"); continue
               d1("UPDATE verses SET devanagari=? WHERE id=?", params=[dev, f"bs.5.{n}"])
-              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsdeva 5."+str(n)+"',"+str(n)+",?)", params=[dev[:400]])
-              rep.append(f"{n}:OK({len(dev)})")
-              time.sleep(0.15)
-          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsdeva DONE',0,?)", params=[str(rep)])
-          print(rep)
+              changed+=1
+              time.sleep(0.1)
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsdeva-all DONE',"+str(changed)+",?)", params=["changed="+str(changed)+" thin="+str(thin)[:300]])
+          print("changed",changed,"thin",thin)
           PY
