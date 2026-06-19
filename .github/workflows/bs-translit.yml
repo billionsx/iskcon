@@ -1,0 +1,60 @@
+name: bs translit (IAST->кириллица BBT, обновление verses.translit)
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  conv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Convert and update
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import os, re, json, urllib.request, time
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql):
+              for _ in range(4):
+                  try:
+                      r=urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                        headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60)
+                      return json.loads(r.read().decode())
+                  except Exception as e: time.sleep(2); last=e
+              raise last
+          def Q(v): return "'"+str(v).replace("'","''")+"'"
+          PAIRS=[("kṣ","кш"),("jñā","гья"),("jñ","гь"),("jj","ддж"),
+           ("kh","кх"),("gh","гх"),("ch","чх"),("jh","джх"),("ṭh","тх"),("ḍh","дх"),
+           ("th","тх"),("dh","дх"),("ph","пх"),("bh","бх"),("ai","ай"),("au","ау"),
+           ("ā","а"),("ī","и"),("ū","у"),("ṛ","ри"),("ṝ","ри"),("ḷ","л"),("ḹ","л"),
+           ("ṅ","н"),("ñ","н"),("ṇ","н"),("ṭ","т"),("ḍ","д"),("ś","ш"),("ṣ","ш"),
+           ("ṁ","м"),("ṃ","м"),("ḥ","х"),
+           ("a","а"),("b","б"),("c","ч"),("d","д"),("e","е"),("g","г"),("h","х"),
+           ("i","и"),("j","дж"),("k","к"),("l","л"),("m","м"),("n","н"),("o","о"),
+           ("p","п"),("r","р"),("s","с"),("t","т"),("u","у"),("v","в"),("y","й")]
+          def preprocess(iast):
+              lines=[]
+              for ln in iast.split("\n"):
+                  if re.search(r'[\u0900-\u097F]', ln): continue
+                  if " - " in ln: continue
+                  if ln.strip(): lines.append(ln.strip())
+              s=" ".join(lines); s=re.sub(r"\s+"," ",s).strip()
+              s=s.replace("- "," "); s=re.sub(r"-\s*$","",s); return s
+          def convert(iast):
+              s=preprocess(iast).lower().replace("'","").replace("’","")
+              for a,b in PAIRS: s=s.replace(a,b)
+              return re.sub(r"\s+"," ",s).strip()
+          rows=d1("SELECT http_code AS n, body AS iast FROM deploy_checks WHERE target LIKE 'bsiast 5.%'")["result"][0]["results"]
+          seen=set(); upd=0
+          for r in rows:
+              n=r["n"]
+              if n in seen: continue
+              seen.add(n)
+              cyr=convert(r["iast"])
+              if not cyr: continue
+              d1(f"UPDATE verses SET translit={Q(cyr)} WHERE id='bs.5.{n}'"); upd+=1
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bs-translit DONE',"+str(upd)+",'updated='||"+str(upd)+")")
+          print("updated translit:", upd)
+          PY
