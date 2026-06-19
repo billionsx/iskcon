@@ -1368,12 +1368,12 @@ export default {
       // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
       // Строгий проход (все слова, префикс на последнем). Если совпадений мало —
       // расширяем до OR-префикса (recall при опечатке/частичном вводе), дедуп.
-      type VRow = { id: string; work_id: string; ref: string; snippet: string | null };
+      type VRow = { id: string; work_id: string; ref: string; trans: string | null; hl: string | null };
       // Канонические писания (БГ/ШБ/ЧЧ/…) — выше прозаических книг-цитат (НПК, ЕОШ,
       // МЦК, ПС, ПЛ…), где один и тот же стих процитирован десятки раз. Берём с запасом
       // (24) и схлопываем одинаковые тексты — в выдаче остаются разные стихи.
       const PROSE = "('owk','sc','lob','tqk','pop','spl','rv','bbd','poy')";
-      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS snippet
+      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS trans, snippet(verse_fts, 1, '', '', '…', 12) AS hl
              FROM verse_fts f JOIN verses v ON v.id=f.verse_id LEFT JOIN verse_texts vt ON vt.verse_id=v.id
              WHERE verse_fts MATCH ?1
              ORDER BY (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END), rank LIMIT 60`;
@@ -1397,7 +1397,7 @@ export default {
         const seenTxt = new Set<string>();
         const uniq: VRow[] = [];
         for (const r of verseRows) {
-          const key = (r.snippet ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().slice(0, 120);
+          const key = (r.trans ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().slice(0, 120);
           if (key && seenTxt.has(key)) continue;
           if (key) seenTxt.add(key);
           uniq.push(r);
@@ -1445,6 +1445,7 @@ export default {
       // стих/глава → URL: id без префикса работы, точки → слэши (bg.4.9 → /book/bg/4/9).
       const tail = (id: string, work: string) =>
         (id.startsWith(work + ".") ? id.slice(work.length + 1) : id).replace(/\./g, "/");
+      const oneLine = (s: string) => s.replace(/\s+/g, " ").trim();
 
       return noStore(json({
         q,
@@ -1454,7 +1455,9 @@ export default {
           const full = WORK_TITLES[r.work_id];
           const sp = (r.ref || "").indexOf(" ");
           const loc = sp > 0 ? (r.ref || "").slice(sp + 1) : (r.ref || "");
-          return { book: full ?? (r.ref || ""), ref: full ? loc : "", work: r.work_id, snippet: r.snippet ?? "", href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` };
+          const hl = r.hl ? oneLine(r.hl) : "";
+          const snippet = hl || (r.trans ?? "");
+          return { book: full ?? (r.ref || ""), ref: full ? loc : "", work: r.work_id, snippet, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` };
         }),
         chapters: (chapters.results ?? []).map((r) => ({ title: r.title, work: r.work_id, level: r.level, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
         prayers: (prayers.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, href: r.slug })),
