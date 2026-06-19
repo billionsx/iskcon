@@ -1,0 +1,143 @@
+name: pkl fix (выверка цитат ПКЛ по эталону D1)
+on:
+  workflow_dispatch:
+    inputs:
+      sim_gate: { default: "0.5" }
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Fix
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GATE: ${{ github.event.inputs.sim_gate }}
+        run: |
+          python3 - <<'PY'
+          import csv, json, re, os, urllib.request, time, difflib
+          csv.field_size_limit(10_000_000)
+          GATE=float(os.environ.get("GATE") or "0.5")
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          def d1(sql, params=None):
+              b={"sql":sql}
+              if params is not None: b["params"]=params
+              for _ in range(5):
+                  try:
+                      r=urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps(b).encode(),
+                        headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60)
+                      return json.loads(r.read().decode())
+                  except Exception: time.sleep(2)
+              raise SystemExit("d1 fail")
+          CSVP="docs/entity-registry/profiles_longform.csv"
+          raw=open(CSVP,encoding="utf-8").read()
+          rows={r[0]:r[1] for r in csv.reader(open(CSVP,encoding="utf-8"))}
+          dos=json.loads(rows["krishna"])
+          COMMENTARY={"из комментария Шрилы Прабхупады","из наставлений Шрилы Прабхупады","по «Чайтанья-чаритамрите» (Рамананда-самвада)"}
+          def to_id(to):
+              if not to: return None
+              p=[x for x in to.strip('/').split('/') if x]
+              if p and p[0]=='book': p=p[1:]
+              return '.'.join(p) if p else None
+          def ref_to_id(ref):
+              ref=ref or ""
+              m=re.match(r'ЧЧ\s+Антья\s+([\d.]+)$', ref)
+              if m: return 'cc.antya.'+m.group(1)
+              m=re.match(r'Упадешамрита\s+(\d+)$', ref)
+              if m: return 'noi.'+m.group(1)
+              return None
+          def candidates(idv):
+              m=re.match(r'(.*\.)(\d+)-(\d+)$', idv)
+              if not m: return [idv]
+              pre,a,b=m.group(1),int(m.group(2)),int(m.group(3))
+              comps=[pre+str(n) for n in range(a,b+1)] if 0<b-a<=12 else []
+              return [idv]+comps
+          def norm(s):
+              s=(s or "").replace('«','').replace('»','').replace('„','').replace('"','').replace('\u00ad','')
+              return re.sub(r'\s+',' ',s).strip().lower()
+          def clean_prose(t):
+              t=(t or "").strip()
+              for a,b in [("«","»"),("„","\u201c"),("„","\""),("\u201c","\u201d")]:
+                  if t.startswith(a) and t.endswith(b): t=t[1:-1].strip()
+              return t
+          # собрать нужные id
+          need=set()
+          for tab in dos["tabs"]:
+            for sub in tab.get("subtabs",[]):
+              for s in sub.get("sections",[]):
+                qs=list(s.get("quotes") or [])+([s["quote"]] if s.get("quote") else [])
+                for q in qs:
+                    if q.get("by") in COMMENTARY: continue
+                    idv=to_id(q.get("to")) or ref_to_id(q.get("ref"))
+                    if idv:
+                        for v in candidates(idv): need.add(v)
+          need=list(need); dmap={}
+          for k in range(0,len(need),60):
+              ch=need[k:k+60]; inl=",".join("'"+x.replace("'","''")+"'" for x in ch)
+              res=d1(f"SELECT v.id, v.translit AS tr, x.translation AS tn FROM verses v LEFT JOIN verse_texts x ON x.verse_id=v.id WHERE v.id IN ({inl})")
+              for r in res["result"][0]["results"]:
+                  dmap[r["id"]]={"tn":r.get("tn") or "","tr":r.get("tr") or ""}
+          st={"replaced":0,"prose":0,"lowsim":0,"unverif":0,"already":0}
+          lowlist=[]
+          for tab in dos["tabs"]:
+            for sub in tab.get("subtabs",[]):
+              for s in sub.get("sections",[]):
+                if isinstance(s.get("p"),str): s["p"]=[s["p"]]
+                qs=list(s.get("quotes") or [])
+                if s.get("quote"): qs=[s["quote"]]+qs; s.pop("quote",None)
+                keep=[]
+                for q in qs:
+                    by=q.get("by","")
+                    if by in COMMENTARY:
+                        txt=clean_prose(q.get("t",""))
+                        if txt:
+                            s.setdefault("p",[]).append(txt); st["prose"]+=1
+                        continue
+                    idv=to_id(q.get("to")) or ref_to_id(q.get("ref"))
+                    cand=candidates(idv) if idv else []
+                    use=[]
+                    if idv and idv in dmap and dmap[idv]["tn"]: use=[idv]
+                    else: use=[v for v in cand if v!=idv and dmap.get(v,{}).get("tn")]
+                    if not use:
+                        st["unverif"]+=1; keep.append(q); continue
+                    joined=" ".join(dmap[v]["tn"] for v in use).strip()
+                    sim=difflib.SequenceMatcher(None,norm(q.get("t","")),norm(joined)).ratio()
+                    if sim>=GATE:
+                        nt=joined.replace('«','„').replace('»','\u201c')
+                        q["t"]="«"+nt+"»"
+                        if q.get("translit"):
+                            jtr=" ".join(dmap[v]["tr"] for v in use if dmap[v]["tr"]).strip()
+                            if jtr: q["translit"]=jtr
+                        if not q.get("to"):
+                            q["to"]="/book/"+re.sub(r'-\d+$','',use[0]).replace(".","/")
+                        st["replaced"]+=1
+                    else:
+                        st["lowsim"]+=1; lowlist.append(f"{tab['id']}/{sub['id']} {q.get('ref')} sim={round(sim,2)}")
+                    keep.append(q)
+                if keep: s["quotes"]=keep
+                elif "quotes" in s: del s["quotes"]
+          newjs=json.dumps(dos,ensure_ascii=False,separators=(', ',': '))
+          # обновить D1 напрямую
+          d1("UPDATE entity_profiles SET longform=?, updated_at=datetime('now') WHERE entity_id='krishna'", params=[newjs])
+          # переписать CSV (только строку krishna, остальные байт-в-байт)
+          m=re.search(r'(?m)^krishna,',raw); start=m.start(); le=raw.find("\r\n",start)
+          line=raw[start:le]; assert line.startswith('krishna,"') and line.endswith('"')
+          newline='krishna,"'+newjs.replace('"','""')+'"'
+          raw2=raw[:start]+newline+raw[le:]
+          assert raw2.count("\r\n")==raw.count("\r\n")
+          open(CSVP,"w",encoding="utf-8",newline="").write(raw2)
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'pkl-fix DONE',"+str(st['replaced'])+",?)", params=[str(st)+" | low:"+"; ".join(lowlist)[:1400]])
+          print(st); print("LOWSIM:", lowlist)
+          PY
+      - name: Commit CSV
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add docs/entity-registry/profiles_longform.csv
+          git commit -m "ПКЛ Кришны: выверка цитат по эталону D1 — дословные переводы, пересказы-комментарии в прозу [skip ci]" || echo nochange
+          for i in 1 2 3 4 5; do git push origin HEAD:main && break || { git fetch origin main; GIT_EDITOR=true git rebase origin/main || true; }; done
