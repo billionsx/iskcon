@@ -1355,7 +1355,7 @@ export default {
     // компактным таблицам. Каждая группа лимитирована; запросы — последовательно.
     if (url.pathname === "/api/search") {
       const q = (url.searchParams.get("q") || "").trim();
-      const empty = { q, exact: null, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
+      const empty = { q, exact: null, personalities: [], places: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
       if (q.length < 2) return noStore(json(empty));
       const g = ciGlob(q);
       const gPrefix = ciGlobPrefix(q);
@@ -1385,28 +1385,29 @@ export default {
         }
       }
 
-      // 1) Личности — по именам и псевдонимам (точно, без флуда описаниями).
-      // Ранжирование: личности раньше писаний/мест; затем «ядро» имени (без гоноративов
-      // Шри/Шримати/Господь…) — точное совпадение с запросом, затем префикс, затем
-      // подстрока в каноническом имени; короче ядро — выше; алфавит — стабилизатор.
-      const people = await env.DB.prepare(
-        `SELECT id, type, name_ru, name_iast FROM (
-           SELECT e.id AS id, e.type AS type,
-             (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
-             (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast,
-             trim(replace(replace(replace(replace(replace(replace(
-               (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1),
-               'Шри Шримати ',''),'Шри Шри ',''),'Шримати ',''),'Шрила ',''),'Господь ',''),'Шри ','')) AS core
-           FROM entities e
-           WHERE EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
-         )
-         ORDER BY (type='personality') DESC,
-           (core GLOB ?3) DESC,
-           (core GLOB ?2) DESC,
-           (name_ru GLOB ?1) DESC,
-           length(core), (name_ru IS NULL), name_ru
-         LIMIT 30`,
-      ).bind(g, gPrefix, gExact).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+      // 1) Личности и святые места — по именам и псевдонимам (точно, без флуда описаниями).
+      // Поиск по сущностям разбит по типу: личности и места (дхамы/тиртхи) — отдельные
+      // разделы; сущности-писания исключены (крупные находятся через «Книги», мелкие —
+      // справочные стабы). Ранжирование внутри типа: «ядро» имени без гоноративов
+      // (Шри/Шримати/Шрила/Господь) — точное совпадение → префикс → подстрока; короче
+      // ядро — выше; алфавит — стабилизатор.
+      const runEntities = (etype: string, lim: number) =>
+        env.DB.prepare(
+          `SELECT id, type, name_ru, name_iast FROM (
+             SELECT e.id AS id, e.type AS type,
+               (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
+               (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast,
+               trim(replace(replace(replace(replace(replace(replace(
+                 (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1),
+                 'Шри Шримати ',''),'Шри Шри ',''),'Шримати ',''),'Шрила ',''),'Господь ',''),'Шри ','')) AS core
+             FROM entities e
+             WHERE e.type=?4 AND EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
+           )
+           ORDER BY (core GLOB ?3) DESC, (core GLOB ?2) DESC, (name_ru GLOB ?1) DESC, length(core), (name_ru IS NULL), name_ru
+           LIMIT ${lim}`,
+        ).bind(g, gPrefix, gExact, etype).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+      const people = await runEntities("personality", 30);
+      const places = await runEntities("place", 20);
 
       // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
       // Строгий проход (все слова, префикс на последнем). Если совпадений мало —
@@ -1497,6 +1498,7 @@ export default {
         q,
         exact,
         personalities: (people.results ?? []).map((r) => ({ id: r.id, type: r.type ?? null, name_ru: r.name_ru, name_iast: r.name_iast })),
+        places: (places.results ?? []).map((r) => ({ id: r.id, type: r.type ?? null, name_ru: r.name_ru, name_iast: r.name_iast })),
         verses: (verses.results ?? []).map((r) => {
           const full = WORK_TITLES[r.work_id];
           const sp = (r.ref || "").indexOf(" ");
