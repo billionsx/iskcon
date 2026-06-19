@@ -302,7 +302,7 @@ function renderProse(text: string, onSub?: (id: string) => void): ReactNode {
     if (m.index > last) out.push(<Fragment key={"t" + k}>{renderSanskrit(text.slice(last, m.index))}</Fragment>);
     const id = m[1], label = m[2];
     out.push(
-      <button key={"l" + k} type="button" onClick={() => onSub(id)} style={{ background: "none", border: "none", padding: 0, font: "inherit", color: "var(--color-label)", cursor: "pointer", textDecoration: "underline", textDecorationColor: "var(--color-label-3)", textUnderlineOffset: "2px" }}>{label}</button>
+      <button key={"l" + k} type="button" onClick={() => onSub(id)} style={{ background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "inherit", cursor: "pointer", lineHeight: "inherit" }}><i className="skt">{label}</i></button>
     );
     last = m.index + m[0].length; k++;
   }
