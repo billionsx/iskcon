@@ -19,10 +19,10 @@ type Center = { name: string; city: string | null; href: string };
 type ExactHit = { kind: "verse" | "chapter"; book: string; ref?: string; snippet?: string; title?: string; level?: string | null; href: string };
 type Results = {
   exact?: ExactHit | null;
-  personalities: Person[]; verses: Verse[]; chapters: Chapter[];
+  personalities: Person[]; places: Person[]; verses: Verse[]; chapters: Chapter[];
   prayers: Page[]; pages: Page[]; centers: Center[];
 };
-const EMPTY: Results = { exact: null, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
+const EMPTY: Results = { exact: null, personalities: [], places: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
 
 const LEVEL_LABEL: Record<string, string> = { chapter: "глава", canto: "песнь", lila: "лила", part: "часть", section: "раздел" };
 function workLabel(work: string): string {
@@ -162,9 +162,9 @@ function Section({ title, count, children }: { title: string; count?: number; ch
   );
 }
 
-const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", centers: "Центры", pages: "Страницы" } as const;
+const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", places: "Святые места", centers: "Центры", pages: "Страницы" } as const;
 type GroupKey = keyof typeof GROUP_LABEL;
-const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "centers", "pages"];
+const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "places", "centers", "pages"];
 
 function Chip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
   return (
@@ -245,7 +245,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
 
   const counts: Record<GroupKey, number> = {
     people: r.personalities.length, books: bookHits.length, verses: r.verses.length,
-    chapters: r.chapters.length, prayers: r.prayers.length, centers: r.centers.length, pages: r.pages.length,
+    chapters: r.chapters.length, prayers: r.prayers.length, places: r.places.length, centers: r.centers.length, pages: r.pages.length,
   };
   const present = GROUP_ORDER.filter((k) => counts[k] > 0);
   const total = present.reduce((s, k) => s + counts[k], 0);
@@ -271,6 +271,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   pushGroup("verses", r.verses, (_v, i) => "v:" + i, (v) => goNav(v.href));
   pushGroup("chapters", r.chapters, (_c, i) => "c:" + i, (c) => goNav(c.href));
   pushGroup("prayers", r.prayers, (_p, i) => "pr:" + i, (p) => goNav(p.href));
+  pushGroup("places", r.places, (p) => "pl:" + p.id, (p) => goEntity(p.id, p.type));
   pushGroup("centers", r.centers, (_c, i) => "ce:" + i, (c) => goNav(c.href));
   pushGroup("pages", r.pages, (_p, i) => "pg:" + i, (p) => goNav(p.href));
   const activeId = active >= 0 && active < navItems.length ? navItems[active].id : null;
@@ -385,6 +386,15 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
               <Row key={"pr" + i + p.href} active={activeId === "pr:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.snippet || p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
             {activeFilter === "all" && counts.prayers > PREVIEW && <MoreLink n={counts.prayers} active={activeId === "more:prayers"} onTap={() => setFilter("prayers")} />}
+          </Section>
+        )}
+
+        {show("places") && (
+          <Section title="Святые места" count={counts.places}>
+            {r.places.slice(0, vis("places")).map((p) => (
+              <Row key={"pl" + p.id} active={activeId === "pl:" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => goEntity(p.id, p.type)} />
+            ))}
+            {activeFilter === "all" && counts.places > PREVIEW && <MoreLink n={counts.places} active={activeId === "more:places"} onTap={() => setFilter("places")} />}
           </Section>
         )}
 
