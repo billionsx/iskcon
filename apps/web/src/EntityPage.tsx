@@ -200,7 +200,7 @@ type LfSee = { id: string; t: string };
 type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
-type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string };
+type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
 type HierTier = { abode: string; beings: string; note?: string; count?: string; countNote?: string; apex?: boolean };
 type HierGroup = { realm: string; tiers: HierTier[] };
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[] };
@@ -373,7 +373,7 @@ function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSourc
 // Золотая граница объединяет транслитерацию и перевод в один стих.
 function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
   return (
-    <blockquote style={{ margin: "20px 0 0", padding: "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, whiteSpace: "pre-line" }}>
+    <blockquote style={{ margin: "20px 0 0", padding: q.gold ? "14px 18px 14px 18px" : "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, borderRadius: q.gold ? 12 : 0, background: q.gold ? "rgba(210,170,27,0.07)" : "transparent", whiteSpace: "pre-line" }}>
       {q.translit && (
         <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, lineHeight: 1.5, letterSpacing: "0.01em", color: "var(--color-label-2)", marginBottom: 10 }}>
           {stripWrap(q.translit)}
