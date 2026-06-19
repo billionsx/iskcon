@@ -788,12 +788,18 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const subAnchorRef = useRef<HTMLDivElement>(null);
   const tabContentRef = useRef<HTMLDivElement>(null);
   const scrollToAnchor = (ref: React.RefObject<HTMLDivElement>, stickyTop: number) => {
-    requestAnimationFrame(() => {
+    // Двойной rAF: ждём и коммита React, и раскладки нового (часто более
+    // короткого) контента. Иначе плавный скролл стартует к верху, а посреди
+    // анимации страница схлопывается по высоте — браузер клампит позицию и
+    // бросает у низа. Прыжок мгновенный (behavior:auto): раздел всегда
+    // открывается с начала экрана, под липкими вкладками.
+    const run = () => {
       const el = ref.current;
       if (!el) return;
       const top = el.getBoundingClientRect().top + window.pageYOffset - stickyTop + 1;
-      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
-    });
+      window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+    };
+    requestAnimationFrame(() => requestAnimationFrame(run));
   };
   const handleRealmChange = (v: "material" | "spiritual") => {
     setRealm(v);
