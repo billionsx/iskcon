@@ -1,0 +1,200 @@
+name: BS ingest (Брахма-самхита · vedabase → D1)
+
+# Тянет «Брахма-самхиту» (vedabase slug bs) в D1 послойно и идемпотентно.
+# Структура: work bs (verse_scheme=mantra), division главы bs.<ch> (level=chapter),
+# verse id = bs.<ch>.<seg> (он же deep-link), ref = «Брахма-самхита <ch>.<seg>».
+# Сам обнаруживает главы на /ru/library/bs/ и сегменты на странице главы — как sb-ingest.
+# mode=probe — только структура (без записи), mode=all — полный ингест.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "probe | all"
+        default: "all"
+      force:
+        description: "перезаливать уже залитые главы (true/false)"
+        default: "false"
+      workers:
+        description: "Параллельных загрузок стихов"
+        default: "12"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bs-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deps
+        run: pip install --quiet beautifulsoup4 lxml
+      - name: Ingest BS from vedabase into D1
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          MODE: ${{ github.event.inputs.mode }}
+          FORCE: ${{ github.event.inputs.force }}
+          WORKERS: ${{ github.event.inputs.workers }}
+        run: |
+          python3 - <<'PY'
+          import os, re, json, time, random, urllib.request
+          from concurrent.futures import ThreadPoolExecutor
+          from bs4 import BeautifulSoup
+
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+          BASE="https://vedabase.io/ru/library/bs"
+          MODE=(os.environ.get("MODE") or "all").strip()
+          FORCE=(os.environ.get("FORCE","").strip().lower() in ("1","true","yes","on"))
+          WORKERS=max(1,int(os.environ.get("WORKERS") or "12"))
+
+          def get(url, tries=4):
+              for t in range(tries):
+                  try:
+                      rq=urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"ru,en;q=0.8","accept":"text/html"})
+                      with urllib.request.urlopen(rq, timeout=35) as r:
+                          if r.status==200: return r.read().decode("utf-8","replace")
+                  except Exception: pass
+                  time.sleep(1.5*(t+1)*(t+1)+random.random())
+              return ""
+          def d1(sql, tries=4):
+              last=None; body=json.dumps({"sql":sql}).encode()
+              for t in range(tries):
+                  try:
+                      rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+                      with urllib.request.urlopen(rq, timeout=90) as r:
+                          j=json.loads(r.read().decode())
+                          if j.get("success"): return j["result"]
+                          last=j
+                  except Exception as e: last=str(e)
+                  time.sleep(1.0*(t+1))
+              raise RuntimeError(f"D1 failed: {str(last)[:300]} :: {sql[:120]}")
+          def rows(sql): return d1(sql)[0]["results"]
+          def q(v):
+              if v is None: return "NULL"
+              return "'"+str(v).replace("'","''")+"'"
+
+          def block_text(el, para=False):
+              for br in el.find_all("br"): br.replace_with("\n")
+              if para:
+                  for p in el.find_all("p"): p.insert_before("\n\n")
+              return el.get_text()
+          def lines(s):
+              out=[re.sub(r"[ \t]+"," ",x).strip() for x in s.split("\n")]
+              s="\n".join(out); s=re.sub(r"\n{3,}","\n\n",s); return s.strip()
+          def flat(s): return re.sub(r"\s+"," ",s).strip()
+          def grab(soup, sel, para=False):
+              els=soup.select(sel)
+              return "\n".join(block_text(e, para) for e in els) if els else ""
+          def parse_tokens(syn):
+              if not syn: return []
+              out=[]
+              for piece in syn.split(";"):
+                  parts=re.split(r"\s+[—–-]\s+", piece)
+                  term=(parts[0] or "").strip()
+                  gloss=" — ".join(parts[1:]).strip() if len(parts)>1 else ""
+                  if term: out.append((term, gloss or None))
+              return out
+          def parse_verse(html):
+              soup=BeautifulSoup(html,"lxml")
+              return {
+                  "deva": lines(grab(soup,".av-devanagari")) or None,
+                  "translit": lines(grab(soup,".av-verse_text")) or None,
+                  "tr": flat(grab(soup,".av-translation")) or None,
+                  "pur": lines(grab(soup,".av-purport", para=True)) or None,
+                  "tokens": parse_tokens(flat(grab(soup,".av-synonyms"))),
+              }
+
+          # обнаружить главы на индексе bs
+          idx=get(BASE+"/")
+          chapters=sorted({int(m.group(1)) for m in re.finditer(r"/ru/library/bs/(\d+)/", idx)})
+          if not chapters: chapters=[5]   # у Брахма-самхиты опубликована глава 5
+          print("chapters:", chapters)
+
+          def chapter_segs(ch):
+              html=get(f"{BASE}/{ch}/")
+              segs=[]; seen=set()
+              for m in re.finditer(rf"/ru/library/bs/{ch}/([0-9]+(?:-[0-9]+)?)/", html):
+                  s=m.group(1)
+                  if s not in seen: seen.add(s); segs.append(s)
+              return segs
+
+          probe={ch: chapter_segs(ch) for ch in chapters}
+          print("segs per chapter:", {k:len(v) for k,v in probe.items()})
+          if MODE=="probe":
+              print("PROBE", json.dumps({k:v for k,v in probe.items()}, ensure_ascii=False)); raise SystemExit(0)
+
+          d1("INSERT INTO works (id,kind,abbrev,verse_scheme) VALUES ('bs','scripture','BS','chapter.verse') "
+             "ON CONFLICT(id) DO UPDATE SET verse_scheme='chapter.verse'")
+          d1("INSERT INTO editions (id,work_id,lang,title,translator,source,license,source_url) "
+             "VALUES ('bs-ru','bs','ru','Брахма-самхита','А.Ч. Бхактиведанта Свами Прабхупада',"
+             "'vedabase.io','public','https://vedabase.io/ru/library/bs/') ON CONFLICT(id) DO NOTHING")
+
+          def flush(stmts):
+              B=[]; size=0
+              for st in stmts:
+                  st=st.strip().rstrip(";")
+                  if B and (len(B)>=30 or size>55000): d1(";".join(B)+";"); B=[]; size=0
+                  B.append(st); size+=len(st)
+              if B: d1(";".join(B)+";")
+
+          ordc=0; total=0
+          for ch in chapters:
+              segs=probe[ch]
+              if not segs: continue
+              chid=f"bs.{ch}"; ordc+=1
+              d1("INSERT INTO divisions (id,work_id,parent_id,level,number,title,ordinal) VALUES "
+                 f"({q(chid)},'bs',NULL,'chapter',{q(str(ch))},{q(json.dumps({'ru':f'Глава {ch}'},ensure_ascii=False))},{ordc}) "
+                 "ON CONFLICT(id) DO UPDATE SET ordinal=excluded.ordinal")
+              if not FORCE:
+                  have=rows(f"SELECT COUNT(*) AS n FROM verses WHERE division_id='{chid}'")[0]["n"]
+                  if have and have>=len(segs):
+                      print("SKIP ch",ch,"have",have); continue
+              def _one(arg):
+                  i,seg=arg; url=f"{BASE}/{ch}/{seg}/"; h=get(url)
+                  if not h: return (seg,None)
+                  v=parse_verse(h); v["seg"]=seg; v["ordinal"]=i; v["url"]=url
+                  if not (v["deva"] or v["translit"] or v["tr"]): return (seg,None)
+                  return (seg,v)
+              verses=[]
+              with ThreadPoolExecutor(max_workers=WORKERS) as ex:
+                  for seg,v in ex.map(_one, list(enumerate(segs,1))):
+                      if v is not None: verses.append(v)
+              verses.sort(key=lambda x:x["ordinal"])
+              stmts=[]
+              for v in verses:
+                  vid=f"bs.{ch}.{v['seg']}"; ref=f"Брахма-самхита {ch}.{v['seg']}"
+                  stmts.append("INSERT INTO verses (id,work_id,division_id,ref,ordinal,devanagari,translit,source_url) VALUES "
+                      f"({q(vid)},'bs',{q(chid)},{q(ref)},{v['ordinal']},{q(v['deva'])},{q(v['translit'])},{q(v['url'])}) "
+                      "ON CONFLICT(id) DO UPDATE SET devanagari=COALESCE(excluded.devanagari,verses.devanagari),"
+                      "translit=COALESCE(excluded.translit,verses.translit),ref=excluded.ref,ordinal=excluded.ordinal")
+              for v in verses:
+                  if v["tr"] or v["pur"]:
+                      vid=f"bs.{ch}.{v['seg']}"
+                      stmts.append("INSERT INTO verse_texts (verse_id,edition_id,translation,purport) VALUES "
+                          f"({q(vid)},'bs-ru',{q(v['tr'])},{q(v['pur'])}) "
+                          "ON CONFLICT(verse_id,edition_id) DO UPDATE SET translation=COALESCE(excluded.translation,verse_texts.translation),"
+                          "purport=COALESCE(excluded.purport,verse_texts.purport)")
+              for v in verses:
+                  if v["tokens"]:
+                      vid=f"bs.{ch}.{v['seg']}"
+                      stmts.append(f"DELETE FROM verse_tokens WHERE verse_id={q(vid)}")
+                      for k,(term,gloss) in enumerate(v["tokens"],1):
+                          stmts.append(f"INSERT INTO verse_tokens (verse_id,ordinal,term,gloss) VALUES ({q(vid)},{k},{q(term)},{q(gloss)})")
+              flush(stmts); total+=len(verses)
+              print("CH",ch,"written",len(verses))
+              time.sleep(0.3)
+
+          vr=rows("SELECT COUNT(*) AS verses, SUM(CASE WHEN length(COALESCE(translit,''))>0 THEN 1 ELSE 0 END) AS translit FROM verses WHERE work_id='bs'")[0]
+          tx=rows("SELECT COUNT(*) AS n FROM verse_texts x JOIN verses v ON v.id=x.verse_id WHERE v.work_id='bs' AND length(COALESCE(x.translation,''))>0")[0]
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bs ingest',"
+             +q(str(total))+","+q(f"verses={vr.get('verses')} tr={tx.get('n')}")+")")
+          print("RESULT verses=",vr.get("verses"),"translit=",vr.get("translit"),"with_translation=",tx.get("n"))
+          if not vr.get("verses"): raise SystemExit("FAIL: no BS verses after run")
+          PY
