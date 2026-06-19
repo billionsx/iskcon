@@ -128,7 +128,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
     setLoading(true);
     const id = ++seq.current;
     timer.current = setTimeout(() => {
-      fetch(api(`/search?q=${encodeURIComponent(query)}`))
+      fetch(api(`/search?q=${encodeURIComponent(query)}`), { cache: "no-store" })
         .then((r) => r.json())
         .then((d) => { if (id === seq.current) { setRes({ ...EMPTY, ...d }); setLoading(false); } })
         .catch(() => { if (id === seq.current) { setRes(EMPTY); setLoading(false); } });

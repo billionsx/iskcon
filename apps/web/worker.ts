@@ -50,6 +50,15 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+// Запрет кэширования (браузер + край Cloudflare) — для динамики вроде поиска,
+// чтобы устаревший/пустой ответ никогда не «залипал» по URL запроса.
+function noStore(r: Response): Response {
+  r.headers.set("Cache-Control", "no-store");
+  r.headers.set("CDN-Cache-Control", "no-store");
+  r.headers.set("Cloudflare-CDN-Cache-Control", "no-store");
+  return r;
+}
+
 // Регистронезависимый GLOB-шаблон для кириллицы: SQLite LIKE не складывает регистр
 // для не-ASCII, поэтому по каждой букве строим класс [строчн.ЗАГЛ.].
 function ciGlob(q: string): string {
@@ -1262,7 +1271,7 @@ export default {
     if (url.pathname === "/api/search") {
       const q = (url.searchParams.get("q") || "").trim();
       const empty = { q, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
-      if (q.length < 2) return json(empty);
+      if (q.length < 2) return noStore(json(empty));
       const g = ciGlob(q);
       const m = ftsMatch(q);
 
@@ -1341,7 +1350,7 @@ export default {
       const tail = (id: string, work: string) =>
         (id.startsWith(work + ".") ? id.slice(work.length + 1) : id).replace(/\./g, "/");
 
-      return json({
+      return noStore(json({
         q,
         personalities: (people.results ?? []).map((r) => ({ id: r.id, type: r.type ?? null, name_ru: r.name_ru, name_iast: r.name_iast })),
         verses: (verses.results ?? []).map((r) => ({ ref: r.ref, work: r.work_id, snippet: r.snippet ?? "", href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
@@ -1349,7 +1358,7 @@ export default {
         prayers: (prayers.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, href: r.slug })),
         pages: (pages.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, type: r.type, href: r.slug })),
         centers: (centers.results ?? []).map((r) => ({ name: r.name, city: r.city ?? null, href: `/center/${r.slug}` })),
-      });
+      }));
     }
 
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
