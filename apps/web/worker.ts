@@ -1467,8 +1467,8 @@ export default {
          WHERE ci.lang='ru' AND ci.type='prayer'
            AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
                 OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
-         ORDER BY (ci.name GLOB ?1) DESC LIMIT 20`,
-      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; body: string | null }>();
+         ORDER BY (ci.name GLOB ?3) DESC, (ci.name GLOB ?2) DESC, (ci.name GLOB ?1) DESC, (ci.subtitle GLOB ?1) DESC, length(ci.name), ci.name LIMIT 20`,
+      ).bind(g, gPrefix, gExact).all<{ slug: string; name: string | null; subtitle: string | null; body: string | null }>();
 
       // 5) Страницы и разделы — прочий контент (хабы, статьи).
       const pages = await env.DB.prepare(
@@ -1478,8 +1478,8 @@ export default {
          WHERE ci.lang='ru' AND ci.type IN ('hub','article')
            AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
                 OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
-         ORDER BY (ci.name GLOB ?1) DESC LIMIT 20`,
-      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null; body: string | null }>();
+         ORDER BY (ci.name GLOB ?3) DESC, (ci.name GLOB ?2) DESC, (ci.name GLOB ?1) DESC, (ci.subtitle GLOB ?1) DESC, length(ci.name), ci.name LIMIT 20`,
+      ).bind(g, gPrefix, gExact).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null; body: string | null }>();
 
       // 6) Центры — опубликованные храмы/ятры.
       const centers = await env.DB.prepare(
