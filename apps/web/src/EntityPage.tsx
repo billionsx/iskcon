@@ -219,22 +219,24 @@ function expandRef(ref: string): RefParts {
   const r0 = ref.trim();
   const r = r0.replace(/^[«"]+|[»"]+$/g, "").replace(/^Шри\s+/, "").trim();
   const head = (s: string) => s.split(/[-–—]/)[0]; // старт диапазона для deep-link
+  const dash = (s: string) => s.replace(/[-–—]/g, "–");
+  const vw = (v: string) => (/[-–—]/.test(v) ? "стихи " : "стих ") + dash(v); // «стих N» / «стихи N–M»
   // Шримад-Бхагаватам (песнь.глава.стих[-стих])
   let m = r.match(/^(?:ШБ|Шримад-Бхагаватам)\s+(\d+)\.(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Шримад-Бхагаватам", loc: m[1]+"."+m[2]+"."+m[3], to: "/book/sb/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
+  if (m) return { book: "Шримад-Бхагаватам", loc: "Песнь "+m[1]+", глава "+m[2]+", "+vw(m[3]), to: "/book/sb/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
   m = r.match(/^(?:ШБ|Шримад-Бхагаватам)\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Шримад-Бхагаватам", loc: m[1]+"."+m[2], to: "/book/sb/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Шримад-Бхагаватам", loc: "Песнь "+m[1]+", глава "+m[2], to: "/book/sb/"+m[1]+"/"+head(m[2]) };
   // Бхагавад-гита (глава.стих[-стих])
   m = r.match(/^(?:БГ|Бхагавад-гита)\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Бхагавад-гита", loc: m[1]+"."+m[2], to: "/book/bg/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Бхагавад-гита как она есть", loc: "глава "+m[1]+", "+vw(m[2]), to: "/book/bg/"+m[1]+"/"+head(m[2]) };
   // Чайтанья-чаритамрита — 3 части (book / lila / loc); диапазоны и алиас «Ч.-ч.»
   // (запятая после кода допускается: «Ч.-ч., Мадхья 8.57» нормализуется в рендере).
   m = r.match(/^(?:ЧЧ|Ч\.-?ч\.|Чайтанья-чаритамрита),?\s+(Ади|Мадхья|Антья)\s+(\d+(?:[-–—]\d+)?)(?:\.(\d+(?:[-–—]\d+)?))?$/);
   if (m) {
     const slug = m[1] === "Ади" ? "adi" : m[1] === "Мадхья" ? "madhya" : "antya";
-    const loc = m[3] ? m[2]+"."+m[3] : m[2];
+    const loc = m[3] ? "глава "+m[2]+", "+vw(m[3]) : "глава "+m[2];
     const to  = m[3] ? "/book/cc/"+slug+"/"+head(m[2])+"/"+head(m[3]) : "/book/cc/"+slug+"/"+head(m[2]);
-    return { book: "Чайтанья-чаритамрита", lila: m[1]+"-лила", loc, to };
+    return { book: "Шри Чайтанья-чаритамрита", lila: m[1]+"-лила", loc, to };
   }
   // Бхакти-расамрита-синдху
   m = r.match(/^(?:БРС|Бхакти-расамрита-синдху)\s+(\d+)\.(\d+)(?:\.(\d+(?:[-–—]\d+)?))?$/);
@@ -244,21 +246,21 @@ function expandRef(ref: string): RefParts {
   }
   // Брахма-самхита (глава.стих) — deep-link в читалку
   m = r.match(/^Брахма-самхита\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Брахма-самхита", loc: m[1]+"."+m[2], to: "/book/bs/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Брахма-самхита", loc: "глава "+m[1]+", "+vw(m[2]), to: "/book/bs/"+m[1]+"/"+head(m[2]) };
   // Вишну-пурана (книга.глава.стих) — иерархический deep-link
   m = r.match(/^Вишну-пурана\s+(\d+)\.(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Вишну-пурана", loc: m[1]+"."+m[2]+"."+m[3], to: "/book/vp/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
+  if (m) return { book: "Вишну-пурана", loc: "Книга "+m[1]+", глава "+m[2]+", "+vw(m[3]), to: "/book/vp/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
   // Кришна-сандарбха (ануччхеда N) — deep-link (плоская книга, глава 1)
   m = r.match(/^Кришна-сандарбха\s+(\d+)$/);
-  if (m) return { book: "Кришна-сандарбха", loc: "ануч. " + m[1], to: "/book/ks/1/"+m[1] };
+  if (m) return { book: "Кришна-сандарбха", loc: "Ануччхеда " + m[1], to: "/book/ks/1/"+m[1] };
   m = r.match(/^Кришна-сандарбха\s+(.+)$/);
-  if (m) return { book: "Кришна-сандарбха", loc: "ануч. " + m[1].replace(/^ануч[.\s]*/i, "") };
+  if (m) return { book: "Кришна-сандарбха", loc: "Ануччхеда " + m[1].replace(/^ануч[.\s]*/i, "") };
   // Лагху-бхагаватамрита
   m = r.match(/^Лагху-бхагаватамрита\s+(.+)$/);
   if (m) return { book: "Лагху-бхагаватамрита", loc: m[1] };
   // Говинда-лиламрита (глава.стих) — deep-link; голый «Говинда-лиламрита» без номера остаётся академическим
   m = r.match(/^Говинда-лиламрита\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Говинда-лиламрита", loc: m[1]+"."+m[2], to: "/book/gl/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Говинда-лиламрита", loc: "глава "+m[1]+", "+vw(m[2]), to: "/book/gl/"+m[1]+"/"+head(m[2]) };
   m = r.match(/^Говинда-лиламрита(?:\s+(.+))?$/);
   if (m) return { book: "Говинда-лиламрита", loc: m[1] };
   // Гита-говинда
@@ -266,7 +268,7 @@ function expandRef(ref: string): RefParts {
   if (m) return { book: "Гита-говинда", loc: m[1] };
   // Упадешамрита (Нектар наставлений, work noi — одна глава из 11 стихов): deep-link
   m = r.match(/^Упадешамрита\s+(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Упадешамрита", loc: m[1], to: "/book/noi/1/"+head(m[1]) };
+  if (m) return { book: "Упадешамрита", loc: vw(m[1]), to: "/book/noi/1/"+head(m[1]) };
   // Универсальный academic-fallback: «Название X.Y.Z» → {book, loc} без deep-link.
   // Покрывает Вишну-пурану, Упадешамриту, Падма-пурану (с номером) и т.п.,
   // чтобы они рендерились академически, а не сырой строкой.
@@ -616,18 +618,23 @@ function EdgeFade({ side, show }: { side: "left" | "right"; show: boolean }) {
 /* Линейная навигация по разделу: «Назад» (тихая) и «Далее» (контрастная капсула). */
 function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: string | null; nextLabel?: string | null; onPrev?: (() => void) | null; onNext?: (() => void) | null }) {
   if (!onPrev && !onNext) return null;
+  // iOS 26 / Apple News стиль: тихие равновесные капсулы, мягкая системная
+  // заливка (fill-2), без чёрного слэба и без обводок; шеврон ‹ › как у Apple.
+  const cell: React.CSSProperties = { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, padding: "12px 16px", borderRadius: "var(--radius-lg)", border: "none", background: "var(--color-fill-2)", cursor: "pointer", color: "inherit", font: "inherit", WebkitTapHighlightColor: "transparent" };
+  const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase", color: "var(--color-label-3)" };
+  const label: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.3 };
   return (
-    <nav aria-label="Листать раздел" style={{ display: "flex", gap: 10, marginTop: 40, paddingTop: 22, borderTop: "0.5px solid var(--color-hairline)" }}>
+    <nav aria-label="Листать раздел" style={{ display: "flex", gap: 8, marginTop: 36, paddingTop: 20, borderTop: "0.5px solid var(--color-hairline)" }}>
       {onPrev ? (
-        <button type="button" onClick={onPrev} style={{ flex: 1, minWidth: 0, textAlign: "left", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
-          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>← Назад</span>
-          <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{prevLabel}</span>
+        <button type="button" onClick={onPrev} style={{ ...cell, alignItems: "flex-start", textAlign: "left" }}>
+          <span style={kicker}>‹&nbsp;&nbsp;Назад</span>
+          <span style={label}>{prevLabel}</span>
         </button>
       ) : <span style={{ flex: 1 }} aria-hidden />}
       {onNext ? (
-        <button type="button" onClick={onNext} style={{ flex: 1, minWidth: 0, textAlign: "right", padding: "11px 14px", borderRadius: 14, border: "0.5px solid transparent", background: "var(--color-label)", cursor: "pointer", color: "var(--color-bg)", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
-          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", opacity: 0.7 }}>Далее →</span>
-          <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{nextLabel}</span>
+        <button type="button" onClick={onNext} style={{ ...cell, alignItems: "flex-end", textAlign: "right" }}>
+          <span style={kicker}>Далее&nbsp;&nbsp;›</span>
+          <span style={label}>{nextLabel}</span>
         </button>
       ) : <span style={{ flex: 1 }} aria-hidden />}
     </nav>
