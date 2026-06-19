@@ -10,7 +10,7 @@
  */
 import { CATEGORY_RU, RASA_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions } from "./cardActions";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, Fragment, type ReactNode } from "react";
 import { api } from "./api";
 import { replaceUrl } from "./nav";
 import { BackIcon } from "./ui/icons";
@@ -289,6 +289,26 @@ function expandCiteRef(ref: string): string {
 function renderSanskrit(text: string | null | undefined): ReactNode {
   return renderTerms(text);
 }
+// Инлайн-проза со ссылками на суб-табы: токен [[subId|подпись]] становится
+// тихой ссылкой-кнопкой, переключающей суб-таб тем же обработчиком, что и чипы
+// (с прокруткой к началу раздела). Остальной текст идёт через renderSanskrit.
+function renderProse(text: string, onSub?: (id: string) => void): ReactNode {
+  if (!text) return null;
+  if (!onSub || text.indexOf("[[") === -1) return renderSanskrit(text);
+  const out: ReactNode[] = [];
+  const re = /\[\[([a-z0-9-]+)\|([^\]]+)\]\]/gi;
+  let last = 0, k = 0, m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) out.push(<Fragment key={"t" + k}>{renderSanskrit(text.slice(last, m.index))}</Fragment>);
+    const id = m[1], label = m[2];
+    out.push(
+      <button key={"l" + k} type="button" onClick={() => onSub(id)} style={{ background: "none", border: "none", padding: 0, font: "inherit", color: "var(--color-label)", cursor: "pointer", textDecoration: "underline", textDecorationColor: "var(--color-label-3)", textUnderlineOffset: "2px" }}>{label}</button>
+    );
+    last = m.index + m[0].length; k++;
+  }
+  if (last < text.length) out.push(<Fragment key={"t" + k}>{renderSanskrit(text.slice(last))}</Fragment>);
+  return out;
+}
 // === Стандарт отображения стиха (ПКЛ/ВКЛ модуль) ===
 // Снимает ВНЕШНИЕ обрамляющие кавычки (« » “ ” " „) только если стих ими обёрнут
 // целиком (начинается с открывающей). Внутренние цитаты сохраняются. Текст в БД
@@ -455,14 +475,14 @@ function HierarchyDescent({ groups }: { groups: HierGroup[] }) {
   );
 }
 
-function LongformArticle({ sections, onOpen, onNavigate }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void }) {
+function LongformArticle({ sections, onOpen, onNavigate, onSub }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; onSub?: (id: string) => void }) {
   return (
     <div>
       {sections.map((s, i) => (
         <section key={i} style={{ marginTop: i === 0 ? 26 : 34 }}>
           {s.h && <Eyebrow>{s.h}</Eyebrow>}
           {(s.p ?? []).map((para, j) => (
-            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderSanskrit(para)}</p>
+            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub)}</p>
           ))}
           {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} />}
           {(s.list ?? []).length > 0 && (() => {
@@ -1123,7 +1143,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                   <div key={"t:" + tab} style={{ animation: "lf-in .26s ease both" }}>
                     {activeTabObj && <TabHeader tab={activeTabObj} />}
                     {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
-                      <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} />
+                      <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} onSub={handleSubChange} />
                     )}
                     {activeTabObj?.rails?.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
                     {activeTabObj?.cards && activeTabObj.cards.length > 0 && <NavCards cards={activeTabObj.cards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
@@ -1141,7 +1161,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                   )}
                   {subSections.length > 0 && (
                     <div key={"s:" + tab + "/" + sub} style={{ marginTop: 18, animation: "lf-in .26s ease both" }}>
-                      <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} />
+                      <LongformArticle sections={subSections} onOpen={onOpen} onNavigate={onNavigate} onSub={handleSubChange} />
                     </div>
                   )}
                   {subRails.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
