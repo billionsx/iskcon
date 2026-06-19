@@ -1,0 +1,53 @@
+name: vishnu fetch (Вишну-пурана со scriptures.ru)
+on: { workflow_dispatch: {} }
+permissions: { contents: write }
+jobs:
+  f:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: fetch
+        env: { CF: "${{ secrets.CLOUDFLARE_API_TOKEN }}" }
+        run: |
+          python3 - <<'PY'
+          import urllib.request, re, json, os
+          def get(u):
+              try:
+                  raw=urllib.request.urlopen(urllib.request.Request(u,headers={"User-Agent":"Mozilla/5.0"}),timeout=40).read()
+                  for enc in ("utf-8","cp1251","koi8-r"):
+                      try: return raw.decode(enc)
+                      except: pass
+                  return raw.decode("utf-8","replace")
+              except Exception as e: return f"ERR {e}"
+          out=[]
+          idx=get("https://scriptures.ru/puranas/")
+          out.append("=== /puranas/ index links ===")
+          for m in sorted(set(re.findall(r'href="([^"]+\.htm)"', idx or ""))):
+              out.append("  "+m)
+          h=get("https://scriptures.ru/puranas/vishnu.htm")
+          out.append(f"=== vishnu.htm len={len(h)} ===")
+          sub=sorted(set(re.findall(r'href="([^"]+)"', h or "")))
+          out.append("vishnu.htm links: "+ "; ".join(s for s in sub if not s.startswith('http'))[:600])
+          # текстовая проба: убрать теги
+          txt=re.sub(r'<[^>]+>',' ',h); txt=re.sub(r'\s+',' ',txt)
+          out.append("TEXT SAMPLE: "+txt[:700])
+          # признаки структуры
+          out.append("книга/глава markers: "+ str(len(re.findall(r'(?i)книга|глава|chapter|КНИГА', h))))
+          os.makedirs("docs/data",exist_ok=True)
+          open("docs/data/vishnu_raw.html","w",encoding="utf-8").write(h if not h.startswith("ERR") else "")
+          open("docs/data/vishnu_probe.txt","w",encoding="utf-8").write("\n".join(out))
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          urllib.request.urlopen(urllib.request.Request(f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query",
+            data=json.dumps({"sql":"INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'vishnu-probe DONE',?,?)","params":[len(h),"\n".join(out)[:1850]]}).encode(),
+            headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}),timeout=40).read()
+          print("\n".join(out))
+          PY
+      - name: commit
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add docs/data/vishnu_raw.html docs/data/vishnu_probe.txt && git commit -m "vishnu probe [skip ci]" || echo no
+          git push origin HEAD:main || true
