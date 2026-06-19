@@ -615,26 +615,34 @@ function EdgeFade({ side, show }: { side: "left" | "right"; show: boolean }) {
   return <span aria-hidden style={style} />;
 }
 
-/* Линейная навигация по разделу: «Назад» (тихая) и «Далее» (контрастная капсула). */
+/* Линейная навигация по разделу в духе iOS 26 / Apple News: две тихие
+   равновесные ячейки на системной заливке (fill-2), шеврон на стороне
+   движения, крошечный капс-кикер над заглавием. Без чёрного слэба и обводок. */
 function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: string | null; nextLabel?: string | null; onPrev?: (() => void) | null; onNext?: (() => void) | null }) {
   if (!onPrev && !onNext) return null;
-  // iOS 26 / Apple News стиль: тихие равновесные капсулы, мягкая системная
-  // заливка (fill-2), без чёрного слэба и без обводок; шеврон ‹ › как у Apple.
-  const cell: React.CSSProperties = { flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, padding: "12px 16px", borderRadius: "var(--radius-lg)", border: "none", background: "var(--color-fill-2)", cursor: "pointer", color: "inherit", font: "inherit", WebkitTapHighlightColor: "transparent" };
-  const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "0.03em", textTransform: "uppercase", color: "var(--color-label-3)" };
-  const label: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.3 };
+  const cell: React.CSSProperties = { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 11, padding: "13px 15px", borderRadius: "var(--radius-lg)", border: "none", background: "var(--color-fill-2)", cursor: "pointer", color: "inherit", font: "inherit", textAlign: "left", WebkitTapHighlightColor: "transparent", transition: "background .18s ease" };
+  const chev: React.CSSProperties = { flexShrink: 0, fontSize: 21, lineHeight: 1, fontWeight: 400, color: "var(--color-label-3)" };
+  const col = (align: "flex-start" | "flex-end"): React.CSSProperties => ({ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0, alignItems: align });
+  const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "var(--color-label-3)" };
+  const title: React.CSSProperties = { maxWidth: "100%", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.3 };
   return (
-    <nav aria-label="Листать раздел" style={{ display: "flex", gap: 8, marginTop: 36, paddingTop: 20, borderTop: "0.5px solid var(--color-hairline)" }}>
+    <nav aria-label="Листать раздел" style={{ display: "flex", gap: 10, marginTop: 36, paddingTop: 20, borderTop: "0.5px solid var(--color-hairline)" }}>
       {onPrev ? (
-        <button type="button" onClick={onPrev} style={{ ...cell, alignItems: "flex-start", textAlign: "left" }}>
-          <span style={kicker}>‹&nbsp;&nbsp;Назад</span>
-          <span style={label}>{prevLabel}</span>
+        <button type="button" onClick={onPrev} style={cell}>
+          <span aria-hidden style={chev}>‹</span>
+          <span style={col("flex-start")}>
+            <span style={kicker}>Назад</span>
+            <span style={title}>{prevLabel}</span>
+          </span>
         </button>
       ) : <span style={{ flex: 1 }} aria-hidden />}
       {onNext ? (
-        <button type="button" onClick={onNext} style={{ ...cell, alignItems: "flex-end", textAlign: "right" }}>
-          <span style={kicker}>Далее&nbsp;&nbsp;›</span>
-          <span style={label}>{nextLabel}</span>
+        <button type="button" onClick={onNext} style={{ ...cell, textAlign: "right" }}>
+          <span style={col("flex-end")}>
+            <span style={kicker}>Далее</span>
+            <span style={title}>{nextLabel}</span>
+          </span>
+          <span aria-hidden style={chev}>›</span>
         </button>
       ) : <span style={{ flex: 1 }} aria-hidden />}
     </nav>
