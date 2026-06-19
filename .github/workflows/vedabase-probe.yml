@@ -2,8 +2,8 @@ name: vedabase probe (диагностика структуры книги)
 on:
   workflow_dispatch:
     inputs:
-      url:
-        default: "https://gitabase.com/eng/BS/5/56"
+      verses:
+        default: "2,3,4,6,7,8"
 permissions:
   contents: read
 jobs:
@@ -11,28 +11,51 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Probe
+      - name: Deva scrape
         env:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          URL: ${{ github.event.inputs.url }}
+          VERSES: ${{ github.event.inputs.verses }}
         run: |
           python3 - <<'PY'
-          import os, re, json, urllib.request
+          import os, re, json, time, urllib.request
           import html as H
           CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
-          URL=os.environ["URL"].strip()
-          html=urllib.request.urlopen(urllib.request.Request(URL, headers={"user-agent":UA,"accept-language":"en"}), timeout=30).read().decode("utf-8","replace")
-          def d1(sql):
-              urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
-                headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read()
-          def q(v): return "'"+str(v).replace("'","''")+"'"
-          t=re.sub(r"<(script|style)[^>]*>.*?</\1>"," ", html, flags=re.S|re.I)
-          t=re.sub(r"<[^>]+>"," ", t); t=H.unescape(t); t=re.sub(r"\s+"," ",t).strip()
-          # окно вокруг "Sri Brahma" .. translation
-          i=t.find("Text")
-          seg=t[:1500]
-          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'v56vis',200,"+q(seg[:1900])+")")
-          print("ok")
+          verses=[int(x) for x in os.environ["VERSES"].split(",") if x.strip()]
+          def get(url):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"ru"}), timeout=30) as r:
+                      return r.status, r.read().decode("utf-8","replace")
+              except Exception: return 0,""
+          def d1(sql, params=None):
+              body={"sql":sql}
+              if params is not None: body["params"]=params
+              for _ in range(4):
+                  try:
+                      urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps(body).encode(),
+                        headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read(); return
+                  except Exception: time.sleep(2)
+          def vis(html):
+              t=re.sub(r"<(script|style)[^>]*>.*?</\1>"," ", html, flags=re.S|re.I)
+              t=re.sub(r"<[^>]+>"," ", t); t=H.unescape(t); return re.sub(r"[ \t]+"," ",t)
+          rep=[]
+          for n in verses:
+              st,html=get(f"https://gitabase.com/rus/BS/5/{n}")
+              if st!=200: rep.append(f"{n}:HTTP{st}"); continue
+              v=vis(html)
+              i=v.find("След. >>")
+              tail=v[i+8:] if i>=0 else v
+              runs=re.findall(r'[\u0900-\u097F][\u0900-\u097F\s.,|॥।ॐ–-]*', tail)
+              dev=max(runs, key=len) if runs else ""
+              dev=re.sub(r'\s+',' ',dev).strip()
+              dev=re.sub(r'\s*\|\s*','|',dev) if False else dev
+              if not dev or len(re.findall(r'[\u0900-\u097F]',dev))<10:
+                  rep.append(f"{n}:THIN"); continue
+              d1("UPDATE verses SET devanagari=? WHERE id=?", params=[dev, f"bs.5.{n}"])
+              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsdeva 5."+str(n)+"',"+str(n)+",?)", params=[dev[:400]])
+              rep.append(f"{n}:OK({len(dev)})")
+              time.sleep(0.15)
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsdeva DONE',0,?)", params=[str(rep)])
+          print(rep)
           PY
