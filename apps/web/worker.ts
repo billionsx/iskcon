@@ -50,6 +50,27 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
+// Регистронезависимый GLOB-шаблон для кириллицы: SQLite LIKE не складывает регистр
+// для не-ASCII, поэтому по каждой букве строим класс [строчн.ЗАГЛ.].
+function ciGlob(q: string): string {
+  let g = "*";
+  for (const ch of q) {
+    if (ch === "*" || ch === "?" || ch === "[") { g += "[" + ch + "]"; continue; }
+    const lo = ch.toLowerCase(), up = ch.toUpperCase();
+    g += lo !== up ? "[" + lo + up + "]" : ch;
+  }
+  return g + "*";
+}
+
+// FTS5 MATCH из пользовательского ввода: буквенно-цифровые токены, неявный AND,
+// префиксная «звёздочка» на последнем токене для поиска на лету. Операторы FTS
+// (кавычки, скобки, двоеточия и т.п.) отсекаются токенизацией.
+function ftsMatch(q: string): string | null {
+  const toks = q.toLowerCase().match(/[\p{L}\p{N}]+/gu);
+  if (!toks || !toks.length) return null;
+  return toks.map((t, i) => (i === toks.length - 1 ? t + "*" : t)).join(" ");
+}
+
 // ── Обложка по стандарту BBT (единая для всех книг) ──
 // Вёрстка обложки вынесена в общий модуль src/pdfCover.ts — её переиспользуют и
 // серверный рендер (этот воркер), и пре-генерация PDF в CI (scripts/genpdf).
@@ -1223,6 +1244,87 @@ export default {
         }
       } catch { /* сеть */ }
       return json({ result: null });
+    }
+
+    // ── Сквозной поиск по всему приложению ──────────────────────────────────
+    // Личности, стихи, главы/части, молитвы и киртаны, страницы, центры. Книги
+    // ищутся на клиенте (каталог LIBRARY с алиасами/фаззи). Стихи — через FTS5
+    // (verse_fts: транслитерация+увача+перевод+комментарий), остальное — GLOB по
+    // компактным таблицам. Каждая группа лимитирована; запросы — последовательно.
+    if (url.pathname === "/api/search") {
+      const q = (url.searchParams.get("q") || "").trim();
+      const empty = { q, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
+      if (q.length < 2) return json(empty);
+      const g = ciGlob(q);
+      const m = ftsMatch(q);
+
+      // 1) Личности — по именам и псевдонимам (точно, без флуда описаниями).
+      const people = await env.DB.prepare(
+        `SELECT e.id, e.type,
+           (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
+           (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
+         FROM entities e
+         WHERE EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
+         ORDER BY (name_ru IS NULL), name_ru LIMIT 12`,
+      ).bind(g).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+
+      // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
+      const verses = m
+        ? await env.DB.prepare(
+            `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,150) AS snippet
+             FROM verse_fts f JOIN verses v ON v.id=f.verse_id LEFT JOIN verse_texts vt ON vt.verse_id=v.id
+             WHERE verse_fts MATCH ?1 ORDER BY rank LIMIT 14`,
+          ).bind(m).all<{ id: string; work_id: string; ref: string; snippet: string | null }>()
+        : { results: [] as { id: string; work_id: string; ref: string; snippet: string | null }[] };
+
+      // 3) Главы и части — по названию (хранится JSON {ru}).
+      const chapters = await env.DB.prepare(
+        `SELECT d.id, d.work_id, d.level, json_extract(d.title,'$.ru') AS title
+         FROM divisions d
+         WHERE json_extract(d.title,'$.ru') GLOB ?1
+         ORDER BY d.work_id, d.ordinal LIMIT 12`,
+      ).bind(g).all<{ id: string; work_id: string; level: string | null; title: string | null }>();
+
+      // 4) Молитвы и киртаны — content_items типа prayer (+ тело страницы page_text).
+      const prayers = await env.DB.prepare(
+        `SELECT ci.slug, ci.name, ci.subtitle
+         FROM content_items ci
+         WHERE ci.lang='ru' AND ci.type='prayer'
+           AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
+                OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
+         ORDER BY (ci.name GLOB ?1) DESC LIMIT 10`,
+      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null }>();
+
+      // 5) Страницы и разделы — прочий контент (хабы, статьи).
+      const pages = await env.DB.prepare(
+        `SELECT ci.slug, ci.name, ci.subtitle, ci.type
+         FROM content_items ci
+         WHERE ci.lang='ru' AND ci.type IN ('hub','article')
+           AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
+                OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
+         ORDER BY (ci.name GLOB ?1) DESC LIMIT 10`,
+      ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null }>();
+
+      // 6) Центры — опубликованные храмы/ятры.
+      const centers = await env.DB.prepare(
+        `SELECT slug, name, city FROM centers
+         WHERE status='live' AND (name GLOB ?1 OR city GLOB ?1 OR country GLOB ?1 OR region GLOB ?1)
+         LIMIT 10`,
+      ).bind(g).all<{ slug: string; name: string; city: string | null }>();
+
+      // стих/глава → URL: id без префикса работы, точки → слэши (bg.4.9 → /book/bg/4/9).
+      const tail = (id: string, work: string) =>
+        (id.startsWith(work + ".") ? id.slice(work.length + 1) : id).replace(/\./g, "/");
+
+      return json({
+        q,
+        personalities: (people.results ?? []).map((r) => ({ id: r.id, type: r.type ?? null, name_ru: r.name_ru, name_iast: r.name_iast })),
+        verses: (verses.results ?? []).map((r) => ({ ref: r.ref, work: r.work_id, snippet: r.snippet ?? "", href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
+        chapters: (chapters.results ?? []).map((r) => ({ title: r.title, work: r.work_id, level: r.level, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
+        prayers: (prayers.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, href: r.slug })),
+        pages: (pages.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, type: r.type, href: r.slug })),
+        centers: (centers.results ?? []).map((r) => ({ name: r.name, city: r.city ?? null, href: `/center/${r.slug}` })),
+      });
     }
 
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
