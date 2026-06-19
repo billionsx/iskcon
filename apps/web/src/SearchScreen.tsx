@@ -136,6 +136,21 @@ function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap
   );
 }
 
+function MoreLink({ n, active, onTap }: { n: number; active: boolean; onTap: () => void }) {
+  const ref = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { if (active) ref.current?.scrollIntoView({ block: "nearest" }); }, [active]);
+  return (
+    <button ref={ref} type="button" onClick={onTap}
+      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", textAlign: "left",
+        padding: "11px 8px", paddingLeft: 61, margin: "0 -4px", borderRadius: 10, border: "none",
+        background: active ? "var(--color-bg-2)" : "transparent", cursor: "pointer",
+        fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-2)" }}>
+      <span>Показать все · {n}</span>
+      <span style={{ color: "var(--color-label-3)", fontSize: 20 }}>›</span>
+    </button>
+  );
+}
+
 function Section({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
   return (
     <section style={{ marginTop: 18 }}>
@@ -239,16 +254,25 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const show = (k: GroupKey) => counts[k] > 0 && (activeFilter === "all" || activeFilter === k);
   const nothing = searching && !loading && res !== null && total === 0 && !r.exact;
 
-  // Плоский список результатов в порядке отображения — для навигации стрелками.
+  // В обзоре («Все») каждая категория показывает превью; полный список — в фильтре.
+  const PREVIEW = 6;
+  const vis = (k: GroupKey) => (activeFilter === "all" ? Math.min(PREVIEW, counts[k]) : counts[k]);
+
+  // Плоский список видимых результатов в порядке отображения — для навигации стрелками.
   const navItems: { id: string; go: () => void }[] = [];
   if (searching && r.exact && activeFilter === "all") navItems.push({ id: "exact", go: () => goNav(r.exact!.href) });
-  if (show("people")) r.personalities.forEach((p) => navItems.push({ id: "p:" + p.id, go: () => goEntity(p.id, p.type) }));
-  if (show("books")) bookHits.forEach((b) => navItems.push({ id: "b:" + b.id, go: () => openBook(b) }));
-  if (show("verses")) r.verses.forEach((v, i) => navItems.push({ id: "v:" + i, go: () => goNav(v.href) }));
-  if (show("chapters")) r.chapters.forEach((c, i) => navItems.push({ id: "c:" + i, go: () => goNav(c.href) }));
-  if (show("prayers")) r.prayers.forEach((p, i) => navItems.push({ id: "pr:" + i, go: () => goNav(p.href) }));
-  if (show("centers")) r.centers.forEach((c, i) => navItems.push({ id: "ce:" + i, go: () => goNav(c.href) }));
-  if (show("pages")) r.pages.forEach((p, i) => navItems.push({ id: "pg:" + i, go: () => goNav(p.href) }));
+  const pushGroup = <T,>(k: GroupKey, rows: T[], idOf: (row: T, i: number) => string, goOf: (row: T) => void) => {
+    if (!show(k)) return;
+    rows.slice(0, vis(k)).forEach((row, i) => navItems.push({ id: idOf(row, i), go: () => goOf(row) }));
+    if (activeFilter === "all" && counts[k] > PREVIEW) navItems.push({ id: "more:" + k, go: () => setFilter(k) });
+  };
+  pushGroup("people", r.personalities, (p) => "p:" + p.id, (p) => goEntity(p.id, p.type));
+  pushGroup("books", bookHits, (b) => "b:" + b.id, (b) => openBook(b));
+  pushGroup("verses", r.verses, (_v, i) => "v:" + i, (v) => goNav(v.href));
+  pushGroup("chapters", r.chapters, (_c, i) => "c:" + i, (c) => goNav(c.href));
+  pushGroup("prayers", r.prayers, (_p, i) => "pr:" + i, (p) => goNav(p.href));
+  pushGroup("centers", r.centers, (_c, i) => "ce:" + i, (c) => goNav(c.href));
+  pushGroup("pages", r.pages, (_p, i) => "pg:" + i, (p) => goNav(p.href));
   const activeId = active >= 0 && active < navItems.length ? navItems[active].id : null;
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, navItems.length - 1)); }
@@ -321,57 +345,64 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
 
         {show("people") && (
           <Section title="Личности" count={counts.people}>
-            {r.personalities.map((p) => (
+            {r.personalities.slice(0, vis("people")).map((p) => (
               <Row key={"p" + p.id} active={activeId === "p:" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => goEntity(p.id, p.type)} />
             ))}
+            {activeFilter === "all" && counts.people > PREVIEW && <MoreLink n={counts.people} active={activeId === "more:people"} onTap={() => setFilter("people")} />}
           </Section>
         )}
 
         {show("books") && (
           <Section title="Книги" count={counts.books}>
-            {bookHits.map((b) => (
+            {bookHits.slice(0, vis("books")).map((b) => (
               <Row key={"b" + b.id} active={activeId === "b:" + b.id} ch={mono(b.title)} title={b.title} iast={b.iast || null} sub={b.readable ? null : "скоро"} toks={toks} onTap={() => openBook(b)} />
             ))}
+            {activeFilter === "all" && counts.books > PREVIEW && <MoreLink n={counts.books} active={activeId === "more:books"} onTap={() => setFilter("books")} />}
           </Section>
         )}
 
         {show("verses") && (
           <Section title="Стихи" count={counts.verses}>
-            {r.verses.map((v, i) => (
+            {r.verses.slice(0, vis("verses")).map((v, i) => (
               <Row key={"v" + i + v.href} active={activeId === "v:" + i} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => goNav(v.href)} />
             ))}
+            {activeFilter === "all" && counts.verses > PREVIEW && <MoreLink n={counts.verses} active={activeId === "more:verses"} onTap={() => setFilter("verses")} />}
           </Section>
         )}
 
         {show("chapters") && (
           <Section title="Главы и части" count={counts.chapters}>
-            {r.chapters.map((c, i) => (
+            {r.chapters.slice(0, vis("chapters")).map((c, i) => (
               <Row key={"c" + i + c.href} active={activeId === "c:" + i} ch={mono(c.title || "?")} title={c.title || "—"} sub={`${workLabel(c.work)}${c.level ? " · " + (LEVEL_LABEL[c.level] || c.level) : ""}`} toks={toks} onTap={() => goNav(c.href)} />
             ))}
+            {activeFilter === "all" && counts.chapters > PREVIEW && <MoreLink n={counts.chapters} active={activeId === "more:chapters"} onTap={() => setFilter("chapters")} />}
           </Section>
         )}
 
         {show("prayers") && (
           <Section title="Молитвы и киртаны" count={counts.prayers}>
-            {r.prayers.map((p, i) => (
+            {r.prayers.slice(0, vis("prayers")).map((p, i) => (
               <Row key={"pr" + i + p.href} active={activeId === "pr:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
+            {activeFilter === "all" && counts.prayers > PREVIEW && <MoreLink n={counts.prayers} active={activeId === "more:prayers"} onTap={() => setFilter("prayers")} />}
           </Section>
         )}
 
         {show("centers") && (
           <Section title="Центры" count={counts.centers}>
-            {r.centers.map((c, i) => (
+            {r.centers.slice(0, vis("centers")).map((c, i) => (
               <Row key={"ce" + i + c.href} active={activeId === "ce:" + i} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => goNav(c.href)} />
             ))}
+            {activeFilter === "all" && counts.centers > PREVIEW && <MoreLink n={counts.centers} active={activeId === "more:centers"} onTap={() => setFilter("centers")} />}
           </Section>
         )}
 
         {show("pages") && (
           <Section title="Страницы и разделы" count={counts.pages}>
-            {r.pages.map((p, i) => (
+            {r.pages.slice(0, vis("pages")).map((p, i) => (
               <Row key={"pg" + i + p.href} active={activeId === "pg:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
+            {activeFilter === "all" && counts.pages > PREVIEW && <MoreLink n={counts.pages} active={activeId === "more:pages"} onTap={() => setFilter("pages")} />}
           </Section>
         )}
 
