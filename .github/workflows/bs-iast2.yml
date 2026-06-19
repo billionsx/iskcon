@@ -1,4 +1,4 @@
-name: bs iast missing (добор IAST для пропущенных стихов)
+name: bs iast missing v2 (добор IAST пропущенных + конвертация в транслит)
 on:
   workflow_dispatch:
     inputs:
@@ -9,9 +9,9 @@ permissions:
 jobs:
   scrape:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
-      - name: Scrape missing IAST
+      - name: Scrape+convert+update
         env:
           CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           VERSES: ${{ github.event.inputs.verses }}
@@ -29,39 +29,53 @@ jobs:
                       return r.status, r.read().decode("utf-8","replace")
               except Exception: return 0,""
           def d1(sql):
-              for _ in range(3):
+              for _ in range(4):
                   try:
-                      urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
-                        headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read(); return
+                      r=urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                        headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60)
+                      return json.loads(r.read().decode())
                   except Exception: time.sleep(2)
           def Q(v): return "'"+str(v).replace("'","''")+"'"
-          def clean(s):
-              s=re.sub(r"<[^>]+>"," ",s); s=H.unescape(s)
-              for z in ("\u00ad","\u200b","\u200c","\u200d"): s=s.replace(z,"")
+          def vis(html):
+              t=re.sub(r"<(script|style)[^>]*>.*?</\1>"," ", html, flags=re.S|re.I)
+              t=re.sub(r"<[^>]+>"," ", t); t=H.unescape(t); return re.sub(r"\s+"," ",t).strip()
+          def extract_iast(html):
+              v=vis(html)
+              i=v.find("Next >>")
+              if i<0: i=v.find("<< Prev")
+              tail=v[i+7:] if i>=0 else v
+              m=re.search(r'\d+\s+times this text|[a-zāīūṛṅñṇṭḍśṣ]+\s-\s', tail)
+              if m: tail=tail[:m.start()]
+              tail=re.sub(r'[\u0900-\u097F]+',' ',tail).replace('|',' ').replace('॥',' ')
+              tail=re.sub(r'\bText\b.*?>>',' ',tail)
+              return re.sub(r'\s+',' ',tail).strip()
+          PAIRS=[("kṣ","кш"),("jñā","гья"),("jñ","гь"),("jj","ддж"),
+           ("kh","кх"),("gh","гх"),("ch","чх"),("jh","джх"),("ṭh","тх"),("ḍh","дх"),
+           ("th","тх"),("dh","дх"),("ph","пх"),("bh","бх"),("ai","ай"),("au","ау"),
+           ("ā","а"),("ī","и"),("ū","у"),("ṛ","ри"),("ṝ","ри"),("ḷ","л"),("ḹ","л"),
+           ("ṅ","н"),("ñ","н"),("ṇ","н"),("ṭ","т"),("ḍ","д"),("ś","ш"),("ṣ","ш"),
+           ("ṁ","м"),("ṃ","м"),("ḥ","х"),
+           ("a","а"),("b","б"),("c","ч"),("d","д"),("e","е"),("g","г"),("h","х"),
+           ("i","и"),("j","дж"),("k","к"),("l","л"),("m","м"),("n","н"),("o","о"),
+           ("p","п"),("r","р"),("s","с"),("t","т"),("u","у"),("v","в"),("y","й")]
+          def convert(iast):
+              s=iast.lower().replace("'","").replace("’","").replace("-"," ") if False else iast.lower().replace("'","").replace("’","")
+              s=s.replace("- "," "); s=re.sub(r"-\s*$","",s)
+              for a,b in PAIRS: s=s.replace(a,b)
               return re.sub(r"\s+"," ",s).strip()
           rep=[]
           for n in verses:
               st,html=get(f"https://gitabase.com/eng/BS/5/{n}")
               if st!=200: rep.append(f"{n}:HTTP{st}"); continue
-              iast=""
-              # все <p align="center"> блоки; IAST = первый с латинскими диакритиками и без англ.слов
-              for m in re.findall(r'<p align="center">(.*?)</p>', html, re.S):
-                  t=clean(m)
-                  if t and re.search(r'[āīūṛṝṅñṇṭḍśṣṁṃḥ]', t) and not re.search(r'\b(the|of|and|to|in|is|by|Lord)\b', t):
-                      iast=t; break
-              if not iast:
-                  m=re.search(r'॥[^<]*?॥(.*?)(?:\d+\s+times this text|<div class="tlabel")', html, re.S)
-                  if m:
-                      cand=clean(m.group(1))
-                      cand=re.split(r'\s[a-zāīū-]+\s-\s', cand)[0]
-                      iast=cand
-              iast=re.sub(r"-\s*$","",iast).strip()
-              if iast:
-                  d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsiast2 5."+str(n)+"',"+str(n)+","+Q(iast[:1000])+")")
-                  rep.append(f"{n}:OK({len(iast)})")
-              else:
-                  rep.append(f"{n}:EMPTY")
+              iast=extract_iast(html)
+              # оставить только латиницу с диакритикой (выкинуть случайные англ. хвосты)
+              if not iast or not re.search(r'[āīūṛṅñṇṭḍśṣ]', iast):
+                  rep.append(f"{n}:NOIAST"); continue
+              cyr=convert(iast)
+              d1(f"UPDATE verses SET translit={Q(cyr)} WHERE id='bs.5.{n}'")
+              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsiast2v2 5."+str(n)+"',"+str(n)+","+Q(cyr[:600])+")")
+              rep.append(f"{n}:OK({len(cyr)})")
               time.sleep(0.15)
-          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsiast2 DONE',0,"+Q(str(rep))+")")
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsiast2v2 DONE',0,"+Q(str(rep))+")")
           print(rep)
           PY
