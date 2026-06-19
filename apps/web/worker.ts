@@ -1412,44 +1412,68 @@ export default {
       // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
       // Строгий проход (все слова, префикс на последнем). Если совпадений мало —
       // расширяем до OR-префикса (recall при опечатке/частичном вводе), дедуп.
-      type VRow = { id: string; work_id: string; ref: string; trans: string | null; hl: string | null };
-      // Канонические писания (БГ/ШБ/ЧЧ/…) — выше прозаических книг-цитат (НПК, ЕОШ,
-      // МЦК, ПС, ПЛ…), где один и тот же стих процитирован десятки раз. Берём с запасом
-      // (24) и схлопываем одинаковые тексты — в выдаче остаются разные стихи.
+      type VRow = { id: string; work_id: string; ref: string; trans: string | null; hl: string | null; vtext: string | null };
+      // Канонические писания (БГ/ШБ/ЧЧ/…) — выше прозаических книг-цитат (НПК, ЕОШ, МЦК…),
+      // где один и тот же стих процитирован десятки раз.
       const PROSE = "('owk','sc','lob','tqk','pop','spl','rv','bbd','poy')";
-      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS trans, snippet(verse_fts, 1, '', '', '…', 12) AS hl
+
+      // (а) Стихи, в самом ТЕКСТЕ которых (транслитерация) есть искомая фраза — это и есть
+      // «тот самый стих», они идут ПЕРВЫМИ (стих, начинающийся с фразы — выше: БГ 4.9
+      // «джанма карма…»). Отдельный поиск по translit нужен потому, что в едином FTS-индексе
+      // bm25 поднимает короткие книги-цитаты выше самого стиха с длинным комментарием
+      // (БГ 4.9 проваливалась на ~90-ю позицию и не попадала в выборку). Только для фраз
+      // (≥2 слов), чтобы не сканировать на каждый одиночный запрос. translit в нижнем
+      // регистре (классы регистра не нужны → нет лимита сложности GLOB); «?» между словами
+      // терпит пробел/дефис («джанма карма» ловит и «джанма-карма̄ни»).
+      const tWords = q.toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
+      const textSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS trans, NULL AS hl, v.translit AS vtext
+             FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id
+             WHERE v.translit GLOB ?1
+             ORDER BY (v.translit GLOB ?2) DESC,
+               (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END),
+               (CASE v.work_id WHEN 'bg' THEN 0 WHEN 'sb' THEN 1 WHEN 'cc' THEN 2 ELSE 3 END), v.id
+             LIMIT 20`;
+      // (б) Совпадения в переводе/комментарии — через FTS по body (как раньше).
+      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS trans, snippet(verse_fts, 1, '', '', '…', 12) AS hl, NULL AS vtext
              FROM verse_fts f JOIN verses v ON v.id=f.verse_id LEFT JOIN verse_texts vt ON vt.verse_id=v.id
              WHERE verse_fts MATCH ?1
              ORDER BY (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END), rank LIMIT 60`;
-      let verseRows: VRow[] = [];
-      if (m) {
-        const strict = await env.DB.prepare(verseSql).bind(m).all<VRow>();
-        verseRows = strict.results ?? [];
-        if (verseRows.length < 5) {
-          const mOr = ftsMatchOr(q);
-          if (mOr && mOr !== m) {
-            const relaxed = await env.DB.prepare(verseSql).bind(mOr).all<VRow>();
-            const seen = new Set(verseRows.map((r) => r.id));
-            for (const r of relaxed.results ?? []) {
-              if (seen.has(r.id)) continue;
-              verseRows.push(r); seen.add(r.id);
-              if (verseRows.length >= 60) break;
-            }
+      const emptyRes = { results: [] as VRow[] };
+      const [textRes, strictRes] = await Promise.all([
+        tWords.length >= 2
+          ? env.DB.prepare(textSql).bind("*" + tWords.join("?") + "*", tWords.join("?") + "*").all<VRow>()
+          : Promise.resolve(emptyRes),
+        m ? env.DB.prepare(verseSql).bind(m).all<VRow>() : Promise.resolve(emptyRes),
+      ]);
+      const textRows: VRow[] = textRes.results ?? [];
+      let bodyRows: VRow[] = strictRes.results ?? [];
+      if (m && bodyRows.length < 5) {
+        const mOr = ftsMatchOr(q);
+        if (mOr && mOr !== m) {
+          const relaxed = await env.DB.prepare(verseSql).bind(mOr).all<VRow>();
+          const seen = new Set(bodyRows.map((r) => r.id));
+          for (const r of relaxed.results ?? []) {
+            if (seen.has(r.id)) continue;
+            bodyRows.push(r); seen.add(r.id);
+            if (bodyRows.length >= 60) break;
           }
         }
-        // Схлопываем повторы одного текста (стих, процитированный в разных книгах).
-        const seenTxt = new Set<string>();
-        const uniq: VRow[] = [];
-        for (const r of verseRows) {
-          const key = (r.trans ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().slice(0, 120);
-          if (key && seenTxt.has(key)) continue;
-          if (key) seenTxt.add(key);
-          uniq.push(r);
-          if (uniq.length >= 30) break;
-        }
-        verseRows = uniq;
       }
-      const verses = { results: verseRows };
+      // (в) Слияние: текстовые совпадения вперёд, затем комментарии. Схлопываем повторы
+      // одного перевода (стих, процитированный в разных книгах) и дубли по id.
+      const seenId = new Set<string>();
+      const seenTxt = new Set<string>();
+      const uniq: VRow[] = [];
+      for (const r of [...textRows, ...bodyRows]) {
+        if (seenId.has(r.id)) continue;
+        const key = (r.trans ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().slice(0, 120);
+        if (key && seenTxt.has(key)) continue;
+        seenId.add(r.id);
+        if (key) seenTxt.add(key);
+        uniq.push(r);
+        if (uniq.length >= 30) break;
+      }
+      const verses = { results: uniq };
 
       // 3) Главы и части — по названию (хранится JSON {ru}).
       const chapters = await env.DB.prepare(
@@ -1503,8 +1527,8 @@ export default {
           const full = WORK_TITLES[r.work_id];
           const sp = (r.ref || "").indexOf(" ");
           const loc = sp > 0 ? (r.ref || "").slice(sp + 1) : (r.ref || "");
-          const hl = r.hl ? oneLine(r.hl) : "";
-          const snippet = hl || (r.trans ?? "");
+          const disp = r.vtext ? oneLine(r.vtext).slice(0, 180) : (r.hl ? oneLine(r.hl) : "");
+          const snippet = disp || (r.trans ?? "");
           return { book: full ?? (r.ref || ""), ref: full ? loc : "", work: r.work_id, snippet, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` };
         }),
         chapters: (chapters.results ?? []).map((r) => ({ title: r.title, work: r.work_id, level: r.level, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
