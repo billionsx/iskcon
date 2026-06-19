@@ -6,6 +6,9 @@ Requires env: CLOUDFLARE_API_TOKEN. Account/DB ids default to the project's valu
 """
 import csv, os, sys, json, urllib.request
 
+# longform JSON-карточки (напр. krishna ~130КБ) превышают дефолтный лимит поля csv (131072)
+csv.field_size_limit(10_000_000)
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 ACCOUNT = os.environ.get("CF_ACCOUNT_ID","d5cbe19470dc38599873eabfe148e6d1")
 DB      = os.environ.get("CF_DATABASE_ID","6226aded-dd03-4e74-977f-9cd0b509e73d")
