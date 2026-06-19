@@ -373,14 +373,20 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
 function HierarchyDescent({ groups }: { groups: HierGroup[] }) {
   const PAD = 30;       // отступ слева под ось + узлы
   const SX = 11.5;      // центр оси (позвоночника) от левого края контейнера
-  const tiers = groups.flatMap((g) => g.tiers);
-  const N = Math.max(1, tiers.length);
-  // Цвет узла/коннектора: золото на вершине → серое внизу (доля полноты).
-  const tone = (i: number) => {
-    const pct = Math.max(14, Math.round(100 - (i / Math.max(1, N - 1)) * 84));
-    return `color-mix(in srgb, ${GOLD} ${pct}%, var(--color-label-3))`;
+  // Цвет узла/коннектора по полноте качеств (таттве): золото = полнота, серое = крупица.
+  const tonePct = (t: HierTier) => {
+    if (t.apex) return 100;
+    const c = (t.count ?? "").trim();
+    if (!c) return 32;                 // брахмаджьоти — безличный аспект, вне счёта
+    if (c.includes("+")) return 46;    // 50 + 5 — Шива
+    const n = parseInt(c, 10);
+    if (n >= 64) return 100;
+    if (n >= 60) return 72;
+    if (n >= 55) return 48;
+    if (n >= 50) return 28;
+    return 22;
   };
-  let run = -1; // сквозной индекс уровня
+  const toneFor = (t: HierTier) => `color-mix(in srgb, ${GOLD} ${tonePct(t)}%, var(--color-label-3))`;
   return (
     <div style={{ marginTop: 18 }}>
       <div style={{ position: "relative", paddingLeft: PAD }}>
@@ -395,20 +401,20 @@ function HierarchyDescent({ groups }: { groups: HierGroup[] }) {
               <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.realm}</div>
             </div>
             {g.tiers.map((tier, ti) => {
-              run += 1; const i = run; const apex = !!tier.apex;
+              const apex = !!tier.apex;
               const r = apex ? 8 : 4;                 // радиус узла
               const dotTop = apex ? 19 : 21;          // выравнивание узла к строке обители
               const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
-              const numSize = apex ? 27 : multi ? 16.5 : Math.max(18.5, 24 - i * 1.3);
+              const numSize = apex ? 27 : multi ? 16.5 : 20;
               return (
                 <div key={ti} style={{ position: "relative", marginTop: ti === 0 ? 0 : 9 }}>
                   {/* горизонтальный «отвод» от оси к карточке */}
-                  <span aria-hidden style={{ position: "absolute", left: SX - PAD, top: dotTop + r - 0.75, width: PAD - SX - 4, height: 1.5, background: tone(i), opacity: apex ? 0.9 : 0.5 }} />
+                  <span aria-hidden style={{ position: "absolute", left: SX - PAD, top: dotTop + r - 0.75, width: PAD - SX - 4, height: 1.5, background: toneFor(tier), opacity: apex ? 0.9 : 0.5 }} />
                   {/* узел на оси */}
                   {apex ? (
                     <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: GOLD, boxShadow: `0 0 0 5px color-mix(in srgb, ${GOLD} 18%, transparent)` }} />
                   ) : (
-                    <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: tone(i), border: "2px solid var(--color-bg)" }} />
+                    <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: toneFor(tier), border: "2px solid var(--color-bg)" }} />
                   )}
                   {/* карточка уровня */}
                   <div style={{ position: "relative", padding: "13px 15px", borderRadius: 14,
