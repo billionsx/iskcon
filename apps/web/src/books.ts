@@ -174,6 +174,46 @@ export const BOOKS: Record<string, BookData> = {
     hierarchical: false,
     uniformTitle: true,
   },
+  gl: {
+    id: "gl",
+    work: "gl",
+    slug: "govinda-lilamrita",
+    titleLine1: "Говинда-",
+    titleLine2: "лиламрита",
+    iast: "Govinda-līlāmṛta",
+    tagline: "Суточные игры Радхи и Кришны",
+    author:
+      "Шрила Кришнадас Кавираджа Госвами, автор «Шри Чайтанья-чаритамриты». Избранные стихи.",
+    description:
+      "Поэтический шедевр Кришнадаса Кавираджи, описывающий вечные суточные игры (ашта-калия-лила) Шри Шри Радхи и Кришны во Вриндаване — от пробуждения на рассвете до ночных встреч.",
+    publisher: "bbt",
+    covers: [
+      "/covers/gl-001.png?v=1",
+    ],
+    chips: ["Глава 8", "Кришнадас Кавираджа", "ключевой стих"],
+    hierarchical: false,
+    uniformTitle: true,
+  },
+  ks: {
+    id: "ks",
+    work: "ks",
+    slug: "krishna-sandarbha",
+    titleLine1: "Кришна-",
+    titleLine2: "сандарбха",
+    iast: "Kṛṣṇa-sandarbha",
+    tagline: "Кришна — Сваям Бхагаван",
+    author:
+      "Шрила Джива Госвами. Четвёртая из шести «Сандарбх» — философского свода гаудия-веданты. Избранные ануччхеды.",
+    description:
+      "В «Кришна-сандарбхе» Шрила Джива Госвами на основе писаний и логики устанавливает, что именно Кришна — изначальная Верховная Личность Бога (Сваям Бхагаван), источник всех воплощений и Вишну-таттвы.",
+    publisher: "bbt",
+    covers: [
+      "/covers/ks-001.png?v=1",
+    ],
+    chips: ["Ануччхеда 28", "Джива Госвами", "Сваям Бхагаван"],
+    hierarchical: false,
+    uniformTitle: true,
+  },
   vp: {
     id: "vp",
     work: "vp",
@@ -472,6 +512,14 @@ export function bookShareImage(b: BookData): string {
  * книга несёт собственный текст; никакого дефолта на «Бхагавад-гиту».
  */
 export const BOOK_ABOUT: Record<string, string[]> = {
+  gl: [
+    "«Говинда-лиламрита» — поэтический шедевр Шрилы Кришнадаса Кавираджи Госвами, автора «Шри Чайтанья-чаритамриты». Книга в мельчайших подробностях описывает вечные суточные игры (ашта-калия-лила) Шри Шри Радхи и Кришны во Вриндаване.",
+    "Следуя за восемью периодами дня — от пробуждения на рассвете до ночных встреч в рощах Враджа, — произведение служит опорой для медитации (смараны) преданных, идущих по пути рагануга-бхакти.",
+  ],
+  ks: [
+    "«Кришна-сандарбха» — четвёртая из шести «Сандарбх» Шрилы Дживы Госвами, образующих философский фундамент гаудия-веданты. Опираясь на «Шримад-Бхагаватам» и строгую логику, Джива Госвами доказывает, что Кришна — это Сваям Бхагаван, изначальная Верховная Личность Бога.",
+    "Знаменитая 28-я ануччхеда подытоживает стих «кришнас ту бхагаван свайам»: все прочие воплощения — части и экспансии Кришны, тогда как Он Сам — их источник. Здесь же раскрыты Его обитель, спутники и энергии.",
+  ],
   vp: [
     "«Вишну-пурана» — одна из восемнадцати главных Пуран и одна из самых почитаемых, целиком посвящённая Господу Вишну. Мудрец Парашара Муни, отец Вьясадевы, излагает её своему ученику Майтрее: о творении и устройстве мироздания, о династиях, обителях и величии Верховного Господа.",
     "Для богословия гаудия-вайшнавов «Вишну-пурана» особенно ценна двумя определениями: шести достояний (бхага), которыми в полноте обладает Бхагаван, и трёх духовных энергий Господа — хладини (блаженство), сандхини (бытие) и самвит (знание). Стихи приводятся с пословным санскритом и переводом.",
@@ -618,6 +666,7 @@ export const LIBRARY: CatalogBook[] = [
   { id: "brihad-bhagavatamrita", title: "Брихад-Бхагаватамрита", iast: "Bṛhad-bhāgavatāmṛta", note: "Поиск высшего получателя милости и высшей обители; путь Гопа-кумара.", authorId: "sanatana-goswami", authorName: "Санатана Госвами", lineage: "acharya", readable: false, also: "Brihad Санатана Брихад-Бхагаватамрита" },
   { id: "dashama-tippani", title: "Дашама-типпани (Вайшнава-тошани)", iast: "Daśama-ṭippanī", note: "Комментарий к Десятой песни «Шримад-Бхагаватам».", authorId: "sanatana-goswami", authorName: "Санатана Госвами", lineage: "acharya", readable: false, also: "toshani Санатана комментарий Дашама-типпани (Вайшнава-тошани)" },
   { id: "shat-sandarbha", title: "Шат-сандарбха", iast: "Ṣaṭ-sandarbha", note: "Шесть философских трактатов — систематика гаудия-веданты.", authorId: "jiva-goswami", authorName: "Джива Госвами", lineage: "acharya", readable: false, also: "sandarbha Джива Tattva Bhagavat Шат-сандарбха" },
+  { id: "ks", title: "Кришна-сандарбха", iast: "Kṛṣṇa-sandarbha", note: "Трактат, устанавливающий, что Кришна — Сваям Бхагаван (4-я из Сандарбх).", authorId: "jiva-goswami", authorName: "Джива Госвами", lineage: "acharya", readable: true, also: "sandarbha Джива Кришна-сандарбха krishna-sandarbha Сваям Бхагаван" },
   { id: "gopala-champu", title: "Гопала-чампу", iast: "Gopāla-campū", note: "Поэтико-прозаический свод вечных игр Кришны во Врадже.", authorId: "jiva-goswami", authorName: "Джива Госвами", lineage: "acharya", readable: false, also: "champu Джива Гопала-чампу" },
   { id: "hari-namamrita-vyakarana", title: "Хари-намамрита-вьякарана", iast: "Hari-nāmāmṛta-vyākaraṇa", note: "Санскритская грамматика, построенная на именах Господа.", authorId: "jiva-goswami", authorName: "Джива Госвами", lineage: "acharya", readable: false, also: "грамматика vyakarana Джива Хари-намамрита-вьякарана" },
   { id: "sarva-samvadini", title: "Сарва-самвадини", iast: "Sarva-saṁvādinī", note: "Авторский комментарий-дополнение к «Сандарбхам».", authorId: "jiva-goswami", authorName: "Джива Госвами", lineage: "acharya", readable: false, also: "samvadini Джива Сарва-самвадини" },
@@ -632,7 +681,7 @@ export const LIBRARY: CatalogBook[] = [
   { id: "chaitanya-chandramrita", title: "Чайтанья-чандрамрита", iast: "Caitanya-candrāmṛta", note: "Сто строф во славу Шри Чайтаньи и Его милости.", authorId: "prabodhananda-saraswati-thakur", authorName: "Прабодхананда Сарасвати", lineage: "acharya", readable: false, also: "chandramrita Прабодхананда Чайтанья-чандрамрита" },
   { id: "radha-rasa-sudha-nidhi", title: "Радха-раса-судха-нидхи", iast: "Rādhā-rasa-sudhā-nidhi", note: "Молитвы, прославляющие Шримати Радхарани.", authorId: "prabodhananda-saraswati-thakur", authorName: "Прабодхананда Сарасвати", lineage: "acharya", readable: false, also: "sudha nidhi Радха Радха-раса-судха-нидхи" },
   { id: "vrindavana-mahimamrita", title: "Вриндавана-махимамрита", iast: "Vṛndāvana-mahimāmṛta", note: "Поэма о величии Шри Вриндавана-дхамы.", authorId: "prabodhananda-saraswati-thakur", authorName: "Прабодхананда Сарасвати", lineage: "acharya", readable: false, also: "mahima Вриндаван Вриндавана-махимамрита" },
-  { id: "govinda-lilamrita", title: "Говинда-лиламрита", iast: "Govinda-līlāmṛta", note: "Поэтическое описание суточных игр (аштакалия-лила) Радхи-Кришны.", authorId: "krishnadasa-kaviraja", authorName: "Кришнадас Кавираджа", lineage: "acharya", readable: false, also: "lilamrita ashtakaliya Говинда-лиламрита" },
+  { id: "gl", title: "Говинда-лиламрита", iast: "Govinda-līlāmṛta", note: "Поэтическое описание суточных игр (аштакалия-лила) Радхи-Кришны.", authorId: "krishnadasa-kaviraja", authorName: "Кришнадас Кавираджа", lineage: "acharya", readable: true, also: "lilamrita ashtakaliya Говинда-лиламрита govinda" },
   { id: "madhurya-kadambini", title: "Мадхурья-кадамбини", iast: "Mādhurya-kādambinī", note: "Трактат о ступенях развития бхакти — от веры до премы.", authorId: "vishvanatha-chakravarti", authorName: "Вишванатха Чакраварти", lineage: "acharya", readable: false, also: "kadambini ступени бхакти Мадхурья-кадамбини" },
   { id: "bhakti-rasamrita-sindhu-bindu", title: "Бхакти-расамрита-синдху-бинду", iast: "Bhakti-rasāmṛta-sindhu-bindu", note: "Краткое изложение «Бхакти-расамрита-синдху» Рупы.", authorId: "vishvanatha-chakravarti", authorName: "Вишванатха Чакраварти", lineage: "acharya", readable: false, also: "bindu синдху Бхакти-расамрита-синдху-бинду" },
   { id: "sarartha-darshini", title: "Сарартха-даршини", iast: "Sārārtha-darśinī", note: "Комментарий к «Шримад-Бхагаватам».", authorId: "vishvanatha-chakravarti", authorName: "Вишванатха Чакраварти", lineage: "acharya", readable: false, also: "sarartha комментарий Сарартха-даршини" },
