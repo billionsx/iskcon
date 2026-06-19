@@ -109,15 +109,14 @@ function resolveRef(query: string): { work: string; id: string } | null {
   return { work, id: [work, ...(div ? [div] : []), ...nums].join(".") };
 }
 
-// Регистронезависимый GLOB-шаблон для кириллицы: SQLite LIKE не складывает регистр
-// для не-ASCII, поэтому по каждой букве строим класс [строчн.ЗАГЛ.].
-function ciGlob(q: string): string {
-  // GLOB регистронезависимо через классы вида [аА]. SQLite отвергает паттерн как
-  // «too complex» примерно с 7 классов подряд, поэтому их число ограничено: первые
-  // символы матчатся без учёта регистра (покрывает заглавную в начале слова/фразы),
-  // остаток — литералом в нижнем регистре. Стихи всё равно ищутся через FTS (вся фраза).
+// Классы регистра для кириллицы: SQLite LIKE не складывает регистр для не-ASCII,
+// поэтому по каждой букве строим класс [строчн.ЗАГЛ.]. SQLite отвергает паттерн как
+// «too complex» примерно с 7 классов подряд, поэтому их число ограничено: первые
+// символы матчатся без учёта регистра (покрывает заглавную в начале), остаток —
+// литералом в нижнем регистре.
+function ciClasses(q: string): string {
   const MAX_CLASSES = 6;
-  let g = "*";
+  let g = "";
   let cls = 0;
   for (const ch of q) {
     if (ch === "*" || ch === "?" || ch === "[") { g += "[" + ch + "]"; continue; }
@@ -125,8 +124,13 @@ function ciGlob(q: string): string {
     if (lo !== up && cls < MAX_CLASSES) { g += "[" + lo + up + "]"; cls++; }
     else g += lo;
   }
-  return g + "*";
+  return g;
 }
+// Подстрока (по умолчанию), префикс (имя начинается с запроса), точное совпадение.
+// Префикс/точное используются для ранжирования личностей по релевантности.
+function ciGlob(q: string): string { return "*" + ciClasses(q) + "*"; }
+const ciGlobPrefix = (q: string) => ciClasses(q) + "*";
+const ciGlobExact = (q: string) => ciClasses(q);
 
 // FTS5 MATCH из пользовательского ввода: буквенно-цифровые токены, неявный AND,
 // префиксная «звёздочка» на последнем токене для поиска на лету. Операторы FTS
@@ -1354,6 +1358,8 @@ export default {
       const empty = { q, exact: null, personalities: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
       if (q.length < 2) return noStore(json(empty));
       const g = ciGlob(q);
+      const gPrefix = ciGlobPrefix(q);
+      const gExact = ciGlobExact(q);
       const m = ftsMatch(q);
 
       // 0) Прямая ссылка («БГ 2.13» → стих, «БГ 2» / «ЧЧ Ади 1» → глава) — карточка сверху.
@@ -1380,14 +1386,27 @@ export default {
       }
 
       // 1) Личности — по именам и псевдонимам (точно, без флуда описаниями).
+      // Ранжирование: личности раньше писаний/мест; затем «ядро» имени (без гоноративов
+      // Шри/Шримати/Господь…) — точное совпадение с запросом, затем префикс, затем
+      // подстрока в каноническом имени; короче ядро — выше; алфавит — стабилизатор.
       const people = await env.DB.prepare(
-        `SELECT e.id, e.type,
-           (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
-           (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
-         FROM entities e
-         WHERE EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
-         ORDER BY (name_ru IS NULL), name_ru LIMIT 30`,
-      ).bind(g).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+        `SELECT id, type, name_ru, name_iast FROM (
+           SELECT e.id AS id, e.type AS type,
+             (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name_ru,
+             (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast,
+             trim(replace(replace(replace(replace(replace(replace(
+               (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1),
+               'Шри Шримати ',''),'Шри Шри ',''),'Шримати ',''),'Шрила ',''),'Господь ',''),'Шри ','')) AS core
+           FROM entities e
+           WHERE EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
+         )
+         ORDER BY (type='personality') DESC,
+           (core GLOB ?3) DESC,
+           (core GLOB ?2) DESC,
+           (name_ru GLOB ?1) DESC,
+           length(core), (name_ru IS NULL), name_ru
+         LIMIT 30`,
+      ).bind(g, gPrefix, gExact).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
 
       // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
       // Строгий проход (все слова, префикс на последнем). Если совпадений мало —
