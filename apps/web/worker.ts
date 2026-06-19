@@ -62,11 +62,18 @@ function noStore(r: Response): Response {
 // Регистронезависимый GLOB-шаблон для кириллицы: SQLite LIKE не складывает регистр
 // для не-ASCII, поэтому по каждой букве строим класс [строчн.ЗАГЛ.].
 function ciGlob(q: string): string {
+  // GLOB регистронезависимо через классы вида [аА]. SQLite отвергает паттерн как
+  // «too complex» примерно с 7 классов подряд, поэтому их число ограничено: первые
+  // символы матчатся без учёта регистра (покрывает заглавную в начале слова/фразы),
+  // остаток — литералом в нижнем регистре. Стихи всё равно ищутся через FTS (вся фраза).
+  const MAX_CLASSES = 6;
   let g = "*";
+  let cls = 0;
   for (const ch of q) {
     if (ch === "*" || ch === "?" || ch === "[") { g += "[" + ch + "]"; continue; }
     const lo = ch.toLowerCase(), up = ch.toUpperCase();
-    g += lo !== up ? "[" + lo + up + "]" : ch;
+    if (lo !== up && cls < MAX_CLASSES) { g += "[" + lo + up + "]"; cls++; }
+    else g += lo;
   }
   return g + "*";
 }
