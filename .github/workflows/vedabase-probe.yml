@@ -1,0 +1,64 @@
+name: vedabase probe (диагностика структуры книги)
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "vedabase slug (bs, brahma-samhita, ...)"
+        default: "bs"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Probe
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SLUG: ${{ github.event.inputs.slug }}
+        run: |
+          python3 - <<'PY'
+          import os, re, json, urllib.request
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36"
+          SLUG=(os.environ.get("SLUG") or "bs").strip()
+          def get(url):
+              try:
+                  rq=urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"ru,en;q=0.8","accept":"text/html"})
+                  with urllib.request.urlopen(rq, timeout=30) as r:
+                      return r.status, r.read().decode("utf-8","replace")
+              except Exception as e:
+                  return 0, f"ERR:{e}"
+          def d1(sql):
+              body=json.dumps({"sql":sql}).encode()
+              rq=urllib.request.Request(D1, data=body, headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"})
+              with urllib.request.urlopen(rq, timeout=60) as r: return json.loads(r.read().decode())
+          def q(v): return "'"+str(v).replace("'","''")+"'"
+
+          out={}
+          for label,url in [
+              ("ru_index", f"https://vedabase.io/ru/library/{SLUG}/"),
+              ("ru_ch5",   f"https://vedabase.io/ru/library/{SLUG}/5/"),
+              ("ru_5_1",   f"https://vedabase.io/ru/library/{SLUG}/5/1/"),
+              ("ru_1",     f"https://vedabase.io/ru/library/{SLUG}/1/"),
+              ("en_5_1",   f"https://vedabase.io/en/library/{SLUG}/5/1/"),
+          ]:
+              st, html = get(url)
+              ch_links = sorted(set(re.findall(rf"/ru/library/{SLUG}/(\d+)/(?:\"|')", html))) if st==200 else []
+              verse_links = sorted(set(re.findall(rf"/library/{SLUG}/(\d+)/(\d+(?:-\d+)?)/", html)))[:5] if st==200 else []
+              out[label]={
+                  "status": st, "len": len(html) if st==200 else 0,
+                  "has_verse_text": ("av-verse_text" in html),
+                  "has_translation": ("av-translation" in html),
+                  "has_devanagari": ("av-devanagari" in html),
+                  "ch_links": ch_links[:14],
+                  "verse_links": verse_links,
+              }
+          blob=json.dumps(out, ensure_ascii=False)[:1900]
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'vedabase probe "+SLUG+"',0,"+q(blob)+")")
+          print(blob)
+          PY
