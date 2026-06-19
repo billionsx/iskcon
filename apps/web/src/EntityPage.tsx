@@ -788,16 +788,28 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const subAnchorRef = useRef<HTMLDivElement>(null);
   const tabContentRef = useRef<HTMLDivElement>(null);
   const scrollToAnchor = (ref: React.RefObject<HTMLDivElement>, stickyTop: number) => {
-    // Двойной rAF: ждём и коммита React, и раскладки нового (часто более
-    // короткого) контента. Иначе плавный скролл стартует к верху, а посреди
-    // анимации страница схлопывается по высоте — браузер клампит позицию и
-    // бросает у низа. Прыжок мгновенный (behavior:auto): раздел всегда
-    // открывается с начала экрана, под липкими вкладками.
+    // Контент крутится во ВНУТРЕННЕМ <main overflow-y:auto>, а не в окне —
+    // window.scrollTo по нему не работает. Поэтому ищем ближайшего
+    // скроллящегося предка якоря и листаем именно его. Двойной rAF — ждём
+    // коммита React и раскладки нового (часто более короткого) контента, иначе
+    // позицию клампит при сжатии. Прыжок мгновенный: раздел открывается
+    // с начала экрана, ровно под липкими вкладками.
     const run = () => {
       const el = ref.current;
       if (!el) return;
-      const top = el.getBoundingClientRect().top + window.pageYOffset - stickyTop + 1;
-      window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+      let sc: HTMLElement | null = el.parentElement;
+      while (sc) {
+        const oy = getComputedStyle(sc).overflowY;
+        if ((oy === "auto" || oy === "scroll" || oy === "overlay") && sc.scrollHeight > sc.clientHeight) break;
+        sc = sc.parentElement;
+      }
+      if (sc) {
+        const top = el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop - stickyTop + 1;
+        sc.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+      } else {
+        const top = el.getBoundingClientRect().top + window.pageYOffset - stickyTop + 1;
+        window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+      }
     };
     requestAnimationFrame(() => requestAnimationFrame(run));
   };
