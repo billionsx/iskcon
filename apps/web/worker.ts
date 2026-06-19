@@ -104,7 +104,8 @@ function resolveRef(query: string): { work: string; id: string } | null {
   const div = DIV_SLUG[parts[i]];
   if (div) i++;
   const nums = parts.slice(i);
-  if (!nums.length || !nums.every((n) => /^\d+(?:[-–]\d+)?$/.test(n))) return null;
+  if (nums.length && !nums.every((n) => /^\d+(?:[-–]\d+)?$/.test(n))) return null; // хвост не числовой — не ссылка
+  if (!div && !nums.length) return null; // одно название книги — это поиск книги, не ссылка
   return { work, id: [work, ...(div ? [div] : []), ...nums].join(".") };
 }
 
@@ -1331,19 +1332,26 @@ export default {
       const g = ciGlob(q);
       const m = ftsMatch(q);
 
-      // 0) Прямая ссылка на стих («БГ 2.13», «ЧЧ Ади 1.1») — точная карточка сверху.
-      let exact: { book: string; ref: string; snippet: string; href: string } | null = null;
+      // 0) Прямая ссылка («БГ 2.13» → стих, «БГ 2» / «ЧЧ Ади 1» → глава) — карточка сверху.
+      let exact: { kind: "verse" | "chapter"; book: string; ref?: string; snippet?: string; title?: string; level?: string | null; href: string } | null = null;
       const rr = resolveRef(q);
       if (rr) {
-        const row = await env.DB.prepare(
+        const vrow = await env.DB.prepare(
           `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS snippet
            FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id WHERE v.id = ?1 LIMIT 1`
         ).bind(rr.id).first<{ id: string; work_id: string; ref: string; snippet: string | null }>();
-        if (row) {
-          const full = WORK_TITLES[row.work_id];
-          const sp = (row.ref || "").indexOf(" ");
-          const loc = sp > 0 ? (row.ref || "").slice(sp + 1) : (row.ref || "");
-          exact = { book: full ?? (row.ref || ""), ref: full ? loc : "", snippet: row.snippet ?? "", href: `/book/${row.work_id}/${tail(row.id, row.work_id)}` };
+        if (vrow) {
+          const full = WORK_TITLES[vrow.work_id];
+          const sp = (vrow.ref || "").indexOf(" ");
+          const loc = sp > 0 ? (vrow.ref || "").slice(sp + 1) : (vrow.ref || "");
+          exact = { kind: "verse", book: full ?? (vrow.ref || ""), ref: full ? loc : "", snippet: vrow.snippet ?? "", href: `/book/${vrow.work_id}/${tail(vrow.id, vrow.work_id)}` };
+        } else {
+          const drow = await env.DB.prepare(
+            `SELECT d.id, d.work_id, d.level, json_extract(d.title,'$.ru') AS title FROM divisions d WHERE d.id = ?1 LIMIT 1`
+          ).bind(rr.id).first<{ id: string; work_id: string; level: string | null; title: string | null }>();
+          if (drow) {
+            exact = { kind: "chapter", book: WORK_TITLES[drow.work_id] ?? drow.work_id, title: drow.title ?? "", level: drow.level, href: `/book/${drow.work_id}/${tail(drow.id, drow.work_id)}` };
+          }
         }
       }
 
