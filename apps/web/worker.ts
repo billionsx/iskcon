@@ -1362,7 +1362,7 @@ export default {
            (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='iast' AND n.kind='canonical' LIMIT 1) AS name_iast
          FROM entities e
          WHERE EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
-         ORDER BY (name_ru IS NULL), name_ru LIMIT 12`,
+         ORDER BY (name_ru IS NULL), name_ru LIMIT 30`,
       ).bind(g).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
 
       // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
@@ -1376,7 +1376,7 @@ export default {
       const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS snippet
              FROM verse_fts f JOIN verses v ON v.id=f.verse_id LEFT JOIN verse_texts vt ON vt.verse_id=v.id
              WHERE verse_fts MATCH ?1
-             ORDER BY (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END), rank LIMIT 24`;
+             ORDER BY (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END), rank LIMIT 60`;
       let verseRows: VRow[] = [];
       if (m) {
         const strict = await env.DB.prepare(verseSql).bind(m).all<VRow>();
@@ -1389,7 +1389,7 @@ export default {
             for (const r of relaxed.results ?? []) {
               if (seen.has(r.id)) continue;
               verseRows.push(r); seen.add(r.id);
-              if (verseRows.length >= 24) break;
+              if (verseRows.length >= 60) break;
             }
           }
         }
@@ -1401,7 +1401,7 @@ export default {
           if (key && seenTxt.has(key)) continue;
           if (key) seenTxt.add(key);
           uniq.push(r);
-          if (uniq.length >= 14) break;
+          if (uniq.length >= 30) break;
         }
         verseRows = uniq;
       }
@@ -1412,7 +1412,7 @@ export default {
         `SELECT d.id, d.work_id, d.level, json_extract(d.title,'$.ru') AS title
          FROM divisions d
          WHERE json_extract(d.title,'$.ru') GLOB ?1
-         ORDER BY d.work_id, d.ordinal LIMIT 12`,
+         ORDER BY d.work_id, d.ordinal LIMIT 30`,
       ).bind(g).all<{ id: string; work_id: string; level: string | null; title: string | null }>();
 
       // 4) Молитвы и киртаны — content_items типа prayer (+ тело страницы page_text).
@@ -1422,7 +1422,7 @@ export default {
          WHERE ci.lang='ru' AND ci.type='prayer'
            AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
                 OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
-         ORDER BY (ci.name GLOB ?1) DESC LIMIT 10`,
+         ORDER BY (ci.name GLOB ?1) DESC LIMIT 20`,
       ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null }>();
 
       // 5) Страницы и разделы — прочий контент (хабы, статьи).
@@ -1432,14 +1432,14 @@ export default {
          WHERE ci.lang='ru' AND ci.type IN ('hub','article')
            AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
                 OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
-         ORDER BY (ci.name GLOB ?1) DESC LIMIT 10`,
+         ORDER BY (ci.name GLOB ?1) DESC LIMIT 20`,
       ).bind(g).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null }>();
 
       // 6) Центры — опубликованные храмы/ятры.
       const centers = await env.DB.prepare(
         `SELECT slug, name, city FROM centers
          WHERE status='live' AND (name GLOB ?1 OR city GLOB ?1 OR country GLOB ?1 OR region GLOB ?1)
-         LIMIT 10`,
+         LIMIT 20`,
       ).bind(g).all<{ slug: string; name: string; city: string | null }>();
 
       // стих/глава → URL: id без префикса работы, точки → слэши (bg.4.9 → /book/bg/4/9).
