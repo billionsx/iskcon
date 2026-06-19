@@ -1,9 +1,10 @@
 /**
  * SearchScreen — глобальный сквозной поиск по всему приложению.
  * Личности (граф), книги (клиентский каталог LIBRARY с фаззи/алиасами), стихи
- * (FTS5 + recall-fallback), главы/части, молитвы и киртаны, страницы и разделы,
- * центры. Серверный поиск — /api/search?q=; книги ищутся на клиенте мгновенно.
- * Совпадения подсвечиваются, у каждой группы — счётчик.
+ * (FTS5 + recall-fallback, с полным названием книги), главы/части, молитвы и
+ * киртаны, страницы и разделы, центры. Серверный поиск — /api/search?q=; книги
+ * ищутся на клиенте мгновенно. Совпадения подсвечиваются; при нескольких типах
+ * результатов сверху появляются чипы-фильтры по категориям (Apple-стиль).
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
@@ -11,7 +12,7 @@ import { BOOKS, LIBRARY, type CatalogBook } from "./books";
 import { searchBooks } from "./bookSearch";
 
 type Person = { id: string; type: string | null; name_ru: string | null; name_iast: string | null };
-type Verse = { ref: string; work: string; snippet: string; href: string };
+type Verse = { book: string; ref: string; work?: string; snippet: string; href: string };
 type Chapter = { title: string | null; work: string; level: string | null; href: string };
 type Page = { name: string | null; subtitle: string | null; type?: string | null; href: string };
 type Center = { name: string; city: string | null; href: string };
@@ -72,14 +73,17 @@ function Monogram({ ch, size = 40 }: { ch: string; size?: number }) {
   );
 }
 
-function Row({ ch, title, sub, iast, toks, onTap }: { ch: string; title: string; sub?: string | null; iast?: string | null; toks: string[]; onTap: () => void }) {
+function Row({ ch, title, meta, sub, iast, toks, onTap }: { ch: string; title: string; meta?: string | null; sub?: string | null; iast?: string | null; toks: string[]; onTap: () => void }) {
   return (
     <div role="button" tabIndex={0} onClick={onTap}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTap(); } }}
       style={{ display: "flex", alignItems: "center", gap: 13, padding: "11px 4px", borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", textAlign: "left" }}>
       <Monogram ch={ch} />
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hl(title, toks)}</span>
+        <span style={{ display: "flex", alignItems: "baseline", gap: 7, minWidth: 0 }}>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hl(title, toks)}</span>
+          {meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{meta}</span>}
+        </span>
         {iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{iast}</span>}
         {sub && <span style={{ fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.35, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } as React.CSSProperties}>{hl(sub, toks)}</span>}
       </span>
@@ -99,6 +103,25 @@ function Section({ title, count, children }: { title: string; count?: number; ch
   );
 }
 
+const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", centers: "Центры", pages: "Страницы" } as const;
+type GroupKey = keyof typeof GROUP_LABEL;
+const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "centers", "pages"];
+
+function Chip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} aria-pressed={active}
+      style={{
+        flexShrink: 0, display: "inline-flex", alignItems: "baseline", gap: 5, padding: "6px 13px", borderRadius: 999,
+        border: active ? "0.5px solid var(--color-label)" : "0.5px solid var(--color-hairline)",
+        background: active ? "var(--color-label)" : "var(--color-bg-2)",
+        color: active ? "var(--color-bg)" : "var(--color-label-2)",
+        fontFamily: "var(--font-text)", fontSize: 14, fontWeight: active ? 600 : 500, lineHeight: 1, cursor: "pointer", whiteSpace: "nowrap",
+      }}>
+      {label}<span style={{ fontVariantNumeric: "tabular-nums", opacity: 0.6, fontWeight: 500 }}>{count}</span>
+    </button>
+  );
+}
+
 export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavigate }: {
   onBack: () => void;
   onOpenEntity: (id: string, type: string | null) => void;
@@ -108,6 +131,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const [q, setQ] = useState("");
   const [res, setRes] = useState<Results | null>(null);
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState<GroupKey | "all">("all");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seq = useRef(0);
@@ -141,14 +165,23 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
     if (b.readable && (BOOKS as Record<string, unknown>)[b.id]) onOpenBook(b.id);
     else onOpenEntity(b.id, "scripture");
   };
-  const total = (res ? r.personalities.length + r.verses.length + r.chapters.length + r.prayers.length + r.pages.length + r.centers.length : 0) + bookHits.length;
+
+  const counts: Record<GroupKey, number> = {
+    people: r.personalities.length, books: bookHits.length, verses: r.verses.length,
+    chapters: r.chapters.length, prayers: r.prayers.length, centers: r.centers.length, pages: r.pages.length,
+  };
+  const present = GROUP_ORDER.filter((k) => counts[k] > 0);
+  const total = present.reduce((s, k) => s + counts[k], 0);
+  // Если активный фильтр опустел после нового запроса — мягко возвращаемся к «Все».
+  const activeFilter: GroupKey | "all" = filter !== "all" && counts[filter] === 0 ? "all" : filter;
+  const show = (k: GroupKey) => counts[k] > 0 && (activeFilter === "all" || activeFilter === k);
   const nothing = searching && !loading && res !== null && total === 0;
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <div style={{ position: "sticky", top: 0, zIndex: 10, display: "flex", alignItems: "center", gap: 8, height: 56, padding: "0 10px",
+      <div style={{ position: "sticky", top: 0, zIndex: 11, display: "flex", alignItems: "center", gap: 8, height: 56, padding: "0 10px",
         background: "color-mix(in srgb, var(--color-bg) 90%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "0.5px solid var(--color-hairline)" }}>
+        borderBottom: present.length >= 2 ? "none" : "0.5px solid var(--color-hairline)" }}>
         <button type="button" aria-label="Назад" onClick={onBack}
           style={{ flexShrink: 0, display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
@@ -157,6 +190,17 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)",
             background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none" }} />
       </div>
+
+      {searching && present.length >= 2 && (
+        <div style={{ position: "sticky", top: 56, zIndex: 10, display: "flex", gap: 8, padding: "9px 16px", overflowX: "auto",
+          background: "color-mix(in srgb, var(--color-bg) 90%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+          borderBottom: "0.5px solid var(--color-hairline)", scrollbarWidth: "none" } as React.CSSProperties}>
+          <Chip label="Все" count={total} active={activeFilter === "all"} onClick={() => setFilter("all")} />
+          {present.map((k) => (
+            <Chip key={k} label={GROUP_LABEL[k]} count={counts[k]} active={activeFilter === k} onClick={() => setFilter(k)} />
+          ))}
+        </div>
+      )}
 
       <div style={{ padding: "10px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
         {!searching && (
@@ -169,56 +213,56 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</p>
         )}
 
-        {searching && r.personalities.length > 0 && (
-          <Section title="Личности" count={r.personalities.length}>
+        {show("people") && (
+          <Section title="Личности" count={counts.people}>
             {r.personalities.map((p) => (
               <Row key={"p" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => onOpenEntity(p.id, p.type)} />
             ))}
           </Section>
         )}
 
-        {searching && bookHits.length > 0 && (
-          <Section title="Книги" count={bookHits.length}>
+        {show("books") && (
+          <Section title="Книги" count={counts.books}>
             {bookHits.map((b) => (
               <Row key={"b" + b.id} ch={mono(b.title)} title={b.title} iast={b.iast || null} sub={b.readable ? null : "скоро"} toks={toks} onTap={() => openBook(b)} />
             ))}
           </Section>
         )}
 
-        {searching && r.verses.length > 0 && (
-          <Section title="Стихи" count={r.verses.length}>
+        {show("verses") && (
+          <Section title="Стихи" count={counts.verses}>
             {r.verses.map((v, i) => (
-              <Row key={"v" + i + v.href} ch={mono(v.ref)} title={v.ref} sub={v.snippet} toks={toks} onTap={() => onNavigate(v.href)} />
+              <Row key={"v" + i + v.href} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => onNavigate(v.href)} />
             ))}
           </Section>
         )}
 
-        {searching && r.chapters.length > 0 && (
-          <Section title="Главы и части" count={r.chapters.length}>
+        {show("chapters") && (
+          <Section title="Главы и части" count={counts.chapters}>
             {r.chapters.map((c, i) => (
               <Row key={"c" + i + c.href} ch={mono(c.title || "?")} title={c.title || "—"} sub={`${workLabel(c.work)}${c.level ? " · " + (LEVEL_LABEL[c.level] || c.level) : ""}`} toks={toks} onTap={() => onNavigate(c.href)} />
             ))}
           </Section>
         )}
 
-        {searching && r.prayers.length > 0 && (
-          <Section title="Молитвы и киртаны" count={r.prayers.length}>
+        {show("prayers") && (
+          <Section title="Молитвы и киртаны" count={counts.prayers}>
             {r.prayers.map((p, i) => (
               <Row key={"pr" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => onNavigate(p.href)} />
             ))}
           </Section>
         )}
 
-        {searching && r.centers.length > 0 && (
-          <Section title="Центры" count={r.centers.length}>
+        {show("centers") && (
+          <Section title="Центры" count={counts.centers}>
             {r.centers.map((c, i) => (
               <Row key={"ce" + i + c.href} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => onNavigate(c.href)} />
             ))}
           </Section>
         )}
 
-        {searching && r.pages.length > 0 && (
-          <Section title="Страницы и разделы" count={r.pages.length}>
+        {show("pages") && (
+          <Section title="Страницы и разделы" count={counts.pages}>
             {r.pages.map((p, i) => (
               <Row key={"pg" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => onNavigate(p.href)} />
             ))}
