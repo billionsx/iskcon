@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        default: "https://gitabase.com/rus/BS/5/29"
+        default: "https://gitabase.com/eng/BS/5/56"
 permissions:
   contents: read
 jobs:
@@ -18,18 +18,21 @@ jobs:
         run: |
           python3 - <<'PY'
           import os, re, json, urllib.request
+          import html as H
           CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
           D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
           UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
           URL=os.environ["URL"].strip()
-          html=urllib.request.urlopen(urllib.request.Request(URL, headers={"user-agent":UA,"accept-language":"ru"}), timeout=30).read().decode("utf-8","replace")
+          html=urllib.request.urlopen(urllib.request.Request(URL, headers={"user-agent":UA,"accept-language":"en"}), timeout=30).read().decode("utf-8","replace")
           def d1(sql):
               urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
                 headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read()
           def q(v): return "'"+str(v).replace("'","''")+"'"
-          i=html.find("Текст</center></div>")
-          raw=html[i:i+1700] if i>0 else html[:1700]
-          for k in range(0,min(len(raw),3400),1700):
-              d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'h4raw "+str(k)+"',200,"+q(raw[k:k+1700])+")")
-          print("ok",len(raw))
+          t=re.sub(r"<(script|style)[^>]*>.*?</\1>"," ", html, flags=re.S|re.I)
+          t=re.sub(r"<[^>]+>"," ", t); t=H.unescape(t); t=re.sub(r"\s+"," ",t).strip()
+          # окно вокруг "Sri Brahma" .. translation
+          i=t.find("Text")
+          seg=t[:1500]
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'v56vis',200,"+q(seg[:1900])+")")
+          print("ok")
           PY
