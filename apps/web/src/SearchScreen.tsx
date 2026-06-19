@@ -32,6 +32,19 @@ function mono(s: string): string {
   return (t[0] || "?").toUpperCase();
 }
 
+// Недавние запросы — локально в браузере, чтобы пустой экран поиска был полезным.
+const RECENT_KEY = "iskcon:recent-search";
+function loadRecent(): string[] {
+  try {
+    const raw = localStorage.getItem(RECENT_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr.filter((x) => typeof x === "string").slice(0, 8) : [];
+  } catch { return []; }
+}
+function saveRecent(list: string[]): void {
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 8))); } catch { /* приватный режим — игнорируем */ }
+}
+
 const RE_ESC = /[.*+?^${}()|[\]\\]/g;
 function tokensOf(q: string): string[] {
   return (q.toLowerCase().match(/[\p{L}\p{N}]+/gu) || []).filter((t) => t.length >= 2);
@@ -132,6 +145,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const [res, setRes] = useState<Results | null>(null);
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<GroupKey | "all">("all");
+  const [recent, setRecent] = useState<string[]>(() => loadRecent());
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seq = useRef(0);
@@ -161,7 +175,20 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   }, [query]);
 
   const r = res ?? EMPTY;
+  const recordRecent = (term: string) => {
+    const t = term.trim();
+    if (t.length < 2) return;
+    setRecent((prev) => {
+      const next = [t, ...prev.filter((x) => x.toLowerCase() !== t.toLowerCase())].slice(0, 8);
+      saveRecent(next);
+      return next;
+    });
+  };
+  const clearRecent = () => { setRecent([]); saveRecent([]); };
+  const goEntity = (id: string, type: string | null) => { recordRecent(query); onOpenEntity(id, type); };
+  const goNav = (href: string) => { recordRecent(query); onNavigate(href); };
   const openBook = (b: CatalogBook) => {
+    recordRecent(query);
     if (b.readable && (BOOKS as Record<string, unknown>)[b.id]) onOpenBook(b.id);
     else onOpenEntity(b.id, "scripture");
   };
@@ -203,7 +230,29 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
       )}
 
       <div style={{ padding: "10px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
-        {!searching && (
+        {!searching && recent.length > 0 && (
+          <section style={{ marginTop: 16 }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "0 0 10px" }}>
+              <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-3)" }}>Недавнее</h3>
+              <button type="button" onClick={clearRecent}
+                style={{ border: "none", background: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)", cursor: "pointer" }}>Очистить</button>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {recent.map((t) => (
+                <button key={t} type="button" onClick={() => setQ(t)}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 13px", borderRadius: 999, border: "0.5px solid var(--color-hairline)",
+                    background: "var(--color-bg-2)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1, cursor: "pointer" }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden style={{ opacity: 0.55 }}>
+                    <path d="M12 7v5l3 2M21 12a9 9 0 1 1-3.5-7.1M21 4v4h-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  {t}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {!searching && recent.length === 0 && (
           <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.5 }}>
             Личности, книги, стихи, главы,<br />молитвы, киртаны, центры…<br />начните вводить имя, название или строку.
           </p>
@@ -216,7 +265,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("people") && (
           <Section title="Личности" count={counts.people}>
             {r.personalities.map((p) => (
-              <Row key={"p" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => onOpenEntity(p.id, p.type)} />
+              <Row key={"p" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => goEntity(p.id, p.type)} />
             ))}
           </Section>
         )}
@@ -232,7 +281,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("verses") && (
           <Section title="Стихи" count={counts.verses}>
             {r.verses.map((v, i) => (
-              <Row key={"v" + i + v.href} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => onNavigate(v.href)} />
+              <Row key={"v" + i + v.href} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => goNav(v.href)} />
             ))}
           </Section>
         )}
@@ -240,7 +289,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("chapters") && (
           <Section title="Главы и части" count={counts.chapters}>
             {r.chapters.map((c, i) => (
-              <Row key={"c" + i + c.href} ch={mono(c.title || "?")} title={c.title || "—"} sub={`${workLabel(c.work)}${c.level ? " · " + (LEVEL_LABEL[c.level] || c.level) : ""}`} toks={toks} onTap={() => onNavigate(c.href)} />
+              <Row key={"c" + i + c.href} ch={mono(c.title || "?")} title={c.title || "—"} sub={`${workLabel(c.work)}${c.level ? " · " + (LEVEL_LABEL[c.level] || c.level) : ""}`} toks={toks} onTap={() => goNav(c.href)} />
             ))}
           </Section>
         )}
@@ -248,7 +297,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("prayers") && (
           <Section title="Молитвы и киртаны" count={counts.prayers}>
             {r.prayers.map((p, i) => (
-              <Row key={"pr" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => onNavigate(p.href)} />
+              <Row key={"pr" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
           </Section>
         )}
@@ -256,7 +305,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("centers") && (
           <Section title="Центры" count={counts.centers}>
             {r.centers.map((c, i) => (
-              <Row key={"ce" + i + c.href} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => onNavigate(c.href)} />
+              <Row key={"ce" + i + c.href} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => goNav(c.href)} />
             ))}
           </Section>
         )}
@@ -264,7 +313,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("pages") && (
           <Section title="Страницы и разделы" count={counts.pages}>
             {r.pages.map((p, i) => (
-              <Row key={"pg" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => onNavigate(p.href)} />
+              <Row key={"pg" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
           </Section>
         )}
