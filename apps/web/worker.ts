@@ -59,6 +59,30 @@ function noStore(r: Response): Response {
   return r;
 }
 
+// Полные русские названия работ (для выдачи стихов в поиске): аббревиатуры в ref
+// (НПК, ЕОШ, МЦК, ПС, ПЛ, Свет…) непрозрачны — показываем книгу целиком.
+const WORK_TITLES: Record<string, string> = {
+  bg: "Бхагавад-гита",
+  cc: "Шри Чайтанья-чаритамрита",
+  sb: "Шримад-Бхагаватам",
+  brs: "Нектар преданности",
+  iso: "Шри Ишопанишад",
+  gl: "Говинда-лиламрита",
+  ks: "Кришна-сандарбха",
+  vp: "Вишну-пурана",
+  bs: "Брахма-самхита",
+  noi: "Нектар наставлений",
+  owk: "На пути к Кришне",
+  rv: "Раджа-видья",
+  pop: "Путь к совершенству",
+  bbd: "По ту сторону рождения и смерти",
+  poy: "Совершенство йоги",
+  sc: "Ещё один шанс",
+  tqk: "Молитвы царицы Кунти",
+  lob: "Свет Бхагаваты",
+  spl: "Шрила Прабхупада-лиламрита",
+};
+
 // Регистронезависимый GLOB-шаблон для кириллицы: SQLite LIKE не складывает регистр
 // для не-ASCII, поэтому по каждой букве строим класс [строчн.ЗАГЛ.].
 function ciGlob(q: string): string {
@@ -1360,7 +1384,12 @@ export default {
       return noStore(json({
         q,
         personalities: (people.results ?? []).map((r) => ({ id: r.id, type: r.type ?? null, name_ru: r.name_ru, name_iast: r.name_iast })),
-        verses: (verses.results ?? []).map((r) => ({ ref: r.ref, work: r.work_id, snippet: r.snippet ?? "", href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
+        verses: (verses.results ?? []).map((r) => {
+          const full = WORK_TITLES[r.work_id];
+          const sp = (r.ref || "").indexOf(" ");
+          const loc = sp > 0 ? (r.ref || "").slice(sp + 1) : (r.ref || "");
+          return { book: full ?? (r.ref || ""), ref: full ? loc : "", work: r.work_id, snippet: r.snippet ?? "", href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` };
+        }),
         chapters: (chapters.results ?? []).map((r) => ({ title: r.title, work: r.work_id, level: r.level, href: `/book/${r.work_id}/${tail(r.id, r.work_id)}` })),
         prayers: (prayers.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, href: r.slug })),
         pages: (pages.results ?? []).map((r) => ({ name: r.name, subtitle: r.subtitle ?? null, type: r.type, href: r.slug })),
