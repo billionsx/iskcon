@@ -88,11 +88,13 @@ function Monogram({ ch, size = 40 }: { ch: string; size?: number }) {
   );
 }
 
-function Row({ ch, title, meta, sub, iast, toks, onTap }: { ch: string; title: string; meta?: string | null; sub?: string | null; iast?: string | null; toks: string[]; onTap: () => void }) {
+function Row({ ch, title, meta, sub, iast, toks, active, onTap }: { ch: string; title: string; meta?: string | null; sub?: string | null; iast?: string | null; toks: string[]; active?: boolean; onTap: () => void }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => { if (active) ref.current?.scrollIntoView({ block: "nearest" }); }, [active]);
   return (
-    <div role="button" tabIndex={0} onClick={onTap}
+    <div ref={ref} role="button" tabIndex={0} onClick={onTap}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTap(); } }}
-      style={{ display: "flex", alignItems: "center", gap: 13, padding: "11px 4px", borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", textAlign: "left" }}>
+      style={{ display: "flex", alignItems: "center", gap: 13, padding: "11px 8px", margin: "0 -4px", borderRadius: 10, borderBottom: "0.5px solid var(--color-hairline)", background: active ? "var(--color-bg-2)" : "transparent", cursor: "pointer", textAlign: "left" }}>
       <Monogram ch={ch} />
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "flex", alignItems: "baseline", gap: 7, minWidth: 0 }}>
@@ -104,6 +106,33 @@ function Row({ ch, title, meta, sub, iast, toks, onTap }: { ch: string; title: s
       </span>
       <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
     </div>
+  );
+}
+
+function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap: () => void }) {
+  const ref = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { if (active) ref.current?.scrollIntoView({ block: "nearest" }); }, [active]);
+  const eyebrow = ex.kind === "verse" ? "Стих" : ex.level === "chapter" ? "Глава" : "Раздел";
+  const second = ex.kind === "verse" ? ex.snippet : ex.title;
+  return (
+    <button ref={ref} type="button" onClick={onTap}
+      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", textAlign: "left", marginTop: 14,
+        padding: "13px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: active ? "var(--color-bg-3)" : "var(--color-bg-2)", cursor: "pointer" }}>
+      <span style={{ flexShrink: 0, width: 42, height: 42, borderRadius: 11, display: "grid", placeItems: "center", background: "var(--color-bg-3)", color: "var(--color-label-2)" }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
+          <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM5 17a3 3 0 0 1 3-3h11" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+      <span style={{ minWidth: 0, flex: 1 }}>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>{eyebrow}</span>
+        <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
+          {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
+        </span>
+        {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
+      </span>
+      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
+    </button>
   );
 }
 
@@ -148,6 +177,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState<GroupKey | "all">("all");
   const [recent, setRecent] = useState<string[]>(() => loadRecent());
+  const [active, setActive] = useState(-1);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seq = useRef(0);
@@ -175,6 +205,9 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
     }, 200);
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [query]);
+
+  // Сброс выделения навигации при смене запроса/фильтра.
+  useEffect(() => { setActive(-1); }, [query, filter]);
 
   const r = res ?? EMPTY;
   const recordRecent = (term: string) => {
@@ -206,6 +239,24 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const show = (k: GroupKey) => counts[k] > 0 && (activeFilter === "all" || activeFilter === k);
   const nothing = searching && !loading && res !== null && total === 0 && !r.exact;
 
+  // Плоский список результатов в порядке отображения — для навигации стрелками.
+  const navItems: { id: string; go: () => void }[] = [];
+  if (searching && r.exact && activeFilter === "all") navItems.push({ id: "exact", go: () => goNav(r.exact!.href) });
+  if (show("people")) r.personalities.forEach((p) => navItems.push({ id: "p:" + p.id, go: () => goEntity(p.id, p.type) }));
+  if (show("books")) bookHits.forEach((b) => navItems.push({ id: "b:" + b.id, go: () => openBook(b) }));
+  if (show("verses")) r.verses.forEach((v, i) => navItems.push({ id: "v:" + i, go: () => goNav(v.href) }));
+  if (show("chapters")) r.chapters.forEach((c, i) => navItems.push({ id: "c:" + i, go: () => goNav(c.href) }));
+  if (show("prayers")) r.prayers.forEach((p, i) => navItems.push({ id: "pr:" + i, go: () => goNav(p.href) }));
+  if (show("centers")) r.centers.forEach((c, i) => navItems.push({ id: "ce:" + i, go: () => goNav(c.href) }));
+  if (show("pages")) r.pages.forEach((p, i) => navItems.push({ id: "pg:" + i, go: () => goNav(p.href) }));
+  const activeId = active >= 0 && active < navItems.length ? navItems[active].id : null;
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, navItems.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, -1)); }
+    else if (e.key === "Enter") { if (active >= 0 && active < navItems.length) { e.preventDefault(); navItems[active].go(); } }
+    else if (e.key === "Escape") { if (q) { e.preventDefault(); setQ(""); setActive(-1); } else onBack(); }
+  };
+
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ position: "sticky", top: 0, zIndex: 11, display: "flex", alignItems: "center", gap: 8, height: 56, padding: "0 10px",
@@ -215,7 +266,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           style={{ flexShrink: 0, display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
         </button>
-        <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по всему приложению…" inputMode="search"
+        <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder="Поиск по всему приложению…" inputMode="search"
           style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)",
             background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none" }} />
       </div>
@@ -264,36 +315,14 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</p>
         )}
 
-        {searching && r.exact && activeFilter === "all" && (() => {
-          const ex = r.exact!;
-          const eyebrow = ex.kind === "verse" ? "Стих" : ex.level === "chapter" ? "Глава" : "Раздел";
-          const second = ex.kind === "verse" ? ex.snippet : ex.title;
-          return (
-            <button type="button" onClick={() => goNav(ex.href)}
-              style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", textAlign: "left", marginTop: 14,
-                padding: "13px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer" }}>
-              <span style={{ flexShrink: 0, width: 42, height: 42, borderRadius: 11, display: "grid", placeItems: "center", background: "var(--color-bg-3)", color: "var(--color-label-2)" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden>
-                  <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM5 17a3 3 0 0 1 3-3h11" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              <span style={{ minWidth: 0, flex: 1 }}>
-                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>{eyebrow}</span>
-                <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
-                  {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
-                </span>
-                {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
-              </span>
-              <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
-            </button>
-          );
-        })()}
+        {searching && r.exact && activeFilter === "all" && (
+          <ExactCard ex={r.exact} active={activeId === "exact"} onTap={() => goNav(r.exact!.href)} />
+        )}
 
         {show("people") && (
           <Section title="Личности" count={counts.people}>
             {r.personalities.map((p) => (
-              <Row key={"p" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => goEntity(p.id, p.type)} />
+              <Row key={"p" + p.id} active={activeId === "p:" + p.id} ch={mono(p.name_ru || p.id)} title={p.name_ru || p.id} iast={p.name_iast} toks={toks} onTap={() => goEntity(p.id, p.type)} />
             ))}
           </Section>
         )}
@@ -301,7 +330,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("books") && (
           <Section title="Книги" count={counts.books}>
             {bookHits.map((b) => (
-              <Row key={"b" + b.id} ch={mono(b.title)} title={b.title} iast={b.iast || null} sub={b.readable ? null : "скоро"} toks={toks} onTap={() => openBook(b)} />
+              <Row key={"b" + b.id} active={activeId === "b:" + b.id} ch={mono(b.title)} title={b.title} iast={b.iast || null} sub={b.readable ? null : "скоро"} toks={toks} onTap={() => openBook(b)} />
             ))}
           </Section>
         )}
@@ -309,7 +338,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("verses") && (
           <Section title="Стихи" count={counts.verses}>
             {r.verses.map((v, i) => (
-              <Row key={"v" + i + v.href} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => goNav(v.href)} />
+              <Row key={"v" + i + v.href} active={activeId === "v:" + i} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => goNav(v.href)} />
             ))}
           </Section>
         )}
@@ -317,7 +346,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("chapters") && (
           <Section title="Главы и части" count={counts.chapters}>
             {r.chapters.map((c, i) => (
-              <Row key={"c" + i + c.href} ch={mono(c.title || "?")} title={c.title || "—"} sub={`${workLabel(c.work)}${c.level ? " · " + (LEVEL_LABEL[c.level] || c.level) : ""}`} toks={toks} onTap={() => goNav(c.href)} />
+              <Row key={"c" + i + c.href} active={activeId === "c:" + i} ch={mono(c.title || "?")} title={c.title || "—"} sub={`${workLabel(c.work)}${c.level ? " · " + (LEVEL_LABEL[c.level] || c.level) : ""}`} toks={toks} onTap={() => goNav(c.href)} />
             ))}
           </Section>
         )}
@@ -325,7 +354,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("prayers") && (
           <Section title="Молитвы и киртаны" count={counts.prayers}>
             {r.prayers.map((p, i) => (
-              <Row key={"pr" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
+              <Row key={"pr" + i + p.href} active={activeId === "pr:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
           </Section>
         )}
@@ -333,7 +362,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("centers") && (
           <Section title="Центры" count={counts.centers}>
             {r.centers.map((c, i) => (
-              <Row key={"ce" + i + c.href} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => goNav(c.href)} />
+              <Row key={"ce" + i + c.href} active={activeId === "ce:" + i} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => goNav(c.href)} />
             ))}
           </Section>
         )}
@@ -341,7 +370,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("pages") && (
           <Section title="Страницы и разделы" count={counts.pages}>
             {r.pages.map((p, i) => (
-              <Row key={"pg" + i + p.href} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
+              <Row key={"pg" + i + p.href} active={activeId === "pg:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
           </Section>
         )}
