@@ -71,6 +71,14 @@ function ftsMatch(q: string): string | null {
   return toks.map((t, i) => (i === toks.length - 1 ? t + "*" : t)).join(" ");
 }
 
+// Расширенный MATCH: все токены префиксами через OR — для recall (опечатка/пропуск
+// слова). bm25 всё равно поднимает наверх стихи, где совпали все слова.
+function ftsMatchOr(q: string): string | null {
+  const toks = q.toLowerCase().match(/[\p{L}\p{N}]+/gu);
+  if (!toks || !toks.length) return null;
+  return toks.map((t) => t + "*").join(" OR ");
+}
+
 // ── Обложка по стандарту BBT (единая для всех книг) ──
 // Вёрстка обложки вынесена в общий модуль src/pdfCover.ts — её переиспользуют и
 // серверный рендер (этот воркер), и пре-генерация PDF в CI (scripts/genpdf).
@@ -1269,13 +1277,30 @@ export default {
       ).bind(g).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
 
       // 2) Стихи — FTS5 по транслитерации, увадже, переводу и комментарию.
-      const verses = m
-        ? await env.DB.prepare(
-            `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,150) AS snippet
+      // Строгий проход (все слова, префикс на последнем). Если совпадений мало —
+      // расширяем до OR-префикса (recall при опечатке/частичном вводе), дедуп.
+      type VRow = { id: string; work_id: string; ref: string; snippet: string | null };
+      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,150) AS snippet
              FROM verse_fts f JOIN verses v ON v.id=f.verse_id LEFT JOIN verse_texts vt ON vt.verse_id=v.id
-             WHERE verse_fts MATCH ?1 ORDER BY rank LIMIT 14`,
-          ).bind(m).all<{ id: string; work_id: string; ref: string; snippet: string | null }>()
-        : { results: [] as { id: string; work_id: string; ref: string; snippet: string | null }[] };
+             WHERE verse_fts MATCH ?1 ORDER BY rank LIMIT 14`;
+      let verseRows: VRow[] = [];
+      if (m) {
+        const strict = await env.DB.prepare(verseSql).bind(m).all<VRow>();
+        verseRows = strict.results ?? [];
+        if (verseRows.length < 5) {
+          const mOr = ftsMatchOr(q);
+          if (mOr && mOr !== m) {
+            const relaxed = await env.DB.prepare(verseSql).bind(mOr).all<VRow>();
+            const seen = new Set(verseRows.map((r) => r.id));
+            for (const r of relaxed.results ?? []) {
+              if (seen.has(r.id)) continue;
+              verseRows.push(r); seen.add(r.id);
+              if (verseRows.length >= 14) break;
+            }
+          }
+        }
+      }
+      const verses = { results: verseRows };
 
       // 3) Главы и части — по названию (хранится JSON {ru}).
       const chapters = await env.DB.prepare(
