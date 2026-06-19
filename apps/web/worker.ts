@@ -1320,9 +1320,14 @@ export default {
       // Строгий проход (все слова, префикс на последнем). Если совпадений мало —
       // расширяем до OR-префикса (recall при опечатке/частичном вводе), дедуп.
       type VRow = { id: string; work_id: string; ref: string; snippet: string | null };
-      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,150) AS snippet
+      // Канонические писания (БГ/ШБ/ЧЧ/…) — выше прозаических книг-цитат (НПК, ЕОШ,
+      // МЦК, ПС, ПЛ…), где один и тот же стих процитирован десятки раз. Берём с запасом
+      // (24) и схлопываем одинаковые тексты — в выдаче остаются разные стихи.
+      const PROSE = "('owk','sc','lob','tqk','pop','spl','rv','bbd','poy')";
+      const verseSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS snippet
              FROM verse_fts f JOIN verses v ON v.id=f.verse_id LEFT JOIN verse_texts vt ON vt.verse_id=v.id
-             WHERE verse_fts MATCH ?1 ORDER BY rank LIMIT 14`;
+             WHERE verse_fts MATCH ?1
+             ORDER BY (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END), rank LIMIT 24`;
       let verseRows: VRow[] = [];
       if (m) {
         const strict = await env.DB.prepare(verseSql).bind(m).all<VRow>();
@@ -1335,10 +1340,21 @@ export default {
             for (const r of relaxed.results ?? []) {
               if (seen.has(r.id)) continue;
               verseRows.push(r); seen.add(r.id);
-              if (verseRows.length >= 14) break;
+              if (verseRows.length >= 24) break;
             }
           }
         }
+        // Схлопываем повторы одного текста (стих, процитированный в разных книгах).
+        const seenTxt = new Set<string>();
+        const uniq: VRow[] = [];
+        for (const r of verseRows) {
+          const key = (r.snippet ?? "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().slice(0, 120);
+          if (key && seenTxt.has(key)) continue;
+          if (key) seenTxt.add(key);
+          uniq.push(r);
+          if (uniq.length >= 14) break;
+        }
+        verseRows = uniq;
       }
       const verses = { results: verseRows };
 
