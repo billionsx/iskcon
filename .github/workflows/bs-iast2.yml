@@ -1,0 +1,67 @@
+name: bs iast missing (добор IAST для пропущенных стихов)
+on:
+  workflow_dispatch:
+    inputs:
+      verses:
+        default: "2,3,4,6,7,8,56"
+permissions:
+  contents: read
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Scrape missing IAST
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VERSES: ${{ github.event.inputs.verses }}
+        run: |
+          python3 - <<'PY'
+          import os, re, json, time, urllib.request
+          import html as H
+          CF=os.environ["CF"]; ACCT="d5cbe19470dc38599873eabfe148e6d1"; DB="6226aded-dd03-4e74-977f-9cd0b509e73d"
+          D1=f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
+          UA="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124 Safari/537.36"
+          verses=[int(x) for x in os.environ["VERSES"].split(",") if x.strip()]
+          def get(url):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(url, headers={"user-agent":UA,"accept-language":"en"}), timeout=30) as r:
+                      return r.status, r.read().decode("utf-8","replace")
+              except Exception: return 0,""
+          def d1(sql):
+              for _ in range(3):
+                  try:
+                      urllib.request.urlopen(urllib.request.Request(D1, data=json.dumps({"sql":sql}).encode(),
+                        headers={"Authorization":f"Bearer {CF}","Content-Type":"application/json"}), timeout=60).read(); return
+                  except Exception: time.sleep(2)
+          def Q(v): return "'"+str(v).replace("'","''")+"'"
+          def clean(s):
+              s=re.sub(r"<[^>]+>"," ",s); s=H.unescape(s)
+              for z in ("\u00ad","\u200b","\u200c","\u200d"): s=s.replace(z,"")
+              return re.sub(r"\s+"," ",s).strip()
+          rep=[]
+          for n in verses:
+              st,html=get(f"https://gitabase.com/eng/BS/5/{n}")
+              if st!=200: rep.append(f"{n}:HTTP{st}"); continue
+              iast=""
+              # все <p align="center"> блоки; IAST = первый с латинскими диакритиками и без англ.слов
+              for m in re.findall(r'<p align="center">(.*?)</p>', html, re.S):
+                  t=clean(m)
+                  if t and re.search(r'[āīūṛṝṅñṇṭḍśṣṁṃḥ]', t) and not re.search(r'\b(the|of|and|to|in|is|by|Lord)\b', t):
+                      iast=t; break
+              if not iast:
+                  m=re.search(r'॥[^<]*?॥(.*?)(?:\d+\s+times this text|<div class="tlabel")', html, re.S)
+                  if m:
+                      cand=clean(m.group(1))
+                      cand=re.split(r'\s[a-zāīū-]+\s-\s', cand)[0]
+                      iast=cand
+              iast=re.sub(r"-\s*$","",iast).strip()
+              if iast:
+                  d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsiast2 5."+str(n)+"',"+str(n)+","+Q(iast[:1000])+")")
+                  rep.append(f"{n}:OK({len(iast)})")
+              else:
+                  rep.append(f"{n}:EMPTY")
+              time.sleep(0.15)
+          d1("INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'bsiast2 DONE',0,"+Q(str(rep))+")")
+          print(rep)
+          PY
