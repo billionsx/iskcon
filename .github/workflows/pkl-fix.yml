@@ -108,7 +108,11 @@ jobs:
                         st["unverif"]+=1; keep.append(q); continue
                     joined=" ".join(dmap[v]["tn"] for v in use).strip()
                     sim=difflib.SequenceMatcher(None,norm(q.get("t","")),norm(joined)).ratio()
-                    if sim>=GATE:
+                    loc=f"{tab['id']}/{sub['id']}"
+                    ww=lambda s:set(re.findall(r'[а-яё]{6,}',(s or '').lower()))
+                    ov=len(ww(q.get("t",""))&ww(joined))
+                    do=(loc=="nama/shikshashtaka") or (sim>=GATE) or (ov>=4 and sim>=0.2)
+                    if do:
                         nt=joined.replace('«','„').replace('»','\u201c')
                         q["t"]="«"+nt+"»"
                         if q.get("translit"):
