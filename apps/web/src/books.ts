@@ -250,7 +250,7 @@ export const BOOKS: Record<string, BookData> = {
     covers: [
       "/covers/bs-001.png?v=1",
     ],
-    chips: ["Песнь 5", "молитвы Брахмы", "сач-чид-ананда"],
+    chips: ["Песнь 5", "молитвы Брахмы", "сат-чид-ананда"],
     hierarchical: false,
     uniformTitle: true,
   },
@@ -526,7 +526,7 @@ export const BOOK_ABOUT: Record<string, string[]> = {
   ],
   bs: [
     "«Брахма-самхита» — древний санскритский текст, молитвы которого вознёс Господь Брахма Говинде, изначальной Личности Бога, в начале творения. Шри Чайтанья Махапрабху, найдя рукопись Пятой песни в Южной Индии, признал её непревзойдённым изложением науки о Кришне и передал Своим преданным.",
-    "Пятая песнь раскрывает облик Кришны как сач-чид-ананда-виграхи, Его вечную обитель Голоку Вриндавану, природу Его энергий и то, как единый Господь пребывает и в каждой вселенной, и в каждом атоме. Стихи приводятся с пословным санскритом и переводом.",
+    "Пятая песнь раскрывает облик Кришны как сат-чид-ананда-виграхи, Его вечную обитель Голоку Вриндавану, природу Его энергий и то, как единый Господь пребывает и в каждой вселенной, и в каждом атоме. Стихи приводятся с пословным санскритом и переводом.",
   ],
   iso: [
     "«Шри Ишопанишад» — одна из 108 Упанишад, относящаяся к «Яджур-веде». Её восемнадцать мантр сжато излагают суть всего ведического знания: мир и всё в нём принадлежит Верховному Господу, и человек призван пользоваться лишь отведённой ему долей, не посягая на чужое.",
@@ -642,7 +642,7 @@ export const LIBRARY: CatalogBook[] = [
   { id: "cb",  title: "Чайтанья-бхагавата",          iast: "Caitanya-bhāgavata",    authorId: "vrindavana-dasa-thakura", authorName: "Вриндаван дас Тхакур",  lineage: "acharya", readable: false, also: "Чайтанья-бхагавата Caitanya-bhagavata Вриндаван" },
   { id: "cm",  title: "Чайтанья-мангала",            iast: "Caitanya-maṅgala",      authorId: "lochana-dasa-thakura",    authorName: "Лочана дас Тхакур",     lineage: "acharya", readable: false, also: "Чайтанья-мангала Caitanya-mangala Лочана" },
   { id: "ggd", title: "Гаура-ганоддеша-дипика",      iast: "Gaura-gaṇoddeśa-dīpikā", authorId: "kavi-karnapura",         authorName: "Кави Карнапура",        lineage: "acharya", readable: false, also: "Гаура-ганоддеша Gaura-ganoddesa Карнапура" },
-  { id: "bs",  title: "Брахма-самхита",              iast: "Brahma-saṁhitā",        note: "Молитвы Господа Брахмы",     authorId: "brahma", authorName: "Господь Брахма",                                            lineage: "acharya", readable: true, also: "Brahma Brahmasamhita Брахма-самхита Говинда сач-чид-ананда" },
+  { id: "bs",  title: "Брахма-самхита",              iast: "Brahma-saṁhitā",        note: "Молитвы Господа Брахмы",     authorId: "brahma", authorName: "Господь Брахма",                                            lineage: "acharya", readable: true, also: "Brahma Brahmasamhita Брахма-самхита Говинда сат-чид-ананда" },
   { id: "vp",  title: "Вишну-пурана",                 iast: "Viṣṇu-purāṇa",          note: "Пурана о Господе Вишну",     authorName: "Парашара Муни",                                       lineage: "acharya", readable: true, also: "Vishnu Purana Вишну-пурана Парашара хладини сандхини самвит бхага" },
   { id: "hbv", title: "Хари-бхакти-виласа",          iast: "Hari-bhakti-vilāsa",    note: "Свод вайшнавской практики",                                         lineage: "acharya", readable: false, also: "Sanatana" },
   { id: "vedanta-sutra", title: "Веданта-сутра",     iast: "Vedānta-sūtra",         authorId: "vyasadeva",               authorName: "Вьясадева",             lineage: "acharya", readable: false, also: "Vyasa Vyasadeva Baladeva Vedanta" },
