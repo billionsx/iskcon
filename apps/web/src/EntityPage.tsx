@@ -201,7 +201,7 @@ type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
-type HierTier = { abode: string; beings: string; note?: string; count?: string; countNote?: string; apex?: boolean };
+type HierTier = { abode: string; beings: string; note?: string | string[]; count?: string; countNote?: string; apex?: boolean };
 type HierGroup = { realm: string; tiers: HierTier[] };
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
@@ -426,7 +426,7 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
             {g.tiers.map((tier, ti) => {
               const apex = !!tier.apex;
               const r = apex ? 8 : 4;                 // радиус узла
-              const dotTop = apex ? 19 : 21;          // выравнивание узла к строке обители
+              const dotTop = apex ? 21 : 23;          // выравнивание узла к строке обители
               const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
               const numSize = apex ? 27 : multi ? 16.5 : 20;
               return (
@@ -440,28 +440,35 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                     <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: toneFor(tier), border: "2px solid var(--color-bg)" }} />
                   )}
                   {/* карточка уровня */}
-                  <div style={{ position: "relative", padding: "13px 15px", borderRadius: 14,
+                  <div style={{ position: "relative", padding: "15px 16px 16px", borderRadius: 16,
                     border: apex ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)",
                     background: "var(--color-bg-2)",
                     boxShadow: apex ? `0 0 0 1px color-mix(in srgb, ${GOLD} 50%, transparent), 0 10px 30px -14px color-mix(in srgb, ${GOLD} 65%, transparent)` : "none" }}>
-                    {apex && <span aria-hidden style={{ position: "absolute", left: 0, right: 0, top: 0, height: 2.5, borderRadius: "14px 14px 0 0", background: `linear-gradient(90deg, transparent, ${GOLD} 50%, transparent)` }} />}
-                    <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                    {apex && <span aria-hidden style={{ position: "absolute", left: 0, right: 0, top: 0, height: 2.5, borderRadius: "16px 16px 0 0", background: `linear-gradient(90deg, transparent, ${GOLD} 50%, transparent)` }} />}
+                    {/* шапка: обитель слева, число качеств справа — на одной верхней линии */}
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 4 }}>Вершина</div>}
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25 }}>{tier.abode}</div>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 3, lineHeight: 1.35 }}>{renderSanskrit(tier.beings)}</div>
-                        {tier.note && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", marginTop: 6, lineHeight: 1.45 }}>{renderProse(tier.note, onSub, onTab)}</div>}
+                        {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 5 }}>Вершина</div>}
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em" }}>{tier.abode}</div>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 4, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>
                       </div>
-                      {/* бейдж: сколько из 64 качеств */}
-                      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", width: 54, paddingTop: apex ? 13 : 1 }}>
+                      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end", width: 100, paddingTop: 1 }}>
                         {tier.count ? (
-                          <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: apex ? 700 : 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>{tier.count}</div>
+                          <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: apex ? 700 : 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.03em", whiteSpace: "nowrap" }}>{tier.count}</div>
                         ) : (
                           <div aria-hidden style={{ width: 26, height: 26, borderRadius: "50%", background: `radial-gradient(circle at 50% 42%, color-mix(in srgb, ${GOLD} 52%, transparent), transparent 72%)`, border: `1px solid color-mix(in srgb, ${GOLD} 32%, transparent)` }} />
                         )}
-                        {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 600, letterSpacing: "0.2px", textTransform: "uppercase", color: "var(--color-label-3)", marginTop: 5, textAlign: "center", lineHeight: 1.25 }}>{tier.countNote}</div>}
+                        {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 600, letterSpacing: "0.3px", textTransform: "uppercase", color: "var(--color-label-3)", marginTop: 5, textAlign: "right", lineHeight: 1.3 }}>{tier.countNote}</div>}
                       </div>
                     </div>
+                    {/* описание — на всю ширину карточки, абзацами */}
+                    {tier.note && (Array.isArray(tier.note) ? tier.note : [tier.note]).filter(Boolean).length > 0 && (
+                      <div style={{ marginTop: 12 }}>
+                        {(Array.isArray(tier.note) ? tier.note : [tier.note]).filter(Boolean).map((para, pi) => (
+                          <p key={pi} style={{ margin: pi === 0 ? 0 : "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", lineHeight: 1.5 }}>{renderProse(para as string, onSub, onTab)}</p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
@@ -849,6 +856,11 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   };
   // Хеш-под-таб ждёт применения после установки tab (см. эффекты ниже).
   const pendingSubFromHash = useRef<string | null>(null);
+  // Deep-link: захватываем исходный хеш ДО того, как эффект-писатель его затрёт.
+  // Без этого write-эффект на маунте пишет #<defaultTab> и read-эффект (ждущий
+  // данных) читает уже затёртый хеш — ссылка вида /#avatara/ierarhiya не открывается.
+  const initialHashRef = useRef(typeof window !== "undefined" ? (window.location.hash || "") : "");
+  const hashConsumedRef = useRef(false);
 
   useEffect(() => {
     let alive = true;
@@ -1041,7 +1053,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     // ПКЛ долгоживущий. В оверлее /person/<id> хеш не используем.
     let hashTab = "", hashSub = "";
     if (embedded && typeof window !== "undefined") {
-      const m = (window.location.hash || "").replace(/^#/, "").split("/");
+      const m = (initialHashRef.current || "").replace(/^#/, "").split("/");
       hashTab = decodeURIComponent(m[0] || "");
       hashSub = decodeURIComponent(m[1] || "");
     }
@@ -1052,6 +1064,9 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     // sub применим позже в эффекте на смену tab. Сохраним хеш-под-таб в реф
     // для одноразового применения.
     pendingSubFromHash.current = tabExists && hashSub ? hashSub : null;
+    // Исходный хеш применён — больше не читаем его и разрешаем писать URL.
+    initialHashRef.current = "";
+    hashConsumedRef.current = true;
   }, [id, data?.id, embedded]);
   // при смене Tier-1 таба в досье — выставить первый суб-таб (либо из хеша
   // если он валиден для этого таба и это первое монтирование).
@@ -1080,6 +1095,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   useEffect(() => {
     if (!embedded || typeof window === "undefined") return;
     if (!tab) return;
+    if (!hashConsumedRef.current) return; // ждём применения исходного deep-link хеша
     const path = window.location.pathname;
     const hash = sub ? `#${encodeURIComponent(tab)}/${encodeURIComponent(sub)}` : `#${encodeURIComponent(tab)}`;
     if (window.location.hash !== hash) replaceUrl(path + hash);
