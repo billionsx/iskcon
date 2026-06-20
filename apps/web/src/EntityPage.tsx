@@ -201,9 +201,11 @@ type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
-type HierTier = { abode: string; beings?: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string; ref?: string; items?: { name: string; ref: string }[] };
+type HierTier = { abode: string; beings?: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string; ref?: string; items?: { name: string; ref: string; desc?: string }[] };
 type HierGroup = { realm: string; tiers: HierTier[] };
-type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[]; hierarchyFooter?: string };
+type LfCatItem = { name: string; desc?: string; ref?: string };
+type LfCatGroup = { group: string; gloss?: string; note?: string; src?: LfSource; items?: LfCatItem[] };
+type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[]; hierarchyFooter?: string; catalog?: LfCatGroup[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; realm?: "material" | "spiritual"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
@@ -507,7 +509,10 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                         {tier.items!.map((it) => (
                           <button key={it.ref} type="button" onClick={() => onOpen?.(it.ref, null)}
                             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, width: "100%", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", padding: "10px 0", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                            <span style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 500, color: "var(--color-label)" }}>{it.name}</span>
+                            <span style={{ flex: 1, minWidth: 0 }}>
+                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 500, color: "var(--color-label)", lineHeight: 1.25 }}>{it.name}</span>
+                              {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.35, marginTop: 2 }}>{it.desc}</span>}
+                            </span>
                             <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 17, lineHeight: 1 }}>›</span>
                           </button>
                         ))}
@@ -540,6 +545,40 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
   );
 }
 
+function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfCatGroup[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; onSub?: (id: string) => void; onTab?: (id: string) => void }) {
+  return (
+    <div style={{ marginTop: 20 }}>
+      {groups.map((g, gi) => (
+        <div key={gi} style={{ marginTop: gi === 0 ? 0 : 30 }}>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</div>
+          {g.gloss && <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{g.gloss}</div>}
+          {g.note && <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label)", lineHeight: 1.55 }}>{renderProse(g.note, onSub, onTab)}</p>}
+          {g.items && g.items.length > 0 && (
+            <div style={{ marginTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
+              {g.items.map((it, ii) => {
+                const clickable = !!it.ref;
+                const inner = (
+                  <>
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>{it.name}</span>
+                      {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4, marginTop: 2 }}>{it.desc}</span>}
+                    </span>
+                    {clickable && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: 18, lineHeight: 1 }}>›</span>}
+                  </>
+                );
+                return clickable
+                  ? <button key={ii} type="button" onClick={() => onOpen(it.ref!, null)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "11px 0", borderBottom: "0.5px solid var(--color-hairline)", textAlign: "left", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{inner}</button>
+                  : <div key={ii} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "11px 0", borderBottom: "0.5px solid var(--color-hairline)" }}>{inner}</div>;
+              })}
+            </div>
+          )}
+          {g.src && <Attribution src={g.src} onOpen={onOpen} onNavigate={onNavigate} marginTop={10} />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { sections: LfSection[]; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; onSub?: (id: string) => void; onTab?: (id: string) => void }) {
   return (
     <div>
@@ -550,6 +589,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub, onTab)}</p>
           ))}
           {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} footer={s.hierarchyFooter} onOpen={onOpen} onSub={onSub} onTab={onTab} />}
+          {s.catalog && s.catalog.length > 0 && <FormCatalog groups={s.catalog} onOpen={onOpen} onNavigate={onNavigate} onSub={onSub} onTab={onTab} />}
           {(s.list ?? []).length > 0 && (() => {
             let n = 0;
             return (
