@@ -201,7 +201,7 @@ type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
-type HierTier = { abode: string; beings: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string };
+type HierTier = { abode: string; beings?: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string };
 type HierGroup = { realm: string; tiers: HierTier[] };
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
@@ -450,7 +450,7 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                     {tier.eyebrow && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</div>}
                     {/* заголовок + спутники */}
                     <div style={{ fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</div>
-                    <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>
+                    {tier.beings && <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>}
                     {/* описание — на всю ширину карточки, абзацами */}
                     {notes.length > 0 && (
                       <div style={{ marginTop: 13 }}>
