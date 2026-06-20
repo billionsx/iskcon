@@ -303,7 +303,7 @@ function renderProse(text: string, onSub?: (id: string) => void, onTab?: (id: st
     const isTab = !!m[1], id = m[2], label = m[3];
     const go = isTab ? onTab : onSub;
     out.push(
-      <button key={"l" + k} type="button" onClick={() => go?.(id)} style={{ background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "inherit", cursor: "pointer", lineHeight: "inherit" }}><i className="skt">{label}</i></button>
+      <button key={"l" + k} type="button" onClick={() => go?.(id)} style={{ background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "inherit", cursor: "pointer", lineHeight: "inherit" }}>{renderSanskrit(label)}</button>
     );
     last = m.index + m[0].length; k++;
   }
