@@ -201,7 +201,7 @@ type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
-type HierTier = { abode: string; beings: string; note?: string | string[]; count?: string; countNote?: string; apex?: boolean };
+type HierTier = { abode: string; beings: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean };
 type HierGroup = { realm: string; tiers: HierTier[] };
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
@@ -459,9 +459,10 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                         ))}
                       </div>
                     )}
-                    {/* метрика: число прямо над подписью — связаны, подпись не сирота */}
-                    {(tier.count || tier.countNote) && (
+                    {/* метрика: явление на Земле + число над подписью */}
+                    {(tier.count || tier.countNote || tier.appeared) && (
                       <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
+                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 12 : 0 }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
                         {tier.count && <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", marginBottom: tier.countNote ? 6 : 0 }}>{tier.count}</div>}
                         {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>}
                       </div>
