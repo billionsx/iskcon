@@ -238,11 +238,21 @@ function expandRef(ref: string): RefParts {
     const to  = m[3] ? "/book/cc/"+slug+"/"+head(m[2])+"/"+head(m[3]) : "/book/cc/"+slug+"/"+head(m[2]);
     return { book: "Шри Чайтанья-чаритамрита", lila: m[1]+"-лила", loc, to };
   }
-  // Бхакти-расамрита-синдху
+  // Бхакти-расамрита-синдху (оригинальная нумерация раздел.волна.стих) —
+  // академический рендер без deep-link: в Библиотеке её изложение хранится
+  // как «Нектар преданности» (см. ниже), у которого иная, главами, разбивка.
   m = r.match(/^(?:БРС|Бхакти-расамрита-синдху)\s+(\d+)\.(\d+)(?:\.(\d+(?:[-–—]\d+)?))?$/);
   if (m) {
     const loc = m[3] ? m[1]+"."+m[2]+"."+m[3] : m[1]+"."+m[2];
     return { book: "Бхакти-расамрита-синдху", loc };
+  }
+  // Нектар преданности (Бхакти-расамрита-синдху в изложении Шрилы Прабхупады) —
+  // плоская книга глав 1–51; deep-link в читалку: /book/brs/<глава>[/<стих>].
+  m = r.match(/^(?:НП|Нектар преданности)\s+(\d+)(?:\.(\d+(?:[-–—]\d+)?))?$/);
+  if (m) {
+    const loc = m[2] ? "глава "+m[1]+", "+vw(m[2]) : "глава "+m[1];
+    const to  = m[2] ? "/book/brs/"+m[1]+"/"+head(m[2]) : "/book/brs/"+m[1];
+    return { book: "Нектар преданности", loc, to };
   }
   // Брахма-самхита (глава.стих) — deep-link в читалку
   m = r.match(/^Брахма-самхита\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
@@ -410,6 +420,20 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
     return 22;
   };
   const toneFor = (t: HierTier) => `color-mix(in srgb, ${GOLD} ${tonePct(t)}%, var(--color-label-3))`;
+  // Процент трансцендентных качеств — по комментарию Шрилы Прабхупады к ШБ 1.3.28:
+  // Кришна — 64 свойства (100%); вишну-таттва (все экспансии вплоть до аватар) —
+  // до 93%; Господь Шива — ~84%; дживы — не более 78%. Брахмаджьоти — вне счёта.
+  const pctFor = (t: HierTier): number | null => {
+    if (t.apex) return 100;
+    const c = (t.count ?? "").trim();
+    if (!c) return null;               // брахмаджьоти
+    if (c.includes("+")) return 84;    // 50 + 5 — Шива
+    const n = parseInt(c, 10);
+    if (n >= 64) return 100;           // Кришна
+    if (n >= 60) return 93;            // вишну-таттва
+    if (n >= 50) return 78;            // джива
+    return null;
+  };
   return (
     <div style={{ marginTop: 18 }}>
       <div style={{ position: "relative", paddingLeft: PAD }}>
@@ -427,8 +451,8 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
               const apex = !!tier.apex;
               const r = apex ? 8 : 4;                 // радиус узла
               const dotTop = apex ? 21 : 23;          // выравнивание узла к строке обители
-              const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
-              const numSize = apex ? 30 : multi ? 20 : 22;
+              const numSize = apex ? 30 : 22;
+              const pct = pctFor(tier);
               const notes = (Array.isArray(tier.note) ? tier.note : tier.note ? [tier.note] : []).filter(Boolean) as string[];
               return (
                 <div key={ti} style={{ position: "relative", marginTop: ti === 0 ? 0 : 9 }}>
@@ -460,10 +484,10 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                       </div>
                     )}
                     {/* метрика: явление на Земле + число над подписью */}
-                    {(tier.count || tier.countNote || tier.appeared) && (
+                    {(pct != null || tier.countNote || tier.appeared) && (
                       <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
-                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 12 : 0, paddingBottom: (tier.count || tier.countNote) ? 12 : 0, borderBottom: (tier.count || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
-                        {tier.count && <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", marginBottom: tier.countNote ? 6 : 0 }}>{tier.count}</div>}
+                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (pct != null || tier.countNote) ? 12 : 0, paddingBottom: (pct != null || tier.countNote) ? 12 : 0, borderBottom: (pct != null || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
+                        {pct != null && <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", marginBottom: tier.countNote ? 6 : 0 }}>{pct}%</div>}
                         {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>}
                       </div>
                     )}
@@ -473,9 +497,6 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
             })}
           </div>
         ))}
-      </div>
-      <div style={{ marginTop: 15, paddingLeft: PAD, fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-3)", lineHeight: 1.5 }}>
-        Число — сколько из шестидесяти четырёх трансцендентных качеств проявлено на этом уровне.
       </div>
     </div>
   );
