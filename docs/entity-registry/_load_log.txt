@@ -1,18 +1,18 @@
 applying schema ...
-entities: 824
-names: 2724 | categories: 1672
+entities: 826
+names: 2732 | categories: 1676
 relations: 2116
-profiles seeded (bronze): 824
+profiles seeded (bronze): 826
 auto profiles upserted: 496
 curated profiles upserted: 166
 longform column: present
 longform articles upserted: 3
 links: 68
-  D1 entities: 824
-  D1 entity_names: 2724
-  D1 entity_categories: 1672
+  D1 entities: 826
+  D1 entity_names: 2732
+  D1 entity_categories: 1676
   D1 entity_relations: 2114
-  D1 entity_profiles: 824
+  D1 entity_profiles: 826
   D1 entity_links: 68
 done.
 EXIT=0
