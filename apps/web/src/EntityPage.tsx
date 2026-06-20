@@ -201,9 +201,9 @@ type LfCite = { ref: string; to?: string };
 type LfListGroup = { label?: string; items: string[] };
 type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
-type HierTier = { abode: string; beings?: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string };
+type HierTier = { abode: string; beings?: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string; ref?: string; items?: { name: string; ref: string }[] };
 type HierGroup = { realm: string; tiers: HierTier[] };
-type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[] };
+type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[]; hierarchyFooter?: string };
 type RailDef = { title: string; params: string; orderIds?: string[] };
 type NavCard = { title: string; subtitle?: string; to?: string; collection?: string };
 type DossierSub = { id: string; label: string; realm?: "material" | "spiritual"; sections: LfSection[]; rails?: RailDef[]; cards?: NavCard[] };
@@ -403,7 +403,8 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
 // нисхождения (золото вверху → серое внизу) кодирует убывание полноты качеств.
 // Apple-quiet: тихие заливки карточек, золото только на вершине и в осях.
 // Шрифт — var(--font-text); writ-курсив здесь не используется (не стихи).
-function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub?: (id: string) => void; onTab?: (id: string) => void }) {
+function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: HierGroup[]; footer?: string; onOpen?: (id: string, type: string | null) => void; onSub?: (id: string) => void; onTab?: (id: string) => void }) {
+  const [open, setOpen] = useState<Record<string, boolean>>({});
   const PAD = 30;       // отступ слева под ось + узлы
   const SX = 11.5;      // центр оси (позвоночника) от левого края контейнера
   // Цвет узла/коннектора по полноте качеств (таттве): золото = полнота, серое = крупица.
@@ -452,30 +453,46 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
               const r = apex ? 8 : 4;                 // радиус узла
               const dotTop = apex ? 21 : 23;          // выравнивание узла к строке обители
               const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
-              const numSize = apex ? 30 : multi ? 20 : 22;
+              const numSize = apex ? 28 : multi ? 19 : 22;
               const pct = pctFor(tier);
               const notes = (Array.isArray(tier.note) ? tier.note : tier.note ? [tier.note] : []).filter(Boolean) as string[];
+              const rowKey = g.realm + "/" + tier.abode;
+              const hasItems = !!(tier.items && tier.items.length);
+              const linkable = !!tier.ref && !!onOpen;
+              const isOpen = !!open[rowKey];
+              const interactive = linkable || (hasItems && !!onOpen);
+              const onHeader = linkable ? () => onOpen!(tier.ref!, null) : hasItems ? () => setOpen((o) => ({ ...o, [rowKey]: !o[rowKey] })) : undefined;
               return (
                 <div key={ti} style={{ position: "relative", marginTop: ti === 0 ? 0 : 9 }}>
                   {/* горизонтальный «отвод» от оси к карточке */}
                   <span aria-hidden style={{ position: "absolute", left: SX - PAD, top: dotTop + r - 0.75, width: PAD - SX - 4, height: 1.5, background: toneFor(tier), opacity: apex ? 0.9 : 0.5 }} />
                   {/* узел на оси */}
                   {apex ? (
-                    <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: GOLD, boxShadow: `0 0 0 5px color-mix(in srgb, ${GOLD} 18%, transparent)` }} />
+                    <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: GOLD, boxShadow: `0 0 0 5px color-mix(in srgb, ${GOLD} 14%, transparent)` }} />
                   ) : (
                     <span aria-hidden style={{ position: "absolute", left: SX - PAD - r, top: dotTop, width: r * 2, height: r * 2, borderRadius: "50%", background: toneFor(tier), border: "2px solid var(--color-bg)" }} />
                   )}
                   {/* карточка уровня */}
                   <div style={{ position: "relative", padding: "15px 16px 16px", borderRadius: 16,
-                    border: apex ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)",
-                    background: "var(--color-bg-2)",
-                    boxShadow: apex ? `0 0 0 1px color-mix(in srgb, ${GOLD} 50%, transparent), 0 10px 30px -14px color-mix(in srgb, ${GOLD} 65%, transparent)` : "none" }}>
-                    {apex && <span aria-hidden style={{ position: "absolute", left: 0, right: 0, top: 0, height: 2.5, borderRadius: "16px 16px 0 0", background: `linear-gradient(90deg, transparent, ${GOLD} 50%, transparent)` }} />}
-                    {/* эйбрау — обитель/уровень отдельной строкой над заголовком */}
-                    {tier.eyebrow && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</div>}
-                    {/* заголовок + спутники */}
-                    <div style={{ fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</div>
-                    {tier.beings && <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>}
+                    border: apex ? `0.5px solid color-mix(in srgb, ${GOLD} 30%, var(--color-hairline))` : "0.5px solid var(--color-hairline)",
+                    background: apex ? `color-mix(in srgb, ${GOLD} 4%, var(--color-bg-2))` : "var(--color-bg-2)",
+                    boxShadow: apex ? "0 1px 2px rgba(0,0,0,0.05)" : "none" }}>
+                    {/* заголовок (эйбрау + название + спутники) — кликабельный: переход на ПКЛ либо раскрытие списка */}
+                    {(() => {
+                      const inner = (
+                        <>
+                          <span style={{ flex: 1, minWidth: 0 }}>
+                            {tier.eyebrow && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</span>}
+                            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</span>
+                            {tier.beings && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{tier.beings}</span>}
+                          </span>
+                          {interactive && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: 19, lineHeight: 1, transition: "transform .2s ease", transform: hasItems && isOpen ? "rotate(90deg)" : "none" }}>›</span>}
+                        </>
+                      );
+                      return interactive
+                        ? <button type="button" onClick={onHeader} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", background: "none", border: "none", padding: 0, textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{inner}</button>
+                        : <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}>{inner}</div>;
+                    })()}
                     {/* описание — на всю ширину карточки, абзацами */}
                     {notes.length > 0 && (
                       <div style={{ marginTop: 13 }}>
@@ -484,17 +501,29 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                         ))}
                       </div>
                     )}
-                    {/* метрика: явление на Земле + число качеств и процент над подписью */}
+                    {/* раскрывающийся список личностей — выбрать и перейти на ПКЛ */}
+                    {hasItems && isOpen && (
+                      <div style={{ marginTop: 13, paddingTop: 4, borderTop: "0.5px solid var(--color-hairline)", animation: "lf-in .2s ease both" }}>
+                        {tier.items!.map((it) => (
+                          <button key={it.ref} type="button" onClick={() => onOpen?.(it.ref, null)}
+                            style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, width: "100%", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", padding: "10px 0", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                            <span style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 500, color: "var(--color-label)" }}>{it.name}</span>
+                            <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 17, lineHeight: 1 }}>›</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {/* метрика: явление на Земле + число качеств и процент */}
                     {(tier.count || tier.countNote || tier.appeared) && (
-                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
-                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 12 : 0, paddingBottom: (tier.count || tier.countNote) ? 12 : 0, borderBottom: (tier.count || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
+                      <div style={{ marginTop: 16, paddingTop: 13, borderTop: "0.5px solid var(--color-hairline)" }}>
+                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 13 : 0, paddingBottom: (tier.count || tier.countNote) ? 13 : 0, borderBottom: (tier.count || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
                         {tier.count && (
-                          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: tier.countNote ? 6 : 0 }}>
-                            <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em" }}>{tier.count}</span>
-                            {pct != null && <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: 13.5, fontWeight: 600, color: toneFor(tier), lineHeight: 1, letterSpacing: "-0.01em" }}>{pct}%</span>}
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                            <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em" }}>{tier.count}</span>
+                            {pct != null && <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: 13, fontWeight: 600, color: toneFor(tier), lineHeight: 1 }}>{pct}%</span>}
                           </div>
                         )}
-                        {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>}
+                        {tier.countNote && <div style={{ marginTop: tier.count ? 6 : 0, fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{tier.countNote}</div>}
                       </div>
                     )}
                   </div>
@@ -503,6 +532,9 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
             })}
           </div>
         ))}
+        {footer && (
+          <div style={{ marginTop: 22, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 400, color: "var(--color-label)", lineHeight: 1.55, letterSpacing: "-0.003em" }}>{renderProse(footer, onSub, onTab)}</div>
+        )}
       </div>
     </div>
   );
@@ -517,7 +549,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
           {(s.p ?? []).map((para, j) => (
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub, onTab)}</p>
           ))}
-          {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} onSub={onSub} onTab={onTab} />}
+          {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} footer={s.hierarchyFooter} onOpen={onOpen} onSub={onSub} onTab={onTab} />}
           {(s.list ?? []).length > 0 && (() => {
             let n = 0;
             return (
@@ -546,7 +578,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
             <QuoteBlock key={qi} q={q} onOpen={onOpen} onNavigate={onNavigate} />
           ))}
           {(s.cite ?? []).length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 16 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 16, paddingLeft: s.hierarchy && s.hierarchy.length > 0 ? 30 : 0 }}>
               {(s.cite ?? []).map((c, k) => {
                 const parts = expandRef(c.ref);
                 if (c.to) parts.to = c.to;
