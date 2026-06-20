@@ -393,7 +393,7 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
 // нисхождения (золото вверху → серое внизу) кодирует убывание полноты качеств.
 // Apple-quiet: тихие заливки карточек, золото только на вершине и в осях.
 // Шрифт — var(--font-text); writ-курсив здесь не используется (не стихи).
-function HierarchyDescent({ groups }: { groups: HierGroup[] }) {
+function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub?: (id: string) => void; onTab?: (id: string) => void }) {
   const PAD = 30;       // отступ слева под ось + узлы
   const SX = 11.5;      // центр оси (позвоночника) от левого края контейнера
   // Цвет узла/коннектора по полноте качеств (таттве): золото = полнота, серое = крупица.
@@ -450,7 +450,7 @@ function HierarchyDescent({ groups }: { groups: HierGroup[] }) {
                         {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 4 }}>Вершина</div>}
                         <div style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25 }}>{tier.abode}</div>
                         <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 3, lineHeight: 1.35 }}>{renderSanskrit(tier.beings)}</div>
-                        {tier.note && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", marginTop: 6, lineHeight: 1.45 }}>{renderSanskrit(tier.note)}</div>}
+                        {tier.note && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", marginTop: 6, lineHeight: 1.45 }}>{renderProse(tier.note, onSub, onTab)}</div>}
                       </div>
                       {/* бейдж: сколько из 64 качеств */}
                       <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", width: 54, paddingTop: apex ? 13 : 1 }}>
@@ -485,7 +485,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
           {(s.p ?? []).map((para, j) => (
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub, onTab)}</p>
           ))}
-          {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} />}
+          {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} onSub={onSub} onTab={onTab} />}
           {(s.list ?? []).length > 0 && (() => {
             let n = 0;
             return (
