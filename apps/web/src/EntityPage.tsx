@@ -428,7 +428,7 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
               const r = apex ? 8 : 4;                 // радиус узла
               const dotTop = apex ? 21 : 23;          // выравнивание узла к строке обители
               const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
-              const numSize = apex ? 30 : multi ? 17 : 21;
+              const numSize = apex ? 30 : multi ? 20 : 22;
               const notes = (Array.isArray(tier.note) ? tier.note : tier.note ? [tier.note] : []).filter(Boolean) as string[];
               return (
                 <div key={ti} style={{ position: "relative", marginTop: ti === 0 ? 0 : 9 }}>
@@ -448,18 +448,9 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                     {apex && <span aria-hidden style={{ position: "absolute", left: 0, right: 0, top: 0, height: 2.5, borderRadius: "16px 16px 0 0", background: `linear-gradient(90deg, transparent, ${GOLD} 50%, transparent)` }} />}
                     {/* эйбрау — отдельной строкой над заголовком */}
                     {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>Вершина</div>}
-                    {/* шапка: обитель/спутники слева, число качеств — крупно справа, ровно по заголовку */}
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</div>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>
-                      </div>
-                      {tier.count ? (
-                        <div style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: apex ? 700 : 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.03em", whiteSpace: "nowrap" }}>{tier.count}</div>
-                      ) : (
-                        <div aria-hidden style={{ flexShrink: 0, width: 26, height: 26, marginTop: 2, borderRadius: "50%", background: `radial-gradient(circle at 50% 42%, color-mix(in srgb, ${GOLD} 52%, transparent), transparent 72%)`, border: `1px solid color-mix(in srgb, ${GOLD} 32%, transparent)` }} />
-                      )}
-                    </div>
+                    {/* заголовок + спутники */}
+                    <div style={{ fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</div>
+                    <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>
                     {/* описание — на всю ширину карточки, абзацами */}
                     {notes.length > 0 && (
                       <div style={{ marginTop: 13 }}>
@@ -468,9 +459,12 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                         ))}
                       </div>
                     )}
-                    {/* подпись к числу — ровной строкой снизу под тонкой линией, не теснит угол */}
-                    {tier.countNote && (
-                      <div style={{ marginTop: 13, paddingTop: 11, borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>
+                    {/* метрика: число прямо над подписью — связаны, подпись не сирота */}
+                    {(tier.count || tier.countNote) && (
+                      <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
+                        {tier.count && <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", marginBottom: tier.countNote ? 6 : 0 }}>{tier.count}</div>}
+                        {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>}
+                      </div>
                     )}
                   </div>
                 </div>
