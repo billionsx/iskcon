@@ -451,7 +451,8 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
               const apex = !!tier.apex;
               const r = apex ? 8 : 4;                 // радиус узла
               const dotTop = apex ? 21 : 23;          // выравнивание узла к строке обители
-              const numSize = apex ? 30 : 22;
+              const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
+              const numSize = apex ? 30 : multi ? 20 : 22;
               const pct = pctFor(tier);
               const notes = (Array.isArray(tier.note) ? tier.note : tier.note ? [tier.note] : []).filter(Boolean) as string[];
               return (
@@ -483,11 +484,16 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                         ))}
                       </div>
                     )}
-                    {/* метрика: явление на Земле + число над подписью */}
-                    {(pct != null || tier.countNote || tier.appeared) && (
+                    {/* метрика: явление на Земле + число качеств и процент над подписью */}
+                    {(tier.count || tier.countNote || tier.appeared) && (
                       <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
-                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (pct != null || tier.countNote) ? 12 : 0, paddingBottom: (pct != null || tier.countNote) ? 12 : 0, borderBottom: (pct != null || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
-                        {pct != null && <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em", marginBottom: tier.countNote ? 6 : 0 }}>{pct}%</div>}
+                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 12 : 0, paddingBottom: (tier.count || tier.countNote) ? 12 : 0, borderBottom: (tier.count || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
+                        {tier.count && (
+                          <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: tier.countNote ? 6 : 0 }}>
+                            <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 700, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em" }}>{tier.count}</span>
+                            {pct != null && <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: 13.5, fontWeight: 600, color: toneFor(tier), lineHeight: 1, letterSpacing: "-0.01em" }}>{pct}%</span>}
+                          </div>
+                        )}
                         {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>}
                       </div>
                     )}
