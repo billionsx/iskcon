@@ -428,7 +428,8 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
               const r = apex ? 8 : 4;                 // радиус узла
               const dotTop = apex ? 21 : 23;          // выравнивание узла к строке обители
               const multi = !!tier.count && !/^\d+$/.test(tier.count); // «50 + 5» и т.п.
-              const numSize = apex ? 27 : multi ? 16.5 : 20;
+              const numSize = apex ? 30 : multi ? 17 : 21;
+              const notes = (Array.isArray(tier.note) ? tier.note : tier.note ? [tier.note] : []).filter(Boolean) as string[];
               return (
                 <div key={ti} style={{ position: "relative", marginTop: ti === 0 ? 0 : 9 }}>
                   {/* горизонтальный «отвод» от оси к карточке */}
@@ -445,29 +446,31 @@ function HierarchyDescent({ groups, onSub, onTab }: { groups: HierGroup[]; onSub
                     background: "var(--color-bg-2)",
                     boxShadow: apex ? `0 0 0 1px color-mix(in srgb, ${GOLD} 50%, transparent), 0 10px 30px -14px color-mix(in srgb, ${GOLD} 65%, transparent)` : "none" }}>
                     {apex && <span aria-hidden style={{ position: "absolute", left: 0, right: 0, top: 0, height: 2.5, borderRadius: "16px 16px 0 0", background: `linear-gradient(90deg, transparent, ${GOLD} 50%, transparent)` }} />}
-                    {/* шапка: обитель слева, число качеств справа — на одной верхней линии */}
-                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14 }}>
+                    {/* эйбрау — отдельной строкой над заголовком */}
+                    {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>Вершина</div>}
+                    {/* шапка: обитель/спутники слева, число качеств — крупно справа, ровно по заголовку */}
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16 }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        {apex && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 5 }}>Вершина</div>}
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em" }}>{tier.abode}</div>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 4, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</div>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{renderSanskrit(tier.beings)}</div>
                       </div>
-                      <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end", width: 100, paddingTop: 1 }}>
-                        {tier.count ? (
-                          <div style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: apex ? 700 : 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.03em", whiteSpace: "nowrap" }}>{tier.count}</div>
-                        ) : (
-                          <div aria-hidden style={{ width: 26, height: 26, borderRadius: "50%", background: `radial-gradient(circle at 50% 42%, color-mix(in srgb, ${GOLD} 52%, transparent), transparent 72%)`, border: `1px solid color-mix(in srgb, ${GOLD} 32%, transparent)` }} />
-                        )}
-                        {tier.countNote && <div style={{ fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 600, letterSpacing: "0.3px", textTransform: "uppercase", color: "var(--color-label-3)", marginTop: 5, textAlign: "right", lineHeight: 1.3 }}>{tier.countNote}</div>}
-                      </div>
+                      {tier.count ? (
+                        <div style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: apex ? 700 : 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.03em", whiteSpace: "nowrap" }}>{tier.count}</div>
+                      ) : (
+                        <div aria-hidden style={{ flexShrink: 0, width: 26, height: 26, marginTop: 2, borderRadius: "50%", background: `radial-gradient(circle at 50% 42%, color-mix(in srgb, ${GOLD} 52%, transparent), transparent 72%)`, border: `1px solid color-mix(in srgb, ${GOLD} 32%, transparent)` }} />
+                      )}
                     </div>
                     {/* описание — на всю ширину карточки, абзацами */}
-                    {tier.note && (Array.isArray(tier.note) ? tier.note : [tier.note]).filter(Boolean).length > 0 && (
-                      <div style={{ marginTop: 12 }}>
-                        {(Array.isArray(tier.note) ? tier.note : [tier.note]).filter(Boolean).map((para, pi) => (
-                          <p key={pi} style={{ margin: pi === 0 ? 0 : "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", lineHeight: 1.5 }}>{renderProse(para as string, onSub, onTab)}</p>
+                    {notes.length > 0 && (
+                      <div style={{ marginTop: 13 }}>
+                        {notes.map((para, pi) => (
+                          <p key={pi} style={{ margin: pi === 0 ? 0 : "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>{renderProse(para, onSub, onTab)}</p>
                         ))}
                       </div>
+                    )}
+                    {/* подпись к числу — ровной строкой снизу под тонкой линией, не теснит угол */}
+                    {tier.countNote && (
+                      <div style={{ marginTop: 13, paddingTop: 11, borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 600, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)", lineHeight: 1.4 }}>{tier.countNote}</div>
                     )}
                   </div>
                 </div>
