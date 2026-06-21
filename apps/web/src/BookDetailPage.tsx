@@ -10,7 +10,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
-import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS } from "./books";
+import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS, BOOKS } from "./books";
 import { PDF_CACHE_REV } from "./pdfRev";
 import { api } from "./api";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
@@ -2073,7 +2073,8 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         if (id === "share") { void shareChapter(); return; }
         // «Скачать PDF» из прозовой книги → единый диспетчер книги (onMenuAction).
         if (id === "qr") {
-          onQr(`https://gaurangers.com/book/${work}`, { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
+          if (numbered) onQr(`https://gaurangers.com${prHref}`, { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
+          else { const bk = BOOKS[work]; onQr(`https://gaurangers.com/book/${work}`, { kind: "book", bookTitle, tagline: bk?.tagline, cover: bk?.covers?.[0] }); }
           return;
         }
         onMenuAction(id);
