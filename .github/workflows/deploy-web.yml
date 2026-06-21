@@ -99,6 +99,26 @@ jobs:
           fi
           exit 0
 
+      - name: Apply GH_TOKEN secret (downloader → dispatch GitHub Actions)
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          set +e
+          if [ -n "$GH_TOKEN" ]; then
+            printf '%s' "$GH_TOKEN" | bunx wrangler secret put GH_TOKEN
+            RC=$?
+            if [ "$RC" = "0" ]; then
+              echo "GH_TOKEN applied to iskcon-web."
+            else
+              echo "::warning::wrangler secret put GH_TOKEN exit $RC — секрет уже сохранён прошлыми деплоями; не блокируем выкат."
+            fi
+          else
+            echo "No GH_TOKEN repo secret — /api/downloader/* will return 503 until you add it."
+          fi
+          exit 0
+
       - name: Deploy to Cloudflare + force latest version to 100%
         working-directory: apps/web
         env:
