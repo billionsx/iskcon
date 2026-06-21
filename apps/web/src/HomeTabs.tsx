@@ -21,9 +21,6 @@ export type HomeTabId =
 
 export const HOME_TABS: readonly { id: HomeTabId; label: string }[] = [
   { id: "iskcon",      label: "ИСККОН" },
-  { id: "sadhana",     label: "Садхана" },
-  { id: "calendar",    label: "Календарь" },
-  { id: "feed",        label: "Лента" },
   { id: "centres",     label: "Центры" },
   { id: "restaurants", label: "Рестораны" },
   { id: "education",   label: "Образование" },

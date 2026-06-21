@@ -338,7 +338,10 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* низ: имя Божеств, подпись, ссылка в Telegram */}
       <div style={chrome({ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 4, padding: "44px 16px calc(20px + env(safe-area-inset-bottom,0px))", background: "linear-gradient(transparent, rgba(0,0,0,0.72))" })}>
         {item.deities && (
-          <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.caption ? 7 : 0 }}>{item.deities}</div>
+          <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.source === "live" ? 4 : (item.caption ? 7 : 0) }}>{item.deities}</div>
+        )}
+        {item.source === "live" && (
+          <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", color: "rgba(255,255,255,0.72)", marginBottom: item.caption ? 7 : 0 }}>Ежедневный даршан</div>
         )}
         {item.caption && (
           <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
