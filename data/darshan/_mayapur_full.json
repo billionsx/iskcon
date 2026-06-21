@@ -1,0 +1,112 @@
+{
+  "at": "2026-06-21T09:28:53.365Z",
+  "album": "594",
+  "hashes": [
+    "FEs7Hcfs",
+    "xjiHhlI9",
+    "W3nnxoCc",
+    "vfnNUs3J",
+    "xbo3t9Ir",
+    "R8S140iw",
+    "jYxHJOct",
+    "YxO0lndb",
+    "noebNMMm",
+    "MhoaKVZv"
+  ],
+  "html_embed": "<a href=\"/imageviewer/show-album-pictures/594/0\" style=\"margin: auto\"><img alt=\"Daily Darshan\" src=\"/storage/albums/594/FEs7Hcfs_thumbnail.jpg\"></a> <div class=\"caption\"> <p></p> <!--p>Created: 21 June 2026 at 5",
+  "originals_test": [
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_large.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_full.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_original.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_thumbnail.jpg",
+      "status": 200,
+      "bytes": 23121,
+      "fmt": "jpeg",
+      "h": 104,
+      "w": 250
+    }
+  ],
+  "imageviewer": {
+    "status": 200,
+    "len": 1817,
+    "storage_urls": [
+      "/storage/albums/594/FEs7Hcfs_image.jpg",
+      "/storage/albums/594/xjiHhlI9_image.jpg",
+      "/storage/albums/594/W3nnxoCc_image.jpg",
+      "/storage/albums/594/vfnNUs3J_image.jpg",
+      "/storage/albums/594/xbo3t9Ir_image.jpg",
+      "/storage/albums/594/R8S140iw_image.jpg",
+      "/storage/albums/594/jYxHJOct_image.jpg",
+      "/storage/albums/594/YxO0lndb_image.jpg",
+      "/storage/albums/594/noebNMMm_image.jpg",
+      "/storage/albums/594/MhoaKVZv_image.jpg"
+    ],
+    "measured": {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_image.jpg",
+      "status": 200,
+      "bytes": 930970,
+      "fmt": "jpeg",
+      "h": 797,
+      "w": 1920
+    },
+    "sample": "g id=\"dispImage\" style=\"max-width: 100%; max-height: 100%; margin: auto; margin-top: auto; display:block;\" src=\"storage/albums/594/FEs7Hcfs_image.jpg\"> </a> <div id=\"next\" class=\"np\" style=\"right:0;\" onclick=\"npClick(1)\">></div> </body> </html> <script src=\"/js/jquery.js\"></script> <script> const images = [] "
+  },
+  "notes": [],
+  "html_len": 34993,
+  "all_full_jpg": [
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/xjiHhlI9.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/W3nnxoCc.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/vfnNUs3J.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/xbo3t9Ir.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/R8S140iw.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/jYxHJOct.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/YxO0lndb.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/noebNMMm.jpg",
+      "status": 404
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/MhoaKVZv.jpg",
+      "status": 404
+    }
+  ]
+}
