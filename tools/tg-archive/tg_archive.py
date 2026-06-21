@@ -355,7 +355,32 @@ async def cmd_stream(cfg: dict):
 
     arc = cfg.get("archive", {})
     mode = os.getenv("IA_MODE") or arc.get("mode", "new_item")
-    if mode == "attach_to_book":
+
+    # Книжный режим: id и метаданные строятся ПО СТАНДАРТУ библиотеки (books.ts),
+    # а не из вольного текста канала. Загрузчик тянет /api/books/<work>/meta.
+    book_id = (os.getenv("BOOK_ID") or "").strip()
+    if book_id:
+        import urllib.request
+        site = (os.getenv("DL_SITE") or "https://gaurangers.com").rstrip("/")
+        try:
+            with urllib.request.urlopen(f"{site}/api/books/{book_id}/meta", timeout=30) as r:
+                bm = json.loads(r.read().decode("utf-8"))
+        except Exception as e:
+            die(f"Не удалось получить метаданные книги '{book_id}' с {site}: {e}")
+        if not bm.get("identifier") or not bm.get("metadata"):
+            die(f"Эндпоинт /api/books/{book_id}/meta вернул неполные данные")
+        identifier = bm["identifier"]
+        base_md = dict(bm["metadata"])
+        base_md.setdefault("mediatype", "audio")
+        page = bm.get("bookPageUrl") or ""
+        rel = bm.get("relatedBookUrl") or page
+        if rel:
+            base_md["external-identifier"] = f"urn:related-book:{rel}"
+        if page:
+            desc = base_md.get("description", "")
+            base_md["description"] = (desc + f'<br/><br/>Аудиокнига к изданию в библиотеке ISKCON ONE LOVE: <a href="{page}">{page}</a>').strip()
+        ok(f"Книга по стандарту: {identifier} — «{base_md.get('title')}» ({base_md.get('creator')})")
+    elif mode == "attach_to_book":
         identifier = os.getenv("IA_BOOK_IDENTIFIER") or arc.get("book_identifier")
         if not identifier:
             die("mode=attach_to_book требует book_identifier (id существующего объекта книги)")
