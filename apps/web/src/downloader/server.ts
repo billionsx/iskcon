@@ -92,9 +92,10 @@ export async function downloaderApi(
       const iaMode = b.iaMode === "attach_to_book" ? "attach_to_book" : "new_item";
       const identifier = String(b.identifier || "").trim();
       const bookIdentifier = String(b.bookIdentifier || "").trim();
+      const book = String(b.book || "").trim();
 
       if (!channel) return reply({ error: "channel_required" }, 400);
-      if (mode === "upload" && iaMode === "new_item" && !identifier)
+      if (mode === "upload" && iaMode === "new_item" && !identifier && !book)
         return reply({ error: "identifier_required" }, 400);
       if (mode === "upload" && iaMode === "attach_to_book" && !bookIdentifier)
         return reply({ error: "book_identifier_required" }, 400);
@@ -108,6 +109,7 @@ export async function downloaderApi(
         identifier,
         related_book_url: String(b.relatedBookUrl || "").trim(),
         book_identifier: bookIdentifier,
+        book,
       };
 
       const res = await fetch(

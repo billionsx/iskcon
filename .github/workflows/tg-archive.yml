@@ -40,6 +40,9 @@ on:
       limit:
         description: "Лимит файлов (пусто = все; для теста)"
         default: ""
+      book:
+        description: "id книги в библиотеке (work, напр. spl) — метаданные строятся по стандарту (для upload)"
+        default: ""
 
 jobs:
   run:
@@ -88,6 +91,7 @@ jobs:
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
           TG_CHANNEL: ${{ inputs.channel }}
           TG_LIMIT: ${{ inputs.limit }}
+          BOOK_ID: ${{ inputs.book }}
           IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
           IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
           IA_MODE: ${{ inputs.ia_mode }}

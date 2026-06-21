@@ -6,7 +6,7 @@ import { centersApi } from "./src/centers/server";
 import { darshanApi } from "./src/darshan/server";
 import { readingApi } from "./src/reading/server";
 import { downloaderApi } from "./src/downloader/server";
-import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
+import { BOOKS, BOOK_ABOUT, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
 import { PDF_CACHE_REV } from "./src/pdfRev";
@@ -647,6 +647,80 @@ async function brsAudioManifest(env: Env, origin: string): Promise<Response> {
   return json({ book: "brs", modes: { plain: { identifier: "iskcone-brs", tracks } } });
 }
 
+// ── «Шрила Прабхупада-лиламрита»: прозовая биография, ОДИН IA-элемент iskcone-spl ──
+// Имена файлов от загрузчика (tg-archive, режим stream/книга): «NNN_<slug>.mp3», где NNN —
+// порядковый номер дорожки. Хронологический порядок канала = порядок книги, поэтому
+// NNN ↔ номер главы 1..62 в divisions(work_id='spl'); заголовки берём из D1 (единый источник).
+async function splAudioTracks(identifier: string, origin: string, titles: Map<number, string>): Promise<AudioTrack[]> {
+  const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
+    headers: { accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!meta.ok) return [];
+  const data = (await meta.json()) as { files?: IaFile[] };
+  const originals = (data.files || []).filter((f) => f.source === "original" && /\.mp3$/i.test(f.name));
+  const chapters: AudioTrack[] = [];
+  for (const f of originals) {
+    const stem = f.name.replace(/\.mp3$/i, "");
+    const url = `${origin}/audio/${identifier}/${f.name}`;
+    const durationSec = audioDuration(f.length);
+    const chM = stem.match(/^(\d{1,3})[._-]/); // ведущий номер дорожки
+    const chapter = chM ? parseInt(chM[1], 10) : 0;
+    chapters.push({
+      kind: "chapter", pos: chapter, chapter,
+      title: titles.get(chapter) || `Глава ${chapter}`,
+      file: f.name, url, durationSec,
+    });
+  }
+  chapters.sort((a, b) => (a.chapter || 0) - (b.chapter || 0));
+  chapters.forEach((t, i) => (t.pos = i));
+  return chapters;
+}
+
+async function splAudioManifest(env: Env, origin: string): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT CAST(number AS INTEGER) AS n, json_extract(title,'$.ru') AS title_ru
+     FROM divisions WHERE work_id='spl' AND level='chapter' ORDER BY n`
+  ).all<{ n: number; title_ru: string }>();
+  const titles = new Map<number, string>();
+  for (const r of results) titles.set(r.n, r.title_ru);
+  const tracks = await splAudioTracks("iskcone-spl", origin, titles);
+  return json({ book: "spl", modes: { plain: { identifier: "iskcone-spl", tracks } } });
+}
+
+// ── Каноничные метаданные книги для заливки аудиокниги на archive.org (единый стандарт) ──
+// Источник истины — books.ts (то же, что карточки/детальная страница). Загрузчик (tg-archive)
+// тянет этот эндпоинт и создаёт IA-объект iskcone-<work> с этими названием/автором/описанием/
+// предметами — без ручного ввода, строго по стандарту библиотеки. Так аудиокнига получается
+// «как у нас уже залиты книги», а не из вольного текста Telegram-канала.
+async function bookMetaResponse(env: Env, work: string): Promise<Response> {
+  const b = BOOKS[work];
+  if (!b) return json({ error: "unknown_book" }, 404);
+  let relatedBookUrl = "";
+  try {
+    const row = await env.DB.prepare(
+      `SELECT source_url FROM editions WHERE work_id=? AND source_url IS NOT NULL AND source_url!='' ORDER BY (lang='ru') DESC LIMIT 1`
+    ).bind(work).first<{ source_url: string }>();
+    relatedBookUrl = row?.source_url || "";
+  } catch { /* D1 недоступна — не критично, ссылку просто опустим */ }
+  const about = BOOK_ABOUT[work] && BOOK_ABOUT[work].length ? BOOK_ABOUT[work] : [b.description];
+  return json({
+    work,
+    identifier: `iskcone-${work}`,
+    metadata: {
+      title: bookFullTitle(b),
+      creator: b.author,
+      description: about.join("\n\n"),
+      subject: ["ISKCON", "Гаудия-вайшнавизм", "Сознание Кришны", "Hare Krishna", b.author, "аудиокнига"],
+      language: "rus",
+      mediatype: "audio",
+      collection: "opensource_audio",
+    },
+    relatedBookUrl,
+    bookPageUrl: `https://gaurangers.com/books/${b.slug}`,
+  });
+}
+
 // ── Чайтанья-чаритамрита: три IA-элемента по лилам (без комментариев пока) ──
 // Файлы: «NN.CC.<Lila>-lila.mp3» (глава) или «NN.PP.CC.<Lila>-lila.mp3» (часть главы).
 const CC_AUDIO_LILAS: { lila: string; label: string; identifier: string }[] = [
@@ -1148,6 +1222,15 @@ export default {
     }
     if (url.pathname === "/api/books/brs/audio") {
       return brsAudioManifest(env, url.origin);
+    }
+    if (url.pathname === "/api/books/spl/audio") {
+      return splAudioManifest(env, url.origin);
+    }
+
+    // GET /api/books/:work/meta → каноничные метаданные книги для заливки аудиокниги (tg-archive)
+    const bookMetaM = url.pathname.match(/^\/api\/books\/([a-z0-9-]+)\/meta$/);
+    if (bookMetaM) {
+      return bookMetaResponse(env, bookMetaM[1]);
     }
 
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)

@@ -467,7 +467,7 @@ export const BOOKS: Record<string, BookData> = {
  * Книги, для которых уже подключён звук (плейлист аудиокниги).
  * Остальные книги показывают «Аудиокнига — скоро» вместо запуска плеера.
  */
-export const AUDIO_WORKS: Record<string, boolean> = { bg: true, cc: true, brs: true };
+export const AUDIO_WORKS: Record<string, boolean> = { bg: true, cc: true, brs: true, spl: true };
 
 /**
  * СТАНДАРТ НАПИСАНИЯ НАЗВАНИЯ КНИГИ — единый источник истины.
