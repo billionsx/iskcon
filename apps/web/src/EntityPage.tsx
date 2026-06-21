@@ -957,6 +957,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   // Без этого write-эффект на маунте пишет #<defaultTab> и read-эффект (ждущий
   // данных) читает уже затёртый хеш — ссылка вида /#avatara/ierarhiya не открывается.
   const initialHashRef = useRef(typeof window !== "undefined" ? (window.location.hash || "") : "");
+  const initialPathRef = useRef(typeof window !== "undefined" ? (window.location.pathname || "") : "");
   const hashConsumedRef = useRef(false);
 
   useEffect(() => {
@@ -1150,9 +1151,16 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     // ПКЛ долгоживущий. В оверлее /person/<id> хеш не используем.
     let hashTab = "", hashSub = "";
     if (embedded && typeof window !== "undefined") {
-      const m = (initialHashRef.current || "").replace(/^#/, "").split("/");
-      hashTab = decodeURIComponent(m[0] || "");
-      hashSub = decodeURIComponent(m[1] || "");
+      // Новый формат — путь /<герой>/<таб>/<подтаб>; seg[0] — id героя (krishna).
+      const seg = (initialPathRef.current || "").split("/").filter(Boolean);
+      hashTab = decodeURIComponent(seg[1] || "");
+      hashSub = decodeURIComponent(seg[2] || "");
+      if (!hashTab) {
+        // Обратная совместимость со старыми ссылками /<герой>#<таб>/<подтаб>.
+        const m = (initialHashRef.current || "").replace(/^#/, "").split("/");
+        hashTab = decodeURIComponent(m[0] || "");
+        hashSub = decodeURIComponent(m[1] || "");
+      }
     }
     const defaultTab = dos ? dos.tabs[0].id : (raw || data.profile?.biography) ? "zhizn" : "obzor";
     const tabExists = dos ? dos.tabs.some((t) => t.id === hashTab) : (hashTab === "obzor" || hashTab === "zhizn");
@@ -1163,6 +1171,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     pendingSubFromHash.current = tabExists && hashSub ? hashSub : null;
     // Исходный хеш применён — больше не читаем его и разрешаем писать URL.
     initialHashRef.current = "";
+    initialPathRef.current = "";
     hashConsumedRef.current = true;
   }, [id, data?.id, embedded]);
   // при смене Tier-1 таба в досье — выставить первый суб-таб (либо из хеша
@@ -1192,11 +1201,21 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   useEffect(() => {
     if (!embedded || typeof window === "undefined") return;
     if (!tab) return;
-    if (!hashConsumedRef.current) return; // ждём применения исходного deep-link хеша
-    const path = window.location.pathname;
-    const hash = sub ? `#${encodeURIComponent(tab)}/${encodeURIComponent(sub)}` : `#${encodeURIComponent(tab)}`;
-    if (window.location.hash !== hash) replaceUrl(path + hash);
-  }, [tab, sub, embedded]);
+    if (!hashConsumedRef.current) return; // ждём применения исходного deep-link
+    const segs = window.location.pathname.split("/").filter(Boolean);
+    const base = "/" + (segs[0] || id);                          // /krishna
+    // Главный экран ПКЛ (первый таб + его первый видимый подтаб) — чистый /krishna
+    // без хвоста; остальное — путь /krishna/<таб>/<подтаб> (без решётки).
+    const defaultTabId = dossier?.tabs?.[0]?.id ?? "";
+    const isDefault = tab === defaultTabId && (sub === (visibleSubs[0]?.id ?? "") || !sub);
+    const target = isDefault
+      ? base
+      : sub
+        ? `${base}/${encodeURIComponent(tab)}/${encodeURIComponent(sub)}`
+        : `${base}/${encodeURIComponent(tab)}`;
+    if (window.location.pathname + window.location.hash !== target) replaceUrl(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, sub, embedded, id]);
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
