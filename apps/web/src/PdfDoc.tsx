@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { BOOKS, bookFullTitle, type BookData } from "./books";
 import { api } from "./api";
-import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
+import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, ProseChapterPrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
 import { tattvaRu, categoriesRu } from "./entityLabels";
 import { getDhama, getTirthaById, KIND_RU } from "./dhama/dhamas";
 
@@ -15,6 +15,7 @@ type Loaded =
   | { kind: "prosebook"; chapters: ChapterRow[]; parasByCh: Record<string, ProsePara[]> }
   | { kind: "lila"; lilaLabel: string; range?: string; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[]; lilaLabel?: string }
+  | { kind: "prosechapter"; chapter: ChapterRow; paras: ProsePara[] }
   | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string; lila?: string }
   | { kind: "card"; header: string; title: string; subtitle?: string; rows: Array<[string, string]>; body?: string[]; footer?: string; sections?: PrintSection[] };
 
@@ -113,10 +114,14 @@ export function PdfDoc() {
             const chapter: ChapterRow = { id: div, number: num, title_ru: title, title_en: "", source_url: "", verses: verses.length };
             if (live) setData({ kind: "chapter", chapter, verses, lilaLabel: CC_LILA[lilaSlug] ?? "" });
           } else {
-            const ch = await (await fetch(api("/books/bg/chapters"))).json();
+            const bk2 = (BOOKS as Record<string, BookData>)[work] ?? BOOKS.bg;
+            const ch = await (await fetch(api(`/books/${bk2.work}/chapters`))).json();
             const chapter = ((ch.chapters ?? []) as ChapterRow[]).find((c) => String(c.number) === String(n)) ?? null;
-            const d = await (await fetch(api(`/books/${work || "bg"}/chapters/${n}/read`))).json();
-            if (live) setData({ kind: "chapter", chapter, verses: (d.verses ?? []) as ChapterVerse[] });
+            const d = await (await fetch(api(`/books/${bk2.work}/chapters/${n}/read`))).json();
+            if (bk2.prose) {
+              const paras = ((d.verses ?? []) as Array<{ ref: string; translation: string | null }>).map((v) => ({ ref: v.ref, translation: v.translation }));
+              if (live) setData({ kind: "prosechapter", chapter: chapter ?? { id: `${bk2.work}.${n}`, number: String(n), title_ru: "", title_en: "", source_url: "", verses: paras.length }, paras });
+            } else if (live) setData({ kind: "chapter", chapter, verses: (d.verses ?? []) as ChapterVerse[] });
           }
         } else if (kind === "verse") {
           if (work !== "bg") {
@@ -159,6 +164,8 @@ export function PdfDoc() {
         if (data.lilaLabel) parts.push(data.lilaLabel);
         parts.push(data.chapter.title_ru || `Глава ${data.chapter.number}`);
         h = parts.join(" · ");
+      } else if (data.kind === "prosechapter") {
+        h = `${title} · ${data.chapter.title_ru || `Глава ${data.chapter.number}`}`;
       } else if (data.kind === "verse") {
         const vnum = ref.match(/\.\s*(\d+)/)?.[1] ?? "";
         const parts = [title];
@@ -183,6 +190,7 @@ export function PdfDoc() {
       {data.kind === "prosebook" && <ProsePrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.brs} chapters={data.chapters} parasByCh={data.parasByCh} />}
       {data.kind === "lila" && <LilaPrint book={(BOOKS as Record<string, BookData>)[work] ?? BOOKS.cc} lilaLabel={data.lilaLabel} range={data.range} chapters={data.chapters} versesByCh={data.versesByCh} bare={bare} />}
       {data.kind === "chapter" && data.chapter && <ChapterPrint chapter={data.chapter} verses={data.verses} />}
+      {data.kind === "prosechapter" && <ProseChapterPrint chapter={data.chapter} paras={data.paras} />}
       {data.kind === "chapter" && !data.chapter && <div style={{ padding: 24 }}>Глава не найдена.</div>}
       {data.kind === "card" && <CardPrint d={data} />}
       {data.kind === "verse" && (
