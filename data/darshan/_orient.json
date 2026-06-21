@@ -1,0 +1,315 @@
+{
+  "at": "2026-06-21T11:19:56.191Z",
+  "istDate": "2026-06-21",
+  "vrindavan": {
+    "data_status": 200,
+    "count": 21,
+    "data_slice": "{},\"routes/daily-darshan/darshanGallery\",{\"_3\":3776},{\"_3\":3777,\"_799\":61,\"_3786\":3787},{\"_3778\":3779,\"_3780\":3602,\"_3781\":3782,\"_3783\":3784,\"_3785\":965},\"gallery_name\",\"Sringar Darshan\",\"gallery_date\",\"images_list\",\"[\\\"static/static-_396a37b01f6ff8e.jpg\\\", \\\"static/static-_366a37b020de483.jpg\\\", \\\"static/static-_696a37b022548f6.jpg\\\", \\\"static/static-_556a37b0239edd7.jpg\\\", \\\"static/static-_216a37b024f2109.jpg\\\", \\\"static/static-_626a3",
+    "has_dim_keys": false,
+    "range": {
+      "status": 206,
+      "accept_ranges": null,
+      "content_range": "bytes 0-2047/958984",
+      "got_bytes": 2048,
+      "dims_from_2k": {
+        "fmt": "?",
+        "w": 0,
+        "h": 0
+      }
+    },
+    "images": [
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_396a37b01f6ff8e.jpg",
+        "status": 200,
+        "bytes": 958984,
+        "px": "2048x1367",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_366a37b020de483.jpg",
+        "status": 200,
+        "bytes": 1022634,
+        "px": "2048x1367",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_696a37b022548f6.jpg",
+        "status": 200,
+        "bytes": 975889,
+        "px": "1367x2048",
+        "exif": null,
+        "effective": "portrait"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_556a37b0239edd7.jpg",
+        "status": 200,
+        "bytes": 983238,
+        "px": "1367x2048",
+        "exif": null,
+        "effective": "portrait"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_216a37b024f2109.jpg",
+        "status": 200,
+        "bytes": 1009008,
+        "px": "2048x1367",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_626a37b02674a2a.jpg",
+        "status": 200,
+        "bytes": 1033091,
+        "px": "2048x1367",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_946a37b027badc0.jpg",
+        "status": 200,
+        "bytes": 1019674,
+        "px": "2048x1367",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_776a37b02906b63.jpg",
+        "status": 200,
+        "bytes": 1048877,
+        "px": "2048x1367",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_876a37b02a9bb95.jpg",
+        "status": 200,
+        "bytes": 986056,
+        "px": "1367x2048",
+        "exif": null,
+        "effective": "portrait"
+      },
+      {
+        "url": "//cdn.iskconvrindavan.com/static/static-_136a37b02c14f7c.jpg",
+        "status": 200,
+        "bytes": 821532,
+        "px": "1367x2048",
+        "exif": null,
+        "effective": "portrait"
+      }
+    ],
+    "summary": {
+      "portrait": 4,
+      "landscape": 6,
+      "with_exif_rotate": 0
+    }
+  },
+  "mayapur": {
+    "index_status": 200,
+    "today": "21/06/2026",
+    "chosen": {
+      "date": "20/06/2026",
+      "id": "594"
+    },
+    "blocks": [
+      {
+        "date": "20/06/2026",
+        "id": "594"
+      },
+      {
+        "date": "19/06/2026",
+        "id": "593"
+      },
+      {
+        "date": "16/06/2026",
+        "id": "591"
+      },
+      {
+        "date": "15/06/2026",
+        "id": "590"
+      },
+      {
+        "date": "14/06/2026",
+        "id": "589"
+      },
+      {
+        "date": "13/06/2026",
+        "id": "588"
+      }
+    ],
+    "album_html_len": 34993,
+    "album_thumb_hashes": [
+      "FEs7Hcfs",
+      "xjiHhlI9",
+      "W3nnxoCc",
+      "vfnNUs3J",
+      "xbo3t9Ir",
+      "R8S140iw",
+      "jYxHJOct",
+      "YxO0lndb",
+      "noebNMMm",
+      "MhoaKVZv"
+    ],
+    "album_image_hashes": [],
+    "viewer": {
+      "off_0": {
+        "status": 200,
+        "len": 1817,
+        "image_hashes": [
+          "FEs7Hcfs",
+          "xjiHhlI9",
+          "W3nnxoCc",
+          "vfnNUs3J",
+          "xbo3t9Ir",
+          "R8S140iw",
+          "jYxHJOct",
+          "YxO0lndb",
+          "noebNMMm",
+          "MhoaKVZv"
+        ]
+      },
+      "off_10": {
+        "status": 500,
+        "len": 0,
+        "image_hashes": []
+      },
+      "off_20": {
+        "status": 500,
+        "len": 0,
+        "image_hashes": []
+      },
+      "off_30": {
+        "status": 500,
+        "len": 0,
+        "image_hashes": []
+      }
+    },
+    "total_unique_hashes": 10,
+    "images": [
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/FEs7Hcfs_image.jpg",
+        "status": 200,
+        "bytes": 930970,
+        "px": "1920x797",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/xjiHhlI9_image.jpg",
+        "status": 200,
+        "bytes": 959782,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/W3nnxoCc_image.jpg",
+        "status": 200,
+        "bytes": 632588,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/vfnNUs3J_image.jpg",
+        "status": 200,
+        "bytes": 508824,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/xbo3t9Ir_image.jpg",
+        "status": 200,
+        "bytes": 945874,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/R8S140iw_image.jpg",
+        "status": 200,
+        "bytes": 736070,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/jYxHJOct_image.jpg",
+        "status": 200,
+        "bytes": 674455,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/YxO0lndb_image.jpg",
+        "status": 200,
+        "bytes": 648688,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/noebNMMm_image.jpg",
+        "status": 200,
+        "bytes": 861498,
+        "px": "1623x1080",
+        "exif": null,
+        "effective": "landscape"
+      },
+      {
+        "url": "ttps://www.mayapur.com/storage/albums/594/MhoaKVZv_image.jpg",
+        "status": 200,
+        "bytes": 968856,
+        "px": "1783x1080",
+        "exif": null,
+        "effective": "landscape"
+      }
+    ],
+    "hotlink": {
+      "referer_gaurangers": {
+        "status": 200,
+        "ct": "image/jpeg",
+        "bytes": 930970
+      },
+      "no_referer": {
+        "status": 200,
+        "ct": "image/jpeg",
+        "bytes": 930970
+      },
+      "referer_mayapur": {
+        "status": 200,
+        "ct": "image/jpeg",
+        "bytes": 930970
+      }
+    }
+  },
+  "live": {
+    "api_status": 200,
+    "api": [
+      {
+        "temple": "mayapur",
+        "source": "live",
+        "images": 10,
+        "first": ".mayapur.com/storage/albums/594/FEs7Hcfs_image.jpg"
+      },
+      {
+        "temple": "vrindavan",
+        "source": "live",
+        "images": 11,
+        "first": "onvrindavan.com/static/static-_696a37b022548f6.jpg"
+      }
+    ],
+    "html_status": 200,
+    "bundles": [
+      "/assets/index-Dd_jwNsz.js"
+    ],
+    "main": "/assets/index-Dd_jwNsz.js",
+    "bundle_len": 1472180,
+    "has_backdrop_blur": true,
+    "has_dailydarshan_label": true,
+    "has_old_client_filter": false
+  }
+}
