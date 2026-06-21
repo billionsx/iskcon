@@ -359,16 +359,34 @@ async def cmd_stream(cfg: dict):
     # Книжный режим: id и метаданные строятся ПО СТАНДАРТУ библиотеки (books.ts),
     # а не из вольного текста канала. Загрузчик тянет /api/books/<work>/meta.
     book_id = (os.getenv("BOOK_ID") or "").strip()
-    if book_id:
+    meta_json = (os.getenv("META_JSON") or "").strip()
+    if book_id or meta_json:
         import urllib.request
-        site = (os.getenv("DL_SITE") or "https://gaurangers.com").rstrip("/")
-        try:
-            with urllib.request.urlopen(f"{site}/api/books/{book_id}/meta", timeout=30) as r:
-                bm = json.loads(r.read().decode("utf-8"))
-        except Exception as e:
-            die(f"Не удалось получить метаданные книги '{book_id}' с {site}: {e}")
-        if not bm.get("identifier") or not bm.get("metadata"):
-            die(f"Эндпоинт /api/books/{book_id}/meta вернул неполные данные")
+        bm = None
+        if meta_json:
+            # Метаданные пришли прямо из бэкенда (воркер собрал по books.ts) — без HTTP, без WAF.
+            try:
+                bm = json.loads(meta_json)
+            except Exception as e:
+                die(f"META_JSON не парсится: {e}")
+        else:
+            site = (os.getenv("DL_SITE") or "https://gaurangers.com").rstrip("/")
+            req = urllib.request.Request(
+                f"{site}/api/books/{book_id}/meta",
+                headers={"User-Agent": "Mozilla/5.0 (compatible; iskcone-downloader/1.0)",
+                         "Accept": "application/json"},
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=30) as r:
+                    raw = r.read().decode("utf-8", "replace")
+            except Exception as e:
+                die(f"Не удалось получить метаданные книги '{book_id}' с {site}: {e}")
+            try:
+                bm = json.loads(raw)
+            except Exception:
+                die(f"/api/books/{book_id}/meta вернул не-JSON (первые 200 симв.): {raw[:200]}")
+        if not bm or not bm.get("identifier") or not bm.get("metadata"):
+            die("Метаданные книги неполны (нужны identifier и metadata)")
         identifier = bm["identifier"]
         base_md = dict(bm["metadata"])
         base_md.setdefault("mediatype", "audio")
@@ -494,6 +512,8 @@ async def cmd_stream(cfg: dict):
     if n_fail:
         info("Часть файлов не залилась — просто запусти прогон ещё раз, докатит остаток.")
     print(f"::notice::archive.org {base_url} | залито {n_done}, пропущено {n_skip}, ошибок {n_fail}")
+    if n_done == 0 and n_fail > 0:
+        die(f"Ни один файл не залит на archive.org ({n_fail} ошибок) — объект {base_url}")
 
 
 def main():
