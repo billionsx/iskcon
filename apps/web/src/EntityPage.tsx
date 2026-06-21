@@ -203,7 +203,7 @@ type LfSource = { by?: string; byId?: string; ref?: string; to?: string };
 type LfQuote = { t: string; translit?: string; by?: string; byId?: string; ref?: string; to?: string; gold?: boolean };
 type HierTier = { abode: string; beings?: string; note?: string | string[]; count?: string; countNote?: string; appeared?: string; apex?: boolean; eyebrow?: string; ref?: string; items?: { name: string; ref: string; desc?: string }[] };
 type HierGroup = { realm: string; tiers: HierTier[] };
-type LfCatItem = { name: string; desc?: string; ref?: string };
+type LfCatItem = { name: string; desc?: string; ref?: string; tags?: string[] };
 type LfCatGroup = { group: string; gloss?: string; note?: string; src?: LfSource; items?: LfCatItem[] };
 type LfSection = { h?: string; p?: string[]; list?: LfListGroup[]; listSource?: LfSource; cite?: LfCite[]; quote?: LfQuote; quotes?: LfQuote[]; see?: LfSee[]; hierarchy?: HierGroup[]; hierarchyFooter?: string; catalog?: LfCatGroup[] };
 type RailDef = { title: string; params: string; orderIds?: string[] };
@@ -550,7 +550,10 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
     <div style={{ marginTop: 20 }}>
       {groups.map((g, gi) => (
         <div key={gi} style={{ marginTop: gi === 0 ? 0 : 30 }}>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+            <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</span>
+            {g.items && g.items.length > 0 && <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{g.items.length}</span>}
+          </div>
           {g.gloss && <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{g.gloss}</div>}
           {g.note && <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label)", lineHeight: 1.55 }}>{renderProse(g.note, onSub, onTab)}</p>}
           {g.items && g.items.length > 0 && (
@@ -562,6 +565,13 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
                     <span style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>{it.name}</span>
                       {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4, marginTop: 2 }}>{it.desc}</span>}
+                      {it.tags && it.tags.length > 0 && (
+                        <span style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 7 }}>
+                          {it.tags.map((tag, ti) => (
+                            <span key={ti} style={{ fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.2px", color: "var(--color-label-2)", background: "color-mix(in srgb, var(--color-label) 7%, transparent)", padding: "2px 8px", borderRadius: 999, lineHeight: 1.35, whiteSpace: "nowrap" }}>{tag}</span>
+                          ))}
+                        </span>
+                      )}
                     </span>
                     {clickable && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: 18, lineHeight: 1 }}>›</span>}
                   </>
