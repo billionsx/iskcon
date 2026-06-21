@@ -64,8 +64,17 @@ const SITE_CDN = "https://cdn.iskconvrindavan.com";
 const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 const istToday = () => new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
 
-async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
-  const date = istToday();
+// Даты IST: сегодня и N предыдущих дней (YYYY-MM-DD), для отката к свежей галерее.
+function istDaysBack(n: number): string[] {
+  const fmt = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" });
+  const now = Date.now();
+  return Array.from({ length: n + 1 }, (_, i) => fmt.format(new Date(now - i * 86400000)));
+}
+
+// Полная галерея даршана сайта за конкретный день. Берём ВСЕ кадры (regex по всем
+// static-путям .data, дедуп) в полном разрешении CDN. null — если за этот день
+// галереи ещё/уже нет.
+async function fetchSiteGalleryDay(src: Src, date: string): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
   const u = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}.data`;
   const pageUrl = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}`;
   try {
@@ -82,6 +91,18 @@ async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string;
     const name = (t.match(/"gallery_name","([^"]+)"/) || [])[1] || src.galleryName || "Darshan";
     return { date, name, pageUrl, images: paths.map((p) => `${SITE_CDN}/${p}`) };
   } catch { return null; }
+}
+
+// Сегодняшний даршан — ВСЕГДА полной галереей сайта. Утром свежей галереи может ещё
+// не быть (её публикуют в течение дня IST), поэтому при пустом «сегодня» откатываемся
+// к самому свежему доступному дню (вчера, позавчера…). Это и есть «весь даршан за
+// день» в полном разрешении — не редкий компрессированный пост Telegram.
+async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
+  for (const date of istDaysBack(6)) {
+    const gal = await fetchSiteGalleryDay(src, date);
+    if (gal && gal.images.length) return gal;
+  }
+  return null;
 }
 
 // Приоритет постам с фото и «даршанной» лексикой, иначе — свежайший пост с фото.
@@ -250,7 +271,7 @@ function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; 
     templeSlug: src.slug,
     templeName: src.name,
     deities: src.deities,
-    images: gal.images.slice(0, 30),
+    images: gal.images.slice(0, 60),
     caption: null,
     srcUrl: gal.pageUrl,
     channelUrl: null,

@@ -206,6 +206,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [ii, setII] = useState(0);       // индекс кадра внутри храма
   const [paused, setPaused] = useState(false);
   const [capOpen, setCapOpen] = useState(false);
+  const [ar, setAr] = useState<number | null>(null);   // соотношение сторон текущего кадра (w/h)
 
   const item = items[ti];
   const imgs = item.images;
@@ -240,8 +241,8 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
-  /* сброс прогресса при смене кадра/храма */
-  useEffect(() => { accRef.current = 0; if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+  /* сброс прогресса и ориентации при смене кадра/храма */
+  useEffect(() => { accRef.current = 0; setAr(null); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
   /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps) */
   useEffect(() => {
@@ -292,6 +293,9 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
   const longCap = !!item.caption && (item.caption.length > 140 || item.caption.includes("\n"));
   const nextSrc = ii < total - 1 ? imgs[ii + 1] : (ti < items.length - 1 ? items[ti + 1].images[0] : null);
+  // Горизонтальный кадр вписываем по ШИРИНЕ экрана, вертикальный — по ВЫСОТЕ.
+  // До загрузки считаем горизонтальным (даршан чаще широкий) — без скачка для общего случая.
+  const landscape = ar == null ? true : ar >= 1;
 
   const chrome = (extra: CSSProperties = {}): CSSProperties => ({ opacity: paused ? 0 : 1, transition: "opacity .2s ease", ...extra });
 
@@ -302,10 +306,13 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* фото — целиком, по центру */}
-      <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1 }}>
+      {/* фото: горизонтальное — по ширине экрана, вертикальное — по высоте; по центру */}
+      <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
+          onLoad={(e) => { const t = e.currentTarget; setAr(t.naturalWidth && t.naturalHeight ? t.naturalWidth / t.naturalHeight : null); }}
+          style={landscape
+            ? { width: "100%", height: "auto", display: "block", imageOrientation: "from-image" }
+            : { width: "auto", height: "100%", display: "block", imageOrientation: "from-image" }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
