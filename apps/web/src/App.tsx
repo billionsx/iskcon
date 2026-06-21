@@ -429,7 +429,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
 
 function SegRow({ value, onChange, items }: { value: string; onChange: (v: string) => void; items: [string, string][] }) {
   return (
-    <div role="tablist" style={{ display: "flex", gap: 8, marginBottom: 18, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+    <div role="tablist" style={{ display: "flex", gap: 8, marginBottom: 18, overflowX: "auto", scrollbarWidth: "none" }}>
       {items.map(([id, label]) => {
         const on = value === id;
         return (
@@ -519,7 +519,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("krishna"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "krishna" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
-      <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+      <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px 116px" }}>
           {tab === "krishna" && <EntityPage id="krishna" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
           {tab === "gauranga" && <AcharyaScreen realm="gauranga" onOpen={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} />}
@@ -961,11 +961,11 @@ export default function App() {
             <BookLoaderPage onBack={goBack} />
           </main>
         ) : openBook ? (
-          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <BookDetailPage key={openBook} book={BOOKS[openBook] ?? BOOKS.bg} onBack={goBack} onDonate={openDonate} onOpenCart={() => navigate("/cart")} initialTarget={bookTarget} />
           </main>
         ) : openBhajan ? (
-          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <BhajanDetailPage slug={openBhajan} onBack={goBack} />
           </main>
         ) : openKirtanArtist ? (
@@ -973,15 +973,15 @@ export default function App() {
             <KirtanArtistPage slug={openKirtanArtist} onBack={goBack} />
           </main>
         ) : openCatalog ? (
-          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={goBack} />
           </main>
         ) : openCollection ? (
-          <main key={openCollection} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main key={openCollection} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <AcharyaScreen collection={openCollection} onBack={goBack} onOpen={openEntityTarget} />
           </main>
         ) : openEntity ? (
-          <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} onNavigate={navigate} onOpenCollection={setOpenCollection} />
           </main>
         ) : openTirtha && getDhama(openTirtha.dhama) ? (
@@ -993,7 +993,7 @@ export default function App() {
             <DhamaDetailPage dhama={getDhama(openDhama)!} onBack={goBack} onOpenTirtha={(tid) => setOpenTirtha({ dhama: openDhama!, id: tid })} />
           </main>
         ) : openContent ? (
-          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <ContentDetailPage
               slug={openContent}
               onBack={goBack}
@@ -1027,7 +1027,7 @@ export default function App() {
             <MyProgressScreen onBack={goBack} onOpen={navigate} />
           </main>
         ) : openSearch ? (
-          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <SearchScreen onBack={goBack} onOpenEntity={openEntityTarget} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onNavigate={navigate} />
           </main>
         ) : openCart ? (

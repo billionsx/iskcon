@@ -22,6 +22,14 @@
 
 
 :root {
+  /* ЗАКОН плавающего таб-бара (.gtab): пилюля абсолютна (bottom:16px, высота 62px,
+     z-40) и плавает ПОВЕРХ контента. Любой скролл-контейнер под видимой пилюлей
+     обязан зарезервировать эту зону снизу через --gtab-reserve, чтобы последний
+     контент и нижние подписи не прятались под пилюлю. Полноэкранные оверлеи
+     (читалки/истории/модалки с крестиком, z≥70) перекрывают пилюлю целиком и
+     используют собственный env(safe-area-inset-bottom) — им резерв не нужен. */
+  --gtab-reserve: calc(104px + env(safe-area-inset-bottom));
+
   /* iOS 26+ semantic colors (dark-first) */
   --color-bg: #000000;
   --color-bg-2: #0a0a0a;
@@ -551,9 +559,15 @@
   position: absolute; left: 0; right: 0; bottom: 16px; z-index: 40;
   pointer-events: none; padding-bottom: env(safe-area-inset-bottom);
 }
-/* Глобальное меню поверх страниц-оверлеев со скроллом → нижний воздух, чтобы
- * последний контент не прятался под плавающей пилюлей (как 116px на главной). */
-.has-overlay-tabbar > main { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+/* Главное меню поверх страниц-оверлеев со скроллом → нижний воздух (--gtab-reserve),
+ * чтобы последний контент не прятался под плавающей пилюлей. Тот же резерв — на
+ * главном шелле и на любом скролл-экране под пилюлей (см. .pb-gtab / закон в :root). */
+.has-overlay-tabbar > main { padding-bottom: var(--gtab-reserve); }
+.pb-gtab { padding-bottom: var(--gtab-reserve); }
+/* Любой открытый лист/модалка/сторис (с крестиком) ставит body.gtab-off →
+ * плавающая пилюля скрывается, чтобы не накладываться на сфокусированный
+ * оверлей (страховка к z-index на случай стек-ловушек iOS-скролла). */
+body.gtab-off .gtab-wrap { display: none; }
 .gtab {
   pointer-events: auto; position: relative; margin: 0 auto;
   width: calc(100% - 44px); height: 62px; border-radius: 31px;
