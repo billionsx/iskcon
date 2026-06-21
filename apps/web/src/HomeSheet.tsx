@@ -11,9 +11,10 @@ export function HomeSheet({ open, label, onClose, children }: {
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
+    document.body.classList.add("gtab-off");
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
-    return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey); };
+    return () => { document.body.style.overflow = prev; document.body.classList.remove("gtab-off"); window.removeEventListener("keydown", onKey); };
   }, [open, onClose]);
   if (!open) return null;
   return (
