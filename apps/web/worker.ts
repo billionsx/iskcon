@@ -277,7 +277,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     const cid = url.searchParams.get("id") || "";
     const cname = url.searchParams.get("name") || "Карточка";
     if (!ctype || !cid) return new Response("bad request", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
-    const extra = ["album", "track"].map((k) => { const v = url.searchParams.get(k); return v ? `&${k}=${encodeURIComponent(v)}` : ""; }).join("");
+    const extra = ["album", "track", "tab", "sub"].map((k) => { const v = url.searchParams.get(k); return v ? `&${k}=${encodeURIComponent(v)}` : ""; }).join("");
     printPath = `/?pdf=card&type=${encodeURIComponent(ctype)}&id=${encodeURIComponent(cid)}${extra}`;
     filename = `${cname}.pdf`;
   } else if (kind === "verse" && ref) {

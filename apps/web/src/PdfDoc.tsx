@@ -46,6 +46,8 @@ export function PdfDoc() {
   const cid = params.get("id") || "";
   const album = params.get("album") || "";
   const track = params.get("track") || "";
+  const ptab = params.get("tab") || "";
+  const psub = params.get("sub") || "";
   const [data, setData] = useState<Loaded | null>(null);
   const [err, setErr] = useState(false);
 
@@ -134,7 +136,7 @@ export function PdfDoc() {
             if (live) setData({ kind: "verse", verse: vRes as ChapterVerse, chapterNo, chapterTitle });
           }
         } else if (kind === "card") {
-          const card = await loadCard(ctype, cid, album, track);
+          const card = await loadCard(ctype, cid, album, track, ptab, psub);
           if (live) { if (card) setData(card); else setErr(true); }
         } else if (live) {
           setErr(true);
@@ -199,7 +201,36 @@ export function PdfDoc() {
 /* ── Печатная карточка справочника (место/личность/документ/бхаджан/киртан) ── */
 type CardLoaded = Extract<Loaded, { kind: "card" }>;
 
-async function loadCard(ctype: string, cid: string, album: string, track: string): Promise<CardLoaded | null> {
+/* ── Досье ПКЛ: минимальные типы для печати одной темы (таб/подтаб) ── */
+type PdfQuote = { t: string; by?: string; ref?: string };
+type PdfSec = { h?: string; p?: string[]; quote?: PdfQuote; quotes?: PdfQuote[] };
+type PdfDossier = { tabs?: Array<{ id: string; label?: string; title?: string; lead?: string; sections?: PdfSec[]; subtabs?: Array<{ id: string; label?: string; sections?: PdfSec[] }> }> };
+function flattenDossierTopic(dos: PdfDossier | null, ptab: string, psub: string): { title: string; sub: string; rows: Array<[string, string]>; sections: PrintSection[] } | null {
+  const tabObj = dos?.tabs?.find((t) => t.id === ptab);
+  if (!tabObj) return null;
+  const subObj = psub ? (tabObj.subtabs ?? []).find((st) => st.id === psub) : undefined;
+  const secs = (subObj?.sections ?? tabObj.sections ?? []);
+  const out: PrintSection[] = [];
+  if (tabObj.lead) out.push({ h: tabObj.title || tabObj.label || "", sub: tabObj.lead, lines: [] });
+  for (const sec of secs) {
+    const lines: string[] = [];
+    for (const para of (sec.p ?? [])) if (para && para.trim()) lines.push(para.trim());
+    const qs = [...(sec.quote ? [sec.quote] : []), ...(sec.quotes ?? [])];
+    for (const q of qs) {
+      if (!q?.t) continue;
+      const attr = [q.by, q.ref].filter(Boolean).join(", ");
+      lines.push("\u00ab" + q.t + "\u00bb" + (attr ? "\n\u2014 " + attr : ""));
+    }
+    if (sec.h || lines.length) out.push({ h: sec.h || undefined, lines });
+  }
+  const tLabel = tabObj.title || tabObj.label || "";
+  const sLabel = subObj?.label || "";
+  const rows: Array<[string, string]> = [];
+  if (tLabel || sLabel) rows.push(["Раздел", [tLabel, sLabel].filter(Boolean).join(" \u00b7 ")]);
+  return { title: sLabel || tLabel, sub: "", rows, sections: out };
+}
+
+async function loadCard(ctype: string, cid: string, album: string, track: string, ptab = "", psub = ""): Promise<CardLoaded | null> {
   try {
     if (ctype === "dhama") {
       const d = getDhama(cid);
@@ -241,9 +272,18 @@ async function loadCard(ctype: string, cid: string, album: string, track: string
     if (ctype === "entity") {
       const e = await (await fetch(`/api/entities/${encodeURIComponent(cid)}`)).json() as {
         name_ru?: string; name_en?: string; name_iast?: string; note?: string | null; tattva?: string | null;
-        categories?: string[]; profile?: { summary?: string | null; biography?: string | null; contribution?: string | null } | null;
+        categories?: string[]; profile?: { summary?: string | null; biography?: string | null; contribution?: string | null; longform?: string | null } | null;
       };
       if (!e || !e.name_ru) return null;
+      // Печать КОНКРЕТНОЙ темы ПКЛ (таб/подтаб), если переданы — иначе вся Личность.
+      if (ptab) {
+        let dos: PdfDossier | null = null;
+        try { const raw = e.profile?.longform; const j = raw ? JSON.parse(raw) : null; if (j && Array.isArray(j.tabs)) dos = j; } catch { dos = null; }
+        const topic = flattenDossierTopic(dos, ptab, psub);
+        if (topic && topic.sections.length) {
+          return { kind: "card", header: `${e.name_ru} · ПКЛ ISKCON ONE LOVE`, title: topic.title || e.name_ru, subtitle: e.name_ru, rows: topic.rows, sections: topic.sections };
+        }
+      }
       const rows: Array<[string, string]> = [];
       if (e.name_iast) rows.push(["IAST", e.name_iast]);
       if (e.name_en) rows.push(["EN", e.name_en]);
