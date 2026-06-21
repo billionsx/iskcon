@@ -65,7 +65,7 @@ function Gallery({ images }: { images: string[] }) {
         style={{ display: "flex", overflowX: multi ? "auto" : "hidden", scrollSnapType: "x mandatory", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {images.map((src, i) => ok[i] && (
           <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", minHeight: 220, maxHeight: "72vh" }}>
-            <img src={src} alt="Даршан" loading={i === 0 ? "eager" : "lazy"} onError={() => setOk((p) => p.map((v, j) => (j === i ? false : v)))}
+            <img src={src} alt="Даршан" loading={i === 0 ? "eager" : "lazy"} referrerPolicy="no-referrer" onError={() => setOk((p) => p.map((v, j) => (j === i ? false : v)))}
               style={{ maxWidth: "100%", maxHeight: "72vh", width: "auto", height: "auto", display: "block", objectFit: "contain" }} />
           </div>
         ))}
@@ -127,7 +127,7 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
       </button>
       <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560, margin: "0 auto", padding: "64px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
         {item.images.map((src, i) => (
-          <img key={i} src={src} alt="Даршан" loading="lazy" style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, marginBottom: 10 }} />
+          <img key={i} src={src} alt="Даршан" loading="lazy" referrerPolicy="no-referrer" style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, marginBottom: 10 }} />
         ))}
         <div style={{ marginTop: 8, color: "#fff" }}>
           <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>
@@ -150,7 +150,7 @@ function ArchiveThumb({ item, onOpen }: { item: DarshanItem; onOpen: () => void 
     <button type="button" onClick={onOpen} aria-label={`Даршан · ${humanDate(item.date)}`}
       style={{ position: "relative", aspectRatio: "1 / 1", borderRadius: 14, overflow: "hidden", border: "none", padding: 0, cursor: "pointer", background: FILL2, WebkitTapHighlightColor: "transparent" }}>
       {ok && item.images[0]
-        ? <img src={item.images[0]} alt="" loading="lazy" onError={() => setOk(false)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        ? <img src={item.images[0]} alt="" loading="lazy" referrerPolicy="no-referrer" onError={() => setOk(false)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         : <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: L3 }}><Lotus /></span>}
       <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "16px 8px 6px", background: "linear-gradient(transparent, rgba(0,0,0,0.6))", color: "#fff", fontFamily: FT, fontSize: 10.5, fontWeight: 600, textAlign: "left" }}>
         {item.date.slice(8, 10)}.{item.date.slice(5, 7)} · {item.templeSlug === "mayapur" ? "Маяпур" : item.templeSlug === "vrindavan" ? "Вриндаван" : item.templeSlug}
@@ -249,9 +249,14 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
                 </>
               )}
 
-              <p style={{ margin: "8px 2px 0", fontFamily: FT, fontSize: 11, lineHeight: 1.5, color: L3, textAlign: "center" }}>
-                Даршаны — из официальных каналов ИСККОН Маяпур и Вриндаван. 🦚 ISKCON ONE LOVE
-              </p>
+              <div style={{ margin: "8px 2px 0", textAlign: "center" }}>
+                <p style={{ margin: 0, fontFamily: FT, fontSize: 11, lineHeight: 1.5, color: L3 }}>
+                  Даршаны — из официальных каналов ИСККОН Маяпур и Вриндаван.
+                </p>
+                <p style={{ margin: "6px 0 0", fontFamily: FT, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", color: GOLDT }}>
+                  ISKCON ONE LOVE
+                </p>
+              </div>
             </>
           )}
         </div>
