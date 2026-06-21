@@ -1858,6 +1858,24 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
   );
 }
 
+/* Печать ОДНОЙ прозовой главы (поглавный PDF «Нектара»): заголовок + абзацы. */
+export function ProseChapterPrint({ chapter, paras }: { chapter: ChapterRow; paras: ProsePara[] }) {
+  const num = Number(chapter.number);
+  const showNum = Number.isFinite(num) && num >= 1;
+  return (
+    <div style={{ color: INK }}>
+      <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
+        {showNum && <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
+        <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
+        <Ornament />
+      </div>
+      {paras.length === 0
+        ? <p style={{ textAlign: "center", color: INK2, fontSize: 15 }}>Текст этой главы готовится.</p>
+        : <div>{paras.map((p, i) => <ProseBlock key={p.ref || i} text={p.translation ?? ""} fontSize={17} lineHeight={1.8} color={INK} top={i === 0 ? 0 : 14} />)}</div>}
+    </div>
+  );
+}
+
 function NavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: ReactNode }) {
   const [pressed, setPressed] = useState(false);
   const off = () => setPressed(false);
@@ -1945,7 +1963,9 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: `/book/${work}/${chapter.number}` });
   const moreRef = useRef<HTMLSpanElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const printRef = useRef<HTMLDivElement>(null);
   const player = usePlayer();
+  const [printing, setPrinting] = useState(false);
 
   const n = Number(chapter.number);
   const numbered = n >= 1 && n <= 999;
@@ -1972,6 +1992,20 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   useEffect(() => {
     noteOpen({ work, ref: chapter.id, label: prLabel, href: prHref, kind: "prose", idx: prog.idx, total: prog.total, weight: prog.weight, totalWeight: prog.totalWeight });
   }, [work, chapter.id, prLabel, prHref, prog]);
+
+  // Поглавный PDF прозы: нумерованные главы — серверный рендер (как БГ),
+  // ненумерованные разделы и сбой сервера — клиентская печать скрытого блока.
+  useEffect(() => {
+    if (!printing) return;
+    let cancelled = false;
+    (async () => {
+      const fallback = () => { if (printRef.current) exportToPdf(printRef.current, { title: `${chapter.title_ru} · ${bookTitle}` }); };
+      if (numbered) await downloadServerPdf(`/pdf?kind=chapter&work=${encodeURIComponent(work)}&n=${encodeURIComponent(chapter.number)}`, `${bookTitle}. Глава ${chapter.number}.pdf`, { onStatus: flash, fallback });
+      else fallback();
+      if (!cancelled) setPrinting(false);
+    })();
+    return () => { cancelled = true; };
+  }, [printing, chapter.id, chapter.number, chapter.title_ru, work, numbered, bookTitle]);
 
   const resumeAnchor = useRef<{ ref: string; frac: number } | null>(null);
   if (resumeAnchor.current === null) {
@@ -2071,7 +2105,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
           return;
         }
         if (id === "share") { void shareChapter(); return; }
-        // «Скачать PDF» из прозовой книги → единый диспетчер книги (onMenuAction).
+        if (id === "pdf") { if (paras && paras.length) setPrinting(true); else flash("Глава ещё загружается…"); return; }
         if (id === "qr") {
           if (numbered) onQr(`https://gaurangers.com${prHref}`, { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
           else { const bk = BOOKS[work]; onQr(`https://gaurangers.com/book/${work}`, { kind: "book", bookTitle, tagline: bk?.tagline, cover: bk?.covers?.[0] }); }
@@ -2079,6 +2113,11 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         }
         onMenuAction(id);
       }} anchorRef={moreRef} />
+      {printing && paras && (
+        <div ref={printRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
+          <ProseChapterPrint chapter={chapter} paras={paras} />
+        </div>
+      )}
     </div>
   );
 }
