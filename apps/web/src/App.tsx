@@ -520,7 +520,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("krishna"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "krishna" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-        <div style={{ padding: "16px 16px 116px" }}>
+        <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
           {tab === "krishna" && <EntityPage id="krishna" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
           {tab === "gauranga" && <AcharyaScreen realm="gauranga" onOpen={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} />}
           {tab === "iskcon" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} onBookMenu={bookMenu} flash={flash} onOpenPath={onOpenPath} />}

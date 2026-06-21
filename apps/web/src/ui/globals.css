@@ -29,6 +29,10 @@
      (читалки/истории/модалки с крестиком, z≥70) перекрывают пилюлю целиком и
      используют собственный env(safe-area-inset-bottom) — им резерв не нужен. */
   --gtab-reserve: calc(104px + env(safe-area-inset-bottom));
+  /* Доп. высота, когда виден мини-плеер (он сидит над пилюлей, height≈58 + зазор).
+     Скролл-контейнеры добавляют её к нижнему резерву, чтобы плеер не закрывал низ
+     страниц (пейджер/последний абзац). Включается классом body.player-on. */
+  --player-extra: 0px;
 
   /* iOS 26+ semantic colors (dark-first) */
   --color-bg: #000000;
@@ -562,8 +566,9 @@
 /* Главное меню поверх страниц-оверлеев со скроллом → нижний воздух (--gtab-reserve),
  * чтобы последний контент не прятался под плавающей пилюлей. Тот же резерв — на
  * главном шелле и на любом скролл-экране под пилюлей (см. .pb-gtab / закон в :root). */
-.has-overlay-tabbar > main { padding-bottom: var(--gtab-reserve); }
-.pb-gtab { padding-bottom: var(--gtab-reserve); }
+.has-overlay-tabbar > main { padding-bottom: calc(var(--gtab-reserve) + var(--player-extra)); }
+.pb-gtab { padding-bottom: calc(var(--gtab-reserve) + var(--player-extra)); }
+body.player-on { --player-extra: 64px; }
 /* Любой открытый лист/модалка/сторис (с крестиком) ставит body.gtab-off →
  * плавающая пилюля скрывается, чтобы не накладываться на сфокусированный
  * оверлей (страховка к z-index на случай стек-ловушек iOS-скролла). */
