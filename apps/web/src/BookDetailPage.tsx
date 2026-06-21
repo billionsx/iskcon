@@ -1945,6 +1945,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: `/book/${work}/${chapter.number}` });
   const moreRef = useRef<HTMLSpanElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const player = usePlayer();
 
   const n = Number(chapter.number);
   const numbered = n >= 1 && n <= 999;
@@ -2025,7 +2026,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
           <div style={{ fontSize: 11, color: INK2 }}>{numbered ? `Глава ${chapter.number} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } }} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } const n = Number(chapter.number); player.playChapter(work, Number.isFinite(n) && n >= 1 ? n : 1, "plain"); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
