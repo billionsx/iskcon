@@ -208,36 +208,8 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [capOpen, setCapOpen] = useState(false);
 
   const item = items[ti];
-
-  // Вертикальные сторис: показываем портретные/квадратные кадры. Галерея храма
-  // может содержать горизонтальные макро-кадры убранства — в формате историй они
-  // лежат «боком». Меряем ориентацию открытого храма (фото всё равно грузятся для
-  // показа) и оставляем портрет. Защита: если портретных нет — показываем все,
-  // чтобы история никогда не была пустой. naturalWidth/Height уже учитывают EXIF.
-  const [portrait, setPortrait] = useState<Record<number, string[]>>({});
-  useEffect(() => {
-    if (portrait[ti]) return;
-    const src = items[ti].images;
-    let alive = true;
-    Promise.all(src.map((u) => new Promise<boolean>((res) => {
-      const im = new Image();
-      let done = false; const fin = (keep: boolean) => { if (!done) { done = true; res(keep); } };
-      im.onload = () => fin(im.naturalHeight >= im.naturalWidth * 0.98);
-      im.onerror = () => fin(true);
-      im.src = u;
-      window.setTimeout(() => fin(true), 4500);
-    }))).then((flags) => {
-      if (!alive) return;
-      const keep = src.filter((_, i) => flags[i]);
-      setPortrait((m) => ({ ...m, [ti]: keep.length ? keep : src }));
-    });
-    return () => { alive = false; };
-  }, [ti, items, portrait]);
-
-  const imgs = portrait[ti] ?? item.images;
+  const imgs = item.images;
   const total = imgs.length;
-  // если после фильтра кадров стало меньше — не выходим за границы
-  useEffect(() => { setII((v) => (v > total - 1 ? Math.max(0, total - 1) : v)); }, [total]);
 
   const barRef = useRef<HTMLSpanElement | null>(null);
   const accRef = useRef(0);
@@ -327,6 +299,8 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={onCancel}
       style={{ position: "fixed", inset: 0, zIndex: 95, background: "#000", overflow: "hidden", touchAction: "none", userSelect: "none", WebkitUserSelect: "none", animation: "storyIn .22s ease" }}>
 
+      {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
       {/* фото — целиком, по центру */}
       <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1 }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
