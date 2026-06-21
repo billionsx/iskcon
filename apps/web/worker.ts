@@ -493,6 +493,12 @@ const BG_INTRO_TITLES: Record<string, string> = {
   "00.04.Molitvy.mangalacharana": "Мангала-ачарана",
 };
 
+// Передняя материя «Нектара преданности» (интро-треки без номера главы).
+const NOD_INTRO_TITLES: Record<string, string> = {
+  "00.01.Predislovie": "Предисловие",
+  "00.02.Vstuplenie": "Вступление",
+};
+
 interface IaFile { name: string; source?: string; format?: string; length?: string; }
 interface AudioTrack {
   kind: "intro" | "chapter" | "song";
@@ -519,7 +525,7 @@ function audioDuration(len?: string): number | null {
   return Number.isNaN(n) ? null : Math.round(n);
 }
 
-async function audioTracks(identifier: string, origin: string, titles: Map<number, string>): Promise<AudioTrack[]> {
+async function audioTracks(identifier: string, origin: string, titles: Map<number, string>, introTitles: Record<string, string> = BG_INTRO_TITLES): Promise<AudioTrack[]> {
   const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
     headers: { accept: "application/json" },
     cf: { cacheEverything: true, cacheTtl: 300 },
@@ -539,7 +545,7 @@ async function audioTracks(identifier: string, origin: string, titles: Map<numbe
         kind: "intro",
         pos: parseInt(introM[1], 10),
         chapter: null,
-        title: BG_INTRO_TITLES[stem] || stem.replace(/^[\d.]+/, "").replace(/[._-]+/g, " ").trim() || stem,
+        title: introTitles[stem] || stem.replace(/^[\d.]+/, "").replace(/[._-]+/g, " ").trim() || stem,
         file: f.name,
         url,
         durationSec,
@@ -584,6 +590,21 @@ async function audioManifest(env: Env, origin: string): Promise<Response> {
       commentary: { identifier: AUDIO_ITEMS.commentary, tracks: commentary },
     },
   });
+}
+
+// ── «Нектар преданности» (Бхакти-расамрита-синдху): прозовая книга, ОДИН IA-элемент ──
+// Файлы глав «NN.<...>.mp3» (NN = номер главы 1..51); передняя материя — интро
+// «00.NN.<...>.mp3» (предисловие/вступление). Заголовки глав — из D1 (work_id='brs').
+// Та же форма манифеста, что у БГ (modes.plain.tracks); комментариев нет (проза).
+async function brsAudioManifest(env: Env, origin: string): Promise<Response> {
+  const { results } = await env.DB.prepare(
+    `SELECT CAST(number AS INTEGER) AS n, json_extract(title,'$.ru') AS title_ru
+     FROM divisions WHERE work_id='brs' AND level='chapter' ORDER BY n`
+  ).all<{ n: number; title_ru: string }>();
+  const titles = new Map<number, string>();
+  for (const r of results) titles.set(r.n, r.title_ru);
+  const tracks = await audioTracks("iskcone-brs", origin, titles, NOD_INTRO_TITLES);
+  return json({ book: "brs", modes: { plain: { identifier: "iskcone-brs", tracks } } });
 }
 
 // ── Чайтанья-чаритамрита: три IA-элемента по лилам (без комментариев пока) ──
@@ -1084,6 +1105,9 @@ export default {
     }
     if (url.pathname === "/api/books/cc/audio") {
       return ccAudioManifest(env, url.origin);
+    }
+    if (url.pathname === "/api/books/brs/audio") {
+      return brsAudioManifest(env, url.origin);
     }
 
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)
