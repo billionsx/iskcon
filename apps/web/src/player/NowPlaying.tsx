@@ -90,14 +90,18 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   const chapterUrl = isChapter
     ? (p.book === "bg"
         ? `${ORIGIN}/book/bg/${ch}?listen`
-        : (lila ? `${ORIGIN}/book/${p.book}/${lila}/${ch}?listen` : bookUrl))
+        : lila
+          ? `${ORIGIN}/book/${p.book}/${lila}/${ch}?listen`
+          : BOOK.prose
+            ? `${ORIGIN}/book/${p.book}/${ch}?listen`
+            : bookUrl)
     : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
   function doShare(url: string, title: string) {
     if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title, url }).catch(() => {});
     else { try { void navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { /* ignore */ } }
   }
-  function readBook() { p.close(); onOpenBook?.(p.book, isChapter && p.book === "bg" ? ch : null); }
+  function readBook() { p.close(); onOpenBook?.(p.book, isChapter && (p.book === "bg" || BOOK.prose) ? ch : null); }
   function downloadChapter() {
     const t = p.track; if (!t) return;
     try { const a = document.createElement("a"); a.href = t.url; a.download = `${t.title}.mp3`; document.body.appendChild(a); a.click(); a.remove(); flash("Скачивание…"); }
