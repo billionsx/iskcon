@@ -747,7 +747,7 @@ function EdgeFade({ side, show }: { side: "left" | "right"; show: boolean }) {
 function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: string | null; nextLabel?: string | null; onPrev?: (() => void) | null; onNext?: (() => void) | null }) {
   if (!onPrev && !onNext) return null;
   const cell: React.CSSProperties = { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 9, padding: "2px 0", background: "none", border: "none", cursor: "pointer", color: "inherit", font: "inherit", WebkitTapHighlightColor: "transparent" };
-  const chev: React.CSSProperties = { flexShrink: 0, fontSize: 19, lineHeight: 1, fontWeight: 500, color: "var(--color-label-3)" };
+  const chev: React.CSSProperties = { flexShrink: 0, display: "inline-flex", alignItems: "center", color: "var(--color-label)" };
   const col = (align: "flex-start" | "flex-end"): React.CSSProperties => ({ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0, alignItems: align });
   const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--color-label-3)" };
   const title: React.CSSProperties = { maxWidth: "100%", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 };
@@ -755,7 +755,7 @@ function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: str
     <nav aria-label="Листать раздел" style={{ display: "flex", gap: 16, marginTop: 30, paddingTop: 17, borderTop: "0.5px solid var(--color-hairline)" }}>
       {onPrev ? (
         <button type="button" onClick={onPrev} style={cell}>
-          <span aria-hidden style={chev}>‹</span>
+          <span aria-hidden style={chev}><BackIcon size={18} /></span>
           <span style={col("flex-start")}>
             <span style={kicker}>Назад</span>
             <span style={title}>{prevLabel}</span>
@@ -768,7 +768,7 @@ function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: str
             <span style={kicker}>Далее</span>
             <span style={title}>{nextLabel}</span>
           </span>
-          <span aria-hidden style={chev}>›</span>
+          <span aria-hidden style={{ ...chev, transform: "scaleX(-1)" }}><BackIcon size={18} /></span>
         </button>
       ) : <span style={{ flex: 1 }} aria-hidden />}
     </nav>

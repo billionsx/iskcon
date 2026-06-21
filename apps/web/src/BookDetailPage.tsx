@@ -1000,10 +1000,47 @@ function versePathFor(work: string, division: string | undefined, ref: string): 
 }
 
 export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
-function Contents({ chapters, onOpenChapter, prose = false }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void; prose?: boolean }) {
+
+/* Возврат «К содержанию» из главы → подсветить и проскроллить к той главе, на
+ * которой только что был (зеркало «К главе» из стиха). Находит ряд по data-chid,
+ * прокручивает ближайший скролл-контейнер так, чтобы глава встала под шапку, и
+ * коротко подсвечивает фон. flashId сбрасывается через onConsume после анимации. */
+function useChapterFlash(flashId: string | null | undefined, onConsume: (() => void) | undefined, listRef: React.RefObject<HTMLDivElement | null>): string | null {
+  const [flashCh, setFlashCh] = useState<string | null>(null);
+  useEffect(() => {
+    if (!flashId) return;
+    const node = listRef.current;
+    if (!node) { onConsume?.(); return; }
+    let sc: HTMLElement | null = node.parentElement;
+    while (sc) { const oy = getComputedStyle(sc).overflowY; if (oy === "auto" || oy === "scroll") break; sc = sc.parentElement; }
+    let r1 = 0, r2 = 0;
+    r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        const el = node.querySelector(`[data-chid="${(typeof window !== "undefined" && window.CSS && CSS.escape) ? CSS.escape(flashId) : flashId}"]`) as HTMLElement | null;
+        if (el) {
+          if (sc) {
+            const top = sc.scrollTop + (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) - 80;
+            sc.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+          } else {
+            el.scrollIntoView({ block: "center", behavior: "auto" });
+          }
+          setFlashCh(flashId);
+          setTimeout(() => setFlashCh((c) => (c === flashId ? null : c)), 1300);
+        }
+        onConsume?.();
+      });
+    });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [flashId]);
+  return flashCh;
+}
+
+function Contents({ chapters, onOpenChapter, prose = false, flashId, onConsumeFlash }: { chapters: ChapterRow[] | null; onOpenChapter: (ch: ChapterRow) => void; prose?: boolean; flashId?: string | null; onConsumeFlash?: () => void }) {
   const chCount = chapters ? chapters.filter((c) => { const n = Number(c.number); return n >= 1 && n <= 999; }).length : 0;
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const flashCh = useChapterFlash(chapters ? flashId : null, onConsumeFlash, listRef);
   return (
-    <div style={{ padding: "24px 20px 12px" }}>
+    <div ref={listRef} style={{ padding: "24px 20px 12px" }}>
       <SectionTitle>{chapters ? (prose ? `${chCount} глав` : `${chapters.length} глав`) : "Содержание"}</SectionTitle>
       {!chapters && <div style={{ fontSize: 15, color: INK2 }}>Загрузка оглавления…</div>}
       {chapters && (
@@ -1012,7 +1049,7 @@ function Contents({ chapters, onOpenChapter, prose = false }: { chapters: Chapte
             const n = Number(c.number);
             const showNum = !prose || (n >= 1 && n <= 999);
             return (
-              <li key={c.id} style={{ position: "relative" }}>
+              <li key={c.id} data-chid={c.id} style={{ position: "relative", background: flashCh === c.id ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 80 }}>
                 <Pressable onClick={() => onOpenChapter(c)} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
                   <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{showNum ? c.number : ""}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
@@ -1033,11 +1070,13 @@ function Contents({ chapters, onOpenChapter, prose = false }: { chapters: Chapte
 
 /* ───────── Содержание (иерархия: лила/песнь → глава) ───────── */
 interface CcToc { name: string; divisions: { id: string; slug: string; number: string; title_ru: string; chapters: { id: string; number: string; title_ru: string; verses: number }[] }[] }
-function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch: ChapterRow) => void }) {
+function CcContents({ work, onOpenChapter, flashId, onConsumeFlash }: { work: string; onOpenChapter: (ch: ChapterRow) => void; flashId?: string | null; onConsumeFlash?: () => void }) {
   const [toc, setToc] = useState<CcToc | null>(null);
   const [err, setErr] = useState(false);
   const [activeDiv, setActiveDiv] = useState<string>("");   // активная песнь/лила (id раздела)
   const [subTop, setSubTop] = useState(96);                  // sticky-офсет суб-табов = TopBar + Tier-1 табы
+  const [flashCh, setFlashCh] = useState<string | null>(null);
+  const flashConsumed = useRef<string | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const subNavEl = useRef<HTMLElement | null>(null);
   const ready = useRef(false);                               // не сбрасывать прокрутку на первичной установке
@@ -1068,6 +1107,36 @@ function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch:
       if (delta < -1) (sc ?? window).scrollBy({ top: delta, behavior: "auto" });
     });
   }, [activeDiv]);   // subTop стабилен после загрузки — намеренно не в зависимостях
+  // «К содержанию» из главы → перейти в нужную песнь/лилу, проскроллить к этой главе и подсветить.
+  useEffect(() => {
+    if (!flashId) { flashConsumed.current = null; return; }
+    if (!toc) return;
+    if (flashConsumed.current === flashId) return;
+    const dv = toc.divisions.find((d) => d.chapters.some((c) => c.id === flashId));
+    if (!dv) { flashConsumed.current = flashId; onConsumeFlash?.(); return; }
+    if (dv.id !== activeDiv) { setActiveDiv(dv.id); return; } // ждём ререндера с нужной песнью/лилой
+    flashConsumed.current = flashId;
+    const node = listRef.current;
+    if (!node) { onConsumeFlash?.(); return; }
+    let sc: HTMLElement | null = node.parentElement;
+    while (sc) { const oy = getComputedStyle(sc).overflowY; if (oy === "auto" || oy === "scroll") break; sc = sc.parentElement; }
+    let r1 = 0, r2 = 0;
+    r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => {
+        const el = node.querySelector(`[data-chid="${(typeof window !== "undefined" && window.CSS && CSS.escape) ? CSS.escape(flashId) : flashId}"]`) as HTMLElement | null;
+        if (el) {
+          if (sc) {
+            const top = sc.scrollTop + (el.getBoundingClientRect().top - sc.getBoundingClientRect().top) - (subTop + (subNavEl.current?.offsetHeight ?? 42) + 12);
+            sc.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+          } else { el.scrollIntoView({ block: "center", behavior: "auto" }); }
+          setFlashCh(flashId);
+          setTimeout(() => setFlashCh((c) => (c === flashId ? null : c)), 1300);
+        }
+        onConsumeFlash?.();
+      });
+    });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [flashId, toc, activeDiv]);
   const totalCh = toc ? toc.divisions.reduce((a, d) => a + d.chapters.length, 0) : 0;
   const partWord = work === "sb" ? "песней" : "части";
   const cur = toc?.divisions.find((d) => d.id === activeDiv) ?? null;
@@ -1091,7 +1160,7 @@ function CcContents({ work, onOpenChapter }: { work: string; onOpenChapter: (ch:
         <div ref={listRef} style={{ padding: "10px 20px 0" }}>
           <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
             {cur.chapters.map((c, i) => (
-              <li key={c.id} style={{ position: "relative" }}>
+              <li key={c.id} data-chid={c.id} style={{ position: "relative", background: flashCh === c.id ? "rgba(210,170,27,0.13)" : "transparent", borderRadius: 12, transition: "background 0.5s ease", scrollMarginTop: 80 }}>
                 <Pressable onClick={() => onOpenChapter({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses })} style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0" }}>
                   <span style={{ flexShrink: 0, width: 22, textAlign: "center", fontSize: 15, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: GOLDT }}>{c.number}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
@@ -1256,7 +1325,7 @@ function useReadProgress(o: {
 
 /* ───────── Глава ───────── */
 /* ───────── Глава ───────── */
-function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash, scrollToVerse, onConsumeScroll }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; divisionInfo?: { num: string; title: string; slug: string } | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; scrollToVerse?: string | null; onConsumeScroll?: () => void }) {
+function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, bookTitle, work = "bg", hierarchical = false, onOpenVerse, onBack, onMenuAction, onQr, flash, scrollToVerse, onConsumeScroll, prevChapter, nextChapter, onOpenChapter, onToContents }: { chapter: ChapterRow; chapters?: ChapterRow[] | null; hierOrder?: string[] | null; hierWeights?: number[] | null; divisionInfo?: { num: string; title: string; slug: string } | null; bookTitle: string; work?: string; hierarchical?: boolean; onOpenVerse: (ref: string) => void; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; scrollToVerse?: string | null; onConsumeScroll?: () => void; prevChapter?: ChapterRow | null; nextChapter?: ChapterRow | null; onOpenChapter?: (ch: ChapterRow) => void; onToContents?: (chId: string) => void }) {
   const [verses, setVerses] = useState<ChapterVerse[] | null>(null);
   const [flashVref, setFlashVref] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -1337,6 +1406,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
   useEffect(() => {
     let live = true;
     setVerses(null);
+    if (scrollElRef.current) scrollElRef.current.scrollTop = 0;
     recordRead({ work, ref: chRef, label: chLabel, href: favHref, kind: "chapter" });
     const readUrl = hierarchical
       ? api(`/books/${work}/division/${chapter.id}/read`)
@@ -1474,6 +1544,14 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
           <div style={{ marginTop: 14 }}><NotesAtSource kind="chapter" refId={`chapter:${work}/${chapter.id || chapter.number}`} accent={GOLD} /></div>
         </div>
       </div>
+
+      {(onToContents || prevChapter || nextChapter) && (
+        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
+          <NavAction arrow="prev" disabled={!prevChapter} onClick={() => prevChapter && onOpenChapter?.(prevChapter)}>Назад</NavAction>
+          <NavAction onClick={() => onToContents?.(chapter.id)}>К содержанию</NavAction>
+          <NavAction arrow="next" disabled={!nextChapter} onClick={() => nextChapter && onOpenChapter?.(nextChapter)}>Вперёд</NavAction>
+        </nav>
+      )}
 
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} withNote onSelect={(id) => {
         setMenu(false);
@@ -1860,7 +1938,7 @@ function ProseBlock({ text, fontSize, lineHeight, color, top }: { text: string; 
     </div>
   );
 }
-function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, onMenuAction, onQr, flash, onOpenChapter }: { chapter: ChapterRow; chapters: ChapterRow[] | null; bookTitle: string; work?: string; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; onOpenChapter: (ch: ChapterRow) => void }) {
+function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, onMenuAction, onQr, flash, onOpenChapter, onToContents }: { chapter: ChapterRow; chapters: ChapterRow[] | null; bookTitle: string; work?: string; onBack: () => void; onMenuAction: (id: string) => void; onQr: (url: string, data: QrData) => void; flash: (m: string) => void; onOpenChapter: (ch: ChapterRow) => void; onToContents: (chId: string) => void }) {
   const [paras, setParas] = useState<ProsePara[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -1970,25 +2048,14 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
               ))}
             </div>
           )}
-
-          {(prev || next) && (
-            <div style={{ display: "flex", gap: 10, marginTop: 34 }}>
-              {prev ? (
-                <Pressable onClick={() => onOpenChapter(prev)} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3, padding: "12px 14px", border: `0.5px solid ${LINE}`, borderRadius: 14, textAlign: "left" }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: INK3 }}>Назад</span>
-                  <span style={{ fontSize: 13.5, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prev.title_ru}</span>
-                </Pressable>
-              ) : <span style={{ flex: 1 }} />}
-              {next ? (
-                <Pressable onClick={() => onOpenChapter(next)} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 3, padding: "12px 14px", border: `0.5px solid ${LINE}`, borderRadius: 14, textAlign: "right" }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLDT }}>Далее</span>
-                  <span style={{ fontSize: 13.5, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{next.title_ru}</span>
-                </Pressable>
-              ) : <span style={{ flex: 1 }} />}
-            </div>
-          )}
         </div>
       </div>
+
+      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
+        <NavAction arrow="prev" disabled={!prev} onClick={() => prev && onOpenChapter(prev)}>Назад</NavAction>
+        <NavAction onClick={() => onToContents(chapter.id)}>К содержанию</NavAction>
+        <NavAction arrow="next" disabled={!next} onClick={() => next && onOpenChapter(next)}>Вперёд</NavAction>
+      </nav>
 
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} withNote onSelect={(id) => {
         setMenu(false);
@@ -2308,9 +2375,11 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const [hierOrder, setHierOrder] = useState<string[] | null>(null); // главы ЧЧ/ШБ в порядке чтения → процент прогресса
   const [hierWeights, setHierWeights] = useState<number[] | null>(null); // число стихов по главам ЧЧ/ШБ → вес для процента
   const [hierDivByCh, setHierDivByCh] = useState<Record<string, { num: string; title: string; slug: string }> | null>(null);
+  const [flatHierChapters, setFlatHierChapters] = useState<ChapterRow[] | null>(null); // главы ЧЧ/ШБ в порядке чтения как ChapterRow → prev/next между главами
   const [openChapter, setOpenChapter] = useState<ChapterRow | null>(null);
   const [readerRef, setReaderRef] = useState<string | null>(null);
   const [chapterScrollTo, setChapterScrollTo] = useState<string | null>(null); // стих, к которому проскроллить главу при «К главе»
+  const [contentsFlashId, setContentsFlashId] = useState<string | null>(null); // глава, которую подсветить в содержании при «К содержанию»
   const bookContentRef = useRef<HTMLDivElement>(null);
   const bookPrintRef = useRef<HTMLDivElement>(null);
   const [bookPrint, setBookPrint] = useState<{ chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> } | null>(null);
@@ -2332,18 +2401,20 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   // даёт процент прогресса так же, как chapters.length у плоских книг. Грузим всегда
   // (а не только при открытом «Содержании»), чтобы процент был и при прямом входе на стих.
   useEffect(() => {
-    if (!book.hierarchical) { setHierOrder(null); setHierWeights(null); setHierDivByCh(null); return; }
+    if (!book.hierarchical) { setHierOrder(null); setHierWeights(null); setHierDivByCh(null); setFlatHierChapters(null); return; }
     let live = true;
     setHierOrder(null);
     setHierWeights(null);
     setHierDivByCh(null);
+    setFlatHierChapters(null);
     fetch(api(`/books/${book.work}/toc`))
       .then((r) => r.json())
-      .then((d: { divisions?: { id: string; slug: string; number: string; title_ru: string; chapters?: { id: string; verses?: number }[] }[] }) => {
+      .then((d: { divisions?: { id: string; slug: string; number: string; title_ru: string; chapters?: { id: string; number?: string; title_ru?: string; verses?: number }[] }[] }) => {
         if (!live || !d?.divisions) return;
         const chs = d.divisions.flatMap((dv) => dv.chapters ?? []);
         setHierOrder(chs.map((c) => c.id));
         setHierWeights(chs.map((c) => Number(c.verses) || 0));
+        setFlatHierChapters(chs.map((c) => ({ id: c.id, number: c.number ?? "", title_ru: c.title_ru ?? "", title_en: "", source_url: "", verses: Number(c.verses) || 0 })));
         const map: Record<string, { num: string; title: string; slug: string }> = {};
         for (const dv of d.divisions) for (const c of (dv.chapters ?? [])) map[c.id] = { num: dv.number, title: dv.title_ru, slug: dv.slug };
         setHierDivByCh(map);
@@ -2351,6 +2422,13 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       .catch(() => {});
     return () => { live = false; };
   }, [book.work, book.hierarchical]);
+
+  // Соседние главы (для нижней навигации читалки): плоский порядок чтения —
+  // у иерархических книг через flatHierChapters, у плоских через chapters.
+  const chapterOrder = book.hierarchical ? flatHierChapters : chapters;
+  const curChIdx = chapterOrder && openChapter ? chapterOrder.findIndex((c) => c.id === openChapter.id) : -1;
+  const prevChapter = chapterOrder && curChIdx > 0 ? chapterOrder[curChIdx - 1] : null;
+  const nextChapter = chapterOrder && curChIdx >= 0 && curChIdx < chapterOrder.length - 1 ? chapterOrder[curChIdx + 1] : null;
 
   // Открыть цель (глава + стих) — для холодного входа по ссылке, QR и кнопок назад/вперёд.
   // navLock не даёт эффекту состояние→URL пушить адрес во время синхронизации ИЗ URL.
@@ -2502,6 +2580,18 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     setReaderRef(null);
   };
 
+  // «К содержанию»: детерминированный переход глава → оглавление. Подсвечиваем главу,
+  // на которой только что были (зеркало «К главе» из стиха), и закрываем читалку.
+  // URL заменяем на адрес книги ДО закрытия — тогда state→URL-эффект видит совпадение
+  // и не пушит дубль (как в goToChapter).
+  const toContents = (chId: string) => {
+    setContentsFlashId(chId);
+    setTab("contents");
+    replaceUrl(`/book/${book.work}`);
+    setOpenChapter(null);
+    setReaderRef(null);
+  };
+
   // URL → состояние при «назад/вперёд» браузера (в пределах книги).
   useEffect(() => {
     const onPop = () => {
@@ -2648,8 +2738,8 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
 
         <div>
           {tab === "contents" && (book.hierarchical
-            ? <CcContents work={book.work} onOpenChapter={setOpenChapter} />
-            : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} />)}
+            ? <CcContents work={book.work} onOpenChapter={setOpenChapter} flashId={contentsFlashId} onConsumeFlash={() => setContentsFlashId(null)} />
+            : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} flashId={contentsFlashId} onConsumeFlash={() => setContentsFlashId(null)} />)}
           {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : <GenericOverview book={book} />)}
           {tab === "author" && (book.work === "spl" ? <SplAuthor /> : <Author />)}
           {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : <Reviews />)}
@@ -2678,8 +2768,8 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
         </button>
       )}
       {openChapter && (book.prose
-        ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} />
-        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} divisionInfo={hierDivByCh && openChapter ? (hierDivByCh[openChapter.id] ?? null) : null} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} scrollToVerse={chapterScrollTo} onConsumeScroll={() => setChapterScrollTo(null)} />)}
+        ? <ProseChapterPage chapter={openChapter} chapters={chapters} bookTitle={bookFullTitle(book)} work={book.work} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} onOpenChapter={setOpenChapter} onToContents={toContents} />
+        : <ChapterPage chapter={openChapter} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} divisionInfo={hierDivByCh && openChapter ? (hierDivByCh[openChapter.id] ?? null) : null} bookTitle={bookFullTitle(book)} work={book.work} hierarchical={!!book.hierarchical} onOpenVerse={(ref) => setReaderRef(ref)} onBack={goBack} onMenuAction={menuAction} onQr={openQr} flash={flash} scrollToVerse={chapterScrollTo} onConsumeScroll={() => setChapterScrollTo(null)} prevChapter={prevChapter} nextChapter={nextChapter} onOpenChapter={setOpenChapter} onToContents={toContents} />)}
       {readerRef && <VerseReader key={readerRef} refStr={readerRef} bookTitle={bookFullTitle(book)} work={book.work} chapters={chapters} hierOrder={hierOrder} hierWeights={hierWeights} hierDivByCh={hierDivByCh} onNavigate={setReaderRef} onClose={goBack} onToChapter={goToChapter} flash={flash} onMenuAction={menuAction} onQr={openQr} />}
       {bookPrint && (
         <div ref={bookPrintRef} aria-hidden style={{ position: "fixed", left: -10000, top: 0, width: 760 }}>
