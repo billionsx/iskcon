@@ -82,9 +82,6 @@ const ArchiveGlyph = () => (
 const CloseGlyph = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
 );
-const TgGlyph = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21.5 4.3 2.9 11.4c-1 .4-1 1.8.1 2.1l4.6 1.4 1.8 5.6c.2.7 1.1.9 1.6.3l2.5-2.6 4.7 3.5c.6.4 1.5.1 1.7-.7L23 5.6c.2-1-.7-1.7-1.5-1.3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>
-);
 
 /* ── общий стиль трея (bleed к краям контейнера Home, паддинг 16) ── */
 const tray: CSSProperties = {
@@ -206,7 +203,6 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [ii, setII] = useState(0);       // индекс кадра внутри храма
   const [paused, setPaused] = useState(false);
   const [capOpen, setCapOpen] = useState(false);
-  const [ar, setAr] = useState<number | null>(null);   // соотношение сторон текущего кадра (w/h)
 
   const item = items[ti];
   const imgs = item.images;
@@ -215,18 +211,6 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const barRef = useRef<HTMLSpanElement | null>(null);
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
-
-  // Замер ориентации кадра. onLoad не срабатывает для уже закэшированных (предзагруженных
-  // через nextSrc) кадров — поэтому при монтировании <img> читаем размеры синхронно, если
-  // картинка уже complete. Иначе сбрасываем в null (до замера показываем целиком, без обрезки),
-  // а onLoad доберёт размеры для свежих кадров.
-  const srcRef = useRef<string>("");
-  const measureRef = useCallback((node: HTMLImageElement | null) => {
-    if (!node || srcRef.current === node.src) return;
-    srcRef.current = node.src;
-    if (node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
-    else setAr(null);
-  }, []);
 
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
@@ -315,18 +299,11 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* фото: горизонтальное — по ширине экрана, вертикальное — по высоте (целиком, без обрезки); по центру */}
+      {/* кадр целиком, без обрезки: вертикальный вписывается по высоте, горизонтальный — по ширине;
+          остаток добивает размытая подложка. object-fit: contain не режет мурти ни при какой ориентации/EXIF. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
-          onLoad={(e) => { const t = e.currentTarget; if (t.naturalWidth && t.naturalHeight) setAr(t.naturalWidth / t.naturalHeight); }}
-          style={{
-            display: "block", imageOrientation: "from-image",
-            ...(ar == null
-              ? { width: "100%", height: "100%", objectFit: "contain" }   // до замера — кадр целиком, без обрезки
-              : ar >= 1
-                ? { width: "100%", height: "auto" }                       // горизонтальный → по ширине экрана
-                : { width: "auto", height: "100%" }),                     // вертикальный → по высоте экрана
-          }} />
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
@@ -359,7 +336,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
         </button>
       </div>
 
-      {/* низ: имя Божеств, подпись, ссылка в Telegram */}
+      {/* низ: имя Божеств + подпись */}
       <div style={chrome({ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 4, padding: "44px 16px calc(20px + env(safe-area-inset-bottom,0px))", background: "linear-gradient(transparent, rgba(0,0,0,0.72))" })}>
         {item.deities && (
           <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.source === "live" ? 4 : (item.caption ? 7 : 0) }}>{item.deities}</div>
@@ -379,10 +356,6 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
             {capOpen ? "Свернуть" : "Ещё"}
           </button>
         )}
-        <a href={item.channelUrl || item.srcUrl} target="_blank" rel="noopener noreferrer" onPointerDown={stop} onPointerUp={stop}
-          style={{ marginTop: 13, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,0.16)", color: "#fff", fontFamily: FT, fontSize: 12.5, fontWeight: 600, textDecoration: "none", backdropFilter: "blur(8px)" }}>
-          <TgGlyph /> Открыть в Telegram
-        </a>
       </div>
     </div>
   );
