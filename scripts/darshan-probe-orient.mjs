@@ -160,4 +160,34 @@ try {
 
 mkdirSync("data/darshan", { recursive: true });
 writeFileSync("data/darshan/_orient.json", JSON.stringify(out, null, 2));
+
+/* ── LIVE prod: что реально отдаёт gaurangers.com ── */
+out.live = {};
+try {
+  const r = await fetch("https://gaurangers.com/api/darshan", { headers: { "User-Agent": UA, accept: "application/json" } });
+  out.live.api_status = r.status;
+  const j = await r.json();
+  out.live.api = (j.today || []).map((it) => ({
+    temple: it.templeSlug, source: it.source, images: (it.images || []).length, first: (it.images || [])[0] ? it.images[0].slice(-50) : null,
+  }));
+} catch (e) { out.live.api_error = String(e).slice(0, 200); }
+try {
+  const h = await fetch("https://gaurangers.com/", { headers: { "User-Agent": UA, accept: "text/html" } });
+  const html = await h.text();
+  const js = uniq(html.match(/\/assets\/[A-Za-z0-9_.-]+\.js/g) || []);
+  out.live.html_status = h.status;
+  out.live.bundles = js.slice(0, 8);
+  // главный бандл — самый большой index-*.js; проверим маркеры
+  let main = js.find((u) => /index-/.test(u)) || js[0];
+  if (main) {
+    const b = await fetch("https://gaurangers.com" + main, { headers: { "User-Agent": UA } });
+    const code = await b.text();
+    out.live.main = main;
+    out.live.bundle_len = code.length;
+    out.live.has_backdrop_blur = code.includes("brightness(0.5");      // мой новый код (подложка)
+    out.live.has_dailydarshan_label = code.includes("Ежедневный даршан"); // более ранний деплой
+    out.live.has_old_client_filter = code.includes("naturalHeight");    // откат должен был убрать
+  }
+} catch (e) { out.live.bundle_error = String(e).slice(0, 200); }
+
 console.log(JSON.stringify(out, null, 2));
