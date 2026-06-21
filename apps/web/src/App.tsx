@@ -701,6 +701,15 @@ export default function App() {
     if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
     if (clean === "/search") { setOpenSearch(true); return; }
+    if (clean === "/calendar" || seg0 === "calendar") {
+      // Календарь живёт подтабом «Главной» (ISKCON). Город уже положен в localStorage
+      // (cal-loc) вызывающим — свежий HomeCalendar прочитает его при монтировании;
+      // событие home-open переключит подтаб у уже смонтированного HomeScreen.
+      setTab("iskcon");
+      try { sessionStorage.setItem("home-tab", "calendar"); } catch { /* noop */ }
+      try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: "calendar" } })); } catch { /* noop */ }
+      return;
+    }
     if (clean === "/notes") { setOpenNotes(true); return; }
     if (seg0 === "note") { const nid = clean.split("/")[2]; if (nid) { setOpenNoteId(nid); return; } }
     if (clean === "/cart") { setOpenCart(true); return; }

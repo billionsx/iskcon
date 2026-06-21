@@ -228,6 +228,18 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
     try { localStorage.setItem(LS_KEY, JSON.stringify(loc)); } catch { /* noop */ }
   }, [loc]);
 
+  // Выбор города из глобального поиска (/calendar) — обновляем город «вживую»,
+  // если календарь уже смонтирован (на свежем монтировании город читается из
+  // localStorage в loadStoredLoc, поэтому событие нужно лишь смонтированному).
+  useEffect(() => {
+    const h = (e: Event) => {
+      const d = (e as CustomEvent).detail as LocCity | undefined;
+      if (d && d.key && d.ru) setLoc(d);
+    };
+    window.addEventListener("cal:set-loc", h as EventListener);
+    return () => window.removeEventListener("cal:set-loc", h as EventListener);
+  }, []);
+
   const today = todayISO();
   const upcoming = useMemo(() => (all || []).filter((e) => e.date >= today), [all, today]);
 
