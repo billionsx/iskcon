@@ -305,7 +305,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* фото — целиком, по центру */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1 }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
+          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 

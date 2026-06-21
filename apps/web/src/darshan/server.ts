@@ -64,48 +64,6 @@ const SITE_CDN = "https://cdn.iskconvrindavan.com";
 const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 const istToday = () => new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
 
-// Размеры JPEG из первых байтов (маркер SOF). Для портретного фильтра Вриндавана:
-// тянем ~128 КБ через Range (Cloudflare кэширует cacheEverything) и читаем w/h.
-function jpegDims(buf: ArrayBuffer): { w: number; h: number } {
-  const b = new Uint8Array(buf); const dv = new DataView(buf);
-  if (!(b[0] === 0xff && b[1] === 0xd8)) return { w: 0, h: 0 };
-  let i = 2;
-  while (i < b.length - 8) {
-    if (b[i] !== 0xff) { i++; continue; }
-    const m = b[i + 1];
-    if (m === 0xd8 || m === 0xd9 || (m >= 0xd0 && m <= 0xd7) || m === 0x01) { i += 2; continue; }
-    if (i + 4 > b.length) break;
-    const len = dv.getUint16(i + 2);
-    if ((m >= 0xc0 && m <= 0xc3) || (m >= 0xc5 && m <= 0xc7) || (m >= 0xc9 && m <= 0xcb) || (m >= 0xcd && m <= 0xcf)) {
-      if (i + 8 > b.length) break;
-      return { h: dv.getUint16(i + 5), w: dv.getUint16(i + 7) };
-    }
-    i += 2 + len;
-  }
-  return { w: 0, h: 0 };
-}
-// true=портрет, false=ландшафт, null=неизвестно (битый/не JPEG/SOF дальше 128 КБ).
-async function isPortrait(url: string): Promise<boolean | null> {
-  try {
-    const r = await fetch(url, {
-      headers: { "User-Agent": SITE_UA, referer: "https://iskconvrindavan.com/", Range: "bytes=0-131071" },
-      cf: { cacheTtl: 3600, cacheEverything: true },
-    } as RequestInit);
-    if (!r.ok && r.status !== 206) return null;
-    const { w, h } = jpegDims(await r.arrayBuffer());
-    if (!w || !h) return null;
-    return h > w;
-  } catch { return null; }
-}
-// Оставляем портретные кадры; неизвестные сохраняем (не роняем даршан из-за сети).
-// Если портретных не нашлось вовсе — возвращаем исходный список (сторис не пустеет).
-async function portraitOnly(images: string[]): Promise<string[]> {
-  const flags = await Promise.all(images.map(isPortrait));
-  const kept = images.filter((_, i) => flags[i] !== false);
-  const portraitCount = flags.filter((f) => f === true).length;
-  return portraitCount > 0 ? kept : images;
-}
-
 async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
   const date = istToday();
   const u = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}.data`;
@@ -380,13 +338,11 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
       if (s.kind === "site") {
         const gal = s.site === "mayapur" ? await fetchMayapurGallery(s) : await fetchSiteGallery(s);
         if (gal && gal.images.length) {
-          // Вриндаван: Божества — высокие, кадр даршана вертикальный; в галерее храма
-          // есть и горизонтальные макро-кадры убранства, которые в вертикальных сторис
-          // лежат боком. Оставляем только портретные. Маяпур — широкие алтари
-          // (Радха-Мадхава с сакхи, Панча-таттва, Прабхупада): кадры горизонтальные,
-          // это и есть даршан — НЕ фильтруем, показываем все.
-          const images = s.site === "mayapur" ? gal.images : await portraitOnly(gal.images);
-          return siteItem(s, { ...gal, images });
+          // Показываем ВСЮ галерею даршана за сегодня (и Вриндаван, и Маяпур): и
+          // широкие кадры алтарей, и вертикальные крупные планы мурти. Сторис-вьювер
+          // вписывает любой кадр целиком (object-fit: contain) на размытую подложку —
+          // горизонтальные фото не «лежат боком», ничего не отсеиваем.
+          return siteItem(s, gal);
         }
         // запас: если сайт недоступен — пробуем канал храма
         const post = await latestDarshan(s.channel);
