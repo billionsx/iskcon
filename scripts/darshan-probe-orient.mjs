@@ -94,7 +94,17 @@ try {
   const re = /static\/static-_[0-9a-zA-Z]+\.(?:jpe?g|png|webp)/g;
   const paths = uniq(g.text.match(re) || []);
   out.vrindavan.count = paths.length;
+  // does .data embed dimensions? dump a slice around the first image path + scan for width/height keys
+  const si = g.text.indexOf(paths[0] || "static-_");
+  out.vrindavan.data_slice = si >= 0 ? g.text.slice(Math.max(0, si - 220), si + 220) : g.text.slice(0, 400);
+  out.vrindavan.has_dim_keys = /"?(width|height|w|h|orientation|portrait|landscape|ratio|aspect)"?\s*[:=]/i.test(g.text);
   const cdn = "https://cdn.iskconvrindavan.com";
+  // Range support test on first image
+  try {
+    const rr = await fetch(`${cdn}/${paths[0]}`, { headers: { "User-Agent": UA, referer: "https://iskconvrindavan.com/", Range: "bytes=0-2047" } });
+    const rbuf = await rr.arrayBuffer();
+    out.vrindavan.range = { status: rr.status, accept_ranges: rr.headers.get("accept-ranges"), content_range: rr.headers.get("content-range"), got_bytes: rbuf.byteLength, dims_from_2k: dims(rbuf) };
+  } catch (e) { out.vrindavan.range = { error: String(e).slice(0, 120) }; }
   const sample = [];
   for (let i = 0; i < Math.min(paths.length, 10); i++) sample.push(await measure(`${cdn}/${paths[i]}`, "https://iskconvrindavan.com/"));
   out.vrindavan.images = sample;
