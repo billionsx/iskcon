@@ -160,6 +160,7 @@ try {
 
 mkdirSync("data/darshan", { recursive: true });
 writeFileSync("data/darshan/_orient.json", JSON.stringify(out, null, 2));
+// (live-секция ниже допишет out.live и перезапишет файл в конце)
 
 /* ── LIVE prod: что реально отдаёт gaurangers.com ── */
 out.live = {};
@@ -191,3 +192,4 @@ try {
 } catch (e) { out.live.bundle_error = String(e).slice(0, 200); }
 
 console.log(JSON.stringify(out, null, 2));
+writeFileSync("data/darshan/_orient.json", JSON.stringify(out, null, 2));
