@@ -612,8 +612,8 @@ async function brsAudioTracks(identifier: string, origin: string, titles: Map<nu
     const stem = f.name.replace(/\.mp3$/i, "");
     const url = `${origin}/audio/${identifier}/${f.name}`;
     const durationSec = audioDuration(f.length);
-    // Глава: якорь на римскую часть издания (I/II/III) + номер главы.
-    const chM = stem.match(/[_\s](I{1,3})[_\s](\d{1,2})(?=[_\s])/);
+    // Глава: якорь на римскую часть издания (I/II/III/IV…) + номер главы.
+    const chM = stem.match(/[_\s]([IVX]+)[_\s](\d{1,2})(?=[_\s])/);
     if (chM) {
       const chapter = parseInt(chM[2], 10);
       chapters.push({ kind: "chapter", pos: chapter, chapter, title: titles.get(chapter) || `Глава ${chapter}`, file: f.name, url, durationSec });
