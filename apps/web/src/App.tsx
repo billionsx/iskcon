@@ -623,6 +623,9 @@ export default function App() {
   // Текущий открытый код книги — для делегирования внутрикнижного popstate (замыкание onPop иначе видит устаревшее значение).
   const openBookRef = useRef<string | null>(null);
   openBookRef.current = openBook;
+  // Глобальное нижнее меню поверх страниц-оверлеев со скроллом: стабильный ref-заглушка
+  // (компакт-режим по скроллу не нужен — пилюля всегда полного размера).
+  const overlayScrollRef = useRef<HTMLElement | null>(null);
 
   // ── URL ↔ состояние (ссылки шарятся; SPA-fallback в воркере включён) ──
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
@@ -922,11 +925,15 @@ export default function App() {
     setOpenEntity(id);
   }
   const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha;
+  // Главное нижнее меню остаётся поверх страниц-оверлеев со скроллом (книга, ПКЛ,
+  // контент, каталоги) — чтобы из любой главы/карточки можно было перейти в раздел.
+  // Читалки (fixed, z70) и модалки перекрывают пилюлю (z40) сами → конфликта нет.
+  const overlayTabBar = !donate && (!!openBook || !!openBhajan || !!openCatalog || !!openCollection || !!openEntity || !!openContent);
   return (
     <AuthProvider>
     <PlayerProvider>
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <div style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
+      <div className={overlayTabBar ? "has-overlay-tabbar" : undefined} style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         <CardActionsProvider onDonate={openDonate}>
         {openAdmin ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -1078,8 +1085,9 @@ export default function App() {
           <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onSearch={() => navigate("/search")} />
         )}
         </CardActionsProvider>
+        {overlayTabBar && <TabBar active={tab} onChange={(k) => navigate("/" + k)} scrollRef={overlayScrollRef} />}
         {donate && <DonateModal onClose={closeDonate} />}
-        <MiniPlayer tabBarVisible={tabBarVisible} />
+        <MiniPlayer tabBarVisible={tabBarVisible || overlayTabBar} />
         <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { div: null, chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onDonate={openDonate} />
         {appToast && (
           <div role="status" aria-live="polite" style={{ position: "fixed", left: "50%", bottom: "calc(94px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 4000, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 92%, transparent)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, lineHeight: 1.35, boxShadow: "var(--shadow-card)", pointerEvents: "none", textAlign: "center" }}>

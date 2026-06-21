@@ -551,6 +551,9 @@
   position: absolute; left: 0; right: 0; bottom: 16px; z-index: 40;
   pointer-events: none; padding-bottom: env(safe-area-inset-bottom);
 }
+/* Глобальное меню поверх страниц-оверлеев со скроллом → нижний воздух, чтобы
+ * последний контент не прятался под плавающей пилюлей (как 116px на главной). */
+.has-overlay-tabbar > main { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
 .gtab {
   pointer-events: auto; position: relative; margin: 0 auto;
   width: calc(100% - 44px); height: 62px; border-radius: 31px;
