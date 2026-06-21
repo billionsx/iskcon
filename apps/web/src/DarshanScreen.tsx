@@ -42,6 +42,13 @@ function humanDate(ymd: string): string {
 const Back = () => (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M15 5l-7 7 7 7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>);
 const TgIcon = () => (<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M21.5 4.3 2.9 11.4c-1 .4-1 1.8.1 2.1l4.6 1.4 1.8 5.6c.2.7 1.1.9 1.6.3l2.5-2.6 4.7 3.5c.6.4 1.5.1 1.7-.7L23 5.6c.2-1-.7-1.7-1.5-1.3z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" /></svg>);
 const Lotus = () => (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 3c1.8 2.2 1.8 4.6 0 7-1.8-2.4-1.8-4.8 0-7Z" fill="currentColor" /><path d="M12 10c2.8-.6 5 .6 6.5 3.4-3 1-5.2.2-6.5-2M12 10c-2.8-.6-5 .6-6.5 3.4 3 1 5.2.2 6.5-2" fill="currentColor" opacity="0.6" /><path d="M5 13.5C5 17 8 19.5 12 19.5S19 17 19 13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>);
+const SiteIcon = () => (<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" /><path d="M3 12h18M12 3c2.4 2.5 2.4 15.5 0 18M12 3c-2.4 2.5-2.4 15.5 0 18" stroke="currentColor" strokeWidth="1.6" /></svg>);
+
+/* ── ссылка-источник карточки: Telegram-пост или сайт храма ── */
+function srcHref(item: DarshanItem): { href: string; tg: boolean } {
+  const href = item.channelUrl || item.srcUrl;
+  return { href, tg: /\/\/t\.me\//.test(href) };
+}
 
 /* ── галерея фото даршана (полное изображение, без обрезки) ── */
 function Gallery({ images }: { images: string[] }) {
@@ -99,6 +106,7 @@ function Caption({ text }: { text: string }) {
 }
 
 function DarshanCard({ item }: { item: DarshanItem }) {
+  const link = srcHref(item);
   return (
     <article style={{ borderRadius: 20, overflow: "hidden", background: FILL, border: `0.5px solid ${HAIR}` }}>
       <Gallery images={item.images} />
@@ -107,9 +115,9 @@ function DarshanCard({ item }: { item: DarshanItem }) {
         {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: L1 }}>{item.deities}</div>}
         <div style={{ marginTop: 4, fontFamily: FT, fontSize: 12.5, color: L3 }}>{humanDate(item.date)}</div>
         {item.caption && <div style={{ marginTop: 12 }}><Caption text={item.caption} /></div>}
-        <a href={item.channelUrl || item.srcUrl} target="_blank" rel="noopener noreferrer"
+        <a href={link.href} target="_blank" rel="noopener noreferrer"
           style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: FILL2, color: L1, fontFamily: FT, fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>
-          <TgIcon /> Открыть в Telegram
+          {link.tg ? <TgIcon /> : <SiteIcon />} {link.tg ? "Открыть в Telegram" : "Открыть на сайте храма"}
         </a>
       </div>
     </article>
@@ -118,6 +126,7 @@ function DarshanCard({ item }: { item: DarshanItem }) {
 
 /* ── лайтбокс для архивной карточки ── */
 function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void }) {
+  const link = srcHref(item);
   return (
     <div role="dialog" aria-modal="true" onClick={onClose}
       style={{ position: "fixed", inset: 0, zIndex: 70, background: "rgba(0,0,0,0.92)", overflowY: "auto", animation: "darFade .2s ease" }}>
@@ -134,9 +143,9 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
           {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>{item.deities}</div>}
           <div style={{ marginTop: 4, fontFamily: FT, fontSize: 12.5, color: "rgba(255,255,255,0.55)" }}>{humanDate(item.date)}</div>
           {item.caption && <p style={{ marginTop: 12, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.82)", whiteSpace: "pre-line" }}>{item.caption}</p>}
-          <a href={item.channelUrl || item.srcUrl} target="_blank" rel="noopener noreferrer"
+          <a href={link.href} target="_blank" rel="noopener noreferrer"
             style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,0.14)", color: "#fff", fontFamily: FT, fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>
-            <TgIcon /> Открыть в Telegram
+            {link.tg ? <TgIcon /> : <SiteIcon />} {link.tg ? "Открыть в Telegram" : "Открыть на сайте храма"}
           </a>
         </div>
       </div>
