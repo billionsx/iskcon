@@ -132,6 +132,8 @@ async function fetchMayapurGallery(src) {
   const today = process.env.DARSHAN_DATE
     ? process.env.DARSHAN_DATE.split("-").reverse().join("/")
     : ddmmyyyyIST();
+  // Берём сегодняшний альбом; если его на сайте ещё нет — свежайший. От дубля вчерашнего
+  // защищает mayapurPostedForDate() (см. ниже): уже опубликованная дата не постится повторно.
   const chosen = blocks.find((b) => b.date === today) || blocks[0];
   const albumId = chosen.id;
   const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
@@ -333,6 +335,15 @@ function alreadyPostedKey(channel, postId) {
   } catch { return false; }
 }
 function alreadyPosted(src) { return alreadyPostedKey(src.channel, src._postId); }
+// Маяпур: гарантия «один даршан в день» независимо от источника (сайт vs Telegram-запас).
+// Вчерашний постился под Telegram-ключом, сегодня — под site:mayapur; сверяем по дате+храму.
+function mayapurPostedForDate(date) {
+  if (process.env.FORCE === "1") return false;
+  try {
+    const res = d1(`SELECT 1 FROM darshan WHERE temple_slug='mayapur' AND date='${date}' LIMIT 1`);
+    return (res?.[0]?.results || []).length > 0;
+  } catch { return false; }
+}
 
 /* ───────── режимы ───────── */
 async function run() {
@@ -400,8 +411,9 @@ async function run() {
           photo_count: gal.images.length, albums_planned: 1,
           photos: imgsSel, caption_preview: caption,
         };
-        if (dry) { preview.push(row); continue; }
         if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
+        if (src.site === "mayapur" && mayapurPostedForDate(gal.date)) { preview.push({ ...row, posted: `skip (даршан Маяпура за ${gal.date} уже опубликован)` }); continue; }
+        if (dry) { preview.push(row); continue; }
         const sent = await sendDarshanAlbums(imgsSel, caption, 10, 1);
         const anchorId = sent.anchorId || 0;
         const msgIds = sent.ids;
@@ -443,10 +455,12 @@ async function run() {
       source_text_head: (post.text || "").slice(0, 200),
     };
 
+    // дедуп (и в dry-режиме показываем, что будет пропущено)
+    if (alreadyPosted(src)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
+    if (src.slug === "mayapur" && mayapurPostedForDate(row.date)) { preview.push({ ...row, posted: `skip (даршан Маяпура за ${row.date} уже опубликован)` }); continue; }
     if (dry) { preview.push(row); continue; }
 
     // LIVE
-    if (alreadyPosted(src)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
     const msg = await sendDarshanAlbum(post.photos, caption);
     const imagesJson = JSON.stringify(post.photos).replace(/'/g, "''");
     const capSql = caption.replace(/'/g, "''");
