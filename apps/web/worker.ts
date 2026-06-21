@@ -5,6 +5,7 @@ import { accountApi } from "./src/account/server";
 import { centersApi } from "./src/centers/server";
 import { darshanApi } from "./src/darshan/server";
 import { readingApi } from "./src/reading/server";
+import { downloaderApi } from "./src/downloader/server";
 import { BOOKS, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
@@ -21,6 +22,11 @@ interface Env {
   BROWSER: Fetcher;
   // Секрет для CRM-загрузчика: wrangler secret put ADMIN_TOKEN
   ADMIN_TOKEN?: string;
+  // Загрузчик аудио (/api/downloader/*): GitHub-токен для запуска tg-archive.yml.
+  //   wrangler secret put GH_TOKEN   (PAT: Actions read+write, Contents read)
+  GH_TOKEN?: string;
+  GH_REPO?: string;
+  GH_WORKFLOW?: string;
   // Отчёты об ошибках → письмо на support@billionsx.com (Resend). Без ключа отчёт
   // только сохраняется в D1, а клиент доставляет письмо через mailto-фолбэк.
   //   wrangler secret put RESEND_API_KEY
@@ -1607,6 +1613,10 @@ export default {
         centers: (centers.results ?? []).map((r) => ({ name: r.name, city: r.city ?? null, href: `/center/${r.slug}` })),
       }));
     }
+
+    // ── Загрузчик аудио (/api/downloader/*): диспетчер GitHub Actions, защищён ADMIN_TOKEN ──
+    const dlRes = await downloaderApi(request, env, url);
+    if (dlRes) return dlRes;
 
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
     if (url.pathname.startsWith("/api/")) {

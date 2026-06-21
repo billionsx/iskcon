@@ -1,0 +1,36 @@
+# Скопируй этот файл в config.yaml и поправь под свой канал/книгу.
+# Здесь НЕТ секретов — config.yaml безопасно коммитить (он нужен и в CI).
+# Все ключи/пароли живут только в .env (локально) или в GitHub Secrets.
+
+telegram:
+  # @username канала, ссылка t.me/... или числовой id.
+  # Аккаунт (по TG_API_ID) должен иметь доступ к этому каналу.
+  channel: "@my_kirtan_channel"
+  audio_only: true          # true = только аудио-треки; false = ещё и голосовые
+  order: chronological      # chronological (старые→новые) | newest
+  # limit: 50               # ограничить число сообщений (для теста). Убери для «всех».
+
+archive:
+  # Два способа «соединить с книгой»:
+  #   new_item        — создать отдельный объект-альбом и кросс-связать с книгой.
+  #   attach_to_book  — доложить аудио-файлы прямо в существующий объект книги.
+  mode: new_item
+
+  # --- режим new_item ---
+  identifier: "iskcon-kirtans-vol1"   # уникальный id: латиница/цифры/-/_/.  без пробелов
+  related_book_url: ""                # напр. https://archive.org/details/bhagavad-gita-ru  (можно пусто)
+  metadata:
+    title: "ISKCON — киртаны и бхаджаны, том 1"
+    creator: "ISKCON ONE LOVE"
+    description: "Собрание киртанов и бхаджанов."
+    subject:
+      - kirtan
+      - bhajan
+      - ISKCON
+      - Gaudiya Vaishnava
+      - Hare Krishna
+    language: rus
+    collection: opensource_audio      # открытая коллекция для свободной загрузки
+
+  # --- режим attach_to_book (используется только если mode: attach_to_book) ---
+  book_identifier: ""                 # id уже существующего объекта книги на archive.org
