@@ -21,6 +21,7 @@ interface DarshanEnv {
 interface Src {
   slug: string;
   kind: "tg" | "site";
+  site?: "iskconvrindavan" | "mayapur";
   channel: string;
   name: string;
   deities: string;
@@ -31,9 +32,14 @@ interface Src {
 }
 const SOURCES: Src[] = [
   {
+    // Маяпур: «сегодня» берём полноразмерными оригиналами из официальной галереи
+    // даршана сайта храма (mayapur.com, ~1920px) — те же 800px-превью Telegram
+    // оставляем лишь запасным источником. channel — fallback (см. darshanApi).
     slug: "mayapur",
-    kind: "tg",
+    kind: "site",
+    site: "mayapur",
     channel: "ISKCONMayapurGroup",
+    galleryName: "Daily Darshan",
     name: "ИСККОН Маяпур · Шри Дхама Маяпур",
     deities: "Шри Шри Радха-Мадхава и Аштасакхи · Панча-таттва",
     srcLabel: "ISKCON Mayapur",
@@ -79,6 +85,55 @@ async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string;
 
 // Приоритет постам с фото и «даршанной» лексикой, иначе — свежайший пост с фото.
 const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|arati|abhishek|rajbhog|raj bhog|sandhya|deity|deities|gaura|nitai|radha|krishna|kṛṣṇa|balaram|madhava/i;
+
+/* ── источник: галерея даршана Маяпура (mayapur.com, оригиналы ~1920px) ── */
+// Индекс server-rendered (блоки «дата DD/MM/YYYY → /media/album/N»). Полные кадры
+// отдаёт server-rendered смотрелка /imageviewer/show-album-pictures/N/0 списком
+// /storage/albums/N/{hash}_image.jpg — браузер не нужен (как у Вриндавана).
+const MAYAPUR = "https://www.mayapur.com";
+const ddmmyyyyIST = () => {
+  const p = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kolkata" }).formatToParts(new Date());
+  const g = (t: string) => (p.find((x) => x.type === t) || { value: "" }).value;
+  return `${g("day")}/${g("month")}/${g("year")}`;
+};
+async function fetchMayapurGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[]; albumId: string } | null> {
+  try {
+    const ri = await fetch(`${MAYAPUR}/media/gallery/daily-darshan`, {
+      headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/` },
+      cf: { cacheTtl: 600, cacheEverything: true },
+    } as RequestInit);
+    if (!ri.ok) return null;
+    const html = await ri.text();
+    const blocks: { date: string | null; id: string }[] = [];
+    const re = /<p>\s*(\d{2}\/\d{2}\/\d{4})\s*<\/p>[\s\S]{0,220}?\/media\/album\/(\d+)/g;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(html))) blocks.push({ date: m[1], id: m[2] });
+    if (!blocks.length) {
+      const idre = /\/media\/album\/(\d+)/g; const ids: string[] = []; let mm: RegExpExecArray | null;
+      while ((mm = idre.exec(html))) ids.push(mm[1]);
+      const first = [...new Set(ids)][0];
+      if (!first) return null;
+      blocks.push({ date: null, id: first });
+    }
+    const today = ddmmyyyyIST();
+    const chosen = blocks.find((b) => b.date === today) || blocks[0];
+    const albumId = chosen.id;
+    const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
+      headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/album/${albumId}` },
+      cf: { cacheTtl: 600, cacheEverything: true },
+    } as RequestInit);
+    if (!rv.ok) return null;
+    const vt = await rv.text();
+    const imgRe = new RegExp(`storage/albums/${albumId}/[A-Za-z0-9]+_image\\.(?:jpe?g|png|webp)`, "gi");
+    const seen = new Set<string>(); const paths: string[] = []; let p: RegExpExecArray | null;
+    while ((p = imgRe.exec(vt))) { if (!seen.has(p[0])) { seen.add(p[0]); paths.push(p[0]); } }
+    if (!paths.length) return null;
+    const date = chosen.date ? chosen.date.split("/").reverse().join("-") : istToday();
+    return { date, albumId, name: src.galleryName || "Daily Darshan", pageUrl: `${MAYAPUR}/media/album/${albumId}`, images: paths.map((x) => `${MAYAPUR}/${x}`) };
+  } catch {
+    return null;
+  }
+}
 
 /* ── парсер t.me/s (порт из workerHome.ts, только нужные поля) ── */
 const deent = (s: string) =>
@@ -158,8 +213,8 @@ function liveItem(src: Src, post: RawPost): DarshanItem {
   };
 }
 
-// Карточка из полной галереи сайта (Вриндаван) — все фото сегодняшнего даршана.
-function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; images: string[] }): DarshanItem {
+// Карточка из полной галереи сайта (Вриндаван/Маяпур) — все фото даршана.
+function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; images: string[]; albumId?: string }): DarshanItem {
   return {
     source: "live",
     date: gal.date,
@@ -170,7 +225,7 @@ function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; 
     caption: null,
     srcUrl: gal.pageUrl,
     channelUrl: null,
-    postId: `${gal.date}/${src.galleryType}`,
+    postId: gal.albumId ? `album/${gal.albumId}` : `${gal.date}/${src.galleryType}`,
   };
 }
 
@@ -246,12 +301,13 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
     }
   }
 
-  // Сегодня — живьём: Вриндаван берём полной галереей с сайта (все фото даршана),
-  // Маяпур — свежайшим даршанным постом канала. Архив — отдельно /archive.
+  // Сегодня — живьём: и Вриндаван, и Маяпур берём полной галереей с сайта
+  // (полноразмерные оригиналы даршана). Если сайт недоступен — запас:
+  // свежайший даршанный пост канала храма. Архив — отдельно /archive.
   const live = await Promise.all(
     SOURCES.map(async (s) => {
       if (s.kind === "site") {
-        const gal = await fetchSiteGallery(s);
+        const gal = s.site === "mayapur" ? await fetchMayapurGallery(s) : await fetchSiteGallery(s);
         if (gal && gal.images.length) return siteItem(s, gal);
         // запас: если сайт недоступен — пробуем канал храма
         const post = await latestDarshan(s.channel);
