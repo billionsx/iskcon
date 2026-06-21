@@ -155,6 +155,17 @@ try {
     const sample = [];
     for (let i = 0; i < Math.min(all.length, 14); i++) sample.push(await measure(`https://www.mayapur.com/storage/albums/${id}/${all[i]}_image.jpg`, `https://www.mayapur.com/media/album/${id}`));
     out.mayapur.images = sample;
+    // HOTLINK тест: грузится ли кадр Маяпура из БРАУЗЕРА с другого домена
+    // (referer gaurangers.com) и вовсе без referer — как это делает <img> на сайте.
+    if (all[0]) {
+      const u0 = `https://www.mayapur.com/storage/albums/${id}/${all[0]}_image.jpg`;
+      const hot = {};
+      for (const [label, ref] of [["referer_gaurangers", "https://gaurangers.com/"], ["no_referer", ""], ["referer_mayapur", "https://www.mayapur.com/"]]) {
+        try { const r = await fetch(u0, { headers: { "User-Agent": UA, ...(ref ? { referer: ref } : {}) } }); hot[label] = { status: r.status, ct: r.headers.get("content-type"), bytes: (await r.arrayBuffer()).byteLength }; }
+        catch (e) { hot[label] = { error: String(e).slice(0, 100) }; }
+      }
+      out.mayapur.hotlink = hot;
+    }
   }
 } catch (e) { out.mayapur.error = String(e).slice(0, 200); }
 
