@@ -493,12 +493,6 @@ const BG_INTRO_TITLES: Record<string, string> = {
   "00.04.Molitvy.mangalacharana": "Мангала-ачарана",
 };
 
-// Передняя материя «Нектара преданности» (интро-треки без номера главы).
-const NOD_INTRO_TITLES: Record<string, string> = {
-  "00.01.Predislovie": "Предисловие",
-  "00.02.Vstuplenie": "Вступление",
-};
-
 interface IaFile { name: string; source?: string; format?: string; length?: string; }
 interface AudioTrack {
   kind: "intro" | "chapter" | "song";
@@ -525,7 +519,7 @@ function audioDuration(len?: string): number | null {
   return Number.isNaN(n) ? null : Math.round(n);
 }
 
-async function audioTracks(identifier: string, origin: string, titles: Map<number, string>, introTitles: Record<string, string> = BG_INTRO_TITLES): Promise<AudioTrack[]> {
+async function audioTracks(identifier: string, origin: string, titles: Map<number, string>): Promise<AudioTrack[]> {
   const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
     headers: { accept: "application/json" },
     cf: { cacheEverything: true, cacheTtl: 300 },
@@ -545,7 +539,7 @@ async function audioTracks(identifier: string, origin: string, titles: Map<numbe
         kind: "intro",
         pos: parseInt(introM[1], 10),
         chapter: null,
-        title: introTitles[stem] || stem.replace(/^[\d.]+/, "").replace(/[._-]+/g, " ").trim() || stem,
+        title: BG_INTRO_TITLES[stem] || stem.replace(/^[\d.]+/, "").replace(/[._-]+/g, " ").trim() || stem,
         file: f.name,
         url,
         durationSec,
@@ -593,9 +587,49 @@ async function audioManifest(env: Env, origin: string): Promise<Response> {
 }
 
 // ── «Нектар преданности» (Бхакти-расамрита-синдху): прозовая книга, ОДИН IA-элемент ──
-// Файлы глав «NN.<...>.mp3» (NN = номер главы 1..51); передняя материя — интро
-// «00.NN.<...>.mp3» (предисловие/вступление). Заголовки глав — из D1 (work_id='brs').
-// Та же форма манифеста, что у БГ (modes.plain.tracks); комментариев нет (проза).
+// Имена файлов источника: главы «Нектар_преданности_<I|II|III>_<NN>_<…>.mp3» (номер
+// главы 1..51 берём по якорю «римская часть + число»); передняя материя — три файла
+// без римской части, с нулевым маркером: «…_000_Наука_бхакти_йоги», «…_00_Предисловие»,
+// «… - 0 Введение». Заголовки глав — из D1 (work_id='brs'); тексты в именах файлов
+// косметические. Форма манифеста как у БГ (modes.plain.tracks); комментариев нет (проза).
+async function brsAudioTracks(identifier: string, origin: string, titles: Map<number, string>): Promise<AudioTrack[]> {
+  const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
+    headers: { accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!meta.ok) return [];
+  const data = (await meta.json()) as { files?: IaFile[] };
+  const originals = (data.files || []).filter((f) => f.source === "original" && /\.mp3$/i.test(f.name));
+  const intros: { order: number; t: AudioTrack }[] = [];
+  const chapters: AudioTrack[] = [];
+  for (const f of originals) {
+    const stem = f.name.replace(/\.mp3$/i, "");
+    const url = `${origin}/audio/${identifier}/${f.name}`;
+    const durationSec = audioDuration(f.length);
+    // Глава: якорь на римскую часть издания (I/II/III) + номер главы.
+    const chM = stem.match(/[_\s](I{1,3})[_\s](\d{1,2})(?=[_\s])/);
+    if (chM) {
+      const chapter = parseInt(chM[2], 10);
+      chapters.push({ kind: "chapter", pos: chapter, chapter, title: titles.get(chapter) || `Глава ${chapter}`, file: f.name, url, durationSec });
+      continue;
+    }
+    // Передняя материя: порядок — по длине нулевого маркера (000→00→0), название — по ключевому слову.
+    const dm = stem.match(/(\d+)/);
+    const order = dm ? -dm[1].length : 0;
+    const lc = stem.toLowerCase();
+    let title = stem.replace(/^Нектар[_\s]*преданности[_\s-]*\d*[_\s]*/i, "").replace(/[_\s]+/g, " ").trim() || stem;
+    if (/наук/.test(lc) && /бхакти/.test(lc)) title = "Наука бхакти-йоги";
+    else if (/предислови/.test(lc)) title = "Предисловие";
+    else if (/введени/.test(lc)) title = "Введение";
+    intros.push({ order, t: { kind: "intro", pos: order, chapter: null, title, file: f.name, url, durationSec } });
+  }
+  intros.sort((a, b) => a.order - b.order);
+  chapters.sort((a, b) => (a.chapter || 0) - (b.chapter || 0));
+  const ordered = [...intros.map((x) => x.t), ...chapters];
+  ordered.forEach((t, i) => (t.pos = i));
+  return ordered;
+}
+
 async function brsAudioManifest(env: Env, origin: string): Promise<Response> {
   const { results } = await env.DB.prepare(
     `SELECT CAST(number AS INTEGER) AS n, json_extract(title,'$.ru') AS title_ru
@@ -603,7 +637,7 @@ async function brsAudioManifest(env: Env, origin: string): Promise<Response> {
   ).all<{ n: number; title_ru: string }>();
   const titles = new Map<number, string>();
   for (const r of results) titles.set(r.n, r.title_ru);
-  const tracks = await audioTracks("iskcone-brs", origin, titles, NOD_INTRO_TITLES);
+  const tracks = await brsAudioTracks("iskcone-brs", origin, titles);
   return json({ book: "brs", modes: { plain: { identifier: "iskcone-brs", tracks } } });
 }
 
