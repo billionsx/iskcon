@@ -1,0 +1,88 @@
+{
+  "at": "2026-06-21T09:25:50.950Z",
+  "album_url": "https://www.mayapur.com/media/album/594",
+  "xhr": [],
+  "json_endpoints": [
+    "200 text/html; charset=UTF-8 https://www.mayapur.com/media/album/594",
+    "204 text/plain https://analytics.google.com/g/collect?v=2&tid=G-YJ2LHEEHBY&gtm=45je66h0v9130256840za200zd9130256840&_p=1782033953332&_gaz=1&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAGA&are=1&cid=89809207.1782033954&frm=0&pscdl=&rcb=12&sr=800x600&uaa=&uab=&uafvl=&uam=&uamb=0&uap=&uapv=&uaw=0&ul=en-us&gaf=2&_s=1&tag_exp=115616985~115938466~115938469~118395333~119027224~119392696~119392704~119456239~119456247&sid=1782033953&sct=1&seg=0&dl=https%3A%2F%2Fwww.mayapur.com%2Fmedia%2Falbum%2F594&dt=Mayapur%20-%20Spiritual%20Capital%20of%20the%20World&en=page_view&_fv=1&_nsi=1&_ss=1&_ee=1&tfd=1616"
+  ],
+  "dom_images": [
+    "https://www.mayapur.com/./images/logo-mayapur.png",
+    "https://www.mayapur.com/images/media/facebook-48.png",
+    "https://www.mayapur.com/images/media/twitter-48.png",
+    "https://www.mayapur.com/images/media/instagram-64.png",
+    "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/xjiHhlI9_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/W3nnxoCc_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/vfnNUs3J_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/xbo3t9Ir_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/R8S140iw_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/jYxHJOct_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/YxO0lndb_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/noebNMMm_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/MhoaKVZv_thumbnail.jpg",
+    "https://www.mayapur.com/images/iskconlogo.png",
+    "https://www.mayapur.com/images/ISKCON-Full-Small.png",
+    "https://www.mayapur.com/images/mailicon.png",
+    "https://www.mayapur.com/images/spSig.png"
+  ],
+  "network_images": [
+    "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/xjiHhlI9_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/W3nnxoCc_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/vfnNUs3J_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/xbo3t9Ir_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/jYxHJOct_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/R8S140iw_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/YxO0lndb_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/noebNMMm_thumbnail.jpg",
+    "https://www.mayapur.com/storage/albums/594/MhoaKVZv_thumbnail.jpg",
+    "https://www.mayapur.com/images/ISKCON-Full-Small.png",
+    "https://www.mayapur.com/images/spSig.png"
+  ],
+  "originals": [],
+  "measured": [
+    {
+      "url": "https://www.mayapur.com/./images/logo-mayapur.png",
+      "status": 200,
+      "bytes": 451009,
+      "fmt": "png",
+      "w": 700,
+      "h": 160
+    },
+    {
+      "url": "https://www.mayapur.com/images/media/facebook-48.png",
+      "status": 200,
+      "bytes": 1373,
+      "fmt": "png",
+      "w": 48,
+      "h": 48
+    },
+    {
+      "url": "https://www.mayapur.com/images/media/twitter-48.png",
+      "status": 200,
+      "bytes": 1318,
+      "fmt": "png",
+      "w": 48,
+      "h": 48
+    },
+    {
+      "url": "https://www.mayapur.com/images/media/instagram-64.png",
+      "status": 200,
+      "bytes": 4618,
+      "fmt": "png",
+      "w": 64,
+      "h": 64
+    },
+    {
+      "url": "https://www.mayapur.com/storage/albums/594/FEs7Hcfs_thumbnail.jpg",
+      "status": 200,
+      "bytes": 23121,
+      "fmt": "jpeg",
+      "h": 104,
+      "w": 250
+    }
+  ],
+  "notes": [],
+  "dom_sample": "ding: 5px; width: 270px; margin: auto\"> <a href=\"/imageviewer/show-album-pictures/594/0\" style=\"margin: auto\"><img alt=\"Daily Darshan\" src=\"/storage/albums/594/FEs7Hcfs_thumbnail.jpg\"></a> <div class=\"caption\"> <p></p> <!--p>Created: 21 June 2026 at 5:05am</p--> "
+}

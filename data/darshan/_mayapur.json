@@ -1,0 +1,106 @@
+{
+  "at": "2026-06-21T09:25:29.854Z",
+  "index": {
+    "tried": "https://www.mayapur.com/media/gallery/daily-darshan",
+    "finalUrl": "https://www.mayapur.com/media/gallery/daily-darshan",
+    "status": 200,
+    "len": 337688,
+    "album_ids_in_order": [
+      "594",
+      "593",
+      "592",
+      "591",
+      "590",
+      "589",
+      "588",
+      "587",
+      "586",
+      "584",
+      "583",
+      "582"
+    ],
+    "sample": "=\"min-height: 514px;\"> <img alt=\"Daily Darshan\" src=\"/storage/albums/5h0eTRve_cover.jpg\"> <div class=\"caption\"> <h3>Daily Darshan</h3> <p>20/06/2026</p> <p><a href=\"https://www.mayapur.com/media/album/594\" class=\"btn btn-primary btn-large\">Show Album</a></p> </div> </div> </div> <div class=\"col-lg-3\"> <div class=\"thumbnail\" style=\"min-height: 514px;\"> <img alt=\"Daily Darsha",
+    "image_urls_sample": [
+      "https://www.mayapur.com/./images/logo-mayapur.png",
+      "https://www.mayapur.com/images/media/facebook-48.png",
+      "https://www.mayapur.com/images/media/twitter-48.png",
+      "https://www.mayapur.com/images/media/instagram-64.png"
+    ]
+  },
+  "album": {
+    "id": "594",
+    "url": "https://www.mayapur.com/media/album/594",
+    "status": 200,
+    "len": 34993,
+    "all_image_urls": [
+      "https://www.mayapur.com/./images/logo-mayapur.png",
+      "https://www.mayapur.com/images/media/facebook-48.png",
+      "https://www.mayapur.com/images/media/twitter-48.png",
+      "https://www.mayapur.com/images/media/instagram-64.png"
+    ],
+    "likely_originals": [
+      "https://www.mayapur.com/images/media/facebook-48.png",
+      "https://www.mayapur.com/images/media/twitter-48.png",
+      "https://www.mayapur.com/images/media/instagram-64.png"
+    ],
+    "sample": "Darshan</a></li> <!--li><a href=\"/media/gallery/festivals\" class=\"mayanav_link\">Festivals</a></li--> <li><a href=\"https://www.facebook.com/MayapurDotCom/photos_albums\" class=\"mayanav_link\">Festivals</a></li> </ul> </li> <li><a href=\"https://www.mayapur.tv/\" class=\"mayanav_link\">Mayapur Live</a></li> <li><a href=\"https://srimayapurdhama.com\" class=\"mayanav_link\">Maya"
+  },
+  "plain_image_urls": [
+    "https://www.mayapur.com/images/media/facebook-48.png",
+    "https://www.mayapur.com/images/media/twitter-48.png",
+    "https://www.mayapur.com/images/media/instagram-64.png"
+  ],
+  "measured": [
+    {
+      "url": "https://www.mayapur.com/images/media/facebook-48.png",
+      "status": 200,
+      "bytes": 1373,
+      "fmt": "png",
+      "w": 48,
+      "h": 48
+    },
+    {
+      "url": "https://www.mayapur.com/images/media/twitter-48.png",
+      "status": 200,
+      "bytes": 1318,
+      "fmt": "png",
+      "w": 48,
+      "h": 48
+    },
+    {
+      "url": "https://www.mayapur.com/images/media/instagram-64.png",
+      "status": 200,
+      "bytes": 4618,
+      "fmt": "png",
+      "w": 64,
+      "h": 64
+    }
+  ],
+  "telegram": {
+    "count": 23,
+    "sample_urls": [
+      "https://cdn5.telesco.pe/file/uEqPANd8RE1OtwYwlLkJEyalY-O-RgQ5m81A3XRqmBZJEwq-Sc1k4awFXyjHmXoUFvqo5rFxw-UxKiqzTXm4RlcyEj5zOIq95FhxMvhkx-QvZPTYzkWe5waBEMfkN8_UH2ZnEWHzpk8Xqh2i87yiijrSqEZ7PvlkppTkIc1-UZ5TYumnQIBAvCt463zB5Rv5S2JFdmfPiEqXOVxnWRhBdNc5QTCfL_Gj24aj23s-UDiJ3zh5QbYMQ1lDPQeqnSP76hLDcJX-tcWOs_tO975M9fNRJYsDYQk6DUmlc0yt7dMniwOxTg9OW17a4DLWx3WyLsAuLXGn4S_2gC3d1OzqTQ.jpg",
+      "https://cdn5.telesco.pe/file/PctELG6gZdqoOR4pGHP7Je3e-2RVdp10TXTSd0iaokZdhwcU2b4-23pehBq00DSSolg4YWPP5u2z3FBwe4weKnrcv-jpOdtjZL6kZFj9BMsGReyCO9IGx0vf35agyWCRcKkq3pj3Q1pSxye2HlptyB-eccMmBdQip_moK0VEIhtBS4v3UkmOteF1twi4-JjtJFxgfKYiJdKibpkBQ1QiY6KGR68ciUoPw1rdH-iDwN1p8rcPJCjEZ72Ui1bQBW0hqKHFFfQVvqgAYqUUR8I_Ea_3xeS_34qMr3P6P1gvqyUF6V__zmCBkVugVYIMZeClue1P57G2XaF7_CRX0YQLog.jpg",
+      "https://cdn5.telesco.pe/file/sH5WCI7UnbEeGJEcyKQ2cs2Ps0Lsjl5-0PiFnRs-ViWWxFcwm2WceAb_BXr8c5MAdVitquzRsFKRy0hN-Y66ODTAIpDYa_dA4B1YEMU-YD6NyYHqKJdDLwpso6xIu52U0svOlbsny_S44naS1If_6hRA9BS4yH1bEOGqZWbbPEcttshraubG3HqSfuRQrEz1HQ_SMZ0fyJm0utRvorM9vf1MP9EHFAWfBpWppD3EfOouk1kBPQzVTcsQ1s8yCnX5mB5X0GYeE6eFpsJzSbIA0qLSgdYqYut00BMa-mFgRy57DS-QGtqCJwuhlEVNwKnCkSuZU3U1AP-YG6U9E0i_WA.jpg"
+    ],
+    "measured": [
+      {
+        "url": "https://cdn5.telesco.pe/file/uEqPANd8RE1OtwYwlLkJEyalY-O-RgQ5m81A3XRqmBZJEwq-Sc1k4awFXyjHmXoUFvqo5rFxw-UxKiqzTXm4RlcyEj5zOIq95FhxMvhkx-QvZPTYzkWe5waBEMfkN8_UH2ZnEWHzpk8Xqh2i87yiijrSqEZ7PvlkppTkIc1-UZ5TYumnQIBAvCt463zB5Rv5S2JFdmfPiEqXOVxnWRhBdNc5QTCfL_Gj24aj23s-UDiJ3zh5QbYMQ1lDPQeqnSP76hLDcJX-tcWOs_tO975M9fNRJYsDYQk6DUmlc0yt7dMniwOxTg9OW17a4DLWx3WyLsAuLXGn4S_2gC3d1OzqTQ.jpg",
+        "status": 200,
+        "bytes": 196511,
+        "fmt": "jpeg",
+        "h": 800,
+        "w": 557
+      },
+      {
+        "url": "https://cdn5.telesco.pe/file/PctELG6gZdqoOR4pGHP7Je3e-2RVdp10TXTSd0iaokZdhwcU2b4-23pehBq00DSSolg4YWPP5u2z3FBwe4weKnrcv-jpOdtjZL6kZFj9BMsGReyCO9IGx0vf35agyWCRcKkq3pj3Q1pSxye2HlptyB-eccMmBdQip_moK0VEIhtBS4v3UkmOteF1twi4-JjtJFxgfKYiJdKibpkBQ1QiY6KGR68ciUoPw1rdH-iDwN1p8rcPJCjEZ72Ui1bQBW0hqKHFFfQVvqgAYqUUR8I_Ea_3xeS_34qMr3P6P1gvqyUF6V__zmCBkVugVYIMZeClue1P57G2XaF7_CRX0YQLog.jpg",
+        "status": 200,
+        "bytes": 123804,
+        "fmt": "jpeg",
+        "h": 341,
+        "w": 800
+      }
+    ]
+  },
+  "notes": []
+}
