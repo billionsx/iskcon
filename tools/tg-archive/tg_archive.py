@@ -147,7 +147,7 @@ async def cmd_download(cfg: dict):
         die("В config.yaml не указан telegram.channel (например: '@my_kirtan_channel' или t.me/...)")
     audio_only = tg.get("audio_only", True)
     reverse = (tg.get("order", "chronological") == "chronological")
-    limit = tg.get("limit")  # None = все
+    limit = (int(os.getenv("TG_LIMIT")) if (os.getenv("TG_LIMIT") or "").strip() else tg.get("limit"))  # None = все; TG_LIMIT — для теста
 
     DOWNLOAD_DIR.mkdir(exist_ok=True)
     manifest = load_manifest()
