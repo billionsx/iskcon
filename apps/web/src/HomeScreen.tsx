@@ -19,7 +19,6 @@ import { SectionSubTabs } from "./SectionSubTabs";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeEducation } from "./HomeMore";
-import { DarshanRings } from "./DarshanStories";
 import { ChevRightIcon } from "./ui/icons";
 
 const GOLD = "#D2AA1B";
@@ -775,12 +774,7 @@ export default function HomeScreen(props: {
     <div ref={rootRef}>
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
-      {homeTab === "iskcon" && (
-        <>
-          <DarshanRings />
-          <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />
-        </>
-      )}
+      {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "education" && <HomeEducation />}
