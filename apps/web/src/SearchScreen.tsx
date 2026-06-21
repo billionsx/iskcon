@@ -1,15 +1,20 @@
 /**
- * SearchScreen — глобальный сквозной поиск по всему приложению.
- * Личности (граф), книги (клиентский каталог LIBRARY с фаззи/алиасами), стихи
- * (FTS5 + recall-fallback, с полным названием книги), главы/части, молитвы и
- * киртаны, страницы и разделы, центры. Серверный поиск — /api/search?q=; книги
- * ищутся на клиенте мгновенно. Совпадения подсвечиваются; при нескольких типах
- * результатов сверху появляются чипы-фильтры по категориям (Apple-стиль).
+ * SearchScreen — глобальный сквозной поиск по всему приложению. Два источника,
+ * слитых в единый список с чипами-фильтрами (Apple-стиль):
+ *   · Серверный /api/search?q= — D1: личности и святые места (граф имён), стихи
+ *     (FTS5 + recall-fallback, с полным названием книги), главы/части, молитвы,
+ *     страницы/разделы, центры.
+ *   · Клиентский searchStatic — бандл-данные, которых нет в D1: города календаря
+ *     (выбор открывает «Календарь» на этом городе), рецепты прасадама,
+ *     киртан-исполнители, разделы и инструменты приложения. Книги ищутся клиентом
+ *     отдельно (searchBooks: фаззи/опечатки/IAST/алиасы) — мгновенно.
+ * Совпадения подсвечиваются; стрелками ↑↓/Enter — навигация по результатам.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { BOOKS, LIBRARY, type CatalogBook } from "./books";
 import { searchBooks } from "./bookSearch";
+import { loadCityDocs, searchStatic, type StaticHit, type CityDoc, type LocCity } from "./searchStatic";
 
 type Person = { id: string; type: string | null; name_ru: string | null; name_iast: string | null };
 type Verse = { book: string; ref: string; work?: string; snippet: string; href: string };
@@ -162,9 +167,9 @@ function Section({ title, count, children }: { title: string; count?: number; ch
   );
 }
 
-const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", places: "Святые места", centers: "Центры", pages: "Страницы" } as const;
+const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", kirtans: "Киртаны", places: "Святые места", cities: "Города", centers: "Центры", recipes: "Рецепты", tools: "Разделы", pages: "Страницы" } as const;
 type GroupKey = keyof typeof GROUP_LABEL;
-const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "places", "centers", "pages"];
+const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "kirtans", "places", "cities", "centers", "recipes", "tools", "pages"];
 
 function Chip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
   return (
@@ -206,6 +211,22 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   // Книги — клиентский поиск (фаззи, опечатки, IAST, алиасы) по каталогу LIBRARY.
   const bookHits = useMemo(() => (searching ? searchBooks(query, LIBRARY).slice(0, 8).map((h) => h.book) : []), [query, searching]);
 
+  // Города календаря — клиентский индекс из /data/vaisnava-locations.json (≈272 города).
+  const [cities, setCities] = useState<CityDoc[]>([]);
+  const [citiesReady, setCitiesReady] = useState(false);
+  useEffect(() => {
+    let on = true;
+    loadCityDocs().then((c) => { if (on) { setCities(c); setCitiesReady(true); } }).catch(() => { if (on) setCitiesReady(true); });
+    return () => { on = false; };
+  }, []);
+
+  // Статический сквозной поиск: города, рецепты, киртан-исполнители, разделы приложения.
+  const staticHits = useMemo<StaticHit[]>(() => (searching ? searchStatic(query, cities) : []), [query, searching, cities]);
+  const cityHits = useMemo(() => staticHits.filter((h) => h.group === "cities"), [staticHits]);
+  const recipeHits = useMemo(() => staticHits.filter((h) => h.group === "recipes"), [staticHits]);
+  const kirtanHits = useMemo(() => staticHits.filter((h) => h.group === "kirtans"), [staticHits]);
+  const toolHits = useMemo(() => staticHits.filter((h) => h.group === "tools"), [staticHits]);
+
   // Серверный сквозной поиск (личности, стихи, главы, молитвы, страницы, центры).
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
@@ -237,6 +258,15 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const clearRecent = () => { setRecent([]); saveRecent([]); };
   const goEntity = (id: string, type: string | null) => { recordRecent(query); onOpenEntity(id, type); };
   const goNav = (href: string) => { recordRecent(query); onNavigate(href); };
+  // Город календаря: запоминаем выбор и открываем «Календарь» уже на этом городе.
+  const goCity = (loc: LocCity) => {
+    recordRecent(query);
+    try { localStorage.setItem("cal-loc", JSON.stringify(loc)); } catch { /* приватный режим */ }
+    try { window.dispatchEvent(new CustomEvent("cal:set-loc", { detail: loc })); } catch { /* noop */ }
+    onNavigate("/calendar");
+  };
+  // Статический результат → действие по типу навигации (путь или город).
+  const goStatic = (h: StaticHit) => { if (h.nav.kind === "city") goCity(h.nav.loc); else goNav(h.nav.href); };
   const openBook = (b: CatalogBook) => {
     recordRecent(query);
     if (b.readable && (BOOKS as Record<string, unknown>)[b.id]) onOpenBook(b.id);
@@ -245,14 +275,16 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
 
   const counts: Record<GroupKey, number> = {
     people: r.personalities.length, books: bookHits.length, verses: r.verses.length,
-    chapters: r.chapters.length, prayers: r.prayers.length, places: r.places.length, centers: r.centers.length, pages: r.pages.length,
+    chapters: r.chapters.length, prayers: r.prayers.length, kirtans: kirtanHits.length,
+    places: r.places.length, cities: cityHits.length, centers: r.centers.length,
+    recipes: recipeHits.length, tools: toolHits.length, pages: r.pages.length,
   };
   const present = GROUP_ORDER.filter((k) => counts[k] > 0);
   const total = present.reduce((s, k) => s + counts[k], 0);
   // Если активный фильтр опустел после нового запроса — мягко возвращаемся к «Все».
   const activeFilter: GroupKey | "all" = filter !== "all" && counts[filter] === 0 ? "all" : filter;
   const show = (k: GroupKey) => counts[k] > 0 && (activeFilter === "all" || activeFilter === k);
-  const nothing = searching && !loading && res !== null && total === 0 && !r.exact;
+  const nothing = searching && !loading && res !== null && citiesReady && total === 0 && !r.exact;
 
   // В обзоре («Все») каждая категория показывает превью; полный список — в фильтре.
   const PREVIEW = 6;
@@ -271,8 +303,12 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   pushGroup("verses", r.verses, (_v, i) => "v:" + i, (v) => goNav(v.href));
   pushGroup("chapters", r.chapters, (_c, i) => "c:" + i, (c) => goNav(c.href));
   pushGroup("prayers", r.prayers, (_p, i) => "pr:" + i, (p) => goNav(p.href));
+  pushGroup("kirtans", kirtanHits, (h) => "ki:" + h.id, (h) => goStatic(h));
   pushGroup("places", r.places, (p) => "pl:" + p.id, (p) => goEntity(p.id, p.type));
+  pushGroup("cities", cityHits, (h) => "ci:" + h.id, (h) => goStatic(h));
   pushGroup("centers", r.centers, (_c, i) => "ce:" + i, (c) => goNav(c.href));
+  pushGroup("recipes", recipeHits, (h) => "rc:" + h.id, (h) => goStatic(h));
+  pushGroup("tools", toolHits, (h) => "to:" + h.id, (h) => goStatic(h));
   pushGroup("pages", r.pages, (_p, i) => "pg:" + i, (p) => goNav(p.href));
   const activeId = active >= 0 && active < navItems.length ? navItems[active].id : null;
   const onKey = (e: React.KeyboardEvent) => {
@@ -332,7 +368,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
 
         {!searching && recent.length === 0 && (
           <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.5 }}>
-            Личности, книги, стихи, главы,<br />молитвы, киртаны, центры…<br />начните вводить имя, название или строку.
+            Личности, книги, стихи, главы, молитвы,<br />киртаны, города, рецепты, разделы…<br />начните вводить имя, название или строку.
           </p>
         )}
 
@@ -381,11 +417,20 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         )}
 
         {show("prayers") && (
-          <Section title="Молитвы и киртаны" count={counts.prayers}>
+          <Section title="Молитвы" count={counts.prayers}>
             {r.prayers.slice(0, vis("prayers")).map((p, i) => (
               <Row key={"pr" + i + p.href} active={activeId === "pr:" + i} ch={mono(p.name || "?")} title={p.name || "—"} sub={p.snippet || p.subtitle} toks={toks} onTap={() => goNav(p.href)} />
             ))}
             {activeFilter === "all" && counts.prayers > PREVIEW && <MoreLink n={counts.prayers} active={activeId === "more:prayers"} onTap={() => setFilter("prayers")} />}
+          </Section>
+        )}
+
+        {show("kirtans") && (
+          <Section title="Киртаны" count={counts.kirtans}>
+            {kirtanHits.slice(0, vis("kirtans")).map((h) => (
+              <Row key={"ki" + h.id} active={activeId === "ki:" + h.id} ch={mono(h.title)} title={h.title} sub={h.subtitle} toks={toks} onTap={() => goStatic(h)} />
+            ))}
+            {activeFilter === "all" && counts.kirtans > PREVIEW && <MoreLink n={counts.kirtans} active={activeId === "more:kirtans"} onTap={() => setFilter("kirtans")} />}
           </Section>
         )}
 
@@ -398,12 +443,39 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           </Section>
         )}
 
+        {show("cities") && (
+          <Section title="Города" count={counts.cities}>
+            {cityHits.slice(0, vis("cities")).map((h) => (
+              <Row key={"ci" + h.id} active={activeId === "ci:" + h.id} ch={mono(h.title)} title={h.title} sub={h.subtitle} toks={toks} onTap={() => goStatic(h)} />
+            ))}
+            {activeFilter === "all" && counts.cities > PREVIEW && <MoreLink n={counts.cities} active={activeId === "more:cities"} onTap={() => setFilter("cities")} />}
+          </Section>
+        )}
+
         {show("centers") && (
           <Section title="Центры" count={counts.centers}>
             {r.centers.slice(0, vis("centers")).map((c, i) => (
               <Row key={"ce" + i + c.href} active={activeId === "ce:" + i} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => goNav(c.href)} />
             ))}
             {activeFilter === "all" && counts.centers > PREVIEW && <MoreLink n={counts.centers} active={activeId === "more:centers"} onTap={() => setFilter("centers")} />}
+          </Section>
+        )}
+
+        {show("recipes") && (
+          <Section title="Рецепты" count={counts.recipes}>
+            {recipeHits.slice(0, vis("recipes")).map((h) => (
+              <Row key={"rc" + h.id} active={activeId === "rc:" + h.id} ch={mono(h.title)} title={h.title} iast={h.iast} sub={h.subtitle} toks={toks} onTap={() => goStatic(h)} />
+            ))}
+            {activeFilter === "all" && counts.recipes > PREVIEW && <MoreLink n={counts.recipes} active={activeId === "more:recipes"} onTap={() => setFilter("recipes")} />}
+          </Section>
+        )}
+
+        {show("tools") && (
+          <Section title="Разделы" count={counts.tools}>
+            {toolHits.slice(0, vis("tools")).map((h) => (
+              <Row key={"to" + h.id} active={activeId === "to:" + h.id} ch={mono(h.title)} title={h.title} sub={h.subtitle} toks={toks} onTap={() => goStatic(h)} />
+            ))}
+            {activeFilter === "all" && counts.tools > PREVIEW && <MoreLink n={counts.tools} active={activeId === "more:tools"} onTap={() => setFilter("tools")} />}
           </Section>
         )}
 
