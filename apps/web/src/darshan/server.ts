@@ -118,15 +118,43 @@ async function fetchMayapurGallery(src: Src): Promise<{ date: string; name: stri
     const today = ddmmyyyyIST();
     const chosen = blocks.find((b) => b.date === today) || blocks[0];
     const albumId = chosen.id;
-    const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
-      headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/album/${albumId}` },
-      cf: { cacheTtl: 600, cacheEverything: true },
-    } as RequestInit);
-    if (!rv.ok) return null;
-    const vt = await rv.text();
-    const imgRe = new RegExp(`storage/albums/${albumId}/[A-Za-z0-9]+_image\\.(?:jpe?g|png|webp)`, "gi");
-    const seen = new Set<string>(); const paths: string[] = []; let p: RegExpExecArray | null;
-    while ((p = imgRe.exec(vt))) { if (!seen.has(p[0])) { seen.add(p[0]); paths.push(p[0]); } }
+
+    // Полный список кадров альбома. Источник 1 — страница альбома: ВСЕ фото в её
+    // raw-HTML присутствуют как {hash}_thumbnail (полноразмерный вариант — {hash}_image.jpg).
+    // Источник 2 — server-rendered смотрелка (.../0) с прямыми {hash}_image.ext.
+    // Объединяем по hash (порядок страницы альбома; реальный URL смотрелки приоритетнее),
+    // чтобы в сторис попали ВСЕ кадры, а не подвыборка одной страницы.
+    const order: string[] = [];
+    const urlByHash = new Map<string, string>();
+    const note = (hash: string, url?: string) => {
+      if (!order.includes(hash)) order.push(hash);
+      if (url) urlByHash.set(hash, url);
+    };
+    try {
+      const ra = await fetch(`${MAYAPUR}/media/album/${albumId}`, {
+        headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/gallery/daily-darshan` },
+        cf: { cacheTtl: 600, cacheEverything: true },
+      } as RequestInit);
+      if (ra.ok) {
+        const at = await ra.text();
+        const thRe = new RegExp(`albums/${albumId}/([A-Za-z0-9]+)_thumbnail`, "gi");
+        let t: RegExpExecArray | null;
+        while ((t = thRe.exec(at))) note(t[1]);
+      }
+    } catch { /* нет страницы альбома — добираем смотрелкой ниже */ }
+    try {
+      const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
+        headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/album/${albumId}` },
+        cf: { cacheTtl: 600, cacheEverything: true },
+      } as RequestInit);
+      if (rv.ok) {
+        const vt = await rv.text();
+        const imgRe = new RegExp(`storage/albums/${albumId}/([A-Za-z0-9]+)_image\\.(?:jpe?g|png|webp)`, "gi");
+        let p: RegExpExecArray | null;
+        while ((p = imgRe.exec(vt))) note(p[1], p[0]);
+      }
+    } catch { /* нет смотрелки — остаёмся на кадрах со страницы альбома */ }
+    const paths = order.map((h) => urlByHash.get(h) || `storage/albums/${albumId}/${h}_image.jpg`);
     if (!paths.length) return null;
     const date = chosen.date ? chosen.date.split("/").reverse().join("-") : istToday();
     return { date, albumId, name: src.galleryName || "Daily Darshan", pageUrl: `${MAYAPUR}/media/album/${albumId}`, images: paths.map((x) => `${MAYAPUR}/${x}`) };
