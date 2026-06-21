@@ -30,6 +30,7 @@ import AcharyaScreen from "./AcharyaScreen";
 import PracticeHub from "./PracticeHub";
 import { HomeCalendar } from "./HomeCalendar";
 import { HomeFeed } from "./HomeFeed";
+import { DarshanRings } from "./DarshanStories";
 import SearchScreen from "./SearchScreen";
 import FavoritesScreen from "./FavoritesScreen";
 import NotesScreen from "./NotesScreen";
@@ -466,7 +467,7 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   return (
     <div>
       <SegRow value={sub} onChange={setSub} items={[["practice", "Практика"], ["calendar", "Календарь"], ["feed", "Лента"], ["cabinet", "Кабинет"]]} />
-      {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
+      {sub === "practice" && <><DarshanRings /><PracticeHub onOpen={onOpenPath} /></>}
       {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
       {sub === "feed" && <HomeFeed />}
       {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
