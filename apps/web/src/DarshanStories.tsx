@@ -208,8 +208,36 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [capOpen, setCapOpen] = useState(false);
 
   const item = items[ti];
-  const imgs = item.images;
+
+  // Вертикальные сторис: показываем портретные/квадратные кадры. Галерея храма
+  // может содержать горизонтальные макро-кадры убранства — в формате историй они
+  // лежат «боком». Меряем ориентацию открытого храма (фото всё равно грузятся для
+  // показа) и оставляем портрет. Защита: если портретных нет — показываем все,
+  // чтобы история никогда не была пустой. naturalWidth/Height уже учитывают EXIF.
+  const [portrait, setPortrait] = useState<Record<number, string[]>>({});
+  useEffect(() => {
+    if (portrait[ti]) return;
+    const src = items[ti].images;
+    let alive = true;
+    Promise.all(src.map((u) => new Promise<boolean>((res) => {
+      const im = new Image();
+      let done = false; const fin = (keep: boolean) => { if (!done) { done = true; res(keep); } };
+      im.onload = () => fin(im.naturalHeight >= im.naturalWidth * 0.98);
+      im.onerror = () => fin(true);
+      im.src = u;
+      window.setTimeout(() => fin(true), 4500);
+    }))).then((flags) => {
+      if (!alive) return;
+      const keep = src.filter((_, i) => flags[i]);
+      setPortrait((m) => ({ ...m, [ti]: keep.length ? keep : src }));
+    });
+    return () => { alive = false; };
+  }, [ti, items, portrait]);
+
+  const imgs = portrait[ti] ?? item.images;
   const total = imgs.length;
+  // если после фильтра кадров стало меньше — не выходим за границы
+  useEffect(() => { setII((v) => (v > total - 1 ? Math.max(0, total - 1) : v)); }, [total]);
 
   const barRef = useRef<HTMLSpanElement | null>(null);
   const accRef = useRef(0);
@@ -302,7 +330,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* фото — целиком, по центру */}
       <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1 }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block" }} />
+          style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 

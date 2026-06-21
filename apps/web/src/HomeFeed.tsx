@@ -54,24 +54,70 @@ function RichText({ rich, clampTo }: { rich: TgSeg[]; clampTo: number | null }) 
   );
 }
 
-/* ── фото: 1 — во всю ширину, 2+ — сетка как в Telegram ── */
+/* ── лайтбокс: фото поста на весь экран, листание, закрытие ── */
+function PhotoLightbox({ photos, index, onIndex, onClose }: {
+  photos: string[]; index: number; onIndex: (i: number) => void; onClose: () => void;
+}) {
+  const total = photos.length;
+  const go = (d: number) => onIndex((index + d + total) % total);
+  useEffect(() => {
+    const prevOv = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft" && total > 1) go(-1);
+      else if (e.key === "ArrowRight" && total > 1) go(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => { document.body.style.overflow = prevOv; window.removeEventListener("keydown", onKey); };
+  });
+  const round: React.CSSProperties = { position: "absolute", width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", display: "grid", placeItems: "center", cursor: "pointer", backdropFilter: "blur(8px)", WebkitTapHighlightColor: "transparent", zIndex: 2 };
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Фото" onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 96, background: "rgba(0,0,0,0.94)", display: "grid", placeItems: "center" }}>
+      <img src={photos[index]} alt="" onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
+      <button type="button" aria-label="Закрыть" onClick={onClose}
+        style={{ ...round, top: "calc(env(safe-area-inset-top,0px) + 14px)", right: 14 }}>
+        <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+      </button>
+      {total > 1 && (
+        <>
+          <span style={{ position: "absolute", top: "calc(env(safe-area-inset-top,0px) + 23px)", left: 16, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)", zIndex: 2 }}>{index + 1} / {total}</span>
+          <button type="button" aria-label="Предыдущее" onClick={(e) => { e.stopPropagation(); go(-1); }} style={{ ...round, left: 14, top: "50%", marginTop: -20 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <button type="button" aria-label="Следующее" onClick={(e) => { e.stopPropagation(); go(1); }} style={{ ...round, right: 14, top: "50%", marginTop: -20 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden style={{ transform: "scaleX(-1)" }}><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* ── фото: 1 — во всю ширину, 2+ — сетка как в Telegram; тап — лайтбокс ── */
 function TgPhotos({ photos }: { photos: string[] }) {
-  if (photos.length === 1) {
-    return (
-      <div style={{ background: "var(--color-glass-regular)" }}>
-        <img src={photos[0]} alt="" loading="lazy" style={{ width: "100%", display: "block", maxHeight: 420, objectFit: "cover" }} />
-      </div>
-    );
-  }
+  const [view, setView] = useState<number | null>(null);
   const odd = photos.length % 2 === 1;
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: "var(--color-glass-regular)" }}>
-      {photos.map((src, i) => (
-        <img key={i} src={src} alt="" loading="lazy"
-          style={{ width: "100%", height: "100%", display: "block", objectFit: "cover",
-            aspectRatio: odd && i === 0 ? "2 / 1" : "1 / 1", gridColumn: odd && i === 0 ? "1 / -1" : undefined }} />
-      ))}
-    </div>
+    <>
+      {photos.length === 1 ? (
+        <div style={{ background: "var(--color-glass-regular)" }}>
+          <img src={photos[0]} alt="" loading="lazy" onClick={() => setView(0)}
+            style={{ width: "100%", display: "block", maxHeight: 420, objectFit: "cover", cursor: "zoom-in", imageOrientation: "from-image" }} />
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2, background: "var(--color-glass-regular)" }}>
+          {photos.map((src, i) => (
+            <img key={i} src={src} alt="" loading="lazy" onClick={() => setView(i)}
+              style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", cursor: "zoom-in", imageOrientation: "from-image",
+                aspectRatio: odd && i === 0 ? "2 / 1" : "1 / 1", gridColumn: odd && i === 0 ? "1 / -1" : undefined }} />
+          ))}
+        </div>
+      )}
+      {view !== null && <PhotoLightbox photos={photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
+    </>
   );
 }
 
