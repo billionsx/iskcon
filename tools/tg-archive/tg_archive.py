@@ -329,9 +329,151 @@ def cmd_upload(cfg: dict):
     info("Этот URL можно записать в D1 и связать с книгой в приложении (см. README).")
 
 
+# -------------------------------------------------------------------- stream
+async def cmd_stream(cfg: dict):
+    """ПУТЬ А (надёжный). По одному файлу: скачать → сразу залить на archive.org → удалить локально.
+    Уже залитые файлы (которые есть в объекте archive.org) пропускаются, поэтому прогон можно
+    перезапускать сколько угодно раз — он докатывается с места обрыва. Устойчив к таймауту раннера
+    и к троттлингу Telegram: ничего не теряется, т.к. прогресс хранится в самом объекте archive.org."""
+    from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeFilename
+    from telethon.errors import FloodWaitError
+    from tqdm import tqdm
+    from internetarchive import get_item, upload as ia_upload
+
+    ak, sk = os.getenv("IA_ACCESS_KEY"), os.getenv("IA_SECRET_KEY")
+    if not ak or not sk:
+        die("Не заданы ключи archive.org: IA_ACCESS_KEY, IA_SECRET_KEY "
+            "(взять на https://archive.org/account/s3.php)")
+
+    tg = cfg.get("telegram", {})
+    channel = os.getenv("TG_CHANNEL") or tg.get("channel")
+    if not channel:
+        die("Не указан канал (env TG_CHANNEL или telegram.channel в config.yaml)")
+    audio_only = tg.get("audio_only", True)
+    reverse = (tg.get("order", "chronological") == "chronological")
+    limit = (int(os.getenv("TG_LIMIT")) if (os.getenv("TG_LIMIT") or "").strip() else tg.get("limit"))
+
+    arc = cfg.get("archive", {})
+    mode = os.getenv("IA_MODE") or arc.get("mode", "new_item")
+    if mode == "attach_to_book":
+        identifier = os.getenv("IA_BOOK_IDENTIFIER") or arc.get("book_identifier")
+        if not identifier:
+            die("mode=attach_to_book требует book_identifier (id существующего объекта книги)")
+        base_md = {}  # метаданные книги не трогаем — только докладываем файлы
+    else:
+        identifier = os.getenv("IA_IDENTIFIER") or arc.get("identifier")
+        if not identifier:
+            die("mode=new_item требует identifier (env IA_IDENTIFIER или archive.identifier)")
+        base_md = dict(arc.get("metadata", {}))
+        base_md.setdefault("mediatype", "audio")
+        rel = os.getenv("IA_RELATED_BOOK_URL") or arc.get("related_book_url")
+        if rel:
+            base_md["external-identifier"] = f"urn:related-book:{rel}"
+            desc = base_md.get("description", "")
+            base_md["description"] = (desc + f'<br/>Аудио к книге: <a href="{rel}">{rel}</a>').strip()
+
+    base_url = f"https://archive.org/details/{identifier}"
+
+    # Что уже лежит в объекте archive.org — это и есть «память» между прогонами.
+    item = get_item(identifier)
+    item_existed = bool(getattr(item, "exists", False))
+    existing = set()
+    if item_existed:
+        for fobj in (item.files or []):
+            nm = fobj.get("name") if isinstance(fobj, dict) else getattr(fobj, "name", None)
+            if nm:
+                existing.add(nm)
+    info(f"Объект archive.org: {identifier} — уже залито файлов: {len(existing)}; "
+         f"объект {'существует' if item_existed else 'будет создан'}.")
+
+    DOWNLOAD_DIR.mkdir(exist_ok=True)
+    metadata_done = item_existed  # если объект уже создан — метаданные больше не трогаем
+    uploaded_run: set[str] = set()
+    idx = 0
+    n_skip = n_done = n_fail = 0
+
+    client = build_client()
+    async with client:
+        await client.start()
+        entity = await client.get_entity(channel)
+        ok(f"Канал: {getattr(entity, 'title', channel)}")
+
+        async for msg in client.iter_messages(entity, reverse=reverse, limit=limit):
+            doc = None
+            if msg.audio:
+                doc = msg.audio
+            elif (not audio_only) and msg.voice:
+                doc = msg.voice
+            elif msg.document and (msg.document.mime_type or "").startswith("audio/"):
+                doc = msg.document
+            if not doc:
+                continue
+
+            idx += 1  # детерминированный хронологический номер — одинаков при любом перезапуске
+
+            title = performer = orig_name = None
+            for attr in doc.attributes:
+                if isinstance(attr, DocumentAttributeAudio):
+                    title, performer = attr.title, attr.performer
+                elif isinstance(attr, DocumentAttributeFilename):
+                    orig_name = attr.file_name
+            mime = doc.mime_type or "audio/mpeg"
+            ext = (os.path.splitext(orig_name)[1] if orig_name else "") \
+                or "." + mime.split("/")[-1].replace("mpeg", "mp3")
+            name_base = slug(
+                f"{performer} {title}" if (performer or title) else (orig_name or f"audio-{msg.id}")
+            )
+            remote = f"{idx:03d}_{name_base}{ext}"
+
+            if remote in existing or remote in uploaded_run:
+                n_skip += 1
+                continue
+
+            dest = DOWNLOAD_DIR / remote
+            while True:  # скачиваем этот один файл, переживая FloodWait
+                try:
+                    pbar = tqdm(total=doc.size, unit="B", unit_scale=True, desc=remote[:32], leave=False)
+
+                    def cb(cur, tot, _p=pbar):
+                        _p.update(cur - _p.n)
+
+                    await client.download_media(msg, file=str(dest), progress_callback=cb)
+                    pbar.close()
+                    break
+                except FloodWaitError as e:
+                    info(f"FloodWait {e.seconds}s — ждём…")
+                    time.sleep(e.seconds + 1)
+
+            md = {} if metadata_done else dict(base_md)  # метаданные ставим только при создании объекта
+            try:
+                resps = ia_upload(identifier, files={remote: str(dest)}, metadata=md,
+                                  access_key=ak, secret_key=sk, retries=3, verbose=True)
+                bad = [r for r in resps if getattr(r, "status_code", 200) not in (200, None)]
+                if bad:
+                    raise RuntimeError(f"HTTP {[getattr(r, 'status_code', None) for r in bad]}")
+                metadata_done = True
+                uploaded_run.add(remote)
+                n_done += 1
+                ok(f"[{idx:03d}] залит: {remote}")
+            except Exception as e:  # не валим весь прогон из-за одного файла — повторится в след. раз
+                n_fail += 1
+                info(f"[{idx:03d}] НЕ залит ({remote}): {e} — будет повторён при следующем прогоне")
+            finally:
+                try:
+                    dest.unlink(missing_ok=True)  # освобождаем диск независимо от исхода
+                except Exception:
+                    pass
+
+    ok(f"Прогон завершён: залито {n_done}, пропущено (уже было) {n_skip}, ошибок {n_fail}.")
+    info(f"Объект: {base_url}")
+    if n_fail:
+        info("Часть файлов не залилась — просто запусти прогон ещё раз, докатит остаток.")
+    print(f"::notice::archive.org {base_url} | залито {n_done}, пропущено {n_skip}, ошибок {n_fail}")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Telegram → archive.org для аудио")
-    ap.add_argument("command", choices=["download", "package", "upload", "run"])
+    ap.add_argument("command", choices=["download", "package", "upload", "stream", "run"])
     ap.add_argument("--config", default=str(ROOT / "config.yaml"))
     args = ap.parse_args()
 
@@ -344,6 +486,8 @@ def main():
         cmd_package(cfg)
     elif args.command == "upload":
         cmd_upload(cfg)
+    elif args.command == "stream":
+        asyncio.run(cmd_stream(cfg))
     elif args.command == "run":
         asyncio.run(cmd_download(cfg))
         cmd_upload(cfg)

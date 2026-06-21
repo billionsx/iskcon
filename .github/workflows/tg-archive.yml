@@ -44,7 +44,7 @@ on:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 350
     steps:
       - uses: actions/checkout@v4
 
@@ -56,6 +56,7 @@ jobs:
         run: pip install -r tools/tg-archive/requirements.txt
 
       - name: "\u0421\u043a\u0430\u0447\u0430\u0442\u044c \u0430\u0443\u0434\u0438\u043e \u0438\u0437 \u043a\u0430\u043d\u0430\u043b\u0430"
+        if: ${{ inputs.mode == 'package' }}
         working-directory: tools/tg-archive
         env:
           TG_API_ID: ${{ secrets.TG_API_ID }}
@@ -82,10 +83,15 @@ jobs:
         if: ${{ inputs.mode == 'upload' }}
         working-directory: tools/tg-archive
         env:
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
+          TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+          TG_CHANNEL: ${{ inputs.channel }}
+          TG_LIMIT: ${{ inputs.limit }}
           IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
           IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
           IA_MODE: ${{ inputs.ia_mode }}
           IA_IDENTIFIER: ${{ inputs.identifier }}
           IA_RELATED_BOOK_URL: ${{ inputs.related_book_url }}
           IA_BOOK_IDENTIFIER: ${{ inputs.book_identifier }}
-        run: python tg_archive.py upload
+        run: python tg_archive.py stream
