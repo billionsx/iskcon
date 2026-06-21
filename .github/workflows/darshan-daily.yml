@@ -30,6 +30,10 @@ on:
         description: 'Удалить сообщения из @iskcone по id через запятую (подчистка)'
         required: false
         default: ''
+      backfill_mayapur:
+        description: '1 = собрать стабильные mayapur.com-URL всех недавних альбомов в ci/darshan-dryrun (без постинга и записи D1)'
+        required: false
+        default: '0'
   schedule:
     # Разнесены на 3 часа, чтобы посты не шли встык (просьба подписчиков). Обе храмовые
     # галереи к этому времени давно опубликованы (выходят утром по IST), запас большой.
@@ -59,6 +63,7 @@ jobs:
           DIAG: ${{ github.event.inputs.diag || '0' }}
           DIAG_CHANNELS: ${{ github.event.inputs.diag_channels || '' }}
           DELETE_IDS: ${{ github.event.inputs.delete_ids || '' }}
+          BACKFILL_MAYAPUR: ${{ github.event.inputs.backfill_mayapur || '0' }}
           # Раскладка Вриндавана по алтарям (индексы фото). Пусто = равномерный спред из 10.
           VRINDAVAN_LAYOUT: ${{ vars.VRINDAVAN_LAYOUT || '' }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
