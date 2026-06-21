@@ -223,8 +223,9 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
   const [t2H, setT2H] = useState(44);
   const reqSeq = useRef(0);
   const [geo, setGeo] = useState<GeoHit | null>(null);
-  const [near, setNear] = useState<{ p: PlaceItem; km: number }[] | null>(null);
+  const [near, setNear] = useState<{ p: PlaceItem; km?: number }[] | null>(null);
   const [nearBusy, setNearBusy] = useState(false);
+  const [nearNote, setNearNote] = useState<string>("");
   const sRef = useRef<HTMLDivElement | null>(null);
   const [sH, setSH] = useState(56);
 
@@ -267,27 +268,66 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
   }, [kind, cont, ctry, q]);
 
   // Умный подбор: текстовый поиск не дал совпадений → геокодим запрос и предлагаем
-  // ближайшие центры/рестораны (по координатам базы, гаверсинус).
+  // Ближайшие центры/рестораны, когда в самом городе их нет. Сначала точная
+  // близость по координатам базы (гаверсинус). Но у ресторанов координат нет, а
+  // в РФ их и вовсе ноль — поэтому фолбэк по нашей географии: тот же регион →
+  // страна → часть света. Регион искомого города берём из любого места базы
+  // (центра или ресторана) с этим городом, чтобы язык/политика геокодера не мешали.
   useEffect(() => {
     const t = q.trim();
     const miss = !!items && items.length === 0 && t.length >= 2;
-    if (!miss) { setGeo(null); setNear(null); setNearBusy(false); return; }
-    let alive = true; setGeo(null); setNear(null); setNearBusy(true);
+    if (!miss) { setGeo(null); setNear(null); setNearBusy(false); setNearNote(""); return; }
+    let alive = true; setGeo(null); setNear(null); setNearBusy(true); setNearNote("");
     (async () => {
       try {
-        const gr = await fetch("/api/geocode?q=" + encodeURIComponent(t));
-        const gj = await gr.json();
-        const hit: GeoHit | null = gj && gj.result ? gj.result : null;
+        let hit: GeoHit | null = null;
+        try {
+          const gj = await (await fetch("/api/geocode?q=" + encodeURIComponent(t))).json();
+          hit = gj && gj.result ? gj.result : null;
+        } catch { hit = null; }
         if (!alive) return;
-        setGeo(hit);
-        if (!hit) { setNear([]); setNearBusy(false); return; }
-        const all = await loadAllPlaces(kind);
+        const cur = await loadAllPlaces(kind);
         if (!alive) return;
-        const ranked = all
-          .filter((p) => p.lat != null && p.lng != null)
-          .map((p) => ({ p, km: haversine(hit.lat, hit.lng, p.lat as number, p.lng as number) }))
-          .sort((a, b) => a.km - b.km)
-          .slice(0, 8);
+
+        let ranked: { p: PlaceItem; km?: number }[] = [];
+        let note = "вот ближайшие:";
+        let label: string | null = hit?.name ?? null;
+
+        if (hit) {
+          ranked = cur
+            .filter((p) => p.lat != null && p.lng != null)
+            .map((p) => ({ p, km: haversine(hit!.lat, hit!.lng, p.lat as number, p.lng as number) }))
+            .sort((a, b) => (a.km as number) - (b.km as number))
+            .slice(0, 8);
+        }
+
+        if (ranked.length === 0) {
+          const ql = t.toLowerCase();
+          const other = await loadAllPlaces(kind === "restaurant" ? "centre" : "restaurant");
+          if (!alive) return;
+          const pool = [...cur, ...other];
+          const probe =
+            pool.find((p) => (p.cityRu || "").toLowerCase() === ql || (p.city || "").toLowerCase() === ql) ||
+            pool.find((p) => (p.cityRu || "").toLowerCase().includes(ql) || (p.city || "").toLowerCase().includes(ql));
+          if (probe) {
+            if (!label) label = probe.cityRu || probe.city || null;
+            const st = (probe.stateRu || "").trim();
+            const cc = (probe.country || "").trim();
+            const cont = (probe.continent || "").trim();
+            const inState = st ? cur.filter((p) => (p.stateRu || "").trim() === st) : [];
+            const inCountry = cc ? cur.filter((p) => (p.country || "").trim() === cc) : [];
+            const inCont = cont ? cur.filter((p) => (p.continent || "").trim() === cont) : [];
+            let pick = inState;
+            if (pick.length) note = `вот ближайшие в регионе «${probe.stateRu}»:`;
+            else if (inCountry.length) { pick = inCountry; note = `вот ближайшие в стране «${probe.countryRu || cc}»:`; }
+            else if (inCont.length) { pick = inCont; note = `вот ближайшие — ${probe.continent}:`; }
+            ranked = pick.slice(0, 8).map((p) => ({ p }));
+          }
+        }
+
+        if (!alive) return;
+        setGeo(label ? { name: label, lat: hit?.lat ?? 0, lng: hit?.lng ?? 0, tz: hit?.tz ?? null, country: hit?.country ?? null, admin1: hit?.admin1 ?? null } : null);
+        setNearNote(note);
         setNear(ranked); setNearBusy(false);
       } catch { if (alive) { setNear([]); setNearBusy(false); } }
     })();
@@ -385,7 +425,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
               ) : near && near.length > 0 ? (
                 <>
                   <div style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-                    {geo ? `В «${geo.name}» ${kind === "restaurant" ? "ресторанов" : "центров"} нет — вот ближайшие:` : "Ближайшие:"}
+                    {geo ? `В «${geo.name}» ${kind === "restaurant" ? "ресторанов" : "центров"} нет — ${nearNote || "вот ближайшие:"}` : "Ближайшие:"}
                   </div>
                   <div style={{ display: "grid", gap: 12 }}>
                     {near.map(({ p, km }) => <PlaceCard flash={flash} key={p.id + p.source} p={p} onOpen={setOpen} dist={km} />)}
