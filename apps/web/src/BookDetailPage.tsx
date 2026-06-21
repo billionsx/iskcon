@@ -1502,7 +1502,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
 
       <div ref={scrollElRef} onScroll={(e) => setCollapsed((e.target as HTMLDivElement).scrollTop > 56)}
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom))" }}>
+        <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}{divEyebrow ? ` · ${divEyebrow}` : ""}</div>
             <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
@@ -2032,7 +2032,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 
       <div ref={scrollRef} onScroll={(e) => setCollapsed((e.target as HTMLDivElement).scrollTop > 56)}
         style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ margin: "0 auto", padding: "16px 24px calc(48px + env(safe-area-inset-bottom))" }}>
+        <div style={{ margin: "0 auto", padding: "16px 24px calc(48px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
             {numbered && <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
             <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
@@ -2205,7 +2205,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
       </header>
 
       <div ref={vScrollRef} style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div ref={verseContentRef} style={{ margin: "0 auto", padding: "22px 20px 40px" }}>
+        <div ref={verseContentRef} style={{ margin: "0 auto", padding: "22px 20px calc(40px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           {!data && !error && <div style={{ textAlign: "center", color: INK2, padding: "40px 0", fontSize: 15 }}>Загрузка стиха…</div>}
           {error && (
             <div style={{ textAlign: "center", padding: "40px 0" }}>
