@@ -216,6 +216,18 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
+  // Замер ориентации кадра. onLoad не срабатывает для уже закэшированных (предзагруженных
+  // через nextSrc) кадров — поэтому при монтировании <img> читаем размеры синхронно, если
+  // картинка уже complete. Иначе сбрасываем в null (до замера показываем целиком, без обрезки),
+  // а onLoad доберёт размеры для свежих кадров.
+  const srcRef = useRef<string>("");
+  const measureRef = useCallback((node: HTMLImageElement | null) => {
+    if (!node || srcRef.current === node.src) return;
+    srcRef.current = node.src;
+    if (node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
+    else setAr(null);
+  }, []);
+
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -241,8 +253,8 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
-  /* сброс прогресса и ориентации при смене кадра/храма */
-  useEffect(() => { accRef.current = 0; setAr(null); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+  /* сброс прогресса при смене кадра/храма (ориентацию измеряет measureRef по самому кадру) */
+  useEffect(() => { accRef.current = 0; if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
   /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps) */
   useEffect(() => {
@@ -293,9 +305,6 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
   const longCap = !!item.caption && (item.caption.length > 140 || item.caption.includes("\n"));
   const nextSrc = ii < total - 1 ? imgs[ii + 1] : (ti < items.length - 1 ? items[ti + 1].images[0] : null);
-  // Горизонтальный кадр вписываем по ШИРИНЕ экрана, вертикальный — по ВЫСОТЕ.
-  // До загрузки считаем горизонтальным (даршан чаще широкий) — без скачка для общего случая.
-  const landscape = ar == null ? true : ar >= 1;
 
   const chrome = (extra: CSSProperties = {}): CSSProperties => ({ opacity: paused ? 0 : 1, transition: "opacity .2s ease", ...extra });
 
@@ -306,13 +315,18 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* фото: горизонтальное — по ширине экрана, вертикальное — по высоте; по центру */}
+      {/* фото: горизонтальное — по ширине экрана, вертикальное — по высоте (целиком, без обрезки); по центру */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          onLoad={(e) => { const t = e.currentTarget; setAr(t.naturalWidth && t.naturalHeight ? t.naturalWidth / t.naturalHeight : null); }}
-          style={landscape
-            ? { width: "100%", height: "auto", display: "block", imageOrientation: "from-image" }
-            : { width: "auto", height: "100%", display: "block", imageOrientation: "from-image" }} />
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
+          onLoad={(e) => { const t = e.currentTarget; if (t.naturalWidth && t.naturalHeight) setAr(t.naturalWidth / t.naturalHeight); }}
+          style={{
+            display: "block", imageOrientation: "from-image",
+            ...(ar == null
+              ? { width: "100%", height: "100%", objectFit: "contain" }   // до замера — кадр целиком, без обрезки
+              : ar >= 1
+                ? { width: "100%", height: "auto" }                       // горизонтальный → по ширине экрана
+                : { width: "auto", height: "100%" }),                     // вертикальный → по высоте экрана
+          }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
