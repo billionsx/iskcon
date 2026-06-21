@@ -1,0 +1,33 @@
+# Вход в Telegram через GitHub Actions (без локальной машины).
+# Управляется секретами — диспетчеризуется по API:
+#   прогон без секрета TG_CODE      → запрашивает код (придёт в приложение Telegram);
+#   прогон с секретом TG_CODE       → логинится и сохраняет TG_SESSION_STRING секретом.
+# Нужны заранее секреты: TG_API_ID, TG_API_HASH, TG_PHONE, GH_TOKEN.
+name: "TG login (создать сессию)"
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  login:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: deps
+        run: pip install "telethon>=1.36" pynacl
+      - name: login
+        working-directory: tools/tg-archive
+        env:
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
+          TG_PHONE: ${{ secrets.TG_PHONE }}
+          TG_CODE: ${{ secrets.TG_CODE }}
+          TG_PASSWORD: ${{ secrets.TG_PASSWORD }}
+          TG_LOGIN_STATE: ${{ secrets.TG_LOGIN_STATE }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: billionsx/iskcon
+        run: python ci_login.py
