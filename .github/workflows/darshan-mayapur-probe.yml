@@ -1,0 +1,26 @@
+name: darshan-mayapur-probe
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Probe mayapur.com gallery
+        run: node scripts/darshan-probe-mayapur.mjs
+      - name: Publish result to side branch
+        run: |
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+          git checkout -B ci/darshan-mayapur
+          git add -f data/darshan/_mayapur.json
+          git commit -m "chore(darshan): mayapur gallery probe result [skip ci]" || echo "no changes"
+          git push -f origin ci/darshan-mayapur
