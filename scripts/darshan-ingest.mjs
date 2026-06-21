@@ -34,6 +34,8 @@ const SOURCES = [
     capLines: [
       "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>",
       "",
+      "Ежедневный даршан",
+      "",
       "ИСККОН Маяпур",
       "",
       '<a href="https://t.me/iskcone">ISKCON ONE LOVE</a>',
@@ -208,9 +210,11 @@ const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, 
 function composeCaption(src) {
   // Если у источника задана собственная подпись (capLines) — используем её дословно.
   if (Array.isArray(src.capLines)) return src.capLines.join("\n");
-  // Иначе дефолт: Божества (жирным) · храм · «ISKCON ONE LOVE» ссылкой на канал.
+  // Иначе дефолт: Божества (жирным) · «Ежедневный даршан» · храм · «ISKCON ONE LOVE».
   return [
     `<b>${esc(src.deities)}</b>`,
+    "",
+    "Ежедневный даршан",
     "",
     esc(src.name),
     "",

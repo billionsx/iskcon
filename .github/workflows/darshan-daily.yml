@@ -31,7 +31,10 @@ on:
         required: false
         default: ''
   schedule:
-    - cron: '0 9 * * *'   # 09:00 UTC ≈ 14:30 IST — после публикации галереи Шрингары на сайте
+    # Разнесены на 3 часа, чтобы посты не шли встык (просьба подписчиков). Обе храмовые
+    # галереи к этому времени давно опубликованы (выходят утром по IST), запас большой.
+    - cron: '0 9 * * *'    # 09:00 UTC ≈ 14:30 IST → Маяпур
+    - cron: '0 12 * * *'   # 12:00 UTC ≈ 17:30 IST → Вриндаван
 
 permissions:
   contents: write
@@ -47,11 +50,11 @@ jobs:
 
       - name: Ingest darshan
         env:
-          # Боевой режим по расписанию (14:30 IST): Вриндаван — один пост из 10 фото
-          # (Гаура-Нитай + Кришна-Баларам + Радхе-Шьям/сакхи), Маяпур — своим постом.
-          # Ручной запуск из UI по умолчанию dry (input default '1').
+          # По расписанию: каждый слот публикует ОДИН храм (Маяпур в 14:30 IST,
+          # Вриндаван в 17:30 IST) — посты разнесены во времени. Ручной запуск из UI:
+          # ONLY из инпута (пусто = оба сразу), по умолчанию dry.
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
-          ONLY: ${{ github.event.inputs.only || 'vrindavan,mayapur' }}
+          ONLY: ${{ github.event.inputs.only || (github.event.schedule == '0 12 * * *' && 'vrindavan') || (github.event.schedule == '0 9 * * *' && 'mayapur') || 'vrindavan,mayapur' }}
           FORCE: ${{ github.event.inputs.force || '0' }}
           DIAG: ${{ github.event.inputs.diag || '0' }}
           DIAG_CHANNELS: ${{ github.event.inputs.diag_channels || '' }}

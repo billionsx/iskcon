@@ -17,10 +17,7 @@ import { HomeTabs, HOME_TABS, type HomeTabId } from "./HomeTabs";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
-import { HomeFeed } from "./HomeFeed";
-import { HomeCalendar } from "./HomeCalendar";
 import { HomeEducation } from "./HomeMore";
-import PracticeHub from "./PracticeHub";
 import { DarshanRings } from "./DarshanStories";
 import { ChevRightIcon } from "./ui/icons";
 
@@ -781,15 +778,12 @@ export default function HomeScreen(props: {
           <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />
         </>
       )}
-      {homeTab === "sadhana" && <PracticeHub onOpen={props.onOpenPath} />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
-      {homeTab === "calendar" && <HomeCalendar stickyTop={t1H} onOpenEntity={props.onOpenEntity} />}
       {homeTab === "education" && <HomeEducation />}
       {homeTab === "documents" && <HomeDocuments stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "structure" && <HomeStructure />}
       {homeTab === "links" && <HomeLinks />}
-      {homeTab === "feed" && <HomeFeed />}
     </div>
   );
 }
