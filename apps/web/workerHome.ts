@@ -75,11 +75,52 @@ async function allPlacesFromD1(env: HomeEnv): Promise<PlaceItem[] | null> {
   } catch { return null; }
 }
 
+// Координаты календарных городов (vaisnava-locations.json): город+страна → lat/lng.
+// Нужны, чтобы долить координаты местам каталога, у которых их нет (см. getPlaces).
+interface LatLng { lat: number; lng: number }
+let calCache: { byEn: Map<string, LatLng>; byRu: Map<string, LatLng>; at: number } | null = null;
+async function getCalCoords(env: HomeEnv, origin: string): Promise<{ byEn: Map<string, LatLng>; byRu: Map<string, LatLng> }> {
+  if (calCache && Date.now() - calCache.at < 30 * 60_000) return calCache;
+  const byEn = new Map<string, LatLng>();
+  const byRu = new Map<string, LatLng>();
+  const j = await assetJson<{ countries?: { cities?: { ru?: string; key?: string; lat?: number; lng?: number }[] }[] }>(env, origin, "/data/vaisnava-locations.json");
+  for (const blk of j?.countries || []) {
+    for (const c of blk.cities || []) {
+      if (typeof c.lat !== "number" || typeof c.lng !== "number") continue;
+      const m = /^(.*?)\s*\[(.*?)\]\s*$/.exec(c.key || "");
+      const cityEn = (m ? m[1] : (c.key || "")).trim().toLowerCase();
+      const country = (m ? m[2] : "").trim().toLowerCase();
+      const cityRu = (c.ru || "").trim().toLowerCase();
+      const ll: LatLng = { lat: c.lat, lng: c.lng };
+      if (cityEn && country) byEn.set(cityEn + "|" + country, ll);
+      if (cityRu && country) byRu.set(cityRu + "|" + country, ll);
+    }
+  }
+  calCache = { byEn, byRu, at: Date.now() };
+  return calCache;
+}
+
 let placesCache: { items: PlaceItem[]; from: string; at: number } | null = null;
 async function getPlaces(env: HomeEnv, origin: string): Promise<{ items: PlaceItem[]; from: string }> {
   if (placesCache && Date.now() - placesCache.at < 5 * 60_000) return placesCache;
   const d1 = await allPlacesFromD1(env);
   const items = d1 || (await allPlacesFromAsset(env, origin));
+  // Обогащение координатами: у большинства мест в базе нет lat/lng (у ресторанов —
+  // поголовно), а «ближайшие» в каталоге считаются гаверсинусом. Доливаем координаты
+  // по совпадению город+страна с таблицей календарных городов — подбор ближайших
+  // становится по-настоящему географическим. БД при этом не трогаем (только рантайм).
+  try {
+    const { byEn, byRu } = await getCalCoords(env, origin);
+    if (byEn.size || byRu.size) {
+      for (const it of items) {
+        if (it.lat != null && it.lng != null) continue;
+        const cc = (it.country || "").toLowerCase();
+        if (!cc) continue;
+        const hit = byEn.get((it.city || "").toLowerCase() + "|" + cc) || byRu.get((it.cityRu || "").toLowerCase() + "|" + cc);
+        if (hit) { it.lat = hit.lat; it.lng = hit.lng; }
+      }
+    }
+  } catch { /* координаты необязательны — тихо пропускаем */ }
   placesCache = { items, from: d1 ? "d1" : "asset", at: Date.now() };
   return placesCache;
 }
