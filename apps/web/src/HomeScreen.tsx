@@ -488,7 +488,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
               हरे कृष्ण हरे कृष्ण<br />कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम<br />राम राम हरे हरे
             </div>
             <div style={{ marginTop: 14, fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: TR_TITLE, lineHeight: 1.55, color: "var(--color-label)" }}>
-              Харе Кришна, Харе Кришна,<br />Кришна Кришна, Харе Харе<br />Харе Рама, Харе Рама,<br />Рама Рама, Харе Харе
+              Харе Кришна Харе Кришна<br />Кришна Кришна Харе Харе<br />Харе Рама Харе Рама<br />Рама Рама Харе Харе
             </div>
             <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>
               Каждый может получить духовное благо от повторения маха-мантры Харе Кришна. Когда звучит трансцендентная вибрация святого имени, благо получают все живые существа — даже деревья, животные и насекомые. Так человек проявляет высшее милосердие ко всему миру.
