@@ -673,5 +673,5 @@ body.gtab-off .gtab-wrap { display: none; }
    подпись. Резервируем место под хром, чтобы кадр был виден целиком; размытая
    подложка при этом остаётся на весь экран. На телефоне (узкий экран) — без полей. */
 @media (min-width: 760px) {
-  .dstory-stage { padding: 76px 16px 150px; box-sizing: border-box; }
+  .dstory-stage { padding: 0; box-sizing: border-box; }
 }
