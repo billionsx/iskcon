@@ -2394,6 +2394,32 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const openQr = (url: string, data: QrData) => setQr({ url, data });
   const [reportOpen, setReportOpen] = useState(false);
 
+  // ── Синхронизация аудио → текст ──
+  // Пока играет аудиокнига ЭТОЙ книги, читалка следует за проигрываемой главой.
+  // Меняем главу только при её СМЕНЕ в плеере (через lastAudioSyncRef), чтобы не мешать
+  // листать текст вручную, и только когда открыта глава (не отдельный стих).
+  const player = usePlayer();
+  const audioNavRef = useRef(false);             // переход вызван аудио → URL заменить, не пушить
+  const lastAudioSyncRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!player.active || player.book !== book.work) return;
+    if (!openChapter || readerRef) return;       // следуем только в режиме чтения главы
+    const t = player.track;
+    if (!t || t.kind !== "chapter" || t.chapter == null) return;
+    const key = `${t.lila ?? ""}#${t.chapter}`;
+    if (lastAudioSyncRef.current === key) return; // реагируем только на смену главы в плеере
+    const list = book.hierarchical ? (flatHierChapters ?? []) : (chapters ?? []);
+    const target = list.find(
+      (c) => c.number === String(t.chapter) && (!t.lila || c.id.split(".")[1] === t.lila),
+    ) ?? null;
+    if (!target) return;
+    lastAudioSyncRef.current = key;
+    if (openChapter.id === target.id) return;
+    audioNavRef.current = true;                   // следующий state→URL — replace, без новой записи
+    setReaderRef(null);
+    setOpenChapter(target);
+  }, [player.active, player.book, player.track, chapters, flatHierChapters, openChapter, readerRef, book.work, book.hierarchical]);
+
   useEffect(() => {
     if (book.hierarchical) return; // иерархические книги (ЧЧ/ШБ) — оглавление через CcContents (/toc)
     fetch(api(`/books/${book.work}/chapters`)).then((r) => r.json()).then((d) => setChapters(d.chapters ?? [])).catch(() => {});
@@ -2517,10 +2543,11 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
         path = `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}`;
       }
       const cur = window.location.pathname;
-      if (cur === path) return;
+      if (cur === path) { audioNavRef.current = false; return; }
       const isVerse = (p: string) => /^\/book\/[a-z0-9]+\/[a-z0-9]+\/\d+\/.+/i.test(p);
-      if (isVerse(cur) && isVerse(path)) replaceUrl(path);
+      if (audioNavRef.current || (isVerse(cur) && isVerse(path))) replaceUrl(path);
       else pushUrl(path);
+      audioNavRef.current = false;
       return;
     }
     if (!chapters) return;
@@ -2535,10 +2562,11 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       path = `${base}/${openChapter.number}`;
     }
     const cur = window.location.pathname;
-    if (cur === path) return;
+    if (cur === path) { audioNavRef.current = false; return; }
     const isVerse = (p: string) => new RegExp(`^/book/${book.work}/\\d+/.+`).test(p);
-    if (isVerse(cur) && isVerse(path)) replaceUrl(path);
+    if (audioNavRef.current || (isVerse(cur) && isVerse(path))) replaceUrl(path);
     else pushUrl(path);
+    audioNavRef.current = false;
   }, [openChapter, readerRef, chapters, book.hierarchical, book.work, book.prose]);
 
   // Единая кнопка «назад» внутри книги: стих → глава → книга → откуда пришли.
