@@ -15,6 +15,7 @@ import { api } from "./api";
 import { BOOKS, LIBRARY, type CatalogBook } from "./books";
 import { searchBooks } from "./bookSearch";
 import { loadCityDocs, searchStatic, type StaticHit, type CityDoc, type LocCity } from "./searchStatic";
+import type { PlaceItem } from "./placesShared";
 
 type Person = { id: string; type: string | null; name_ru: string | null; name_iast: string | null };
 type Verse = { book: string; ref: string; work?: string; snippet: string; href: string };
@@ -167,9 +168,10 @@ function Section({ title, count, children }: { title: string; count?: number; ch
   );
 }
 
-const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", kirtans: "Киртаны", places: "Святые места", cities: "Города", centers: "Центры", recipes: "Рецепты", tools: "Разделы", pages: "Страницы" } as const;
+const GROUP_LABEL = { people: "Личности", books: "Книги", verses: "Стихи", chapters: "Главы", prayers: "Молитвы", kirtans: "Киртаны", places: "Святые места", centers: "Центры", restaurants: "Рестораны", cities: "Города", recipes: "Рецепты", tools: "Разделы", pages: "Страницы" } as const;
 type GroupKey = keyof typeof GROUP_LABEL;
-const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "kirtans", "places", "cities", "centers", "recipes", "tools", "pages"];
+const GROUP_ORDER: GroupKey[] = ["people", "books", "verses", "chapters", "prayers", "kirtans", "places", "centers", "restaurants", "cities", "recipes", "tools", "pages"];
+type PlaceHit = { id: string; title: string; sub: string | null; href: string };
 
 function Chip({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
   return (
@@ -201,6 +203,10 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const seq = useRef(0);
+  const [dirCentresRaw, setDirCentresRaw] = useState<PlaceItem[]>([]);
+  const [dirRestRaw, setDirRestRaw] = useState<PlaceItem[]>([]);
+  const dirTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dirSeq = useRef(0);
 
   useEffect(() => { inputRef.current?.focus(); }, []);
 
@@ -242,10 +248,45 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [query]);
 
+  // Каталог центров/ресторанов из общей базы (/api/places) — RU-совпадения по
+  // названию, городу, региону и стране. Так глобальный поиск находит реальный
+  // центр (напр. Евпатория), а не только «город» календаря.
+  useEffect(() => {
+    if (dirTimer.current) clearTimeout(dirTimer.current);
+    if (query.length < 2) { setDirCentresRaw([]); setDirRestRaw([]); return; }
+    const id = ++dirSeq.current;
+    dirTimer.current = setTimeout(() => {
+      const enc = encodeURIComponent(query);
+      Promise.all([
+        fetch(api(`/places?kind=centre&q=${enc}&limit=12`)).then((x) => x.json()).catch(() => ({ items: [] })),
+        fetch(api(`/places?kind=restaurant&q=${enc}&limit=12`)).then((x) => x.json()).catch(() => ({ items: [] })),
+      ]).then(([c, rr]) => {
+        if (id !== dirSeq.current) return;
+        setDirCentresRaw(Array.isArray(c?.items) ? c.items : []);
+        setDirRestRaw(Array.isArray(rr?.items) ? rr.items : []);
+      }).catch(() => { if (id === dirSeq.current) { setDirCentresRaw([]); setDirRestRaw([]); } });
+    }, 220);
+    return () => { if (dirTimer.current) clearTimeout(dirTimer.current); };
+  }, [query]);
+
   // Сброс выделения навигации при смене запроса/фильтра.
   useEffect(() => { setActive(-1); }, [query, filter]);
 
   const r = res ?? EMPTY;
+  // Центры: заявленные (D1, богатые карточки /center) сверху, затем каталог
+  // (/place/:id). Дубль каталога по совпадению англ. города с D1 убираем.
+  const centresUnified = useMemo<PlaceHit[]>(() => {
+    const d1 = r.centers;
+    const d1Hits: PlaceHit[] = d1.map((c, i) => ({ id: "d1c:" + i, title: c.name, sub: c.city, href: c.href }));
+    const d1Cities = new Set(d1.map((c) => (c.city || "").trim().toLowerCase()).filter(Boolean));
+    const dir: PlaceHit[] = dirCentresRaw
+      .filter((pl) => !d1Cities.has((pl.city || "").trim().toLowerCase()))
+      .map((pl) => ({ id: "dc:" + pl.id, title: pl.nameRu || pl.name, sub: [pl.cityRu || pl.city, pl.countryRu].filter(Boolean).join(" · ") || null, href: "/place/" + pl.id }));
+    return [...d1Hits, ...dir];
+  }, [r.centers, dirCentresRaw]);
+  const restaurantsHits = useMemo<PlaceHit[]>(() =>
+    dirRestRaw.map((pl) => ({ id: "dr:" + pl.id, title: pl.nameRu || pl.name, sub: [pl.cityRu || pl.city, pl.countryRu].filter(Boolean).join(" · ") || null, href: "/restaurant/" + pl.id })),
+    [dirRestRaw]);
   const recordRecent = (term: string) => {
     const t = term.trim();
     if (t.length < 2) return;
@@ -276,8 +317,8 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const counts: Record<GroupKey, number> = {
     people: r.personalities.length, books: bookHits.length, verses: r.verses.length,
     chapters: r.chapters.length, prayers: r.prayers.length, kirtans: kirtanHits.length,
-    places: r.places.length, cities: cityHits.length, centers: r.centers.length,
-    recipes: recipeHits.length, tools: toolHits.length, pages: r.pages.length,
+    places: r.places.length, centers: centresUnified.length, restaurants: restaurantsHits.length,
+    cities: cityHits.length, recipes: recipeHits.length, tools: toolHits.length, pages: r.pages.length,
   };
   const present = GROUP_ORDER.filter((k) => counts[k] > 0);
   const total = present.reduce((s, k) => s + counts[k], 0);
@@ -305,8 +346,9 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   pushGroup("prayers", r.prayers, (_p, i) => "pr:" + i, (p) => goNav(p.href));
   pushGroup("kirtans", kirtanHits, (h) => "ki:" + h.id, (h) => goStatic(h));
   pushGroup("places", r.places, (p) => "pl:" + p.id, (p) => goEntity(p.id, p.type));
+  pushGroup("centers", centresUnified, (h) => "ce:" + h.id, (h) => goNav(h.href));
+  pushGroup("restaurants", restaurantsHits, (h) => "re:" + h.id, (h) => goNav(h.href));
   pushGroup("cities", cityHits, (h) => "ci:" + h.id, (h) => goStatic(h));
-  pushGroup("centers", r.centers, (_c, i) => "ce:" + i, (c) => goNav(c.href));
   pushGroup("recipes", recipeHits, (h) => "rc:" + h.id, (h) => goStatic(h));
   pushGroup("tools", toolHits, (h) => "to:" + h.id, (h) => goStatic(h));
   pushGroup("pages", r.pages, (_p, i) => "pg:" + i, (p) => goNav(p.href));
@@ -443,21 +485,30 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
           </Section>
         )}
 
+        {show("centers") && (
+          <Section title="Центры" count={counts.centers}>
+            {centresUnified.slice(0, vis("centers")).map((h) => (
+              <Row key={"ce" + h.id} active={activeId === "ce:" + h.id} ch={mono(h.title)} title={h.title} sub={h.sub} toks={toks} onTap={() => goNav(h.href)} />
+            ))}
+            {activeFilter === "all" && counts.centers > PREVIEW && <MoreLink n={counts.centers} active={activeId === "more:centers"} onTap={() => setFilter("centers")} />}
+          </Section>
+        )}
+
+        {show("restaurants") && (
+          <Section title="Рестораны" count={counts.restaurants}>
+            {restaurantsHits.slice(0, vis("restaurants")).map((h) => (
+              <Row key={"re" + h.id} active={activeId === "re:" + h.id} ch={mono(h.title)} title={h.title} sub={h.sub} toks={toks} onTap={() => goNav(h.href)} />
+            ))}
+            {activeFilter === "all" && counts.restaurants > PREVIEW && <MoreLink n={counts.restaurants} active={activeId === "more:restaurants"} onTap={() => setFilter("restaurants")} />}
+          </Section>
+        )}
+
         {show("cities") && (
           <Section title="Города" count={counts.cities}>
             {cityHits.slice(0, vis("cities")).map((h) => (
               <Row key={"ci" + h.id} active={activeId === "ci:" + h.id} ch={mono(h.title)} title={h.title} sub={h.subtitle} toks={toks} onTap={() => goStatic(h)} />
             ))}
             {activeFilter === "all" && counts.cities > PREVIEW && <MoreLink n={counts.cities} active={activeId === "more:cities"} onTap={() => setFilter("cities")} />}
-          </Section>
-        )}
-
-        {show("centers") && (
-          <Section title="Центры" count={counts.centers}>
-            {r.centers.slice(0, vis("centers")).map((c, i) => (
-              <Row key={"ce" + i + c.href} active={activeId === "ce:" + i} ch={mono(c.name)} title={c.name} sub={c.city} toks={toks} onTap={() => goNav(c.href)} />
-            ))}
-            {activeFilter === "all" && counts.centers > PREVIEW && <MoreLink n={counts.centers} active={activeId === "more:centers"} onTap={() => setFilter("centers")} />}
           </Section>
         )}
 

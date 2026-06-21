@@ -14,6 +14,7 @@ import { api } from "./api";
 import { BOOKS, LIBRARY, AUDIO_WORKS } from "./books";
 import { BookHeroCard } from "./BookHeroCard";
 import { HomeTabs, HOME_TABS, type HomeTabId } from "./HomeTabs";
+import { takeHomeTab } from "./homeNav";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
@@ -728,6 +729,8 @@ export default function HomeScreen(props: {
   // и «назад» должен вернуть в тот же раздел (например, «Календарь»), а не на «ИСККОН».
   const [homeTab, setHomeTab] = useState<HomeTabId>(() => {
     try {
+      const pend = takeHomeTab();
+      if (pend && HOME_TABS.some((t) => t.id === pend)) return pend;
       const v = sessionStorage.getItem("home-tab") as HomeTabId | null;
       if (v && HOME_TABS.some((t) => t.id === v)) return v;
     } catch { /* noop */ }
