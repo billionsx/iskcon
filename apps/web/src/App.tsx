@@ -8,6 +8,8 @@ import { useState, useRef, useEffect, useLayoutEffect, type ReactNode } from "re
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
 import { BookDetailPage } from "./BookDetailPage";
 import HomeScreen from "./HomeScreen";
+import { requestHomeTab } from "./homeNav";
+import type { HomeTabId } from "./HomeTabs";
 import { DonateModal } from "./DonateModal";
 import { BOOKS, bookFullTitle } from "./books";
 import BooksHub from "./BooksHub";
@@ -705,9 +707,11 @@ export default function App() {
     if (clean === "/search") { setOpenSearch(true); return; }
     if (clean === "/calendar" || seg0 === "calendar") {
       // Календарь живёт подтабом «Главной» (ISKCON). Город уже положен в localStorage
-      // (cal-loc) вызывающим — свежий HomeCalendar прочитает его при монтировании;
-      // событие home-open переключит подтаб у уже смонтированного HomeScreen.
-      setTab("iskcon");
+      // (cal-loc) вызывающим — свежий HomeCalendar прочитает его при монтировании.
+      // Подтаб выбираем тремя каналами: синглтон homeNav (надёжно, синхронно),
+      // sessionStorage (дубль) и событие home-open (если HomeScreen уже смонтирован).
+      setTab("home");
+      requestHomeTab("calendar");
       try { sessionStorage.setItem("home-tab", "calendar"); } catch { /* noop */ }
       try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: "calendar" } })); } catch { /* noop */ }
       return;
@@ -772,13 +776,14 @@ export default function App() {
     }
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
-    if (seg0 === "place" || seg0 === "doc") {
+    if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
-      const sub = seg0 === "place" ? "centres" : "documents";
+      const sub: HomeTabId = seg0 === "doc" ? "documents" : seg0 === "restaurant" ? "restaurants" : "centres";
       setTab("home");
+      requestHomeTab(sub);
       try {
         sessionStorage.setItem("home-tab", sub);
-        if (pid) sessionStorage.setItem(seg0 === "place" ? "open-place" : "open-doc", pid);
+        if (pid) sessionStorage.setItem(seg0 === "doc" ? "open-doc" : "open-place", pid);
       } catch { /* noop */ }
       // Сигнал смонтированному HomeScreen переключить подтаб (sessionStorage уже
       // прочитан при инициализации, поэтому одного его мало). Дочерние эффекты
