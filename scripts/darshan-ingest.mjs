@@ -18,9 +18,15 @@ import { execFileSync } from "node:child_process";
 // Якоря — две дхамы. «Гостевой» храм добавим ротацией позже.
 const SOURCES = [
   {
+    // Маяпур: основной источник — полноразмерные оригиналы (~1920px) из официальной
+    // галереи даршана сайта храма (mayapur.com). Если сайт недоступен — запас:
+    // свежайший даршанный пост канала (channel, превью t.me/s — те же 800px).
     slug: "mayapur",
-    kind: "tg",
+    kind: "site",
+    site: "mayapur",
+    srcKey: "site:mayapur",
     channel: "ISKCONMayapurGroup",
+    galleryName: "Daily Darshan",
     name: "ИСККОН Маяпур · Шри Дхама Маяпур",
     deities: "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
     srcLabel: "ISKCON Mayapur",
@@ -94,6 +100,51 @@ async function fetchSiteGallery(src) {
   while ((m = re.exec(t))) { if (!seen.has(m[0])) { seen.add(m[0]); paths.push(m[0]); } }
   const name = (t.match(/"gallery_name","([^"]+)"/) || [])[1] || src.galleryName || "Darshan";
   return { date, name, pageUrl, images: paths.map((p) => `${SITE_CDN}/${p}`) };
+}
+
+/* ── источник: галерея даршана Маяпура (mayapur.com, оригиналы ~1920px) ──
+   Индекс server-rendered (блоки «дата DD/MM/YYYY → /media/album/N»). Полные кадры
+   отдаёт server-rendered смотрелка /imageviewer/show-album-pictures/N/0 списком
+   /storage/albums/N/{hash}_image.jpg — браузер не нужен (как у Вриндавана). */
+const MAYAPUR = "https://www.mayapur.com";
+function ddmmyyyyIST() {
+  const p = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kolkata" }).formatToParts(new Date());
+  const g = (k) => (p.find((x) => x.type === k) || { value: "" }).value;
+  return `${g("day")}/${g("month")}/${g("year")}`;
+}
+async function fetchMayapurGallery(src) {
+  const ri = await fetch(`${MAYAPUR}/media/gallery/daily-darshan`, {
+    headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/` },
+  });
+  if (!ri.ok) throw new Error(`${MAYAPUR}/media/gallery/daily-darshan → HTTP ${ri.status}`);
+  const html = await ri.text();
+  const blocks = [];
+  const re = /<p>\s*(\d{2}\/\d{2}\/\d{4})\s*<\/p>[\s\S]{0,220}?\/media\/album\/(\d+)/g;
+  let m;
+  while ((m = re.exec(html))) blocks.push({ date: m[1], id: m[2] });
+  if (!blocks.length) {
+    const idre = /\/media\/album\/(\d+)/g; const ids = []; let mm;
+    while ((mm = idre.exec(html))) ids.push(mm[1]);
+    const first = [...new Set(ids)][0];
+    if (!first) throw new Error("mayapur gallery: no album links found");
+    blocks.push({ date: null, id: first });
+  }
+  const today = process.env.DARSHAN_DATE
+    ? process.env.DARSHAN_DATE.split("-").reverse().join("/")
+    : ddmmyyyyIST();
+  const chosen = blocks.find((b) => b.date === today) || blocks[0];
+  const albumId = chosen.id;
+  const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
+    headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/album/${albumId}` },
+  });
+  if (!rv.ok) throw new Error(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0 → HTTP ${rv.status}`);
+  const vt = await rv.text();
+  const imgRe = new RegExp(`storage/albums/${albumId}/[A-Za-z0-9]+_image\\.(?:jpe?g|png|webp)`, "gi");
+  const seen = new Set(); const paths = []; let p;
+  while ((p = imgRe.exec(vt))) { if (!seen.has(p[0])) { seen.add(p[0]); paths.push(p[0]); } }
+  const date = chosen.date ? chosen.date.split("/").reverse().join("-") : istToday();
+  const pageUrl = `${MAYAPUR}/media/album/${albumId}`;
+  return { date, albumId, name: src.galleryName || "Daily Darshan", pageUrl, images: paths.map((x) => `${MAYAPUR}/${x}`) };
 }
 
 /* ───────── парсер t.me/s (порт из workerHome.ts) ───────── */
@@ -332,33 +383,41 @@ async function run() {
     if (only.length && !only.includes(src.slug)) continue;
 
     if (src.kind === "site") {
-      let gal;
-      try { gal = await fetchSiteGallery(src); }
-      catch (e) { preview.push({ slug: src.slug, error: String(e) }); continue; }
-      if (!gal.images.length) { preview.push({ slug: src.slug, date: gal.date, error: `site gallery empty for ${gal.date}` }); continue; }
-      src._postId = `${gal.date}/${src.galleryType}`;
-      const caption = composeCaption(src);
-      const imgsSel = selectVrindavan(gal.images);
-      const row = {
-        slug: src.slug, kind: "site", date: gal.date, temple_name: src.name, deities: src.deities,
-        src_channel: src.srcKey, src_post_id: src._postId, src_url: gal.pageUrl, gallery_name: gal.name,
-        photo_count: gal.images.length, albums_planned: 1,
-        photos: imgsSel, caption_preview: caption,
-      };
-      if (dry) { preview.push(row); continue; }
-      if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
-      const sent = await sendDarshanAlbums(imgsSel, caption, 10, 1);
-      const anchorId = sent.anchorId || 0;
-      const msgIds = sent.ids;
-      const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
-      const capSql = caption.replace(/'/g, "''");
-      try {
-        d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-            VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',${anchorId})
-            ON CONFLICT(src_channel,src_post_id) DO UPDATE SET tg_message_id=excluded.tg_message_id, images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-      } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
-      preview.push({ ...row, posted: `ok msgs=${msgIds.join(",")}` });
-      continue;
+      let gal = null;
+      try { gal = src.site === "mayapur" ? await fetchMayapurGallery(src) : await fetchSiteGallery(src); }
+      catch (e) {
+        // Вриндаван — пропускаем источник; Маяпур — падаем в Telegram-запас ниже.
+        if (src.site !== "mayapur") { preview.push({ slug: src.slug, error: String(e) }); continue; }
+        gal = null;
+      }
+      if (gal && gal.images.length) {
+        src._postId = src.site === "mayapur" ? `album/${gal.albumId}` : `${gal.date}/${src.galleryType}`;
+        const caption = composeCaption(src);
+        const imgsSel = src.site === "mayapur" ? pickSpread(gal.images, 10) : selectVrindavan(gal.images);
+        const row = {
+          slug: src.slug, kind: "site", date: gal.date, temple_name: src.name, deities: src.deities,
+          src_channel: src.srcKey, src_post_id: src._postId, src_url: gal.pageUrl, gallery_name: gal.name,
+          photo_count: gal.images.length, albums_planned: 1,
+          photos: imgsSel, caption_preview: caption,
+        };
+        if (dry) { preview.push(row); continue; }
+        if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
+        const sent = await sendDarshanAlbums(imgsSel, caption, 10, 1);
+        const anchorId = sent.anchorId || 0;
+        const msgIds = sent.ids;
+        const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
+        const capSql = caption.replace(/'/g, "''");
+        try {
+          d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
+              VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',${anchorId})
+              ON CONFLICT(src_channel,src_post_id) DO UPDATE SET tg_message_id=excluded.tg_message_id, images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
+        } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
+        preview.push({ ...row, posted: `ok msgs=${msgIds.join(",")}` });
+        continue;
+      }
+      // Галерея пуста/недоступна.
+      if (src.site !== "mayapur") { preview.push({ slug: src.slug, date: gal && gal.date, error: `site gallery empty` }); continue; }
+      // Маяпур: НЕ continue — проваливаемся в Telegram-блок (src.channel) ниже.
     }
 
     let posts;
