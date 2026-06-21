@@ -354,6 +354,36 @@ async function run() {
   const dry = (process.env.DRY_RUN ?? "1") !== "0";
   const only = (process.env.ONLY || "").split(",").map((s) => s.trim()).filter(Boolean);
 
+  // Бэкафилл Маяпура: вытащить стабильные mayapur.com-URL всех недавних альбомов
+  // (для замены протухших Telegram-CDN ссылок в архиве). Ничего не постит, в D1 не
+  // пишет — только дамп в ci/darshan-dryrun, откуда URL переносятся в D1 вручную.
+  if (process.env.BACKFILL_MAYAPUR === "1") {
+    const ri = await fetch(`${MAYAPUR}/media/gallery/daily-darshan`, { headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/` } });
+    if (!ri.ok) throw new Error(`mayapur gallery → HTTP ${ri.status}`);
+    const html = await ri.text();
+    const blocks = []; const re = /<p>\s*(\d{2}\/\d{2}\/\d{4})\s*<\/p>[\s\S]{0,220}?\/media\/album\/(\d+)/g; let m;
+    while ((m = re.exec(html))) blocks.push({ date: m[1], id: m[2] });
+    const albums = [];
+    for (const b of blocks) {
+      const ymd = b.date.split("/").reverse().join("-");
+      try {
+        const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${b.id}/0`, { headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/album/${b.id}` } });
+        if (!rv.ok) { albums.push({ date: ymd, albumId: b.id, error: `HTTP ${rv.status}` }); continue; }
+        const vt = await rv.text();
+        const imgRe = new RegExp(`storage/albums/${b.id}/[A-Za-z0-9]+_image\\.(?:jpe?g|png|webp)`, "gi");
+        const seen = new Set(); const paths = []; let p;
+        while ((p = imgRe.exec(vt))) { if (!seen.has(p[0])) { seen.add(p[0]); paths.push(p[0]); } }
+        const images = pickSpread(paths.map((x) => `${MAYAPUR}/${x}`), 10);
+        albums.push({ date: ymd, albumId: b.id, pageUrl: `${MAYAPUR}/media/album/${b.id}`, count: paths.length, images });
+      } catch (e) { albums.push({ date: ymd, albumId: b.id, error: String(e).slice(0, 120) }); }
+      await new Promise((r) => setTimeout(r, 150));
+    }
+    mkdirSync("data/darshan", { recursive: true });
+    writeFileSync("data/darshan/_dryrun.json", JSON.stringify({ mode: "backfill-mayapur", at: new Date().toISOString(), albums }, null, 2));
+    console.log("backfill-mayapur written:", albums.length, "albums");
+    return;
+  }
+
   if (process.env.DELETE_IDS) {
     const raw = process.env.DELETE_IDS.split(",").map((s) => s.trim()).filter(Boolean);
     const ids = [];
