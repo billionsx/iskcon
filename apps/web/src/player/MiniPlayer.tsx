@@ -5,11 +5,18 @@
  */
 import { usePlayer } from "./store";
 import { PlayIcon, PauseIcon, NextIcon } from "./icons";
-import type { CSSProperties } from "react";
+import { useEffect, type CSSProperties } from "react";
 
 export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
   const p = usePlayer();
-  if (!p.active || p.expanded) return null;
+  const visible = p.active && !p.expanded;
+  // Виден мини-плеер → body.player-on, чтобы скролл-контейнеры зарезервировали его
+  // высоту снизу (--player-extra) и плеер не закрывал низ страниц.
+  useEffect(() => {
+    document.body.classList.toggle("player-on", visible);
+    return () => document.body.classList.remove("player-on");
+  }, [visible]);
+  if (!visible) return null;
 
   const pct = p.duration > 0 ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
   const t = p.track;
