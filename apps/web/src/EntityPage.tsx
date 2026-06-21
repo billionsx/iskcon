@@ -9,7 +9,7 @@
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
 import { CATEGORY_RU, RASA_RU } from "./entityLabels";
-import { CardActionBtns, useCardActions } from "./cardActions";
+import { CardActionBtns, useCardActions, favMetaFromCtx, type CardCtx } from "./cardActions";
 import { useEffect, useRef, useState, Fragment, type ReactNode } from "react";
 import { api } from "./api";
 import { replaceUrl } from "./nav";
@@ -887,10 +887,10 @@ function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "material" |
 /* TabHeader — контекстный заголовок таба в стиле «Библиотека / Книги».
    На каждом разделе ПКЛ (Таттва, Нама, Рупа, Гуна, …) показывает что это
    за раздел — kicker (золотом), крупный title и короткий lead. */
-function TabHeader({ tab }: { tab: { kicker?: string; title?: string; lead?: string; label: string } }) {
+function TabHeader({ tab, flush }: { tab: { kicker?: string; title?: string; lead?: string; label: string }; flush?: boolean }) {
   if (!tab.kicker && !tab.title && !tab.lead) return null;
   return (
-    <header style={{ marginTop: 18, marginBottom: 2 }}>
+    <header style={{ marginTop: flush ? 0 : 18, marginBottom: 2 }}>
       {tab.kicker && (
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
           {tab.kicker}
@@ -1059,6 +1059,26 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const allSubs = activeTabObj?.subtabs ?? [];
   const hasRealmSplit = allSubs.some((st) => st.realm);
   const visibleSubs = hasRealmSplit ? allSubs.filter((st) => !st.realm || st.realm === realm) : allSubs;
+  // Контекст-меню текущей темы ПКЛ (как у книг/глав): ссылка/QR/PDF/заметка/избранное
+  // по ТЕКУЩЕМУ месту — вся Личность (/krishna) или конкретная тема (/krishna/<таб>/<подтаб>).
+  const topicIsDefault = tab === (dossier?.tabs?.[0]?.id ?? "") && (sub === (visibleSubs[0]?.id ?? "") || !sub);
+  const topicPath = topicIsDefault
+    ? "/" + id
+    : sub ? `/${id}/${encodeURIComponent(tab)}/${encodeURIComponent(sub)}` : `/${id}/${encodeURIComponent(tab)}`;
+  const topicUrl = "https://gaurangers.com" + topicPath;
+  const topicSubObj = visibleSubs.find((st) => st.id === sub);
+  const topicTabLabel = activeTabObj?.title || activeTabObj?.label || "";
+  const topicSubLabel = topicSubObj?.label || "";
+  const topicTitle = topicIsDefault ? (data?.name_ru || id) : (topicSubLabel || topicTabLabel || data?.name_ru || id);
+  const topicSubtitle = topicIsDefault
+    ? (data?.note || data?.name_iast || undefined)
+    : `${data?.name_ru || id}${topicTabLabel && topicSubLabel ? " · " + topicTabLabel : ""}`;
+  const topicFavKey = topicIsDefault ? `entity:${id}` : `entity:${id}:${tab}/${sub}`;
+  const topicCtx: CardCtx = {
+    type: "entity", id, title: topicTitle, subtitle: topicSubtitle, url: topicUrl,
+    context: `ПКЛ · ${data?.name_ru || id} · ${topicPath}`,
+    pdfExtra: topicIsDefault ? undefined : { tab, sub },
+  };
   const subItems = visibleSubs.map((st) => ({ id: st.id, label: st.label }));
   const activeSub = visibleSubs.find((st) => st.id === sub) ?? visibleSubs[0];
   const subSections = activeSub?.sections ?? [];
@@ -1273,7 +1293,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               chips={heroChips}
               onMore={() => openCardMenu({
                 type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
-                url: `https://gaurangers.com/person/${encodeURIComponent(id)}`,
+                url: embedded ? `https://gaurangers.com/${encodeURIComponent(id)}` : `https://gaurangers.com/person/${encodeURIComponent(id)}`,
                 context: `Герой · ${data.name_ru || id} · /entity/${id}`,
               })}
             />
@@ -1284,7 +1304,14 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                 <div ref={tabContentRef} style={{ marginTop: 4 }}>
                   <style>{LF_ANIM}</style>
                   <div key={"t:" + tab} style={{ animation: "lf-in .26s ease both" }}>
-                    {activeTabObj && <TabHeader tab={activeTabObj} />}
+                    {embedded && data ? (
+                      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginTop: 18 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>{activeTabObj && <TabHeader tab={activeTabObj} flush />}</div>
+                        <div style={{ flexShrink: 0, paddingTop: 2 }}>
+                          <CardActionBtns favKey={topicFavKey} meta={favMetaFromCtx(topicCtx)} onMore={() => openCardMenu(topicCtx)} />
+                        </div>
+                      </div>
+                    ) : (activeTabObj && <TabHeader tab={activeTabObj} />)}
                     {activeTabObj?.sections && activeTabObj.sections.length > 0 && (
                       <LongformArticle sections={activeTabObj.sections} onOpen={onOpen} onNavigate={onNavigate} onSub={handleSubChange} onTab={goToTab} />
                     )}
