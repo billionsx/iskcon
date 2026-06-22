@@ -21,7 +21,7 @@ interface DarshanEnv {
 interface Src {
   slug: string;
   kind: "tg" | "site";
-  site?: "iskconvrindavan" | "mayapur";
+  site?: "iskconvrindavan" | "mayapur" | "chowpatty";
   channel: string;
   name: string;
   deities: string;
@@ -58,6 +58,18 @@ const SOURCES: Src[] = [
     deities: "Джайа Гаура Нитай, Кришна Баларам, Лалита Вишакха Радхе Шьям",
     place: "Шри Шри Кришна-Баларам Мандир · ИСККОН Вриндаван",
     srcLabel: "ISKCON Vrindavan",
+  },
+  {
+    // Чоупати (Мумбаи): отдельный сайт даршана с датированными кадрами в полном
+    // разрешении (8601px). Тянем server-side, фильтруем по сегодняшней дате IST.
+    slug: "chowpatty",
+    kind: "site",
+    site: "chowpatty",
+    channel: "iskconchowpatty",
+    name: "ИСККОН Чоупати · Шри Шри Радха-Гопинатх",
+    deities: "Шри Шри Радха-Гопинатх",
+    place: "Шри Шри Радха-Гопинатх Мандир · ИСККОН Чоупати, Мумбаи",
+    srcLabel: "ISKCON Chowpatty",
   },
   {
     // Евпатория (Крым): публичный Telegram-канал храма с ежедневным даршаном.
@@ -284,6 +296,39 @@ const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|a
 // Индекс server-rendered (блоки «дата DD/MM/YYYY → /media/album/N»). Полные кадры
 // отдаёт server-rendered смотрелка /imageviewer/show-album-pictures/N/0 списком
 // /storage/albums/N/{hash}_image.jpg — браузер не нужен (как у Вриндавана).
+/* ── источник: сайт даршана Чоупати (darshan.iskconchowpatty.com) ──
+   Кадры — прямые датированные файлы /Photos/yr{YYYY}/{mon}{yy}/{DD}{mon}{YYYY}_{код}.jpg
+   в полном разрешении. Берём сегодняшнюю дату IST; если ещё не выложили — самую
+   свежую дату, присутствующую на странице. orient считает клиент. */
+const CHOWPATTY = "https://darshan.iskconchowpatty.com";
+const MON3: Record<string, string> = { jan: "01", feb: "02", mar: "03", apr: "04", may: "05", jun: "06", jul: "07", aug: "08", sep: "09", oct: "10", nov: "11", dec: "12" };
+function chowTokenIST(d: Date): string {
+  const p = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "Asia/Kolkata" }).formatToParts(d);
+  const g = (t: string) => (p.find((x) => x.type === t) || { value: "" }).value;
+  return `${g("day")}${g("month").toLowerCase()}${g("year")}`;   // "22jun2026"
+}
+async function fetchChowpattyGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
+  let html = "";
+  try {
+    const r = await fetch(`${CHOWPATTY}/`, { headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${CHOWPATTY}/` }, cf: { cacheTtl: 600, cacheEverything: true } } as RequestInit);
+    if (!r.ok) return null;
+    html = await r.text();
+  } catch { return null; }
+  const re = /Photos\/yr\d{4}\/[a-z]{3}\d{2}\/(\d{1,2}[a-z]{3}\d{4})_[A-Za-z0-9]+\.(?:jpe?g|png|webp)/gi;
+  const seen = new Set<string>(); const all: { token: string; path: string }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html))) { if (!seen.has(m[0])) { seen.add(m[0]); all.push({ token: m[1].toLowerCase(), path: m[0] }); } }
+  if (!all.length) return null;
+  const toNum = (tok: string) => { const mm = tok.match(/^(\d{1,2})([a-z]{3})(\d{4})$/); return mm ? Number(`${mm[3]}${MON3[mm[2]] || "00"}${mm[1].padStart(2, "0")}`) : 0; };
+  const today = chowTokenIST(new Date());
+  const token = all.some((x) => x.token === today) ? today : all.map((x) => x.token).sort((a, b) => toNum(b) - toNum(a))[0];
+  const images = all.filter((x) => x.token === token).map((x) => `${CHOWPATTY}/${x.path}`);
+  if (!images.length) return null;
+  const mt = token.match(/^(\d{1,2})([a-z]{3})(\d{4})$/);
+  const date = mt ? `${mt[3]}-${MON3[mt[2]] || "01"}-${mt[1].padStart(2, "0")}` : istToday();
+  return { date, name: src.galleryName || "Darshan", pageUrl: `${CHOWPATTY}/`, images: images.slice(0, 60) };
+}
+
 const MAYAPUR = "https://www.mayapur.com";
 const ddmmyyyyIST = () => {
   const p = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kolkata" }).formatToParts(new Date());
@@ -549,7 +594,7 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
   const live = await Promise.all(
     SOURCES.map(async (s) => {
       if (s.kind === "site") {
-        const gal = s.site === "mayapur" ? await fetchMayapurGallery(s) : await fetchVrindavanCombined(s);
+        const gal = s.site === "mayapur" ? await fetchMayapurGallery(s) : s.site === "chowpatty" ? await fetchChowpattyGallery(s) : await fetchVrindavanCombined(s);
         if (gal && gal.images.length) {
           // Показываем ВСЮ галерею даршана за сегодня (и Вриндаван, и Маяпур): и
           // широкие кадры алтарей, и вертикальные крупные планы мурти. Сторис-вьювер
