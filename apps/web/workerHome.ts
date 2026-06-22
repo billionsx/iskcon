@@ -426,60 +426,47 @@ async function tgPost(channel: string, id: string, env: HomeEnv): Promise<Respon
 
 async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Response> {
   if (!TG_CHANNELS.has(channel)) return jr({ error: "unknown_channel" }, 404);
-  // Курсор before — timestamp ms (опаков для клиента: он просто возвращает oldest в ?before=).
-  // Лента — слияние по времени: ДАРШАНЫ из D1 (ежедневный бэкбон, пагинация по created_at)
-  // + РЕАЛЬНЫЕ посты канала @iskcone (всё остальное, что постит автор — их по-прежнему
-  // скрейпим). Даршаны в канал больше не постятся → синтезируем из D1; старые даршан-посты,
-  // ещё висящие в канале, прячем по подписи, чтобы не было дублей.
-  const beforeTs = /^\d{10,}$/.test(before) ? Number(before) : Number.POSITIVE_INFINITY;
-  const PAGE = 20;
-
-  // 1) Реальные посты канала (страница 1, кэш 5 мин), кроме даршан-подписей.
-  let real: Array<TgPost & { ts: number }> = [];
   try {
-    const r = await fetch(`https://t.me/s/${channel}`, {
+    // Канал @iskcone — id-овая пагинация: отдаём ВСЮ историю канала (включая старые даршаны,
+    // которые уже опубликованы — их НЕ прячем). t.me/s ?before=<id> — страница более старых.
+    const qs = /^\d+$/.test(before) ? `?before=${before}` : "";
+    const r = await fetch(`https://t.me/s/${channel}${qs}`, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" },
       cf: { cacheTtl: 300, cacheEverything: true },
     } as RequestInit);
     const html = await r.text();
-    const arr: TgPost[] = [];
-    for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) arr.push(pp); }
-    real = arr
-      .filter((pp) => !/Ежедневный даршан/i.test(pp.text))
-      .map((pp) => ({ ...pp, ts: Date.parse(pp.date) || 0 }))
-      .filter((pp) => pp.ts > 0 && pp.ts < beforeTs);
-  } catch { /* канал недоступен — поедем на одних даршанах */ }
+    let posts: TgPost[] = [];
+    for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) posts.push(pp); }
+    posts.reverse(); // свежие сверху
 
-  // 2) Даршаны из D1 — страница по created_at (строго старее курсора).
-  let dposts: Array<TgPost & { ts: number }> = [];
-  let darshanMore = false;
-  try {
-    if (env.DB) {
-      const lim = PAGE + 6;
-      let res;
-      if (Number.isFinite(beforeTs)) {
-        const iso = new Date(beforeTs).toISOString().slice(0, 19).replace("T", " ");
-        res = await env.DB.prepare(
-          `SELECT id, date, temple_name, deities, caption, images_json, created_at FROM darshan WHERE created_at < ? ORDER BY created_at DESC, id DESC LIMIT ${lim}`,
-        ).bind(iso).all();
-      } else {
-        res = await env.DB.prepare(
-          `SELECT id, date, temple_name, deities, caption, images_json, created_at FROM darshan ORDER BY created_at DESC, id DESC LIMIT ${lim}`,
+    // НОВЫЕ даршаны в канал больше не постятся (tg_message_id IS NULL) — добавляем их
+    // синтетическими постами из D1 ТОЛЬКО на первой странице, слив по дате с верхом канала.
+    // Старые даршаны (tg_message_id задан) остаются в канале и приходят скрейпом → без дублей.
+    if (!qs && env.DB) {
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT id, date, temple_name, deities, caption, images_json, created_at FROM darshan WHERE tg_message_id IS NULL ORDER BY created_at DESC LIMIT 40`,
         ).all();
-      }
-      const rows = (res.results || []) as Array<{ id: number; date: string; temple_name: string; deities: string; caption: string; images_json: string; created_at: string }>;
-      darshanMore = rows.length > PAGE;
-      for (const row of rows) { const sp = synthDarshan(row); if (sp && sp.ts < beforeTs) dposts.push(sp); }
+        const dn: Array<{ p: TgPost; ts: number }> = [];
+        for (const row of (results || []) as Array<{ id: number; date: string; temple_name: string; deities: string; caption: string; images_json: string; created_at: string }>) {
+          const sp = synthDarshan(row);
+          if (sp) { const { ts, ...p } = sp; dn.push({ p, ts }); }
+        }
+        if (dn.length) {
+          const ch = posts.map((p) => ({ p, ts: Date.parse(p.date) || 0 }));
+          posts = [...dn, ...ch].sort((a, b) => b.ts - a.ts).map((x) => x.p);
+        }
+      } catch { /* без D1 — просто лента канала */ }
     }
-  } catch { /* без D1 — только канал */ }
 
-  // 3) Слияние по времени → страница PAGE.
-  const merged = [...real, ...dposts].sort((a, b) => b.ts - a.ts);
-  const page = merged.slice(0, PAGE);
-  const oldest = page.length ? String(page[page.length - 1].ts) : null;
-  const hasMore = merged.length > PAGE || darshanMore;
-  const posts = page.map(({ ts: _ts, ...p }) => p);
-  return jr({ channel, posts, oldest, hasMore }, 200, "public, max-age=120");
+    // Курсор — самый старый РЕАЛЬНЫЙ id канала на странице (синтетические d<n> в курсор не берём).
+    const realIds = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
+    const oldest = realIds.length ? String(Math.min(...realIds)) : null;
+    const hasMore = oldest !== null && Number(oldest) > 1;
+    return jr({ channel, posts, oldest, hasMore }, 200, "public, max-age=120");
+  } catch {
+    return jr({ channel, posts: [], oldest: null, hasMore: false }, 502, "no-store");
+  }
 }
 
 /* ───────────────────────── РОУТЕР ───────────────────────── */
