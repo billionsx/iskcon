@@ -382,8 +382,8 @@ function synthDarshan(row: { id: number; date: string; temple_name: string; deit
   return {
     id: `d${row.id}`, date: dateIso, views: "", text,
     rich: [{ t: "t", v: text }],
-    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=1080`),
-    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`),
+    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`),
+    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`),
     videos: [], audios: [], link: null, ts,
   };
 }
@@ -438,6 +438,34 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
     let posts: TgPost[] = [];
     for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) posts.push(pp); }
     posts.reverse(); // свежие сверху
+
+    // ПОЛНОРАЗМЕР для даршан-постов канала. Веб-превью t.me/s ужимает фото (у альбомов —
+    // вообще мелкая сетка). Бот публиковал ПОЛНОРАЗМЕРНЫЕ оригиналы (храмовые CDN) и писал
+    // их URL в D1 (images_json) под id поста. Матчим скрейп-посты к D1 по tg_message_id и
+    // ставим оригиналы И в карточку (photos, w=2048), И в лайтбокс (photosFull, w=2560) —
+    // через worker-прокси /api/img (тянет сервер, свой домен + кэш). Превью больше не показываем.
+    try {
+      const ids = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
+      if (ids.length && env.DB) {
+        const ph = ids.map(() => "?").join(",");
+        const { results } = await env.DB.prepare(
+          `SELECT tg_message_id AS mid, images_json AS imgs FROM darshan WHERE tg_message_id IN (${ph})`,
+        ).bind(...ids).all();
+        const byId = new Map<number, string>();
+        for (const row of (results || []) as Array<{ mid: number; imgs: string }>) byId.set(Number(row.mid), row.imgs);
+        for (const p of posts) {
+          const imgs = byId.get(Number(p.id));
+          if (!imgs) continue;
+          try {
+            const full = JSON.parse(imgs) as string[];
+            if (Array.isArray(full) && full.length) {
+              p.photos = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`);
+              p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`);
+            }
+          } catch { /* оставляем превью */ }
+        }
+      }
+    } catch { /* ошибка БД — отдаём превью */ }
 
     // НОВЫЕ даршаны в канал больше не постятся (tg_message_id IS NULL) — добавляем их
     // синтетическими постами из D1 ТОЛЬКО на первой странице, слив по дате с верхом канала.
