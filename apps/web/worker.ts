@@ -1246,7 +1246,7 @@ async function igSid(env: Env): Promise<string> {
   try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_sessionid'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
 }
 
-type IgPost = { ts: number; isVideo: boolean; urls: string[]; shortcode: string };
+type IgPost = { ts: number; isVideo: boolean; urls: string[]; thumbs: string[]; shortcode: string };
 
 function igOneUrl(n: Record<string, any>): string {
   if (!n) return "";
@@ -1259,18 +1259,39 @@ function igOneUrl(n: Record<string, any>): string {
   return "";
 }
 
+function igThumbUrl(n: Record<string, any>): string {
+  if (!n) return "";
+  const tr = n?.thumbnail_resources;
+  if (Array.isArray(tr) && tr.length) {
+    const best = [...tr].sort((a, b) => (Number(b?.config_width) || 0) - (Number(a?.config_width) || 0))[0];
+    if (best?.src) return String(best.src);
+  }
+  const cands = n?.image_versions2?.candidates;
+  if (Array.isArray(cands) && cands.length) {
+    const small = [...cands].sort((a, b) => (Number(a?.width) || 0) - (Number(b?.width) || 0)).find((c) => (Number(c?.width) || 0) >= 600) || cands[cands.length - 1];
+    if (small?.url) return String(small.url);
+  }
+  if (n.thumbnail_src) return String(n.thumbnail_src);
+  return "";
+}
+
 function igNodeToPost(n: Record<string, any>): IgPost | null {
   if (!n) return null;
   const isVideo = !!(n.is_video || n.media_type === 2 || (Array.isArray(n.video_versions) && n.video_versions.length));
   const ts = Number(n.taken_at_timestamp || n.taken_at) || 0;
   const shortcode = String(n.shortcode || n.code || "");
   let urls: string[] = [];
+  let thumbs: string[] = [];
   const kids = n?.edge_sidecar_to_children?.edges;
   const carousel = n?.carousel_media;
-  if (Array.isArray(kids) && kids.length) urls = kids.map((k: any) => igOneUrl(k?.node)).filter(Boolean) as string[];
-  else if (Array.isArray(carousel) && carousel.length) urls = carousel.map((c: any) => igOneUrl(c)).filter(Boolean) as string[];
-  else { const u = igOneUrl(n); if (u) urls = [u]; }
-  return urls.length ? { ts, isVideo, urls, shortcode } : null;
+  if (Array.isArray(kids) && kids.length) {
+    for (const k of kids) { const u = igOneUrl(k?.node); if (u) { urls.push(u); thumbs.push(igThumbUrl(k?.node) || u); } }
+  } else if (Array.isArray(carousel) && carousel.length) {
+    for (const c of carousel) { const u = igOneUrl(c); if (u) { urls.push(u); thumbs.push(igThumbUrl(c) || u); } }
+  } else {
+    const u = igOneUrl(n); if (u) { urls = [u]; thumbs = [igThumbUrl(n) || u]; }
+  }
+  return urls.length ? { ts, isVideo, urls, thumbs, shortcode } : null;
 }
 
 async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>>, user: string, sid: string): Promise<IgPost[]> {
@@ -1318,13 +1339,13 @@ async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>
   return posts;
 }
 
-function igPickLatestPhoto(posts: IgPost[]): { ts: number; urls: string[]; postUrl: string } | null {
+function igPickLatestPhoto(posts: IgPost[]): { ts: number; urls: string[]; thumbs: string[]; postUrl: string } | null {
   const photos = posts.filter((p) => !p.isVideo && p.urls.length);
   if (!photos.length) return null;
   photos.sort((a, b) => b.ts - a.ts);
   const top = photos[0];
   const ts = top.ts || Math.floor(Date.now() / 1000);
-  return { ts, urls: top.urls, postUrl: top.shortcode ? `https://www.instagram.com/p/${top.shortcode}/` : "https://www.instagram.com/" };
+  return { ts, urls: top.urls, thumbs: top.thumbs, postUrl: top.shortcode ? `https://www.instagram.com/p/${top.shortcode}/` : "https://www.instagram.com/" };
 }
 
 async function igDownloadB64(u: string): Promise<{ b64: string; ct: string } | null> {
@@ -1354,8 +1375,17 @@ async function igIngestOne(env: Env, browser: Awaited<ReturnType<typeof puppetee
   const date = igIstDate(pick.ts);
   const stored: { idx: number; b64: string; ct: string }[] = [];
   let idx = 0;
-  for (const u of pick.urls.slice(0, 6)) { const d = await igDownloadB64(u); if (d) stored.push({ idx: idx++, b64: d.b64, ct: d.ct }); }
-  if (!stored.length) return { slug: t.slug, ok: false, n: 0, msg: "download failed" };
+  const urls = pick.urls.slice(0, 6);
+  for (let i = 0; i < urls.length; i++) {
+    let d = await igDownloadB64(urls[i]);
+    if (!d && pick.thumbs[i] && pick.thumbs[i] !== urls[i]) d = await igDownloadB64(pick.thumbs[i]);
+    if (d) stored.push({ idx: idx++, b64: d.b64, ct: d.ct });
+  }
+  if (!stored.length) {
+    let diag = "";
+    try { const rr = await fetch(urls[0], { headers: { "User-Agent": IG_UA, Referer: "https://www.instagram.com/" } }); diag = `http=${rr.status} cl=${rr.headers.get("content-length")}`; } catch (e) { diag = "ferr " + String(e).slice(0, 30); }
+    return { slug: t.slug, ok: false, n: 0, msg: "download failed [" + diag + "]" };
+  }
   try {
     await env.DB.prepare("DELETE FROM ig_darshan WHERE slug=?1").bind(t.slug).run();
     for (const s of stored) {
