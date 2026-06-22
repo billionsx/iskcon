@@ -442,6 +442,22 @@ async def cmd_stream(cfg: dict):
         entity = await client.get_entity(channel)
         ok(f"Канал: {getattr(entity, 'title', channel)}")
 
+        # Обложка книги = фото канала (у аудиокниг это обычно и есть обложка издания).
+        # Кладём cover.jpg в объект; карточка берёт обложку оттуда. Идемпотентно.
+        if "cover.jpg" not in existing:
+            try:
+                cov = await client.download_profile_photo(entity, file=str(DOWNLOAD_DIR / "cover.jpg"))
+                if cov and os.path.exists(cov):
+                    ia_upload(identifier, files={"cover.jpg": cov}, metadata={},
+                              access_key=ak, secret_key=sk, retries=3)
+                    try: os.remove(cov)
+                    except OSError: pass
+                    ok("Обложка канала → cover.jpg")
+                else:
+                    info("У канала нет фото — обложку не залил")
+            except Exception as e:
+                info(f"Обложку не залил: {e}")
+
         async for msg in client.iter_messages(entity, reverse=reverse, limit=limit):
             doc = None
             if msg.audio:

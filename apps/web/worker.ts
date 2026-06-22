@@ -1268,7 +1268,10 @@ export default {
     if (url.pathname === "/api/books/spl/audio") {
       return splAudioManifest(env, url.origin);
     }
-    const genAudioM = url.pathname.match(/^\/api\/books\/(noi|iso|bs)\/audio$/);
+    // Любая другая работа со своей аудиокнигой → общий хэндлер (треки из iskcone-<work>,
+    // заголовки из playlist.json). Спец-хэндлеры bg/cc/brs/spl обработаны выше; работы без
+    // объекта на archive.org вернут пустой список (безвредно).
+    const genAudioM = url.pathname.match(/^\/api\/books\/([a-z0-9-]+)\/audio$/);
     if (genAudioM) {
       return bookAudioGeneric(genAudioM[1], `iskcone-${genAudioM[1]}`, url.origin);
     }
