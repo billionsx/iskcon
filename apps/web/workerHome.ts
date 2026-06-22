@@ -239,7 +239,7 @@ export interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta
 export interface TgLink { href: string; title: string; desc: string; img: string | null }
 export interface TgPost {
   id: string; date: string; views: string; text: string;
-  rich: TgSeg[]; photos: string[]; videos: TgVideo[]; audios: TgAudio[]; link: TgLink | null;
+  rich: TgSeg[]; photos: string[]; photosFull?: string[]; videos: TgVideo[]; audios: TgAudio[]; link: TgLink | null;
 }
 
 function parseRich(html: string): TgSeg[] {
@@ -338,6 +338,35 @@ function parseTgBlock(b: string): TgPost | null {
   };
 }
 
+/* ───────── Прокси изображений ─────────
+   Тянем картинку с разрешённого источника НА СЕРВЕРЕ и отдаём со своего домена:
+   • храмовые CDN (mayapur.com и т.п.) в браузере часто блокируют хотлинк/CORS — через
+     прокси грузятся надёжно;
+   • если на зоне включён Image Resizing — отдаём уменьшённую (быстро, но резко на экране),
+     иначе оригинал (всё равно надёжно);
+   • кэшируется на крае Cloudflare (повторные загрузки мгновенные). */
+const IMG_HOSTS = /(^|\.)(iskconvrindavan\.com|mayapur\.com|iskconchowpatty\.com|archive\.org|telesco\.pe|cdn-telegram\.org|telegram-cdn\.org)$/i;
+async function imgProxy(url: URL): Promise<Response> {
+  const raw = url.searchParams.get("u") || "";
+  let target: URL;
+  try { target = new URL(raw); } catch { return new Response("bad url", { status: 400 }); }
+  if (target.protocol !== "https:" || !IMG_HOSTS.test(target.hostname)) return new Response("forbidden", { status: 403 });
+  const w = Math.min(2560, Math.max(160, Number(url.searchParams.get("w")) || 1600));
+  const hdr = { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)", Referer: `${target.protocol}//${target.hostname}/`, accept: "image/*,*/*" };
+  let r: Response;
+  try {
+    r = await fetch(target.toString(), { headers: hdr, cf: { image: { width: w, quality: 82, fit: "scale-down" }, cacheEverything: true, cacheTtl: 86400 } } as RequestInit);
+    if (!r.ok) throw new Error(`resize ${r.status}`);
+  } catch {
+    try {
+      r = await fetch(target.toString(), { headers: hdr, cf: { cacheEverything: true, cacheTtl: 86400 } } as RequestInit);
+    } catch { return new Response("proxy error", { status: 502 }); }
+  }
+  if (!r.ok) return new Response(`upstream ${r.status}`, { status: 502 });
+  const ct = r.headers.get("content-type") || "image/jpeg";
+  return new Response(r.body, { status: 200, headers: { "content-type": ct, "cache-control": "public, max-age=86400, immutable", "x-content-type-options": "nosniff", "X-Robots-Tag": "noindex" } });
+}
+
 async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Response> {
   if (!TG_CHANNELS.has(channel)) return jr({ error: "unknown_channel" }, 404);
   try {
@@ -355,12 +384,12 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
     }
     posts.reverse(); // свежие сверху
 
-    // Полноразмер для даршан-постов. Веб-превью t.me/s ужимает фото (у альбомов —
-    // вообще сетка-миниатюра), тогда как бот публикует в канал ПОЛНОРАЗМЕРНЫЕ оригиналы
-    // (с храмовых CDN) и пишет их URL в D1 (images_json) под id опубликованного поста.
-    // Поэтому фото даршан-постов подменяем на эти оригиналы — тот же кадр, что в канале,
-    // но в полном разрешении. Матч точный по tg_message_id (id сгруппированного поста =
-    // id первого сообщения альбома). При любой осечке остаётся веб-превью.
+    // Полноразмер для даршан-постов — в ЛАЙТБОКС (по тапу), не в карточку. Веб-превью
+    // t.me/s грузится всегда и на размере карточки резкое; полноразмерные оригиналы бот
+    // пишет в D1 (images_json), но они на храмовых CDN (mayapur.com и т.п.) — в браузере
+    // часто не грузятся (хотлинк/CORS) и тяжёлые. Поэтому отдаём их в photosFull через
+    // worker-прокси /api/img (тянет сервер, отдаёт со своего домена + кэш). Матч точный
+    // по tg_message_id. Карточка показывает p.photos (превью), лайтбокс — p.photosFull.
     try {
       const ids = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
       if (ids.length && env.DB) {
@@ -373,10 +402,13 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
         for (const p of posts) {
           const imgs = byId.get(Number(p.id));
           if (!imgs) continue;
-          try { const full = JSON.parse(imgs) as string[]; if (Array.isArray(full) && full.length) p.photos = full; } catch { /* оставляем веб-превью */ }
+          try {
+            const full = JSON.parse(imgs) as string[];
+            if (Array.isArray(full) && full.length) p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`);
+          } catch { /* оставляем только превью */ }
         }
       }
-    } catch { /* любая ошибка БД — отдаём как есть, веб-превью */ }
+    } catch { /* любая ошибка БД — отдаём как есть */ }
 
     const oldest = posts.length ? posts[posts.length - 1].id : null;
     // конец истории: страница пуста или старее уже некуда
@@ -397,6 +429,7 @@ export async function homeApi(request: Request, env: HomeEnv): Promise<Response 
   const pid = p.match(/^\/api\/places\/([a-z0-9][a-z0-9._-]*)$/i);
   if (pid && pid[1] !== "facets") return placeById(env, url, pid[1]);
   if (p === "/api/documents") return documentsList(env, url);
+  if (p === "/api/img") return imgProxy(url);
   const tg = p.match(/^\/api\/tg\/([a-z0-9_]+)$/i);
   if (tg) return tgFeed(tg[1].toLowerCase(), url.searchParams.get("before") || "", env);
   return null;

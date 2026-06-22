@@ -33,7 +33,7 @@ interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: strin
 interface TgLink { href: string; title: string; desc: string; img: string | null }
 interface TgPost {
   id: string; date: string; views: string; text: string;
-  rich: TgSeg[]; photos: string[]; videos: TgVideo[]; audios: TgAudio[]; link: TgLink | null;
+  rich: TgSeg[]; photos: string[]; photosFull?: string[]; videos: TgVideo[]; audios: TgAudio[]; link: TgLink | null;
 }
 
 const postUrl = (id: string) => `https://t.me/iskcone/${id}`;
@@ -156,9 +156,9 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
     // перебивает aspect-ratio: высота кадра жёстко фиксирована, при скролле не «плавает».
     const frame = ar ? Math.min(1.91, Math.max(0.8, ar)) : 0.8;
     return (
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", width: "100%", paddingBottom: (100 / frame).toFixed(3) + "%", background: "var(--color-glass-regular)", overflow: "hidden" }}>
         <div ref={scRef} onScroll={onScroll} onPointerDown={onDown} className="iol-feed-carousel"
-          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: String(frame), background: "var(--color-glass-regular)" }}>
+          style={{ position: "absolute", inset: 0, display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
           {photos.map((src, i) => (
             <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%" }}>
               <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
@@ -431,7 +431,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
       </div>
 
       {/* лайтбокс + шиты */}
-      {view !== null && p.photos.length > 0 && <PhotoLightbox photos={p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
+      {view !== null && p.photos.length > 0 && <PhotoLightbox photos={(p.photosFull && p.photosFull.length === p.photos.length) ? p.photosFull : p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" />
       {qr && <QrSheet url={postUrl(p.id)} data={{ kind: "card", title: head, subtitle: fmtDate(p.date) }} onClose={() => setQr(false)} />}
       <ReportSheet open={report} onClose={() => setReport(false)} context={`Лента · пост ${postUrl(p.id)}`} />
