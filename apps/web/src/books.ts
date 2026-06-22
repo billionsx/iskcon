@@ -731,7 +731,14 @@ export const BOOKS: Record<string, BookData> = {
  * Книги, для которых уже подключён звук (плейлист аудиокниги).
  * Остальные книги показывают «Аудиокнига — скоро» вместо запуска плеера.
  */
-export const AUDIO_WORKS: Record<string, boolean> = { bg: true, cc: true, brs: true, spl: true, noi: true, iso: true, bs: true };
+export const AUDIO_WORKS: Record<string, boolean> = {
+  bg: true, cc: true, brs: true, spl: true, noi: true, iso: true, bs: true,
+  // продвинутая библиотека — включаются по мере заливки на archive.org (iskcone-<slug>)
+  "manah-siksa": true, "siksastaka": true, "bhakti-tattva-viveka": true,
+  "mukunda-mala-stotra": true, "sanmodana-bhashya": true, "bhaktyaloka": true,
+  "prema-pradipa": true, "harinama-cintamani": true, "caitanya-siksamrta": true,
+  "jagannatha-vallabha-nataka": true, "sri-namamrita": true,
+};
 
 /**
  * СТАНДАРТ НАПИСАНИЯ НАЗВАНИЯ КНИГИ — единый источник истины.
