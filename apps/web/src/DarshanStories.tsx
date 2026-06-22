@@ -212,10 +212,10 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
-  // Ориентация: сначала серверный флаг (по байтам JPEG), а если он не доехал (кэш API) —
-  // меряем в браузере по naturalWidth/Height загруженного кадра. У этих фото EXIF-поворота
-  // нет (exif:1), поэтому naturalWidth честно отражает ориентацию. Сброс при смене кадра —
-  // синхронно в рендере, чтобы новый кадр не унаследовал старый замер.
+  // Ориентацию берём ИЗ САМОГО ЗАГРУЖЕННОГО КАДРА (naturalWidth/Height). EXIF-поворота в
+  // этих фото нет (exif:1), поэтому это абсолютная истина и не зависит ни от API, ни от кэша.
+  // Серверный флаг намеренно НЕ используем — кэш мог отдать устаревшее/неверное значение.
+  // Сброс при смене кадра — синхронно в рендере, чтобы новый кадр не унаследовал старый замер.
   const [ar, setAr] = useState<number | null>(null);
   const frameKey = `${ti}:${ii}`;
   const lastFrameRef = useRef(frameKey);
@@ -223,8 +223,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const measureRef = useCallback((node: HTMLImageElement | null) => {
     if (node && node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
   }, []);
-  const serverO = item.orient?.[ii];
-  const orient: "p" | "l" | null = serverO ?? (ar != null ? (ar < 1 ? "p" : "l") : null);
+  const orient: "p" | "l" | null = ar != null ? (ar < 1 ? "p" : "l") : null;
 
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
