@@ -10,28 +10,25 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: run ingest per slug
+      - name: run ingest (single browser, all temples)
         env:
           RUN_KEY: ${{ inputs.key }}
         run: |
           python3 - <<'PY'
-          import os, json, time, urllib.request, urllib.error
+          import os, json, urllib.request, urllib.error
           key = os.environ["RUN_KEY"]
           def note(m): print("::notice::" + str(m).replace("\n"," ")[:380], flush=True)
           def err(m):  print("::error::"  + str(m).replace("\n"," ")[:380], flush=True)
-          for slug in ["noida", "nashik", "gev"]:
-              url = f"https://gaurangers.com/api/ig/run?key={key}&slug={slug}"
+          url = f"https://gaurangers.com/api/ig/run?key={key}"
+          try:
+              r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=240)
+              body = r.read().decode("utf-8","ignore")
               try:
-                  r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=150)
-                  body = r.read().decode("utf-8","ignore")
-                  try:
-                      d = json.loads(body)
-                      for it in d: note(f"{it.get('slug')}: ok={it.get('ok')} n={it.get('n')} msg={it.get('msg')}")
-                  except Exception:
-                      note(f"{slug}: HTTP{r.status} raw={body[:160]}")
-              except urllib.error.HTTPError as e:
-                  err(f"{slug}: HTTP {e.code} {e.read().decode('utf-8','ignore')[:120]}")
-              except Exception as e:
-                  err(f"{slug}: {type(e).__name__} {str(e)[:140]}")
-              time.sleep(3)
+                  for it in json.loads(body): note(f"{it.get('slug')}: ok={it.get('ok')} n={it.get('n')} msg={it.get('msg')}")
+              except Exception:
+                  note(f"HTTP{r.status} raw={body[:200]}")
+          except urllib.error.HTTPError as e:
+              err(f"HTTP {e.code} {e.read().decode('utf-8','ignore')[:160]}")
+          except Exception as e:
+              err(f"{type(e).__name__} {str(e)[:160]}")
           PY
