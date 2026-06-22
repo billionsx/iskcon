@@ -25,7 +25,7 @@ import { ReportSheet } from "./ReportSheet";
 import { exportToPdf } from "./pdf";
 
 const GOLD = "#D2AA1B";
-const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20, border: "0.5px solid var(--color-hairline)" };
+const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20 };
 
 interface TgSeg { t: "t" | "a"; v: string; href?: string }
 interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }
@@ -122,24 +122,11 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   const photos = p.photos;
   const [idx, setIdx] = useState(0);
-  const [ratios, setRatios] = useState<Record<number, number>>({});  // аспект w/h каждого фото
-  const [vw, setVw] = useState(0);                                    // ширина вьюпорта карусели
   const scRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const el = scRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => setVw(el.clientWidth));
-    ro.observe(el); setVw(el.clientWidth);
-    return () => ro.disconnect();
-  }, []);
 
   const onScroll = () => {
     const el = scRef.current; if (!el) return;
     const w = el.clientWidth; if (w) setIdx(Math.round(el.scrollLeft / w));
-  };
-  const noteRatio = (i: number, n: HTMLImageElement) => {
-    if (n.naturalWidth && n.naturalHeight) setRatios((r) => (r[i] ? r : { ...r, [i]: n.naturalWidth / n.naturalHeight }));
   };
 
   if (photos.length === 1) {
@@ -152,18 +139,18 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   }
 
   if (photos.length > 1) {
-    // высота карусели подстраивается под пропорции ТЕКУЩЕГО фото — горизонтальные
-    // не впихиваются в вертикальный кадр (без обрезки и потери разрешения).
-    const cr = ratios[idx] || ratios[0] || 4 / 5;
-    const h = vw ? Math.round(vw / cr) : undefined;
+    // Стандарт Apple/IG: единый фикс-кадр 4:5 на всю карусель (без джанк-ресайза при
+    // свайпе), каждое фото — ЦЕЛИКОМ (contain) поверх размытой подложки того же кадра,
+    // поэтому ничего не обрезается, а поля заполнены элегантно. Свайп — постраничный.
     return (
       <div style={{ position: "relative" }}>
         <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
-          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", height: h, transition: "height .3s ease", background: "var(--color-bg)" }}>
+          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", scrollSnapStop: "always", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: "4 / 5", background: "#0c0c0d" }}>
           {photos.map((src, i) => (
-            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", height: "100%" }}>
-              <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)} onLoad={(e) => noteRatio(i, e.currentTarget)}
-                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", overflow: "hidden" }}>
+              <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${src}")`, backgroundSize: "cover", backgroundPosition: "center", transform: "scale(1.2)", filter: "blur(30px) saturate(1.2) brightness(0.82)" }} />
+              <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
+                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
@@ -286,9 +273,9 @@ function preloadImages(urls: string[], cap = 9000): Promise<void> {
   });
 }
 function buildPostPrintNode(p: TgPost): HTMLElement {
-  // Структура и стили — копия карточного эталона CardPrint (PdfDoc.tsx), чтобы PDF
-  // поста выглядел «по нашему стандарту»: золотая надстрочная (Georgia) · крупный
-  // заголовок · подзаголовок · фото · текст. Печатный конвейер (поля/футер) даёт exportToPdf.
+  // Профессиональная компактная вёрстка: единый блок заголовка (надстрочная Georgia ·
+  // имена Божеств · дата · метаданные) держится целиком на первой странице, затем фото —
+  // СЕТКОЙ 2×N в паспарту (contain, без обрезки Божеств), а не по одному кадру на лист.
   const root = document.createElement("div");
   root.style.maxWidth = "640px";
   root.style.margin = "0 auto";
@@ -297,53 +284,56 @@ function buildPostPrintNode(p: TgPost): HTMLElement {
   const lines = text.split("\n");
   const li = lines.findIndex((l) => l.trim());
   const lead = li >= 0 ? lines[li].trim() : "";
-  const rest = li >= 0 ? lines.slice(li + 1).join("\n").trim() : "";
+  const restLines = (li >= 0 ? lines.slice(li + 1) : []).map((l) => l.trim()).filter(Boolean);
+
+  // — блок заголовка (не разрывается между страницами) —
+  const head = document.createElement("div");
+  head.setAttribute("data-pdf-block", "");
 
   const eyebrow = document.createElement("div");
   eyebrow.textContent = "Лента · ISKCON ONE LOVE";
   Object.assign(eyebrow.style, { fontSize: "10pt", letterSpacing: "2px", textTransform: "uppercase", color: "#9a7a14", fontFamily: "Georgia, serif" });
-  root.appendChild(eyebrow);
+  head.appendChild(eyebrow);
 
   if (lead) {
     const h1 = document.createElement("h1");
     h1.textContent = lead;
-    Object.assign(h1.style, { margin: "10pt 0 0", fontSize: "22pt", lineHeight: "1.16", letterSpacing: "-0.01em", fontWeight: "800" });
-    root.appendChild(h1);
+    Object.assign(h1.style, { margin: "10pt 0 0", fontSize: "21pt", lineHeight: "1.18", letterSpacing: "-0.01em", fontWeight: "800" });
+    head.appendChild(h1);
   }
 
   const sub = document.createElement("div");
   sub.textContent = fmtDate(p.date);
-  Object.assign(sub.style, { marginTop: "5pt", fontSize: "12.5pt", color: "#55565c" });
-  root.appendChild(sub);
+  Object.assign(sub.style, { marginTop: "5pt", fontSize: "11pt", color: "#8a8a8e" });
+  head.appendChild(sub);
 
+  if (restLines.length) {
+    const meta = document.createElement("div");
+    Object.assign(meta.style, { marginTop: "9pt", fontSize: "11.5pt", lineHeight: "1.5", color: "#3a3b40" });
+    restLines.forEach((ln) => {
+      const d = document.createElement("div");
+      d.textContent = ln;
+      meta.appendChild(d);
+    });
+    head.appendChild(meta);
+  }
+  root.appendChild(head);
+
+  // — фото: сетка 2 колонки, паспарту, contain (без обрезки) —
   if (p.photos.length) {
-    const imgs = document.createElement("div");
-    imgs.style.margin = "16pt 0 0";
+    const grid = document.createElement("div");
+    Object.assign(grid.style, { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4mm", marginTop: "14pt" });
     p.photos.forEach((src) => {
-      const wrap = document.createElement("div");
-      wrap.setAttribute("data-pdf-block", "");
-      wrap.style.margin = "0 0 7mm";
+      const cell = document.createElement("div");
+      cell.setAttribute("data-pdf-block", "");
+      Object.assign(cell.style, { aspectRatio: "4 / 5", background: "#f4f4f6", borderRadius: "6px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" });
       const img = document.createElement("img");
       img.src = src;
-      img.style.width = "100%";
-      img.style.borderRadius = "8px";
-      img.style.display = "block";
-      wrap.appendChild(img);
-      imgs.appendChild(wrap);
+      Object.assign(img.style, { width: "100%", height: "100%", objectFit: "contain", display: "block" });
+      cell.appendChild(img);
+      grid.appendChild(cell);
     });
-    root.appendChild(imgs);
-  }
-
-  if (rest) {
-    const body = document.createElement("div");
-    Object.assign(body.style, { marginTop: p.photos.length ? "4pt" : "16pt", fontSize: "11.5pt", lineHeight: "1.62" });
-    rest.split(/\n{2,}/).forEach((para) => {
-      const pp = document.createElement("p");
-      pp.textContent = para.trim();
-      Object.assign(pp.style, { margin: "0 0 10pt", whiteSpace: "pre-wrap" });
-      body.appendChild(pp);
-    });
-    root.appendChild(body);
+    root.appendChild(grid);
   }
 
   return root;
@@ -354,7 +344,7 @@ async function downloadPostPdf(p: TgPost, flash: (m: string) => void) {
     await preloadImages(p.photos);
     const node = buildPostPrintNode(p);
     const head = leadLine(p.text) || "ISKCON ONE LOVE";
-    exportToPdf(node, { title: head });   // вёрстка задана внутри узла (как CardPrint); опцию-шапку не передаём
+    exportToPdf(node, { title: head });   // вёрстка задана внутри узла; опцию-шапку не передаём
   } catch { flash("Не удалось собрать PDF — попробуйте ещё раз"); }
 }
 
@@ -369,7 +359,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
 
   const head = leadLine(p.text) || "ISKCON ONE LOVE";
   const favKey = `post:${p.id}`;
-  const favMeta = { t: head.slice(0, 140), s: fmtDate(p.date), h: "/sadhana" };
+  const favMeta = { t: head.slice(0, 140), s: fmtDate(p.date), h: `/post/${p.id}` };
   const long = p.text.length > 220;
   const hasMedia = p.photos.length > 0 || p.videos.length > 0;
 
@@ -505,12 +495,12 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
           </div>
         )}
         {!err && !posts && (
-          <div style={{ display: "grid", gap: 16 }}>
+          <div style={{ display: "grid", gap: 20 }}>
             {[0, 1, 2].map((i) => <div key={i} style={{ height: 360, ...fill, opacity: 0.6 }} />)}
           </div>
         )}
         {posts && posts.length > 0 && (
-          <div style={{ display: "grid", gap: 16 }}>
+          <div style={{ display: "grid", gap: 20 }}>
             {posts.map((p) => (
               <FeedPost key={p.id} p={p} open={expanded.has(p.id)} onDonate={onDonate} flash={flash}
                 onToggle={() => setExpanded((s) => { const n = new Set(s); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; })} />
@@ -532,6 +522,68 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         )}
       </div>
 
+      {toast && (
+        <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
+      )}
+    </div>
+  );
+}
+
+/* ── фокус-вид одного поста (открывается из избранного по /post/<id>) ─────────
+ *  Тянем конкретный пост канала: t.me/s/iskcone?before=<id+1> отдаёт страницу,
+ *  включающую нужный id; если не нашли (свежий) — берём последнюю страницу. */
+export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: () => void; onDonate?: () => void }) {
+  const [post, setPost] = useState<TgPost | null>(null);
+  const [state, setState] = useState<"loading" | "ok" | "error">("loading");
+  const [open, setOpen] = useState(true);
+  const [toast, setToast] = useState("");
+  const flash = (m: string) => { setToast(m); window.setTimeout(() => setToast(""), 2400); };
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      try {
+        const nid = Number(id);
+        const find = (j: { posts?: TgPost[] }) => (j.posts || []).find((x) => String(x.id) === String(id)) || null;
+        let j = await (await fetch(api("/tg/iskcone") + (nid ? "?before=" + (nid + 1) : ""))).json();
+        let found = find(j);
+        if (!found) { j = await (await fetch(api("/tg/iskcone"))).json(); found = find(j); }
+        if (!live) return;
+        setPost(found); setState(found ? "ok" : "error");
+      } catch { if (live) setState("error"); }
+    })();
+    return () => { live = false; };
+  }, [id]);
+
+  return (
+    <div style={{ minHeight: "100dvh", background: "var(--color-bg)" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 10, display: "flex", alignItems: "center", height: 52, padding: "0 8px",
+        background: "color-mix(in srgb, var(--color-bg) 86%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+        <button type="button" aria-label="Назад" onClick={onBack}
+          style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <span style={{ flex: 1, minWidth: 0, textAlign: "center", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 700, letterSpacing: "0.04em", color: "var(--color-label)", paddingRight: 38 }}>ISKCON ONE LOVE</span>
+      </header>
+
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 0 40px" }}>
+        {state === "loading" && (
+          <div style={{ padding: "40px 0", display: "grid", placeItems: "center" }}>
+            <div style={{ width: 26, height: 26, borderRadius: "50%", border: "2.5px solid var(--color-hairline)", borderTopColor: GOLD, animation: "feedspin .8s linear infinite" }} />
+          </div>
+        )}
+        {state === "error" && (
+          <div style={{ padding: "40px 16px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+            Не удалось открыть пост.<br />
+            <a href={postUrl(id)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>Открыть в Telegram →</a>
+          </div>
+        )}
+        {state === "ok" && post && (
+          <FeedPost p={post} open={open} onToggle={() => setOpen((v) => !v)} onDonate={onDonate} flash={flash} />
+        )}
+      </div>
+
+      <style>{`@keyframes feedspin{to{transform:rotate(360deg)}}`}</style>
       {toast && (
         <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
       )}
