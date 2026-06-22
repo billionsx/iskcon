@@ -10,42 +10,46 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: webapi
+      - name: warmapi
         env:
           IG_SESSIONID: ${{ secrets.IG_SESSIONID }}
           IG_USER: ${{ inputs.user }}
         run: |
           python3 - <<'PY'
-          import os, json, urllib.request, urllib.error, re
+          import os, re, json, urllib.request, urllib.error
+          from http.cookiejar import CookieJar, Cookie
           sid = os.environ["IG_SESSIONID"]; user = os.environ.get("IG_USER") or "iskcon_noida"
           def note(m): print("::notice::" + str(m).replace("\n"," ")[:380], flush=True)
           def err(m):  print("::error::"  + str(m).replace("\n"," ")[:380], flush=True)
           UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
           uid = re.match(r"\d+", sid).group(0)
-          # (1) web_profile_info JSON
-          url = f"https://www.instagram.com/api/v1/users/web_profile_info/?username={user}"
-          hdr = {"User-Agent": UA, "X-IG-App-ID": "936619743392459", "Accept": "*/*",
-                 "Accept-Language": "en-US,en;q=0.9", "Referer": f"https://www.instagram.com/{user}/",
-                 "Cookie": f"sessionid={sid}; ds_user_id={uid}"}
+          cj = CookieJar()
+          def setc(n, v): cj.set_cookie(Cookie(0, n, v, None, False, ".instagram.com", True, False, "/", True, True, None, False, None, None, {}))
+          setc("sessionid", sid); setc("ds_user_id", uid)
+          op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+          # warm-up GET profile page
           try:
-              r = urllib.request.urlopen(urllib.request.Request(url, headers=hdr), timeout=25)
-              body = r.read().decode("utf-8","ignore"); note(f"web_profile_info HTTP{r.status} len={len(body)}")
-              d = json.loads(body); edges = d["data"]["user"]["edge_owner_to_timeline_media"]["edges"]
-              note(f"WPI_MEDIA {len(edges)}")
-              for i, e in enumerate(edges[:5]):
-                  n = e["node"]; note(f"[{i}] vid={n.get('is_video')} ts={n.get('taken_at_timestamp')} {str(n.get('display_url'))[:88]}")
+              w = op.open(urllib.request.Request(f"https://www.instagram.com/{user}/", headers={"User-Agent": UA, "Accept-Language": "en-US,en;q=0.9", "Accept": "text/html,application/xhtml+xml"}), timeout=25)
+              claim = w.headers.get("x-ig-set-www-claim", "")
+              _ = w.read()
+              csrf = next((c.value for c in cj if c.name == "csrftoken"), "")
+              note(f"WARM HTTP{w.status} claim={'y' if claim else 'n'} csrf={'y' if csrf else 'n'}")
+          except Exception as e:
+              err(f"WARM {type(e).__name__}: {str(e)[:160]}"); csrf=""; claim=""
+          # API call with full headers + jar cookies
+          hdr = {"User-Agent": UA, "X-IG-App-ID": "936619743392459", "X-Requested-With": "XMLHttpRequest",
+                 "Accept": "*/*", "Accept-Language": "en-US,en;q=0.9", "Referer": f"https://www.instagram.com/{user}/"}
+          if csrf: hdr["X-CSRFToken"] = csrf
+          if claim: hdr["X-IG-WWW-Claim"] = claim
+          try:
+              r = op.open(urllib.request.Request(f"https://www.instagram.com/api/v1/users/web_profile_info/?username={user}", headers=hdr), timeout=25)
+              body = r.read().decode("utf-8","ignore"); note(f"WPI HTTP{r.status} len={len(body)}")
+              edges = json.loads(body)["data"]["user"]["edge_owner_to_timeline_media"]["edges"]
+              note(f"MEDIA {len(edges)}")
+              for i, e in enumerate(edges[:6]):
+                  n = e["node"]; note(f"[{i}] vid={n.get('is_video')} ts={n.get('taken_at_timestamp')} {str(n.get('display_url'))[:86]}")
           except urllib.error.HTTPError as e:
               err(f"WPI HTTP {e.code}: {e.read().decode('utf-8','ignore')[:140]}")
           except Exception as e:
               err(f"WPI {type(e).__name__}: {str(e)[:160]}")
-          # (2) profile HTML page (embedded data)
-          try:
-              r2 = urllib.request.urlopen(urllib.request.Request(f"https://www.instagram.com/{user}/", headers={"User-Agent": UA, "Cookie": f"sessionid={sid}; ds_user_id={uid}", "Accept-Language":"en-US,en;q=0.9"}), timeout=25)
-              b2 = r2.read().decode("utf-8","ignore")
-              du = len(re.findall(r'"display_url":', b2)); pj = len(re.findall(r'"image_versions2"', b2))
-              note(f"HTML HTTP{r2.status} len={len(b2)} display_url={du} image_versions2={pj} login_wall={'loginForm' in b2 or 'Log in' in b2[:3000]}")
-          except urllib.error.HTTPError as e:
-              err(f"HTML HTTP {e.code}: {str(e)[:120]}")
-          except Exception as e:
-              err(f"HTML {type(e).__name__}: {str(e)[:140]}")
           PY
