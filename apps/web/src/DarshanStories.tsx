@@ -203,7 +203,6 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [ii, setII] = useState(0);       // индекс кадра внутри храма
   const [paused, setPaused] = useState(false);
   const [capOpen, setCapOpen] = useState(false);
-  const [ar, setAr] = useState<number | null>(null);   // соотношение сторон кадра С УЧЁТОМ EXIF (w/h)
 
   const item = items[ti];
   const imgs = item.images;
@@ -213,19 +212,10 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
-  // Ориентацию меряем по РЕАЛЬНО отрисованному кадру: getBoundingClientRect видимого <img>
-  // в «предзамерном» состоянии (auto-размер) уже учитывает EXIF-поворот, в отличие от
-  // naturalWidth/offsetWidth (они отдают сырые пиксели — путали EXIF-кадры). Сброс ar при
-  // смене кадра делаем синхронно в рендере (паттерн «состояние от пропса»), чтобы новый
-  // кадр гарантированно смонтировался в предзамерном состоянии, а не со старым стилем.
-  const frameKey = `${ti}:${ii}`;
-  const lastFrameRef = useRef(frameKey);
-  if (lastFrameRef.current !== frameKey) { lastFrameRef.current = frameKey; setAr(null); }
-  const measureRef = useCallback((node: HTMLImageElement | null) => {
-    if (!node || !node.complete) return;           // свежий кадр домерит onLoad
-    const r = node.getBoundingClientRect();
-    if (r.width && r.height) setAr(r.width / r.height);
-  }, []);
+  // Ориентация кадра приходит с сервера (orient: "p"|"l"|null — определена по реальным
+  // байтам JPEG с учётом EXIF-поворота). В браузере её надёжно не измерить. "l" — на всю
+  // ширину, "p" — по высоте, нет данных — кадр целиком (object-fit: contain, без обрезки).
+  const orient = item.orient?.[ii] ?? null;
 
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
@@ -314,18 +304,17 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* кадр: горизонтальный — на всю ширину экрана, вертикальный — по высоте; до замера —
-          целиком без обрезки. Остаток добивает размытая подложка. */}
+      {/* кадр: ландшафт — на всю ширину экрана, портрет — по высоте; без данных — целиком
+          (object-fit: contain, без обрезки). Ориентация — с сервера (EXIF). Остаток добивает подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
-          onLoad={(e) => { const n = e.currentTarget; if (n.style.maxWidth) { const r = n.getBoundingClientRect(); if (r.width && r.height) setAr(r.width / r.height); } }}
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
           style={{
             display: "block", imageOrientation: "from-image",
-            ...(ar == null
-              ? { maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto" }   // до замера — кадр целиком (EXIF-ориентация отрисована)
-              : ar >= 1
-                ? { width: "100%", height: "auto" }                                       // горизонтальный → на всю ширину
-                : { width: "auto", height: "100%" }),                                     // вертикальный → по высоте
+            ...(orient === "l"
+              ? { width: "100%", height: "auto" }                                       // ландшафт → на всю ширину
+              : orient === "p"
+                ? { width: "auto", height: "100%" }                                     // портрет → по высоте
+                : { width: "100%", height: "100%", objectFit: "contain" }),             // неизвестно → кадр целиком
           }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}

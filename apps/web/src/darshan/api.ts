@@ -13,6 +13,7 @@ export interface DarshanItem {
   templeName: string;
   deities: string | null;
   images: string[];           // URL фото (Telegram-CDN)
+  orient?: ("p" | "l" | null)[]; // ориентация показа каждого кадра (определена сервером по EXIF), выровнена с images
   caption: string | null;
   srcUrl: string;             // пост-источник в канале храма
   channelUrl: string | null;  // пост в @iskcone (для архива, если опубликован)

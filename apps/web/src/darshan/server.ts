@@ -64,6 +64,80 @@ const SITE_CDN = "https://cdn.iskconvrindavan.com";
 const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 const istToday = () => new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
 
+// Истинная ориентация показа кадра из JPEG: реальные размеры (маркер SOF) + EXIF-поворот
+// (сегмент APP1/Exif). "p"=портрет, "l"=ландшафт, null=не разобрали. EXIF-ориентации 5–8
+// (повороты 90/270) меняют ширину и высоту местами — именно это путало клиентский замер.
+function jpegOrient(buf: ArrayBuffer): "p" | "l" | null {
+  const b = new Uint8Array(buf); const dv = new DataView(buf);
+  if (b.length < 4 || b[0] !== 0xff || b[1] !== 0xd8) return null;
+  let w = 0, h = 0, orient = 1, i = 2;
+  while (i < b.length - 1) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const marker = b[i + 1];
+    if (marker === 0xff) { i++; continue; }
+    if (marker === 0xd8 || marker === 0xd9 || (marker >= 0xd0 && marker <= 0xd7) || marker === 0x01) { i += 2; continue; }
+    if (i + 4 > b.length) break;
+    const len = dv.getUint16(i + 2); const seg = i + 4; // big-endian длина; seg — начало нагрузки
+    if (marker === 0xe1 && seg + 6 <= b.length &&
+        b[seg] === 0x45 && b[seg + 1] === 0x78 && b[seg + 2] === 0x69 && b[seg + 3] === 0x66 && b[seg + 4] === 0x00 && b[seg + 5] === 0x00) {
+      const tiff = seg + 6; const le = b[tiff] === 0x49 && b[tiff + 1] === 0x49; // 'II'=LE, 'MM'=BE
+      const u16 = (o: number) => dv.getUint16(o, le); const u32 = (o: number) => dv.getUint32(o, le);
+      if (u16(tiff + 2) === 0x002a) {
+        const ifd0 = tiff + u32(tiff + 4);
+        if (ifd0 + 2 <= b.length) {
+          const n = u16(ifd0);
+          for (let e = 0; e < n; e++) {
+            const ent = ifd0 + 2 + e * 12; if (ent + 12 > b.length) break;
+            if (u16(ent) === 0x0112) { orient = u16(ent + 8); break; } // тег Orientation, SHORT
+          }
+        }
+      }
+    }
+    if ((marker >= 0xc0 && marker <= 0xc3) || (marker >= 0xc5 && marker <= 0xc7) ||
+        (marker >= 0xc9 && marker <= 0xcb) || (marker >= 0xcd && marker <= 0xcf)) {
+      if (seg + 5 <= b.length) { h = dv.getUint16(seg + 1); w = dv.getUint16(seg + 3); }
+      break; // EXIF (если есть) идёт раньше SOF — уже прочитан
+    }
+    if (len < 2) break;
+    i = seg + (len - 2);
+  }
+  if (!w || !h) return null;
+  if (orient >= 5 && orient <= 8) { const t = w; w = h; h = t; }
+  return h > w ? "p" : "l";
+}
+
+// Тянем первые maxBytes байт кадра (Range + ограничение чтения стримом, чтобы не качать
+// весь файл, даже если CDN игнорит Range). Ответ кэшируется на edge (cf cacheEverything).
+async function fetchHead(url: string, referer: string, maxBytes: number): Promise<ArrayBuffer | null> {
+  try {
+    const r = await fetch(url, {
+      headers: { "User-Agent": SITE_UA, referer, Range: `bytes=0-${maxBytes - 1}` },
+      cf: { cacheTtl: 86400, cacheEverything: true },
+    } as RequestInit);
+    if (!r.ok && r.status !== 206) return null;
+    if (!r.body) { const ab = await r.arrayBuffer(); return ab.byteLength ? ab.slice(0, maxBytes) : null; }
+    const reader = (r.body as ReadableStream<Uint8Array>).getReader();
+    const chunks: Uint8Array[] = []; let total = 0;
+    while (total < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (value) { chunks.push(value); total += value.length; }
+    }
+    try { await reader.cancel(); } catch { /* ignore */ }
+    const out = new Uint8Array(Math.min(total, maxBytes)); let off = 0;
+    for (const c of chunks) { const take = Math.min(c.length, out.length - off); out.set(c.subarray(0, take), off); off += take; if (off >= out.length) break; }
+    return out.buffer;
+  } catch { return null; }
+}
+
+// Ориентация каждого кадра — серверно, по реальным байтам файла (не по DOM в браузере).
+async function orientFor(images: string[], referer: string): Promise<("p" | "l" | null)[]> {
+  return Promise.all(images.map(async (u) => {
+    const buf = await fetchHead(u, referer, 131072);
+    return buf ? jpegOrient(buf) : null;
+  }));
+}
+
 // Даты IST: сегодня и N предыдущих дней (YYYY-MM-DD), для отката к свежей галерее.
 function istDaysBack(n: number): string[] {
   const fmt = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" });
@@ -74,7 +148,7 @@ function istDaysBack(n: number): string[] {
 // Полная галерея даршана сайта за конкретный день. Берём ВСЕ кадры (regex по всем
 // static-путям .data, дедуп) в полном разрешении CDN. null — если за этот день
 // галереи ещё/уже нет.
-async function fetchSiteGalleryDay(src: Src, date: string): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
+async function fetchSiteGalleryDay(src: Src, date: string): Promise<{ date: string; name: string; pageUrl: string; images: string[]; orient: ("p" | "l" | null)[] } | null> {
   const u = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}.data`;
   const pageUrl = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${src.galleryType}/${src.gallerySlug}`;
   try {
@@ -89,7 +163,9 @@ async function fetchSiteGalleryDay(src: Src, date: string): Promise<{ date: stri
     while ((m = re.exec(t))) { if (!seen.has(m[0])) { seen.add(m[0]); paths.push(m[0]); } }
     if (!paths.length) return null;
     const name = (t.match(/"gallery_name","([^"]+)"/) || [])[1] || src.galleryName || "Darshan";
-    return { date, name, pageUrl, images: paths.map((p) => `${SITE_CDN}/${p}`) };
+    const images = paths.slice(0, 60).map((p) => `${SITE_CDN}/${p}`);
+    const orient = await orientFor(images, "https://iskconvrindavan.com/");
+    return { date, name, pageUrl, images, orient };
   } catch { return null; }
 }
 
@@ -97,7 +173,7 @@ async function fetchSiteGalleryDay(src: Src, date: string): Promise<{ date: stri
 // не быть (её публикуют в течение дня IST), поэтому при пустом «сегодня» откатываемся
 // к самому свежему доступному дню (вчера, позавчера…). Это и есть «весь даршан за
 // день» в полном разрешении — не редкий компрессированный пост Telegram.
-async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
+async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[]; orient: ("p" | "l" | null)[] } | null> {
   for (const date of istDaysBack(6)) {
     const gal = await fetchSiteGalleryDay(src, date);
     if (gal && gal.images.length) return gal;
@@ -118,7 +194,7 @@ const ddmmyyyyIST = () => {
   const g = (t: string) => (p.find((x) => x.type === t) || { value: "" }).value;
   return `${g("day")}/${g("month")}/${g("year")}`;
 };
-async function fetchMayapurGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[]; albumId: string } | null> {
+async function fetchMayapurGallery(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[]; orient: ("p" | "l" | null)[]; albumId: string } | null> {
   try {
     const ri = await fetch(`${MAYAPUR}/media/gallery/daily-darshan`, {
       headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/` },
@@ -179,7 +255,9 @@ async function fetchMayapurGallery(src: Src): Promise<{ date: string; name: stri
     const paths = order.map((h) => urlByHash.get(h) || `storage/albums/${albumId}/${h}_image.jpg`);
     if (!paths.length) return null;
     const date = chosen.date ? chosen.date.split("/").reverse().join("-") : istToday();
-    return { date, albumId, name: src.galleryName || "Daily Darshan", pageUrl: `${MAYAPUR}/media/album/${albumId}`, images: paths.map((x) => `${MAYAPUR}/${x}`) };
+    const images = paths.slice(0, 60).map((x) => `${MAYAPUR}/${x}`);
+    const orient = await orientFor(images, `${MAYAPUR}/`);
+    return { date, albumId, name: src.galleryName || "Daily Darshan", pageUrl: `${MAYAPUR}/media/album/${albumId}`, images, orient };
   } catch {
     return null;
   }
@@ -241,6 +319,7 @@ interface DarshanItem {
   templeName: string;
   deities: string | null;
   images: string[];
+  orient?: ("p" | "l" | null)[];   // ориентация показа каждого кадра (серверно, по EXIF), выровнена с images
   caption: string | null;
   srcUrl: string;
   channelUrl: string | null;
@@ -264,7 +343,7 @@ function liveItem(src: Src, post: RawPost): DarshanItem {
 }
 
 // Карточка из полной галереи сайта (Вриндаван/Маяпур) — все фото даршана.
-function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; images: string[]; albumId?: string }): DarshanItem {
+function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; images: string[]; orient?: ("p" | "l" | null)[]; albumId?: string }): DarshanItem {
   return {
     source: "live",
     date: gal.date,
@@ -272,6 +351,7 @@ function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; 
     templeName: src.name,
     deities: src.deities,
     images: gal.images.slice(0, 60),
+    orient: gal.orient ? gal.orient.slice(0, 60) : undefined,
     caption: null,
     srcUrl: gal.pageUrl,
     channelUrl: null,
