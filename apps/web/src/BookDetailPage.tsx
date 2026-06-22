@@ -123,7 +123,7 @@ function KeyVal({ k, v, last }: { k: string; v: string; last?: boolean }) {
 type BookTabId = "contents" | "overview" | "author" | "reviews";
 /** Книги с собственными курируемыми рецензиями. У прочих вкладка «Рецензии» скрыта
  * (не показываем чужие отзывы; добавится, когда появятся свои). */
-const REVIEWED_WORKS = new Set(["bg", "cc", "sb", "brs"]);
+const REVIEWED_WORKS = new Set(["bg", "cc", "sb", "brs", "seventh-goswami"]);
 const BOOK_TABS: { id: BookTabId; label: string }[] = [
   { id: "contents", label: "Содержание" },
   { id: "overview", label: "О книге" },
@@ -926,6 +926,42 @@ function NodOverview({ book }: { book: BookData }) {
           <KeyVal k="Первое издание" v="1970" />
           <KeyVal k="Язык этого издания" v="Русский" last />
         </div>
+      </section>
+    </div>
+  );
+}
+
+/* ───────── Рецензии · Седьмой Госвами ───────── */
+function SeventhGoswamiReviews() {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: INK }}>
+          «Седьмой Госвами» — первая полная биография Шрилы Саччидананды Бхактивиноды Тхакура на английском языке; новое, дополненное издание выпущено Бхактиведанта Бук Траст.
+        </p>
+      </section>
+
+      <section>
+        <SectionTitle>Отзывы</SectionTitle>
+        <div>
+          <Review
+            text="Рупа-виласа показывает Бхактивиноду Тхакура как вайшнавского учёного и преданного высочайшего уровня — и при этом книга читается на одном дыхании. Это издание стало выдающимся и непреходящим вкладом в вайшнавизм."
+            name="Сатсварупа дас Госвами"
+            role="Ученик и биограф Шрилы Прабхупады" />
+          <Review
+            text="Я не видел шестерых Госвами Вриндавана, но вас я считаю Седьмым Госвами."
+            name="Шишир Кумар Гхош"
+            role="Основатель и редактор газеты «Амрита Базар Патрика», XIX век"
+            last />
+        </div>
+      </section>
+
+      <section>
+        <SectionTitle>Почему это важно</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.58, color: INK2 }}>
+          К XIX веку чистое учение Шри Чайтаньи в Индии было почти забыто и считалось религией нищих. Бхактивинода Тхакур практически в одиночку вернул поклонение Кришне в центр духовной жизни образованных людей и посеял семена его распространения по всему миру. Эта биография — о масштабе его служения и о корнях современного движения сознания Кришны.
+        </p>
       </section>
     </div>
   );
@@ -2851,7 +2887,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
             : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} flashId={contentsFlashId} onConsumeFlash={() => setContentsFlashId(null)} />)}
           {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : <GenericOverview book={book} />)}
           {tab === "author" && (book.work === "spl" ? <SplAuthor /> : <Author />)}
-          {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : <Reviews />)}
+          {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : book.work === "seventh-goswami" ? <SeventhGoswamiReviews /> : <Reviews />)}
         </div>
       </div>
 
