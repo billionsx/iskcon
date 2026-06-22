@@ -6,14 +6,14 @@ on:
         description: run_key
         required: true
       slug:
-        description: optional single slug (noida/nashik/gev)
+        description: slug (noida/nashik/gev) или "verify"
         required: false
 
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: run ingest
+      - name: run
         env:
           RUN_KEY: ${{ inputs.key }}
           SLUG: ${{ inputs.slug }}
@@ -23,16 +23,28 @@ jobs:
           key = os.environ["RUN_KEY"]; slug = os.environ.get("SLUG","").strip()
           def note(m): print("::notice::" + str(m).replace("\n"," ")[:380], flush=True)
           def err(m):  print("::error::"  + str(m).replace("\n"," ")[:380], flush=True)
-          url = f"https://gaurangers.com/api/ig/run?key={key}" + (f"&slug={slug}" if slug else "")
-          try:
-              r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=180)
-              body = r.read().decode("utf-8","ignore")
+          if slug == "verify":
               try:
-                  for it in json.loads(body): note(f"{it.get('slug')}: ok={it.get('ok')} n={it.get('n')} msg={it.get('msg')}")
-              except Exception:
-                  note(f"HTTP{r.status} raw={body[:200]}")
-          except urllib.error.HTTPError as e:
-              err(f"HTTP {e.code} {e.read().decode('utf-8','ignore')[:160]}")
-          except Exception as e:
-              err(f"{type(e).__name__} {str(e)[:160]}")
+                  r = urllib.request.urlopen(urllib.request.Request("https://gaurangers.com/api/darshan", headers={"User-Agent":"probe"}), timeout=60)
+                  d = json.loads(r.read().decode("utf-8","ignore")); today = d.get("today", [])
+                  slugs = [it.get("templeSlug") for it in today]
+                  note(f"rings={len(today)} slugs={slugs}")
+                  igrings = [it for it in today if it.get("templeSlug") in ("noida","nashik","gev")]
+                  note(f"IG rings: {[(it.get('templeSlug'), it.get('deities'), len(it.get('images',[]))) for it in igrings]}")
+                  img = next((it['images'][0] for it in today if it.get('templeSlug')=='noida' and it.get('images')), None)
+                  if img:
+                      ri = urllib.request.urlopen("https://gaurangers.com"+img, timeout=60); b = ri.read()
+                      note(f"igimg {img} -> HTTP{ri.status} ct={ri.headers.get('content-type')} bytes={len(b)}")
+                  else: err("no noida image url")
+              except Exception as e:
+                  err(f"verify {type(e).__name__} {str(e)[:160]}")
+          else:
+              url = f"https://gaurangers.com/api/ig/run?key={key}" + (f"&slug={slug}" if slug else "")
+              try:
+                  r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=180)
+                  for it in json.loads(r.read().decode("utf-8","ignore")): note(f"{it.get('slug')}: ok={it.get('ok')} n={it.get('n')} msg={it.get('msg')}")
+              except urllib.error.HTTPError as e:
+                  err(f"HTTP {e.code} {e.read().decode('utf-8','ignore')[:160]}")
+              except Exception as e:
+                  err(f"{type(e).__name__} {str(e)[:160]}")
           PY
