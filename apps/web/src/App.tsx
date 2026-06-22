@@ -48,6 +48,7 @@ import SadhanaScreen from "./SadhanaScreen";
 import VowScreen from "./VowScreen";
 import DarshanScreen from "./DarshanScreen";
 import DownloaderScreen from "./DownloaderScreen";
+import StoriesToolScreen from "./StoriesToolScreen";
 import DailyVerseScreen from "./DailyVerseScreen";
 import MyProgressScreen from "./MyProgressScreen";
 import CenterScreen from "./centers/CenterScreen";
@@ -593,6 +594,7 @@ export default function App() {
   const [openContent, setOpenContent] = useState<string | null>(null);
   const [openAdmin, setOpenAdmin] = useState(false);
   const [openDownloader, setOpenDownloader] = useState(false);
+  const [openStoriesTool, setOpenStoriesTool] = useState(false);
   const [openEntity, setOpenEntity] = useState<string | null>(null);
   const [openCollection, setOpenCollection] = useState<string | null>(null);
   const [donate, setDonate] = useState(false);
@@ -638,7 +640,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "entity", "person", "favorites", "notes", "note", "cart", "practice", "prasadam", "center", "centers", "my"];
+  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "stories-tool", "entity", "person", "favorites", "notes", "note", "cart", "practice", "prasadam", "center", "centers", "my"];
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
@@ -663,6 +665,7 @@ export default function App() {
     if (prasadamSection) return prasadamSection === "offering" ? "/prasadam/offering" : "/prasadam";
     if (openAdmin) return "/admin";
     if (openDownloader) return "/downloader";
+    if (openStoriesTool) return "/stories-tool";
     if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     if (openBhajan) return openBhajan;     // slug сам по себе путь
     if (openKirtanArtist) return "/kirtan/" + openKirtanArtist;
@@ -694,7 +697,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("krishna"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -760,6 +763,7 @@ export default function App() {
     }
     if (seg0 === "admin") { setOpenAdmin(true); return; }
     if (seg0 === "downloader") { setOpenDownloader(true); return; }
+    if (seg0 === "stories-tool") { setOpenStoriesTool(true); return; }
     if (seg0 === "center") {
       const parts = clean.split("/");        // ["", "center", <slug>, "edit"?]
       const cslug = parts[2] ?? "";
@@ -896,7 +900,7 @@ export default function App() {
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader]);
+  }, [tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader, openStoriesTool]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -949,7 +953,7 @@ export default function App() {
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader;
+  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
   // Главное нижнее меню остаётся поверх страниц-оверлеев со скроллом (книга, ПКЛ,
   // контент, каталоги) — чтобы из любой главы/карточки можно было перейти в раздел.
   // Читалки (fixed, z70) и модалки перекрывают пилюлю (z40) сами → конфликта нет.
@@ -960,7 +964,11 @@ export default function App() {
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div className={overlayTabBar ? "has-overlay-tabbar" : undefined} style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         <CardActionsProvider onDonate={openDonate}>
-        {openDownloader ? (
+        {openStoriesTool ? (
+          <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
+            <StoriesToolScreen onBack={goBack} />
+          </main>
+        ) : openDownloader ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <DownloaderScreen onBack={goBack} />
           </main>

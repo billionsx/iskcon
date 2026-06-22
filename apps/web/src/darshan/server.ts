@@ -598,6 +598,46 @@ async function igItems(env: DarshanEnv): Promise<DarshanItem[]> {
   return out;
 }
 
+// Круг сторис «ISKCON ONE LOVE» — из манифеста, который пишет забор сторис
+// (tools/tg-stories → archive.org). Каждая сторис = кадр со своим временем/подписью.
+// Показываем живые: активные (не истёкшие) + закреплённые. Медиа — прямые URL IA.
+const STORIES_BASE = "https://archive.org/download/iskcone-stories/";
+interface StoryRec { id: number; type: string; file: string; caption: string | null; date: string | null; expire: string | null; pinned: boolean }
+async function iskconeStoriesCircle(): Promise<DarshanItem | null> {
+  try {
+    const r = await fetch(`${STORIES_BASE}stories.json`, {
+      headers: { "User-Agent": SITE_UA, accept: "application/json,*/*" },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    } as RequestInit);
+    if (!r.ok) return null;
+    const mf = (await r.json()) as { stories?: StoryRec[] };
+    const all = Array.isArray(mf.stories) ? mf.stories : [];
+    const now = Date.now();
+    const live = all.filter((s) => s && s.file && (s.pinned || (s.expire ? Date.parse(s.expire) > now : true)));
+    if (!live.length) return null;
+    live.sort((a, b) => (Date.parse(b.date || "") || 0) - (Date.parse(a.date || "") || 0)); // свежие первыми
+    const frames = live.map((s) => ({ image: STORIES_BASE + s.file, caption: s.caption ?? null, postedAt: s.date ?? null }));
+    const latest = live[0];
+    return {
+      source: "live",
+      date: ymdIST(latest.date || ""),
+      templeSlug: "iskcone",
+      templeName: "ISKCON ONE LOVE",
+      deities: null,
+      place: null,
+      images: frames.map((f) => f.image),
+      caption: null,
+      frames,
+      postedAt: latest.date || undefined,
+      srcUrl: "https://t.me/iskcone",
+      channelUrl: "https://t.me/iskcone",
+      postId: String(latest.id),
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function darshanApi(request: Request, env: DarshanEnv, url: URL): Promise<Response | null> {
   const p = url.pathname;
   if (p !== "/api/darshan" && p !== "/api/darshan/archive") return null;
@@ -657,7 +697,9 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
       return post ? liveItem(s, post) : null;
     }),
   );
+  const iskcone = await iskconeStoriesCircle();
   const today = [...live.filter((x): x is DarshanItem => x !== null), ...(await igItems(env))];
+  const all = iskcone ? [iskcone, ...today] : today;
 
-  return jr({ today, at: new Date().toISOString() }, 200, today.length ? "public, max-age=600" : "no-store");
+  return jr({ today: all, at: new Date().toISOString() }, 200, all.length ? "public, max-age=600" : "no-store");
 }
