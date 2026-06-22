@@ -376,12 +376,16 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
   const favMeta = { t: head.slice(0, 140), s: fmtDate(p.date), h: `/post/${p.id}` };
   const long = p.text.length > 220;
   const hasMedia = p.photos.length > 0 || p.videos.length > 0;
+  // Даршан-посты синтезируются из D1 и в Telegram-канале их нет — share/QR/report ведут
+  // на пост в приложении, пункт «Открыть в Telegram» скрыт.
+  const isDar = p.id.startsWith("d");
+  const shareUrl = isDar ? `${typeof location !== "undefined" ? location.origin : "https://gaurangers.com"}/post/${p.id}` : postUrl(p.id);
 
   const onPick = (id: string) => {
     if (id === "telegram") { window.open(postUrl(p.id), "_blank", "noopener"); return; }
     if (id === "share") {
-      if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: head, url: postUrl(p.id) }).catch(() => {});
-      else { navigator.clipboard?.writeText(postUrl(p.id)).catch(() => {}); flash("Ссылка скопирована"); }
+      if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: head, url: shareUrl }).catch(() => {});
+      else { navigator.clipboard?.writeText(shareUrl).catch(() => {}); flash("Ссылка скопирована"); }
     } else if (id === "pdf") { void downloadPostPdf(p, flash); }
     else if (id === "qr") { setQr(true); }
     else if (id === "donate") { onDonate?.(); }
@@ -432,9 +436,9 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
 
       {/* лайтбокс + шиты */}
       {view !== null && p.photos.length > 0 && <PhotoLightbox photos={(p.photosFull && p.photosFull.length === p.photos.length) ? p.photosFull : p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" />
-      {qr && <QrSheet url={postUrl(p.id)} data={{ kind: "card", title: head, subtitle: fmtDate(p.date) }} onClose={() => setQr(false)} />}
-      <ReportSheet open={report} onClose={() => setReport(false)} context={`Лента · пост ${postUrl(p.id)}`} />
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" noTelegram={isDar} />
+      {qr && <QrSheet url={shareUrl} data={{ kind: "card", title: head, subtitle: fmtDate(p.date) }} onClose={() => setQr(false)} />}
+      <ReportSheet open={report} onClose={() => setReport(false)} context={`Лента · пост ${shareUrl}`} />
     </article>
   );
 }
@@ -557,9 +561,8 @@ export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: ()
     let live = true;
     (async () => {
       try {
-        const nid = Number(id);
         const find = (j: { posts?: TgPost[] }) => (j.posts || []).find((x) => String(x.id) === String(id)) || null;
-        let j = await (await fetch(api("/tg/iskcone") + (nid ? "?before=" + (nid + 1) : ""))).json();
+        let j = await (await fetch(api("/tg/iskcone") + "?post=" + encodeURIComponent(id))).json();
         let found = find(j);
         if (!found) { j = await (await fetch(api("/tg/iskcone"))).json(); found = find(j); }
         if (!live) return;

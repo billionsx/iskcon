@@ -4,7 +4,7 @@
 // (та же механика и парсер, что и боевая Лента @iskcone в apps/web/workerHome.ts),
 // выбирает свежий пост-даршан, собирает подпись в фирменном стиле канала и:
 //   • DRY_RUN=1 (по умолчанию) — НИЧЕГО не постит: складывает превью в data/darshan/_dryrun.json
-//   • DRY_RUN=0                — публикует фото в @iskcone (sendPhoto) и пишет строку в D1
+//   • DRY_RUN=0                — пишет строку в D1 (в канал @iskcone больше не постим; даршаны только в приложении)
 //
 // Никаких зависимостей: Node 20 (глобальные fetch / FormData / Blob).
 //
@@ -462,17 +462,14 @@ async function run() {
         if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
         if (src.site === "mayapur" && mayapurPostedForDate(gal.date)) { preview.push({ ...row, posted: `skip (даршан Маяпура за ${gal.date} уже опубликован)` }); continue; }
         if (dry) { preview.push(row); continue; }
-        const sent = await sendDarshanAlbums(imgsSel, caption, 10, 1);
-        const anchorId = sent.anchorId || 0;
-        const msgIds = sent.ids;
         const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
         const capSql = caption.replace(/'/g, "''");
         try {
           d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-              VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',${anchorId})
-              ON CONFLICT(src_channel,src_post_id) DO UPDATE SET tg_message_id=excluded.tg_message_id, images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-        } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
-        preview.push({ ...row, posted: `ok msgs=${msgIds.join(",")}` });
+              VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',NULL)
+              ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
+        } catch (e) { console.error("D1 insert failed:", String(e)); }
+        preview.push({ ...row, posted: "ok (в приложение)" });
         continue;
       }
       // Галерея пуста/недоступна.
@@ -508,16 +505,15 @@ async function run() {
     if (src.slug === "mayapur" && mayapurPostedForDate(row.date)) { preview.push({ ...row, posted: `skip (даршан Маяпура за ${row.date} уже опубликован)` }); continue; }
     if (dry) { preview.push(row); continue; }
 
-    // LIVE
-    const msg = await sendDarshanAlbum(post.photos, caption);
+    // В приложение: пишем строку в D1 (в канал @iskcone больше не постим).
     const imagesJson = JSON.stringify(post.photos).replace(/'/g, "''");
     const capSql = caption.replace(/'/g, "''");
     try {
       d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-          VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',${msg.message_id})
-          ON CONFLICT(src_channel,src_post_id) DO UPDATE SET tg_message_id=excluded.tg_message_id, images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-    } catch (e) { console.error("D1 insert failed (post still sent):", String(e)); }
-    preview.push({ ...row, posted: `ok msg_id=${msg.message_id}` });
+          VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',NULL)
+          ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
+    } catch (e) { console.error("D1 insert failed:", String(e)); }
+    preview.push({ ...row, posted: "ok (в приложение)" });
   }
 
   let dbRows = null;
