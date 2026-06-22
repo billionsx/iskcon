@@ -313,18 +313,17 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — заполняет поля по краям, без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* заполнение: ландшафт — на всю ширину (верх/низ может слегка уйти за кадр на широком
-          экране — это цена «на всю ширину»), портрет — по высоте целиком. Поля — размытая подложка. */}
-      <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
+      {/* Бокс img = строго экран (position:absolute; inset:0 → определённая высота, без грид-багов
+          с процентами). Фит через object-fit: портрет — contain (целиком по высоте, поля = размытая
+          подложка); ландшафт — cover (на весь экран, верх/низ слегка подрезаются). */}
+      <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
           onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) { setAr(n.naturalWidth / n.naturalHeight); setDbg(`${n.naturalWidth}x${n.naturalHeight}`); } }}
           style={{
-            display: "block", imageOrientation: "from-image",
-            ...(orient === "p"
-              ? { width: "auto", height: "100%" }                                       // портрет → по высоте целиком
-              : orient === "l"
-                ? { width: "100%", height: "auto" }                                     // ландшафт → на всю ширину
-                : { width: "100%", height: "100%", objectFit: "contain" }),             // пока меряем → целиком (без обрезки)
+            position: "absolute", inset: 0, width: "100%", height: "100%",
+            imageOrientation: "from-image",
+            objectFit: orient === "l" ? "cover" : "contain",   // ландшафт → на весь экран; портрет/замер → целиком
+            objectPosition: "center",
           }} />
       </div>
       {/* ВРЕМЕННАЯ ОТЛАДКА: подтверждает версию сборки + показывает реальные размеры кадра и вычисленную ориентацию */}
