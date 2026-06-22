@@ -120,7 +120,10 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
  *  Кадр показываем ЦЕЛИКОМ (contain) поверх размытой подложки — без обрезки и
  *  cover-увеличения. Счётчик «1/9» — слева сверху (справа сверху живут действия). */
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
-  const photos = p.photos;
+  // Прогрессивная загрузка как в Instagram/Telegram: показываем полноразмер (display),
+  // а под ним — лёгкое превью (preview) мгновенным фоном, чтобы не было серого ожидания.
+  const display = (p.photosFull && p.photosFull.length) ? p.photosFull : p.photos;
+  const preview = p.photos;
   const [idx, setIdx] = useState(0);
   const [ar, setAr] = useState<number | null>(null);  // аспект кадра берём из ПЕРВОГО фото (как в Instagram)
   const scRef = useRef<HTMLDivElement | null>(null);
@@ -139,37 +142,36 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
     const w = el.clientWidth; if (w) setIdx(Math.round(el.scrollLeft / w));
   };
 
-  if (photos.length === 1) {
+  if (display.length === 1) {
     return (
-      <div style={{ background: "var(--color-bg)" }} onPointerDown={onDown} onClick={(e) => tryOpen(0, e)}>
-        <img src={photos[0]} alt="" loading="lazy"
+      <div onPointerDown={onDown} onClick={(e) => tryOpen(0, e)}
+        style={{ background: "var(--color-bg)", backgroundImage: preview[0] && preview[0] !== display[0] ? `url("${preview[0]}")` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <img src={display[0]} alt="" loading="lazy"
           style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
       </div>
     );
   }
 
-  if (photos.length > 1) {
+  if (display.length > 1) {
     // Как в Instagram: единый кадр на всю карусель, его аспект задаёт ПЕРВОЕ фото
-    // (кламп 4:5 … 1.91:1) — горизонтальная пачка даёт горизонтальную галерею,
-    // вертикальная — вертикальную. Все кадры заполняют рамку (cover), без полей.
-    // <img> — position:absolute (вне потока), поэтому интринзик-высота фото НЕ
-    // перебивает aspect-ratio: высота кадра жёстко фиксирована, при скролле не «плавает».
+    // (кламп 4:5 … 1.91:1). Высота фиксирована через padding-bottom (при скролле не «плавает»).
+    // Каждый кадр: лёгкое превью мгновенным фоном + полноразмер <img> поверх (прогрессивно).
     const frame = ar ? Math.min(1.91, Math.max(0.8, ar)) : 0.8;
     return (
       <div style={{ position: "relative", width: "100%", paddingBottom: (100 / frame).toFixed(3) + "%", background: "var(--color-glass-regular)", overflow: "hidden" }}>
         <div ref={scRef} onScroll={onScroll} onPointerDown={onDown} className="iol-feed-carousel"
           style={{ position: "absolute", inset: 0, display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
-          {photos.map((src, i) => (
-            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%" }}>
+          {display.map((src, i) => (
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", backgroundImage: preview[i] ? `url("${preview[i]}")` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
               <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
                 onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
-        <span style={{ position: "absolute", top: 16, left: 16, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{photos.length}</span>
+        <span style={{ position: "absolute", top: 16, left: 16, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{display.length}</span>
         <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 14, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none", zIndex: 3 }}>
-          {photos.map((_, i) => (
+          {display.map((_, i) => (
             <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? "#fff" : "rgba(255,255,255,0.5)", boxShadow: "0 0 2px rgba(0,0,0,0.4)", transition: "background .2s" }} />
           ))}
         </div>
@@ -187,9 +189,9 @@ function VideoBox({ v, id }: { v: TgVideo; id: string }) {
   if (playing && v.src) {
     return (
       <div style={{ background: "#000" }}>
-        <video src={v.src} poster={v.thumb || undefined} controls autoPlay playsInline
+        <video src={v.src} poster={v.thumb || undefined} controls autoPlay playsInline preload="metadata"
           onError={() => { setPlaying(false); window.open(postUrl(id), "_blank", "noopener"); }}
-          style={{ width: "100%", display: "block", maxHeight: 540, ...(v.round ? { aspectRatio: "1 / 1", borderRadius: "50%", objectFit: "cover", maxWidth: 280, margin: "14px auto" } : {}) }} />
+          style={{ width: "100%", display: "block", maxHeight: "80vh", background: "#000", ...(v.round ? { aspectRatio: "1 / 1", borderRadius: "50%", objectFit: "cover", maxWidth: 320, margin: "14px auto" } : {}) }} />
       </div>
     );
   }
@@ -435,7 +437,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
       </div>
 
       {/* лайтбокс + шиты */}
-      {view !== null && p.photos.length > 0 && <PhotoLightbox photos={(p.photosFull && p.photosFull.length === p.photos.length) ? p.photosFull : p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
+      {view !== null && (p.photosFull?.length || p.photos.length) > 0 && <PhotoLightbox photos={p.photosFull ?? p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" noTelegram={isDar} />
       {qr && <QrSheet url={shareUrl} data={{ kind: "card", title: head, subtitle: fmtDate(p.date) }} onClose={() => setQr(false)} />}
       <ReportSheet open={report} onClose={() => setReport(false)} context={`Лента · пост ${shareUrl}`} />
