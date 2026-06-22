@@ -213,15 +213,18 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
-  // EXIF-устойчивый замер ориентации. naturalWidth/Height отдают размеры ДО EXIF-поворота,
-  // поэтому вертикальный кадр со снятым телефоном (горизонтальные пиксели + флаг поворота)
-  // ошибочно считался горизонтальным и резался. Зонд рендерится с auto-размерами и
-  // image-orientation:from-image — его offsetWidth/Height уже учитывают реальный поворот.
-  // Стабильный ref-колбэк срабатывает один раз на монтирование кадра (key), ловит и кэш.
-  const probeRef = useCallback((node: HTMLImageElement | null) => {
-    if (!node) return;
-    if (node.complete && node.offsetWidth && node.offsetHeight) setAr(node.offsetWidth / node.offsetHeight);
-    else setAr(null); // ещё не загружен → до замера кадр целиком (без обрезки)
+  // Ориентацию меряем по РЕАЛЬНО отрисованному кадру: getBoundingClientRect видимого <img>
+  // в «предзамерном» состоянии (auto-размер) уже учитывает EXIF-поворот, в отличие от
+  // naturalWidth/offsetWidth (они отдают сырые пиксели — путали EXIF-кадры). Сброс ar при
+  // смене кадра делаем синхронно в рендере (паттерн «состояние от пропса»), чтобы новый
+  // кадр гарантированно смонтировался в предзамерном состоянии, а не со старым стилем.
+  const frameKey = `${ti}:${ii}`;
+  const lastFrameRef = useRef(frameKey);
+  if (lastFrameRef.current !== frameKey) { lastFrameRef.current = frameKey; setAr(null); }
+  const measureRef = useCallback((node: HTMLImageElement | null) => {
+    if (!node || !node.complete) return;           // свежий кадр домерит onLoad
+    const r = node.getBoundingClientRect();
+    if (r.width && r.height) setAr(r.width / r.height);
   }, []);
 
   /* блокируем скролл body на время просмотра */
@@ -314,20 +317,17 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* кадр: горизонтальный — на всю ширину экрана, вертикальный — по высоте; до замера —
           целиком без обрезки. Остаток добивает размытая подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
+          onLoad={(e) => { const n = e.currentTarget; if (n.style.maxWidth) { const r = n.getBoundingClientRect(); if (r.width && r.height) setAr(r.width / r.height); } }}
           style={{
             display: "block", imageOrientation: "from-image",
             ...(ar == null
-              ? { maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto" }   // до замера — кадр целиком
+              ? { maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto" }   // до замера — кадр целиком (EXIF-ориентация отрисована)
               : ar >= 1
                 ? { width: "100%", height: "auto" }                                       // горизонтальный → на всю ширину
                 : { width: "auto", height: "100%" }),                                     // вертикальный → по высоте
           }} />
       </div>
-      {/* скрытый зонд: меряет ориентацию кадра с учётом EXIF (offsetWidth/Height при auto-размере) */}
-      <img key={`probe:${ti}:${ii}`} src={imgs[ii]} alt="" aria-hidden ref={probeRef}
-        onLoad={(e) => { const t = e.currentTarget; if (t.offsetWidth && t.offsetHeight) setAr(t.offsetWidth / t.offsetHeight); }}
-        style={{ position: "fixed", left: "-99999px", top: 0, width: "auto", height: "auto", visibility: "hidden", pointerEvents: "none", imageOrientation: "from-image" }} />
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
       {/* скримы для читабельности хрома */}
