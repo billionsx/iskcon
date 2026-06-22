@@ -217,11 +217,12 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   // Серверный флаг намеренно НЕ используем — кэш мог отдать устаревшее/неверное значение.
   // Сброс при смене кадра — синхронно в рендере, чтобы новый кадр не унаследовал старый замер.
   const [ar, setAr] = useState<number | null>(null);
+  const [dbg, setDbg] = useState("—");
   const frameKey = `${ti}:${ii}`;
   const lastFrameRef = useRef(frameKey);
   if (lastFrameRef.current !== frameKey) { lastFrameRef.current = frameKey; setAr(null); }
   const measureRef = useCallback((node: HTMLImageElement | null) => {
-    if (node && node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
+    if (node && node.complete && node.naturalWidth && node.naturalHeight) { setAr(node.naturalWidth / node.naturalHeight); setDbg(`${node.naturalWidth}x${node.naturalHeight}`); }
   }, []);
   const orient: "p" | "l" | null = ar != null ? (ar < 1 ? "p" : "l") : null;
 
@@ -316,7 +317,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           экране — это цена «на всю ширину»), портрет — по высоте целиком. Поля — размытая подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
-          onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); }}
+          onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) { setAr(n.naturalWidth / n.naturalHeight); setDbg(`${n.naturalWidth}x${n.naturalHeight}`); } }}
           style={{
             display: "block", imageOrientation: "from-image",
             ...(orient === "p"
@@ -325,6 +326,10 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
                 ? { width: "100%", height: "auto" }                                     // ландшафт → на всю ширину
                 : { width: "100%", height: "100%", objectFit: "contain" }),             // пока меряем → целиком (без обрезки)
           }} />
+      </div>
+      {/* ВРЕМЕННАЯ ОТЛАДКА: подтверждает версию сборки + показывает реальные размеры кадра и вычисленную ориентацию */}
+      <div style={{ position: "absolute", top: "max(56px, calc(env(safe-area-inset-top,0px) + 46px))", left: 10, zIndex: 9, color: "#39ff14", font: "600 13px ui-monospace, Menlo, monospace", background: "rgba(0,0,0,0.72)", padding: "3px 8px", borderRadius: 6, pointerEvents: "none" }}>
+        DBG1 · {dbg} · {orient ?? "—"}
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
