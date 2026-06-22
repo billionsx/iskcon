@@ -122,6 +122,7 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   const photos = p.photos;
   const [idx, setIdx] = useState(0);
+  const [ar, setAr] = useState<number | null>(null);  // аспект первого фото задаёт высоту карусели (без полей)
   const scRef = useRef<HTMLDivElement | null>(null);
   const onScroll = () => {
     const el = scRef.current; if (!el) return;
@@ -141,12 +142,12 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
     return (
       <div style={{ position: "relative" }}>
         <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
-          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
+          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: ar ? String(ar) : "4 / 5", background: "var(--color-glass-regular)" }}>
           {photos.map((src, i) => (
-            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", position: "relative", aspectRatio: "4 / 5", overflow: "hidden", background: "#000" }}>
-              <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${src}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(26px) brightness(0.6)", transform: "scale(1.15)" }} />
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", height: "100%" }}>
               <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", cursor: "zoom-in", imageOrientation: "from-image" }} />
+                onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
