@@ -122,6 +122,7 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   const photos = p.photos;
   const [idx, setIdx] = useState(0);
+  const [ar, setAr] = useState<number | null>(null);  // аспект кадра берём из ПЕРВОГО фото (как в Instagram)
   const scRef = useRef<HTMLDivElement | null>(null);
 
   const onScroll = () => {
@@ -139,18 +140,19 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   }
 
   if (photos.length > 1) {
-    // Стандарт Apple/IG: единый фикс-кадр 4:5 на всю карусель (без джанк-ресайза при
-    // свайпе), каждое фото — ЦЕЛИКОМ (contain) поверх размытой подложки того же кадра,
-    // поэтому ничего не обрезается, а поля заполнены элегантно. Свайп — постраничный.
+    // Как в Instagram: единый кадр на всю карусель, его аспект задаёт ПЕРВОЕ фото
+    // (кламп 4:5 … 1.91:1) — горизонтальная пачка даёт горизонтальную галерею,
+    // вертикальная — вертикальную. Все кадры заполняют рамку (cover), без полей.
+    const frame = ar ? Math.min(1.91, Math.max(0.8, ar)) : 0.8;
     return (
       <div style={{ position: "relative" }}>
         <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
-          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", scrollSnapStop: "always", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: "4 / 5", background: "#0c0c0d" }}>
+          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: String(frame), background: "var(--color-glass-regular)" }}>
           {photos.map((src, i) => (
-            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", overflow: "hidden" }}>
-              <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${src}")`, backgroundSize: "cover", backgroundPosition: "center", transform: "scale(1.2)", filter: "blur(30px) saturate(1.2) brightness(0.82)" }} />
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", height: "100%" }}>
               <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
-                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
+                onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
+                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
