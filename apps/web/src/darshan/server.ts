@@ -449,6 +449,45 @@ async function latestDarshan(channel: string): Promise<RawPost | null> {
   }
 }
 
+// Круг @iskcone — лента нашего канала: последние посты с фото, каждый = отдельный кадр
+// со своим временем и подписью. Источник тот же публичный t.me/s, что и у храмов.
+async function iskconeCircle(): Promise<DarshanItem | null> {
+  try {
+    const r = await fetch(`https://t.me/s/iskcone`, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" },
+      cf: { cacheTtl: 600, cacheEverything: true },
+    } as RequestInit);
+    if (!r.ok) return null;
+    const posts = parsePosts(await r.text());          // свежие первыми
+    const withPhoto = posts.filter((p) => p.photos.length);
+    const recent = withPhoto.slice(0, 12);             // последние посты канала = кадры, свежие первыми
+    if (!recent.length) return null;
+    const frames = recent.map((p) => ({
+      image: p.photos[0],
+      caption: p.text ? p.text.slice(0, 600) : null,
+      postedAt: p.date || null,
+    }));
+    const latest = recent[0];
+    return {
+      source: "live",
+      date: ymdIST(latest.date),
+      templeSlug: "iskcone",
+      templeName: "ISKCON ONE LOVE",
+      deities: null,
+      place: null,
+      images: frames.map((f) => f.image),
+      caption: null,
+      frames,
+      postedAt: latest.date || undefined,
+      srcUrl: `https://t.me/iskcone/${latest.id}`,
+      channelUrl: `https://t.me/iskcone/${latest.id}`,
+      postId: latest.id,
+    };
+  } catch {
+    return null;
+  }
+}
+
 // Локальный день поста по IST (граница суток храмового даршана — индийская).
 function ymdIST(iso: string): string {
   const d = iso ? new Date(iso) : new Date();
@@ -467,6 +506,8 @@ interface DarshanItem {
   images: string[];
   orient?: ("p" | "l" | null)[];   // ориентация показа каждого кадра (серверно, по EXIF), выровнена с images
   caption: string | null;
+  postedAt?: string;               // ISO-время поста-источника (для показа времени и сортировки кругов)
+  frames?: { image: string; caption: string | null; postedAt: string | null }[]; // покадровая лента (канал @iskcone): каждый кадр = отдельный пост со своим временем/подписью
   srcUrl: string;
   channelUrl: string | null;
   postId: string;
@@ -485,6 +526,7 @@ function liveItem(src: Src, post: RawPost): DarshanItem {
     place: src.place ?? null,
     images: post.photos.slice(0, 30),
     caption: cap,
+    postedAt: post.date || undefined,
     srcUrl: `https://t.me/${src.channel}/${post.id}`,
     channelUrl: null,
     postId: post.id,
@@ -616,7 +658,9 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
       return post ? liveItem(s, post) : null;
     }),
   );
+  const iskcone = await iskconeCircle();
   const today = live.filter((x): x is DarshanItem => x !== null);
+  const all = iskcone ? [iskcone, ...today] : today;
 
-  return jr({ today, at: new Date().toISOString() }, 200, today.length ? "public, max-age=600" : "no-store");
+  return jr({ today: all, at: new Date().toISOString() }, 200, all.length ? "public, max-age=600" : "no-store");
 }

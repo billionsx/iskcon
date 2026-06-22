@@ -16,7 +16,7 @@
  * вход не требуется (даршан открыт каждому). Изображения — прямые URL
  * Telegram-CDN, как в Ленте и на экране «Даршан дня».
  */
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { darshanClient, type DarshanItem } from "./darshan/api";
 
 /* ── токены ── */
@@ -34,6 +34,7 @@ const RING_GRAD = "conic-gradient(from 135deg, #F4C430, #FF7A00, #E0451F, #D2AA1
 
 /* ── короткое имя храма для подписи кольца ── */
 function shortTemple(slug: string, name: string): string {
+  if (slug === "iskcone") return "ISKCON";
   if (slug === "mayapur") return "Маяпур";
   if (slug === "vrindavan") return "Вриндаван";
   return (name.split("·")[0] || name).replace(/^ИСККОН\s+/, "").trim() || slug;
@@ -51,6 +52,14 @@ function humanDate(ymd: string): string {
   if (diff === 0) return `Сегодня · ${base}`;
   if (diff === 1) return `Вчера · ${base}`;
   return base;
+}
+
+/* ── время поста (ЧЧ:ММ, локальное) ── */
+function humanTime(iso?: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return new Intl.DateTimeFormat("ru-RU", { hour: "2-digit", minute: "2-digit" }).format(d);
 }
 
 /* ── «просмотрено» — память по дате+храму (как у IG гаснут кольца) ── */
@@ -146,7 +155,7 @@ function RingsSkeleton() {
 export function DarshanRings() {
   const fresh = CACHE && Date.now() - CACHE.at < 600_000 ? CACHE.items : null;
   const [items, setItems] = useState<DarshanItem[] | null>(fresh);
-  const [start, setStart] = useState<number | null>(null);
+  const [view, setView] = useState<{ list: DarshanItem[]; start: number } | null>(null);
   const [seen, setSeen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -166,6 +175,20 @@ export function DarshanRings() {
     setSeen((s) => ({ ...init, ...s }));
   }, [items]);
 
+  // Порядок колец: непросмотренные впереди (просмотренные — в конец), @iskcone первым
+  // по умолчанию, далее по времени размещения (свежие выше).
+  const ordered = useMemo(() => {
+    if (!items) return [];
+    const key = (x: DarshanItem) => x.postedAt || `${x.date}T00:00:00`;
+    return [...items].sort((a, b) => {
+      const sa = !!seen[seenId(a)], sb = !!seen[seenId(b)];
+      if (sa !== sb) return sa ? 1 : -1;
+      const ia = a.templeSlug === "iskcone", ib = b.templeSlug === "iskcone";
+      if (ia !== ib) return ia ? -1 : 1;
+      return key(b).localeCompare(key(a));
+    });
+  }, [items, seen]);
+
   if (items === null) return <><RingsSkeleton /><Keyframes /></>;
   if (items.length === 0) return null;
 
@@ -173,18 +196,18 @@ export function DarshanRings() {
 
   return (
     <>
-      <div style={tray} role="list" aria-label="Даршан дня">
-        {items.map((it, i) => (
-          <Ring key={it.srcUrl} item={it} seen={!!seen[seenId(it)]} onClick={() => setStart(i)} />
+      <div style={tray} role="list" aria-label="Истории">
+        {ordered.map((it, i) => (
+          <Ring key={it.srcUrl} item={it} seen={!!seen[seenId(it)]} onClick={() => setView({ list: ordered, start: i })} />
         ))}
         <ArchiveRing onClick={openArchive} />
       </div>
-      {start !== null && (
+      {view && (
         <DarshanStoryViewer
-          items={items}
-          start={start}
+          items={view.list}
+          start={view.start}
           onSeen={(it) => { writeSeen(it); setSeen((s) => ({ ...s, [seenId(it)]: true })); }}
-          onClose={() => setStart(null)}
+          onClose={() => setView(null)}
         />
       )}
       <Keyframes />
@@ -207,6 +230,14 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const item = items[ti];
   const imgs = item.images;
   const total = imgs.length;
+  // покадровые данные: для канала @iskcone подпись/время/дату берём с текущего кадра-поста,
+  // для храмов — общие по элементу.
+  const fr = item.frames ? item.frames[ii] : null;
+  const curCap = fr ? fr.caption : item.caption;
+  const curAt = fr ? fr.postedAt : (item.postedAt ?? null);
+  const curYmd = fr && fr.postedAt
+    ? new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(fr.postedAt))
+    : item.date;
 
   const barRef = useRef<HTMLSpanElement | null>(null);
   const accRef = useRef(0);
@@ -294,7 +325,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const onCancel = () => { window.clearTimeout(holdTimer.current); if (press.current?.hold) setPaused(false); press.current = null; };
   const stop = (e: React.PointerEvent | React.MouseEvent) => e.stopPropagation();
 
-  const longCap = !!item.caption && (item.caption.length > 140 || item.caption.includes("\n"));
+  const longCap = !!curCap && (curCap.length > 140 || curCap.includes("\n"));
   const nextSrc = ii < total - 1 ? imgs[ii + 1] : (ti < items.length - 1 ? items[ti + 1].images[0] : null);
 
   const chrome = (extra: CSSProperties = {}): CSSProperties => ({ opacity: paused ? 0 : 1, transition: "opacity .2s ease", ...extra });
@@ -341,7 +372,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           <div style={{ fontFamily: FT, fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {shortTemple(item.templeSlug, item.templeName)}
           </div>
-          <div style={{ fontFamily: FT, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{humanDate(item.date)}</div>
+          <div style={{ fontFamily: FT, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{humanDate(curYmd)}{curAt ? ` · ${humanTime(curAt)}` : ""}</div>
         </div>
         <button type="button" aria-label="Закрыть" onClick={onClose} onPointerDown={stop} onPointerUp={stop}
           style={{ flexShrink: 0, width: 38, height: 38, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.14)", color: "#fff", display: "grid", placeItems: "center", cursor: "pointer", backdropFilter: "blur(8px)", WebkitTapHighlightColor: "transparent" }}>
@@ -352,15 +383,15 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* низ: имя Божеств + подпись */}
       <div style={chrome({ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 4, padding: "44px 16px calc(20px + env(safe-area-inset-bottom,0px))", background: "linear-gradient(transparent, rgba(0,0,0,0.72))" })}>
         {item.deities && (
-          <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.source === "live" ? 4 : (item.caption ? 7 : 0) }}>{item.deities}</div>
+          <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.source === "live" ? 4 : (curCap ? 7 : 0) }}>{item.deities}</div>
         )}
-        {item.source === "live" && (
-          <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", color: "rgba(255,255,255,0.72)", marginBottom: item.caption ? 7 : 0 }}>{item.place || "Ежедневный даршан"}</div>
+        {item.source === "live" && !item.frames && (
+          <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", color: "rgba(255,255,255,0.72)", marginBottom: curCap ? 7 : 0 }}>{item.place || "Ежедневный даршан"}</div>
         )}
-        {item.caption && (
+        {curCap && (
           <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
             ...(capOpen ? {} : { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }) }}>
-            {item.caption}
+            {curCap}
           </p>
         )}
         {longCap && (
