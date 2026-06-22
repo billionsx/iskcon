@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
     inputs:
       user:
-        description: instagram username to probe
         default: iskcon_noida
         required: false
 
@@ -11,42 +10,34 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: deps
-        run: pip install "instagrapi==2.1.2" pillow
-      - name: probe
+      - name: mirrors
         env:
-          IG_SESSIONID: ${{ secrets.IG_SESSIONID }}
           IG_USER: ${{ inputs.user }}
         run: |
           python3 - <<'PY'
-          import os, urllib.parse, urllib.request, traceback
-          from instagrapi import Client
-          def note(m): print("::notice::" + str(m).replace("\n", " ")[:400], flush=True)
-          def err(m):  print("::error::" + str(m).replace("\n", " ")[:400], flush=True)
-          raw = os.environ["IG_SESSIONID"]; user = os.environ.get("IG_USER") or "iskcon_noida"
-          cands = [raw]
-          dec = urllib.parse.unquote(raw)
-          if dec != raw: cands.append(dec)
-          cl = None
-          for j, sid in enumerate(cands):
-              c = Client(); c.delay_range = [1, 3]
+          import urllib.request, re, os
+          U = os.environ.get("IG_USER") or "iskcon_noida"
+          def note(m): print("::notice::" + str(m).replace("\n"," ")[:380], flush=True)
+          def err(m):  print("::error::" + str(m).replace("\n"," ")[:380], flush=True)
+          hdr = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36","Accept-Language":"en-US,en;q=0.9","Accept":"text/html,application/xhtml+xml"}
+          mirrors = [
+            ("imginn",  f"https://imginn.com/{U}/"),
+            ("imginn2", f"https://imginn.org/{U}/"),
+            ("pixwox",  f"https://www.pixwox.com/profile/{U}/"),
+            ("picnob",  f"https://www.picnob.com/profile/{U}/"),
+            ("gramhir", f"https://gramhir.com/profile/{U}/"),
+            ("dumpor",  f"https://dumpor.com/v/{U}"),
+            ("storiesig", f"https://storiesig.info/en/{U}"),
+          ]
+          for name, url in mirrors:
               try:
-                  c.login_by_sessionid(sid); note(f"LOGIN_OK variant={j}"); cl = c; break
+                  r = urllib.request.urlopen(urllib.request.Request(url, headers=hdr), timeout=25)
+                  body = r.read().decode("utf-8","ignore")
+                  imgs = set(re.findall(r'https://[^\s"\'<>\\]+?\.(?:jpg|jpeg|webp)', body))
+                  cdn = [u for u in imgs if any(k in u for k in ("cdninstagram","fbcdn","scontent"))]
+                  samp = (sorted(cdn) or sorted(imgs))[:1]
+                  note(f"{name} HTTP{r.status} len={len(body)} imgs={len(imgs)} igcdn={len(cdn)} {samp}")
               except Exception as e:
-                  err(f"LOGIN_FAIL v{j} {type(e).__name__}: {e}")
-          if cl is None: raise SystemExit(1)
-          try:
-              uid = cl.user_id_from_username(user); note(f"UID {uid}")
-              ms = cl.user_medias(uid, amount=5); note(f"GOT {len(ms)} medias")
-              for i, m in enumerate(ms):
-                  res = getattr(m, "resources", None)
-                  note(f"[{i}] {m.taken_at} type={m.media_type} carousel={len(res) if res else 0} {str(m.thumbnail_url)[:90]}")
-              if ms:
-                  b = urllib.request.urlopen(urllib.request.Request(str(ms[0].thumbnail_url), headers={"User-Agent": "Mozilla/5.0"}), timeout=30).read()
-                  note(f"IMG_BYTES {len(b)}")
-          except Exception as e:
-              err(f"FETCH_FAIL {type(e).__name__}: {e}"); raise SystemExit(2)
+                  code = getattr(e, "code", "")
+                  err(f"{name} {type(e).__name__} {code}: {str(e)[:110]}")
           PY
