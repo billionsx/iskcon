@@ -25,6 +25,7 @@ interface Src {
   channel: string;
   name: string;
   deities: string;
+  place?: string;          // вторая строка подписи (храм · ИСККОН-центр); если нет — «Ежедневный даршан»
   srcLabel: string;
   galleryType?: string;
   gallerySlug?: string;
@@ -54,7 +55,8 @@ const SOURCES: Src[] = [
     gallerySlug: "sringar-darshan",
     galleryName: "Sringar Darshan",
     name: "ИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир",
-    deities: "Шри Шри Кришна-Баларам · Радха-Шьямасундар · Гаура-Нитай",
+    deities: "Джайа Гаура Нитай, Кришна Баларам, Лалита Вишакха Радхе Шьям",
+    place: "Шри Шри Кришна-Баларам Мандир · ИСККОН Вриндаван",
     srcLabel: "ISKCON Vrindavan",
   },
 ];
@@ -357,6 +359,7 @@ interface DarshanItem {
   templeSlug: string;
   templeName: string;
   deities: string | null;
+  place: string | null;
   images: string[];
   orient?: ("p" | "l" | null)[];   // ориентация показа каждого кадра (серверно, по EXIF), выровнена с images
   caption: string | null;
@@ -373,6 +376,7 @@ function liveItem(src: Src, post: RawPost): DarshanItem {
     templeSlug: src.slug,
     templeName: src.name,
     deities: src.deities,
+    place: src.place ?? null,
     images: post.photos.slice(0, 30),
     caption: cap,
     srcUrl: `https://t.me/${src.channel}/${post.id}`,
@@ -389,6 +393,7 @@ function siteItem(src: Src, gal: { date: string; name: string; pageUrl: string; 
     templeSlug: src.slug,
     templeName: src.name,
     deities: src.deities,
+    place: src.place ?? null,
     images: gal.images.slice(0, 60),
     orient: gal.orient ? gal.orient.slice(0, 60) : undefined,
     caption: null,
@@ -411,6 +416,7 @@ function archiveItem(row: DarshanRow): DarshanItem {
     templeSlug: row.temple_slug,
     templeName: row.temple_name,
     deities: row.deities,
+    place: null,
     images: images.slice(0, 10),
     caption: row.caption ? plain(row.caption).slice(0, 400) || null : null,
     srcUrl: `https://t.me/${row.src_channel}/${row.src_post_id}`,

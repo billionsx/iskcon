@@ -12,6 +12,7 @@ export interface DarshanItem {
   templeSlug: string;
   templeName: string;
   deities: string | null;
+  place: string | null;
   images: string[];           // URL фото (Telegram-CDN)
   orient?: ("p" | "l" | null)[]; // ориентация показа каждого кадра (определена сервером по EXIF), выровнена с images
   caption: string | null;

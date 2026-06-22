@@ -217,12 +217,11 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   // Серверный флаг намеренно НЕ используем — кэш мог отдать устаревшее/неверное значение.
   // Сброс при смене кадра — синхронно в рендере, чтобы новый кадр не унаследовал старый замер.
   const [ar, setAr] = useState<number | null>(null);
-  const [dbg, setDbg] = useState("—");
   const frameKey = `${ti}:${ii}`;
   const lastFrameRef = useRef(frameKey);
   if (lastFrameRef.current !== frameKey) { lastFrameRef.current = frameKey; setAr(null); }
   const measureRef = useCallback((node: HTMLImageElement | null) => {
-    if (node && node.complete && node.naturalWidth && node.naturalHeight) { setAr(node.naturalWidth / node.naturalHeight); setDbg(`${node.naturalWidth}x${node.naturalHeight}`); }
+    if (node && node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
   }, []);
   const orient: "p" | "l" | null = ar != null ? (ar < 1 ? "p" : "l") : null;
 
@@ -318,17 +317,13 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           подложка); ландшафт — cover (на весь экран, верх/низ слегка подрезаются). */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
-          onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) { setAr(n.naturalWidth / n.naturalHeight); setDbg(`${n.naturalWidth}x${n.naturalHeight}`); } }}
+          onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); }}
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             imageOrientation: "from-image",
             objectFit: orient === "l" ? "cover" : "contain",   // ландшафт → на весь экран; портрет/замер → целиком
             objectPosition: "center",
           }} />
-      </div>
-      {/* ВРЕМЕННАЯ ОТЛАДКА: подтверждает версию сборки + показывает реальные размеры кадра и вычисленную ориентацию */}
-      <div style={{ position: "absolute", top: "max(56px, calc(env(safe-area-inset-top,0px) + 46px))", left: 10, zIndex: 9, color: "#39ff14", font: "600 13px ui-monospace, Menlo, monospace", background: "rgba(0,0,0,0.72)", padding: "3px 8px", borderRadius: 6, pointerEvents: "none" }}>
-        DBG1 · {dbg} · {orient ?? "—"}
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
@@ -367,7 +362,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.source === "live" ? 4 : (item.caption ? 7 : 0) }}>{item.deities}</div>
         )}
         {item.source === "live" && (
-          <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", color: "rgba(255,255,255,0.72)", marginBottom: item.caption ? 7 : 0 }}>Ежедневный даршан</div>
+          <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", color: "rgba(255,255,255,0.72)", marginBottom: item.caption ? 7 : 0 }}>{item.place || "Ежедневный даршан"}</div>
         )}
         {item.caption && (
           <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
