@@ -222,6 +222,50 @@ async function fetchSiteGallery(src: Src): Promise<{ date: string; name: string;
   return null;
 }
 
+// Все типы ежедневного даршана Вриндавана. Порядок = порядок показа в кружке:
+// особый фестивальный ведёт (когда есть), затем свежайший регулярный (шрингар),
+// затем мангала-аарати. Сайт публикует их в течение дня IST — набор копится.
+const VRINDAVAN_DARSHANS: { type: string; slug: string }[] = [
+  { type: "4", slug: "festival-darshan" },
+  { type: "2", slug: "sringar-darshan" },
+  { type: "3", slug: "mangala-darshan" },
+];
+
+// Кадры ОДНОГО типа даршана за конкретный день (без orient — ориентацию клиент
+// определяет сам по загруженному кадру, серверный флаг не используется).
+async function fetchVrindGalleryType(date: string, type: string, slug: string): Promise<string[]> {
+  const u = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/${type}/${slug}.data`;
+  try {
+    const r = await fetch(u, {
+      headers: { "User-Agent": SITE_UA, accept: "*/*", referer: "https://iskconvrindavan.com/daily-darshan-gallery" },
+      cf: { cacheTtl: 600, cacheEverything: true },
+    } as RequestInit);
+    if (!r.ok) return [];
+    const t = await r.text();
+    const re = /static\/static-_[0-9a-zA-Z]+\.(?:jpe?g|png|webp)/g;
+    const seen = new Set<string>(); const paths: string[] = []; let m: RegExpExecArray | null;
+    while ((m = re.exec(t))) { if (!seen.has(m[0])) { seen.add(m[0]); paths.push(m[0]); } }
+    return paths.map((p) => `${SITE_CDN}/${p}`);
+  } catch { return []; }
+}
+
+// Вриндаван для сторис: ВСЕ даршаны дня в одном наборе (фестивальный + шрингар +
+// мангала), в одном кружке. Берём самый свежий день IST, где опубликован хоть один
+// тип; внутри — порядок VRINDAVAN_DARSHANS. По мере публикации новых даршанов набор
+// растёт сам (каждый запрос пересобирает день), старые кадры не пропадают до смены суток.
+async function fetchVrindavanCombined(src: Src): Promise<{ date: string; name: string; pageUrl: string; images: string[] } | null> {
+  for (const date of istDaysBack(6)) {
+    const groups = await Promise.all(VRINDAVAN_DARSHANS.map((d) => fetchVrindGalleryType(date, d.type, d.slug)));
+    const images: string[] = []; const seen = new Set<string>();
+    groups.forEach((g) => g.forEach((u) => { if (!seen.has(u)) { seen.add(u); images.push(u); } }));
+    if (images.length) {
+      const pageUrl = `https://iskconvrindavan.com/daily-darshan-gallery/${date}/2/sringar-darshan`;
+      return { date, name: src.galleryName || "Darshan", pageUrl, images: images.slice(0, 90) };
+    }
+  }
+  return null;
+}
+
 // Приоритет постам с фото и «даршанной» лексикой, иначе — свежайший пост с фото.
 const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|arati|abhishek|rajbhog|raj bhog|sandhya|deity|deities|gaura|nitai|radha|krishna|kṛṣṇa|balaram|madhava/i;
 
@@ -494,7 +538,7 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
   const live = await Promise.all(
     SOURCES.map(async (s) => {
       if (s.kind === "site") {
-        const gal = s.site === "mayapur" ? await fetchMayapurGallery(s) : await fetchSiteGallery(s);
+        const gal = s.site === "mayapur" ? await fetchMayapurGallery(s) : await fetchVrindavanCombined(s);
         if (gal && gal.images.length) {
           // Показываем ВСЮ галерею даршана за сегодня (и Вриндаван, и Маяпур): и
           // широкие кадры алтарей, и вертикальные крупные планы мурти. Сторис-вьювер
