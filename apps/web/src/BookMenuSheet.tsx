@@ -58,6 +58,9 @@ const BagGlyph = () => <Svg><g {...stroke}><path d="M6 8.6h12a.8.8 0 0 1 .8.86l-
 /* note.text — «в заметки»: страница с линиями текста и загнутым уголком. */
 const NoteGlyph = () => <Svg><g {...stroke}><path d="M6 3.6h7.4L18.4 8.6V20a.9.9 0 0 1-.9.9H6a.9.9 0 0 1-.9-.9V4.5A.9.9 0 0 1 6 3.6Z" /><path d="M13.2 3.7v4.6a.6.6 0 0 0 .6.6h4.4" /><path d="M8 12.4h6.6M8 15.4h6.6M8 18.2h3.8" /></g></Svg>;
 
+/* telegram — официальный плейн (FontAwesome telegram-plane), монохром */
+const TelegramGlyph = () => <svg width={S} height={S} viewBox="0 0 448 512" aria-hidden fill="currentColor"><path d="M446.7 98.6l-67.6 318.8c-5.1 22.5-18.4 28.1-37.3 17.5l-103-75.9-49.7 47.8c-5.5 5.5-10.1 10.1-20.7 10.1l7.4-104.9 190.9-172.5c8.3-7.4-1.8-11.5-12.9-4.1L117.8 284 16.2 252.2c-22.1-6.9-22.5-22.1 4.6-32.7L418.2 66.4c18.4-6.8 34.5 4.4 28.5 32.2z" /></svg>;
+
 type Item = { id: string; label: string; Icon: () => ReactNode; danger?: boolean };
 const GROUPS: Item[][] = [
   [
@@ -99,6 +102,22 @@ function buildKirtanGroups(): Group[] {
     { items: [
       { id: "share-album", label: "Поделиться альбомом", Icon: ShareBookGlyph },
       { id: "download-track", label: "Скачать дорожку", Icon: PdfGlyph },
+    ] },
+    { items: [
+      { id: "donate", label: "Задонатить", Icon: GiftGlyph },
+      { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
+    ] },
+  ];
+}
+
+// Меню поста ленты — открыть в Telegram (первой строкой), затем стандартные действия.
+function buildPostGroups(): Group[] {
+  return [
+    { items: [{ id: "telegram", label: "Открыть в Telegram", Icon: TelegramGlyph }] },
+    { items: [
+      { id: "share", label: "Поделиться", Icon: ShareGlyph },
+      { id: "pdf", label: "Скачать PDF", Icon: PdfGlyph },
+      { id: "qr", label: "QR-код", Icon: QrGlyph },
     ] },
     { items: [
       { id: "donate", label: "Задонатить", Icon: GiftGlyph },
@@ -193,14 +212,15 @@ export { NoteGlyph };
 export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false, notePinned = false, noteHasSource = false, centerCanManage = false, centerHasMaps = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan" | "note" | "center"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan" | "note" | "center" | "post"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
   notePinned?: boolean; noteHasSource?: boolean; centerCanManage?: boolean; centerHasMaps?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
     variant === "note" ? buildNoteGroups(notePinned, noteHasSource)
       : variant === "center" ? buildCenterGroups(centerCanManage, centerHasMaps)
-        : variant === "kirtan" ? buildKirtanGroups()
+        : variant === "post" ? buildPostGroups()
+          : variant === "kirtan" ? buildKirtanGroups()
           : variant === "bhajan" ? buildBhajanGroups()
             : variant === "player" ? buildPlayerGroups(isChapter)
               : (() => {

@@ -380,25 +380,34 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
         </button>
       </div>
 
-      {/* низ: имя Божеств + подпись */}
+      {/* низ: имя Божеств + подпись (для ежедневных даршанов — единый 3-строчный стандарт) */}
       <div style={chrome({ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 4, padding: "44px 16px calc(20px + env(safe-area-inset-bottom,0px))", background: "linear-gradient(transparent, rgba(0,0,0,0.72))" })}>
-        {item.deities && (
-          <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: "#fff", marginBottom: item.source === "live" ? 4 : (curCap ? 7 : 0) }}>{item.deities}</div>
-        )}
-        {item.source === "live" && !item.frames && (
-          <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", color: "rgba(255,255,255,0.72)", marginBottom: curCap ? 7 : 0 }}>{item.place || "Ежедневный даршан"}</div>
-        )}
-        {curCap && (
-          <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
-            ...(capOpen ? {} : { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }) }}>
-            {curCap}
-          </p>
-        )}
-        {longCap && (
-          <button type="button" onClick={() => setCapOpen((v) => !v)} onPointerDown={stop} onPointerUp={stop}
-            style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: "rgba(255,255,255,0.7)", fontFamily: FT, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
-            {capOpen ? "Свернуть" : "Ещё"}
-          </button>
+        {item.deities ? (
+          <>
+            {/* 1 — имена пар Божеств, жирно */}
+            <div style={{ fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "#fff" }}>{item.deities}</div>
+            {/* 2 — «Ежедневный даршан» */}
+            <div style={{ marginTop: 5, fontFamily: FT, fontSize: 13, fontWeight: 500, lineHeight: 1.3, color: "rgba(255,255,255,0.88)" }}>Ежедневный даршан</div>
+            {/* 3 — Храм · ИСККОН-центр */}
+            {(item.place || item.caption) && (
+              <div style={{ marginTop: 2, fontFamily: FT, fontSize: 13, fontWeight: 400, lineHeight: 1.35, color: "rgba(255,255,255,0.62)" }}>{item.place || item.caption}</div>
+            )}
+          </>
+        ) : (
+          <>
+            {curCap && (
+              <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
+                ...(capOpen ? {} : { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }) }}>
+                {curCap}
+              </p>
+            )}
+            {longCap && (
+              <button type="button" onClick={() => setCapOpen((v) => !v)} onPointerDown={stop} onPointerUp={stop}
+                style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: "rgba(255,255,255,0.7)", fontFamily: FT, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
+                {capOpen ? "Свернуть" : "Ещё"}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

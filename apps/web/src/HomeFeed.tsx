@@ -18,11 +18,10 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { useFavorite, RoundBtn } from "./cardActions";
+import { CardActionBtns } from "./cardActions";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
-import { HeartIcon, MoreIcon } from "./ui/icons";
 import { exportToPdf } from "./pdf";
 
 const GOLD = "#D2AA1B";
@@ -73,35 +72,6 @@ function renderRich(rich: TgSeg[], clampTo: number | null): React.ReactNode[] {
     } else out.push(<span key={i}>{v}</span>);
   }
   return out;
-}
-
-/* ── официальный плейн Telegram БЕЗ круга (FontAwesome telegram-plane) ── */
-function TelegramPlane({ size = 19 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 448 512" aria-hidden fill="currentColor">
-      <path d="M446.7 98.6l-67.6 318.8c-5.1 22.5-18.4 28.1-37.3 17.5l-103-75.9-49.7 47.8c-5.5 5.5-10.1 10.1-20.7 10.1l7.4-104.9 190.9-172.5c8.3-7.4-1.8-11.5-12.9-4.1L117.8 284 16.2 252.2c-22.1-6.9-22.5-22.1 4.6-32.7L418.2 66.4c18.4-6.8 34.5 4.4 28.5 32.2z" />
-    </svg>
-  );
-}
-
-/* ── строка действий поста (♥ · Telegram · ⋯) — стандарт ВКП (RoundBtn) ── */
-function PostActions({ id, favKey, favMeta, dark, flash, onMore }: {
-  id: string; favKey: string; favMeta: { t?: string; s?: string; h?: string }; dark?: boolean; flash: (m: string) => void; onMore: () => void;
-}) {
-  const fav = useFavorite(favKey, favMeta);
-  return (
-    <span style={{ display: "inline-flex", gap: 8 }} onClick={(e) => e.stopPropagation()}>
-      <RoundBtn ariaLabel={fav.on ? "Убрать из избранного" : "В избранное"} active={fav.on} activeColor="#FF453A" dark={dark} size={34} onClick={() => fav.toggle(flash)}>
-        <HeartIcon size={18} filled={fav.on} />
-      </RoundBtn>
-      <RoundBtn ariaLabel="Открыть в Telegram" dark={dark} size={34} onClick={() => window.open(postUrl(id), "_blank", "noopener")}>
-        <TelegramPlane size={19} />
-      </RoundBtn>
-      <RoundBtn ariaLabel="Ещё" dark={dark} size={34} onClick={onMore}>
-        <MoreIcon size={16} />
-      </RoundBtn>
-    </span>
-  );
 }
 
 /* ── лайтбокс: фото поста на весь экран, листание, закрытие ── */
@@ -180,8 +150,8 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
             </div>
           ))}
         </div>
-        <span style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{photos.length}</span>
-        <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 9, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none", zIndex: 3 }}>
+        <span style={{ position: "absolute", top: 16, left: 16, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{photos.length}</span>
+        <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 14, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none", zIndex: 3 }}>
           {photos.map((_, i) => (
             <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? "#fff" : "rgba(255,255,255,0.5)", boxShadow: "0 0 2px rgba(0,0,0,0.4)", transition: "background .2s" }} />
           ))}
@@ -347,6 +317,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
   const hasMedia = p.photos.length > 0 || p.videos.length > 0;
 
   const onPick = (id: string) => {
+    if (id === "telegram") { window.open(postUrl(p.id), "_blank", "noopener"); return; }
     if (id === "share") {
       if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: head, url: postUrl(p.id) }).catch(() => {});
       else { navigator.clipboard?.writeText(postUrl(p.id)).catch(() => {}); flash("Ссылка скопирована"); }
@@ -358,20 +329,20 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
 
   return (
     <article style={{ overflow: "hidden", ...fill }}>
-      {/* медиа с действиями оверлеем (стандарт ВКП) */}
+      {/* медиа с действиями оверлеем — по эталону BookHeroCard (♥ + ⋯) */}
       {hasMedia ? (
         <div style={{ position: "relative" }}>
           <PostMedia p={p} onOpen={setView} />
-          {/* верхний скрим — читаемость стеклянных кнопок на светлых фото */}
-          <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 66, background: "linear-gradient(rgba(0,0,0,0.34), transparent)", pointerEvents: "none", zIndex: 2 }} />
-          <div style={{ position: "absolute", top: 8, right: 8, zIndex: 4 }}>
-            <PostActions id={p.id} favKey={favKey} favMeta={favMeta} dark flash={flash} onMore={() => setMenu(true)} />
+          {/* верхний скрим — читаемость стеклянных кнопок на светлых фото (как у эталона) */}
+          <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 120, background: "linear-gradient(rgba(0,0,0,0.5), transparent)", pointerEvents: "none", zIndex: 2 }} />
+          <div style={{ position: "absolute", top: 16, right: 16, zIndex: 4 }}>
+            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} dark onMore={() => setMenu(true)} />
           </div>
         </div>
       ) : (
-        <div style={{ padding: "12px 12px 2px", display: "flex" }}>
+        <div style={{ padding: "14px 16px 2px", display: "flex" }}>
           <span style={{ marginLeft: "auto" }}>
-            <PostActions id={p.id} favKey={favKey} favMeta={favMeta} flash={flash} onMore={() => setMenu(true)} />
+            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} onMore={() => setMenu(true)} />
           </span>
         </div>
       )}
@@ -400,7 +371,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
 
       {/* лайтбокс + шиты */}
       {view !== null && p.photos.length > 0 && <PhotoLightbox photos={p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="book" />
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" />
       {qr && <QrSheet url={postUrl(p.id)} data={{ kind: "card", title: head, subtitle: fmtDate(p.date) }} onClose={() => setQr(false)} />}
       <ReportSheet open={report} onClose={() => setReport(false)} context={`Лента · пост ${postUrl(p.id)}`} />
     </article>
