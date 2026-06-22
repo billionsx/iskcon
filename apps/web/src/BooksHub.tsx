@@ -325,7 +325,12 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
 }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
+  const [soonOpen, setSoonOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const byLineage = (l: Lineage) => LIBRARY.filter((b) => b.lineage === l);
+  // «Есть контент» = доступен текст (есть в BOOKS и не noText) ИЛИ аудио (AUDIO_WORKS).
+  const hasContent = (id: string) => !!AUDIO_WORKS[id] || (!!BOOKS[id] && !BOOKS[id].noText);
 
   const trimmed = q.trim();
   const searching = trimmed.length >= 2;
@@ -334,16 +339,35 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
     if (!searching) return [] as CatalogBook[];
     const hits = searchBooks(trimmed, LIBRARY);
     const scoped = filter === "all" ? hits : hits.filter((h) => h.book.lineage === filter);
-    return scoped.map((h) => h.book);
+    return scoped.map((h) => h.book).filter((b) => hasContent(b.id));
   }, [trimmed, searching, filter]);
 
   // книга-строка → читаемые в ридер, остальные — на страницу сущности книги
   const openBook = (b: CatalogBook) => onOpenEntity(b.id, "scripture");
   const openAuthor = (id: string) => onOpenEntity(id, "personality");
 
-  const byLineage = (l: Lineage) => LIBRARY.filter((b) => b.lineage === l);
-  const prabhupadaReadable = byLineage("prabhupada").filter((b) => b.readable);
-  const prabhupadaMore = byLineage("prabhupada").filter((b) => !b.readable);
+  // Витрина ВКП (как у Прабхупады): крупные карточки только для книг с контентом.
+  const heroStack = (books: CatalogBook[]) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
+      {books.filter((b) => hasContent(b.id) && BOOKS[b.id]).map((b) => {
+        const work = b.id;
+        const bk = BOOKS[work];
+        return (
+          <BookHeroCard
+            key={work}
+            book={bk}
+            topLeft={bk.publisher === "bbt" ? <MaskMark src="/bbt.svg" size={26} /> : undefined}
+            onOpen={() => onOpenBook(work)}
+            flash={flash}
+            onListen={AUDIO_WORKS[work] ? undefined : () => flash("Аудиокнига — скоро")}
+            onMenuSelect={(id) => onBookMenu(work, id)}
+          />
+        );
+      })}
+    </div>
+  );
+  // «Скоро появятся» — нет ни текста, ни аудио; учитывает активный фильтр.
+  const soonBooks = LIBRARY.filter((b) => !hasContent(b.id) && (filter === "all" || b.lineage === filter));
 
   return (
     <div>
@@ -390,7 +414,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           ) : (
             <>
               <div style={{ margin: "2px 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{results.length} {plural(results.length, "книга", "книги", "книг")}</div>
-              <BookList books={results} query={trimmed} onOpenBook={openBook} onOpenAuthor={openAuthor} />
+              {heroStack(results)}
             </>
           )}
         </div>
@@ -407,28 +431,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
                 accent
                 onClick={() => onOpenEntity("prabhupada", "personality")}
               />
-              <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
-                {prabhupadaReadable.map((b) => {
-                  const work = b.id;
-                  return (
-                    <BookHeroCard
-                      key={work}
-                      book={BOOKS[work]}
-                      topLeft={<MaskMark src="/bbt.svg" size={26} />}
-                      onOpen={() => onOpenBook(work)}
-                      flash={flash}
-                      onListen={AUDIO_WORKS[work] ? undefined : () => flash("Аудиокнига — скоро")}
-                      onMenuSelect={(id) => onBookMenu(work, id)}
-                    />
-                  );
-                })}
-              </div>
-              {prabhupadaMore.length > 0 && (
-                <>
-                  <div style={{ margin: "20px 2px 8px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Ещё книги Шрилы Прабхупады</div>
-                  <BookList books={prabhupadaMore} onOpenBook={openBook} onOpenAuthor={openAuthor} />
-                </>
-              )}
+              {heroStack(byLineage("prabhupada"))}
             </section>
           )}
 
@@ -436,7 +439,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           {(filter === "all" || filter === "acharya") && (
             <section>
               <SectionHeader title={LINEAGE_LABEL.acharya} note={LINEAGE_NOTE.acharya} />
-              <BookList books={byLineage("acharya")} onOpenBook={openBook} onOpenAuthor={openAuthor} />
+              {heroStack(byLineage("acharya"))}
             </section>
           )}
 
@@ -444,15 +447,15 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           {(filter === "all" || filter === "guru-iskcon") && (
             <section>
               <SectionHeader title={LINEAGE_LABEL["guru-iskcon"]} note={LINEAGE_NOTE["guru-iskcon"]} />
-              <div style={{ marginBottom: 12 }}>
-                <BookList books={byLineage("guru-iskcon")} onOpenBook={openBook} onOpenAuthor={openAuthor} />
+              {heroStack(byLineage("guru-iskcon"))}
+              <div style={{ marginTop: 14 }}>
+                <SectionCard
+                  title="Преемники Прабхупады"
+                  subtitle="Духовные учителя ИСККОН, дающие посвящение и продолжающие линию"
+                  mark={<MaskMark src="/iskcon-sign.svg" size={40} />}
+                  onClick={() => onOpenCollection("iskcon-gurus")}
+                />
               </div>
-              <SectionCard
-                title="Преемники Прабхупады"
-                subtitle="Духовные учителя ИСККОН, дающие посвящение и продолжающие линию"
-                mark={<MaskMark src="/iskcon-sign.svg" size={40} />}
-                onClick={() => onOpenCollection("iskcon-gurus")}
-              />
             </section>
           )}
 
@@ -466,6 +469,32 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
                 mark={<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M3 11h18a8 8 0 0 1-16 0z" /><path d="M8.5 7.5c0-1.6 1-2.4 1-3.6M12.5 7.5c0-1.6 1-2.4 1-3.6" /></svg>}
                 onClick={() => onOpenPath("/prasadam/book")}
               />
+            </section>
+          )}
+
+          {/* ── Скоро появятся (нет ни текста, ни аудио) — сворачиваемый ── */}
+          {soonBooks.length > 0 && (
+            <section style={{ marginTop: 20 }}>
+              <button
+                type="button"
+                onClick={() => setSoonOpen((v) => !v)}
+                aria-expanded={soonOpen}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", padding: "14px 4px", border: "none", borderTop: "0.5px solid var(--color-hairline, rgba(0,0,0,.1))", background: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
+              >
+                <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, color: "var(--color-label)" }}>Скоро появятся</span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{soonBooks.length}</span>
+                </span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-label-3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ transform: soonOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }}><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+              {soonOpen && (
+                <div style={{ marginTop: 4 }}>
+                  <p style={{ margin: "0 4px 8px", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.45 }}>
+                    Эти книги ещё готовятся — текст или аудио появятся позже.
+                  </p>
+                  <BookList books={soonBooks} onOpenBook={openBook} onOpenAuthor={openAuthor} />
+                </div>
+              )}
             </section>
           )}
         </>
