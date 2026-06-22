@@ -726,6 +726,50 @@ async function bookMetaResponse(env: Env, work: string): Promise<Response> {
 // ведущему номеру в имени (NNN_*.mp3); заголовки — из сайдкара playlist.json (реальные названия
 // дорожек Telegram-канала). Для книг без глав (стихи/мантры): Нектар наставлений, Шри Ишопанишад,
 // Брахма-самхита — и любых будущих аудиокниг, заливаемых тем же загрузчиком.
+// Чистка подписей дорожек аудиокниг: подписи из Telegram-канала часто несут мусор —
+// подчёркивания, повтор названия книги и автора, имя чтеца, нижний регистр, ведущие номера.
+// Применяется только к новым аудиокнигам (AUDIO_CLEAN); noi/iso/bs не трогаем.
+const AUDIO_CLEAN = new Set<string>([
+  "manah-siksa", "siksastaka", "bhakti-tattva-viveka", "mukunda-mala-stotra",
+  "sanmodana-bhashya", "bhaktyaloka", "prema-pradipa", "harinama-cintamani",
+  "caitanya-siksamrta", "jagannatha-vallabha-nataka", "sri-namamrita",
+]);
+const AUDIO_TITLE_STRIP: Record<string, string[]> = {
+  "manah-siksa": ["Манах-шикша", "Манах шикша"],
+  "siksastaka": ["Шри Шикшаштака", "Шикшаштака", "(Виврити)", "Виврити"],
+  "sanmodana-bhashya": ["Шри Шикшаштака", "Шикшаштака", "(Санмодана бхашья)", "Санмодана бхашья"],
+  "harinama-cintamani": ["Шри Харинама Чинтамани", "Харинама Чинтамани", "Шрила Бхактивинода Тхакур", "Шрила Бхактивинода", "Бхактивинода Тхакур", "Бхактивинода"],
+  "caitanya-siksamrta": ["Шрилы Бхактивинода Тхакура", "Шрила Бхактивинода Тхакур", "Бхактивинода Тхакура", "Бхактивинода"],
+  "mukunda-mala-stotra": ["Шрила Прабхупада", "Прабхупада", "Ученики"],
+};
+const AUDIO_TITLE_UNIT: Record<string, string> = {
+  "manah-siksa": "Стих", "siksastaka": "Стих", "sanmodana-bhashya": "Стих",
+};
+function cleanAudioTitle(slug: string, raw: string, fileNum: number): string {
+  let s = String(raw || "").replace(/_/g, " ").replace(/\s+/g, " ").trim();
+  const sectionLead = /^\d{1,3}\.\d/.test(s); // «1.1» / «1.0» — осмысленный номер раздела, сохраняем
+  let n: number | null = null;
+  if (!sectionLead) {
+    const m = s.match(/^\s*(?:[IVXLC]+\.?\s*)?(\d{1,3})[.\-–):]?\s+/);
+    if (m) { n = parseInt(m[1], 10); s = s.slice(m[0].length); }
+  }
+  for (const p of AUDIO_TITLE_STRIP[slug] || []) s = s.split(p).join(" ");
+  s = s.replace(/«\s*»|\(\s*\)|<\s*>/g, " ").replace(/\s+/g, " ").replace(/^[\s.,:;\-–—]+|[\s.,:;\-–—]+$/g, "").trim();
+  if (!s) {
+    s = `${AUDIO_TITLE_UNIT[slug] || "Часть"} ${n ?? fileNum}`;
+  } else {
+    const u = s.match(/^(Глава|Песнь|Часть|Луч|Стих)\s+(\d{1,3})\s*[.:\-–]?\s*(.*)$/i);
+    if (u) {
+      const word = u[1][0].toUpperCase() + u[1].slice(1).toLowerCase();
+      const rest = u[3].trim();
+      s = rest ? `${word} ${u[2]}. ${rest[0].toUpperCase()}${rest.slice(1)}` : `${word} ${u[2]}`;
+    }
+  }
+  // заглавная — у ведущей буквы (с учётом числового префикса «1.1 »)
+  s = s.replace(/^(\s*(?:\d{1,3}(?:\.\d{1,3})?[.)]?\s+)?)([a-zа-яё])/, (_m, pre, ch) => pre + ch.toUpperCase());
+  return s;
+}
+
 async function bookAudioGeneric(work: string, identifier: string, origin: string): Promise<Response> {
   const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
     headers: { accept: "application/json" },
@@ -752,9 +796,10 @@ async function bookAudioGeneric(work: string, identifier: string, origin: string
       const m = f.name.match(/^(\d{1,3})[._-]/);
       const num = m ? parseInt(m[1], 10) : 0;
       const fallback = f.name.replace(/\.mp3$/i, "").replace(/^\d{1,3}[._-]/, "").replace(/[._-]+/g, " ").trim();
+      const raw = titles.get(f.name) || fallback;
       return {
         kind: "chapter" as const, pos: num, chapter: num,
-        title: titles.get(f.name) || fallback || `Часть ${num}`,
+        title: AUDIO_CLEAN.has(work) ? cleanAudioTitle(work, raw, num) : (raw || `Часть ${num}`),
         file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
         durationSec: audioDuration(f.length),
       };
