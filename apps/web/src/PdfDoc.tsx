@@ -17,14 +17,17 @@ type Loaded =
   | { kind: "chapter"; chapter: ChapterRow | null; verses: ChapterVerse[]; lilaLabel?: string }
   | { kind: "prosechapter"; chapter: ChapterRow; paras: ProsePara[] }
   | { kind: "verse"; verse: ChapterVerse; chapterNo: string; chapterTitle: string; lila?: string }
-  | { kind: "card"; header: string; title: string; subtitle?: string; rows: Array<[string, string]>; body?: string[]; footer?: string; sections?: PrintSection[] };
+  | { kind: "card"; header: string; title: string; subtitle?: string; rows: Array<[string, string]>; body?: string[]; footer?: string; sections?: PrintSection[]; images?: string[] };
 
 /** Сообщаем headless-браузеру (page.waitForFunction), что контент готов к печати. */
 function markReady() {
   const done = () => { (window as unknown as { __pdfReady?: boolean }).__pdfReady = true; };
-  const f = (document as unknown as { fonts?: { ready?: Promise<unknown> } }).fonts;
-  if (f?.ready) f.ready.then(() => requestAnimationFrame(() => requestAnimationFrame(done)));
-  else requestAnimationFrame(() => requestAnimationFrame(done));
+  const fontsP: Promise<unknown> = (document as unknown as { fonts?: { ready?: Promise<unknown> } }).fonts?.ready ?? Promise.resolve();
+  const imgs = Array.from(document.images || []);
+  const imgsP = Promise.all(imgs.map((im) => (im.complete ? Promise.resolve() : new Promise<void>((res) => { im.addEventListener("load", () => res(), { once: true }); im.addEventListener("error", () => res(), { once: true }); }))));
+  // защитный таймаут: если картинка зависла — печатаем что есть (у page.pdf свой запас)
+  const safety = new Promise<void>((res) => setTimeout(res, 14000));
+  Promise.race([Promise.all([fontsP, imgsP]).then(() => undefined), safety]).then(() => requestAnimationFrame(() => requestAnimationFrame(done)));
 }
 
 /**
@@ -240,6 +243,22 @@ function flattenDossierTopic(dos: PdfDossier | null, ptab: string, psub: string)
 
 async function loadCard(ctype: string, cid: string, album: string, track: string, ptab = "", psub = ""): Promise<CardLoaded | null> {
   try {
+    if (ctype === "post") {
+      // Пост ленты: тянем конкретный кадр канала (t.me/s/iskcone?before=<id+1> отдаёт
+      // страницу, включающую нужный id; иначе берём последнюю).
+      const nid = Number(cid);
+      const findP = (j: { posts?: Array<{ id: string; text?: string; date?: string; photos?: string[] }> }) => (j.posts || []).find((x) => String(x.id) === String(cid)) || null;
+      let j = await (await fetch(api("/tg/iskcone") + (nid ? "?before=" + (nid + 1) : ""))).json();
+      let post = findP(j);
+      if (!post) { j = await (await fetch(api("/tg/iskcone"))).json(); post = findP(j); }
+      if (!post) return null;
+      const lines = (post.text || "").trim().split("\n").map((l) => l.trim()).filter(Boolean);
+      const title = lines[0] || "ISKCON ONE LOVE";
+      const body = lines.slice(1);
+      let dateStr = "";
+      if (post.date) { try { dateStr = new Intl.DateTimeFormat("ru-RU", { day: "numeric", month: "long", year: "numeric" }).format(new Date(post.date)); } catch { /* noop */ } }
+      return { kind: "card", header: "Лента · ISKCON ONE LOVE", title, subtitle: dateStr || undefined, rows: [], body: body.length ? body : undefined, images: (post.photos || []).slice(0, 30) };
+    }
     if (ctype === "dhama") {
       const d = getDhama(cid);
       if (!d) return null;
@@ -440,6 +459,13 @@ function CardPrint({ d }: { d: CardLoaded }) {
               {s.sub && <div style={{ marginTop: "2pt", fontSize: "10.5pt", fontStyle: "italic", color: "#70727b" }}>{s.sub}</div>}
               {s.lines.map((ln, j) => <p key={j} style={{ margin: "6pt 0 0", fontSize: "11pt", lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{ln}</p>)}
             </div>
+          ))}
+        </div>
+      )}
+      {d.images && d.images.length > 0 && (
+        <div style={{ marginTop: "16pt", display: "flex", flexDirection: "column", gap: "9mm" }}>
+          {d.images.map((src, i) => (
+            <img key={i} src={src} alt="" data-pdf-block="" style={{ display: "block", margin: "0 auto", maxWidth: "100%", maxHeight: "232mm", borderRadius: "10px", breakInside: "avoid" }} />
           ))}
         </div>
       )}

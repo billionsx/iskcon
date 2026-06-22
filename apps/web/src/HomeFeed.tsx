@@ -22,7 +22,7 @@ import { CardActionBtns } from "./cardActions";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
-import { exportToPdf } from "./pdf";
+import { exportToPdf, downloadServerPdf } from "./pdf";
 
 const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20 };
@@ -341,13 +341,14 @@ function buildPostPrintNode(p: TgPost): HTMLElement {
   return root;
 }
 async function downloadPostPdf(p: TgPost, flash: (m: string) => void) {
-  flash("Готовим PDF…");
-  try {
-    await preloadImages(p.photos);
-    const node = buildPostPrintNode(p);
-    const head = leadLine(p.text) || "ISKCON ONE LOVE";
-    exportToPdf(node, { title: head });   // вёрстка задана внутри узла; опцию-шапку не передаём
-  } catch { flash("Не удалось собрать PDF — попробуйте ещё раз"); }
+  const head = leadLine(p.text) || "ISKCON ONE LOVE";
+  // Серверный конвейер: headless-Chrome рендерит карточку в настоящий PDF-файл
+  // (профессиональная вёрстка A4, бренд-футер iskcone.com — как в PDF книг).
+  await downloadServerPdf(
+    `/pdf?kind=card&type=post&id=${encodeURIComponent(p.id)}&name=${encodeURIComponent(head)}`,
+    `${head}.pdf`,
+    { onStatus: flash, fallback: () => { void preloadImages(p.photos).then(() => exportToPdf(buildPostPrintNode(p), { title: head })); } },
+  );
 }
 
 /* ── один пост ленты ─────────────────────────────────────────────────────── */
