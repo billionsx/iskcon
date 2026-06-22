@@ -212,18 +212,12 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
-  // Ориентацию берём ИЗ САМОГО ЗАГРУЖЕННОГО КАДРА (naturalWidth/Height). EXIF-поворота в
-  // этих фото нет (exif:1), поэтому это абсолютная истина и не зависит ни от API, ни от кэша.
-  // Серверный флаг намеренно НЕ используем — кэш мог отдать устаревшее/неверное значение.
-  // Сброс при смене кадра — синхронно в рендере, чтобы новый кадр не унаследовал старый замер.
-  const [ar, setAr] = useState<number | null>(null);
-  const frameKey = `${ti}:${ii}`;
-  const lastFrameRef = useRef(frameKey);
-  if (lastFrameRef.current !== frameKey) { lastFrameRef.current = frameKey; setAr(null); }
-  const measureRef = useCallback((node: HTMLImageElement | null) => {
-    if (node && node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
-  }, []);
-  const orient: "p" | "l" | null = ar != null ? (ar < 1 ? "p" : "l") : null;
+  // Даршан-кадры показываем ЦЕЛИКОМ (object-fit: contain) — мурти никогда не режем.
+  // Раньше для ландшафта включался cover, а ориентацию мерили по naturalWidth/Height.
+  // Но источники (напр. Чоупати) отдают EXIF-повёрнутые фото: пре-EXIF размеры
+  // классифицировали реальный портрет как ландшафт → cover срезал верх/низ (видны были
+  // только стопы/середина мурти). Поэтому замер убран — поля при любой ориентации
+  // закрывает размытая подложка из того же кадра.
 
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
@@ -250,7 +244,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
-  /* сброс прогресса при смене кадра/храма (ориентацию измеряет measureRef по самому кадру) */
+  /* сброс прогресса при смене кадра/храма */
   useEffect(() => { accRef.current = 0; if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
   /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps) */
@@ -313,15 +307,14 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* размытая подложка из того же кадра — заполняет поля по краям, без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
       {/* Бокс img = строго экран (position:absolute; inset:0 → определённая высота, без грид-багов
-          с процентами). Фит через object-fit: портрет — contain (целиком по высоте, поля = размытая
-          подложка); ландшафт — cover (на весь экран, верх/низ слегка подрезаются). */}
+          с процентами). Фит — object-fit: contain при любой ориентации: кадр целиком, поля
+          закрывает размытая подложка. Мурти не обрезаем. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
-          onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); }}
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             imageOrientation: "from-image",
-            objectFit: orient === "l" ? "cover" : "contain",   // ландшафт → на весь экран; портрет/замер → целиком
+            objectFit: "contain",   // целиком, без обрезки мурти (поля закрывает блюр-подложка)
             objectPosition: "center",
           }} />
       </div>

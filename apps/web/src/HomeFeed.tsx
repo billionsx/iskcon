@@ -266,10 +266,10 @@ export function HomeFeed() {
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Telegram</div>
-        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Лента ISKCON</h2>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>ISKCON ONE LOVE</div>
+        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Живая лента</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Живая лента ISKCON ONE LOVE — вдохновение и события движения Харе Кришна в этой беспрецедентной волне Гауранга Лилы.
+          Вдохновение, события и даршаны всемирного движения Харе Кришна в этой беспрецедентной волне Гауранга Лилы.
         </p>
       </div>
 
