@@ -203,6 +203,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [ii, setII] = useState(0);       // индекс кадра внутри храма
   const [paused, setPaused] = useState(false);
   const [capOpen, setCapOpen] = useState(false);
+  const [ar, setAr] = useState<number | null>(null);   // соотношение сторон кадра С УЧЁТОМ EXIF (w/h)
 
   const item = items[ti];
   const imgs = item.images;
@@ -211,6 +212,17 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const barRef = useRef<HTMLSpanElement | null>(null);
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
+
+  // EXIF-устойчивый замер ориентации. naturalWidth/Height отдают размеры ДО EXIF-поворота,
+  // поэтому вертикальный кадр со снятым телефоном (горизонтальные пиксели + флаг поворота)
+  // ошибочно считался горизонтальным и резался. Зонд рендерится с auto-размерами и
+  // image-orientation:from-image — его offsetWidth/Height уже учитывают реальный поворот.
+  // Стабильный ref-колбэк срабатывает один раз на монтирование кадра (key), ловит и кэш.
+  const probeRef = useCallback((node: HTMLImageElement | null) => {
+    if (!node) return;
+    if (node.complete && node.offsetWidth && node.offsetHeight) setAr(node.offsetWidth / node.offsetHeight);
+    else setAr(null); // ещё не загружен → до замера кадр целиком (без обрезки)
+  }, []);
 
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
@@ -299,12 +311,23 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* кадр целиком, без обрезки: вертикальный вписывается по высоте, горизонтальный — по ширине;
-          остаток добивает размытая подложка. object-fit: contain не режет мурти ни при какой ориентации/EXIF. */}
+      {/* кадр: горизонтальный — на всю ширину экрана, вертикальный — по высоте; до замера —
+          целиком без обрезки. Остаток добивает размытая подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
+          style={{
+            display: "block", imageOrientation: "from-image",
+            ...(ar == null
+              ? { maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto" }   // до замера — кадр целиком
+              : ar >= 1
+                ? { width: "100%", height: "auto" }                                       // горизонтальный → на всю ширину
+                : { width: "auto", height: "100%" }),                                     // вертикальный → по высоте
+          }} />
       </div>
+      {/* скрытый зонд: меряет ориентацию кадра с учётом EXIF (offsetWidth/Height при auto-размере) */}
+      <img key={`probe:${ti}:${ii}`} src={imgs[ii]} alt="" aria-hidden ref={probeRef}
+        onLoad={(e) => { const t = e.currentTarget; if (t.offsetWidth && t.offsetHeight) setAr(t.offsetWidth / t.offsetHeight); }}
+        style={{ position: "fixed", left: "-99999px", top: 0, width: "auto", height: "auto", visibility: "hidden", pointerEvents: "none", imageOrientation: "from-image" }} />
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
       {/* скримы для читабельности хрома */}
