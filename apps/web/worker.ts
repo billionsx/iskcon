@@ -6,6 +6,7 @@ import { centersApi } from "./src/centers/server";
 import { darshanApi } from "./src/darshan/server";
 import { readingApi } from "./src/reading/server";
 import { downloaderApi } from "./src/downloader/server";
+import { storiesSyncApi } from "./src/stories/server";
 import { BOOKS, BOOK_ABOUT, bookShareTitle, bookShareImage, bookFullTitle, type BookData } from "./src/books";
 import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from "./src/kirtans";
 import { coverHtml } from "./src/pdfCover";
@@ -1968,6 +1969,10 @@ export default {
     // ── Загрузчик аудио (/api/downloader/*): диспетчер GitHub Actions, защищён ADMIN_TOKEN ──
     const dlRes = await downloaderApi(request, env, url);
     if (dlRes) return dlRes;
+
+    // ── Забор сторис (/api/stories-sync/*): диспетчер tg-stories.yml, защищён ADMIN_TOKEN ──
+    const stRes = await storiesSyncApi(request, env, url);
+    if (stRes) return stRes;
 
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
     if (url.pathname.startsWith("/api/")) {
