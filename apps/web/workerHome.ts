@@ -382,8 +382,8 @@ function synthDarshan(row: { id: number; date: string; temple_name: string; deit
   return {
     id: `d${row.id}`, date: dateIso, views: "", text,
     rich: [{ t: "t", v: text }],
-    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`),
-    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`),
+    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=400`),
+    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`),
     videos: [], audios: [], link: null, ts,
   };
 }
@@ -439,11 +439,10 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
     for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) posts.push(pp); }
     posts.reverse(); // свежие сверху
 
-    // ПОЛНОРАЗМЕР для даршан-постов канала. Веб-превью t.me/s ужимает фото (у альбомов —
-    // вообще мелкая сетка). Бот публиковал ПОЛНОРАЗМЕРНЫЕ оригиналы (храмовые CDN) и писал
-    // их URL в D1 (images_json) под id поста. Матчим скрейп-посты к D1 по tg_message_id и
-    // ставим оригиналы И в карточку (photos, w=2048), И в лайтбокс (photosFull, w=2560) —
-    // через worker-прокси /api/img (тянет сервер, свой домен + кэш). Превью больше не показываем.
+    // ПОЛНОРАЗМЕР для даршан-постов канала. Веб-превью t.me/s (p.photos) оставляем как лёгкий
+    // мгновенный плейсхолдер (прогрессивная загрузка, без серого ожидания), а оригиналы с
+    // храмовых CDN (images_json под id поста) кладём в photosFull — карточка показывает их
+    // поверх превью, и лайтбокс тоже. Через worker-прокси /api/img (сервер + кэш). Матч по tg_message_id.
     try {
       const ids = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
       if (ids.length && env.DB) {
@@ -458,10 +457,7 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
           if (!imgs) continue;
           try {
             const full = JSON.parse(imgs) as string[];
-            if (Array.isArray(full) && full.length) {
-              p.photos = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`);
-              p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`);
-            }
+            if (Array.isArray(full) && full.length) p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`);
           } catch { /* оставляем превью */ }
         }
       }
