@@ -138,6 +138,55 @@ async function orientFor(images: string[], referer: string): Promise<("p" | "l" 
   }));
 }
 
+// ── ДИАГНОСТИКА (?debug=orient): сырые размеры + EXIF + статус ответа CDN ──
+function jpegInfo(buf: ArrayBuffer): { w: number; h: number; exif: number } | null {
+  const b = new Uint8Array(buf); const dv = new DataView(buf);
+  if (b.length < 4 || b[0] !== 0xff || b[1] !== 0xd8) return null;
+  let w = 0, h = 0, exif = 1, i = 2;
+  while (i < b.length - 1) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const marker = b[i + 1];
+    if (marker === 0xff) { i++; continue; }
+    if (marker === 0xd8 || marker === 0xd9 || (marker >= 0xd0 && marker <= 0xd7) || marker === 0x01) { i += 2; continue; }
+    if (i + 4 > b.length) break;
+    const len = dv.getUint16(i + 2); const seg = i + 4;
+    if (marker === 0xe1 && seg + 6 <= b.length &&
+        b[seg] === 0x45 && b[seg + 1] === 0x78 && b[seg + 2] === 0x69 && b[seg + 3] === 0x66 && b[seg + 4] === 0x00 && b[seg + 5] === 0x00) {
+      const tiff = seg + 6; const le = b[tiff] === 0x49 && b[tiff + 1] === 0x49;
+      const u16 = (o: number) => dv.getUint16(o, le); const u32 = (o: number) => dv.getUint32(o, le);
+      if (u16(tiff + 2) === 0x002a) {
+        const ifd0 = tiff + u32(tiff + 4);
+        if (ifd0 + 2 <= b.length) {
+          const n = u16(ifd0);
+          for (let e = 0; e < n; e++) {
+            const ent = ifd0 + 2 + e * 12; if (ent + 12 > b.length) break;
+            if (u16(ent) === 0x0112) { exif = u16(ent + 8); break; }
+          }
+        }
+      }
+    }
+    if ((marker >= 0xc0 && marker <= 0xc3) || (marker >= 0xc5 && marker <= 0xc7) ||
+        (marker >= 0xc9 && marker <= 0xcb) || (marker >= 0xcd && marker <= 0xcf)) {
+      if (seg + 5 <= b.length) { h = dv.getUint16(seg + 1); w = dv.getUint16(seg + 3); }
+      break;
+    }
+    if (len < 2) break;
+    i = seg + (len - 2);
+  }
+  return w && h ? { w, h, exif } : null;
+}
+
+async function headDebug(url: string, referer: string): Promise<Record<string, unknown>> {
+  try {
+    const r = await fetch(url, { headers: { "User-Agent": SITE_UA, referer, Range: "bytes=0-131071" }, cf: { cacheTtl: 86400, cacheEverything: true } } as RequestInit);
+    let len = 0; const buf = await r.arrayBuffer().catch(() => null);
+    if (buf) len = buf.byteLength;
+    const info = buf ? jpegInfo(buf) : null;
+    const orient = buf ? jpegOrient(buf) : null;
+    return { url: url.replace(/^https?:\/\/[^/]+/, ""), status: r.status, len, ct: r.headers.get("content-type"), w: info?.w ?? null, h: info?.h ?? null, exif: info?.exif ?? null, orient };
+  } catch (e) { return { url: url.replace(/^https?:\/\/[^/]+/, ""), error: String(e) }; }
+}
+
 // Даты IST: сегодня и N предыдущих дней (YYYY-MM-DD), для отката к свежей галерее.
 function istDaysBack(n: number): string[] {
   const fmt = new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" });
@@ -412,6 +461,18 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
   if (request.method !== "GET") return jr({ error: "method" }, 405);
 
   await ensureDarshan(env);
+
+  // Диагностика ориентации: GET /api/darshan?debug=orient — для каждого кадра свежей
+  // галереи Вриндавана показывает статус ответа CDN, реальные размеры, EXIF и итог парсера.
+  if (p === "/api/darshan" && url.searchParams.get("debug") === "orient") {
+    const src = SOURCES.find((s) => s.kind === "site" && s.site !== "mayapur");
+    if (!src) return jr({ error: "no_site_source" }, 200, "no-store");
+    const gal = await fetchSiteGallery(src);
+    if (!gal) return jr({ error: "no_gallery", note: "сайт Вриндавана не отдал галерею воркеру" }, 200, "no-store");
+    const sample = gal.images.slice(0, 10);
+    const rows = await Promise.all(sample.map((u) => headDebug(u, "https://iskconvrindavan.com/")));
+    return jr({ date: gal.date, count: gal.images.length, referer: "https://iskconvrindavan.com/", frames: rows }, 200, "no-store");
+  }
 
   // Постраничный архив из D1 (для «показать ещё»).
   if (p === "/api/darshan/archive") {
