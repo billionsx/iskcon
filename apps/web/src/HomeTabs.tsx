@@ -12,6 +12,7 @@ export type HomeTabId =
   | "sadhana"      // Садхана — хаб ежедневной практики
   | "calendar"     // Вайшнавский календарь
   | "feed"         // Лента ISKCON (@iskcone)
+  | "news"         // Новости ИСККОН
   | "centres"      // Центры ИСККОН
   | "restaurants"  // Рестораны ИСККОН
   | "education"    // Образование ИСККОН
@@ -21,6 +22,7 @@ export type HomeTabId =
 
 export const HOME_TABS: readonly { id: HomeTabId; label: string }[] = [
   { id: "iskcon",      label: "ИСККОН" },
+  { id: "news",        label: "Новости" },
   { id: "centres",     label: "Центры" },
   { id: "restaurants", label: "Рестораны" },
   { id: "education",   label: "Образование" },
