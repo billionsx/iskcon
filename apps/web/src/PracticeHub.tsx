@@ -34,26 +34,17 @@ interface Group { group: string; items: Row[] }
 const GROUPS: Group[] = [
   { group: "Каждый день", items: [
     { icon: ICON.verse, t: "Стих дня", d: "Системное чтение Прабхупады — стих за стихом, БГ → ШБ → ЧЧ", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-daily-verse")) },
-    { icon: ICON.darshan, t: "Даршан дня", d: "Божества из храмов Маяпура и Вриндавана", go: () => window.dispatchEvent(new CustomEvent("iol:open-darshan")) },
   ] },
   { group: "Моя практика", items: [
     { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-japa")) },
     { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-diary")) },
-    { icon: ICON.moon, t: "Экадаши и посты", d: "Когда следующий, правила, время выхода (парана)" },
   ] },
   { group: "Прасад", items: [
     { icon: ICON.bowl, t: "Рецепты прасада", d: "100 рецептов, подбор по продуктам и диете, что дорого Божествам, подношение", to: "/prasadam" },
     { icon: ICON.bookmark, t: "Книга «Кухня прасада»", d: "Философия, продукты и специи, техники, рецепты и подношение", to: "/prasadam/book" },
   ] },
-  { group: "Сообщество", items: [
-    { icon: ICON.pin, t: "Центры ИСККОН рядом", d: "Локатор Ятры: поиск и карта храмов, нама-хатт, ферм и ресторанов", to: "/centers" },
-  ] },
-  { group: "Узнавать", items: [
-    { icon: ICON.news, t: "Новости ИСККОН", d: "Мировые новости движения, переведённые на русский" },
-  ] },
   { group: "Изучение", items: [
     { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано: системное чтение, книги, время и стрик", go: () => window.dispatchEvent(new CustomEvent("iol:open-progress")) },
-    { icon: ICON.bookmark, t: "Закладки и заметки", d: "Сохранённые стихи, выделения и личные пометки" },
   ] },
   { group: "Рост", items: [
     { icon: ICON.path, t: "Путь преданного", d: "Ступени от шраддхи к преме, цели и достижения" },
@@ -67,7 +58,7 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Личное пространство ежедневной практики: джапа, дневник, стих и даршан дня, прасад, новости и путь. Разделы открываются постепенно — здесь будет ваш ежедневный заход в храм.
+          Личное пространство ежедневной практики: стих дня, джапа, дневник, прасад и путь преданного. Здесь будет ваш ежедневный заход в храм.
         </p>
       </div>
 

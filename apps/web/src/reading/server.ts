@@ -31,6 +31,25 @@ const WINDOW = 60; // максимум стихов в одной единице
 const isWork = (s: string): s is Work => (WORKS as readonly string[]).includes(s);
 const hasPur = (p: string | null) => !!p && p.trim().length > 0;
 
+/* ── те же чистки текста, что и в боевой читалке библиотеки (worker.ts) ── */
+function stripScriptLabel(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return s.replace(/^[\u0400-\u04FF]+\s*/, "");
+}
+function cleanGloss(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/[\s.\u2026]+$/u, "");
+}
+function fixSentenceSpacing(s: string | null | undefined): string | null {
+  if (s == null) return null;
+  return String(s).replace(/([а-яёa-z])([.!?])([А-ЯЁA-Z])/gu, "$1$2 $3");
+}
+/** Подпись стиха как в библиотеке: «Текст N» / «Тексты N-M». */
+function verseLabel(ref: string): string {
+  const tail = String(ref).split(".").pop() ?? "";
+  return /[-–—]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, "-")}` : `Текст ${tail}`;
+}
+
 /* ── кешируемый индекс глав: префикс стихов до главы (внутри книги) + офсеты книг ── */
 interface PlanIndex { at: number; total: number; offset: Record<Work, number>; prefix: Record<string, number>; }
 let idxCache: PlanIndex | null = null;
@@ -133,6 +152,17 @@ export async function readingApi(request: Request, env: ReadingEnv, url: URL): P
   const fromGnum = await globalNum(env, idx, start);
   const toGnum = fromGnum + unit.length - 1;
 
+  // Пословный перевод стихов единицы — та же таблица и порядок, что в читалке.
+  const ids = unit.map((v) => v.id);
+  const byVerse: Record<string, { term: string; gloss: string | null }[]> = {};
+  if (ids.length) {
+    const ph = ids.map((_, i) => `?${i + 1}`).join(",");
+    const tres = await env.DB.prepare(
+      `SELECT verse_id, term, gloss FROM verse_tokens WHERE verse_id IN (${ph}) ORDER BY verse_id, ordinal`
+    ).bind(...ids).all<{ verse_id: string; term: string; gloss: string | null }>();
+    for (const t of tres.results ?? []) (byVerse[t.verse_id] ??= []).push({ term: t.term, gloss: cleanGloss(t.gloss) });
+  }
+
   // Следующая стартовая позиция.
   let nextFrom: string | null = win[endIdx + 1]?.id ?? null;
   if (!nextFrom) {
@@ -148,8 +178,17 @@ export async function readingApi(request: Request, env: ReadingEnv, url: URL): P
     fromGnum,
     toGnum,
     total: idx.total,
-    verses: unit.map((v) => ({ id: v.id, ref: v.ref, devanagari: v.devanagari, translit: v.translit, translation: v.translation })),
-    purport: hasPur(endRow.purport) ? { ref: endRow.ref, text: endRow.purport as string } : null,
+    verses: unit.map((v) => ({
+      id: v.id,
+      ref: v.ref,
+      label: verseLabel(v.ref),
+      devanagari: stripScriptLabel(v.devanagari),
+      translit: v.translit ?? null,
+      tokens: byVerse[v.id] ?? [],
+      translation: fixSentenceSpacing(v.translation),
+      purport: hasPur(v.purport) ? fixSentenceSpacing(v.purport) : null,
+    })),
+    purport: hasPur(endRow.purport) ? { ref: endRow.ref, text: fixSentenceSpacing(endRow.purport) as string } : null,
     nextFrom,
     done: nextFrom === null,
   }, 200, "public, max-age=300");

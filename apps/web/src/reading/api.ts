@@ -7,9 +7,15 @@ import { api } from "../api";
 export interface ReadVerse {
   id: string;
   ref: string;
+  /** Подпись стиха как в библиотеке: «Текст N» / «Тексты N-M». */
+  label: string;
   devanagari: string | null;
   translit: string | null;
+  /** Пословный перевод (как в читалке библиотеки). */
+  tokens: { term: string; gloss: string | null }[];
   translation: string | null;
+  /** Комментарий Прабхупады к этому стиху (есть только у закрывающего единицу). */
+  purport: string | null;
 }
 
 export interface ReadUnit {

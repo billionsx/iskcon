@@ -464,13 +464,13 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
 function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void; flash?: string | null;
 }) {
-  const [sub, setSub] = useState("practice");
+  const [sub, setSub] = useState("feed");
   return (
     <div>
-      <SegRow value={sub} onChange={setSub} items={[["practice", "Практика"], ["calendar", "Календарь"], ["feed", "Лента"], ["cabinet", "Кабинет"]]} />
-      {sub === "practice" && <><DarshanRings /><PracticeHub onOpen={onOpenPath} /></>}
+      <SegRow value={sub} onChange={setSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
+      {sub === "feed" && <><DarshanRings /><HomeFeed /></>}
+      {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
-      {sub === "feed" && <HomeFeed />}
       {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
     </div>
   );
