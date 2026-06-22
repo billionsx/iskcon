@@ -59,6 +59,17 @@ const SOURCES: Src[] = [
     place: "Шри Шри Кришна-Баларам Мандир · ИСККОН Вриндаван",
     srcLabel: "ISKCON Vrindavan",
   },
+  {
+    // Евпатория (Крым): публичный Telegram-канал храма с ежедневным даршаном.
+    // Читаем server-side через t.me/s/ (как запасной путь Маяпура) — берём свежий
+    // пост с фото. Только в сторис приложения; ТГ-постинг (@iskcone) не затрагивается.
+    slug: "evpatoria",
+    kind: "tg",
+    channel: "harekrishnaevpatoria",
+    name: "ИСККОН Евпатория",
+    deities: "",
+    srcLabel: "ISKCON Evpatoria",
+  },
 ];
 
 /* ── источник: сайт храма (полная галерея даршана за сегодня IST) ── */
