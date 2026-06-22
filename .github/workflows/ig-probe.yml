@@ -33,7 +33,7 @@ jobs:
                   note(f"IG rings: {[(it.get('templeSlug'), it.get('deities'), len(it.get('images',[]))) for it in igrings]}")
                   img = next((it['images'][0] for it in today if it.get('templeSlug')=='noida' and it.get('images')), None)
                   if img:
-                      ri = urllib.request.urlopen("https://gaurangers.com"+img, timeout=60); b = ri.read()
+                      ri = urllib.request.urlopen(urllib.request.Request("https://gaurangers.com"+img, headers={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36","Accept":"image/avif,image/webp,image/*,*/*","Referer":"https://gaurangers.com/"}), timeout=60); b = ri.read()
                       note(f"igimg {img} -> HTTP{ri.status} ct={ri.headers.get('content-type')} bytes={len(b)}")
                   else: err("no noida image url")
               except Exception as e:
