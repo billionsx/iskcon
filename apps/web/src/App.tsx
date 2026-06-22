@@ -520,7 +520,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   };
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
-      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("krishna"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "krishna" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
+      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("sadhana"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "sadhana" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
           {tab === "krishna" && <EntityPage id="krishna" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
@@ -580,7 +580,7 @@ export default function App() {
   if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pdf")) {
     return <PdfDoc />;
   }
-  const [tab, setTab] = useState("krishna");
+  const [tab, setTab] = useState("sadhana");
   const [openBook, setOpenBook] = useState<string | null>(null);
   const [bookTarget, setBookTarget] = useState<{ div: string | null; chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
@@ -680,7 +680,7 @@ export default function App() {
     if (openDhama) return "/dhama/" + openDhama;
     // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
     if (tab === "krishna") return (typeof window !== "undefined" && window.location.pathname.startsWith("/krishna")) ? window.location.pathname : "/krishna";
-    return tab === "home" ? "/" : "/" + tab;
+    return (tab === "home" || tab === "sadhana") ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
     fetch(api(`/content/resolve?slug=${encodeURIComponent(slug)}`))
@@ -699,7 +699,7 @@ export default function App() {
     setDonate(false);
     setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false);
     const seg0 = clean.split("/")[1] ?? "";
-    if (clean === "/") { setTab("krishna"); return; }
+    if (clean === "/") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
     if (seg0 === "krishna") { setTab("krishna"); return; }
