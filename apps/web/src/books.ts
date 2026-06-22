@@ -519,9 +519,8 @@ export const BOOKS: Record<string, BookData> = {
     description: "Молитвы царя Кулашекхары, выражающие безраздельную преданность Господу Мукунде.",
     publisher: "",
     covers: ["/covers/mukunda-mala-stotra-ia.jpg"],
-    chips: ["62 стиха", "~1100 лет", "Кулашекхара"],
+    chips: ["40 стихов", "~1100 лет", "Кулашекхара"],
     uniformTitle: true,
-    noText: true,
   },
   "sanmodana-bhashya": {
     id: "sanmodana-bhashya",
