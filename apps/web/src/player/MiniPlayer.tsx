@@ -6,6 +6,7 @@
 import { usePlayer } from "./store";
 import { PlayIcon, PauseIcon, NextIcon } from "./icons";
 import { useEffect, type CSSProperties } from "react";
+import { BOOKS, bookFullTitle } from "../books";
 
 export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
   const p = usePlayer();
@@ -20,13 +21,17 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
 
   const pct = p.duration > 0 ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
   const t = p.track;
+  const abBook = p.kind !== "kirtan" ? BOOKS[p.book] : undefined;
+  const isAudiobook = !!abBook?.noText;
   const subtitle = p.kind === "kirtan"
     ? (p.artist || "Киртан")
     : t?.kind === "intro"
       ? (p.mode === "commentary" ? "С комментариями · вступление" : "Вступление")
       : t?.lilaLabel
         ? `${t.lilaLabel} · Глава ${t.chapter ?? ""}`
-        : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
+        : isAudiobook && abBook
+          ? bookFullTitle(abBook)
+          : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
 
   const bottom = tabBarVisible
     ? "calc(90px + env(safe-area-inset-bottom))"

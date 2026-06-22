@@ -69,17 +69,19 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
   const isKirtan = p.kind === "kirtan";
+  const BOOK = BOOKS[p.book] ?? BOOKS.bg;
+  const isAudiobook = !isKirtan && !!BOOK.noText; // аудиокнига без текста: «глав» нет — показываем название книги
   const sub = isKirtan
     ? (p.artist || "Киртан")
     : p.track?.kind === "intro" ? "Вступление"
       : p.track?.lilaLabel ? `${p.track.lilaLabel} · Глава ${p.track?.chapter ?? ""}`
-        : `Глава ${p.track?.chapter ?? ""}`;
+        : isAudiobook ? bookFullTitle(BOOK)
+          : `Глава ${p.track?.chapter ?? ""}`;
 
   function onDown(e: React.PointerEvent) { startY.current = e.clientY; setDragging(true); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }
   function onMove(e: React.PointerEvent) { if (startY.current == null) return; const dy = e.clientY - startY.current; if (dy > 0) setDrag(dy); }
   function onUp() { if (startY.current == null) return; const d = drag; startY.current = null; setDragging(false); setDrag(0); if (d > 110) p.close(); }
 
-  const BOOK = BOOKS[p.book] ?? BOOKS.bg;
   const ORIGIN = "https://gaurangers.com";
   const artistSlug = isKirtan ? (albumById(p.book)?.artist ?? "") : "";
   const kirtanUrl = artistSlug ? `${ORIGIN}/kirtan/${artistSlug}` : ORIGIN;
@@ -179,7 +181,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
               <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
-              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isKirtan ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : `${sub} · ${bookFullTitle(BOOK)}`}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isKirtan ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : isAudiobook ? bookFullTitle(BOOK) : `${sub} · ${bookFullTitle(BOOK)}`}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
