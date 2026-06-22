@@ -77,6 +77,7 @@ async function scrapeOne(browser, url) {
     cdn_count: cdn.length,
     cdn_images: cdn.slice(0, 100),
     og: uniq(dom.og),
+    darshan_links: uniq(dom.hrefs.filter((h) => /daily-darshan-gallery\/|daily-sringar-darshan|\/darshan|mangal|sringar|shringar|rajbhog|raj-bhog|sandhya|shayan|gaura|utthapan|abhishek/i.test(h || ""))).slice(0, 80),
     biggest: dims,
   };
 }
