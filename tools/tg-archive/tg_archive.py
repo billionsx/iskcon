@@ -432,6 +432,7 @@ async def cmd_stream(cfg: dict):
     DOWNLOAD_DIR.mkdir(exist_ok=True)
     metadata_done = item_existed  # если объект уже создан — метаданные больше не трогаем
     uploaded_run: set[str] = set()
+    tracklist: list[dict] = []   # реальные названия дорожек из канала → сайдкар playlist.json
     idx = 0
     n_skip = n_done = n_fail = 0
 
@@ -467,6 +468,8 @@ async def cmd_stream(cfg: dict):
                 f"{performer} {title}" if (performer or title) else (orig_name or f"audio-{msg.id}")
             )
             remote = f"{idx:03d}_{name_base}{ext}"
+            raw_title = (title or (os.path.splitext(orig_name)[0] if orig_name else None) or f"Часть {idx}").strip()
+            tracklist.append({"file": remote, "title": raw_title})
 
             if remote in existing or remote in uploaded_run:
                 n_skip += 1
@@ -507,6 +510,19 @@ async def cmd_stream(cfg: dict):
                 except Exception:
                     pass
 
+    # Сайдкар с реальными названиями дорожек (из канала) — бэкенд берёт из него заголовки
+    # для книг без глав (стихи/мантры). Перезаписывается каждый прогон, идемпотентно.
+    if tracklist:
+        try:
+            pl_path = DOWNLOAD_DIR / "playlist.json"
+            pl_path.write_text(json.dumps({"tracks": tracklist}, ensure_ascii=False), encoding="utf-8")
+            ia_upload(identifier, files={"playlist.json": str(pl_path)}, metadata={},
+                      access_key=ak, secret_key=sk, retries=3)
+            pl_path.unlink(missing_ok=True)
+            ok(f"playlist.json обновлён ({len(tracklist)} дорожек)")
+        except Exception as e:
+            info(f"playlist.json не залит: {e}")
+
     ok(f"Прогон завершён: залито {n_done}, пропущено (уже было) {n_skip}, ошибок {n_fail}.")
     info(f"Объект: {base_url}")
     if n_fail:
@@ -532,7 +548,34 @@ def main():
     elif args.command == "upload":
         cmd_upload(cfg)
     elif args.command == "stream":
-        asyncio.run(cmd_stream(cfg))
+        batch = (os.getenv("BATCH_JSON") or "").strip()
+        if batch:
+            # Несколько книг в ОДНОМ джобе, строго последовательно (одна Telegram-сессия за раз —
+            # параллельные джобы её отзывают). Каждая книга резюмируемая, ошибка одной не валит остальные.
+            try:
+                items = json.loads(batch)
+            except Exception as e:
+                die(f"BATCH_JSON не парсится: {e}")
+            os.environ.pop("BOOK_ID", None)
+            os.environ.pop("TG_LIMIT", None)
+            failed = []
+            for it in items:
+                ident = (it.get("meta") or {}).get("identifier", "?")
+                print(f"::group::Книга {ident} ← {it.get('channel')}")
+                os.environ["TG_CHANNEL"] = it["channel"]
+                os.environ["META_JSON"] = json.dumps(it["meta"], ensure_ascii=False)
+                try:
+                    asyncio.run(cmd_stream(cfg))
+                except SystemExit as e:
+                    if e.code:
+                        print(f"\u2717 {ident}: прерван (code {e.code})"); failed.append(it.get("channel"))
+                except Exception as e:
+                    print(f"\u2717 {ident}: {e}"); failed.append(it.get("channel"))
+                print("::endgroup::")
+            if failed:
+                die(f"Не докатились: {failed} — перезапусти батч, докатит остаток")
+        else:
+            asyncio.run(cmd_stream(cfg))
     elif args.command == "run":
         asyncio.run(cmd_download(cfg))
         cmd_upload(cfg)

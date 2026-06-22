@@ -721,6 +721,48 @@ async function bookMetaResponse(env: Env, work: string): Promise<Response> {
   });
 }
 
+// ── Общий аудио-хэндлер: треки = mp3-оригиналы объекта iskcone-<work>, упорядоченные по
+// ведущему номеру в имени (NNN_*.mp3); заголовки — из сайдкара playlist.json (реальные названия
+// дорожек Telegram-канала). Для книг без глав (стихи/мантры): Нектар наставлений, Шри Ишопанишад,
+// Брахма-самхита — и любых будущих аудиокниг, заливаемых тем же загрузчиком.
+async function bookAudioGeneric(work: string, identifier: string, origin: string): Promise<Response> {
+  const meta = await fetch(`https://archive.org/metadata/${identifier}`, {
+    headers: { accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!meta.ok) return json({ book: work, modes: { plain: { identifier, tracks: [] } } });
+  const data = (await meta.json()) as { files?: IaFile[] };
+  const files = data.files || [];
+
+  const titles = new Map<string, string>();
+  if (files.some((f) => f.name === "playlist.json")) {
+    try {
+      const pl = await fetch(`https://archive.org/download/${identifier}/playlist.json`, { cf: { cacheTtl: 300 } });
+      if (pl.ok) {
+        const j = (await pl.json()) as { tracks?: { file: string; title: string }[] };
+        for (const t of j.tracks || []) if (t.file) titles.set(t.file, t.title);
+      }
+    } catch { /* нет сайдкара — заголовок соберём из имени файла */ }
+  }
+
+  const tracks: AudioTrack[] = files
+    .filter((f) => f.source === "original" && /\.mp3$/i.test(f.name))
+    .map((f) => {
+      const m = f.name.match(/^(\d{1,3})[._-]/);
+      const num = m ? parseInt(m[1], 10) : 0;
+      const fallback = f.name.replace(/\.mp3$/i, "").replace(/^\d{1,3}[._-]/, "").replace(/[._-]+/g, " ").trim();
+      return {
+        kind: "chapter" as const, pos: num, chapter: num,
+        title: titles.get(f.name) || fallback || `Часть ${num}`,
+        file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
+        durationSec: audioDuration(f.length),
+      };
+    });
+  tracks.sort((a, b) => (a.pos || 0) - (b.pos || 0));
+  tracks.forEach((t, i) => (t.pos = i));
+  return json({ book: work, modes: { plain: { identifier, tracks } } });
+}
+
 // ── Чайтанья-чаритамрита: три IA-элемента по лилам (без комментариев пока) ──
 // Файлы: «NN.CC.<Lila>-lila.mp3» (глава) или «NN.PP.CC.<Lila>-lila.mp3» (часть главы).
 const CC_AUDIO_LILAS: { lila: string; label: string; identifier: string }[] = [
@@ -1225,6 +1267,10 @@ export default {
     }
     if (url.pathname === "/api/books/spl/audio") {
       return splAudioManifest(env, url.origin);
+    }
+    const genAudioM = url.pathname.match(/^\/api\/books\/(noi|iso|bs)\/audio$/);
+    if (genAudioM) {
+      return bookAudioGeneric(genAudioM[1], `iskcone-${genAudioM[1]}`, url.origin);
     }
 
     // GET /api/books/:work/meta → каноничные метаданные книги для заливки аудиокниги (tg-archive)

@@ -46,6 +46,9 @@ on:
       meta_json:
         description: "JSON метаданных книги (если задан — используется напрямую, без запроса к сайту)"
         default: ""
+      batch_json:
+        description: "JSON-массив [{channel, meta}] — несколько книг последовательно в одном джобе"
+        default: ""
 
 jobs:
   run:
@@ -96,6 +99,7 @@ jobs:
           TG_LIMIT: ${{ inputs.limit }}
           BOOK_ID: ${{ inputs.book }}
           META_JSON: ${{ inputs.meta_json }}
+          BATCH_JSON: ${{ inputs.batch_json }}
           IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
           IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
           IA_MODE: ${{ inputs.ia_mode }}
