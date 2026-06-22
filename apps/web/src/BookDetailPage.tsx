@@ -931,6 +931,102 @@ function NodOverview({ book }: { book: BookData }) {
   );
 }
 
+/* ───────── Рецензии · данные (генерик для аудио-книг) ───────── */
+type Endorsement = { text: string; name: string; role: string };
+type ReviewsData = { intro: string; endorsements?: Endorsement[]; significance: string };
+
+const BOOK_REVIEWS: Record<string, ReviewsData> = {
+  "manah-siksa": {
+    intro: "«Манах-шикша» — одиннадцать сокровенных стихов Шрилы Рагхунатхи даса Госвами, одного из шести Госвами Вриндавана, обращённых к собственному уму.",
+    significance: "Сжатое руководство по внутренней дисциплине бхаджана: как обуздать ум, оставить мирские привязанности и сосредоточиться на служении Радхе и Кришне. Рагхунатха дас Госвами — образец отречения и сокровенной преданности.",
+  },
+  "siksastaka": {
+    intro: "«Шикшаштака» — восемь стихов, единственное произведение, написанное Самим Шри Чайтаньей Махапрабху.",
+    significance: "В этих восьми стихах сжата вся наука бхакти: слава святого имени, смирение ниже травинки, терпение и чистое желание любовного служения Кришне. С них начинается изучение учения Господа Чайтаньи.",
+  },
+  "bhakti-tattva-viveka": {
+    intro: "«Бхакти-таттва-вивека» — трактат Шрилы Бхактивиноды Тхакура о различении истины в преданности.",
+    significance: "Тхакур разбирает ступени веры и учит отличать чистое преданное служение от его внешних подобий — материально мотивированной религиозности. Инструмент честной самопроверки на духовном пути.",
+  },
+  "mukunda-mala-stotra": {
+    intro: "«Мукунда-мала-стотра» — молитвы царя Кулашекхары, одного из альваров, преданных Южной Индии.",
+    significance: "Царь, оставивший всё ради памятования о Господе, выражает суть предания себя: молитву о том, чтобы ум был всегда занят Мукундой. Образец того, что преданность выше любого мирского положения.",
+  },
+  "sanmodana-bhashya": {
+    intro: "«Санмодана-бхашья» — комментарий Шрилы Бхактивиноды Тхакура к «Шикшаштаке» Шри Чайтаньи Махапрабху.",
+    significance: "Тхакур раскрывает глубинные смыслы восьми стихов Господа Чайтаньи, делая сжатое учение доступным практикующему. Незаменимое сопровождение к «Шикшаштаке».",
+  },
+  "bhaktyaloka": {
+    intro: "«Бхактьялока» — серия эссе Шрилы Бхактивиноды Тхакура о препятствиях на пути преданности (анартхах).",
+    significance: "Тхакур разбирает виды анартх — жадность, гнев, лицемерие и другие загрязнения сердца — и указывает путь очищения от них. Практическое руководство по внутренней гигиене бхакти.",
+  },
+  "prema-pradipa": {
+    intro: "«Према-прадипа» («Светильник любви») — философская повесть Шрилы Бхактивиноды Тхакура.",
+    significance: "Через беседы героев Тхакур излагает сиддханту гаудия-вайшнавов — от опровержения имперсонализма до науки чистой любви к Богу. Глубокая философия в живой повествовательной форме.",
+  },
+  "harinama-cintamani": {
+    intro: "«Харинама-чинтамани» — наставления о святом имени в форме бесед Шри Чайтаньи Махапрабху и Шрилы Харидаса Тхакура.",
+    significance: "Классический разбор величия имени Кришны и десяти оскорблений (нама-апарадх), которых следует избегать при повторении. Настольный текст для каждого, кто серьёзно относится к джапе и санкиртане.",
+  },
+  "caitanya-siksamrta": {
+    intro: "«Чайтанья-шикшамрита» — систематическое изложение учения Шри Чайтаньи Махапрабху Шрилой Бхактивинодой Тхакуром.",
+    significance: "Тхакур выстраивает учение Господа Чайтаньи в стройную систему — от основ дхармы до вершин чистой премы, в диалоге с мыслью своего времени. Один из ключевых трудов вайшнавского возрождения XIX века.",
+  },
+  "jagannatha-vallabha-nataka": {
+    intro: "«Джаганнатха-валлабха-натака» — драма Шри Рамананды Рая, близкого спутника Шри Чайтаньи Махапрабху.",
+    significance: "Рамананда Рай, которого Сам Господь Чайтанья признал знатоком высших истин расы, изображает сокровенные игры Радхи и Кришны. К этому произведению обращался и Бхактивинода Тхакур в Пури.",
+  },
+  "sri-namamrita": {
+    intro: "«Шри Намамрита» («Нектар святого имени») — тематическое собрание наставлений Шрилы Прабхупады о святом имени.",
+    significance: "Составленная из книг, писем и бесед, она собирает в одном месте всё, что основатель-ачарья ИСККОН говорил о повторении имён Кришны — славу имени, способ и плоды повторения. Вдохновение для ежедневной джапы.",
+  },
+  "ray-of-vishnu": {
+    intro: "«Луч Вишну» — биография Шрилы Бхактисиддханты Сарасвати Тхакура, духовного учителя Шрилы Прабхупады, написанная Рупа-виласой дасом.",
+    significance: "Рассказ о шактьявеша-аватаре, основавшем Гаудия-матх и проповедовавшем в масштабах, невиданных со времён Господа Чайтаньи. Именно он вдохновил Прабхупаду нести сознание Кришны на Запад.",
+  },
+  "uroki-lyubvi": {
+    intro: "«Уроки любви» — истории из жизни Шрилы Прабхупады, рассказанные его учеником Бхакти Вигьяной Госвами.",
+    significance: "Слушая о качествах и поступках святого, мы приобщаемся к живущей в его сердце любви к Богу — этот принцип Шрилы Рупы Госвами лежит в основе книги. Тёплый, личный взгляд на личность основателя-ачарьи ИСККОН.",
+  },
+  "navadvipa-dhama-mahatmya": {
+    intro: "«Навадвипа-дхама-махатмья» — описание славы Навадвипы, земли явления Шри Чайтаньи Махапрабху, Шрилой Бхактивинодой Тхакуром.",
+    significance: "Тхакур, вновь открывший место рождения Господа Чайтаньи, ведёт читателя по девяти островам Навадвипа-дхамы и раскрывает их сокровенное значение. Путеводитель по святой земле и приглашение к паломничеству.",
+  },
+  "the-beggar": {
+    intro: "«Нищий» — серия медитаций и молитв Е.С. Бхакти Тиртхи Свами (Джона Фэйворса), старшего учителя ИСККОН.",
+    significance: "В образе нищего, просящего лишь милости Господа, автор делится размышлениями о смирении, преодолении ложного эго и духовной устойчивости в болезни и трудностях. Книга рождена из глубокого личного молитвенного опыта.",
+  },
+  "vrindavane-bhajana": {
+    intro: "«Вриндаване бхаджана» — поэтическое произведение Шрилы Прабхупады с переводом и комментариями Е.С. Джаяпатаки Свами.",
+    significance: "Поэма передаёт настроение преданного, всецело укрывшегося у Господа. Комментарии Джаяпатаки Свами помогают глубже войти в молитвенное настроение основателя-ачарьи ИСККОН.",
+  },
+};
+
+function GenericReviews({ data }: { data: ReviewsData }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 34, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Признание</div>
+        <p style={{ margin: 0, fontSize: 17, lineHeight: 1.55, color: INK }}>{data.intro}</p>
+      </section>
+      {data.endorsements && data.endorsements.length > 0 && (
+        <section>
+          <SectionTitle>Отзывы</SectionTitle>
+          <div>
+            {data.endorsements.map((e, i) => (
+              <Review key={i} text={e.text} name={e.name} role={e.role} last={i === data.endorsements!.length - 1} />
+            ))}
+          </div>
+        </section>
+      )}
+      <section>
+        <SectionTitle>Почему это важно</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.58, color: INK2 }}>{data.significance}</p>
+      </section>
+    </div>
+  );
+}
+
 /* ───────── Рецензии · Седьмой Госвами ───────── */
 function SeventhGoswamiReviews() {
   return (
@@ -2879,7 +2975,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
           <BookHeroCard book={book} topLeft={book.publisher === "bbt" ? <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" /> : undefined} flash={flash} onMenuSelect={menuAction} canOrder={!!bookProduct(book.work)} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
         </div>
 
-        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => (t.id !== "reviews" || REVIEWED_WORKS.has(book.work)) && (t.id !== "contents" || !book.noText))} />
+        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => (t.id !== "reviews" || REVIEWED_WORKS.has(book.work) || !!BOOK_REVIEWS[book.work]) && (t.id !== "contents" || !book.noText))} />
 
         <div>
           {tab === "contents" && (book.hierarchical
@@ -2887,7 +2983,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
             : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} flashId={contentsFlashId} onConsumeFlash={() => setContentsFlashId(null)} />)}
           {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : <GenericOverview book={book} />)}
           {tab === "author" && (book.work === "spl" ? <SplAuthor /> : <Author />)}
-          {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : book.work === "seventh-goswami" ? <SeventhGoswamiReviews /> : <Reviews />)}
+          {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : book.work === "seventh-goswami" ? <SeventhGoswamiReviews /> : BOOK_REVIEWS[book.work] ? <GenericReviews data={BOOK_REVIEWS[book.work]} /> : <Reviews />)}
         </div>
       </div>
 
