@@ -602,7 +602,7 @@ async function igItems(env: DarshanEnv): Promise<DarshanItem[]> {
 // (tools/tg-stories → archive.org). Каждая сторис = кадр со своим временем/подписью.
 // Показываем живые: активные (не истёкшие) + закреплённые. Медиа — прямые URL IA.
 const STORIES_BASE = "https://archive.org/download/iskcone-stories/";
-interface StoryRec { id: number; type: string; file: string; caption: string | null; date: string | null; expire: string | null; pinned: boolean }
+interface StoryRec { id: number; type: string; file: string; video?: string; caption: string | null; date: string | null; expire: string | null; pinned: boolean }
 async function iskconeStoriesCircle(): Promise<DarshanItem | null> {
   try {
     const r = await fetch(`${STORIES_BASE}stories.json`, {
@@ -616,7 +616,7 @@ async function iskconeStoriesCircle(): Promise<DarshanItem | null> {
     const live = all.filter((s) => s && s.file && (s.pinned || (s.expire ? Date.parse(s.expire) > now : true)));
     if (!live.length) return null;
     live.sort((a, b) => (Date.parse(b.date || "") || 0) - (Date.parse(a.date || "") || 0)); // свежие первыми
-    const frames = live.map((s) => ({ image: STORIES_BASE + s.file, caption: s.caption ?? null, postedAt: s.date ?? null }));
+    const frames = live.map((s) => ({ image: STORIES_BASE + s.file, video: s.video ? STORIES_BASE + s.video : null, caption: s.caption ?? null, postedAt: s.date ?? null }));
     const latest = live[0];
     return {
       source: "live",

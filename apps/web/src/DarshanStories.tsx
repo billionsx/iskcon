@@ -242,6 +242,8 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
   const barRef = useRef<HTMLSpanElement | null>(null);
   const accRef = useRef(0);
+  const durRef = useRef(STORY_MS);          // длительность активного кадра (видео → его длина)
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const goNextRef = useRef<() => void>(() => {});
 
   // Даршан-кадры показываем ЦЕЛИКОМ (object-fit: contain) — мурти никогда не режем.
@@ -277,7 +279,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
   /* сброс прогресса при смене кадра/храма */
-  useEffect(() => { accRef.current = 0; setReady(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+  useEffect(() => { accRef.current = 0; durRef.current = STORY_MS; setReady(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
   /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps).
      Прогресс НЕ стартует, пока фото не загрузилось — иначе кадр перелистывался
@@ -288,7 +290,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
     const tick = (now: number) => {
       const dt = now - last; last = now;
       accRef.current += dt;
-      const frac = Math.min(1, accRef.current / STORY_MS);
+      const frac = Math.min(1, accRef.current / durRef.current);
       if (barRef.current) barRef.current.style.width = (frac * 100).toFixed(2) + "%";
       if (frac >= 1) { goNextRef.current(); return; }
       raf = requestAnimationFrame(tick);
@@ -296,6 +298,12 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [ti, ii, paused, ready]);
+
+  /* видео-кадр: проигрывание синхронно с паузой истории (тап-удержание ставит на паузу) */
+  useEffect(() => {
+    const v = videoRef.current; if (!v) return;
+    if (paused) v.pause(); else void v.play().catch(() => {});
+  }, [paused, ti, ii, ready]);
 
   /* клавиатура */
   useEffect(() => {
@@ -344,16 +352,24 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           с процентами). Фит — object-fit: contain при любой ориентации: кадр целиком, поля
           закрывает размытая подложка. Мурти не обрезаем. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          ref={(el) => { if (el && el.complete && el.naturalWidth > 0) setReady(true); }}
-          onLoad={() => setReady(true)}
-          style={{
-            position: "absolute", inset: 0, width: "100%", height: "100%",
-            imageOrientation: "from-image",
-            objectFit: "contain",   // целиком, без обрезки мурти (поля закрывает блюр-подложка)
-            objectPosition: "center",
-            opacity: ready ? 1 : 0, transition: "opacity .25s ease",
-          }} />
+        {fr?.video ? (
+          <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={imgs[ii]}
+            autoPlay muted loop playsInline preload="auto"
+            onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) durRef.current = Math.min(Math.max(d * 1000, 2500), 60000); }}
+            onLoadedData={() => setReady(true)} onCanPlay={() => setReady(true)}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s ease" }} />
+        ) : (
+          <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+            ref={(el) => { if (el && el.complete && el.naturalWidth > 0) setReady(true); }}
+            onLoad={() => setReady(true)}
+            style={{
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              imageOrientation: "from-image",
+              objectFit: "contain",   // целиком, без обрезки мурти (поля закрывает блюр-подложка)
+              objectPosition: "center",
+              opacity: ready ? 1 : 0, transition: "opacity .25s ease",
+            }} />
+        )}
         {!ready && (
           <span aria-hidden style={{ position: "absolute", top: "50%", left: "50%", width: 34, height: 34, marginTop: -17, marginLeft: -17, borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.28)", borderTopColor: "#fff", animation: "darSpin .8s linear infinite", zIndex: 2 }} />
         )}
