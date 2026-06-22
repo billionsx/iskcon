@@ -1472,6 +1472,33 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
     return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
   }, [scrollToVerse, verses]);
 
+  // Аудио → текст для книг из ОДНОГО раздела (стихи/мантры: Ишопанишад, Брахма-самхита).
+  // В такой аудиокниге один трек = один стих по порядку, поэтому при СМЕНЕ трека скроллим
+  // к verses[index] и коротко подсвечиваем. В многоглавных книгах трек = глава — сюда не
+  // заходим (отбор по chapters.length === 1), там за главой следит BookDetailPage.
+  const lastAudioIdxRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!chapters || chapters.length !== 1) return;
+    if (!player.active || player.book !== work || !verses || verses.length === 0) return;
+    const i = player.index;
+    if (i == null || lastAudioIdxRef.current === i) return;
+    const v = verses[i];
+    if (!v) return;
+    lastAudioIdxRef.current = i;
+    const cont = scrollElRef.current;
+    if (!cont) return;
+    const raf = requestAnimationFrame(() => {
+      const el = cont.querySelector(`[data-vref="${(window.CSS && CSS.escape) ? CSS.escape(v.ref) : v.ref}"]`) as HTMLElement | null;
+      if (el) {
+        const top = cont.scrollTop + (el.getBoundingClientRect().top - cont.getBoundingClientRect().top) - 14;
+        cont.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        setFlashVref(v.ref);
+        setTimeout(() => setFlashVref((c) => (c === v.ref ? null : c)), 1300);
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [player.active, player.book, player.index, verses, chapters, work]);
+
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
   const shareChapter = async () => {
@@ -2434,26 +2461,39 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const [reportOpen, setReportOpen] = useState(false);
 
   // ── Синхронизация аудио → текст ──
-  // Пока играет аудиокнига ЭТОЙ книги, читалка следует за проигрываемой главой.
-  // Меняем главу только при её СМЕНЕ в плеере (через lastAudioSyncRef), чтобы не мешать
-  // листать текст вручную, и только когда открыта глава (не отдельный стих).
+  // Пока играет аудиокнига ЭТОЙ книги, читалка следует за проигрываемым местом.
+  // • Многоглавные книги (Гита, ЧЧ, Нектар преданности, Лиламрита): следуем за ГЛАВОЙ,
+  //   только когда уже открыта глава (не дёргаем из обзора).
+  // • Книги из ОДНОГО раздела (стихи/мантры: Ишопанишад, Брахма-самхита): открываем этот
+  //   единственный раздел при проигрывании (даже из обзора); прокрутку к нужному стиху
+  //   делает сам ChapterPage по индексу трека.
   const player = usePlayer();
   const audioNavRef = useRef(false);             // переход вызван аудио → URL заменить, не пушить
   const lastAudioSyncRef = useRef<string | null>(null);
   useEffect(() => {
     if (!player.active || player.book !== book.work) return;
-    if (!openChapter || readerRef) return;       // следуем только в режиме чтения главы
+    if (readerRef) return;                        // открыт отдельный стих — не перебиваем
     const t = player.track;
-    if (!t || t.kind !== "chapter" || t.chapter == null) return;
-    const key = `${t.lila ?? ""}#${t.chapter}`;
-    if (lastAudioSyncRef.current === key) return; // реагируем только на смену главы в плеере
+    if (!t || t.kind !== "chapter") return;
     const list = book.hierarchical ? (flatHierChapters ?? []) : (chapters ?? []);
-    const target = list.find(
-      (c) => c.number === String(t.chapter) && (!t.lila || c.id.split(".")[1] === t.lila),
-    ) ?? null;
+    if (!list.length) return;
+
+    let target: ChapterRow | null = null;
+    let key = "";
+    if (list.length === 1) {
+      target = list[0];                           // единственный раздел — он всегда цель
+      key = `one#${target.id}`;                   // открыть один раз, дальше не переоткрывать
+    } else {
+      if (!openChapter || t.chapter == null) return; // многоглавные: только в режиме чтения главы
+      target = list.find(
+        (c) => c.number === String(t.chapter) && (!t.lila || c.id.split(".")[1] === t.lila),
+      ) ?? null;
+      key = `${t.lila ?? ""}#${t.chapter}`;
+    }
     if (!target) return;
+    if (lastAudioSyncRef.current === key) return; // реагируем только на смену цели
     lastAudioSyncRef.current = key;
-    if (openChapter.id === target.id) return;
+    if (openChapter?.id === target.id) return;
     audioNavRef.current = true;                   // следующий state→URL — replace, без новой записи
     setReaderRef(null);
     setOpenChapter(target);
