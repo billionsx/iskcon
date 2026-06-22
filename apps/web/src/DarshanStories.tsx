@@ -226,6 +226,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [ii, setII] = useState(0);       // индекс кадра внутри храма
   const [paused, setPaused] = useState(false);
   const [capOpen, setCapOpen] = useState(false);
+  const [ready, setReady] = useState(false);   // текущий кадр загрузился? пока нет — прогресс не идёт
 
   const item = items[ti];
   const imgs = item.images;
@@ -276,11 +277,13 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
   /* сброс прогресса при смене кадра/храма */
-  useEffect(() => { accRef.current = 0; if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+  useEffect(() => { accRef.current = 0; setReady(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
-  /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps) */
+  /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps).
+     Прогресс НЕ стартует, пока фото не загрузилось — иначе кадр перелистывался
+     раньше, чем пользователь успевал его увидеть. */
   useEffect(() => {
-    if (paused) return;
+    if (paused || !ready) return;
     let raf = 0; let last = performance.now();
     const tick = (now: number) => {
       const dt = now - last; last = now;
@@ -292,7 +295,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [ti, ii, paused]);
+  }, [ti, ii, paused, ready]);
 
   /* клавиатура */
   useEffect(() => {
@@ -342,12 +345,18 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           закрывает размытая подложка. Мурти не обрезаем. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+          ref={(el) => { if (el && el.complete && el.naturalWidth > 0) setReady(true); }}
+          onLoad={() => setReady(true)}
           style={{
             position: "absolute", inset: 0, width: "100%", height: "100%",
             imageOrientation: "from-image",
             objectFit: "contain",   // целиком, без обрезки мурти (поля закрывает блюр-подложка)
             objectPosition: "center",
+            opacity: ready ? 1 : 0, transition: "opacity .25s ease",
           }} />
+        {!ready && (
+          <span aria-hidden style={{ position: "absolute", top: "50%", left: "50%", width: 34, height: 34, marginTop: -17, marginLeft: -17, borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.28)", borderTopColor: "#fff", animation: "darSpin .8s linear infinite", zIndex: 2 }} />
+        )}
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
@@ -416,5 +425,5 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
 /* ── keyframes (один раз) ── */
 function Keyframes() {
-  return <style>{`@keyframes darPulse{0%,100%{opacity:.45}50%{opacity:.8}}@keyframes storyIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}`}</style>;
+  return <style>{`@keyframes darPulse{0%,100%{opacity:.45}50%{opacity:.8}}@keyframes storyIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}@keyframes darSpin{to{transform:rotate(360deg)}}`}</style>;
 }
