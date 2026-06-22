@@ -1,0 +1,48 @@
+name: ia-tracks
+on:
+  workflow_dispatch:
+    inputs:
+      run_tag:
+        description: tag
+        required: false
+        default: tracks
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: dump track titles
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request
+          slugs = ["manah-siksa","siksastaka","bhakti-tattva-viveka","mukunda-mala-stotra",
+                   "sanmodana-bhashya","bhaktyaloka","prema-pradipa","harinama-cintamani",
+                   "caitanya-siksamrta","jagannatha-vallabha-nataka","sri-namamrita"]
+          def get(url):
+              try:
+                  return urllib.request.urlopen(url, timeout=30).read()
+              except Exception as e:
+                  return None
+          out=[]
+          for s in slugs:
+              ID="iskcone-"+s
+              raw=get(f"https://archive.org/download/{ID}/playlist.json")
+              tracks=[]
+              if raw:
+                  try: tracks=json.loads(raw).get("tracks",[])
+                  except Exception: tracks=[]
+              out.append(f"### {s}  (треков: {len(tracks)})")
+              for t in tracks[:3]:
+                  out.append(f"   file={t.get('file','?')}  ||  title={t.get('title','?')}")
+              if not tracks:
+                  # запасной: имена mp3 из метаданных
+                  m=get(f"https://archive.org/metadata/{ID}")
+                  if m:
+                      try:
+                          files=[f.get('name') for f in json.loads(m).get('files',[]) if f.get('name','').lower().endswith('.mp3')]
+                          for n in files[:3]: out.append(f"   mp3={n}")
+                      except Exception: pass
+          msg="\n".join(out)
+          msg=msg.replace('%','%25').replace('\r','').replace('\n','%0A')
+          print(f"::notice title=TRACKS::{msg}")
+          PY
