@@ -115,18 +115,8 @@ async function fetchHead(url: string, referer: string, maxBytes: number): Promis
       cf: { cacheTtl: 86400, cacheEverything: true },
     } as RequestInit);
     if (!r.ok && r.status !== 206) return null;
-    if (!r.body) { const ab = await r.arrayBuffer(); return ab.byteLength ? ab.slice(0, maxBytes) : null; }
-    const reader = (r.body as ReadableStream<Uint8Array>).getReader();
-    const chunks: Uint8Array[] = []; let total = 0;
-    while (total < maxBytes) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (value) { chunks.push(value); total += value.length; }
-    }
-    try { await reader.cancel(); } catch { /* ignore */ }
-    const out = new Uint8Array(Math.min(total, maxBytes)); let off = 0;
-    for (const c of chunks) { const take = Math.min(c.length, out.length - off); out.set(c.subarray(0, take), off); off += take; if (off >= out.length) break; }
-    return out.buffer;
+    const ab = await r.arrayBuffer().catch(() => null); // CDN отдаёт ровно ~128 КБ (206) — читаем как headDebug
+    return ab && ab.byteLength ? ab : null;
   } catch { return null; }
 }
 

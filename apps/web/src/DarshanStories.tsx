@@ -212,8 +212,19 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
-  // Ориентация — с сервера (по реальным байтам JPEG): "l" ландшафт, "p" портрет.
-  const orient = item.orient?.[ii] ?? null;
+  // Ориентация: сначала серверный флаг (по байтам JPEG), а если он не доехал (кэш API) —
+  // меряем в браузере по naturalWidth/Height загруженного кадра. У этих фото EXIF-поворота
+  // нет (exif:1), поэтому naturalWidth честно отражает ориентацию. Сброс при смене кадра —
+  // синхронно в рендере, чтобы новый кадр не унаследовал старый замер.
+  const [ar, setAr] = useState<number | null>(null);
+  const frameKey = `${ti}:${ii}`;
+  const lastFrameRef = useRef(frameKey);
+  if (lastFrameRef.current !== frameKey) { lastFrameRef.current = frameKey; setAr(null); }
+  const measureRef = useCallback((node: HTMLImageElement | null) => {
+    if (node && node.complete && node.naturalWidth && node.naturalHeight) setAr(node.naturalWidth / node.naturalHeight);
+  }, []);
+  const serverO = item.orient?.[ii];
+  const orient: "p" | "l" | null = serverO ?? (ar != null ? (ar < 1 ? "p" : "l") : null);
 
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
@@ -305,14 +316,15 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* заполнение: ландшафт — на всю ширину (верх/низ может слегка уйти за кадр на широком
           экране — это цена «на всю ширину»), портрет — по высоте целиком. Поля — размытая подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
-        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+        <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан" ref={measureRef}
+          onLoad={(e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); }}
           style={{
             display: "block", imageOrientation: "from-image",
             ...(orient === "p"
               ? { width: "auto", height: "100%" }                                       // портрет → по высоте целиком
               : orient === "l"
                 ? { width: "100%", height: "auto" }                                     // ландшафт → на всю ширину
-                : { width: "100%", height: "100%", objectFit: "cover" }),               // нет данных → заполнить экран
+                : { width: "100%", height: "100%", objectFit: "contain" }),             // пока меряем → целиком (без обрезки)
           }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
