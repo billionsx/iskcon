@@ -1227,9 +1227,86 @@ function fixSentenceSpacing(s: string | null | undefined): string | null {
   return String(s).replace(/([а-яёa-z])([.!?])([А-ЯЁA-Z])/gu, "$1$2 $3");
 }
 
+// ── Пробник IG через Browser Rendering: грузим зеркала и сам IG настоящим Chrome,
+// смотрим, что отдаётся (антибот зеркал реальный браузер обычно проходит; для IG —
+// перехватываем ответ web_profile_info на лету). Временный, потом заменим/защитим. ──
+async function handleIgTest(env: Env, url: URL): Promise<Response> {
+  const user = (url.searchParams.get("user") || "iskcon_noida").replace(/[^a-z0-9._]/gi, "");
+  const sid = url.searchParams.get("sid") || "";   // опц. для прямого IG
+  const out: Record<string, unknown> = { user, tries: [] as unknown[] };
+  const tries = out.tries as Record<string, unknown>[];
+  const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
+  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
+  try {
+    browser = await puppeteer.launch(env.BROWSER);
+
+    // (A) зеркала-вьюеры — публичные, сессия не нужна
+    for (const m of [`https://imginn.com/${user}/`, `https://www.pixwox.com/profile/${user}/`, `https://www.picnob.com/profile/${user}/`, `https://dumpor.com/v/${user}`]) {
+      const t: Record<string, unknown> = { kind: "mirror", url: m };
+      try {
+        const page = await browser.newPage();
+        await page.setUserAgent(UA);
+        await page.setViewport({ width: 1280, height: 1800 });
+        const resp = await page.goto(m, { waitUntil: "networkidle2", timeout: 30000 });
+        t.status = resp ? resp.status() : 0;
+        await new Promise((r) => setTimeout(r, 2500));
+        const imgs: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("img")).map((i) => (i as HTMLImageElement).src).filter(Boolean));
+        const cdn = imgs.filter((u) => /cdninstagram|fbcdn|scontent/.test(u));
+        t.imgTotal = imgs.length; t.igcdn = cdn.length; t.sample = (cdn.length ? cdn : imgs).slice(0, 3);
+        await page.close();
+      } catch (e) { t.error = String(e).slice(0, 160); }
+      tries.push(t);
+      if ((t.igcdn as number) > 0) break;
+    }
+
+    // (B) сам IG настоящим Chrome + перехват web_profile_info (если дали sid)
+    if (sid) {
+      const t: Record<string, unknown> = { kind: "ig-direct", url: `https://www.instagram.com/${user}/` };
+      try {
+        const page = await browser.newPage();
+        await page.setUserAgent(UA);
+        const uid = (sid.match(/\d+/) || ["0"])[0];
+        await page.setCookie(
+          { name: "sessionid", value: sid, domain: ".instagram.com", path: "/", httpOnly: true, secure: true },
+          { name: "ds_user_id", value: uid, domain: ".instagram.com", path: "/", secure: true },
+        );
+        const captured: string[] = [];
+        page.on("response", async (r) => {
+          try {
+            const u = r.url();
+            if (u.includes("web_profile_info") || u.includes("graphql")) {
+              const j = await r.json().catch(() => null);
+              const edges = j?.data?.user?.edge_owner_to_timeline_media?.edges
+                || j?.data?.xdt_api__v1__feed__user_timeline_graphql_connection?.edges;
+              if (Array.isArray(edges)) for (const e of edges) { const du = e?.node?.display_url || e?.node?.image_versions2?.candidates?.[0]?.url; if (du) captured.push(du); }
+            }
+          } catch { /* ignore */ }
+        });
+        const resp = await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "networkidle2", timeout: 35000 });
+        t.status = resp ? resp.status() : 0;
+        await new Promise((r) => setTimeout(r, 4000));
+        const domImgs: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("article img, main img")).map((i) => (i as HTMLImageElement).src).filter((s) => /cdninstagram|scontent/.test(s)));
+        t.captured = captured.slice(0, 5); t.domImgs = domImgs.slice(0, 5);
+        await page.close();
+      } catch (e) { t.error = String(e).slice(0, 160); }
+      tries.push(t);
+    }
+  } catch (e) {
+    out.launchError = String(e).slice(0, 200);
+  } finally {
+    try { if (browser) await browser.close(); } catch { /* ignore */ }
+  }
+  return new Response(JSON.stringify(out, null, 2), { headers: { "content-type": "application/json", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // ── Временный пробник: headless-Chrome (Browser Rendering) тащит ленту IG ──
+    if (url.pathname === "/api/_igtest") {
+      return handleIgTest(env, url);
+    }
 
     // ── Audio proxy: /audio/<ia-identifier>/<file>.mp3 → streamed from Internet Archive ──
     const audioM = url.pathname.match(/^\/audio\/([a-z0-9][a-z0-9._-]*)\/(.+\.mp3)$/i);
