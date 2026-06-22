@@ -25,7 +25,7 @@ import { ReportSheet } from "./ReportSheet";
 import { exportToPdf } from "./pdf";
 
 const GOLD = "#D2AA1B";
-const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
+const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20, border: "0.5px solid var(--color-hairline)" };
 
 interface TgSeg { t: "t" | "a"; v: string; href?: string }
 interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }
@@ -122,16 +122,29 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   const photos = p.photos;
   const [idx, setIdx] = useState(0);
-  const [ar, setAr] = useState<number | null>(null);  // аспект первого фото задаёт высоту карусели (без полей)
+  const [ratios, setRatios] = useState<Record<number, number>>({});  // аспект w/h каждого фото
+  const [vw, setVw] = useState(0);                                    // ширина вьюпорта карусели
   const scRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = scRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => setVw(el.clientWidth));
+    ro.observe(el); setVw(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+
   const onScroll = () => {
     const el = scRef.current; if (!el) return;
     const w = el.clientWidth; if (w) setIdx(Math.round(el.scrollLeft / w));
   };
+  const noteRatio = (i: number, n: HTMLImageElement) => {
+    if (n.naturalWidth && n.naturalHeight) setRatios((r) => (r[i] ? r : { ...r, [i]: n.naturalWidth / n.naturalHeight }));
+  };
 
   if (photos.length === 1) {
     return (
-      <div style={{ background: "var(--color-glass-regular)" }}>
+      <div style={{ background: "var(--color-bg)" }}>
         <img src={photos[0]} alt="" loading="lazy" onClick={() => onOpen(0)}
           style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
       </div>
@@ -139,15 +152,18 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   }
 
   if (photos.length > 1) {
+    // высота карусели подстраивается под пропорции ТЕКУЩЕГО фото — горизонтальные
+    // не впихиваются в вертикальный кадр (без обрезки и потери разрешения).
+    const cr = ratios[idx] || ratios[0] || 4 / 5;
+    const h = vw ? Math.round(vw / cr) : undefined;
     return (
       <div style={{ position: "relative" }}>
         <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
-          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: ar ? String(ar) : "4 / 5", background: "var(--color-glass-regular)" }}>
+          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", height: h, transition: "height .3s ease", background: "var(--color-bg)" }}>
           {photos.map((src, i) => (
             <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", height: "100%" }}>
-              <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
-                onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
+              <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)} onLoad={(e) => noteRatio(i, e.currentTarget)}
+                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
@@ -270,26 +286,66 @@ function preloadImages(urls: string[], cap = 9000): Promise<void> {
   });
 }
 function buildPostPrintNode(p: TgPost): HTMLElement {
+  // Структура и стили — копия карточного эталона CardPrint (PdfDoc.tsx), чтобы PDF
+  // поста выглядел «по нашему стандарту»: золотая надстрочная (Georgia) · крупный
+  // заголовок · подзаголовок · фото · текст. Печатный конвейер (поля/футер) даёт exportToPdf.
   const root = document.createElement("div");
-  p.photos.forEach((src) => {
-    const wrap = document.createElement("div");
-    wrap.setAttribute("data-pdf-block", "");
-    wrap.style.margin = "0 0 7mm";
-    const img = document.createElement("img");
-    img.src = src;
-    img.style.width = "100%";
-    img.style.borderRadius = "8px";
-    wrap.appendChild(img);
-    root.appendChild(wrap);
-  });
-  const t = (p.text || "").trim();
-  if (t) {
-    const cap = document.createElement("p");
-    cap.textContent = t;
-    cap.style.whiteSpace = "pre-wrap";
-    cap.style.margin = p.photos.length ? "4mm 0 0" : "0";
-    root.appendChild(cap);
+  root.style.maxWidth = "640px";
+  root.style.margin = "0 auto";
+
+  const text = (p.text || "").trim();
+  const lines = text.split("\n");
+  const li = lines.findIndex((l) => l.trim());
+  const lead = li >= 0 ? lines[li].trim() : "";
+  const rest = li >= 0 ? lines.slice(li + 1).join("\n").trim() : "";
+
+  const eyebrow = document.createElement("div");
+  eyebrow.textContent = "Лента · ISKCON ONE LOVE";
+  Object.assign(eyebrow.style, { fontSize: "10pt", letterSpacing: "2px", textTransform: "uppercase", color: "#9a7a14", fontFamily: "Georgia, serif" });
+  root.appendChild(eyebrow);
+
+  if (lead) {
+    const h1 = document.createElement("h1");
+    h1.textContent = lead;
+    Object.assign(h1.style, { margin: "10pt 0 0", fontSize: "22pt", lineHeight: "1.16", letterSpacing: "-0.01em", fontWeight: "800" });
+    root.appendChild(h1);
   }
+
+  const sub = document.createElement("div");
+  sub.textContent = fmtDate(p.date);
+  Object.assign(sub.style, { marginTop: "5pt", fontSize: "12.5pt", color: "#55565c" });
+  root.appendChild(sub);
+
+  if (p.photos.length) {
+    const imgs = document.createElement("div");
+    imgs.style.margin = "16pt 0 0";
+    p.photos.forEach((src) => {
+      const wrap = document.createElement("div");
+      wrap.setAttribute("data-pdf-block", "");
+      wrap.style.margin = "0 0 7mm";
+      const img = document.createElement("img");
+      img.src = src;
+      img.style.width = "100%";
+      img.style.borderRadius = "8px";
+      img.style.display = "block";
+      wrap.appendChild(img);
+      imgs.appendChild(wrap);
+    });
+    root.appendChild(imgs);
+  }
+
+  if (rest) {
+    const body = document.createElement("div");
+    Object.assign(body.style, { marginTop: p.photos.length ? "4pt" : "16pt", fontSize: "11.5pt", lineHeight: "1.62" });
+    rest.split(/\n{2,}/).forEach((para) => {
+      const pp = document.createElement("p");
+      pp.textContent = para.trim();
+      Object.assign(pp.style, { margin: "0 0 10pt", whiteSpace: "pre-wrap" });
+      body.appendChild(pp);
+    });
+    root.appendChild(body);
+  }
+
   return root;
 }
 async function downloadPostPdf(p: TgPost, flash: (m: string) => void) {
@@ -298,7 +354,7 @@ async function downloadPostPdf(p: TgPost, flash: (m: string) => void) {
     await preloadImages(p.photos);
     const node = buildPostPrintNode(p);
     const head = leadLine(p.text) || "ISKCON ONE LOVE";
-    exportToPdf(node, { title: head, heading: "ISKCON ONE LOVE", subheading: fmtDate(p.date) });
+    exportToPdf(node, { title: head });   // вёрстка задана внутри узла (как CardPrint); опцию-шапку не передаём
   } catch { flash("Не удалось собрать PDF — попробуйте ещё раз"); }
 }
 
@@ -449,12 +505,12 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
           </div>
         )}
         {!err && !posts && (
-          <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 16 }}>
             {[0, 1, 2].map((i) => <div key={i} style={{ height: 360, ...fill, opacity: 0.6 }} />)}
           </div>
         )}
         {posts && posts.length > 0 && (
-          <div style={{ display: "grid", gap: 12 }}>
+          <div style={{ display: "grid", gap: 16 }}>
             {posts.map((p) => (
               <FeedPost key={p.id} p={p} open={expanded.has(p.id)} onDonate={onDonate} flash={flash}
                 onToggle={() => setExpanded((s) => { const n = new Set(s); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; })} />

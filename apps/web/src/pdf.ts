@@ -64,7 +64,7 @@ export function exportToPdf(
   const footTd = document.createElement("td");
   const foot = document.createElement("div");
   foot.className = "pdf-foot";
-  foot.textContent = "ISKCON ONE LOVE · gaurangers.com";
+  foot.textContent = "ISKCON ONE LOVE · " + ((typeof location !== "undefined" && location.hostname) || "gaurangers.com");
   footTd.appendChild(foot);
   footTr.appendChild(footTd);
   tfoot.appendChild(footTr);

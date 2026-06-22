@@ -29,8 +29,8 @@ const GOLDT = "#9c7c15";
 const RED = "#FF3B30";
 
 /* ── категории ── */
-type CatKey = "book" | "chapter" | "verse" | "kirtan" | "bhajan" | "entity" | "centre" | "restaurant" | "doc" | "other";
-const CAT_ORDER: CatKey[] = ["book", "chapter", "verse", "kirtan", "bhajan", "entity", "centre", "restaurant", "doc", "other"];
+type CatKey = "book" | "chapter" | "verse" | "kirtan" | "bhajan" | "entity" | "centre" | "restaurant" | "doc" | "feed" | "other";
+const CAT_ORDER: CatKey[] = ["book", "chapter", "verse", "kirtan", "bhajan", "entity", "centre", "restaurant", "doc", "feed", "other"];
 const CAT_META: Record<CatKey, { label: string; accent: string }> = {
   book: { label: "Книги", accent: "#D2AA1B" },
   chapter: { label: "Главы", accent: "#0CA678" },
@@ -41,6 +41,7 @@ const CAT_META: Record<CatKey, { label: string; accent: string }> = {
   centre: { label: "Центры", accent: "#1098AD" },
   restaurant: { label: "Рестораны", accent: "#2F9E44" },
   doc: { label: "Документы", accent: "#7C6F64" },
+  feed: { label: "Лента", accent: "#E8590C" },
   other: { label: "Прочее", accent: "#8E8E93" },
 };
 function catOf(type: string): CatKey {
@@ -52,6 +53,7 @@ function catOf(type: string): CatKey {
   if (type === "centre") return "centre";
   if (type === "restaurant") return "restaurant";
   if (type === "doc") return "doc";
+  if (type === "post") return "feed";
   if (type.indexOf("kirtan") === 0) return "kirtan";
   return "other";
 }
@@ -79,6 +81,8 @@ function CatIcon({ cat, size = 22 }: { cat: CatKey; size?: number }) {
       return <svg {...p}><path {...STROKE} d="M7 3v8M9.5 3v8M7 11v9.5M8.25 3v5" /><path {...STROKE} d="M16.5 3c-1.4 0-2.5 2-2.5 5 0 2.3 1 3.4 2.5 3.6V20.5" /></svg>;
     case "doc":
       return <svg {...p}><path {...STROKE} d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path {...STROKE} d="M13.5 3v4.5H18M9 13h6M9 16.5h6" /></svg>;
+    case "feed":
+      return <svg {...p}><path {...STROKE} d="M12 3 21 8 12 13 3 8z" /><path {...STROKE} d="m3 12 9 5 9-5" /><path {...STROKE} d="m3 16 9 5 9-5" /></svg>;
     default:
       return <svg {...p}><path {...STROKE} d="M12 4.2 14.4 9l5.3.8-3.8 3.7.9 5.3-4.8-2.5-4.8 2.5.9-5.3L4.3 9.8 9.6 9 12 4.2Z" /></svg>;
   }
