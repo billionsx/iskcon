@@ -125,11 +125,13 @@ async def cmd_fetch():
         peer = await client.get_input_entity(entity)
 
         seen: set[int] = set()
+        n_active = n_pinned = 0
 
         # 1) активные сторис (живые, ~24ч)
         try:
             res = await client(functions.stories.GetPeerStoriesRequest(peer=peer))
             active = getattr(getattr(res, "stories", None), "stories", None) or []
+            n_active = len(active)
             for s in active:
                 sid = getattr(s, "id", None)
                 if sid is None or sid in seen:
@@ -144,6 +146,7 @@ async def cmd_fetch():
         try:
             res = await client(functions.stories.GetPinnedStoriesRequest(peer=peer, offset_id=0, limit=50))
             pinned = getattr(res, "stories", None) or []
+            n_pinned = len(pinned)
             for s in pinned:
                 sid = getattr(s, "id", None)
                 if sid is None or sid in seen:
@@ -252,6 +255,7 @@ async def cmd_fetch():
             mfp.unlink(missing_ok=True)
 
         ok(f"Готово: залито {n_done}, пропущено (уже было) {n_skip}, ошибок {n_fail}; в манифесте {len(manifest)}.")
+        print(f"::notice title=Stories::активных={n_active} закреплённых={n_pinned} в_манифесте={len(manifest)} залито={n_done} ошибок={n_fail}", flush=True)
         info(f"Объект: https://archive.org/details/{identifier}")
 
 
