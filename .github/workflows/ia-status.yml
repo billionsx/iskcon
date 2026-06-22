@@ -45,8 +45,7 @@ jobs:
                   st="QUEUE"; queue+=1
               msg=f"{st} | mp3={len(mp3)} | playlist={'y' if has_pl else 'n'} | cover={'y' if has_cov else 'n'}"
               print(f"{ident}: {msg}")
-              print(f"::notice title={ident}::{msg}")
-              lines.append(f"{ident}={st}(mp3:{len(mp3)})")
+              lines.append(f"{ident.replace(chr(34),chr(39)).replace('iskcone-','')}:{st}({len(mp3)})")
           summary=f"ГОТОВО={done} ЗАЛИВАЕТСЯ={ip} ОЧЕРЕДЬ={queue} | "+", ".join(lines)
           print(summary)
           print(f"::notice title=ИТОГ::{summary}")
