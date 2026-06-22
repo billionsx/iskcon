@@ -109,16 +109,31 @@ async function fetchSiteGallery(src) {
    отдаёт server-rendered смотрелка /imageviewer/show-album-pictures/N/0 списком
    /storage/albums/N/{hash}_image.jpg — браузер не нужен (как у Вриндавана). */
 const MAYAPUR = "https://www.mayapur.com";
+// mayapur.com периодически отдаёт 5xx/таймаут раннеру (троттлинг по IP). Ретраим
+// с растущей паузой, чтобы транзиентный сбой НЕ ронял Маяпур в низкокачественный
+// Telegram-запас. Возвращаем только успешный ответ (иначе бросаем после всех попыток).
+async function fetchRetry(url, opts, tries = 4) {
+  let last;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const ac = AbortSignal.timeout ? AbortSignal.timeout(20000) : undefined;
+      const r = await fetch(url, ac ? { ...opts, signal: ac } : opts);
+      if (r.ok) return r;
+      last = new Error(`HTTP ${r.status}`);
+    } catch (e) { last = e; }
+    if (i < tries - 1) await new Promise((res) => setTimeout(res, 900 * (i + 1)));
+  }
+  throw new Error(`${url} → ${String(last && last.message || last)} (после ${tries} попыток)`);
+}
 function ddmmyyyyIST() {
   const p = new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "Asia/Kolkata" }).formatToParts(new Date());
   const g = (k) => (p.find((x) => x.type === k) || { value: "" }).value;
   return `${g("day")}/${g("month")}/${g("year")}`;
 }
 async function fetchMayapurGallery(src) {
-  const ri = await fetch(`${MAYAPUR}/media/gallery/daily-darshan`, {
+  const ri = await fetchRetry(`${MAYAPUR}/media/gallery/daily-darshan`, {
     headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/` },
   });
-  if (!ri.ok) throw new Error(`${MAYAPUR}/media/gallery/daily-darshan → HTTP ${ri.status}`);
   const html = await ri.text();
   const blocks = [];
   const re = /<p>\s*(\d{2}\/\d{2}\/\d{4})\s*<\/p>[\s\S]{0,220}?\/media\/album\/(\d+)/g;
@@ -138,10 +153,9 @@ async function fetchMayapurGallery(src) {
   // защищает mayapurPostedForDate() (см. ниже): уже опубликованная дата не постится повторно.
   const chosen = blocks.find((b) => b.date === today) || blocks[0];
   const albumId = chosen.id;
-  const rv = await fetch(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
+  const rv = await fetchRetry(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0`, {
     headers: { "User-Agent": SITE_UA, accept: "text/html,*/*", referer: `${MAYAPUR}/media/album/${albumId}` },
   });
-  if (!rv.ok) throw new Error(`${MAYAPUR}/imageviewer/show-album-pictures/${albumId}/0 → HTTP ${rv.status}`);
   const vt = await rv.text();
   const imgRe = new RegExp(`storage/albums/${albumId}/[A-Za-z0-9]+_image\\.(?:jpe?g|png|webp)`, "gi");
   const seen = new Set(); const paths = []; let p;
