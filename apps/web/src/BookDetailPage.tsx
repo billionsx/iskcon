@@ -2424,7 +2424,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const [inCart, setInCart] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [tab, setTab] = useState<BookTabId>("contents");
+  const [tab, setTab] = useState<BookTabId>(book.noText ? "overview" : "contents");
   // Смена Tier-1 таба → если прокручено вглубь, подтянуть так, чтобы липкие табы
   // сели под шапку (52px), а контент таба начался с верха. Если уже у верха —
   // ничего не двигаем (контент и так свежий). Первый монтаж пропускаем.
@@ -2840,10 +2840,10 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       <div ref={bookContentRef}>
         {/* HERO — the SAME card module as the feed (ВКП); single source from books.ts */}
         <div style={{ padding: "2px 16px 6px" }}>
-          <BookHeroCard book={book} topLeft={<LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" />} flash={flash} onMenuSelect={menuAction} canOrder={!!bookProduct(book.work)} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
+          <BookHeroCard book={book} topLeft={book.publisher === "bbt" ? <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" /> : undefined} flash={flash} onMenuSelect={menuAction} canOrder={!!bookProduct(book.work)} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
         </div>
 
-        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => t.id !== "reviews" || REVIEWED_WORKS.has(book.work))} />
+        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => (t.id !== "reviews" || REVIEWED_WORKS.has(book.work)) && (t.id !== "contents" || !book.noText))} />
 
         <div>
           {tab === "contents" && (book.hierarchical
