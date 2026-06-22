@@ -468,7 +468,7 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   return (
     <div>
       <SegRow value={sub} onChange={setSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
-      {sub === "feed" && <><DarshanRings /><HomeFeed /></>}
+      {sub === "feed" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
       {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
