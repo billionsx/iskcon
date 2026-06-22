@@ -26,6 +26,7 @@ interface Src {
   name: string;
   deities: string;
   place?: string;          // вторая строка подписи (храм · ИСККОН-центр); если нет — «Ежедневный даршан»
+  caption?: string;        // фиксированная 3-я строка подписи для tg-источника — перекрывает текст поста канала
   srcLabel: string;
   galleryType?: string;
   gallerySlug?: string;
@@ -74,12 +75,15 @@ const SOURCES: Src[] = [
   {
     // Евпатория (Крым): публичный Telegram-канал храма с ежедневным даршаном.
     // Читаем server-side через t.me/s/ (как запасной путь Маяпура) — берём свежий
-    // пост с фото. Только в сторис приложения; ТГ-постинг (@iskcone) не затрагивается.
+    // пост с фото. Подпись задана основателем (фиксированная, перекрывает текст поста):
+    // имена Божеств · «Ежедневный даршан» (фолбэк place) · храм. Только в сторис
+    // приложения; ТГ-постинг (@iskcone) не затрагивается.
     slug: "evpatoria",
     kind: "tg",
     channel: "harekrishnaevpatoria",
-    name: "ИСККОН Евпатория",
-    deities: "",
+    name: "ИСККОН Евпатория · Махабхава Мандир",
+    deities: "Шри Шри Нитай Гауранга Махабхава Расарадж · Шри Шри Кришна Баларам · Шри Шри Радха Шьямасундара",
+    caption: "ИСККОН Евпатория · Махабхава Мандир",
     srcLabel: "ISKCON Evpatoria",
   },
 ];
@@ -469,7 +473,9 @@ interface DarshanItem {
 }
 
 function liveItem(src: Src, post: RawPost): DarshanItem {
-  const cap = post.text ? post.text.slice(0, 400) : null;
+  // Фиксированная редакционная подпись источника (src.caption) перекрывает текст поста
+  // канала — для храмов, где подпись сторис задаёт редакция (напр. Евпатория).
+  const cap = src.caption ?? (post.text ? post.text.slice(0, 400) : null);
   return {
     source: "live",
     date: ymdIST(post.date),
