@@ -212,6 +212,9 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
+  // Ориентация — с сервера (по реальным байтам JPEG): "l" ландшафт, "p" портрет.
+  const orient = item.orient?.[ii] ?? null;
+
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -299,11 +302,18 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* размытая подложка из того же кадра — заполняет поля по краям, без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* кадр ВСЕГДА целиком: object-fit:contain вписывает по меньшей стороне и никогда не
-          режет — ни широкие, ни вертикальные, на любом экране. Поля добивает размытая подложка. */}
+      {/* заполнение: ландшафт — на всю ширину (верх/низ может слегка уйти за кадр на широком
+          экране — это цена «на всю ширину»), портрет — по высоте целиком. Поля — размытая подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          style={{ display: "block", width: "100%", height: "100%", objectFit: "contain", imageOrientation: "from-image" }} />
+          style={{
+            display: "block", imageOrientation: "from-image",
+            ...(orient === "p"
+              ? { width: "auto", height: "100%" }                                       // портрет → по высоте целиком
+              : orient === "l"
+                ? { width: "100%", height: "auto" }                                     // ландшафт → на всю ширину
+                : { width: "100%", height: "100%", objectFit: "cover" }),               // нет данных → заполнить экран
+          }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
