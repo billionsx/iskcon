@@ -44,6 +44,7 @@ const SOURCES: Src[] = [
     galleryName: "Daily Darshan",
     name: "ИСККОН Маяпур · Шри Дхама Маяпур",
     deities: "Шри Шри Радха-Мадхава и Аштасакхи · Панча-таттва",
+    place: "Шри Маяпур Чандродая Мандир · ИСККОН Маяпур",
     srcLabel: "ISKCON Mayapur",
   },
   {
