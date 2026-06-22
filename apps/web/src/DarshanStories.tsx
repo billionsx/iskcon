@@ -212,11 +212,6 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const accRef = useRef(0);
   const goNextRef = useRef<() => void>(() => {});
 
-  // Ориентация кадра приходит с сервера (orient: "p"|"l"|null — определена по реальным
-  // байтам JPEG с учётом EXIF-поворота). В браузере её надёжно не измерить. "l" — на всю
-  // ширину, "p" — по высоте, нет данных — кадр целиком (object-fit: contain, без обрезки).
-  const orient = item.orient?.[ii] ?? null;
-
   /* блокируем скролл body на время просмотра */
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -302,20 +297,13 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={onCancel}
       style={{ position: "fixed", inset: 0, zIndex: 95, background: "#000", overflow: "hidden", touchAction: "none", userSelect: "none", WebkitUserSelect: "none", animation: "storyIn .22s ease" }}>
 
-      {/* размытая подложка из того же кадра — горизонтальные/узкие фото без чёрных полос */}
+      {/* размытая подложка из того же кадра — заполняет поля по краям, без чёрных полос */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
-      {/* кадр: ландшафт — на всю ширину экрана, портрет — по высоте; без данных — целиком
-          (object-fit: contain, без обрезки). Ориентация — с сервера (EXIF). Остаток добивает подложка. */}
+      {/* кадр ВСЕГДА целиком: object-fit:contain вписывает по меньшей стороне и никогда не
+          режет — ни широкие, ни вертикальные, на любом экране. Поля добивает размытая подложка. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", zIndex: 1, overflow: "hidden" }}>
         <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
-          style={{
-            display: "block", imageOrientation: "from-image",
-            ...(orient === "l"
-              ? { width: "100%", height: "auto" }                                       // ландшафт → на всю ширину
-              : orient === "p"
-                ? { width: "auto", height: "100%" }                                     // портрет → по высоте
-                : { width: "100%", height: "100%", objectFit: "contain" }),             // неизвестно → кадр целиком
-          }} />
+          style={{ display: "block", width: "100%", height: "100%", objectFit: "contain", imageOrientation: "from-image" }} />
       </div>
       {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
