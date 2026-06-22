@@ -1326,9 +1326,9 @@ async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>
       if (Array.isArray(j?.items)) addEdges(j.items);
     } catch { /* ignore */ }
   });
-  try { await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "networkidle2", timeout: 40000 }); } catch { /* ignore */ }
-  await new Promise((res) => setTimeout(res, 3500));
-  if (!posts.length) { try { await page.evaluate(() => window.scrollBy(0, 1400)); } catch { /* */ } await new Promise((res) => setTimeout(res, 3000)); }
+  try { await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "domcontentloaded", timeout: 25000 }); } catch { /* ignore */ }
+  for (let w = 0; w < 14 && !posts.length; w++) await new Promise((res) => setTimeout(res, 1000));
+  if (!posts.length) { try { await page.evaluate(() => window.scrollBy(0, 1400)); } catch { /* */ } for (let w = 0; w < 5 && !posts.length; w++) await new Promise((res) => setTimeout(res, 1000)); }
   if (!posts.length) {
     try {
       const domUrls: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("article img, main img")).map((i) => (i as HTMLImageElement).currentSrc || (i as HTMLImageElement).src).filter((s) => /cdninstagram|scontent/.test(s)));
