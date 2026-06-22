@@ -338,7 +338,7 @@ function parseTgBlock(b: string): TgPost | null {
   };
 }
 
-async function tgFeed(channel: string, before: string): Promise<Response> {
+async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Response> {
   if (!TG_CHANNELS.has(channel)) return jr({ error: "unknown_channel" }, 404);
   try {
     // t.me/s отдаёт ~20 постов; ?before=<id> — страница более старых (бесконечная лента)
@@ -354,6 +354,30 @@ async function tgFeed(channel: string, before: string): Promise<Response> {
       if (p) posts.push(p);
     }
     posts.reverse(); // свежие сверху
+
+    // Полноразмер для даршан-постов. Веб-превью t.me/s ужимает фото (у альбомов —
+    // вообще сетка-миниатюра), тогда как бот публикует в канал ПОЛНОРАЗМЕРНЫЕ оригиналы
+    // (с храмовых CDN) и пишет их URL в D1 (images_json) под id опубликованного поста.
+    // Поэтому фото даршан-постов подменяем на эти оригиналы — тот же кадр, что в канале,
+    // но в полном разрешении. Матч точный по tg_message_id (id сгруппированного поста =
+    // id первого сообщения альбома). При любой осечке остаётся веб-превью.
+    try {
+      const ids = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
+      if (ids.length && env.DB) {
+        const ph = ids.map(() => "?").join(",");
+        const { results } = await env.DB.prepare(
+          `SELECT tg_message_id AS mid, images_json AS imgs FROM darshan WHERE tg_message_id IN (${ph})`,
+        ).bind(...ids).all();
+        const byId = new Map<number, string>();
+        for (const row of (results as Array<{ mid: number; imgs: string }>)) byId.set(Number(row.mid), row.imgs);
+        for (const p of posts) {
+          const imgs = byId.get(Number(p.id));
+          if (!imgs) continue;
+          try { const full = JSON.parse(imgs) as string[]; if (Array.isArray(full) && full.length) p.photos = full; } catch { /* оставляем веб-превью */ }
+        }
+      }
+    } catch { /* любая ошибка БД — отдаём как есть, веб-превью */ }
+
     const oldest = posts.length ? posts[posts.length - 1].id : null;
     // конец истории: страница пуста или старее уже некуда
     const hasMore = posts.length > 0 && oldest !== null && Number(oldest) > 1;
@@ -374,6 +398,6 @@ export async function homeApi(request: Request, env: HomeEnv): Promise<Response 
   if (pid && pid[1] !== "facets") return placeById(env, url, pid[1]);
   if (p === "/api/documents") return documentsList(env, url);
   const tg = p.match(/^\/api\/tg\/([a-z0-9_]+)$/i);
-  if (tg) return tgFeed(tg[1].toLowerCase(), url.searchParams.get("before") || "");
+  if (tg) return tgFeed(tg[1].toLowerCase(), url.searchParams.get("before") || "", env);
   return null;
 }
