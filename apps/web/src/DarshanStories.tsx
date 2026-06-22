@@ -227,6 +227,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [paused, setPaused] = useState(false);
   const [capOpen, setCapOpen] = useState(false);
   const [ready, setReady] = useState(false);   // текущий кадр загрузился? пока нет — прогресс не идёт
+  const [stalled, setStalled] = useState(false); // видео буферизуется → прогресс на паузе, не перелистываем
 
   const item = items[ti];
   const imgs = item.images;
@@ -279,13 +280,13 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
   /* сброс прогресса при смене кадра/храма */
-  useEffect(() => { accRef.current = 0; durRef.current = STORY_MS; setReady(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+  useEffect(() => { accRef.current = 0; durRef.current = STORY_MS; setReady(false); setStalled(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
   /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps).
      Прогресс НЕ стартует, пока фото не загрузилось — иначе кадр перелистывался
      раньше, чем пользователь успевал его увидеть. */
   useEffect(() => {
-    if (paused || !ready) return;
+    if (paused || !ready || stalled) return;
     let raf = 0; let last = performance.now();
     const tick = (now: number) => {
       const dt = now - last; last = now;
@@ -297,7 +298,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [ti, ii, paused, ready]);
+  }, [ti, ii, paused, ready, stalled]);
 
   /* видео-кадр: проигрывание синхронно с паузой истории (тап-удержание ставит на паузу) */
   useEffect(() => {
@@ -356,7 +357,8 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={imgs[ii]}
             autoPlay muted loop playsInline preload="auto"
             onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) durRef.current = Math.min(Math.max(d * 1000, 2500), 60000); }}
-            onLoadedData={() => setReady(true)} onCanPlay={() => setReady(true)}
+            onLoadedData={() => setReady(true)} onCanPlay={() => { setReady(true); setStalled(false); }}
+            onPlaying={() => { setReady(true); setStalled(false); }} onWaiting={() => setStalled(true)} onStalled={() => setStalled(true)}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s ease" }} />
         ) : (
           <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
@@ -370,7 +372,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
               opacity: ready ? 1 : 0, transition: "opacity .25s ease",
             }} />
         )}
-        {!ready && (
+        {(!ready || stalled) && (
           <span aria-hidden style={{ position: "absolute", top: "50%", left: "50%", width: 34, height: 34, marginTop: -17, marginLeft: -17, borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.28)", borderTopColor: "#fff", animation: "darSpin .8s linear infinite", zIndex: 2 }} />
         )}
       </div>
