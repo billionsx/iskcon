@@ -1246,46 +1246,85 @@ async function igSid(env: Env): Promise<string> {
   try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_sessionid'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
 }
 
-async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>>, user: string, sid: string): Promise<Record<string, unknown>[]> {
+type IgPost = { ts: number; isVideo: boolean; urls: string[]; shortcode: string };
+
+function igOneUrl(n: Record<string, any>): string {
+  if (!n) return "";
+  if (n.display_url) return String(n.display_url);
+  const cands = n?.image_versions2?.candidates;
+  if (Array.isArray(cands) && cands.length) {
+    const best = [...cands].sort((a, b) => (Number(b?.width) || 0) - (Number(a?.width) || 0))[0];
+    if (best?.url) return String(best.url);
+  }
+  return "";
+}
+
+function igNodeToPost(n: Record<string, any>): IgPost | null {
+  if (!n) return null;
+  const isVideo = !!(n.is_video || n.media_type === 2 || (Array.isArray(n.video_versions) && n.video_versions.length));
+  const ts = Number(n.taken_at_timestamp || n.taken_at) || 0;
+  const shortcode = String(n.shortcode || n.code || "");
+  let urls: string[] = [];
+  const kids = n?.edge_sidecar_to_children?.edges;
+  const carousel = n?.carousel_media;
+  if (Array.isArray(kids) && kids.length) urls = kids.map((k: any) => igOneUrl(k?.node)).filter(Boolean) as string[];
+  else if (Array.isArray(carousel) && carousel.length) urls = carousel.map((c: any) => igOneUrl(c)).filter(Boolean) as string[];
+  else { const u = igOneUrl(n); if (u) urls = [u]; }
+  return urls.length ? { ts, isVideo, urls, shortcode } : null;
+}
+
+async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>>, user: string, sid: string): Promise<IgPost[]> {
   const page = await browser.newPage();
   await page.setUserAgent(IG_UA);
-  await page.setViewport({ width: 1280, height: 1800 });
+  await page.setViewport({ width: 1280, height: 2200 });
   const uid = (sid.match(/\d+/) || ["0"])[0];
   await page.setCookie(
     { name: "sessionid", value: sid, domain: ".instagram.com", path: "/", httpOnly: true, secure: true },
     { name: "ds_user_id", value: uid, domain: ".instagram.com", path: "/", secure: true },
   );
-  let media: Record<string, unknown>[] = [];
-  page.on("response", async (r: { url(): string; json(): Promise<unknown> }) => {
+  const posts: IgPost[] = [];
+  const seen = new Set<string>();
+  const addEdges = (edges: any) => {
+    if (!Array.isArray(edges)) return;
+    for (const e of edges) {
+      const node = e?.node || e;
+      const p = igNodeToPost(node);
+      if (!p) continue;
+      if (p.shortcode && seen.has(p.shortcode)) continue;
+      if (p.shortcode) seen.add(p.shortcode);
+      posts.push(p);
+    }
+  };
+  page.on("response", async (r: { url(): string; json(): Promise<any> }) => {
     try {
-      if (!media.length && r.url().includes("web_profile_info")) {
-        const j = await r.json() as { data?: { user?: { edge_owner_to_timeline_media?: { edges?: { node: Record<string, unknown> }[] } } } };
-        const edges = j?.data?.user?.edge_owner_to_timeline_media?.edges;
-        if (Array.isArray(edges)) media = edges.map((e) => e.node);
-      }
+      const u = r.url();
+      if (!/web_profile_info|graphql\/query|api\/v1\/feed\/user|user_timeline/.test(u)) return;
+      const j = await r.json();
+      addEdges(j?.data?.user?.edge_owner_to_timeline_media?.edges);
+      addEdges(j?.data?.xdt_api__v1__feed__user_timeline_graphql_connection?.edges);
+      if (Array.isArray(j?.items)) addEdges(j.items);
     } catch { /* ignore */ }
   });
-  try { await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "networkidle2", timeout: 35000 }); } catch { /* ignore */ }
+  try { await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "networkidle2", timeout: 40000 }); } catch { /* ignore */ }
   await new Promise((res) => setTimeout(res, 3500));
+  if (!posts.length) { try { await page.evaluate(() => window.scrollBy(0, 1400)); } catch { /* */ } await new Promise((res) => setTimeout(res, 3000)); }
+  if (!posts.length) {
+    try {
+      const domUrls: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("article img, main img")).map((i) => (i as HTMLImageElement).currentSrc || (i as HTMLImageElement).src).filter((s) => /cdninstagram|scontent/.test(s)));
+      if (domUrls.length) posts.push({ ts: Math.floor(Date.now() / 1000), isVideo: false, urls: [domUrls[0]], shortcode: "" });
+    } catch { /* ignore */ }
+  }
   try { await page.close(); } catch { /* ignore */ }
-  return media;
+  return posts;
 }
 
-function igPickLatestPhoto(media: Record<string, unknown>[]): { ts: number; urls: string[]; postUrl: string } | null {
-  const sorted = [...media].sort((a, b) => (Number(b?.taken_at_timestamp) || 0) - (Number(a?.taken_at_timestamp) || 0));
-  for (const n of sorted) {
-    if (n?.is_video) continue;
-    const kids = (n?.edge_sidecar_to_children as { edges?: { node: Record<string, unknown> }[] } | undefined)?.edges;
-    let urls: string[];
-    if (Array.isArray(kids) && kids.length) urls = kids.filter((k) => !k?.node?.is_video).map((k) => String(k?.node?.display_url || "")).filter(Boolean);
-    else urls = [String(n?.display_url || "")].filter(Boolean);
-    if (urls.length) {
-      const ts = Number(n?.taken_at_timestamp) || Math.floor(Date.now() / 1000);
-      const sc = n?.shortcode ? String(n.shortcode) : "";
-      return { ts, urls, postUrl: sc ? `https://www.instagram.com/p/${sc}/` : "https://www.instagram.com/" };
-    }
-  }
-  return null;
+function igPickLatestPhoto(posts: IgPost[]): { ts: number; urls: string[]; postUrl: string } | null {
+  const photos = posts.filter((p) => !p.isVideo && p.urls.length);
+  if (!photos.length) return null;
+  photos.sort((a, b) => b.ts - a.ts);
+  const top = photos[0];
+  const ts = top.ts || Math.floor(Date.now() / 1000);
+  return { ts, urls: top.urls, postUrl: top.shortcode ? `https://www.instagram.com/p/${top.shortcode}/` : "https://www.instagram.com/" };
 }
 
 async function igDownloadB64(u: string): Promise<{ b64: string; ct: string } | null> {
@@ -1294,7 +1333,7 @@ async function igDownloadB64(u: string): Promise<{ b64: string; ct: string } | n
     if (!r.ok) return null;
     const ct = r.headers.get("content-type") || "image/jpeg";
     const bytes = new Uint8Array(await r.arrayBuffer());
-    if (!bytes.length || bytes.length > 1_400_000) return null;   // лимит ячейки D1
+    if (!bytes.length || bytes.length > 1_400_000) return null;
     let bin = ""; const CH = 0x8000;
     for (let i = 0; i < bytes.length; i += CH) bin += String.fromCharCode(...Array.from(bytes.subarray(i, i + CH)));
     return { b64: btoa(bin), ct };
@@ -1305,16 +1344,12 @@ function igIstDate(ts: number): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ts * 1000));
 }
 
-async function igIngestOne(env: Env, t: { user: string; slug: string; deities: string; place: string }): Promise<{ slug: string; ok: boolean; n: number; msg: string }> {
-  const sid = await igSid(env);
-  if (!sid) return { slug: t.slug, ok: false, n: 0, msg: "no sid" };
-  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
-  let media: Record<string, unknown>[] = [];
-  try { browser = await puppeteer.launch(env.BROWSER); media = await igFetchMedia(browser, t.user, sid); }
-  catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "launch " + String(e).slice(0, 60) }; }
-  finally { try { if (browser) await browser.close(); } catch { /* ignore */ } }
-  if (!media.length) return { slug: t.slug, ok: false, n: 0, msg: "no media (429/login?)" };
-  const pick = igPickLatestPhoto(media);
+async function igIngestOne(env: Env, browser: Awaited<ReturnType<typeof puppeteer.launch>>, sid: string, t: { user: string; slug: string; deities: string; place: string }): Promise<{ slug: string; ok: boolean; n: number; msg: string }> {
+  let posts: IgPost[] = [];
+  try { posts = await igFetchMedia(browser, t.user, sid); }
+  catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "fetch " + String(e).slice(0, 50) }; }
+  if (!posts.length) return { slug: t.slug, ok: false, n: 0, msg: "no media (429/login?)" };
+  const pick = igPickLatestPhoto(posts);
   if (!pick) return { slug: t.slug, ok: false, n: 0, msg: "no photo post" };
   const date = igIstDate(pick.ts);
   const stored: { idx: number; b64: string; ct: string }[] = [];
@@ -1327,14 +1362,29 @@ async function igIngestOne(env: Env, t: { user: string; slug: string; deities: s
       await env.DB.prepare("INSERT INTO ig_darshan (slug,date,deities,place,idx,img,ct,post_url,ts) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)")
         .bind(t.slug, date, t.deities, t.place, s.idx, s.b64, s.ct, pick.postUrl, pick.ts).run();
     }
-  } catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "d1 " + String(e).slice(0, 60) }; }
+  } catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "d1 " + String(e).slice(0, 50) }; }
   return { slug: t.slug, ok: true, n: stored.length, msg: date };
 }
 
-async function igIngestAll(env: Env): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
+async function igRunTargets(env: Env, targets: { user: string; slug: string; deities: string; place: string }[]): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
+  const sid = await igSid(env);
+  if (!sid) return targets.map((t) => ({ slug: t.slug, ok: false, n: 0, msg: "no sid" }));
+  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
+  try { browser = await puppeteer.launch(env.BROWSER); }
+  catch (e) { return targets.map((t) => ({ slug: t.slug, ok: false, n: 0, msg: "launch " + String(e).slice(0, 60) })); }
   const out: { slug: string; ok: boolean; n: number; msg: string }[] = [];
-  for (const t of IG_TARGETS) { try { out.push(await igIngestOne(env, t)); } catch (e) { out.push({ slug: t.slug, ok: false, n: 0, msg: "ex " + String(e).slice(0, 50) }); } }
+  try {
+    for (const t of targets) {
+      try { out.push(await igIngestOne(env, browser, sid, t)); }
+      catch (e) { out.push({ slug: t.slug, ok: false, n: 0, msg: "ex " + String(e).slice(0, 50) }); }
+      await new Promise((res) => setTimeout(res, 1500));
+    }
+  } finally { try { if (browser) await browser.close(); } catch { /* ignore */ } }
   return out;
+}
+
+async function igIngestAll(env: Env): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
+  return igRunTargets(env, IG_TARGETS);
 }
 
 async function serveIgImg(env: Env, slug: string, date: string, idx: number): Promise<Response> {
@@ -1353,8 +1403,7 @@ async function igRun(env: Env, url: URL): Promise<Response> {
   if (!want || url.searchParams.get("key") !== want) return new Response("forbidden", { status: 403 });
   const only = url.searchParams.get("slug");
   const targets = only ? IG_TARGETS.filter((t) => t.slug === only) : IG_TARGETS;
-  const res: { slug: string; ok: boolean; n: number; msg: string }[] = [];
-  for (const t of targets) res.push(await igIngestOne(env, t));
+  const res = await igRunTargets(env, targets);
   return new Response(JSON.stringify(res, null, 2), { headers: { "content-type": "application/json", "Cache-Control": "no-store" } });
 }
 
