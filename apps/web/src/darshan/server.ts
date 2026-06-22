@@ -497,7 +497,7 @@ function ymdIST(iso: string): string {
 
 /* ── форма карточки для клиента ── */
 interface DarshanItem {
-  source: "live" | "archive";
+  source: "live" | "archive" | "ig";
   date: string;
   templeSlug: string;
   templeName: string;
@@ -599,6 +599,43 @@ const clampInt = (v: string | null, def: number, lo: number, hi: number) => {
   return Number.isFinite(n) ? Math.min(Math.max(n, lo), hi) : def;
 };
 
+// ── Источники Instagram (только IG: чистого веба/Telegram у них нет) ──
+// Забор делает воркер через Browser Rendering (см. worker.ts: igIngestAll) и кладёт
+// последний даршан-пост в таблицу ig_darshan (картинки в base64). Здесь — только
+// ЧТЕНИЕ из D1 и сборка кружков; кадры отдаёт маршрут /api/darshan/igimg/...
+export const IG_TEMPLES = [
+  { slug: "noida", user: "iskcon_noida", name: "ИСККОН Нойда · Шри Шри Радха-Говинд-Дев", deities: "Шри Шри Радха-Говинд-Дев", place: "Шри Шри Радха-Говинд-Дев Мандир · ИСККОН Нойда" },
+  { slug: "nashik", user: "iskconnashik", name: "ИСККОН Насик · Шри Шри Радха-Мадан-Гопал", deities: "Шри Шри Радха-Мадан-Гопал", place: "Шри Шри Радха-Мадан-Гопал Мандир · ИСККОН Насик" },
+  { slug: "gev", user: "iskcon_gev_official", name: "ГЭВ · Шри Шри Радха-Вриндаванбихари", deities: "Шри Шри Радха-Вриндаванбихари", place: "Шри Шри Радха-Вриндаванбихари · Говардхан-эковилладж (ИСККОН)" },
+] as const;
+
+async function igItems(env: DarshanEnv): Promise<DarshanItem[]> {
+  const out: DarshanItem[] = [];
+  for (const t of IG_TEMPLES) {
+    try {
+      const latest = await env.DB.prepare("SELECT date FROM ig_darshan WHERE slug=?1 ORDER BY date DESC LIMIT 1").bind(t.slug).first<{ date: string }>();
+      if (!latest?.date) continue;
+      const res = await env.DB.prepare("SELECT idx, post_url FROM ig_darshan WHERE slug=?1 AND date=?2 ORDER BY idx ASC").bind(t.slug, latest.date).all<{ idx: number; post_url: string }>();
+      const rows = res.results ?? [];
+      if (!rows.length) continue;
+      out.push({
+        source: "ig",
+        date: latest.date,
+        templeSlug: t.slug,
+        templeName: t.name,
+        deities: t.deities,
+        place: t.place,
+        images: rows.map((r) => `/api/darshan/igimg/${t.slug}/${latest.date}/${r.idx}`).slice(0, 10),
+        caption: null,
+        srcUrl: rows[0]?.post_url || `https://www.instagram.com/${t.user}/`,
+        channelUrl: `https://www.instagram.com/${t.user}/`,
+        postId: t.slug,
+      });
+    } catch { /* пропускаем храм */ }
+  }
+  return out;
+}
+
 export async function darshanApi(request: Request, env: DarshanEnv, url: URL): Promise<Response | null> {
   const p = url.pathname;
   if (p !== "/api/darshan" && p !== "/api/darshan/archive") return null;
@@ -659,7 +696,7 @@ export async function darshanApi(request: Request, env: DarshanEnv, url: URL): P
     }),
   );
   const iskcone = await iskconeCircle();
-  const today = live.filter((x): x is DarshanItem => x !== null);
+  const today = [...live.filter((x): x is DarshanItem => x !== null), ...(await igItems(env))];
   const all = iskcone ? [iskcone, ...today] : today;
 
   return jr({ today: all, at: new Date().toISOString() }, 200, all.length ? "public, max-age=600" : "no-store");
