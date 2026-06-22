@@ -30,6 +30,11 @@ run_worker_first = true
 [browser]
 binding = "BROWSER"
 
+# Крон: ежедневная перекладка IG-даршанов (Ноида/Насик/GEV) в D1 — обработчик scheduled().
+# Время в UTC; IST = UTC+5:30. Несколько прогонов покрывают утро–вечер IST.
+[triggers]
+crons = ["0 4 * * *", "0 9 * * *", "0 14 * * *"]
+
 [[d1_databases]]
 binding = "DB"
 database_name = "iskcon"

@@ -2,37 +2,36 @@ name: ig-probe
 on:
   workflow_dispatch:
     inputs:
-      user:
-        default: iskcon_noida
-        required: false
+      key:
+        description: run_key
+        required: true
 
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: call worker
+      - name: run ingest per slug
         env:
-          IG_SESSIONID: ${{ secrets.IG_SESSIONID }}
-          IG_USER: ${{ inputs.user }}
+          RUN_KEY: ${{ inputs.key }}
         run: |
           python3 - <<'PY'
-          import os, json, urllib.request, urllib.parse, urllib.error
-          sid = urllib.parse.quote(os.environ.get("IG_SESSIONID",""), safe="")
-          user = os.environ.get("IG_USER") or "iskcon_noida"
+          import os, json, time, urllib.request, urllib.error
+          key = os.environ["RUN_KEY"]
           def note(m): print("::notice::" + str(m).replace("\n"," ")[:380], flush=True)
           def err(m):  print("::error::"  + str(m).replace("\n"," ")[:380], flush=True)
-          url = f"https://gaurangers.com/api/_igtest?user={user}&sid={sid}"
-          try:
-              r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=170)
-              d = json.loads(r.read().decode("utf-8","ignore"))
-              if d.get("launchError"): err("LAUNCH " + str(d["launchError"]))
-              for t in d.get("tries", []):
-                  if t.get("kind") == "mirror":
-                      note(f"MIRROR {t.get('url')} st={t.get('status')} imgs={t.get('imgTotal')} igcdn={t.get('igcdn')} samp={t.get('sample')}")
-                  else:
-                      note(f"IGDIRECT st={t.get('status')} cap={len(t.get('captured',[]))} dom={len(t.get('domImgs',[]))} err={str(t.get('error',''))[:70]} samp={(t.get('captured') or t.get('domImgs') or [])[:1]}")
-          except urllib.error.HTTPError as e:
-              err(f"HTTP {e.code}: {e.read().decode('utf-8','ignore')[:200]}")
-          except Exception as e:
-              err(f"{type(e).__name__}: {str(e)[:200]}")
+          for slug in ["noida", "nashik", "gev"]:
+              url = f"https://gaurangers.com/api/ig/run?key={key}&slug={slug}"
+              try:
+                  r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=150)
+                  body = r.read().decode("utf-8","ignore")
+                  try:
+                      d = json.loads(body)
+                      for it in d: note(f"{it.get('slug')}: ok={it.get('ok')} n={it.get('n')} msg={it.get('msg')}")
+                  except Exception:
+                      note(f"{slug}: HTTP{r.status} raw={body[:160]}")
+              except urllib.error.HTTPError as e:
+                  err(f"{slug}: HTTP {e.code} {e.read().decode('utf-8','ignore')[:120]}")
+              except Exception as e:
+                  err(f"{slug}: {type(e).__name__} {str(e)[:140]}")
+              time.sleep(3)
           PY

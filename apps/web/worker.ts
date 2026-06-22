@@ -1227,86 +1227,149 @@ function fixSentenceSpacing(s: string | null | undefined): string | null {
   return String(s).replace(/([а-яёa-z])([.!?])([А-ЯЁA-Z])/gu, "$1$2 $3");
 }
 
-// ── Пробник IG через Browser Rendering: грузим зеркала и сам IG настоящим Chrome,
-// смотрим, что отдаётся (антибот зеркал реальный браузер обычно проходит; для IG —
-// перехватываем ответ web_profile_info на лету). Временный, потом заменим/защитим. ──
-async function handleIgTest(env: Env, url: URL): Promise<Response> {
-  const user = (url.searchParams.get("user") || "iskcon_noida").replace(/[^a-z0-9._]/gi, "");
-  const sid = url.searchParams.get("sid") || "";   // опц. для прямого IG
-  const out: Record<string, unknown> = { user, tries: [] as unknown[] };
-  const tries = out.tries as Record<string, unknown>[];
-  const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
-  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
-  try {
-    browser = await puppeteer.launch(env.BROWSER);
+/* ────────────────────────────────────────────────────────────────────────
+   IG-даршан: Browser Rendering грузит профиль храма в Instagram настоящим
+   Chrome (голый запрос ловит 467/429 по IP дата-центра, реальный браузер с
+   сессией проходит), перехватывает ответ web_profile_info, берёт последний
+   пост-фото/карусель, перекладывает кадры в D1 (ig_darshan) и отдаёт их
+   маршрутом /api/darshan/igimg/... — потому что ссылки cdninstagram протухают.
+   Запускается по крону (см. scheduled) и вручную через /api/ig/run?key=...
+   ──────────────────────────────────────────────────────────────────────── */
+const IG_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
+const IG_TARGETS: { user: string; slug: string; deities: string; place: string }[] = [
+  { user: "iskcon_noida",        slug: "noida",  deities: "Шри Шри Радха-Говинда",        place: "Шри Шри Радха-Говинда Мандир · ИСККОН Ноида" },
+  { user: "iskconnashik",        slug: "nashik", deities: "Шри Шри Радха-Мадан-Гопал",     place: "Шри Шри Радха-Мадан-Гопал Мандир · ИСККОН Насик" },
+  { user: "iskcon_gev_official", slug: "gev",    deities: "Шри Шри Радха-Вриндаванбихари", place: "Говардхан Эковилладж · ИСККОН" },
+];
 
-    // (A) зеркала-вьюеры — публичные, сессия не нужна
-    for (const m of [`https://imginn.com/${user}/`, `https://www.pixwox.com/profile/${user}/`, `https://www.picnob.com/profile/${user}/`, `https://dumpor.com/v/${user}`]) {
-      const t: Record<string, unknown> = { kind: "mirror", url: m };
-      try {
-        const page = await browser.newPage();
-        await page.setUserAgent(UA);
-        await page.setViewport({ width: 1280, height: 1800 });
-        const resp = await page.goto(m, { waitUntil: "networkidle2", timeout: 30000 });
-        t.status = resp ? resp.status() : 0;
-        await new Promise((r) => setTimeout(r, 2500));
-        const imgs: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("img")).map((i) => (i as HTMLImageElement).src).filter(Boolean));
-        const cdn = imgs.filter((u) => /cdninstagram|fbcdn|scontent/.test(u));
-        t.imgTotal = imgs.length; t.igcdn = cdn.length; t.sample = (cdn.length ? cdn : imgs).slice(0, 3);
-        await page.close();
-      } catch (e) { t.error = String(e).slice(0, 160); }
-      tries.push(t);
-      if ((t.igcdn as number) > 0) break;
-    }
+async function igSid(env: Env): Promise<string> {
+  try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_sessionid'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
+}
 
-    // (B) сам IG настоящим Chrome + перехват web_profile_info (если дали sid)
-    if (sid) {
-      const t: Record<string, unknown> = { kind: "ig-direct", url: `https://www.instagram.com/${user}/` };
-      try {
-        const page = await browser.newPage();
-        await page.setUserAgent(UA);
-        const uid = (sid.match(/\d+/) || ["0"])[0];
-        await page.setCookie(
-          { name: "sessionid", value: sid, domain: ".instagram.com", path: "/", httpOnly: true, secure: true },
-          { name: "ds_user_id", value: uid, domain: ".instagram.com", path: "/", secure: true },
-        );
-        const captured: string[] = [];
-        page.on("response", async (r) => {
-          try {
-            const u = r.url();
-            if (u.includes("web_profile_info") || u.includes("graphql")) {
-              const j = await r.json().catch(() => null);
-              const edges = j?.data?.user?.edge_owner_to_timeline_media?.edges
-                || j?.data?.xdt_api__v1__feed__user_timeline_graphql_connection?.edges;
-              if (Array.isArray(edges)) for (const e of edges) { const du = e?.node?.display_url || e?.node?.image_versions2?.candidates?.[0]?.url; if (du) captured.push(du); }
-            }
-          } catch { /* ignore */ }
-        });
-        const resp = await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "networkidle2", timeout: 35000 });
-        t.status = resp ? resp.status() : 0;
-        await new Promise((r) => setTimeout(r, 4000));
-        const domImgs: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("article img, main img")).map((i) => (i as HTMLImageElement).src).filter((s) => /cdninstagram|scontent/.test(s)));
-        t.captured = captured.slice(0, 5); t.domImgs = domImgs.slice(0, 5);
-        await page.close();
-      } catch (e) { t.error = String(e).slice(0, 160); }
-      tries.push(t);
+async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>>, user: string, sid: string): Promise<Record<string, unknown>[]> {
+  const page = await browser.newPage();
+  await page.setUserAgent(IG_UA);
+  await page.setViewport({ width: 1280, height: 1800 });
+  const uid = (sid.match(/\d+/) || ["0"])[0];
+  await page.setCookie(
+    { name: "sessionid", value: sid, domain: ".instagram.com", path: "/", httpOnly: true, secure: true },
+    { name: "ds_user_id", value: uid, domain: ".instagram.com", path: "/", secure: true },
+  );
+  let media: Record<string, unknown>[] = [];
+  page.on("response", async (r: { url(): string; json(): Promise<unknown> }) => {
+    try {
+      if (!media.length && r.url().includes("web_profile_info")) {
+        const j = await r.json() as { data?: { user?: { edge_owner_to_timeline_media?: { edges?: { node: Record<string, unknown> }[] } } } };
+        const edges = j?.data?.user?.edge_owner_to_timeline_media?.edges;
+        if (Array.isArray(edges)) media = edges.map((e) => e.node);
+      }
+    } catch { /* ignore */ }
+  });
+  try { await page.goto(`https://www.instagram.com/${user}/`, { waitUntil: "networkidle2", timeout: 35000 }); } catch { /* ignore */ }
+  await new Promise((res) => setTimeout(res, 3500));
+  try { await page.close(); } catch { /* ignore */ }
+  return media;
+}
+
+function igPickLatestPhoto(media: Record<string, unknown>[]): { ts: number; urls: string[]; postUrl: string } | null {
+  const sorted = [...media].sort((a, b) => (Number(b?.taken_at_timestamp) || 0) - (Number(a?.taken_at_timestamp) || 0));
+  for (const n of sorted) {
+    if (n?.is_video) continue;
+    const kids = (n?.edge_sidecar_to_children as { edges?: { node: Record<string, unknown> }[] } | undefined)?.edges;
+    let urls: string[];
+    if (Array.isArray(kids) && kids.length) urls = kids.filter((k) => !k?.node?.is_video).map((k) => String(k?.node?.display_url || "")).filter(Boolean);
+    else urls = [String(n?.display_url || "")].filter(Boolean);
+    if (urls.length) {
+      const ts = Number(n?.taken_at_timestamp) || Math.floor(Date.now() / 1000);
+      const sc = n?.shortcode ? String(n.shortcode) : "";
+      return { ts, urls, postUrl: sc ? `https://www.instagram.com/p/${sc}/` : "https://www.instagram.com/" };
     }
-  } catch (e) {
-    out.launchError = String(e).slice(0, 200);
-  } finally {
-    try { if (browser) await browser.close(); } catch { /* ignore */ }
   }
-  return new Response(JSON.stringify(out, null, 2), { headers: { "content-type": "application/json", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" } });
+  return null;
+}
+
+async function igDownloadB64(u: string): Promise<{ b64: string; ct: string } | null> {
+  try {
+    const r = await fetch(u, { headers: { "User-Agent": IG_UA, Referer: "https://www.instagram.com/", Accept: "image/*,*/*" }, cf: { cacheTtl: 60 } } as RequestInit);
+    if (!r.ok) return null;
+    const ct = r.headers.get("content-type") || "image/jpeg";
+    const bytes = new Uint8Array(await r.arrayBuffer());
+    if (!bytes.length || bytes.length > 1_400_000) return null;   // лимит ячейки D1
+    let bin = ""; const CH = 0x8000;
+    for (let i = 0; i < bytes.length; i += CH) bin += String.fromCharCode(...Array.from(bytes.subarray(i, i + CH)));
+    return { b64: btoa(bin), ct };
+  } catch { return null; }
+}
+
+function igIstDate(ts: number): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ts * 1000));
+}
+
+async function igIngestOne(env: Env, t: { user: string; slug: string; deities: string; place: string }): Promise<{ slug: string; ok: boolean; n: number; msg: string }> {
+  const sid = await igSid(env);
+  if (!sid) return { slug: t.slug, ok: false, n: 0, msg: "no sid" };
+  let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
+  let media: Record<string, unknown>[] = [];
+  try { browser = await puppeteer.launch(env.BROWSER); media = await igFetchMedia(browser, t.user, sid); }
+  catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "launch " + String(e).slice(0, 60) }; }
+  finally { try { if (browser) await browser.close(); } catch { /* ignore */ } }
+  if (!media.length) return { slug: t.slug, ok: false, n: 0, msg: "no media (429/login?)" };
+  const pick = igPickLatestPhoto(media);
+  if (!pick) return { slug: t.slug, ok: false, n: 0, msg: "no photo post" };
+  const date = igIstDate(pick.ts);
+  const stored: { idx: number; b64: string; ct: string }[] = [];
+  let idx = 0;
+  for (const u of pick.urls.slice(0, 6)) { const d = await igDownloadB64(u); if (d) stored.push({ idx: idx++, b64: d.b64, ct: d.ct }); }
+  if (!stored.length) return { slug: t.slug, ok: false, n: 0, msg: "download failed" };
+  try {
+    await env.DB.prepare("DELETE FROM ig_darshan WHERE slug=?1").bind(t.slug).run();
+    for (const s of stored) {
+      await env.DB.prepare("INSERT INTO ig_darshan (slug,date,deities,place,idx,img,ct,post_url,ts) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)")
+        .bind(t.slug, date, t.deities, t.place, s.idx, s.b64, s.ct, pick.postUrl, pick.ts).run();
+    }
+  } catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "d1 " + String(e).slice(0, 60) }; }
+  return { slug: t.slug, ok: true, n: stored.length, msg: date };
+}
+
+async function igIngestAll(env: Env): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
+  const out: { slug: string; ok: boolean; n: number; msg: string }[] = [];
+  for (const t of IG_TARGETS) { try { out.push(await igIngestOne(env, t)); } catch (e) { out.push({ slug: t.slug, ok: false, n: 0, msg: "ex " + String(e).slice(0, 50) }); } }
+  return out;
+}
+
+async function serveIgImg(env: Env, slug: string, date: string, idx: number): Promise<Response> {
+  try {
+    const row = await env.DB.prepare("SELECT img, ct FROM ig_darshan WHERE slug=?1 AND date=?2 AND idx=?3").bind(slug, date, idx).first();
+    if (!row) return new Response("not found", { status: 404 });
+    const rec = row as { img: string; ct: string };
+    const bytes = Uint8Array.from(atob(rec.img), (c) => c.charCodeAt(0));
+    return new Response(bytes, { headers: { "content-type": rec.ct || "image/jpeg", "Cache-Control": "public, max-age=86400, immutable", "X-Robots-Tag": "noindex" } });
+  } catch { return new Response("err", { status: 500 }); }
+}
+
+async function igRun(env: Env, url: URL): Promise<Response> {
+  let want = "";
+  try { want = ((await env.DB.prepare("SELECT v FROM ig_config WHERE k='run_key'").first()) as { v?: string } | null)?.v || ""; } catch { /* */ }
+  if (!want || url.searchParams.get("key") !== want) return new Response("forbidden", { status: 403 });
+  const only = url.searchParams.get("slug");
+  const targets = only ? IG_TARGETS.filter((t) => t.slug === only) : IG_TARGETS;
+  const res: { slug: string; ok: boolean; n: number; msg: string }[] = [];
+  for (const t of targets) res.push(await igIngestOne(env, t));
+  return new Response(JSON.stringify(res, null, 2), { headers: { "content-type": "application/json", "Cache-Control": "no-store" } });
 }
 
 export default {
+  // Крон: перекладываем свежий даршан IG-храмов в D1 (см. [triggers] в wrangler.toml).
+  async scheduled(_event: unknown, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
+    ctx.waitUntil(igIngestAll(env).then(() => undefined).catch(() => undefined));
+  },
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // ── Временный пробник: headless-Chrome (Browser Rendering) тащит ленту IG ──
-    if (url.pathname === "/api/_igtest") {
-      return handleIgTest(env, url);
-    }
+    // ── IG-даршан: отдать кадр из D1 (воркер перекладывает инстаграм-посты по крону) ──
+    const igImgM = url.pathname.match(/^\/api\/darshan\/igimg\/([a-z0-9_-]+)\/(\d{4}-\d{2}-\d{2})\/(\d+)$/i);
+    if (igImgM) return serveIgImg(env, igImgM[1], igImgM[2], Number(igImgM[3]));
+    if (url.pathname === "/api/ig/run") return igRun(env, url);
 
     // ── Audio proxy: /audio/<ia-identifier>/<file>.mp3 → streamed from Internet Archive ──
     const audioM = url.pathname.match(/^\/audio\/([a-z0-9][a-z0-9._-]*)\/(.+\.mp3)$/i);
