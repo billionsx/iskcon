@@ -111,9 +111,9 @@ function buildKirtanGroups(): Group[] {
 }
 
 // Меню поста ленты — открыть в Telegram (первой строкой), затем стандартные действия.
-function buildPostGroups(): Group[] {
-  return [
-    { items: [{ id: "telegram", label: "Открыть в Telegram", Icon: TelegramGlyph }] },
+// Для даршан-постов (их больше нет в канале) пункт Telegram скрываем.
+function buildPostGroups(noTelegram = false): Group[] {
+  const groups: Group[] = [
     { items: [
       { id: "share", label: "Поделиться", Icon: ShareGlyph },
       { id: "pdf", label: "Скачать PDF", Icon: PdfGlyph },
@@ -124,6 +124,8 @@ function buildPostGroups(): Group[] {
       { id: "report", label: "Сообщить об ошибке", Icon: ReportGlyph },
     ] },
   ];
+  if (!noTelegram) groups.unshift({ items: [{ id: "telegram", label: "Открыть в Telegram", Icon: TelegramGlyph }] });
+  return groups;
 }
 
 // Меню бхаджана — поделиться, QR, поддержать, сообщить (без книжного PDF-рендера).
@@ -209,17 +211,17 @@ const SHEET_CSS = `
 
 export { NoteGlyph };
 
-export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false, notePinned = false, noteHasSource = false, centerCanManage = false, centerHasMaps = false }: {
+export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isChapter = false, canOrder = false, withNote = false, noPdf = false, noTelegram = false, notePinned = false, noteHasSource = false, centerCanManage = false, centerHasMaps = false }: {
   open: boolean; onClose: () => void; onSelect: (id: string) => void;
   anchorRef?: RefObject<HTMLElement | null>;
-  variant?: "book" | "player" | "kirtan" | "bhajan" | "note" | "center" | "post"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean;
+  variant?: "book" | "player" | "kirtan" | "bhajan" | "note" | "center" | "post"; isChapter?: boolean; canOrder?: boolean; withNote?: boolean; noPdf?: boolean; noTelegram?: boolean;
   notePinned?: boolean; noteHasSource?: boolean; centerCanManage?: boolean; centerHasMaps?: boolean;
 }) {
   if (!open || typeof document === "undefined") return null;
   const data: Group[] =
     variant === "note" ? buildNoteGroups(notePinned, noteHasSource)
       : variant === "center" ? buildCenterGroups(centerCanManage, centerHasMaps)
-        : variant === "post" ? buildPostGroups()
+        : variant === "post" ? buildPostGroups(noTelegram)
           : variant === "kirtan" ? buildKirtanGroups()
           : variant === "bhajan" ? buildBhajanGroups()
             : variant === "player" ? buildPlayerGroups(isChapter)

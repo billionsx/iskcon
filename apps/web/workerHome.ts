@@ -367,56 +367,119 @@ async function imgProxy(url: URL): Promise<Response> {
   return new Response(r.body, { status: 200, headers: { "content-type": ct, "cache-control": "public, max-age=86400, immutable", "x-content-type-options": "nosniff", "X-Robots-Tag": "noindex" } });
 }
 
-async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Response> {
+/* Синтез поста ленты из строки D1 darshan: даршаны больше не идут в Telegram-канал,
+   поэтому показываем их в ленте, собирая пост из храмовых полноразмеров (через прокси). */
+function synthDarshan(row: { id: number; date: string; temple_name: string; deities: string; caption: string; images_json: string; created_at: string }): (TgPost & { ts: number }) | null {
+  let imgs: string[] = [];
+  try { const a = JSON.parse(row.images_json); if (Array.isArray(a)) imgs = a.filter((x) => typeof x === "string" && x); } catch { /* нет картинок */ }
+  if (!imgs.length) return null;
+  const ts = Date.parse((row.created_at || "").replace(" ", "T") + "Z") || Date.parse(row.date) || 0;
+  if (!ts) return null;
+  const dateIso = row.date && /^\d{4}-\d{2}-\d{2}$/.test(row.date) ? `${row.date}T12:00:00.000Z` : new Date(ts).toISOString();
+  const deities = (row.deities || "").trim();
+  const temple = (row.temple_name || "").trim();
+  const text = [deities, "Ежедневный даршан", temple].filter(Boolean).join("\n\n");
+  return {
+    id: `d${row.id}`, date: dateIso, views: "", text,
+    rich: [{ t: "t", v: text }],
+    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=1080`),
+    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`),
+    videos: [], audios: [], link: null, ts,
+  };
+}
+
+/* Одиночный пост для deep-link /post/<id> (открытие из избранного).
+   • d<n> — даршан из D1; • число — реальный пост канала (страница t.me/s, включающая id). */
+async function tgPost(channel: string, id: string, env: HomeEnv): Promise<Response> {
   if (!TG_CHANNELS.has(channel)) return jr({ error: "unknown_channel" }, 404);
+  const dm = id.match(/^d(\d+)$/i);
+  if (dm) {
+    try {
+      if (env.DB) {
+        const { results } = await env.DB.prepare(
+          `SELECT id, date, temple_name, deities, caption, images_json, created_at FROM darshan WHERE id = ? LIMIT 1`,
+        ).bind(Number(dm[1])).all();
+        const row = (results || [])[0] as { id: number; date: string; temple_name: string; deities: string; caption: string; images_json: string; created_at: string } | undefined;
+        const sp = row ? synthDarshan(row) : null;
+        if (sp) { const { ts: _t, ...p } = sp; return jr({ channel, posts: [p], oldest: null, hasMore: false }, 200, "public, max-age=300"); }
+      }
+    } catch { /* ниже — пусто */ }
+    return jr({ channel, posts: [], oldest: null, hasMore: false }, 200, "no-store");
+  }
+  // реальный пост: t.me/s?before=<id+1> отдаёт страницу с этим id
   try {
-    // t.me/s отдаёт ~20 постов; ?before=<id> — страница более старых (бесконечная лента)
-    const qs = /^\d+$/.test(before) ? `?before=${before}` : "";
+    const nid = Number(id);
+    const qs = Number.isFinite(nid) && nid > 0 ? `?before=${nid + 1}` : "";
     const r = await fetch(`https://t.me/s/${channel}${qs}`, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" },
       cf: { cacheTtl: 300, cacheEverything: true },
     } as RequestInit);
     const html = await r.text();
     const posts: TgPost[] = [];
-    for (const b of html.split("tgme_widget_message_wrap").slice(1)) {
-      const p = parseTgBlock(b);
-      if (p) posts.push(p);
-    }
-    posts.reverse(); // свежие сверху
-
-    // Полноразмер для даршан-постов — в ЛАЙТБОКС (по тапу), не в карточку. Веб-превью
-    // t.me/s грузится всегда и на размере карточки резкое; полноразмерные оригиналы бот
-    // пишет в D1 (images_json), но они на храмовых CDN (mayapur.com и т.п.) — в браузере
-    // часто не грузятся (хотлинк/CORS) и тяжёлые. Поэтому отдаём их в photosFull через
-    // worker-прокси /api/img (тянет сервер, отдаёт со своего домена + кэш). Матч точный
-    // по tg_message_id. Карточка показывает p.photos (превью), лайтбокс — p.photosFull.
-    try {
-      const ids = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
-      if (ids.length && env.DB) {
-        const ph = ids.map(() => "?").join(",");
-        const { results } = await env.DB.prepare(
-          `SELECT tg_message_id AS mid, images_json AS imgs FROM darshan WHERE tg_message_id IN (${ph})`,
-        ).bind(...ids).all();
-        const byId = new Map<number, string>();
-        for (const row of (results as Array<{ mid: number; imgs: string }>)) byId.set(Number(row.mid), row.imgs);
-        for (const p of posts) {
-          const imgs = byId.get(Number(p.id));
-          if (!imgs) continue;
-          try {
-            const full = JSON.parse(imgs) as string[];
-            if (Array.isArray(full) && full.length) p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`);
-          } catch { /* оставляем только превью */ }
-        }
-      }
-    } catch { /* любая ошибка БД — отдаём как есть */ }
-
-    const oldest = posts.length ? posts[posts.length - 1].id : null;
-    // конец истории: страница пуста или старее уже некуда
-    const hasMore = posts.length > 0 && oldest !== null && Number(oldest) > 1;
-    return jr({ channel, posts, oldest, hasMore }, 200, "public, max-age=300");
+    for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) posts.push(pp); }
+    posts.reverse();
+    return jr({ channel, posts, oldest: null, hasMore: false }, 200, "public, max-age=300");
   } catch {
     return jr({ channel, posts: [], oldest: null, hasMore: false }, 502, "no-store");
   }
+}
+
+async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Response> {
+  if (!TG_CHANNELS.has(channel)) return jr({ error: "unknown_channel" }, 404);
+  // Курсор before — timestamp ms (опаков для клиента: он просто возвращает oldest в ?before=).
+  // Лента — слияние по времени: ДАРШАНЫ из D1 (ежедневный бэкбон, пагинация по created_at)
+  // + РЕАЛЬНЫЕ посты канала @iskcone (всё остальное, что постит автор — их по-прежнему
+  // скрейпим). Даршаны в канал больше не постятся → синтезируем из D1; старые даршан-посты,
+  // ещё висящие в канале, прячем по подписи, чтобы не было дублей.
+  const beforeTs = /^\d{10,}$/.test(before) ? Number(before) : Number.POSITIVE_INFINITY;
+  const PAGE = 20;
+
+  // 1) Реальные посты канала (страница 1, кэш 5 мин), кроме даршан-подписей.
+  let real: Array<TgPost & { ts: number }> = [];
+  try {
+    const r = await fetch(`https://t.me/s/${channel}`, {
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    } as RequestInit);
+    const html = await r.text();
+    const arr: TgPost[] = [];
+    for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) arr.push(pp); }
+    real = arr
+      .filter((pp) => !/Ежедневный даршан/i.test(pp.text))
+      .map((pp) => ({ ...pp, ts: Date.parse(pp.date) || 0 }))
+      .filter((pp) => pp.ts > 0 && pp.ts < beforeTs);
+  } catch { /* канал недоступен — поедем на одних даршанах */ }
+
+  // 2) Даршаны из D1 — страница по created_at (строго старее курсора).
+  let dposts: Array<TgPost & { ts: number }> = [];
+  let darshanMore = false;
+  try {
+    if (env.DB) {
+      const lim = PAGE + 6;
+      let res;
+      if (Number.isFinite(beforeTs)) {
+        const iso = new Date(beforeTs).toISOString().slice(0, 19).replace("T", " ");
+        res = await env.DB.prepare(
+          `SELECT id, date, temple_name, deities, caption, images_json, created_at FROM darshan WHERE created_at < ? ORDER BY created_at DESC, id DESC LIMIT ${lim}`,
+        ).bind(iso).all();
+      } else {
+        res = await env.DB.prepare(
+          `SELECT id, date, temple_name, deities, caption, images_json, created_at FROM darshan ORDER BY created_at DESC, id DESC LIMIT ${lim}`,
+        ).all();
+      }
+      const rows = (res.results || []) as Array<{ id: number; date: string; temple_name: string; deities: string; caption: string; images_json: string; created_at: string }>;
+      darshanMore = rows.length > PAGE;
+      for (const row of rows) { const sp = synthDarshan(row); if (sp && sp.ts < beforeTs) dposts.push(sp); }
+    }
+  } catch { /* без D1 — только канал */ }
+
+  // 3) Слияние по времени → страница PAGE.
+  const merged = [...real, ...dposts].sort((a, b) => b.ts - a.ts);
+  const page = merged.slice(0, PAGE);
+  const oldest = page.length ? String(page[page.length - 1].ts) : null;
+  const hasMore = merged.length > PAGE || darshanMore;
+  const posts = page.map(({ ts: _ts, ...p }) => p);
+  return jr({ channel, posts, oldest, hasMore }, 200, "public, max-age=120");
 }
 
 /* ───────────────────────── РОУТЕР ───────────────────────── */
@@ -431,6 +494,10 @@ export async function homeApi(request: Request, env: HomeEnv): Promise<Response 
   if (p === "/api/documents") return documentsList(env, url);
   if (p === "/api/img") return imgProxy(url);
   const tg = p.match(/^\/api\/tg\/([a-z0-9_]+)$/i);
-  if (tg) return tgFeed(tg[1].toLowerCase(), url.searchParams.get("before") || "", env);
+  if (tg) {
+    const one = url.searchParams.get("post");
+    if (one) return tgPost(tg[1].toLowerCase(), one, env);
+    return tgFeed(tg[1].toLowerCase(), url.searchParams.get("before") || "", env);
+  }
   return null;
 }
