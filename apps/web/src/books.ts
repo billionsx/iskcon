@@ -476,7 +476,6 @@ export const BOOKS: Record<string, BookData> = {
     covers: ["/covers/manah-siksa-ia.jpg"],
     chips: ["11 стихов", "~500 лет", "Рагхунатха дас Госвами"],
     uniformTitle: true,
-    noText: true,
   },
   "siksastaka": {
     id: "siksastaka",
