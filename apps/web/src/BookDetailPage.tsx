@@ -195,6 +195,32 @@ function DefRow({ term, desc, last }: { term: string; desc: string; last?: boole
 }
 
 /* ───────── О книге · универсальная (data-driven из BOOK_ABOUT) ───────── */
+function AudiobookOverview({ book }: { book: BookData }) {
+  const paras = BOOK_ABOUT[book.work] ?? [book.description];
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
+      <section>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Аудиокнига</div>
+        {paras.map((t, i) => (
+          <p key={i} style={{ margin: i === 0 ? 0 : "14px 0 0", fontSize: i === 0 ? 17.5 : 16, lineHeight: 1.58, color: i === 0 ? INK : INK2 }}>{renderTerms(t)}</p>
+        ))}
+      </section>
+      <section>
+        <SectionTitle>Кратко</SectionTitle>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {book.chips.map((c, i) => (
+            <span key={i} style={{ fontSize: 13, lineHeight: 1.3, color: INK2, border: `0.5px solid ${LINE}`, borderRadius: 999, padding: "5px 11px" }}>{c}</span>
+          ))}
+        </div>
+      </section>
+      <section>
+        <SectionTitle>Автор</SectionTitle>
+        <p style={{ margin: 0, fontSize: 16, lineHeight: 1.6, color: INK2 }}>{book.author}</p>
+      </section>
+    </div>
+  );
+}
+
 function GenericOverview({ book }: { book: BookData }) {
   const paras = BOOK_ABOUT[book.work] ?? [book.description];
   return (
@@ -2975,13 +3001,13 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
           <BookHeroCard book={book} topLeft={book.publisher === "bbt" ? <LogoMark src="/bbt.svg" label="The Bhaktivedanta Book Trust" height={26} color="#fff" /> : undefined} flash={flash} onMenuSelect={menuAction} canOrder={!!bookProduct(book.work)} onListen={AUDIO_WORKS[book.work] ? undefined : () => flash("Аудиокнига — скоро")} />
         </div>
 
-        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => (t.id !== "reviews" || REVIEWED_WORKS.has(book.work) || !!BOOK_REVIEWS[book.work]) && (t.id !== "contents" || !book.noText))} />
+        <BookTabs active={tab} onChange={(id) => setTab(id)} tabs={BOOK_TABS.filter((t) => (t.id !== "reviews" || REVIEWED_WORKS.has(book.work) || !!BOOK_REVIEWS[book.work]) && (t.id !== "contents" || !book.noText) && (t.id !== "author" || !book.noText))} />
 
         <div>
           {tab === "contents" && (book.hierarchical
             ? <CcContents work={book.work} onOpenChapter={setOpenChapter} flashId={contentsFlashId} onConsumeFlash={() => setContentsFlashId(null)} />
             : <Contents chapters={chapters} onOpenChapter={setOpenChapter} prose={book.prose} flashId={contentsFlashId} onConsumeFlash={() => setContentsFlashId(null)} />)}
-          {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : <GenericOverview book={book} />)}
+          {tab === "overview" && (book.work === "brs" ? <NodOverview book={book} /> : book.work === "sb" ? <SbOverview book={book} /> : book.work === "cc" ? <CcOverview book={book} /> : book.work === "bg" ? <Overview book={book} /> : book.noText ? <AudiobookOverview book={book} /> : <GenericOverview book={book} />)}
           {tab === "author" && (book.work === "spl" ? <SplAuthor /> : <Author />)}
           {tab === "reviews" && REVIEWED_WORKS.has(book.work) && (book.work === "brs" ? <NodReviews /> : book.work === "sb" ? <SbReviews /> : book.work === "cc" ? <CcReviews /> : book.work === "seventh-goswami" ? <SeventhGoswamiReviews /> : BOOK_REVIEWS[book.work] ? <GenericReviews data={BOOK_REVIEWS[book.work]} /> : <Reviews />)}
         </div>
