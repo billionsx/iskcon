@@ -17,7 +17,7 @@ export interface DarshanItem {
   orient?: ("p" | "l" | null)[]; // ориентация показа каждого кадра (определена сервером по EXIF), выровнена с images
   caption: string | null;
   postedAt?: string;          // ISO-время поста (для показа времени и сортировки кругов)
-  frames?: { image: string; caption: string | null; postedAt: string | null }[]; // покадровая лента канала @iskcone
+  frames?: { image: string; video?: string | null; caption: string | null; postedAt: string | null }[]; // покадровая лента канала @iskcone
   srcUrl: string;             // пост-источник в канале храма
   channelUrl: string | null;  // пост в @iskcone (для архива, если опубликован)
   postId: string;

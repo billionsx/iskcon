@@ -49,6 +49,25 @@ def die(m: str, code: int = 1):
     sys.exit(code)
 
 
+async def _dl(client, media, dest: str, thumb=None) -> bool:
+    """Скачать медиа в dest (с переждать-FloodWait). thumb=-1 — крупнейший постер
+    видео; thumb=None — медиа целиком (полное фото или ПОЛНОЕ видео). True при успехе."""
+    from telethon.errors import FloodWaitError as _FW
+    while True:
+        try:
+            if thumb is None:
+                await client.download_media(media, file=dest)
+            else:
+                await client.download_media(media, file=dest, thumb=thumb)
+            return os.path.exists(dest)
+        except _FW as e:
+            info(f"FloodWait {e.seconds}s — ждём…")
+            time.sleep(e.seconds + 1)
+        except Exception as e:
+            info(f"скачать не удалось: {e}")
+            return False
+
+
 def load_dotenv_if_present():
     env = ROOT / ".env"
     if not env.exists():
@@ -171,69 +190,81 @@ async def cmd_fetch():
             media = getattr(s, "media", None)
             if media is None:
                 continue
-            remote = f"story_{sid}.jpg"
+            poster = f"story_{sid}.jpg"        # постер (видео) или фото целиком
+            video_name = f"story_{sid}.mp4"    # ПОЛНОЕ видео (только для видео-сторис)
             cap = (getattr(s, "caption", None) or "").strip() or None
-            mtype = "video" if isinstance(media, MessageMediaDocument) else "photo"
+            is_video = isinstance(media, MessageMediaDocument)
+            mtype = "video" if is_video else "photo"
             entry = {
                 "id": sid,
                 "type": mtype,
-                "file": remote,
+                "file": poster,
                 "caption": cap,
                 "date": _iso(getattr(s, "date", None)),
                 "expire": _iso(getattr(s, "expire_date", None)),
                 "pinned": bool(pinned),
             }
-            manifest.append(entry)
 
-            if remote in existing:  # уже залито в прошлый прогон — медиа на месте
+            # Идемпотентность: фото → нужен постер; видео → нужны постер И полное mp4.
+            need_poster = poster not in existing
+            need_video = is_video and (video_name not in existing)
+            if not need_poster and not need_video:
+                if is_video:
+                    entry["video"] = video_name   # mp4 уже залит ранее
+                manifest.append(entry)
                 n_skip += 1
                 continue
 
-            dest = DL / remote
-            got = None
-            while True:
-                try:
-                    if isinstance(media, MessageMediaPhoto):
-                        got = await client.download_media(media, file=str(dest))
-                    else:
-                        # видео/гиф → постер-кадр (крупнейший thumbnail)
-                        got = await client.download_media(media, file=str(dest), thumb=-1)
-                        if not got:
-                            got = await client.download_media(media, file=str(dest))
-                    break
-                except FloodWaitError as e:
-                    info(f"FloodWait {e.seconds}s — ждём…")
-                    time.sleep(e.seconds + 1)
-                except Exception as e:
-                    info(f"[{sid}] скачать не удалось: {e}")
-                    got = None
-                    break
+            files_to_upload: dict[str, str] = {}
+            if need_poster:
+                pdest = DL / poster
+                if is_video:
+                    # постер видео — крупнейший thumbnail (для превью/блюр-подложки)
+                    if not await _dl(client, media, str(pdest), thumb=-1):
+                        await _dl(client, media, str(pdest))
+                else:
+                    await _dl(client, media, str(pdest))            # фото целиком
+                if os.path.exists(pdest):
+                    files_to_upload[poster] = str(pdest)
+            if need_video:
+                vdest = DL / video_name
+                if await _dl(client, media, str(vdest)):            # ПОЛНОЕ видео
+                    files_to_upload[video_name] = str(vdest)
 
-            if not got or not os.path.exists(dest):
+            have_video = is_video and ((video_name in files_to_upload) or (video_name in existing))
+            have_poster = (poster in files_to_upload) or (poster in existing)
+            if not have_poster and not have_video:
                 n_fail += 1
-                manifest.pop()  # без медиа сторис в манифест не идёт
                 info(f"[{sid}] нет медиа — пропуск")
+                continue
+            if have_video:
+                entry["video"] = video_name
+            manifest.append(entry)
+
+            if not files_to_upload:
+                n_skip += 1
                 continue
 
             md = {} if metadata_done else dict(base_md)
             try:
-                resps = ia_upload(identifier, files={remote: str(dest)}, metadata=md,
+                resps = ia_upload(identifier, files=files_to_upload, metadata=md,
                                   access_key=ak, secret_key=sk, retries=3, verbose=True)
                 bad = [r for r in resps if getattr(r, "status_code", 200) not in (200, None)]
                 if bad:
                     raise RuntimeError(f"HTTP {[getattr(r, 'status_code', None) for r in bad]}")
                 metadata_done = True
                 n_done += 1
-                ok(f"[{sid}] залит: {remote}")
+                ok(f"[{sid}] залит: {', '.join(files_to_upload.keys())}")
             except Exception as e:
                 n_fail += 1
                 manifest.pop()  # не залилось — не показываем (докатится в следующий прогон)
                 info(f"[{sid}] НЕ залит: {e} — повторится при следующем прогоне")
             finally:
-                try:
-                    dest.unlink(missing_ok=True)
-                except Exception:
-                    pass
+                for fp in files_to_upload.values():
+                    try:
+                        Path(fp).unlink(missing_ok=True)
+                    except Exception:
+                        pass
 
         # Манифест: его читает бэкенд и строит круг сторис. Перезаписывается каждый прогон.
         mf = {
