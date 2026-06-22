@@ -5,23 +5,27 @@ on:
       key:
         description: run_key
         required: true
+      slug:
+        description: optional single slug (noida/nashik/gev)
+        required: false
 
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: run ingest (single browser, all temples)
+      - name: run ingest
         env:
           RUN_KEY: ${{ inputs.key }}
+          SLUG: ${{ inputs.slug }}
         run: |
           python3 - <<'PY'
           import os, json, urllib.request, urllib.error
-          key = os.environ["RUN_KEY"]
+          key = os.environ["RUN_KEY"]; slug = os.environ.get("SLUG","").strip()
           def note(m): print("::notice::" + str(m).replace("\n"," ")[:380], flush=True)
           def err(m):  print("::error::"  + str(m).replace("\n"," ")[:380], flush=True)
-          url = f"https://gaurangers.com/api/ig/run?key={key}"
+          url = f"https://gaurangers.com/api/ig/run?key={key}" + (f"&slug={slug}" if slug else "")
           try:
-              r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=240)
+              r = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent":"probe"}), timeout=180)
               body = r.read().decode("utf-8","ignore")
               try:
                   for it in json.loads(body): note(f"{it.get('slug')}: ok={it.get('ok')} n={it.get('n')} msg={it.get('msg')}")
