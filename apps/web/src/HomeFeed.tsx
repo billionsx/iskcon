@@ -124,6 +124,15 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   const [idx, setIdx] = useState(0);
   const [ar, setAr] = useState<number | null>(null);  // аспект кадра берём из ПЕРВОГО фото (как в Instagram)
   const scRef = useRef<HTMLDivElement | null>(null);
+  const downRef = useRef<{ x: number; y: number; t: number } | null>(null);
+
+  // Открываем лайтбокс ТОЛЬКО на чистом тапе: если палец сместился (свайп карусели
+  // или скролл страницы) или удержание долгое — это жест, а не клик, не открываем.
+  const onDown = (e: React.PointerEvent) => { downRef.current = { x: e.clientX, y: e.clientY, t: Date.now() }; };
+  const tryOpen = (i: number, e: React.MouseEvent) => {
+    const d = downRef.current;
+    if (d && Math.hypot(e.clientX - d.x, e.clientY - d.y) <= 10 && Date.now() - d.t <= 600) onOpen(i);
+  };
 
   const onScroll = () => {
     const el = scRef.current; if (!el) return;
@@ -132,8 +141,8 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
 
   if (photos.length === 1) {
     return (
-      <div style={{ background: "var(--color-bg)" }}>
-        <img src={photos[0]} alt="" loading="lazy" onClick={() => onOpen(0)}
+      <div style={{ background: "var(--color-bg)" }} onPointerDown={onDown} onClick={(e) => tryOpen(0, e)}>
+        <img src={photos[0]} alt="" loading="lazy"
           style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
       </div>
     );
@@ -143,16 +152,18 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
     // Как в Instagram: единый кадр на всю карусель, его аспект задаёт ПЕРВОЕ фото
     // (кламп 4:5 … 1.91:1) — горизонтальная пачка даёт горизонтальную галерею,
     // вертикальная — вертикальную. Все кадры заполняют рамку (cover), без полей.
+    // <img> — position:absolute (вне потока), поэтому интринзик-высота фото НЕ
+    // перебивает aspect-ratio: высота кадра жёстко фиксирована, при скролле не «плавает».
     const frame = ar ? Math.min(1.91, Math.max(0.8, ar)) : 0.8;
     return (
       <div style={{ position: "relative" }}>
-        <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
+        <div ref={scRef} onScroll={onScroll} onPointerDown={onDown} className="iol-feed-carousel"
           style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", aspectRatio: String(frame), background: "var(--color-glass-regular)" }}>
           {photos.map((src, i) => (
-            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", height: "100%" }}>
-              <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%" }}>
+              <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
                 onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
-                style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
