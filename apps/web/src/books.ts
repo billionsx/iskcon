@@ -491,7 +491,6 @@ export const BOOKS: Record<string, BookData> = {
     publisher: "",
     covers: ["/covers/siksastaka-ia.jpg"],
     chips: ["8 стихов", "~500 лет", "Шри Чайтанья Махапрабху"],
-    noText: true,
   },
   "bhakti-tattva-viveka": {
     id: "bhakti-tattva-viveka",
