@@ -29,7 +29,7 @@ import EntityPage from "./EntityPage";
 import AcharyaScreen from "./AcharyaScreen";
 import PracticeHub from "./PracticeHub";
 import { HomeCalendar } from "./HomeCalendar";
-import { HomeFeed } from "./HomeFeed";
+import { HomeFeed, FeedPostFocus } from "./HomeFeed";
 import { DarshanRings } from "./DarshanStories";
 import SearchScreen from "./SearchScreen";
 import FavoritesScreen from "./FavoritesScreen";
@@ -596,6 +596,7 @@ export default function App() {
   const [openDownloader, setOpenDownloader] = useState(false);
   const [openStoriesTool, setOpenStoriesTool] = useState(false);
   const [openEntity, setOpenEntity] = useState<string | null>(null);
+  const [openPost, setOpenPost] = useState<string | null>(null);
   const [openCollection, setOpenCollection] = useState<string | null>(null);
   const [donate, setDonate] = useState(false);
   const [openCart, setOpenCart] = useState(false);
@@ -675,6 +676,7 @@ export default function App() {
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
     if (openEntity) return "/person/" + openEntity;
+    if (openPost) return "/post/" + openPost;
     if (openCollection) return "/acharya/" + openCollection;
     if (openTirtha) return "/dhama/" + openTirtha.dhama + "/" + openTirtha.id;
     if (openDhama) return "/dhama/" + openDhama;
@@ -697,7 +699,7 @@ export default function App() {
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -788,6 +790,7 @@ export default function App() {
       return;
     }
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
+    if (seg0 === "post") { const pid = clean.split("/")[2] ?? ""; if (pid) { setOpenPost(pid); return; } }
     if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
     if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
@@ -995,6 +998,10 @@ export default function App() {
         ) : openCollection ? (
           <main key={openCollection} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <AcharyaScreen collection={openCollection} onBack={goBack} onOpen={openEntityTarget} />
+          </main>
+        ) : openPost ? (
+          <main key={openPost} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
+            <FeedPostFocus id={openPost} onBack={goBack} onDonate={openDonate} />
           </main>
         ) : openEntity ? (
           <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
