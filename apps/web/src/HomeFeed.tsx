@@ -1,17 +1,20 @@
 /**
  * HomeFeed — «Лента ISKCON ONE LOVE»: публичный Telegram-канал @iskcone целиком.
- * Дизайн постов — в стиле Instagram 2026: шапка (аватар канала · имя · дата),
- * медиа во всю ширину (одно фото / свайп-карусель с точками / видео), затем
- * панель действий и подпись «**ISKCON ONE LOVE** …».
+ * Карточка поста (в стиле Instagram, сверху вниз):
+ *   медиа (фото / свайп-карусель с точками / видео)
+ *   панель действий:  ♥ В избранное  ·  ✈ Telegram (оригинальный лого)  ·  ⋯
+ *   подпись «**ISKCON ONE LOVE** …»
+ *   дата · число просмотров
+ * Шапки с именем канала нет — бренд назван в подписи.
  *
- * Панель действий каждого поста:
- *   ♥ В избранное (персистентно — общий слой cardActions, синк в кабинет)
- *   ✈ Открыть в Telegram
- *   ⋯ → BookMenuSheet: Поделиться · Скачать PDF · QR-код · Задонатить · Сообщить об ошибке.
+ * Медиа показываем ЦЕЛИКОМ (object-fit: contain) поверх размытой подложки того
+ * же кадра — без обрезки и без cover-увеличения (которое мылит горизонтальные
+ * кадры). Исходники — веб-превью Telegram (t.me/s), это их предел разрешения.
  *
- * PDF поста собирается на КЛИЕНТЕ (печатный конвейер браузера, тот же книжный
- * print-CSS с колонтитулом «ISKCON ONE LOVE · gaurangers.com») — серверный
- * /pdf?kind=card рендерит из D1, а посты ленты живут только в Telegram.
+ * ⋯ → BookMenuSheet: Поделиться · Скачать PDF · QR-код · Задонатить · Сообщить
+ * об ошибке. PDF поста собирается на КЛИЕНТЕ (книжный print-CSS, колонтитул
+ * «ISKCON ONE LOVE · gaurangers.com») — серверный /pdf?kind=card рендерит из D1,
+ * а посты ленты живут только в Telegram.
  *
  * Данные — с воркера /api/tg/iskcone (парсинг t.me/s, кеш 5 мин), бесконечная лента.
  */
@@ -25,7 +28,6 @@ import { HeartIcon, MoreIcon } from "./ui/icons";
 import { exportToPdf } from "./pdf";
 
 const GOLD = "#D2AA1B";
-const TG_BLUE = "#229ED9";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 interface TgSeg { t: "t" | "a"; v: string; href?: string }
@@ -75,12 +77,11 @@ function renderRich(rich: TgSeg[], clampTo: number | null): React.ReactNode[] {
   return out;
 }
 
-/* ── иконки ───────────────────────────────────────────────────────────────── */
-function TelegramIcon({ size = 25 }: { size?: number }) {
-  // фирменный «самолётик» Telegram, в брендовом синем
+/* ── официальный лого Telegram (Simple Icons), монохром через currentColor ── */
+function TelegramIcon({ size = 24 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-      <path fill={TG_BLUE} d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden fill="currentColor">
+      <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
     </svg>
   );
 }
@@ -90,20 +91,9 @@ function ActBtn({ label, onClick, color, children }: { label: string; onClick: (
   return (
     <button type="button" aria-label={label}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
-      style={{ display: "grid", placeItems: "center", width: 40, height: 40, padding: 0, border: "none", background: "none", cursor: "pointer", color: color || "var(--color-label)", WebkitTapHighlightColor: "transparent" }}>
+      style={{ display: "grid", placeItems: "center", width: 42, height: 42, padding: 0, border: "none", background: "none", cursor: "pointer", color: color || "var(--color-label)", WebkitTapHighlightColor: "transparent" }}>
       {children}
     </button>
-  );
-}
-
-/* ── аватар канала: золотое «сторис-кольцо» + эмблема ISKCON ONE LOVE ── */
-function ChannelAvatar({ size = 40 }: { size?: number }) {
-  return (
-    <span aria-hidden style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", padding: 2, background: `conic-gradient(from 220deg, ${GOLD}, #f1e1a4, ${GOLD})`, boxSizing: "border-box" }}>
-      <span style={{ display: "grid", placeItems: "center", width: "100%", height: "100%", borderRadius: "50%", background: "var(--color-bg)", boxSizing: "border-box" }}>
-        <img src="/iskcon-one-love-mark.svg" alt="" style={{ width: "62%", height: "62%", objectFit: "contain", display: "block" }} />
-      </span>
-    </span>
   );
 }
 
@@ -149,7 +139,9 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
   );
 }
 
-/* ── медиа: 1 фото — натурально; 2+ — свайп-карусель 4:5 с точками; видео ── */
+/* ── медиа: 1 фото — натурально; 2+ — свайп-карусель с точками; видео ──
+ *  Кадр показываем ЦЕЛИКОМ (contain) поверх размытой подложки — без обрезки и
+ *  без cover-увеличения (которое мылит горизонтальные снимки). */
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   const photos = p.photos;
   const [idx, setIdx] = useState(0);
@@ -161,38 +153,39 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
 
   if (photos.length === 0 && p.videos.length === 0) return null;
 
-  return (
-    <>
-      {photos.length === 1 && (
-        <div style={{ background: "var(--color-glass-regular)", display: "grid", placeItems: "center" }}>
-          <img src={photos[0]} alt="" loading="lazy" onClick={() => onOpen(0)}
-            style={{ width: "100%", height: "auto", maxHeight: 620, objectFit: "contain", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
-        </div>
-      )}
+  if (photos.length === 1) {
+    return (
+      <div style={{ background: "var(--color-glass-regular)" }}>
+        <img src={photos[0]} alt="" loading="lazy" onClick={() => onOpen(0)}
+          style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
+      </div>
+    );
+  }
 
-      {photos.length > 1 && (
-        <div style={{ position: "relative" }}>
-          <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
-            style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", background: "var(--color-glass-regular)" }}>
-            {photos.map((src, i) => (
-              <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", aspectRatio: "4 / 5" }}>
-                <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
-                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
-              </div>
-            ))}
-          </div>
-          <span style={{ position: "absolute", top: 10, right: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px" }}>{idx + 1}/{photos.length}</span>
-          <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 9, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none" }}>
-            {photos.map((_, i) => (
-              <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? "#fff" : "rgba(255,255,255,0.5)", boxShadow: "0 0 2px rgba(0,0,0,0.4)", transition: "background .2s" }} />
-            ))}
-          </div>
+  if (photos.length > 1) {
+    return (
+      <div style={{ position: "relative" }}>
+        <div ref={scRef} onScroll={onScroll} className="iol-feed-carousel"
+          style={{ display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
+          {photos.map((src, i) => (
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", position: "relative", aspectRatio: "4 / 5", overflow: "hidden", background: "#000" }}>
+              <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${src}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(26px) brightness(0.6)", transform: "scale(1.15)" }} />
+              <img src={src} alt="" loading="lazy" onClick={() => onOpen(i)}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", cursor: "zoom-in", imageOrientation: "from-image" }} />
+            </div>
+          ))}
         </div>
-      )}
+        <span style={{ position: "absolute", top: 10, right: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px" }}>{idx + 1}/{photos.length}</span>
+        <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 9, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none" }}>
+          {photos.map((_, i) => (
+            <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? "#fff" : "rgba(255,255,255,0.5)", boxShadow: "0 0 2px rgba(0,0,0,0.4)", transition: "background .2s" }} />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-      {photos.length === 0 && p.videos.map((v, i) => <VideoBox key={i} v={v} id={p.id} />)}
-    </>
-  );
+  return <>{p.videos.map((v, i) => <VideoBox key={i} v={v} id={p.id} />)}</>;
 }
 
 /* ── видео: превью + длительность; тап — проигрывание здесь либо пост в Telegram ── */
@@ -358,26 +351,16 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
 
   return (
     <article style={{ overflow: "hidden", ...fill }}>
-      {/* шапка: аватар канала · имя · дата */}
-      <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer"
-        style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 12px", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
-        <ChannelAvatar size={40} />
-        <span style={{ minWidth: 0 }}>
-          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label)" }}>ISKCON ONE LOVE</span>
-          {p.date && <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>{fmtDate(p.date)}</span>}
-        </span>
-      </a>
-
       {/* медиа */}
       <PostMedia p={p} onOpen={setView} />
 
-      {/* панель действий: ♥ · Telegram · ⋯ */}
+      {/* панель действий: ♥ · Telegram · ⋯ (всё монохром-чёрное; ♥ краснеет в избранном) */}
       <div style={{ display: "flex", alignItems: "center", padding: "5px 7px 1px" }}>
         <ActBtn label={fav.on ? "Убрать из избранного" : "В избранное"} color={fav.on ? "#FF3B30" : "var(--color-label)"} onClick={() => fav.toggle(flash)}>
           <HeartIcon size={25} filled={fav.on} />
         </ActBtn>
         <ActBtn label="Открыть в Telegram" onClick={() => window.open(postUrl(p.id), "_blank", "noopener")}>
-          <TelegramIcon size={25} />
+          <TelegramIcon size={24} />
         </ActBtn>
         <span style={{ marginLeft: "auto" }}>
           <ActBtn label="Ещё" onClick={() => setMenu(true)}>
@@ -386,7 +369,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
         </span>
       </div>
 
-      {/* подпись + просмотры */}
+      {/* подпись + дата · просмотры */}
       <div style={{ padding: "0 14px 14px" }}>
         {p.text.trim() && (
           <div style={{ fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
@@ -402,8 +385,10 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
         )}
         {p.audios.map((a, i) => <TgAudioCard key={i} a={a} id={p.id} />)}
         {p.link && <TgLinkCard l={p.link} />}
-        {p.views && (
-          <div style={{ marginTop: 9, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: "var(--color-label-3)" }}>{p.views} просмотров</div>
+        {(p.date || p.views) && (
+          <div style={{ marginTop: 9, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: "var(--color-label-3)" }}>
+            {fmtDate(p.date)}{p.date && p.views ? " · " : ""}{p.views ? `${p.views} просмотров` : ""}
+          </div>
         )}
       </div>
 
@@ -487,7 +472,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         )}
         {!err && !posts && (
           <div style={{ display: "grid", gap: 12 }}>
-            {[0, 1, 2].map((i) => <div key={i} style={{ height: 320, ...fill, opacity: 0.6 }} />)}
+            {[0, 1, 2].map((i) => <div key={i} style={{ height: 360, ...fill, opacity: 0.6 }} />)}
           </div>
         )}
         {posts && posts.length > 0 && (
