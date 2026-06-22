@@ -135,11 +135,11 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
  * овальное выделение активного таба, иконки — логотипы через CSS-маску
  * (цвет = --color-label, т.е. чёрные в светлой теме / белые в тёмной). */
 const TABS = [
+  { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
   { id: "krishna", label: "Кришна", src: "/vraj.svg", wide: false },
   { id: "gauranga", label: "Гауранга", src: "/gauranga.svg", wide: false },
   { id: "iskcon", label: "ИСККОН", src: "/iskcon.svg", wide: true },
   { id: "bogatstva", label: "Богатства", src: "/bbt.svg", wide: false },
-  { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
 ] as const;
 
 function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {

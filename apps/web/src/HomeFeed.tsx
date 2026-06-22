@@ -269,7 +269,7 @@ export function HomeFeed() {
         <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Telegram</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Лента ISKCON</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Живая лента канала <a href="https://t.me/iskcone" target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>@iskcone</a> — вдохновение, события и материалы движения.
+          Живая лента ISKCON ONE LOVE — вдохновение и события движения Харе Кришна в этой беспрецедентной волне Гауранга Лилы.
         </p>
       </div>
 
