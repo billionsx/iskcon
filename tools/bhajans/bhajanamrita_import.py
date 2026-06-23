@@ -34,6 +34,7 @@ COMB_MACRON, COMB_DOT_BELOW, COMB_DOT_ABOVE, COMB_TILDE, COMB_ACUTE = "\u0304","
 PUA_MAP = {
     "\uF101": "а" + COMB_MACRON,      # ā
     "\uF103": "д" + COMB_DOT_BELOW,   # ḍ
+    "\uF105": "л" + COMB_DOT_BELOW,   # ḷ  (слоговое l)
     "\uF109": "м" + COMB_DOT_ABOVE,   # ṁ  (анусвара)
     "\uF10F": "н" + COMB_DOT_ABOVE,   # ṅ
     "\uF111": "н" + COMB_DOT_BELOW,   # ṇ
