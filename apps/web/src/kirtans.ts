@@ -77,6 +77,7 @@ export interface KirtanArtist {
   bio: string;           // 1–2 предложения
   mono: string;          // 1–2 буквы для монограммы-аватара
   accent?: boolean;      // флагман (Шрила Прабхупада) — золотой акцент
+  entityId?: string;     // связь с графом личностей (entities.id), если есть карточка
 }
 
 export interface KirtanAlbum {

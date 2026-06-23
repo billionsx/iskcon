@@ -989,7 +989,7 @@ export default function App() {
           </main>
         ) : openKirtanArtist ? (
           <main key={openKirtanArtist} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <KirtanArtistPage slug={openKirtanArtist} onBack={goBack} />
+            <KirtanArtistPage slug={openKirtanArtist} onBack={goBack} onOpenEntity={openEntityTarget} />
           </main>
         ) : openCatalog ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
@@ -1075,7 +1075,7 @@ export default function App() {
           </main>
         ) : prasadamSection ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} />
+            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} onOpenEntity={openEntityTarget} />
           </main>
         ) : openNoteId ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

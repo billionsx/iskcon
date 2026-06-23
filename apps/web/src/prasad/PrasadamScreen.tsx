@@ -45,13 +45,14 @@ const SECTIONS: { id: SectionId; label: string }[] = [
 ];
 
 export default function PrasadamScreen({
-  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange, onOpenBook, flash,
+  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange, onOpenBook, onOpenEntity, flash,
 }: {
   initialSection?: SectionId;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onSectionChange?: (id: SectionId) => void;
   onOpenBook: () => void;
+  onOpenEntity?: (id: string, type: string | null) => void;
   flash?: (m: string) => void;
 }) {
   const [section, setSection] = useState<SectionId>(initialSection);
@@ -83,7 +84,7 @@ export default function PrasadamScreen({
       <div style={{ padding: "18px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
         {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} flash={flash} />}
         {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
-        {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} flash={flash} />}
+        {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} onOpenEntity={onOpenEntity} flash={flash} />}
         {section === "offering" && <OfferingSection />}
       </div>
     </div>
@@ -308,7 +309,7 @@ function MatchSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }
 }
 
 /* ═══════════════════ РАЗДЕЛ: КОМУ ДОРОГО ═══════════════════ */
-function DeitiesSection({ onOpenRecipe, flash }: { onOpenRecipe: (slug: string) => void; flash?: (m: string) => void }) {
+function DeitiesSection({ onOpenRecipe, onOpenEntity, flash }: { onOpenRecipe: (slug: string) => void; onOpenEntity?: (id: string, type: string | null) => void; flash?: (m: string) => void }) {
   return (
     <>
       <SectionTitle sub="Что особенно дорого Божествам и ачарьям — и рецепты из библиотеки, которыми можно Их порадовать.">Кому подносим</SectionTitle>
@@ -319,7 +320,14 @@ function DeitiesSection({ onOpenRecipe, flash }: { onOpenRecipe: (slug: string) 
           return (
             <article key={d.id} style={{ padding: "18px 18px 16px", borderRadius: 20, background: "var(--color-glass-thin)" }}>
               <Eyebrow>{d.epithet}</Eyebrow>
-              <h3 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{d.name}</h3>
+              <h3 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>
+                {onOpenEntity && d.entityId ? (
+                  <button type="button" onClick={() => onOpenEntity(d.entityId, "personality")}
+                    style={{ appearance: "none", background: "none", border: "none", padding: 0, font: "inherit", color: "inherit", cursor: "pointer", textDecoration: "underline", textDecorationColor: `color-mix(in srgb, ${GOLD} 50%, transparent)`, textUnderlineOffset: 4 }}>
+                    {d.name}
+                  </button>
+                ) : d.name}
+              </h3>
               <p style={{ margin: "9px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>{d.blurb}</p>
 
               <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
