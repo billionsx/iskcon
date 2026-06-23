@@ -1504,6 +1504,25 @@ export default {
     }
 
     // ── Library API (served from D1; structure + deep-links only) ──
+    // GET /api/books/catalog → весь каталог библиотеки из D1. Источник истины —
+    // таблица book_catalog; связь книга↔автор идёт через author_entity_id (FK на entities).
+    if (url.pathname === "/api/books/catalog") {
+      const { results } = await env.DB.prepare(
+        `SELECT id, title, iast, note,
+                author_name AS authorName, author_entity_id AS authorId,
+                lineage, readable, audio, also
+         FROM book_catalog ORDER BY sort`
+      ).all<{ id: string; title: string; iast: string | null; note: string | null; authorName: string | null; authorId: string | null; lineage: string; readable: number; audio: number; also: string | null }>();
+      const books = (results || []).map((r) => ({
+        id: r.id, title: r.title,
+        iast: r.iast ?? undefined, note: r.note ?? undefined,
+        authorName: r.authorName ?? undefined, authorId: r.authorId ?? undefined,
+        lineage: r.lineage, readable: !!r.readable, audio: !!r.audio,
+        also: r.also ?? undefined,
+      }));
+      return json(books);
+    }
+
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
     if (url.pathname === "/api/books/bg/chapters") {
       const { results } = await env.DB.prepare(
