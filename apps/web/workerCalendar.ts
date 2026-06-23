@@ -124,6 +124,7 @@ const FEST: ReadonlyArray<[string, { ru: string; type: CalType; id?: string }]> 
   ["rama navami", { ru: "Рама-навами — явление Господа Шри Рамачандры", type: "festival", id: "rama" }],
   ["nrsimha caturdasi", { ru: "Нрисимха-чатурдаши — явление Господа Нрисимхадевы", type: "festival", id: "nrisimha" }],
   ["narasimha caturdasi", { ru: "Нрисимха-чатурдаши — явление Господа Нрисимхадевы", type: "festival", id: "nrisimha" }],
+  ["nityananda trayodasi", { ru: "Нитьянанда-трайодаши — явление Шри Нитьянанды Прабху", type: "festival", id: "nityananda" }],
   ["vamana dvadasi", { ru: "Вамана-двадаши — явление Господа Ваманадевы", type: "festival", id: "vamana" }],
   ["varaha dvadasi", { ru: "Вараха-двадаши — явление Господа Варахадевы", type: "festival", id: "varaha" }],
   ["lord balarama", { ru: "Явление Господа Баларамы (Баларама-пурнима)", type: "festival", id: "balarama" }],
@@ -177,7 +178,8 @@ const FEST: ReadonlyArray<[string, { ru: string; type: CalType; id?: string }]> 
   ["jahnu saptami", { ru: "Джахну-саптами", type: "other" }],
   ["ramacandra vijayotsava", { ru: "Рамачандра-виджаётсава", type: "festival", id: "rama" }],
   ["visvarupa mahotsava", { ru: "Шри Вишварупа-махотсава", type: "festival" }],
-  ["trisprsa mahadvadasi", { ru: "Триспришa-махадвадаши", type: "other" }],
+  ["trisprsa mahadvadasi", { ru: "Триспрша-махадвадаши", type: "other" }],
+  ["unmilani mahadvadasi", { ru: "Унмилани-махадвадаши", type: "other" }],
   ["vyanjuli mahadvadasi", { ru: "Вьянджули-махадвадаши", type: "other" }],
   ["paksa vardhini mahadvadasi", { ru: "Пакша-вардхини-махадвадаши", type: "other" }],
   ["vijaya mahadvadasi", { ru: "Виджая-махадвадаши", type: "other" }],
@@ -214,6 +216,18 @@ function fastNote(low: string): string | null {
   if (low.includes("milk fast")) return "месяц поста от молока";
   if (low.includes("urad dal")) return "месяц поста от урад-дала";
   return null;
+}
+
+/* ── «(Fast today [for <божество>])» — божество дня в родительном падеже ─ */
+const FAST_DEITY_RU: Record<string, string> = {
+  varahadeva: "Варахадевы",
+  vamanadeva: "Ваманадевы",
+  nrsimhadeva: "Нрисимхадевы",
+  nityananda: "Нитьянанды Прабху",
+};
+function fastDeityRu(s: string): string | null {
+  const k = s.toLowerCase().replace(/\b(lord|sri|sriman|srila)\b/g, " ").replace(/[^a-z]+/g, " ").trim();
+  return FAST_DEITY_RU[k] || null;
 }
 
 function ruTitle(t: string): { title: string; type: CalType; entityId?: string } {
@@ -299,6 +313,52 @@ async function fetchFeed(env: CalAssetsEnv, origin: string, slug: string): Promi
   return null;
 }
 
+/* ── сборка русифицированных событий из сырого фида ──────────────────────
+ * Чистая функция (без рантайм-зависимостей) → тестируется отдельно.
+ *  · «Ksaya/Vrddhi tithi …» — астрономические пометки альманаха (выпавшая/
+ *    удвоенная титхи), не события → скрываем.
+ *  · «(Fast today [for <божество>])» и прочие скобочные пометки поста →
+ *    клеятся к главному событию дня; неизвестные скобки не выводим сырыми.
+ */
+const IGNORE_LINE = /^(?:ksaya|vrddhi)\s+tithi\b|daylight saving time/i;
+export function buildEvents(raw: { date: string; title: string }[]): CalEvent[] {
+  const events: CalEvent[] = [];
+  for (const e of raw) {
+    const t = e.title.trim();
+    if (IGNORE_LINE.test(t)) continue;
+
+    const par = t.match(/^\((.+)\)$/);
+    if (par) {
+      const inner = par[1].toLowerCase().trim();
+      const prev = [...events].reverse().find((x) => x.date === e.date && x.type !== "parana");
+
+      // «Fast today [for X]» — день поста в честь праздника/божества
+      const ft = inner.match(/^fast today(?:\s+for\s+(.+))?$/);
+      if (ft) {
+        const deity = ft[1] ? fastDeityRu(ft[1]) : null;
+        if (prev) {
+          const hasPost = /пост/i.test(prev.title);
+          if (deity) prev.title += hasPost ? ` · в честь ${deity}` : ` · пост в честь ${deity}`;
+          else if (!hasPost) prev.title += " · пост";
+        } else {
+          events.push({ date: e.date, title: deity ? `Пост в честь ${deity}` : "Сегодня пост", orig: e.title, type: "other" });
+        }
+        continue;
+      }
+
+      const note = fastNote(inner);
+      if (note && prev) { prev.title += ` · ${note}`; continue; }
+      if (note) { events.push({ date: e.date, title: note.replace(/^./, (c) => c.toUpperCase()), orig: e.title, type: "other" }); continue; }
+      continue; // неизвестная скобочная пометка — не показываем сырой английский
+    }
+
+    const clean = t.replace(/^-+\s*/, "").replace(/\s*-+$/, "");
+    const r = ruTitle(clean);
+    events.push({ date: e.date, title: r.title, orig: e.title, type: r.type, ...(r.entityId ? { entityId: r.entityId } : {}) });
+  }
+  return events;
+}
+
 export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv): Promise<Response | null> {
   if (url.pathname !== "/api/calendar") return null;
   const rawLoc = (url.searchParams.get("loc") || "").trim().slice(0, 80);
@@ -339,19 +399,7 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
   }
   raw.sort((a, b) => a.date.localeCompare(b.date));
 
-  const events: CalEvent[] = [];
-  for (const e of raw) {
-    const par = e.title.match(/^\((.+)\)$/);
-    if (par) {
-      const note = fastNote(par[1].toLowerCase().trim());
-      const prev = [...events].reverse().find((x) => x.date === e.date && x.type !== "parana");
-      if (note && prev) { prev.title += ` · ${note}`; continue; }
-      if (note) { events.push({ date: e.date, title: note.replace(/^./, (c) => c.toUpperCase()), orig: e.title, type: "other" }); continue; }
-    }
-    const clean = e.title.replace(/^-+\s*/, "").replace(/\s*-+$/, "");
-    const r = ruTitle(clean);
-    events.push({ date: e.date, title: r.title, orig: e.title, type: r.type, ...(r.entityId ? { entityId: r.entityId } : {}) });
-  }
+  const events = buildEvents(raw);
 
   const label = locValid ? rawLoc : (feed?.location?.name || rawLoc || "");
   const res = new Response(JSON.stringify({ loc: label, events }), {
