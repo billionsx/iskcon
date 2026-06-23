@@ -733,6 +733,7 @@ const AUDIO_CLEAN = new Set<string>([
   "manah-siksa", "siksastaka", "bhakti-tattva-viveka", "mukunda-mala-stotra",
   "sanmodana-bhashya", "bhaktyaloka", "prema-pradipa", "harinama-cintamani",
   "caitanya-siksamrta", "jagannatha-vallabha-nataka", "sri-namamrita",
+  "ray-of-vishnu", "vrindavane-bhajana",
 ]);
 const AUDIO_TITLE_STRIP: Record<string, string[]> = {
   "manah-siksa": ["Манах-шикша", "Манах шикша"],

@@ -735,6 +735,7 @@ export const AUDIO_WORKS: Record<string, boolean> = {
   "mukunda-mala-stotra": true, "sanmodana-bhashya": true, "bhaktyaloka": true,
   "prema-pradipa": true, "harinama-cintamani": true, "caitanya-siksamrta": true,
   "jagannatha-vallabha-nataka": true, "sri-namamrita": true,
+  "ray-of-vishnu": true, "vrindavane-bhajana": true,
 };
 
 /**
