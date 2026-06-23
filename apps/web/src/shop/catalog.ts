@@ -45,6 +45,34 @@ export const CATALOG: CatalogGroup[] = [
 
 export const DONATION_PRESETS = [300, 500, 1000, 2000];
 
+// ── Гидрация из D1 (плейн, без React; см. shop/shopHydrate.ts для хука) ──
+// CATALOG выше — сид/фолбэк. Источник истины — таблицы shop_groups/shop_products
+// (+ book_id → book_catalog). Обложки книжных товаров в БД не хранятся: восстанавливаем
+// их из единого источника BOOKS по bookId, чтобы не плодить копии путей к ассетам.
+let _catalog: CatalogGroup[] = CATALOG;
+let _shopVersion = 0;
+const _shopSubs = new Set<() => void>();
+
+export function catalogNow(): CatalogGroup[] { return _catalog; }
+export function setShopData(groups: CatalogGroup[]): void {
+  if (!Array.isArray(groups) || !groups.length) return;
+  _catalog = groups.map((g) => ({
+    ...g,
+    items: (g.items || []).map((p) => {
+      // Книжному товару восстанавливаем обложку из BOOKS по bookId (как в сиде).
+      if (p.kind === "physical" && p.bookId && !p.cover) {
+        const c = cover(p.bookId);
+        return c ? { ...p, cover: c } : p;
+      }
+      return p;
+    }),
+  }));
+  _shopVersion++;
+  _shopSubs.forEach((f) => f());
+}
+export function subscribeShop(cb: () => void): () => void { _shopSubs.add(cb); return () => { _shopSubs.delete(cb); }; }
+export function shopDataVersion(): number { return _shopVersion; }
+
 export function donationProduct(amount: number): Product {
   return { id: "donation", kind: "donation", title: "Пожертвование", subtitle: "ISKCON ONE LOVE", price: amount, emblem: true };
 }
@@ -56,7 +84,7 @@ export function donationProduct(amount: number): Product {
  * только для неизвестного work.
  */
 export function bookProduct(work: string): Product | undefined {
-  for (const g of CATALOG) {
+  for (const g of catalogNow()) {
     const hit = g.items.find((p) => p.id === `bk-${work}`);
     if (hit) return hit;
   }
