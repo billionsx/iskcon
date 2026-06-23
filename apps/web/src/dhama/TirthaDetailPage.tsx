@@ -34,6 +34,8 @@ function PersonChip({ person, accent, onOpenEntity, onMiss }: { person: Person; 
   const [busy, setBusy] = useState(false);
   const open = async () => {
     if (busy) return;
+    // Точный путь: id из FK (tirtha_persons.entity_id) — открываем мгновенно, без поиска.
+    if (person.entityId) { onOpenEntity(person.entityId, "personality"); return; }
     setBusy(true);
     try {
       const r = await fetch(api(`/entities?q=${encodeURIComponent(person.q)}&limit=1`));
