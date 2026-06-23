@@ -14,11 +14,12 @@ import { api } from "./api";
 import { usePlayer } from "./player/store";
 import { BhajanCard } from "./BhajanCard";
 import {
-  KIRTAN_ARTISTS, playableAlbums, albumCover, albumsByArtist, artistPlayableCount,
+  kirtanArtists, playableAlbums, albumCover, albumsByArtist, artistPlayableCount,
   artistBySlug, filterAlbums, moodsInCatalog, typesInCatalog,
   TYPE_LABEL, MOOD_LABEL,
   type KirtanArtist, type KirtanAlbum, type KirtanType, type KirtanMood,
 } from "./kirtans";
+import { useKirtans } from "./kirtansHydrate";
 
 const GOLD = "#D2AA1B";
 
@@ -78,9 +79,10 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   onOpenCatalog: () => void;
 }) {
   const player = usePlayer();
-  const playable = useMemo(() => playableAlbums(), []);
-  const types = useMemo(() => typesInCatalog(), []);
-  const moods = useMemo(() => moodsInCatalog(), []);
+  const kv = useKirtans();   // реактивная гидрация каталога из БД (сид → БД)
+  const playable = useMemo(() => playableAlbums(), [kv]);
+  const types = useMemo(() => typesInCatalog(), [kv]);
+  const moods = useMemo(() => moodsInCatalog(), [kv]);
 
   // Классификации — выбранный фильтр (один тип ИЛИ одно настроение за раз).
   const [fType, setFType] = useState<KirtanType | null>(null);
@@ -140,12 +142,12 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       <section style={{ marginTop: 30 }}>
         <SectionHead eyebrow="Голоса святого имени" title="Исполнители" />
         <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-          {KIRTAN_ARTISTS.map((a, i) => {
+          {kirtanArtists().map((a, i) => {
             const cnt = artistPlayableCount(a.slug);
             const total = albumsByArtist(a.slug).length;
             const meta = cnt > 0 ? `${cnt} ${plural(cnt, "альбом", "альбома", "альбомов")} со звуком` : (total > 0 ? "Записи" : a.role);
             return (
-              <li key={a.slug} style={{ borderBottom: i === KIRTAN_ARTISTS.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+              <li key={a.slug} style={{ borderBottom: i === kirtanArtists().length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
                 <button onClick={() => onOpenArtist(a.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
                   <ArtistMono artist={a} />
                   <span style={{ minWidth: 0, flex: 1 }}>

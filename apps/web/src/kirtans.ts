@@ -297,27 +297,35 @@ export const KIRTAN_ALBUMS: KirtanAlbum[] = [
   },
 ];
 
-// ── Производные хелперы (без состояния; используются хабом и страницей исполнителя) ──
+// ── Гидрация из D1 ──
+// Источник истины — таблицы kirtan_artists/kirtan_albums (связь альбом→исполнитель,
+// исполнитель→личность через entity_id). KIRTAN_* выше — сид/фолбэк (мгновенно,
+// и синхронный поисковый индекс). Внутренние _artists/_albums хелперы читают живьём;
+// hydrateKirtans() подменяет их данными из БД, useKirtans() даёт реактивность экранам.
+let _artists: KirtanArtist[] = KIRTAN_ARTISTS;
+let _albums: KirtanAlbum[] = KIRTAN_ALBUMS;
+
+// ── Производные хелперы (используются хабом и страницей исполнителя) ──
 
 export function artistBySlug(slug: string): KirtanArtist | undefined {
-  return KIRTAN_ARTISTS.find((a) => a.slug === slug);
+  return _artists.find((a) => a.slug === slug);
 }
 
 export function albumById(id: string): KirtanAlbum | undefined {
-  return KIRTAN_ALBUMS.find((a) => a.id === id);
+  return _albums.find((a) => a.id === id);
 }
 
 export function albumsByArtist(slug: string): KirtanAlbum[] {
-  return KIRTAN_ALBUMS.filter((a) => a.artist === slug);
+  return _albums.filter((a) => a.artist === slug);
 }
 
 /** Альбомы со звуком (есть IA-идентификатор) — витрина «Слушать сейчас». */
 export function playableAlbums(): KirtanAlbum[] {
-  return KIRTAN_ALBUMS.filter((a) => !!a.archive);
+  return _albums.filter((a) => !!a.archive);
 }
 
 export function artistPlayableCount(slug: string): number {
-  return KIRTAN_ALBUMS.filter((a) => a.artist === slug && a.archive).length;
+  return _albums.filter((a) => a.artist === slug && a.archive).length;
 }
 
 /** Обложка альбома: фирменная картинка IA-элемента (грузится напрямую, без прокси). */
@@ -328,20 +336,42 @@ export function albumCover(a: KirtanAlbum): string {
 /** Все настроения/типы, реально встречающиеся в каталоге (для чипов классификаций). */
 export function moodsInCatalog(): KirtanMood[] {
   const set = new Set<KirtanMood>();
-  for (const a of KIRTAN_ALBUMS) for (const m of a.moods) set.add(m);
+  for (const a of _albums) for (const m of a.moods) set.add(m);
   return (Object.keys(MOOD_LABEL) as KirtanMood[]).filter((m) => set.has(m));
 }
 
 export function typesInCatalog(): KirtanType[] {
   const set = new Set<KirtanType>();
-  for (const a of KIRTAN_ALBUMS) set.add(a.type);
+  for (const a of _albums) set.add(a.type);
   return (Object.keys(TYPE_LABEL) as KirtanType[]).filter((t) => set.has(t));
 }
 
 /** Фильтр альбомов по типу и/или настроению (для секции «Жанры и настроения»). */
 export function filterAlbums(opts: { type?: KirtanType | null; mood?: KirtanMood | null }): KirtanAlbum[] {
-  return KIRTAN_ALBUMS.filter((a) =>
+  return _albums.filter((a) =>
     (opts.type == null || a.type === opts.type) &&
     (opts.mood == null || a.moods.includes(opts.mood))
   );
 }
+
+// ── Гидрация из БД (плейн, без React — модуль грузит и воркер worker.ts) ──
+// Реактивный хук useKirtans() живёт в отдельном модуле kirtansHydrate.ts.
+let _version = 0;
+const _subs = new Set<() => void>();
+
+/** Текущие (гидрированные или сид) данные — для прямого рендера в хабе. */
+export function kirtanArtists(): KirtanArtist[] { return _artists; }
+export function kirtanAlbums(): KirtanAlbum[] { return _albums; }
+
+/** Подменить каталог данными из D1 (вызывает kirtansHydrate). */
+export function setKirtanData(artists: KirtanArtist[], albums: KirtanAlbum[]): void {
+  if (Array.isArray(artists) && artists.length) _artists = artists;
+  if (Array.isArray(albums) && albums.length) _albums = albums;
+  _version++;
+  _subs.forEach((f) => f());
+}
+export function subscribeKirtans(cb: () => void): () => void {
+  _subs.add(cb);
+  return () => { _subs.delete(cb); };
+}
+export function kirtanDataVersion(): number { return _version; }
