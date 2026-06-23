@@ -1623,11 +1623,18 @@ export default {
     // GET /api/dhamas → дхамы с вложенными кластерами и тиртхами из D1. Источник истины —
     // dhamas/dhama_clusters/tirthas; форма совпадает с DHAMAS (Dhama[] фронта).
     if (url.pathname === "/api/dhamas") {
-      const [dRes, cRes, tRes] = await Promise.all([
+      const [dRes, cRes, tRes, pRes] = await Promise.all([
         env.DB.prepare(`SELECT id, name, iast, tagline, deity, deity_entity_id, region, hero, accent, center_lat, center_lng, center_zoom, intro, facts FROM dhamas ORDER BY sort`).all<Record<string, unknown>>(),
         env.DB.prepare(`SELECT dhama_id, cluster_id, title, note FROM dhama_clusters ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
         env.DB.prepare(`SELECT id, dhama_id, cluster, name, iast, kind, lat, lng, blurb, about, lila, persons, maps, source FROM tirthas ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
+        env.DB.prepare(`SELECT tirtha_id, name, entity_id FROM tirtha_persons WHERE entity_id IS NOT NULL`).all<Record<string, unknown>>(),
       ]);
+      // Точный резолв связанных личностей: tirtha_id → { имя → entity_id }. Подмешаем в
+      // persons, чтобы чип открывал героя по id мгновенно (без фаззи-поиска по имени).
+      const entBy: Record<string, Record<string, string>> = {};
+      for (const p of pRes.results || []) {
+        ((entBy[p.tirtha_id as string] ||= {}))[p.name as string] = p.entity_id as string;
+      }
       const pj = (s: unknown): unknown => { try { return s ? JSON.parse(s as string) : undefined; } catch { return undefined; } };
       const clustersBy: Record<string, unknown[]> = {};
       for (const c of cRes.results || []) {
@@ -1635,11 +1642,14 @@ export default {
       }
       const tirthasBy: Record<string, unknown[]> = {};
       for (const t of tRes.results || []) {
+        const rawPersons = (pj(t.persons) as { name: string; q: string }[] | undefined) ?? [];
+        const emap = entBy[t.id as string];
+        const persons = emap ? rawPersons.map((pp) => (emap[pp.name] ? { ...pp, entityId: emap[pp.name] } : pp)) : rawPersons;
         (tirthasBy[t.dhama_id as string] ||= []).push({
           id: t.id, dhama: t.dhama_id, cluster: t.cluster, name: t.name,
           iast: t.iast ?? undefined, kind: t.kind, lat: t.lat, lng: t.lng,
           blurb: t.blurb ?? "", about: t.about ?? "", lila: t.lila ?? undefined,
-          persons: pj(t.persons) ?? [], maps: t.maps ?? undefined, source: t.source ?? undefined,
+          persons, maps: t.maps ?? undefined, source: t.source ?? undefined,
         });
       }
       const dhamas = (dRes.results || []).map((d) => ({

@@ -43,7 +43,7 @@ export const KIND_RU: Record<TirthaKind, string> = {
   place: "Святое место",
 };
 
-export interface Person { name: string; q: string }
+export interface Person { name: string; q: string; entityId?: string }
 
 export interface Tirtha {
   id: string;
