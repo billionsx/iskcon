@@ -143,11 +143,34 @@ def apply(plan_path, token, min_score=THRESHOLD):
     print(f"DONE: применено {done} из {len(rc['matched'])}")
 
 
+def credit(payload_path, plan_path, token):
+    """Проставить source_credit всем bhajanamrita-песням (учёт слитых в книжные слаги)."""
+    CREDIT = "Текст: Bhajanāmṛta / Sri Rupa Seva Kunj, с разрешения"
+    try:
+        d1("ALTER TABLE prayers ADD COLUMN source_credit TEXT", token=token)
+        print("  колонка source_credit добавлена")
+    except Exception as e:
+        print(f"  колонка уже есть ({str(e)[:60]})")
+    songs = json.load(open(payload_path, encoding="utf-8"))
+    moved = {}
+    if os.path.exists(plan_path):
+        rc = json.load(open(plan_path, encoding="utf-8"))
+        moved = {m["flat_slug"]: m["best_stub"] for m in rc.get("matched", [])}
+    final = sorted({moved.get(s["slug"], s["slug"]) for s in songs})
+    for i in range(0, len(final), 25):
+        batch = final[i:i + 25]
+        ph = ",".join("?" for _ in batch)
+        d1(f"UPDATE prayers SET source_credit=? WHERE slug IN ({ph})", [CREDIT, *batch], token=token)
+    got = d1("SELECT COUNT(*) n FROM prayers WHERE source_credit IS NOT NULL", token=token)[0]["n"]
+    print(f"DONE: целевых слагов={len(final)}, в БД с кредитом={got}")
+
+
 def _cli():
     import argparse
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", action="store_true")
     ap.add_argument("--apply", action="store_true")
+    ap.add_argument("--credit", action="store_true")
     ap.add_argument("--payload", default="data/bhajanamrita_payload.json")
     ap.add_argument("--out", default="tools/bhajans/recon/RECONCILE.json")
     a = ap.parse_args()
@@ -156,6 +179,8 @@ def _cli():
         plan(a.payload, a.out, tok)
     elif a.apply:
         apply(a.out, tok)
+    elif a.credit:
+        credit(a.payload, a.out, tok)
     else:
         ap.print_help()
 
