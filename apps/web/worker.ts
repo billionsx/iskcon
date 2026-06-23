@@ -1293,6 +1293,18 @@ async function igSid(env: Env): Promise<string> {
   try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_sessionid'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
 }
 
+// Опциональный резидентный прокси / web-unlocker для публичного забора (как у веб-сервисов,
+// которые так обходят бан дата-центровых IP). Значение в ig_config.ig_proxy — шаблон URL
+// c плейсхолдером {url}, напр. "https://api.scraperapi.com/?api_key=KEY&country_code=in&url={url}".
+// Пусто → ходим напрямую с воркера. Воркеры CF не умеют HTTP/SOCKS-прокси, поэтому именно
+// URL-обёртка (forward-заголовки зависят от параметров провайдера).
+async function igProxyTmpl(env: Env): Promise<string> {
+  try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_proxy'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
+}
+function igProxied(tmpl: string, target: string): string {
+  return tmpl && tmpl.includes("{url}") ? tmpl.replace("{url}", encodeURIComponent(target)) : target;
+}
+
 type IgPost = { ts: number; isVideo: boolean; urls: string[]; thumbs: string[]; shortcode: string };
 
 function igOneUrl(n: Record<string, any>): string {
@@ -1415,7 +1427,7 @@ function igIstDate(ts: number): string {
 // Без авторизации (как веб-даунлоадеры): прямой fetch к публичному web-API инсты.
 // x-ig-app-id — публичный id веб-приложения Instagram; браузер и сессия не нужны.
 // Узлы парсим тем же igNodeToPost (форма совпадает). Возвращаем [] при блоке/429/пустом.
-async function igFetchMediaPublic(user: string): Promise<IgPost[]> {
+async function igFetchMediaPublic(user: string, proxyTmpl = ""): Promise<IgPost[]> {
   const headers: Record<string, string> = {
     "User-Agent": IG_UA,
     "x-ig-app-id": "936619743392459",
@@ -1432,7 +1444,7 @@ async function igFetchMediaPublic(user: string): Promise<IgPost[]> {
   ];
   for (const ep of eps) {
     try {
-      const r = await fetch(ep, { headers, cf: { cacheTtl: 0 } } as RequestInit);
+      const r = await fetch(igProxied(proxyTmpl, ep), { headers, cf: { cacheTtl: 0 } } as RequestInit);
       if (!r.ok) continue;
       const j = (await r.json().catch(() => null)) as any;
       const edges = j?.data?.user?.edge_owner_to_timeline_media?.edges;
@@ -1485,12 +1497,13 @@ async function igStoreLatestPhoto(env: Env, t: { user: string; slug: string; dei
 async function igRunTargets(env: Env, targets: { user: string; slug: string; deities: string; place: string }[]): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
   const out: { slug: string; ok: boolean; n: number; msg: string }[] = [];
   const needAuth: { user: string; slug: string; deities: string; place: string }[] = [];
+  const proxy = await igProxyTmpl(env);
   // 1) Основной путь — БЕЗ авторизации: публичный web-API инсты (как веб-даунлоадеры).
-  //    Ни браузера, ни сессии — аккаунт под удар не ставим. Случайный разброс между
-  //    запросами мягче к детектору. Кого не отдало — в needAuth на фолбэк.
+  //    Ни браузера, ни сессии — аккаунт под удар не ставим. При наличии ig_proxy идём
+  //    через резидентный прокси (обход бана дата-центровых IP). Кого не отдало — в needAuth.
   for (const t of targets) {
     let posts: IgPost[] = [];
-    try { posts = await igFetchMediaPublic(t.user); } catch { posts = []; }
+    try { posts = await igFetchMediaPublic(t.user, proxy); } catch { posts = []; }
     if (posts.length) out.push(await igStoreLatestPhoto(env, t, posts));
     else needAuth.push(t);
     await new Promise((res) => setTimeout(res, 1200 + Math.floor(Math.random() * 900)));
