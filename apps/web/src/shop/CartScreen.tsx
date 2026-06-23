@@ -25,7 +25,8 @@ import {
   detectBrand, luhn, groupCard, formatExpiry, validExpiry,
   type CartLine, type ProductKind, type Product,
 } from "./cart";
-import { CATALOG, DONATION_PRESETS, donationProduct } from "./catalog";
+import { catalogNow, DONATION_PRESETS, donationProduct } from "./catalog";
+import { useShop } from "./shopHydrate";
 
 /* ───────── палитра (зеркало DonateModal/FavoritesScreen) ───────── */
 const INK = "#1d1d1f";
@@ -158,13 +159,14 @@ function CatalogRow({ p, first, onAdd }: { p: Product; first: boolean; onAdd: ()
 }
 function CatalogView({ onAskDonation }: { onAskDonation: () => void }) {
   useCart();
+  useShop();   // реактивная гидрация каталога магазина из БД (сид → БД)
   const donQty = qtyOf("donation");
   return (
     <div style={{ padding: "12px 16px calc(28px + env(safe-area-inset-bottom,0px))" }}>
       <div style={{ fontFamily: "var(--font-display)", fontSize: 13, color: INK2, lineHeight: 1.5, margin: "2px 2px 18px" }}>
         Книги, атрибуты и цифровые материалы. Каждая покупка поддерживает миссию Шрилы Прабхупады.
       </div>
-      {CATALOG.map((g) => (
+      {catalogNow().map((g) => (
         <section key={g.key} style={{ marginBottom: 22 }}>
           <SectionLabel>{g.title}</SectionLabel>
           <GroupCard>

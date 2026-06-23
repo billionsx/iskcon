@@ -1602,6 +1602,27 @@ export default {
       return json(recipes);
     }
 
+    // GET /api/shop → каталог магазина (группы с товарами) из D1. Форма = CatalogGroup[]
+    // фронта; book_id отдаём как bookId (клиент восстановит обложку из BOOKS).
+    if (url.pathname === "/api/shop") {
+      const [gRes, pRes] = await Promise.all([
+        env.DB.prepare(`SELECT key, title, note FROM shop_groups ORDER BY sort`).all<Record<string, unknown>>(),
+        env.DB.prepare(`SELECT id, group_key, kind, title, subtitle, price, cover, weight_g, emblem, book_id FROM shop_products ORDER BY group_key, sort`).all<Record<string, unknown>>(),
+      ]);
+      const itemsBy: Record<string, unknown[]> = {};
+      for (const p of pRes.results || []) {
+        (itemsBy[p.group_key as string] ||= []).push({
+          id: p.id, kind: p.kind, title: p.title, subtitle: p.subtitle ?? undefined,
+          price: p.price, cover: p.cover ?? undefined, weightG: p.weight_g ?? undefined,
+          emblem: p.emblem ? true : undefined, bookId: p.book_id ?? undefined,
+        });
+      }
+      const groups = (gRes.results || []).map((g) => ({
+        key: g.key, title: g.title, note: g.note ?? undefined, items: itemsBy[g.key as string] ?? [],
+      }));
+      return json(groups);
+    }
+
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
     if (url.pathname === "/api/books/bg/chapters") {
       const { results } = await env.DB.prepare(

@@ -22,6 +22,7 @@ export interface Product {
   cover?: string;          // обложка/изображение
   emblem?: boolean;        // плитка с эмблемой вместо обложки (пожертвование)
   weightG?: number;        // вес для оценки доставки (физический товар)
+  bookId?: string;         // связь товара с каталогом книг (book_catalog.id), если это книга
 }
 
 export interface CartLine {
