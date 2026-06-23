@@ -459,28 +459,29 @@ async function run() {
           photo_count: gal.images.length, albums_planned: 1,
           photos: imgsSel, caption_preview: caption,
         };
-        const siteAlreadyPosted = alreadyPostedKey(src.srcKey, src._postId) || (src.site === "mayapur" && mayapurPostedForDate(gal.date));
-        if (siteAlreadyPosted && src.site !== "mayapur") { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
-        if (!siteAlreadyPosted) {
-          if (dry) { preview.push(row); continue; }
-          const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
-          const capSql = caption.replace(/'/g, "''");
-          try {
-            d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-                VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',NULL)
-                ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-          } catch (e) { console.error("D1 insert failed:", String(e)); }
-          preview.push({ ...row, posted: "ok (в приложение)" });
-          continue;
+        // Полноразмерные оригиналы — ТОЛЬКО с сайта храма (стандарт качества).
+        // Если альбом сайта уже опубликован (этот же или за эту дату) — пропускаем.
+        // В Telegram-канал НЕ падаем: там сжатые кадры ниже стандарта, и низкокачественная
+        // строка «застолбила» бы дату, заблокировав последующий захват full-res с сайта.
+        if (alreadyPostedKey(src.srcKey, src._postId) || (src.site === "mayapur" && mayapurPostedForDate(gal.date))) {
+          preview.push({ ...row, posted: "skip (dedup)" }); continue;
         }
-        // Маяпур + альбом сайта уже опубликован: НЕ пропускаем день — проваливаемся
-        // в Telegram-канал храма ниже (там обычно уже свежий даршан, когда mayapur.com
-        // ещё отдаёт вчерашний альбом). Дедуп канала (по дате поста) защитит от повторов.
-        preview.push({ ...row, posted: `site album ${gal.date} уже опубликован → пробуем канал` });
+        if (dry) { preview.push(row); continue; }
+        const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
+        const capSql = caption.replace(/'/g, "''");
+        try {
+          d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
+              VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',NULL)
+              ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
+        } catch (e) { console.error("D1 insert failed:", String(e)); }
+        preview.push({ ...row, posted: "ok (в приложение)" });
+        continue;
       }
-      // Галерея пуста/недоступна.
-      if (src.site !== "mayapur") { preview.push({ slug: src.slug, date: gal && gal.date, error: `site gallery empty` }); continue; }
-      // Маяпур: НЕ continue — проваливаемся в Telegram-блок (src.channel) ниже.
+      // Галерея пуста/недоступна — пропускаем источник. Никакого Telegram-фолбэка:
+      // даршан только в полном качестве с сайта храма; пустой день дождётся публикации
+      // (следующий прогон/каточап подхватит full-res альбом, когда он появится на сайте).
+      preview.push({ slug: src.slug, date: gal && gal.date, error: "site gallery empty" });
+      continue;
     }
 
     let posts;
