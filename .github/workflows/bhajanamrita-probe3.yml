@@ -1,0 +1,57 @@
+name: bhajanamrita probe3 (capture API shape)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture public API
+        run: |
+          python3 - <<'PY'
+          import urllib.request, urllib.error, json, pathlib, time
+          BASE="https://bhajanamrita.com"
+          UA="gaurangers-bhajan-sync/1.0 (by permission of Sri Rupa Seva Kunj; ceo@billionsx.com)"
+          OUT=pathlib.Path("tools/bhajans/recon"); OUT.mkdir(parents=True, exist_ok=True)
+          def get(path):
+              rq=urllib.request.Request(BASE+path, headers={"User-Agent":UA,"Accept":"application/json"})
+              with urllib.request.urlopen(rq, timeout=40) as r:
+                  return r.status, r.headers.get("Content-Type",""), r.read()
+          def shape(o, depth=0, maxd=3):
+              if depth>maxd: return "…"
+              if isinstance(o,dict): return {k:shape(v,depth+1,maxd) for k,v in list(o.items())[:25]}
+              if isinstance(o,list): return [shape(o[0],depth+1,maxd)] if o else []
+              if isinstance(o,str): return f"str({len(o)})"
+              return type(o).__name__
+          rep={}
+          for tag,path in [("list_ru","/api/public/bhajans?lang=ru"),
+                           ("list","/api/public/bhajans"),
+                           ("list_ru2","/api/public/bhajans/ru"),
+                           ("detail_amara","/api/public/bhajans/amara-jivana"),
+                           ("detail_amara_ru","/api/public/bhajans/amara-jivana?lang=ru"),
+                           ("detail_gurudev","/api/public/bhajans/gurudev")]:
+              try:
+                  st,ct,data=get(path); 
+                  try: j=json.loads(data)
+                  except Exception: j=None
+                  if j is not None:
+                      (OUT/f"api_{tag}.json").write_bytes(data)
+                      rep[tag]={"status":st,"ctype":ct,"bytes":len(data),"shape":shape(j)}
+                  else:
+                      rep[tag]={"status":st,"ctype":ct,"bytes":len(data),"note":"not json","head":data[:200].decode('utf-8','replace')}
+              except urllib.error.HTTPError as e:
+                  rep[tag]={"http":e.code,"path":path}
+              except Exception as e:
+                  rep[tag]={"err":str(e)[:160],"path":path}
+              time.sleep(0.6)
+          (OUT/"PROBE3.json").write_text(json.dumps(rep,ensure_ascii=False,indent=2))
+          print(json.dumps(rep,ensure_ascii=False,indent=2)[:3000])
+          PY
+      - name: Commit
+        run: |
+          git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
+          git add tools/bhajans/recon
+          git commit -m "probe3(bhajanamrita): API shape [skip ci]" || exit 0
+          git push
