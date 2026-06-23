@@ -1412,10 +1412,49 @@ function igIstDate(ts: number): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ts * 1000));
 }
 
-async function igIngestOne(env: Env, browser: Awaited<ReturnType<typeof puppeteer.launch>>, sid: string, t: { user: string; slug: string; deities: string; place: string }): Promise<{ slug: string; ok: boolean; n: number; msg: string }> {
-  let posts: IgPost[] = [];
-  try { posts = await igFetchMedia(browser, t.user, sid); }
-  catch (e) { return { slug: t.slug, ok: false, n: 0, msg: "fetch " + String(e).slice(0, 50) }; }
+// Без авторизации (как веб-даунлоадеры): прямой fetch к публичному web-API инсты.
+// x-ig-app-id — публичный id веб-приложения Instagram; браузер и сессия не нужны.
+// Узлы парсим тем же igNodeToPost (форма совпадает). Возвращаем [] при блоке/429/пустом.
+async function igFetchMediaPublic(user: string): Promise<IgPost[]> {
+  const headers: Record<string, string> = {
+    "User-Agent": IG_UA,
+    "x-ig-app-id": "936619743392459",
+    "x-asbd-id": "129477",
+    "x-requested-with": "XMLHttpRequest",
+    Accept: "*/*",
+    "Accept-Language": "en-US,en;q=0.9",
+    Referer: `https://www.instagram.com/${user}/`,
+    Origin: "https://www.instagram.com",
+  };
+  const eps = [
+    `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(user)}`,
+    `https://i.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(user)}`,
+  ];
+  for (const ep of eps) {
+    try {
+      const r = await fetch(ep, { headers, cf: { cacheTtl: 0 } } as RequestInit);
+      if (!r.ok) continue;
+      const j = (await r.json().catch(() => null)) as any;
+      const edges = j?.data?.user?.edge_owner_to_timeline_media?.edges;
+      if (!Array.isArray(edges) || !edges.length) continue;
+      const posts: IgPost[] = [];
+      const seen = new Set<string>();
+      for (const e of edges) {
+        const p = igNodeToPost(e?.node);
+        if (!p) continue;
+        if (p.shortcode && seen.has(p.shortcode)) continue;
+        if (p.shortcode) seen.add(p.shortcode);
+        posts.push(p);
+      }
+      if (posts.length) return posts;
+    } catch { /* пробуем следующий endpoint */ }
+  }
+  return [];
+}
+
+// Выбор свежего фото-поста и сохранение кадров в ig_darshan. Источник постов —
+// igFetchMediaPublic (без авторизации) либо igFetchMedia (браузер+кука, фолбэк).
+async function igStoreLatestPhoto(env: Env, t: { user: string; slug: string; deities: string; place: string }, posts: IgPost[]): Promise<{ slug: string; ok: boolean; n: number; msg: string }> {
   if (!posts.length) return { slug: t.slug, ok: false, n: 0, msg: "no media (429/login?)" };
   const pick = igPickLatestPhoto(posts);
   if (!pick) return { slug: t.slug, ok: false, n: 0, msg: "no photo post" };
@@ -1444,16 +1483,32 @@ async function igIngestOne(env: Env, browser: Awaited<ReturnType<typeof puppetee
 }
 
 async function igRunTargets(env: Env, targets: { user: string; slug: string; deities: string; place: string }[]): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
+  const out: { slug: string; ok: boolean; n: number; msg: string }[] = [];
+  const needAuth: { user: string; slug: string; deities: string; place: string }[] = [];
+  // 1) Основной путь — БЕЗ авторизации: публичный web-API инсты (как веб-даунлоадеры).
+  //    Ни браузера, ни сессии — аккаунт под удар не ставим. Случайный разброс между
+  //    запросами мягче к детектору. Кого не отдало — в needAuth на фолбэк.
+  for (const t of targets) {
+    let posts: IgPost[] = [];
+    try { posts = await igFetchMediaPublic(t.user); } catch { posts = []; }
+    if (posts.length) out.push(await igStoreLatestPhoto(env, t, posts));
+    else needAuth.push(t);
+    await new Promise((res) => setTimeout(res, 1200 + Math.floor(Math.random() * 900)));
+  }
+  if (!needAuth.length) return out;
+  // 2) Фолбэк только для неотданных и только если в D1 есть sid: браузер Cloudflare +
+  //    сессия (старый путь). Без sid публичный путь единственный.
   const sid = await igSid(env);
-  if (!sid) return targets.map((t) => ({ slug: t.slug, ok: false, n: 0, msg: "no sid" }));
+  if (!sid) { for (const t of needAuth) out.push({ slug: t.slug, ok: false, n: 0, msg: "no media (unauth; нет sid)" }); return out; }
   let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
   try { browser = await puppeteer.launch(env.BROWSER); }
-  catch (e) { return targets.map((t) => ({ slug: t.slug, ok: false, n: 0, msg: "launch " + String(e).slice(0, 60) })); }
-  const out: { slug: string; ok: boolean; n: number; msg: string }[] = [];
+  catch (e) { for (const t of needAuth) out.push({ slug: t.slug, ok: false, n: 0, msg: "launch " + String(e).slice(0, 50) }); return out; }
   try {
-    for (const t of targets) {
-      try { out.push(await igIngestOne(env, browser, sid, t)); }
-      catch (e) { out.push({ slug: t.slug, ok: false, n: 0, msg: "ex " + String(e).slice(0, 50) }); }
+    for (const t of needAuth) {
+      let posts: IgPost[] = [];
+      try { posts = await igFetchMedia(browser, t.user, sid); }
+      catch (e) { out.push({ slug: t.slug, ok: false, n: 0, msg: "fetch " + String(e).slice(0, 40) }); continue; }
+      out.push(await igStoreLatestPhoto(env, t, posts));
       await new Promise((res) => setTimeout(res, 1500));
     }
   } finally { try { if (browser) await browser.close(); } catch { /* ignore */ } }
