@@ -22,8 +22,10 @@ on:
       identifier:
         description: "archive.org id объекта сторис (пусто = iskcone-stories)"
         default: ""
-  schedule:
-    - cron: "0 */3 * * *"   # каждые 3 часа — подхват свежих активных сторис
+  # ВРЕМЕННО ОТКЛЮЧЕНО на массовую загрузку книг: крон каждые 3ч использовал ту же
+  # TG_SESSION_STRING с нового IP раннера и отзывал сессию. Вернуть после загрузки.
+  # schedule:
+  #   - cron: "0 */3 * * *"
 
 concurrency:
   group: tg-stories          # один прогон за раз (одна Telegram-сессия)
