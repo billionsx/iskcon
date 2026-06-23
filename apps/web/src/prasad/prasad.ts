@@ -3304,8 +3304,25 @@ export const CLASSICS: { title: string; author: string; note: string }[] = [
 
 /* ════════════════════ ХЕЛПЕРЫ ════════════════════ */
 
+// ── Гидрация из D1 (плейн, без React; см. prasad/recipesHydrate.ts для хука) ──
+// RECIPES выше — сид/фолбэк. Источник истины — таблицы recipes (+ recipe_deities, deity FK).
+// Хелперы ниже читают _recipes; setRecipeData() подменяет его данными из БД.
+let _recipes: Recipe[] = RECIPES;
+let _recipeVersion = 0;
+const _recipeSubs = new Set<() => void>();
+
+export function recipesNow(): Recipe[] { return _recipes; }
+export function setRecipeData(recipes: Recipe[]): void {
+  if (!Array.isArray(recipes) || !recipes.length) return;
+  _recipes = recipes;
+  _recipeVersion++;
+  _recipeSubs.forEach((f) => f());
+}
+export function subscribeRecipes(cb: () => void): () => void { _recipeSubs.add(cb); return () => { _recipeSubs.delete(cb); }; }
+export function recipeDataVersion(): number { return _recipeVersion; }
+
 export function recipeBySlug(slug: string): Recipe | undefined {
-  return RECIPES.find((r) => r.slug === slug);
+  return _recipes.find((r) => r.slug === slug);
 }
 
 export function deityById(id: Deity): DeityProfile | undefined {
@@ -3314,7 +3331,7 @@ export function deityById(id: Deity): DeityProfile | undefined {
 
 /** Фильтр библиотеки по категории и диете (любой из аргументов может быть null = «все»). */
 export function filterRecipes(category: Category | null, diet: DietTag | null): Recipe[] {
-  return RECIPES.filter((r) => {
+  return _recipes.filter((r) => {
     if (category && r.category !== category) return false;
     if (diet && !r.diets.includes(diet)) return false;
     return true;
@@ -3335,7 +3352,7 @@ export interface MatchResult {
 export function matchByPantry(selectedKeys: string[]): MatchResult[] {
   const sel = new Set(selectedKeys);
   if (sel.size === 0) return [];
-  const results: MatchResult[] = RECIPES.map((r) => {
+  const results: MatchResult[] = _recipes.map((r) => {
     const have = r.pantry.filter((k) => sel.has(k));
     const missing = r.pantry.filter((k) => !sel.has(k));
     return { recipe: r, have, missing, coverage: r.pantry.length ? have.length / r.pantry.length : 0 };

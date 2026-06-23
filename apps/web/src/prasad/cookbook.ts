@@ -12,7 +12,7 @@
  * RECIPES по категории) → подношение (молитвы из OFFERING_PRAYERS) → глоссарий →
  * что почитать. Ридер — CookbookScreen.tsx.
  */
-import { RECIPES, OFFERING_PRAYERS, CLASSICS, type Category } from "./prasad";
+import { recipesNow, OFFERING_PRAYERS, CLASSICS, type Category } from "./prasad";
 
 export type Block =
   | { type: "h"; text: string }                       // подзаголовок
@@ -236,12 +236,12 @@ export function chapterById(id: string): Chapter | undefined {
 
 /** Рецепты для главы-раздела (в порядке RECIPES). */
 export function chapterRecipes(category: Category) {
-  return RECIPES.filter((r) => r.category === category);
+  return recipesNow().filter((r) => r.category === category);
 }
 
 /** Глава-раздел, содержащая данный рецепт (для ссылки «читать в книге»). */
 export function chapterForRecipe(slug: string): Chapter | undefined {
-  const r = RECIPES.find((x) => x.slug === slug);
+  const r = recipesNow().find((x) => x.slug === slug);
   if (!r) return undefined;
   return COOKBOOK.chapters.find((c) => c.recipesOf === r.category);
 }

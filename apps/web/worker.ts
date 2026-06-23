@@ -1585,6 +1585,23 @@ export default {
       return json(dhamas);
     }
 
+    // GET /api/recipes → рецепты прасада из D1 (форма = Recipe[] фронта; favoredBy из
+    // favored_by JSON). Источник истины — таблица recipes (+ recipe_deities, deity FK).
+    if (url.pathname === "/api/recipes") {
+      const res = await env.DB.prepare(
+        `SELECT slug, title, sanskrit, subtitle, category, diets, minutes, difficulty, servings, favored_by, region, ingredients, steps, note, pantry FROM recipes ORDER BY sort`
+      ).all<Record<string, unknown>>();
+      const pj = (s: unknown, fb: unknown): unknown => { try { return s ? JSON.parse(s as string) : fb; } catch { return fb; } };
+      const recipes = (res.results || []).map((r) => ({
+        slug: r.slug, title: r.title, sanskrit: r.sanskrit ?? undefined, subtitle: r.subtitle ?? "",
+        category: r.category, diets: pj(r.diets, []), minutes: r.minutes, difficulty: r.difficulty,
+        servings: r.servings ?? "", favoredBy: pj(r.favored_by, []), region: r.region ?? undefined,
+        ingredients: pj(r.ingredients, []), steps: pj(r.steps, []), note: r.note ?? undefined,
+        pantry: pj(r.pantry, []),
+      }));
+      return json(recipes);
+    }
+
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
     if (url.pathname === "/api/books/bg/chapters") {
       const { results } = await env.DB.prepare(

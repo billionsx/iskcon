@@ -21,6 +21,7 @@ import {
   filterRecipes, matchByPantry, recipeBySlug, RECIPE_COUNT,
   type Category, type DietTag, type Recipe,
 } from "./prasad";
+import { useRecipes } from "./recipesHydrate";
 
 const GOLD = "#D2AA1B";
 
@@ -159,7 +160,8 @@ const FEATURED = ["sweet-rice", "gulab-jamun", "paneer-butter-masala", "khichri"
 function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (slug: string) => void; onOpenBook: () => void; flash?: (m: string) => void }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [diet, setDiet] = useState<DietTag | null>(null);
-  const results = useMemo(() => filterRecipes(category, diet), [category, diet]);
+  const rv = useRecipes();   // реактивная гидрация рецептов из БД (сид → БД)
+  const results = useMemo(() => filterRecipes(category, diet), [category, diet, rv]);
 
   return (
     <>
@@ -216,7 +218,8 @@ function MatchSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const toggle = (key: string) => setSelected((prev) => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
   const clear = () => setSelected(new Set());
-  const results = useMemo(() => matchByPantry(Array.from(selected)), [selected]);
+  const rv = useRecipes();   // реактивная гидрация рецептов из БД
+  const results = useMemo(() => matchByPantry(Array.from(selected)), [selected, rv]);
 
   return (
     <>
