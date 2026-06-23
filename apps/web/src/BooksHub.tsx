@@ -15,7 +15,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import {
   BOOKS,
-  LIBRARY,
   LINEAGE_LABEL,
   LINEAGE_NOTE,
   AUDIO_WORKS,
@@ -23,6 +22,7 @@ import {
   type CatalogBook,
   type Lineage,
 } from "./books";
+import { useCatalog } from "./bookCatalog";
 import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
 import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
@@ -328,6 +328,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
   const [soonOpen, setSoonOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const LIBRARY = useCatalog();   // источник истины — D1 (book_catalog); фолбэк — бандл
   const byLineage = (l: Lineage) => LIBRARY.filter((b) => b.lineage === l);
   // «Есть контент» = доступен текст (есть в BOOKS и не noText) ИЛИ аудио (AUDIO_WORKS).
   const hasContent = (id: string) => !!AUDIO_WORKS[id] || (!!BOOKS[id] && !BOOKS[id].noText);
@@ -340,7 +341,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
     const hits = searchBooks(trimmed, LIBRARY);
     const scoped = filter === "all" ? hits : hits.filter((h) => h.book.lineage === filter);
     return scoped.map((h) => h.book).filter((b) => hasContent(b.id));
-  }, [trimmed, searching, filter]);
+  }, [trimmed, searching, filter, LIBRARY]);
 
   // книга-строка → читаемые в ридер, остальные — на страницу сущности книги
   const openBook = (b: CatalogBook) => onOpenEntity(b.id, "scripture");

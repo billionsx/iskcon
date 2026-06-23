@@ -12,7 +12,8 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
-import { BOOKS, LIBRARY, type CatalogBook } from "./books";
+import { BOOKS, type CatalogBook } from "./books";
+import { useCatalog, catalogNow } from "./bookCatalog";
 import { searchBooks } from "./bookSearch";
 import { loadCityDocs, searchStatic, type StaticHit, type CityDoc, type LocCity } from "./searchStatic";
 import type { PlaceItem } from "./placesShared";
@@ -32,7 +33,7 @@ const EMPTY: Results = { exact: null, personalities: [], places: [], verses: [],
 
 const LEVEL_LABEL: Record<string, string> = { chapter: "глава", canto: "песнь", lila: "лила", part: "часть", section: "раздел" };
 function workLabel(work: string): string {
-  const b = LIBRARY.find((x) => x.id === work);
+  const b = catalogNow().find((x) => x.id === work);
   return b ? b.title : work.toUpperCase();
 }
 function mono(s: string): string {
@@ -214,8 +215,9 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
   const searching = query.length >= 2;
   const toks = useMemo(() => tokensOf(query), [query]);
 
-  // Книги — клиентский поиск (фаззи, опечатки, IAST, алиасы) по каталогу LIBRARY.
-  const bookHits = useMemo(() => (searching ? searchBooks(query, LIBRARY).slice(0, 8).map((h) => h.book) : []), [query, searching]);
+  // Книги — клиентский поиск (фаззи, опечатки, IAST, алиасы) по каталогу из D1.
+  const catalog = useCatalog();
+  const bookHits = useMemo(() => (searching ? searchBooks(query, catalog).slice(0, 8).map((h) => h.book) : []), [query, searching, catalog]);
 
   // Города календаря — клиентский индекс из /data/vaisnava-locations.json (≈272 города).
   const [cities, setCities] = useState<CityDoc[]>([]);

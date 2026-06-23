@@ -11,7 +11,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
-import { BOOKS, LIBRARY, AUDIO_WORKS } from "./books";
+import { BOOKS, AUDIO_WORKS } from "./books";
+import { catalogNow } from "./bookCatalog";
 import { BookHeroCard } from "./BookHeroCard";
 import { HomeTabs, HOME_TABS, type HomeTabId } from "./HomeTabs";
 import { takeHomeTab } from "./homeNav";
@@ -553,7 +554,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <SectionHead eyebrow="Библиотека" title="Миллиард духовных книг" subtitle="ИСККОН распространяет древнюю священную литературу на 89 языках, помогая людям найти смысл жизни, организовать её согласно духовным принципам и научиться служить и любить Бога." />
         <div style={{ display: "flex", gap: 12, overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch",
           margin: `4px -${PAD}px 0`, padding: `12px ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
-          {LIBRARY.filter((b) => b.lineage === "prabhupada" && b.readable && BOOKS[b.id]).map((b) => (
+          {catalogNow().filter((b) => b.lineage === "prabhupada" && b.readable && BOOKS[b.id]).map((b) => (
             <div key={b.id} style={{ flex: `0 0 calc(100% - ${PAD * 2}px)`, scrollSnapAlign: "start" }}>
               <BookHeroCard
                 book={BOOKS[b.id]}
