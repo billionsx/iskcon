@@ -148,6 +148,16 @@ function human(n?: number): string {
 export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
   const [token, setToken] = useState<string>(() => {
     try {
+      const q = new URLSearchParams(window.location.search);
+      const fromUrl = (q.get("t") || q.get("token") || "").trim();
+      if (fromUrl) {
+        try {
+          sessionStorage.setItem(TOKEN_KEY, fromUrl);
+        } catch {
+          /* noop */
+        }
+        return fromUrl;
+      }
       return sessionStorage.getItem(TOKEN_KEY) || "";
     } catch {
       return "";
@@ -598,6 +608,17 @@ type RunRow = {
   htmlUrl: string; startedAt: string | null;
 };
 type BookRow = { id: string; status: string; mp3: number; playlist: boolean; cover: boolean };
+type BookDetail = {
+  id: string;
+  title?: string;
+  creator?: string;
+  mp3Count?: number;
+  hasPlaylist?: boolean;
+  chapters?: { name: string; size: number }[];
+  tracks?: { file: string; title: string }[];
+  relatedBook?: string | null;
+  detailsUrl?: string;
+};
 
 function bookColor(s: string): string {
   if (s === "DONE") return "#34c759";
@@ -622,6 +643,8 @@ function LiveMonitor({ token }: { token: string }) {
   const [runs, setRuns] = useState<RunRow[]>([]);
   const [books, setBooks] = useState<BookRow[]>([]);
   const [ts, setTs] = useState<number>(0);
+  const [open, setOpen] = useState<string | null>(null);
+  const [details, setDetails] = useState<Record<string, BookDetail>>({});
   const timer = useRef<number | null>(null);
 
   useEffect(() => {
@@ -648,6 +671,27 @@ function LiveMonitor({ token }: { token: string }) {
   }, [token]);
 
   const order: Record<string, number> = { UPLOADING: 0, QUEUE: 1, ERROR: 2, DONE: 3 };
+
+  async function toggle(id: string) {
+    if (open === id) {
+      setOpen(null);
+      return;
+    }
+    setOpen(id);
+    if (!details[id]) {
+      try {
+        const r = await fetch(api(`/downloader/book?id=${encodeURIComponent(id)}`), {
+          headers: { "x-admin-token": token },
+        });
+        if (r.ok) {
+          const d = (await r.json()) as BookDetail;
+          setDetails((m) => ({ ...m, [id]: d }));
+        }
+      } catch {
+        /* следующий тап повторит */
+      }
+    }
+  }
   const sorted = [...books].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
   const done = books.filter((b) => b.status === "DONE").length;
   const up = books.filter((b) => b.status === "UPLOADING").length;
@@ -707,26 +751,78 @@ function LiveMonitor({ token }: { token: string }) {
         )}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        {sorted.map((b) => (
-          <div
-            key={b.id}
-            style={{
-              display: "flex", alignItems: "center", gap: 8, padding: "6px 10px",
-              background: "var(--color-bg-3)", borderRadius: "var(--radius-sm)",
-            }}
-          >
-            <span
-              style={{
-                width: 8, height: 8, borderRadius: 4, background: bookColor(b.status), flexShrink: 0,
-                ...(b.status === "UPLOADING" ? { animation: "dlpulse 1.4s ease-in-out infinite" } : {}),
-              }}
-            />
-            <span style={{ flex: 1, fontSize: 13, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {b.id.replace("iskcone-", "")}
-            </span>
-            <span style={{ fontSize: 12, color: "var(--color-label-2)" }}>{b.mp3 > 0 ? `${b.mp3} дор.` : "—"}</span>
-          </div>
-        ))}
+        {sorted.map((b) => {
+          const d = details[b.id];
+          const isOpen = open === b.id;
+          return (
+            <div key={b.id} style={{ background: "var(--color-bg-3)", borderRadius: "var(--radius-sm)", overflow: "hidden" }}>
+              <button
+                onClick={() => toggle(b.id)}
+                style={{
+                  width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 10px",
+                  background: "transparent", border: "none", cursor: "pointer", textAlign: "left",
+                }}
+              >
+                <span
+                  style={{
+                    width: 8, height: 8, borderRadius: 4, background: bookColor(b.status), flexShrink: 0,
+                    ...(b.status === "UPLOADING" ? { animation: "dlpulse 1.4s ease-in-out infinite" } : {}),
+                  }}
+                />
+                <span style={{ flex: 1, fontSize: 13, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {b.id.replace("iskcone-", "")}
+                </span>
+                <span style={{ fontSize: 12, color: "var(--color-label-2)" }}>{b.mp3 > 0 ? `${b.mp3} дор.` : "—"}</span>
+                <span style={{ fontSize: 11, color: "var(--color-label-3)", width: 12, textAlign: "center" }}>{isOpen ? "▾" : "▸"}</span>
+              </button>
+              {isOpen && (
+                <div style={{ padding: "2px 10px 10px 26px", borderTop: "1px solid var(--color-hairline)" }}>
+                  {!d ? (
+                    <div style={{ fontSize: 12, color: "var(--color-label-3)", padding: "8px 0" }}>загрузка…</div>
+                  ) : (
+                    <>
+                      {(d.title || d.creator) && (
+                        <div style={{ fontSize: 12, color: "var(--color-label-2)", margin: "8px 0 4px" }}>
+                          {d.title}
+                          {d.creator ? ` · ${d.creator}` : ""}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 11, color: "var(--color-label-3)", marginBottom: 6 }}>
+                        {d.relatedBook ? (
+                          <>
+                            связана с книгой: <span style={{ color: "var(--color-brand-blue)" }}>{d.relatedBook}</span>
+                          </>
+                        ) : (
+                          "отдельный объект (без связи)"
+                        )}
+                        {" · "}
+                        <a href={d.detailsUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-brand-blue)" }}>
+                          archive.org&nbsp;↗
+                        </a>
+                      </div>
+                      {(d.tracks && d.tracks.length > 0
+                        ? d.tracks.map((t, i) => ({ key: t.file || String(i), label: t.title || t.file }))
+                        : (d.chapters || []).map((c, i) => ({
+                            key: c.name || String(i),
+                            label: c.name.replace(/^\d+_/, "").replace(/\.mp3$/i, ""),
+                          }))
+                      ).map((row, i) => (
+                        <div key={row.key} style={{ display: "flex", gap: 8, fontSize: 12, color: "var(--color-label)", padding: "3px 0" }}>
+                          <span style={{ color: "var(--color-label-3)", width: 22, flexShrink: 0, textAlign: "right" }}>{i + 1}.</span>
+                          <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.label}</span>
+                          <span style={{ color: "#34c759", flexShrink: 0 }}>✓</span>
+                        </div>
+                      ))}
+                      {(!d.chapters || d.chapters.length === 0) && (!d.tracks || d.tracks.length === 0) && (
+                        <div style={{ fontSize: 12, color: "var(--color-label-3)", padding: "4px 0" }}>дорожек пока нет (в очереди)</div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <style>{`@keyframes dlpulse{0%,100%{opacity:1}50%{opacity:.3}}`}</style>
