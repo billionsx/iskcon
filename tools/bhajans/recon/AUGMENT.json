@@ -3,7 +3,7 @@
   "touched": 71,
   "wbw_skipped_count_mismatch": 0,
   "total_wbw_pairs": 6818,
-  "total_media": 407,
+  "total_media": 395,
   "items": [
     {
       "slug": "/ru/bhajans/adi-shankaracharya/jagannathastaka",
@@ -220,14 +220,14 @@
       "verses_db": 6,
       "verses_api": 6,
       "wbw_pairs": 62,
-      "media": 10
+      "media": 8
     },
     {
       "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
       "verses_db": 10,
       "verses_api": 10,
       "wbw_pairs": 102,
-      "media": 9
+      "media": 7
     },
     {
       "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
@@ -297,7 +297,7 @@
       "verses_db": 8,
       "verses_api": 8,
       "wbw_pairs": 173,
-      "media": 21
+      "media": 15
     },
     {
       "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
@@ -318,7 +318,7 @@
       "verses_db": 8,
       "verses_api": 8,
       "wbw_pairs": 241,
-      "media": 10
+      "media": 8
     },
     {
       "slug": "/ru/bhajans/unknown/dzhai-dzhai-radkha-ramana",
