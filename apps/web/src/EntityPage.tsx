@@ -1426,7 +1426,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                           {cards.map((d) => (
                             <div key={d.templeSlug} style={{ overflow: "hidden", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
-                              <img src={d.images[0]} alt={d.deities || d.templeName} loading="lazy" style={{ width: "100%", display: "block" }} />
+                              <img src={d.images[0].startsWith("/") ? d.images[0] : `/api/img?u=${encodeURIComponent(d.images[0])}&w=1600`} alt={d.deities || d.templeName} loading="lazy" style={{ width: "100%", display: "block" }} />
                               <div style={{ padding: "10px 13px" }}>
                                 <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.templeName}</div>
                                 <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.templeName} · {d.date}</div>
