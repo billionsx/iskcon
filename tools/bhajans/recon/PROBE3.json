@@ -1,0 +1,26 @@
+{
+  "list_ru": {
+    "http": 404,
+    "path": "/api/public/bhajans?lang=ru"
+  },
+  "list": {
+    "http": 404,
+    "path": "/api/public/bhajans"
+  },
+  "list_ru2": {
+    "http": 404,
+    "path": "/api/public/bhajans/ru"
+  },
+  "detail_amara": {
+    "http": 404,
+    "path": "/api/public/bhajans/amara-jivana"
+  },
+  "detail_amara_ru": {
+    "http": 404,
+    "path": "/api/public/bhajans/amara-jivana?lang=ru"
+  },
+  "detail_gurudev": {
+    "http": 404,
+    "path": "/api/public/bhajans/gurudev"
+  }
+}
