@@ -53,6 +53,9 @@ on:
       batch_json:
         description: "JSON-массив [{channel, meta}] — несколько книг последовательно в одном джобе"
         default: ""
+      login_poll:
+        description: "Войти в этом же раннере (один IP), ждать код в variable TG_CODE_LIVE (true/false)"
+        default: "false"
 
 jobs:
   run:
@@ -68,13 +71,26 @@ jobs:
       - name: "\u0417\u0430\u0432\u0438\u0441\u0438\u043c\u043e\u0441\u0442\u0438"
         run: pip install -r tools/tg-archive/requirements.txt
 
+      - name: "Вход в этом же раннере (один IP) — если login_poll=true"
+        if: ${{ inputs.login_poll == 'true' }}
+        working-directory: tools/tg-archive
+        env:
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
+          TG_PHONE: ${{ secrets.TG_PHONE }}
+          TG_PASSWORD: ${{ secrets.TG_PASSWORD }}
+          TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: billionsx/iskcon
+        run: python tg_load.py
+
       - name: "\u0421\u043a\u0430\u0447\u0430\u0442\u044c \u0430\u0443\u0434\u0438\u043e \u0438\u0437 \u043a\u0430\u043d\u0430\u043b\u0430"
         if: ${{ inputs.mode == 'package' }}
         working-directory: tools/tg-archive
         env:
           TG_API_ID: ${{ secrets.TG_API_ID }}
           TG_API_HASH: ${{ secrets.TG_API_HASH }}
-          TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+          TG_SESSION_STRING: ${{ env.TG_SESSION_STRING || secrets.TG_SESSION_STRING }}
           TG_CHANNEL: ${{ inputs.channel }}
           TG_LIMIT: ${{ inputs.limit }}
         run: |
@@ -103,7 +119,7 @@ jobs:
         env:
           TG_API_ID: ${{ secrets.TG_API_ID }}
           TG_API_HASH: ${{ secrets.TG_API_HASH }}
-          TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+          TG_SESSION_STRING: ${{ env.TG_SESSION_STRING || secrets.TG_SESSION_STRING }}
           TG_CHANNEL: ${{ inputs.channel }}
           TG_LIMIT: ${{ inputs.limit }}
           BOOK_ID: ${{ inputs.book }}
