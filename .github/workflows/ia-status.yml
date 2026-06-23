@@ -22,6 +22,8 @@ jobs:
             "iskcone-jagannatha-vallabha-nataka","iskcone-sri-namamrita","iskcone-ray-of-vishnu",
             "iskcone-vrindavane-bhajana","iskcone-uroki-lyubvi","iskcone-navadvipa-dhama-mahatmya",
             "iskcone-seventh-goswami","iskcone-the-beggar",
+            "iskcone-bereg-razluki","iskcone-prema-vivarta",
+            "iskcone-japa-meditations","iskcone-narottama-thakura",
           ]
           done=ip=queue=0
           lines=[]
