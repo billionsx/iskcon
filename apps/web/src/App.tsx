@@ -455,9 +455,10 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   const [sub, setSub] = useState("books");
   return (
     <div>
-      <SegRow value={sub} onChange={setSub} items={[["books", "Книги"], ["audio", "Аудио"]]} />
+      <SegRow value={sub} onChange={setSub} items={[["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"]]} />
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
-      {sub === "audio" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+      {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+      {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
     </div>
   );
 }
