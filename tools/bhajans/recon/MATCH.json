@@ -5,9 +5,7 @@
     "NEW": 71,
     "COLLISION_FILLED": 3
   },
-  "with_residual_pua": [
-    "govardhana-vasa"
-  ],
+  "with_residual_pua": [],
   "credit": "Тексты — Bhajanāmṛta / Sri Rupa Seva Kunj, с разрешения",
   "items": [
     {
@@ -203,9 +201,7 @@
         "comments": 3,
         "scores": 1
       },
-      "residual_pua": [
-        "U+F105"
-      ]
+      "residual_pua": []
     },
     {
       "bhajanamrita_slug": "govindam-adi-purusam",
