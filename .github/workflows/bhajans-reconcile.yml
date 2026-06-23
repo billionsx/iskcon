@@ -39,4 +39,6 @@ jobs:
           git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
           git add tools/bhajans/recon/RECONCILE.json
           git commit -m "reconcile(bhajanamrita): план сверки с заглушками [skip ci]" || exit 0
-          git push
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin main && break || sleep 3
+          done
