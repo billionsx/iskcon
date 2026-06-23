@@ -28,7 +28,7 @@ on:
   #   - cron: "0 */3 * * *"
 
 concurrency:
-  group: tg-stories          # один прогон за раз (одна Telegram-сессия)
+  group: tg-archive-session  # общая блокировка с аудио-загрузчиком (одна TG-сессия)
   cancel-in-progress: false
 
 jobs:
