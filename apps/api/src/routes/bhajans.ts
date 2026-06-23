@@ -60,7 +60,7 @@ bhajansRouter.get('/detail', async (c) => {
 
   const row = (await c.env.DB.prepare(
     `SELECT slug, name, author_name, hero_image, source_text, category, section,
-            text, translit, translation, is_catalog
+            text, translit, translation, is_catalog, source_credit
        FROM prayers WHERE slug = ?`,
   )
     .bind(slug)
@@ -93,6 +93,7 @@ bhajansRouter.get('/detail', async (c) => {
     source_text: row.source_text ?? null,
     category: row.category ?? null,
     section: row.section ?? null,
+    source_credit: row.source_credit ?? null,
     verses,
     translit: row.translit ?? null,
     translation: row.translation ?? null,

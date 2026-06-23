@@ -26,6 +26,7 @@ interface Verse { ord: number; translit: string | null; text: string | null; sig
 interface BhajanDetail {
   slug: string; name: string; author: string | null; hero_image: string | null;
   category: string | null; source_text: string | null; section: string | null;
+  source_credit: string | null;
   verses: Verse[]; translit: string | null; translation: string | null;
   body: string; pending: boolean;
 }
@@ -156,6 +157,9 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
                 </>
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
+              )}
+              {data.source_credit && !data.pending && (
+                <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
               )}
               <NotesAtSource kind="bhajan" refId={`bhajan:${slug}`} accent="#7048E8" />
             </div>
