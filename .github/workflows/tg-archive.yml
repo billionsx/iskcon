@@ -77,7 +77,12 @@ jobs:
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
           TG_CHANNEL: ${{ inputs.channel }}
           TG_LIMIT: ${{ inputs.limit }}
-        run: python tg_archive.py download
+        run: |
+          set +e
+          python tg_archive.py download 2>&1 | tee /tmp/tg.log
+          rc=${PIPESTATUS[0]}
+          [ $rc -ne 0 ] && echo "::error title=tg-archive-download::$(tail -c 1500 /tmp/tg.log | tr '\n\r\t' '   ')"
+          exit $rc
 
       - name: "\u0423\u043f\u0430\u043a\u043e\u0432\u0430\u0442\u044c \u0432 .zip"
         if: ${{ inputs.mode == 'package' }}
@@ -110,4 +115,9 @@ jobs:
           IA_IDENTIFIER: ${{ inputs.identifier }}
           IA_RELATED_BOOK_URL: ${{ inputs.related_book_url }}
           IA_BOOK_IDENTIFIER: ${{ inputs.book_identifier }}
-        run: python tg_archive.py stream
+        run: |
+          set +e
+          python tg_archive.py stream 2>&1 | tee /tmp/tg.log
+          rc=${PIPESTATUS[0]}
+          [ $rc -ne 0 ] && echo "::error title=tg-archive-stream::$(tail -c 1500 /tmp/tg.log | tr '\n\r\t' '   ')"
+          exit $rc
