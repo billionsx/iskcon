@@ -1523,6 +1523,35 @@ export default {
       return json(books);
     }
 
+    // GET /api/kirtans → реестр киртанов из D1: исполнители (+ entity_id личности) и
+    // альбомы (artist → slug исполнителя). Форма совпадает с KIRTAN_ARTISTS/KIRTAN_ALBUMS.
+    if (url.pathname === "/api/kirtans") {
+      const [aRes, bRes] = await Promise.all([
+        env.DB.prepare(
+          `SELECT slug, name, full, role, era, origin, bio, mono, accent, entity_id
+           FROM kirtan_artists ORDER BY sort`
+        ).all<{ slug: string; name: string; full: string | null; role: string | null; era: string | null; origin: string | null; bio: string | null; mono: string | null; accent: number; entity_id: string | null }>(),
+        env.DB.prepare(
+          `SELECT id, artist_slug, title, archive, year, type, moods, langs, composers, note
+           FROM kirtan_albums ORDER BY sort`
+        ).all<{ id: string; artist_slug: string; title: string; archive: string | null; year: string | null; type: string; moods: string | null; langs: string | null; composers: string | null; note: string | null }>(),
+      ]);
+      const parse = (s: string | null): unknown[] => { try { return s ? JSON.parse(s) : []; } catch { return []; } };
+      const artists = (aRes.results || []).map((r) => ({
+        slug: r.slug, name: r.name,
+        full: r.full ?? undefined, role: r.role ?? "", era: r.era ?? undefined,
+        origin: r.origin ?? undefined, bio: r.bio ?? "", mono: r.mono ?? "",
+        accent: !!r.accent, entityId: r.entity_id ?? undefined,
+      }));
+      const albums = (bRes.results || []).map((r) => ({
+        id: r.id, artist: r.artist_slug, title: r.title,
+        archive: r.archive ?? undefined, year: r.year ?? undefined, type: r.type,
+        moods: parse(r.moods), langs: parse(r.langs), composers: parse(r.composers),
+        note: r.note ?? undefined,
+      }));
+      return json({ artists, albums });
+    }
+
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
     if (url.pathname === "/api/books/bg/chapters") {
       const { results } = await env.DB.prepare(
