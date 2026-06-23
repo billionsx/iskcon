@@ -98,18 +98,21 @@ function MediaHeader({ children }: { children: React.ReactNode }) {
 const ROW = { display: "flex", alignItems: "center", gap: 12, padding: "var(--space-4) var(--space-5)", textAlign: "left" as const };
 const MCARD = { borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", overflow: "hidden" } as const;
 
-/** Текстовый комментарий/пурпорт — карточка с «Читать полностью» (тексты длинные). */
+/** Текстовый комментарий/пурпорт — текст с «Читать полностью» и/или ссылка на источник (PDF/внешняя). */
 function CommentaryCard({ c }: { c: MediaItem }) {
   const [open, setOpen] = useState(false);
   const text = c.description || "";
   const long = text.length > 320;
   const shown = open || !long ? text : text.slice(0, 300).trimEnd() + "…";
+  const hasUrl = !!(c.url && c.url.length > 0);
+  const isPdf = (c.url || "").toLowerCase().includes(".pdf");
   return (
     <div style={{ ...MCARD, padding: "var(--space-5)" }}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>{c.title || "Комментарий"}</div>
       {(c.subtitle || c.date) ? <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[c.subtitle, c.date].filter(Boolean).join(" · ")}</div> : null}
       {text ? <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{shown}</div> : null}
-      {long ? <button onClick={() => setOpen((o) => !o)} style={{ marginTop: "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)" }}>{open ? "Свернуть" : "Читать полностью"}</button> : null}
+      {text && long ? <button onClick={() => setOpen((o) => !o)} style={{ marginTop: "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)" }}>{open ? "Свернуть" : "Читать полностью"}</button> : null}
+      {hasUrl ? <a href={c.url || "#"} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: text ? "var(--space-3)" : "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)", textDecoration: "none" }}>{isPdf ? "Открыть PDF" : "Открыть источник"} ↗</a> : null}
     </div>
   );
 }
