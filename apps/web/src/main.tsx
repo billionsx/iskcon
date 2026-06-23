@@ -53,6 +53,12 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
   window.addEventListener("focus", () => void checkForUpdate());
   setTimeout(() => void checkForUpdate(), 4000);
   setInterval(() => void checkForUpdate(), 120000);
+
+  // PWA: регистрируем service worker (офлайн-оболочка + кэш статики). Навигация в SW —
+  // network-first, поэтому авто-обновление сборки выше продолжает работать как прежде.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+  }
 }
 
 createRoot(document.getElementById("root")!).render(
