@@ -121,9 +121,12 @@ def run(payload_path, plan_path, token, lang="ru"):
             title = (c.get("title") or "").strip(); author = (c.get("author") or "").strip()
             date = (c.get("date") or "").strip(); clang = (c.get("language") or lang)
             if ctype == "text" or (not vurl and not aurl):
-                com_k += 1
                 text = decode_pua((c.get("content") or "").strip())
-                ins("commentary", com_k, title, author, "", (c.get("attachmentUrl") or "").strip(),
+                att = (c.get("attachmentUrl") or "").strip()
+                if not text and not att:
+                    continue  # ни текста, ни вложения — пустышка, пропускаем
+                com_k += 1
+                ins("commentary", com_k, title, author, "", att,
                     "text", "", "", text, date, clang)
             else:
                 lec_k += 1
