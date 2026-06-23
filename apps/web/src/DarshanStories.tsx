@@ -13,8 +13,8 @@
  *    обрезаем мурти), хром поверх лёгких градиентных скримов.
  *
  * Эстетика iOS-26: токены темы, золото, только инлайн-SVG. Модуль публичный —
- * вход не требуется (даршан открыт каждому). Изображения — прямые URL
- * Telegram-CDN, как в Ленте и на экране «Даршан дня».
+ * вход не требуется (даршан открыт каждому). Изображения храмовых CDN идут через
+ * worker-прокси /api/img (хотлинк-защита + ресайз/кэш), как в Ленте.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { darshanClient, type DarshanItem } from "./darshan/api";
@@ -31,6 +31,17 @@ const FILL2 = "var(--color-glass-regular)";
 
 const STORY_MS = 6000;            // длительность одного кадра
 const RING_GRAD = "conic-gradient(from 135deg, #F4C430, #FF7A00, #E0451F, #D2AA1B, #F4C430)";
+
+/* Прокси картинки через worker /api/img: храмовые CDN (cdn.iskconvrindavan.com,
+   mayapur.com, …) отдают фото с хотлинк-защитой и не грузятся прямой <img src>
+   из браузера — серверный прокси тянет их со спуфингом referer, режет под нужную
+   ширину (CF Image Resizing) и кэширует на свой домен. Уже-локальные пути
+   (/api/darshan/igimg/…) и пустые значения отдаём как есть. */
+function px(u: string | undefined | null, w: number): string {
+  if (!u) return "";
+  if (u.startsWith("/") || u.startsWith("data:") || u.startsWith("blob:")) return u;
+  return `/api/img?u=${encodeURIComponent(u)}&w=${w}`;
+}
 
 /* ── короткое имя храма для подписи кольца ── */
 function shortTemple(slug: string, name: string): string {
@@ -109,7 +120,7 @@ const ringBtn: CSSProperties = {
 /* ── одно кольцо храма ── */
 function Ring({ item, seen, onClick }: { item: DarshanItem; seen: boolean; onClick: () => void }) {
   const [ok, setOk] = useState(true);
-  const cover = item.images[0];
+  const cover = px(item.images[0], 220);
   return (
     <button type="button" onClick={onClick} role="listitem" style={ringBtn}
       aria-label={`Даршан · ${shortTemple(item.templeSlug, item.templeName)}`}>
@@ -348,20 +359,20 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       style={{ position: "fixed", inset: 0, zIndex: 95, background: "#000", overflow: "hidden", touchAction: "none", userSelect: "none", WebkitUserSelect: "none", animation: "storyIn .22s ease" }}>
 
       {/* размытая подложка из того же кадра — заполняет поля по краям, без чёрных полос */}
-      <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${imgs[ii]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
+      <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0, backgroundImage: `url("${px(imgs[ii], 96)}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
       {/* Бокс img = строго экран (position:absolute; inset:0 → определённая высота, без грид-багов
           с процентами). Фит — object-fit: contain при любой ориентации: кадр целиком, поля
           закрывает размытая подложка. Мурти не обрезаем. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
         {fr?.video ? (
-          <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={imgs[ii]}
+          <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={px(imgs[ii], 1600)}
             autoPlay muted loop playsInline preload="auto"
             onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) durRef.current = Math.min(Math.max(d * 1000, 2500), 60000); }}
             onLoadedData={() => setReady(true)} onCanPlay={() => { setReady(true); setStalled(false); }}
             onPlaying={() => { setReady(true); setStalled(false); }} onWaiting={() => setStalled(true)} onStalled={() => setStalled(true)}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s ease" }} />
         ) : (
-          <img key={`${ti}:${ii}`} src={imgs[ii]} alt="Даршан"
+          <img key={`${ti}:${ii}`} src={px(imgs[ii], 1600)} alt="Даршан"
             ref={(el) => { if (el && el.complete && el.naturalWidth > 0) setReady(true); }}
             onLoad={() => setReady(true)}
             style={{
@@ -376,7 +387,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           <span aria-hidden style={{ position: "absolute", top: "50%", left: "50%", width: 34, height: 34, marginTop: -17, marginLeft: -17, borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.28)", borderTopColor: "#fff", animation: "darSpin .8s linear infinite", zIndex: 2 }} />
         )}
       </div>
-      {nextSrc && <img src={nextSrc} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
+      {nextSrc && <img src={px(nextSrc, 1600)} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
       {/* скримы для читабельности хрома */}
       <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 150, background: "linear-gradient(rgba(0,0,0,0.55), transparent)", zIndex: 2, pointerEvents: "none", ...chrome() }} />
@@ -393,7 +404,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
       {/* шапка: храм + дата + закрыть */}
       <div style={chrome({ position: "absolute", top: "calc(max(10px, env(safe-area-inset-top,0px)) + 16px)", left: 12, right: 12, display: "flex", alignItems: "center", gap: 10, zIndex: 4 })}>
         <span style={{ width: 34, height: 34, borderRadius: "50%", overflow: "hidden", flexShrink: 0, background: "rgba(255,255,255,0.14)", display: "grid", placeItems: "center" }}>
-          {imgs[0] ? <img src={imgs[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff" }}><Lotus s={18} /></span>}
+          {imgs[0] ? <img src={px(imgs[0], 96)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff" }}><Lotus s={18} /></span>}
         </span>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontFamily: FT, fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
