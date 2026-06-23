@@ -760,19 +760,40 @@ const nilachala: Dhama = {
 
 export const DHAMAS: Dhama[] = [vrindavan, navadvipa, nilachala];
 
-const BY_ID: Record<string, Dhama> = Object.fromEntries(DHAMAS.map((d) => [d.id, d]));
+// ── Гидрация из D1 (плейн, без React — модуль может грузить и воркер) ──
+// Источник истины — таблицы dhamas/dhama_clusters/tirthas (+ tirtha_persons, deity FK).
+// DHAMAS выше — сид/фолбэк. Внутренние _dhamas/_byId/_allTirthas хелперы читают живьём;
+// setDhamaData() подменяет их данными из БД, useDhamas() (dhamasHydrate.ts) даёт реактивность.
+let _dhamas: Dhama[] = DHAMAS;
+let _byId: Record<string, Dhama> = Object.fromEntries(_dhamas.map((d) => [d.id, d]));
+let _allTirthas: Tirtha[] = _dhamas.flatMap((d) => d.tirthas);
+let _version = 0;
+const _subs = new Set<() => void>();
+
+export function dhamasNow(): Dhama[] { return _dhamas; }
+export function allTirthasNow(): Tirtha[] { return _allTirthas; }
+export function setDhamaData(dhamas: Dhama[]): void {
+  if (!Array.isArray(dhamas) || !dhamas.length) return;
+  _dhamas = dhamas;
+  _byId = Object.fromEntries(_dhamas.map((d) => [d.id, d]));
+  _allTirthas = _dhamas.flatMap((d) => d.tirthas);
+  _version++;
+  _subs.forEach((f) => f());
+}
+export function subscribeDhamas(cb: () => void): () => void { _subs.add(cb); return () => { _subs.delete(cb); }; }
+export function dhamaDataVersion(): number { return _version; }
 
 export function getDhama(id: string): Dhama | undefined {
-  return BY_ID[id];
+  return _byId[id];
 }
 
 export function getTirtha(dhamaId: string, tirthaId: string): Tirtha | undefined {
-  return BY_ID[dhamaId]?.tirthas.find((t) => t.id === tirthaId);
+  return _byId[dhamaId]?.tirthas.find((t) => t.id === tirthaId);
 }
 
 /** Поиск тиртхи по её id среди всех дхам (id тиртх глобально уникальны). */
 export function getTirthaById(id: string): { dhama: Dhama; tirtha: Tirtha } | undefined {
-  for (const d of DHAMAS) { const t = d.tirthas.find((x) => x.id === id); if (t) return { dhama: d, tirtha: t }; }
+  for (const d of _dhamas) { const t = d.tirthas.find((x) => x.id === id); if (t) return { dhama: d, tirtha: t }; }
   return undefined;
 }
 
@@ -797,13 +818,14 @@ export function tirthaCtx(dhamaId: string, t: Tirtha) {
   };
 }
 
-/** Все тиртхи всех дхам в стабильном порядке (для «места дня» и поиска). */
+/** Все тиртхи всех дхам в стабильном порядке (сид; реактивно — allTirthasNow()). */
 export const ALL_TIRTHAS: Tirtha[] = DHAMAS.flatMap((d) => d.tirthas);
 
 /** Святое место дня — детерминированный выбор по календарной дате (UTC). */
 export function tirthaOfDay(date: Date = new Date()): { dhama: Dhama; tirtha: Tirtha } {
+  const all = _allTirthas;
   const dayIndex = Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 86400000);
-  const t = ALL_TIRTHAS[((dayIndex % ALL_TIRTHAS.length) + ALL_TIRTHAS.length) % ALL_TIRTHAS.length];
+  const t = all[((dayIndex % all.length) + all.length) % all.length];
   return { dhama: getDhama(t.dhama)!, tirtha: t };
 }
 

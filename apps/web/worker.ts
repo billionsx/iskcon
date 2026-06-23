@@ -1552,6 +1552,39 @@ export default {
       return json({ artists, albums });
     }
 
+    // GET /api/dhamas → дхамы с вложенными кластерами и тиртхами из D1. Источник истины —
+    // dhamas/dhama_clusters/tirthas; форма совпадает с DHAMAS (Dhama[] фронта).
+    if (url.pathname === "/api/dhamas") {
+      const [dRes, cRes, tRes] = await Promise.all([
+        env.DB.prepare(`SELECT id, name, iast, tagline, deity, deity_entity_id, region, hero, accent, center_lat, center_lng, center_zoom, intro, facts FROM dhamas ORDER BY sort`).all<Record<string, unknown>>(),
+        env.DB.prepare(`SELECT dhama_id, cluster_id, title, note FROM dhama_clusters ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
+        env.DB.prepare(`SELECT id, dhama_id, cluster, name, iast, kind, lat, lng, blurb, about, lila, persons, maps, source FROM tirthas ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
+      ]);
+      const pj = (s: unknown): unknown => { try { return s ? JSON.parse(s as string) : undefined; } catch { return undefined; } };
+      const clustersBy: Record<string, unknown[]> = {};
+      for (const c of cRes.results || []) {
+        (clustersBy[c.dhama_id as string] ||= []).push({ id: c.cluster_id, title: c.title, note: c.note ?? undefined });
+      }
+      const tirthasBy: Record<string, unknown[]> = {};
+      for (const t of tRes.results || []) {
+        (tirthasBy[t.dhama_id as string] ||= []).push({
+          id: t.id, dhama: t.dhama_id, cluster: t.cluster, name: t.name,
+          iast: t.iast ?? undefined, kind: t.kind, lat: t.lat, lng: t.lng,
+          blurb: t.blurb ?? "", about: t.about ?? "", lila: t.lila ?? undefined,
+          persons: pj(t.persons) ?? [], maps: t.maps ?? undefined, source: t.source ?? undefined,
+        });
+      }
+      const dhamas = (dRes.results || []).map((d) => ({
+        id: d.id, name: d.name, iast: d.iast ?? "", tagline: d.tagline ?? "",
+        deity: d.deity ?? "", deityEntityId: d.deity_entity_id ?? undefined,
+        region: d.region ?? "", hero: d.hero ?? undefined, accent: d.accent ?? "#888",
+        center: { lat: d.center_lat, lng: d.center_lng, zoom: d.center_zoom },
+        intro: pj(d.intro) ?? [], facts: pj(d.facts) ?? [],
+        clusters: clustersBy[d.id as string] ?? [], tirthas: tirthasBy[d.id as string] ?? [],
+      }));
+      return json(dhamas);
+    }
+
     // GET /api/books/bg/chapters → 18 chapters with verse counts + source_url
     if (url.pathname === "/api/books/bg/chapters") {
       const { results } = await env.DB.prepare(

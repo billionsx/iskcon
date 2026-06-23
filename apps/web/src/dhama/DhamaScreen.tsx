@@ -5,7 +5,8 @@
  * подробной), действия ♥ · карты · ⋯ (книжный двухвидовой стандарт). Тап → ПКП.
  */
 import { useMemo, useState } from "react";
-import { DHAMAS, ALL_TIRTHAS, getDhama, tirthaOfDay, KIND_RU, type Dhama, type Tirtha, type TirthaKind } from "./dhamas";
+import { getDhama, tirthaOfDay, KIND_RU, dhamasNow, allTirthasNow, type Dhama, type Tirtha, type TirthaKind } from "./dhamas";
+import { useDhamas } from "./dhamasHydrate";
 import { DhamaHeroCard, dhamaMapsHref } from "./DhamaHeroCard";
 import { TirthaHeroCard, tirthaMapsHref } from "./TirthaHeroCard";
 import { requestNote } from "../notes";
@@ -47,16 +48,18 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
   const [kind, setKind] = useState<TirthaKind | "all">("all");
   const searching = q.trim() !== "" || kind !== "all";
 
+  const dv = useDhamas();   // реактивная гидрация дхам из БД (сид → БД)
+
   const presentKinds = useMemo(() => {
-    const set = new Set(ALL_TIRTHAS.map((t) => t.kind));
+    const set = new Set(allTirthasNow().map((t) => t.kind));
     return KIND_ORDER.filter((k) => set.has(k));
-  }, []);
+  }, [dv]);
 
   const results = useMemo(() => {
     if (!searching) return [];
     const nq = norm(q.trim());
     const scored: { t: Tirtha; score: number }[] = [];
-    for (const t of ALL_TIRTHAS) {
+    for (const t of allTirthasNow()) {
       if (kind !== "all" && t.kind !== kind) continue;
       if (!nq) { scored.push({ t, score: 5 }); continue; }
       const name = norm(t.name), iast = norm(t.iast || ""), blurb = norm(t.blurb || "");
@@ -72,7 +75,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
     }
     scored.sort((a, b) => a.score - b.score || a.t.name.localeCompare(b.t.name, "ru"));
     return scored.map((s) => s.t);
-  }, [q, kind, searching]);
+  }, [q, kind, searching, dv]);
 
   const tod = tirthaOfDay();
   const todCluster = tod.dhama.clusters.find((c) => c.id === tod.tirtha.cluster)?.title;
@@ -154,7 +157,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
       )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {DHAMAS.map((d) => (
+        {dhamasNow().map((d) => (
           <DhamaHeroCard key={d.id} dhama={d} onOpen={() => onOpen(d.id)} onMenuSelect={onMenuDhama(d)} />
         ))}
       </div>
