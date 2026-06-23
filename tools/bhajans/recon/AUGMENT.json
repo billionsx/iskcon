@@ -1,0 +1,506 @@
+{
+  "songs": 71,
+  "touched": 71,
+  "wbw_skipped_count_mismatch": 0,
+  "total_wbw_pairs": 6818,
+  "total_media": 407,
+  "items": [
+    {
+      "slug": "/ru/bhajans/adi-shankaracharya/jagannathastaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 179,
+      "media": 10
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/bhoga-arati",
+      "verses_db": 17,
+      "verses_api": 17,
+      "wbw_pairs": 165,
+      "media": 8
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/dzhaia-radkha-madkhava",
+      "verses_db": 1,
+      "verses_api": 1,
+      "wbw_pairs": 15,
+      "media": 10
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/gaura-arati",
+      "verses_db": 7,
+      "verses_api": 7,
+      "wbw_pairs": 85,
+      "media": 6
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/gopinatha-1",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 88,
+      "media": 4
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/jiv-jago",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 51,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/mama-mana-mandire",
+      "verses_db": 6,
+      "verses_api": 6,
+      "wbw_pairs": 38,
+      "media": 8
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/narada-muni-badzhaia-vina",
+      "verses_db": 6,
+      "verses_api": 6,
+      "wbw_pairs": 77,
+      "media": 9
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/ohe-vaishnava-thakura",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 68,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/vibhavari-sesa",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 103,
+      "media": 10
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinod-thakur/yasomati-nandana",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 59,
+      "media": 8
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinoda-thakura/kalyana-kalpataru/57-kali-kukkura-kadana-jadi-co-he",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 46,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "verses_db": 6,
+      "verses_api": 6,
+      "wbw_pairs": 97,
+      "media": 13
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/11-manasa-deho-geho-jo-kichu-mor",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 81,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/19-sarvasva-tomar-carane-sampiya",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 68,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/32-radha-kunda-tata-kunja-kutir",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 55,
+      "media": 4
+    },
+    {
+      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/49-kabe-habe-bolo-se-dina-amar",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 127,
+      "media": 4
+    },
+    {
+      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 125,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/dina-dukhi-krishna-das/dzhaia-radkha-girivaradkhari",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 41,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
+      "verses_db": 11,
+      "verses_api": 11,
+      "wbw_pairs": 99,
+      "media": 7
+    },
+    {
+      "slug": "/ru/bhajans/dzhiva-gosvami/shri-iugalastaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 80,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 68,
+      "media": 32
+    },
+    {
+      "slug": "/ru/bhajans/jayadeva-goswami/dasavatara-stotra",
+      "verses_db": 12,
+      "verses_api": 12,
+      "wbw_pairs": 231,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/lochan-das-thakur/avatara-sara-gora-avatara",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 73,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 57,
+      "media": 10
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 52,
+      "media": 11
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 69,
+      "media": 6
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 86,
+      "media": 13
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/radkha-krishna-prana-mora",
+      "verses_db": 6,
+      "verses_api": 6,
+      "wbw_pairs": 59,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/shri-guru-vandana",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 87,
+      "media": 4
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
+      "verses_db": 6,
+      "verses_api": 6,
+      "wbw_pairs": 62,
+      "media": 10
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
+      "verses_db": 10,
+      "verses_api": 10,
+      "wbw_pairs": 102,
+      "media": 9
+    },
+    {
+      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 85,
+      "media": 7
+    },
+    {
+      "slug": "/ru/bhajans/raghunath-das-goswami/govardhana-vasa",
+      "verses_db": 11,
+      "verses_api": 11,
+      "wbw_pairs": 247,
+      "media": 7
+    },
+    {
+      "slug": "/ru/bhajans/raghunath-das-goswami/manah-siksa",
+      "verses_db": 12,
+      "verses_api": 12,
+      "wbw_pairs": 335,
+      "media": 1
+    },
+    {
+      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 57,
+      "media": 6
+    },
+    {
+      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 30,
+      "media": 9
+    },
+    {
+      "slug": "/ru/bhajans/rupa-goswami/yamunashtaka",
+      "verses_db": 9,
+      "verses_api": 9,
+      "wbw_pairs": 198,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/dven-imen-gospoda-nitianandy",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 33,
+      "media": 1
+    },
+    {
+      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachinataiashtaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 148,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachisutashtaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 158,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 173,
+      "media": 21
+    },
+    {
+      "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 126,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/shrila-prabhupada/markine-bhagavata-dharma",
+      "verses_db": 15,
+      "verses_api": 15,
+      "wbw_pairs": 180,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 241,
+      "media": 10
+    },
+    {
+      "slug": "/ru/bhajans/unknown/dzhai-dzhai-radkha-ramana",
+      "verses_db": 7,
+      "verses_api": 7,
+      "wbw_pairs": 105,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/unknown/dzhai-govinda-dzhai-gopal",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 27,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/unknown/dzhio-shiam-lala",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 41,
+      "media": 1
+    },
+    {
+      "slug": "/ru/bhajans/unknown/govardhana-arati",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 35,
+      "media": 1
+    },
+    {
+      "slug": "/ru/bhajans/unknown/mokhana-piare-kho-kankhaia",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 73,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/unknown/nanda-ke-ananda-bhyo",
+      "verses_db": 3,
+      "verses_api": 3,
+      "wbw_pairs": 27,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/unknown/nanda-nandana-ashtaka",
+      "verses_db": 9,
+      "verses_api": 9,
+      "wbw_pairs": 0,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/unknown/radha-ramana-kaho",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 47,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/unknown/radharani-ki-jaya",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 17,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/unknown/radkha-krishna-giti",
+      "verses_db": 14,
+      "verses_api": 14,
+      "wbw_pairs": 0,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/unknown/ragkhupati-ragkhava",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 23,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/unknown/shri-govardkhana-makharadzha",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 0,
+      "media": 1
+    },
+    {
+      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
+      "verses_db": 13,
+      "verses_api": 13,
+      "wbw_pairs": 333,
+      "media": 6
+    },
+    {
+      "slug": "/ru/bhajans/unknown/sundara-bala",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 64,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/unknown/tulasi-kirtan",
+      "verses_db": 5,
+      "verses_api": 5,
+      "wbw_pairs": 58,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/unknown/vande-krishna-nanda-kumara",
+      "verses_db": 3,
+      "verses_api": 3,
+      "wbw_pairs": 17,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/vallabhacharya/madhurashtakam",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 112,
+      "media": 4
+    },
+    {
+      "slug": "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 43,
+      "media": 3
+    },
+    {
+      "slug": "/ru/bhajans/vasudeva-ghosh/iadi-gaura-na-hoito",
+      "verses_db": 4,
+      "verses_api": 4,
+      "wbw_pairs": 45,
+      "media": 1
+    },
+    {
+      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shri-gurvastaka",
+      "verses_db": 9,
+      "verses_api": 9,
+      "wbw_pairs": 165,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
+      "verses_db": 9,
+      "verses_api": 9,
+      "wbw_pairs": 165,
+      "media": 7
+    },
+    {
+      "slug": "/ru/bhajans/vrindavan-das-thakur/nitiananda-astaka",
+      "verses_db": 9,
+      "verses_api": 9,
+      "wbw_pairs": 179,
+      "media": 2
+    },
+    {
+      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
+      "verses_db": 19,
+      "verses_api": 19,
+      "wbw_pairs": 358,
+      "media": 8
+    },
+    {
+      "slug": "/ru/bhajans/vyasadeva/govindam-adi-purusam",
+      "verses_db": 2,
+      "verses_api": 2,
+      "wbw_pairs": 40,
+      "media": 4
+    },
+    {
+      "slug": "/ru/bhajans/vyasadeva/molitvy-nrisimhadevu",
+      "verses_db": 3,
+      "verses_api": 3,
+      "wbw_pairs": 46,
+      "media": 5
+    },
+    {
+      "slug": "/ru/bhajans/yuta-nilakantha-gosvami/kevalashtaka",
+      "verses_db": 8,
+      "verses_api": 8,
+      "wbw_pairs": 94,
+      "media": 5
+    }
+  ]
+}
