@@ -107,7 +107,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
   );
 }
 
-export default function KirtanArtistPage({ slug, onBack }: { slug: string; onBack: () => void }) {
+export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug: string; onBack: () => void; onOpenEntity?: (id: string, type: string | null) => void }) {
   const artist = artistBySlug(slug);
   const albums = albumsByArtist(slug);
   const [scrolled, setScrolled] = useState(false);
@@ -156,6 +156,13 @@ export default function KirtanArtistPage({ slug, onBack }: { slug: string; onBac
         )}
 
         <p style={{ margin: "14px 0 0", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label)" }}>{artist.bio}</p>
+
+        {artist.entityId && onOpenEntity && (
+          <button type="button" onClick={() => onOpenEntity(artist.entityId!, "personality")}
+            style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 15px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)" }}>
+            Страница личности →
+          </button>
+        )}
 
         {/* Дискография */}
         <div style={{ marginTop: 28 }}>
