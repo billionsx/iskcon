@@ -3,7 +3,7 @@
   "touched": 71,
   "wbw_skipped_count_mismatch": 0,
   "total_wbw_pairs": 6818,
-  "total_media": 395,
+  "total_media": 393,
   "items": [
     {
       "slug": "/ru/bhajans/adi-shankaracharya/jagannathastaka",
@@ -178,7 +178,7 @@
       "verses_db": 4,
       "verses_api": 4,
       "wbw_pairs": 57,
-      "media": 10
+      "media": 8
     },
     {
       "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
