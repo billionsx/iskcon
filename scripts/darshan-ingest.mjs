@@ -459,18 +459,24 @@ async function run() {
           photo_count: gal.images.length, albums_planned: 1,
           photos: imgsSel, caption_preview: caption,
         };
-        if (alreadyPostedKey(src.srcKey, src._postId)) { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
-        if (src.site === "mayapur" && mayapurPostedForDate(gal.date)) { preview.push({ ...row, posted: `skip (даршан Маяпура за ${gal.date} уже опубликован)` }); continue; }
-        if (dry) { preview.push(row); continue; }
-        const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
-        const capSql = caption.replace(/'/g, "''");
-        try {
-          d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
-              VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',NULL)
-              ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-        } catch (e) { console.error("D1 insert failed:", String(e)); }
-        preview.push({ ...row, posted: "ok (в приложение)" });
-        continue;
+        const siteAlreadyPosted = alreadyPostedKey(src.srcKey, src._postId) || (src.site === "mayapur" && mayapurPostedForDate(gal.date));
+        if (siteAlreadyPosted && src.site !== "mayapur") { preview.push({ ...row, posted: "skip (dedup)" }); continue; }
+        if (!siteAlreadyPosted) {
+          if (dry) { preview.push(row); continue; }
+          const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
+          const capSql = caption.replace(/'/g, "''");
+          try {
+            d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
+                VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',NULL)
+                ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
+          } catch (e) { console.error("D1 insert failed:", String(e)); }
+          preview.push({ ...row, posted: "ok (в приложение)" });
+          continue;
+        }
+        // Маяпур + альбом сайта уже опубликован: НЕ пропускаем день — проваливаемся
+        // в Telegram-канал храма ниже (там обычно уже свежий даршан, когда mayapur.com
+        // ещё отдаёт вчерашний альбом). Дедуп канала (по дате поста) защитит от повторов.
+        preview.push({ ...row, posted: `site album ${gal.date} уже опубликован → пробуем канал` });
       }
       // Галерея пуста/недоступна.
       if (src.site !== "mayapur") { preview.push({ slug: src.slug, date: gal && gal.date, error: `site gallery empty` }); continue; }
