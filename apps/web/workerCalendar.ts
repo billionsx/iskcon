@@ -25,8 +25,7 @@ const PERSON: ReadonlyArray<[string, { ru: string; id: string | null }]> = [
   ["bhugarbha", { ru: "Шри Бхугарбхи Госвами", id: "bhugarbha-goswami" }],
   ["devananda", { ru: "Шри Девананды Пандита", id: "devananda-pandit" }],
   ["dhananjaya", { ru: "Шри Дхананджаи Пандита", id: "arjuna" }],
-  ["gadadhara", { ru: "Шри Гададхары даса Госвами", id: "gadadhara-dasa" }],
-  ["gadadhara", { ru: "Шри Гададхары Пандита", id: "gadadhara-dasa" }],
+  ["gadadhara", { ru: "Шри Гададхары Пандита", id: "gadadhara" }],
   ["gangamata", { ru: "Шримати Гангаматы Госвамини", id: "gangamata-gosvamini" }],
   ["gaura kisora babaji", { ru: "Шрилы Гауракишоры даса Бабаджи", id: "gaurakishora-dasa-babaji" }],
   ["gauridasa", { ru: "Шри Гауридаса Пандита", id: "gauridasa-pandit" }],
@@ -72,7 +71,6 @@ const PERSON: ReadonlyArray<[string, { ru: string; id: string | null }]> = [
   ["sanatana", { ru: "Шрилы Санатаны Госвами", id: "sanatana-goswami" }],
   ["saranga", { ru: "Шри Шаранги Тхакура", id: "sharanga-thakura" }],
   ["sita", { ru: "Шримати Ситы-деви", id: "sita" }],
-  ["sita", { ru: "Шримати Ситы Тхакурани", id: "sita" }],
   ["sivananda sena", { ru: "Шри Шивананды Сены", id: "shivananda-sena" }],
   ["sridhara", { ru: "Шри Шридхары Пандита (Колавечи)", id: "kholavecha-shridhara" }],
   ["srinivasa acarya", { ru: "Шри Шринивасы Ачарьи", id: "srinivasa-acharya" }],
@@ -99,7 +97,19 @@ function personKey(s: string): string {
 }
 const PERSON_MAP = new Map<string, { ru: string; id: string | null }>();
 for (const [k, v] of PERSON) { PERSON_MAP.set(k, v); PERSON_MAP.set(k.replace(/ /g, ""), v); }
+// Развязка тёзок: personKey() срезает «pandita/dasa/devi/thakurani», из-за чего
+// разные личности схлопываются. Проверяем различающие токены ДО общей карты.
+const DISAMBIG: ReadonlyArray<[RegExp, { ru: string; id: string }]> = [
+  [/\bgadadhara\b.*\bdasa\b/, { ru: "Шри Гададхары даса Госвами", id: "gadadhara-dasa" }],
+  [/\bgadadhara\b.*\bbhatta\b/, { ru: "Шри Гададхары Бхатты", id: "gadadhara-bhatta" }],
+  [/\bgadadhara\b/, { ru: "Шри Гададхары Пандита", id: "gadadhara" }],
+  [/\bsita\b.*\bthakurani\b/, { ru: "Шримати Ситы Тхакурани", id: "sita-advaita" }],
+  [/\bsita\b.*\bdevi\b/, { ru: "Шримати Ситы-деви", id: "sita" }],
+  [/\bsita\b/, { ru: "Шримати Ситы-деви", id: "sita" }],
+];
 function findPerson(base: string): { ru: string; id: string | null } | null {
+  const low = base.toLowerCase();
+  for (const [re, v] of DISAMBIG) if (re.test(low)) return v;
   const k = personKey(base);
   return PERSON_MAP.get(k) || PERSON_MAP.get(k.replace(/ /g, "")) || null;
 }
