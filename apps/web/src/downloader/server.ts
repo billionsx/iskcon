@@ -239,6 +239,66 @@ export async function downloaderApi(
       return reply({ books });
     }
 
+    // ── детали книги: поглавно (дорожки) + названия из playlist + связь с книгой ──
+    if (sub === "book" && request.method === "GET") {
+      const id = (url.searchParams.get("id") || "").trim();
+      if (!id) return reply({ error: "id_required" }, 400);
+      let meta: Record<string, unknown> = {};
+      let files: { name?: string; size?: string }[] = [];
+      try {
+        const r = await fetch(`https://archive.org/metadata/${encodeURIComponent(id)}`, {
+          headers: { "User-Agent": "gaurangers-downloader", Accept: "application/json" },
+        });
+        if (r.ok) {
+          const d = (await r.json()) as {
+            files?: { name?: string; size?: string }[];
+            metadata?: Record<string, unknown>;
+          };
+          files = d.files || [];
+          meta = d.metadata || {};
+        }
+      } catch {
+        /* объект ещё не создан */
+      }
+      const chapters = files
+        .filter((f) => (f.name || "").toLowerCase().endsWith(".mp3"))
+        .map((f) => ({ name: f.name || "", size: Number(f.size || 0) }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+      const hasPlaylist = files.some((f) => f.name === "playlist.json");
+      let tracks: { file: string; title: string }[] = [];
+      if (hasPlaylist) {
+        try {
+          const pr = await fetch(
+            `https://archive.org/download/${encodeURIComponent(id)}/playlist.json`,
+            { headers: { "User-Agent": "gaurangers-downloader" } },
+          );
+          if (pr.ok) {
+            const pj = (await pr.json()) as { tracks?: { file?: string; title?: string }[] };
+            tracks = (pj.tracks || []).map((t) => ({ file: t.file || "", title: t.title || "" }));
+          }
+        } catch {
+          /* плейлист ещё не залит */
+        }
+      }
+      const ext = meta["external-identifier"];
+      const relatedRaw = Array.isArray(ext)
+        ? ext.find((x) => String(x).includes("related-book"))
+        : typeof ext === "string" && ext.includes("related-book")
+          ? ext
+          : null;
+      return reply({
+        id,
+        title: meta.title || id,
+        creator: meta.creator || "",
+        mp3Count: chapters.length,
+        hasPlaylist,
+        chapters,
+        tracks,
+        relatedBook: relatedRaw ? String(relatedRaw).replace("urn:related-book:", "") : null,
+        detailsUrl: `https://archive.org/details/${id}`,
+      });
+    }
+
     return reply({ error: "not_found" }, 404);
   } catch (e) {
     return reply({ error: "internal", detail: (e as Error).message }, 500);
