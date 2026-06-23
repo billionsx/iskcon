@@ -12,7 +12,7 @@ on:
         required: true
         default: "plan"
         type: choice
-        options: ["plan", "apply"]
+        options: ["plan", "apply", "credit"]
 
 permissions:
   contents: write
@@ -30,6 +30,8 @@ jobs:
         run: |
           if [ "${{ inputs.mode }}" = "apply" ]; then
             python3 tools/bhajans/reconcile_stubs.py --apply
+          elif [ "${{ inputs.mode }}" = "credit" ]; then
+            python3 tools/bhajans/reconcile_stubs.py --credit
           else
             python3 tools/bhajans/reconcile_stubs.py --plan
           fi
