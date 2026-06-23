@@ -444,6 +444,8 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
               </div>
             )}
 
+            <LiveMonitor token={token} />
+
             <p style={{ fontSize: 12, color: "var(--color-label-3)", marginTop: 18, lineHeight: 1.5 }}>
               Тяжёлую работу делает раннер GitHub Actions (Python/Telethon) — браузер и Worker
               MTProto и большие файлы не тянут. Ключи Telegram/archive.org заданы в секретах
@@ -575,4 +577,159 @@ function resultBtn(bg: string): React.CSSProperties {
     cursor: "pointer",
     textDecoration: "none",
   };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Живой монитор загрузки: список прогонов CI (со ссылкой на лог) + покнижный
+// прогресс прямо с archive.org. Автообновление каждые 10 с.
+// ─────────────────────────────────────────────────────────────────────────────
+const MONITOR_IDS = [
+  "iskcone-manah-siksa", "iskcone-siksastaka", "iskcone-bhakti-tattva-viveka",
+  "iskcone-mukunda-mala-stotra", "iskcone-sanmodana-bhashya", "iskcone-bhaktyaloka",
+  "iskcone-prema-pradipa", "iskcone-harinama-cintamani", "iskcone-caitanya-siksamrta",
+  "iskcone-jagannatha-vallabha-nataka", "iskcone-sri-namamrita", "iskcone-ray-of-vishnu",
+  "iskcone-vrindavane-bhajana", "iskcone-uroki-lyubvi", "iskcone-navadvipa-dhama-mahatmya",
+  "iskcone-seventh-goswami", "iskcone-the-beggar", "iskcone-bereg-razluki",
+  "iskcone-prema-vivarta", "iskcone-japa-meditations", "iskcone-narottama-thakura",
+];
+
+type RunRow = {
+  id: number; title: string; status: string; conclusion: string | null;
+  htmlUrl: string; startedAt: string | null;
+};
+type BookRow = { id: string; status: string; mp3: number; playlist: boolean; cover: boolean };
+
+function bookColor(s: string): string {
+  if (s === "DONE") return "#34c759";
+  if (s === "UPLOADING") return "var(--color-brand-blue)";
+  if (s === "ERROR") return "#ff453a";
+  return "var(--color-label-3)"; // QUEUE
+}
+function runColor(r: RunRow): string {
+  if (r.status !== "completed") return "var(--color-brand-blue)";
+  if (r.conclusion === "success") return "#34c759";
+  if (r.conclusion === "cancelled") return "var(--color-label-3)";
+  return "#ff453a";
+}
+function runWord(r: RunRow): string {
+  if (r.status !== "completed") return r.status === "queued" ? "в очереди" : "идёт";
+  if (r.conclusion === "success") return "готово";
+  if (r.conclusion === "cancelled") return "отменён";
+  return "ошибка";
+}
+
+function LiveMonitor({ token }: { token: string }) {
+  const [runs, setRuns] = useState<RunRow[]>([]);
+  const [books, setBooks] = useState<BookRow[]>([]);
+  const [ts, setTs] = useState<number>(0);
+  const timer = useRef<number | null>(null);
+
+  useEffect(() => {
+    const tick = async () => {
+      try {
+        const [rRes, bRes] = await Promise.all([
+          fetch(api("/downloader/runs"), { headers: { "x-admin-token": token } }),
+          fetch(api(`/downloader/progress?ids=${MONITOR_IDS.join(",")}`), {
+            headers: { "x-admin-token": token },
+          }),
+        ]);
+        if (rRes.ok) setRuns(((await rRes.json()) as { runs?: RunRow[] }).runs || []);
+        if (bRes.ok) setBooks(((await bRes.json()) as { books?: BookRow[] }).books || []);
+        setTs(Date.now());
+      } catch {
+        /* сетевой сбой — следующий тик */
+      }
+    };
+    void tick();
+    timer.current = window.setInterval(tick, 10000);
+    return () => {
+      if (timer.current) window.clearInterval(timer.current);
+    };
+  }, [token]);
+
+  const order: Record<string, number> = { UPLOADING: 0, QUEUE: 1, ERROR: 2, DONE: 3 };
+  const sorted = [...books].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+  const done = books.filter((b) => b.status === "DONE").length;
+  const up = books.filter((b) => b.status === "UPLOADING").length;
+  const q = books.filter((b) => b.status === "QUEUE").length;
+
+  return (
+    <div style={{ ...card, marginTop: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+        <h3 style={{ margin: 0, fontSize: 15, color: "var(--color-label)" }}>Процесс загрузки</h3>
+        <span style={{ fontSize: 12, color: "var(--color-label-3)" }}>
+          {ts ? `обновлено ${new Date(ts).toLocaleTimeString("ru-RU")}` : "загрузка…"}
+        </span>
+      </div>
+
+      <div style={{ fontSize: 12, color: "var(--color-label-2)", marginBottom: 6 }}>Заливки (CI)</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+        {runs.slice(0, 6).map((r) => (
+          <a
+            key={r.id}
+            href={r.htmlUrl}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: "flex", alignItems: "center", gap: 8, textDecoration: "none",
+              padding: "8px 10px", background: "var(--color-bg-3)", borderRadius: "var(--radius-sm)",
+            }}
+          >
+            <span
+              style={{
+                width: 8, height: 8, borderRadius: 4, background: runColor(r), flexShrink: 0,
+                ...(r.status !== "completed" ? { animation: "dlpulse 1.4s ease-in-out infinite" } : {}),
+              }}
+            />
+            <span style={{ flex: 1, fontSize: 13, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {r.title || `run ${r.id}`}
+            </span>
+            <span style={{ fontSize: 11, color: "var(--color-label-3)" }}>{runWord(r)}</span>
+            <span style={{ fontSize: 11, color: "var(--color-brand-blue)" }}>лог&nbsp;↗</span>
+          </a>
+        ))}
+        {runs.length === 0 && <span style={{ fontSize: 12, color: "var(--color-label-3)" }}>нет прогонов</span>}
+      </div>
+
+      <div style={{ fontSize: 12, color: "var(--color-label-2)", marginBottom: 6 }}>
+        Книги на archive.org · <span style={{ color: "#34c759" }}>{done} готово</span>
+        {up > 0 && (
+          <>
+            {" · "}
+            <span style={{ color: "var(--color-brand-blue)" }}>{up} льётся</span>
+          </>
+        )}
+        {q > 0 && (
+          <>
+            {" · "}
+            <span style={{ color: "var(--color-label-3)" }}>{q} в очереди</span>
+          </>
+        )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        {sorted.map((b) => (
+          <div
+            key={b.id}
+            style={{
+              display: "flex", alignItems: "center", gap: 8, padding: "6px 10px",
+              background: "var(--color-bg-3)", borderRadius: "var(--radius-sm)",
+            }}
+          >
+            <span
+              style={{
+                width: 8, height: 8, borderRadius: 4, background: bookColor(b.status), flexShrink: 0,
+                ...(b.status === "UPLOADING" ? { animation: "dlpulse 1.4s ease-in-out infinite" } : {}),
+              }}
+            />
+            <span style={{ flex: 1, fontSize: 13, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {b.id.replace("iskcone-", "")}
+            </span>
+            <span style={{ fontSize: 12, color: "var(--color-label-2)" }}>{b.mp3 > 0 ? `${b.mp3} дор.` : "—"}</span>
+          </div>
+        ))}
+      </div>
+
+      <style>{`@keyframes dlpulse{0%,100%{opacity:1}50%{opacity:.3}}`}</style>
+    </div>
+  );
 }

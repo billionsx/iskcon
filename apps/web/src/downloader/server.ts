@@ -189,6 +189,56 @@ export async function downloaderApi(
       return reply({ url: loc });
     }
 
+    // ── список последних прогонов tg-archive (для живого монитора) ──
+    if (sub === "runs" && request.method === "GET") {
+      const res = await fetch(
+        `${GH_API}/repos/${repo}/actions/workflows/${encodeURIComponent(workflow)}/runs?per_page=12`,
+        { headers: ghHeaders(env.GH_TOKEN) },
+      );
+      if (!res.ok) return reply({ error: "runs_failed", status: res.status }, 502);
+      const j = (await res.json()) as {
+        workflow_runs?: (GhRun & { created_at?: string; run_started_at?: string })[];
+      };
+      const runs = (j.workflow_runs || []).map((r) => ({
+        id: r.id,
+        title: r.display_title || r.name || "",
+        status: r.status,
+        conclusion: r.conclusion,
+        htmlUrl: r.html_url,
+        startedAt: r.run_started_at || r.created_at || null,
+      }));
+      return reply({ runs });
+    }
+
+    // ── покнижный прогресс прямо с archive.org (воркер достаёт metadata) ──
+    if (sub === "progress" && request.method === "GET") {
+      const ids = (url.searchParams.get("ids") || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 60);
+      const books = await Promise.all(
+        ids.map(async (id) => {
+          try {
+            const r = await fetch(`https://archive.org/metadata/${encodeURIComponent(id)}`, {
+              headers: { "User-Agent": "gaurangers-downloader", Accept: "application/json" },
+            });
+            if (!r.ok) return { id, status: "ERROR", mp3: 0, playlist: false, cover: false };
+            const d = (await r.json()) as { files?: { name?: string }[] };
+            const names = (d.files || []).map((f) => (f.name || "").toLowerCase());
+            const mp3 = names.filter((n) => n.endsWith(".mp3")).length;
+            const playlist = names.includes("playlist.json");
+            const cover = names.includes("cover.jpg");
+            const status = playlist ? "DONE" : mp3 > 0 || names.length > 0 ? "UPLOADING" : "QUEUE";
+            return { id, status, mp3, playlist, cover };
+          } catch {
+            return { id, status: "ERROR", mp3: 0, playlist: false, cover: false };
+          }
+        }),
+      );
+      return reply({ books });
+    }
+
     return reply({ error: "not_found" }, 404);
   } catch (e) {
     return reply({ error: "internal", detail: (e as Error).message }, 500);
