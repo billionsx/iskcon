@@ -1063,7 +1063,7 @@ export default function App() {
           </main>
         ) : prasadamRecipe ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} onOpenBookChapter={(id) => navigate("/prasadam/book/" + id)} />
+            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} onOpenBookChapter={(id) => navigate("/prasadam/book/" + id)} onOpenEntity={openEntityTarget} />
           </main>
         ) : cookbookChapter ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

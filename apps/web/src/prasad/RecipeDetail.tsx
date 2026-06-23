@@ -45,12 +45,13 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   return <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{children}</h2>;
 }
 
-export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering, onOpenBookChapter, flash }: {
+export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering, onOpenBookChapter, onOpenEntity, flash }: {
   slug: string;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onOpenOffering: () => void;
   onOpenBookChapter?: (chapterId: string) => void;
+  onOpenEntity?: (id: string, type: string | null) => void;
   flash?: (m: string) => void;
 }) {
   const { openCardMenu } = useCardActions();
@@ -116,7 +117,17 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
               <Lotus size={15} /> Кому особенно дорого
             </div>
             <div style={{ marginTop: 6, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.5, color: "var(--color-label)" }}>
-              {cooks.map((c) => c!.name).join(" · ")}
+              {cooks.map((c, i) => (
+                <span key={c!.id}>
+                  {i > 0 && <span style={{ color: "var(--color-label-3)" }}> · </span>}
+                  {c!.entityId && onOpenEntity ? (
+                    <button type="button" onClick={() => onOpenEntity(c!.entityId, "personality")}
+                      style={{ appearance: "none", background: "none", border: "none", padding: 0, font: "inherit", color: "var(--color-label)", cursor: "pointer", textDecoration: "underline", textDecorationColor: `color-mix(in srgb, ${GOLD} 55%, transparent)`, textUnderlineOffset: 3 }}>
+                      {c!.name}
+                    </button>
+                  ) : c!.name}
+                </span>
+              ))}
             </div>
           </div>
         )}
