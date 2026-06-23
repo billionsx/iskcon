@@ -82,13 +82,21 @@ async def main():
     client = TelegramClient(StringSession(state["session"]), API_ID, API_HASH)
     await client.connect()
     try:
-        await client.sign_in(phone=PHONE, code=CODE, phone_code_hash=state["phone_code_hash"])
-    except SessionPasswordNeededError:
-        if not PASSWORD:
+        try:
+            await client.sign_in(phone=PHONE, code=CODE, phone_code_hash=state["phone_code_hash"])
+        except SessionPasswordNeededError:
+            if not PASSWORD:
+                await client.disconnect()
+                print("2FA_REQUIRED: у аккаунта включён облачный пароль — задай секрет TG_PASSWORD и перезапусти.")
+                return
+            await client.sign_in(password=PASSWORD)
+    except Exception as e:
+        try:
             await client.disconnect()
-            print("2FA_REQUIRED: у аккаунта включён облачный пароль — задай секрет TG_PASSWORD и перезапусти.")
-            return
-        await client.sign_in(password=PASSWORD)
+        except Exception:
+            pass
+        print(f"::error title=tg-login-signin::{type(e).__name__}: {e}")
+        raise
 
     final = client.session.save()
     me = await client.get_me()
