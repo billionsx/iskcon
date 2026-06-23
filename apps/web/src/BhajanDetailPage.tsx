@@ -22,12 +22,16 @@ const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: 
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
 
-interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; }
+interface WBW { t: string; m: string; }
+interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; words?: WBW[]; }
+interface MediaItem { title: string | null; subtitle: string | null; duration: string | null; url: string | null; media_type: string | null; platform: string | null; ext_id: string | null; description: string | null; date: string | null; }
+interface BhajanMedia { recordings: MediaItem[]; lectures: MediaItem[]; scores: MediaItem[]; }
 interface BhajanDetail {
   slug: string; name: string; author: string | null; hero_image: string | null;
   category: string | null; source_text: string | null; section: string | null;
   source_credit: string | null;
   verses: Verse[]; translit: string | null; translation: string | null;
+  media?: BhajanMedia;
   body: string; pending: boolean;
 }
 
@@ -40,6 +44,8 @@ function Eyebrow({ children, blue }: { children: React.ReactNode; blue?: boolean
 
 /** Богатая карточка одного стиха: метка · транслитерация (Georgia курсив) · перевод (SF). */
 function VerseCard({ v }: { v: Verse }) {
+  const [wbw, setWbw] = useState(false);
+  const hasWbw = !!(v.words && v.words.length > 0);
   return (
     <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)" }}>
       <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
@@ -48,6 +54,25 @@ function VerseCard({ v }: { v: Verse }) {
       )}
       {v.text && (
         <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.text}</div>
+      )}
+      {hasWbw && (
+        <div style={{ marginTop: "var(--space-4)", paddingTop: "var(--space-3)", borderTop: "0.5px solid var(--color-hairline)" }}>
+          <button onClick={() => setWbw((o) => !o)} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>
+            Пословный перевод
+            <span style={{ display: "inline-block", transform: wbw ? "rotate(90deg)" : "none", transition: "transform .15s", fontSize: 12 }}>›</span>
+          </button>
+          {wbw && (
+            <div style={{ marginTop: "var(--space-3)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-2)" }}>
+              {v.words!.map((w, i) => (
+                <span key={i}>
+                  <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", color: "var(--color-label)" }}>{w.t}</span>
+                  {w.m ? <span style={{ fontFamily: "var(--font-text)" }}> — {w.m}</span> : null}
+                  {i < v.words!.length - 1 ? <span style={{ color: "var(--color-label-3, var(--color-label-2))" }}>;&nbsp; </span> : null}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </section>
   );
@@ -63,12 +88,96 @@ function LayerCard({ label, text, scripture }: { label: string; text: string; sc
   );
 }
 
+function PlayIcon({ size = 18 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path d="M7 5v14l12-7z" fill="currentColor" /></svg>; }
+function PauseIcon({ size = 18 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" /></svg>; }
+
+function MediaHeader({ children }: { children: React.ReactNode }) {
+  return <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", color: "var(--color-label)", marginBottom: "var(--space-3)" }}>{children}</div>;
+}
+
+const ROW = { display: "flex", alignItems: "center", gap: 12, padding: "var(--space-4) var(--space-5)", textAlign: "left" as const };
+const MCARD = { borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", overflow: "hidden" } as const;
+
+/** Записи (рабочий плеер) · Лекции (открыть) · Ноты (открыть). */
+function MediaSections({ media }: { media: BhajanMedia }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState<string | null>(null);
+  const recs = media.recordings ?? [], lecs = media.lectures ?? [], scs = media.scores ?? [];
+  if (!recs.length && !lecs.length && !scs.length) return null;
+
+  function toggle(url: string) {
+    const a = audioRef.current; if (!a || !url) return;
+    if (playing === url) { a.pause(); setPlaying(null); return; }
+    a.src = url; a.play().then(() => setPlaying(url)).catch(() => setPlaying(null));
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
+      <audio ref={audioRef} onEnded={() => setPlaying(null)} preload="none" />
+      {recs.length > 0 && (
+        <div>
+          <MediaHeader>Записи</MediaHeader>
+          <div style={MCARD}>
+            {recs.map((r, i) => {
+              const on = playing === r.url;
+              return (
+                <button key={i} onClick={() => toggle(r.url || "")} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: on ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
+                    {r.subtitle ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{r.subtitle}</span> : null}
+                  </span>
+                  {r.duration ? <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)", flexShrink: 0 }}>{r.duration}</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {lecs.length > 0 && (
+        <div>
+          <MediaHeader>Лекции</MediaHeader>
+          <div style={MCARD}>
+            {lecs.map((l, i) => (
+              <a key={i} href={l.url || "#"} target="_blank" rel="noreferrer" style={{ ...ROW, textDecoration: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
+                <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: l.media_type === "youtube" ? "#FF453A" : "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}><PlayIcon size={16} /></span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{l.title || "Лекция"}</span>
+                  {(l.subtitle || l.date) ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[l.subtitle, l.date].filter(Boolean).join(" · ")}</span> : null}
+                </span>
+                <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{l.media_type === "youtube" ? "YouTube" : (l.media_type === "audio" ? "Аудио" : "Видео")}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+      {scs.length > 0 && (
+        <div>
+          <MediaHeader>Ноты</MediaHeader>
+          <div style={MCARD}>
+            {scs.map((s, i) => (
+              <a key={i} href={s.url || "#"} target="_blank" rel="noreferrer" style={{ ...ROW, textDecoration: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{s.title || "Ноты"}</span>
+                  {s.description ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{s.description}</span> : null}
+                </span>
+                <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{(s.media_type || "image") === "pdf" ? "PDF" : "Изобр."}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBack: () => void }) {
   const [data, setData] = useState<BhajanDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const mediaRef = useRef<HTMLDivElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fav = useFavorite(`bhajan:${slug}`);
@@ -136,7 +245,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               {/* действия */}
               <div style={{ marginTop: "var(--space-5)", display: "flex", alignItems: "center", gap: 10 }}>
                 <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" size={40} onClick={() => fav.toggle(flash)}><HeartIcon size={20} filled={fav.on} /></RoundBtn>
-                <RoundBtn ariaLabel="Слушать" size={40} onClick={() => flash("Аудио — скоро")}><HeadphonesIcon size={20} /></RoundBtn>
+                <RoundBtn ariaLabel="Слушать" size={40} onClick={() => { if (data?.media?.recordings?.length && mediaRef.current) mediaRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); else flash("Записей пока нет"); }}><HeadphonesIcon size={20} /></RoundBtn>
                 <RoundBtn ariaLabel="Ещё" size={40} onClick={openMore}><MoreIcon size={19} /></RoundBtn>
               </div>
             </div>
@@ -158,6 +267,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
+              {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} /></div>}
               {data.source_credit && !data.pending && (
                 <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
               )}

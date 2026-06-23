@@ -68,17 +68,40 @@ bhajansRouter.get('/detail', async (c) => {
   if (!row) return c.json({ error: { code: 'not_found', message: 'bhajan not found' } }, 404);
 
   const { results: vrows } = await c.env.DB.prepare(
-    `SELECT ord, verse_translit, verse_text, signature
+    `SELECT ord, verse_translit, verse_text, signature, word_by_word
        FROM prayer_verses WHERE slug = ? ORDER BY ord`,
   )
     .bind(slug)
     .all();
-  const verses = ((vrows as Row[]) ?? []).map((v) => ({
-    ord: v.ord,
-    translit: v.verse_translit ?? null,
-    text: v.verse_text ?? null,
-    signature: v.signature ?? null,
-  }));
+  const verses = ((vrows as Row[]) ?? []).map((v) => {
+    let words: { t: string; m: string }[] = [];
+    if (v.word_by_word) { try { words = JSON.parse(String(v.word_by_word)); } catch { words = []; } }
+    return {
+      ord: v.ord,
+      translit: v.verse_translit ?? null,
+      text: v.verse_text ?? null,
+      signature: v.signature ?? null,
+      words,
+    };
+  });
+
+  const { results: mrows } = await c.env.DB.prepare(
+    `SELECT kind, ord, title, subtitle, duration, url, media_type, platform, ext_id, description, date
+       FROM prayer_media WHERE slug = ? ORDER BY kind, ord`,
+  )
+    .bind(slug)
+    .all();
+  const media = { recordings: [] as Row[], lectures: [] as Row[], scores: [] as Row[] };
+  for (const m of (mrows as Row[]) ?? []) {
+    const item = {
+      title: m.title ?? null, subtitle: m.subtitle ?? null, duration: m.duration ?? null,
+      url: m.url ?? null, media_type: m.media_type ?? null, platform: m.platform ?? null,
+      ext_id: m.ext_id ?? null, description: m.description ?? null, date: m.date ?? null,
+    };
+    if (m.kind === 'recording') media.recordings.push(item as unknown as Row);
+    else if (m.kind === 'lecture') media.lectures.push(item as unknown as Row);
+    else if (m.kind === 'score') media.scores.push(item as unknown as Row);
+  }
 
   const raw = String(row.text ?? '');
   const nl = raw.indexOf('\n');
@@ -95,6 +118,7 @@ bhajansRouter.get('/detail', async (c) => {
     section: row.section ?? null,
     source_credit: row.source_credit ?? null,
     verses,
+    media,
     translit: row.translit ?? null,
     translation: row.translation ?? null,
     body,
