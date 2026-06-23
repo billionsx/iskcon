@@ -113,17 +113,34 @@ def run(payload_path, plan_path, token, lang="ru"):
             ins("recording", k, (r.get("title") or "").strip(), (r.get("performer") or "").strip(),
                 (r.get("duration") or "").strip(), (r.get("audioUrl") or "").strip(),
                 media_type_of(r.get("audioUrl"), "audio"), "", "", "", (r.get("date") or "").strip(), lang)
-        for k, c in enumerate(full.get("comments") or [], 1):
-            url = (c.get("videoUrl") or c.get("audioUrl") or "").strip()
-            plat = (c.get("platform") or "").strip()
-            mt = "youtube" if (plat == "youtube" or c.get("youtubeId")) else media_type_of(url, (c.get("type") or "video"))
-            ins("lecture", k, (c.get("title") or "").strip(), (c.get("author") or "").strip(),
-                (c.get("duration") or "").strip(), url, mt, plat,
-                (c.get("youtubeId") or c.get("videoId") or "").strip(),
-                (c.get("description") or "").strip(), (c.get("date") or "").strip(), (c.get("language") or lang))
-        for k, s in enumerate(full.get("scores") or [], 1):
-            ins("score", k, (s.get("title") or "").strip(), (s.get("author") or "").strip(),
-                "", (s.get("imageUrl") or "").strip(), media_type_of(s.get("imageUrl"), "image"),
+        lec_k = com_k = 0
+        for c in (full.get("comments") or []):
+            ctype = (c.get("type") or "").strip().lower()
+            vurl = (c.get("videoUrl") or "").strip()
+            aurl = (c.get("audioUrl") or "").strip()
+            title = (c.get("title") or "").strip(); author = (c.get("author") or "").strip()
+            date = (c.get("date") or "").strip(); clang = (c.get("language") or lang)
+            if ctype == "text" or (not vurl and not aurl):
+                com_k += 1
+                text = decode_pua((c.get("content") or "").strip())
+                ins("commentary", com_k, title, author, "", (c.get("attachmentUrl") or "").strip(),
+                    "text", "", "", text, date, clang)
+            else:
+                lec_k += 1
+                url = vurl or aurl
+                plat = (c.get("platform") or "").strip()
+                mt = "youtube" if (plat == "youtube" or c.get("youtubeId")) else media_type_of(url, ctype or "video")
+                ins("lecture", lec_k, title, author, (c.get("duration") or "").strip(), url, mt, plat,
+                    (c.get("youtubeId") or c.get("videoId") or "").strip(),
+                    (c.get("description") or "").strip(), date, clang)
+        sc_k = 0
+        for s in (full.get("scores") or []):
+            img = (s.get("imageUrl") or "").strip()
+            if not img:
+                continue  # нет картинки — мёртвая строка, пропускаем
+            sc_k += 1
+            ins("score", sc_k, (s.get("title") or "").strip(), (s.get("author") or "").strip(),
+                "", img, media_type_of(img, "image"),
                 "", "", (s.get("description") or "").strip(), (s.get("date") or "").strip(), (s.get("language") or lang))
         tot_media += n_media; touched += 1
         report.append({"slug": final_slug, "verses_db": dbn, "verses_api": len(api_verses),

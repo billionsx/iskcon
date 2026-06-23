@@ -25,7 +25,7 @@ function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M1
 interface WBW { t: string; m: string; }
 interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; words?: WBW[]; }
 interface MediaItem { title: string | null; subtitle: string | null; duration: string | null; url: string | null; media_type: string | null; platform: string | null; ext_id: string | null; description: string | null; date: string | null; }
-interface BhajanMedia { recordings: MediaItem[]; lectures: MediaItem[]; scores: MediaItem[]; }
+interface BhajanMedia { recordings: MediaItem[]; lectures: MediaItem[]; scores: MediaItem[]; commentaries: MediaItem[]; }
 interface BhajanDetail {
   slug: string; name: string; author: string | null; hero_image: string | null;
   category: string | null; source_text: string | null; section: string | null;
@@ -98,12 +98,31 @@ function MediaHeader({ children }: { children: React.ReactNode }) {
 const ROW = { display: "flex", alignItems: "center", gap: 12, padding: "var(--space-4) var(--space-5)", textAlign: "left" as const };
 const MCARD = { borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", overflow: "hidden" } as const;
 
-/** Записи (рабочий плеер) · Лекции (открыть) · Ноты (открыть). */
+/** Текстовый комментарий/пурпорт — карточка с «Читать полностью» (тексты длинные). */
+function CommentaryCard({ c }: { c: MediaItem }) {
+  const [open, setOpen] = useState(false);
+  const text = c.description || "";
+  const long = text.length > 320;
+  const shown = open || !long ? text : text.slice(0, 300).trimEnd() + "…";
+  return (
+    <div style={{ ...MCARD, padding: "var(--space-5)" }}>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>{c.title || "Комментарий"}</div>
+      {(c.subtitle || c.date) ? <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[c.subtitle, c.date].filter(Boolean).join(" · ")}</div> : null}
+      {text ? <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{shown}</div> : null}
+      {long ? <button onClick={() => setOpen((o) => !o)} style={{ marginTop: "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)" }}>{open ? "Свернуть" : "Читать полностью"}</button> : null}
+    </div>
+  );
+}
+
+/** Записи (плеер) · Лекции (открыть) · Комментарии (текст) · Ноты (открыть). */
 function MediaSections({ media }: { media: BhajanMedia }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState<string | null>(null);
-  const recs = media.recordings ?? [], lecs = media.lectures ?? [], scs = media.scores ?? [];
-  if (!recs.length && !lecs.length && !scs.length) return null;
+  const recs = media.recordings ?? [];
+  const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0);
+  const scs = (media.scores ?? []).filter((s) => s.url && s.url.length > 0);
+  const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
+  if (!recs.length && !lecs.length && !scs.length && !coms.length) return null;
 
   function toggle(url: string) {
     const a = audioRef.current; if (!a || !url) return;
@@ -148,6 +167,14 @@ function MediaSections({ media }: { media: BhajanMedia }) {
                 <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{l.media_type === "youtube" ? "YouTube" : (l.media_type === "audio" ? "Аудио" : "Видео")}</span>
               </a>
             ))}
+          </div>
+        </div>
+      )}
+      {coms.length > 0 && (
+        <div>
+          <MediaHeader>Комментарии</MediaHeader>
+          <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
+            {coms.map((c, i) => <CommentaryCard key={i} c={c} />)}
           </div>
         </div>
       )}

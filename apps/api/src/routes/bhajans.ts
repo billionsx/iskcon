@@ -91,7 +91,7 @@ bhajansRouter.get('/detail', async (c) => {
   )
     .bind(slug)
     .all();
-  const media = { recordings: [] as Row[], lectures: [] as Row[], scores: [] as Row[] };
+  const media = { recordings: [] as Row[], lectures: [] as Row[], scores: [] as Row[], commentaries: [] as Row[] };
   for (const m of (mrows as Row[]) ?? []) {
     const item = {
       title: m.title ?? null, subtitle: m.subtitle ?? null, duration: m.duration ?? null,
@@ -101,6 +101,7 @@ bhajansRouter.get('/detail', async (c) => {
     if (m.kind === 'recording') media.recordings.push(item as unknown as Row);
     else if (m.kind === 'lecture') media.lectures.push(item as unknown as Row);
     else if (m.kind === 'score') media.scores.push(item as unknown as Row);
+    else if (m.kind === 'commentary') media.commentaries.push(item as unknown as Row);
   }
 
   const raw = String(row.text ?? '');
