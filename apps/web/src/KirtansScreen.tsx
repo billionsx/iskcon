@@ -23,7 +23,7 @@ import { useKirtans } from "./kirtansHydrate";
 
 const GOLD = "#D2AA1B";
 
-interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; category: string | null; }
+interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; category: string | null; has_recordings?: boolean; }
 
 /** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
 export function ArtistMono({ artist, size = 52 }: { artist: KirtanArtist; size?: number }) {
@@ -218,7 +218,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
             {bhajans.slice(0, 6).map((b) => (
               <BhajanCard
                 key={b.slug}
-                bhajan={{ slug: b.slug, name: b.name, author: b.author, category: b.category }}
+                bhajan={{ slug: b.slug, name: b.name, author: b.author, category: b.category, hasRecordings: b.has_recordings }}
                 onOpen={() => onOpenBhajan(b.slug)}
                 flash={flash}
               />
