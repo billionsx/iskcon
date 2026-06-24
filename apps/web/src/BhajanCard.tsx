@@ -11,6 +11,7 @@
 import type { ReactNode } from "react";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 import { useFavorite, useCardActions } from "./cardActions";
+import { usePlayer } from "./player/store";
 
 const GRAPHITE = "radial-gradient(130% 130% at 25% 0%, #34343a 0%, #26262b 52%, #1b1b1f 100%)";
 
@@ -31,12 +32,15 @@ export interface BhajanCardData {
   category?: string | null;
   sourceText?: string | null;
   section?: string | null;
+  hasRecordings?: boolean;
 }
 
 export function BhajanCard({ bhajan, onOpen, flash }: { bhajan: BhajanCardData; onOpen?: () => void; flash?: (m: string) => void }) {
   const { on: favorited, toggle: toggleFav } = useFavorite(`bhajan:${bhajan.slug}`, { t: bhajan.name, s: bhajan.author || undefined, h: `/bhajan/${bhajan.slug}` });
   const { openCardMenu } = useCardActions();
+  const player = usePlayer();
   const chip = bhajan.category || bhajan.sourceText || bhajan.section || null;
+  const onListen = () => { if (bhajan.hasRecordings) player.playBhajan(bhajan.slug, 0); else flash?.("Записей пока нет"); };
   const openMore = () => openCardMenu({
     type: "bhajan", id: bhajan.slug, title: bhajan.name, subtitle: bhajan.author || undefined,
     url: `https://gaurangers.com/bhajan/${encodeURIComponent(bhajan.slug)}`,
@@ -54,7 +58,7 @@ export function BhajanCard({ bhajan, onOpen, flash }: { bhajan: BhajanCardData; 
             : <span />}
           <div style={{ display: "flex", alignItems: "center", gap: 6, pointerEvents: "auto" }}>
             <GlassBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => toggleFav(flash)}><HeartIcon size={15} filled={favorited} /></GlassBtn>
-            <GlassBtn ariaLabel="Слушать" onClick={() => flash?.("Аудио — скоро")}><HeadphonesIcon size={15} /></GlassBtn>
+            <GlassBtn ariaLabel="Слушать" onClick={onListen}><HeadphonesIcon size={15} /></GlassBtn>
             <GlassBtn ariaLabel="Ещё" onClick={openMore}><MoreIcon size={14} /></GlassBtn>
           </div>
         </div>
