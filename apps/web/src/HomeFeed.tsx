@@ -94,9 +94,14 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
   const round: React.CSSProperties = { position: "absolute", width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", display: "grid", placeItems: "center", cursor: "pointer", backdropFilter: "blur(8px)", WebkitTapHighlightColor: "transparent", zIndex: 2 };
   return (
     <div role="dialog" aria-modal="true" aria-label="Фото" onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 96, background: "rgba(0,0,0,0.94)", display: "grid", placeItems: "center" }}>
+      style={{ position: "fixed", inset: 0, zIndex: 96, background: "#000", overflow: "hidden" }}>
+      {/* Размытая подложка из текущего кадра — закрывает поля у вертикальных фото (как в сторис). */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${photos[index]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(34px) brightness(0.5)", transform: "scale(1.18)" }} />
+      {/* Бокс img = строго экран (position:absolute; inset:0 → ОПРЕДЕЛЁННАЯ высота, без грид-багов
+          с max-height:100%: из-за них вертикальные кадры не ограничивались по высоте, тянулись на
+          всю ширину и обрезались снизу). objectFit:contain показывает кадр ЦЕЛИКОМ — мурти не режем. */}
       <img src={photos[index]} alt="" onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: "100%", maxHeight: "100%", width: "auto", height: "auto", objectFit: "contain", display: "block", imageOrientation: "from-image" }} />
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", imageOrientation: "from-image" }} />
       <button type="button" aria-label="Закрыть" onClick={onClose}
         style={{ ...round, top: "calc(env(safe-area-inset-top,0px) + 14px)", right: 14 }}>
         <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
