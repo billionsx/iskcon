@@ -195,7 +195,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
                   ))}
                 </div>
                 <p style={{ margin: "20px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.5 }}>
-                  Это удобный обзорный порядок обхода, а не канонический маршрут парикрамы. Координаты приблизительны.
+                  Места сгруппированы по районам в порядке парикрамы. У части мест координаты приблизительны или будут добавлены позже — их можно открыть в списке и проложить маршрут по названию.
                 </p>
               </div>
             );
