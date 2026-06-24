@@ -1289,6 +1289,12 @@ const IG_TARGETS: { user: string; slug: string; deities: string; place: string }
   { user: "iskcon_gev_official", slug: "gev",    deities: "Шри Шри Радха-Вриндаванбихари", place: "Говардхан Эковилладж · ИСККОН" },
 ];
 
+// Распознавание даршана по подписи IG-поста. NON: афиши/анонсы/программы/астрономия
+// (постеры Экадаши, флаеры лекций — сессии/регистрация/venue, фото луны/затмений). POS:
+// даршанная лексика + имена Божеств. «Фестиваль/утсав» НЕ режем — фестивальные даршаны реальны.
+const IG_NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|\bкурс\b|\bpresents\b|представляет|philosophy of|admission|\bticket\b|\bбилет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|\bзакат\b|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
+const IG_DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|arati|abhishek|rajbhog|raj bhog|sandhya|deity|deities|gaura|nitai|radha|krishna|kṛṣṇa|balaram|madhava|govinda|gopinath|gopal|madan|vrindavan|радха|кришна|гопинатх|мадан|говинда|вриндаван|баларам/i;
+
 async function igSid(env: Env): Promise<string> {
   try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_sessionid'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
 }
@@ -1305,7 +1311,7 @@ function igProxied(tmpl: string, target: string): string {
   return tmpl && tmpl.includes("{url}") ? tmpl.replace("{url}", encodeURIComponent(target)) : target;
 }
 
-type IgPost = { ts: number; isVideo: boolean; urls: string[]; thumbs: string[]; shortcode: string };
+type IgPost = { ts: number; isVideo: boolean; urls: string[]; thumbs: string[]; shortcode: string; caption: string };
 
 function igOneUrl(n: Record<string, any>): string {
   if (!n) return "";
@@ -1350,7 +1356,12 @@ function igNodeToPost(n: Record<string, any>): IgPost | null {
   } else {
     const u = igOneUrl(n); if (u) { urls = [u]; thumbs = [igThumbUrl(n) || u]; }
   }
-  return urls.length ? { ts, isVideo, urls, thumbs, shortcode } : null;
+  const caption = String(
+    n?.edge_media_to_caption?.edges?.[0]?.node?.text ??
+    n?.caption?.text ??
+    (typeof n?.caption === "string" ? n.caption : "") ?? "",
+  );
+  return urls.length ? { ts, isVideo, urls, thumbs, shortcode, caption } : null;
 }
 
 async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>>, user: string, sid: string): Promise<IgPost[]> {
@@ -1391,7 +1402,7 @@ async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>
   if (!posts.length) {
     try {
       const domUrls: string[] = await page.evaluate(() => Array.from(document.querySelectorAll("article img, main img")).map((i) => (i as HTMLImageElement).currentSrc || (i as HTMLImageElement).src).filter((s) => /cdninstagram|scontent/.test(s)));
-      if (domUrls.length) posts.push({ ts: Math.floor(Date.now() / 1000), isVideo: false, urls: [domUrls[0]], shortcode: "" });
+      if (domUrls.length) posts.push({ ts: Math.floor(Date.now() / 1000), isVideo: false, urls: [domUrls[0]], shortcode: "", caption: "" });
     } catch { /* ignore */ }
   }
   try { await page.close(); } catch { /* ignore */ }
@@ -1399,10 +1410,15 @@ async function igFetchMedia(browser: Awaited<ReturnType<typeof puppeteer.launch>
 }
 
 function igPickLatestPhoto(posts: IgPost[]): { ts: number; urls: string[]; thumbs: string[]; postUrl: string } | null {
-  const photos = posts.filter((p) => !p.isVideo && p.urls.length);
+  const photos = posts.filter((p) => !p.isVideo && p.urls.length).sort((a, b) => b.ts - a.ts);
   if (!photos.length) return null;
-  photos.sort((a, b) => b.ts - a.ts);
-  const top = photos[0];
+  // Только ДАРШАН: отсекаем афиши/анонсы/астрономию (постеры Экадаши, флаеры лекций, фото
+  // луны), затем предпочитаем пост с даршанной лексикой; иначе свежайший НЕ-афишный пост.
+  // Если все недавние посты — не даршаны, возвращаем null (лучше пропустить день, чем
+  // выложить афишу/луну как «ежедневный даршан»).
+  const ok = photos.filter((p) => !IG_NON_DARSHAN_RE.test(p.caption || ""));
+  const top = ok.find((p) => IG_DARSHAN_RE.test(p.caption || "")) || ok[0] || null;
+  if (!top) return null;
   const ts = top.ts || Math.floor(Date.now() / 1000);
   return { ts, urls: top.urls, thumbs: top.thumbs, postUrl: top.shortcode ? `https://www.instagram.com/p/${top.shortcode}/` : "https://www.instagram.com/" };
 }
