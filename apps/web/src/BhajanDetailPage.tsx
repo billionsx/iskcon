@@ -15,6 +15,7 @@ import type { SVGProps } from "react";
 import { api } from "./api";
 import { RoundBtn, useFavorite, useCardActions } from "./cardActions";
 import { usePlayer } from "./player/store";
+import { MediaViewer, type ViewerMedia } from "./MediaViewer";
 import { NotesAtSource } from "./NotesAtSource";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 
@@ -48,13 +49,13 @@ function VerseCard({ v }: { v: Verse }) {
   const [wbw, setWbw] = useState(false);
   const hasWbw = !!(v.words && v.words.length > 0);
   return (
-    <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)" }}>
+    <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)", minWidth: 0, overflowWrap: "break-word" }}>
       <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
       {v.translit && (
-        <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 18.5, lineHeight: 1.72, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.translit}</div>
+        <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 18.5, lineHeight: 1.72, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>
       )}
       {v.text && (
-        <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.text}</div>
+        <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>
       )}
       {hasWbw && (
         <div style={{ marginTop: "var(--space-4)", paddingTop: "var(--space-3)", borderTop: "0.5px solid var(--color-hairline)" }}>
@@ -63,7 +64,7 @@ function VerseCard({ v }: { v: Verse }) {
             <span style={{ display: "inline-block", transform: wbw ? "rotate(90deg)" : "none", transition: "transform .15s", fontSize: 12 }}>›</span>
           </button>
           {wbw && (
-            <div style={{ marginTop: "var(--space-3)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-2)" }}>
+            <div style={{ marginTop: "var(--space-3)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-2)", overflowWrap: "break-word" }}>
               {v.words!.map((w, i) => (
                 <span key={i}>
                   <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", color: "var(--color-label)" }}>{w.t}</span>
@@ -82,9 +83,9 @@ function VerseCard({ v }: { v: Verse }) {
 /** Слой (когда стихи не разнесены): подписанный блок текста — тоже карточкой. */
 function LayerCard({ label, text, scripture }: { label: string; text: string; scripture?: boolean }) {
   return (
-    <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)" }}>
+    <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)", minWidth: 0, overflowWrap: "break-word" }}>
       <Eyebrow blue>{label}</Eyebrow>
-      <div style={{ marginTop: "var(--space-3)", fontFamily: scripture ? "var(--font-scripture)" : "var(--font-text)", fontStyle: scripture ? "italic" : "normal", fontSize: scripture ? 18.5 : "var(--text-body)", lineHeight: scripture ? 1.72 : "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{text}</div>
+      <div style={{ marginTop: "var(--space-3)", fontFamily: scripture ? "var(--font-scripture)" : "var(--font-text)", fontStyle: scripture ? "italic" : "normal", fontSize: scripture ? 18.5 : "var(--text-body)", lineHeight: scripture ? 1.72 : "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{text}</div>
     </section>
   );
 }
@@ -99,30 +100,38 @@ function MediaHeader({ children }: { children: React.ReactNode }) {
 const ROW = { display: "flex", alignItems: "center", gap: 12, padding: "var(--space-4) var(--space-5)", textAlign: "left" as const };
 const MCARD = { borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", overflow: "hidden" } as const;
 
-/** Текстовый комментарий/пурпорт — текст с «Читать полностью» и/или ссылка на источник (PDF/внешняя). */
-function CommentaryCard({ c }: { c: MediaItem }) {
+/** Текстовый комментарий/пурпорт — текст с «Читать полностью» и встроенным просмотром PDF/изображения. */
+function CommentaryCard({ c, onView }: { c: MediaItem; onView: (m: ViewerMedia) => void }) {
   const [open, setOpen] = useState(false);
   const text = c.description || "";
   const long = text.length > 320;
   const shown = open || !long ? text : text.slice(0, 300).trimEnd() + "…";
   const hasUrl = !!(c.url && c.url.length > 0);
-  const isPdf = (c.url || "").toLowerCase().includes(".pdf");
+  const u = (c.url || "").toLowerCase();
+  const isPdf = u.includes(".pdf");
+  const isImg = /\.(png|jpe?g|webp|gif)(\?|$)/.test(u);
+  const linkStyle = { display: "inline-flex", alignItems: "center", marginTop: text ? "var(--space-3)" : "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)", textDecoration: "none" } as const;
   return (
     <div style={{ ...MCARD, padding: "var(--space-5)" }}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>{c.title || "Комментарий"}</div>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)", overflowWrap: "anywhere" }}>{c.title || "Комментарий"}</div>
       {(c.subtitle || c.date) ? <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[c.subtitle, c.date].filter(Boolean).join(" · ")}</div> : null}
-      {text ? <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{shown}</div> : null}
+      {text ? <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{shown}</div> : null}
       {text && long ? <button onClick={() => setOpen((o) => !o)} style={{ marginTop: "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)" }}>{open ? "Свернуть" : "Читать полностью"}</button> : null}
-      {hasUrl ? <a href={c.url || "#"} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: text ? "var(--space-3)" : "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)", textDecoration: "none" }}>{isPdf ? "Открыть PDF" : "Открыть источник"} ↗</a> : null}
+      {hasUrl ? (
+        isPdf || isImg
+          ? <button onClick={() => onView({ type: isPdf ? "pdf" : "image", url: c.url || "", title: c.title || "Комментарий", subtitle: c.subtitle })} style={linkStyle}>{isPdf ? "Открыть PDF" : "Открыть"}</button>
+          : <a href={c.url || "#"} target="_blank" rel="noreferrer" style={linkStyle}>Открыть источник ↗</a>
+      ) : null}
     </div>
   );
 }
 
 /** Записи (плеер) · Лекции (открыть) · Комментарии (текст) · Ноты (открыть). */
-function MediaSections({ media, slug }: { media: BhajanMedia; slug: string }) {
+function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: string; onView: (m: ViewerMedia) => void }) {
   const player = usePlayer();
   const recs = (media.recordings ?? []).filter((r) => r.url);
   const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0);
+  const audioLecs = lecs.filter((l) => l.media_type === "audio");
   const scs = (media.scores ?? []).filter((s) => s.url && s.url.length > 0);
   const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
   if (!recs.length && !lecs.length && !scs.length && !coms.length) return null;
@@ -156,16 +165,25 @@ function MediaSections({ media, slug }: { media: BhajanMedia; slug: string }) {
         <div>
           <MediaHeader>Лекции</MediaHeader>
           <div style={MCARD}>
-            {lecs.map((l, i) => (
-              <a key={i} href={l.url || "#"} target="_blank" rel="noreferrer" style={{ ...ROW, textDecoration: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
-                <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: l.media_type === "youtube" ? "#FF453A" : "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}><PlayIcon size={16} /></span>
-                <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{l.title || "Лекция"}</span>
-                  {(l.subtitle || l.date) ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[l.subtitle, l.date].filter(Boolean).join(" · ")}</span> : null}
-                </span>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{l.media_type === "youtube" ? "YouTube" : (l.media_type === "audio" ? "Аудио" : "Видео")}</span>
-              </a>
-            ))}
+            {lecs.map((l, i) => {
+              const isAudio = l.media_type === "audio";
+              const playIdx = isAudio ? recs.length + audioLecs.indexOf(l) : -1;
+              const isCur = isAudio && isThis && player.index === playIdx;
+              const on = isCur && player.isPlaying;
+              const handle = isAudio
+                ? () => { if (isCur) player.togglePlay(); else player.playBhajan(slug, playIdx); }
+                : () => onView({ type: l.media_type === "youtube" ? "youtube" : "video", url: l.url || "", title: l.title || "Лекция", subtitle: l.subtitle });
+              return (
+                <button key={i} onClick={handle} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isCur ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: l.media_type === "youtube" ? "#FF453A" : "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon size={16} /> : <PlayIcon size={16} />}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-brand-blue)" : "var(--color-label)", overflowWrap: "anywhere" }}>{l.title || "Лекция"}</span>
+                    {(l.subtitle || l.date) ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[l.subtitle, l.date].filter(Boolean).join(" · ")}</span> : null}
+                  </span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{l.media_type === "youtube" ? "YouTube" : (isAudio ? "Аудио" : "Видео")}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -173,7 +191,7 @@ function MediaSections({ media, slug }: { media: BhajanMedia; slug: string }) {
         <div>
           <MediaHeader>Комментарии</MediaHeader>
           <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
-            {coms.map((c, i) => <CommentaryCard key={i} c={c} />)}
+            {coms.map((c, i) => <CommentaryCard key={i} c={c} onView={onView} />)}
           </div>
         </div>
       )}
@@ -181,15 +199,21 @@ function MediaSections({ media, slug }: { media: BhajanMedia; slug: string }) {
         <div>
           <MediaHeader>Ноты</MediaHeader>
           <div style={MCARD}>
-            {scs.map((s, i) => (
-              <a key={i} href={s.url || "#"} target="_blank" rel="noreferrer" style={{ ...ROW, textDecoration: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
-                <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{s.title || "Ноты"}</span>
-                  {s.description ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{s.description}</span> : null}
-                </span>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{(s.media_type || "image") === "pdf" ? "PDF" : "Изобр."}</span>
-              </a>
-            ))}
+            {scs.map((s, i) => {
+              const isPdf = (s.media_type || "image") === "pdf";
+              return (
+                <button key={i} onClick={() => onView({ type: isPdf ? "pdf" : "image", url: s.url || "", title: s.title || "Ноты", subtitle: s.description })} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: "transparent", cursor: "pointer" }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-fill-2, rgba(120,120,128,.12))", color: "var(--color-brand-blue)", flexShrink: 0 }}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /><circle cx="6.5" cy="18" r="2.5" fill="currentColor" /><circle cx="16.5" cy="16" r="2.5" fill="currentColor" /></svg>
+                  </span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", overflowWrap: "anywhere" }}>{s.title || "Ноты"}</span>
+                    {s.description ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{s.description}</span> : null}
+                  </span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{isPdf ? "PDF" : "Изобр."}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -202,6 +226,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
+  const [viewer, setViewer] = useState<ViewerMedia | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -254,6 +279,13 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
         borderBottom: `0.5px solid color-mix(in srgb, var(--color-glass-stroke) ${Math.round(t * 100)}%, transparent)` }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", color: "var(--color-label)", background: "transparent", flexShrink: 0 }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: t > 0.55 ? (t - 0.55) / 0.45 : 0 }}>{data?.name}</div>
+        {data && (
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+            <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" size={36} onClick={() => fav.toggle(flash)}><HeartIcon size={18} filled={fav.on} /></RoundBtn>
+            <RoundBtn ariaLabel="Слушать" size={36} onClick={() => { if (data?.media?.recordings?.some((r) => r.url)) player.playBhajan(slug, 0); else flash("Записей пока нет"); }}><HeadphonesIcon size={18} /></RoundBtn>
+            <RoundBtn ariaLabel="Ещё" size={36} onClick={openMore}><MoreIcon size={16} /></RoundBtn>
+          </span>
+        )}
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -268,13 +300,6 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               <h1 style={{ margin: data.category ? "var(--space-2) 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>{data.name}</h1>
               {data.author && <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{data.author}</div>}
               {meta && <div style={{ marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{meta}</div>}
-
-              {/* действия */}
-              <div style={{ marginTop: "var(--space-5)", display: "flex", alignItems: "center", gap: 10 }}>
-                <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" size={40} onClick={() => fav.toggle(flash)}><HeartIcon size={20} filled={fav.on} /></RoundBtn>
-                <RoundBtn ariaLabel="Слушать" size={40} onClick={() => { if (data?.media?.recordings?.some((r) => r.url)) player.playBhajan(slug, 0); else flash("Записей пока нет"); }}><HeadphonesIcon size={20} /></RoundBtn>
-                <RoundBtn ariaLabel="Ещё" size={40} onClick={openMore}><MoreIcon size={19} /></RoundBtn>
-              </div>
             </div>
 
             {/* ТЕКСТ — стихи карточками */}
@@ -294,7 +319,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
-              {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} slug={slug} /></div>}
+              {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} slug={slug} onView={setViewer} /></div>}
               {data.source_credit && !data.pending && (
                 <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
               )}
@@ -307,6 +332,8 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
       {toast && (
         <div role="status" style={{ position: "absolute", left: "50%", bottom: "calc(env(safe-area-inset-bottom,0px) + 24px)", transform: "translateX(-50%)", zIndex: 50, padding: "10px 16px", borderRadius: 999, background: "rgba(0,0,0,.82)", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", boxShadow: "0 8px 30px rgba(0,0,0,.3)", pointerEvents: "none" }}>{toast}</div>
       )}
+
+      <MediaViewer media={viewer} onClose={() => setViewer(null)} />
     </div>
   );
 }

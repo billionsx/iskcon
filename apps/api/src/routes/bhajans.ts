@@ -72,13 +72,22 @@ bhajansRouter.get('/audio', async (c) => {
       ORDER BY ord`,
   ).bind(slug).all();
 
+  // Аудио-лекции добавляем в ту же очередь после записей — чтобы лекция играла
+  // в общем плеере (видео/YouTube-лекции в очередь НЕ идут: им встроенный видео-вьювер).
+  const { results: lecRes } = await c.env.DB.prepare(
+    `SELECT ord, title, subtitle, duration, url
+       FROM prayer_media
+      WHERE slug = ? AND kind = 'lecture' AND media_type = 'audio' AND url IS NOT NULL AND length(url) > 0
+      ORDER BY ord`,
+  ).bind(slug).all();
+
   const parseDur = (d: unknown): number | null => {
     const m = String(d ?? '').trim().match(/^(?:(\d+):)?(\d{1,2}):(\d{2})$/);
     if (!m) return null;
     return (m[1] ? parseInt(m[1], 10) : 0) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10);
   };
 
-  const tracks = ((results as Row[]) ?? []).map((r, i) => ({
+  const recs = ((results as Row[]) ?? []).map((r, i) => ({
     kind: 'song' as const,
     pos: i,
     chapter: null,
@@ -88,6 +97,17 @@ bhajansRouter.get('/audio', async (c) => {
     durationSec: parseDur(r.duration),
     artist: r.subtitle ?? undefined,
   }));
+  const lecs = ((lecRes as Row[]) ?? []).map((r, j) => ({
+    kind: 'song' as const,
+    pos: recs.length + j,
+    chapter: null,
+    title: r.title || `Лекция ${j + 1}`,
+    file: `lec-${r.ord}`,
+    url: r.url,
+    durationSec: parseDur(r.duration),
+    artist: r.subtitle ?? undefined,
+  }));
+  const tracks = [...recs, ...lecs];
 
   return c.json({
     book: slug,
