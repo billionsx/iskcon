@@ -6,18 +6,29 @@
  *   • О дхаме — вводные тексты и ключевые факты.
  * Тап по месту → страница тиртхи.
  */
-import { useEffect, useRef, useState } from "react";
-import { BackIcon } from "../ui/icons";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { BackIcon, HeartIcon, MoreIcon } from "../ui/icons";
 import { SectionSubTabs } from "../SectionSubTabs";
 import DhamaMap from "./DhamaMap";
 import { KIND_RU, mapsDir, tirthaCtx, type Dhama, type Tirtha } from "./dhamas";
-import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
-import { DhamaHeroCard } from "./DhamaHeroCard";
+import { CardActionBtns, favMetaFromCtx, useCardActions, useFavorite } from "../cardActions";
+import { DhamaHeroCard, dhamaMapsHref } from "./DhamaHeroCard";
+import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
 import { NotesAtSource } from "../NotesAtSource";
 
 const NAV_H = 52;
+
+const navBtn = (active: boolean): CSSProperties => ({ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: active ? "#FF453A" : "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" });
+
+const PinIconNav = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden style={{ display: "block" }}>
+    <g fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" />
+    </g>
+  </svg>
+);
 
 function KindChip({ d, kind }: { d: Dhama; kind: Tirtha["kind"] }) {
   return (
@@ -102,6 +113,9 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
   const [sub, setSub] = useState<"places" | "parikrama" | "map" | "about">("places");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [qr, setQr] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const moreRef = useRef<HTMLSpanElement>(null);
+  const { on: favorited, toggle: toggleFav } = useFavorite(`dhama:${dhama.id}`, { t: dhama.name, s: dhama.tagline, h: `/dhama/${dhama.id}` });
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
@@ -134,13 +148,17 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
           <BackIcon size={22} />
         </button>
         <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{dhama.name}</div>
-        <span style={{ width: 38, flexShrink: 0 }} />
+        <div data-pdf-no-print style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+          <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={21} filled={favorited} /></button>
+          <button aria-label="Открыть в картах" onClick={() => { try { window.open(dhamaMapsHref(dhama), "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIconNav size={20} /></button>
+          <span ref={moreRef} style={{ display: "inline-flex" }}><button aria-label="Ещё" onClick={() => setMenuOpen(true)} style={navBtn(false)}><MoreIcon size={18} /></button></span>
+        </div>
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         {/* hero (ПКП) */}
         <div style={{ padding: "16px 16px 0" }}>
-          <DhamaHeroCard dhama={dhama} onMenuSelect={onMenu} flash={flash} />
+          <DhamaHeroCard dhama={dhama} presentational onMenuSelect={onMenu} flash={flash} />
         </div>
 
         <div style={{ padding: "12px 16px 0" }}>
@@ -230,6 +248,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
       {qr && typeof window !== "undefined" && (
         <QrSheet url={`${window.location.origin}/dhama/${dhama.id}`} data={{ kind: "card", title: dhama.name, subtitle: dhama.region }} onClose={() => setQr(false)} />
       )}
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenu(id)} anchorRef={moreRef} variant="center" centerCanManage={false} centerHasMaps />
       {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: 999, maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)" }}>{toast}</div>}
     </div>
   );
