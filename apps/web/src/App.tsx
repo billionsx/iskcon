@@ -238,7 +238,7 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
 }
 
 /* ═════════ Bhajan shelf — list from D1 prayers (api /bhajans) ═════════ */
-interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; }
+interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; has_recordings?: boolean; }
 function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void; onOpenCatalog: () => void }) {
   const [items, setItems] = useState<BhajanListItem[] | null>(null);
   const [q, setQ] = useState("");
@@ -286,6 +286,13 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
                   <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
                   {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
                 </span>
+                {b.has_recordings && (
+                  <svg width="16" height="16" viewBox="0 0 24 24" aria-label="есть записи" style={{ flexShrink: 0, color: "var(--color-brand-blue)" }}>
+                    <path d="M4 13v-1a8 8 0 0116 0v1" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+                    <rect x="3" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
+                    <rect x="16.8" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
+                  </svg>
+                )}
                 <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
             </li>
