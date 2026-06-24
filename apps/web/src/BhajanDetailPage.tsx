@@ -91,6 +91,12 @@ function LayerCard({ label, text, scripture }: { label: string; text: string; sc
 function PlayIcon({ size = 18 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path d="M7 5v14l12-7z" fill="currentColor" /></svg>; }
 function PauseIcon({ size = 18 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" /></svg>; }
 
+function mmss(s: number): string {
+  if (!isFinite(s) || s < 0) s = 0;
+  const m = Math.floor(s / 60), x = Math.floor(s % 60);
+  return `${m}:${x < 10 ? "0" : ""}${x}`;
+}
+
 function MediaHeader({ children }: { children: React.ReactNode }) {
   return <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", color: "var(--color-label)", marginBottom: "var(--space-3)" }}>{children}</div>;
 }
@@ -120,37 +126,63 @@ function CommentaryCard({ c }: { c: MediaItem }) {
 /** Записи (плеер) · Лекции (открыть) · Комментарии (текст) · Ноты (открыть). */
 function MediaSections({ media }: { media: BhajanMedia }) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState<string | null>(null);
+  const [activeUrl, setActiveUrl] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [cur, setCur] = useState(0);
+  const [dur, setDur] = useState(0);
   const recs = media.recordings ?? [];
   const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0);
   const scs = (media.scores ?? []).filter((s) => s.url && s.url.length > 0);
   const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
   if (!recs.length && !lecs.length && !scs.length && !coms.length) return null;
 
-  function toggle(url: string) {
+  function playRow(url: string) {
     const a = audioRef.current; if (!a || !url) return;
-    if (playing === url) { a.pause(); setPlaying(null); return; }
-    a.src = url; a.play().then(() => setPlaying(url)).catch(() => setPlaying(null));
+    if (activeUrl === url) {
+      if (a.paused) a.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+      else { a.pause(); setIsPlaying(false); }
+      return;
+    }
+    a.src = url; setActiveUrl(url); setCur(0); setDur(0);
+    a.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
+  }
+  function seek(v: number) {
+    const a = audioRef.current; if (!a) return;
+    a.currentTime = v; setCur(v);
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-      <audio ref={audioRef} onEnded={() => setPlaying(null)} preload="none" />
+      <audio ref={audioRef} preload="none"
+        onLoadedMetadata={(e) => setDur(e.currentTarget.duration || 0)}
+        onTimeUpdate={(e) => setCur(e.currentTarget.currentTime || 0)}
+        onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)}
+        onEnded={() => { setIsPlaying(false); setCur(0); }} />
       {recs.length > 0 && (
         <div>
           <MediaHeader>Записи</MediaHeader>
           <div style={MCARD}>
             {recs.map((r, i) => {
-              const on = playing === r.url;
+              const isActive = activeUrl === r.url;
+              const on = isActive && isPlaying;
               return (
-                <button key={i} onClick={() => toggle(r.url || "")} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: on ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
-                  <span style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
-                    {r.subtitle ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{r.subtitle}</span> : null}
-                  </span>
-                  {r.duration ? <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)", flexShrink: 0 }}>{r.duration}</span> : null}
-                </button>
+                <div key={i} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isActive ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent" }}>
+                  <button onClick={() => playRow(r.url || "")} style={{ ...ROW, width: "100%", border: "none", background: "transparent", cursor: "pointer" }}>
+                    <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
+                    <span style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
+                      {r.subtitle ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{r.subtitle}</span> : null}
+                    </span>
+                    {(r.duration && !isActive) ? <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)", flexShrink: 0 }}>{r.duration}</span> : null}
+                  </button>
+                  {isActive && (
+                    <div style={{ padding: "0 var(--space-5) var(--space-4)", display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", fontVariantNumeric: "tabular-nums", flexShrink: 0, minWidth: 34, textAlign: "right" }}>{mmss(cur)}</span>
+                      <input type="range" min={0} max={dur || 0} step="any" value={Math.min(cur, dur || 0)} onChange={(e) => seek(Number(e.currentTarget.value))} aria-label="Перемотка" style={{ flex: 1, accentColor: "var(--color-brand-blue)", height: 4, cursor: "pointer" }} />
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", fontVariantNumeric: "tabular-nums", flexShrink: 0, minWidth: 34 }}>{mmss(dur)}</span>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
