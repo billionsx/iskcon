@@ -1,0 +1,33 @@
+{
+  "at": "2026-06-24T16:22:08.350238Z",
+  "objects": {
+    "iskcone-uroki-lyubvi": {
+      "exists": true,
+      "mp3": 67,
+      "playlist": true,
+      "cover": true,
+      "total_files": 276
+    },
+    "iskcone-navadvipa-dhama-mahatmya": {
+      "exists": true,
+      "mp3": 18,
+      "playlist": true,
+      "cover": true,
+      "total_files": 80
+    },
+    "iskcone-seventh-goswami": {
+      "exists": true,
+      "mp3": 14,
+      "playlist": true,
+      "cover": true,
+      "total_files": 64
+    },
+    "iskcone-the-beggar": {
+      "exists": true,
+      "mp3": 108,
+      "playlist": true,
+      "cover": true,
+      "total_files": 440
+    }
+  }
+}
