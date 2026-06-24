@@ -76,6 +76,31 @@ def download(url: str, dest: str, deadline: int = 360, stall: int = 45):
     return os.path.getsize(dest)
 
 
+def sniff_ext(path, fallback):
+    """Расширение по сигнатуре файла (CDN отдаёт аудио в mp4-контейнере под /audio/ —
+    archive.org такой .mp3 отвергает: «improper extension, try .mp4»)."""
+    try:
+        with open(path, "rb") as f:
+            head = f.read(16)
+    except Exception:
+        return fallback
+    if len(head) >= 8 and head[4:8] == b"ftyp":
+        return "mp4"
+    if head[:3] == b"ID3" or (len(head) >= 2 and head[0] == 0xFF and (head[1] & 0xE0) == 0xE0):
+        return "mp3"
+    if head[:4] == b"OggS":
+        return "ogg"
+    if head[:4] == b"RIFF":
+        return "wav"
+    if head[:4] == b"%PDF":
+        return "pdf"
+    if head[:3] == b"\xff\xd8\xff":
+        return "jpg"
+    if head[:8] == b"\x89PNG\r\n\x1a\n":
+        return "png"
+    return fallback
+
+
 def run(payload_path, plan_path, token):
     from internetarchive import upload as ia_upload, get_item
     ak = os.environ["IA_ACCESS_KEY"]; sk = os.environ["IA_SECRET_KEY"]
@@ -115,31 +140,34 @@ def run(payload_path, plan_path, token):
 
         md_pending = md  # метаданные ставим на первой реальной заливке объекта
         for it in items:
-            ext = ext_of(it["url"], it["kind"])
-            fname = f'{it["kind"]}-{it["ord"]}.{ext}'
-            ia_url = f"https://archive.org/download/{ident}/{fname}"
+            base = f'{it["kind"]}-{it["ord"]}.'
+            url_ext = ext_of(it["url"], it["kind"])
+            fname = None
             try:
-                if fname not in existing:
-                    with tempfile.NamedTemporaryFile(delete=False, suffix="." + ext) as tf:
+                existing_match = next((f for f in existing if f.startswith(base)), None)
+                if existing_match is None:
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=".tmp") as tf:
                         tmp = tf.name
-                    # Качаем+заливаем в отдельном демон-потоке с жёстким join(300):
+                    # Качаем+заливаем в отдельном демон-потоке с жёстким join:
                     # любой зависший файл (download ИЛИ upload) бросается, цикл идёт дальше.
                     res: dict = {}
-                    def _work(_it=it, _fname=fname, _tmp=tmp, _ident=ident, _mdp=md_pending):
+                    def _work(_it=it, _tmp=tmp, _ident=ident, _mdp=md_pending, _base=base, _uext=url_ext):
                         try:
-                            sz = download(_it["url"], _tmp)
-                            ia_upload(_ident, files={_fname: _tmp},
+                            sz = download(_it["url"], _tmp, deadline=900)
+                            fn = _base + sniff_ext(_tmp, _uext)   # расширение по сигнатуре файла
+                            ia_upload(_ident, files={fn: _tmp},
                                       metadata=(_mdp if _mdp else {}),
                                       access_key=ak, secret_key=sk, retries=4, verbose=True)
-                            res["sz"] = sz
+                            res["sz"] = sz; res["fname"] = fn
                         except Exception as e:  # noqa: BLE001
                             res["err"] = e
                     th = threading.Thread(target=_work, daemon=True)
-                    th.start(); th.join(420)
+                    th.start(); th.join(960)
                     if th.is_alive():
-                        raise TimeoutError("файл >420с — поток брошен")
+                        raise TimeoutError("файл >960с — поток брошен")
                     if "err" in res:
                         raise res["err"]
+                    fname = res["fname"]
                     md_pending = None
                     existing.add(fname)
                     try: os.unlink(tmp)
@@ -147,7 +175,9 @@ def run(payload_path, plan_path, token):
                     n_up += 1
                     print(f"  ↑ {ident}/{fname}  ({res.get('sz', 0)//1024} КБ)", flush=True)
                 else:
+                    fname = existing_match
                     n_skip += 1
+                ia_url = f"https://archive.org/download/{ident}/{fname}"
                 # переписываем ссылку в БД на archive.org
                 d1("UPDATE prayer_media SET url=? WHERE slug=? AND kind=? AND ord=?",
                    [ia_url, it["slug"], it["kind"], it["ord"]], token=token)
@@ -155,8 +185,8 @@ def run(payload_path, plan_path, token):
                 report.append({"slug": slug, "ident": ident, "file": fname, "ia_url": ia_url})
             except Exception as e:
                 n_err += 1
-                report.append({"slug": slug, "file": fname, "src": it["url"][:80], "err": str(e)[:160]})
-                print(f"  ✗ {ident}/{fname}: {str(e)[:120]}", flush=True)
+                report.append({"slug": slug, "file": (fname or base + url_ext), "src": it["url"][:80], "err": str(e)[:160]})
+                print(f"  ✗ {ident}/{base}: {str(e)[:120]}", flush=True)
             time.sleep(0.5)
 
     out = {"songs": len(by_song), "uploaded": n_up, "skipped_existing": n_skip,
