@@ -15,7 +15,18 @@ cdn.bhajanamrita.com, в Internet Archive — чтобы приложение х
 Запуск в CI: нужны IA_ACCESS_KEY/IA_SECRET_KEY (S3-ключи) + CF (D1) + интернет.
 """
 from __future__ import annotations
-import json, os, re, sys, time, tempfile, pathlib, urllib.request
+import json, os, re, sys, time, tempfile, pathlib, urllib.request, signal
+
+
+class _FileTimeout(Exception):
+    pass
+
+
+def _on_alarm(_sig, _frm):
+    raise _FileTimeout("жёсткий потолок на файл")
+
+
+signal.signal(signal.SIGALRM, _on_alarm)
 
 ACCT = "d5cbe19470dc38599873eabfe148e6d1"; DB = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 D1_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
@@ -120,15 +131,18 @@ def run(payload_path, plan_path, token):
             ia_url = f"https://archive.org/download/{ident}/{fname}"
             try:
                 if fname not in existing:
+                    signal.alarm(420)  # жёсткий потолок на весь файл (download+upload)
                     with tempfile.NamedTemporaryFile(delete=False, suffix="." + ext) as tf:
                         tmp = tf.name
                     sz = download(it["url"], tmp)
                     ia_upload(ident, files={fname: tmp},
                               metadata=(md_pending if md_pending else {}),
-                              access_key=ak, secret_key=sk, retries=3, verbose=True)
+                              access_key=ak, secret_key=sk, retries=2, verbose=True)
+                    signal.alarm(0)
                     md_pending = None
                     existing.add(fname)
-                    os.unlink(tmp)
+                    try: os.unlink(tmp)
+                    except Exception: pass
                     n_up += 1
                     print(f"  ↑ {ident}/{fname}  ({sz//1024} КБ)")
                 else:
@@ -139,6 +153,7 @@ def run(payload_path, plan_path, token):
                 n_url += 1
                 report.append({"slug": slug, "ident": ident, "file": fname, "ia_url": ia_url})
             except Exception as e:
+                signal.alarm(0)
                 n_err += 1
                 report.append({"slug": slug, "file": fname, "src": it["url"][:80], "err": str(e)[:160]})
                 print(f"  ✗ {ident}/{fname}: {str(e)[:120]}")
