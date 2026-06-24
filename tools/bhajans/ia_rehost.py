@@ -130,14 +130,14 @@ def run(payload_path, plan_path, token):
                             sz = download(_it["url"], _tmp)
                             ia_upload(_ident, files={_fname: _tmp},
                                       metadata=(_mdp if _mdp else {}),
-                                      access_key=ak, secret_key=sk, retries=1, verbose=True)
+                                      access_key=ak, secret_key=sk, retries=4, verbose=True)
                             res["sz"] = sz
                         except Exception as e:  # noqa: BLE001
                             res["err"] = e
                     th = threading.Thread(target=_work, daemon=True)
-                    th.start(); th.join(300)
+                    th.start(); th.join(420)
                     if th.is_alive():
-                        raise TimeoutError("файл >300с — поток брошен")
+                        raise TimeoutError("файл >420с — поток брошен")
                     if "err" in res:
                         raise res["err"]
                     md_pending = None
@@ -157,7 +157,7 @@ def run(payload_path, plan_path, token):
                 n_err += 1
                 report.append({"slug": slug, "file": fname, "src": it["url"][:80], "err": str(e)[:160]})
                 print(f"  ✗ {ident}/{fname}: {str(e)[:120]}", flush=True)
-            time.sleep(0.2)
+            time.sleep(0.5)
 
     out = {"songs": len(by_song), "uploaded": n_up, "skipped_existing": n_skip,
            "urls_rewritten": n_url, "errors": n_err, "items": report}
