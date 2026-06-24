@@ -73,7 +73,10 @@ export default function DhamaMap({ dhama, height = 340, onOpen, ordered = false,
 
         const accent = dhama.accent;
         const list = stops && stops.length ? stops : dhama.tirthas;
-        const pts: [number, number][] = list.map((t) => [t.lat, t.lng]);
+        // На карте — только места с валидными координатами; места без координат
+        // (напр. редкие тиртхи из книг) остаются в списке и доступны по ссылке на карты.
+        const geo = list.filter((t) => t.lat != null && t.lng != null && !(t.lat === 0 && t.lng === 0));
+        const pts: [number, number][] = geo.map((t) => [t.lat as number, t.lng as number]);
 
         if (ordered) {
           // маршрут-парикрама: пунктирная линия + нумерованные пины поверх неё
@@ -84,19 +87,19 @@ export default function DhamaMap({ dhama, height = 340, onOpen, ordered = false,
             document.head.appendChild(st);
           }
           if (pts.length > 1) L.polyline(pts, { color: accent, weight: 3, opacity: 0.72, dashArray: "1 7", lineCap: "round" }).addTo(map);
-          list.forEach((t, i) => {
+          geo.forEach((t, i) => {
             const icon = L.divIcon({
               className: "dhama-seq-pin",
               html: `<div style="display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:${accent};color:#fff;font:700 12px/1 var(--font-text,sans-serif);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.35)">${i + 1}</div>`,
               iconSize: [24, 24], iconAnchor: [12, 12],
             });
-            const m = L.marker([t.lat, t.lng], { icon }).addTo(map);
+            const m = L.marker([t.lat as number, t.lng as number], { icon }).addTo(map);
             m.bindTooltip(`${i + 1}. ${t.name}`, { direction: "top", offset: [0, -12] });
             m.on("click", () => onOpenRef.current(t.id));
           });
         } else {
-          for (const t of list) {
-            const m = L.circleMarker([t.lat, t.lng], { radius: 7, color: "#ffffff", weight: 2, fillColor: accent, fillOpacity: 1 }).addTo(map);
+          for (const t of geo) {
+            const m = L.circleMarker([t.lat as number, t.lng as number], { radius: 7, color: "#ffffff", weight: 2, fillColor: accent, fillOpacity: 1 }).addTo(map);
             m.bindTooltip(`${t.name}`, { direction: "top", offset: [0, -6] });
             m.on("click", () => onOpenRef.current(t.id));
           }

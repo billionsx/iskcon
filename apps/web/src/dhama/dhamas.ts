@@ -52,8 +52,8 @@ export interface Tirtha {
   name: string;
   iast?: string;
   kind: TirthaKind;
-  lat: number;
-  lng: number;
+  lat: number | null;
+  lng: number | null;
   blurb: string;
   about: string;
   lila?: string;
