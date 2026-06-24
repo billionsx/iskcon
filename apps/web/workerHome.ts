@@ -382,7 +382,7 @@ function synthDarshan(row: { id: number; date: string; temple_name: string; deit
   return {
     id: `d${row.id}`, date: dateIso, views: "", text,
     rich: [{ t: "t", v: text }],
-    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=400`),
+    photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=1440`),
     photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`),
     videos: [], audios: [], link: null, ts,
   };
