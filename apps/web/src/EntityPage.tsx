@@ -694,15 +694,26 @@ function kindHref(kind: string, ref: string): string | null {
 }
 
 function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkItem[]; onNavigate?: (href: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const CAP = 24;
+  const shown = open ? items : items.slice(0, CAP);
+  const more = items.length - shown.length;
   return (
     <section style={{ marginTop: 26 }}>
       <Eyebrow count={items.length}>{KIND_LABEL[kind] ?? kind}</Eyebrow>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {items.map((it) => {
+        {shown.map((it) => {
           const href = kindHref(it.kind, it.ref);
           const go = href && onNavigate ? () => onNavigate(href) : undefined;
           return <Chip key={it.kind + it.ref} label={it.title || it.ref} onClick={go} />;
         })}
+        {more > 0 && (
+          <button type="button" onClick={() => setOpen(true)}
+            style={{ display: "inline-flex", alignItems: "center", padding: "8px 13px", borderRadius: 999, border: "none",
+              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)", cursor: "pointer" }}>
+            Ещё {more}
+          </button>
+        )}
       </div>
     </section>
   );
