@@ -102,6 +102,9 @@ def same_song(slug: str, api_verses) -> bool:
 
 
 def main():
+    # Слаги, где имя+автор сверены в _bm_catalog, а сверка по тексту даёт ложный
+    # отказ из-за транслит-варианта (коруна/каруна). Песня подтверждена — байпас.
+    TRUSTED = {"/ru/bhajans/lochan-das-thakur/parama-koruna"}
     d1("""CREATE TABLE IF NOT EXISTS _rec_fill_log
           (slug TEXT PRIMARY KEY, bm TEXT, status TEXT, recs INTEGER, note TEXT, ts TEXT)""")
     d1("DELETE FROM _rec_fill_log")
@@ -127,7 +130,7 @@ def main():
         recs = [r for r in (full.get("recordings") or []) if (r.get("audioUrl") or "").strip()]
         if not recs:
             log(slug, bm, "no-recordings", 0, f"v={len(verses)}"); continue
-        if not same_song(slug, verses):
+        if slug not in TRUSTED and not same_song(slug, verses):
             log(slug, bm, "identity-fail", 0, f"v={len(verses)} recs_avail={len(recs)}"); continue
         # пишем записи
         n = 0
