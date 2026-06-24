@@ -30,6 +30,7 @@ interface MediaItem { title: string | null; subtitle: string | null; duration: s
 interface BhajanMedia { recordings: MediaItem[]; lectures: MediaItem[]; scores: MediaItem[]; commentaries: MediaItem[]; }
 interface BhajanDetail {
   slug: string; name: string; author: string | null; hero_image: string | null;
+  author_entity?: string | null; author_entity_title?: string | null;
   category: string | null; source_text: string | null; section: string | null;
   source_credit: string | null;
   verses: Verse[]; translit: string | null; translation: string | null;
@@ -235,7 +236,7 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
   );
 }
 
-export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBack: () => void }) {
+export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug: string; onBack: () => void; onOpenEntity?: (id: string, type: string | null) => void }) {
   const [data, setData] = useState<BhajanDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0);
@@ -312,7 +313,17 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
             <div style={{ padding: "64px var(--pad-card) 0" }}>
               {data.category && <Eyebrow blue>{data.category}</Eyebrow>}
               <h1 style={{ margin: data.category ? "var(--space-2) 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>{data.name}</h1>
-              {data.author && <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{data.author}</div>}
+              {data.author && (
+                data.author_entity && onOpenEntity ? (
+                  <button onClick={() => onOpenEntity(data.author_entity || "", "personality")} aria-label={`Об авторе: ${data.author}`}
+                    style={{ marginTop: "var(--space-3)", display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", WebkitTapHighlightColor: "transparent" }}>
+                    {data.author}
+                    <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: "var(--color-label-2)", flexShrink: 0 }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
+                ) : (
+                  <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{data.author}</div>
+                )
+              )}
               {meta && <div style={{ marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{meta}</div>}
             </div>
 

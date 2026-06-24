@@ -163,10 +163,26 @@ bhajansRouter.get('/detail', async (c) => {
   const body = (nl >= 0 ? raw.slice(nl + 1) : raw).trim(); // срезаем служебную первую строку
   const hasText = verses.length > 0 || body.length > 0 || !!(row.translit || row.translation);
 
+  // Связь с графом: карточка ПКЛ автора (если личность с таким именем есть; алиасы учтены).
+  let authorEntity: string | null = null;
+  let authorEntityTitle: string | null = null;
+  if (row.author_name) {
+    const ae = (await c.env.DB.prepare(
+      `SELECT n.entity_id AS id,
+              (SELECT value FROM entity_names n2 WHERE n2.entity_id = n.entity_id AND n2.lang = 'ru'
+                 ORDER BY (n2.kind = 'canonical') DESC LIMIT 1) AS title
+         FROM entity_names n JOIN entities e ON e.id = n.entity_id
+        WHERE e.type = 'personality' AND lower(n.value) = lower(?) LIMIT 1`,
+    ).bind(row.author_name).first()) as Row | null;
+    if (ae && ae.id) { authorEntity = String(ae.id); authorEntityTitle = ae.title ? String(ae.title) : null; }
+  }
+
   return c.json({
     slug: row.slug,
     name: row.name,
     author: row.author_name ?? null,
+    author_entity: authorEntity,
+    author_entity_title: authorEntityTitle,
     hero_image: row.hero_image ?? null,
     source_text: row.source_text ?? null,
     category: row.category ?? null,
