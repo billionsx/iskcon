@@ -373,9 +373,13 @@ function synthDarshan(row: { id: number; date: string; temple_name: string; deit
   let imgs: string[] = [];
   try { const a = JSON.parse(row.images_json); if (Array.isArray(a)) imgs = a.filter((x) => typeof x === "string" && x); } catch { /* нет картинок */ }
   if (!imgs.length) return null;
-  const ts = Date.parse((row.created_at || "").replace(" ", "T") + "Z") || Date.parse(row.date) || 0;
+  // Сортировка ленты — по ДАТЕ даршана (полдень), а не по времени вставки в D1: иначе
+  // дозабранный задним числом старый день получает created_at=сейчас и прыгает наверх
+  // ленты над свежими. На created_at падаем только если дата некорректна.
+  const dateTs = row.date && /^\d{4}-\d{2}-\d{2}$/.test(row.date) ? Date.parse(`${row.date}T12:00:00.000Z`) : 0;
+  const ts = dateTs || Date.parse((row.created_at || "").replace(" ", "T") + "Z") || 0;
   if (!ts) return null;
-  const dateIso = row.date && /^\d{4}-\d{2}-\d{2}$/.test(row.date) ? `${row.date}T12:00:00.000Z` : new Date(ts).toISOString();
+  const dateIso = dateTs ? `${row.date}T12:00:00.000Z` : new Date(ts).toISOString();
   const deities = (row.deities || "").trim();
   const temple = (row.temple_name || "").trim();
   const text = [deities, "Ежедневный даршан", temple].filter(Boolean).join("\n\n");
