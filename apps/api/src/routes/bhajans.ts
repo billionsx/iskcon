@@ -12,6 +12,17 @@ export const bhajansRouter = new Hono<{ Bindings: Bindings; Variables: Variables
 
 type Row = Record<string, any>;
 
+// Аудио бхаджанов проигрывается через тот же потоковый прокси, что и аудио-книги:
+// /audio/<ia-id>/<file>.mp3 (worker.ts → serveAudio, стрим с archive.org, кэш, Range).
+// Прямые archive.org/download ссылки в <audio> спотыкаются на 302-редиректах.
+// Относительный путь резолвится на origin страницы (gaurangers.com → прокси воркера).
+function toAudioProxy(u: unknown): string | null {
+  const s = u == null ? '' : String(u);
+  if (!s) return null;
+  const m = s.match(/^https?:\/\/(?:[a-z0-9.-]*\.)?archive\.org\/download\/([^/]+)\/(.+\.(?:mp3|m4a|mp4|aac|ogg|oga|wav|flac))$/i);
+  return m ? `/audio/${m[1]}/${m[2]}` : s;
+}
+
 // GET /v1/bhajans — витрина: только записи с реальным текстом (наполненные)
 bhajansRouter.get('/', async (c) => {
   const { results } = await c.env.DB.prepare(
@@ -93,7 +104,7 @@ bhajansRouter.get('/audio', async (c) => {
     chapter: null,
     title: r.title || `${noun} ${i + 1}`,
     file: `${pfx}-${r.ord}`,
-    url: r.url,
+    url: toAudioProxy(r.url),
     durationSec: parseDur(r.duration),
     artist: r.subtitle ?? undefined,
   }));
@@ -149,7 +160,7 @@ bhajansRouter.get('/detail', async (c) => {
   for (const m of (mrows as Row[]) ?? []) {
     const item = {
       title: m.title ?? null, subtitle: m.subtitle ?? null, duration: m.duration ?? null,
-      url: m.url ?? null, media_type: m.media_type ?? null, platform: m.platform ?? null,
+      url: toAudioProxy(m.url), media_type: m.media_type ?? null, platform: m.platform ?? null,
       ext_id: m.ext_id ?? null, description: m.description ?? null, date: m.date ?? null,
     };
     if (m.kind === 'recording') media.recordings.push(item as unknown as Row);
