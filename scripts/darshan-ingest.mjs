@@ -62,6 +62,17 @@ const SITE_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 function istToday() {
   return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date());
 }
+function istDaysAgo(n) {
+  return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Kolkata" }).format(new Date(Date.now() - n * 86400000));
+}
+// Есть ли уже даршан этого храма за дату (для самолечащего дозабора — пропуск захваченных).
+function hasDarshan(slug, date) {
+  if (process.env.FORCE === "1") return false;
+  try {
+    const res = d1(`SELECT 1 FROM darshan WHERE temple_slug='${slug}' AND date='${date}' LIMIT 1`);
+    return (res?.[0]?.results || []).length > 0;
+  } catch { return false; }
+}
 // Отбор k фото из всех: выкидываем (n-k) равномерно вразброс, порядок сохраняем.
 // Так при 23→20 удаляются лишь 3 кадра «через равные промежутки» — все алтари остаются.
 function pickSpread(arr, k) {
@@ -438,8 +449,18 @@ async function run() {
 
   const preview = [];
 
+  // 3 проверки в день + самолечение. Текущий день идёт первым (свежий даршан), затем
+  // дозабираем последние 3 дня: если день пропущен (сайт не отдал галерею в момент
+  // прогона), его подхватит ближайший прогон. Дедуп (src_channel,src_post_id) +
+  // mayapurPostedForDate не дают дублей. Ручной запуск с DARSHAN_DATE — только эта дата.
+  const _fixedDate = (process.env.DARSHAN_DATE || "").trim();
+  const _dates = _fixedDate ? [_fixedDate] : [istToday(), istDaysAgo(1), istDaysAgo(2), istDaysAgo(3)];
+  for (const _date of _dates) {
+    process.env.DARSHAN_DATE = _date;
+
   for (const src of SOURCES) {
     if (only.length && !only.includes(src.slug)) continue;
+    if (_date !== _dates[0] && hasDarshan(src.slug, _date)) continue;
 
     if (src.kind === "site") {
       let gal = null;
@@ -522,6 +543,8 @@ async function run() {
     } catch (e) { console.error("D1 insert failed:", String(e)); }
     preview.push({ ...row, posted: "ok (в приложение)" });
   }
+  }
+  if (!_fixedDate) delete process.env.DARSHAN_DATE;
 
   let dbRows = null;
   if (!dry) {
