@@ -134,7 +134,9 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
   // убраны из приложения по требованию; данные сохранены в D1, вернуть = снять фильтр.
   const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0 && l.media_type !== "video");
   const audioLecs = lecs.filter((l) => l.media_type === "audio");
-  const scs = (media.scores ?? []).filter((s) => s.url && s.url.length > 0);
+  // Ноты (kind='score', PDF) временно убраны со всех бхаджанов по требованию;
+  // данные в D1 сохранены. Вернуть = (media.scores ?? []).filter((s) => s.url && s.url.length > 0).
+  const scs = (media.scores ?? []).filter(() => false);
   const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
   if (!recs.length && !lecs.length && !scs.length && !coms.length) return null;
 
