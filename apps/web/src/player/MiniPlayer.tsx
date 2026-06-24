@@ -21,10 +21,10 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
 
   const pct = p.duration > 0 ? Math.min(100, (p.currentTime / p.duration) * 100) : 0;
   const t = p.track;
-  const abBook = p.kind !== "kirtan" ? BOOKS[p.book] : undefined;
+  const abBook = p.kind === "book" ? BOOKS[p.book] : undefined;
   const isAudiobook = !!abBook?.noText;
-  const subtitle = p.kind === "kirtan"
-    ? (p.artist || "Киртан")
+  const subtitle = p.kind !== "book"
+    ? (p.artist || (p.kind === "kirtan" ? "Киртан" : "Бхаджан"))
     : t?.kind === "intro"
       ? (p.mode === "commentary" ? "С комментариями · вступление" : "Вступление")
       : t?.lilaLabel

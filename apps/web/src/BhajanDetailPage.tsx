@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
 import { RoundBtn, useFavorite, useCardActions } from "./cardActions";
+import { usePlayer } from "./player/store";
 import { NotesAtSource } from "./NotesAtSource";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 
@@ -91,12 +92,6 @@ function LayerCard({ label, text, scripture }: { label: string; text: string; sc
 function PlayIcon({ size = 18 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path d="M7 5v14l12-7z" fill="currentColor" /></svg>; }
 function PauseIcon({ size = 18 }: { size?: number }) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor" /></svg>; }
 
-function mmss(s: number): string {
-  if (!isFinite(s) || s < 0) s = 0;
-  const m = Math.floor(s / 60), x = Math.floor(s % 60);
-  return `${m}:${x < 10 ? "0" : ""}${x}`;
-}
-
 function MediaHeader({ children }: { children: React.ReactNode }) {
   return <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", color: "var(--color-label)", marginBottom: "var(--space-3)" }}>{children}</div>;
 }
@@ -124,65 +119,34 @@ function CommentaryCard({ c }: { c: MediaItem }) {
 }
 
 /** Записи (плеер) · Лекции (открыть) · Комментарии (текст) · Ноты (открыть). */
-function MediaSections({ media }: { media: BhajanMedia }) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [activeUrl, setActiveUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [cur, setCur] = useState(0);
-  const [dur, setDur] = useState(0);
-  const recs = media.recordings ?? [];
+function MediaSections({ media, slug }: { media: BhajanMedia; slug: string }) {
+  const player = usePlayer();
+  const recs = (media.recordings ?? []).filter((r) => r.url);
   const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0);
   const scs = (media.scores ?? []).filter((s) => s.url && s.url.length > 0);
   const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
   if (!recs.length && !lecs.length && !scs.length && !coms.length) return null;
 
-  function playRow(url: string) {
-    const a = audioRef.current; if (!a || !url) return;
-    if (activeUrl === url) {
-      if (a.paused) a.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
-      else { a.pause(); setIsPlaying(false); }
-      return;
-    }
-    a.src = url; setActiveUrl(url); setCur(0); setDur(0);
-    a.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
-  }
-  function seek(v: number) {
-    const a = audioRef.current; if (!a) return;
-    a.currentTime = v; setCur(v);
-  }
+  const isThis = player.kind === "bhajan" && player.book === slug;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
-      <audio ref={audioRef} preload="none"
-        onLoadedMetadata={(e) => setDur(e.currentTarget.duration || 0)}
-        onTimeUpdate={(e) => setCur(e.currentTarget.currentTime || 0)}
-        onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)}
-        onEnded={() => { setIsPlaying(false); setCur(0); }} />
       {recs.length > 0 && (
         <div>
           <MediaHeader>Записи</MediaHeader>
           <div style={MCARD}>
             {recs.map((r, i) => {
-              const isActive = activeUrl === r.url;
-              const on = isActive && isPlaying;
+              const isCur = isThis && player.index === i;
+              const on = isCur && player.isPlaying;
               return (
-                <div key={i} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isActive ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent" }}>
-                  <button onClick={() => playRow(r.url || "")} style={{ ...ROW, width: "100%", border: "none", background: "transparent", cursor: "pointer" }}>
-                    <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
-                    <span style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
-                      {r.subtitle ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{r.subtitle}</span> : null}
-                    </span>
-                    {(r.duration && !isActive) ? <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)", flexShrink: 0 }}>{r.duration}</span> : null}
-                  </button>
-                  {isActive && (
-                    <div style={{ padding: "0 var(--space-5) var(--space-4)", display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", fontVariantNumeric: "tabular-nums", flexShrink: 0, minWidth: 34, textAlign: "right" }}>{mmss(cur)}</span>
-                      <input type="range" min={0} max={dur || 0} step="any" value={Math.min(cur, dur || 0)} onChange={(e) => seek(Number(e.currentTarget.value))} aria-label="Перемотка" style={{ flex: 1, accentColor: "var(--color-brand-blue)", height: 4, cursor: "pointer" }} />
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", fontVariantNumeric: "tabular-nums", flexShrink: 0, minWidth: 34 }}>{mmss(dur)}</span>
-                    </div>
-                  )}
-                </div>
+                <button key={i} onClick={() => { if (isCur) player.togglePlay(); else player.playBhajan(slug, i); }} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isCur ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-brand-blue)" : "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
+                    {r.subtitle ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{r.subtitle}</span> : null}
+                  </span>
+                  {r.duration ? <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)", flexShrink: 0 }}>{r.duration}</span> : null}
+                </button>
               );
             })}
           </div>
@@ -244,6 +208,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
 
   const fav = useFavorite(`bhajan:${slug}`);
   const { openCardMenu } = useCardActions();
+  const player = usePlayer();
   const flash = (m: string) => {
     setToast(m);
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -307,7 +272,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               {/* действия */}
               <div style={{ marginTop: "var(--space-5)", display: "flex", alignItems: "center", gap: 10 }}>
                 <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" size={40} onClick={() => fav.toggle(flash)}><HeartIcon size={20} filled={fav.on} /></RoundBtn>
-                <RoundBtn ariaLabel="Слушать" size={40} onClick={() => { if (data?.media?.recordings?.length && mediaRef.current) mediaRef.current.scrollIntoView({ behavior: "smooth", block: "start" }); else flash("Записей пока нет"); }}><HeadphonesIcon size={20} /></RoundBtn>
+                <RoundBtn ariaLabel="Слушать" size={40} onClick={() => { if (data?.media?.recordings?.some((r) => r.url)) player.playBhajan(slug, 0); else flash("Записей пока нет"); }}><HeadphonesIcon size={20} /></RoundBtn>
                 <RoundBtn ariaLabel="Ещё" size={40} onClick={openMore}><MoreIcon size={19} /></RoundBtn>
               </div>
             </div>
@@ -329,7 +294,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
-              {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} /></div>}
+              {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} slug={slug} /></div>}
               {data.source_credit && !data.pending && (
                 <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
               )}

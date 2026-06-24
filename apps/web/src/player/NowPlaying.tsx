@@ -69,10 +69,11 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
   const isKirtan = p.kind === "kirtan";
+  const isAdHoc = p.kind !== "book";
   const BOOK = BOOKS[p.book] ?? BOOKS.bg;
-  const isAudiobook = !isKirtan && !!BOOK.noText; // аудиокнига без текста: «глав» нет — показываем название книги
-  const sub = isKirtan
-    ? (p.artist || "Киртан")
+  const isAudiobook = !isAdHoc && !!BOOK.noText; // аудиокнига без текста: «глав» нет — показываем название книги
+  const sub = isAdHoc
+    ? (p.artist || (isKirtan ? "Киртан" : "Бхаджан"))
     : p.track?.kind === "intro" ? "Вступление"
       : p.track?.lilaLabel ? `${p.track.lilaLabel} · Глава ${p.track?.chapter ?? ""}`
         : isAudiobook ? bookFullTitle(BOOK)
@@ -113,13 +114,13 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   function chapterQr() { if (!isChapter) { bookQr(); return; } setQr({ url: chapterUrl, data: { kind: "chapter", bookTitle: bookFullTitle(BOOK), chapterNumber: String(ch), chapterTitle: p.track?.title ?? "" } }); }
   function onMenuSelect(id: string) {
     if (id === "note") {
-      if (isKirtan) {
+      if (isAdHoc) {
         requestNote({
           kind: "kirtan",
-          ref: `kirtan:${p.book}`,
+          ref: `${p.kind}:${p.book}`,
           title: p.bookTitle,
-          subtitle: `${p.track?.title ? p.track.title + " · " : ""}${p.artist || "Киртан"}`,
-          href: kirtanUrl.replace(ORIGIN, "") || "/kirtans",
+          subtitle: `${p.track?.title ? p.track.title + " · " : ""}${p.artist || (isKirtan ? "Киртан" : "Бхаджан")}`,
+          href: isKirtan ? (kirtanUrl.replace(ORIGIN, "") || "/kirtans") : (p.book || "/"),
         });
       } else {
         requestNote({
@@ -145,7 +146,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   const coverActions = (
     <>
       <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-      {!isKirtan && <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>}
+      {!isAdHoc && <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>}
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
   );
@@ -181,13 +182,13 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
               <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
-              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isKirtan ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : isAudiobook ? bookFullTitle(BOOK) : `${sub} · ${bookFullTitle(BOOK)}`}</div>
+              <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isAdHoc ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : isAudiobook ? bookFullTitle(BOOK) : `${sub} · ${bookFullTitle(BOOK)}`}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
                 style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
                 <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : "#fff" }}><HeartIcon size={17} filled={favorited} /></button>
-                {!isKirtan && <button type="button" aria-label="Читать" onClick={readBook} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
+                {!isAdHoc && <button type="button" aria-label="Читать" onClick={readBook} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
               <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
@@ -200,12 +201,12 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
         {/* scroll body: ВКП cover + queue */}
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
-          {isKirtan
+          {isAdHoc
             ? <KirtanHero cover={p.cover} title={p.bookTitle} artist={p.artist} note={albumById(p.book)?.note} coverActions={coverActions} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
           <div style={{ marginTop: 22 }}>
             <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
-              {isKirtan ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+              {isAdHoc ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
             </div>
             {hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
             <div style={{ paddingTop: hierQueue ? 10 : 0 }}>
@@ -216,7 +217,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
                   const show = t.lila ? t.lila === activeDiv : activeDiv === divisions[0]?.id;
                   if (!show) return null;
                 }
-                return <QueueRow key={t.file} t={t} active={i === p.index} num={isKirtan ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
+                return <QueueRow key={t.file} t={t} active={i === p.index} num={isAdHoc ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
               })}
             </div>
           </div>
@@ -275,7 +276,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
-      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} withNote variant={isKirtan ? "kirtan" : "player"} isChapter={isChapter} anchorRef={moreRef} />
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={onMenuSelect} withNote variant={isAdHoc ? "kirtan" : "player"} isChapter={isChapter} anchorRef={moreRef} />
     </div>
   );
 }
