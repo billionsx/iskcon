@@ -138,7 +138,8 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
   const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
   if (!recs.length && !lecs.length && !scs.length && !coms.length) return null;
 
-  const isThis = player.kind === "bhajan" && player.book === slug;
+  const isThisRec = player.kind === "bhajan" && player.book === slug;
+  const isThisLec = player.kind === "bhajan" && player.book === `${slug}::lec`;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)" }}>
@@ -147,7 +148,7 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
           <MediaHeader>Записи</MediaHeader>
           <div style={MCARD}>
             {recs.map((r, i) => {
-              const isCur = isThis && player.index === i;
+              const isCur = isThisRec && player.index === i;
               const on = isCur && player.isPlaying;
               return (
                 <button key={i} onClick={() => { if (isCur) player.togglePlay(); else player.playBhajan(slug, i); }} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isCur ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
@@ -169,8 +170,8 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
           <div style={MCARD}>
             {lecs.map((l, i) => {
               const isAudio = l.media_type === "audio";
-              const playIdx = isAudio ? recs.length + audioLecs.indexOf(l) : -1;
-              const isCur = isAudio && isThis && player.index === playIdx;
+              const playIdx = isAudio ? audioLecs.indexOf(l) : -1;
+              const isCur = isAudio && isThisLec && player.index === playIdx;
               const on = isCur && player.isPlaying;
               const u = (l.url || "").toLowerCase();
               const isYt = !isAudio && (l.media_type === "youtube" || /youtube|youtu\.be/.test(u));
@@ -178,7 +179,7 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
               const isFile = !isAudio && /\.(mp4|m4v|webm|mov)(\?|$)/.test(u);
               const isExternal = !isAudio && !isYt && !rt && !isFile;
               const handle = isAudio
-                ? () => { if (isCur) player.togglePlay(); else player.playBhajan(slug, playIdx); }
+                ? () => { if (isCur) player.togglePlay(); else player.playBhajan(slug, playIdx, "lectures"); }
                 : isYt ? () => onView({ type: "youtube", url: l.url || "", title: l.title || "Лекция", subtitle: l.subtitle })
                 : rt ? () => onView({ type: "iframe", url: `https://rutube.ru/play/embed/${rt[1]}`, title: l.title || "Лекция", subtitle: l.subtitle })
                 : isFile ? () => onView({ type: "video", url: l.url || "", title: l.title || "Лекция", subtitle: l.subtitle })
@@ -314,7 +315,7 @@ export default function BhajanDetailPage({ slug, onBack }: { slug: string; onBac
             </div>
 
             {/* ТЕКСТ — стихи карточками */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", padding: "var(--space-7) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-9))" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", padding: "var(--space-7) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-9) + var(--player-extra))" }}>
               {data.pending ? (
                 <div style={{ padding: "var(--space-6) var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", textAlign: "center" }}>
                   <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>Текст готовится</div>
