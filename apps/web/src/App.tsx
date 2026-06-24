@@ -241,6 +241,7 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
 interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; }
 function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void; onOpenCatalog: () => void }) {
   const [items, setItems] = useState<BhajanListItem[] | null>(null);
+  const [q, setQ] = useState("");
   useEffect(() => {
     let live = true;
     fetch(api("/bhajans"))
@@ -249,6 +250,10 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
       .catch(() => { if (live) setItems([]); });
     return () => { live = false; };
   }, []);
+
+  const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+  const nq = norm(q.trim());
+  const shown = items ? (nq ? items.filter((b) => norm(`${b.name} ${b.author || ""}`).includes(nq)) : items) : null;
 
   return (
     <section style={{ marginTop: 28 }}>
@@ -262,12 +267,17 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>
+      {items && items.length > 0 && (
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
+          style={{ width: "100%", boxSizing: "border-box", marginBottom: 12, padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 15, outline: "none" }} />
+      )}
       {!items && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
       {items && items.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
-      {items && items.length > 0 && (
+      {items && items.length > 0 && shown && shown.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Ничего не найдено.</div>}
+      {shown && shown.length > 0 && (
         <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-          {items.map((b, i) => (
-            <li key={b.slug} style={{ borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+          {shown.map((b, i) => (
+            <li key={b.slug} style={{ borderBottom: i === shown.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
               <button onClick={() => onOpen(b.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
                 {b.hero_image
                   ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
