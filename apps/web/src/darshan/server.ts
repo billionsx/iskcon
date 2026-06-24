@@ -296,6 +296,10 @@ async function fetchVrindavanCombined(src: Src): Promise<{ date: string; name: s
 
 // Приоритет постам с фото и «даршанной» лексикой, иначе — свежайший пост с фото.
 const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|arati|abhishek|rajbhog|raj bhog|sandhya|deity|deities|gaura|nitai|radha|krishna|kṛṣṇa|balaram|madhava/i;
+// НЕ-даршан: афиши/анонсы/программы/астрономия. Высокоточный отсев — ловит постеры Экадаши,
+// флаеры лекций (сессии/регистрация/venue), фото луны/затмений и т.п. Намеренно НЕ включает
+// «фестиваль/утсав» — фестивальные даршаны Божеств реальны и должны проходить.
+const NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|\bкурс\b|\bpresents\b|представляет|philosophy of|admission|\bticket\b|\bбилет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|\bзакат\b|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
 
 /* ── источник: галерея даршана Маяпура (mayapur.com, оригиналы ~1920px) ── */
 // Индекс server-rendered (блоки «дата DD/MM/YYYY → /media/album/N»). Полные кадры
@@ -443,8 +447,11 @@ async function latestDarshan(channel: string): Promise<RawPost | null> {
     } as RequestInit);
     if (!r.ok) return null;
     const posts = parsePosts(await r.text());
+    // Только ДАРШАН: сперва выкидываем афиши/анонсы/астрономию, затем предпочитаем пост
+    // с даршанной лексикой; если таких нет — свежайший НЕ-афишный пост с фото (а не любой).
     const withPhoto = posts.filter((p) => p.photos.length);
-    return withPhoto.find((p) => DARSHAN_RE.test(p.text)) || withPhoto[0] || null;
+    const ok = withPhoto.filter((p) => !NON_DARSHAN_RE.test(p.text));
+    return ok.find((p) => DARSHAN_RE.test(p.text)) || ok[0] || null;
   } catch {
     return null;
   }
