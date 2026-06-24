@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { BackIcon } from "../ui/icons";
 import { SectionSubTabs } from "../SectionSubTabs";
 import DhamaMap from "./DhamaMap";
-import { KIND_RU, tirthaCtx, type Dhama, type Tirtha } from "./dhamas";
+import { KIND_RU, mapsDir, tirthaCtx, type Dhama, type Tirtha } from "./dhamas";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
 import { DhamaHeroCard } from "./DhamaHeroCard";
 import { QrSheet } from "../QrSheet";
@@ -26,6 +26,19 @@ function KindChip({ d, kind }: { d: Dhama; kind: Tirtha["kind"] }) {
       {KIND_RU[kind]}
     </span>
   );
+}
+
+/** Стрелка-навигатор для кнопки прокладки маршрута. */
+function NavArrowIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden style={{ display: "block" }}>
+      <path d="M12 2 4.6 20.3a.7.7 0 0 0 .98.84L12 18l6.42 3.14a.7.7 0 0 0 .98-.84L12 2z" />
+    </svg>
+  );
+}
+
+function openDir(t: Tirtha) {
+  try { window.open(mapsDir(t), "_blank", "noopener"); } catch { /* noop */ }
 }
 
 function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string) => void }) {
@@ -73,7 +86,12 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
         </span>
         <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.42, color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
-      <span style={{ alignSelf: "center" }}>
+      <span style={{ alignSelf: "center", display: "flex", alignItems: "center", gap: 6 }}>
+        <button aria-label="Проложить маршрут" title="Проложить маршрут в Google Maps"
+          onClick={(e) => { e.stopPropagation(); openDir(t); }}
+          style={{ display: "grid", placeItems: "center", width: 30, height: 30, borderRadius: "50%", border: `1px solid color-mix(in srgb, ${d.accent} 55%, transparent)`, background: `color-mix(in srgb, ${d.accent} 8%, transparent)`, color: d.accent, cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent" }}>
+          <NavArrowIcon size={15} />
+        </button>
         <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={26} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
       </span>
     </div>

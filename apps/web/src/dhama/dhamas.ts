@@ -802,6 +802,15 @@ export function mapsQuery(t: Tirtha): string {
   return t.maps ?? `${t.name} ${getDhama(t.dhama)?.name ?? ""}`.trim();
 }
 
+/** Ссылка на пеший маршрут в Google Maps (навигация к месту от текущего положения). Без API-ключа. */
+export function mapsDir(t: Tirtha): string {
+  const dest =
+    t.lat != null && t.lng != null && !(t.lat === 0 && t.lng === 0)
+      ? `${t.lat},${t.lng}`
+      : mapsQuery(t);
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=walking`;
+}
+
 /* ── Контекст карточки (♥/⋯-меню, share, QR, PDF) — единый книжный стандарт ── */
 export function dhamaCtx(d: Dhama) {
   return {
