@@ -18,6 +18,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { darshanClient, type DarshanItem } from "./darshan/api";
+import { useFavorite } from "./cardActions";
 
 /* ── токены ── */
 const GOLD = "#D2AA1B";
@@ -30,6 +31,11 @@ const HAIR = "var(--color-hairline)";
 const FILL2 = "var(--color-glass-regular)";
 
 const STORY_MS = 6000;            // длительность одного кадра
+// Настройки сторис между сессиями (как в TG: звук по умолчанию ВЫКЛ, скорость 1×).
+function storySoundOn(): boolean { try { return localStorage.getItem("iol_story_sound") === "1"; } catch { return false; } }
+function setStorySound(on: boolean) { try { localStorage.setItem("iol_story_sound", on ? "1" : "0"); } catch { /* приватный режим */ } }
+function storyRate(): number { let n = 1; try { n = Number(localStorage.getItem("iol_story_rate")); } catch { /* noop */ } return n === 1.5 || n === 2 ? n : 1; }
+function setStoryRate(r: number) { try { localStorage.setItem("iol_story_rate", String(r)); } catch { /* noop */ } }
 const RING_GRAD = "conic-gradient(from 135deg, #F4C430, #FF7A00, #E0451F, #D2AA1B, #F4C430)";
 
 /* Прокси картинки через worker /api/img: храмовые CDN (cdn.iskconvrindavan.com,
@@ -239,6 +245,9 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const [capOpen, setCapOpen] = useState(false);
   const [ready, setReady] = useState(false);   // текущий кадр загрузился? пока нет — прогресс не идёт
   const [stalled, setStalled] = useState(false); // видео буферизуется → прогресс на паузе, не перелистываем
+  const [muted, setMuted] = useState(() => !storySoundOn()); // звук видео (по умолчанию выкл, как в TG)
+  const [rate, setRate] = useState(() => storyRate());        // скорость видео 1× / 1.5× / 2×
+  const [toast, setToast] = useState<string | null>(null);    // мини-уведомление (избранное / ссылка)
 
   const item = items[ti];
   const imgs = item.images;
@@ -257,6 +266,12 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const durRef = useRef(STORY_MS);          // длительность активного кадра (видео → его длина)
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const goNextRef = useRef<() => void>(() => {});
+  const baseDurRef = useRef(STORY_MS);                 // длина видео без учёта скорости
+  const rateRef = useRef(rate); rateRef.current = rate;
+  const toastT = useRef(0);
+  // Избранное текущей истории (♥, localStorage `fav:*`). Ключ — стабильный id поста.
+  const fav = useFavorite(`darshan:${item.postId || item.srcUrl}`, { t: item.deities || item.templeName, s: "Ежедневный даршан", h: item.channelUrl || item.srcUrl });
+  const flash = useCallback((m: string) => { setToast(m); window.clearTimeout(toastT.current); toastT.current = window.setTimeout(() => setToast(null), 1600); }, []);
 
   // Даршан-кадры показываем ЦЕЛИКОМ (object-fit: contain) — мурти никогда не режем.
   // Раньше для ландшафта включался cover, а ориентацию мерили по naturalWidth/Height.
@@ -291,7 +306,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   useEffect(() => { goNextRef.current = goNext; }, [goNext]);
 
   /* сброс прогресса при смене кадра/храма */
-  useEffect(() => { accRef.current = 0; durRef.current = STORY_MS; setReady(false); setStalled(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
+  useEffect(() => { accRef.current = 0; durRef.current = STORY_MS; baseDurRef.current = STORY_MS; setReady(false); setStalled(false); if (barRef.current) barRef.current.style.width = "0%"; }, [ti, ii]);
 
   /* таймер кадра — двигаем ширину активного бара напрямую (без ререндера 60 fps).
      Прогресс НЕ стартует, пока фото не загрузилось — иначе кадр перелистывался
@@ -314,8 +329,14 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   /* видео-кадр: проигрывание синхронно с паузой истории (тап-удержание ставит на паузу) */
   useEffect(() => {
     const v = videoRef.current; if (!v) return;
+    v.muted = muted;            // применяем выбор звука (вкл/выкл) к текущему видео
+    v.playbackRate = rate;      // и скорость
     if (paused) v.pause(); else void v.play().catch(() => {});
-  }, [paused, ti, ii, ready]);
+  }, [paused, ti, ii, ready, muted, rate]);
+
+  /* прогресс-бар видео тикает по стенным часам → при ускорении делим длительность
+     на скорость, чтобы полоса заполнялась ровно к концу ускоренного ролика. */
+  useEffect(() => { durRef.current = baseDurRef.current / rate; }, [rate]);
 
   /* клавиатура */
   useEffect(() => {
@@ -347,6 +368,14 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   };
   const onCancel = () => { window.clearTimeout(holdTimer.current); if (press.current?.hold) setPaused(false); press.current = null; };
   const stop = (e: React.PointerEvent | React.MouseEvent) => e.stopPropagation();
+  const SBTN: CSSProperties = { flexShrink: 0, width: 44, height: 44, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.16)", color: "#fff", display: "grid", placeItems: "center", cursor: "pointer", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", WebkitTapHighlightColor: "transparent" };
+  const toggleSound = () => setMuted((m) => { const next = !m; setStorySound(!next); const v = videoRef.current; if (v) { v.muted = next; if (!next) void v.play().catch(() => {}); } return next; });
+  const cycleRate = () => setRate((r) => { const next = r === 1 ? 1.5 : r === 1.5 ? 2 : 1; setStoryRate(next); const v = videoRef.current; if (v) v.playbackRate = next; durRef.current = baseDurRef.current / next; return next; });
+  const onShare = async () => {
+    const url = item.channelUrl || item.srcUrl || "";
+    const title = item.deities || item.templeName || "Даршан";
+    try { if (navigator.share) { await navigator.share({ title, url }); } else { await navigator.clipboard.writeText(url); flash("Ссылка скопирована"); } } catch { /* отменено пользователем */ }
+  };
 
   const longCap = !!curCap && (curCap.length > 140 || curCap.includes("\n"));
   const nextSrc = ii < total - 1 ? imgs[ii + 1] : (ti < items.length - 1 ? items[ti + 1].images[0] : null);
@@ -367,7 +396,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
         {fr?.video ? (
           <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={px(imgs[ii], 2560)}
             autoPlay muted loop playsInline preload="auto"
-            onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) durRef.current = Math.min(Math.max(d * 1000, 2500), 60000); }}
+            onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) { baseDurRef.current = Math.min(Math.max(d * 1000, 2500), 60000); durRef.current = baseDurRef.current / rateRef.current; } }}
             onLoadedData={() => setReady(true)} onCanPlay={() => { setReady(true); setStalled(false); }}
             onPlaying={() => { setReady(true); setStalled(false); }} onWaiting={() => setStalled(true)} onStalled={() => setStalled(true)}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s ease" }} />
@@ -417,6 +446,37 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           <CloseGlyph />
         </button>
       </div>
+
+      {/* правый рейл действий — как в TG/reels: избранное · звук · скорость · поделиться.
+          Обёртка гасит жесты истории (пауза/листание), чтобы тапы по кнопкам не листали кадр. */}
+      <div onPointerDown={stop} onPointerUp={stop} onPointerCancel={stop} onClick={stop}
+        style={chrome({ position: "absolute", right: 10, bottom: "calc(150px + env(safe-area-inset-bottom,0px))", zIndex: 5, display: "flex", flexDirection: "column", gap: 12, alignItems: "center" })}>
+        <button type="button" aria-label={fav.on ? "Убрать из избранного" : "В избранное"} aria-pressed={fav.on} onClick={() => fav.toggle(flash)} style={SBTN}>
+          <svg width="23" height="23" viewBox="0 0 24 24" fill={fav.on ? "#FF453A" : "none"} stroke={fav.on ? "#FF453A" : "#fff"} strokeWidth="2" strokeLinejoin="round" aria-hidden><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
+        </button>
+        {fr?.video && (
+          <button type="button" aria-label={muted ? "Включить звук" : "Выключить звук"} aria-pressed={!muted} onClick={toggleSound} style={SBTN}>
+            {muted ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#fff" stroke="none" /><path d="M17 9l5 6M22 9l-5 6" /></svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 9v6h4l5 4V5L8 9H4z" fill="#fff" stroke="none" /><path d="M16.5 8.5a5 5 0 010 7" /><path d="M19 6a9 9 0 010 12" /></svg>
+            )}
+          </button>
+        )}
+        {fr?.video && (
+          <button type="button" aria-label={`Скорость ${rate}×`} onClick={cycleRate} style={{ ...SBTN, fontFamily: FT, fontWeight: 800, fontSize: rate === 1.5 ? 11 : 13, letterSpacing: "-0.02em" }}>
+            {rate === 1 ? "1×" : rate === 1.5 ? "1.5×" : "2×"}
+          </button>
+        )}
+        <button type="button" aria-label="Поделиться" onClick={onShare} style={SBTN}>
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M12 3v13" /><path d="M8 7l4-4 4 4" /><path d="M5 12v7a1 1 0 001 1h12a1 1 0 001-1v-7" /></svg>
+        </button>
+      </div>
+
+      {/* тост действий */}
+      {toast && (
+        <div style={{ position: "absolute", left: "50%", bottom: "calc(116px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 6, background: "rgba(0,0,0,0.8)", color: "#fff", fontFamily: FT, fontSize: 13, fontWeight: 600, padding: "9px 16px", borderRadius: 999, backdropFilter: "blur(8px)", pointerEvents: "none", whiteSpace: "nowrap" }}>{toast}</div>
+      )}
 
       {/* низ: имя Божеств + подпись (для ежедневных даршанов — единый 3-строчный стандарт) */}
       <div style={chrome({ position: "absolute", left: 0, right: 0, bottom: 0, zIndex: 4, padding: "44px 16px calc(20px + env(safe-area-inset-bottom,0px))", background: "linear-gradient(transparent, rgba(0,0,0,0.72))" })}>
