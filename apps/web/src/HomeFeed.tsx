@@ -153,19 +153,24 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   }
 
   if (display.length > 1) {
-    // Как в Instagram: единый кадр на всю карусель, его аспект задаёт ПЕРВОЕ фото
-    // (кламп 4:5 … 1.91:1). Высота фиксирована через padding-bottom (при скролле не «плавает»).
-    // Каждый кадр: лёгкое превью мгновенным фоном + полноразмер <img> поверх (прогрессивно).
-    const frame = ar ? Math.min(1.91, Math.max(0.8, ar)) : 0.8;
+    // Единый кадр на всю карусель, его аспект задаёт ПЕРВОЕ фото. Кадр показываем
+    // ЦЕЛИКОМ (object-fit: contain) — мурти/Божеств НИКОГДА не режем. Раньше тут был
+    // cover + кламп 4:5 (0.8): любой вертикальный даршан выше 4:5 терял верх/низ (срезало
+    // корону/стопы — «обрезка на 90%»). Поля по краям закрывает размытая подложка из того же
+    // кадра (как в Stories/лайтбоксе). Высота фиксирована через padding-bottom, чтобы при
+    // свайпе не «плавала». Contain делает фит устойчивым к EXIF-повёрнутым фото: даже при
+    // неверно замеренном аспекте кадр не обрезается, лишь шире поля подложки.
+    const frame = ar ? Math.min(1.91, Math.max(0.5, ar)) : 0.8;
     return (
-      <div style={{ position: "relative", width: "100%", paddingBottom: (100 / frame).toFixed(3) + "%", background: "var(--color-glass-regular)", overflow: "hidden" }}>
+      <div style={{ position: "relative", width: "100%", paddingBottom: (100 / frame).toFixed(3) + "%", background: "#000", overflow: "hidden" }}>
         <div ref={scRef} onScroll={onScroll} onPointerDown={onDown} className="iol-feed-carousel"
           style={{ position: "absolute", inset: 0, display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
           {display.map((src, i) => (
-            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", backgroundImage: preview[i] ? `url("${preview[i]}")` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
+            <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", overflow: "hidden" }}>
+              {preview[i] && <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${preview[i]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(30px) brightness(0.55)", transform: "scale(1.15)" }} />}
               <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
                 onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
           ))}
         </div>
