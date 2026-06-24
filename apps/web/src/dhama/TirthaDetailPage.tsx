@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BackIcon } from "../ui/icons";
 import { api } from "../api";
-import { mapsQuery, type Dhama, type Person, type Tirtha } from "./dhamas";
+import { mapsDir, mapsQuery, type Dhama, type Person, type Tirtha } from "./dhamas";
 import { TirthaHeroCard } from "./TirthaHeroCard";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
@@ -134,6 +134,17 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           <div style={{ marginBottom: 18 }}><NotesAtSource kind="place" refId={t.id} accent={accent} /></div>
           {/* описание */}
           <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{t.about}</p>
+
+          {/* навигатор: пеший маршрут в Google Maps */}
+          <a href={mapsDir(t)} target="_blank" rel="noreferrer"
+            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 16, padding: "10px 16px", borderRadius: 999,
+              background: accent, color: "#fff", textDecoration: "none", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600,
+              boxShadow: "var(--shadow-card)", WebkitTapHighlightColor: "transparent" }}>
+            <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor" aria-hidden style={{ display: "block" }}>
+              <path d="M12 2 4.6 20.3a.7.7 0 0 0 .98.84L12 18l6.42 3.14a.7.7 0 0 0 .98-.84L12 2z" />
+            </svg>
+            Проложить маршрут
+          </a>
 
           {/* лила */}
           {t.lila && (
