@@ -299,7 +299,7 @@ const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|a
 // НЕ-даршан: афиши/анонсы/программы/астрономия. Высокоточный отсев — ловит постеры Экадаши,
 // флаеры лекций (сессии/регистрация/venue), фото луны/затмений и т.п. Намеренно НЕ включает
 // «фестиваль/утсав» — фестивальные даршаны Божеств реальны и должны проходить.
-const NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|\bкурс\b|\bpresents\b|представляет|philosophy of|admission|\bticket\b|\bбилет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|\bзакат\b|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
+const NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|\bкурс\b|\bpresents\b|представляет|philosophy of|admission|\bticket\b|\bбилет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|ekadas|экада[шс]|mahadvadas|махадвадаш|двадаш|dvadas|dwadas|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|\bзакат\b|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
 
 /* ── источник: галерея даршана Маяпура (mayapur.com, оригиналы ~1920px) ── */
 // Индекс server-rendered (блоки «дата DD/MM/YYYY → /media/album/N»). Полные кадры
@@ -446,12 +446,26 @@ async function latestDarshan(channel: string): Promise<RawPost | null> {
       cf: { cacheTtl: 600, cacheEverything: true },
     } as RequestInit);
     if (!r.ok) return null;
-    const posts = parsePosts(await r.text());
-    // Только ДАРШАН: сперва выкидываем афиши/анонсы/астрономию, затем предпочитаем пост
-    // с даршанной лексикой; если таких нет — свежайший НЕ-афишный пост с фото (а не любой).
+    const posts = parsePosts(await r.text());                 // свежие первыми
+    // Только ДАРШАН: сперва выкидываем афиши/анонсы/астрономию/Экадаши.
     const withPhoto = posts.filter((p) => p.photos.length);
     const ok = withPhoto.filter((p) => !NON_DARSHAN_RE.test(p.text));
-    return ok.find((p) => DARSHAN_RE.test(p.text)) || ok[0] || null;
+    if (!ok.length) return null;
+    // Якорь — свежайший даршанный пост (с даршанной лексикой, иначе просто свежайший).
+    const anchor = ok.find((p) => DARSHAN_RE.test(p.text)) || ok[0];
+    // Храмы постят даршан за день НЕСКОЛЬКИМИ сообщениями (по 1–2 фото). Собираем фото
+    // ВСЕХ даршанных постов того же дня, что и якорь (окно ~20 ч до якоря, без привязки к
+    // часовому поясу храма) — иначе из канала уезжало только последнее сообщение (2 кадра).
+    const at = Date.parse(anchor.date) || Date.now();
+    const sameDay = ok.filter((q) => {
+      const t = Date.parse(q.date);
+      if (!Number.isFinite(t)) return q.id === anchor.id;
+      return at - t >= -3600_000 && at - t <= 20 * 3600_000;
+    });
+    sameDay.sort((a, b) => (Date.parse(a.date) || 0) - (Date.parse(b.date) || 0)); // день: старые → новые
+    const photos: string[] = []; const seen = new Set<string>();
+    for (const q of sameDay) for (const ph of q.photos) if (!seen.has(ph)) { seen.add(ph); photos.push(ph); }
+    return { id: anchor.id, date: anchor.date, text: anchor.text, photos: photos.slice(0, 30) };
   } catch {
     return null;
   }
