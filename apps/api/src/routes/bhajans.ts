@@ -15,7 +15,8 @@ type Row = Record<string, any>;
 // GET /v1/bhajans — витрина: только записи с реальным текстом (наполненные)
 bhajansRouter.get('/', async (c) => {
   const { results } = await c.env.DB.prepare(
-    `SELECT slug, name, author_name, hero_image, category
+    `SELECT slug, name, author_name, hero_image, category,
+            EXISTS(SELECT 1 FROM prayer_media m WHERE m.slug = prayers.slug AND m.kind = 'recording') AS has_rec
        FROM prayers
       WHERE is_section = 0 AND is_catalog = 0
       ORDER BY (author_name IS NULL), length(text) ASC`,
@@ -26,6 +27,7 @@ bhajansRouter.get('/', async (c) => {
     author: r.author_name ?? null,
     hero_image: r.hero_image ?? null,
     category: r.category ?? null,
+    has_recordings: !!r.has_rec,
   }));
   return c.json({ bhajans });
 });
