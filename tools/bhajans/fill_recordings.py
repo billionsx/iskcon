@@ -86,17 +86,19 @@ def _cpl(a, b):
 
 
 def same_song(slug: str, api_verses) -> bool:
-    """Тождество подтверждаем содержимым 1-го куплета нашей версии: ищем среди
-    куплетов bhajanamrita сильное совпадение (транслит >=14 ИЛИ перевод >=24)."""
-    rows = d1("SELECT verse_translit tr, verse_text tx FROM prayer_verses WHERE slug=? ORDER BY ord LIMIT 1", [slug])
+    """Тождество подтверждаем содержимым: ищем сильное совпадение между ЛЮБЫМ нашим
+    куплетом и ЛЮБЫМ куплетом bhajanamrita (транслит >=14 ИЛИ перевод >=24). Так
+    компиляции (наш 1-й куплет может отсутствовать у bhajanamrita) тоже подтверждаются."""
+    rows = d1("SELECT verse_translit tr, verse_text tx FROM prayer_verses WHERE slug=? ORDER BY ord", [slug])
     if not rows or not api_verses:
         return False
-    d_tr, d_tx = norm(rows[0].get("tr") or ""), norm(rows[0].get("tx") or "")
-    best_tr = best_tx = 0
-    for v in api_verses:
-        best_tr = max(best_tr, _cpl(d_tr, norm(v.get("transliteration") or "")))
-        best_tx = max(best_tx, _cpl(d_tx, norm(v.get("translation") or "")))
-    return best_tr >= 14 or best_tx >= 24
+    api = [(norm(v.get("transliteration") or ""), norm(v.get("translation") or "")) for v in api_verses]
+    for r in rows:
+        d_tr, d_tx = norm(r.get("tr") or ""), norm(r.get("tx") or "")
+        for a_tr, a_tx in api:
+            if _cpl(d_tr, a_tr) >= 14 or _cpl(d_tx, a_tx) >= 24:
+                return True
+    return False
 
 
 def main():
