@@ -36,6 +36,21 @@ TAILS = [
     "unknown/nanda-nandana-ashtaka", "unknown/shri-govardkhana-makharadzha",
 ]
 
+# Слаги bhajanamrita, сверенные вручную по имени+автору в _bm_catalog (74 песни).
+# Для них доверяем совпадению (нужен лишь матч числа куплетов — содержимое уже сверено глазами).
+VERIFIED = {
+    "radharani-ki-jay": "radharani-ki-jaya",
+    "tulasi": "tulasi-kirtan",
+    "bhaktivinod-thakur/ohe-vaishnava-thakur": "ohe-vaishnava-thakura",
+    "vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho": "gauranga-tumi-more",
+    "visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka": "shri-gurvastaka",
+    "govindam": "govindam-adi-purusam",
+    "lochan-das-thakur/parama-koruna": "parama-karuna",
+    "narottam-das-thakur/hari-hari": "khari-khari-vipkhale",
+    "narottam-das-thakur/nama-sankirtana": "shri-nama-sankirtana",
+    "narottam-das-thakur/vrindavana-ramia-sthana": "vrindavana-ramia-sthana",
+}
+
 
 def d1(sql, params=None):
     token = os.environ.get("CF") or os.environ.get("CLOUDFLARE_API_TOKEN")
@@ -95,8 +110,9 @@ def build_catalog():
     return cat
 
 
-def try_fill(slug, bhaj, db_n, db_v1_translit, db_v1_text):
-    """Возврат: (status, pairs, api_n, note). Пишет wbw только при совпадении."""
+def try_fill(slug, bhaj, db_n, db_v1_translit, db_v1_text, trusted=False):
+    """Возврат: (status, pairs, api_n, note). Пишет wbw только при совпадении.
+    trusted=True (сверенный вручную слаг) — content-check не нужен, достаточно числа куплетов."""
     try:
         full = fetch_full(bhaj, "ru")
     except Exception as e:
@@ -107,14 +123,18 @@ def try_fill(slug, bhaj, db_n, db_v1_translit, db_v1_text):
         return ("not_found", 0, 0, f"{bhaj}: no verses")
     if db_n != api_n:
         return ("count_mismatch", 0, api_n, f"{bhaj} db={db_n} api={api_n}")
-    api_v1_tr = api_verses[0].get("transliteration") or ""
-    api_v1_tx = api_verses[0].get("translation") or ""
-    nt_db, nt_api = norm(db_v1_translit), norm(api_v1_tr)
-    tr_ok = bool(nt_db) and bool(nt_api) and (nt_db[:18] == nt_api[:18] or nt_db.startswith(nt_api[:24]) or nt_api.startswith(nt_db[:24]))
-    tx_db, tx_api = norm(db_v1_text), norm(api_v1_tx)
-    tx_ok = bool(tx_db) and bool(tx_api) and len(tx_db) >= 20 and (tx_db[:28] == tx_api[:28] or tx_db.startswith(tx_api[:30]) or tx_api.startswith(tx_db[:30]))
-    if not (tr_ok or tx_ok):
-        return ("content_mismatch", 0, api_n, f"{bhaj}: {nt_db[:20]}|{nt_api[:20]}")
+    if trusted:
+        method = "verified"
+    else:
+        api_v1_tr = api_verses[0].get("transliteration") or ""
+        api_v1_tx = api_verses[0].get("translation") or ""
+        nt_db, nt_api = norm(db_v1_translit), norm(api_v1_tr)
+        tr_ok = bool(nt_db) and bool(nt_api) and (nt_db[:18] == nt_api[:18] or nt_db.startswith(nt_api[:24]) or nt_api.startswith(nt_db[:24]))
+        tx_db, tx_api = norm(db_v1_text), norm(api_v1_tx)
+        tx_ok = bool(tx_db) and bool(tx_api) and len(tx_db) >= 20 and (tx_db[:28] == tx_api[:28] or tx_db.startswith(tx_api[:30]) or tx_api.startswith(tx_db[:30]))
+        if not (tr_ok or tx_ok):
+            return ("content_mismatch", 0, api_n, f"{bhaj}: {nt_db[:20]}|{nt_api[:20]}")
+        method = "translit" if tr_ok else "translation"
     total_wbw = sum(len(v.get("wordByWord") or []) for v in api_verses)
     if total_wbw == 0:
         return ("source_no_wbw", 0, api_n, bhaj)
@@ -130,7 +150,7 @@ def try_fill(slug, bhaj, db_n, db_v1_translit, db_v1_text):
             d1("UPDATE prayer_verses SET word_by_word=? WHERE slug=? AND ord=?",
                [json.dumps(p, ensure_ascii=False), slug, i])
             pairs += len(p)
-    return ("filled", pairs, api_n, f"via {bhaj} ({'translit' if tr_ok else 'translation'})")
+    return ("filled", pairs, api_n, f"via {bhaj} ({method})")
 
 
 def main():
@@ -150,15 +170,21 @@ def main():
         db_tr = (dv[0]["tr"] if dv and dv[0].get("tr") else "")
         db_tx = (dv[0]["tx"] if dv and dv[0].get("tx") else "")
 
-        candidates = [last]
+        # 1) сверенный вручную слаг (доверенный), 2) последний сегмент, 3) матч по имени каталога
+        verified_slug = VERIFIED.get(tail)
+        candidates = []
+        if verified_slug:
+            candidates.append((verified_slug, True))
+        if last not in [c[0] for c in candidates]:
+            candidates.append((last, False))
         ck = cat.get(norm(db_name))
-        if ck and ck not in candidates:
-            candidates.append(ck)
+        if ck and ck not in [c[0] for c in candidates]:
+            candidates.append((ck, False))
 
         best = ("not_found", 0, 0, "no candidate matched")
         order = {"filled": 5, "source_no_wbw": 4, "content_mismatch": 3, "count_mismatch": 2, "not_found": 1}
-        for bhaj in candidates:
-            res = try_fill(slug, bhaj, db_n, db_tr, db_tx)
+        for bhaj, trusted in candidates:
+            res = try_fill(slug, bhaj, db_n, db_tr, db_tx, trusted=trusted)
             if order.get(res[0], 0) > order.get(best[0], 0):
                 best = res
             if res[0] == "filled":
