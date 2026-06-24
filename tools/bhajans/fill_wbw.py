@@ -49,6 +49,8 @@ VERIFIED = {
     "narottam-das-thakur/hari-hari": "khari-khari-vipkhale",
     "narottam-das-thakur/nama-sankirtana": "shri-nama-sankirtana",
     "narottam-das-thakur/vrindavana-ramia-sthana": "vrindavana-ramia-sthana",
+    "narottam-das-thakur/gauranga-bolite-habe": "gauranga-bolite-ha-be",
+    "narottam-das-thakur/shree-krishna-chaytaniya-prabhu": "shri-krishna-chaitania-prabkhu",
 }
 
 
@@ -110,9 +112,61 @@ def build_catalog():
     return cat
 
 
+def _cpl(a, b):
+    n = 0
+    for x, y in zip(a, b):
+        if x != y:
+            break
+        n += 1
+    return n
+
+
+def _pairs_of(v):
+    p = []
+    for w in (v.get("wordByWord") or []):
+        t = decode_pua((w.get("wordTransliteration") or "").strip())
+        m = re.sub(r"\s+", " ", (w.get("translation") or "")).strip()
+        if t or m:
+            p.append({"t": t, "m": m})
+    return p
+
+
+def fill_aligned(slug, api_verses):
+    """Куплеты сопоставляются по СОДЕРЖИМОМУ (не по порядку): для каждого нашего
+    куплета ищем куплет bhajanamrita с тем же текстом. Лишний куплет остаётся без
+    пословника — без рассинхрона. Совпадение должно быть уверенным и однозначным."""
+    rows = d1("SELECT ord, verse_translit tr, verse_text tx FROM prayer_verses WHERE slug=? ORDER BY ord", [slug])
+    api = [(norm(v.get("transliteration") or ""), norm(v.get("translation") or ""), _pairs_of(v)) for v in api_verses]
+    filled = pairs = 0
+    for r in rows:
+        d_tr, d_tx = norm(r.get("tr") or ""), norm(r.get("tx") or "")
+        scores = sorted(((_cpl(d_tr, a[0]), _cpl(d_tx, a[1]), idx) for idx, a in enumerate(api)), reverse=True)
+        best = scores[0]
+        second_tr = scores[1][0] if len(scores) > 1 else 0
+        idx = best[2]
+        ok_tr = best[0] >= 14 and best[0] >= second_tr + 6
+        # запасной матч по переводу, если транслит неоднозначен
+        tx_scores = sorted(((_cpl(d_tx, a[1]), i) for i, a in enumerate(api)), reverse=True)
+        ok_tx = tx_scores[0][0] >= 24 and (len(tx_scores) < 2 or tx_scores[0][0] >= tx_scores[1][0] + 8)
+        if ok_tr:
+            chosen = idx
+        elif ok_tx:
+            chosen = tx_scores[0][1]
+        else:
+            continue
+        p = api[chosen][2]
+        if p:
+            d1("UPDATE prayer_verses SET word_by_word=? WHERE slug=? AND ord=?",
+               [json.dumps(p, ensure_ascii=False), slug, r["ord"]])
+            filled += 1
+            pairs += len(p)
+    return filled, pairs
+
+
 def try_fill(slug, bhaj, db_n, db_v1_translit, db_v1_text, trusted=False):
     """Возврат: (status, pairs, api_n, note). Пишет wbw только при совпадении.
-    trusted=True (сверенный вручную слаг) — content-check не нужен, достаточно числа куплетов."""
+    trusted=True (сверенный вручную слаг) — content-check не нужен; при разном числе
+    куплетов делаем пословный матч по содержимому (fill_aligned)."""
     try:
         full = fetch_full(bhaj, "ru")
     except Exception as e:
@@ -122,6 +176,11 @@ def try_fill(slug, bhaj, db_n, db_v1_translit, db_v1_text, trusted=False):
     if api_n == 0:
         return ("not_found", 0, 0, f"{bhaj}: no verses")
     if db_n != api_n:
+        if trusted:
+            fv, pr = fill_aligned(slug, api_verses)
+            if fv > 0:
+                return ("filled_aligned", pr, api_n, f"via {bhaj}: {fv}/{db_n} куплетов сматчено")
+            return ("count_mismatch", 0, api_n, f"{bhaj} db={db_n} api={api_n} (align 0)")
         return ("count_mismatch", 0, api_n, f"{bhaj} db={db_n} api={api_n}")
     if trusted:
         method = "verified"
@@ -182,12 +241,12 @@ def main():
             candidates.append((ck, False))
 
         best = ("not_found", 0, 0, "no candidate matched")
-        order = {"filled": 5, "source_no_wbw": 4, "content_mismatch": 3, "count_mismatch": 2, "not_found": 1}
+        order = {"filled": 6, "filled_aligned": 5, "source_no_wbw": 4, "content_mismatch": 3, "count_mismatch": 2, "not_found": 1}
         for bhaj, trusted in candidates:
             res = try_fill(slug, bhaj, db_n, db_tr, db_tx, trusted=trusted)
             if order.get(res[0], 0) > order.get(best[0], 0):
                 best = res
-            if res[0] == "filled":
+            if res[0] in ("filled", "filled_aligned"):
                 break
             time.sleep(0.3)
         status, pairs, api_n, note = best
