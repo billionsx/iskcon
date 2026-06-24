@@ -1,0 +1,63 @@
+name: ia-check
+
+# Считает файлы (mp3/playlist/cover) в объектах archive.org и кладёт результат
+# в ветку ci/ia-check (data/ia/_check.json) — читается через Contents API.
+# Нужно потому, что из песочницы archive.org заблокирован, а раннер до него ходит.
+on:
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: 'archive.org identifiers через запятую (напр. iskcone-uroki-lyubvi,iskcone-the-beggar)'
+        required: true
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Count files in IA objects
+        env:
+          IDS: ${{ github.event.inputs.ids }}
+        run: |
+          pip install --quiet internetarchive
+          python - <<'PY'
+          import os, json
+          from internetarchive import get_item
+          ids = [x.strip() for x in os.environ["IDS"].split(",") if x.strip()]
+          out = {}
+          for ident in ids:
+              try:
+                  it = get_item(ident)
+                  files = it.files or []
+                  names = [ (f.get("name") if isinstance(f, dict) else getattr(f, "name", "")) or "" for f in files ]
+                  audio = [n for n in names if n.lower().endswith((".mp3", ".m4a", ".ogg", ".opus", ".flac"))]
+                  out[ident] = {
+                      "exists": bool(getattr(it, "exists", False)),
+                      "mp3": len(audio),
+                      "playlist": "playlist.json" in names,
+                      "cover": "cover.jpg" in names,
+                      "total_files": len(names),
+                  }
+              except Exception as e:
+                  out[ident] = {"error": str(e)[:200]}
+          os.makedirs("data/ia", exist_ok=True)
+          with open("data/ia/_check.json", "w", encoding="utf-8") as f:
+              json.dump({"at": __import__("datetime").datetime.utcnow().isoformat() + "Z", "objects": out}, f, ensure_ascii=False, indent=2)
+          print(json.dumps(out, ensure_ascii=False, indent=2))
+          PY
+      - name: Publish result to side branch
+        if: always()
+        run: |
+          git config user.name "ci-ia"
+          git config user.email "ci@local"
+          git checkout -B ci/ia-check
+          git add -f data/ia/_check.json
+          git commit -m "ci: ia-check result [skip ci]" || echo "nothing to commit"
+          git push -f origin ci/ia-check
