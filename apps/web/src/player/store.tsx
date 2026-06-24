@@ -19,7 +19,7 @@ import { recordListen } from "../account/track";
 import { createWebEngine, type AudioEngine } from "./engine";
 
 export type AudioMode = "plain" | "commentary";
-export type Source = "book" | "kirtan";
+export type Source = "book" | "kirtan" | "bhajan";
 
 export interface Track {
   kind: "intro" | "chapter" | "song";
@@ -66,6 +66,7 @@ export interface PlayerApi {
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string): void;
   playKirtan(albumId: string, startIndex?: number): void;
+  playBhajan(slug: string, startIndex?: number): void;
   // транспорт
   togglePlay(): void;
   next(): void;
@@ -99,6 +100,8 @@ const BOOK_AUDIO: Record<string, { title: string; cover: string }> = {
 function bookCfg(id: string) {
   return BOOK_AUDIO[id] ?? { title: BOOKS[id] ? bookFullTitle(BOOKS[id]) : "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? "/og-default.png" };
 }
+/** Дисплей-инфо бхаджанов (название/обложка/автор) — заполняется из манифеста при загрузке. */
+const bhajanMeta: Record<string, { title: string; cover: string; artist: string }> = {};
 /** Заголовок/обложка/исполнитель плеера по активному элементу (книга или альбом киртанов). */
 function cfgFor(id: string, src: Source): { title: string; cover: string; artist: string } {
   if (src === "kirtan") {
@@ -108,6 +111,10 @@ function cfgFor(id: string, src: Source): { title: string; cover: string; artist
       cover: al ? albumCover(al) : "/og-default.png",
       artist: al ? (artistBySlug(al.artist)?.name ?? "") : "",
     };
+  }
+  if (src === "bhajan") {
+    const d = bhajanMeta[id];
+    return { title: d?.title ?? "Бхаджан", cover: d?.cover || "/og-default.png", artist: d?.artist ?? "" };
   }
   const c = bookCfg(id);
   return { title: c.title, cover: c.cover, artist: "" };
@@ -213,15 +220,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const src = sourceRef.current;
     const cur = manifestRef.current;
     if (cur && cur.book === want) return Promise.resolve(cur);
-    const path = src === "kirtan" ? `/kirtans/${want}/audio` : `/books/${want}/audio`;
+    const path = src === "kirtan" ? `/kirtans/${want}/audio`
+      : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(want)}`
+      : `/books/${want}/audio`;
     return fetch(api(path))
       .then((r) => r.json())
-      .then((m: Manifest) => { manifestRef.current = m; setManifest(m); return m; });
+      .then((m: Manifest & { title?: string; cover?: string; artist?: string }) => {
+        if (src === "bhajan") bhajanMeta[want] = { title: m.title || "Бхаджан", cover: m.cover || "", artist: m.artist || "" };
+        manifestRef.current = m; setManifest(m); return m;
+      });
   }
 
   function persist() {
     try {
-      if (sourceRef.current === "kirtan") return; // киртаны не восстанавливаем (v2)
+      if (sourceRef.current !== "book") return; // киртаны/бхаджаны не восстанавливаем (v2)
       const m = manifestRef.current; if (!m) return;
       const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
       localStorage.setItem(PERSIST_KEY, JSON.stringify({
@@ -247,7 +259,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     updateMediaSession(t, useMode);
     // Телеметрия прослушивания: только при реальном старте (autoplay), не при
     // тихом восстановлении позиции на старте приложения. No-op для гостя.
-    if (autoplay) {
+    if (autoplay && sourceRef.current !== "bhajan") {
       const isK = sourceRef.current === "kirtan";
       const cfg = cfgFor(bookRef.current, sourceRef.current);
       let listenRef = t.url;
@@ -314,6 +326,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
   function playKirtan(albumId: string, startIndex?: number) {
     switchBook(albumId, "kirtan");
+    pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand: true };
+    restoreRef.current = null;
+    ensureManifest().then((m) => applyPending(m, true));
+  }
+  function playBhajan(slug: string, startIndex?: number) {
+    switchBook(slug, "bhajan");
     pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
@@ -474,7 +492,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     isPlaying, currentTime, duration, rate, order: orderMode, repeat,
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
-    playBook, playChapter, playKirtan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
+    playBook, playChapter, playKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),
     dismiss,

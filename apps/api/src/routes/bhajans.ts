@@ -55,6 +55,49 @@ bhajansRouter.get('/catalog', async (c) => {
   return c.json({ items });
 });
 
+// GET /v1/bhajans/audio?slug=/ru/... — манифест записей бхаджана для глобального плеера
+// (та же форма, что /books/:id/audio и /kirtans/:id/audio).
+bhajansRouter.get('/audio', async (c) => {
+  const slug = c.req.query('slug');
+  if (!slug) return c.json({ error: { code: 'bad_request', message: 'slug required' } }, 400);
+
+  const meta = (await c.env.DB.prepare(
+    `SELECT name, author_name, hero_image FROM prayers WHERE slug = ?`,
+  ).bind(slug).first()) as Row | null;
+
+  const { results } = await c.env.DB.prepare(
+    `SELECT ord, title, subtitle, duration, url
+       FROM prayer_media
+      WHERE slug = ? AND kind = 'recording' AND url IS NOT NULL AND length(url) > 0
+      ORDER BY ord`,
+  ).bind(slug).all();
+
+  const parseDur = (d: unknown): number | null => {
+    const m = String(d ?? '').trim().match(/^(?:(\d+):)?(\d{1,2}):(\d{2})$/);
+    if (!m) return null;
+    return (m[1] ? parseInt(m[1], 10) : 0) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10);
+  };
+
+  const tracks = ((results as Row[]) ?? []).map((r, i) => ({
+    kind: 'song' as const,
+    pos: i,
+    chapter: null,
+    title: r.title || `Запись ${i + 1}`,
+    file: `rec-${r.ord}`,
+    url: r.url,
+    durationSec: parseDur(r.duration),
+    artist: r.subtitle ?? undefined,
+  }));
+
+  return c.json({
+    book: slug,
+    title: meta?.name ?? 'Бхаджан',
+    cover: meta?.hero_image ?? '',
+    artist: meta?.author_name ?? '',
+    modes: { plain: { identifier: slug, tracks } },
+  });
+});
+
 // GET /v1/bhajans/detail?slug=/ru/... — карточка (slug содержит слэши → query-param)
 bhajansRouter.get('/detail', async (c) => {
   const slug = c.req.query('slug');
