@@ -945,7 +945,15 @@ async function serveAudio(request: Request, identifier: string, filename: string
   h.set("X-Robots-Tag", NOINDEX);
   h.delete("set-cookie");
   const ct = h.get("Content-Type");
-  if (!ct || ct === "application/octet-stream") h.set("Content-Type", "audio/mpeg");
+  if (!ct || ct === "application/octet-stream") {
+    const ext = (name.split(".").pop() || "").toLowerCase();
+    const mime = ext === "m4a" || ext === "mp4" || ext === "aac" ? "audio/mp4"
+      : ext === "ogg" || ext === "oga" ? "audio/ogg"
+      : ext === "wav" ? "audio/wav"
+      : ext === "flac" ? "audio/flac"
+      : "audio/mpeg";
+    h.set("Content-Type", mime);
+  }
   return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: h });
 }
 
@@ -1582,7 +1590,7 @@ export default {
     if (url.pathname === "/api/ig/run") return igRun(env, url);
 
     // ── Audio proxy: /audio/<ia-identifier>/<file>.mp3 → streamed from Internet Archive ──
-    const audioM = url.pathname.match(/^\/audio\/([a-z0-9][a-z0-9._-]*)\/(.+\.mp3)$/i);
+    const audioM = url.pathname.match(/^\/audio\/([a-z0-9][a-z0-9._-]*)\/(.+\.(?:mp3|m4a|mp4|aac|ogg|oga|wav|flac))$/i);
     if (audioM) {
       return serveAudio(request, audioM[1], audioM[2]);
     }

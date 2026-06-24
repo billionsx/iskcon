@@ -46,7 +46,11 @@ export function createWebEngine(ev: EngineEvents): AudioEngine {
   return {
     load(url, autoplay) {
       if (!el) return;
-      if (el.src !== url) el.src = url;
+      // Относительный путь (/audio/...) приводим к абсолютному: иначе el.src-геттер вернёт
+      // уже абсолютный URL и сравнение el.src!==url будет всегда истинным → перезагрузка в цикле.
+      let target = url;
+      if (url) { try { target = new URL(url, location.href).href; } catch { target = url; } }
+      if (el.src !== target) el.src = target;
       if (autoplay) el.play().catch(() => { /* autoplay may be blocked until a gesture */ });
     },
     play() { return el ? el.play() : Promise.resolve(); },
