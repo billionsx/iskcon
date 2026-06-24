@@ -6,7 +6,7 @@
  *   • О дхаме — вводные тексты и ключевые факты.
  * Тап по месту → страница тиртхи.
  */
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { BackIcon, HeartIcon, MoreIcon } from "../ui/icons";
 import { SectionSubTabs } from "../SectionSubTabs";
 import DhamaMap from "./DhamaMap";
@@ -30,10 +30,32 @@ const PinIconNav = ({ size = 20 }: { size?: number }) => (
   </svg>
 );
 
+function KindIcon({ kind, size = 13 }: { kind: Tirtha["kind"]; size?: number }) {
+  let inner: ReactNode;
+  switch (kind) {
+    case "temple": inner = <path d="M3 21h18 M6 21V10 M12 21V10 M18 21V10 M4 10h16 M3 10 12 4 21 10" />; break;
+    case "kunda": inner = <><ellipse cx="12" cy="13" rx="8" ry="4.5" /><path d="M9 12.5q1.5 -1.4 3 0 t3 0" /></>; break;
+    case "ghat": inner = <><path d="M5 8h5v3h4v3h5" /><path d="M5 19q2 -1.5 4 0 t4 0 t4 0" /></>; break;
+    case "forest": inner = <><path d="M12 3 5.5 13h13L12 3Z" /><path d="M12 13v6 M9 19h6" /></>; break;
+    case "hill": inner = <path d="M3 19 9 8l4 6 3.5 -5L21 19Z" />; break;
+    case "river": inner = <><path d="M3 9q3 -3 6 0 t6 0 t6 0" /><path d="M3 15q3 -3 6 0 t6 0 t6 0" /></>; break;
+    case "samadhi": inner = <><path d="M6 12c0 -3.6 2.7 -6.5 6 -6.5s6 2.9 6 6.5" /><path d="M6 12v9 M18 12v9 M4 21h16 M12 5.5V3" /></>; break;
+    case "village": inner = <><path d="M5 21V11l7 -6 7 6v10Z" /><path d="M10 21v-6h4v6" /></>; break;
+    case "island": inner = <><path d="M5.5 16q6.5 -9 13 0" /><path d="M3 20q3 -2 6 0 t6 0 t6 0" /></>; break;
+    default: inner = <><path d="M12 21s6 -5.3 6 -10a6 6 0 1 0 -12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2" /></>;
+  }
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden style={{ display: "block", flexShrink: 0 }}>
+      <g stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">{inner}</g>
+    </svg>
+  );
+}
+
 function KindChip({ d, kind }: { d: Dhama; kind: Tirtha["kind"] }) {
   return (
-    <span style={{ flexShrink: 0, alignSelf: "center", padding: "3px 9px", borderRadius: 999, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "0.1px",
+    <span style={{ flexShrink: 0, alignSelf: "center", display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px 3px 7px", borderRadius: 999, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "0.1px",
       color: d.accent, background: `color-mix(in srgb, ${d.accent} 13%, transparent)`, border: `0.5px solid color-mix(in srgb, ${d.accent} 38%, transparent)` }}>
+      <KindIcon kind={kind} size={12} />
       {KIND_RU[kind]}
     </span>
   );
@@ -199,8 +221,8 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
                 {breakdown.length > 0 && (
                   <div style={{ marginTop: 9, display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {breakdown.map(({ k, n }) => (
-                      <span key={k} style={{ display: "inline-flex", alignItems: "center", gap: 5, borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", height: 26, padding: "0 11px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)" }}>
-                        <b style={{ fontWeight: 700, color: "var(--color-label)" }}>{n}</b> {plural(n, KIND_PL[k][0], KIND_PL[k][1], KIND_PL[k][2])}
+                      <span key={k} style={{ display: "inline-flex", alignItems: "center", gap: 5, borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", height: 26, padding: "0 11px 0 9px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)" }}>
+                        <KindIcon kind={k as Tirtha["kind"]} size={12} /><b style={{ fontWeight: 700, color: "var(--color-label)" }}>{n}</b> {plural(n, KIND_PL[k][0], KIND_PL[k][1], KIND_PL[k][2])}
                       </span>
                     ))}
                   </div>
@@ -208,7 +230,10 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
               </div>
               {byCluster.map(({ cluster, items }) => (
                 <section key={cluster.id} style={{ marginTop: 18 }}>
-                  <h3 style={{ margin: "0 0 2px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{cluster.title}</h3>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 2px" }}>
+                    <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{cluster.title}</h3>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: "var(--color-label-3)", flexShrink: 0 }}>{items.length}</span>
+                  </div>
                   {cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.4 }}>{cluster.note}</p>}
                   <div>
                     {items.map((t) => <TirthaRow key={t.id} d={dhama} t={t} onOpen={onOpenTirtha} />)}
