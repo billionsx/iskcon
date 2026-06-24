@@ -1164,12 +1164,12 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   })();
   // Эпитет на карточке (ВКЛ): профильное summary как авторитетная «надпись», иначе короткая заметка.
   const heroSummary = data?.profile?.summary || data?.note || null;
-  const hasScripture = (data?.links ?? []).some((l) => l.kind === "scripture") || linkGroups.length > 0;
+  const hasScripture = (data?.links ?? []).some((l) => l.kind === "scripture");
   const hasPlaces = (liveDarshans?.length ?? 0) > 0 || centers.length > 0;
   const hasBio = !!article || !!data?.profile?.biography;
   const tabs: { id: string; label: string }[] = [{ id: "obzor", label: "Обзор" }];
   if (data && hasBio) tabs.push({ id: "zhizn", label: bioLabel(data) });
-  if (groups.length > 0) tabs.push({ id: "svyazi", label: "Связи" });
+  if (groups.length > 0 || linkGroups.length > 0) tabs.push({ id: "svyazi", label: "Связи" });
   if (hasScripture) tabs.push({ id: "pisaniya", label: "Писания" });
   if (hasPlaces) tabs.push({ id: "mesta", label: "Места" });
   // На первичной загрузке героя: tab/sub берём из URL-хеша (#tab/sub), если
@@ -1392,7 +1392,14 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                 </>
               ))}
 
-              {tab === "svyazi" && groups.map((g) => <RelRows key={g.label} group={g} onOpen={onOpen} />)}
+              {tab === "svyazi" && (
+                <>
+                  {groups.map((g) => <RelRows key={g.label} group={g} onOpen={onOpen} />)}
+                  {linkGroups.map(([kind, items]) => (
+                    <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
+                  ))}
+                </>
+              )}
 
               {tab === "pisaniya" && (
                 <>
@@ -1410,9 +1417,6 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                       </div>
                     </section>
                   )}
-                  {linkGroups.map(([kind, items]) => (
-                    <LinkSection key={kind} kind={kind} items={items} onNavigate={onNavigate} />
-                  ))}
                 </>
               )}
 
