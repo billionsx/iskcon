@@ -55,15 +55,24 @@ def ext_of(url: str, kind: str) -> str:
     return {"recording": "mp3", "lecture": "mp3", "score": "pdf", "commentary": "pdf"}.get(kind, "bin")
 
 
-def download(url: str, dest: str):
+def download(url: str, dest: str, deadline: int = 360, stall: int = 45):
+    """Качает файл с жёстким дедлайном (deadline c) и анти-столлом (stall c без новых байт)."""
     rq = urllib.request.Request(url, headers={
         "User-Agent": UA, "Referer": "https://bhajanamrita.com/", "Accept": "*/*"})
-    with urllib.request.urlopen(rq, timeout=180) as r, open(dest, "wb") as f:
+    t0 = time.time(); last = t0; got = 0
+    with urllib.request.urlopen(rq, timeout=30) as r, open(dest, "wb") as f:
         while True:
             chunk = r.read(1 << 16)
+            now = time.time()
             if not chunk:
                 break
-            f.write(chunk)
+            f.write(chunk); got += len(chunk)
+            if chunk:
+                last = now
+            if now - t0 > deadline:
+                raise TimeoutError(f"дедлайн {deadline}c ({got//1024} КБ)")
+            if now - last > stall:
+                raise TimeoutError(f"столл >{stall}c без данных ({got//1024} КБ)")
     return os.path.getsize(dest)
 
 
