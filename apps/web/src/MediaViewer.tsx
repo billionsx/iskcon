@@ -8,7 +8,7 @@
 import { useEffect } from "react";
 
 export type ViewerMedia = {
-  type: "youtube" | "video" | "pdf" | "image";
+  type: "youtube" | "video" | "iframe" | "pdf" | "image";
   url: string;
   title?: string | null;
   subtitle?: string | null;
@@ -69,6 +69,12 @@ export function MediaViewer({ media, onClose }: { media: ViewerMedia | null; onC
         )}
         {media.type === "youtube" && !yid && (
           <a href={media.url} target="_blank" rel="noreferrer" style={{ color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, textDecoration: "underline" }}>Открыть видео ↗</a>
+        )}
+        {media.type === "iframe" && (
+          <div style={{ width: "100%", maxWidth: 960, aspectRatio: "16 / 9", background: "#000", borderRadius: 14, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}>
+            <iframe src={media.url} title={media.title || "Видео"} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
+              style={{ width: "100%", height: "100%", border: "none", display: "block" }} />
+          </div>
         )}
         {media.type === "video" && (
           <video src={media.url} controls autoPlay playsInline preload="metadata"
