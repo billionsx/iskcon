@@ -130,7 +130,9 @@ function CommentaryCard({ c, onView }: { c: MediaItem; onView: (m: ViewerMedia) 
 function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: string; onView: (m: ViewerMedia) => void }) {
   const player = usePlayer();
   const recs = (media.recordings ?? []).filter((r) => r.url);
-  const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0);
+  // Видео-лекции (media_type='video' — невстраиваемые страницы Яндекс/Rutube) временно
+  // убраны из приложения по требованию; данные сохранены в D1, вернуть = снять фильтр.
+  const lecs = (media.lectures ?? []).filter((l) => l.url && l.url.length > 0 && l.media_type !== "video");
   const audioLecs = lecs.filter((l) => l.media_type === "audio");
   const scs = (media.scores ?? []).filter((s) => s.url && s.url.length > 0);
   const coms = (media.commentaries ?? []).filter((c) => (c.description && c.description.length > 0) || (c.url && c.url.length > 0));
