@@ -145,7 +145,7 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
       </button>
       <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: 560, margin: "0 auto", padding: "64px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
         {item.images.map((src, i) => (
-          <img key={i} src={px(src, 2048)} alt="Даршан" loading="lazy" style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, marginBottom: 10 }} />
+          <img key={i} src={px(src, 2560)} alt="Даршан" loading="lazy" style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, marginBottom: 10 }} />
         ))}
         <div style={{ marginTop: 8, color: "#fff" }}>
           <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>

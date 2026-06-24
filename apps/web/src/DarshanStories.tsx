@@ -365,14 +365,14 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           закрывает размытая подложка. Мурти не обрезаем. */}
       <div className="dstory-stage" style={{ position: "absolute", inset: 0, zIndex: 1, overflow: "hidden" }}>
         {fr?.video ? (
-          <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={px(imgs[ii], 1600)}
+          <video key={`${ti}:${ii}`} ref={videoRef} src={fr.video} poster={px(imgs[ii], 2560)}
             autoPlay muted loop playsInline preload="auto"
             onLoadedMetadata={(e) => { const d = e.currentTarget.duration; if (Number.isFinite(d) && d > 0) durRef.current = Math.min(Math.max(d * 1000, 2500), 60000); }}
             onLoadedData={() => setReady(true)} onCanPlay={() => { setReady(true); setStalled(false); }}
             onPlaying={() => { setReady(true); setStalled(false); }} onWaiting={() => setStalled(true)} onStalled={() => setStalled(true)}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", opacity: ready ? 1 : 0, transition: "opacity .25s ease" }} />
         ) : (
-          <img key={`${ti}:${ii}`} src={px(imgs[ii], 1600)} alt="Даршан"
+          <img key={`${ti}:${ii}`} src={px(imgs[ii], 2560)} alt="Даршан"
             ref={(el) => { if (el && el.complete && el.naturalWidth > 0) setReady(true); }}
             onLoad={() => setReady(true)}
             style={{
@@ -387,7 +387,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           <span aria-hidden style={{ position: "absolute", top: "50%", left: "50%", width: 34, height: 34, marginTop: -17, marginLeft: -17, borderRadius: "50%", border: "2.5px solid rgba(255,255,255,0.28)", borderTopColor: "#fff", animation: "darSpin .8s linear infinite", zIndex: 2 }} />
         )}
       </div>
-      {nextSrc && <img src={px(nextSrc, 1600)} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
+      {nextSrc && <img src={px(nextSrc, 2560)} alt="" aria-hidden style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }} />}
 
       {/* скримы для читабельности хрома */}
       <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 150, background: "linear-gradient(rgba(0,0,0,0.55), transparent)", zIndex: 2, pointerEvents: "none", ...chrome() }} />

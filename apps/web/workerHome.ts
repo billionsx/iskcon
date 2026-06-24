@@ -355,7 +355,7 @@ async function imgProxy(url: URL): Promise<Response> {
   const hdr = { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)", Referer: `${target.protocol}//${target.hostname}/`, accept: "image/*,*/*" };
   let r: Response;
   try {
-    r = await fetch(target.toString(), { headers: hdr, cf: { image: { width: w, quality: 82, fit: "scale-down" }, cacheEverything: true, cacheTtl: 86400 } } as RequestInit);
+    r = await fetch(target.toString(), { headers: hdr, cf: { image: { width: w, quality: 90, fit: "scale-down" }, cacheEverything: true, cacheTtl: 86400 } } as RequestInit);
     if (!r.ok) throw new Error(`resize ${r.status}`);
   } catch {
     try {
@@ -383,7 +383,7 @@ function synthDarshan(row: { id: number; date: string; temple_name: string; deit
     id: `d${row.id}`, date: dateIso, views: "", text,
     rich: [{ t: "t", v: text }],
     photos: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=400`),
-    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`),
+    photosFull: imgs.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`),
     videos: [], audios: [], link: null, ts,
   };
 }
@@ -457,7 +457,7 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
           if (!imgs) continue;
           try {
             const full = JSON.parse(imgs) as string[];
-            if (Array.isArray(full) && full.length) p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2048`);
+            if (Array.isArray(full) && full.length) p.photosFull = full.map((u) => `/api/img?u=${encodeURIComponent(u)}&w=2560`);
           } catch { /* оставляем превью */ }
         }
       }
