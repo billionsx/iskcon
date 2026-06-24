@@ -1,9 +1,9 @@
 {
-  "songs": 60,
-  "uploaded": 219,
+  "songs": 11,
+  "uploaded": 59,
   "skipped_existing": 0,
-  "urls_rewritten": 219,
-  "errors": 64,
+  "urls_rewritten": 59,
+  "errors": 5,
   "items": [
     {
       "slug": "/ru/bhajans/adi-shankaracharya/jagannathastaka",
@@ -13,699 +13,363 @@
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "lecture-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/3f8dc036_20251202_072244.mp3",
-      "err": " error uploading lecture-1.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username billi"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/lecture-1.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "lecture-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/2234379a_20251211_054118.mp3",
-      "err": " error uploading lecture-2.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username billi"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/lecture-2.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "lecture-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/2234379a_20251211_054118.mp3",
-      "err": " error uploading lecture-3.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username billi"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/lecture-3.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/576c2565_20251121_161853.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/4e0da7c3_20251121_161926.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/41d7897d_20251211_054049.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-3.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-4.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/ba2fc011_20251215_172041.mp3",
-      "err": " error uploading recording-4.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-4.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-5.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/b104629d_20251215_172346.mp3",
-      "err": " error uploading recording-5.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-5.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-6.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/fea83b5f_20251215_173200.mp3",
-      "err": " error uploading recording-6.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-6.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "recording-7.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/c9518edd_20251215_173307.mp3",
-      "err": " error uploading recording-7.mp3 to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username bil"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/recording-7.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/6e846f65_20251212_052813.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username billion"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/score-1.pdf"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/05-amara-jivana-sada-pape-rata",
+      "ident": "iskcone-bhajan-amara-jivana",
       "file": "score-2.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/6e846f65_20251212_052813.pdf",
-      "err": " error uploading score-2.pdf to iskcone-bhajan-amara-jivana, Please reduce your request rate. - Your upload of iskcone-bhajan-amara-jivana from username billion"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-amara-jivana/score-2.pdf"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/11-manasa-deho-geho-jo-kichu-mor",
+      "ident": "iskcone-bhajan-manasa-deha-geha",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/d1f8c525_20251221_143934.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-manasa-deha-geha, Please reduce your request rate. - Your upload of iskcone-bhajan-manasa-deha-geha from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-manasa-deha-geha/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/11-manasa-deho-geho-jo-kichu-mor",
+      "ident": "iskcone-bhajan-manasa-deha-geha",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/7f1f5478_20251221_144027.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-manasa-deha-geha, Please reduce your request rate. - Your upload of iskcone-bhajan-manasa-deha-geha from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-manasa-deha-geha/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/11-manasa-deho-geho-jo-kichu-mor",
+      "ident": "iskcone-bhajan-manasa-deha-geha",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/d59b7484_20251221_144117.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-manasa-deha-geha, Please reduce your request rate. - Your upload of iskcone-bhajan-manasa-deha-geha from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-manasa-deha-geha/recording-3.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/11-manasa-deho-geho-jo-kichu-mor",
+      "ident": "iskcone-bhajan-manasa-deha-geha",
       "file": "recording-4.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/85a1c2e5_20251221_144216.mp3",
-      "err": " error uploading recording-4.mp3 to iskcone-bhajan-manasa-deha-geha, Please reduce your request rate. - Your upload of iskcone-bhajan-manasa-deha-geha from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-manasa-deha-geha/recording-4.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/11-manasa-deho-geho-jo-kichu-mor",
+      "ident": "iskcone-bhajan-manasa-deha-geha",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/33b95d50_20251221_143729.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-manasa-deha-geha, Please reduce your request rate. - Your upload of iskcone-bhajan-manasa-deha-geha from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-manasa-deha-geha/score-1.pdf"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/19-sarvasva-tomar-carane-sampiya",
+      "ident": "iskcone-bhajan-sarvasva-tomara",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/b0904d70_20251222_122248.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-sarvasva-tomara, Please reduce your request rate. - Your upload of iskcone-bhajan-sarvasva-tomara from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-sarvasva-tomara/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/19-sarvasva-tomar-carane-sampiya",
+      "ident": "iskcone-bhajan-sarvasva-tomara",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/4922b12d_20251222_122320.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-sarvasva-tomara, Please reduce your request rate. - Your upload of iskcone-bhajan-sarvasva-tomara from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-sarvasva-tomara/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/19-sarvasva-tomar-carane-sampiya",
+      "ident": "iskcone-bhajan-sarvasva-tomara",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/be8ac224_20251222_122046.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-sarvasva-tomara, Please reduce your request rate. - Your upload of iskcone-bhajan-sarvasva-tomara from username b"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-sarvasva-tomara/score-1.pdf"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/32-radha-kunda-tata-kunja-kutir",
+      "ident": "iskcone-bhajan-radha-kunda-tata",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/51942319_20251119_112330.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-radha-kunda-tata, Please reduce your request rate. - Your upload of iskcone-bhajan-radha-kunda-tata from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-kunda-tata/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/32-radha-kunda-tata-kunja-kutir",
+      "ident": "iskcone-bhajan-radha-kunda-tata",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/54ce92d6_20251119_112436.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-radha-kunda-tata, Please reduce your request rate. - Your upload of iskcone-bhajan-radha-kunda-tata from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-kunda-tata/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/32-radha-kunda-tata-kunja-kutir",
+      "ident": "iskcone-bhajan-radha-kunda-tata",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/f98f8d72_20251119_112540.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-radha-kunda-tata, Please reduce your request rate. - Your upload of iskcone-bhajan-radha-kunda-tata from user"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-kunda-tata/recording-3.mp3"
     },
     {
       "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/32-radha-kunda-tata-kunja-kutir",
+      "ident": "iskcone-bhajan-radha-kunda-tata",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/219d9958_20251212_071619.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-radha-kunda-tata, Please reduce your request rate. - Your upload of iskcone-bhajan-radha-kunda-tata from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-kunda-tata/score-1.pdf"
     },
     {
-      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/49-kabe-habe-bolo-se-dina-amar",
-      "ident": "iskcone-bhajan-kabe-habe-bolo",
+      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
+      "ident": "iskcone-bhajan-chorastaka",
       "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kabe-habe-bolo/recording-1.mp3"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-chorastaka/recording-1.mp3"
     },
     {
-      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/49-kabe-habe-bolo-se-dina-amar",
-      "ident": "iskcone-bhajan-kabe-habe-bolo",
+      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
+      "ident": "iskcone-bhajan-chorastaka",
       "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kabe-habe-bolo/recording-2.mp3"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-chorastaka/recording-2.mp3"
     },
     {
-      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/49-kabe-habe-bolo-se-dina-amar",
-      "ident": "iskcone-bhajan-kabe-habe-bolo",
+      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
+      "ident": "iskcone-bhajan-chorastaka",
       "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kabe-habe-bolo/recording-3.mp3"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-chorastaka/recording-3.mp3"
     },
     {
-      "slug": "/ru/bhajans/bhaktivinoda-thakura/saranagati/49-kabe-habe-bolo-se-dina-amar",
-      "ident": "iskcone-bhajan-kabe-habe-bolo",
+      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
+      "ident": "iskcone-bhajan-chorastaka",
       "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kabe-habe-bolo/recording-4.mp3"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-chorastaka/recording-4.mp3"
     },
     {
       "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
-      "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/932dd4d6_20251223_190745.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-chorastaka, Please reduce your request rate. - Your upload of iskcone-bhajan-chorastaka from username billion"
-    },
-    {
-      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
-      "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/ba7925fd_20251223_200834.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-chorastaka, Please reduce your request rate. - Your upload of iskcone-bhajan-chorastaka from username billion"
-    },
-    {
-      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
-      "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/871b55c0_20251223_200912.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-chorastaka, Please reduce your request rate. - Your upload of iskcone-bhajan-chorastaka from username billion"
-    },
-    {
-      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
-      "file": "recording-4.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/ac7378b2_20251223_201222.mp3",
-      "err": " error uploading recording-4.mp3 to iskcone-bhajan-chorastaka, Please reduce your request rate. - Your upload of iskcone-bhajan-chorastaka from username billion"
-    },
-    {
-      "slug": "/ru/bhajans/bilvamangal-thakur/chorastaka",
+      "ident": "iskcone-bhajan-chorastaka",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/12675d5a_20251223_190413.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-chorastaka, Please reduce your request rate. - Your upload of iskcone-bhajan-chorastaka from username billions.x."
-    },
-    {
-      "slug": "/ru/bhajans/dina-dukhi-krishna-das/dzhaia-radkha-girivaradkhari",
-      "ident": "iskcone-bhajan-dzhaia-radkha-girivaradkhari",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkha-girivaradkhari/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/dina-dukhi-krishna-das/dzhaia-radkha-girivaradkhari",
-      "ident": "iskcone-bhajan-dzhaia-radkha-girivaradkhari",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkha-girivaradkhari/score-1.pdf"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-chorastaka/score-1.pdf"
     },
     {
       "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
+      "ident": "iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
       "file": "lecture-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/8757e84a_20251202_105727.mp3",
-      "err": " error uploading lecture-1.mp3 to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Please reduce your request rate. - Your upload of iskcone-bhajan"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan/lecture-1.mp3"
     },
     {
       "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
+      "ident": "iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/ad848e8a_20251119_160945.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Please reduce your request rate. - Your upload of iskcone-bhaj"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
+      "ident": "iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/040913db_20251119_161025.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Please reduce your request rate. - Your upload of iskcone-bhaj"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
+      "ident": "iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/0ef4adb0_20251119_161122.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Please reduce your request rate. - Your upload of iskcone-bhaj"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan/recording-3.mp3"
     },
     {
       "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
       "file": "recording-4.mp3",
       "src": "https://cdn.bhajanamrita.com/media/audio/3dbb7aa5_20251206_080520.mp3",
-      "err": " error uploading recording-4.mp3 to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Please reduce your request rate. - Your upload of iskcone-bhaj"
+      "err": " error uploading recording-4.mp3 to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Uploaded content is unacceptable. - video file has improper ex"
     },
     {
       "slug": "/ru/bhajans/dina-krishna-das/dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
+      "ident": "iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/44e90840_20251212_071203.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan, Please reduce your request rate. - Your upload of iskcone-bhajan-d"
-    },
-    {
-      "slug": "/ru/bhajans/dzhiva-gosvami/shri-iugalastaka",
-      "ident": "iskcone-bhajan-shri-iugalastaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-iugalastaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/dzhiva-gosvami/shri-iugalastaka",
-      "ident": "iskcone-bhajan-shri-iugalastaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-iugalastaka/score-1.pdf"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhaia-radkhe-dzhaia-krishna-dzhaia-vrindavan/score-1.pdf"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/4a819bbb_20251211_051733.mp3",
-      "err": " error uploading lecture-1.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-1.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/4a819bbb_20251211_051733.mp3",
-      "err": " error uploading lecture-2.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-2.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/19f5c721_20251226_040100.mp3",
-      "err": " error uploading lecture-3.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-3.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-4.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/19f5c721_20251226_040100.mp3",
-      "err": " error uploading lecture-4.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-4.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-5.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/a3909f4f_20260103_074332.mp3",
-      "err": " error uploading lecture-5.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-5.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-6.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/a3909f4f_20260103_074332.mp3",
-      "err": " error uploading lecture-6.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-6.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-7.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/bec3255f_20260103_080216.mp3",
-      "err": " error uploading lecture-7.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-7.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
       "file": "lecture-8.mp3",
       "src": "https://cdn.bhajanamrita.com/media/audio/bec3255f_20260103_080216.mp3",
-      "err": "файл >300с — поток брошен"
+      "err": "дедлайн 360c (48000 КБ)"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-9.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/5022bb6a_20260109_085438.mp3",
-      "err": " error uploading lecture-9.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-9.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "lecture-10.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/5022bb6a_20260109_085438.mp3",
-      "err": " error uploading lecture-10.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from usernam"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/lecture-10.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/177387b4_20251121_123102.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/1bf87b71_20251121_123132.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/ba44efaa_20251121_123207.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-3.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-4.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/f7b75c85_20251121_123259.mp3",
-      "err": " error uploading recording-4.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-4.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-5.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/2b4dea7e_20251211_051629.mp3",
-      "err": " error uploading recording-5.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-5.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-6.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/001fd9c2_20251229_051547.mp3",
-      "err": " error uploading recording-6.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-6.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-7.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/c30e922e_20260103_073939.mp3",
-      "err": " error uploading recording-7.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-7.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-8.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/f148ab13_20260103_074128.mp3",
-      "err": " error uploading recording-8.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-8.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-9.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/6257eb6c_20260103_075444.mp3",
-      "err": " error uploading recording-9.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from userna"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-9.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-10.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/36350ccd_20260103_080041.mp3",
-      "err": " error uploading recording-10.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from usern"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-10.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-11.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/8d2b4914_20260103_080450.mp3",
-      "err": " error uploading recording-11.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from usern"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-11.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-12.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/6fa29e8f_20260103_080655.mp3",
-      "err": " error uploading recording-12.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from usern"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-12.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "recording-13.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/f2a3419a_20260103_080841.mp3",
-      "err": " error uploading recording-13.mp3 to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from usern"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/recording-13.mp3"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "score-1.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/f9540201_20251212_054435.pdf",
-      "err": " error uploading score-1.pdf to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username b"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/score-1.pdf"
     },
     {
       "slug": "/ru/bhajans/govinda-das-kaviraja/bhajahu-re-mana",
+      "ident": "iskcone-bhajan-bhajahu-re-mana",
       "file": "score-2.pdf",
-      "src": "https://cdn.bhajanamrita.com/media/images/f9540201_20251212_054435.pdf",
-      "err": " error uploading score-2.pdf to iskcone-bhajan-bhajahu-re-mana, Please reduce your request rate. - Your upload of iskcone-bhajan-bhajahu-re-mana from username b"
-    },
-    {
-      "slug": "/ru/bhajans/jayadeva-goswami/dasavatara-stotra",
-      "ident": "iskcone-bhajan-dasavatara-stotra",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dasavatara-stotra/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/jayadeva-goswami/dasavatara-stotra",
-      "ident": "iskcone-bhajan-dasavatara-stotra",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dasavatara-stotra/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/jayadeva-goswami/dasavatara-stotra",
-      "ident": "iskcone-bhajan-dasavatara-stotra",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dasavatara-stotra/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/jayadeva-goswami/dasavatara-stotra",
-      "ident": "iskcone-bhajan-dasavatara-stotra",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dasavatara-stotra/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/jayadeva-goswami/dasavatara-stotra",
-      "ident": "iskcone-bhajan-dasavatara-stotra",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dasavatara-stotra/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/avatara-sara-gora-avatara",
-      "ident": "iskcone-bhajan-avatara-sara-gora-avatara",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-avatara-sara-gora-avatara/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/avatara-sara-gora-avatara",
-      "ident": "iskcone-bhajan-avatara-sara-gora-avatara",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-avatara-sara-gora-avatara/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/avatara-sara-gora-avatara",
-      "ident": "iskcone-bhajan-avatara-sara-gora-avatara",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-avatara-sara-gora-avatara/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "recording-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/recording-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/lochan-das-thakur/parama-karuna",
-      "ident": "iskcone-bhajan-parama-karuna",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-parama-karuna/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "lecture-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/lecture-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "lecture-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/lecture-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/gauranga-bolite-ha-be",
-      "ident": "iskcone-bhajan-gauranga-bolite-ha-be",
-      "file": "score-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-bolite-ha-be/score-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
-      "ident": "iskcone-bhajan-khari-khari-vipkhale",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-khari-khari-vipkhale/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
-      "ident": "iskcone-bhajan-khari-khari-vipkhale",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-khari-khari-vipkhale/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
-      "ident": "iskcone-bhajan-khari-khari-vipkhale",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-khari-khari-vipkhale/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
-      "ident": "iskcone-bhajan-khari-khari-vipkhale",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-khari-khari-vipkhale/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
-      "ident": "iskcone-bhajan-khari-khari-vipkhale",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-khari-khari-vipkhale/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/khari-khari-vipkhale",
-      "ident": "iskcone-bhajan-khari-khari-vipkhale",
-      "file": "score-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-khari-khari-vipkhale/score-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "commentary-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/commentary-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "commentary-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/commentary-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "lecture-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/lecture-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-6.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-6.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "recording-7.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/recording-7.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/nitai-pada-kamala",
-      "ident": "iskcone-bhajan-nitai-pada-kamala",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitai-pada-kamala/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/radkha-krishna-prana-mora",
-      "ident": "iskcone-bhajan-radkha-krishna-prana-mora",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-prana-mora/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/radkha-krishna-prana-mora",
-      "ident": "iskcone-bhajan-radkha-krishna-prana-mora",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-prana-mora/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/radkha-krishna-prana-mora",
-      "ident": "iskcone-bhajan-radkha-krishna-prana-mora",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-prana-mora/recording-2.mp3"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-bhajahu-re-mana/score-2.pdf"
     },
     {
       "slug": "/ru/bhajans/narottam-das-thakur/radkha-krishna-prana-mora",
@@ -714,994 +378,16 @@
       "err": " error uploading recording-3.mp3 to iskcone-bhajan-radkha-krishna-prana-mora, Uploaded content is unacceptable. - video file has improper extension, try one of "
     },
     {
-      "slug": "/ru/bhajans/narottam-das-thakur/radkha-krishna-prana-mora",
-      "ident": "iskcone-bhajan-radkha-krishna-prana-mora",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-prana-mora/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-guru-vandana",
-      "ident": "iskcone-bhajan-shri-guru-vandana",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-guru-vandana/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-guru-vandana",
-      "ident": "iskcone-bhajan-shri-guru-vandana",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-guru-vandana/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-guru-vandana",
-      "ident": "iskcone-bhajan-shri-guru-vandana",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-guru-vandana/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-guru-vandana",
-      "ident": "iskcone-bhajan-shri-guru-vandana",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-guru-vandana/score-1.pdf"
-    },
-    {
       "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
       "file": "lecture-1.mp3",
       "src": "https://cdn.bhajanamrita.com/media/audio/9d8021e2_20251206_081210.mp3",
       "err": " error uploading lecture-1.mp3 to iskcone-bhajan-shri-krishna-chaitania-prabkhu, Uploaded content is unacceptable. - video file has improper extension, try one "
     },
     {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
-      "ident": "iskcone-bhajan-shri-krishna-chaitania-prabkhu",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-krishna-chaitania-prabkhu/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
-      "ident": "iskcone-bhajan-shri-krishna-chaitania-prabkhu",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-krishna-chaitania-prabkhu/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
-      "ident": "iskcone-bhajan-shri-krishna-chaitania-prabkhu",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-krishna-chaitania-prabkhu/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
-      "ident": "iskcone-bhajan-shri-krishna-chaitania-prabkhu",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-krishna-chaitania-prabkhu/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
-      "ident": "iskcone-bhajan-shri-krishna-chaitania-prabkhu",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-krishna-chaitania-prabkhu/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-krishna-chaitania-prabkhu",
-      "ident": "iskcone-bhajan-shri-krishna-chaitania-prabkhu",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-krishna-chaitania-prabkhu/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
-      "ident": "iskcone-bhajan-shri-nama-sankirtana",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-nama-sankirtana/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
-      "ident": "iskcone-bhajan-shri-nama-sankirtana",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-nama-sankirtana/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
-      "ident": "iskcone-bhajan-shri-nama-sankirtana",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-nama-sankirtana/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
-      "ident": "iskcone-bhajan-shri-nama-sankirtana",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-nama-sankirtana/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-nama-sankirtana",
-      "ident": "iskcone-bhajan-shri-nama-sankirtana",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-nama-sankirtana/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
-      "ident": "iskcone-bhajan-shri-rupa-mandzhari-pada",
-      "file": "commentary-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-rupa-mandzhari-pada/commentary-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
-      "ident": "iskcone-bhajan-shri-rupa-mandzhari-pada",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-rupa-mandzhari-pada/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
-      "ident": "iskcone-bhajan-shri-rupa-mandzhari-pada",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-rupa-mandzhari-pada/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
-      "ident": "iskcone-bhajan-shri-rupa-mandzhari-pada",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-rupa-mandzhari-pada/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
-      "ident": "iskcone-bhajan-shri-rupa-mandzhari-pada",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-rupa-mandzhari-pada/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/narottam-das-thakur/shri-rupa-mandzhari-pada",
-      "ident": "iskcone-bhajan-shri-rupa-mandzhari-pada",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-rupa-mandzhari-pada/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/raghunath-das-goswami/govardhana-vasa",
-      "ident": "iskcone-bhajan-govardhana-vasa",
-      "file": "commentary-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govardhana-vasa/commentary-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/raghunath-das-goswami/govardhana-vasa",
-      "ident": "iskcone-bhajan-govardhana-vasa",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govardhana-vasa/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/raghunath-das-goswami/govardhana-vasa",
-      "ident": "iskcone-bhajan-govardhana-vasa",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govardhana-vasa/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/raghunath-das-goswami/govardhana-vasa",
-      "ident": "iskcone-bhajan-govardhana-vasa",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govardhana-vasa/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/raghunath-das-goswami/govardhana-vasa",
-      "ident": "iskcone-bhajan-govardhana-vasa",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govardhana-vasa/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/raghunath-das-goswami/manah-siksa",
-      "ident": "iskcone-bhajan-manah-siksa",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-manah-siksa/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
-      "ident": "iskcone-bhajan-krishna-deva-bhavanam-vande",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-krishna-deva-bhavanam-vande/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
-      "ident": "iskcone-bhajan-krishna-deva-bhavanam-vande",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-krishna-deva-bhavanam-vande/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
-      "ident": "iskcone-bhajan-krishna-deva-bhavanam-vande",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-krishna-deva-bhavanam-vande/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
-      "ident": "iskcone-bhajan-krishna-deva-bhavanam-vande",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-krishna-deva-bhavanam-vande/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
-      "ident": "iskcone-bhajan-krishna-deva-bhavanam-vande",
-      "file": "recording-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-krishna-deva-bhavanam-vande/recording-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/krishna-deva-bhavanam-vande",
-      "ident": "iskcone-bhajan-krishna-deva-bhavanam-vande",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-krishna-deva-bhavanam-vande/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "recording-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/recording-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "ident": "iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkhe-dzhaia-dzhaia-madkhava-daiite/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/yamunashtaka",
-      "ident": "iskcone-bhajan-yamunashtaka",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-yamunashtaka/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/yamunashtaka",
-      "ident": "iskcone-bhajan-yamunashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-yamunashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/rupa-goswami/yamunashtaka",
-      "ident": "iskcone-bhajan-yamunashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-yamunashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/dven-imen-gospoda-nitianandy",
-      "ident": "iskcone-bhajan-dven-imen-gospoda-nitianandy",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dven-imen-gospoda-nitianandy/recording-1.mp3"
-    },
-    {
       "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachinataiashtaka",
       "ident": "iskcone-bhajan-shri-shachinataiashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachinataiashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachinataiashtaka",
-      "ident": "iskcone-bhajan-shri-shachinataiashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachinataiashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachinataiashtaka",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/a56b6ec8_20251228_055350.mp3",
-      "err": "The read operation timed out"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachinataiashtaka",
-      "ident": "iskcone-bhajan-shri-shachinataiashtaka",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachinataiashtaka/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachinataiashtaka",
-      "ident": "iskcone-bhajan-shri-shachinataiashtaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachinataiashtaka/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachisutashtaka",
-      "ident": "iskcone-bhajan-shri-shachisutashtaka",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachisutashtaka/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachisutashtaka",
-      "ident": "iskcone-bhajan-shri-shachisutashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachisutashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachisutashtaka",
-      "ident": "iskcone-bhajan-shri-shachisutashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachisutashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachisutashtaka",
-      "ident": "iskcone-bhajan-shri-shachisutashtaka",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachisutashtaka/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/sarvabhauma-bhattacharya/shri-shachisutashtaka",
-      "ident": "iskcone-bhajan-shri-shachisutashtaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachisutashtaka/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "commentary-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/commentary-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "commentary-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/commentary-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "lecture-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/lecture-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "lecture-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/lecture-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "lecture-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/lecture-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "recording-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/recording-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/satyavrata-muni/damodarashtaka",
-      "ident": "iskcone-bhajan-damodarashtaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-damodarashtaka/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
-      "ident": "iskcone-bhajan-shri-siksastaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-siksastaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
-      "ident": "iskcone-bhajan-shri-siksastaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-siksastaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
-      "ident": "iskcone-bhajan-shri-siksastaka",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-siksastaka/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
-      "ident": "iskcone-bhajan-shri-siksastaka",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-siksastaka/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shri-chaytanya-mahaprabhu/shri-siksastaka",
-      "ident": "iskcone-bhajan-shri-siksastaka",
-      "file": "recording-5.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-siksastaka/recording-5.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shrila-prabhupada/markine-bhagavata-dharma",
-      "ident": "iskcone-bhajan-markine-bhagavata-dharma",
-      "file": "recording-1.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-markine-bhagavata-dharma/recording-1.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/shrila-prabhupada/markine-bhagavata-dharma",
-      "ident": "iskcone-bhajan-markine-bhagavata-dharma",
-      "file": "recording-2.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-markine-bhagavata-dharma/recording-2.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/shrila-prabhupada/markine-bhagavata-dharma",
-      "ident": "iskcone-bhajan-markine-bhagavata-dharma",
-      "file": "recording-3.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-markine-bhagavata-dharma/recording-3.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/shrila-prabhupada/markine-bhagavata-dharma",
-      "ident": "iskcone-bhajan-markine-bhagavata-dharma",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-markine-bhagavata-dharma/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/shrila-prabhupada/markine-bhagavata-dharma",
-      "ident": "iskcone-bhajan-markine-bhagavata-dharma",
-      "file": "score-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-markine-bhagavata-dharma/score-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
-      "ident": "iskcone-bhajan-sad-gosvami-ashtakam",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sad-gosvami-ashtakam/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
-      "ident": "iskcone-bhajan-sad-gosvami-ashtakam",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sad-gosvami-ashtakam/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
-      "ident": "iskcone-bhajan-sad-gosvami-ashtakam",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sad-gosvami-ashtakam/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
-      "ident": "iskcone-bhajan-sad-gosvami-ashtakam",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sad-gosvami-ashtakam/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
-      "ident": "iskcone-bhajan-sad-gosvami-ashtakam",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sad-gosvami-ashtakam/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/shrinivas-acharya/sad-gosvami-ashtakam",
-      "ident": "iskcone-bhajan-sad-gosvami-ashtakam",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sad-gosvami-ashtakam/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/dzhai-dzhai-radkha-ramana",
-      "ident": "iskcone-bhajan-dzhai-dzhai-radkha-ramana",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhai-dzhai-radkha-ramana/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/dzhai-dzhai-radkha-ramana",
-      "ident": "iskcone-bhajan-dzhai-dzhai-radkha-ramana",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhai-dzhai-radkha-ramana/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/dzhai-govinda-dzhai-gopal",
-      "ident": "iskcone-bhajan-dzhai-govinda-dzhai-gopal",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhai-govinda-dzhai-gopal/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/dzhai-govinda-dzhai-gopal",
-      "ident": "iskcone-bhajan-dzhai-govinda-dzhai-gopal",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhai-govinda-dzhai-gopal/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/dzhai-govinda-dzhai-gopal",
-      "ident": "iskcone-bhajan-dzhai-govinda-dzhai-gopal",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhai-govinda-dzhai-gopal/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/dzhio-shiam-lala",
-      "ident": "iskcone-bhajan-dzhio-shiam-lala",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-dzhio-shiam-lala/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/govardhana-arati",
-      "ident": "iskcone-bhajan-govardhana-arati",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govardhana-arati/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/mokhana-piare-kho-kankhaia",
-      "ident": "iskcone-bhajan-mokhana-piare-kho-kankhaia",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-mokhana-piare-kho-kankhaia/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/mokhana-piare-kho-kankhaia",
-      "ident": "iskcone-bhajan-mokhana-piare-kho-kankhaia",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-mokhana-piare-kho-kankhaia/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/nanda-ke-ananda-bhyo",
-      "ident": "iskcone-bhajan-nanda-ke-ananda-bhyo",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nanda-ke-ananda-bhyo/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/nanda-ke-ananda-bhyo",
-      "ident": "iskcone-bhajan-nanda-ke-ananda-bhyo",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nanda-ke-ananda-bhyo/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/nanda-ke-ananda-bhyo",
-      "ident": "iskcone-bhajan-nanda-ke-ananda-bhyo",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nanda-ke-ananda-bhyo/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/nanda-nandana-ashtaka",
-      "ident": "iskcone-bhajan-nanda-nandana-ashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nanda-nandana-ashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/nanda-nandana-ashtaka",
-      "ident": "iskcone-bhajan-nanda-nandana-ashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nanda-nandana-ashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radha-ramana-kaho",
-      "ident": "iskcone-bhajan-radha-ramana-kaho",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-ramana-kaho/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radha-ramana-kaho",
-      "ident": "iskcone-bhajan-radha-ramana-kaho",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-ramana-kaho/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radha-ramana-kaho",
-      "ident": "iskcone-bhajan-radha-ramana-kaho",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radha-ramana-kaho/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radharani-ki-jaya",
-      "ident": "iskcone-bhajan-radharani-ki-jaya",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radharani-ki-jaya/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radharani-ki-jaya",
-      "ident": "iskcone-bhajan-radharani-ki-jaya",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radharani-ki-jaya/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radharani-ki-jaya",
-      "ident": "iskcone-bhajan-radharani-ki-jaya",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radharani-ki-jaya/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radkha-krishna-giti",
-      "ident": "iskcone-bhajan-radkha-krishna-giti",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-giti/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radkha-krishna-giti",
-      "ident": "iskcone-bhajan-radkha-krishna-giti",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-giti/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/radkha-krishna-giti",
-      "ident": "iskcone-bhajan-radkha-krishna-giti",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-radkha-krishna-giti/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/ragkhupati-ragkhava",
-      "ident": "iskcone-bhajan-ragkhupati-ragkhava",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-ragkhupati-ragkhava/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/ragkhupati-ragkhava",
-      "ident": "iskcone-bhajan-ragkhupati-ragkhava",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-ragkhupati-ragkhava/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-govardkhana-makharadzha",
-      "ident": "iskcone-bhajan-shri-govardkhana-makharadzha",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-govardkhana-makharadzha/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
-      "ident": "iskcone-bhajan-shri-radkha-kripa-kataksha-stotra",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-radkha-kripa-kataksha-stotra/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
-      "ident": "iskcone-bhajan-shri-radkha-kripa-kataksha-stotra",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-radkha-kripa-kataksha-stotra/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
-      "ident": "iskcone-bhajan-shri-radkha-kripa-kataksha-stotra",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-radkha-kripa-kataksha-stotra/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
-      "ident": "iskcone-bhajan-shri-radkha-kripa-kataksha-stotra",
-      "file": "recording-4.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-radkha-kripa-kataksha-stotra/recording-4.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
-      "ident": "iskcone-bhajan-shri-radkha-kripa-kataksha-stotra",
-      "file": "recording-5.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-radkha-kripa-kataksha-stotra/recording-5.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/shri-radkha-kripa-kataksha-stotra",
-      "ident": "iskcone-bhajan-shri-radkha-kripa-kataksha-stotra",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-radkha-kripa-kataksha-stotra/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/sundara-bala",
-      "ident": "iskcone-bhajan-sundara-bala",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sundara-bala/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/sundara-bala",
-      "ident": "iskcone-bhajan-sundara-bala",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-sundara-bala/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/tulasi-kirtan",
-      "ident": "iskcone-bhajan-tulasi-kirtan",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-tulasi-kirtan/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/tulasi-kirtan",
-      "ident": "iskcone-bhajan-tulasi-kirtan",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-tulasi-kirtan/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/tulasi-kirtan",
-      "ident": "iskcone-bhajan-tulasi-kirtan",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-tulasi-kirtan/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/vande-krishna-nanda-kumara",
-      "ident": "iskcone-bhajan-vande-krishna-nanda-kumara",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vande-krishna-nanda-kumara/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/unknown/vande-krishna-nanda-kumara",
-      "ident": "iskcone-bhajan-vande-krishna-nanda-kumara",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vande-krishna-nanda-kumara/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vallabhacharya/madhurashtakam",
-      "ident": "iskcone-bhajan-madhurashtakam",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-madhurashtakam/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vallabhacharya/madhurashtakam",
-      "ident": "iskcone-bhajan-madhurashtakam",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-madhurashtakam/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vallabhacharya/madhurashtakam",
-      "ident": "iskcone-bhajan-madhurashtakam",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-madhurashtakam/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vallabhacharya/madhurashtakam",
-      "ident": "iskcone-bhajan-madhurashtakam",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-madhurashtakam/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more",
-      "ident": "iskcone-bhajan-gauranga-tumi-more",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-tumi-more/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more",
-      "ident": "iskcone-bhajan-gauranga-tumi-more",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-tumi-more/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more",
-      "ident": "iskcone-bhajan-gauranga-tumi-more",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-tumi-more/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vasudeva-ghosh/iadi-gaura-na-hoito",
-      "ident": "iskcone-bhajan-iadi-gaura-na-hoito",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-iadi-gaura-na-hoito/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shri-gurvastaka",
-      "ident": "iskcone-bhajan-shri-gurvastaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-gurvastaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shri-gurvastaka",
-      "ident": "iskcone-bhajan-shri-gurvastaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-gurvastaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shri-gurvastaka",
-      "ident": "iskcone-bhajan-shri-gurvastaka",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-gurvastaka/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shri-gurvastaka",
-      "ident": "iskcone-bhajan-shri-gurvastaka",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-gurvastaka/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shri-gurvastaka",
-      "ident": "iskcone-bhajan-shri-gurvastaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-gurvastaka/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
-      "ident": "iskcone-bhajan-vrindadevi-ashtaka",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vrindadevi-ashtaka/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
-      "ident": "iskcone-bhajan-vrindadevi-ashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vrindadevi-ashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
-      "ident": "iskcone-bhajan-vrindadevi-ashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vrindadevi-ashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
-      "ident": "iskcone-bhajan-vrindadevi-ashtaka",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vrindadevi-ashtaka/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
-      "ident": "iskcone-bhajan-vrindadevi-ashtaka",
-      "file": "recording-4.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vrindadevi-ashtaka/recording-4.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/vrindadevi-ashtaka",
-      "ident": "iskcone-bhajan-vrindadevi-ashtaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-vrindadevi-ashtaka/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vrindavan-das-thakur/nitiananda-astaka",
-      "ident": "iskcone-bhajan-nitiananda-astaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitiananda-astaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vrindavan-das-thakur/nitiananda-astaka",
-      "ident": "iskcone-bhajan-nitiananda-astaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-nitiananda-astaka/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "commentary-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/commentary-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "commentary-2.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/commentary-2.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "lecture-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/lecture-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "lecture-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/lecture-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "recording-1.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/recording-1.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "recording-2.m4a",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/recording-2.m4a"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/gopi-gita",
-      "ident": "iskcone-bhajan-gopi-gita",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-gopi-gita/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/govindam-adi-purusam",
-      "ident": "iskcone-bhajan-govindam-adi-purusam",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govindam-adi-purusam/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/govindam-adi-purusam",
-      "ident": "iskcone-bhajan-govindam-adi-purusam",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govindam-adi-purusam/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/govindam-adi-purusam",
-      "ident": "iskcone-bhajan-govindam-adi-purusam",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govindam-adi-purusam/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/govindam-adi-purusam",
-      "ident": "iskcone-bhajan-govindam-adi-purusam",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-govindam-adi-purusam/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/molitvy-nrisimhadevu",
-      "ident": "iskcone-bhajan-molitvy-nrisimhadevu",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-molitvy-nrisimhadevu/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/molitvy-nrisimhadevu",
-      "ident": "iskcone-bhajan-molitvy-nrisimhadevu",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-molitvy-nrisimhadevu/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/molitvy-nrisimhadevu",
-      "ident": "iskcone-bhajan-molitvy-nrisimhadevu",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-molitvy-nrisimhadevu/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/vyasadeva/molitvy-nrisimhadevu",
-      "ident": "iskcone-bhajan-molitvy-nrisimhadevu",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-molitvy-nrisimhadevu/score-1.pdf"
-    },
-    {
-      "slug": "/ru/bhajans/yuta-nilakantha-gosvami/kevalashtaka",
-      "ident": "iskcone-bhajan-kevalashtaka",
-      "file": "recording-1.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kevalashtaka/recording-1.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/yuta-nilakantha-gosvami/kevalashtaka",
-      "ident": "iskcone-bhajan-kevalashtaka",
-      "file": "recording-2.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kevalashtaka/recording-2.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/yuta-nilakantha-gosvami/kevalashtaka",
-      "ident": "iskcone-bhajan-kevalashtaka",
-      "file": "recording-3.mp3",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kevalashtaka/recording-3.mp3"
-    },
-    {
-      "slug": "/ru/bhajans/yuta-nilakantha-gosvami/kevalashtaka",
-      "ident": "iskcone-bhajan-kevalashtaka",
-      "file": "score-1.pdf",
-      "ia_url": "https://archive.org/download/iskcone-bhajan-kevalashtaka/score-1.pdf"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-shri-shachinataiashtaka/recording-3.mp3"
     }
   ]
 }
