@@ -145,6 +145,14 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
             </section>
           )}
 
+          {/* источник: BBT-книга (курсивом, как цитата) либо подпись о традиции */}
+          {t.source && (
+            <div style={{ marginTop: 16, display: "flex", gap: 8, alignItems: "baseline", flexWrap: "wrap" }}>
+              <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Источник</span>
+              <span style={{ fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.45, color: "var(--color-label-2)", fontStyle: t.source.startsWith("«") ? "italic" : "normal" }}>{t.source}</span>
+            </div>
+          )}
+
           {/* связанные личности */}
           {t.persons && t.persons.length > 0 && (
             <section style={{ marginTop: 26 }}>
