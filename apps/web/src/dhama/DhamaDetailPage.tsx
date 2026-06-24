@@ -109,6 +109,20 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
   );
 }
 
+const KIND_PL: Record<string, [string, string, string]> = {
+  temple: ["храм", "храма", "храмов"],
+  kunda: ["кунда", "кунды", "кунд"],
+  ghat: ["гхат", "гхата", "гхатов"],
+  forest: ["лес", "леса", "лесов"],
+  hill: ["холм", "холма", "холмов"],
+  river: ["река", "реки", "рек"],
+  samadhi: ["самадхи", "самадхи", "самадхи"],
+  village: ["деревня", "деревни", "деревень"],
+  place: ["место", "места", "мест"],
+  island: ["остров", "острова", "островов"],
+};
+const KIND_ORDER = ["temple", "kunda", "ghat", "forest", "hill", "river", "samadhi", "village", "place", "island"];
+
 export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama: Dhama; onBack: () => void; onOpenTirtha: (id: string) => void }) {
   const [sub, setSub] = useState<"places" | "parikrama" | "map" | "about">("places");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -137,6 +151,10 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
   const byCluster = dhama.clusters
     .map((c) => ({ cluster: c, items: dhama.tirthas.filter((t) => t.cluster === c.id) }))
     .filter((g) => g.items.length > 0);
+
+  const kindCounts: Record<string, number> = {};
+  for (const t of dhama.tirthas) kindCounts[t.kind] = (kindCounts[t.kind] || 0) + 1;
+  const breakdown = KIND_ORDER.filter((k) => kindCounts[k]).map((k) => ({ k, n: kindCounts[k] }));
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
@@ -174,6 +192,20 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         <div style={{ padding: "10px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
           {sub === "places" && (
             <div>
+              <div style={{ marginTop: 8, padding: "13px 15px", borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>
+                  {dhama.tirthas.length} {plural(dhama.tirthas.length, "святое место", "святых места", "святых мест")} · {byCluster.length} {plural(byCluster.length, "район", "района", "районов")} парикрамы
+                </div>
+                {breakdown.length > 0 && (
+                  <div style={{ marginTop: 9, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {breakdown.map(({ k, n }) => (
+                      <span key={k} style={{ display: "inline-flex", alignItems: "center", gap: 5, borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", height: 26, padding: "0 11px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)" }}>
+                        <b style={{ fontWeight: 700, color: "var(--color-label)" }}>{n}</b> {plural(n, KIND_PL[k][0], KIND_PL[k][1], KIND_PL[k][2])}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
               {byCluster.map(({ cluster, items }) => (
                 <section key={cluster.id} style={{ marginTop: 18 }}>
                   <h3 style={{ margin: "0 0 2px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{cluster.title}</h3>
