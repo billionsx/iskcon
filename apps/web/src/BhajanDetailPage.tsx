@@ -170,17 +170,26 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
               const playIdx = isAudio ? recs.length + audioLecs.indexOf(l) : -1;
               const isCur = isAudio && isThis && player.index === playIdx;
               const on = isCur && player.isPlaying;
+              const u = (l.url || "").toLowerCase();
+              const isYt = !isAudio && (l.media_type === "youtube" || /youtube|youtu\.be/.test(u));
+              const rt = !isAudio ? (l.url || "").match(/rutube\.ru\/(?:video|play\/embed)\/([0-9a-f]+)/i) : null;
+              const isFile = !isAudio && /\.(mp4|m4v|webm|mov)(\?|$)/.test(u);
+              const isExternal = !isAudio && !isYt && !rt && !isFile;
               const handle = isAudio
                 ? () => { if (isCur) player.togglePlay(); else player.playBhajan(slug, playIdx); }
-                : () => onView({ type: l.media_type === "youtube" ? "youtube" : "video", url: l.url || "", title: l.title || "Лекция", subtitle: l.subtitle });
+                : isYt ? () => onView({ type: "youtube", url: l.url || "", title: l.title || "Лекция", subtitle: l.subtitle })
+                : rt ? () => onView({ type: "iframe", url: `https://rutube.ru/play/embed/${rt[1]}`, title: l.title || "Лекция", subtitle: l.subtitle })
+                : isFile ? () => onView({ type: "video", url: l.url || "", title: l.title || "Лекция", subtitle: l.subtitle })
+                : () => window.open(l.url || "", "_blank", "noopener,noreferrer");
+              const label = isAudio ? "Аудио" : isYt ? "YouTube" : isExternal ? "Видео ↗" : "Видео";
               return (
                 <button key={i} onClick={handle} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isCur ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: l.media_type === "youtube" ? "#FF453A" : "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon size={16} /> : <PlayIcon size={16} />}</span>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: isYt ? "#FF453A" : "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon size={16} /> : <PlayIcon size={16} />}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-brand-blue)" : "var(--color-label)", overflowWrap: "anywhere" }}>{l.title || "Лекция"}</span>
                     {(l.subtitle || l.date) ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[l.subtitle, l.date].filter(Boolean).join(" · ")}</span> : null}
                   </span>
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{l.media_type === "youtube" ? "YouTube" : (isAudio ? "Аудио" : "Видео")}</span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{label}</span>
                 </button>
               );
             })}
