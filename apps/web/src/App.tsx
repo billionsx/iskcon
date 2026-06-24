@@ -1012,7 +1012,7 @@ export default function App() {
           </main>
         ) : openBhajan ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-            <BhajanDetailPage slug={openBhajan} onBack={goBack} />
+            <BhajanDetailPage slug={openBhajan} onBack={goBack} onOpenEntity={openEntityTarget} />
           </main>
         ) : openKirtanArtist ? (
           <main key={openKirtanArtist} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
