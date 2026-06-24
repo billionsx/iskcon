@@ -674,12 +674,13 @@ const KIND_LABEL: Record<string, string> = {
   tirtha: "Святые места",
   dish: "Любимые блюда",
   kirtan: "Киртаны",
+  bhajan: "Бхаджаны",
   temple: "Храмы",
   festival: "Праздники",
   gallery: "Галерея",
   video: "Видео",
 };
-const KIND_ORDER = ["dhama", "tirtha", "dish", "kirtan", "temple", "festival", "gallery", "video"];
+const KIND_ORDER = ["dhama", "tirtha", "dish", "kirtan", "bhajan", "temple", "festival", "gallery", "video"];
 
 function kindHref(kind: string, ref: string): string | null {
   switch (kind) {
@@ -687,6 +688,7 @@ function kindHref(kind: string, ref: string): string | null {
     case "dhama": return "/dhama/" + ref;
     case "tirtha": return "/dhama/" + ref;   // ref = "<dhamaId>/<tirthaId>"
     case "kirtan": return "/kirtan/" + ref;  // ref = слаг исполнителя
+    case "bhajan": return ref;               // ref = полный слаг бхаджана (/ru/bhajans/...)
     default: return null; // остальные виды получат маршруты по мере ввода рефов
   }
 }

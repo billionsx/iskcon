@@ -818,6 +818,7 @@ export default function App() {
     }
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "post") { const pid = clean.split("/")[2] ?? ""; if (pid) { setOpenPost(pid); return; } }
+    if (clean.startsWith("/ru/bhajans/")) { setOpenBhajan(clean); return; }
     if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
     if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
