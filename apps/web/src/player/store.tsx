@@ -66,7 +66,7 @@ export interface PlayerApi {
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string): void;
   playKirtan(albumId: string, startIndex?: number): void;
-  playBhajan(slug: string, startIndex?: number): void;
+  playBhajan(slug: string, startIndex?: number, set?: "lectures"): void;
   // транспорт
   togglePlay(): void;
   next(): void;
@@ -220,13 +220,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const src = sourceRef.current;
     const cur = manifestRef.current;
     if (cur && cur.book === want) return Promise.resolve(cur);
+    const bhajIsLec = src === "bhajan" && want.endsWith("::lec");
+    const bhajBase = bhajIsLec ? want.slice(0, -5) : want;
     const path = src === "kirtan" ? `/kirtans/${want}/audio`
-      : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(want)}`
+      : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
       : `/books/${want}/audio`;
     return fetch(api(path))
       .then((r) => r.json())
       .then((m: Manifest & { title?: string; cover?: string; artist?: string }) => {
         if (src === "bhajan") bhajanMeta[want] = { title: m.title || "Бхаджан", cover: m.cover || "", artist: m.artist || "" };
+        m.book = want; // ключ кэша = полный book id (вкл. суффикс ::lec)
         manifestRef.current = m; setManifest(m); return m;
       });
   }
@@ -330,8 +333,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
-  function playBhajan(slug: string, startIndex?: number) {
-    switchBook(slug, "bhajan");
+  function playBhajan(slug: string, startIndex?: number, set?: "lectures") {
+    // Записи и аудио-лекции — РАЗНЫЕ очереди (book id с суффиксом ::lec), чтобы
+    // автоплей не пересекал границу «петая запись → говорная лекция».
+    switchBook(set === "lectures" ? `${slug}::lec` : slug, "bhajan");
     pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));

@@ -65,20 +65,18 @@ bhajansRouter.get('/audio', async (c) => {
     `SELECT name, author_name, hero_image FROM prayers WHERE slug = ?`,
   ).bind(slug).first()) as Row | null;
 
-  const { results } = await c.env.DB.prepare(
-    `SELECT ord, title, subtitle, duration, url
-       FROM prayer_media
-      WHERE slug = ? AND kind = 'recording' AND url IS NOT NULL AND length(url) > 0
-      ORDER BY ord`,
-  ).bind(slug).all();
+  const wantLectures = c.req.query('set') === 'lectures';
 
-  // Аудио-лекции добавляем в ту же очередь после записей — чтобы лекция играла
-  // в общем плеере (видео/YouTube-лекции в очередь НЕ идут: им встроенный видео-вьювер).
-  const { results: lecRes } = await c.env.DB.prepare(
-    `SELECT ord, title, subtitle, duration, url
-       FROM prayer_media
-      WHERE slug = ? AND kind = 'lecture' AND media_type = 'audio' AND url IS NOT NULL AND length(url) > 0
-      ORDER BY ord`,
+  const { results } = await c.env.DB.prepare(
+    wantLectures
+      ? `SELECT ord, title, subtitle, duration, url
+           FROM prayer_media
+          WHERE slug = ? AND kind = 'lecture' AND media_type = 'audio' AND url IS NOT NULL AND length(url) > 0
+          ORDER BY ord`
+      : `SELECT ord, title, subtitle, duration, url
+           FROM prayer_media
+          WHERE slug = ? AND kind = 'recording' AND url IS NOT NULL AND length(url) > 0
+          ORDER BY ord`,
   ).bind(slug).all();
 
   const parseDur = (d: unknown): number | null => {
@@ -87,27 +85,18 @@ bhajansRouter.get('/audio', async (c) => {
     return (m[1] ? parseInt(m[1], 10) : 0) * 3600 + parseInt(m[2], 10) * 60 + parseInt(m[3], 10);
   };
 
-  const recs = ((results as Row[]) ?? []).map((r, i) => ({
+  const pfx = wantLectures ? 'lec' : 'rec';
+  const noun = wantLectures ? 'Лекция' : 'Запись';
+  const tracks = ((results as Row[]) ?? []).map((r, i) => ({
     kind: 'song' as const,
     pos: i,
     chapter: null,
-    title: r.title || `Запись ${i + 1}`,
-    file: `rec-${r.ord}`,
+    title: r.title || `${noun} ${i + 1}`,
+    file: `${pfx}-${r.ord}`,
     url: r.url,
     durationSec: parseDur(r.duration),
     artist: r.subtitle ?? undefined,
   }));
-  const lecs = ((lecRes as Row[]) ?? []).map((r, j) => ({
-    kind: 'song' as const,
-    pos: recs.length + j,
-    chapter: null,
-    title: r.title || `Лекция ${j + 1}`,
-    file: `lec-${r.ord}`,
-    url: r.url,
-    durationSec: parseDur(r.duration),
-    artist: r.subtitle ?? undefined,
-  }));
-  const tracks = [...recs, ...lecs];
 
   return c.json({
     book: slug,
