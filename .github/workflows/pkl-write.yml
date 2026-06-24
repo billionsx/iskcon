@@ -1,0 +1,27 @@
+name: pkl-write
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Только эти id через запятую (пусто = все файлы data/pkl/)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  write:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Залить карточки ПКЛ в D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: "d5cbe19470dc38599873eabfe148e6d1"
+          ONLY: ${{ github.event.inputs.only }}
+        run: node scripts/pkl-write.mjs
