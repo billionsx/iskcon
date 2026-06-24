@@ -81,7 +81,7 @@ function Gallery({ images }: { images: string[] }) {
         style={{ display: "flex", overflowX: multi ? "auto" : "hidden", scrollSnapType: "x mandatory", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {images.map((src, i) => ok[i] && (
           <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", display: "flex", justifyContent: "center", alignItems: "center", minHeight: 220, maxHeight: "72vh" }}>
-            <img src={px(src, 1600)} alt="Даршан" loading={i === 0 ? "eager" : "lazy"} onError={() => setOk((p) => p.map((v, j) => (j === i ? false : v)))}
+            <img src={px(src, 2560)} alt="Даршан" loading={i === 0 ? "eager" : "lazy"} onError={() => setOk((p) => p.map((v, j) => (j === i ? false : v)))}
               style={{ maxWidth: "100%", maxHeight: "72vh", width: "auto", height: "auto", display: "block", objectFit: "contain" }} />
           </div>
         ))}
