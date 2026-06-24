@@ -17,7 +17,7 @@ import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { PdfDoc } from "./PdfDoc";
-import { CardActionsProvider } from "./cardActions";
+import { CardActionsProvider, CardActionBtns, useCardActions } from "./cardActions";
 import { PlayerProvider } from "./player/store";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
@@ -242,6 +242,7 @@ interface BhajanListItem { slug: string; name: string; author: string | null; he
 function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void; onOpenCatalog: () => void }) {
   const [items, setItems] = useState<BhajanListItem[] | null>(null);
   const [q, setQ] = useState("");
+  const { openCardMenu } = useCardActions();
   useEffect(() => {
     let live = true;
     fetch(api("/bhajans"))
@@ -278,23 +279,31 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
         <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
           {shown.map((b, i) => (
             <li key={b.slug} style={{ borderBottom: i === shown.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-              <button onClick={() => onOpen(b.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+              <div style={{ position: "relative", display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                <button aria-label={`Открыть: ${b.name}`} onClick={() => onOpen(b.slug)} style={{ position: "absolute", inset: 0, background: "none", border: "none", cursor: "pointer", zIndex: 0 }} />
                 {b.hero_image
-                  ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
-                  : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)" }} />}
-                <span style={{ minWidth: 0, flex: 1 }}>
+                  ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
+                  : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)", position: "relative", zIndex: 1, pointerEvents: "none" }} />}
+                <span style={{ minWidth: 0, flex: 1, position: "relative", zIndex: 1, pointerEvents: "none" }}>
                   <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
                   {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
                 </span>
-                {b.has_recordings && (
-                  <svg width="16" height="16" viewBox="0 0 24 24" aria-label="есть записи" style={{ flexShrink: 0, color: "var(--color-brand-blue)" }}>
-                    <path d="M4 13v-1a8 8 0 0116 0v1" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-                    <rect x="3" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
-                    <rect x="16.8" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
-                  </svg>
-                )}
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-              </button>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0, position: "relative", zIndex: 1 }}>
+                  {b.has_recordings && (
+                    <svg width="16" height="16" viewBox="0 0 24 24" aria-label="есть записи" style={{ flexShrink: 0, color: "var(--color-brand-blue)", pointerEvents: "none" }}>
+                      <path d="M4 13v-1a8 8 0 0116 0v1" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+                      <rect x="3" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
+                      <rect x="16.8" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
+                    </svg>
+                  )}
+                  <CardActionBtns
+                    favKey={`bhajan:${b.slug}`}
+                    meta={{ t: b.name, s: b.author || undefined, h: `/bhajan/${b.slug}` }}
+                    size={30}
+                    onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })}
+                  />
+                </span>
+              </div>
             </li>
           ))}
         </ul>
