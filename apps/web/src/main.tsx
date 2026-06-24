@@ -56,8 +56,30 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
 
   // PWA: регистрируем service worker (офлайн-оболочка + кэш статики). Навигация в SW —
   // network-first, поэтому авто-обновление сборки выше продолжает работать как прежде.
+  //
+  // ВАЖНО: старые версии SW могли «заморозить» приложение — отдавать закэшированный
+  // старый index.html -> старый JS, и пока байты /sw.js не менялись, обновление SW не
+  // срабатывало, поэтому правки НИКОГДА не доезжали до клиента. Лечение: (1) при
+  // загрузке принудительно дёргаем reg.update() (браузер тянет /sw.js в обход HTTP-кэша
+  // и видит новую версию); (2) когда новый SW перехватывает управление (controllerchange)
+  // — один раз перезагружаем страницу, чтобы подхватить свежий бандл без ручного
+  // Cmd+Shift+R. Анти-цикл — через sessionStorage.
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => {}); });
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadController) return;
+      let last = 0;
+      try { last = Number(sessionStorage.getItem("__sw_reload_at") || "0"); } catch { /* ignore */ }
+      if (Date.now() - last < 30000) return;
+      try { sessionStorage.setItem("__sw_reload_at", String(Date.now())); } catch { /* ignore */ }
+      window.location.reload();
+    });
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").then((reg) => {
+        reg.update().catch(() => {});
+        setInterval(() => reg.update().catch(() => {}), 120000);
+      }).catch(() => {});
+    });
   }
 }
 
