@@ -18,6 +18,11 @@ export function dhamaMapsHref(d: Dhama): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(d.name + " " + d.region)}`;
 }
 
+const pl = (n: number, a: string, b: string, c: string) => {
+  const x = n % 10, y = n % 100;
+  return x === 1 && y !== 11 ? a : x >= 2 && x <= 4 && (y < 10 || y >= 20) ? b : c;
+};
+
 export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSelect, flash }: {
   dhama: Dhama;
   topLeft?: ReactNode;
@@ -72,6 +77,9 @@ export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSe
           <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.18)", height: 26, padding: "0 12px", fontSize: 12.5, lineHeight: 1, fontWeight: 600, color: "#fff" }}>{dhama.deity}</span>
             <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.12)", height: 26, padding: "0 12px", fontSize: 12.5, lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.8)" }}>{dhama.region}</span>
+            {(dhama.tirthas?.length ?? 0) > 0 && (
+              <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.12)", height: 26, padding: "0 12px", fontSize: 12.5, lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.8)" }}>{dhama.tirthas.length} {pl(dhama.tirthas.length, "место", "места", "мест")}</span>
+            )}
           </div>
         </div>
       </article>
