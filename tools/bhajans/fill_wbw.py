@@ -60,22 +60,38 @@ def norm(s: str) -> str:
 
 
 def build_catalog():
-    """norm(имя)->слаг по всему каталогу bhajanamrita (кириллические имена)."""
+    """norm(имя)->слаг по всему каталогу bhajanamrita (кириллические имена).
+    Параллельно персистим весь каталог в _bm_catalog для ручной сверки."""
     cat = {}
+    items = []
     try:
-        for it in fetch_list("ru"):
-            slug = (it.get("slug") or "").strip()
-            if not slug:
-                continue
-            for key in ("name", "title", "transliteration", "transliteratedName"):
-                v = it.get(key)
-                if v:
-                    k = norm(v)
-                    if k and k not in cat:
-                        cat[k] = slug
+        items = fetch_list("ru")
     except Exception as e:
-        print(f"[catalog] error: {str(e)[:120]}", flush=True)
-    print(f"[catalog] {len(cat)} ключей", flush=True)
+        print(f"[catalog] fetch error: {str(e)[:120]}", flush=True)
+    # персист
+    try:
+        d1("CREATE TABLE IF NOT EXISTS _bm_catalog (slug TEXT PRIMARY KEY, name TEXT, author TEXT, translit TEXT)")
+        d1("DELETE FROM _bm_catalog")
+    except Exception:
+        pass
+    for it in items:
+        slug = (it.get("slug") or "").strip()
+        if not slug:
+            continue
+        nm = (it.get("name") or it.get("title") or "")
+        au = (it.get("author") or it.get("authorName") or "")
+        tl = (it.get("transliteration") or it.get("transliteratedName") or "")
+        try:
+            d1("INSERT OR IGNORE INTO _bm_catalog (slug,name,author,translit) VALUES (?,?,?,?)",
+               [slug, nm, au, tl])
+        except Exception:
+            pass
+        for v in (nm, it.get("title"), tl):
+            if v:
+                k = norm(v)
+                if k and k not in cat:
+                    cat[k] = slug
+    print(f"[catalog] {len(items)} песен, {len(cat)} ключей", flush=True)
     return cat
 
 
