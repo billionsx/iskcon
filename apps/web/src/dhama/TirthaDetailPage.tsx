@@ -9,16 +9,20 @@
  * Тексты — оригинальная редакционная проза (не копии парикрам-гайдов): связи
  * лила→место→личность традиционны и общеизвестны.
  */
-import { useEffect, useRef, useState } from "react";
-import { BackIcon } from "../ui/icons";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { BackIcon, HeartIcon, MoreIcon } from "../ui/icons";
 import { api } from "../api";
 import { mapsDir, mapsQuery, type Dhama, type Person, type Tirtha } from "./dhamas";
 import { TirthaHeroCard } from "./TirthaHeroCard";
+import { useFavorite } from "../cardActions";
+import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
 import { NotesAtSource } from "../NotesAtSource";
 
 const NAV_H = 52;
+
+const navBtn = (active: boolean): CSSProperties => ({ display: "grid", height: 44, width: 44, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: active ? "var(--color-red)" : "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" });
 
 function PinIcon({ size = 17 }: { size?: number }) {
   return (
@@ -54,8 +58,8 @@ function PersonChip({ person, accent, onOpenEntity, onMiss }: { person: Person; 
       onPointerDown={(e) => (e.currentTarget.style.background = `color-mix(in srgb, ${accent} 22%, transparent)`)}
       onPointerUp={(e) => (e.currentTarget.style.background = `color-mix(in srgb, ${accent} 11%, transparent)`)}
       onPointerLeave={(e) => (e.currentTarget.style.background = `color-mix(in srgb, ${accent} 11%, transparent)`)}
-      style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 13px", borderRadius: 999, cursor: busy ? "default" : "pointer",
-        fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, letterSpacing: "-0.1px", color: "var(--color-label)",
+      style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 13px", borderRadius: "var(--radius-pill)", cursor: busy ? "default" : "pointer",
+        fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", letterSpacing: "-0.1px", color: "var(--color-label)",
         background: `color-mix(in srgb, ${accent} 11%, transparent)`, border: `0.5px solid color-mix(in srgb, ${accent} 34%, transparent)`,
         opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
       <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: accent, flexShrink: 0 }} />
@@ -68,14 +72,14 @@ function NotFound({ dhama, onBack }: { dhama: Dhama; onBack: () => void }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)" }}>
       <header style={{ height: NAV_H, display: "flex", alignItems: "center", padding: "0 6px", borderBottom: "0.5px solid var(--color-hairline)" }}>
-        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
+        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 44, width: 44, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
         </button>
       </header>
-      <div style={{ flex: 1, display: "grid", placeItems: "center", padding: 24, textAlign: "center" }}>
+      <div style={{ flex: 1, display: "grid", placeItems: "center", padding: "var(--space-6)", textAlign: "center" }}>
         <div>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, color: "var(--color-label)" }}>Место не найдено</div>
-          <p style={{ margin: "6px 0 0", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-2)" }}>Эта тиртха отсутствует в дхаме «{dhama.name}».</p>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", color: "var(--color-label)" }}>Место не найдено</div>
+          <p style={{ margin: "6px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Эта тиртха отсутствует в дхаме «{dhama.name}».</p>
         </div>
       </div>
     </div>
@@ -88,8 +92,11 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 1800); };
   const [qr, setQr] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const moreRef = useRef<HTMLSpanElement>(null);
 
   const t: Tirtha | undefined = dhama.tirthas.find((x) => x.id === tirthaId);
+  const { on: favorited, toggle: toggleFav } = useFavorite(t ? `tirtha:${t.id}` : "tirtha:__none__", { t: t?.name || "", s: t?.iast || "", h: t ? `/dhama/${dhama.id}/${t.id}` : "" });
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [tirthaId]);
 
@@ -113,21 +120,23 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
-      {/* sticky навбар «жидкое стекло» */}
-      <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: 4, padding: "0 6px",
-        background: "var(--color-glass-nav)", backdropFilter: "saturate(180%) blur(20px)", WebkitBackdropFilter: "saturate(180%) blur(20px)",
-        borderBottom: "0.5px solid var(--color-hairline)" }}>
-        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
-          <BackIcon size={22} />
+      {/* sticky навбар — iOS 26 Liquid Glass */}
+      <header className="glass-nav glass-nav-edge" style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: "var(--space-1)", padding: "0 6px" }}>
+        <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
+          <BackIcon size={24} />
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
-        <span style={{ width: 38, flexShrink: 0 }} />
+        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
+        <div data-pdf-no-print style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
+          <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={22} filled={favorited} /></button>
+          <button aria-label="Открыть в картах" onClick={() => { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIcon size={22} /></button>
+          <span ref={moreRef} style={{ display: "inline-flex" }}><button aria-label="Ещё" onClick={() => setMenuOpen(true)} style={navBtn(false)}><MoreIcon size={20} /></button></span>
+        </div>
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         {/* hero (ПКП) */}
         <div style={{ padding: "16px 16px 0" }}>
-          <TirthaHeroCard dhamaId={dhama.id} tirtha={t} accent={accent} dhamaName={dhama.name} clusterTitle={clusterTitle} onMenuSelect={onMenu} flash={flash} />
+          <TirthaHeroCard dhamaId={dhama.id} tirtha={t} accent={accent} dhamaName={dhama.name} clusterTitle={clusterTitle} presentational onMenuSelect={onMenu} flash={flash} />
         </div>
 
         <div style={{ padding: "20px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
@@ -139,8 +148,8 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
           {/* навигатор: пеший маршрут в Google Maps */}
           <a href={mapsDir(t)} target="_blank" rel="noreferrer"
-            style={{ display: "inline-flex", alignItems: "center", gap: 8, marginTop: 16, padding: "10px 16px", borderRadius: 999,
-              background: accent, color: "#fff", textDecoration: "none", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600,
+            style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", marginTop: "var(--space-4)", padding: "10px 16px", borderRadius: "var(--radius-pill)",
+              background: accent, color: "#fff", textDecoration: "none", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)",
               boxShadow: "var(--shadow-card)", WebkitTapHighlightColor: "transparent" }}>
             <svg width={16} height={16} viewBox="0 0 24 24" fill="currentColor" aria-hidden style={{ display: "block" }}>
               <path d="M12 2 4.6 20.3a.7.7 0 0 0 .98.84L12 18l6.42 3.14a.7.7 0 0 0 .98-.84L12 2z" />
@@ -150,53 +159,53 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
           {/* лила */}
           {t.lila && (
-            <section style={{ marginTop: 24 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: accent }}>Лила</div>
-              <div style={{ marginTop: 8, padding: "14px 16px", borderRadius: "var(--radius-lg)", background: `color-mix(in srgb, ${accent} 7%, var(--color-bg-2))`, border: `0.5px solid color-mix(in srgb, ${accent} 22%, var(--color-hairline))` }}>
-                <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label)" }}>{t.lila}</p>
+            <section style={{ marginTop: "var(--space-6)" }}>
+              <div style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.4px", textTransform: "uppercase", color: accent }}>Лила</div>
+              <div style={{ marginTop: "var(--space-2)", padding: "14px 16px", borderRadius: "var(--radius-lg)", background: `color-mix(in srgb, ${accent} 7%, var(--color-bg-2))`, border: `0.5px solid color-mix(in srgb, ${accent} 22%, var(--color-hairline))` }}>
+                <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{t.lila}</p>
               </div>
             </section>
           )}
 
           {/* источник: BBT-книга (курсивом, как цитата) либо подпись о традиции */}
           {t.source && (
-            <div style={{ marginTop: 16, display: "flex", gap: 8, alignItems: "baseline", flexWrap: "wrap" }}>
-              <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Источник</span>
-              <span style={{ fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.45, color: "var(--color-label-2)", fontStyle: t.source.startsWith("«") ? "italic" : "normal" }}>{t.source}</span>
+            <div style={{ marginTop: "var(--space-4)", display: "flex", gap: "var(--space-2)", alignItems: "baseline", flexWrap: "wrap" }}>
+              <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: "var(--weight-bold)", letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Источник</span>
+              <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-normal)", color: "var(--color-label-2)", fontStyle: t.source.startsWith("«") ? "italic" : "normal" }}>{t.source}</span>
             </div>
           )}
 
           {/* из священных книг — структурированные описания (vrajapedia) */}
           {t.sources && t.sources.length > 0 && (
             <section style={{ marginTop: 28 }}>
-              <h3 style={{ margin: "0 0 13px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>Из священных книг</h3>
+              <h3 style={{ margin: "0 0 13px", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)" }}>Из священных книг</h3>
               {t.sources.map((src, i) => (
                 <article key={i} style={{ marginTop: i ? 14 : 0, padding: "16px 18px", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
                   {(src.author || src.book) && (
                     <header style={{ marginBottom: 11, paddingBottom: 11, borderBottom: "0.5px solid var(--color-hairline)" }}>
-                      {src.author && <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{src.author}</div>}
-                      {src.book && <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13, fontStyle: "italic", color: "var(--color-label-2)" }}>«{src.book}»</div>}
+                      {src.author && <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>{src.author}</div>}
+                      {src.book && <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontStyle: "italic", color: "var(--color-label-2)" }}>«{src.book}»</div>}
                     </header>
                   )}
                   {src.paragraphs.map((para, j) =>
                     para.startsWith("## ") ? (
-                      <div key={j} style={{ margin: j ? "13px 0 0" : 0, fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 700, color: "var(--color-label)" }}>{para.slice(3)}</div>
+                      <div key={j} style={{ margin: j ? "13px 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-bold)", color: "var(--color-label)" }}>{para.slice(3)}</div>
                     ) : (
-                      <p key={j} style={{ margin: j ? "10px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.62, color: "var(--color-label)" }}>{para}</p>
+                      <p key={j} style={{ margin: j ? "10px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{para}</p>
                     ),
                   )}
                   {src.footnotes && src.footnotes.length > 0 && (
-                    <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
+                    <div style={{ marginTop: 14, paddingTop: "var(--space-3)", borderTop: "0.5px solid var(--color-hairline)" }}>
                       {src.footnotes.map((f, k) => (
-                        <p key={k} style={{ margin: k ? "6px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.5, color: "var(--color-label-3)" }}>
-                          {f.n ? <sup style={{ marginRight: 4, color: accent, fontWeight: 700 }}>{f.n}</sup> : null}{f.text}
+                        <p key={k} style={{ margin: k ? "6px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: "var(--leading-normal)", color: "var(--color-label-3)" }}>
+                          {f.n ? <sup style={{ marginRight: "var(--space-1)", color: accent, fontWeight: "var(--weight-bold)" }}>{f.n}</sup> : null}{f.text}
                         </p>
                       ))}
                     </div>
                   )}
                 </article>
               ))}
-              <p style={{ margin: "12px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-3)" }}>
+              <p style={{ margin: "12px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: "var(--leading-normal)", color: "var(--color-label-3)" }}>
                 Источник: онлайн-энциклопедия Вриндавана «Шри Рупа Сева Кундж» (vrajapedia.com), публикуется с разрешения правообладателя.
               </p>
             </section>
@@ -205,7 +214,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           {/* связанные личности */}
           {t.persons && t.persons.length > 0 && (
             <section style={{ marginTop: 26 }}>
-              <h3 style={{ margin: "0 0 11px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>Связанные личности</h3>
+              <h3 style={{ margin: "0 0 11px", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)" }}>Связанные личности</h3>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 9 }}>
                 {t.persons.map((p) => (
                   <PersonChip key={p.q} person={p} accent={accent} onOpenEntity={onOpenEntity} onMiss={() => flash(`${p.name}: страница появится позже`)} />
@@ -217,30 +226,31 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           {/* карты */}
           <section style={{ marginTop: 26 }}>
             <a href={mapsHref} target="_blank" rel="noreferrer"
-              style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: "var(--radius-lg)", textDecoration: "none",
+              style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "14px 16px", borderRadius: "var(--radius-lg)", textDecoration: "none",
                 background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label)" }}>
               <span aria-hidden style={{ display: "grid", placeItems: "center", width: 38, height: 38, borderRadius: 11, flexShrink: 0, color: accent, background: `color-mix(in srgb, ${accent} 13%, transparent)` }}>
                 <PinIcon size={19} />
               </span>
               <span style={{ minWidth: 0, flex: 1 }}>
-                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.2px" }}>Открыть в Google Картах</span>
-                <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>Местоположение тиртхи</span>
+                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: "var(--weight-semibold)", letterSpacing: "-0.2px" }}>Открыть в Google Картах</span>
+                <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>Местоположение тиртхи</span>
               </span>
-              <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 17 }}>↗</span>
+              <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-body)" }}>↗</span>
             </a>
           </section>
 
           {/* сноска об источнике */}
-          <p style={{ margin: "22px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-3)" }}>
+          <p style={{ margin: "22px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: "var(--leading-normal)", color: "var(--color-label-3)" }}>
             Описание подготовлено редакцией gaurangers.com на основе традиционных источников. Координаты приблизительны.
           </p>
         </div>
       </div>
 
-      {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: 999, maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)" }}>{toast}</div>}
+      {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: "var(--radius-pill)", maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", boxShadow: "var(--shadow-card)" }}>{toast}</div>}
       {qr && typeof window !== "undefined" && (
         <QrSheet url={`${window.location.origin}/dhama/${dhama.id}/${t.id}`} data={{ kind: "card", title: t.name, subtitle: [dhama.name, clusterTitle].filter(Boolean).join(" · ") }} onClose={() => setQr(false)} />
       )}
+      <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenu(id)} anchorRef={moreRef} variant="center" centerCanManage={false} centerHasMaps />
     </div>
   );
 }

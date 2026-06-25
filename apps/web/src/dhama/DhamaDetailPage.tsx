@@ -20,7 +20,7 @@ import { NotesAtSource } from "../NotesAtSource";
 
 const NAV_H = 52;
 
-const navBtn = (active: boolean): CSSProperties => ({ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: active ? "#FF453A" : "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" });
+const navBtn = (active: boolean): CSSProperties => ({ display: "grid", height: 44, width: 44, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: active ? "var(--color-red)" : "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" });
 
 const PinIconNav = ({ size = 20 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden style={{ display: "block" }}>
@@ -53,7 +53,7 @@ function KindIcon({ kind, size = 13 }: { kind: Tirtha["kind"]; size?: number }) 
 
 function KindChip({ d, kind }: { d: Dhama; kind: Tirtha["kind"] }) {
   return (
-    <span style={{ flexShrink: 0, alignSelf: "center", display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 9px 3px 7px", borderRadius: 999, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, letterSpacing: "0.1px",
+    <span style={{ flexShrink: 0, alignSelf: "center", display: "inline-flex", alignItems: "center", gap: "var(--space-1)", padding: "3px 9px 3px 7px", borderRadius: "var(--radius-pill)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "0.1px",
       color: d.accent, background: `color-mix(in srgb, ${d.accent} 13%, transparent)`, border: `0.5px solid color-mix(in srgb, ${d.accent} 38%, transparent)` }}>
       <KindIcon kind={kind} size={12} />
       {KIND_RU[kind]}
@@ -82,15 +82,15 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
       onPointerDown={(e) => (e.currentTarget.style.background = "var(--color-fill-1)")}
       onPointerUp={(e) => (e.currentTarget.style.background = "transparent")}
       onPointerLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "13px 4px", background: "transparent",
+      style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "13px 4px", background: "transparent",
         borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <span style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{t.name}</span>
+        <span style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>{t.name}</span>
           <KindChip d={d} kind={t.kind} />
         </span>
-        {t.iast && <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)" }}>{t.iast}</span>}
-        <span style={{ display: "block", marginTop: 4, fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.4, color: "var(--color-label-2)" }}>{t.blurb}</span>
+        {t.iast && <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{t.iast}</span>}
+        <span style={{ display: "block", marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
       <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={28} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
     </div>
@@ -106,18 +106,18 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
       onPointerDown={(e) => (e.currentTarget.style.background = "var(--color-fill-1)")}
       onPointerUp={(e) => (e.currentTarget.style.background = "transparent")}
       onPointerLeave={(e) => (e.currentTarget.style.background = "transparent")}
-      style={{ display: "flex", alignItems: "stretch", gap: 12, width: "100%", textAlign: "left", padding: "10px 4px", background: "transparent",
-        cursor: "pointer", WebkitTapHighlightColor: "transparent", borderRadius: 10 }}>
+      style={{ display: "flex", alignItems: "stretch", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "10px 4px", background: "transparent",
+        cursor: "pointer", WebkitTapHighlightColor: "transparent", borderRadius: "var(--radius-sm)" }}>
       <div style={{ position: "relative", width: 28, flexShrink: 0 }}>
         {!lastInGroup && <span aria-hidden style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", top: 28, bottom: -12, width: 2, background: `color-mix(in srgb, ${d.accent} 26%, transparent)` }} />}
-        <span style={{ position: "relative", zIndex: 1, display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: "50%", background: d.accent, color: "#fff", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700 }}>{n}</span>
+        <span style={{ position: "relative", zIndex: 1, display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: "50%", background: d.accent, color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-bold)" }}>{n}</span>
       </div>
-      <span style={{ minWidth: 0, flex: 1, paddingBottom: 4 }}>
-        <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          <span style={{ fontFamily: "var(--font-display)", fontSize: 16.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{t.name}</span>
+      <span style={{ minWidth: 0, flex: 1, paddingBottom: "var(--space-1)" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>{t.name}</span>
           <KindChip d={d} kind={t.kind} />
         </span>
-        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.42, color: "var(--color-label-2)" }}>{t.blurb}</span>
+        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
       <span style={{ alignSelf: "center", display: "flex", alignItems: "center", gap: 6 }}>
         <button aria-label="Проложить маршрут" title="Проложить маршрут в Google Maps"
@@ -180,18 +180,16 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
-      {/* sticky навбар «жидкое стекло» */}
-      <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: 4, padding: "0 6px",
-        background: "var(--color-glass-nav)", backdropFilter: "saturate(180%) blur(20px)", WebkitBackdropFilter: "saturate(180%) blur(20px)",
-        borderBottom: "0.5px solid var(--color-hairline)" }}>
-        <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
-          <BackIcon size={22} />
+      {/* sticky навбар — iOS 26 Liquid Glass */}
+      <header className="glass-nav glass-nav-edge" style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: "var(--space-1)", padding: "0 6px" }}>
+        <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
+          <BackIcon size={24} />
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{dhama.name}</div>
+        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{dhama.name}</div>
         <div data-pdf-no-print style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
-          <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={21} filled={favorited} /></button>
-          <button aria-label="Открыть в картах" onClick={() => { try { window.open(dhamaMapsHref(dhama), "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIconNav size={20} /></button>
-          <span ref={moreRef} style={{ display: "inline-flex" }}><button aria-label="Ещё" onClick={() => setMenuOpen(true)} style={navBtn(false)}><MoreIcon size={18} /></button></span>
+          <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={22} filled={favorited} /></button>
+          <button aria-label="Открыть в картах" onClick={() => { try { window.open(dhamaMapsHref(dhama), "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIconNav size={22} /></button>
+          <span ref={moreRef} style={{ display: "inline-flex" }}><button aria-label="Ещё" onClick={() => setMenuOpen(true)} style={navBtn(false)}><MoreIcon size={20} /></button></span>
         </div>
       </header>
 
@@ -214,15 +212,15 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         <div style={{ padding: "10px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
           {sub === "places" && (
             <div>
-              <div style={{ marginTop: 8, padding: "13px 15px", borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
-                <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>
+              <div style={{ marginTop: "var(--space-2)", padding: "13px 15px", borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>
                   {dhama.tirthas.length} {plural(dhama.tirthas.length, "святое место", "святых места", "святых мест")} · {byCluster.length} {plural(byCluster.length, "район", "района", "районов")} парикрамы
                 </div>
                 {breakdown.length > 0 && (
                   <div style={{ marginTop: 9, display: "flex", flexWrap: "wrap", gap: 6 }}>
                     {breakdown.map(({ k, n }) => (
-                      <span key={k} style={{ display: "inline-flex", alignItems: "center", gap: 5, borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", height: 26, padding: "0 11px 0 9px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)" }}>
-                        <KindIcon kind={k as Tirtha["kind"]} size={12} /><b style={{ fontWeight: 700, color: "var(--color-label)" }}>{n}</b> {plural(n, KIND_PL[k][0], KIND_PL[k][1], KIND_PL[k][2])}
+                      <span key={k} style={{ display: "inline-flex", alignItems: "center", gap: 5, borderRadius: "var(--radius-pill)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", height: 26, padding: "0 11px 0 9px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-2)" }}>
+                        <KindIcon kind={k as Tirtha["kind"]} size={12} /><b style={{ fontWeight: "var(--weight-bold)", color: "var(--color-label)" }}>{n}</b> {plural(n, KIND_PL[k][0], KIND_PL[k][1], KIND_PL[k][2])}
                       </span>
                     ))}
                   </div>
@@ -230,11 +228,11 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
               </div>
               {byCluster.map(({ cluster, items }) => (
                 <section key={cluster.id} style={{ marginTop: 18 }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, margin: "0 0 2px" }}>
-                    <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{cluster.title}</h3>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: "var(--color-label-3)", flexShrink: 0 }}>{items.length}</span>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)", margin: "0 0 2px" }}>
+                    <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)" }}>{cluster.title}</h3>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: "var(--weight-semibold)", color: "var(--color-label-3)", flexShrink: 0 }}>{items.length}</span>
                   </div>
-                  {cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.4 }}>{cluster.note}</p>}
+                  {cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: "var(--leading-snug)" }}>{cluster.note}</p>}
                   <div>
                     {items.map((t) => <TirthaRow key={t.id} d={dhama} t={t} onOpen={onOpenTirtha} />)}
                   </div>
@@ -249,27 +247,27 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
             const groups = byCluster.map((g) => { const start = offset; offset += g.items.length; return { ...g, start }; });
             return (
               <div style={{ marginTop: 14 }}>
-                <p style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.5 }}>
+                <p style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: "var(--leading-normal)" }}>
                   Рекомендуемый маршрут по святым местам — {route.length} {plural(route.length, "остановка", "остановки", "остановок")}, сгруппированы по районам. Двигайтесь по порядку или коснитесь номера на карте.
                 </p>
                 <DhamaMap dhama={dhama} stops={route} ordered onOpen={onOpenTirtha} />
                 <div style={{ marginTop: 18 }}>
                   {groups.map((g) => (
-                    <section key={g.cluster.id} style={{ marginTop: 16 }}>
-                      <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
-                        <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{g.cluster.title}</h3>
-                        <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: dhama.accent }}>
+                    <section key={g.cluster.id} style={{ marginTop: "var(--space-4)" }}>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)", marginBottom: "var(--space-1)" }}>
+                        <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)" }}>{g.cluster.title}</h3>
+                        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: "var(--weight-semibold)", color: dhama.accent }}>
                           {g.items.length > 1 ? `${g.start + 1}–${g.start + g.items.length}` : `${g.start + 1}`}
                         </span>
                       </div>
-                      {g.cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.4 }}>{g.cluster.note}</p>}
+                      {g.cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: "var(--leading-snug)" }}>{g.cluster.note}</p>}
                       <div>
                         {g.items.map((t, i) => <ParikramaStop key={t.id} d={dhama} t={t} n={g.start + i + 1} lastInGroup={i === g.items.length - 1} onOpen={onOpenTirtha} />)}
                       </div>
                     </section>
                   ))}
                 </div>
-                <p style={{ margin: "20px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)", lineHeight: 1.5 }}>
+                <p style={{ margin: "20px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)", lineHeight: "var(--leading-normal)" }}>
                   Места сгруппированы по районам в порядке парикрамы. У части мест координаты приблизительны или будут добавлены позже — их можно открыть в списке и проложить маршрут по названию.
                 </p>
               </div>
@@ -279,22 +277,22 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
           {sub === "map" && (
             <div style={{ marginTop: 14 }}>
               <DhamaMap dhama={dhama} onOpen={onOpenTirtha} />
-              <p style={{ margin: "10px 2px 0", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.45 }}>
+              <p style={{ margin: "10px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: "var(--leading-normal)" }}>
                 {dhama.tirthas.length} {plural(dhama.tirthas.length, "место", "места", "мест")} на карте. Коснитесь метки, чтобы открыть тиртху. Координаты приблизительны.
               </p>
             </div>
           )}
 
           {sub === "about" && (
-            <div style={{ marginTop: 16 }}>
+            <div style={{ marginTop: "var(--space-4)" }}>
               {dhama.intro.map((p, i) => (
                 <p key={i} style={{ margin: i === 0 ? 0 : "var(--space-4) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{p}</p>
               ))}
               <div style={{ marginTop: 22, borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", overflow: "hidden" }}>
                 {dhama.facts.map((f, i) => (
-                  <div key={i} style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: i === dhama.facts.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                    <span style={{ flexShrink: 0, width: 116, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{f.k}</span>
-                    <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 500, color: "var(--color-label)" }}>{f.v}</span>
+                  <div key={i} style={{ display: "flex", gap: "var(--space-3)", padding: "12px 16px", borderBottom: i === dhama.facts.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                    <span style={{ flexShrink: 0, width: 116, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{f.k}</span>
+                    <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{f.v}</span>
                   </div>
                 ))}
               </div>
@@ -306,7 +304,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         <QrSheet url={`${window.location.origin}/dhama/${dhama.id}`} data={{ kind: "card", title: dhama.name, subtitle: dhama.region }} onClose={() => setQr(false)} />
       )}
       <BookMenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} onSelect={(id) => onMenu(id)} anchorRef={moreRef} variant="center" centerCanManage={false} centerHasMaps />
-      {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: 999, maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)" }}>{toast}</div>}
+      {toast && <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, padding: "11px 18px", borderRadius: "var(--radius-pill)", maxWidth: "86vw", textAlign: "center", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", boxShadow: "var(--shadow-card)" }}>{toast}</div>}
     </div>
   );
 }

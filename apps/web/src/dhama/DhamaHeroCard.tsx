@@ -42,7 +42,7 @@ export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSe
     <>
       <article
         style={{
-          position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20,
+          position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: "var(--radius-glass)",
           border: "0.5px solid var(--color-hairline, rgba(0,0,0,.08))",
           background: photo ? `center/cover no-repeat url("${photo}")` : `radial-gradient(120% 90% at 30% 8%, color-mix(in srgb, ${accent} 80%, #000) 0%, ${accent} 46%, color-mix(in srgb, ${accent} 48%, #000) 100%)`,
           boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
@@ -54,11 +54,11 @@ export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSe
         {onOpen && !presentational && <button type="button" aria-label="Открыть дхаму" onClick={() => onOpen()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />}
 
         {/* TOP */}
-        <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--space-2)" }}>
           <span style={{ display: "flex", alignItems: "center", color: "#fff", minWidth: 0 }}>{topLeft}</span>
           {!presentational && (
-            <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => toggleFav(flash)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+            <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: "var(--space-2)" }}>
+              <ActionBtn active={favorited} activeColor="var(--color-red)" ariaLabel="В избранное" onClick={() => toggleFav(flash)}><HeartIcon size={18} filled={favorited} /></ActionBtn>
               <ActionBtn ariaLabel="Открыть в картах" onClick={() => { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }}><PinIcon size={18} /></ActionBtn>
               <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
             </div>
@@ -66,19 +66,19 @@ export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSe
         </div>
 
         {/* INFO */}
-        <div style={{ position: "relative", zIndex: 20, padding: 20, fontFamily: "var(--font-text)", pointerEvents: "none" }}>
+        <div style={{ position: "relative", zIndex: 20, padding: "var(--space-5)", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 7, marginBottom: 9 }}>
             <span style={{ width: 7, height: 7, borderRadius: 2, background: accent }} />
-            <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>Святая дхама</span>
+            <span style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>Святая дхама</span>
           </div>
-          {dhama.iast && <p style={{ margin: "0 0 2px", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 15, color: "rgba(255,255,255,.82)" }}>{dhama.iast}</p>}
-          <h3 style={{ margin: 0, fontSize: 30, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{dhama.name}</h3>
-          <p style={{ margin: "8px 0 0", fontSize: 14.5, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.88)" }}>{dhama.tagline}</p>
-          <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-            <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.18)", height: 26, padding: "0 12px", fontSize: 12.5, lineHeight: 1, fontWeight: 600, color: "#fff" }}>{dhama.deity}</span>
-            <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.12)", height: 26, padding: "0 12px", fontSize: 12.5, lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.8)" }}>{dhama.region}</span>
+          {dhama.iast && <p style={{ margin: "0 0 2px", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-subhead)", color: "rgba(255,255,255,.82)" }}>{dhama.iast}</p>}
+          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.03em", color: "#fff" }}>{dhama.name}</h3>
+          <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-regular)", letterSpacing: "-0.01em", color: "rgba(255,255,255,.88)" }}>{dhama.tagline}</p>
+          <div style={{ marginTop: "var(--space-4)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
+            <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,.18)", height: 26, padding: "0 12px", fontSize: "var(--text-caption)", lineHeight: 1, fontWeight: "var(--weight-semibold)", color: "#fff" }}>{dhama.deity}</span>
+            <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,.12)", height: 26, padding: "0 12px", fontSize: "var(--text-caption)", lineHeight: 1, fontWeight: "var(--weight-medium)", color: "rgba(255,255,255,.8)" }}>{dhama.region}</span>
             {(dhama.tirthas?.length ?? 0) > 0 && (
-              <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.12)", height: 26, padding: "0 12px", fontSize: 12.5, lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.8)" }}>{dhama.tirthas.length} {pl(dhama.tirthas.length, "место", "места", "мест")}</span>
+              <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,.12)", height: 26, padding: "0 12px", fontSize: "var(--text-caption)", lineHeight: 1, fontWeight: "var(--weight-medium)", color: "rgba(255,255,255,.8)" }}>{dhama.tirthas.length} {pl(dhama.tirthas.length, "место", "места", "мест")}</span>
             )}
           </div>
         </div>
