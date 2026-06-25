@@ -125,9 +125,13 @@ jobs:
           git config user.email "ceo@billionsx.com"
           git add -A puri.candidates.txt apps/web/public/media/puri.webp apps/web/public/media/puri.credit.txt 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "media: Jagannath-Mandir cover for Puri (Wikimedia Commons) + candidates"
-            git push origin HEAD:main
+            echo "No changes to commit."; git rev-parse HEAD; exit 0
           fi
-          git rev-parse HEAD
+          git commit -m "media: Jagannath-Mandir cover for Puri (Wikimedia Commons) + candidates"
+          for i in 1 2 3 4 5 6; do
+            if git push origin HEAD:main; then echo "PUSHED"; git rev-parse HEAD; exit 0; fi
+            echo "push rejected, rebasing (attempt $i)"
+            git fetch origin main
+            GIT_EDITOR=true git rebase origin/main || git rebase --abort
+          done
+          echo "push failed after retries"; exit 1
