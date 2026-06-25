@@ -101,6 +101,18 @@ function BhNavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | 
 function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses: Verse[]; idx: number; bhajanName: string; onClose: () => void; onNav: (i: number) => void }) {
   const v = verses[idx];
   const hasWbw = !!(v.words && v.words.length > 0);
+  const scRef = useRef<HTMLDivElement>(null);
+  const prevOk = idx > 0, nextOk = idx < verses.length - 1;
+  useEffect(() => { scRef.current?.scrollTo({ top: 0 }); }, [idx]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft" && prevOk) onNav(idx - 1);
+      else if (e.key === "ArrowRight" && nextOk) onNav(idx + 1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [idx, prevOk, nextOk, onClose, onNav]);
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
@@ -110,7 +122,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
           <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)" }}>Стих {v.ord} из {verses.length}</div>
         </div>
       </header>
-      <div style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+      <div ref={scRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
           <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
           {v.translit && <div style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 20.5, lineHeight: 1.74, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>}
@@ -132,9 +144,9 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
         </div>
       </div>
       <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
-        <BhNavAction arrow="prev" disabled={idx <= 0} onClick={() => idx > 0 && onNav(idx - 1)}>Назад</BhNavAction>
+        <BhNavAction arrow="prev" disabled={!prevOk} onClick={() => prevOk && onNav(idx - 1)}>Назад</BhNavAction>
         <BhNavAction onClick={onClose}>К бхаджану</BhNavAction>
-        <BhNavAction arrow="next" disabled={idx >= verses.length - 1} onClick={() => idx < verses.length - 1 && onNav(idx + 1)}>Вперёд</BhNavAction>
+        <BhNavAction arrow="next" disabled={!nextOk} onClick={() => nextOk && onNav(idx + 1)}>Вперёд</BhNavAction>
       </nav>
     </div>
   );
@@ -357,6 +369,16 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
   const sIdx = sibs ? sibs.findIndex((s) => s.slug === slug) : -1;
   const prevB = sIdx > 0 ? sibs![sIdx - 1] : null;
   const nextB = sIdx >= 0 && sibs && sIdx < sibs.length - 1 ? sibs[sIdx + 1] : null;
+  useEffect(() => {
+    if (vIdx !== null) return; // когда открыт стих — навигацией рулит экран стиха
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onBack();
+      else if (e.key === "ArrowLeft" && prevB) onOpenBhajan?.(prevB.slug);
+      else if (e.key === "ArrowRight" && nextB) onOpenBhajan?.(nextB.slug);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [vIdx, prevB, nextB, onBack, onOpenBhajan]);
 
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
