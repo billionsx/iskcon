@@ -1,0 +1,33 @@
+name: vraja run (generic runner for tools/vraja scripts)
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: "script filename under tools/vraja/"
+        required: true
+        default: "recon_probe.py"
+      args:
+        description: "extra args passed to the script"
+        required: false
+        default: ""
+permissions: { contents: write }
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Deps
+        run: python3 -m pip install --quiet requests beautifulsoup4 lxml
+      - name: Run script
+        env: { CF: "${{ secrets.CLOUDFLARE_API_TOKEN }}" }
+        run: python3 "tools/vraja/${{ github.event.inputs.script }}" ${{ github.event.inputs.args }}
+      - name: Commit artifacts
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add tools/vraja/*.json 2>/dev/null || true
+          git commit --no-verify -m "vraja: ${{ github.event.inputs.script }} artifacts [skip ci]" || echo "nothing to commit"
+          for i in 1 2 3 4 5 6; do git push origin HEAD:main && break; git fetch origin main -q && git rebase origin/main -q || git rebase --abort; done
