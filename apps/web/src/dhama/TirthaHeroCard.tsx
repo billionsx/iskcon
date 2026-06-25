@@ -46,8 +46,13 @@ export function TirthaHeroCard({ dhamaId, tirtha, accent, dhamaName, clusterTitl
           boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 100%)" }} />
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "74%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.38) 46%, rgba(0,0,0,0) 100%)" }} />
+        {t.hero_image && (
+          <img src={t.hero_image} alt="" aria-hidden loading="lazy"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+        )}
+        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, zIndex: 1, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 100%)" }} />
+        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "74%", zIndex: 1, pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.38) 46%, rgba(0,0,0,0) 100%)" }} />
 
         {onOpen && !presentational && <button type="button" aria-label="Открыть место" onClick={() => onOpen()} style={{ position: "absolute", inset: 0, zIndex: 10, background: "none", border: "none", cursor: "pointer" }} />}
 
