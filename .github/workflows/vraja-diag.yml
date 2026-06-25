@@ -1,0 +1,13 @@
+name: vraja diag (runner reachability of vrajapedia.com)
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - name: Reachability matrix
+        env: { CF: "${{ secrets.CLOUDFLARE_API_TOKEN }}" }
+        run: python3 tools/vraja/diag.py
