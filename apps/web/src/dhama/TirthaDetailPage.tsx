@@ -245,7 +245,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
             <a href={mapsHref} className="tap-press-soft" target="_blank" rel="noreferrer"
               style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4) var(--space-4)", borderRadius: "var(--radius-lg)", textDecoration: "none",
                 background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label)" }}>
-              <span aria-hidden style={{ display: "grid", placeItems: "center", width: 38, height: 38, borderRadius: 11, flexShrink: 0, color: accent, background: `color-mix(in srgb, ${accent} 13%, transparent)` }}>
+              <span aria-hidden style={{ display: "grid", placeItems: "center", width: 38, height: 38, borderRadius: "var(--radius-control)", flexShrink: 0, color: accent, background: `color-mix(in srgb, ${accent} 13%, transparent)` }}>
                 <PinIcon size={19} />
               </span>
               <span style={{ minWidth: 0, flex: 1 }}>
