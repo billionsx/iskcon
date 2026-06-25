@@ -96,7 +96,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: "var(--color-label-3)", flexShrink: 0 }}><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.2-3.2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Найти святое место" inputMode="search"
             style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", color: "var(--color-label)" }} />
-          {q && <button type="button" aria-label="Очистить" onClick={() => setQ("")} style={{ border: "none", background: "none", color: "var(--color-label-3)", cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
+          {q && <button type="button" aria-label="Очистить" className="tap-press" onClick={() => setQ("")} style={{ border: "none", background: "none", color: "var(--color-label-3)", cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>}
         </div>
@@ -104,7 +104,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
           {(["all", ...presentKinds] as ("all" | TirthaKind)[]).map((k) => {
             const on = kind === k;
             return (
-              <button key={k} type="button" onClick={() => setKind(k)}
+              <button key={k} type="button" className="tap-press" onClick={() => setKind(k)}
                 style={{ flexShrink: 0, height: 32, padding: "0 13px", borderRadius: "var(--radius-pill)", border: on ? "none" : "0.5px solid var(--color-hairline)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", background: on ? "var(--color-label)" : "var(--color-glass-thin)", color: on ? "var(--color-bg)" : "var(--color-label-2)", WebkitTapHighlightColor: "transparent" }}>
                 {k === "all" ? "Все" : KIND_RU[k]}
               </button>

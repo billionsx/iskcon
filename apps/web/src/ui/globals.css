@@ -675,3 +675,20 @@ body.gtab-off .gtab-wrap { display: none; }
 @media (min-width: 760px) {
   .dstory-stage { padding: 0; box-sizing: border-box; }
 }
+
+/* ─────────────────────────────────────────────────────────────────
+ * iOS-нативный отклик на нажатие (press feedback). Лёгкое сжатие + дим,
+ * сглаженное var(--ease-standard). Reduce-motion полностью убирает transform.
+ *   .tap-press      — чипы/кнопки (scale .97 + дим)
+ *   .tap-press-soft — крупные карточки / карто-строки (scale .985)
+ *   .tap-row        — строки списков (подсветка фона)
+ * ───────────────────────────────────────────────────────────────── */
+.tap-press { transition: transform var(--duration-fast) var(--ease-standard), opacity var(--duration-fast) var(--ease-standard); -webkit-tap-highlight-color: transparent; }
+.tap-press:active { transform: scale(0.97); opacity: 0.9; }
+.tap-press-soft { transition: transform var(--duration-base) var(--ease-standard); -webkit-tap-highlight-color: transparent; }
+.tap-press-soft:active { transform: scale(0.985); }
+.tap-row { transition: background var(--duration-fast) var(--ease-standard); -webkit-tap-highlight-color: transparent; }
+.tap-row:active { background: var(--color-fill-1) !important; }
+@media (prefers-reduced-motion: reduce) {
+  .tap-press:active, .tap-press-soft:active { transform: none; }
+}

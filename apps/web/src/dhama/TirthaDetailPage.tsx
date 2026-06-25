@@ -54,10 +54,7 @@ function PersonChip({ person, accent, onOpenEntity, onMiss }: { person: Person; 
     }
   };
   return (
-    <button type="button" onClick={() => void open()} disabled={busy}
-      onPointerDown={(e) => (e.currentTarget.style.background = `color-mix(in srgb, ${accent} 22%, transparent)`)}
-      onPointerUp={(e) => (e.currentTarget.style.background = `color-mix(in srgb, ${accent} 11%, transparent)`)}
-      onPointerLeave={(e) => (e.currentTarget.style.background = `color-mix(in srgb, ${accent} 11%, transparent)`)}
+    <button type="button" className="tap-press" onClick={() => void open()} disabled={busy}
       style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 13px", borderRadius: "var(--radius-pill)", cursor: busy ? "default" : "pointer",
         fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", letterSpacing: "-0.1px", color: "var(--color-label)",
         background: `color-mix(in srgb, ${accent} 11%, transparent)`, border: `0.5px solid color-mix(in srgb, ${accent} 34%, transparent)`,
@@ -147,7 +144,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           )}
 
           {/* навигатор: пеший маршрут в Google Maps */}
-          <a href={mapsDir(t)} target="_blank" rel="noreferrer"
+          <a href={mapsDir(t)} className="tap-press" target="_blank" rel="noreferrer"
             style={{ display: "inline-flex", alignItems: "center", gap: "var(--space-2)", marginTop: "var(--space-4)", padding: "10px 16px", borderRadius: "var(--radius-pill)",
               background: accent, color: "#fff", textDecoration: "none", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)",
               boxShadow: "var(--shadow-card)", WebkitTapHighlightColor: "transparent" }}>
@@ -225,7 +222,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
           {/* карты */}
           <section style={{ marginTop: 26 }}>
-            <a href={mapsHref} target="_blank" rel="noreferrer"
+            <a href={mapsHref} className="tap-press-soft" target="_blank" rel="noreferrer"
               style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "14px 16px", borderRadius: "var(--radius-lg)", textDecoration: "none",
                 background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label)" }}>
               <span aria-hidden style={{ display: "grid", placeItems: "center", width: 38, height: 38, borderRadius: 11, flexShrink: 0, color: accent, background: `color-mix(in srgb, ${accent} 13%, transparent)` }}>

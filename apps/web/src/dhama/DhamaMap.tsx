@@ -139,7 +139,7 @@ function FallbackList({ dhama, onOpen }: { dhama: Dhama; onOpen: (id: string) =>
         Карта недоступна — список мест:
       </div>
       {dhama.tirthas.map((t: Tirtha) => (
-        <button key={t.id} type="button" onClick={() => onOpen(t.id)}
+        <button key={t.id} type="button" className="tap-row" onClick={() => onOpen(t.id)}
           style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left", padding: "11px 14px", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer" }}>
           <span style={{ flexShrink: 0, width: 9, height: 9, borderRadius: "50%", background: dhama.accent }} />
           <span style={{ minWidth: 0, flex: 1 }}>

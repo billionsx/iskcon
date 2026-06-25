@@ -77,11 +77,8 @@ function openDir(t: Tirtha) {
 function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string) => void }) {
   const { openCardMenu } = useCardActions();
   return (
-    <div role="button" tabIndex={0} onClick={() => onOpen(t.id)}
+    <div role="button" tabIndex={0} className="tap-row" onClick={() => onOpen(t.id)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(t.id); } }}
-      onPointerDown={(e) => (e.currentTarget.style.background = "var(--color-fill-1)")}
-      onPointerUp={(e) => (e.currentTarget.style.background = "transparent")}
-      onPointerLeave={(e) => (e.currentTarget.style.background = "transparent")}
       style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "13px 4px", background: "transparent",
         borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
       <span style={{ minWidth: 0, flex: 1 }}>
@@ -101,11 +98,8 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
 function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; n: number; lastInGroup: boolean; onOpen: (id: string) => void }) {
   const { openCardMenu } = useCardActions();
   return (
-    <div role="button" tabIndex={0} onClick={() => onOpen(t.id)}
+    <div role="button" tabIndex={0} className="tap-row" onClick={() => onOpen(t.id)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(t.id); } }}
-      onPointerDown={(e) => (e.currentTarget.style.background = "var(--color-fill-1)")}
-      onPointerUp={(e) => (e.currentTarget.style.background = "transparent")}
-      onPointerLeave={(e) => (e.currentTarget.style.background = "transparent")}
       style={{ display: "flex", alignItems: "stretch", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "10px 4px", background: "transparent",
         cursor: "pointer", WebkitTapHighlightColor: "transparent", borderRadius: "var(--radius-sm)" }}>
       <div style={{ position: "relative", width: 28, flexShrink: 0 }}>

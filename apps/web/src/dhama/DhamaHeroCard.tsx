@@ -41,6 +41,7 @@ export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSe
   return (
     <>
       <article
+        className={onOpen && !presentational ? "tap-press-soft" : undefined}
         style={{
           position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: "var(--radius-glass)",
           border: "0.5px solid var(--color-hairline, rgba(0,0,0,.08))",
