@@ -91,11 +91,31 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
   const [qr, setQr] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [navSolid, setNavSolid] = useState(false);
 
   const t: Tirtha | undefined = dhama.tirthas.find((x) => x.id === tirthaId);
   const { on: favorited, toggle: toggleFav } = useFavorite(t ? `tirtha:${t.id}` : "tirtha:__none__", { t: t?.name || "", s: t?.iast || "", h: t ? `/dhama/${dhama.id}/${t.id}` : "" });
 
   useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [tirthaId]);
+  // iOS large-title: имя в шапке проявляется, когда герой ушёл под навбар.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const h = heroRef.current;
+        const trig = h ? h.offsetHeight - NAV_H - 8 : 240;
+        setNavSolid(el.scrollTop > trig);
+      });
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => { el.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, [tirthaId]);
 
   if (!t) return <NotFound dhama={dhama} onBack={onBack} />;
 
@@ -122,7 +142,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
         <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
           <BackIcon size={24} />
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</div>
+        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: navSolid ? 1 : 0, transform: navSolid ? "none" : "translateY(3px)", transition: "opacity var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-standard)", pointerEvents: "none" }}>{t.name}</div>
         <div data-pdf-no-print style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
           <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={22} filled={favorited} /></button>
           <button aria-label="Открыть в картах" onClick={() => { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIcon size={22} /></button>
@@ -132,7 +152,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         {/* hero (ПКП) */}
-        <div style={{ padding: "16px 16px 0" }}>
+        <div ref={heroRef} style={{ padding: "16px 16px 0" }}>
           <TirthaHeroCard dhamaId={dhama.id} tirtha={t} accent={accent} dhamaName={dhama.name} clusterTitle={clusterTitle} presentational onMenuSelect={onMenu} flash={flash} />
         </div>
 
