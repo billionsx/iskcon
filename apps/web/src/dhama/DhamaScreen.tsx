@@ -82,30 +82,30 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Святые места</div>
-        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Дхама</h2>
-        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.45 }}>
+      <div style={{ marginBottom: "var(--space-4)" }}>
+        <div style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Святые места</div>
+        <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-display)" }}>Дхама</h2>
+        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: "var(--leading-normal)" }}>
           Дхамы — святые земли, неотличные от духовного мира, где Господь являет Свои вечные игры. Войдите в каждую, чтобы пройти по её тиртхам, лилам и картам.
         </p>
       </div>
 
       {/* поиск по всем святым местам */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, height: 40, padding: "0 12px", borderRadius: 12, background: "rgba(120,120,128,0.12)" }}>
+      <div style={{ marginBottom: "var(--space-4)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", height: 40, padding: "0 12px", borderRadius: "var(--radius-control)", background: "var(--color-fill-1)" }}>
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: "var(--color-label-3)", flexShrink: 0 }}><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.2-3.2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Найти святое место" inputMode="search"
-            style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }} />
+            style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", color: "var(--color-label)" }} />
           {q && <button type="button" aria-label="Очистить" onClick={() => setQ("")} style={{ border: "none", background: "none", color: "var(--color-label-3)", cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
           </button>}
         </div>
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "10px 0 0", scrollbarWidth: "none" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)", overflowX: "auto", padding: "10px 0 0", scrollbarWidth: "none" }}>
           {(["all", ...presentKinds] as ("all" | TirthaKind)[]).map((k) => {
             const on = kind === k;
             return (
               <button key={k} type="button" onClick={() => setKind(k)}
-                style={{ flexShrink: 0, height: 32, padding: "0 13px", borderRadius: 999, border: on ? "none" : "0.5px solid var(--color-hairline)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, background: on ? "var(--color-label)" : "var(--color-glass-thin)", color: on ? "var(--color-bg)" : "var(--color-label-2)", WebkitTapHighlightColor: "transparent" }}>
+                style={{ flexShrink: 0, height: 32, padding: "0 13px", borderRadius: "var(--radius-pill)", border: on ? "none" : "0.5px solid var(--color-hairline)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", background: on ? "var(--color-label)" : "var(--color-glass-thin)", color: on ? "var(--color-bg)" : "var(--color-label-2)", WebkitTapHighlightColor: "transparent" }}>
                 {k === "all" ? "Все" : KIND_RU[k]}
               </button>
             );
@@ -116,13 +116,13 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
       {searching ? (
         results.length === 0 ? (
           <div style={{ textAlign: "center", padding: "48px 20px" }}>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 800, color: "var(--color-label)" }}>Ничего не найдено</div>
-            <p style={{ margin: "8px auto 0", maxWidth: 300, fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>Измените запрос или выберите другой тип места.</p>
+            <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: "var(--weight-heavy)", color: "var(--color-label)" }}>Ничего не найдено</div>
+            <p style={{ margin: "8px auto 0", maxWidth: 300, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-normal)", color: "var(--color-label-2)" }}>Измените запрос или выберите другой тип места.</p>
           </div>
         ) : (
           <>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", margin: "0 2px 12px" }}>{results.length} {plural(results.length, "место", "места", "мест")}</div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)", margin: "0 2px 12px" }}>{results.length} {plural(results.length, "место", "места", "мест")}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
               {results.map((t) => {
                 const d = getDhama(t.dhama)!;
                 return (
@@ -148,7 +148,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
             onOpen={() => onOpenTirtha(tod.dhama.id, tod.tirtha.id)}
             onMenuSelect={onMenuTirtha(tod.dhama, tod.tirtha)}
             topLeft={
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 28, padding: "0 11px", borderRadius: 999, background: "rgba(255,255,255,0.22)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "#fff" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 28, padding: "0 11px", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,0.22)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.5px", textTransform: "uppercase", color: "#fff" }}>
                 <span aria-hidden style={{ width: 5, height: 5, borderRadius: "50%", background: "#fff" }} />Место дня
               </span>
             }
@@ -156,7 +156,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
         {dhamasNow().map((d) => (
           <DhamaHeroCard key={d.id} dhama={d} onOpen={() => onOpen(d.id)} onMenuSelect={onMenuDhama(d)} />
         ))}

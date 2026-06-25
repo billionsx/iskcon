@@ -135,7 +135,7 @@ export default function DhamaMap({ dhama, height = 340, onOpen, ordered = false,
 function FallbackList({ dhama, onOpen }: { dhama: Dhama; onOpen: (id: string) => void }) {
   return (
     <div style={{ borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", overflow: "hidden" }}>
-      <div style={{ padding: "10px 14px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+      <div style={{ padding: "10px 14px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)", borderBottom: "0.5px solid var(--color-hairline)" }}>
         Карта недоступна — список мест:
       </div>
       {dhama.tirthas.map((t: Tirtha) => (
@@ -143,11 +143,11 @@ function FallbackList({ dhama, onOpen }: { dhama: Dhama; onOpen: (id: string) =>
           style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", textAlign: "left", padding: "11px 14px", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer" }}>
           <span style={{ flexShrink: 0, width: 9, height: 9, borderRadius: "50%", background: dhama.accent }} />
           <span style={{ minWidth: 0, flex: 1 }}>
-            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</span>
-            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>{KIND_RU[t.kind]}</span>
+            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.name}</span>
+            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{KIND_RU[t.kind]}</span>
           </span>
           <a href={`https://maps.google.com/?q=${encodeURIComponent(mapsQuery(t))}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
-            style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-brand-blue)", textDecoration: "none" }}>Карты ↗</a>
+            style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-brand-blue)", textDecoration: "none" }}>Карты ↗</a>
         </button>
       ))}
     </div>
