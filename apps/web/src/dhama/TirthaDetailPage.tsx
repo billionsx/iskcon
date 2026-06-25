@@ -138,7 +138,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
       {/* sticky навбар — iOS 26 Liquid Glass */}
-      <header className="glass-nav glass-nav-edge" style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: "var(--space-1)", padding: "0 6px" }}>
+      <header className={navSolid ? "glass-nav glass-nav-edge" : "glass-nav"} style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: "var(--space-1)", padding: "0 6px" }}>
         <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
           <BackIcon size={24} />
         </button>
@@ -178,7 +178,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           {t.lila && (
             <section style={{ marginTop: "var(--space-6)" }}>
               <div style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.4px", textTransform: "uppercase", color: accent }}>Лила</div>
-              <div style={{ marginTop: "var(--space-2)", padding: "14px 16px", borderRadius: "var(--radius-lg)", background: `color-mix(in srgb, ${accent} 7%, var(--color-bg-2))`, border: `0.5px solid color-mix(in srgb, ${accent} 22%, var(--color-hairline))` }}>
+              <div style={{ marginTop: "var(--space-2)", padding: "var(--space-4) var(--space-4)", borderRadius: "var(--radius-lg)", background: `color-mix(in srgb, ${accent} 7%, var(--color-bg-2))`, border: `0.5px solid color-mix(in srgb, ${accent} 22%, var(--color-hairline))` }}>
                 <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{t.lila}</p>
               </div>
             </section>
@@ -197,7 +197,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
             <section style={{ marginTop: 28 }}>
               <h3 style={{ margin: "0 0 13px", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)" }}>Из священных книг</h3>
               {t.sources.map((src, i) => (
-                <article key={i} style={{ marginTop: i ? 14 : 0, padding: "16px 18px", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+                <article key={i} style={{ marginTop: i ? 14 : 0, padding: "var(--space-4) var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
                   {(src.author || src.book) && (
                     <header style={{ marginBottom: 11, paddingBottom: 11, borderBottom: "0.5px solid var(--color-hairline)" }}>
                       {src.author && <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>{src.author}</div>}
@@ -243,7 +243,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           {/* карты */}
           <section style={{ marginTop: 26 }}>
             <a href={mapsHref} className="tap-press-soft" target="_blank" rel="noreferrer"
-              style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "14px 16px", borderRadius: "var(--radius-lg)", textDecoration: "none",
+              style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", padding: "var(--space-4) var(--space-4)", borderRadius: "var(--radius-lg)", textDecoration: "none",
                 background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", color: "var(--color-label)" }}>
               <span aria-hidden style={{ display: "grid", placeItems: "center", width: 38, height: 38, borderRadius: 11, flexShrink: 0, color: accent, background: `color-mix(in srgb, ${accent} 13%, transparent)` }}>
                 <PinIcon size={19} />

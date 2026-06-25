@@ -79,7 +79,7 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
   return (
     <div role="button" tabIndex={0} className="tap-row" onClick={() => onOpen(t.id)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(t.id); } }}
-      style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "13px 4px", background: "transparent",
+      style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "var(--space-3) var(--space-1)", background: "transparent",
         borderBottom: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", flexWrap: "wrap" }}>
@@ -100,7 +100,7 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
   return (
     <div role="button" tabIndex={0} className="tap-row" onClick={() => onOpen(t.id)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(t.id); } }}
-      style={{ display: "flex", alignItems: "stretch", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "10px 4px", background: "transparent",
+      style={{ display: "flex", alignItems: "stretch", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "var(--space-3) var(--space-1)", background: "transparent",
         cursor: "pointer", WebkitTapHighlightColor: "transparent", borderRadius: "var(--radius-sm)" }}>
       <div style={{ position: "relative", width: 28, flexShrink: 0 }}>
         {!lastInGroup && <span aria-hidden style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", top: 28, bottom: -12, width: 2, background: `color-mix(in srgb, ${d.accent} 26%, transparent)` }} />}
@@ -195,7 +195,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
       {/* sticky навбар — iOS 26 Liquid Glass */}
-      <header className="glass-nav glass-nav-edge" style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: "var(--space-1)", padding: "0 6px" }}>
+      <header className={navSolid ? "glass-nav glass-nav-edge" : "glass-nav"} style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: NAV_H, display: "flex", alignItems: "center", gap: "var(--space-1)", padding: "0 6px" }}>
         <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
           <BackIcon size={24} />
         </button>
@@ -226,7 +226,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         <div style={{ padding: "10px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
           {sub === "places" && (
             <div>
-              <div style={{ marginTop: "var(--space-2)", padding: "13px 15px", borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
+              <div style={{ marginTop: "var(--space-2)", padding: "var(--space-3) var(--space-4)", borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
                 <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>
                   {dhama.tirthas.length} {plural(dhama.tirthas.length, "святое место", "святых места", "святых мест")} · {byCluster.length} {plural(byCluster.length, "район", "района", "районов")} парикрамы
                 </div>
@@ -304,7 +304,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
               ))}
               <div style={{ marginTop: 22, borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", overflow: "hidden" }}>
                 {dhama.facts.map((f, i) => (
-                  <div key={i} style={{ display: "flex", gap: "var(--space-3)", padding: "12px 16px", borderBottom: i === dhama.facts.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
+                  <div key={i} style={{ display: "flex", gap: "var(--space-3)", padding: "var(--space-3) var(--space-4)", borderBottom: i === dhama.facts.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
                     <span style={{ flexShrink: 0, width: 116, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{f.k}</span>
                     <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)" }}>{f.v}</span>
                   </div>
