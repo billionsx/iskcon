@@ -170,6 +170,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const [data, setData] = useState<ContentDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0); // 0..1 прогресс ухода hero под навбар
+  const [prog, setProg] = useState(0); // 0..1 прогресс чтения по странице
   const scrollRef = useRef<HTMLDivElement>(null);
   const [favorited, setFavorited] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -209,10 +210,24 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
 
   useEffect(() => {
     const el = scrollRef.current; if (!el) return;
-    const onScroll = () => { const p = Math.min(1, Math.max(0, el.scrollTop / 180)); setT(p); };
+    const onScroll = () => {
+      setT(Math.min(1, Math.max(0, el.scrollTop / 180)));
+      const max = el.scrollHeight - el.clientHeight;
+      setProg(max > 8 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0);
+    };
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
   }, [data]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onBack();
+      else if (e.key === "ArrowLeft" && data?.nav?.prev) onOpenContent(data.nav.prev.slug);
+      else if (e.key === "ArrowRight" && data?.nav?.next) onOpenContent(data.nav.next.slug);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [data, onBack, onOpenContent]);
 
   const blocks = data?.blocks ?? [];
   const useBlocks = blocks.length > 0;
@@ -247,6 +262,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
             <NavBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)} onGlass={1 - t}><MoreIcon size={16} /></NavBtn>
           </div>
         )}
+        <div aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, width: `${prog * 100}%`, background: "var(--color-brand-blue)", borderRadius: "0 2px 2px 0", transition: "width .12s linear" }} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
