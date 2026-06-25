@@ -1,0 +1,84 @@
+SKIP 6000x8000 CC BY-SA 4.0       File:Night view of the Jagannath Temple in Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/0/0d/Night_view_of_the_Jagannath_Temple_in_Puri.jpg
+ok   6000x3789 CC BY-SA 3.0       File:Shri Jagannath temple.jpg  | https://upload.wikimedia.org/wikipedia/commons/b/b7/Shri_Jagannath_temple.jpg
+ok   3865x5797 CC BY-SA 4.0       File:Jai Jagannath.jpg  | https://upload.wikimedia.org/wikipedia/commons/f/fe/Jai_Jagannath.jpg
+SKIP 5471x3908 CC BY-SA 4.0       File:Lord Jagannath temple at night.jpg  | https://upload.wikimedia.org/wikipedia/commons/f/f3/Lord_Jagannath_temple_at_night.jpg
+ok   5568x3712 CC BY-SA 4.0       File:Shri Jagannatha Temple.jpg  | https://upload.wikimedia.org/wikipedia/commons/6/6e/Shri_Jagannatha_Temple.jpg
+ok   4896x3672 CC BY-SA 4.0       File:Neelachakra of Jagannath temple Puri.JPG  | https://upload.wikimedia.org/wikipedia/commons/a/a2/Neelachakra_of_Jagannath_temple_Puri.JPG
+ok   5184x3456 CC BY-SA 3.0       File:Jagannath Temple, Puri 01.jpg  | https://upload.wikimedia.org/wikipedia/commons/8/80/Jagannath_Temple%2C_Puri_01.jpg
+ok   5184x3456 CC BY-SA 3.0       File:Jagannath Temple, Puri 04.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/7b/Jagannath_Temple%2C_Puri_04.jpg
+ok   5024x3396 CC BY-SA 3.0       File:Jagannath Temple, Puri 03.jpg  | https://upload.wikimedia.org/wikipedia/commons/e/e2/Jagannath_Temple%2C_Puri_03.jpg
+ok   3456x4608 CC BY-SA 4.0       File:Shrijagannathtemple-hyderabad-telangana-img001.jpg  | https://upload.wikimedia.org/wikipedia/commons/1/16/Shrijagannathtemple-hyderabad-telangana-img001.jpg
+ok   4608x3456 CC BY 2.0          File:Jagannath Temple, Puri, 2014.jpg  | https://upload.wikimedia.org/wikipedia/commons/2/24/Jagannath_Temple%2C_Puri%2C_2014.jpg
+ok   3304x4729 CC BY-SA 3.0       File:Jagannath Temple, Puri 06.jpg  | https://upload.wikimedia.org/wikipedia/commons/b/bf/Jagannath_Temple%2C_Puri_06.jpg
+ok   5248x2952 CC BY-SA 4.0       File:Puri Jagannath Temple.jpg  | https://upload.wikimedia.org/wikipedia/commons/3/33/Puri_Jagannath_Temple.jpg
+ok   3215x4754 CC BY-SA 3.0       File:Jagannath Temple, Puri 07.jpg  | https://upload.wikimedia.org/wikipedia/commons/d/d2/Jagannath_Temple%2C_Puri_07.jpg
+ok   4721x3222 CC BY-SA 3.0       File:Jagannath Temple, Puri 08.jpg  | https://upload.wikimedia.org/wikipedia/commons/4/43/Jagannath_Temple%2C_Puri_08.jpg
+ok   4320x3240 CC BY-SA 3.0       File:Jagganath Temple, Puri, West Bengal, Uttar Pradesh.JPG  | https://upload.wikimedia.org/wikipedia/commons/3/3d/Jagganath_Temple%2C_Puri%2C_West_Bengal%2C_Uttar_Pradesh.JPG
+ok   4320x3240 CC BY-SA 3.0       File:Jagganth temple.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/7b/Jagganth_temple.jpg
+ok   3000x4200 Public domain      File:Provincial geographies of India (Volume 2).djvu  | https://upload.wikimedia.org/wikipedia/commons/3/36/Provincial_geographies_of_India_%28Volume_2%29.djvu
+SKIP 4096x3072 CC BY-SA 4.0       File:Shree Jagannath Temple Shikhara at Night, Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/4/44/Shree_Jagannath_Temple_Shikhara_at_Night%2C_Puri.jpg
+ok   2799x4484 CC BY-SA 3.0       File:Jagannath Temple, Puri 09.jpg  | https://upload.wikimedia.org/wikipedia/commons/3/33/Jagannath_Temple%2C_Puri_09.jpg
+ok   4080x3072 CC0                File:Jagannath temple Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/5/57/Jagannath_temple_Puri.jpg
+ok   2800x4406 Public domain      File:History of Indian and Eastern Architecture Vol 2.djvu  | https://upload.wikimedia.org/wikipedia/commons/d/d8/History_of_Indian_and_Eastern_Architecture_Vol_2.djvu
+SKIP 3200x3853 Public domain      File:Puri, India, ca. 1915 (IMP-CSCNWW33-OS14-69).jpg  | https://upload.wikimedia.org/wikipedia/commons/e/ef/Puri%2C_India%2C_ca._1915_%28IMP-CSCNWW33-OS14-69%29.jpg
+ok   3943x3121 CC BY-SA 3.0       File:Shri Jagannath Temple,Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/7b/Shri_Jagannath_Temple%2CPuri.jpg
+SKIP 3024x4032 CC BY-SA 4.0       File:The Puri Shri Jagannath Temple during Rath Yatra.jpg  | https://upload.wikimedia.org/wikipedia/commons/8/80/The_Puri_Shri_Jagannath_Temple_during_Rath_Yatra.jpg
+ok   4000x3000 CC BY-SA 3.0       File:Western side of lord jagannath temple.JPG  | https://upload.wikimedia.org/wikipedia/commons/7/71/Western_side_of_lord_jagannath_temple.JPG
+ok   4000x3000 CC BY-SA 4.0       File:DSCN4971 Jagannath temple Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/a/ac/DSCN4971_Jagannath_temple_Puri.jpg
+ok   4000x3000 CC BY-SA 4.0       File:Jagannath Temple, Puri, Odisha (2017).jpg  | https://upload.wikimedia.org/wikipedia/commons/7/7c/Jagannath_Temple%2C_Puri%2C_Odisha_%282017%29.jpg
+ok   3000x4000 CC BY-SA 4.0       File:Jagannath Temple, Puri, Odisha (2017) 1.jpg  | https://upload.wikimedia.org/wikipedia/commons/1/1a/Jagannath_Temple%2C_Puri%2C_Odisha_%282017%29_1.jpg
+ok   4000x3000 CC BY-SA 3.0       File:Western side of Lord Jagannath temple..JPG  | https://upload.wikimedia.org/wikipedia/commons/8/83/Western_side_of_Lord_Jagannath_temple..JPG
+ok   3664x2748 CC BY-SA 4.0       File:Jagannath Temple, Puri, Odisha, India (2016).jpg  | https://upload.wikimedia.org/wikipedia/commons/5/5f/Jagannath_Temple%2C_Puri%2C_Odisha%2C_India_%282016%29.jpg
+ok   3574x2636 CC BY-SA 4.0       File:A panoramic view of Jagannath temple, Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/2/2a/A_panoramic_view_of_Jagannath_temple%2C_Puri.jpg
+ok   4080x2296 CC BY-SA 4.0       File:Jagannath Temple Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/f/f2/Jagannath_Temple_Puri.jpg
+ok   2296x4080 CC BY-SA 4.0       File:Jagannath Temple Puri (51345).jpg  | https://upload.wikimedia.org/wikipedia/commons/2/25/Jagannath_Temple_Puri_%2851345%29.jpg
+ok   2248x4000 CC BY-SA 3.0       File:Jagannath Puri.JPG  | https://upload.wikimedia.org/wikipedia/commons/b/b1/Jagannath_Puri.JPG
+ok   4390x2000 CC BY-SA 2.5       File:Thennangur Panduranga temple panorama.jpg  | https://upload.wikimedia.org/wikipedia/commons/d/dc/Thennangur_Panduranga_temple_panorama.jpg
+ok   4010x2048 CC BY-SA 4.0       File:Shree Mandir.jpg  | https://upload.wikimedia.org/wikipedia/commons/f/fb/Shree_Mandir.jpg
+SKIP 3403x2379 CC BY-SA 3.0       File:Puri Ratha Yatra.jpg  | https://upload.wikimedia.org/wikipedia/commons/a/ae/Puri_Ratha_Yatra.jpg
+ok   2265x3561 Public domain      File:Letters of Tagore.djvu  | https://upload.wikimedia.org/wikipedia/commons/8/8c/Letters_of_Tagore.djvu
+ok   3264x2448 CC BY-SA 3.0       File:Jagannath temple ( market view).JPG  | https://upload.wikimedia.org/wikipedia/commons/2/2f/Jagannath_temple_%28_market_view%29.JPG
+ok   3264x2448 CC BY 3.0          File:Queue - Jagannath Mandir - Grand Road - Puri 20180126140232.jpg  | https://upload.wikimedia.org/wikipedia/commons/a/a6/Queue_-_Jagannath_Mandir_-_Grand_Road_-_Puri_20180126140232.jpg
+ok   2200x3437 Public domain      File:Works by the late Horace Hayman Wilson Vol 3.djvu  | https://upload.wikimedia.org/wikipedia/commons/2/25/Works_by_the_late_Horace_Hayman_Wilson_Vol_3.djvu
+ok   2188x3336 Public domain      File:Rupam - Volume 3.djvu  | https://upload.wikimedia.org/wikipedia/commons/8/8b/Rupam_-_Volume_3.djvu
+ok   2445x2885 CC BY-SA 3.0       File:Jagannath Temple, Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/5/55/Jagannath_Temple%2C_Puri.jpg
+ok   2816x2112 CC BY-SA 4.0       File:Shri Jagannath Dham.jpg  | https://upload.wikimedia.org/wikipedia/commons/b/b3/Shri_Jagannath_Dham.jpg
+ok   1859x2944 CC BY-SA 3.0       File:Jagannath Temple, Puri 02.jpg  | https://upload.wikimedia.org/wikipedia/commons/5/51/Jagannath_Temple%2C_Puri_02.jpg
+ok   1774x2908 Public domain      File:A revised and enlarged account of the Bobbili zemindari.djvu  | https://upload.wikimedia.org/wikipedia/commons/b/b1/A_revised_and_enlarged_account_of_the_Bobbili_zemindari.djvu
+SKIP 1815x2613 Public domain      File:The Modern Review, July To December 1917.djvu  | https://upload.wikimedia.org/wikipedia/commons/f/fb/The_Modern_Review%2C_July_To_December_1917.djvu
+ok   2560x1536 Public domain      File:Meghanad wall.jpeg  | https://upload.wikimedia.org/wikipedia/commons/6/6c/Meghanad_wall.jpeg
+ok   1536x2560 Public domain      File:Peja nala.jpeg  | https://upload.wikimedia.org/wikipedia/commons/a/a2/Peja_nala.jpeg
+ok   1513x2203 CC BY-SA 3.0       File:Jagannath Temple, Puri 10 - Arun.jpg  | https://upload.wikimedia.org/wikipedia/commons/c/ca/Jagannath_Temple%2C_Puri_10_-_Arun.jpg
+ok   2048x1536 CC BY-SA 3.0       File:Sri Jagannath Temple.jpg  | https://upload.wikimedia.org/wikipedia/commons/5/5c/Sri_Jagannath_Temple.jpg
+ok   2088x1452 CC BY-SA 4.0       File:Jagannath Temple,Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/7c/Jagannath_Temple%2CPuri.jpg
+ok   1844x1579 CC BY-SA 4.0       File:Puri temple , odisha , India.jpg  | https://upload.wikimedia.org/wikipedia/commons/9/95/Puri_temple_%2C_odisha_%2C_India.jpg
+ok   1280x1706 CC BY-SA 3.0       File:Jagannath Temple .jpg  | https://upload.wikimedia.org/wikipedia/commons/d/da/Jagannath_Temple_.jpg
+ok   1620x1080 CC BY-SA 4.0       File:Chahani Mandap.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/79/Chahani_Mandap.jpg
+ok   1620x1080 CC BY-SA 4.0       File:Lion on singhdwar gumuta.jpg  | https://upload.wikimedia.org/wikipedia/commons/4/40/Lion_on_singhdwar_gumuta.jpg
+ok   1620x1080 CC BY-SA 4.0       File:Shrimandira karukarya.jpg  | https://upload.wikimedia.org/wikipedia/commons/e/e6/Shrimandira_karukarya.jpg
+ok   1620x1080 CC BY-SA 4.0       File:Water Elephant Structure.jpg  | https://upload.wikimedia.org/wikipedia/commons/6/63/Water_Elephant_Structure.jpg
+ok   1080x1620 CC BY-SA 4.0       File:Shrimandir.jpg  | https://upload.wikimedia.org/wikipedia/commons/f/f6/Shrimandir.jpg
+SKIP 1120x1500 Public domain      File:The Modern Review Vol 03 (Jan.-June 1908).djvu  | https://upload.wikimedia.org/wikipedia/commons/c/c3/The_Modern_Review_Vol_03_%28Jan.-June_1908%29.djvu
+SKIP 1097x1500 Public domain      File:The Modern Review Vol 22 (July-Dec. 1917).djvu  | https://upload.wikimedia.org/wikipedia/commons/7/77/The_Modern_Review_Vol_22_%28July-Dec._1917%29.djvu
+ok   1620x962 CC BY-SA 4.0       File:Lion on Shrimandir.jpg  | https://upload.wikimedia.org/wikipedia/commons/8/80/Lion_on_Shrimandir.jpg
+ok   1080x1251 CC BY-SA 4.0       File:Architecture of Shrimandira.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/76/Architecture_of_Shrimandira.jpg
+SKIP 965x1286 CC BY-SA 2.0       File:Jagannath Temple - Nila Chakra (27204572212).jpg  | https://upload.wikimedia.org/wikipedia/commons/4/4c/Jagannath_Temple_-_Nila_Chakra_%2827204572212%29.jpg
+ok   896x1231 CC0                File:Jagannath Temple in Puri district.jpg  | https://upload.wikimedia.org/wikipedia/commons/2/20/Jagannath_Temple_in_Puri_district.jpg
+SKIP 864x1152 CC BY-SA 4.0       File:Jagannath Temple Night view, Puri, Odisha.jpg  | https://upload.wikimedia.org/wikipedia/commons/8/86/Jagannath_Temple_Night_view%2C_Puri%2C_Odisha.jpg
+SKIP 864x1152 CC BY-SA 4.0       File:Jagannath Temple Night view full moon day, Puri, Odisha.jpg  | https://upload.wikimedia.org/wikipedia/commons/9/93/Jagannath_Temple_Night_view_full_moon_day%2C_Puri%2C_Odisha.jpg
+ok   1152x864 CC BY-SA 4.0       File:Konark Sun Temple by Rahul Saha.jpg  | https://upload.wikimedia.org/wikipedia/commons/d/de/Konark_Sun_Temple_by_Rahul_Saha.jpg
+ok   1200x675 CC BY 4.0          File:BirdsEyeViewOf JagannathTemplePuri.jpg  | https://upload.wikimedia.org/wikipedia/commons/8/89/BirdsEyeViewOf_JagannathTemplePuri.jpg
+ok   960x720 CC BY 4.0          File:SinhaDwara Puri Jagannath Temple.jpg  | https://upload.wikimedia.org/wikipedia/commons/5/5c/SinhaDwara_Puri_Jagannath_Temple.jpg
+ok   645x980 CC BY-SA 3.0       File:Sri Jagannath Temple Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/c/cc/Sri_Jagannath_Temple_Puri.jpg
+ok   800x601 Public domain      File:Street scene near the Jagannath Temple, Puri in the 1890s.JPG  | https://upload.wikimedia.org/wikipedia/commons/f/f2/Street_scene_near_the_Jagannath_Temple%2C_Puri_in_the_1890s.JPG
+ok   564x846 CC BY-SA 4.0       File:The pictresque Jagannath Temple of Odisha.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/74/The_pictresque_Jagannath_Temple_of_Odisha.jpg
+ok   768x576 CC BY-SA 4.0       File:Shrimandir of Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/3/3b/Shrimandir_of_Puri.jpg
+ok   768x576 CC BY-SA 4.0       File:Koili baikuntha srimandira.jpg  | https://upload.wikimedia.org/wikipedia/commons/b/b7/Koili_baikuntha_srimandira.jpg
+ok   800x543 CC BY-SA 1.0       File:Temple-Jagannath.jpg  | https://upload.wikimedia.org/wikipedia/commons/7/7d/Temple-Jagannath.jpg
+ok   712x500 Public domain      File:View of the Dol-Mandapa, Puri from outside the exterior wall.jpg  | https://upload.wikimedia.org/wikipedia/commons/a/a2/View_of_the_Dol-Mandapa%2C_Puri_from_outside_the_exterior_wall.jpg
+ok   480x640 CC BY-SA 3.0       File:Jagannath Temple (day view), Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/0/09/Jagannath_Temple_%28day_view%29%2C_Puri.jpg
+ok   480x640 CC BY-SA 4.0       File:Sri Jagannath Temple, Puri. India.jpg  | https://upload.wikimedia.org/wikipedia/commons/c/c0/Sri_Jagannath_Temple%2C_Puri._India.jpg
+SKIP 480x640 CC BY-SA 3.0       File:Jagannath Temple (night view), Puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/5/53/Jagannath_Temple_%28night_view%29%2C_Puri.jpg
+ok   630x350 CC BY-SA 4.0       File:Jagannath temple, puri.jpg  | https://upload.wikimedia.org/wikipedia/commons/e/eb/Jagannath_temple%2C_puri.jpg
+ok   442x411 CC BY-SA 3.0       File:Sri Jagannath Temple Puri, Orissa.jpeg  | https://upload.wikimedia.org/wikipedia/commons/a/a9/Sri_Jagannath_Temple_Puri%2C_Orissa.jpeg
+ok   300x360 CC BY-SA 3.0       File:Sri Jagannath Temple Puri, Orissa.jpg  | https://upload.wikimedia.org/wikipedia/commons/0/00/Sri_Jagannath_Temple_Puri%2C_Orissa.jpg

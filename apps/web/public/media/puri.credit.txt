@@ -1,0 +1,5 @@
+Source: Wikimedia Commons — File:Shri Jagannath temple.jpg
+URL: https://upload.wikimedia.org/wikipedia/commons/b/b7/Shri_Jagannath_temple.jpg
+License: CC BY-SA 3.0
+Artist: Prachites
+Fetched: workflow run
