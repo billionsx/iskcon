@@ -1,57 +1,57 @@
 {
   "songs": 3,
-  "uploaded": 0,
+  "uploaded": 8,
   "skipped_existing": 0,
-  "urls_rewritten": 0,
-  "errors": 8,
+  "urls_rewritten": 8,
+  "errors": 0,
   "items": [
     {
       "slug": "/ru/bhajans/tulasi",
+      "ident": "iskcone-bhajan-tulasi",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/b494cf0a_20251212_050327.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-tulasi, Please reduce your request rate. - Your upload of iskcone-bhajan-tulasi from username billions.x.com@"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-tulasi/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/tulasi",
+      "ident": "iskcone-bhajan-tulasi",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/fb047887_20251212_050400.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-tulasi, Please reduce your request rate. - Your upload of iskcone-bhajan-tulasi from username billions.x.com@"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-tulasi/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho",
+      "ident": "iskcone-bhajan-gauranga-tumi-more-doya-na-chariho",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/aa196ef1_20251221_124607.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-gauranga-tumi-more-doya-na-chariho, Please reduce your request rate. - Your upload of iskcone-bhajan-gauranga"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-tumi-more-doya-na-chariho/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho",
+      "ident": "iskcone-bhajan-gauranga-tumi-more-doya-na-chariho",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/317b412f_20251221_124639.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-gauranga-tumi-more-doya-na-chariho, Please reduce your request rate. - Your upload of iskcone-bhajan-gauranga"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-gauranga-tumi-more-doya-na-chariho/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka",
+      "ident": "iskcone-bhajan-shree-shree-gurv-ashtaka",
       "file": "recording-1.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/6972b4ca_20251214_093804.mp3",
-      "err": " error uploading recording-1.mp3 to iskcone-bhajan-shree-shree-gurv-ashtaka, Please reduce your request rate. - Your upload of iskcone-bhajan-shree-shree-gurv-a"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-shree-shree-gurv-ashtaka/recording-1.mp3"
     },
     {
       "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka",
+      "ident": "iskcone-bhajan-shree-shree-gurv-ashtaka",
       "file": "recording-2.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/a624b2b2_20251214_093830.mp3",
-      "err": " error uploading recording-2.mp3 to iskcone-bhajan-shree-shree-gurv-ashtaka, Please reduce your request rate. - Your upload of iskcone-bhajan-shree-shree-gurv-a"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-shree-shree-gurv-ashtaka/recording-2.mp3"
     },
     {
       "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka",
+      "ident": "iskcone-bhajan-shree-shree-gurv-ashtaka",
       "file": "recording-3.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/3cafd13f_20251214_093917.mp3",
-      "err": " error uploading recording-3.mp3 to iskcone-bhajan-shree-shree-gurv-ashtaka, Please reduce your request rate. - Your upload of iskcone-bhajan-shree-shree-gurv-a"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-shree-shree-gurv-ashtaka/recording-3.mp3"
     },
     {
       "slug": "/ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka",
+      "ident": "iskcone-bhajan-shree-shree-gurv-ashtaka",
       "file": "recording-4.mp3",
-      "src": "https://cdn.bhajanamrita.com/media/audio/d63e90ac_20251214_094402.mp3",
-      "err": " error uploading recording-4.mp3 to iskcone-bhajan-shree-shree-gurv-ashtaka, Please reduce your request rate. - Your upload of iskcone-bhajan-shree-shree-gurv-a"
+      "ia_url": "https://archive.org/download/iskcone-bhajan-shree-shree-gurv-ashtaka/recording-4.mp3"
     }
   ]
 }
