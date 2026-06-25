@@ -350,7 +350,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
       </div>
 
       {data && data.nav && (data.nav.parent || data.nav.prev || data.nav.next) && (
-        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, padding: "8px 8px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
+        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, padding: "8px 8px calc(8px + env(safe-area-inset-bottom) + var(--player-extra))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
           <ContentNavAction arrow="prev" disabled={!data.nav.prev} onClick={() => data.nav?.prev && onOpenContent(data.nav.prev.slug)}>Назад</ContentNavAction>
           <ContentNavAction disabled={!data.nav.parent} onClick={() => data.nav?.parent && onOpenContent(data.nav!.parent!.slug)}>К содержанию</ContentNavAction>
           <ContentNavAction arrow="next" disabled={!data.nav.next} onClick={() => data.nav?.next && onOpenContent(data.nav.next.slug)}>Вперёд</ContentNavAction>
