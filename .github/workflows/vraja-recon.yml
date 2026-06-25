@@ -1,0 +1,20 @@
+name: vraja recon (WP REST discovery on vrajapedia.com)
+on: { workflow_dispatch: {} }
+permissions: { contents: write }
+jobs:
+  recon:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: main }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Probe vrajapedia WP REST
+        env: { CF: "${{ secrets.CLOUDFLARE_API_TOKEN }}" }
+        run: python3 tools/vraja/recon_probe.py
+      - name: Commit recon dump
+        run: |
+          git config user.email "ceo@billionsx.com"; git config user.name "Billions X"
+          git add tools/vraja/recon.json && git commit -m "vraja: WP REST recon dump [skip ci]" || echo "nothing to commit"
+          git push origin HEAD:main || true
