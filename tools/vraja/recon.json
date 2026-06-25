@@ -1,0 +1,11 @@
+{
+  "base": "https://vrajapedia.com/wp-json",
+  "root_err": "<urlopen error timed out>",
+  "types_err": "<urlopen error timed out>",
+  "types": {},
+  "taxonomies_err": "<urlopen error timed out>",
+  "taxonomies": {},
+  "type_counts": {},
+  "samples": {},
+  "terms": {}
+}
