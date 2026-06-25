@@ -132,8 +132,10 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
         <div style={{ padding: "20px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
           <div style={{ marginBottom: 18 }}><NotesAtSource kind="place" refId={t.id} accent={accent} /></div>
-          {/* описание */}
-          <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{t.about}</p>
+          {/* описание (у новых мест about — начало первого источника; не дублируем) */}
+          {t.about && !(t.sources && t.sources[0]?.paragraphs?.[0]?.slice(0, 55) === t.about.slice(0, 55)) && (
+            <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{t.about}</p>
+          )}
 
           {/* навигатор: пеший маршрут в Google Maps */}
           <a href={mapsDir(t)} target="_blank" rel="noreferrer"
@@ -162,6 +164,42 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
               <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Источник</span>
               <span style={{ fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.45, color: "var(--color-label-2)", fontStyle: t.source.startsWith("«") ? "italic" : "normal" }}>{t.source}</span>
             </div>
+          )}
+
+          {/* из священных книг — структурированные описания (vrajapedia) */}
+          {t.sources && t.sources.length > 0 && (
+            <section style={{ marginTop: 28 }}>
+              <h3 style={{ margin: "0 0 13px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>Из священных книг</h3>
+              {t.sources.map((src, i) => (
+                <article key={i} style={{ marginTop: i ? 14 : 0, padding: "16px 18px", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+                  {(src.author || src.book) && (
+                    <header style={{ marginBottom: 11, paddingBottom: 11, borderBottom: "0.5px solid var(--color-hairline)" }}>
+                      {src.author && <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{src.author}</div>}
+                      {src.book && <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13, fontStyle: "italic", color: "var(--color-label-2)" }}>«{src.book}»</div>}
+                    </header>
+                  )}
+                  {src.paragraphs.map((para, j) =>
+                    para.startsWith("## ") ? (
+                      <div key={j} style={{ margin: j ? "13px 0 0" : 0, fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 700, color: "var(--color-label)" }}>{para.slice(3)}</div>
+                    ) : (
+                      <p key={j} style={{ margin: j ? "10px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.62, color: "var(--color-label)" }}>{para}</p>
+                    ),
+                  )}
+                  {src.footnotes && src.footnotes.length > 0 && (
+                    <div style={{ marginTop: 14, paddingTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
+                      {src.footnotes.map((f, k) => (
+                        <p key={k} style={{ margin: k ? "6px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.5, color: "var(--color-label-3)" }}>
+                          {f.n ? <sup style={{ marginRight: 4, color: accent, fontWeight: 700 }}>{f.n}</sup> : null}{f.text}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              ))}
+              <p style={{ margin: "12px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, lineHeight: 1.5, color: "var(--color-label-3)" }}>
+                Источник: онлайн-энциклопедия Вриндавана «Шри Рупа Сева Кундж» (vrajapedia.com), публикуется с разрешения правообладателя.
+              </p>
+            </section>
           )}
 
           {/* связанные личности */}

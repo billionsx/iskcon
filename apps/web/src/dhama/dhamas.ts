@@ -60,6 +60,17 @@ export interface Tirtha {
   persons?: Person[];
   maps?: string;     // переопределение поискового запроса для карт
   source?: string;
+  hero_image?: string;           // hero-фото (vrajapedia / рехост archive.org)
+  gallery?: string[];            // дополнительные фото
+  sources?: TirthaSource[];      // структурированные описания из священных книг
+}
+
+/** Описание места из священной книги: автор, книга, абзацы прозы, сноски. */
+export interface TirthaSource {
+  author?: string;
+  book?: string;
+  paragraphs: string[];
+  footnotes?: { n?: string; text: string }[];
 }
 
 export interface Cluster { id: string; title: string; note?: string }
