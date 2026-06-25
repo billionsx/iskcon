@@ -157,7 +157,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
           )}
         </div>
       </div>
-      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
+      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom) + var(--player-extra))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
         <BhNavAction arrow="prev" disabled={!prevOk} onClick={() => prevOk && onNav(idx - 1)}>Назад</BhNavAction>
         <BhNavAction onClick={onClose}>К бхаджану</BhNavAction>
         <BhNavAction arrow="next" disabled={!nextOk} onClick={() => nextOk && onNav(idx + 1)}>Вперёд</BhNavAction>
@@ -473,7 +473,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
       </div>
 
       {data && (
-        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
+        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom) + var(--player-extra))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
           <BhNavAction arrow="prev" disabled={!prevB} onClick={() => prevB && onOpenBhajan?.(prevB.slug)}>Назад</BhNavAction>
           <BhNavAction onClick={() => onOpenCatalog?.()}>К каталогу</BhNavAction>
           <BhNavAction arrow="next" disabled={!nextB} onClick={() => nextB && onOpenBhajan?.(nextB.slug)}>Вперёд</BhNavAction>
