@@ -322,11 +322,22 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
   );
 }
 
-/* ═════════ Bhajan catalog — grouped author → songbook → section ═════════ */
+/* ═════════ Bhajan catalog — сегмент-фильтр по теме + поиск, группировка автор→песенник ═════════ */
 interface CatalogItem { slug: string; name: string; author: string | null; source_text: string | null; category: string | null; section: string | null; ord: number | null; has_text: boolean; }
+const CAT_SEGMENTS: { id: string; label: string; match: (s: string) => boolean }[] = [
+  { id: "all", label: "Все", match: () => true },
+  { id: "krishna", label: "Кришна", match: (s) => /кришн/i.test(s) },
+  { id: "radha", label: "Радха", match: (s) => /радх/i.test(s) },
+  { id: "gauranga", label: "Гауранга", match: (s) => /гаур|нитьянанд|чайтань/i.test(s) },
+  { id: "nama", label: "Святые имена", match: (s) => /нама/i.test(s) },
+  { id: "sharanagati", label: "Шаранагати", match: (s) => /шаранагати|дайнь|ниведан|гоптритве|свикар|уччхвас|виджняпт/i.test(s) },
+  { id: "dhama", label: "Дхама", match: (s) => /дхам/i.test(s) },
+];
 function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onBack: () => void }) {
   const [items, setItems] = useState<CatalogItem[] | null>(null);
   const [err, setErr] = useState(false);
+  const [seg, setSeg] = useState("all");
+  const [q, setQ] = useState("");
   useEffect(() => {
     let live = true;
     fetch(api("/bhajans/catalog"))
@@ -336,25 +347,32 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
     return () => { live = false; };
   }, []);
 
+  const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+  const nq = norm(q.trim());
+  const segDef = CAT_SEGMENTS.find((x) => x.id === seg) ?? CAT_SEGMENTS[0];
+  const segCount = (id: string) => {
+    const d = CAT_SEGMENTS.find((x) => x.id === id)!;
+    return (items ?? []).filter((it) => (id === "all" ? true : !!(it.section && d.match(it.section)))).length;
+  };
+  const filtered = (items ?? []).filter((it) =>
+    (seg === "all" || !!(it.section && segDef.match(it.section))) &&
+    (!nq || norm(`${it.name} ${it.author || ""}`).includes(nq))
+  );
+
   // group: author -> songbook(source_text|'—') -> items (ordered)
   const groups: { author: string; books: { book: string | null; rows: CatalogItem[] }[] }[] = [];
-  if (items) {
+  {
     const byAuthor = new Map<string, CatalogItem[]>();
-    for (const it of items) {
+    for (const it of filtered) {
       const a = it.author ?? "Традиционные";
       (byAuthor.get(a) ?? byAuthor.set(a, []).get(a)!).push(it);
     }
     for (const [author, rows] of byAuthor) {
       const byBook = new Map<string, CatalogItem[]>();
-      for (const it of rows) {
-        const b = it.source_text ?? "—";
-        (byBook.get(b) ?? byBook.set(b, []).get(b)!).push(it);
-      }
-      const books = [...byBook.entries()].map(([book, r]) => ({ book: book === "—" ? null : book, rows: r }));
-      groups.push({ author, books });
+      for (const it of rows) { const b = it.source_text ?? "—"; (byBook.get(b) ?? byBook.set(b, []).get(b)!).push(it); }
+      groups.push({ author, books: [...byBook.entries()].map(([book, r]) => ({ book: book === "—" ? null : book, rows: r })) });
     }
   }
-  const totalText = items ? items.filter((i) => i.has_text).length : 0;
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)" }}>
@@ -369,10 +387,22 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
       {err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 16px", fontSize: 15 }}>Не удалось загрузить каталог.</div>}
 
       {items && (
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: "16px 16px 56px" }}>
-          <div style={{ fontSize: 13, color: "var(--color-label-2)", marginBottom: 18 }}>
-            {items.length} молитв и песен · {totalText} с полным текстом
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 16px 56px" }}>
+          {/* сегмент-фильтр по теме */}
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", margin: "0 -16px", padding: "2px 16px 12px", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
+            {CAT_SEGMENTS.filter((s) => s.id === "all" || segCount(s.id) > 0).map((s) => {
+              const on = seg === s.id;
+              return (
+                <button key={s.id} onClick={() => setSeg(s.id)} style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, border: on ? "none" : "0.5px solid var(--color-hairline)", background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", WebkitTapHighlightColor: "transparent" }}>{s.label}</button>
+              );
+            })}
           </div>
+          {/* поиск */}
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
+            style={{ width: "100%", boxSizing: "border-box", margin: "2px 0 18px", padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 15, outline: "none" }} />
+
+          {filtered.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>Ничего не найдено.</div>}
+
           {groups.map((g) => (
             <section key={g.author} style={{ marginBottom: 26 }}>
               <h2 style={{ margin: "0 0 10px", fontSize: 18, fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
@@ -382,11 +412,8 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
                     {bk.rows.map((it, i) => (
                       <li key={it.slug} style={{ borderBottom: i === bk.rows.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                        <button onClick={() => onOpen(it.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "11px 12px", textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                          <span style={{ minWidth: 0, flex: 1 }}>
-                            <span style={{ display: "block", fontSize: 15, fontWeight: 500, lineHeight: 1.3, color: "var(--color-label)" }}>{it.name}</span>
-                            {it.section && <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{it.section}</span>}
-                          </span>
+                        <button onClick={() => onOpen(it.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "12px 12px", textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+                          <span style={{ minWidth: 0, flex: 1, fontSize: 15, fontWeight: 500, lineHeight: 1.3, color: "var(--color-label)" }}>{it.name}</span>
                           {!it.has_text && <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-label-2)", border: "0.5px solid var(--color-hairline)", borderRadius: 999, padding: "2px 8px" }}>скоро</span>}
                           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </button>

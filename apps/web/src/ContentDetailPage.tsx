@@ -207,7 +207,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const firstAccentIdx = blocks.findIndex((b) => b.kind === "accent");
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* nav bar: прозрачный над hero → liquid-glass со scroll-edge blur; заголовок проявляется */}
       <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 2, padding: "0 6px",
         background: `color-mix(in srgb, var(--color-glass-nav) ${Math.round(t * 100)}%, transparent)`,
@@ -247,7 +247,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
               <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 24%, rgba(0,0,0,0) 82%, var(--color-bg) 100%)" }} />
             </div>
 
-            <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-5) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
+            <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-5) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + 64px + var(--player-extra))" }}>
               {/* заголовочный блок: eyebrow (мягкий регистр) + Large Title */}
               {data.kind && (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)", marginBottom: "var(--space-2)" }}>
@@ -289,11 +289,27 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                   })}
                 </div>
               ) : (
-                <div>
-                  {data.paragraphs.map((p, i) => (
-                    <p key={i} style={{ margin: i === 0 ? "var(--space-5) 0 0" : "var(--space-5) 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)" }}>{renderTerms(p)}</p>
-                  ))}
-                </div>
+                (() => {
+                  // page_text часто содержит мусор скрейпа: после каждого стиха идут
+                  // строки-подписи «<автор> ,» и «<название>,». Чистим их перед версткой.
+                  const nm = (data.name || "").trim().toLowerCase().replace(/[.,;:\s]+$/, "");
+                  const norm = (s: string) => s.trim().toLowerCase().replace(/[.,;:\s]+$/, "");
+                  const ps = data.paragraphs;
+                  const clean: string[] = [];
+                  for (let i = 0; i < ps.length; i++) {
+                    const cur = norm(ps[i]);
+                    if (nm && cur === nm) continue;                                   // строка == название (подпись)
+                    if (cur.length < 44 && nm && norm(ps[i + 1] || "") === nm) continue; // короткая строка-автор перед подписью
+                    clean.push(ps[i]);
+                  }
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)", marginTop: "var(--space-5)" }}>
+                      {clean.map((p, i) => (
+                        <p key={i} style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-relaxed, 1.72)", color: "var(--color-label)" }}>{renderTerms(p)}</p>
+                      ))}
+                    </div>
+                  );
+                })()
               )}
             </div>
           </>
