@@ -59,39 +59,84 @@ function Eyebrow({ children, blue }: { children: React.ReactNode; blue?: boolean
   return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: blue ? "var(--color-brand-blue)" : "var(--color-label-2)" }}>{children}</div>;
 }
 
-/** Богатая карточка одного стиха: метка · транслитерация (Georgia курсив) · перевод (SF). */
-function VerseCard({ v }: { v: Verse }) {
-  const [wbw, setWbw] = useState(false);
-  const hasWbw = !!(v.words && v.words.length > 0);
+/** Карточка стиха — тапабельное превью (как строка стиха в главе книги): метка ·
+ *  транслитерация (Georgia) · перевод (SF) · шеврон. Пословный перевод и фокус —
+ *  на экране стиха. */
+function VerseCard({ v, onOpen }: { v: Verse; onOpen?: () => void }) {
   return (
-    <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)", minWidth: 0, overflowWrap: "break-word" }}>
-      <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
+    <section onClick={onOpen} role={onOpen ? "button" : undefined} tabIndex={onOpen ? 0 : undefined}
+      onKeyDown={onOpen ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } } : undefined}
+      style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)", minWidth: 0, overflowWrap: "break-word", cursor: onOpen ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
+        {onOpen && <span style={{ color: "var(--color-label-3, var(--color-label-2))", display: "inline-flex", flexShrink: 0 }}><svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></span>}
+      </div>
       {v.translit && (
         <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 18.5, lineHeight: 1.72, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>
       )}
       {v.text && (
         <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>
       )}
-      {hasWbw && (
-        <div style={{ marginTop: "var(--space-4)", paddingTop: "var(--space-3)", borderTop: "0.5px solid var(--color-hairline)" }}>
-          <button onClick={() => setWbw((o) => !o)} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>
-            Пословный перевод
-            <span style={{ display: "inline-block", transform: wbw ? "rotate(90deg)" : "none", transition: "transform .15s", fontSize: 12 }}>›</span>
-          </button>
-          {wbw && (
-            <div style={{ marginTop: "var(--space-3)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-2)", overflowWrap: "break-word" }}>
-              {v.words!.map((w, i) => (
-                <span key={i}>
-                  <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", color: "var(--color-label)" }}>{w.t}</span>
-                  {w.m ? <span style={{ fontFamily: "var(--font-text)" }}> — {w.m}</span> : null}
-                  {i < v.words!.length - 1 ? <span style={{ color: "var(--color-label-3, var(--color-label-2))" }}>;&nbsp; </span> : null}
-                </span>
-              ))}
+    </section>
+  );
+}
+
+/** Кнопка нижней навигации — как книжная NavAction (прозрачная, заливка при нажатии). */
+function BhNavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: React.ReactNode }) {
+  const [pressed, setPressed] = useState(false);
+  const off = () => setPressed(false);
+  return (
+    <button type="button" disabled={disabled} onClick={onClick}
+      onPointerDown={() => { if (!disabled) setPressed(true); }} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, height: 40, padding: "0 14px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", color: disabled ? "var(--color-label-3, var(--color-label-2))" : "var(--color-label)", opacity: disabled ? 0.45 : 1, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: "var(--weight-semibold)", transition: "background .12s", WebkitTapHighlightColor: "transparent" }}>
+      {arrow === "prev" && <BackIcon size={18} />}
+      {children}
+      {arrow === "next" && <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><BackIcon size={18} /></span>}
+    </button>
+  );
+}
+
+/** Экран отдельного стиха бхаджана (= стих в книге): фокус-чтение с верхней и
+ *  нижней навигацией (предыдущий · к бхаджану · следующий). */
+function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses: Verse[]; idx: number; bhajanName: string; onClose: () => void; onNav: (i: number) => void }) {
+  const v = verses[idx];
+  const hasWbw = !!(v.words && v.words.length > 0);
+  return (
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+      <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+        <PlainBtn ariaLabel="К бхаджану" onClick={onClose}><BackIcon size={22} /></PlainBtn>
+        <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: "var(--weight-bold)", letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bhajanName}</div>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)" }}>Стих {v.ord} из {verses.length}</div>
+        </div>
+      </header>
+      <div style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
+          <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
+          {v.translit && <div style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 20.5, lineHeight: 1.74, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>}
+          {v.text && <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-5)", borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 17.5, lineHeight: 1.7, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>}
+          {hasWbw && (
+            <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-4)", borderTop: "0.5px solid var(--color-hairline)" }}>
+              <Eyebrow blue>Пословный перевод</Eyebrow>
+              <div style={{ marginTop: "var(--space-3)", fontSize: "var(--text-subhead)", lineHeight: 1.85, color: "var(--color-label-2)", overflowWrap: "break-word" }}>
+                {v.words!.map((w, i) => (
+                  <span key={i}>
+                    <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", color: "var(--color-label)" }}>{w.t}</span>
+                    {w.m ? <span style={{ fontFamily: "var(--font-text)" }}> — {w.m}</span> : null}
+                    {i < v.words!.length - 1 ? <span style={{ color: "var(--color-label-3, var(--color-label-2))" }}>;&nbsp; </span> : null}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
         </div>
-      )}
-    </section>
+      </div>
+      <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
+        <BhNavAction arrow="prev" disabled={idx <= 0} onClick={() => idx > 0 && onNav(idx - 1)}>Назад</BhNavAction>
+        <BhNavAction onClick={onClose}>К бхаджану</BhNavAction>
+        <BhNavAction arrow="next" disabled={idx >= verses.length - 1} onClick={() => idx < verses.length - 1 && onNav(idx + 1)}>Вперёд</BhNavAction>
+      </nav>
+    </div>
   );
 }
 
@@ -250,12 +295,14 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
   );
 }
 
-export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug: string; onBack: () => void; onOpenEntity?: (id: string, type: string | null) => void }) {
+export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBhajan, onOpenCatalog }: { slug: string; onBack: () => void; onOpenEntity?: (id: string, type: string | null) => void; onOpenBhajan?: (slug: string) => void; onOpenCatalog?: () => void }) {
   const [data, setData] = useState<BhajanDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [viewer, setViewer] = useState<ViewerMedia | null>(null);
+  const [vIdx, setVIdx] = useState<number | null>(null);
+  const [sibs, setSibs] = useState<{ slug: string; name: string }[] | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -271,7 +318,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
 
   useEffect(() => {
     let live = true;
-    setData(null); setErr(false);
+    setData(null); setErr(false); setVIdx(null);
     fetch(api(`/bhajans/detail?slug=${encodeURIComponent(slug)}`))
       .then((r) => r.json())
       .then((d) => { if (live) { if (d && Array.isArray(d.verses)) setData(d); else setErr(true); } })
@@ -286,6 +333,15 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
     return () => el.removeEventListener("scroll", onScroll);
   }, [data]);
 
+  // Соседние бхаджаны для нижней навигации (порядок каталога — по автору/песеннику).
+  useEffect(() => {
+    let live = true;
+    fetch(api("/bhajans/catalog")).then((r) => r.json())
+      .then((d: { items?: Array<{ slug: string; name: string }> }) => { if (live) setSibs((d.items ?? []).map((x) => ({ slug: x.slug, name: x.name }))); })
+      .catch(() => { if (live) setSibs([]); });
+    return () => { live = false; };
+  }, []);
+
   const openMore = () => {
     if (!data) return;
     openCardMenu({
@@ -298,9 +354,12 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
   const meta = data ? [data.source_text, data.section].filter(Boolean).join(" · ") : "";
   const hasVerses = !!(data && data.verses.length > 0);
   const hasLayers = !!(data && (data.translit || data.translation));
+  const sIdx = sibs ? sibs.findIndex((s) => s.slug === slug) : -1;
+  const prevB = sIdx > 0 ? sibs![sIdx - 1] : null;
+  const nextB = sIdx >= 0 && sibs && sIdx < sibs.length - 1 ? sibs[sIdx + 1] : null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0, background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* scroll-edge навбар — назад + титул на скролле */}
       <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 2, padding: "0 8px",
         background: `color-mix(in srgb, var(--color-glass-nav) ${Math.round(t * 100)}%, transparent)`,
@@ -352,7 +411,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
                   <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>Перевод этого бхаджана появится здесь после подготовки.</div>
                 </div>
               ) : hasVerses ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>{data.verses.map((v) => <VerseCard key={v.ord} v={v} />)}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>{data.verses.map((v, i) => <VerseCard key={v.ord} v={v} onOpen={() => setVIdx(i)} />)}</div>
               ) : hasLayers ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                   {data.translit && <LayerCard label="Транслитерация" text={data.translit} scripture />}
@@ -371,8 +430,20 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
         )}
       </div>
 
+      {data && (
+        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 10px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
+          <BhNavAction arrow="prev" disabled={!prevB} onClick={() => prevB && onOpenBhajan?.(prevB.slug)}>Назад</BhNavAction>
+          <BhNavAction onClick={() => onOpenCatalog?.()}>К каталогу</BhNavAction>
+          <BhNavAction arrow="next" disabled={!nextB} onClick={() => nextB && onOpenBhajan?.(nextB.slug)}>Вперёд</BhNavAction>
+        </nav>
+      )}
+
       {toast && (
         <div role="status" style={{ position: "absolute", left: "50%", bottom: "calc(env(safe-area-inset-bottom,0px) + 24px)", transform: "translateX(-50%)", zIndex: 50, padding: "10px 16px", borderRadius: 999, background: "rgba(0,0,0,.82)", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", boxShadow: "0 8px 30px rgba(0,0,0,.3)", pointerEvents: "none" }}>{toast}</div>
+      )}
+
+      {data && vIdx !== null && data.verses[vIdx] && (
+        <BhajanVerseScreen verses={data.verses} idx={vIdx} bhajanName={data.name} onClose={() => setVIdx(null)} onNav={setVIdx} />
       )}
 
       <MediaViewer media={viewer} onClose={() => setViewer(null)} />
