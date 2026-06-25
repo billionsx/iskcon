@@ -345,25 +345,25 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
             </div>
 
             {/* ТЕКСТ — стихи карточками */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)", padding: "var(--space-7) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-9) + var(--player-extra))" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-6)", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
               {data.pending ? (
                 <div style={{ padding: "var(--space-6) var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", textAlign: "center" }}>
                   <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>Текст готовится</div>
                   <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>Перевод этого бхаджана появится здесь после подготовки.</div>
                 </div>
               ) : hasVerses ? (
-                data.verses.map((v) => <VerseCard key={v.ord} v={v} />)
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>{data.verses.map((v) => <VerseCard key={v.ord} v={v} />)}</div>
               ) : hasLayers ? (
-                <>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                   {data.translit && <LayerCard label="Транслитерация" text={data.translit} scripture />}
                   {data.translation && <LayerCard label="Перевод" text={data.translation} />}
-                </>
+                </div>
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
               {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} slug={slug} onView={setViewer} /></div>}
               {data.source_credit && !data.pending && (
-                <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
+                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
               )}
               <NotesAtSource kind="bhajan" refId={`bhajan:${slug}`} accent="#7048E8" />
             </div>
