@@ -69,9 +69,11 @@ interface SignRef {
   citation: string | null; raw: string;
 }
 interface Block { kind: string; text: string | null; image: string | null; ref?: SignRef }
+interface NavLink { slug: string; name: string }
 interface ContentDetail {
   slug: string; name: string; type: string; kind: string | null;
   hero_image: string | null; blocks: Block[]; paragraphs: string[];
+  nav?: { parent: NavLink | null; prev: NavLink | null; next: NavLink | null };
 }
 
 /** Редакционный pull-quote (Apple Books / News): крупный курсив слева,
@@ -146,6 +148,21 @@ function Figure({ src }: { src: string }) {
   return (
     <img src={src} alt="" loading="lazy"
       style={{ display: "block", width: "100%", margin: "var(--space-8) 0 0", borderRadius: "var(--radius-lg)", objectFit: "cover", boxShadow: "var(--shadow-card)" }} />
+  );
+}
+
+/** Кнопка нижней навигации произведения — плоский pill (как в читалке). */
+function ContentNavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | "next"; disabled?: boolean; onClick: () => void; children: React.ReactNode }) {
+  const [pressed, setPressed] = useState(false);
+  const off = () => setPressed(false);
+  return (
+    <button type="button" disabled={disabled} onClick={onClick}
+      onPointerDown={() => { if (!disabled) setPressed(true); }} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, minWidth: 0, height: 40, padding: "0 12px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", color: disabled ? "var(--color-label-3, var(--color-label-2))" : "var(--color-label)", opacity: disabled ? 0.4 : 1, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: "var(--weight-semibold)", transition: "background .12s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap", overflow: "hidden" }}>
+      {arrow === "prev" && <BackIcon size={18} />}
+      <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{children}</span>
+      {arrow === "next" && <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><BackIcon size={18} /></span>}
+    </button>
   );
 }
 
@@ -315,6 +332,14 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
           </>
         )}
       </div>
+
+      {data && data.nav && (data.nav.parent || data.nav.prev || data.nav.next) && (
+        <nav style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 6, padding: "8px 8px calc(8px + env(safe-area-inset-bottom))", background: "var(--color-bg)", borderTop: "0.5px solid var(--color-hairline)" }}>
+          <ContentNavAction arrow="prev" disabled={!data.nav.prev} onClick={() => data.nav?.prev && onOpenContent(data.nav.prev.slug)}>Назад</ContentNavAction>
+          <ContentNavAction disabled={!data.nav.parent} onClick={() => data.nav?.parent && onOpenContent(data.nav!.parent!.slug)}>К содержанию</ContentNavAction>
+          <ContentNavAction arrow="next" disabled={!data.nav.next} onClick={() => data.nav?.next && onOpenContent(data.nav.next.slug)}>Вперёд</ContentNavAction>
+        </nav>
+      )}
 
       <ActionsSheet open={menuOpen} items={menuItems} onClose={() => setMenuOpen(false)} onSelect={onMenu} />
       <Toast msg={toast} />
