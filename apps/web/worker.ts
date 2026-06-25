@@ -1600,15 +1600,17 @@ async function dispatchStories(env: Env): Promise<void> {
 }
 
 export default {
-  // Крон (см. [triggers] в wrangler.toml). Каждый тик: ЗАПУСК забора сторис (дёшево,
-  // надёжно). Тяжёлый IG-даршан храмов (Browser Rendering) — только на трёх суточных
-  // слотах 4:00/9:00/14:00 UTC, не на каждые 30 минут.
-  async scheduled(event: { cron?: string }, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
-    const cron = (event && event.cron) || "";
-    // Сторис — на каждом тике крона (надёжный планировщик Cloudflare).
+  // Крон (см. [triggers] в wrangler.toml): ОДИН триггер "*/30 * * * *" — каждые 30 мин.
+  // Каждый тик: ЗАПУСК забора сторис (дёшево, надёжно). Тяжёлый IG-даршан храмов
+  // (Browser Rendering) — только в три суточных слота ≈04/09/14 UTC, по времени тика.
+  // Один cron-триггер вместо четырёх: укладываемся в лимит триггеров воркера.
+  async scheduled(event: { cron?: string; scheduledTime?: number }, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
+    // Сторис — на каждом тике (каждые 30 мин, надёжный планировщик Cloudflare).
     ctx.waitUntil(dispatchStories(env).catch(() => undefined));
-    // Даршан храмов — только на суточных слотах (дорогой headless-Chrome).
-    if (cron === "0 4 * * *" || cron === "0 9 * * *" || cron === "0 14 * * *") {
+    // Даршан храмов — только в суточные слоты (тик :00 часов 4/9/14 UTC; дорогой headless-Chrome).
+    const now = new Date(typeof (event && event.scheduledTime) === "number" ? (event.scheduledTime as number) : Date.now());
+    const h = now.getUTCHours();
+    if (now.getUTCMinutes() < 30 && (h === 4 || h === 9 || h === 14)) {
       ctx.waitUntil(igIngestAll(env).then(() => undefined).catch(() => undefined));
     }
   },
