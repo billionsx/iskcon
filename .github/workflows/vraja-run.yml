@@ -21,9 +21,12 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - name: Deps
-        run: python3 -m pip install --quiet requests beautifulsoup4 lxml
+        run: python3 -m pip install --quiet requests beautifulsoup4 lxml "internetarchive>=4.1"
       - name: Run script
-        env: { CF: "${{ secrets.CLOUDFLARE_API_TOKEN }}" }
+        env:
+          CF: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          IA_ACCESS_KEY: "${{ secrets.IA_ACCESS_KEY }}"
+          IA_SECRET_KEY: "${{ secrets.IA_SECRET_KEY }}"
         run: python3 "tools/vraja/${{ github.event.inputs.script }}" ${{ github.event.inputs.args }}
       - name: Commit artifacts
         run: |
