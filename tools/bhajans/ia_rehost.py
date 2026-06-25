@@ -174,6 +174,7 @@ def run(payload_path, plan_path, token):
                     except Exception: pass
                     n_up += 1
                     print(f"  ↑ {ident}/{fname}  ({res.get('sz', 0)//1024} КБ)", flush=True)
+                    time.sleep(12)  # стаггер: держим request rate archive.org под лимитом
                 else:
                     fname = existing_match
                     n_skip += 1
