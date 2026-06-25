@@ -1576,10 +1576,41 @@ async function igRun(env: Env, url: URL): Promise<Response> {
   return new Response(JSON.stringify(res, null, 2), { headers: { "content-type": "application/json", "Cache-Control": "no-store" } });
 }
 
+// Диспетч забора Telegram-сторис (@iskcone → archive.org) через GitHub Actions
+// tg-stories.yml. Telethon-сессию нельзя крутить внутри воркера, поэтому надёжный
+// крон Cloudflare лишь ЗАПУСКАЕТ воркфлоу — это снимает зависимость от флаки-крона
+// GitHub (который массово пропускал слоты на :00, и свежие сторис висели часами).
+// Идемпотентно: concurrency-группа воркфлоу сериализует прогоны, забор пропускает
+// уже залитое. GH_TOKEN/GH_REPO — те же секреты, что у /api/stories-sync.
+async function dispatchStories(env: Env): Promise<void> {
+  if (!env.GH_TOKEN) return;
+  const repo = env.GH_REPO || "billionsx/iskcon";
+  const tag = "cron-" + Date.now().toString(36);
+  await fetch(`https://api.github.com/repos/${repo}/actions/workflows/tg-stories.yml/dispatches`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.GH_TOKEN}`,
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "gaurangers-stories-cron",
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ ref: "main", inputs: { run_tag: tag, channel: "", identifier: "" } }),
+  });
+}
+
 export default {
-  // Крон: перекладываем свежий даршан IG-храмов в D1 (см. [triggers] в wrangler.toml).
-  async scheduled(_event: unknown, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
-    ctx.waitUntil(igIngestAll(env).then(() => undefined).catch(() => undefined));
+  // Крон (см. [triggers] в wrangler.toml). Каждый тик: ЗАПУСК забора сторис (дёшево,
+  // надёжно). Тяжёлый IG-даршан храмов (Browser Rendering) — только на трёх суточных
+  // слотах 4:00/9:00/14:00 UTC, не на каждые 30 минут.
+  async scheduled(event: { cron?: string }, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
+    const cron = (event && event.cron) || "";
+    // Сторис — на каждом тике крона (надёжный планировщик Cloudflare).
+    ctx.waitUntil(dispatchStories(env).catch(() => undefined));
+    // Даршан храмов — только на суточных слотах (дорогой headless-Chrome).
+    if (cron === "0 4 * * *" || cron === "0 9 * * *" || cron === "0 14 * * *") {
+      ctx.waitUntil(igIngestAll(env).then(() => undefined).catch(() => undefined));
+    }
   },
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
