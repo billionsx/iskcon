@@ -17,8 +17,9 @@ import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { PdfDoc } from "./PdfDoc";
-import { CardActionsProvider, CardActionBtns, useCardActions } from "./cardActions";
-import { PlayerProvider } from "./player/store";
+import { CardActionsProvider, useCardActions, useFavorite } from "./cardActions";
+import { PlayerProvider, usePlayer } from "./player/store";
+import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
 import BhajanDetailPage from "./BhajanDetailPage";
@@ -237,6 +238,28 @@ function LogoMark({ src, label, height }: { src: string; label: string; height: 
   );
 }
 
+/* Плоские действия строки бхаджана — единый стиль как в книжной шапке: без серых
+   кругов; слушать (если есть записи) · избранное · ещё. */
+function FlatRowBtn({ ariaLabel, onClick, color, children }: { ariaLabel: string; onClick: () => void; color?: string; children: ReactNode }) {
+  return (
+    <button type="button" aria-label={ariaLabel} onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{ display: "grid", height: 32, width: 32, placeItems: "center", borderRadius: "50%", border: "none", background: "transparent", color: color || "var(--color-label-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent", pointerEvents: "auto" }}>
+      {children}
+    </button>
+  );
+}
+function BhajanRowActions({ slug, name, author, hasRecordings, onMore }: { slug: string; name: string; author: string | null; hasRecordings?: boolean; onMore: () => void }) {
+  const { on, toggle } = useFavorite(`bhajan:${slug}`, { t: name, s: author || undefined, h: `/bhajan/${slug}` });
+  const player = usePlayer();
+  return (
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 2, position: "relative", zIndex: 1 }}>
+      {hasRecordings && <FlatRowBtn ariaLabel="Слушать" onClick={() => player.playBhajan(slug, 0)}><HeadphonesIcon size={18} /></FlatRowBtn>}
+      <FlatRowBtn ariaLabel="В избранное" color={on ? "#FF453A" : undefined} onClick={() => toggle()}><HeartIcon size={18} filled={on} /></FlatRowBtn>
+      <FlatRowBtn ariaLabel="Ещё" onClick={onMore}><MoreIcon size={16} /></FlatRowBtn>
+    </span>
+  );
+}
+
 /* ═════════ Bhajan shelf — list from D1 prayers (api /bhajans) ═════════ */
 interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; has_recordings?: boolean; }
 function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void; onOpenCatalog: () => void }) {
@@ -288,21 +311,8 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
                   <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
                   {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
                 </span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0, position: "relative", zIndex: 1 }}>
-                  {b.has_recordings && (
-                    <svg width="16" height="16" viewBox="0 0 24 24" aria-label="есть записи" style={{ flexShrink: 0, color: "var(--color-brand-blue)", pointerEvents: "none" }}>
-                      <path d="M4 13v-1a8 8 0 0116 0v1" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
-                      <rect x="3" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
-                      <rect x="16.8" y="13" width="4.2" height="7" rx="2.1" fill="currentColor" />
-                    </svg>
-                  )}
-                  <CardActionBtns
-                    favKey={`bhajan:${b.slug}`}
-                    meta={{ t: b.name, s: b.author || undefined, h: `/bhajan/${b.slug}` }}
-                    size={30}
-                    onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })}
-                  />
-                </span>
+                <BhajanRowActions slug={b.slug} name={b.name} author={b.author} hasRecordings={b.has_recordings}
+                  onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })} />
               </div>
             </li>
           ))}
@@ -473,15 +483,17 @@ function SegRow({ value, onChange, items }: { value: string; onChange: (v: strin
   );
 }
 
+let bogSub = "books"; // сохраняем выбранный сабтаб Богатств между уходом в деталь и возвратом (history.back)
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
   onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
   onOpenArtist: (slug: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void;
 }) {
-  const [sub, setSub] = useState("books");
+  const [sub, setSub] = useState(bogSub);
+  const pickSub = (v: string) => { bogSub = v; setSub(v); };
   return (
     <div>
-      <SegRow value={sub} onChange={setSub} items={[["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"]]} />
+      <SegRow value={sub} onChange={pickSub} items={[["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"]]} />
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
       {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
