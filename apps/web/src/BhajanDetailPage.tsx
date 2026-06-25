@@ -113,6 +113,17 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [idx, prevOk, nextOk, onClose, onNav]);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => { const p = e.touches[0]; if (p) touch.current = { x: p.clientX, y: p.clientY }; };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const s = touch.current; touch.current = null; if (!s) return;
+    const p = e.changedTouches[0]; if (!p) return;
+    const dx = p.clientX - s.x, dy = p.clientY - s.y;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 2) {
+      if (dx < 0 && nextOk) onNav(idx + 1);
+      else if (dx > 0 && prevOk) onNav(idx - 1);
+    }
+  };
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
@@ -122,7 +133,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
           <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)" }}>Стих {v.ord} из {verses.length}</div>
         </div>
       </header>
-      <div ref={scRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
+      <div ref={scRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
           <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
           {v.translit && <div style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 20.5, lineHeight: 1.74, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>}
