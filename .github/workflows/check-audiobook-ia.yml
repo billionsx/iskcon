@@ -1,0 +1,73 @@
+name: Check audiobook IA items (audio presence)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Probe archive.org metadata for book items
+        run: |
+          set -e
+          python3 - <<'PY'
+          import json, urllib.request
+          UA = {"User-Agent": "iskcon-one-love/1.0 (ceo@billionsx.com)"}
+          # work-slug -> identifier is iskcone-<slug>
+          flagged = ["uroki-lyubvi","navadvipa-dhama-mahatmya","seventh-goswami","the-beggar"]
+          baseline = ["manah-siksa","harinama-cintamani"]   # already-working sanity refs
+          candidates = ["bereg-razluki","prema-vivarta","japa-meditations","narottama-thakura"]
+          AUDIO_FMT = ("mp3","ogg","flac","wav","m4a","aac","opus")
+          def probe(slug):
+              ident = "iskcone-" + slug
+              url = "https://archive.org/metadata/" + ident
+              try:
+                  req = urllib.request.Request(url, headers=UA)
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      d = json.load(r)
+              except Exception as e:
+                  return (ident, "ERR", 0, 0.0, str(e)[:60])
+              files = d.get("files") or []
+              if not files and not d.get("metadata"):
+                  return (ident, "MISSING", 0, 0.0, "no item")
+              audio = [f for f in files if str(f.get("name","")).lower().rsplit(".",1)[-1] in AUDIO_FMT
+                       or "mp3" in str(f.get("format","")).lower() or "ogg" in str(f.get("format","")).lower()
+                       or "flac" in str(f.get("format","")).lower()]
+              # de-dupe derivative formats by basename to estimate distinct tracks
+              bases = set()
+              for f in audio:
+                  n = str(f.get("name",""))
+                  bases.add(n.rsplit(".",1)[0])
+              mb = 0.0
+              for f in audio:
+                  try: mb += float(f.get("size",0))/1048576.0
+                  except: pass
+              sample = sorted({b for b in bases})[:2]
+              return (ident, "OK" if audio else "EMPTY", len(bases), round(mb,1), " | ".join(sample))
+          lines = []
+          for group, slugs in (("FLAGGED",flagged),("BASELINE",baseline),("CANDIDATE",candidates)):
+              for s in slugs:
+                  ident, status, ntr, mb, note = probe(s)
+                  line = f"{group:9} {status:8} tracks={ntr:<3} {mb:>7}MB  {ident}  | {note}"
+                  print(line); lines.append(line)
+          open("audiobook_ia_status.txt","w").write("\n".join(lines)+"\n")
+          PY
+
+      - name: Commit report
+        run: |
+          set -e
+          git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
+          git add -A audiobook_ia_status.txt 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no change"; exit 0; fi
+          git commit -m "chore: audiobook IA audio-presence probe report"
+          for i in 1 2 3 4 5 6; do
+            if git push origin HEAD:main; then echo PUSHED; exit 0; fi
+            git fetch origin main; GIT_EDITOR=true git rebase origin/main || git rebase --abort
+          done
+          echo "push failed"; exit 1
