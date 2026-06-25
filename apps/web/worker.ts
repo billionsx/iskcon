@@ -1683,7 +1683,7 @@ export default {
       const [dRes, cRes, tRes, pRes] = await Promise.all([
         env.DB.prepare(`SELECT id, name, iast, tagline, deity, deity_entity_id, region, hero, accent, center_lat, center_lng, center_zoom, intro, facts FROM dhamas ORDER BY sort`).all<Record<string, unknown>>(),
         env.DB.prepare(`SELECT dhama_id, cluster_id, title, note FROM dhama_clusters ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
-        env.DB.prepare(`SELECT id, dhama_id, cluster, name, iast, kind, lat, lng, blurb, about, lila, persons, maps, source FROM tirthas ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
+        env.DB.prepare(`SELECT id, dhama_id, cluster, name, iast, kind, lat, lng, blurb, about, lila, persons, maps, source, hero_image, gallery, sources_json FROM tirthas ORDER BY dhama_id, sort`).all<Record<string, unknown>>(),
         env.DB.prepare(`SELECT tirtha_id, name, entity_id FROM tirtha_persons WHERE entity_id IS NOT NULL`).all<Record<string, unknown>>(),
       ]);
       // Точный резолв связанных личностей: tirtha_id → { имя → entity_id }. Подмешаем в
@@ -1702,11 +1702,16 @@ export default {
         const rawPersons = (pj(t.persons) as { name: string; q: string }[] | undefined) ?? [];
         const emap = entBy[t.id as string];
         const persons = emap ? rawPersons.map((pp) => (emap[pp.name] ? { ...pp, entityId: emap[pp.name] } : pp)) : rawPersons;
+        const gallery = pj(t.gallery) as string[] | undefined;
+        const sources = pj(t.sources_json) as unknown[] | undefined;
         (tirthasBy[t.dhama_id as string] ||= []).push({
           id: t.id, dhama: t.dhama_id, cluster: t.cluster, name: t.name,
           iast: t.iast ?? undefined, kind: t.kind, lat: t.lat, lng: t.lng,
           blurb: t.blurb ?? "", about: t.about ?? "", lila: t.lila ?? undefined,
           persons, maps: t.maps ?? undefined, source: t.source ?? undefined,
+          hero_image: (t.hero_image as string) || undefined,
+          gallery: gallery && gallery.length ? gallery : undefined,
+          sources: sources && sources.length ? sources : undefined,
         });
       }
       const dhamas = (dRes.results || []).map((d) => ({
