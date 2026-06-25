@@ -128,11 +128,12 @@ function buildPostGroups(noTelegram = false): Group[] {
   return groups;
 }
 
-// Меню бхаджана — поделиться, QR, поддержать, сообщить (без книжного PDF-рендера).
+// Меню бхаджана — поделиться, PDF (серверный card-рендер), QR, поддержать, сообщить.
 function buildBhajanGroups(): Group[] {
   return [
     { items: [
       { id: "share", label: "Поделиться", Icon: ShareGlyph },
+      { id: "pdf", label: "Скачать PDF", Icon: PdfGlyph },
       { id: "qr", label: "QR-код", Icon: QrGlyph },
     ] },
     { items: [

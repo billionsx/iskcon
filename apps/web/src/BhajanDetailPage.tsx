@@ -13,7 +13,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
-import { RoundBtn, useFavorite, useCardActions } from "./cardActions";
+import { useFavorite, useCardActions } from "./cardActions";
 import { usePlayer } from "./player/store";
 import { MediaViewer, type ViewerMedia } from "./MediaViewer";
 import { NotesAtSource } from "./NotesAtSource";
@@ -23,6 +23,20 @@ interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { 
 const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 function BackIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>; }
+
+/** Плоская иконочная кнопка как в книжной читалке: прозрачная в покое, лёгкая
+ *  заливка при нажатии; без постоянного серого круга. */
+function PlainBtn({ ariaLabel, onClick, active, color, children }: { ariaLabel: string; onClick: () => void; active?: boolean; color?: string; children: React.ReactNode }) {
+  const [pressed, setPressed] = useState(false);
+  const off = () => setPressed(false);
+  return (
+    <button type="button" aria-label={ariaLabel} onClick={onClick}
+      onPointerDown={() => setPressed(true)} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
+      style={{ display: "grid", height: 36, width: 36, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", color: active && color ? color : "var(--color-label)", background: pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", transition: "background .12s", WebkitTapHighlightColor: "transparent", flexShrink: 0 }}>
+      {children}
+    </button>
+  );
+}
 
 interface WBW { t: string; m: string; }
 interface Verse { ord: number; translit: string | null; text: string | null; signature: string | null; words?: WBW[]; }
@@ -293,12 +307,15 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity }: { slug:
         backdropFilter: t > 0.04 ? "saturate(180%) blur(20px)" : "none", WebkitBackdropFilter: t > 0.04 ? "saturate(180%) blur(20px)" : "none",
         borderBottom: `0.5px solid color-mix(in srgb, var(--color-glass-stroke) ${Math.round(t * 100)}%, transparent)` }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", color: "var(--color-label)", background: "transparent", flexShrink: 0 }}><BackIcon size={22} /></button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: t > 0.55 ? (t - 0.55) / 0.45 : 0 }}>{data?.name}</div>
+        <div style={{ flex: 1, minWidth: 0, paddingLeft: 2, opacity: t > 0.55 ? (t - 0.55) / 0.45 : 0, transform: t > 0.55 ? "none" : "translateY(3px)", transition: "opacity .15s, transform .15s" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: "var(--weight-bold)", letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.name}</div>
+          {data?.author && <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.author}</div>}
+        </div>
         {data && (
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
-            <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" size={36} onClick={() => fav.toggle(flash)}><HeartIcon size={18} filled={fav.on} /></RoundBtn>
-            <RoundBtn ariaLabel="Слушать" size={36} onClick={() => { if (data?.media?.recordings?.some((r) => r.url)) player.playBhajan(slug, 0); else flash("Записей пока нет"); }}><HeadphonesIcon size={18} /></RoundBtn>
-            <RoundBtn ariaLabel="Ещё" size={36} onClick={openMore}><MoreIcon size={16} /></RoundBtn>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
+            <PlainBtn ariaLabel="В избранное" active={fav.on} color="#FF453A" onClick={() => fav.toggle(flash)}><HeartIcon size={18} filled={fav.on} /></PlainBtn>
+            <PlainBtn ariaLabel="Слушать" onClick={() => { if (data?.media?.recordings?.some((r) => r.url)) player.playBhajan(slug, 0); else flash("Записей пока нет"); }}><HeadphonesIcon size={18} /></PlainBtn>
+            <PlainBtn ariaLabel="Ещё" onClick={openMore}><MoreIcon size={16} /></PlainBtn>
           </span>
         )}
       </header>
