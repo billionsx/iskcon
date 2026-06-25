@@ -246,6 +246,30 @@ contentRouter.get('/detail', async (c) => {
     .first()) as Row | null;
   if (!ci) return c.json({ error: { code: 'not_found', message: 'content not found' } }, 404);
 
+  // навигация по коллекции: родитель + соседние элементы (произведения, напр. Ставамала)
+  let navParent: { slug: string; name: string } | null = null;
+  let navPrev: { slug: string; name: string } | null = null;
+  let navNext: { slug: string; name: string } | null = null;
+  {
+    const pm = slug.match(/^(.*)\/[^/]+$/);
+    const pslug = pm?.[1] ?? '';
+    if (pslug && pslug.split('/').filter(Boolean).length >= 2) {
+      const pr = (await c.env.DB.prepare(`SELECT slug, name FROM content_items WHERE slug = ?`).bind(pslug).first()) as Row | null;
+      if (pr) {
+        navParent = { slug: pr.slug as string, name: pr.name as string };
+        const { results: sibs } = await c.env.DB.prepare(
+          `SELECT slug, name FROM content_items WHERE slug LIKE ? AND slug NOT LIKE ? ORDER BY rowid`,
+        ).bind(pslug + '/%', pslug + '/%/%').all();
+        const arr = (sibs as Row[]) ?? [];
+        const ix = arr.findIndex((s) => s.slug === slug);
+        const p = ix > 0 ? arr[ix - 1] : undefined;
+        const n = ix >= 0 && ix < arr.length - 1 ? arr[ix + 1] : undefined;
+        if (p) navPrev = { slug: p.slug as string, name: p.name as string };
+        if (n) navNext = { slug: n.slug as string, name: n.name as string };
+      }
+    }
+  }
+
   const pt = (await c.env.DB.prepare(`SELECT text FROM page_text WHERE slug = ?`).bind(slug).first()) as Row | null;
   const body = bodyOf(pt?.text);
   const paragraphs = body.split('\n').map((s) => s.trim()).filter((s) => s.length > 0);
@@ -277,6 +301,7 @@ contentRouter.get('/detail', async (c) => {
     type: ci.type,
     kind: SUB[ci.subtype as string] ?? null,
     hero_image: ci.hero_image ?? null,
+    nav: { parent: navParent, prev: navPrev, next: navNext },
     blocks,
     paragraphs, // fallback, если blocks пуст
   });
