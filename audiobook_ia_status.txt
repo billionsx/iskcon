@@ -1,0 +1,10 @@
+FLAGGED   OK       tracks=67   1469.8MB  iskcone-uroki-lyubvi  | 001_uroki-lyubvi-00-predislovie | 002_uroki-lyubvi-01-odin-iz-moikh-uchenikov-peresechet-okean
+FLAGGED   OK       tracks=18    978.4MB  iskcone-navadvipa-dhama-mahatmya  | 001_navadvipa-dkhama-makhatmya-01-vysochayshee-polozhenie | 002_navadvipa-dkhama-makhatmya-02-istinnaya-priroda-i-razmery-dk
+FLAGGED   OK       tracks=14    798.7MB  iskcone-seventh-goswami  | 001_rupa-vilasa-das-00-predislovie | 002_rupa-vilasa-das-01-rodoslovnaya-detstvo
+FLAGGED   OK       tracks=108  3904.7MB  iskcone-the-beggar  | 001_nishchiy-i-0-predislovie-avtora | 002_nishchiy-i-01-matushka-spasibo-za-probuzhdenie
+BASELINE  OK       tracks=13    501.3MB  iskcone-manah-siksa  | 001_ragkhunatkha-das-gosvami-00-vse-stikhi | 002_ragkhunatkha-das-gosvami-01-manakh-shiksha
+BASELINE  OK       tracks=19    306.3MB  iskcone-harinama-cintamani  | 001_glava-1-sambandkha-gyana-shri-kharinama-chintamani-shrila-bk | 002_glava-2-obrashchenie-k-svyatomu-imeni-shri-kharinama-chintam
+CANDIDATE MISSING  tracks=0       0.0MB  iskcone-bereg-razluki  | no item
+CANDIDATE MISSING  tracks=0       0.0MB  iskcone-prema-vivarta  | no item
+CANDIDATE MISSING  tracks=0       0.0MB  iskcone-japa-meditations  | no item
+CANDIDATE MISSING  tracks=0       0.0MB  iskcone-narottama-thakura  | no item
