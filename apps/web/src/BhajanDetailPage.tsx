@@ -133,6 +133,9 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
           <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)" }}>Стих {v.ord} из {verses.length}</div>
         </div>
       </header>
+      <div aria-hidden style={{ flexShrink: 0, height: 2.5, background: "var(--color-hairline)" }}>
+        <div style={{ height: "100%", width: `${((idx + 1) / Math.max(1, verses.length)) * 100}%`, background: "var(--color-brand-blue)", transition: "width .22s ease" }} />
+      </div>
       <div ref={scRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
           <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
@@ -322,6 +325,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
   const [data, setData] = useState<BhajanDetail | null>(null);
   const [err, setErr] = useState(false);
   const [t, setT] = useState(0);
+  const [prog, setProg] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
   const [viewer, setViewer] = useState<ViewerMedia | null>(null);
   const [vIdx, setVIdx] = useState<number | null>(null);
@@ -351,7 +355,11 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
 
   useEffect(() => {
     const el = scrollRef.current; if (!el) return;
-    const onScroll = () => setT(Math.min(1, Math.max(0, el.scrollTop / 120)));
+    const onScroll = () => {
+      setT(Math.min(1, Math.max(0, el.scrollTop / 120)));
+      const max = el.scrollHeight - el.clientHeight;
+      setProg(max > 8 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0);
+    };
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
   }, [data]);
@@ -410,6 +418,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
             <PlainBtn ariaLabel="Ещё" onClick={openMore}><MoreIcon size={16} /></PlainBtn>
           </span>
         )}
+        <div aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, width: `${prog * 100}%`, background: "var(--color-brand-blue)", borderRadius: "0 2px 2px 0", transition: "width .12s linear" }} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
