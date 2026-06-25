@@ -1,0 +1,236 @@
+{
+  "pods": {
+    "list_status": 401,
+    "list_snip": "{\"code\":\"rest_forbidden\",\"message\":\"\\u0418\\u0437\\u0432\\u0438\\u043d\\u0438\\u0442\\u0435, \\u0432\\u0430\\u043c \\u043d\\u0435 \\u0440\\u0430\\u0437\\u0440\\u0435\\u0448\\u0435\\u043d\\u043e \\u0432\\u044b\\u043f\\u043e\\u043b\\u043d\\u044f\\u0442\\u044c \\u0434\\u0430\\u043d\\u043d\\u043e\\u0435 \\u0434\\u0435\\u0439\\u0441\\u0442\\u0432\\u0438\\u0435.\",\"data\":{\"status\":401}}",
+    "slugs": [],
+    "pod:post": {
+      "status": 401,
+      "snip": "{\"code\":\"rest_forbidden\",\"message\":\"\\u0418\\u0437\\u0432\\u0438\\u043d\\u0438\\u0442\\u0435, \\u0432\\u0430\\u043c \\u043d\\u0435 \\u0440\\u0430\\u0437\\u0440\\u0435\\u0448\\u0435\\u043d\\u043e \\u0432\\u044b\\u043f\\u043e\\u043b\\u043d\\u044f\\u0442\\u044c \\u0434\\u0430\\u043d\\u043d\\u043e\\u0435 \\u0434\\u0435\\u0439\\u0441\\u0442\\u0432\\u0438\\u0435.\",\"data\":{\"status\":401}}"
+    }
+  },
+  "ru_list": [
+    {
+      "id": 9060,
+      "slug": "rangeshvara-mahadev",
+      "link": "https://vrajapedia.com/ru/places/mathura/rangeshvara-mahadev/",
+      "title": "Рангешвара Махадев",
+      "clen": 4617,
+      "elen": 422,
+      "featured": null,
+      "cats": [
+        332,
+        57
+      ]
+    },
+    {
+      "id": 8792,
+      "slug": "sankarshana-kunda",
+      "link": "https://vrajapedia.com/ru/places/talavan/sankarshana-kunda/",
+      "title": "Санкаршана-кунда",
+      "clen": 2901,
+      "elen": 406,
+      "featured": null,
+      "cats": [
+        57,
+        334
+      ]
+    },
+    {
+      "id": 8783,
+      "slug": "madhu-gufa",
+      "link": "https://vrajapedia.com/ru/places/madhuvan/madhu-gufa/",
+      "title": "Мадху-гуфа",
+      "clen": 2142,
+      "elen": 416,
+      "featured": null,
+      "cats": [
+        330,
+        57
+      ]
+    },
+    {
+      "id": 8777,
+      "slug": "dhruva-tila",
+      "link": "https://vrajapedia.com/ru/places/madhuvan/dhruva-tila/",
+      "title": "Дхрува-тила",
+      "clen": 581,
+      "elen": 445,
+      "featured": null,
+      "cats": [
+        330,
+        57
+      ]
+    },
+    {
+      "id": 8767,
+      "slug": "daudzhi-mandir-3",
+      "link": "https://vrajapedia.com/ru/places/madhuvan/daudzhi-mandir-3/",
+      "title": "Дауджи-мандир",
+      "clen": 1349,
+      "elen": 392,
+      "featured": null,
+      "cats": [
+        330,
+        57
+      ]
+    },
+    {
+      "id": 8763,
+      "slug": "madhu-kunda",
+      "link": "https://vrajapedia.com/ru/places/madhuvan/madhu-kunda/",
+      "title": "Мадху-кунда",
+      "clen": 307,
+      "elen": 273,
+      "featured": null,
+      "cats": [
+        330,
+        57
+      ]
+    },
+    {
+      "id": 8648,
+      "slug": "sakhi-sthali",
+      "link": "https://vrajapedia.com/ru/places/govardhan/sakhi-sthali/",
+      "title": "Сакхи-стхали",
+      "clen": 1100,
+      "elen": 419,
+      "featured": null,
+      "cats": [
+        59,
+        57
+      ]
+    },
+    {
+      "id": 8642,
+      "slug": "vilachhu-kunda",
+      "link": "https://vrajapedia.com/ru/places/govardhan/vilachhu-kunda/",
+      "title": "Вилачху-кунда",
+      "clen": 1182,
+      "elen": 441,
+      "featured": null,
+      "cats": [
+        59,
+        57
+      ]
+    },
+    {
+      "id": 8639,
+      "slug": "dandavata-shila",
+      "link": "https://vrajapedia.com/ru/places/govardhan/dandavata-shila/",
+      "title": "Дандавата-шила",
+      "clen": 500,
+      "elen": 437,
+      "featured": null,
+      "cats": [
+        59,
+        57
+      ]
+    },
+    {
+      "id": 8634,
+      "slug": "samadhi-vitthalanathi",
+      "link": "https://vrajapedia.com/ru/places/govardhan/samadhi-vitthalanathi/",
+      "title": "Самадхи Виттхаланатхи",
+      "clen": 376,
+      "elen": 342,
+      "featured": null,
+      "cats": [
+        59,
+        57
+      ]
+    },
+    {
+      "id": 8617,
+      "slug": "indra-kunda-charana-kunda",
+      "link": "https://vrajapedia.com/ru/places/govardhan/indra-kunda-charana-kunda/",
+      "title": "Индра-кунда (Чарана-кунда)",
+      "clen": 478,
+      "elen": 398,
+      "featured": null,
+      "cats": [
+        59,
+        57
+      ]
+    },
+    {
+      "id": 8612,
+      "slug": "indra-pranama-sthali",
+      "link": "https://vrajapedia.com/ru/places/govardhan/indra-pranama-sthali/",
+      "title": "Индра-пранама-стхали",
+      "clen": 711,
+      "elen": 394,
+      "featured": null,
+      "cats": [
+        59,
+        57
+      ]
+    }
+  ],
+  "target_full": {
+    "id": "9060",
+    "date": "2023-06-12T13:17:17",
+    "date_gmt": "2023-06-12T10:17:17",
+    "guid": "{\"rendered\": \"https://vrajapedia.com/?p=9060\"}",
+    "modified": "2023-07-21T13:58:09",
+    "modified_gmt": "2023-07-21T10:58:09",
+    "slug": "rangeshvara-mahadev",
+    "status": "publish",
+    "type": "post",
+    "link": "https://vrajapedia.com/ru/places/mathura/rangeshvara-mahadev/",
+    "title": "{\"rendered\": \"Рангешвара Махадев\"}",
+    "content": "{\"rendered\": \"<h3 class=\\\"book-name\\\">Бхактиведанта Нараяна Госвами</h3>\\n<p>Из книги «Враджа-мандала-парикрама»:</p>\\n<p>В южной части Матхуры находится кшетра-пал Шри Рангешвара Махадев. Махараджа Камса, разрушитель своей семьи и династии…",
+    "excerpt": "{\"rendered\": \"<p>Бхактиведанта Нараяна Госвами Из книги «Враджа-мандала-парикрама»: В южной части Матхуры находится кшетра-пал Шри Рангешвара Махадев. Махараджа Камса, разрушитель своей семьи и династии Бходжи, задумал убить Кришну и Балара…",
+    "author": "23",
+    "featured_media": "0",
+    "comment_status": "closed",
+    "ping_status": "open",
+    "sticky": "false",
+    "template": "",
+    "format": "standard",
+    "meta": "{\"footnotes\": \"\"}",
+    "categories": "[332, 57]",
+    "tags": "[2848, 2579, 2556, 3209, 3213, 3532]",
+    "acf": "[]",
+    "lang": "ru",
+    "translations": "{\"ru\": 9060, \"en\": 9062}",
+    "pll_sync_post": "[]"
+  },
+  "target_id": 9060,
+  "target_link": "https://vrajapedia.com/ru/places/mathura/rangeshvara-mahadev/",
+  "html_status": 200,
+  "html_len": 195612,
+  "coords": {
+    "data_lat": [],
+    "data_lng": [],
+    "json_latlng": [],
+    "latlng_func": [],
+    "pair": [],
+    "gmaps_iframe": [],
+    "gmaps_link": []
+  },
+  "img_count": 10,
+  "img_sample": [
+    "https://vrajapedia.com/wp-content/uploads/2022/08/2022-09-12-11.38.25.jpg",
+    "https://vrajapedia.com/wp-content/uploads/2022/08/favicon-100x100.png",
+    "https://vrajapedia.com/wp-content/uploads/2022/08/favicon.png",
+    "https://vrajapedia.com/wp-content/uploads/2022/10/frame-1.png",
+    "https://vrajapedia.com/wp-content/uploads/2022/10/frame-27-300x10.png",
+    "https://vrajapedia.com/wp-content/uploads/2022/10/frame-27-768x26.png",
+    "https://vrajapedia.com/wp-content/uploads/2022/10/frame-27.png",
+    "https://vrajapedia.com/wp-content/uploads/2022/10/frame-452.png"
+  ],
+  "text_total_len": 5566,
+  "text_cyr_len": 4363,
+  "text_snippet": "Яват Кокилаван Бхадраван Бхандираван Матаван Белван Лохаван Равал Махаван-Гокула Упаваны Храмы Ади-Бадринатх Санкет Кумудван Бахулаван Искать ",
+  "sitemaps": {
+    "index_status": 200,
+    "subs": [
+      "https://vrajapedia.com/post-sitemap.xml",
+      "https://vrajapedia.com/post-sitemap2.xml",
+      "https://vrajapedia.com/page-sitemap.xml",
+      "https://vrajapedia.com/category-sitemap.xml",
+      "https://vrajapedia.com/post_tag-sitemap.xml",
+      "https://vrajapedia.com/author-sitemap.xml"
+    ]
+  }
+}
