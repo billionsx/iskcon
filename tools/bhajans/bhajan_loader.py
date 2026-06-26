@@ -62,7 +62,7 @@ ACCT = "d5cbe19470dc38599873eabfe148e6d1"
 DB = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 D1_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
 
-DEFAULT_HERO = "https://static.tildacdn.net/tild3063-6561-4534-a539-336262316565/iskcon.png"
+DEFAULT_HERO = "/audio-cover.png"
 
 
 # ------------------------------------------------------------------ канон-нормализация

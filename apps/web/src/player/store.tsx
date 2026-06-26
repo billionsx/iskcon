@@ -92,13 +92,16 @@ export function usePlayer(): PlayerApi {
 }
 
 export const PLAYER_RATES = [1, 1.25, 1.5, 2];
+/** Единая запасная обложка плеера (фирменный знак ISKCON ONE LOVE) — для любого
+ *  аудио без собственной обложки. Источник — apps/web/public/audio-cover.png. */
+export const AUDIO_FALLBACK_COVER = "/audio-cover.png";
 // Отображаемые название/обложка плеера по книге (источник — books.ts).
 const BOOK_AUDIO: Record<string, { title: string; cover: string }> = {
-  bg: { title: "Бхагавад-гита как она есть", cover: BOOKS.bg?.covers?.[0] ?? "/og-default.png" },
-  cc: { title: "Шри Чайтанья-чаритамрита", cover: BOOKS.cc?.covers?.[0] ?? "/og-default.png" },
+  bg: { title: "Бхагавад-гита как она есть", cover: BOOKS.bg?.covers?.[0] ?? AUDIO_FALLBACK_COVER },
+  cc: { title: "Шри Чайтанья-чаритамрита", cover: BOOKS.cc?.covers?.[0] ?? AUDIO_FALLBACK_COVER },
 };
 function bookCfg(id: string) {
-  return BOOK_AUDIO[id] ?? { title: BOOKS[id] ? bookFullTitle(BOOKS[id]) : "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? "/og-default.png" };
+  return BOOK_AUDIO[id] ?? { title: BOOKS[id] ? bookFullTitle(BOOKS[id]) : "ISKCON ONE LOVE", cover: BOOKS[id]?.covers?.[0] ?? AUDIO_FALLBACK_COVER };
 }
 /** Дисплей-инфо бхаджанов (название/обложка/автор) — заполняется из манифеста при загрузке. */
 const bhajanMeta: Record<string, { title: string; cover: string; artist: string }> = {};
@@ -108,13 +111,13 @@ function cfgFor(id: string, src: Source): { title: string; cover: string; artist
     const al = albumById(id);
     return {
       title: al?.title ?? "Киртан",
-      cover: al ? albumCover(al) : "/og-default.png",
+      cover: al ? albumCover(al) : AUDIO_FALLBACK_COVER,
       artist: al ? (artistBySlug(al.artist)?.name ?? "") : "",
     };
   }
   if (src === "bhajan") {
     const d = bhajanMeta[id];
-    return { title: d?.title ?? "Бхаджан", cover: d?.cover || "/og-default.png", artist: d?.artist ?? "" };
+    return { title: d?.title ?? "Бхаджан", cover: d?.cover || AUDIO_FALLBACK_COVER, artist: d?.artist ?? "" };
   }
   const c = bookCfg(id);
   return { title: c.title, cover: c.cover, artist: "" };
