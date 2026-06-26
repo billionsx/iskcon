@@ -10,7 +10,7 @@
  * Действия (избранное · наушники · ⋯) и меню — общий слой cardActions; меню в
  * варианте «bhajan» (Поделиться · QR · Задонатить · Сообщить — без книжного PDF).
  */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import type { SVGProps } from "react";
 import { api } from "./api";
 import { useFavorite, useCardActions } from "./cardActions";
@@ -54,6 +54,34 @@ interface BhajanDetail {
 
 function verseLabel(ord: number): string { return `Стих ${ord}`; }
 
+/* Транслитерация: каждая строка — в ОДНУ визуальную строку (без переноса).
+ * Размер шрифта авто-ужимается под ширину контейнера по самой длинной строке. */
+function FitText({ text, max = 18.5, min = 12, style }: { text: string; max?: number; min?: number; style?: CSSProperties }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const lastW = useRef(-1);
+  const [size, setSize] = useState(max);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => {
+      const avail = el.clientWidth;
+      if (!avail) return;
+      lastW.current = avail;
+      el.style.fontSize = max + "px";
+      const need = el.scrollWidth;
+      setSize(need > avail ? Math.max(min, Math.floor((max * avail / need) * 10) / 10) : max);
+    };
+    fit();
+    const ro = new ResizeObserver(() => {
+      const el2 = ref.current;
+      if (el2 && el2.clientWidth !== lastW.current) fit();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [text, max, min]);
+  return <div ref={ref} style={{ ...style, fontSize: size + "px", whiteSpace: "pre", overflow: "hidden" }}>{text}</div>;
+}
+
 /* eyebrow-метка (Caption2, uppercase, трекинг) */
 function Eyebrow({ children, blue }: { children: React.ReactNode; blue?: boolean }) {
   return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: blue ? "var(--color-brand-blue)" : "var(--color-label-2)" }}>{children}</div>;
@@ -72,7 +100,7 @@ function VerseCard({ v, onOpen }: { v: Verse; onOpen?: () => void }) {
         {onOpen && <span style={{ color: "var(--color-label-3, var(--color-label-2))", display: "inline-flex", flexShrink: 0 }}><svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg></span>}
       </div>
       {v.translit && (
-        <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 18.5, lineHeight: 1.72, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>
+        <FitText text={v.translit} max={18.5} min={12} style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", lineHeight: 1.5, color: "var(--color-label)" }} />
       )}
       {v.text && (
         <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>
@@ -139,7 +167,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
       <div ref={scRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
           <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
-          {v.translit && <div style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 20.5, lineHeight: 1.74, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{v.translit}</div>}
+          {v.translit && <FitText text={v.translit} max={21} min={13} style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-scripture)", fontStyle: "italic", lineHeight: 1.5, color: "var(--color-label)" }} />}
           {v.text && <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-5)", borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 17.5, lineHeight: 1.7, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>}
           {hasWbw && (
             <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-4)", borderTop: "0.5px solid var(--color-hairline)" }}>
@@ -171,7 +199,7 @@ function LayerCard({ label, text, scripture }: { label: string; text: string; sc
   return (
     <section style={{ borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", padding: "var(--space-5)", minWidth: 0, overflowWrap: "break-word" }}>
       <Eyebrow blue>{label}</Eyebrow>
-      <div style={{ marginTop: "var(--space-3)", fontFamily: scripture ? "var(--font-scripture)" : "var(--font-text)", fontStyle: scripture ? "italic" : "normal", fontSize: scripture ? 18.5 : "var(--text-body)", lineHeight: scripture ? 1.72 : "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word", wordBreak: "break-word" }}>{text}</div>
+      {scripture ? <FitText text={text} max={18.5} min={12} style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", lineHeight: 1.5, color: "var(--color-label)" }} /> : <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{text}</div>}
     </section>
   );
 }
@@ -463,9 +491,6 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
               )}
               {!data.pending && data.media && <div ref={mediaRef}><MediaSections media={data.media} slug={slug} onView={setViewer} /></div>}
-              {data.source_credit && !data.pending && (
-                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", lineHeight: "var(--leading-snug)", color: "var(--color-label-3, var(--color-label-2))", textAlign: "center" }}>{data.source_credit}</div>
-              )}
               <NotesAtSource kind="bhajan" refId={`bhajan:${slug}`} accent="#7048E8" />
             </div>
           </div>
