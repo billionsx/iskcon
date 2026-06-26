@@ -4,6 +4,7 @@
  * Тап по панели (не по кнопкам) открывает Now Playing.
  */
 import { usePlayer } from "./store";
+import { CoverArt } from "./CoverArt";
 import { PlayIcon, PauseIcon, NextIcon } from "./icons";
 import { useEffect, type CSSProperties } from "react";
 import { BOOKS, bookFullTitle } from "../books";
@@ -65,7 +66,7 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
           <div style={{ height: "100%", width: `${pct}%`, background: "#D2AA1B", transition: "width .25s linear" }} />
         </div>
 
-        <img src={p.cover} alt="" draggable={false}
+        <CoverArt src={p.cover} alt=""
           style={{ height: 42, width: 42, borderRadius: 9, objectFit: "cover", flexShrink: 0, boxShadow: "0 2px 8px rgba(0,0,0,0.4)" }} />
 
         <div style={{ flex: 1, minWidth: 0 }}>

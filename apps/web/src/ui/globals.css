@@ -291,6 +291,12 @@
 :root[data-theme='dark']  .light-logo-only { display: none; }
 :root:not([data-theme='light']) .light-logo-only { display: none; }
 
+/* Theme-aware audio cover (фирменная заглушка плеера).
+   Обе версии в DOM; CSS прячет лишнюю по data-theme. По умолчанию (тёмная /
+   без атрибута) — тёмная обложка. См. player/CoverArt.tsx. */
+:root[data-theme='light'] .audio-cover-dark { display: none; }
+:root:not([data-theme='light']) .audio-cover-light { display: none; }
+
 
   html {
     -webkit-font-smoothing: antialiased;
