@@ -1020,6 +1020,7 @@ export default function App() {
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
   function openEntityTarget(id: string, type: string | null) {
     setOpenCollection(null);
+    setOpenBhajan(null); setOpenKirtanArtist(null); setOpenBook(null); setBookTarget(null); setOpenCatalog(false); setOpenContent(null); setOpenPost(null);
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
   }
