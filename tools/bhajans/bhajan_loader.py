@@ -54,6 +54,9 @@ import urllib.request
 import urllib.error
 from typing import Any, Optional
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from divine_caps import capitalize_divine  # noqa: E402  (капитализация имён божеств в названии)
+
 # ------------------------------------------------------------------ конфигурация D1
 ACCT = "d5cbe19470dc38599873eabfe148e6d1"
 DB = "6226aded-dd03-4e74-977f-9cd0b509e73d"
@@ -93,7 +96,7 @@ def _verse_text(v: dict) -> str:
 def build_record(b: dict) -> dict:
     """payload-песня → готовые поля prayers + строки prayer_verses. Чистая функция."""
     slug = normalize_slug(b["slug"])
-    name = re.sub(r"\s+", " ", str(b["name"])).strip()
+    name = capitalize_divine(re.sub(r"\s+", " ", str(b["name"])).strip())
     author = canon_author(b.get("author_name"))
     verses_in = b.get("verses") or []
 

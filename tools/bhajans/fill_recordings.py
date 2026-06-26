@@ -19,6 +19,7 @@ from __future__ import annotations
 import json, os, re, sys, time, unicodedata, urllib.request
 sys.path.insert(0, os.path.dirname(__file__))
 from bhajanamrita_import import decode_pua, fetch_full
+from divine_caps import capitalize_divine  # капитализация имён божеств в заголовке аудио
 
 ACCT = "d5cbe19470dc38599873eabfe148e6d1"; DB = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 D1_URL = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}/query"
@@ -139,7 +140,7 @@ def main():
             d1("""INSERT OR REPLACE INTO prayer_media
                   (slug,kind,ord,title,subtitle,duration,url,media_type,platform,ext_id,description,date,lang)
                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
-               [slug, "recording", k, (r.get("title") or "").strip(), (r.get("performer") or "").strip(),
+               [slug, "recording", k, capitalize_divine((r.get("title") or "").strip()), (r.get("performer") or "").strip(),
                 (r.get("duration") or "").strip(), url, media_type_of(url, "audio"),
                 "", "", "", (r.get("date") or "").strip(), "ru"])
             n += 1
