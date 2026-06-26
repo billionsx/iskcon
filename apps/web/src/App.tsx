@@ -262,6 +262,53 @@ function BhajanRowActions({ slug, name, author, hasRecordings, onMore }: { slug:
 
 /* ═════════ Bhajan shelf — list from D1 prayers (api /bhajans) ═════════ */
 interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; has_recordings?: boolean; }
+/* Структура молитвенника по службам Храмов ИСККОН (как на iskcone.com/ru/bhajans). */
+const BHAJAN_SECTIONS: { title: string; slugs: string[] }[] = [
+  { title: "Службы храмов ИСККОН", slugs: [
+    "/ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka",
+    "/ru/bhajans/tulasi", "/ru/bhajans/govindam",
+    "/ru/bhajans/narottam-das-thakur/shree-guru-vandana",
+    "/ru/sri-narasimha-pranama", "/ru/srila-prabhupada-pranama-mantra",
+    "/ru/pancha-tattva-maha-mantra", "/ru/maha-mantra",
+    "/ru/sri-sri-siksastaka", "/ru/sri-vaisnava-pranama",
+    "/ru/gaura-arati", "/ru/tilaka", "/ru/prema-dhavani", "/ru/nama-aparadha",
+  ] },
+  { title: "Молитвы перед лекциями", slugs: [
+    "/ru/katha-mantra", "/ru/srimad-bhagavatam-pranama", "/ru/jaya-radha-madhava",
+  ] },
+  { title: "Другие важные молитвы", slugs: [
+    "/ru/prasada-mantra", "/ru/narayana-kavacha",
+  ] },
+  { title: "Молитвы и бхаджаны", slugs: [
+    "/ru/bhajans/rupa-goswami/shree-radhika-stava", "/ru/bhajans/radharani-ki-jay",
+    "/ru/bhajans/shree-radha-stotram", "/ru/shrinivas-acharia/sad-goswami-ashtakam",
+    "/ru/bhajans/narottam-das-thakur/je-anilo-prema-dhana",
+    "/ru/bhajans/narottam-das-thakur/shree-krishna-chaytaniya-prabhu",
+    "/ru/bhajans/narottam-das-thakur/hari-hari",
+    "/ru/bhajans/narottam-das-thakur/gauranga-bolite-habe",
+    "/ru/bhajans/narottam-das-thakur/shree-radha-nishtha",
+    "/ru/bhajans/narottam-das-thakur/vaishnava-vigyapti",
+    "/ru/bhajans/narottam-das-thakur/shree-rupa-manjari-pada",
+    "/ru/bhajans/narottam-das-thakur/nama-sankirtana",
+    "/ru/bhajans/narottam-das-thakur/vrindavana-ramia-sthana",
+    "/ru/bhajans/lochan-das-thakur/parama-koruna",
+    "/ru/bhajans/bhaktivinod-thakur/gurudev",
+    "/ru/bhajans/bhaktivinod-thakur/ohe-vaishnava-thakur",
+    "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho",
+    "/ru/bhajans/damodarashtaka",
+  ] },
+  { title: "Молитвы ачарьям", slugs: [
+    "/ru/srila-bhaktisiddhanta-sarasvati-mantra", "/ru/gaurakisor-das-babaji-pranama",
+    "/ru/bhaktivinod-thakur-pranama", "/ru/jagannatha-das-babaji-pranama",
+    "/ru/madhvacharia-vandana", "/ru/madhavendra-puri-vandana",
+    "/ru/shrila-sanatana-goswami-vighyapti", "/ru/shrila-rupa-goswami-vighyapti",
+    "/ru/shri-shukadeva-goswami-pranama",
+  ] },
+  { title: "Молитвы Шрилы Прабхупады", slugs: [
+    "/ru/prabhupada/markine-bhagavat-dharma", "/ru/prabhupada/molitva-lotosnim-stopam-krishni",
+  ] },
+];
+
 function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void; onOpenCatalog: () => void }) {
   const [items, setItems] = useState<BhajanListItem[] | null>(null);
   const [q, setQ] = useState("");
@@ -277,7 +324,34 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
 
   const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
   const nq = norm(q.trim());
-  const shown = items ? (nq ? items.filter((b) => norm(`${b.name} ${b.author || ""}`).includes(nq)) : items) : null;
+  const searching = nq.length > 0;
+  const filtered = items ? items.filter((b) => norm(`${b.name} ${b.author || ""}`).includes(nq)) : null;
+  const bySlug = new Map((items ?? []).map((b) => [b.slug, b] as const));
+  const groups = !items ? [] : BHAJAN_SECTIONS
+    .map((sec) => ({ title: sec.title, list: sec.slugs.map((sl) => bySlug.get(sl)).filter(Boolean) as BhajanListItem[] }))
+    .filter((g) => g.list.length > 0);
+
+  const rowOf = (b: BhajanListItem, isLast: boolean) => (
+    <li key={b.slug} style={{ borderBottom: isLast ? "none" : "0.5px solid var(--color-hairline)" }}>
+      <div style={{ position: "relative", display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+        <button aria-label={`Открыть: ${b.name}`} onClick={() => onOpen(b.slug)} style={{ position: "absolute", inset: 0, background: "none", border: "none", cursor: "pointer", zIndex: 0 }} />
+        {b.hero_image
+          ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
+          : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)", position: "relative", zIndex: 1, pointerEvents: "none" }} />}
+        <span style={{ minWidth: 0, flex: 1, position: "relative", zIndex: 1, pointerEvents: "none" }}>
+          <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
+          {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
+        </span>
+        <BhajanRowActions slug={b.slug} name={b.name} author={b.author} hasRecordings={b.has_recordings}
+          onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })} />
+      </div>
+    </li>
+  );
+  const listOf = (arr: BhajanListItem[]) => (
+    <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+      {arr.map((b, i) => rowOf(b, i === arr.length - 1))}
+    </ul>
+  );
 
   return (
     <section style={{ marginTop: 28 }}>
@@ -297,26 +371,19 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
       )}
       {!items && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
       {items && items.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
-      {items && items.length > 0 && shown && shown.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Ничего не найдено.</div>}
-      {shown && shown.length > 0 && (
-        <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-          {shown.map((b, i) => (
-            <li key={b.slug} style={{ borderBottom: i === shown.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-              <div style={{ position: "relative", display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                <button aria-label={`Открыть: ${b.name}`} onClick={() => onOpen(b.slug)} style={{ position: "absolute", inset: 0, background: "none", border: "none", cursor: "pointer", zIndex: 0 }} />
-                {b.hero_image
-                  ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
-                  : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)", position: "relative", zIndex: 1, pointerEvents: "none" }} />}
-                <span style={{ minWidth: 0, flex: 1, position: "relative", zIndex: 1, pointerEvents: "none" }}>
-                  <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
-                  {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
-                </span>
-                <BhajanRowActions slug={b.slug} name={b.name} author={b.author} hasRecordings={b.has_recordings}
-                  onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })} />
-              </div>
-            </li>
+      {items && items.length > 0 && searching && filtered && filtered.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Ничего не найдено.</div>}
+      {searching
+        ? (filtered && filtered.length > 0 ? listOf(filtered) : null)
+        : groups.map((g) => (
+            <div key={g.title} style={{ marginTop: 20 }}>
+              <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 700, letterSpacing: "-0.1px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{g.title}</div>
+              {listOf(g.list)}
+            </div>
           ))}
-        </ul>
+      {!searching && items && items.length > 0 && (
+        <button onClick={onOpenCatalog} style={{ marginTop: 18, width: "100%", padding: "12px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 14, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+          Открыть весь каталог →
+        </button>
       )}
     </section>
   );
