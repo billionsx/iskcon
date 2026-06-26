@@ -675,12 +675,13 @@ const KIND_LABEL: Record<string, string> = {
   dish: "Любимые блюда",
   kirtan: "Киртаны",
   bhajan: "Бхаджаны",
+  work: "Читать",
   temple: "Храмы",
   festival: "Праздники",
   gallery: "Галерея",
   video: "Видео",
 };
-const KIND_ORDER = ["dhama", "tirtha", "dish", "kirtan", "bhajan", "temple", "festival", "gallery", "video"];
+const KIND_ORDER = ["work", "dhama", "tirtha", "dish", "kirtan", "bhajan", "temple", "festival", "gallery", "video"];
 
 function kindHref(kind: string, ref: string): string | null {
   switch (kind) {
@@ -689,6 +690,7 @@ function kindHref(kind: string, ref: string): string | null {
     case "tirtha": return "/dhama/" + ref;   // ref = "<dhamaId>/<tirthaId>"
     case "kirtan": return "/kirtan/" + ref;  // ref = слаг исполнителя
     case "bhajan": return ref;               // ref = полный слаг бхаджана (/ru/bhajans/...)
+    case "work":   return "/book/" + ref;    // ref = id произведения (bg, sb, cc…) → читалка
     default: return null; // остальные виды получат маршруты по мере ввода рефов
   }
 }
