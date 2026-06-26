@@ -18,7 +18,7 @@ import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { PdfDoc } from "./PdfDoc";
 import { CardActionsProvider, useCardActions, useFavorite } from "./cardActions";
-import { PlayerProvider, usePlayer } from "./player/store";
+import { PlayerProvider, usePlayer, AUDIO_FALLBACK_COVER, AUDIO_FALLBACK_COVER_LIGHT } from "./player/store";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
@@ -336,7 +336,7 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
       <div style={{ position: "relative", display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
         <button aria-label={`Открыть: ${b.name}`} onClick={() => onOpen(b.slug)} style={{ position: "absolute", inset: 0, background: "none", border: "none", cursor: "pointer", zIndex: 0 }} />
         {b.hero_image
-          ? <img src={b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
+          ? <img src={b.hero_image === AUDIO_FALLBACK_COVER ? AUDIO_FALLBACK_COVER_LIGHT : b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
           : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)", position: "relative", zIndex: 1, pointerEvents: "none" }} />}
         <span style={{ minWidth: 0, flex: 1, position: "relative", zIndex: 1, pointerEvents: "none" }}>
           <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
