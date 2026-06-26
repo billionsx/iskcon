@@ -7,7 +7,6 @@
  */
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { usePlayer, fmtTime, type Track } from "./store";
-import { CoverArt } from "./CoverArt";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
@@ -330,7 +329,7 @@ function KirtanHero({ cover, title, artist, note, coverActions }: { cover: strin
   return (
     <div style={{ paddingTop: 6 }}>
       <div style={{ position: "relative", width: "100%", maxWidth: 340, margin: "0 auto", aspectRatio: "1 / 1", borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}>
-        <CoverArt src={cover} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, marginTop: 18 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
