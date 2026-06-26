@@ -331,7 +331,7 @@ export function artistPlayableCount(slug: string): number {
 
 /** Обложка альбома: фирменная картинка IA-элемента (грузится напрямую, без прокси). */
 export function albumCover(a: KirtanAlbum): string {
-  return a.archive ? `https://archive.org/services/img/${a.archive}` : "/og-default.png";
+  return a.archive ? `https://archive.org/services/img/${a.archive}` : "/audio-cover.png";
 }
 
 /** Все настроения/типы, реально встречающиеся в каталоге (для чипов классификаций). */
