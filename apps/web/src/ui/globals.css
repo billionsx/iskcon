@@ -66,13 +66,13 @@
   --color-yellow: #ffd60a;
 
   /* Apartsales brand — single source of truth in @apartsales/brand */
-  --color-brand-blue: #2a96fb;          /* APARTSALES_BLUE */
+  --color-brand-blue: #9c7c15;          /* бренд-золото (бывш. APARTSALES_BLUE): единый акцент приложения */
   --color-brand-blue-50: #eaf5fe;
   --color-brand-blue-100: #d0e9fd;
   --color-brand-blue-200: #a1d2fb;
   --color-brand-blue-300: #73bcf9;
   --color-brand-blue-400: #4ea9f7;
-  --color-brand-blue-500: #2a96fb;
+  --color-brand-blue-500: #9c7c15;
   --color-brand-blue-600: #1f7ed9;
   --color-brand-blue-700: #1865b0;
   --color-brand-blue-800: #124d85;
@@ -200,7 +200,7 @@
   --color-success-surface: rgba(48, 209, 88, 0.16);
   --color-warning-surface: rgba(255, 159, 10, 0.16);
   --color-danger-surface: rgba(255, 69, 58, 0.16);
-  --color-info-surface: rgba(42, 150, 251, 0.16);
+  --color-info-surface: rgba(156, 124, 21, 0.16);
 
   /* Нейтральные заливки (алиасы glass — для inline-читаемости) */
   --color-fill-1: var(--color-glass-thin);
@@ -274,7 +274,7 @@
   --color-success-surface: rgba(52, 199, 89, 0.12);
   --color-warning-surface: rgba(255, 149, 0, 0.13);
   --color-danger-surface: rgba(255, 59, 48, 0.10);
-  --color-info-surface: rgba(42, 150, 251, 0.08);
+  --color-info-surface: rgba(156, 124, 21, 0.08);
 
   --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.06);
   --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.10);
