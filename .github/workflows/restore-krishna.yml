@@ -1,0 +1,21 @@
+name: restore-krishna
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Restore krishna card into D1 (only this row)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+          CF_DATABASE_ID: 6226aded-dd03-4e74-977f-9cd0b509e73d
+        run: python3 docs/entity-registry/restore_krishna.py
