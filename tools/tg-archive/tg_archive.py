@@ -148,6 +148,9 @@ async def cmd_download(cfg: dict):
     audio_only = tg.get("audio_only", True)
     reverse = (tg.get("order", "chronological") == "chronological")
     limit = (int(os.getenv("TG_LIMIT")) if (os.getenv("TG_LIMIT") or "").strip() else tg.get("limit"))  # None = все; TG_LIMIT — для теста
+    match = (os.getenv("TG_MATCH") or "").strip().lower()  # точечный отбор: только сообщения с этим текстом
+    if (os.getenv("TG_NEWEST") or "").strip().lower() in ("1", "true", "yes"):
+        reverse = False  # свежие сначала — быстро находим недавний пост при limit
 
     DOWNLOAD_DIR.mkdir(exist_ok=True)
     manifest = load_manifest()
@@ -182,6 +185,11 @@ async def cmd_download(cfg: dict):
                     title, performer, duration = attr.title, attr.performer, attr.duration
                 elif isinstance(attr, DocumentAttributeFilename):
                     orig_name = attr.file_name
+
+            if match:
+                hay = " ".join(x for x in (title, performer, orig_name, (msg.message or "")) if x).lower()
+                if match not in hay:
+                    continue
 
             mime = doc.mime_type or "audio/mpeg"
             ext = (os.path.splitext(orig_name)[1] if orig_name else "") \
