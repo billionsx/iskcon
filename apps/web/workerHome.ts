@@ -235,7 +235,7 @@ const plain = (s: string) => deent(s.replace(/<[^>]+>/g, ""));
 
 export interface TgSeg { t: "t" | "a"; v: string; href?: string }
 export interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }
-export interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: string; src: string | null }
+export interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: string; src: string | null; kindLabel?: string }
 export interface TgLink { href: string; title: string; desc: string; img: string | null }
 export interface TgPost {
   id: string; date: string; views: string; text: string;
@@ -422,10 +422,40 @@ async function tgPost(channel: string, id: string, env: HomeEnv): Promise<Respon
     const posts: TgPost[] = [];
     for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) posts.push(pp); }
     posts.reverse();
+    await applyFeedAudio(posts, env);
     return jr({ channel, posts, oldest: null, hasMore: false }, 200, "public, max-age=300");
   } catch {
     return jr({ channel, posts: [], oldest: null, hasMore: false }, 502, "no-store");
   }
+}
+
+// Мост «пост ленты → файл на archive.org»: аудио-документам канала (src=null) проставляем
+// прямой src из D1 (feed_audio.post_id). Тогда лента показывает их через ВКЗ как звук.
+async function applyFeedAudio(posts: TgPost[], env: HomeEnv): Promise<void> {
+  try {
+    if (!env.DB) return;
+    const ids = posts.filter((p) => p.audios.some((a) => !a.src)).map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
+    if (!ids.length) return;
+    const ph = ids.map(() => "?").join(",");
+    const { results } = await env.DB.prepare(
+      `SELECT post_id AS pid, src, title, presenter, kind_label AS kl FROM feed_audio WHERE post_id IN (${ph})`,
+    ).bind(...ids).all();
+    const byId = new Map<number, { pid: number; src: string; title?: string; presenter?: string; kl?: string }>();
+    for (const r of (results || []) as Array<{ pid: number; src: string; title?: string; presenter?: string; kl?: string }>) byId.set(Number(r.pid), r);
+    for (const p of posts) {
+      const ov = byId.get(Number(p.id));
+      if (!ov || !ov.src) continue;
+      const a = p.audios.find((x) => !x.src);
+      if (a) {
+        a.src = ov.src;
+        if (ov.title) a.title = ov.title;
+        if (ov.presenter) a.meta = ov.presenter;
+        if (ov.kl) a.kindLabel = ov.kl;
+      } else {
+        p.audios.push({ kind: "audio", title: ov.title || "Аудио", meta: ov.presenter || "", src: ov.src, kindLabel: ov.kl || undefined });
+      }
+    }
+  } catch { /* без оверрайда — отдаём как есть */ }
 }
 
 async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Response> {
@@ -486,6 +516,8 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
         }
       } catch { /* без D1 — просто лента канала */ }
     }
+
+    await applyFeedAudio(posts, env);
 
     // Курсор — самый старый РЕАЛЬНЫЙ id канала на странице (синтетические d<n> в курсор не берём).
     const realIds = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));

@@ -30,7 +30,7 @@ const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius:
 
 interface TgSeg { t: "t" | "a"; v: string; href?: string }
 interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }
-interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: string; src: string | null }
+interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: string; src: string | null; kindLabel?: string }
 interface TgLink { href: string; title: string; desc: string; img: string | null }
 interface TgPost {
   id: string; date: string; views: string; text: string;
@@ -277,7 +277,7 @@ function TgAudioCard({ a, id, flash, onMore }: { a: TgAudio; id: string; flash?:
     const ttl = decodeEntities(a.title) || "Аудио";
     const who = decodeEntities(a.meta) || undefined;
     return (
-      <AudioShowcaseCard src={a.src} title={ttl} presenter={who} kindLabel="Аудио"
+      <AudioShowcaseCard src={a.src} title={ttl} presenter={who} kindLabel={a.kindLabel || "Аудио"}
         favKey={`audio:${id}`} favMeta={{ t: ttl.slice(0, 140), s: who, h: `/post/${id}` }}
         onMore={onMore} flash={flash} />
     );
