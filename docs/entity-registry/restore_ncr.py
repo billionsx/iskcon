@@ -78,10 +78,20 @@ for stmt in (
 ):
     run(stmt)
 
+# valid entity ids actually present in D1 — CSV/table drift means some CSV rows
+# reference ids not in `entities`; D1 enforces FKs and OR IGNORE does NOT skip FK
+# violations, so one orphan row 400s the whole batch. Filter to valid ids.
+vres = run("SELECT id FROM entities;")
+valid = {row["id"] for row in vres[0]["results"]}
+print("valid entities in D1:", len(valid))
+
 # 2) names + categories from entities_all.csv (same derivation as registry_load.py)
 ents = list(csv.DictReader(open(os.path.join(BASE, "entities_all.csv"), encoding="utf-8")))
-nrows = []; crows = []
+nrows = []; crows = []; skipped_ent = 0
 for e in ents:
+    if e["id"] not in valid:
+        skipped_ent += 1
+        continue
     for lang, key in (("en", "name_en"), ("ru", "name_ru"), ("iast", "name_iast")):
         v = (e.get(key) or "").strip()
         if v:
@@ -94,12 +104,15 @@ for e in ents:
         c = c.strip()
         if c:
             crows.append([e["id"], c])
+print("csv entities skipped (not in D1):", skipped_ent)
 print("names:", insert("entity_names", ["entity_id", "lang", "value", "kind"], nrows))
 print("categories:", insert("entity_categories", ["entity_id", "category"], crows))
 
-# 3) relations from relations_all.csv
+# 3) relations from relations_all.csv — both endpoints must exist
 rels = list(csv.DictReader(open(os.path.join(BASE, "relations_all.csv"), encoding="utf-8")))
-rrows = [[r["from_id"], r["relation"], r["to_id"]] for r in rels]
+rrows = [[r["from_id"], r["relation"], r["to_id"]] for r in rels
+         if r["from_id"] in valid and r["to_id"] in valid]
+print("relations rows kept:", len(rrows), "of", len(rels))
 print("relations:", insert("entity_relations", ["from_id", "relation", "to_id"], rrows))
 
 # 4) report final counts
