@@ -1,28 +1,31 @@
 == wrangler version ==
-npm warn EBADENGINE Unsupported engine {
-npm warn EBADENGINE   package: 'wrangler@4.105.0',
-npm warn EBADENGINE   required: { node: '>=22.0.0' },
-npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
-npm warn EBADENGINE }
-npm warn EBADENGINE Unsupported engine {
-npm warn EBADENGINE   package: '@cloudflare/kv-asset-handler@0.5.0',
-npm warn EBADENGINE   required: { node: '>=22.0.0' },
-npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
-npm warn EBADENGINE }
-npm warn EBADENGINE Unsupported engine {
-npm warn EBADENGINE   package: 'miniflare@4.20260625.0',
-npm warn EBADENGINE   required: { node: '>=22.0.0' },
-npm warn EBADENGINE   current: { node: 'v20.20.2', npm: '10.8.2' }
-npm warn EBADENGINE }
-Wrangler requires at least Node.js v22.0.0. You are using v20.20.2. Please update your version of Node.js.
-
-Consider using a Node.js version manager such as https://volta.sh/ or https://github.com/nvm-sh/nvm.
+4.105.0
 == time-travel info (restorable window) ==
-Wrangler requires at least Node.js v22.0.0. You are using v20.20.2. Please update your version of Node.js.
 
-Consider using a Node.js version manager such as https://volta.sh/ or https://github.com/nvm-sh/nvm.
+ ⛅️ wrangler 4.105.0
+────────────────────
+Resource location: remote 
+
+🚧 Time Traveling...
+⚠️ The current bookmark is '00000721-00000000-00005098-20ca87e593e6747a1ab05ee8c218b499'
+⚡️ To restore to this specific bookmark, run:
+ `wrangler d1 time-travel restore 6226aded-dd03-4e74-977f-9cd0b509e73d --bookmark=00000721-00000000-00005098-20ca87e593e6747a1ab05ee8c218b499`
+      
 == restore to 2026-06-28T11:55:00Z ==
-Wrangler requires at least Node.js v22.0.0. You are using v20.20.2. Please update your version of Node.js.
 
-Consider using a Node.js version manager such as https://volta.sh/ or https://github.com/nvm-sh/nvm.
-EXIT=1
+ ⛅️ wrangler 4.105.0
+────────────────────
+Resource location: remote 
+
+🚧 Restoring database 6226aded-dd03-4e74-977f-9cd0b509e73d from bookmark 00000709-00000026-00005098-b988a9f9ce30e8b0c7f8eff2b85ac04a
+			
+⚠️ This will overwrite all data in database 6226aded-dd03-4e74-977f-9cd0b509e73d. 
+In-flight queries and transactions will be cancelled.
+			
+? OK to proceed (y/N)
+🤖 Using fallback value in non-interactive context: yes
+⚡️ Time travel in progress...
+✅ Database 6226aded-dd03-4e74-977f-9cd0b509e73d restored back to bookmark 00000709-00000026-00005098-b988a9f9ce30e8b0c7f8eff2b85ac04a
+				
+↩️ To undo this operation, you can restore to the previous bookmark: 00000721-ffffffff-00005098-1d7ee1f8d325dac70045f730fb18ebda
+EXIT=0
