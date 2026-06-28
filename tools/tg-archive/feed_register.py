@@ -19,6 +19,25 @@ IDENT = os.getenv("IA_IDENTIFIER", "iskcone-lectures")
 KIND = os.getenv("FEED_KIND_LABEL", "Лекция")
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "manifest.json")
 
+# Киртаны/бхаджаны помечаем «Киртан», прочее спокенворд — KIND («Лекция»).
+KIRTAN_KW = ("kirtan", "киртан", "bhajan", "бхаджан", "vandana", "вандана",
+             "mantra", "мантра", "japa", "джапа", "arati", "арати")
+
+
+def infer_kind(title, perf):
+    hay = (title + " " + perf).lower()
+    return "Киртан" if any(k in hay for k in KIRTAN_KW) else KIND
+
+
+def clean_presenter(perf):
+    p = (perf or "").strip()
+    low = p.lower()
+    if low in ("iskcon one love", "iskcone", "iskcon"):
+        return ""
+    if "prabhupāda" in low or "prabhupada" in low or "прабхупада" in low:
+        return "Шрила Прабхупада"
+    return p
+
 
 def d1(sql, params=None):
     if not TOKEN:
@@ -53,9 +72,11 @@ def cmd_register():
             continue
         src = f"/audio/{IDENT}/{fn}"
         title = (f.get("title") or fn).strip()
-        perf = (f.get("performer") or "").strip()
+        perf_raw = (f.get("performer") or "").strip()
+        kind = infer_kind(title, perf_raw)
+        perf = clean_presenter(perf_raw)
         d1("INSERT OR IGNORE INTO feed_audio (post_id, src, title, presenter, kind_label) VALUES (?1,?2,?3,?4,?5)",
-           [pid, src, title, perf, KIND])
+           [pid, src, title, perf, kind])
         n += 1
         print(f"  + {pid} → {fn}")
     print(f"Зарегистрировано новых аудио: {n}")
