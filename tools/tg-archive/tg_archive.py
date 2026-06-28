@@ -151,6 +151,11 @@ async def cmd_download(cfg: dict):
     match = (os.getenv("TG_MATCH") or "").strip().lower()  # точечный отбор: только сообщения с этим текстом
     if (os.getenv("TG_NEWEST") or "").strip().lower() in ("1", "true", "yes"):
         reverse = False  # свежие сначала — быстро находим недавний пост при limit
+    skip_ids = set()  # уже зарегистрированные посты (авто-ingest не качает их повторно)
+    for _x in (os.getenv("TG_SKIP_IDS") or "").split(","):
+        _x = _x.strip()
+        if _x.isdigit():
+            skip_ids.add(int(_x))
 
     DOWNLOAD_DIR.mkdir(exist_ok=True)
     manifest = load_manifest()
@@ -176,6 +181,8 @@ async def cmd_download(cfg: dict):
             elif msg.document and (msg.document.mime_type or "").startswith("audio/"):
                 doc = msg.document
             if not doc:
+                continue
+            if msg.id in skip_ids:
                 continue
 
             title = performer = orig_name = None

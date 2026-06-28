@@ -474,7 +474,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
 
       {/* лайтбокс + шиты */}
       {view !== null && (p.photosFull?.length || p.photos.length) > 0 && <PhotoLightbox photos={p.photosFull ?? p.photos} index={view} onIndex={setView} onClose={() => setView(null)} />}
-      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" noTelegram={isDar} />
+      <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" noTelegram={isDar} noPdf={p.audios.length > 0} />
       {qr && <QrSheet url={shareUrl} data={{ kind: "card", title: head, subtitle: fmtDate(p.date) }} onClose={() => setQr(false)} />}
       <ReportSheet open={report} onClose={() => setReport(false)} context={`Лента · пост ${shareUrl}`} />
     </article>

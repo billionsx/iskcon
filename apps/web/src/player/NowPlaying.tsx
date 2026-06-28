@@ -26,7 +26,7 @@ const glass = (radius: number): CSSProperties => ({
 });
 const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0, background: "none", border: "none", padding: 0 });
 
-export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: string, chapter?: number | null) => void; onDonate?: () => void } = {}) {
+export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?: (book: string, chapter?: number | null) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -105,6 +105,10 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
     else { try { void navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { /* ignore */ } }
   }
   function readBook() { p.close(); onOpenBook?.(p.book, isChapter && (p.book === "bg" || BOOK.prose) ? ch : null); }
+  function openText() {
+    if (p.kind === "bhajan") { p.close(); onOpenBhajan?.((p.book || "").split("::")[0]); return; }
+    readBook();
+  }
   function downloadChapter() {
     const t = p.track; if (!t) return;
     try { const a = document.createElement("a"); a.href = t.url; a.download = `${t.title}.mp3`; document.body.appendChild(a); a.click(); a.remove(); flash("Скачивание…"); }
@@ -146,7 +150,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
   const coverActions = (
     <>
       <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
-      {!isAdHoc && <ActionBtn ariaLabel="Читать" onClick={readBook}><BookOpenIcon size={18} /></ActionBtn>}
+      {(!isAdHoc || p.kind === "bhajan") && <ActionBtn ariaLabel={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText}><BookOpenIcon size={18} /></ActionBtn>}
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
   );
@@ -188,7 +192,7 @@ export function NowPlaying({ onOpenBook, onDonate }: { onOpenBook?: (book: strin
               <div aria-hidden={!collapsed}
                 style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
                 <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : "#fff" }}><HeartIcon size={17} filled={favorited} /></button>
-                {!isAdHoc && <button type="button" aria-label="Читать" onClick={readBook} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
+                {(!isAdHoc || p.kind === "bhajan") && <button type="button" aria-label={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
               <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
