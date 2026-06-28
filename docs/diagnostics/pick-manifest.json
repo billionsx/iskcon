@@ -1,0 +1,22 @@
+{
+  "channel": "@iskcone",
+  "generated_at": "2026-06-28T18:54:09.608585+00:00",
+  "count": 1,
+  "files": [
+    {
+      "msg_id": 10782,
+      "order": 1,
+      "date": "2026-06-26T19:19:42+00:00",
+      "filename": "001_gour-govinda-svami-makharadzh-poznayte-krishnu-v-tattve.m4a",
+      "size": 27236891,
+      "duration": 2018,
+      "title": "Познайте Кришну в таттве",
+      "performer": "Гоур Говинда Свами Махарадж",
+      "mime": "audio/x-m4a",
+      "downloaded": true,
+      "uploaded": true,
+      "ia_identifier": "iskcone-lectures",
+      "ia_url": "https://archive.org/details/iskcone-lectures"
+    }
+  ]
+}
