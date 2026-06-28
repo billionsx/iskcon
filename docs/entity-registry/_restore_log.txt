@@ -1,15 +1,18 @@
 == probe: SELECT 1 (reveals token/api health + error body) ==
-{"result":[{"results":[{"ok":1}],"success":true,"meta":{"served_by":"v3-prod","served_by_region":"WEUR","served_by_colo":"AMS","served_by_primary":true,"timings":{"sql_duration_ms":0.0954},"duration":0.0954,"changes":0,"last_row_id":0,"changed_db":false,"size_after":285876224,"rows_read":0,"rows_written":0,"total_attempts":1}}],"errors":[],"messages":[],"success":true}
+{"result":[{"results":[{"ok":1}],"success":true,"meta":{"served_by":"v3-prod","served_by_region":"WEUR","served_by_colo":"AMS","served_by_primary":true,"timings":{"sql_duration_ms":0.1211},"duration":0.1211,"changes":0,"last_row_id":0,"changed_db":false,"size_after":285876224,"rows_read":0,"rows_written":0,"total_attempts":1}}],"errors":[],"messages":[],"success":true}
 HTTP 200
 
 == python restore_ncr.py ==
+!! HTTP 400 ERROR BODY: {"messages":[],"result":[],"success":false,"errors":[{"code":7500,"message":"FOREIGN KEY constraint failed: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_FOREIGNKEY)"}]}
+!! FAILING SQL (first 400 chars): INSERT OR IGNORE INTO entity_names (entity_id,lang,value,kind) VALUES ('vakreshvara-pandit','iast','Vakreśvara Paṇḍita','canonical'),('vali','en','Vali','canonical'),('vali','ru','Вали','canonical'),('vali','iast','Vālī','canonical'),('vallabha-bhatta','en','Vallabha Bhatta','canonical'),('vallabha-bhatta','ru','Валлабха Бхатта','canonical'),('vallabha-bhatta','iast','Vallabha Bhaṭṭa','canonical')
+!! SQL length: 3909
 Traceback (most recent call last):
-  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/restore_ncr.py", line 90, in <module>
+  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/restore_ncr.py", line 97, in <module>
     print("names:", insert("entity_names", ["entity_id", "lang", "value", "kind"], nrows))
                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/restore_ncr.py", line 44, in insert
+  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/restore_ncr.py", line 51, in insert
     run(f"INSERT OR IGNORE INTO {table} ({','.join(cols)}) VALUES {vals};")
-  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/restore_ncr.py", line 28, in run
+  File "/home/runner/work/iskcon/iskcon/docs/entity-registry/restore_ncr.py", line 29, in run
     with urllib.request.urlopen(req, timeout=120) as r:
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/urllib/request.py", line 215, in urlopen
