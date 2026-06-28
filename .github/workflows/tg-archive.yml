@@ -174,3 +174,20 @@ jobs:
           name: pick-manifest
           path: tools/tg-archive/manifest.json
           retention-days: 7
+
+      - name: "Манифест pick → в репо (песочница читает из main)"
+        if: ${{ inputs.mode == 'pick' }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          mkdir -p docs/diagnostics
+          cp tools/tg-archive/manifest.json docs/diagnostics/pick-manifest.json
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+          git add docs/diagnostics/pick-manifest.json
+          git commit -m "pick manifest [skip ci]" || { echo "nothing to commit"; exit 0; }
+          for i in 1 2 3 4 5; do
+            git pull --rebase "https://x-access-token:${GH_TOKEN}@github.com/billionsx/iskcon.git" main || true
+            git push "https://x-access-token:${GH_TOKEN}@github.com/billionsx/iskcon.git" HEAD:main && break
+            sleep 3
+          done
