@@ -93,7 +93,7 @@
 | Тип связи | Кол-во | Тип связи | Кол-во |
 |---|---|---|---|
 | `appears-in` | 1 406 | `avatar-of` | 20 |
-| `gaura-lila-identity` | 200 | `brother-of` | 17 |
+| `gauranga-lila-identity` | 200 | `brother-of` | 17 |
 | `disciple-of` | 169 | `wife-of` | 17 |
 | `author-of` | 108 | `father-of` | 15 |
 | `abode-of` | 52 | `mother-of` | 14 |

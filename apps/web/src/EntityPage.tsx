@@ -91,7 +91,7 @@ function relGroup(relation: string, dir: "out" | "in"): { label: string; order: 
     case "disciple-of": return O ? { label: "Духовный учитель", order: 20 } : { label: "Ученики", order: 21 };
     case "godbrother-of": return { label: "Духовные братья", order: 24 };
     case "associate-of": return O ? { label: "Спутник", order: 30 } : { label: "Спутники", order: 30 };
-    case "gaura-lila-identity": return O ? { label: "В лиле Кришны", order: 40 } : { label: "В лиле Гауранги", order: 41 };
+    case "gauranga-lila-identity": return O ? { label: "В лиле Кришны", order: 40 } : { label: "В лиле Гауранги", order: 41 };
     case "son-of": return O ? { label: "Родители", order: 50 } : { label: "Дети", order: 52 };
     case "foster-son-of": return O ? { label: "Приёмные родители", order: 51 } : { label: "Приёмные дети", order: 52 };
     case "father-of": return O ? { label: "Дети", order: 52 } : { label: "Родители", order: 50 };
@@ -1122,7 +1122,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const idRel = [
     ...(data?.out ?? []).map((r) => ({ r, dir: "out" as const })),
     ...(data?.in ?? []).map((r) => ({ r, dir: "in" as const })),
-  ].find((x) => x.r.relation === "gaura-lila-identity" && x.r.id);
+  ].find((x) => x.r.relation === "gauranga-lila-identity" && x.r.id);
   const identity = idRel ? (idRel.dir === "out" ? `В лиле Кришны — ${idRel.r.name_ru || idRel.r.id}` : `В лиле Шри Чайтаньи — ${idRel.r.name_ru || idRel.r.id}`) : null;
   // Классификация для ВКЛ: авторитетная «надпись» (eyebrow) + вторичные чипы без дублей.
   const { eyebrow, heroChips } = (() => {

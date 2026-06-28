@@ -52,8 +52,8 @@ for r in rows:
     if r["type"]!="personality": continue
     ds=r["dataset"]; cats=set((r["category"] or "").split("|"))
     target=set()
-    if ds=="Гаура-ганоддеша-дипика · Гаура-лила": target|={"ggd","cc","cb","cm"}
-    elif ds=="Гаура-ганоддеша-дипика · Кришна-лила": target|={"ggd","sb","krishna-book"}
+    if ds=="Гаура-ганоддеша-дипика · Гауранга Лила": target|={"ggd","cc","cb","cm"}
+    elif ds=="Гаура-ганоддеша-дипика · Кришна Лила": target|={"ggd","sb","krishna-book"}
     elif ds=="Прабхупада-лиламрита": target|={"prabhupada-lilamrita"}
     elif ds=="Ядро":
         for c in cats: target|=CAT.get(c,set())

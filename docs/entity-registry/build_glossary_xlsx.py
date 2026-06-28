@@ -8,8 +8,8 @@ from openpyxl.utils import get_column_letter
 base = os.path.dirname(os.path.abspath(__file__))
 ENT = [
  ("entities_core.csv","Ядро"),
- ("ggd_entities.csv","Гаура-ганоддеша-дипика · Гаура-лила"),
- ("ggd_krishna_lila_entities.csv","Гаура-ганоддеша-дипика · Кришна-лила"),
+ ("ggd_entities.csv","Гаура-ганоддеша-дипика · Гауранга Лила"),
+ ("ggd_krishna_lila_entities.csv","Гаура-ганоддеша-дипика · Кришна Лила"),
  ("iskcon_gurus_entities.csv","Гуру ИСККОН (GBC)"),
  ("prabhupada_lilamrita_entities.csv","Прабхупада-лиламрита"),
  ("mahabharata_entities.csv","Махабхарата"),
@@ -36,7 +36,7 @@ REL_RU = {
  "grandson-of":"внук","nephew-of":"племянник","disciple-of":"ученик (кого)","guru-of":"гуру (кого)",
  "associate-of":"спутник","godbrother-of":"духовный брат","author-of":"автор",
  "speaker-of":"произнёс","hearer-of":"слушатель","narrator-of":"рассказчик",
- "appears-in":"встречается в","gaura-lila-identity":"тождество в Гаура-лиле",
+ "appears-in":"встречается в","gauranga-lila-identity":"тождество в Гауранга Лиле",
 }
 
 # ---- load entities

@@ -220,7 +220,7 @@ function ResultRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
   );
 }
 
-const GAURA_DS = encodeURIComponent("Гаура-ганоддеша-дипика · Гаура-лила");
+const GAURA_DS = encodeURIComponent("Гаура-ганоддеша-дипика · Гауранга Лила");
 
 interface Collection { title: string; subtitle: string; rails: { title: string; params: string; orderIds?: string[] }[] }
 const COLLECTIONS: Record<string, Collection> = {
