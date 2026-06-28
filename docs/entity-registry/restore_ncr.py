@@ -25,8 +25,15 @@ def run(sql):
         URL, method="POST",
         headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"},
         data=json.dumps({"sql": sql}).encode())
-    with urllib.request.urlopen(req, timeout=120) as r:
-        out = json.loads(r.read())
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            out = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")
+        print("!! HTTP", e.code, "ERROR BODY:", body[:800])
+        print("!! FAILING SQL (first 400 chars):", sql[:400])
+        print("!! SQL length:", len(sql))
+        raise
     if not out.get("success"):
         raise RuntimeError(json.dumps(out.get("errors"), ensure_ascii=False))
     return out["result"]
