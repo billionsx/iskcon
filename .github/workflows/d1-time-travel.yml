@@ -1,0 +1,37 @@
+name: d1-time-travel
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  tt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: D1 Time Travel restore (pre-drop)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+        run: |
+          set +e
+          LOG=docs/entity-registry/_tt_log.txt
+          DB=6226aded-dd03-4e74-977f-9cd0b509e73d
+          echo "== wrangler version ==" > "$LOG"
+          npx -y wrangler@latest --version >> "$LOG" 2>&1
+          echo "== time-travel info (restorable window) ==" >> "$LOG"
+          npx -y wrangler@latest d1 time-travel info "$DB" >> "$LOG" 2>&1
+          echo "== restore to 2026-06-28T11:55:00Z ==" >> "$LOG"
+          yes | npx -y wrangler@latest d1 time-travel restore "$DB" --timestamp=2026-06-28T11:55:00Z >> "$LOG" 2>&1
+          echo "EXIT=$?" >> "$LOG"
+          cat "$LOG"
+      - name: commit log
+        if: always()
+        run: |
+          git config user.email ceo@billionsx.com
+          git config user.name "Billions X"
+          git add docs/entity-registry/_tt_log.txt || true
+          git commit -m "ci: d1 time-travel log [skip ci]" || true
+          git push || true
