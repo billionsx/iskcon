@@ -63,6 +63,9 @@ on:
         description: "Войти в этом же раннере (один IP), ждать код в variable TG_CODE_LIVE (true/false)"
         default: "false"
 
+permissions:
+  contents: write
+
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -178,7 +181,7 @@ jobs:
       - name: "Манифест pick → в репо (песочница читает из main)"
         if: ${{ inputs.mode == 'pick' }}
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p docs/diagnostics
           cp tools/tg-archive/manifest.json docs/diagnostics/pick-manifest.json
