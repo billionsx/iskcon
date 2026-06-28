@@ -3,7 +3,7 @@
 """Materialize the Krishna-lila side of the GGD pairs into registry entities.
 Reads ggd_pairs.csv (krishna_lila_id + krishna_lila_name_ru), skips ids already
 present in entities_core.csv or ggd_entities.csv, and writes
-ggd_krishna_lila_entities.csv so the gaura-lila-identity graph has no dangling ids.
+ggd_krishna_lila_entities.csv so the gauranga-lila-identity graph has no dangling ids.
 Tattva is assigned by coarse heuristic and everything is flagged 'review' for curation.
 """
 import csv, os

@@ -2,7 +2,7 @@
 
 Всего профилей: **657** (уровень bronze, сгенерированы из реестра).
 
-## Гаура-ганоддеша-дипика · Гаура-лила (206)
+## Гаура-ганоддеша-дипика · Гауранга Лила (206)
 - [Акшобхья Тиртха](akshobhya-tirtha.md) · `akshobhya-tirtha`
 - [Ананта](ananta-puri.md) · `ananta-puri`
 - [Ананта Ачарья Госвами](ananta-acharya.md) · `ananta-acharya`
@@ -210,7 +210,7 @@
 - [Шрихарша](shriharsha.md) · `shriharsha`
 - [Шукламбара Брахмачари](shuklambara-brahmachari.md) · `shuklambara-brahmachari`
 
-## Гаура-ганоддеша-дипика · Кришна-лила (115)
+## Гаура-ганоддеша-дипика · Кришна Лила (115)
 - [Амбика](ambika-nurse.md) · `ambika-nurse`
 - [Ананга-манджари](ananga-manjari.md) · `ananga-manjari`
 - [Ангада](angada.md) · `angada`

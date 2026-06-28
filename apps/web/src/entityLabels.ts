@@ -33,7 +33,7 @@ export const CATEGORY_RU: Record<string, string> = {
   manjari: "Манджари",
   vraja: "Враджа",
   consort: "Супруга Господа",
-  "gaura-lila": "Гауранга Лила",
+  "gauranga-lila": "Гауранга Лила",
   "krishna-lila": "Кришна Лила",
   "krishna-family": "Семья Кришны",
   "founder-acharya": "Основатель-ачарья",
