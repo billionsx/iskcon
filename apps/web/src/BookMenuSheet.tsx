@@ -112,7 +112,7 @@ function buildKirtanGroups(): Group[] {
 
 // Меню поста ленты — открыть в Telegram (первой строкой), затем стандартные действия.
 // Для даршан-постов (их больше нет в канале) пункт Telegram скрываем.
-function buildPostGroups(noTelegram = false): Group[] {
+function buildPostGroups(noTelegram = false, noPdf = false): Group[] {
   const groups: Group[] = [
     { items: [
       { id: "share", label: "Поделиться", Icon: ShareGlyph },
@@ -125,7 +125,7 @@ function buildPostGroups(noTelegram = false): Group[] {
     ] },
   ];
   if (!noTelegram) groups.unshift({ items: [{ id: "telegram", label: "Открыть в Telegram", Icon: TelegramGlyph }] });
-  return groups;
+  return noPdf ? groups.map((g) => ({ items: g.items.filter((it) => it.id !== "pdf") })) : groups;
 }
 
 // Меню бхаджана — поделиться, PDF (серверный card-рендер), QR, поддержать, сообщить.
@@ -222,7 +222,7 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isCha
   const data: Group[] =
     variant === "note" ? buildNoteGroups(notePinned, noteHasSource)
       : variant === "center" ? buildCenterGroups(centerCanManage, centerHasMaps)
-        : variant === "post" ? buildPostGroups(noTelegram)
+        : variant === "post" ? buildPostGroups(noTelegram, noPdf)
           : variant === "kirtan" ? buildKirtanGroups()
           : variant === "bhajan" ? buildBhajanGroups()
             : variant === "player" ? buildPlayerGroups(isChapter)
