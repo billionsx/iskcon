@@ -19,6 +19,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { CardActionBtns } from "./cardActions";
+import { AudioShowcaseCard } from "./AudioShowcaseCard";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -45,10 +46,25 @@ function fmtDate(iso: string): string {
   catch { return ""; }
 }
 
+/** Декодирование HTML-сущностей из текста Telegram (&#33; → !, &amp; → & и т. д.). */
+function decodeEntities(s: string): string {
+  if (!s || s.indexOf("&") === -1) return s;
+  if (typeof document !== "undefined") {
+    const el = document.createElement("textarea");
+    el.innerHTML = s;
+    return el.value;
+  }
+  return s
+    .replace(/&#(\d+);/g, (m, n) => { try { return String.fromCodePoint(+n); } catch { return m; } })
+    .replace(/&#x([0-9a-fA-F]+);/g, (m, h) => { try { return String.fromCodePoint(parseInt(h, 16)); } catch { return m; } })
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"")
+    .replace(/&#39;|&apos;/g, "'").replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
+}
+
 /** Первая непустая строка подписи — заголовок для избранного / share / QR / PDF. */
 function leadLine(text: string): string {
   const l = (text || "").split("\n").find((x) => x.trim());
-  return (l || "").trim();
+  return decodeEntities((l || "").trim());
 }
 
 /* ── подпись поста: инлайн-сегменты с живыми ссылками (с опц. обрезкой) ── */
@@ -57,11 +73,12 @@ function renderRich(rich: TgSeg[], clampTo: number | null): React.ReactNode[] {
   const out: React.ReactNode[] = [];
   for (let i = 0; i < rich.length; i++) {
     const s = rich[i];
-    let v = s.v;
+    let v = decodeEntities(s.v);
     if (clampTo !== null) {
       if (used >= clampTo) break;
-      if (used + v.length > clampTo) v = v.slice(0, clampTo - used).replace(/\s+\S*$/, "") + "…";
-      used += s.v.length;
+      const full = v.length;
+      if (used + full > clampTo) v = v.slice(0, clampTo - used).replace(/\s+\S*$/, "") + "…";
+      used += full;
     }
     if (s.t === "a" && s.href) {
       out.push(
@@ -254,8 +271,17 @@ function VoicePlayer({ a }: { a: TgAudio }) {
 }
 
 /* ── аудио и файлы: карточка как в Telegram, открывается в Telegram ── */
-function TgAudioCard({ a, id }: { a: TgAudio; id: string }) {
+function TgAudioCard({ a, id, flash, onMore }: { a: TgAudio; id: string; flash?: (m: string) => void; onMore?: () => void }) {
   if (a.kind === "voice" && a.src) return <VoicePlayer a={a} />;
+  if (a.src) {
+    const ttl = decodeEntities(a.title) || "Аудио";
+    const who = decodeEntities(a.meta) || undefined;
+    return (
+      <AudioShowcaseCard src={a.src} title={ttl} presenter={who} kindLabel="Аудио"
+        favKey={`audio:${id}`} favMeta={{ t: ttl.slice(0, 140), s: who, h: `/post/${id}` }}
+        onMore={onMore} flash={flash} />
+    );
+  }
   return (
     <a href={postUrl(id)} target="_blank" rel="noopener noreferrer"
       style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-glass-regular)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
@@ -437,7 +463,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
             )}
           </div>
         )}
-        {p.audios.map((a, i) => <TgAudioCard key={i} a={a} id={p.id} />)}
+        {p.audios.map((a, i) => <TgAudioCard key={i} a={a} id={p.id} flash={flash} onMore={() => setMenu(true)} />)}
         {p.link && <TgLinkCard l={p.link} />}
         {(p.date || p.views) && (
           <div style={{ marginTop: 8, fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 400, lineHeight: 1.3, color: "var(--color-label-3)" }}>

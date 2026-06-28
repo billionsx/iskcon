@@ -196,11 +196,11 @@ dossier={"tabs":[
     sub("volna-3","Третья волна",[
       sec("Третья волна",
         ["Третья волна — Нараяна Бхатта Госвами, Нарахари Чакраварти Тхакур, Гададхара Бхатта Госвами, Гададхара дас Тхакур и Гангамата Госвамини.",
-         "Они хранили и распространяли традицию, составляя жития и труды, питающие преданность."],
+         "Они хранили и распространяли традицию: Нараяна Бхатта возрождал святые места Враджа, Нарахари Чакраварти записал летопись Гаудия-вайшнавов, а остальные составляли жития и труды, питающие преданность."],
         None,
-        [S("gadadhara-bhatta","Гададхара Бхатта Госвами"),S("gadadhara-dasa","Гададхара дас Тхакур"),S("gangamata-gosvamini","Гангамата Госвамини")])
-    ],[ rail("Третья волна","ids=gadadhara-bhatta,gadadhara-dasa,gangamata-gosvamini",
-             ["gadadhara-bhatta","gadadhara-dasa","gangamata-gosvamini"]) ]),
+        [S("narayana-bhatta-goswami","Нараяна Бхатта Госвами"),S("narahari-chakravarti","Нарахари Чакраварти Тхакур"),S("gadadhara-bhatta","Гададхара Бхатта Госвами"),S("gadadhara-dasa","Гададхара дас Тхакур"),S("gangamata-gosvamini","Гангамата Госвамини")])
+    ],[ rail("Третья волна","ids=narayana-bhatta-goswami,narahari-chakravarti,gadadhara-bhatta,gadadhara-dasa,gangamata-gosvamini",
+             ["narayana-bhatta-goswami","narahari-chakravarti","gadadhara-bhatta","gadadhara-dasa","gangamata-gosvamini"]) ]),
     sub("volna-4","Четвёртая волна",[
       sec("Четвёртая волна",
         ["Четвёртая волна — Вишванатха Чакраварти Тхакур Махарадж и Баладева Видьябхушана.",
