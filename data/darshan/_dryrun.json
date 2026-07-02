@@ -1,0 +1,89 @@
+{
+  "mode": "live",
+  "at": "2026-07-02T13:00:49.524Z",
+  "channel": "@iskcone",
+  "db_rows": 30,
+  "progress": [],
+  "items": [
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-07-01",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/604",
+      "src_url": "https://www.mayapur.com/media/album/604",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/604/l7DUbMsG_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/wPRrhlyt_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/mMQGVlde_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/lpIqY3jE_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/nGcIEUcy_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/6pde6bhJ_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/ouR00R94_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/xb0eqT6W_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/jrw6wifk_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/pNsSHLth_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    },
+    {
+      "slug": "vrindavan",
+      "kind": "site",
+      "date": "2026-07-02",
+      "temple_name": "ИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир",
+      "deities": "Джайа Гаура Нитай · Кришна Баларам · Лалита Вишакха Радхе Шьям",
+      "src_channel": "site:iskconvrindavan",
+      "src_post_id": "2026-07-02/2",
+      "src_url": "https://iskconvrindavan.com/daily-darshan-gallery/2026-07-02/2/sringar-darshan",
+      "gallery_name": "Sringar Darshan",
+      "photo_count": 23,
+      "albums_planned": 1,
+      "photos": [
+        "https://cdn.iskconvrindavan.com/static/static-_376a46298e7ac79.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_176a46299023a00.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_76a462994df1a2.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_696a46299353839.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_26a4629987f2a4.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_286a46299e4cb85.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_316a46299fa25ae.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_946a46299a4035f.jpg",
+        "https://cdn.iskconvrindavan.com/static/static-_116a46299c9e9d5.jpg"
+      ],
+      "caption_preview": "<b>Джайа Гаура Нитай · Кришна Баларам · Лалита Вишакха Радхе Шьям</b>\n\nЕжедневный даршан\n\nИСККОН Вриндаван · Шри Шри Кришна-Баларам Мандир\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "ok (в приложение)"
+    },
+    {
+      "slug": "mayapur",
+      "kind": "site",
+      "date": "2026-07-01",
+      "temple_name": "ИСККОН Маяпур · Шри Дхама Маяпур",
+      "deities": "Джайа Панча-таттва · Радха-Мадхава и Аштасакхи · Шри Нрисимхадев",
+      "src_channel": "site:mayapur",
+      "src_post_id": "album/604",
+      "src_url": "https://www.mayapur.com/media/album/604",
+      "gallery_name": "Daily Darshan",
+      "photo_count": 10,
+      "albums_planned": 1,
+      "photos": [
+        "https://www.mayapur.com/storage/albums/604/l7DUbMsG_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/wPRrhlyt_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/mMQGVlde_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/lpIqY3jE_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/nGcIEUcy_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/6pde6bhJ_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/ouR00R94_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/xb0eqT6W_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/jrw6wifk_image.jpg",
+        "https://www.mayapur.com/storage/albums/604/pNsSHLth_image.jpg"
+      ],
+      "caption_preview": "<b>Радха-Мадхава и Аштасакхи · Панча-таттва · Прахлада-Нрисимхадев</b>\n\nЕжедневный даршан\n\nИСККОН Маяпур\n\n<a href=\"https://t.me/iskcone\">ISKCON ONE LOVE</a>",
+      "posted": "skip (dedup)"
+    }
+  ]
+}
