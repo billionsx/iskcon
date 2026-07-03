@@ -9,6 +9,7 @@
  * поощряющих вред здоровью или крайнюю аскезу.
  */
 import { useCallback, useSyncExternalStore } from "react";
+import { api } from "./api";
 
 export type Commitment = { id: string; label: string; detail?: string; target?: number; unit?: string };
 export type VowStatus = "active" | "completed" | "abandoned";
@@ -102,8 +103,46 @@ export function getArchive(): Vow[] {
   archiveCache = readJson<Vow[]>(K_ARCHIVE, []).map(normalizeVow);
   return archiveCache;
 }
-function setActive(v: Vow | null) { if (v) writeJson(K_ACTIVE, v); else { try { localStorage.removeItem(K_ACTIVE); } catch { /* noop */ } } invalidate(); }
-function setArchive(a: Vow[]) { writeJson(K_ARCHIVE, a); invalidate(); }
+function setActive(v: Vow | null) { if (v) writeJson(K_ACTIVE, v); else { try { localStorage.removeItem(K_ACTIVE); } catch { /* noop */ } } invalidate(); touch(); }
+function setArchive(a: Vow[]) { writeJson(K_ARCHIVE, a); invalidate(); touch(); }
+
+/* ── Синхронизация на сервер (Ц6) ─────────────────────────────────────────
+ * Источник правды — localStorage. Снимок {active, archive} зеркалим для кросс-
+ * устройства; конфликт — «новее по updated_at (epoch-ms)». Гостю PUT/GET вернут
+ * 401 и молча проигнорируются. pullVows() зовём при открытии экрана обетов. */
+const K_UPDATED = "vow:updatedAt";
+function getUpdatedAt(): number { try { return Number(localStorage.getItem(K_UPDATED)) || 0; } catch { return 0; } }
+function setUpdatedAt(t: number) { try { localStorage.setItem(K_UPDATED, String(t)); } catch { /* noop */ } }
+
+let pushTimer: ReturnType<typeof setTimeout> | null = null;
+function schedulePush(): void {
+  if (typeof window === "undefined") return;
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => {
+    pushTimer = null;
+    const payload = { active: getActiveVow(), archive: getArchive(), updatedAt: getUpdatedAt() };
+    void fetch(api("/me/vows"), { method: "PUT", credentials: "include", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) }).catch(() => {});
+  }, 800);
+}
+/** Отметить локальное изменение и запланировать отправку на сервер. */
+function touch(): void { setUpdatedAt(Date.now()); schedulePush(); }
+
+/** Подтянуть обеты с сервера: если серверный снимок новее локального — заменить. */
+export async function pullVows(): Promise<void> {
+  if (typeof window === "undefined") return;
+  try {
+    const r = await fetch(api("/me/vows"), { credentials: "include" });
+    if (!r.ok) return;
+    const d = (await r.json()) as { active: Vow | null; archive: Vow[]; updatedAt: number };
+    if (!d || typeof d.updatedAt !== "number") return;
+    if (d.updatedAt > getUpdatedAt()) {
+      if (d.active) writeJson(K_ACTIVE, d.active); else { try { localStorage.removeItem(K_ACTIVE); } catch { /* noop */ } }
+      writeJson(K_ARCHIVE, Array.isArray(d.archive) ? d.archive : []);
+      setUpdatedAt(d.updatedAt);
+      invalidate(); // без touch → без обратной отправки
+    }
+  } catch { /* офлайн/гость */ }
+}
 
 export function useActiveVow(): Vow | null {
   return useSyncExternalStore(
