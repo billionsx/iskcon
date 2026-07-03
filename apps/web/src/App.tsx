@@ -122,7 +122,7 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
         <button type="button" aria-label="ISKCON ONE LOVE" onClick={onHome}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <span role="img" style={{
-            display: "block", width: 132, height: 132 * 73 / 1067, backgroundColor: "var(--color-label)",
+            display: "block", width: 132, height: 132 * 53 / 815, backgroundColor: "var(--color-label)",
             WebkitMaskImage: "url(/iskcon-one-love.svg)", maskImage: "url(/iskcon-one-love.svg)",
             WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center",
           }} />
