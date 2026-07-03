@@ -6,11 +6,24 @@
  */
 import { api } from "../api";
 
+/** Ступень практики (самоопределение) — управляет адаптацией интерфейса под уровень. */
+export type DevoteeLevel = "guest" | "neophyte" | "practicing" | "initiated" | "guru";
+/** Факт инициации в ИСККОН. */
+export type Initiation = "none" | "harinama" | "brahmin";
+
 export interface AccountUser {
   id: string;
   email: string | null;
   name: string | null;
   spiritualName: string | null;
+  // Профиль духовной ступени (Ц1). Управляет онбордингом, экраном «Сегодня»,
+  // путём ученика, разделом «мой гуру».
+  level: DevoteeLevel | null;
+  initiation: Initiation | null;
+  dikshaGuru: string | null;
+  sikshaGuru: string | null;
+  principlesSince: string | null;
+  homeCenterId: string | null;
   createdAt: string;
   emailVerified: boolean;
 }
@@ -99,7 +112,12 @@ export const accountClient = {
   login: (email: string, password: string) =>
     request<{ user: AccountUser }>("POST", "/auth/login", { email, password }).then((d) => d.user),
   logout: () => request<{ ok: true }>("POST", "/auth/logout").catch(() => ({ ok: true as const })),
-  updateProfile: (patch: { name?: string; spiritualName?: string }) =>
+  updateProfile: (patch: {
+    name?: string; spiritualName?: string;
+    level?: DevoteeLevel | ""; initiation?: Initiation | "";
+    dikshaGuru?: string; sikshaGuru?: string; principlesSince?: string;
+    homeCenterId?: string; chantNorm?: number;
+  }) =>
     request<{ user: AccountUser }>("PATCH", "/me/profile", patch).then((d) => d.user),
   overview: () => request<Overview>("GET", "/me/overview"),
   sadhana: {

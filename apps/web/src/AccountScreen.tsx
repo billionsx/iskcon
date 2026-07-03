@@ -12,7 +12,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
-import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState } from "./account/api";
+import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState, type DevoteeLevel, type Initiation } from "./account/api";
 import { usePlayer } from "./player/store";
 import { BOOKS, bookFullTitle } from "./books";
 import { albumById } from "./kirtans";
@@ -455,45 +455,163 @@ function ProfileHeader({ onEdit }: { onEdit: () => void }) {
   );
 }
 
+/** Ступени практики (самоопределение) — управляют адаптацией интерфейса. */
+const LEVEL_OPTS: { id: DevoteeLevel; label: string; hint: string }[] = [
+  { id: "guest", label: "Гость", hint: "Знакомлюсь с сознанием Кришны" },
+  { id: "neophyte", label: "Неофит", hint: "Начинаю духовную практику" },
+  { id: "practicing", label: "Практикующий", hint: "Ежедневная садхана" },
+  { id: "initiated", label: "Инициированный", hint: "Принял(а) духовного учителя" },
+  { id: "guru", label: "Наставник", hint: "Наставляю других преданных" },
+];
+const INIT_OPTS: { id: Initiation; label: string }[] = [
+  { id: "none", label: "Пока нет" },
+  { id: "harinama", label: "Харинама" },
+  { id: "brahmin", label: "Брахманская" },
+];
+
+/** Сегментированный выбор (чипы с переносом). */
+function SegPicker<T extends string>({ value, options, onChange }: { value: T | ""; options: { id: T; label: string }[]; onChange: (v: T) => void }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, padding: "12px 14px" }}>
+      {options.map((o) => {
+        const on = value === o.id;
+        return (
+          <button
+            key={o.id}
+            onClick={() => onChange(o.id)}
+            style={{
+              padding: "8px 14px", borderRadius: 999, cursor: "pointer", fontFamily: FONT, fontSize: 14.5, fontWeight: on ? 600 : 500,
+              border: `1px solid ${on ? GOLD : HAIR}`,
+              background: on ? "color-mix(in srgb, #D2AA1B 15%, transparent)" : "transparent",
+              color: on ? "color-mix(in srgb, #D2AA1B 82%, var(--color-label))" : INK,
+              WebkitTapHighlightColor: "transparent", transition: "all .15s",
+            }}
+          >
+            {o.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function ProfileEditor({ onClose }: { onClose: () => void }) {
   const { user, updateProfile } = useAuth();
   const [name, setName] = useState(user?.name ?? "");
   const [spiritual, setSpiritual] = useState(user?.spiritualName ?? "");
+  const [level, setLevel] = useState<DevoteeLevel | "">(user?.level ?? "");
+  const [initiation, setInitiation] = useState<Initiation | "">(user?.initiation ?? "");
+  const [dikshaGuru, setDikshaGuru] = useState(user?.dikshaGuru ?? "");
+  const [sikshaGuru, setSikshaGuru] = useState(user?.sikshaGuru ?? "");
+  const [principlesSince, setPrinciplesSince] = useState(user?.principlesSince ?? "");
+  const [chantNorm, setChantNorm] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // Текущую норму кругов берём из единого источника (sadhanaGoal), чтобы её не
+  // затереть при сохранении профиля. Если запрос не удался — поле остаётся пустым
+  // и норма не отправляется (цель садханы не меняется).
+  useEffect(() => {
+    let alive = true;
+    accountClient.sadhana.get(ymdLocal(), 1).then((s) => { if (alive && s?.goal) setChantNorm(String(s.goal)); }).catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  const practicing = level !== "" && level !== "guest";
+  const initiated = level === "initiated" || level === "guru";
 
   async function save() {
     if (busy) return;
     setBusy(true);
     try {
-      await updateProfile({ name: name.trim(), spiritualName: spiritual.trim() });
+      const patch: Parameters<typeof updateProfile>[0] = {
+        name: name.trim(),
+        spiritualName: spiritual.trim(),
+        level: level,
+        // Практика: норма кругов, принципы, наставляющий гуру — для практикующих+.
+        sikshaGuru: practicing ? sikshaGuru.trim() : "",
+        principlesSince: practicing ? principlesSince : "",
+        // Инициация и дикша-гуру — только для инициированных.
+        initiation: initiated ? initiation : "",
+        dikshaGuru: initiated ? dikshaGuru.trim() : "",
+      };
+      const norm = parseInt(chantNorm, 10);
+      if (practicing && Number.isFinite(norm) && norm >= 1 && norm <= 64) patch.chantNorm = norm;
+      await updateProfile(patch);
       onClose();
     } catch {
       setBusy(false);
     }
   }
 
-  const rowStyle: CSSProperties = { display: "flex", alignItems: "center", height: 52, padding: "0 16px" };
-  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 17, color: INK, fontFamily: FONT, padding: 0 };
+  const rowStyle: CSSProperties = { display: "flex", alignItems: "center", minHeight: 52, padding: "0 16px" };
+  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 17, color: INK, fontFamily: FONT, padding: "14px 0" };
+  const cardStyle: CSSProperties = { background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden" };
+  const groupLabel: CSSProperties = { margin: "20px 6px 7px", fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase" };
+  const hair = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.4)" }} onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} style={{ background: GROUPED, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: "10px 16px calc(20px + env(safe-area-inset-bottom))", maxWidth: 480, width: "100%", margin: "0 auto" }}>
-        <div style={{ width: 36, height: 5, borderRadius: 3, background: "rgba(0,0,0,0.18)", margin: "0 auto 14px" }} />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: GROUPED, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: "10px 16px calc(20px + env(safe-area-inset-bottom))", maxWidth: 480, width: "100%", margin: "0 auto", maxHeight: "92vh", overflowY: "auto" }}>
+        <div style={{ width: 36, height: 5, borderRadius: 3, background: "rgba(0,0,0,0.18)", margin: "0 auto 14px", position: "sticky", top: 0 }} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
           <button onClick={onClose} style={{ background: "none", border: "none", color: INK2, fontSize: 16, fontFamily: FONT, cursor: "pointer", padding: 0 }}>Отмена</button>
-          <span style={{ fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Профиль</span>
+          <span style={{ fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Профиль преданного</span>
           <button onClick={() => void save()} disabled={busy} style={{ background: "none", border: "none", color: GOLD, fontSize: 16, fontWeight: 600, fontFamily: FONT, cursor: "pointer", padding: 0, opacity: busy ? 0.5 : 1 }}>Готово</button>
         </div>
-        <div style={{ background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden" }}>
-          <div style={rowStyle}>
-            <input style={inputStyle} placeholder="Имя" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
-          </div>
-          <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />
-          <div style={rowStyle}>
-            <input style={inputStyle} placeholder="Духовное имя (если есть)" value={spiritual} onChange={(e) => setSpiritual(e.target.value)} />
-          </div>
+
+        <div style={groupLabel}>Кто вы</div>
+        <div style={cardStyle}>
+          <div style={rowStyle}><input style={inputStyle} placeholder="Имя" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} /></div>
+          {hair}
+          <div style={rowStyle}><input style={inputStyle} placeholder="Духовное имя (если есть)" value={spiritual} onChange={(e) => setSpiritual(e.target.value)} /></div>
         </div>
-        <p style={{ margin: "10px 4px 0", fontSize: 12, lineHeight: 1.5, color: INK3, fontFamily: FONT }}>Имя отображается в кабинете. Духовное имя — по желанию.</p>
+
+        <div style={groupLabel}>Ступень практики</div>
+        <div style={cardStyle}>
+          <SegPicker value={level} options={LEVEL_OPTS} onChange={setLevel} />
+          {level && (
+            <>
+              {hair}
+              <p style={{ margin: 0, padding: "10px 16px", fontSize: 13, lineHeight: 1.45, color: INK2, fontFamily: FONT }}>
+                {LEVEL_OPTS.find((o) => o.id === level)?.hint}
+              </p>
+            </>
+          )}
+        </div>
+
+        {practicing && (
+          <>
+            <div style={groupLabel}>Практика</div>
+            <div style={cardStyle}>
+              <div style={rowStyle}>
+                <span style={{ fontSize: 17, color: INK, fontFamily: FONT }}>Норма кругов в день</span>
+                <input inputMode="numeric" style={{ ...inputStyle, textAlign: "right", flex: "0 0 auto", width: 64 }} placeholder="16" value={chantNorm} onChange={(e) => setChantNorm(e.target.value.replace(/[^\d]/g, "").slice(0, 2))} />
+              </div>
+              {hair}
+              <div style={rowStyle}>
+                <span style={{ fontSize: 17, color: INK, fontFamily: FONT, flexShrink: 0, marginRight: 12 }}>Следую 4 принципам с</span>
+                <input type="date" style={{ ...inputStyle, textAlign: "right", colorScheme: "light" }} value={principlesSince} onChange={(e) => setPrinciplesSince(e.target.value)} />
+              </div>
+              {hair}
+              <div style={rowStyle}><input style={inputStyle} placeholder="Шикша-гуру — наставляющий (если есть)" value={sikshaGuru} onChange={(e) => setSikshaGuru(e.target.value)} /></div>
+            </div>
+          </>
+        )}
+
+        {initiated && (
+          <>
+            <div style={groupLabel}>Инициация</div>
+            <div style={cardStyle}>
+              <SegPicker value={initiation} options={INIT_OPTS} onChange={setInitiation} />
+              {hair}
+              <div style={rowStyle}><input style={inputStyle} placeholder="Дикша-гуру — духовный учитель" value={dikshaGuru} onChange={(e) => setDikshaGuru(e.target.value)} /></div>
+            </div>
+          </>
+        )}
+
+        <p style={{ margin: "18px 6px 0", fontSize: 12, lineHeight: 1.5, color: INK3, fontFamily: FONT }}>
+          Ступень настраивает приложение под вас — от первых шагов до зрелой садханы. Ничего из этого не публикуется; данные видны только вам.
+        </p>
       </div>
     </div>
   );
