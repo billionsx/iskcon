@@ -5,12 +5,13 @@
  * отчёт (серия/лучшая, проценты по каждому служению), тепловая карта дней,
  * действия (поделиться отчётом · завершить · отказаться) и архив прошлых обетов.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   PRESET_COMMITMENTS, DURATION_PRESETS, ymd, addDays, fmtDate, vowStats, vowReportText,
-  useActiveVow, useArchive, createVow, toggleCommitment, setCount, isNumeric, closeVow, deleteArchived,
+  useActiveVow, useArchive, createVow, toggleCommitment, setCount, isNumeric, closeVow, deleteArchived, pullVows,
   type Commitment, type Vow,
 } from "./vows";
+import { listCollectiveVows, contributeCollective, type CollectiveVow } from "./collectiveVows";
 
 const SAFFRON = "#DD7A1E";
 const L1 = "var(--color-label)";
@@ -368,11 +369,67 @@ function ArchiveList({ items }: { items: Vow[] }) {
   );
 }
 
+const fmtNum = (n: number): string => n.toLocaleString("ru-RU");
+function membersWord(n: number): string { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "участник"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "участника"; return "участников"; }
+
+/** Совместные враты — сангха без ленты/чата: общий итог, участники, мой вклад. */
+function CollectiveVowsSection() {
+  const [items, setItems] = useState<CollectiveVow[] | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+
+  useEffect(() => { let a = true; void listCollectiveVows().then((x) => { if (a) setItems(x); }); return () => { a = false; }; }, []);
+  if (!items || !items.length) return null;
+
+  async function add(v: CollectiveVow, amount: number) {
+    if (busy) return;
+    setBusy(v.id); setNote(null);
+    const r = await contributeCollective(v.id, amount);
+    setBusy(null);
+    if (r === "auth") { setNote("Войдите в кабинет, чтобы участвовать."); return; }
+    if (r) setItems(r);
+  }
+
+  return (
+    <section style={{ marginTop: 28 }}>
+      <h3 style={{ margin: "0 4px 4px", fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Совместные враты</h3>
+      <p style={{ margin: "0 4px 14px", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L3 }}>Сангха без ленты и переписки — общее памятование и движение к цели вместе.</p>
+      {items.map((v) => {
+        const pct = v.target > 0 ? Math.min(100, Math.round((v.total / v.target) * 100)) : 0;
+        return (
+          <div key={v.id} style={{ background: "var(--color-bg-2)", borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: "16px 16px", marginBottom: 12 }}>
+            <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 700, color: L1 }}>{v.title}</div>
+            {v.description && <div style={{ fontFamily: FT, fontSize: 13.5, lineHeight: 1.5, color: L2, marginTop: 5 }}>{v.description}</div>}
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginTop: 14 }}>
+              <span style={{ fontFamily: FD, fontSize: 20, fontWeight: 800, color: SAFFRON }}>{fmtNum(v.total)}</span>
+              <span style={{ fontFamily: FT, fontSize: 13, color: L3 }}>из {fmtNum(v.target)} {v.unit}</span>
+            </div>
+            <div style={{ height: 8, borderRadius: 8, background: "rgba(120,120,128,0.18)", marginTop: 8, overflow: "hidden" }}>
+              <div style={{ width: `${pct}%`, height: "100%", borderRadius: 8, background: SAFFRON, transition: "width .3s" }} />
+            </div>
+            <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, marginTop: 8 }}>{fmtNum(v.members)} {membersWord(v.members)}{v.mine > 0 ? ` · мой вклад ${fmtNum(v.mine)}` : ""}</div>
+            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+              {[1, 4, 16].map((n) => (
+                <button key={n} type="button" disabled={busy === v.id} onClick={() => void add(v, n)}
+                  style={{ flex: 1, height: 40, borderRadius: 11, border: `1px solid ${SAFFRON}`, background: "transparent", color: SAFFRON, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: busy === v.id ? "default" : "pointer", opacity: busy === v.id ? 0.5 : 1, WebkitTapHighlightColor: "transparent" }}>
+                  +{n} {v.unit === "кругов" ? "" : ""}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      {note && <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, textAlign: "center", marginTop: 2 }}>{note}</div>}
+    </section>
+  );
+}
+
 export default function VowScreen({ onBack }: { onBack: () => void }) {
   const active = useActiveVow();
   const archive = useArchive();
   const [creating, setCreating] = useState(false);
   const heading = useMemo(() => (creating ? "Принять обет" : active ? "Мой обет" : "Обет"), [creating, active]);
+  useEffect(() => { void pullVows(); }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
@@ -390,6 +447,7 @@ export default function VowScreen({ onBack }: { onBack: () => void }) {
           ) : active ? (
             <>
               <VowDashboard vow={active} />
+              <CollectiveVowsSection />
               <ArchiveList items={archive} />
             </>
           ) : (
@@ -405,6 +463,7 @@ export default function VowScreen({ onBack }: { onBack: () => void }) {
                 </p>
               </div>
               <button type="button" onClick={() => setCreating(true)} style={{ width: "100%", height: 52, marginTop: 22, borderRadius: 15, border: "none", background: SAFFRON, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
+              <CollectiveVowsSection />
               <ArchiveList items={archive} />
             </>
           )}

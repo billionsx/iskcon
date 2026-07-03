@@ -3,6 +3,7 @@ import { homeApi } from "./workerHome";
 import { calendarApi } from "./workerCalendar";
 import { accountApi } from "./src/account/server";
 import { pushApi, runNotifications } from "./src/push/server";
+import { vowsApi } from "./src/vows/server";
 import { centersApi } from "./src/centers/server";
 import { darshanApi } from "./src/darshan/server";
 import { readingApi } from "./src/reading/server";
@@ -1831,6 +1832,11 @@ export default {
     // pushApi отдаёт null на всё, кроме /api/push* и /api/me/push*.
     const pushRes = await pushApi(request, env, url);
     if (pushRes) return pushRes;
+
+    // ── Обеты (Ц6): личные (снимок) + совместные враты. ДО кабинета: /api/me/vows
+    // иначе поймал бы accountApi. vowsApi отдаёт null на всё, кроме /api/me/vows* и /api/vows*.
+    const vowsRes = await vowsApi(request, env, url);
+    if (vowsRes) return vowsRes;
 
     // ── Личный кабинет: регистрация/вход/сессия (cookie) + закладки, прогресс
     // чтения, история прослушивания. Та же база D1, тот же origin. Матчим ДО
