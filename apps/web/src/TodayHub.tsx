@@ -43,7 +43,7 @@ function readJapaToday(): { rounds: number; goal: number } {
 
 interface CalEvent { date: string; title: string; type: string }
 /** Ближайшее Экадаши/праздник из /api/calendar по сохранённому городу (или Вриндаван). */
-async function fetchNextEvent(): Promise<{ title: string; days: number } | null> {
+async function fetchNextEvent(): Promise<{ title: string; days: number; type: string } | null> {
   let key = "Vrindavan [India]";
   let lat: number | undefined, lng: number | undefined;
   try {
@@ -65,7 +65,7 @@ async function fetchNextEvent(): Promise<{ title: string; days: number } | null>
     if (!up.length) return null;
     const e = up[0];
     const days = Math.round((new Date(e.date + "T00:00:00").getTime() - new Date(today + "T00:00:00").getTime()) / 86_400_000);
-    return { title: e.title, days };
+    return { title: e.title, days, type: e.type };
   } catch { return null; }
 }
 const daysLabel = (n: number) => (n <= 0 ? "сегодня" : n === 1 ? "завтра" : `через ${n} дн.`);
@@ -96,7 +96,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
 
   const [verse, setVerse] = useState<{ label: string; translation: string | null } | null>(null);
   const [japa, setJapa] = useState(() => readJapaToday());
-  const [nextEv, setNextEv] = useState<{ title: string; days: number } | null>(null);
+  const [nextEv, setNextEv] = useState<{ title: string; days: number; type: string } | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -178,7 +178,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
       {nextEv && (
         <>
           <div style={label}>Ближайшее</div>
-          <Card onClick={() => onSub("calendar")}>
+          <Card onClick={() => (nextEv.type === "ekadasi" ? onOpenPath("/ekadashi") : onSub("calendar"))}>
             <div style={{ padding: "15px 16px", display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ flexShrink: 0, width: 52, textAlign: "center" }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: GOLD, fontFamily: FONT, lineHeight: 1 }}>{nextEv.days <= 0 ? "•" : nextEv.days}</div>
