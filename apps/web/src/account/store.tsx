@@ -20,7 +20,7 @@ interface AuthApi {
   login: (email: string, password: string) => Promise<AccountUser>;
   register: (email: string, password: string, name?: string) => Promise<AccountUser>;
   logout: () => Promise<void>;
-  updateProfile: (patch: { name?: string; spiritualName?: string }) => Promise<AccountUser>;
+  updateProfile: (patch: Parameters<typeof accountClient.updateProfile>[0]) => Promise<AccountUser>;
   refresh: () => Promise<void>;
 }
 
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [apply]);
 
   const updateProfile = useCallback(
-    async (patch: { name?: string; spiritualName?: string }) => {
+    async (patch: Parameters<typeof accountClient.updateProfile>[0]) => {
       const u = await accountClient.updateProfile(patch);
       apply(u);
       return u;

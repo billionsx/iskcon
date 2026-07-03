@@ -261,6 +261,14 @@ interface UserRow {
   email: string | null;
   name: string | null;
   spiritual_name: string | null;
+  // Профиль духовной ступени (Ц1 «Модель преданного»). Опциональны: старые
+  // конструкции UserRow их не задают, а SELECT-ы подтягивают из БД.
+  level?: string | null;
+  initiation?: string | null;
+  diksha_guru?: string | null;
+  siksha_guru?: string | null;
+  principles_since?: string | null;
+  home_center_id?: string | null;
   created_at: string;
 }
 function publicUser(u: UserRow, emailVerified = 0) {
@@ -269,6 +277,12 @@ function publicUser(u: UserRow, emailVerified = 0) {
     email: u.email,
     name: u.name,
     spiritualName: u.spiritual_name,
+    level: u.level ?? null,
+    initiation: u.initiation ?? null,
+    dikshaGuru: u.diksha_guru ?? null,
+    sikshaGuru: u.siksha_guru ?? null,
+    principlesSince: u.principles_since ?? null,
+    homeCenterId: u.home_center_id ?? null,
     createdAt: u.created_at,
     emailVerified: !!emailVerified,
   };
@@ -292,7 +306,9 @@ async function sessionUser(env: DB, req: Request): Promise<{ user: UserRow; veri
   if (!token) return null;
   const tokenHash = await sha256(token);
   const row = await env.DB.prepare(
-    `SELECT u.id, u.email, u.name, u.spiritual_name, u.created_at,
+    `SELECT u.id, u.email, u.name, u.spiritual_name,
+            u.level, u.initiation, u.diksha_guru, u.siksha_guru, u.principles_since, u.home_center_id,
+            u.created_at,
             COALESCE(a.email_verified,0) AS verified
      FROM sessions s
      JOIN users u ON u.id = s.user_id
@@ -497,7 +513,9 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
     const password = String(b.password ?? "");
     if (!email || !password) return err("bad_credentials", 401);
     const row = await env.DB.prepare(
-      `SELECT u.id, u.email, u.name, u.spiritual_name, u.created_at,
+      `SELECT u.id, u.email, u.name, u.spiritual_name,
+              u.level, u.initiation, u.diksha_guru, u.siksha_guru, u.principles_since, u.home_center_id,
+              u.created_at,
               a.password_hash, COALESCE(a.email_verified,0) AS verified
        FROM users u JOIN user_auth a ON a.user_id = u.id
        WHERE u.email = ?1 LIMIT 1`,
@@ -510,8 +528,7 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
     const ok = await verifyPassword(password, row.password_hash);
     if (!ok) return err("bad_credentials", 401);
     const token = await createSession(env, row.id, request);
-    const u: UserRow = { id: row.id, email: row.email, name: row.name, spiritual_name: row.spiritual_name, created_at: row.created_at };
-    return jres({ user: publicUser(u, row.verified) }, { cookie: setCookie(token, SESSION_TTL_SEC) });
+    return jres({ user: publicUser(row, row.verified) }, { cookie: setCookie(token, SESSION_TTL_SEC) });
   }
 
   if (p === "/api/auth/logout" && method === "POST") {
@@ -540,13 +557,31 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
   // профиль
   if (p === "/api/me/profile" && method === "PATCH") {
     const b = await body();
-    const name = "name" in b ? clip(b.name, 120) : null;
-    const spiritual = "spiritualName" in b ? clip(b.spiritualName, 120) : null;
-    await env.DB.prepare(
-      `UPDATE users SET name = COALESCE(?2, name), spiritual_name = COALESCE(?3, spiritual_name) WHERE id = ?1`,
-    ).bind(uid, name, spiritual).run();
+    // Ступень практики (самоопределение) и факт инициации — по закрытым словарям.
+    // Значение вне словаря трактуем как «сброшено» (null), а не как ошибку запроса.
+    const LEVELS = new Set(["guest", "neophyte", "practicing", "initiated", "guru"]);
+    const INITS = new Set(["none", "harinama", "brahmin"]);
+    // Собираем SET динамически: обновляем ТОЛЬКО присланные ключи (экран профиля —
+    // источник правды на «Готово»; пустая строка → NULL = поле очищено).
+    const sets: string[] = [];
+    const vals: (string | null)[] = [];
+    const put = (col: string, v: string | null) => { sets.push(`${col} = ?${vals.length + 2}`); vals.push(v); };
+    if ("name" in b) put("name", clip(b.name, 120) || null);
+    if ("spiritualName" in b) put("spiritual_name", clip(b.spiritualName, 120) || null);
+    if ("level" in b) { const v = clip(b.level, 20); put("level", LEVELS.has(v) ? v : null); }
+    if ("initiation" in b) { const v = clip(b.initiation, 20); put("initiation", INITS.has(v) ? v : null); }
+    if ("dikshaGuru" in b) put("diksha_guru", clip(b.dikshaGuru, 120) || null);
+    if ("sikshaGuru" in b) put("siksha_guru", clip(b.sikshaGuru, 120) || null);
+    if ("principlesSince" in b) { const v = clip(b.principlesSince, 10); put("principles_since", /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null); }
+    if ("homeCenterId" in b) put("home_center_id", clip(b.homeCenterId, 80) || null);
+    if (sets.length) {
+      await env.DB.prepare(`UPDATE users SET ${sets.join(", ")} WHERE id = ?1`).bind(uid, ...vals).run();
+    }
+    // Норма кругов — не колонка users, а единый sadhanaGoal в user_prefs.
+    if ("chantNorm" in b && Number.isFinite(Number(b.chantNorm))) await writeGoal(env, uid, Number(b.chantNorm));
     const u = await env.DB.prepare(
-      `SELECT id, email, name, spiritual_name, created_at FROM users WHERE id = ?1`,
+      `SELECT id, email, name, spiritual_name, level, initiation, diksha_guru, siksha_guru, principles_since, home_center_id, created_at
+       FROM users WHERE id = ?1`,
     ).bind(uid).first<UserRow>();
     return jres({ user: u ? publicUser(u, session.verified) : null });
   }
