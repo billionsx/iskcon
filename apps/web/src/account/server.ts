@@ -222,6 +222,7 @@ async function ensureSchema(env: DB): Promise<void> {
         reading_min INTEGER NOT NULL DEFAULT 0,
         rose_at     TEXT,
         note        TEXT,
+        ekadashi    INTEGER NOT NULL DEFAULT 0,
         created_at  TEXT NOT NULL DEFAULT (datetime('now')),
         updated_at  TEXT NOT NULL DEFAULT (datetime('now')),
         PRIMARY KEY (user_id, day)
@@ -374,7 +375,7 @@ async function writeGoal(env: DB, uid: string, goal: number): Promise<void> {
   ).bind(uid, JSON.stringify(data)).run();
 }
 
-interface DiaryRow { day: string; reading_min: number; rose_at: string | null; note: string | null }
+interface DiaryRow { day: string; reading_min: number; rose_at: string | null; note: string | null; ekadashi: number }
 
 /** Полное состояние дневника: цель, сегодня, стрики, неделя, история. */
 async function sadhanaState(env: DB, uid: string, today: string, histDays: number) {
@@ -387,7 +388,7 @@ async function sadhanaState(env: DB, uid: string, today: string, histDays: numbe
       `SELECT day, COUNT(*) AS rounds FROM japa_round WHERE user_id = ?1 GROUP BY day`,
     ).bind(uid).all<{ day: string; rounds: number }>(),
     env.DB.prepare(
-      `SELECT day, reading_min, rose_at, note FROM sadhana_day WHERE user_id = ?1`,
+      `SELECT day, reading_min, rose_at, note, ekadashi FROM sadhana_day WHERE user_id = ?1`,
     ).bind(uid).all<DiaryRow>(),
     env.DB.prepare(
       `SELECT COALESCE(SUM(reading_min),0) AS reading FROM sadhana_day WHERE user_id = ?1`,
@@ -424,6 +425,7 @@ async function sadhanaState(env: DB, uid: string, today: string, histDays: numbe
       reading_min: dr?.reading_min ?? 0,
       rose_at: dr?.rose_at ?? null,
       note: dr?.note ?? null,
+      ekadashi: dr?.ekadashi ?? 0,
     };
   };
 
@@ -855,21 +857,23 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
       const hasReading = "readingMin" in b && Number.isFinite(Number(b.readingMin));
       const hasRose = "roseAt" in b;
       const hasNote = "note" in b;
-      if (hasReading || hasRose || hasNote) {
+      const hasEkadashi = "ekadashi" in b;
+      if (hasReading || hasRose || hasNote || hasEkadashi) {
         const cur = await env.DB.prepare(
-          `SELECT reading_min, rose_at, note FROM sadhana_day WHERE user_id = ?1 AND day = ?2`,
-        ).bind(uid, day).first<{ reading_min: number; rose_at: string | null; note: string | null }>();
+          `SELECT reading_min, rose_at, note, ekadashi FROM sadhana_day WHERE user_id = ?1 AND day = ?2`,
+        ).bind(uid, day).first<{ reading_min: number; rose_at: string | null; note: string | null; ekadashi: number }>();
         const reading = hasReading ? Math.min(Math.max(Math.round(Number(b.readingMin)), 0), 1440) : (cur?.reading_min ?? 0);
         let rose: string | null;
         if (hasRose) { const v = clip(b.roseAt, 5); rose = /^\d{1,2}:\d{2}$/.test(v) ? v : null; }
         else rose = cur?.rose_at ?? null;
         const note = hasNote ? (clip(b.note, 500) || null) : (cur?.note ?? null);
+        const ekadashi = hasEkadashi ? (b.ekadashi ? 1 : 0) : (cur?.ekadashi ?? 0);
         await env.DB.prepare(
-          `INSERT INTO sadhana_day (user_id, day, reading_min, rose_at, note, updated_at)
-           VALUES (?1,?2,?3,?4,?5, datetime('now'))
+          `INSERT INTO sadhana_day (user_id, day, reading_min, rose_at, note, ekadashi, updated_at)
+           VALUES (?1,?2,?3,?4,?5,?6, datetime('now'))
            ON CONFLICT(user_id, day) DO UPDATE SET
-             reading_min = ?3, rose_at = ?4, note = ?5, updated_at = datetime('now')`,
-        ).bind(uid, day, reading, rose, note).run();
+             reading_min = ?3, rose_at = ?4, note = ?5, ekadashi = ?6, updated_at = datetime('now')`,
+        ).bind(uid, day, reading, rose, note, ekadashi).run();
         touched = true;
       }
 

@@ -38,6 +38,7 @@ const GROUPS: Group[] = [
   { group: "Моя практика", items: [
     { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-japa")) },
     { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-diary")) },
+    { icon: ICON.moon, t: "Экадаши", d: "Дни поста, время параны по городу, отметка соблюдения", to: "/ekadashi" },
   ] },
   { group: "Прасад", items: [
     { icon: ICON.bowl, t: "Рецепты прасада", d: "100 рецептов, подбор по продуктам и диете, что дорого Божествам, подношение", to: "/prasadam" },
