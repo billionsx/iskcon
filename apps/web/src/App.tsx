@@ -40,6 +40,7 @@ import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteA
 import BookLoaderPage from "./BookLoaderPage";
 import AccountScreen from "./AccountScreen";
 import { AuthProvider } from "./account/store";
+import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
 import { api } from "./api";
@@ -1266,6 +1267,7 @@ export default function App() {
         </CardActionsProvider>
         {overlayTabBar && <TabBar active={tab} onChange={(k) => navigate("/" + k)} scrollRef={overlayScrollRef} />}
         {donate && <DonateModal onClose={closeDonate} />}
+        <Onboarding navigate={navigate} />
         <MiniPlayer tabBarVisible={tabBarVisible || overlayTabBar} />
         <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { div: null, chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onOpenBhajan={setOpenBhajan} onDonate={openDonate} />
         {appToast && (
