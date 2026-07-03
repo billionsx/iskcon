@@ -148,7 +148,8 @@ export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
     go(4);
   }
 
-  const wrap: CSSProperties = { position: "fixed", inset: 0, zIndex: 5000, background: BG, display: "flex", flexDirection: "column", fontFamily: TEXT, overflow: "hidden", overscrollBehavior: "contain" };
+  const wrap: CSSProperties = { position: "fixed", inset: 0, zIndex: 5000, background: BG, display: "flex", justifyContent: "center", fontFamily: TEXT, overflow: "hidden", overscrollBehavior: "contain" };
+  const shell: CSSProperties = { width: "100%", maxWidth: 480, height: "100%", display: "flex", flexDirection: "column", minHeight: 0 };
   const header: CSSProperties = { padding: "calc(12px + env(safe-area-inset-top)) 20px 0" };
   const main: CSSProperties = { flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "0 24px", display: "flex", flexDirection: "column" };
   const footer: CSSProperties = { padding: "12px 24px calc(20px + env(safe-area-inset-bottom))", display: "flex", flexDirection: "column", gap: 2 };
@@ -304,9 +305,11 @@ export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
   return (
     <div className="onb-root" style={wrap}>
       <style>{CSS}</style>
-      {chromeSteps && <Header />}
-      {content}
-      {foot}
+      <div style={shell}>
+        {chromeSteps && <Header />}
+        {content}
+        {foot}
+      </div>
     </div>
   );
 }
