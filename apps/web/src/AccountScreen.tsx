@@ -18,6 +18,7 @@ import { BOOKS, bookFullTitle } from "./books";
 import { albumById } from "./kirtans";
 import { useNotes, requestNote, requestOpenNote, shareNote, togglePin, type Note } from "./notes";
 import { NoteHeroCard } from "./NoteHeroCard";
+import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, updateCats, loadCats, type PushCats } from "./push";
 
 /* ─────────────────────────── палитра/токены ─────────────────────────── */
 
@@ -43,6 +44,9 @@ const ChevR = ({ size = 18 }: IcoProps) => (
 );
 const PencilIco = ({ size = 18 }: IcoProps) => (
   <svg {...ico(size)}><path {...STR} d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg>
+);
+const BellIco = ({ size = 18 }: IcoProps) => (
+  <svg {...ico(size)}><path {...STR} d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" /><path {...STR} d="M13.7 21a2 2 0 0 1-3.4 0" /></svg>
 );
 const HeartIco = ({ size = 18 }: IcoProps) => (
   <svg {...ico(size)}><path fill="currentColor" d="M12 21s-7.5-4.6-10-9.2C.6 8.9 2 5.6 5.1 5.1 7 4.8 8.8 5.8 9.7 7.4 10.6 5.8 12.4 4.8 14.3 5.1c3.1.5 4.5 3.8 3.1 6.7C19.5 16.4 12 21 12 21Z" /></svg>
@@ -617,6 +621,83 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
   );
 }
 
+function Switch({ on, busy, onToggle }: { on: boolean; busy?: boolean; onToggle: () => void }) {
+  return (
+    <button
+      role="switch" aria-checked={on} disabled={busy} onClick={onToggle}
+      style={{
+        flexShrink: 0, width: 51, height: 31, borderRadius: 31, border: "none", position: "relative", cursor: busy ? "default" : "pointer",
+        background: on ? GOLD : "rgba(120,120,128,0.28)", transition: "background .2s", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      <span style={{ position: "absolute", top: 2, left: on ? 22 : 2, width: 27, height: 27, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 3px rgba(0,0,0,0.3)", transition: "left .2s" }} />
+    </button>
+  );
+}
+
+const PUSH_CAT_LABELS: { id: keyof PushCats; label: string; sub: string }[] = [
+  { id: "verse", label: "Стих дня", sub: "Священное слово каждое утро" },
+  { id: "ekadashi", label: "Экадаши", sub: "Напоминание накануне поста" },
+  { id: "festival", label: "Праздники", sub: "Дни вайшнавского календаря" },
+  { id: "streak", label: "Серия под угрозой", sub: "Если норма кругов не закрыта" },
+];
+
+function NotificationsCard() {
+  const [supported] = useState(() => pushSupported());
+  const [perm, setPerm] = useState(() => pushPermission());
+  const [on, setOn] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [cats, setCats] = useState<PushCats>(() => loadCats());
+
+  useEffect(() => { void isSubscribed().then(setOn); }, []);
+
+  async function toggleMaster() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      if (on) { await disablePush(); setOn(false); }
+      else { const r = await enablePush(cats); setOn(r.ok); }
+      setPerm(pushPermission());
+    } finally { setBusy(false); }
+  }
+  function toggleCat(k: keyof PushCats) {
+    const next = { ...cats, [k]: !cats[k] };
+    setCats(next);
+    if (on) void updateCats(next);
+  }
+
+  return (
+    <div>
+      <SectionTitle title="Уведомления" />
+      <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 14px" }}>
+          <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><BellIco /></span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 16, color: INK, fontWeight: 500, fontFamily: FONT }}>Push-уведомления</div>
+            <div style={{ fontSize: 12.5, color: INK3, fontFamily: FONT, marginTop: 1 }}>
+              {!supported ? "Недоступно в этом браузере" : perm === "denied" ? "Разрешение запрещено в браузере" : on ? "Включены на этом устройстве" : "Тихие напоминания о практике"}
+            </div>
+          </div>
+          {supported && perm !== "denied" && <Switch on={on} busy={busy} onToggle={() => void toggleMaster()} />}
+        </div>
+
+        {on && PUSH_CAT_LABELS.map((c) => (
+          <div key={c.id}>
+            <div style={{ height: "0.5px", background: HAIR, marginLeft: 56 }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px 11px 56px" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 15.5, color: INK, fontFamily: FONT }}>{c.label}</div>
+                <div style={{ fontSize: 12, color: INK3, fontFamily: FONT, marginTop: 1 }}>{c.sub}</div>
+              </div>
+              <Switch on={!!cats[c.id]} onToggle={() => toggleCat(c.id)} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function SettingsCard({ onEdit, onDonate, onLogout }: { onEdit: () => void; onDonate: () => void; onLogout: () => void }) {
   const rows: { icon: ReactNode; label: string; tint?: string; onClick: () => void }[] = [
     { icon: <PencilIco size={18} />, label: "Изменить профиль", onClick: onEdit },
@@ -868,6 +949,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
         </section>
       )}
 
+      <NotificationsCard />
       <SettingsCard onEdit={() => setEditing(true)} onDonate={onDonate} onLogout={() => void doLogout()} />
 
       <p style={{ textAlign: "center", fontSize: 12, color: INK3, fontFamily: FONT, margin: 0 }}>gaurangers.com · ИСККОН</p>

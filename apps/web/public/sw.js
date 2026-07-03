@@ -56,3 +56,41 @@ self.addEventListener("fetch", (e) => {
     return hit || net;
   })());
 });
+
+/* Уведомления (Ц3). Модель «tickle»: пуш приходит без данных → спрашиваем сервер,
+ * что показать (cookie-сессия уходит сама), и показываем. Тег = id уведомления,
+ * чтобы браузер не плодил дубли при повторной доставке. */
+self.addEventListener("push", (e) => {
+  e.waitUntil((async () => {
+    let items = [];
+    try {
+      const res = await fetch("/api/push/pending", { credentials: "include" });
+      if (res.ok) items = ((await res.json()) || {}).items || [];
+    } catch { /* сеть/сессия недоступны */ }
+    // Фолбэк: если сервер молчит, но пуш нёс данные — показать их.
+    if (!items.length && e.data) {
+      try { const d = e.data.json(); if (d && d.title) items = [d]; } catch { /* нет тела */ }
+    }
+    for (const it of items.slice(0, 3)) {
+      await self.registration.showNotification(it.title || "ISKCON ONE LOVE", {
+        body: it.body || "",
+        icon: "/icon-192.png",
+        badge: "/icon-192.png",
+        tag: it.id || undefined,
+        data: { url: it.url || "/" },
+      });
+    }
+  })());
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || "/";
+  e.waitUntil((async () => {
+    const all = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+    for (const c of all) {
+      if ("focus" in c) { try { await c.navigate(url); } catch { /* кросс-док */ } return c.focus(); }
+    }
+    if (self.clients.openWindow) return self.clients.openWindow(url);
+  })());
+});

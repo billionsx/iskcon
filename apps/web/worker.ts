@@ -2,6 +2,7 @@ import { handleAdmin } from "./loader/handler";
 import { homeApi } from "./workerHome";
 import { calendarApi } from "./workerCalendar";
 import { accountApi } from "./src/account/server";
+import { pushApi, runNotifications } from "./src/push/server";
 import { centersApi } from "./src/centers/server";
 import { darshanApi } from "./src/darshan/server";
 import { readingApi } from "./src/reading/server";
@@ -1607,6 +1608,9 @@ export default {
   async scheduled(event: { cron?: string; scheduledTime?: number }, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<void> {
     // Сторис — на каждом тике (каждые 30 мин, надёжный планировщик Cloudflare).
     ctx.waitUntil(dispatchStories(env).catch(() => undefined));
+    // Уведомления преданных (Ц3) — каждый тик: генерация по локальному времени
+    // подписок + пустой web-push. Дедуп внутри (UNIQUE user/cat/day). Изолировано.
+    ctx.waitUntil(runNotifications(env).catch(() => undefined));
     // Даршан храмов — только в суточные слоты (тик :00 часов 4/9/14 UTC; дорогой headless-Chrome).
     const now = new Date(typeof (event && event.scheduledTime) === "number" ? (event.scheduledTime as number) : Date.now());
     const h = now.getUTCHours();
@@ -1821,6 +1825,12 @@ export default {
     // спокойно доходят до кабинета ниже. См. apps/web/src/centers/server.ts.
     const cenRes = await centersApi(request, env, url);
     if (cenRes) return cenRes;
+
+    // ── Уведомления (Ц3): подписки/категории/pending + публичный VAPID-ключ.
+    // ДО кабинета: accountApi ловит весь /api/me и 404-ил бы /api/me/push/*.
+    // pushApi отдаёт null на всё, кроме /api/push* и /api/me/push*.
+    const pushRes = await pushApi(request, env, url);
+    if (pushRes) return pushRes;
 
     // ── Личный кабинет: регистрация/вход/сессия (cookie) + закладки, прогресс
     // чтения, история прослушивания. Та же база D1, тот же origin. Матчим ДО
