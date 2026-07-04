@@ -831,6 +831,19 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       <ProfileHeader onEdit={() => setEditing(true)} />
 
+      <button
+        onClick={() => window.dispatchEvent(new Event("iskcon:onboarding"))}
+        style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "14px", background: SURFACE, border: `0.5px solid ${HAIR}`, borderRadius: 16, boxShadow: "var(--shadow-card)", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+        <span style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1" /><circle cx="15" cy="6" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="17" cy="18" r="2" /></g></svg>
+        </span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Настроить профиль</span>
+          <span style={{ display: "block", fontSize: 13, color: INK2, fontFamily: FONT, marginTop: 1 }}>Пошагово: ступень, имя и уведомления</span>
+        </span>
+        <span style={{ color: INK3, flexShrink: 0, fontSize: 20 }}>›</span>
+      </button>
+
       {ov && <StatStrip stats={ov.stats} />}
 
       {sad && (
