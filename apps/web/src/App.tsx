@@ -738,6 +738,12 @@ export default function App() {
   const [donate, setDonate] = useState(false);
   const [openCart, setOpenCart] = useState(false);
   const [openJapa, setOpenJapa] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  useEffect(() => {
+    const h = () => setShowOnboarding(true);
+    window.addEventListener("iskcon:onboarding", h);
+    return () => window.removeEventListener("iskcon:onboarding", h);
+  }, []);
   const [openDiary, setOpenDiary] = useState(false);
   const [openVow, setOpenVow] = useState(false);
   const [openDarshan, setOpenDarshan] = useState(false);
@@ -1277,7 +1283,7 @@ export default function App() {
         </CardActionsProvider>
         {overlayTabBar && <TabBar active={tab} onChange={(k) => navigate("/" + k)} scrollRef={overlayScrollRef} />}
         {donate && <DonateModal onClose={closeDonate} />}
-        <Onboarding navigate={navigate} />
+        {showOnboarding && <Onboarding navigate={navigate} onClose={() => setShowOnboarding(false)} />}
         <MiniPlayer tabBarVisible={tabBarVisible || overlayTabBar} />
         <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { div: null, chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onOpenBhajan={setOpenBhajan} onDonate={openDonate} />
         {appToast && (

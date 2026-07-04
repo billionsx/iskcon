@@ -17,7 +17,7 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
 import { enablePush, pushSupported } from "./push";
-import { isOnboarded, markOnboarded, setLocalDevotee, getLocalDevotee, LEVEL_META } from "./devotee";
+import { markOnboarded, setLocalDevotee, getLocalDevotee, LEVEL_META } from "./devotee";
 import type { DevoteeLevel } from "./account/api";
 
 /* Единый акцент приложения — золото (как в TodayHub / Экадаши). */
@@ -100,12 +100,11 @@ function SubtleBtn({ label, onClick, disabled }: { label: string; onClick: () =>
   );
 }
 
-export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
+export function Onboarding({ navigate, onClose }: { navigate: (path: string) => void; onClose?: () => void }) {
   const { user, status, updateProfile } = useAuth();
   const local = getLocalDevotee();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState(1);
-  const [dismissed, setDismissed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [level, setLevel] = useState<DevoteeLevel | "">(user?.level ?? local.level ?? "");
   const [name, setName] = useState(user?.name ?? local.name ?? "");
@@ -118,9 +117,6 @@ export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
   const practicing = level === "practicing" || level === "initiated" || level === "guru";
   const initiated = level === "initiated" || level === "guru";
 
-  const show = !dismissed && status !== "loading" && !isOnboarded() && !(status === "authed" && !!user?.level);
-  if (!show) return null;
-
   function go(n: number) { setDir(n >= step ? 1 : -1); setStep(n); }
   function goBack() { go(Math.max(0, step - 1)); }
 
@@ -130,7 +126,7 @@ export function Onboarding({ navigate }: { navigate: (path: string) => void }) {
     const lv = level || "";
     setLocalDevotee({ level: lv, name: name.trim(), spiritualName: spiritual.trim(), dikshaGuru: guru.trim(), chantNorm: practicing ? norm : undefined });
     markOnboarded();
-    setDismissed(true);
+    onClose?.();
     if (navTo) navigate(navTo);
     if (status === "authed") {
       void updateProfile({
