@@ -47,7 +47,6 @@ import { api } from "./api";
 import CartScreen from "./shop/CartScreen";
 import JapaScreen from "./JapaScreen";
 import SadhanaScreen from "./SadhanaScreen";
-import TodayHub from "./TodayHub";
 import VowScreen from "./VowScreen";
 import DarshanScreen from "./DarshanScreen";
 import DownloaderScreen from "./DownloaderScreen";
@@ -601,11 +600,10 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
 function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void; flash?: string | null;
 }) {
-  const [sub, setSub] = useState("today");
+  const [sub, setSub] = useState("feed");
   return (
     <div>
-      <SegRow value={sub} onChange={setSub} items={[["today", "Сегодня"], ["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
-      {sub === "today" && <TodayHub onOpenPath={onOpenPath} onSub={setSub} />}
+      <SegRow value={sub} onChange={setSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
       {sub === "feed" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
