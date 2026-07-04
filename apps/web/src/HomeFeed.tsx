@@ -542,7 +542,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         </p>
       </div>
 
-      <div style={{ width: 44, height: 3, borderRadius: 999, background: "#D2AA1B", margin: "18px auto 0" }} />
+      <div style={{ height: 1, margin: "22px 0 0", background: "linear-gradient(90deg, transparent 0%, rgba(210,170,27,0.45) 28%, rgba(210,170,27,0.45) 72%, transparent 100%)" }} />
 
       <div style={{ marginTop: 16 }} aria-live="polite">
         {err && (
