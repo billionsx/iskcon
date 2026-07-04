@@ -542,8 +542,6 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         </p>
       </div>
 
-      <div style={{ height: 1, margin: "22px 0 0", background: "linear-gradient(90deg, transparent 0%, rgba(210,170,27,0.45) 28%, rgba(210,170,27,0.45) 72%, transparent 100%)" }} />
-
       <div style={{ marginTop: 16 }} aria-live="polite">
         {err && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
