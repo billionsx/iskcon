@@ -539,7 +539,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
       <div style={{ padding: "20px 0 0" }}>
         <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>ISKCON ONE LOVE</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Вдохновение, события и даршаны всемирного движения Харе Кришна в этой беспрецедентной волне Гауранга Лилы. Присоединяйся.
+          Вдохновение дарами, которые принес Шрила Прабхупада в этой беспрецедентной волне Гауранга Лилы — Международное общество сознание Кришны (ИСККОН), развивающееся по всему миру и распространяющее Прему высшего порядка.
         </p>
       </div>
 
