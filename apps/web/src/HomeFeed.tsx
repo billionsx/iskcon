@@ -542,7 +542,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         </p>
       </div>
 
-      <div style={{ marginTop: 16 }} aria-live="polite">
+      <div style={{ marginTop: 28 }} aria-live="polite">
         {err && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Лента временно недоступна.<br />
