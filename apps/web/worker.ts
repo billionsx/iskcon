@@ -1622,6 +1622,19 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
+    // ── Каноничный адрес: сайт всегда открывается как https://gaurangers.com ──
+    // Apex и www привязаны к воркеру как custom_domain (сертификат Cloudflare есть на
+    // обоих), поэтому воркер исполняется на обоих хостах и здесь приводит любой вход к
+    // единому каноничному origin, сохраняя путь и query-строку:
+    //   www.gaurangers.com/*   → https://gaurangers.com/*   (301)
+    //   http://<любой хост>/*  → https://gaurangers.com/*   (301)
+    if (url.hostname === "www.gaurangers.com" || url.protocol === "http:") {
+      url.hostname = "gaurangers.com";
+      url.protocol = "https:";
+      url.port = "";
+      return Response.redirect(url.toString(), 301);
+    }
+
     // ── IG-даршан: отдать кадр из D1 (воркер перекладывает инстаграм-посты по крону) ──
     const igImgM = url.pathname.match(/^\/api\/darshan\/igimg\/([a-z0-9_-]+)\/(\d{4}-\d{2}-\d{2})\/(\d+)$/i);
     if (igImgM) return serveIgImg(env, igImgM[1], igImgM[2], Number(igImgM[3]));
