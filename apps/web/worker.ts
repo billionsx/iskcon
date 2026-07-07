@@ -2347,6 +2347,14 @@ export default {
     }
     const out = new Response(res.body, res);
     out.headers.set("X-Robots-Tag", NOINDEX);
+    // Хешированные ассеты (/assets/*-<hash>.{js,css,woff2,png,…}) неизменяемы по
+    // содержимому — Vite вшивает контент-хэш в имя файла. Кэшируем на год: повторные
+    // заходы и переключения между вкладками берут JS/CSS/шрифты из кэша браузера
+    // мгновенно, без сетевого запроса. Новый деплой = новый хэш = новый URL (при этом
+    // index.html — no-store и всегда тянет свежие хэши), поэтому устаревание невозможно.
+    if (url.pathname.startsWith("/assets/")) {
+      out.headers.set("Cache-Control", "public, max-age=31536000, immutable");
+    }
     return out;
   },
 };

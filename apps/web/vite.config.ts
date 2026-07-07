@@ -1,8 +1,47 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 
+/**
+ * Preload основного шрифта (Gentium Regular woff2) в <head>.
+ *
+ * Иначе браузер узнаёт о шрифте только после парсинга CSS и стартует его загрузку
+ * поздно → дольше держится подмена шрифта (FOUT). Preload запускает скачивание
+ * параллельно с JS сразу из HTML. Имя файла содержит контент-хэш, поэтому берём
+ * его из финального бандла (ctx.bundle доступен только на сборке; в dev — no-op).
+ */
+function preloadRegularFont(): Plugin {
+  return {
+    name: "preload-regular-font",
+    enforce: "post",
+    transformIndexHtml(html, ctx) {
+      const bundle = ctx?.bundle;
+      if (!bundle) return html; // dev-режим — бандла ещё нет
+      const font = Object.keys(bundle).find((f) =>
+        /GentiumBookPlus-Regular-[^/]*\.woff2$/.test(f)
+      );
+      if (!font) return html;
+      return {
+        html,
+        tags: [
+          {
+            tag: "link",
+            attrs: {
+              rel: "preload",
+              as: "font",
+              type: "font/woff2",
+              href: "/" + font,
+              crossorigin: "", // запросы шрифтов всегда в CORS-режиме — атрибут обязателен, иначе preload не совпадёт
+            },
+            injectTo: "head-prepend",
+          },
+        ],
+      };
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), preloadRegularFont()],
   build: {
     outDir: "dist",
     emptyOutDir: true,
