@@ -15,7 +15,6 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon, HeartIcon, ShareIcon, MoreIcon, LinkIcon, TopIcon, type IconProps } from "./ui/icons";
 import { renderTerms } from "./ui/Skt";
-import { img, onImgError } from "./img";
 
 /** Круглая стеклянная кнопка навбара (как в ПКП). На hero — тёмное стекло; при
  *  скролле растворяется в фон и icon берёт цвет контента (передаётся onGlass). */
@@ -147,7 +146,7 @@ function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: 
 /** Фото — единый радиус, лёгкая тень-возвышение, вертикальный ритм. */
 function Figure({ src }: { src: string }) {
   return (
-    <img src={img(src, 720)} alt="" loading="lazy" onError={onImgError(src)}
+    <img src={src} alt="" loading="lazy"
       style={{ display: "block", width: "100%", margin: "var(--space-8) 0 0", borderRadius: "var(--radius-lg)", objectFit: "cover", boxShadow: "var(--shadow-card)" }} />
   );
 }
@@ -275,7 +274,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
             {/* hero — edge-to-edge, без текста; снизу плавный градиент в фон */}
             <div style={{ position: "relative", width: "100%", aspectRatio: hasHeroImg ? "4 / 3" : "16 / 9", maxHeight: 380, background: "var(--color-bg-3)", overflow: "hidden" }}>
               {hasHeroImg
-                ? <img src={img(data.hero_image as string, 720)} alt="" onError={onImgError(data.hero_image as string)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                ? <img src={data.hero_image as string} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                 : <div style={{ height: "100%", display: "grid", placeItems: "center", color: "var(--color-label-3)" }}><LogoMark src="/iskcon-sign.svg" label="ISKCON" height={88} /></div>}
               {/* верхний фейд под навбар + нижний фейд в фон страницы */}
               <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0) 24%, rgba(0,0,0,0) 82%, var(--color-bg) 100%)" }} />

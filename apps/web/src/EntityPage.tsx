@@ -19,7 +19,6 @@ import { galleryFor } from "./personaGallery";
 import { Rail } from "./AcharyaScreen";
 import { renderTerms } from "./ui/Skt";
 import { SectionSubTabs } from "./SectionSubTabs";
-import { img, onImgError } from "./img";
 
 const GOLD = "#D2AA1B";
 
@@ -147,7 +146,7 @@ function Monogram({ ch, size = 72 }: { ch: string; size?: number }) {
 function PhotoCircle({ src, size = 72 }: { src: string; size?: number }) {
   return (
     <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)" }}>
-      <img src={img(src, 360)} alt="" loading="lazy" onError={onImgError(src)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+      <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
     </div>
   );
 }

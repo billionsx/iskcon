@@ -21,7 +21,6 @@ import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeEducation, HomeNews } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
-import { img, onImgError } from "./img";
 
 const GOLD = "#D2AA1B";
 const S = 44;   // воздух между секциями
@@ -53,7 +52,7 @@ function Section({ children, top = S, id }: { children: React.ReactNode; top?: n
 function Photo({ src, ratio, pos = "center", radius = 20 }: { src: string; ratio?: string; pos?: string; radius?: number }) {
   return (
     <div style={{ borderRadius: radius, overflow: "hidden", background: IMG_BG, transform: "translateZ(0)" }}>
-      <img src={img(src, 640)} alt="" loading="lazy" onError={onImgError(src)} style={{ width: "100%", display: "block", ...(ratio ? { aspectRatio: ratio, objectFit: "cover" as const, objectPosition: pos } : { height: "auto" }) }} />
+      <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", ...(ratio ? { aspectRatio: ratio, objectFit: "cover" as const, objectPosition: pos } : { height: "auto" }) }} />
     </div>
   );
 }
@@ -79,7 +78,7 @@ function Carousel({ items, ratio = "4 / 3" }: { items: string[]; ratio?: string 
       margin: `16px -${PAD}px 0`, padding: `0 ${PAD}px`, scrollPaddingLeft: PAD, scrollbarWidth: "none" }}>
       {items.map((src, i) => (
         <div key={i} style={{ flex: "0 0 84%", scrollSnapAlign: "start", borderRadius: 22, overflow: "hidden", background: IMG_BG, transform: "translateZ(0)" }}>
-          <img src={img(src, 640)} alt="" loading="lazy" onError={onImgError(src)} style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover" }} />
+          <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: ratio, objectFit: "cover" }} />
         </div>
       ))}
       <div aria-hidden style={{ flex: `0 0 ${PAD - 10}px` }} />
@@ -93,7 +92,7 @@ function SquareGrid({ items }: { items: string[] }) {
     <div style={{ marginTop: 16, borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 3, background: "var(--color-bg)", transform: "translateZ(0)" }}>
       {items.map((src, i) => (
         <div key={i} style={{ background: IMG_BG }}>
-          <img src={img(src, 640)} alt="" loading="lazy" onError={onImgError(src)} style={{ width: "100%", display: "block", aspectRatio: "1 / 1", objectFit: "cover" }} />
+          <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "1 / 1", objectFit: "cover" }} />
         </div>
       ))}
     </div>
@@ -108,7 +107,7 @@ function Mosaic({ items }: { items: string[] }) {
       overflowX: "auto", WebkitOverflowScrolling: "touch", margin: `16px -${PAD}px 0`, padding: `0 ${PAD}px`, scrollbarWidth: "none" }}>
       {items.map((src, i) => (
         <div key={i} style={{ gridRow: tall.has(i) ? "span 2" : "auto", borderRadius: 14, overflow: "hidden", background: IMG_BG, transform: "translateZ(0)" }}>
-          <img src={img(src, 640)} alt="" loading="lazy" onError={onImgError(src)} style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }} />
+          <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }} />
         </div>
       ))}
     </div>
@@ -119,7 +118,7 @@ function Mosaic({ items }: { items: string[] }) {
 function PlaceCard({ src, title, sub, pos = "center" }: { src: string; title: string; sub: string; pos?: string }) {
   return (
     <div style={{ position: "relative", borderRadius: 22, overflow: "hidden", background: IMG_BG, transform: "translateZ(0)" }}>
-      <img src={img(src, 640)} alt="" loading="lazy" onError={onImgError(src)} style={{ width: "100%", display: "block", aspectRatio: "16 / 10", objectFit: "cover", objectPosition: pos }} />
+      <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 10", objectFit: "cover", objectPosition: pos }} />
       <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 42%, transparent 64%)" }} />
       <div style={{ position: "absolute", left: 16, right: 16, bottom: 14 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 800, letterSpacing: TR_TITLE, color: "#fff" }}>{title}</div>
