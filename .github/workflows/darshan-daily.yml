@@ -55,6 +55,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install image optimizer (sharp)
+        run: npm install --no-save sharp
+
       - name: Ingest darshan
         env:
           # По расписанию: каждый слот публикует ОДИН храм (Маяпур в 14:30 IST,
