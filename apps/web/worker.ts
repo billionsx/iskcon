@@ -2308,39 +2308,6 @@ export default {
     const stRes = await storiesSyncApi(request, env, url);
     if (stRes) return stRes;
 
-    // ── Ресайз/переупаковка фотографий (Cloudflare Image Resizing) ──
-    // /api/img?u=<url-фото>&w=<px>: тянем удалённое изображение и отдаём его в
-    // AVIF/WebP под нужную ширину. fit=scale-down — НИКОГДА не увеличиваем (без
-    // замыливания), quality 82 — на фото визуально неотличимо, format=auto по
-    // Accept браузера. Кэш на год (immutable). Fail-open: если ресайз не подключён
-    // в аккаунте — cf.image игнорируется, отдаётся оригинал; если источник недоступен
-    // (подписанные URL IG и т.п.) — 302 на оригинал, чтобы <img> всё равно загрузился.
-    if (url.pathname === "/api/img") {
-      const u = url.searchParams.get("u") || "";
-      if (!/^https?:\/\//i.test(u)) {
-        return new Response("bad image url", { status: 400, headers: { "X-Robots-Tag": NOINDEX } });
-      }
-      let w = parseInt(url.searchParams.get("w") || "0", 10);
-      if (!Number.isFinite(w) || w <= 0) w = 1024;
-      if (w > 2048) w = 2048;
-      try {
-        const r = await fetch(u, {
-          cf: {
-            image: { width: w, quality: 82, fit: "scale-down", format: "auto", metadata: "none" },
-            cacheEverything: true,
-            cacheTtl: 31536000,
-          },
-        } as RequestInit);
-        if (!r.ok) return Response.redirect(u, 302);
-        const out = new Response(r.body, r);
-        out.headers.set("Cache-Control", "public, max-age=31536000, immutable");
-        out.headers.set("X-Robots-Tag", NOINDEX);
-        return out;
-      } catch {
-        return Response.redirect(u, 302);
-      }
-    }
-
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
     if (url.pathname.startsWith("/api/")) {
       const target = "https://api.gaurangers.com/v1/" + url.pathname.slice(5) + url.search;
