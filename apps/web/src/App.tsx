@@ -4,72 +4,40 @@
  * Cover: graphite background for now (real BBT artwork to be wired later).
  * Text strictly per Śrīla Prabhupāda. One type family throughout.
  */
-import { useState, useRef, useEffect, useLayoutEffect, type ReactNode } from "react";
+import { useState, useRef, useEffect, useLayoutEffect, Suspense, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
-import { BookDetailPage } from "./BookDetailPage";
-import HomeScreen from "./HomeScreen";
+import {
+  HomeScreen, EntityPage, AccountScreen, BooksHub, KirtansScreen, AcharyaScreen, PracticeHub, DhamaScreen,
+  BookDetailPage, BhajanDetailPage, KirtanArtistPage, ContentDetailPage, SearchScreen, FavoritesScreen,
+  NotesScreen, NoteDetail, BookLoaderPage, CartScreen, JapaScreen, SadhanaScreen, VowScreen, DarshanScreen,
+  DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen,
+  CenterScreen, MyCentersScreen, CentersScreen, CenterEditor, CenterSchedule, CenterDeities, CenterEvents,
+  CenterModeration, CenterPhotos, PrasadamScreen, RecipeDetail, CookbookScreen, DhamaDetailPage,
+  TirthaDetailPage, PdfDoc,
+} from "./lazyScreens";
+import { ScreenFallback } from "./ScreenFallback";
 import { requestHomeTab } from "./homeNav";
 import type { HomeTabId } from "./HomeTabs";
 import { DonateModal } from "./DonateModal";
 import { BOOKS, bookFullTitle } from "./books";
-import BooksHub from "./BooksHub";
 import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
-import { PdfDoc } from "./PdfDoc";
 import { CardActionsProvider, useCardActions, useFavorite } from "./cardActions";
 import { PlayerProvider, usePlayer, AUDIO_FALLBACK_COVER, AUDIO_FALLBACK_COVER_LIGHT } from "./player/store";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
-import BhajanDetailPage from "./BhajanDetailPage";
-import KirtansScreen from "./KirtansScreen";
-import KirtanArtistPage from "./KirtanArtistPage";
-import ContentDetailPage from "./ContentDetailPage";
-import EntityPage from "./EntityPage";
-import AcharyaScreen from "./AcharyaScreen";
-import PracticeHub from "./PracticeHub";
 import { HomeCalendar } from "./HomeCalendar";
 import { HomeFeed, FeedPostFocus } from "./HomeFeed";
 import { DarshanRings } from "./DarshanStories";
-import SearchScreen from "./SearchScreen";
-import FavoritesScreen from "./FavoritesScreen";
-import NotesScreen from "./NotesScreen";
-import NoteDetail from "./NoteDetail";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
-import BookLoaderPage from "./BookLoaderPage";
-import AccountScreen from "./AccountScreen";
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
 import { api } from "./api";
-import CartScreen from "./shop/CartScreen";
-import JapaScreen from "./JapaScreen";
-import SadhanaScreen from "./SadhanaScreen";
-import VowScreen from "./VowScreen";
-import DarshanScreen from "./DarshanScreen";
-import DownloaderScreen from "./DownloaderScreen";
-import StoriesToolScreen from "./StoriesToolScreen";
-import DailyVerseScreen from "./DailyVerseScreen";
-import EkadashiScreen from "./EkadashiScreen";
-import MyProgressScreen from "./MyProgressScreen";
-import CenterScreen from "./centers/CenterScreen";
-import MyCentersScreen from "./centers/MyCentersScreen";
-import CentersScreen from "./centers/CentersScreen";
-import CenterEditor from "./centers/CenterEditor";
-import CenterSchedule from "./centers/CenterSchedule";
-import CenterDeities from "./centers/CenterDeities";
-import CenterEvents from "./centers/CenterEvents";
-import CenterModeration from "./centers/CenterModeration";
-import CenterPhotos from "./centers/CenterPhotos";
 import { useCartCount } from "./shop/cart";
-import PrasadamScreen from "./prasad/PrasadamScreen";
-import RecipeDetail from "./prasad/RecipeDetail";
-import CookbookScreen from "./prasad/CookbookScreen";
-import DhamaScreen from "./dhama/DhamaScreen";
-import DhamaDetailPage from "./dhama/DhamaDetailPage";
-import TirthaDetailPage from "./dhama/TirthaDetailPage";
 import { getDhama } from "./dhama/dhamas";
 
 /* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
@@ -658,6 +626,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
       <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("sadhana"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "sadhana" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
+          <Suspense fallback={<ScreenFallback />}>
           {tab === "krishna" && <EntityPage id="krishna" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
           {tab === "gauranga" && <EntityPage id="chaitanya" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
           {tab === "iskcon" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} onBookMenu={bookMenu} flash={flash} onOpenPath={onOpenPath} />}
@@ -681,6 +650,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
           {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
           {tab === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
           {tab === "account" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
+          </Suspense>
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} scrollRef={mainRef} />
@@ -713,7 +683,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
 
 export default function App() {
   if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pdf")) {
-    return <PdfDoc />;
+    return <Suspense fallback={null}><PdfDoc /></Suspense>;
   }
   const [tab, setTab] = useState("sadhana");
   const [openBook, setOpenBook] = useState<string | null>(null);
@@ -1113,6 +1083,7 @@ export default function App() {
     <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div className={overlayTabBar ? "has-overlay-tabbar" : undefined} style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
         <CardActionsProvider onDonate={openDonate}>
+        <Suspense fallback={<ScreenFallback />}>
         {openStoriesTool ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <StoriesToolScreen onBack={goBack} />
@@ -1278,6 +1249,7 @@ export default function App() {
         ) : (
           <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onSearch={() => navigate("/search")} />
         )}
+        </Suspense>
         </CardActionsProvider>
         {overlayTabBar && <TabBar active={tab} onChange={(k) => navigate("/" + k)} scrollRef={overlayScrollRef} />}
         {donate && <DonateModal onClose={closeDonate} />}
