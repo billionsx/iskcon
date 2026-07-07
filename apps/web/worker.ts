@@ -959,6 +959,33 @@ async function serveAudio(request: Request, identifier: string, filename: string
   return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: h });
 }
 
+// Видео-прокси на Internet Archive: как serveAudio, но с video/* Content-Type и правкой
+// случая, когда IA отдаёт mp4 под audio/* — иначе <video> проигрывал бы только звук.
+async function serveVideo(request: Request, identifier: string, filename: string): Promise<Response> {
+  let name = filename;
+  try { name = decodeURIComponent(filename); } catch { /* keep as-is */ }
+  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(name)}`;
+  const range = request.headers.get("Range");
+  const upstream = await fetch(iaUrl, {
+    method: "GET",
+    headers: range ? { Range: range } : {},
+    redirect: "follow",
+    cf: { cacheEverything: true, cacheTtl: 31536000 },
+  });
+  const h = new Headers(upstream.headers);
+  h.set("Accept-Ranges", "bytes");
+  h.set("Cache-Control", "public, max-age=31536000, immutable");
+  h.set("X-Robots-Tag", NOINDEX);
+  h.delete("set-cookie");
+  const ct = h.get("Content-Type");
+  if (!ct || ct === "application/octet-stream" || /^audio\//i.test(ct)) {
+    const ext = (name.split(".").pop() || "").toLowerCase();
+    const mime = ext === "webm" ? "video/webm" : ext === "ogv" ? "video/ogg" : "video/mp4";
+    h.set("Content-Type", mime);
+  }
+  return new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: h });
+}
+
 function jsonResp(obj: unknown, status = 200): Response {
   return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": NOINDEX } });
 }
@@ -1644,6 +1671,13 @@ export default {
     const audioM = url.pathname.match(/^\/audio\/([a-z0-9][a-z0-9._-]*)\/(.+\.(?:mp3|m4a|mp4|aac|ogg|oga|wav|flac))$/i);
     if (audioM) {
       return serveAudio(request, audioM[1], audioM[2]);
+    }
+
+    // ── Video proxy: /video/<ia-identifier>/<file>.mp4 → streamed from Internet Archive ──
+    // Близнец /audio, но с video/* Content-Type — чтобы <video> в ленте проигрывал файл.
+    const videoM = url.pathname.match(/^\/video\/([a-z0-9][a-z0-9._-]*)\/(.+\.(?:mp4|webm|mov|m4v|ogv))$/i);
+    if (videoM) {
+      return serveVideo(request, videoM[1], videoM[2]);
     }
 
     // ── Library API (served from D1; structure + deep-links only) ──
