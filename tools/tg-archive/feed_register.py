@@ -19,6 +19,26 @@ IDENT = os.getenv("IA_IDENTIFIER", "iskcone-lectures")
 KIND = os.getenv("FEED_KIND_LABEL", "Лекция")
 MANIFEST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "manifest.json")
 
+# Медиа-режим: audio → feed_audio; video → feed_video (тот же приём, прокси /video/).
+MEDIA = (os.getenv("FEED_MEDIA", "audio") or "audio").strip().lower()
+IS_VIDEO = (MEDIA == "video")
+TABLE = "feed_video" if IS_VIDEO else "feed_audio"
+SRC_KIND = "video" if IS_VIDEO else "audio"
+
+
+def fmt_dur(sec):
+    try:
+        s = int(sec)
+    except Exception:
+        return None
+    if s <= 0:
+        return None
+    m, ss = divmod(s, 60)
+    if m >= 60:
+        h, m = divmod(m, 60)
+        return f"{h}:{m:02d}:{ss:02d}"
+    return f"{m}:{ss:02d}"
+
 # Киртаны/бхаджаны помечаем «Киртан», прочее спокенворд — KIND («Лекция»).
 KIRTAN_KW = ("kirtan", "киртан", "bhajan", "бхаджан", "vandana", "вандана",
              "mantra", "мантра", "japa", "джапа", "arati", "арати")
@@ -54,7 +74,7 @@ def d1(sql, params=None):
 
 
 def cmd_skip_ids():
-    rows = d1("SELECT post_id FROM feed_audio")
+    rows = d1(f"SELECT post_id FROM {TABLE}")
     print(",".join(str(r["post_id"]) for r in rows))
 
 
@@ -70,16 +90,21 @@ def cmd_register():
         fn = f.get("filename")
         if not pid or not fn:
             continue
-        src = f"/audio/{IDENT}/{fn}"
-        title = (f.get("title") or fn).strip()
-        perf_raw = (f.get("performer") or "").strip()
-        kind = infer_kind(title, perf_raw)
-        perf = clean_presenter(perf_raw)
-        d1("INSERT OR IGNORE INTO feed_audio (post_id, src, title, presenter, kind_label) VALUES (?1,?2,?3,?4,?5)",
-           [pid, src, title, perf, kind])
+        src = f"/{SRC_KIND}/{IDENT}/{fn}"
+        if IS_VIDEO:
+            dur = fmt_dur(f.get("duration"))
+            d1("INSERT OR IGNORE INTO feed_video (post_id, src, duration) VALUES (?1,?2,?3)",
+               [pid, src, dur])
+        else:
+            title = (f.get("title") or fn).strip()
+            perf_raw = (f.get("performer") or "").strip()
+            kind = infer_kind(title, perf_raw)
+            perf = clean_presenter(perf_raw)
+            d1("INSERT OR IGNORE INTO feed_audio (post_id, src, title, presenter, kind_label) VALUES (?1,?2,?3,?4,?5)",
+               [pid, src, title, perf, kind])
         n += 1
         print(f"  + {pid} → {fn}")
-    print(f"Зарегистрировано новых аудио: {n}")
+    print(f"Зарегистрировано новых ({SRC_KIND}): {n}")
 
 
 if __name__ == "__main__":
