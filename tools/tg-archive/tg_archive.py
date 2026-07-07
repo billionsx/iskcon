@@ -137,7 +137,7 @@ def build_client():
 
 # ------------------------------------------------------------------ download
 async def cmd_download(cfg: dict):
-    from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeFilename
+    from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeFilename, DocumentAttributeVideo
     from telethon.errors import FloodWaitError
     from tqdm import tqdm
 
@@ -146,6 +146,9 @@ async def cmd_download(cfg: dict):
     if not channel:
         die("В config.yaml не указан telegram.channel (например: '@my_kirtan_channel' или t.me/...)")
     audio_only = tg.get("audio_only", True)
+    media = (os.getenv("TG_MEDIA") or "audio").strip().lower()   # audio | video | any
+    want_audio = media in ("audio", "any")
+    want_video = media in ("video", "any")
     reverse = (tg.get("order", "chronological") == "chronological")
     limit = (int(os.getenv("TG_LIMIT")) if (os.getenv("TG_LIMIT") or "").strip() else tg.get("limit"))  # None = все; TG_LIMIT — для теста
     match = (os.getenv("TG_MATCH") or "").strip().lower()  # точечный отбор: только сообщения с этим текстом
@@ -174,12 +177,21 @@ async def cmd_download(cfg: dict):
 
         async for msg in client.iter_messages(entity, reverse=reverse, limit=limit):
             doc = None
-            if msg.audio:
-                doc = msg.audio
-            elif (not audio_only) and msg.voice:
-                doc = msg.voice
-            elif msg.document and (msg.document.mime_type or "").startswith("audio/"):
-                doc = msg.document
+            kind = None
+            if want_audio and msg.audio:
+                doc, kind = msg.audio, "audio"
+            elif want_audio and (not audio_only) and msg.voice:
+                doc, kind = msg.voice, "voice"
+            elif want_video and msg.video:
+                doc, kind = msg.video, "video"
+            elif want_video and getattr(msg, "video_note", None):
+                doc, kind = msg.video_note, "video"
+            elif msg.document:
+                _mt = (msg.document.mime_type or "")
+                if want_audio and _mt.startswith("audio/"):
+                    doc, kind = msg.document, "audio"
+                elif want_video and _mt.startswith("video/"):
+                    doc, kind = msg.document, "video"
             if not doc:
                 continue
             if msg.id in skip_ids:
@@ -190,6 +202,8 @@ async def cmd_download(cfg: dict):
             for attr in doc.attributes:
                 if isinstance(attr, DocumentAttributeAudio):
                     title, performer, duration = attr.title, attr.performer, attr.duration
+                elif isinstance(attr, DocumentAttributeVideo):
+                    duration = attr.duration
                 elif isinstance(attr, DocumentAttributeFilename):
                     orig_name = attr.file_name
 
@@ -198,9 +212,10 @@ async def cmd_download(cfg: dict):
                 if match not in hay:
                     continue
 
-            mime = doc.mime_type or "audio/mpeg"
+            default_mime = "video/mp4" if kind == "video" else "audio/mpeg"
+            mime = doc.mime_type or default_mime
             ext = (os.path.splitext(orig_name)[1] if orig_name else "") \
-                or "." + mime.split("/")[-1].replace("mpeg", "mp3")
+                or "." + mime.split("/")[-1].replace("mpeg", "mp3").replace("quicktime", "mov").replace("x-matroska", "mkv")
 
             existing = by_id.get(msg.id)
             if existing:
@@ -209,8 +224,9 @@ async def cmd_download(cfg: dict):
                 order_idx += 1
                 idx = order_idx
 
+            _fallback = orig_name or (f"video-{msg.id}" if kind == "video" else f"audio-{msg.id}")
             name_base = slug(
-                f"{performer} {title}" if (performer or title) else (orig_name or f"audio-{msg.id}")
+                f"{performer} {title}" if (performer or title) else _fallback
             )
             filename = f"{idx:03d}_{name_base}{ext}"
             dest = DOWNLOAD_DIR / filename
@@ -225,6 +241,7 @@ async def cmd_download(cfg: dict):
                 "title": title,
                 "performer": performer,
                 "mime": mime,
+                "kind": kind,
             })
 
             # докачка: пропускаем уже скачанные файлы нужного размера
@@ -319,7 +336,8 @@ def cmd_upload(cfg: dict):
         if not identifier:
             die("mode=new_item требует identifier (env IA_IDENTIFIER или archive.identifier)")
         md = dict(arc.get("metadata", {}))
-        md.setdefault("mediatype", "audio")
+        _is_video = any((f.get("kind") == "video") for f in files)
+        md.setdefault("mediatype", "movies" if _is_video else "audio")
         rel = os.getenv("IA_RELATED_BOOK_URL") or arc.get("related_book_url")
         if rel:  # связь с книгой: кросс-ссылка в метаданных и описании
             md["external-identifier"] = f"urn:related-book:{rel}"
