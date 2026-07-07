@@ -423,6 +423,7 @@ async function tgPost(channel: string, id: string, env: HomeEnv): Promise<Respon
     for (const b of html.split("tgme_widget_message_wrap").slice(1)) { const pp = parseTgBlock(b); if (pp) posts.push(pp); }
     posts.reverse();
     await applyFeedAudio(posts, env);
+    await applyFeedVideo(posts, env);
     return jr({ channel, posts, oldest: null, hasMore: false }, 200, "public, max-age=300");
   } catch {
     return jr({ channel, posts: [], oldest: null, hasMore: false }, 502, "no-store");
@@ -431,28 +432,85 @@ async function tgPost(channel: string, id: string, env: HomeEnv): Promise<Respon
 
 // Мост «пост ленты → файл на archive.org»: аудио-документам канала (src=null) проставляем
 // прямой src из D1 (feed_audio.post_id). Тогда лента показывает их через ВКЗ как звук.
+//
+// Ключ: Telegram-альбом из нескольких аудио рендерится ОДНОЙ обёрткой ленты, чей id — id
+// ПЕРВОГО сообщения (напр. 10797), но сообщения альбома нумеруются подряд (10797, 10798…).
+// Поэтому каждому аудио без src назначаем строку из ПОСЛЕДОВАТЕЛЬНЫХ id: base+0, base+1, …
+// (иначе второе аудио альбома оставалось бы src=null → «слушать в Telegram»).
 async function applyFeedAudio(posts: TgPost[], env: HomeEnv): Promise<void> {
   try {
     if (!env.DB) return;
-    const ids = posts.filter((p) => p.audios.some((a) => !a.src)).map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
-    if (!ids.length) return;
+    const wanted = new Set<number>();
+    for (const p of posts) {
+      const base = Number(p.id);
+      if (!Number.isFinite(base)) continue;
+      const gaps = p.audios.filter((a) => !a.src).length;
+      if (gaps === 0) continue;
+      for (let k = 0; k < gaps; k++) wanted.add(base + k);
+    }
+    if (!wanted.size) return;
+    const ids = [...wanted];
     const ph = ids.map(() => "?").join(",");
     const { results } = await env.DB.prepare(
       `SELECT post_id AS pid, src, title, presenter, kind_label AS kl FROM feed_audio WHERE post_id IN (${ph})`,
     ).bind(...ids).all();
     const byId = new Map<number, { pid: number; src: string; title?: string; presenter?: string; kl?: string }>();
     for (const r of (results || []) as Array<{ pid: number; src: string; title?: string; presenter?: string; kl?: string }>) byId.set(Number(r.pid), r);
+    if (!byId.size) return;
     for (const p of posts) {
-      const ov = byId.get(Number(p.id));
-      if (!ov || !ov.src) continue;
-      const a = p.audios.find((x) => !x.src);
-      if (a) {
+      const base = Number(p.id);
+      if (!Number.isFinite(base)) continue;
+      let slot = 0;
+      for (const a of p.audios) {
+        if (a.src) continue;
+        const ov = byId.get(base + slot);
+        slot++;
+        if (!ov || !ov.src) continue;
         a.src = ov.src;
         if (ov.title) a.title = ov.title;
         if (ov.presenter) a.meta = ov.presenter;
         if (ov.kl) a.kindLabel = ov.kl;
-      } else {
-        p.audios.push({ kind: "audio", title: ov.title || "Аудио", meta: ov.presenter || "", src: ov.src, kindLabel: ov.kl || undefined });
+      }
+    }
+  } catch { /* без оверрайда — отдаём как есть */ }
+}
+
+// Мост «пост ленты → видео на archive.org»: близнец applyFeedAudio. Крупные видео канала
+// Telegram помечает not_supported и не отдаёт прямой <video src> в вебпревью → лента их
+// не может проиграть. Проставляем прямой src из D1 (feed_video.post_id, тот же приём с
+// последовательными id для альбомов). Тогда VideoBox проигрывает видео инлайн как рилс.
+async function applyFeedVideo(posts: TgPost[], env: HomeEnv): Promise<void> {
+  try {
+    if (!env.DB) return;
+    const wanted = new Set<number>();
+    for (const p of posts) {
+      const base = Number(p.id);
+      if (!Number.isFinite(base)) continue;
+      const gaps = p.videos.filter((v) => !v.src).length;
+      if (gaps === 0) continue;
+      for (let k = 0; k < gaps; k++) wanted.add(base + k);
+    }
+    if (!wanted.size) return;
+    const ids = [...wanted];
+    const ph = ids.map(() => "?").join(",");
+    const { results } = await env.DB.prepare(
+      `SELECT post_id AS pid, src, thumb, duration FROM feed_video WHERE post_id IN (${ph})`,
+    ).bind(...ids).all();
+    const byId = new Map<number, { pid: number; src: string; thumb?: string; duration?: string }>();
+    for (const r of (results || []) as Array<{ pid: number; src: string; thumb?: string; duration?: string }>) byId.set(Number(r.pid), r);
+    if (!byId.size) return;
+    for (const p of posts) {
+      const base = Number(p.id);
+      if (!Number.isFinite(base)) continue;
+      let slot = 0;
+      for (const v of p.videos) {
+        if (v.src) continue;
+        const ov = byId.get(base + slot);
+        slot++;
+        if (!ov || !ov.src) continue;
+        v.src = ov.src;
+        if (ov.thumb) v.thumb = ov.thumb;
+        if (ov.duration) v.duration = ov.duration;
       }
     }
   } catch { /* без оверрайда — отдаём как есть */ }
@@ -518,6 +576,7 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
     }
 
     await applyFeedAudio(posts, env);
+    await applyFeedVideo(posts, env);
 
     // Курсор — самый старый РЕАЛЬНЫЙ id канала на странице (синтетические d<n> в курсор не берём).
     const realIds = posts.map((p) => Number(p.id)).filter((n) => Number.isFinite(n));
