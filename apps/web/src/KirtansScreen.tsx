@@ -20,6 +20,7 @@ import {
   type KirtanArtist, type KirtanAlbum, type KirtanType, type KirtanMood,
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
+import { img, onImgError } from "./img";
 
 const GOLD = "#D2AA1B";
 
@@ -61,7 +62,7 @@ function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }
   return (
     <button onClick={onPlay} style={{ flexShrink: 0, width: 168, textAlign: "left", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-text)" }}>
       <div style={{ position: "relative", width: 168, height: 168, borderRadius: 16, overflow: "hidden", background: "var(--color-bg-3, #e9e9ee)", boxShadow: "0 8px 26px rgba(0,0,0,0.16)", border: "0.5px solid var(--color-hairline)" }}>
-        <img src={albumCover(album)} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={img(albumCover(album), 500)} alt="" loading="lazy" onError={onImgError(albumCover(album))} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         <span aria-hidden style={{ position: "absolute", right: 10, bottom: 10, width: 38, height: 38, borderRadius: "50%", display: "grid", placeItems: "center", background: "rgba(255,255,255,0.92)", color: "#1d1d1f", boxShadow: "0 3px 12px rgba(0,0,0,0.3)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
         </span>
@@ -187,7 +188,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
               return (
                 <li key={al.id} style={{ borderBottom: i === filtered.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
                   <button onClick={() => can ? player.playKirtan(al.id) : onOpenArtist(al.artist)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                    <img src={albumCover(al)} alt="" loading="lazy" style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
+                    <img src={img(albumCover(al), 96)} alt="" loading="lazy" onError={onImgError(albumCover(al))} style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
                     <span style={{ minWidth: 0, flex: 1 }}>
                       <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{al.title}</span>
                       <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{ar?.name} · {TYPE_LABEL[al.type]}</span>
