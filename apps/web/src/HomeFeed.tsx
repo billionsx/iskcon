@@ -24,6 +24,7 @@ import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
+import { img, onImgError } from "./img";
 
 const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20 };
@@ -117,7 +118,7 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
       {/* Бокс img = строго экран (position:absolute; inset:0 → ОПРЕДЕЛЁННАЯ высота, без грид-багов
           с max-height:100%: из-за них вертикальные кадры не ограничивались по высоте, тянулись на
           всю ширину и обрезались снизу). objectFit:contain показывает кадр ЦЕЛИКОМ — мурти не режем. */}
-      <img src={photos[index]} alt="" onClick={(e) => e.stopPropagation()}
+      <img src={img(photos[index], 1600)} alt="" onError={onImgError(photos[index])} onClick={(e) => e.stopPropagation()}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", imageOrientation: "from-image" }} />
       <button type="button" aria-label="Закрыть" onClick={onClose}
         style={{ ...round, top: "calc(env(safe-area-inset-top,0px) + 14px)", right: 14 }}>
@@ -168,7 +169,7 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
     return (
       <div onPointerDown={onDown} onClick={(e) => tryOpen(0, e)}
         style={{ background: "var(--color-bg)", backgroundImage: preview[0] && preview[0] !== display[0] ? `url("${preview[0]}")` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
-        <img src={display[0]} alt="" loading="lazy"
+        <img src={img(display[0], 720)} alt="" loading="lazy" onError={onImgError(display[0])}
           style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
       </div>
     );
@@ -190,7 +191,7 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
           {display.map((src, i) => (
             <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", overflow: "hidden" }}>
               {preview[i] && <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${preview[i]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(30px) brightness(0.55)", transform: "scale(1.15)" }} />}
-              <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
+              <img src={img(src, 720)} alt="" loading="lazy" onError={onImgError(src)} onClick={(e) => tryOpen(i, e)}
                 onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
             </div>
@@ -304,7 +305,7 @@ function TgLinkCard({ l }: { l: TgLink }) {
   return (
     <a href={l.href} target="_blank" rel="noopener noreferrer"
       style={{ display: "block", margin: "12px 14px 0", borderRadius: 16, overflow: "hidden", border: "1px solid var(--color-separator)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
-      {l.img && <img src={l.img} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 8", objectFit: "cover" }} />}
+      {l.img && <img src={img(l.img, 720)} alt="" loading="lazy" onError={onImgError(l.img)} style={{ width: "100%", display: "block", aspectRatio: "16 / 8", objectFit: "cover" }} />}
       <span style={{ display: "block", padding: "10px 14px 12px" }}>
         {l.title && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 700, color: "var(--color-label)" }}>{l.title}</span>}
         {l.desc && <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{l.desc}</span>}
