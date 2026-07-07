@@ -33,6 +33,34 @@ DL = ROOT / "downloads"
 SESSION_NAME = str(ROOT / "tg")  # → tg.session при локальном запуске
 
 DEFAULT_CHANNEL = "@iskcone"
+
+
+def _compress_image(path: str, max_dim: int = 1600, quality: int = 85) -> None:
+    """Ужать фото НА МЕСТЕ без видимой потери качества перед заливкой на archive.org.
+
+    Даунскейл ТОЛЬКО вниз до max_dim по большей стороне (лишние пиксели в приложении
+    всё равно не видны — вес падает, качество на глаз то же; увеличения не бывает).
+    EXIF-ориентация впекается в пиксели, затем пере-кодируем в JPEG q85 (progressive,
+    optimize). Файл заменяем ТОЛЬКО если результат меньше исходника. Любая ошибка или
+    отсутствие Pillow — файл остаётся нетронутым: приём сторис не должен падать из-за
+    сжатия.
+    """
+    try:
+        import io as _io
+        from PIL import Image, ImageOps
+        with Image.open(path) as im:
+            im = ImageOps.exif_transpose(im)  # ориентация из EXIF → в пиксели
+            if im.mode not in ("RGB", "L"):
+                im = im.convert("RGB")
+            im.thumbnail((max_dim, max_dim), Image.LANCZOS)  # thumbnail никогда не увеличивает
+            buf = _io.BytesIO()
+            im.save(buf, format="JPEG", quality=quality, optimize=True, progressive=True)
+        data = buf.getvalue()
+        if len(data) < os.path.getsize(path):
+            with open(path, "wb") as fh:
+                fh.write(data)
+    except Exception as e:  # noqa: BLE001 — сжатие не критично, не роняем приём
+        print(f"  [compress] пропуск {os.path.basename(path)}: {e}", file=sys.stderr)
 DEFAULT_IDENTIFIER = "iskcone-stories"
 
 
@@ -225,6 +253,7 @@ async def cmd_fetch():
                 else:
                     await _dl(client, media, str(pdest))            # фото целиком
                 if os.path.exists(pdest):
+                    _compress_image(str(pdest))  # ужать фото до заливки на archive.org
                     files_to_upload[poster] = str(pdest)
             if need_video:
                 vdest = DL / video_name

@@ -12,6 +12,7 @@
 //      CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID
 
 import { writeFileSync, mkdirSync } from "node:fs";
+import { optimizeIfSmaller } from "./imgopt.mjs"; // сжатие фото на приёме с сайтов храмов
 import { execFileSync } from "node:child_process";
 
 /* ───────── источники ───────── */
@@ -270,7 +271,7 @@ async function sendDarshanPhoto(photoUrl, captionHtml) {
   // скачиваем байты и грузим multipart — надёжнее, чем отдавать Telegram hotlink на cdn-telegram
   const img = await fetch(photoUrl, { headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" } });
   if (!img.ok) throw new Error(`photo fetch ${img.status}`);
-  const buf = Buffer.from(await img.arrayBuffer());
+  const buf = (await optimizeIfSmaller(Buffer.from(await img.arrayBuffer()), { maxDim: 1600, quality: 82, to: "jpeg" })).buf;
   const fd = new FormData();
   fd.append("chat_id", CHANNEL);
   if (captionHtml) { fd.append("caption", captionHtml); fd.append("parse_mode", "HTML"); }
@@ -289,7 +290,7 @@ async function sendDarshanAlbum(photoUrls, captionHtml) {
     try { img = await fetch(urls[i], { headers: { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)" } }); }
     catch { continue; }
     if (!img.ok) continue;
-    const buf = Buffer.from(await img.arrayBuffer());
+    const buf = (await optimizeIfSmaller(Buffer.from(await img.arrayBuffer()), { maxDim: 1600, quality: 82, to: "jpeg" })).buf;
     const name = `photo${i}`;
     fd.append(name, new Blob([buf], { type: img.headers.get("content-type") || "image/jpeg" }), `${name}.jpg`);
     ok.push({ name, url: urls[i] });
@@ -314,7 +315,7 @@ async function sendAlbumChunk(urls, captionHtml) {
   for (let i = 0; i < urls.length; i++) {
     let img; try { img = await fetch(urls[i], { headers: { "User-Agent": SITE_UA } }); } catch { continue; }
     if (!img.ok) continue;
-    const buf = Buffer.from(await img.arrayBuffer());
+    const buf = (await optimizeIfSmaller(Buffer.from(await img.arrayBuffer()), { maxDim: 1600, quality: 82, to: "jpeg" })).buf;
     const name = `photo${i}`;
     fd.append(name, new Blob([buf], { type: img.headers.get("content-type") || "image/jpeg" }), `${name}.jpg`);
     ok.push({ name, url: urls[i] });
