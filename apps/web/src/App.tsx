@@ -13,7 +13,7 @@ import {
   DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen,
   CenterScreen, MyCentersScreen, CentersScreen, CenterEditor, CenterSchedule, CenterDeities, CenterEvents,
   CenterModeration, CenterPhotos, PrasadamScreen, RecipeDetail, CookbookScreen, DhamaDetailPage,
-  TirthaDetailPage, PdfDoc,
+  TirthaDetailPage, PdfDoc, prefetchTopScreens,
 } from "./lazyScreens";
 import { ScreenFallback } from "./ScreenFallback";
 import { requestHomeTab } from "./homeNav";
@@ -712,6 +712,9 @@ export default function App() {
     window.addEventListener("iskcon:onboarding", h);
     return () => window.removeEventListener("iskcon:onboarding", h);
   }, []);
+  // Прогрев чанков основных вкладок в простое браузера → переключение между
+  // разделами открывается мгновенно, без скелетона (модуль уже в кэше).
+  useEffect(() => { prefetchTopScreens(); }, []);
   const [openDiary, setOpenDiary] = useState(false);
   const [openVow, setOpenVow] = useState(false);
   const [openDarshan, setOpenDarshan] = useState(false);

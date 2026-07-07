@@ -75,3 +75,30 @@ export const TirthaDetailPage = lazy(() => import("./dhama/TirthaDetailPage"));
 export const PdfDoc = lazy(() =>
   import("./PdfDoc").then((m) => ({ default: m.PdfDoc }))
 );
+
+/**
+ * Прогрев чанков основных вкладок в простое браузера.
+ *
+ * После первого кадра, когда главный поток свободен, тихо подтягиваем модули
+ * разделов, в которые пользователь заходит чаще всего (личности, книги, практика,
+ * кабинет). Тап по вкладке тогда открывается мгновенно — без скелетона, чанк уже
+ * в кэше модулей. Экономный режим уважаем: при Save-Data или медленной сети (2g)
+ * прогрев пропускаем, чтобы не тратить трафик наперёд.
+ */
+export function prefetchTopScreens(): void {
+  try {
+    const c = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ""))) return;
+  } catch {
+    /* нет Network Information API — прогреваем как обычно */
+  }
+  const warm = () => {
+    void import("./AcharyaScreen");
+    void import("./BooksHub");
+    void import("./PracticeHub");
+    void import("./AccountScreen");
+  };
+  const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout?: number }) => number }).requestIdleCallback;
+  if (ric) ric(warm, { timeout: 3000 });
+  else setTimeout(warm, 1500);
+}
