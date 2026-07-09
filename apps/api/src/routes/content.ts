@@ -232,6 +232,8 @@ contentRouter.get('/pkl', async (c) => {
             (SELECT n.value FROM entity_names n WHERE n.entity_id = e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name,
             e.tattva AS tattva,
             e.note AS note,
+            ep.summary AS summary,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND (ec.category LIKE 'wave-%' OR ec.category LIKE 'rasa:%' OR ec.category LIKE 'bhag-%') LIMIT 1) AS sub,
             (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'lila-%' LIMIT 1) AS lila,
             (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'wave-%' LIMIT 1) AS wave,
             (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'rasa:%' LIMIT 1) AS rasa,
@@ -252,6 +254,8 @@ contentRouter.get('/pkl', async (c) => {
     rasa: r.rasa ?? null,
     tattva: r.tattva ?? null,
     note: r.note ?? null,
+    summary: r.summary ?? null,
+    sub: r.sub ?? null,
   }));
   return c.json({ items });
 });
