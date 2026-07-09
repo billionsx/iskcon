@@ -17,7 +17,7 @@ concurrency:
 
 on:
   schedule:
-    - cron: "37 */6 * * *"
+    - cron: "17 */2 * * *"
   workflow_dispatch:
     inputs:
       limit:
