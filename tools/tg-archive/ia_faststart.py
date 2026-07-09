@@ -62,19 +62,23 @@ def main():
 
     from internetarchive import download as ia_download, upload as ia_upload
 
+    def err(fn, msg):
+        # аннотация читается через checks API (api.github.com), в отличие от blob-логов
+        print(f"::error title=faststart::{fn}: {msg}", flush=True)
+
     work = Path(tempfile.mkdtemp(prefix="iafs_"))
     done = 0
     for fn in files:
         print(f"== {fn} ==", flush=True)
         try:
-            ia_download(ident, files=[fn], destdir=str(work), silent=True,
-                        ignore_existing=True, retries=3)
+            ia_download(ident, files=[fn], destdir=str(work),
+                        ignore_existing=True, retries=3, verbose=False)
         except Exception as e:
-            print(f"  ! download error: {e}")
+            err(fn, f"download error: {e}")
             continue
         local = work / ident / fn
         if not local.exists() or local.stat().st_size == 0:
-            print("  ! файл не скачался — пропуск")
+            err(fn, "файл не скачался из IA")
             continue
         before = local.stat().st_size
         # Новое имя: всегда .web.mp4 (контейнер после faststart — mp4).
@@ -82,21 +86,21 @@ def main():
         new_name = f"{base}.web.mp4"
         out = local.parent / new_name
         if not remux_faststart(local, out):
-            print("  ! remux не удался — пропуск")
+            err(fn, "ffmpeg remux не удался")
             continue
         after = out.stat().st_size
         try:
             resp = ia_upload(ident, files={new_name: str(out)}, access_key=ak,
-                             secret_key=sk, retries=3, verbose=True)
+                             secret_key=sk, retries=3, queue_derive=False, verbose=True)
         except Exception as e:
-            print(f"  ! upload error: {e}")
+            err(fn, f"upload error: {e}")
             continue
         bad = [r for r in resp if getattr(r, "status_code", 200) not in (200, None)]
         if bad:
-            print(f"  ! upload fail: {[getattr(r, 'status_code', None) for r in bad]}")
+            err(fn, f"upload status {[getattr(r, 'status_code', None) for r in bad]}")
             continue
-        print(f"  {before} -> {after} байт")
-        print(f"OK {fn} -> {new_name}", flush=True)
+        print(f"  {before} -> {after} байт", flush=True)
+        print(f"::notice title=faststart::OK {fn} -> {new_name}", flush=True)
         done += 1
 
     print(f"Готово: {done}/{len(files)}")
