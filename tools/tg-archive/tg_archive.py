@@ -268,6 +268,20 @@ async def cmd_download(cfg: dict):
                     time.sleep(e.seconds + 1)
 
             rec["downloaded"] = True
+            # Видео: тянем крупнейший thumbnail из Telegram — постер плеера ленты.
+            # best-effort: любой сбой не должен ронять ingest самого видео.
+            if kind == "video":
+                try:
+                    tname = os.path.splitext(filename)[0] + ".jpg"
+                    tdest = DOWNLOAD_DIR / tname
+                    if tdest.exists() and tdest.stat().st_size > 0:
+                        rec["thumb"] = tname
+                    else:
+                        got = await client.download_media(msg, file=str(tdest), thumb=-1)
+                        if got and tdest.exists() and tdest.stat().st_size > 0:
+                            rec["thumb"] = tname
+                except Exception:
+                    pass
             by_id[msg.id] = rec
             if not existing:
                 manifest["files"].append(rec)
@@ -322,6 +336,11 @@ def cmd_upload(cfg: dict):
         local = DOWNLOAD_DIR / f["filename"]
         if local.exists():
             file_map[f["filename"]] = str(local)
+        thumb = f.get("thumb")  # постер видео — грузим тем же объектом (best-effort)
+        if thumb:
+            tlocal = DOWNLOAD_DIR / thumb
+            if tlocal.exists():
+                file_map[thumb] = str(tlocal)
     if not file_map:
         die("Файлы из манифеста не найдены в downloads/ — перезапусти download")
 
