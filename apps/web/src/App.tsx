@@ -758,7 +758,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "stories-tool", "entity", "person", "favorites", "notes", "note", "cart", "practice", "prasadam", "center", "centers", "my"];
+  const RESERVED = ["", "dhana", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "stories-tool", "entity", "person", "favorites", "notes", "note", "cart", "practice", "prasadam", "center", "centers", "my"];
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
@@ -793,13 +793,14 @@ export default function App() {
     if (openNotes) return "/notes";
     if (openCatalog) return "/bhajans";
     if (openContent) return openContent;   // slug сам по себе путь
-    if (openEntity) return "/person/" + openEntity;
+    if (openEntity) return "/" + openEntity;
     if (openPost) return "/post/" + openPost;
     if (openCollection) return "/acharya/" + openCollection;
     if (openTirtha) return "/dhama/" + openTirtha.dhama + "/" + openTirtha.id;
     if (openDhama) return "/dhama/" + openDhama;
     // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
     if (tab === "krishna") return (typeof window !== "undefined" && window.location.pathname.startsWith("/krishna")) ? window.location.pathname : "/krishna";
+    if (tab === "bogatstva") return "/dhana";
     return (tab === "home" || tab === "sadhana") ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
@@ -807,7 +808,8 @@ export default function App() {
       .then((r) => r.json())
       .then((d) => {
         fromPop.current = true;
-        if (d?.kind === "bhajan") setOpenBhajan(slug);
+        if (d?.kind === "entity") setOpenEntity((d.id as string) || slug.replace(/^\//, ""));
+        else if (d?.kind === "bhajan") setOpenBhajan(slug);
         else setOpenContent(slug); // content или неизвестно → пробуем как контент
       })
       .catch(() => { fromPop.current = true; setOpenContent(slug); });
@@ -821,6 +823,7 @@ export default function App() {
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
+    if (seg0 === "dhana") { setTab("bogatstva"); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
     if (seg0 === "krishna") { setTab("krishna"); return; }
     if (seg0 === "dhama") {

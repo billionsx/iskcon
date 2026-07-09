@@ -1170,7 +1170,13 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     let qualifier = "";
     if (rasa && data?.type !== "place" && !/таттва|Личность/.test(primary)) qualifier = `${rasa.label}-раса`;
     else if (has("gaudiya")) { qualifier = "Гаудия-сампрадая"; eat("gaudiya"); }
-    const eyebrow = qualifier ? `${primary} · ${qualifier}` : primary;
+    // Классификация ЛИЛА · ПОДКАТЕГОРИЯ (напр. «Гауранга Лила · I волна») — приоритетна для личностей.
+    const LILA_LBL: Record<string, string> = { "lila-gauranga": "Гауранга Лила", "lila-krishna": "Кришна Лила", "lila-bhagavatam": "Шримад Бхагаватам", "lila-gita": "Бхагавад Гита", "lila-other": "Другие" };
+    const SUB_LBL: Record<string, string> = { "wave-1": "I волна", "wave-2": "II волна", "wave-3": "III волна", "wave-4": "IV волна", "wave-5": "V волна", "wave-iskcon": "ИСККОН", "wave-sampradaya": "Ачарьи сампрадай", "rasa:shanta": "Шанта", "rasa:dasya": "Дасья", "rasa:sakhya": "Сакхья", "rasa:vatsalya": "Ватсалья", "rasa:madhurya": "Мадхурья", "bhag-ramayana": "Рамаяна", "bhag-mahabharata": "Махабхарата", "bhag-avatara": "Аватары", "bhag-devata": "Полубоги", "bhag-bhagavata": "Бхагаватам" };
+    const lilaCat = cats.find((c) => LILA_LBL[c]);
+    const subCat = cats.find((c) => c.startsWith("wave-") || c.startsWith("rasa:") || c.startsWith("bhag-"));
+    const classEyebrow = (lilaCat && data?.type !== "place") ? (LILA_LBL[lilaCat] + (subCat && SUB_LBL[subCat] ? ` · ${SUB_LBL[subCat]}` : "")) : "";
+    const eyebrow = classEyebrow || (qualifier ? `${primary} · ${qualifier}` : primary);
     const SCRIPT = new Set(["bhagavatam", "gita", "cc", "ramayana", "mahabharata"]);
     const W = (c: string) => (c === "source-of-all" ? 3 : SCRIPT.has(c) ? 2 : c === "vraja" ? -1 : 0);
     const rest = cats.filter((c) => !used.has(c) && !c.startsWith("rasa:") && CATEGORY_RU[c]).sort((a, b) => W(b) - W(a));
