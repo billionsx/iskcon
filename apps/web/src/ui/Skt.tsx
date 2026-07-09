@@ -91,6 +91,9 @@ function wrapGlossary(text: string, keyBase: number): ReactNode[] {
   return out;
 }
 
+const NAME_STOP = new Set(["он", "она", "оно", "они", "его", "ему", "её", "ее", "их", "им", "ими", "сам", "сама", "само", "сами", "самого", "свой", "своя", "своё", "свое", "свои", "своих", "своим", "в", "и", "а", "но", "это", "эти", "этот", "эта", "тот", "та", "то", "так", "за", "на", "по", "под", "над", "с", "о", "об", "от", "до", "для", "как", "что", "чтобы", "бог", "бога", "богу", "господь", "господа", "господу", "верховный", "верховная", "верховную", "верховного"]);
+function upperStart(s: string): boolean { return s.length > 0 && s[0] === s[0].toUpperCase() && s[0] !== s[0].toLowerCase(); }
+
 function wrapGlossaryInner(text: string, keyBase: number, out: ReactNode[]): void {
   const re = SCRIPTURE_TERM_REGEX;
   re.lastIndex = 0;
@@ -106,6 +109,17 @@ function wrapGlossaryInner(text: string, keyBase: number, out: ReactNode[]): voi
     if (!boundaryOk || SCRIPTURE_STOP_SET.has(form.toLowerCase())) {
       re.lastIndex = start + 1;
       continue;
+    }
+    // Имя-guard: заглавный термин, за которым следует ещё одно заглавное слово
+    // (не местоимение/частица), — часть имени собственного (напр. «Бхакти Тиртха
+    // Свами»), а не термин. Курсивить не нужно.
+    if (upperStart(form)) {
+      const rest = text.slice(end).replace(/^\s+/, "");
+      const nextWord = (rest.match(/^\S+/)?.[0] ?? "").replace(/[^\p{L}-]/gu, "");
+      if (upperStart(nextWord) && !NAME_STOP.has(nextWord.toLowerCase())) {
+        re.lastIndex = start + 1;
+        continue;
+      }
     }
     if (start > last) out.push(text.slice(last, start));
     out.push(<Skt key={`g${keyBase}-${out.length}`}>{form}</Skt>);
