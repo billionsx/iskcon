@@ -15,6 +15,7 @@ import {
   CenterModeration, CenterPhotos, PrasadamScreen, RecipeDetail, CookbookScreen, DhamaDetailPage,
   TirthaDetailPage, PdfDoc, prefetchTopScreens,
 } from "./lazyScreens";
+import LichnostiHub from "./LichnostiHub";
 import { ScreenFallback } from "./ScreenFallback";
 import { requestHomeTab } from "./homeNav";
 import type { HomeTabId } from "./HomeTabs";
@@ -547,7 +548,7 @@ function SegRow({ value, onChange, items }: { value: string; onChange: (v: strin
   );
 }
 
-let bogSub = "books"; // сохраняем выбранный сабтаб Богатств между уходом в деталь и возвратом (history.back)
+let bogSub = "lichnosti"; // сохраняем выбранный сабтаб Богатств между уходом в деталь и возвратом (history.back)
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
   onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
@@ -557,7 +558,8 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   const pickSub = (v: string) => { bogSub = v; setSub(v); };
   return (
     <div>
-      <SegRow value={sub} onChange={pickSub} items={[["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"]]} />
+      <SegRow value={sub} onChange={pickSub} items={[["lichnosti", "Личности"], ["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"]]} />
+      {sub === "lichnosti" && <LichnostiHub onOpenEntity={onOpenEntity} />}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
       {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
