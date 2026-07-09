@@ -196,7 +196,11 @@ contentRouter.get('/personalities', async (c) => {
   const { results } = await c.env.DB.prepare(
     `SELECT ci.slug, ci.name, ci.subtype, ci.hero_image,
             (SELECT COUNT(*) FROM quotes q WHERE q.personality_slug = ci.slug) AS n_quotes,
-            length(COALESCE(pt.text,'')) AS tlen
+            length(COALESCE(pt.text,'')) AS tlen,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = ci.slug AND ec.category LIKE 'lila-%' LIMIT 1) AS lila,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = ci.slug AND ec.category LIKE 'wave-%' LIMIT 1) AS wave,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = ci.slug AND ec.category LIKE 'rasa:%' LIMIT 1) AS rasa,
+            (SELECT en.tattva FROM entities en WHERE en.id = ci.slug) AS tattva
        FROM content_items ci
        LEFT JOIN page_text pt ON pt.slug = ci.slug
       WHERE ci.type = 'personality' AND ci.lang = 'ru'
@@ -213,6 +217,10 @@ contentRouter.get('/personalities', async (c) => {
     kind: SUB[r.subtype as string] ?? null,
     hero_image: r.hero_image ?? null,
     n_quotes: r.n_quotes ?? 0,
+    lila: r.lila ?? null,
+    wave: r.wave ?? null,
+    rasa: r.rasa ?? null,
+    tattva: r.tattva ?? null,
   }));
   return c.json({ items });
 });
