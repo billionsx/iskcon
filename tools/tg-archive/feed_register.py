@@ -10,6 +10,7 @@ D1 — через HTTP API (секрет CLOUDFLARE_API_TOKEN). Никаких �
 import json
 import os
 import sys
+import urllib.parse
 import urllib.request
 
 ACCOUNT = os.getenv("CF_ACCOUNT_ID", "d5cbe19470dc38599873eabfe148e6d1")
@@ -93,8 +94,13 @@ def cmd_register():
         src = f"/{SRC_KIND}/{IDENT}/{fn}"
         if IS_VIDEO:
             dur = fmt_dur(f.get("duration"))
-            d1("INSERT OR IGNORE INTO feed_video (post_id, src, duration) VALUES (?1,?2,?3)",
-               [pid, src, dur])
+            thumb = f.get("thumb")
+            thumb_url = None
+            if thumb:
+                direct = f"https://archive.org/download/{IDENT}/{thumb}"
+                thumb_url = "/api/img?u=" + urllib.parse.quote(direct, safe="") + "&w=800"
+            d1("INSERT OR IGNORE INTO feed_video (post_id, src, thumb, duration) VALUES (?1,?2,?3,?4)",
+               [pid, src, thumb_url, dur])
         else:
             title = (f.get("title") or fn).strip()
             perf_raw = (f.get("performer") or "").strip()
