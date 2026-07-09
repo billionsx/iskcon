@@ -49,7 +49,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 
   useEffect(() => {
     let live = true;
-    fetch(api("/content/personalities")).then((r) => r.json())
+    fetch(api("/content/pkl")).then((r) => r.json())
       .then((d) => { if (live) setItems(d.items ?? []); })
       .catch(() => { if (live) setItems([]); });
     return () => { live = false; };

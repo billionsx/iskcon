@@ -225,6 +225,35 @@ contentRouter.get('/personalities', async (c) => {
   return c.json({ items });
 });
 
+// GET /v1/content/pkl — полная библиотека личностей (entities) с таксономией лила/волна/раса
+contentRouter.get('/pkl', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT e.id AS slug,
+            (SELECT n.value FROM entity_names n WHERE n.entity_id = e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1) AS name,
+            e.tattva AS tattva,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'lila-%' LIMIT 1) AS lila,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'wave-%' LIMIT 1) AS wave,
+            (SELECT ec.category FROM entity_categories ec WHERE ec.entity_id = e.id AND ec.category LIKE 'rasa:%' LIMIT 1) AS rasa,
+            (SELECT COUNT(*) FROM json_tree(COALESCE(ep.longform, '{}')) WHERE key = 'byId') AS n_quotes
+       FROM entities e
+       LEFT JOIN entity_profiles ep ON ep.entity_id = e.id
+      WHERE e.type = 'personality' AND e.status = 'published'
+      ORDER BY name`,
+  ).all();
+  const items = ((results as Row[]) ?? []).map((r) => ({
+    slug: r.slug,
+    name: r.name ?? r.slug,
+    kind: null,
+    hero_image: null,
+    n_quotes: r.n_quotes ?? 0,
+    lila: r.lila ?? null,
+    wave: r.wave ?? null,
+    rasa: r.rasa ?? null,
+    tattva: r.tattva ?? null,
+  }));
+  return c.json({ items });
+});
+
 // GET /v1/content/centers — список центров ИСККОН
 contentRouter.get('/centers', async (c) => {
   const { results } = await c.env.DB.prepare(
