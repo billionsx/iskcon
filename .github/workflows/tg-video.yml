@@ -39,6 +39,9 @@ jobs:
       - name: "Зависимости"
         run: pip install -r tools/tg-archive/requirements.txt
 
+      - name: "ffmpeg (faststart видео)"
+        run: ffmpeg -version >/dev/null 2>&1 || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+
       - name: "Уже зарегистрированные id -> TG_SKIP_IDS"
         working-directory: tools/tg-archive
         env:

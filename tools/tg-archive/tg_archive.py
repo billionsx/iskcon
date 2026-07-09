@@ -86,6 +86,46 @@ def ok(msg: str):
     print(f"\u2713 {msg}")
 
 
+def ensure_faststart(path: Path) -> None:
+    """Веб-оптимизация видео: moov-атом в начало файла (progressive streaming).
+
+    Без этого крупный mp4 не проигрывается инлайн (<video autoPlay preload=metadata):
+    браузер не находит moov в голове потока → onError → лента уходит в Telegram-iframe.
+    Быстрый путь — только переложить moov (-c copy, без перекодирования, секунды).
+    Если контейнер/кодеки несовместимы с вебом — лёгкий перекод в h264/aac.
+    Имя файла НЕ меняем: ссылка /video/<id>/<file> в ленте остаётся прежней."""
+    import shutil
+    import subprocess
+    if not path.exists():
+        return
+    if path.suffix.lower() not in (".mp4", ".m4v", ".mov"):
+        return  # faststart относится только к mp4/mov контейнерам
+    if shutil.which("ffmpeg") is None:
+        info("ffmpeg не найден — пропускаю faststart (видео может уйти в Telegram-iframe)")
+        return
+    tmp = path.parent / (path.stem + ".fs" + path.suffix)
+
+    def _run(cmd):
+        return subprocess.run(cmd, stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL).returncode
+
+    rc = _run(["ffmpeg", "-y", "-i", str(path), "-c", "copy",
+               "-movflags", "+faststart", str(tmp)])
+    if rc != 0 or not tmp.exists() or tmp.stat().st_size == 0:
+        if tmp.exists():
+            tmp.unlink()
+        rc = _run(["ffmpeg", "-y", "-i", str(path), "-c:v", "libx264",
+                   "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
+                   "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(tmp)])
+    if rc == 0 and tmp.exists() and tmp.stat().st_size > 0:
+        os.replace(str(tmp), str(path))
+        ok(f"faststart: {path.name}")
+    else:
+        if tmp.exists():
+            tmp.unlink()
+        info(f"faststart не удался: {path.name} — оставляю оригинал")
+
+
 def load_dotenv_if_present():
     env = ROOT / ".env"
     if not env.exists():
@@ -268,6 +308,8 @@ async def cmd_download(cfg: dict):
                     time.sleep(e.seconds + 1)
 
             rec["downloaded"] = True
+            if kind == "video":
+                ensure_faststart(dest)  # moov в начало → инлайн-стриминг, не Telegram-iframe
             # Видео: тянем крупнейший thumbnail из Telegram — постер плеера ленты.
             # best-effort: любой сбой не должен ронять ingest самого видео.
             if kind == "video":
