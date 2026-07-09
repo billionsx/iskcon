@@ -800,7 +800,7 @@ export default function App() {
     if (openDhama) return "/dhama/" + openDhama;
     // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
     if (tab === "krishna") return (typeof window !== "undefined" && window.location.pathname.startsWith("/krishna")) ? window.location.pathname : "/krishna";
-    if (tab === "bogatstva") return "/dhana";
+    if (tab === "bogatstva") return (typeof window !== "undefined" && window.location.pathname.startsWith("/dhana")) ? window.location.pathname : "/dhana";
     return (tab === "home" || tab === "sadhana") ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {

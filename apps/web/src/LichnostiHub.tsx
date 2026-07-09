@@ -17,6 +17,21 @@ const SUBS: Record<string, [string, string][]> = {
   "lila-bhagavatam": [["bhag-ramayana", "Рамаяна"], ["bhag-mahabharata", "Махабхарата"], ["bhag-avatara", "Аватары"], ["bhag-devata", "Полубоги"], ["bhag-bhagavata", "Бхагаватам"], ["", "Все"]],
 };
 
+const LILA_SLUG: Record<string, string> = { "lila-gauranga": "gauranga-lila", "lila-krishna": "krishna-lila", "lila-bhagavatam": "shrimad-bhagavatam", "lila-gita": "bhagavad-gita", "lila-other": "drugie" };
+const SUB_SLUG: Record<string, string> = { "wave-1": "1-volna", "wave-2": "2-volna", "wave-3": "3-volna", "wave-4": "4-volna", "wave-5": "5-volna", "wave-iskcon": "bespretsedentnaya", "wave-sampradaya": "acharyi-sampradaya", "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya", "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya", "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata", "bhag-avatara": "avatary", "bhag-devata": "polubogi", "bhag-bhagavata": "bhagavatam" };
+const SLUG_LILA: Record<string, string> = Object.fromEntries(Object.entries(LILA_SLUG).map(([k, v]) => [v, k]));
+const SLUG_SUB: Record<string, string> = Object.fromEntries(Object.entries(SUB_SLUG).map(([k, v]) => [v, k]));
+
+function readUrl(): { lila: string; sub: string } {
+  const parts = (typeof window !== "undefined" ? window.location.pathname : "/").split("/").filter(Boolean);
+  if (parts[0] === "dhana" && parts[1] && SLUG_LILA[parts[1]]) {
+    const l = SLUG_LILA[parts[1]];
+    const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : (SUBS[l]?.[0]?.[0] ?? "");
+    return { lila: l, sub: s };
+  }
+  return { lila: "lila-gauranga", sub: "wave-1" };
+}
+
 function entityCtx(p: Person) {
   return {
     type: "entity" as const, id: p.slug, title: p.name, subtitle: p.note || undefined,
@@ -64,9 +79,10 @@ function Row({ p, onOpen }: { p: Person; onOpen: (id: string, type: string | nul
 
 export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: string, type: string | null) => void }) {
   const [items, setItems] = useState<Person[] | null>(null);
-  const [lila, setLila] = useState("lila-gauranga");
-  const [subSel, setSubSel] = useState("wave-1");
+  const [lila, setLila] = useState(() => readUrl().lila);
+  const [subSel, setSubSel] = useState(() => readUrl().sub);
   const [q, setQ] = useState("");
+  const pickLila = (v: string) => { setLila(v); setSubSel(SUBS[v]?.[0]?.[0] ?? ""); };
 
   useEffect(() => {
     let live = true;
@@ -75,7 +91,16 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
       .catch(() => { if (live) setItems([]); });
     return () => { live = false; };
   }, []);
-  useEffect(() => { setSubSel(SUBS[lila]?.[0]?.[0] ?? ""); }, [lila]);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const lslug = LILA_SLUG[lila];
+    if (!lslug) return;
+    const sslug = subSel ? SUB_SLUG[subSel] : "";
+    const path = "/dhana/" + lslug + (sslug ? "/" + sslug : "");
+    if (window.location.pathname !== path) {
+      try { window.history.replaceState(window.history.state, "", path); } catch { /* noop */ }
+    }
+  }, [lila, subSel]);
 
   const qq = q.trim().toLowerCase();
   const hit = (p: Person) => !qq || p.name.toLowerCase().includes(qq) || (p.note ?? "").toLowerCase().includes(qq) || (p.summary ?? "").toLowerCase().includes(qq);
@@ -130,7 +155,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
           {q ? <button type="button" className="lh-clr" aria-label="Очистить" onClick={() => setQ("")}>✕</button> : null}
         </div>
 
-        <div className="lh-grp"><Pills value={lila} onChange={setLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
+        <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
         {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={setSubSel} items={subItems} count={subCount} sec /></div> : null}
       </div>
 
