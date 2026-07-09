@@ -78,17 +78,15 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   useEffect(() => { setSubSel(SUBS[lila]?.[0]?.[0] ?? ""); }, [lila]);
 
   const qq = q.trim().toLowerCase();
-  const searching = qq.length > 0;
-  const hit = (p: Person) => p.name.toLowerCase().includes(qq) || (p.note ?? "").toLowerCase().includes(qq) || (p.summary ?? "").toLowerCase().includes(qq);
-  const lilaCount = (lv: string) => (items ?? []).filter((p) => p.lila === lv).length;
-  const inLila = useMemo(() => (items ?? []).filter((p) => p.lila === lila), [items, lila]);
-  const subCount = (sv: string) => (sv === "" ? inLila.length : inLila.filter((p) => p.sub === sv).length);
-  const results = useMemo(() => {
-    if (!items) return [];
-    if (searching) return items.filter(hit);
-    return inLila.filter((p) => !subSel || p.sub === subSel);
+  const hit = (p: Person) => !qq || p.name.toLowerCase().includes(qq) || (p.note ?? "").toLowerCase().includes(qq) || (p.summary ?? "").toLowerCase().includes(qq);
+  const lilaCount = (lv: string) => (items ?? []).filter((p) => p.lila === lv && hit(p)).length;
+  const inLila = useMemo(
+    () => (items ?? []).filter((p) => p.lila === lila && hit(p)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items, searching, qq, inLila, subSel]);
+    [items, lila, qq],
+  );
+  const subCount = (sv: string) => (sv === "" ? inLila.length : inLila.filter((p) => p.sub === sv).length);
+  const results = useMemo(() => inLila.filter((p) => !subSel || p.sub === subSel), [inLila, subSel]);
   const subItems = SUBS[lila] ?? null;
   const lilaVisible = LILAS.filter(([v]) => lilaCount(v) > 0);
 
@@ -132,20 +130,16 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
           {q ? <button type="button" className="lh-clr" aria-label="Очистить" onClick={() => setQ("")}>✕</button> : null}
         </div>
 
-        {!searching ? (
-          <>
-            <div className="lh-grp"><Pills value={lila} onChange={setLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
-            {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={setSubSel} items={subItems} count={subCount} sec /></div> : null}
-          </>
-        ) : null}
+        <div className="lh-grp"><Pills value={lila} onChange={setLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
+        {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={setSubSel} items={subItems} count={subCount} sec /></div> : null}
       </div>
 
-      <div className="lh-cap">{searching ? "Найдено во всей библиотеке · " : ""}{results.length} {results.length % 10 === 1 && results.length % 100 !== 11 ? "личность" : (results.length % 10 >= 2 && results.length % 10 <= 4 && (results.length % 100 < 10 || results.length % 100 >= 20) ? "личности" : "личностей")}</div>
+      <div className="lh-cap">{results.length} {results.length % 10 === 1 && results.length % 100 !== 11 ? "личность" : (results.length % 10 >= 2 && results.length % 10 <= 4 && (results.length % 100 < 10 || results.length % 100 >= 20) ? "личности" : "личностей")}</div>
 
       {!items ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-2)" }}>Загрузка…</div> : null}
       {items && results.length === 0 ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-3)", padding: "40px 0", textAlign: "center" }}>Никого не найдено</div> : null}
       {items && results.length > 0 ? (
-        <div className="lh-list" key={searching ? "s:" + qq : lila + subSel}>
+        <div className="lh-list" key={lila + subSel + qq}>
           {results.map((p) => <Row key={p.slug} p={p} onOpen={onOpenEntity} />)}
         </div>
       ) : null}

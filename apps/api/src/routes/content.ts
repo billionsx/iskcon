@@ -18,6 +18,12 @@ type Row = Record<string, any>;
 contentRouter.get('/resolve', async (c) => {
   const slug = c.req.query('slug') ?? '';
   if (!slug) return c.json({ kind: 'none' });
+  // Личность-сущность (чистый URL /{id} без /person)
+  const eid = slug.replace(/^\//, '');
+  const en = (await c.env.DB.prepare(
+    `SELECT 1 AS x FROM entities WHERE id = ? AND type = 'personality' AND status = 'published' LIMIT 1`,
+  ).bind(eid).first()) as Row | null;
+  if (en) return c.json({ kind: 'entity', id: eid });
   const ci = (await c.env.DB.prepare(
     `SELECT type FROM content_items WHERE slug = ? AND type IN ('article','personality','center') LIMIT 1`,
   ).bind(slug).first()) as Row | null;
