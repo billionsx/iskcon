@@ -18,6 +18,7 @@ import { api } from "./api";
 import { CalendarEventCard, type EventBrief } from "./CalendarEventCard";
 
 const GOLD = "#D2AA1B";
+const CAL_CLIENT_VER = "3";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 interface CalEvent { date: string; title: string; orig: string; type: "ekadasi" | "parana" | "festival" | "appearance" | "disappearance" | "other"; entityId?: string }
@@ -48,7 +49,10 @@ async function loadCal(loc: LocCity): Promise<CalEvent[]> {
       params.set("lat", String(loc.lat)); params.set("lng", String(loc.lng));
     }
     if (![...params.keys()].length) params.set("loc", loc.key);
-    const r = await fetch("/api/calendar?" + params.toString());
+    // cv — версия клиента: меняется при правках маппинга календаря, чтобы браузер/CDN
+    // не отдавали старый закэшированный ответ. no-store — всегда берём свежий из сети
+    // (серверный кэш воркера всё равно держит вычисление, так что нагрузка мала).
+    const r = await fetch("/api/calendar?cv=" + CAL_CLIENT_VER + "&" + params.toString(), { cache: "no-store" });
     if (r.ok) {
       const j = await r.json();
       const evs = (j.events || []) as CalEvent[];
@@ -227,7 +231,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   // Ленивая карта личностей (лила/волна/описание) для МКСК — грузим один раз.
   useEffect(() => {
     let live = true;
-    fetch(api("/content/pkl")).then((r) => r.json()).then((d) => {
+    fetch(api("/content/pkl"), { cache: "no-store" }).then((r) => r.json()).then((d) => {
       if (!live) return;
       const m = new Map<string, EventBrief>();
       for (const p of (d.items ?? [])) m.set(p.slug, { name: p.name, note: p.note, summary: p.summary, lila: p.lila, sub: p.sub, grp: p.grp });
