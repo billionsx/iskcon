@@ -91,7 +91,7 @@ function relGroup(relation: string, dir: "out" | "in"): { label: string; order: 
     case "disciple-of": return O ? { label: "Духовный учитель", order: 20 } : { label: "Ученики", order: 21 };
     case "godbrother-of": return { label: "Духовные братья", order: 24 };
     case "associate-of": return O ? { label: "Спутник", order: 30 } : { label: "Спутники", order: 30 };
-    case "gauranga-lila-identity": return O ? { label: "В лиле Кришны", order: 40 } : { label: "В лиле Гауранги", order: 41 };
+    case "gauranga-lila-identity": return O ? { label: "В Кришна Лиле", order: 40 } : { label: "В Гауранга Лиле", order: 41 };
     case "son-of": return O ? { label: "Родители", order: 50 } : { label: "Дети", order: 52 };
     case "foster-son-of": return O ? { label: "Приёмные родители", order: 51 } : { label: "Приёмные дети", order: 52 };
     case "father-of": return O ? { label: "Дети", order: 52 } : { label: "Родители", order: 50 };
@@ -935,7 +935,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const [data, setData] = useState<EntityDetail | null>(null);
   const [error, setError] = useState(false);
   const [centers, setCenters] = useState<CenterHit[]>([]);
-  const [tab, setTab] = useState<string>("obzor");
+  const [tab, setTab] = useState<string>("");
   const [sub, setSub] = useState<string>("");
   const [realm, setRealm] = useState<"material" | "spiritual">("material");
   // Якоря для скролла к верху раздела при смене realm-сегмента/подтаба.
@@ -1062,7 +1062,6 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     return null;
   })();
   const rasa = rasaKey ? RASA_RU[rasaKey] ?? null : null;
-  const lead = data?.profile?.summary || data?.note || null;
   const article: LfSection[] | null = (() => {
     const raw = data?.profile?.longform;
     if (!raw) return null;
@@ -1123,7 +1122,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     ...(data?.out ?? []).map((r) => ({ r, dir: "out" as const })),
     ...(data?.in ?? []).map((r) => ({ r, dir: "in" as const })),
   ].find((x) => x.r.relation === "gauranga-lila-identity" && x.r.id);
-  const identity = idRel ? (idRel.dir === "out" ? `В лиле Кришны — ${idRel.r.name_ru || idRel.r.id}` : `В лиле Шри Чайтаньи — ${idRel.r.name_ru || idRel.r.id}`) : null;
+  const identity = idRel ? (idRel.dir === "out" ? `В Кришна Лиле — ${idRel.r.name_ru || idRel.r.id}` : `В Гауранга Лиле — ${idRel.r.name_ru || idRel.r.id}`) : null;
   // Классификация для ВКЛ: авторитетная «надпись» (eyebrow) + вторичные чипы без дублей.
   const { eyebrow, heroChips } = (() => {
     const cats = data?.categories ?? [];
@@ -1188,7 +1187,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const hasScripture = (data?.links ?? []).some((l) => l.kind === "scripture");
   const hasPlaces = (liveDarshans?.length ?? 0) > 0 || centers.length > 0;
   const hasBio = !!article || !!data?.profile?.biography;
-  const tabs: { id: string; label: string }[] = [{ id: "obzor", label: "Обзор" }];
+  const tabs: { id: string; label: string }[] = [];
   if (data && hasBio) tabs.push({ id: "zhizn", label: bioLabel(data) });
   if (groups.length > 0 || linkGroups.length > 0) tabs.push({ id: "svyazi", label: "Связи" });
   if (hasScripture) tabs.push({ id: "pisaniya", label: "Писания" });
@@ -1218,8 +1217,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
         hashSub = decodeURIComponent(m[1] || "");
       }
     }
-    const defaultTab = dos ? dos.tabs[0].id : (raw || data.profile?.biography) ? "zhizn" : "obzor";
-    const tabExists = dos ? dos.tabs.some((t) => t.id === hashTab) : (hashTab === "obzor" || hashTab === "zhizn");
+    const defaultTab = dos ? dos.tabs[0].id : (tabs[0]?.id ?? "");
+    const tabExists = dos ? dos.tabs.some((t) => t.id === hashTab) : tabs.some((t) => t.id === hashTab);
     const nextTab = tabExists ? hashTab : defaultTab;
     setTab(nextTab);
     // sub применим позже в эффекте на смену tab. Сохраним хеш-под-таб в реф
@@ -1286,10 +1285,10 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
         <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingInline: 6 }}>{data?.name_ru || ""}</span>
         {data && (
           <CardActionBtns favKey={`entity:${id}`}
-            meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/person/${encodeURIComponent(id)}` }}
+            meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/${encodeURIComponent(id)}` }}
             onMore={() => openCardMenu({
             type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
-            url: `https://gaurangers.com/person/${encodeURIComponent(id)}`,
+            url: `https://gaurangers.com/${encodeURIComponent(id)}`,
             context: `Герой · ${data.name_ru || id} · /entity/${id}`,
           })} />
         )}
@@ -1319,7 +1318,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               chips={heroChips}
               onMore={() => openCardMenu({
                 type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
-                url: embedded ? `https://gaurangers.com/${encodeURIComponent(id)}` : `https://gaurangers.com/person/${encodeURIComponent(id)}`,
+                url: `https://gaurangers.com/${encodeURIComponent(id)}`,
                 context: `Герой · ${data.name_ru || id} · /entity/${id}`,
               })}
             />
@@ -1369,40 +1368,35 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               </>
             ) : (
               <>
-            {tabs.length > 1 && <PersonTabs tabs={tabs} active={tab} onChange={setTab} stickyTop={embedded ? 0 : 52} />}
+            {(rasa || (data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance")) && (
+              <div style={{ marginBottom: tabs.length > 1 ? 6 : 0 }}>
+                {rasa && (
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
+                  </div>
+                )}
+                {(data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
+                  <div style={{ marginTop: rasa ? 14 : 0 }}>
+                    <Eyebrow>Тайминг</Eyebrow>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {(data.links ?? []).filter((l) => l.kind === "appearance" || l.kind === "disappearance").map((t) => (
+                        <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }}>
+                          <span style={{ color: "var(--color-label-3)" }}>{t.kind === "appearance" ? "Явление" : "Уход"}</span>
+                          {t.title && <span style={{ fontWeight: 600 }}> · {t.title}</span>}
+                          {t.subtitle && <span style={{ color: "var(--color-label-3)" }}> · {t.subtitle}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
-            <div style={{ marginTop: tabs.length > 1 ? 18 : 22 }}>
-              {tab === "obzor" && (
-                <>
-                  {lead && (
-                    <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 17, lineHeight: 1.5, color: "var(--color-label)" }}>{lead}</p>
-                  )}
-                  {rasa && (
-                    <div style={{ marginTop: lead ? 18 : 0, display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
-                    </div>
-                  )}
-                  {(data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
-                    <div style={{ marginTop: (lead || rasa) ? 18 : 0 }}>
-                      <Eyebrow>Тайминг</Eyebrow>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        {(data.links ?? []).filter((l) => l.kind === "appearance" || l.kind === "disappearance").map((t) => (
-                          <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }}>
-                            <span style={{ color: "var(--color-label-3)" }}>{t.kind === "appearance" ? "Явление" : "Уход"}</span>
-                            {t.title && <span style={{ fontWeight: 600 }}> · {t.title}</span>}
-                            {t.subtitle && <span style={{ color: "var(--color-label-3)" }}> · {t.subtitle}</span>}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {!lead && !rasa && !hasBio && !(data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
-                    <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-3)" }}>Профиль готовится.</p>
-                  )}
-                </>
-              )}
+            {tabs.length > 1 && <PersonTabs tabs={tabs} active={tab} onChange={goToTab} stickyTop={embedded ? 0 : 52} />}
+
+            <div ref={tabContentRef} style={{ marginTop: (tabs.length > 1 || rasa || (data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance")) ? 18 : 22 }}>
 
               {tab === "zhizn" && (article ? (
                 <LongformArticle sections={article} onOpen={onOpen} onNavigate={onNavigate} />
