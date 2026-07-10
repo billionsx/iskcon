@@ -370,6 +370,12 @@ export function buildEvents(raw: { date: string; title: string }[]): CalEvent[] 
   return events;
 }
 
+// Версия кэша календаря. Вычисленный ответ /api/calendar лежит в edge-кэше
+// воркера (caches.default) на 24 часа и НЕ сбрасывается при деплое. Поэтому при
+// ЛЮБОЙ правке маппинга событий/личностей (PERSON/DISAMBIG/FEST/ruTitle) —
+// увеличиваем версию, иначе прод продолжит отдавать устаревшие entityId.
+const CAL_CACHE_VER = "2026-07-10-3";
+
 export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv): Promise<Response | null> {
   if (url.pathname !== "/api/calendar") return null;
   const rawLoc = (url.searchParams.get("loc") || "").trim().slice(0, 80);
@@ -385,7 +391,7 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
   const ckId = locValid ? "loc=" + encodeURIComponent(rawLoc)
     : hasCoords ? "nc=" + lat.toFixed(3) + "," + lng.toFixed(3)
       : "loc=" + encodeURIComponent("Vrindavan [India]");
-  const cacheKey = new Request(url.origin + "/api/calendar?" + ckId);
+  const cacheKey = new Request(url.origin + "/api/calendar?v=" + CAL_CACHE_VER + "&" + ckId);
   const hit = await cache.match(cacheKey);
   if (hit) return hit;
 
@@ -414,7 +420,7 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
 
   const label = locValid ? rawLoc : (feed?.location?.name || rawLoc || "");
   const res = new Response(JSON.stringify({ loc: label, events }), {
-    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=86400" },
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600" },
   });
   await cache.put(cacheKey, res.clone());
   return res;
