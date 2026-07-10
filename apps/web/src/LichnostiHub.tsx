@@ -4,7 +4,7 @@ import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 
 type Person = {
   slug: string; name: string; hero_image: string | null; n_quotes: number;
-  lila: string | null; sub: string | null; note: string | null; summary: string | null; tattva: string | null;
+  lila: string | null; sub: string | null; grp: string | null; note: string | null; summary: string | null; tattva: string | null;
 };
 
 const LILAS: [string, string][] = [
@@ -17,19 +17,31 @@ const SUBS: Record<string, [string, string][]> = {
   "lila-bhagavatam": [["bhag-ramayana", "Рамаяна"], ["bhag-mahabharata", "Махабхарата"], ["bhag-avatara", "Аватары"], ["bhag-devata", "Полубоги"], ["bhag-bhagavata", "Бхагаватам"], ["", "Все"]],
 };
 
+// Третий уровень: группы внутри субтаба (пока — внутри I волны Гауранга Лилы). Ключ — значение sub.
+const SUBSUBS: Record<string, [string, string][]> = {
+  "wave-1": [
+    ["w1-pancha", "Панча-таттва"], ["w1-navadvipa", "Навадвипа"], ["w1-nilachala", "Нилачала"],
+    ["w1-vrindavana", "Вриндаван"], ["w1-shrikhanda", "Шри Кханда"], ["w1-kulinagrama", "Кулина-грама"],
+    ["w1-nityananda", "Свита Нитьянанды"], ["w1-korni", "Корни"], ["", "Все"],
+  ],
+};
+
 const LILA_SLUG: Record<string, string> = { "lila-gauranga": "gauranga-lila", "lila-krishna": "krishna-lila", "lila-bhagavatam": "shrimad-bhagavatam", "lila-gita": "bhagavad-gita", "lila-other": "drugie" };
 const SUB_SLUG: Record<string, string> = { "wave-1": "1-volna", "wave-2": "2-volna", "wave-3": "3-volna", "wave-4": "4-volna", "wave-5": "5-volna", "wave-iskcon": "bespretsedentnaya", "wave-sampradaya": "acharyi-sampradaya", "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya", "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya", "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata", "bhag-avatara": "avatary", "bhag-devata": "polubogi", "bhag-bhagavata": "bhagavatam" };
 const SLUG_LILA: Record<string, string> = Object.fromEntries(Object.entries(LILA_SLUG).map(([k, v]) => [v, k]));
 const SLUG_SUB: Record<string, string> = Object.fromEntries(Object.entries(SUB_SLUG).map(([k, v]) => [v, k]));
+const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nilachala": "nilachala", "w1-vrindavana": "vrindavan", "w1-shrikhanda": "shri-khanda", "w1-kulinagrama": "kulina-grama", "w1-nityananda": "svita-nityanandy", "w1-korni": "korni" };
+const SLUG_SUBSUB: Record<string, string> = Object.fromEntries(Object.entries(SUBSUB_SLUG).map(([k, v]) => [v, k]));
 
-function readUrl(): { lila: string; sub: string } {
+function readUrl(): { lila: string; sub: string; grp: string } {
   const parts = (typeof window !== "undefined" ? window.location.pathname : "/").split("/").filter(Boolean);
   if (parts[0] === "dhana" && parts[1] && SLUG_LILA[parts[1]]) {
     const l = SLUG_LILA[parts[1]];
     const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : (SUBS[l]?.[0]?.[0] ?? "");
-    return { lila: l, sub: s };
+    const g = parts[3] && SLUG_SUBSUB[parts[3]] && SUBSUBS[s] ? SLUG_SUBSUB[parts[3]] : "";
+    return { lila: l, sub: s, grp: g };
   }
-  return { lila: "lila-gauranga", sub: "wave-1" };
+  return { lila: "lila-gauranga", sub: "wave-1", grp: "" };
 }
 
 function entityCtx(p: Person) {
@@ -38,6 +50,13 @@ function entityCtx(p: Person) {
     url: `https://gaurangers.com/person/${encodeURIComponent(p.slug)}`,
     context: `Герой · ${p.name} · /entity/${p.slug}`,
   };
+}
+
+function personWord(n: number): string {
+  const a = n % 10, b = n % 100;
+  if (a === 1 && b !== 11) return "личность";
+  if (a >= 2 && a <= 4 && (b < 10 || b >= 20)) return "личности";
+  return "личностей";
 }
 
 function Pills({ value, onChange, items, count, sec }: {
@@ -81,8 +100,10 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const [items, setItems] = useState<Person[] | null>(null);
   const [lila, setLila] = useState(() => readUrl().lila);
   const [subSel, setSubSel] = useState(() => readUrl().sub);
+  const [grpSel, setGrpSel] = useState(() => readUrl().grp);
   const [q, setQ] = useState("");
-  const pickLila = (v: string) => { setLila(v); setSubSel(SUBS[v]?.[0]?.[0] ?? ""); };
+  const pickLila = (v: string) => { setLila(v); setSubSel(SUBS[v]?.[0]?.[0] ?? ""); setGrpSel(""); };
+  const pickSub = (v: string) => { setSubSel(v); setGrpSel(""); };
 
   useEffect(() => {
     let live = true;
@@ -96,11 +117,12 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
     const lslug = LILA_SLUG[lila];
     if (!lslug) return;
     const sslug = subSel ? SUB_SLUG[subSel] : "";
-    const path = "/dhana/" + lslug + (sslug ? "/" + sslug : "");
+    const gslug = grpSel && SUBSUBS[subSel] ? SUBSUB_SLUG[grpSel] : "";
+    const path = "/dhana/" + lslug + (sslug ? "/" + sslug : "") + (sslug && gslug ? "/" + gslug : "");
     if (window.location.pathname !== path) {
       try { window.history.replaceState(window.history.state, "", path); } catch { /* noop */ }
     }
-  }, [lila, subSel]);
+  }, [lila, subSel, grpSel]);
 
   const qq = q.trim().toLowerCase();
   const hit = (p: Person) => !qq || p.name.toLowerCase().includes(qq) || (p.note ?? "").toLowerCase().includes(qq) || (p.summary ?? "").toLowerCase().includes(qq);
@@ -113,6 +135,14 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const subCount = (sv: string) => (sv === "" ? inLila.length : inLila.filter((p) => p.sub === sv).length);
   const results = useMemo(() => inLila.filter((p) => !subSel || p.sub === subSel), [inLila, subSel]);
   const subItems = SUBS[lila] ?? null;
+  const subsubItems = SUBSUBS[subSel] ?? null;
+  const grpCount = (gv: string) => (gv === "" ? results.length : results.filter((p) => p.grp === gv).length);
+  const grouped = !!subsubItems && !grpSel;
+  const sections = grouped
+    ? subsubItems!.filter(([gv]) => gv).map(([gv, label]) => ({ gv, label, rows: results.filter((p) => p.grp === gv) })).filter((s) => s.rows.length > 0)
+    : [];
+  const flat = subsubItems && grpSel ? results.filter((p) => p.grp === grpSel) : results;
+  const shown = subsubItems && grpSel ? flat.length : results.length;
   const lilaVisible = LILAS.filter(([v]) => lilaCount(v) > 0);
 
   return (
@@ -135,6 +165,10 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-pill-n{font-size:11px;font-weight:700;opacity:.5;font-variant-numeric:tabular-nums;}
 .lh-pill.on .lh-pill-n{opacity:.72;}
 .lh-cap{margin:6px 4px 6px;font-family:var(--font-text);font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-label-3);text-transform:uppercase;}
+.lh-sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:20px 4px 3px;padding-bottom:2px;border-bottom:0.5px solid var(--color-hairline);}
+.lh-list>div:first-child .lh-sec-h{margin-top:2px;}
+.lh-sec-t{font-family:var(--font-text);font-size:13.5px;font-weight:700;letter-spacing:-0.1px;color:var(--color-label);}
+.lh-sec-n{font-family:var(--font-text);font-size:11px;font-weight:700;color:var(--color-label-3);font-variant-numeric:tabular-nums;}
 .lh-list{animation:lhfade .24s cubic-bezier(.32,.72,0,1);}
 @keyframes lhfade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .lh-row{display:flex;align-items:center;gap:13px;width:100%;box-sizing:border-box;padding:11px 4px;border-bottom:0.5px solid var(--color-hairline);cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease;}
@@ -156,16 +190,24 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
         </div>
 
         <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
-        {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={setSubSel} items={subItems} count={subCount} sec /></div> : null}
+        {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
+        {subsubItems ? <div className="lh-grp"><Pills value={grpSel} onChange={setGrpSel} items={subsubItems} count={grpCount} sec /></div> : null}
       </div>
 
-      <div className="lh-cap">{results.length} {results.length % 10 === 1 && results.length % 100 !== 11 ? "личность" : (results.length % 10 >= 2 && results.length % 10 <= 4 && (results.length % 100 < 10 || results.length % 100 >= 20) ? "личности" : "личностей")}</div>
+      <div className="lh-cap">{shown} {personWord(shown)}</div>
 
       {!items ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-2)" }}>Загрузка…</div> : null}
-      {items && results.length === 0 ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-3)", padding: "40px 0", textAlign: "center" }}>Никого не найдено</div> : null}
-      {items && results.length > 0 ? (
-        <div className="lh-list" key={lila + subSel + qq}>
-          {results.map((p) => <Row key={p.slug} p={p} onOpen={onOpenEntity} />)}
+      {items && shown === 0 ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-3)", padding: "40px 0", textAlign: "center" }}>Никого не найдено</div> : null}
+      {items && shown > 0 ? (
+        <div className="lh-list" key={lila + subSel + grpSel + qq}>
+          {grouped
+            ? sections.map((s) => (
+              <div key={s.gv}>
+                <div className="lh-sec-h"><span className="lh-sec-t">{s.label}</span><span className="lh-sec-n">{s.rows.length}</span></div>
+                {s.rows.map((p) => <Row key={p.slug} p={p} onOpen={onOpenEntity} />)}
+              </div>
+            ))
+            : flat.map((p) => <Row key={p.slug} p={p} onOpen={onOpenEntity} />)}
         </div>
       ) : null}
     </div>
