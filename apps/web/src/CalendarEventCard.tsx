@@ -7,6 +7,7 @@
  */
 import { HomeSheet } from "./HomeSheet";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
+import { cleanCardText } from "./cardText";
 
 export type EventBrief = {
   name?: string; note?: string | null; summary?: string | null;
@@ -70,7 +71,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
   const { openCardMenu } = useCardActions();
   const meta = TYPE_META[type] || TYPE_META.other;
   const name = brief?.name || "";
-  const desc = brief?.note || brief?.summary || "";
+  const desc = cleanCardText(brief?.note || brief?.summary);
   const chips = brief ? chipsFor(brief) : [];
   const hasPerson = !!entityId && (type === "appearance" || type === "disappearance" || !!brief);
 
