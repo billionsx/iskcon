@@ -387,13 +387,11 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
     return new Response(JSON.stringify({ error: "bad loc" }), { status: 400, headers: { "Content-Type": "application/json" } });
   }
 
-  const cache = (caches as unknown as { default: Cache }).default;
-  const ckId = locValid ? "loc=" + encodeURIComponent(rawLoc)
-    : hasCoords ? "nc=" + lat.toFixed(3) + "," + lng.toFixed(3)
-      : "loc=" + encodeURIComponent("Vrindavan [India]");
-  const cacheKey = new Request(url.origin + "/api/calendar?v=" + CAL_CACHE_VER + "&" + ckId);
-  const hit = await cache.match(cacheKey);
-  if (hit) return hit;
+  // Кэш воркера (caches.default) ОТКЛЮЧЁН для /api/calendar. Он держал устаревшие
+  // entityId и не сбрасывался при деплое/правках маппинга — из-за этого связи на
+  // проде оставались старыми даже после исправлений в PERSON/DISAMBIG/FEST. Вычисление
+  // лёгкое (строковый матчинг ~350 событий), считаем свежее на каждый запрос.
+  void CAL_CACHE_VER;
 
   // Источник — self-hosted фид GCal (Гаурабда, Календарный комитет GBC): ассет
   // /data/gcal/<slug>.json, посчитанный движком GCAL по координатам города. Точный
@@ -419,9 +417,7 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
   const events = buildEvents(raw);
 
   const label = locValid ? rawLoc : (feed?.location?.name || rawLoc || "");
-  const res = new Response(JSON.stringify({ loc: label, events }), {
-    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "public, max-age=3600" },
+  return new Response(JSON.stringify({ loc: label, events }), {
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
-  await cache.put(cacheKey, res.clone());
-  return res;
 }
