@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 
@@ -14,7 +14,7 @@ const LILAS: [string, string][] = [
 const SUBS: Record<string, [string, string][]> = {
   "lila-gauranga": [["wave-1", "I волна"], ["wave-2", "II волна"], ["wave-3", "III волна"], ["wave-4", "IV волна"], ["wave-5", "V волна"], ["wave-iskcon", "Беспрецедентная"], ["wave-sampradaya", "Ачарьи сампрадай"], ["", "Все"]],
   "lila-krishna": [["rasa:shanta", "Шанта"], ["rasa:dasya", "Дасья"], ["rasa:sakhya", "Сакхья"], ["rasa:vatsalya", "Ватсалья"], ["rasa:madhurya", "Мадхурья"], ["", "Все"]],
-  "lila-bhagavatam": [["bhag-ramayana", "Рамаяна"], ["bhag-mahabharata", "Махабхарата"], ["bhag-avatara", "Аватары"], ["bhag-devata", "Полубоги"], ["bhag-bhagavata", "Бхагаватам"], ["", "Все"]],
+  "lila-bhagavatam": [["bhag-avatara", "Аватары"], ["bhag-rishi", "Мудрецы"], ["bhag-bhakta", "Цари и преданные"], ["bhag-devata", "Полубоги"], ["bhag-asura", "Демоны"], ["bhag-ramayana", "Рамаяна"], ["bhag-mahabharata", "Махабхарата"], ["", "Все"]],
 };
 
 // Третий уровень: группы внутри субтаба (пока — внутри I волны Гауранга Лилы). Ключ — значение sub.
@@ -24,13 +24,21 @@ const SUBSUBS: Record<string, [string, string][]> = {
     ["w1-vrindavana", "Вриндаван"], ["w1-shrikhanda", "Шри Кханда"], ["w1-kulinagrama", "Кулина-грама"],
     ["w1-nityananda", "Свита Нитьянанды"], ["w1-korni", "Корни"], ["", "Все"],
   ],
+  "wave-sampradaya": [
+    ["ws-madhva", "Брахма-Мадхва"], ["ws-shri", "Шри-сампрадая"], ["ws-kumara", "Кумара-сампрадая"],
+    ["ws-rudra", "Рудра-сампрадая"], ["ws-rishi", "Мудрецы"], ["", "Все"],
+  ],
+  "wave-iskcon": [
+    ["wi-founders", "Прабхупада и основатели"], ["wi-guru", "Инициирующие гуру"],
+    ["wi-lilamrita", "Прабхупада-лиламрита"], ["wi-mission", "Миссия ИСККОН"], ["", "Все"],
+  ],
 };
 
 const LILA_SLUG: Record<string, string> = { "lila-gauranga": "gauranga-lila", "lila-krishna": "krishna-lila", "lila-bhagavatam": "shrimad-bhagavatam", "lila-gita": "bhagavad-gita", "lila-other": "drugie" };
-const SUB_SLUG: Record<string, string> = { "wave-1": "1-volna", "wave-2": "2-volna", "wave-3": "3-volna", "wave-4": "4-volna", "wave-5": "5-volna", "wave-iskcon": "bespretsedentnaya", "wave-sampradaya": "acharyi-sampradaya", "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya", "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya", "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata", "bhag-avatara": "avatary", "bhag-devata": "polubogi", "bhag-bhagavata": "bhagavatam" };
+const SUB_SLUG: Record<string, string> = { "wave-1": "1-volna", "wave-2": "2-volna", "wave-3": "3-volna", "wave-4": "4-volna", "wave-5": "5-volna", "wave-iskcon": "bespretsedentnaya", "wave-sampradaya": "acharyi-sampradaya", "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya", "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya", "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata", "bhag-avatara": "avatary", "bhag-devata": "polubogi", "bhag-rishi": "mudretsy", "bhag-bhakta": "tsari-predannye", "bhag-asura": "demony" };
 const SLUG_LILA: Record<string, string> = Object.fromEntries(Object.entries(LILA_SLUG).map(([k, v]) => [v, k]));
 const SLUG_SUB: Record<string, string> = Object.fromEntries(Object.entries(SUB_SLUG).map(([k, v]) => [v, k]));
-const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nilachala": "nilachala", "w1-vrindavana": "vrindavan", "w1-shrikhanda": "shri-khanda", "w1-kulinagrama": "kulina-grama", "w1-nityananda": "svita-nityanandy", "w1-korni": "korni" };
+const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nilachala": "nilachala", "w1-vrindavana": "vrindavan", "w1-shrikhanda": "shri-khanda", "w1-kulinagrama": "kulina-grama", "w1-nityananda": "svita-nityanandy", "w1-korni": "korni", "ws-madhva": "brahma-madhva", "ws-shri": "shri-sampradaya", "ws-kumara": "kumara-sampradaya", "ws-rudra": "rudra-sampradaya", "ws-rishi": "mudretsy", "wi-founders": "prabhupada-osnovateli", "wi-guru": "iniciiruyushchie-guru", "wi-lilamrita": "prabhupada-lilamrita", "wi-mission": "missiya-iskcon" };
 const SLUG_SUBSUB: Record<string, string> = Object.fromEntries(Object.entries(SUBSUB_SLUG).map(([k, v]) => [v, k]));
 
 function readUrl(): { lila: string; sub: string; grp: string } {
@@ -47,7 +55,7 @@ function readUrl(): { lila: string; sub: string; grp: string } {
 function entityCtx(p: Person) {
   return {
     type: "entity" as const, id: p.slug, title: p.name, subtitle: p.note || undefined,
-    url: `https://gaurangers.com/person/${encodeURIComponent(p.slug)}`,
+    url: `https://gaurangers.com/${encodeURIComponent(p.slug)}`,
     context: `Герой · ${p.name} · /entity/${p.slug}`,
   };
 }
@@ -104,6 +112,30 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const [q, setQ] = useState("");
   const pickLila = (v: string) => { setLila(v); setSubSel(SUBS[v]?.[0]?.[0] ?? ""); setGrpSel(""); };
   const pickSub = (v: string) => { setSubSel(v); setGrpSel(""); };
+  const rootRef = useRef<HTMLDivElement>(null);
+  const didMount = useRef(false);
+
+  // При смене лилы/волны/группы — прокрутка к началу списка (как в верхних меню книг/глав).
+  useEffect(() => {
+    if (!didMount.current) { didMount.current = true; return; }
+    const run = () => {
+      const el = rootRef.current;
+      if (!el) return;
+      let sc: HTMLElement | null = el.parentElement;
+      while (sc) {
+        const oy = getComputedStyle(sc).overflowY;
+        if ((oy === "auto" || oy === "scroll" || oy === "overlay") && sc.scrollHeight > sc.clientHeight) break;
+        sc = sc.parentElement;
+      }
+      if (sc) {
+        const top = el.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop;
+        sc.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+    };
+    requestAnimationFrame(() => requestAnimationFrame(run));
+  }, [lila, subSel, grpSel]);
 
   useEffect(() => {
     let live = true;
@@ -146,7 +178,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const lilaVisible = LILAS.filter(([v]) => lilaCount(v) > 0);
 
   return (
-    <div>
+    <div ref={rootRef}>
       <style>{`
 .lh-bar{position:sticky;top:0;z-index:8;margin:-6px -16px 6px;padding:10px 16px 8px;background:color-mix(in srgb, var(--color-bg) 84%, transparent);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);}
 .lh-search{position:relative;margin-bottom:14px;}

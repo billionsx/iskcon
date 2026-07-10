@@ -79,7 +79,7 @@ function Avatar({ item, size }: { item: Item; size: number }) {
 function entityCtx(item: Item) {
   return {
     type: "entity" as const, id: item.id, title: item.name_ru || item.id, subtitle: item.name_iast || undefined,
-    url: `https://gaurangers.com/person/${encodeURIComponent(item.id)}`,
+    url: `https://gaurangers.com/${encodeURIComponent(item.id)}`,
     context: `Герой · ${item.name_ru || item.id} · /entity/${item.id}`,
   };
 }

@@ -100,7 +100,7 @@ function hrefFor(it: FavItem): string | null {
   if (it.href) return it.href;
   const { type, id } = it;
   if (type === "book") return `/book/${id}`;
-  if (type === "entity") return `/person/${id}`;
+  if (type === "entity") return `/${id}`;
   if (type === "doc") return `/doc/${id}`;
   if (type === "centre" || type === "restaurant") return `/place/${id}`;
   if (type === "bhajan") return id.charAt(0) === "/" ? id : `/bhajan/${id}`;

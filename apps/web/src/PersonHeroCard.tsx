@@ -32,7 +32,7 @@ export function PersonHeroCard({
   flash?: (m: string) => void;
   presentational?: boolean;
 }) {
-  const { on: favorited, toggle: toggleFav } = useFavorite(`entity:${id}`, { t: nameRu, s: summary || eyebrow || undefined, h: `/person/${encodeURIComponent(id)}` });
+  const { on: favorited, toggle: toggleFav } = useFavorite(`entity:${id}`, { t: nameRu, s: summary || eyebrow || undefined, h: `/${encodeURIComponent(id)}` });
   const imgs = images && images.length ? images : (image ? [image] : []);
   const { idx, next, prev } = useCoverSlider(imgs.length);
   const initial = (nameRu || "·").trim().charAt(0).toUpperCase();
