@@ -14,6 +14,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
+import { api } from "./api";
+import { CalendarEventCard, type EventBrief } from "./CalendarEventCard";
 
 const GOLD = "#D2AA1B";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -218,7 +220,21 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   const [filt, setFilt] = useState<"all" | "ekadasi" | "festival" | "vaisnava">("all");
   const [q, setQ] = useState("");
   const [pickOpen, setPickOpen] = useState(false);
+  const [cardEvent, setCardEvent] = useState<CalEvent | null>(null);
+  const [briefMap, setBriefMap] = useState<Map<string, EventBrief> | null>(null);
   const gen = useRef(0);
+
+  // Ленивая карта личностей (лила/волна/описание) для МКСК — грузим один раз.
+  useEffect(() => {
+    let live = true;
+    fetch(api("/content/pkl")).then((r) => r.json()).then((d) => {
+      if (!live) return;
+      const m = new Map<string, EventBrief>();
+      for (const p of (d.items ?? [])) m.set(p.slug, { name: p.name, note: p.note, summary: p.summary, lila: p.lila, sub: p.sub, grp: p.grp });
+      setBriefMap(m);
+    }).catch(() => { /* карточка покажет только событие */ });
+    return () => { live = false; };
+  }, []);
 
   useEffect(() => {
     const g = ++gen.current;
@@ -343,6 +359,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                   const f = fmtDay(e.date); const meta = TYPE_META[e.type];
                   const isToday = e.date === today;
                   const linked = !!e.entityId && !!onOpenEntity;
+                  const tappable = linked || e.type === "festival" || e.type === "appearance" || e.type === "disappearance" || e.type === "ekadasi";
                   const inner = (
                     <>
                       <div style={{ flexShrink: 0, width: 44, textAlign: "center" }}>
@@ -353,7 +370,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                         <div style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.35, color: "var(--color-label)" }}>{e.title}</div>
                         <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: meta.color }}>{isToday ? "Сегодня · " : ""}{meta.label}{linked ? " · Герой" : ""}</div>
                       </div>
-                      {linked && (
+                      {tappable && (
                         <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}>
                           <svg width="14" height="14" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </span>
@@ -361,8 +378,8 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                     </>
                   );
                   const rowStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: 13, padding: "12px 14px", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" };
-                  return linked ? (
-                    <button key={e.date + e.orig + i} type="button" onClick={() => onOpenEntity!(e.entityId!, "personality")}
+                  return tappable ? (
+                    <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
                       style={{ ...rowStyle, width: "100%", textAlign: "left", background: "none", border: "none", borderTop: rowStyle.borderTop, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                       {inner}
                     </button>
@@ -382,6 +399,16 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       </div>
 
       <LocationSheet open={pickOpen} current={loc} onPick={setLoc} onClose={() => setPickOpen(false)} />
+      <CalendarEventCard
+        open={!!cardEvent}
+        title={cardEvent?.title || ""}
+        date={cardEvent?.date || ""}
+        type={cardEvent?.type || "other"}
+        entityId={cardEvent?.entityId || null}
+        brief={cardEvent?.entityId && briefMap ? (briefMap.get(cardEvent.entityId) || null) : null}
+        onOpen={(id) => { setCardEvent(null); onOpenEntity?.(id, "personality"); }}
+        onClose={() => setCardEvent(null)}
+      />
     </div>
   );
 }
