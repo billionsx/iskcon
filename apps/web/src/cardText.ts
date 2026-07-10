@@ -12,7 +12,7 @@
 // ═══════════════════════════════════════════════════════════════════════════
 
 export function cleanCardText(input: string | null | undefined): string {
-  let s = (input || "").replace(/\s+/g, " ").trim();
+  let s = (input || "").replace(/[ \t]+/g, " ").trim();
   if (!s) return "";
 
   // ── ЗАКОН 1: убрать точки с запятыми ──

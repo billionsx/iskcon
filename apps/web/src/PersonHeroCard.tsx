@@ -10,6 +10,7 @@ import { HeartIcon, MoreIcon } from "./ui/icons";
 import { ActionBtn } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
 import { useCoverSlider, CoverImages, CoverTapZones, CoverCounter } from "./CardCover";
+import { cleanCardText } from "./cardText";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 const GOLD = "#E6BE55"; // золото для тёмного фона (рифмуется с заголовками разделов)
@@ -83,9 +84,9 @@ export function PersonHeroCard({
         {nameIast && (
           <div style={{ marginTop: 6, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16, lineHeight: 1.3, color: "rgba(255,255,255,.72)" }}>{nameIast}</div>
         )}
-        {identity && <p style={{ margin: "16px 0 0", fontSize: 15.5, lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{identity}</p>}
+        {identity && <p style={{ margin: "16px 0 0", fontSize: 15.5, lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{cleanCardText(identity)}</p>}
         {summary && (
-          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: 14, lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", whiteSpace: "pre-line", display: "-webkit-box", WebkitLineClamp: 8, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{summary}</p>
+          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: 14, lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", whiteSpace: "pre-line", display: "-webkit-box", WebkitLineClamp: 8, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanCardText(summary)}</p>
         )}
         {chips && chips.length > 0 && (
           <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
