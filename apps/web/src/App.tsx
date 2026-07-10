@@ -549,6 +549,7 @@ function SegRow({ value, onChange, items }: { value: string; onChange: (v: strin
 }
 
 let bogSub = "lichnosti"; // сохраняем выбранный сабтаб Богатств между уходом в деталь и возвратом (history.back)
+let sadSub = "feed"; // то же для Садханы: возврат из карточки (напр. из Календаря) восстанавливает подтаб
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
   onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
@@ -570,10 +571,11 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
 function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void; flash?: string | null;
 }) {
-  const [sub, setSub] = useState("feed");
+  const [sub, setSub] = useState(sadSub);
+  const pickSub = (v: string) => { sadSub = v; setSub(v); };
   return (
     <div>
-      <SegRow value={sub} onChange={setSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
+      <SegRow value={sub} onChange={pickSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
       {sub === "feed" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
