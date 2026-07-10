@@ -22,8 +22,12 @@ const SUBSUBS: Record<string, [string, string][]> = {
   "wave-1": [
     ["", "Все"],
     ["w1-pancha", "Панча-таттва"], ["w1-navadvipa", "Навадвипа"], ["w1-nilachala", "Нилачала"],
-    ["w1-vrindavana", "Вриндаван"], ["w1-shrikhanda", "Шри Кханда"], ["w1-kulinagrama", "Кулина-грама"],
+    ["w1-goswami", "Шесть Госвами"], ["w1-vrindavana", "Вриндаван"], ["w1-shrikhanda", "Шри Кханда"], ["w1-kulinagrama", "Кулина-грама"],
     ["w1-nityananda", "Свита Нитьянанды"], ["w1-korni", "Корни"],
+  ],
+  "wave-2": [
+    ["", "Все"],
+    ["w2-acharyas", "Три ачарьи"], ["w2-parivara", "Ученики и спутники"],
   ],
   "wave-sampradaya": [
     ["", "Все"],
@@ -41,7 +45,7 @@ const LILA_SLUG: Record<string, string> = { "lila-gauranga": "gauranga-lila", "l
 const SUB_SLUG: Record<string, string> = { "wave-1": "1-volna", "wave-2": "2-volna", "wave-3": "3-volna", "wave-4": "4-volna", "wave-5": "5-volna", "wave-iskcon": "bespretsedentnaya", "wave-sampradaya": "acharyi-sampradaya", "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya", "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya", "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata", "bhag-avatara": "avatary", "bhag-devata": "polubogi", "bhag-rishi": "mudretsy", "bhag-bhakta": "tsari-predannye", "bhag-asura": "demony" };
 const SLUG_LILA: Record<string, string> = Object.fromEntries(Object.entries(LILA_SLUG).map(([k, v]) => [v, k]));
 const SLUG_SUB: Record<string, string> = Object.fromEntries(Object.entries(SUB_SLUG).map(([k, v]) => [v, k]));
-const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nilachala": "nilachala", "w1-vrindavana": "vrindavan", "w1-shrikhanda": "shri-khanda", "w1-kulinagrama": "kulina-grama", "w1-nityananda": "svita-nityanandy", "w1-korni": "korni", "ws-madhva": "brahma-madhva", "ws-shri": "shri-sampradaya", "ws-kumara": "kumara-sampradaya", "ws-rudra": "rudra-sampradaya", "ws-rishi": "mudretsy", "wi-founders": "prabhupada-osnovateli", "wi-guru": "iniciiruyushchie-guru", "wi-lilamrita": "prabhupada-lilamrita", "wi-mission": "missiya-iskcon" };
+const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nilachala": "nilachala", "w1-vrindavana": "vrindavan", "w1-shrikhanda": "shri-khanda", "w1-kulinagrama": "kulina-grama", "w1-nityananda": "svita-nityanandy", "w1-korni": "korni", "w1-goswami": "shest-gosvami", "w2-acharyas": "tri-acharyi", "w2-parivara": "ucheniki-sputniki", "ws-madhva": "brahma-madhva", "ws-shri": "shri-sampradaya", "ws-kumara": "kumara-sampradaya", "ws-rudra": "rudra-sampradaya", "ws-rishi": "mudretsy", "wi-founders": "prabhupada-osnovateli", "wi-guru": "iniciiruyushchie-guru", "wi-lilamrita": "prabhupada-lilamrita", "wi-mission": "missiya-iskcon" };
 const SLUG_SUBSUB: Record<string, string> = Object.fromEntries(Object.entries(SUBSUB_SLUG).map(([k, v]) => [v, k]));
 
 function readUrl(): { lila: string; sub: string; grp: string } {
