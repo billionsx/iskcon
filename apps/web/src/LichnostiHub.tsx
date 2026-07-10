@@ -12,25 +12,28 @@ const LILAS: [string, string][] = [
   ["lila-bhagavatam", "Шримад Бхагаватам"], ["lila-gita", "Бхагавад Гита"], ["lila-other", "Другие"],
 ];
 const SUBS: Record<string, [string, string][]> = {
-  "lila-gauranga": [["wave-1", "I волна"], ["wave-2", "II волна"], ["wave-3", "III волна"], ["wave-4", "IV волна"], ["wave-5", "V волна"], ["wave-iskcon", "Беспрецедентная"], ["wave-sampradaya", "Ачарьи сампрадай"], ["", "Все"]],
-  "lila-krishna": [["rasa:shanta", "Шанта"], ["rasa:dasya", "Дасья"], ["rasa:sakhya", "Сакхья"], ["rasa:vatsalya", "Ватсалья"], ["rasa:madhurya", "Мадхурья"], ["", "Все"]],
-  "lila-bhagavatam": [["bhag-avatara", "Аватары"], ["bhag-rishi", "Мудрецы"], ["bhag-bhakta", "Цари и преданные"], ["bhag-devata", "Полубоги"], ["bhag-asura", "Демоны"], ["bhag-ramayana", "Рамаяна"], ["bhag-mahabharata", "Махабхарата"], ["", "Все"]],
+  "lila-gauranga": [["", "Все"], ["wave-1", "I волна"], ["wave-2", "II волна"], ["wave-3", "III волна"], ["wave-4", "IV волна"], ["wave-5", "V волна"], ["wave-iskcon", "Беспрецедентная"], ["wave-sampradaya", "Ачарьи сампрадай"]],
+  "lila-krishna": [["", "Все"], ["rasa:shanta", "Шанта"], ["rasa:dasya", "Дасья"], ["rasa:sakhya", "Сакхья"], ["rasa:vatsalya", "Ватсалья"], ["rasa:madhurya", "Мадхурья"]],
+  "lila-bhagavatam": [["", "Все"], ["bhag-avatara", "Аватары"], ["bhag-rishi", "Мудрецы"], ["bhag-bhakta", "Цари и преданные"], ["bhag-devata", "Полубоги"], ["bhag-asura", "Демоны"], ["bhag-ramayana", "Рамаяна"], ["bhag-mahabharata", "Махабхарата"]],
 };
 
 // Третий уровень: группы внутри субтаба (пока — внутри I волны Гауранга Лилы). Ключ — значение sub.
 const SUBSUBS: Record<string, [string, string][]> = {
   "wave-1": [
+    ["", "Все"],
     ["w1-pancha", "Панча-таттва"], ["w1-navadvipa", "Навадвипа"], ["w1-nilachala", "Нилачала"],
     ["w1-vrindavana", "Вриндаван"], ["w1-shrikhanda", "Шри Кханда"], ["w1-kulinagrama", "Кулина-грама"],
-    ["w1-nityananda", "Свита Нитьянанды"], ["w1-korni", "Корни"], ["", "Все"],
+    ["w1-nityananda", "Свита Нитьянанды"], ["w1-korni", "Корни"],
   ],
   "wave-sampradaya": [
+    ["", "Все"],
     ["ws-madhva", "Брахма-Мадхва"], ["ws-shri", "Шри-сампрадая"], ["ws-kumara", "Кумара-сампрадая"],
-    ["ws-rudra", "Рудра-сампрадая"], ["ws-rishi", "Мудрецы"], ["", "Все"],
+    ["ws-rudra", "Рудра-сампрадая"], ["ws-rishi", "Мудрецы"],
   ],
   "wave-iskcon": [
+    ["", "Все"],
     ["wi-founders", "Прабхупада и основатели"], ["wi-guru", "Инициирующие гуру"],
-    ["wi-lilamrita", "Прабхупада-лиламрита"], ["wi-mission", "Миссия ИСККОН"], ["", "Все"],
+    ["wi-lilamrita", "Прабхупада-лиламрита"], ["wi-mission", "Миссия ИСККОН"],
   ],
 };
 
@@ -70,13 +73,20 @@ function personWord(n: number): string {
 function Pills({ value, onChange, items, count, sec }: {
   value: string; onChange: (v: string) => void; items: [string, string][]; count?: (v: string) => number; sec?: boolean;
 }) {
+  const activeRef = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => {
+    const el = activeRef.current;
+    if (el && typeof el.scrollIntoView === "function") {
+      try { el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); } catch { /* noop */ }
+    }
+  }, [value, items]);
   return (
     <div className="lh-pills">
       {items.map(([v, label]) => {
         const on = v === value;
         const n = count ? count(v) : null;
         return (
-          <button key={v || "all"} type="button" onClick={() => onChange(v)} className={"lh-pill" + (sec ? " sec" : "") + (on ? " on" : "")}>
+          <button ref={on ? activeRef : undefined} key={v || "all"} type="button" onClick={() => onChange(v)} className={"lh-pill" + (sec ? " sec" : "") + (on ? " on" : "")}>
             {label}{n != null ? <span className="lh-pill-n">{n}</span> : null}
           </button>
         );
@@ -110,7 +120,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const [subSel, setSubSel] = useState(() => readUrl().sub);
   const [grpSel, setGrpSel] = useState(() => readUrl().grp);
   const [q, setQ] = useState("");
-  const pickLila = (v: string) => { setLila(v); setSubSel(SUBS[v]?.[0]?.[0] ?? ""); setGrpSel(""); };
+  const pickLila = (v: string) => { const arr = SUBS[v] || []; const firstReal = (arr.find(([sv]) => sv) || arr[0] || ["", ""])[0]; setLila(v); setSubSel(firstReal ?? ""); setGrpSel(""); };
   const pickSub = (v: string) => { setSubSel(v); setGrpSel(""); };
   const rootRef = useRef<HTMLDivElement>(null);
   const didMount = useRef(false);
@@ -169,12 +179,24 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const subItems = SUBS[lila] ?? null;
   const subsubItems = SUBSUBS[subSel] ?? null;
   const grpCount = (gv: string) => (gv === "" ? results.length : results.filter((p) => p.grp === gv).length);
-  const grouped = !!subsubItems && !grpSel;
-  const sections = grouped
-    ? subsubItems!.filter(([gv]) => gv).map(([gv, label]) => ({ gv, label, rows: results.filter((p) => p.grp === gv) })).filter((s) => s.rows.length > 0)
-    : [];
+  // Список «Все» — структурированный: на уровне лилы группируем по волнам (sub), на уровне волны — по подгруппам (grp).
+  let grouped = false;
+  let sections: { gv: string; label: string; rows: Person[] }[] = [];
+  if (!subSel && subItems) {
+    grouped = true;
+    const known = new Set<string>();
+    sections = subItems.filter(([sv]) => sv).map(([sv, label]) => { known.add(sv); return { gv: sv, label, rows: inLila.filter((p) => p.sub === sv) }; }).filter((s) => s.rows.length > 0);
+    const rest = inLila.filter((p) => !p.sub || !known.has(p.sub));
+    if (rest.length) sections.push({ gv: "__rest", label: "Прочие", rows: rest });
+  } else if (subsubItems && !grpSel) {
+    grouped = true;
+    const known = new Set<string>();
+    sections = subsubItems.filter(([gv]) => gv).map(([gv, label]) => { known.add(gv); return { gv, label, rows: results.filter((p) => p.grp === gv) }; }).filter((s) => s.rows.length > 0);
+    const rest = results.filter((p) => !p.grp || !known.has(p.grp));
+    if (rest.length) sections.push({ gv: "__rest", label: "Прочие", rows: rest });
+  }
   const flat = subsubItems && grpSel ? results.filter((p) => p.grp === grpSel) : results;
-  const shown = subsubItems && grpSel ? flat.length : results.length;
+  const shown = grouped ? sections.reduce((a, s) => a + s.rows.length, 0) : (subsubItems && grpSel ? flat.length : results.length);
   const lilaVisible = LILAS.filter(([v]) => lilaCount(v) > 0);
 
   return (
