@@ -43,5 +43,12 @@ jobs:
       - name: Аудит продукта и книг (Пр · Б)
         run: python3 tools/product-audit.py
 
+      # ЗКН-Р004: ЗОЛОТО ТРЕБУЕТ УЛИКИ. Метка в D1 без паспорта и досье = самозванство:
+      # ровно так 649 профилей объявляли себя золотом, имея <2000 знаков.
+      - name: Аудит ПКЛ и реестра (П · Р)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python3 tools/pkl-audit.py
+
       - name: Аудит конституции (свод против кода)
         run: python3 tools/laws-audit.py
