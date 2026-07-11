@@ -20,26 +20,19 @@ import {
   type KirtanArtist, type KirtanAlbum, type KirtanType, type KirtanMood,
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 const GOLD = "var(--color-gold)";
 
 interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; category: string | null; has_recordings?: boolean; }
 
 /** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
-export function ArtistMono({ artist, size = 52 }: { artist: KirtanArtist; size?: number }) {
-  const accent = artist.accent;
+export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number }) {
+  // ЗКН-Д007: буква-монограмма — суррогат. Нет портрета → фирменная заглушка.
   return (
-    <span aria-hidden style={{
-      width: size, height: size, flexShrink: 0, borderRadius: "50%", display: "grid", placeItems: "center",
-      fontFamily: "var(--font-text)", fontWeight: 700, letterSpacing: "-0.01em",
-      fontSize: size * (artist.mono.length > 1 ? 0.34 : 0.42),
-      color: accent ? "#3a2e05" : "var(--color-label)",
-      background: accent
-        ? "radial-gradient(120% 120% at 30% 25%, #F0D060 0%, #D2AA1B 55%, #B8901A 100%)"
-        : "var(--color-bg-3, #e9e9ee)",
-      border: accent ? "none" : "0.5px solid var(--color-hairline)",
-      boxShadow: accent ? "0 4px 14px rgba(210,170,27,0.35)" : "none",
-    }}>{artist.mono}</span>
+    <img src={COVER_FALLBACK} alt="" loading="lazy"
+      style={{ width: size, height: size, flexShrink: 0, borderRadius: "50%", objectFit: "cover",
+        background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }} />
   );
 }
 

@@ -93,7 +93,7 @@ export function usePlayer(): PlayerApi {
 
 export const PLAYER_RATES = [1, 1.25, 1.5, 2];
 /** Единая запасная обложка плеера (фирменный знак ISKCON ONE LOVE) — для любого
- *  аудио без собственной обложки. Источник — apps/web/public/audio-cover.png. */
+ *  аудио без собственной обложки. ЗКН-Д005: единая заглушка cover-fallback.svg. */
 export const AUDIO_FALLBACK_COVER = "/cover-fallback.svg";        // ЗКН-Д005
 /** Обложка фирменного знака для СПИСКА бхаджанов — золото на белом (всегда,
  *  вне зависимости от темы). В плеере используется тёмная AUDIO_FALLBACK_COVER. */

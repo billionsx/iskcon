@@ -1,3 +1,4 @@
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 /**
  * Каталог аудиотеки киртанов и бхаджанов (раздел «Киртаны»).
  *
@@ -331,7 +332,9 @@ export function artistPlayableCount(slug: string): number {
 
 /** Обложка альбома: фирменная картинка IA-элемента (грузится напрямую, без прокси). */
 export function albumCover(a: KirtanAlbum): string {
-  return a.archive ? `https://archive.org/services/img/${a.archive}` : "/audio-cover.png";
+  // ЗКН-Д007: спектрограмма archive.org (services/img) — суррогат, не обложка.
+  // Своих обложек у альбомов нет → фирменная заглушка.
+  return COVER_FALLBACK;
 }
 
 /** Все настроения/типы, реально встречающиеся в каталоге (для чипов классификаций). */
