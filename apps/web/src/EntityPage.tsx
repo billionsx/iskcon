@@ -685,6 +685,54 @@ const KIND_LABEL: Record<string, string> = {
 };
 const KIND_ORDER = ["work", "dhama", "tirtha", "dish", "kirtan", "bhajan", "temple", "festival", "gallery", "video"];
 
+/* ═══ ЗКН-Н014 · МОСТ ДОСЬЕ ↔ БОГАТСТВА (синхронизация) ═══
+ * Волны и группы живут в ДВУХ местах: в досье Гауранги/Кришны (табы «Парикары»)
+ * и в витрине Богатства → Личности. Раньше они были не связаны: из досье нельзя
+ * было попасть в список личностей этой волны.
+ *
+ * Слаги отличались (`volna-2` в досье vs `2-volna` в витрине) — мост переводит.
+ */
+const BRIDGE_WAVE: Record<string, string> = {
+  "volna-1": "/dhana/gauranga-lila/1-volna",
+  "volna-2": "/dhana/gauranga-lila/2-volna",
+  "volna-3": "/dhana/gauranga-lila/3-volna",
+  "volna-4": "/dhana/gauranga-lila/4-volna",
+  "volna-5": "/dhana/gauranga-lila/5-volna",
+  "volna-iskcon": "/dhana/gauranga-lila/bespretsedentnaya",
+  "volny": "/dhana/gauranga-lila",
+};
+const BRIDGE_RASA: Record<string, string> = {
+  shanta: "/dhana/krishna-lila/shanta",
+  dasya: "/dhana/krishna-lila/dasya",
+  sakhya: "/dhana/krishna-lila/sakhya",
+  vatsalya: "/dhana/krishna-lila/vatsalya",
+  madhurya: "/dhana/krishna-lila/madhurya",
+  "pyat-ras": "/dhana/krishna-lila",
+};
+
+/** Ссылка «Смотреть всех» из суб-таба досье в витрину Личностей. */
+function bridgeHref(entityId: string, tabId: string, subId: string): string | null {
+  if (tabId !== "parikary" && tabId !== "parikara") return null;
+  if (entityId === "chaitanya") return BRIDGE_WAVE[subId] ?? null;
+  if (entityId === "krishna") return BRIDGE_RASA[subId] ?? null;
+  return null;
+}
+
+/** Кнопка-мост под содержимым суб-таба. */
+function BridgeLink({ href, label, onNavigate }: { href: string; label: string; onNavigate?: (h: string) => void }) {
+  return (
+    <button type="button" onClick={() => onNavigate?.(href)}
+      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
+        width: "100%", marginTop: 18, padding: "13px 15px", borderRadius: "var(--radius-card, 14px)",
+        background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", cursor: "pointer",
+        fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600,
+        color: "var(--color-label)", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+      <span>{label}</span>
+      <span aria-hidden style={{ color: "var(--color-gold)", fontWeight: 400 }}>→</span>
+    </button>
+  );
+}
+
 function kindHref(kind: string, ref: string): string | null {
   switch (kind) {
     case "dish": return "/prasadam/recipe/" + ref;
@@ -1362,6 +1410,11 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                     </div>
                   )}
                   {subRails.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
+                  {/* ЗКН-Н014: мост из досье в витрину Личностей той же волны/расы */}
+                  {(() => {
+                    const bh = bridgeHref(id, tab, activeSub?.id ?? sub);
+                    return bh ? <BridgeLink href={bh} label={`Все личности: ${activeSub?.label ?? ""}`} onNavigate={onNavigate} /> : null;
+                  })()}
                   {subCards.length > 0 && <NavCards cards={subCards} onNavigate={onNavigate} onOpenCollection={onOpenCollection} />}
                   {(pagerPrev.on || pagerNext.on) && (
                     <ReaderPager prevLabel={pagerPrev.label} nextLabel={pagerNext.label} onPrev={pagerPrev.on ? pagerPrev.go : null} onNext={pagerNext.on ? pagerNext.go : null} />
