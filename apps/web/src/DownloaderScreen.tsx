@@ -626,6 +626,16 @@ function bookColor(s: string): string {
   if (s === "ERROR") return "#ff453a";
   return "var(--color-label-3)"; // QUEUE
 }
+/** Человеческий текст ошибки. Раньше вызывалась, но НЕ существовала —
+ *  любая ошибка загрузчика роняла экран (ЗКН-Ф006: tsc ловит такое). */
+function ruError(code: string): string {
+  const MAP: Record<string, string> = {
+    "401": "Нужна авторизация", "403": "Нет доступа", "404": "Не найдено",
+    "409": "Уже выполняется", "429": "Слишком часто", "500": "Ошибка сервера",
+  };
+  return MAP[code] || `Ошибка: ${code}`;
+}
+
 function runColor(r: RunRow): string {
   if (r.status !== "completed") return "var(--color-gold-deep)";
   if (r.conclusion === "success") return "#34c759";

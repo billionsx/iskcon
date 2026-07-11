@@ -24,6 +24,7 @@ import { BookMenuSheet } from "./BookMenuSheet";
 import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20 };

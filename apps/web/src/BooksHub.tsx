@@ -26,6 +26,7 @@ import { useCatalog } from "./bookCatalog";
 import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
 import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 const GOLD = "var(--color-gold)";
 

@@ -20,6 +20,7 @@ import { Rail } from "./AcharyaScreen";
 import { renderTerms } from "./ui/Skt";
 import { cleanCardText } from "./cardText";
 import { SectionSubTabs } from "./SectionSubTabs";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 const GOLD = "var(--color-gold)";
 
