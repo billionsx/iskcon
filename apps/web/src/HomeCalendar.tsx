@@ -87,7 +87,7 @@ function fmtDay(iso: string): { d: string; wd: string; m: string; y: number } {
 const TYPE_META: Record<CalEvent["type"], { label: string; color: string }> = {
   ekadasi: { label: "Экадаши", color: GOLD },
   parana: { label: "Парана", color: "var(--color-label-3)" },
-  festival: { label: "Праздник", color: "var(--color-brand-blue)" },
+  festival: { label: "Праздник", color: "var(--color-gold-deep)" },
   appearance: { label: "Явление", color: "#2E9E5B" },
   disappearance: { label: "Уход", color: "var(--color-label-2)" },
   other: { label: "Событие", color: "var(--color-label-3)" },
@@ -339,7 +339,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Календарь для города «{loc.ru}» сейчас недоступен.{" "}
             {loc.key !== DEFAULT_LOC.key && (
-              <button type="button" onClick={() => setLoc(DEFAULT_LOC)} style={{ padding: 0, border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--color-brand-blue)" }}>Показать Вриндаван</button>
+              <button type="button" onClick={() => setLoc(DEFAULT_LOC)} style={{ padding: 0, border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--color-gold-deep)" }}>Показать Вриндаван</button>
             )}
           </div>
         )}

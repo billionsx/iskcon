@@ -83,7 +83,7 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
   return (
     <div>
       <div style={{ marginBottom: "var(--space-4)" }}>
-        <div style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Святые места</div>
+        <div style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Святые места</div>
         <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-display)" }}>Дхама</h2>
         <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: "var(--leading-normal)" }}>
           Дхамы — святые земли, неотличные от духовного мира, где Господь являет Свои вечные игры. Войдите в каждую, чтобы пройти по её тиртхам, лилам и картам.

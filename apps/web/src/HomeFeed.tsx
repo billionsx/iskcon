@@ -84,7 +84,7 @@ function renderRich(rich: TgSeg[], clampTo: number | null): React.ReactNode[] {
       out.push(
         <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600, wordBreak: "break-word" }}>{v}</a>
+          style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600, wordBreak: "break-word" }}>{v}</a>
       );
     } else out.push(<span key={i}>{v}</span>);
   }
@@ -576,7 +576,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         {err && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Лента временно недоступна.<br />
-            <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>Открыть канал в Telegram →</a>
+            <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал в Telegram →</a>
           </div>
         )}
         {!err && !posts && (
@@ -602,7 +602,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
         )}
         {posts && posts.length === 0 && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>
-            Пока нет постов. <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a>
+            Пока нет постов. <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a>
           </div>
         )}
       </div>
@@ -659,7 +659,7 @@ export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: ()
         {state === "error" && (
           <div style={{ padding: "40px 16px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Не удалось открыть пост.<br />
-            <a href={postUrl(id)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-brand-blue)", textDecoration: "none", fontWeight: 600 }}>Открыть в Telegram →</a>
+            <a href={postUrl(id)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть в Telegram →</a>
           </div>
         )}
         {state === "ok" && post && (

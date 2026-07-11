@@ -1,5 +1,6 @@
 /**
- * Apartsales — UI-токены (веха ui-0).
+ * ISKCON ONE LOVE — UI-токены: единственный источник размеров, цветов,
+ * отступов и радиусов (ЗКН-Д001). Магические числа в компонентах запрещены.
  *
  * TS-зеркало CSS-переменных из globals.css. Компоненты пишут
  * `tk.text.footnote` вместо магического числа `13` — единый
@@ -68,7 +69,7 @@ export const tk = {
     label: 'var(--color-label)',
     label2: 'var(--color-label-2)',
     label3: 'var(--color-label-3)',
-    brand: 'var(--color-brand-blue)',
+    brand: 'var(--color-gold-deep)',
     bg: 'var(--color-bg)',
     bg2: 'var(--color-bg-2)',
     /** Поверхность карточки контента (iOS grouped card — белая на сером). */

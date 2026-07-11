@@ -53,7 +53,7 @@ function TokenGate({ onSet }: { onSet: (t: string) => void }) {
       <input type="password" value={val} placeholder="ADMIN_TOKEN" onChange={(e) => setVal(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && val.trim()) onSet(val.trim()); }} style={inputStyle} />
       <button onClick={() => val.trim() && onSet(val.trim())} disabled={!val.trim()}
-        style={{ marginTop: 12, width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 12, fontSize: 16, fontWeight: 600, color: "#fff", background: val.trim() ? "var(--color-brand-blue)" : "var(--color-fill-2)", cursor: val.trim() ? "pointer" : "default" }}>
+        style={{ marginTop: 12, width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 12, fontSize: 16, fontWeight: 600, color: "#fff", background: val.trim() ? "var(--color-gold-deep)" : "var(--color-fill-2)", cursor: val.trim() ? "pointer" : "default" }}>
         Войти
       </button>
     </div>
@@ -155,14 +155,14 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
         <input value={identifier} placeholder="iskcone-stories" onChange={(e) => setIdentifier(e.target.value)} style={{ ...inputStyle, marginBottom: 14 }} />
 
         <button onClick={start} disabled={busy}
-          style={{ width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 13, fontSize: 16, fontWeight: 700, color: "#fff", background: busy ? "var(--color-fill-2)" : "var(--color-brand-blue)", cursor: busy ? "default" : "pointer" }}>
+          style={{ width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 13, fontSize: 16, fontWeight: 700, color: "#fff", background: busy ? "var(--color-fill-2)" : "var(--color-gold-deep)", cursor: busy ? "default" : "pointer" }}>
           {run.phase === "starting" ? "Запуск…" : run.phase === "running" ? `Идёт забор · ${run.status}` : "Забрать сторис сейчас"}
         </button>
 
         {run.phase === "done" && (
           <div style={{ marginTop: 12, fontSize: 14, color: run.conclusion === "success" ? "var(--color-green, #2e7d32)" : "var(--color-label)" }}>
             {run.conclusion === "success" ? "✓ Готово — манифест обновлён ниже." : `Завершено: ${run.conclusion}`}
-            {run.htmlUrl && <> · <a href={run.htmlUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-brand-blue)" }}>лог</a></>}
+            {run.htmlUrl && <> · <a href={run.htmlUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-gold-deep)" }}>лог</a></>}
           </div>
         )}
         {run.phase === "failed" && (

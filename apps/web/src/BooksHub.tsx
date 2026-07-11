@@ -374,7 +374,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
     <div>
       {/* шапка */}
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Библиотека</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Библиотека</div>
         <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Книги</h1>
         <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>
           Священные тексты — от первоисточников парампары до изданий Шрилы Прабхупады

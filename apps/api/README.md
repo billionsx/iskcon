@@ -1,7 +1,7 @@
 # @iskcon/api
 
 ISKCON Platform API — Cloudflare Worker (Hono + Zod + TypeScript) поверх **D1** (SQLite), **KV** (кэш) и **R2** (файлы, после активации).
-Стек повторяет `apartsales/apps/api`, но БД — D1 вместо Supabase.
+Стек: Hono + Cloudflare Workers, БД — D1.
 
 ## Эндпоинты (v1)
 - `GET  /v1/health` — проверка KV + D1
@@ -28,7 +28,7 @@ wrangler dev            # http://localhost:8787
 ```
 
 ## Деплой
-Рекомендуется **Cloudflare Git Integration** (как в apartsales):
+Рекомендуется **Cloudflare Git Integration**:
 Cloudflare → Workers & Pages → Create → Workers → Connect to Git →
 репозиторий `billionsx/iskcon`, root dir `apps/api`. CF сам собирает и деплоит.
 

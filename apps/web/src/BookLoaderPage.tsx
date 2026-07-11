@@ -377,7 +377,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
 
       <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 18px 60px" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>
             Библиотека · ингест
           </div>
           <h1 style={{ margin: "2px 0 6px", fontSize: 24, fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
@@ -403,7 +403,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                   fontSize: 14,
                   fontWeight: 600,
                   fontFamily: "var(--font-text)",
-                  background: w.id === work ? "var(--color-brand-blue)" : "var(--color-glass-regular)",
+                  background: w.id === work ? "var(--color-gold-deep)" : "var(--color-glass-regular)",
                   color: w.id === work ? "#fff" : w.enabled ? "var(--color-label)" : "var(--color-label-3, var(--color-label-2))",
                   opacity: w.enabled ? 1 : 0.55,
                 }}
@@ -485,8 +485,8 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                       disabled={busy || (!layers.sanskrit && !layers.edition)}
                       style={{
                         ...ghostBtn,
-                        background: loadingCh === c.number ? "var(--color-brand-blue)" : "var(--color-bg)",
-                        color: loadingCh === c.number ? "#fff" : "var(--color-brand-blue)",
+                        background: loadingCh === c.number ? "var(--color-gold-deep)" : "var(--color-bg)",
+                        color: loadingCh === c.number ? "#fff" : "var(--color-gold-deep)",
                         cursor: busy ? "default" : "pointer",
                         opacity: busy && loadingCh !== c.number ? 0.5 : 1,
                       }}
@@ -525,7 +525,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           {/* импорт файла / JSON (резерв или ручная загрузка) */}
           <button
             onClick={() => setJsonOpen((v) => !v)}
-            style={{ marginTop: 22, background: "none", border: "none", color: "var(--color-brand-blue)", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: "4px 0", fontFamily: "var(--font-text)" }}
+            style={{ marginTop: 22, background: "none", border: "none", color: "var(--color-gold-deep)", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: "4px 0", fontFamily: "var(--font-text)" }}
           >
             {jsonOpen ? "▾ " : "▸ "}Загрузить из файла с компьютера / JSON
           </button>
@@ -600,7 +600,7 @@ function Toggle({ label, note, on, onToggle, warn }: { label: string; note?: str
         <span style={{ display: "block", fontSize: 15, color: "var(--color-label)" }}>{label}</span>
         {note && <span style={{ display: "block", marginTop: 2, fontSize: 12, color: warn ? "#a8700a" : "var(--color-label-2)" }}>{note}</span>}
       </span>
-      <span aria-hidden style={{ position: "relative", width: 42, height: 26, borderRadius: 999, flexShrink: 0, background: on ? (warn ? "#d99100" : "var(--color-brand-blue)") : "var(--color-glass-regular)", transition: "background .2s" }}>
+      <span aria-hidden style={{ position: "relative", width: 42, height: 26, borderRadius: 999, flexShrink: 0, background: on ? (warn ? "#d99100" : "var(--color-gold-deep)") : "var(--color-glass-regular)", transition: "background .2s" }}>
         <span style={{ position: "absolute", top: 3, left: on ? 19 : 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", transition: "left .2s", boxShadow: "0 1px 3px rgba(0,0,0,.3)" }} />
       </span>
     </button>
@@ -609,7 +609,7 @@ function Toggle({ label, note, on, onToggle, warn }: { label: string; note?: str
 
 function Chip({ label, tone = "muted" }: { label: string; tone?: "ok" | "muted" }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", height: 20, padding: "0 8px", borderRadius: 999, background: tone === "ok" ? "rgba(0,122,255,.12)" : "var(--color-glass-regular)", color: tone === "ok" ? "var(--color-brand-blue)" : "var(--color-label-2)", fontSize: 11, fontWeight: 600 }}>
+    <span style={{ display: "inline-flex", alignItems: "center", height: 20, padding: "0 8px", borderRadius: 999, background: tone === "ok" ? "rgba(0,122,255,.12)" : "var(--color-glass-regular)", color: tone === "ok" ? "var(--color-gold-deep)" : "var(--color-label-2)", fontSize: 11, fontWeight: 600 }}>
       {label}
     </span>
   );
@@ -623,7 +623,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
   return (
     <div style={{ padding: "12px 0", borderTop: "0.5px dashed var(--color-hairline)" }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-brand-blue)" }}>{v.ref}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-gold-deep)" }}>{v.ref}</span>
         {v.sourceUrl && (
           <a href={v.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: "var(--color-label-3, var(--color-label-2))" }}>
             источник ↗
@@ -652,7 +652,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
             <div style={{ marginTop: 6, fontSize: 13, lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
               {long && !more ? purp.slice(0, 280) + "…" : purp}
               {long && (
-                <button onClick={() => setMore((m) => !m)} style={{ marginLeft: 6, background: "none", border: "none", color: "var(--color-brand-blue)", cursor: "pointer", fontSize: 12, padding: 0, fontFamily: "var(--font-text)" }}>
+                <button onClick={() => setMore((m) => !m)} style={{ marginLeft: 6, background: "none", border: "none", color: "var(--color-gold-deep)", cursor: "pointer", fontSize: 12, padding: 0, fontFamily: "var(--font-text)" }}>
                   {more ? "свернуть" : "развернуть"}
                 </button>
               )}
@@ -668,6 +668,6 @@ function VersePreview({ v }: { v: PreviewVerse }) {
 const page: CSSProperties = { display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)" };
 const card: CSSProperties = { borderRadius: 14, padding: "16px 18px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" };
 const input: CSSProperties = { width: "100%", boxSizing: "border-box", height: 44, padding: "0 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-label)", fontSize: 15, fontFamily: "var(--font-text)", outline: "none" };
-const primaryBtn: CSSProperties = { height: 46, padding: "0 18px", borderRadius: 12, border: "none", background: "var(--color-brand-blue)", color: "#fff", fontSize: 15, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
+const primaryBtn: CSSProperties = { height: 46, padding: "0 18px", borderRadius: 12, border: "none", background: "var(--color-gold-deep)", color: "#fff", fontSize: 15, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
 const sectionLabel: CSSProperties = { fontSize: 11, fontWeight: 600, letterSpacing: "1.4px", textTransform: "uppercase", color: "var(--color-label-2)", margin: "0 0 10px" };
-const ghostBtn: CSSProperties = { flexShrink: 0, height: 34, padding: "0 12px", borderRadius: 10, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
+const ghostBtn: CSSProperties = { flexShrink: 0, height: 34, padding: "0 12px", borderRadius: 10, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };

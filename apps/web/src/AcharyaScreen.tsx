@@ -290,7 +290,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
     <div>
       {/* Порог пред Личностью */}
       <div style={{ marginBottom: 6 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга Лилы"}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга Лилы"}</div>
         <h1 style={{ margin: "3px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: "-0.5px", color: "var(--color-label)" }}>{K ? "Шри Кришна" : "Шри Гауранга"}</h1>
         <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>
           {K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гауранга Лиле."}
@@ -441,7 +441,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna"
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{realm === "gauranga" ? "Гауранга Лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{realm === "gauranga" ? "Гауранга Лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
         <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{realm === "gauranga" ? "Гауранга" : realm === "krishna" ? "Кришна" : "Герои"}</h2>
         <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Гауранга Махапрабху, Панча-таттва и все спутники Гауранга Лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
       </div>

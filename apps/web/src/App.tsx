@@ -1,5 +1,5 @@
 /**
- * gaurangers.com — shell copied 1:1 from apartsales (TopHeader + TabBar + UnitCard/UnitHero).
+ * gaurangers.com — оболочка приложения: TopHeader + TabBar + карточки (ЗКН-Н004).
  * Book card PRESENTS the book (no price/rating/compare/CTA): tap → detail page.
  * Cover: graphite background for now (real BBT artwork to be wired later).
  * Text strictly per Śrīla Prabhupāda. One type family throughout.
@@ -41,7 +41,7 @@ import { api } from "./api";
 import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
 
-/* ═════════ ICONS (apartsales icons.tsx, verbatim geometry) ═════════ */
+/* ═════════ ICONS — иконки приложения ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
 const sp = ({ size = 26 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -328,10 +328,10 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
     <section style={{ marginTop: 28 }}>
       <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Молитвенник</div>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Молитвенник</div>
           <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
         </div>
-        <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+        <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
           Весь каталог
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
@@ -352,7 +352,7 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
             </div>
           ))}
       {!searching && items && items.length > 0 && (
-        <button onClick={onOpenCatalog} style={{ marginTop: 18, width: "100%", padding: "12px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 14, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+        <button onClick={onOpenCatalog} style={{ marginTop: 18, width: "100%", padding: "12px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 14, fontWeight: 600, fontFamily: "var(--font-text)" }}>
           Открыть весь каталог →
         </button>
       )}
@@ -446,7 +446,7 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
               <h2 style={{ margin: "0 0 10px", fontSize: 18, fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
               {g.books.map((bk) => (
                 <div key={(g.author) + "|" + (bk.book ?? "_")} style={{ marginBottom: 12 }}>
-                  {bk.book && <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-brand-blue)", margin: "8px 2px 6px" }}>{bk.book}</div>}
+                  {bk.book && <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-gold-deep)", margin: "8px 2px 6px" }}>{bk.book}</div>}
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
                     {bk.rows.map((it, i) => (
                       <li key={it.slug} style={{ borderBottom: i === bk.rows.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
@@ -486,7 +486,7 @@ function ContentSection({ eyebrow, title, endpoint, onOpen }: { eyebrow: string;
   return (
     <section style={{ marginTop: "var(--space-8)" }}>
       <div style={{ marginBottom: "var(--space-3)" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{eyebrow}</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
         <h2 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{title}</h2>
       </div>
       {!items && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
@@ -520,7 +520,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   return (
     <div>
       <div style={{ marginBottom: "var(--space-2)" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>ISKCON ONE LOVE</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>ISKCON ONE LOVE</div>
         <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>Лента</h1>
       </div>
       <ContentSection eyebrow="Личности" title="Кришна, аватары и спутники" endpoint="/content/personalities" onOpen={onOpen} />

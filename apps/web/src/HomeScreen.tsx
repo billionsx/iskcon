@@ -593,7 +593,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <button type="button" onClick={() => setSpOpen(true)}
           onPointerDown={(e) => (e.currentTarget.style.opacity = "0.55")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
           style={{ marginTop: 18, padding: "8px 2px", background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4,
-            fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, letterSpacing: TR_BODY, color: "var(--color-brand-blue)", WebkitTapHighlightColor: "transparent" }}>
+            fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, letterSpacing: TR_BODY, color: "var(--color-gold-deep)", WebkitTapHighlightColor: "transparent" }}>
           Подробнее о Шриле Прабхупаде
           <ChevRightIcon size={16} />
         </button>

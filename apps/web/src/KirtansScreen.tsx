@@ -47,7 +47,7 @@ function SectionHead({ eyebrow, title, action }: { eyebrow: string; title: strin
   return (
     <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>{eyebrow}</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
         <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{title}</h2>
       </div>
       {action}
@@ -119,7 +119,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     <div style={{ fontFamily: "var(--font-text)" }}>
       {/* Заголовок раздела */}
       <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)" }}>Аудиотека</div>
+        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Аудиотека</div>
         <h1 style={{ margin: "2px 0 0", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Киртаны и бхаджаны</h1>
         <p style={{ margin: "8px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "var(--color-label-2)", maxWidth: 520 }}>
           Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана и фестивалей наших дней.
@@ -166,7 +166,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       {/* Жанры и настроения */}
       <section style={{ marginTop: 30 }}>
         <SectionHead eyebrow="Классификации" title="Жанры и настроения" action={
-          (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
+          (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
         } />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {types.map((t) => (
@@ -206,7 +206,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       {/* Тексты бхаджанов (молитвенник) */}
       <section style={{ marginTop: 30 }}>
         <SectionHead eyebrow="Молитвенник" title="Тексты бхаджанов" action={
-          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-brand-blue)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
             Весь каталог
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
