@@ -48,9 +48,37 @@ def get(url: str, timeout: int = 45):
         return json.load(r)
 
 
+def discover_routes():
+    """Спросить у сайта, какие маршруты он отдаёт. Не угадывать."""
+    try:
+        idx = get("%s/wp-json/" % OFFICIAL)
+    except Exception as e:
+        raise SystemExit("::error title=NO-REST::wp-json недоступен: %s" % e)
+    routes = sorted(idx.get("routes", {}).keys())
+    print("::notice title=ROUTES::всего маршрутов=%d" % len(routes))
+    # показать всё, что похоже на листинги/центры
+    interesting = [r for r in routes if re.search(r"listing|centre|center|place|job|geo|map", r, re.I)]
+    for r in interesting[:40]:
+        print("  route: %s" % r)
+    return routes, interesting
+
+
 def find_cpt() -> str:
-    """Определить реальный тип записи для центров."""
-    for cpt in CPT_CANDIDATES:
+    """Определить реальный тип записи для центров — по ответу сайта, не по догадке."""
+    routes, interesting = discover_routes()
+
+    # маршруты вида /wp/v2/<cpt> — берём кандидатов оттуда
+    cands = []
+    for r in routes:
+        m = re.match(r"^/wp/v2/([a-z0-9_\-]+)$", r)
+        if m and m.group(1) not in ("posts", "pages", "media", "users", "comments",
+                                    "categories", "tags", "taxonomies", "types",
+                                    "statuses", "settings", "themes", "blocks",
+                                    "search", "menu-items", "menus", "widgets"):
+            cands.append(m.group(1))
+    print("::notice title=CPT-CANDIDATES::%s" % (", ".join(cands) or "нет"))
+
+    for cpt in cands + CPT_CANDIDATES:
         try:
             arr = get("%s/wp-json/wp/v2/%s?per_page=1" % (OFFICIAL, cpt))
             if isinstance(arr, list) and arr:
@@ -58,8 +86,10 @@ def find_cpt() -> str:
                 return cpt
         except Exception:
             continue
-    raise SystemExit("::error title=CPT-NOT-FOUND::официальный директорий не отдаёт ни один из %s"
-                     % ", ".join(CPT_CANDIDATES))
+
+    raise SystemExit("::error title=CPT-NOT-FOUND::центры не отдаются через REST. "
+                     "Кандидаты: %s. Маршруты по теме: %s"
+                     % (", ".join(cands) or "нет", ", ".join(interesting[:8]) or "нет"))
 
 
 def num(v):
