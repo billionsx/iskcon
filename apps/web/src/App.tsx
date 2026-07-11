@@ -38,7 +38,7 @@ import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
-import { HallTabs } from "./SectionSubTabs";
+import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
 import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
