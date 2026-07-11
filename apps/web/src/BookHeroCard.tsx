@@ -13,6 +13,7 @@ import { BookMenuSheet } from "./BookMenuSheet";
 import { useFavorite } from "./cardActions";
 import { usePlayer } from "./player/store";
 import { useCoverSlider } from "./CardCover";
+import { CoverFallback } from "./ui/CoverFallback";
 
 const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #1b1b1f 100%)";
 
@@ -44,6 +45,7 @@ export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, prese
           boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
+        {n === 0 && <CoverFallback dark />}
         {book.covers.map((src, i) => (
           <img key={src} src={src} alt={bookFullTitle(book)} loading={i === 0 ? "eager" : "lazy"} decoding="async" draggable={false}
             style={{ position: "absolute", inset: 0, height: "100%", width: "100%", objectFit: "cover", opacity: i === idx ? 1 : 0, transition: "opacity .35s ease" }} />
