@@ -533,23 +533,6 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   );
 }
 
-function SegRow({ value, onChange, items }: { value: string; onChange: (v: string) => void; items: [string, string][] }) {
-  return (
-    <div role="tablist" style={{ display: "flex", gap: 8, marginBottom: 18, overflowX: "auto", scrollbarWidth: "none" }}>
-      {items.map(([id, label]) => {
-        const on = value === id;
-        return (
-          <button key={id} role="tab" aria-selected={on} onClick={() => onChange(id)}
-            style={{ flexShrink: 0, padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer",
-              fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.2px",
-              background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label-2)" }}>
-            {label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 /* ЗКН-Н005: суб-таб Богатств — сегмент URL, а не переменная в модуле.
  * /dhana                        → Личности (умолчание)

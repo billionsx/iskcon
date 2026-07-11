@@ -79,6 +79,12 @@ RULES = [
         "hint": "→ COVER_FALLBACK / <CoverFallback />. Инициал в кружке — суррогат (ЗКН-Д007)",
     },
     {
+        "id": "ЗКН-Н016",
+        "name": "своя копия чипов навигации мимо ui/nav4",
+        "pattern": re.compile(r"function (FilterChip|Pills|SegRow)\b"),
+        "hint": "→ импортировать из ./ui/nav4 (ЗКН-Н006/Н016). Своя копия = разъезд системы",
+    },
+    {
         "id": "ЗКН-Ц001",
         "name": "секрет в коде",
         "pattern": re.compile(r"(ghp_|github_pat_)[A-Za-z0-9_]{10,}"),

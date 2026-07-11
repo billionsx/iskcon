@@ -17,6 +17,7 @@ import { BookHeroCard } from "./BookHeroCard";
 import { HomeTabs, HOME_TABS, type HomeTabId } from "./HomeTabs";
 import { takeHomeTab } from "./homeNav";
 import { SectionSubTabs } from "./SectionSubTabs";
+import { FilterChips as NavFilterChips } from "./ui/nav4";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeEducation, HomeNews } from "./HomeMore";
@@ -440,9 +441,10 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
 
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
-      <SectionSubTabs variant="chips" ariaLabel="Разделы страницы ИСККОН" tone="light" top={stickyTop} bleed={16}
-        navRef={(el) => { subRef.current = el; if (el) setSubH(el.offsetHeight); }}
-        items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} />
+      {/* ЗКН-Н006: Tier-2 — общий FilterChips (контур, без заливки), а не чёрные капсулы */}
+      <div ref={(el) => { subRef.current = el; if (el) setSubH(el.offsetHeight); }}>
+        <NavFilterChips items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} ariaLabel="Разделы страницы ИСККОН" />
+      </div>
       {/* HERO */}
       <div id="hsec-about" style={{ paddingTop: 20 }} />
       <MaskMark src="/iskcon.svg" size={50} color={GOLD} />

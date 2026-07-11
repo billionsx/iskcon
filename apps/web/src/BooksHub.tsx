@@ -27,6 +27,7 @@ import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
 import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { FilterChips as NavFilterChips, type NavItem } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
 
@@ -83,32 +84,6 @@ function Chevron({ muted = true }: { muted?: boolean }) {
 }
 
 /* сегмент-фильтр по линии */
-function FilterChips({ value, onChange }: { value: "all" | Lineage; onChange: (v: "all" | Lineage) => void }) {
-  const opts: { id: "all" | Lineage; label: string }[] = [
-    { id: "all", label: "Все" },
-    { id: "prabhupada", label: "Шрила Прабхупада" },
-    { id: "acharya", label: "Ачарьи" },
-    { id: "guru-iskcon", label: "Гуру ИСККОН" },
-  ];
-  return (
-    <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "2px 16px", margin: "14px -16px 0", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-      {opts.map((o) => {
-        const on = value === o.id;
-        return (
-          <button key={o.id} type="button" onClick={() => onChange(o.id)}
-            style={{ flexShrink: 0, padding: "8px 15px", borderRadius: 999, cursor: "pointer", whiteSpace: "nowrap",
-              fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em",
-              border: on ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)",
-              background: on ? "var(--color-label)" : "var(--color-bg-2)",
-              color: on ? "var(--color-bg)" : "var(--color-label-2)", transition: "background .15s, color .15s",
-              WebkitTapHighlightColor: "transparent" }}>
-            {o.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 /* строка книги: открыть книгу (оверлей) + отдельная кнопка автора (связь книга↔герой) */
 function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
@@ -322,6 +297,12 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
 }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
+  const LINEAGE_NAV: NavItem[] = [
+    { id: "all", label: "Все", count: LIBRARY.length },
+    { id: "prabhupada", label: "Шрила Прабхупада", count: LIBRARY.filter((b) => b.lineage === "prabhupada").length },
+    { id: "acharya", label: "Ачарьи", count: LIBRARY.filter((b) => b.lineage === "acharya").length },
+    { id: "iskcon", label: "Гуру ИСККОН", count: LIBRARY.filter((b) => b.lineage === "iskcon").length },
+  ];
   const [soonOpen, setSoonOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -401,7 +382,8 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         )}
       </div>
 
-      <FilterChips value={filter} onChange={setFilter} />
+      {/* ЗКН-Н006: Tier-3 — общий FilterChips (контур), а не своя копия */}
+      <NavFilterChips items={LINEAGE_NAV} active={filter} onChange={(v) => setFilter(v as "all" | Lineage)} ariaLabel="Линия" />
 
       {searching ? (
         <div style={{ marginTop: 16 }} aria-live="polite">

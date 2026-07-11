@@ -202,9 +202,9 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:none;border-radius:50%;background:var(--color-bg-3);color:var(--color-label-2);cursor:pointer;display:grid;place-items:center;font-size:14px;line-height:1;}
 /* ЗКН-Н006: вес уровней убывает. Tier-2 — чёрные капсулы, Tier-3 — серые,
    Tier-4 — самые лёгкие (мельче кегль, тише цвет), иначе уровни сливаются. */
-.lh-search{position:relative;margin:4px 0 0;}
+.lh-search{position:relative;margin:16px 0 0;}
 .lh-pills::-webkit-scrollbar{display:none;}
-.lh-cap{margin:6px 4px 6px;font-family:var(--font-text);font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-label-3);text-transform:uppercase;}
+.lh-cap{margin:14px 4px 6px;font-family:var(--font-text);font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-label-3);text-transform:uppercase;}
 .lh-list{animation:lhfade .24s cubic-bezier(.32,.72,0,1);}
 @keyframes lhfade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .lh-row{display:flex;align-items:center;gap:13px;width:100%;box-sizing:border-box;padding:11px 4px;border-bottom:0.5px solid var(--color-hairline);cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease;}

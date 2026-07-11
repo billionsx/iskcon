@@ -2017,10 +2017,21 @@ export default {
       return json({ items: results ?? [] });
     }
 
+    /* ЗКН-Н015: АЛИАСЫ СУЩНОСТЕЙ. Одна Личность — один id, но у неё могут быть
+     * общеупотребимые синонимы-адреса. `gauranga` ≡ `chaitanya` (это одна Личность:
+     * Гауранга Махапрабху = Шри Кришна Чайтанья Махапрабху, ЗКН-Сд002).
+     * Без алиаса /gauranga отдавал 404 и белую страницу. */
+    const ENTITY_ALIAS: Record<string, string> = {
+      gauranga: "chaitanya",
+      "gauranga-mahaprabhu": "chaitanya",
+      mahaprabhu: "chaitanya",
+    };
+
     // GET /api/entities/:id — полная карточка: имена, категории, профиль, связи (обе стороны)
     const entM = url.pathname.match(/^\/api\/entities\/([A-Za-z0-9][A-Za-z0-9-]*)$/);
     if (entM) {
-      const id = entM[1].toLowerCase();
+      const raw = entM[1].toLowerCase();
+      const id = ENTITY_ALIAS[raw] ?? raw;
       const ent = await env.DB.prepare(
         `SELECT id, type, tattva, dataset, note, source_ref FROM entities WHERE id = ?`,
       ).bind(id).first<{ id: string; type: string; tattva: string | null; dataset: string | null; note: string | null; source_ref: string | null }>();
