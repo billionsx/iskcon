@@ -49,6 +49,12 @@ RULES = [
         "hint": "→ «Гауранга Лила» / «Кришна Лила» (оба слова с заглавной, без дефиса)",
     },
     {
+        "id": "ЗКН-Д007",
+        "name": "суррогатная обложка (спектрограмма / буква-монограмма / авто-парсинг)",
+        "pattern": re.compile(r"archive\.org/services/img|audio-cover(-light)?\.png|/covers/[a-z-]+-ia\.jpg"),
+        "hint": "→ COVER_FALLBACK / <CoverFallback dark /> (ЗКН-Д005/Д007). Суррогат хуже честной заглушки",
+    },
+    {
         "id": "ЗКН-Ц001",
         "name": "секрет в коде",
         "pattern": re.compile(r"(ghp_|github_pat_)[A-Za-z0-9_]{10,}"),
