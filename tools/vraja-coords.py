@@ -38,16 +38,31 @@ COORD_RX = [
     re.compile(r'\bLatLng\(\s*(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)'),
 ]
 
-# Врадж-мандала: ~27.2–27.9 N, ~77.2–77.8 E (84 коса вокруг Матхуры).
-# Рамка БЫЛА (26.5–28.8, 76.5–78.5) — слишком щедрая: пропустила бы «Лалита-деви
-# мандир» с долготой 77.93 (другой Унчагаон, ~50 км восточнее). Рамка — это гейт
-# против ложного совпадения, и она должна быть тесной (ЗКН-Пл008).
-VRAJA_BOX = (27.1, 28.0, 77.15, 77.85)   # lat_min, lat_max, lng_min, lng_max
+# РАМКА — ЭТО ГЕЙТ ПРОТИВ ЛОЖНОГО СОВПАДЕНИЯ (ЗКН-Пл008), и она должна быть ТЕСНОЙ.
+#
+# Проверено на живых ошибках геосервиса:
+#   • «Лалита-деви мандир» → точка с долготой 77.93 (другой Унчагаон, ~50 км восточнее)
+#   • «Кулия» (Навадвипа)  → другая Кулия в 13 км южнее
+# Широкая рамка пропустила бы обе. У КАЖДОЙ дхамы своя.
+BOXES = {
+    # Врадж-мандала: 84 коса вокруг Матхуры
+    "vrindavan": (27.10, 28.00, 77.15, 77.85),
+    # Навадвипа-дхама: девять островов у слияния Ганги и Джаланги
+    "navadvipa": (23.20, 23.60, 88.20, 88.55),
+    # Нилачала (Джаганнатха Пури) — берег Бенгальского залива
+    "nilachala": (19.70, 20.00, 85.75, 86.00),
+}
+VRAJA_BOX = BOXES["vrindavan"]           # обратная совместимость
+
+
+def in_box(lat: float, lng: float, dhama: str = "vrindavan") -> bool:
+    """Координата обязана лежать В СВОЕЙ дхаме. Иначе это чужое место с тем же именем."""
+    a, b, c, d = BOXES.get(dhama, BOXES["vrindavan"])
+    return a <= lat <= b and c <= lng <= d
 
 
 def in_vraja(lat: float, lng: float) -> bool:
-    a, b, c, d = VRAJA_BOX
-    return a <= lat <= b and c <= lng <= d
+    return in_box(lat, lng, "vrindavan")
 
 
 def get(url: str, timeout: int = 25) -> str:
@@ -56,14 +71,14 @@ def get(url: str, timeout: int = 25) -> str:
         return r.read().decode("utf-8", "replace")
 
 
-def coords_from(html: str):
+def coords_from(html: str, dhama: str = "vrindavan"):
     for rx in COORD_RX:
         for m in rx.finditer(html):
             try:
                 lat, lng = float(m.group(1)), float(m.group(2))
             except ValueError:
                 continue
-            if in_vraja(lat, lng):
+            if in_box(lat, lng, dhama):
                 return lat, lng
     return None, None
 
@@ -95,7 +110,7 @@ def main():
         print("нет токена — пропуск (локальный прогон)")
         return 0
 
-    res = d1("""SELECT id, name, vp_link FROM tirthas
+    res = d1("""SELECT id, name, dhama_id, vp_link FROM tirthas
                 WHERE lat IS NULL AND vp_link IS NOT NULL AND vp_link <> ''""")
     rows = (res.get("result") or [{}])[0].get("results") or []
     print("мест без координат со ссылкой на источник: %d" % len(rows))
@@ -117,7 +132,7 @@ def main():
                                  "источник не отвечает из CI (%s). Последняя ошибка: %s"
                                  % (r["vp_link"].split("/")[2], str(e)[:60]))
             continue
-        lat, lng = coords_from(html)
+        lat, lng = coords_from(html, r.get("dhama_id") or "vrindavan")
         if lat is None:
             miss += 1
         else:
