@@ -61,6 +61,12 @@ RULES = [
         "hint": "→ pushUrl() / replaceUrl() из ./nav. Сырой replaceState стирает appIdx и ломает «назад»",
     },
     {
+        "id": "ЗКН-Н005",
+        "name": "суб-таб в переменной модуля (мимо URL)",
+        "pattern": re.compile(r"^let\s+\w*(Sub|Tab)\s*=", re.M),
+        "hint": "→ состояние навигации живёт в URL: pushUrl()/replaceUrl(). Было: bogSub, sadSub",
+    },
+    {
         "id": "ЗКН-Ц001",
         "name": "секрет в коде",
         "pattern": re.compile(r"(ghp_|github_pat_)[A-Za-z0-9_]{10,}"),

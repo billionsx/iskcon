@@ -252,7 +252,8 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 
         <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
         {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
-        {subsubItems ? <div className="lh-grp"><Pills value={grpSel} onChange={setGrpSel} items={subsubItems} count={grpCount} sec /></div> : null}
+        {/* ЗКН-Н006: четвёртый уровень (кластеры) УБРАН — максимум 3 уровня.
+            Кластеры уже показаны заголовками секций внутри списка (см. sections). */}
       </div>
 
       <div className="lh-cap">{shown} {personWord(shown)}</div>
