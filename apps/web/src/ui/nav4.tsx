@@ -59,7 +59,7 @@ export function HallTabs({ items, active, onChange, ariaLabel = "Разделы"
   }, [active]);
   return (
     <nav aria-label={ariaLabel}
-      style={{ position: "sticky", top: 0, zIndex: 30, margin: "-16px -16px 0",
+      style={{ position: "sticky", top: 0, zIndex: 30, margin: "-16px -16px 14px",
         background: "var(--color-glass-nav)", backdropFilter: "blur(40px) saturate(180%)",
         WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div ref={cRef} style={{ display: "flex", alignItems: "stretch", height: "var(--h-hall-tabs)", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>

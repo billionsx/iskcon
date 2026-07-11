@@ -73,6 +73,12 @@ RULES = [
         "hint": "→ липнуть ПОД вышестоящим: top: var(--h-hall-tabs). Два слоя на top:0 = нижний исчезает",
     },
     {
+        "id": "ЗКН-Д007b",
+        "name": "буква-монограмма вместо фирменной заглушки",
+        "pattern": re.compile(r"charAt\(0\)\.toUpperCase\(\)"),
+        "hint": "→ COVER_FALLBACK / <CoverFallback />. Инициал в кружке — суррогат (ЗКН-Д007)",
+    },
+    {
         "id": "ЗКН-Ц001",
         "name": "секрет в коде",
         "pattern": re.compile(r"(ghp_|github_pat_)[A-Za-z0-9_]{10,}"),
