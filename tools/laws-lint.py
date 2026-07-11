@@ -248,7 +248,7 @@ def check_missing_imports():
         return []
     bad = []
     for line in out.split("\n"):
-        if "TS2304" in line or "TS2552" in line:      # Cannot find name
+        if any(e in line for e in ("TS2304", "TS2552", "TS2448")):   # нет имени / использовано до объявления
             bad.append(({"id": "ЗКН-Ф006", "name": "отсутствующий импорт (белая страница в проде)",
                          "hint": "→ добавить импорт. vite соберёт, но браузер упадёт ReferenceError"},
                         line.split("(")[0], 0, line.strip()[:90]))

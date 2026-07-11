@@ -228,7 +228,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
           Tier-4 группа   — РАСКРЫТИЕ (Disclosure в списке — структура, не меню)
           Ни один уровень не спутать с соседним. Заливок нет нигде. */}
       <ScopeTitle items={lilaNav} active={lila} onChange={pickLila} ariaLabel="Лила" />
-      {subNav.length > 0 && <FilterChips items={subNav} active={subSel} onChange={pickSub} ariaLabel="Волна" />}
+      {subNav.length > 0 && <FilterChips sticky stickyTop="calc(var(--h-hall-tabs) + 40px)" items={subNav} active={subSel} onChange={pickSub} ariaLabel="Волна" />}
 
       <div className="lh-search">
         <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>

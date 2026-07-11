@@ -442,9 +442,11 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
       {/* ЗКН-Н006: Tier-2 — общий FilterChips (контур, без заливки), а не чёрные капсулы */}
-      <div ref={(el) => { subRef.current = el; if (el) setSubH(el.offsetHeight); }}>
-        <NavFilterChips sticky items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} ariaLabel="Разделы страницы ИСККОН" />
-      </div>
+      {/* ЗКН-Н019: БЕЗ обёртки — <div> вокруг липкого меню ломает sticky
+          (высота обёртки = высоте меню, у sticky нет хода). Ссылка — через navRef. */}
+      <NavFilterChips sticky items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor}
+        ariaLabel="Разделы страницы ИСККОН"
+        navRef={(el) => { subRef.current = el as HTMLDivElement | null; if (el) setSubH(el.offsetHeight); }} />
       {/* HERO */}
       <div id="hsec-about" style={{ paddingTop: 20 }} />
       <MaskMark src="/iskcon.svg" size={50} color={GOLD} />

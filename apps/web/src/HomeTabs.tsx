@@ -55,7 +55,7 @@ export function HomeTabs({ active, onChange, navRef }: {
           const on = t.id === active;
           return (
             <button key={t.id} ref={(el) => { tabRefs.current[t.id] = el; }} type="button" onClick={() => onChange(t.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "13px 16px", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", background: "none", border: "none", cursor: "pointer",
+              style={{ position: "relative", flexShrink: 0, padding: "0 13px", height: "var(--h-hall-tabs)", display: "flex", alignItems: "center", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", background: "none", border: "none", cursor: "pointer",
                 color: on ? "var(--color-label)" : "var(--color-label-2)", fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0,
                 transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
               {t.label}
