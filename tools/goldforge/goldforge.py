@@ -98,6 +98,28 @@ def compile_pattern(forms):
     return re.compile(rf"(?<![a-zа-я])({body})[a-zа-я]{{0,{MAX_SUFFIX}}}(?![a-zа-я])")
 
 
+NEAR = 60  # окно вокруг имени, где ищем уточнитель
+
+
+def tier(passage, forms, quals, homs):
+    """Уровень уверенности пассажа. Ничего не выбрасываем — маркируем (ЗКН-П009).
+      strong    — рядом с именем стоит уточнитель (дас / тхакур / das / thakur)
+      homonym   — рядом стоит маркер нарицательного (дхира, «лучший из людей»)
+      candidate — голое имя: скорее всего личность, но нужен взгляд куратора
+    """
+    f = fold(passage)
+    pat = compile_pattern(forms)
+    best = "candidate"
+    for m in pat.finditer(f):
+        lo, hi = max(0, m.start() - NEAR), min(len(f), m.end() + NEAR)
+        near = f[lo:hi]
+        if any(fold(q) in near for q in quals):
+            return "strong"
+        if any(fold(h) in near for h in homs):
+            best = "homonym" if best == "candidate" else best
+    return best
+
+
 def snap(text, lo, hi):
     p = text.rfind("\n\n", max(0, lo - 400), lo)
     if p != -1:
@@ -185,14 +207,16 @@ def cmd_passport(args):
     out.write_text(json.dumps({
         "entity_id": args.entity_id, "names": names,
         "forms": sorted(forms), "excludes": args.exclude or [],
-        "require": args.require or [],
+        "qualifiers": args.qualifier or [],
+        "homonyms": args.homonym or [],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     print("паспорт: %s" % out)
     print("  имён:  %d → %s" % (len(names), ", ".join(names)))
     print("  основ: %d → %s" % (len(forms), ", ".join(sorted(forms))))
-    if args.require:
-        print("  require (защита от омонимов): пассаж обязан содержать одно из %s"
-              % ", ".join(args.require))
+    if args.qualifier:
+        print("  уточнители (→ уверенно): %s" % ", ".join(args.qualifier))
+    if args.homonym:
+        print("  омонимы (→ отсев):       %s" % ", ".join(args.homonym))
 
 
 def cmd_sql(args):
@@ -201,10 +225,10 @@ def cmd_sql(args):
         print("\n-- %s\n%s;" % (k, v))
 
 
-def harvest_local(forms, excludes, require=None):
+def harvest_local(forms, excludes, quals=None, homs=None):
     pat = compile_pattern(forms)
     ex = [re.compile(fold(e)) for e in excludes]
-    req = [fold(r) for r in (require or [])]
+    quals, homs = quals or [], homs or []
     findings = []
     for fp in sorted(SOURCES.rglob("*.txt")):
         try:
@@ -226,20 +250,18 @@ def harvest_local(forms, excludes, require=None):
         rel = str(fp.relative_to(ROOT))
         for lo, hi, bases, hits in merged:
             passage = text[lo:hi].strip()
-            fp_ = fold(passage)
-            if any(x.search(fp_) for x in ex):
-                continue
-            if req and not any(r in fp_ for r in req):
+            if any(x.search(fold(passage)) for x in ex):
                 continue
             findings.append({"channel": "k2-archive", "source": rel,
                              "ref": "offset:%d" % lo, "hits": hits,
-                             "forms": sorted(bases), "passage": passage})
+                             "forms": sorted(bases), "passage": passage,
+                             "tier": tier(passage, forms, quals, homs)})
     return findings
 
 
-def normalize(rows, excludes=None, require=None):
+def normalize(rows, forms=None, excludes=None, quals=None, homs=None):
     ex = [re.compile(fold(e)) for e in (excludes or [])]
-    req = [fold(r) for r in (require or [])]
+    forms, quals, homs = forms or [], quals or [], homs or []
     out = []
     for r in rows:
         if not isinstance(r, dict):
@@ -252,30 +274,28 @@ def normalize(rows, excludes=None, require=None):
         passage = "\n\n".join(str(p) for p in parts).strip()
         if not passage:
             continue
-        fp_ = fold(passage)
-        if any(x.search(fp_) for x in ex):
-            continue
-        if req and not any(rq in fp_ for rq in req):
+        if any(x.search(fold(passage)) for x in ex):
             continue
         out.append({"channel": ch, "source": str(src), "ref": str(ref),
-                    "hits": 1, "forms": [], "passage": passage})
+                    "hits": 1, "forms": [], "passage": passage,
+                    "tier": tier(passage, forms, quals, homs)})
     return out
 
 
 def cmd_harvest(args):
     doc = load_passport(args.entity_id)
     forms, excludes = doc["forms"], doc.get("excludes", [])
-    require = doc.get("require", [])
+    quals, homs = doc.get("qualifiers", []), doc.get("homonyms", [])
     findings = []
 
     if not args.only or "k2" in args.only:
-        findings += harvest_local(forms, excludes, require)
+        findings += harvest_local(forms, excludes, quals, homs)
 
     if os.environ.get("CLOUDFLARE_API_TOKEN") and (not args.only or "k1" in args.only or "k4" in args.only):
         for _, sql in d1_sql(forms).items():
             rows = d1_query(sql)
             if rows:
-                findings += normalize(rows, excludes, require)
+                findings += normalize(rows, forms, excludes, quals, homs)
 
     for f in (args.inject or []):
         p = Path(f)
@@ -284,26 +304,32 @@ def cmd_harvest(args):
             continue
         raw = json.loads(p.read_text(encoding="utf-8"))
         rows = raw.get("results", raw) if isinstance(raw, dict) else raw
-        findings += normalize(rows, excludes, require)
+        findings += normalize(rows, forms, excludes, quals, homs)
 
-    per_ch = {}
+    per_ch, per_tier = {}, {"strong": 0, "candidate": 0, "homonym": 0}
     for f in findings:
         c = per_ch.setdefault(f["channel"], {"passages": 0, "chars": 0})
         c["passages"] += 1
         c["chars"] += len(f["passage"])
+        per_tier[f.get("tier", "candidate")] = per_tier.get(f.get("tier", "candidate"), 0) + 1
 
     DOSSIERS.mkdir(parents=True, exist_ok=True)
     out = DOSSIERS / ("%s.dossier.json" % args.entity_id)
     total = sum(len(f["passage"]) for f in findings)
     out.write_text(json.dumps({
         "entity_id": args.entity_id, "passport": doc,
-        "stats": {"passages": len(findings), "chars": total, "per_channel": per_ch},
+        "stats": {"passages": len(findings), "chars": total,
+                  "per_channel": per_ch, "per_tier": per_tier},
         "findings": findings,
     }, ensure_ascii=False, indent=2), encoding="utf-8")
 
     print("досье: %s" % out)
     print("  пассажей : %d" % len(findings))
     print("  материала: %s симв." % format(total, ",").replace(",", " "))
+    print("\n  по уверенности (ничего не выброшено):")
+    print("    уверенно  (имя + уточнитель) : %d" % per_tier["strong"])
+    print("    кандидат  (голое имя)        : %d  ← решает куратор" % per_tier["candidate"])
+    print("    омоним    (нарицательное)    : %d  ← в сборку не идёт" % per_tier["homonym"])
     print("\n  по каналам:")
     for c in CHANNELS:
         v = per_ch.get(c)
@@ -351,8 +377,10 @@ def main():
     p = sub.add_parser("passport"); p.add_argument("entity_id")
     p.add_argument("--names"); p.add_argument("--name", action="append")
     p.add_argument("--form", action="append"); p.add_argument("--exclude", action="append")
-    p.add_argument("--require", action="append",
-                   help="омоним-защита: пассаж обязан содержать одно из этих слов")
+    p.add_argument("--qualifier", action="append",
+                   help="уточнитель рядом с именем → пассаж «уверенный» (дас, тхакур)")
+    p.add_argument("--homonym", action="append",
+                   help="паттерн нарицательного употребления → пассаж «омоним»")
     p.set_defaults(func=cmd_passport)
     s = sub.add_parser("sql"); s.add_argument("entity_id"); s.set_defaults(func=cmd_sql)
     h = sub.add_parser("harvest"); h.add_argument("entity_id")
