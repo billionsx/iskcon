@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { cleanCardText } from "./cardText";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 type Person = {
   slug: string; name: string; hero_image: string | null; n_quotes: number;
@@ -108,7 +109,7 @@ function Row({ p, onOpen }: { p: Person; onOpen: (id: string, type: string | nul
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(p.slug, null); } }}>
       {p.hero_image
         ? <span className="lh-ava"><img src={p.hero_image} alt="" loading="lazy" /></span>
-        : <span className="lh-mono">{(p.name || "?").trim().charAt(0).toUpperCase()}</span>}
+        : <span className="lh-ava"><img src={COVER_FALLBACK} alt="" loading="lazy" /></span>}
       <span className="lh-tx">
         <span className="lh-nm">{p.name}</span>
         {desc ? <span className="lh-sub">{desc}</span> : null}

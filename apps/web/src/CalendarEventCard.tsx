@@ -8,6 +8,7 @@
 import { HomeSheet } from "./HomeSheet";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { cleanCardText } from "./cardText";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 export type EventBrief = {
   name?: string; note?: string | null; summary?: string | null;
@@ -98,9 +99,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
       {hasPerson && (
         <div style={{ marginTop: 18 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-            <span style={{ display: "grid", placeItems: "center", flexShrink: 0, width: 46, height: 46, borderRadius: "50%", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontWeight: 500, fontSize: "var(--text-title3)" }}>
-              {(name || "?").trim().charAt(0).toUpperCase()}
-            </span>
+            <img src={COVER_FALLBACK} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} />
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.25, color: "var(--color-label)" }}>{name || "Личность"}</div>
               {chips.length > 0 && (
