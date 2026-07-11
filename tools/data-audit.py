@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""
+АУДИТ ДАННЫХ — законы, живущие в D1, а не в коде (ЗКН-Р004, БТ, И, Сд, П).
+
+Линтер стережёт КОД. Но половина конституции живёт в ДАННЫХ: канон имён в досье,
+ссылки до стиха, уровни профилей, суррогатные обложки. Их линтер не видит —
+и именно там нарушения жили месяцами (649 ложных меток «золото», 339 битых
+обложек в `prayers`).
+
+Этот аудит закрывает дыру: гоняет SQL по боевой базе и роняет CI при нарушении.
+
+Запуск: python3 tools/data-audit.py
+Нужны: CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, D1_DATABASE_ID
+"""
+import json
+import os
+import sys
+import urllib.request
+
+CHECKS = [
+    {
+        "law": "ЗКН-И001",
+        "name": "голая «Шри Чайтанья Махапрабху» в досье",
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles
+                  WHERE longform LIKE '%Шри Чайтанья Махапрабху%'
+                     OR longform LIKE '%Шри Чайтаньи Махапрабху%'""",
+        "hint": "→ «Гауранга Махапрабху» или «Шри Кришна Чайтанья Махапрабху» (санньяса-лила)",
+    },
+    {
+        "law": "ЗКН-И003",
+        "name": "дефисная «Гауранга-лила» / «Кришна-лила»",
+        # «Кришна-лиламрита» — НАЗВАНИЕ КНИГИ, не нарушение (ложное срабатывание).
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles
+                  WHERE (longform LIKE '%Гауранга-лила%' AND longform NOT LIKE '%Гауранга-лиламрит%')
+                     OR (longform LIKE '%Кришна-лила%'  AND longform NOT LIKE '%Кришна-лиламрит%')""",
+        "hint": "→ «Гауранга Лила» / «Кришна Лила» (оба слова с заглавной, без дефиса)",
+    },
+    {
+        "law": "ЗКН-И004",
+        "name": "Прабхупада не в канонической форме",
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles
+                  WHERE longform LIKE '%Бхактиведанта Свами%'
+                    AND longform NOT LIKE '%А.Ч. Бхактиведанта Свами%'""",
+        "hint": "→ «А.Ч. Бхактиведанта Свами Шрила Прабхупада» (без пробелов в инициалах)",
+    },
+    {
+        "law": "ЗКН-П003",
+        "name": "битый JSON досье (карточка не отрисуется)",
+        "sql": "SELECT COUNT(*) AS n FROM entity_profiles WHERE longform IS NOT NULL AND json_valid(longform) = 0",
+        "hint": "→ audit-to-zero перед записью (ЗКН-П003)",
+    },
+    {
+        "law": "ЗКН-Р004",
+        "name": "ручная метка «золото» (уровень ставится ГЕЙТОМ)",
+        # Золото присваивает только goldforge audit при исчерпании источников.
+        "sql": "SELECT COUNT(*) AS n FROM entity_profiles WHERE level = 'gold' AND length(longform) < 70000",
+        "hint": "→ уровень вычисляется `goldforge audit`, вручную не ставится (ЗКН-Р003/Р004)",
+    },
+    {
+        "law": "ЗКН-Д007",
+        "name": "суррогатная обложка в ДАННЫХ",
+        "sql": """SELECT (SELECT COUNT(*) FROM prayers
+                          WHERE hero_image LIKE '%audio-cover%'
+                             OR hero_image LIKE '%services/img%'
+                             OR hero_image LIKE '%-ia.jpg%') AS n""",
+        "hint": "→ NULL (тогда рисуется фирменная заглушка) — ЗКН-Д005/Д007",
+    },
+    {
+        "law": "ЗКН-Н008",
+        "name": "нечитаемый слаг суб-таба в адресе",
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles p,
+                       json_each(json_extract(p.longform,'$.tabs')) t,
+                       json_each(json_extract(t.value,'$.subtabs')) s
+                  WHERE json_valid(p.longform)
+                    AND s.value ->> '$.id' IN ('obzor','g64','vrnd2','pobeg1','unique-4','prema-ladder')""",
+        "hint": "→ слаг отражает смысл: «Пять рас» → pyat-ras (ЗКН-Н008)",
+    },
+]
+
+
+def d1(sql: str):
+    acc = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
+    tok = os.environ.get("CLOUDFLARE_API_TOKEN")
+    dbid = os.environ.get("D1_DATABASE_ID")
+    if not (acc and tok and dbid):
+        return None
+    url = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
+    req = urllib.request.Request(
+        url, data=json.dumps({"sql": sql}).encode(),
+        headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        body = json.load(r)
+    for blk in body.get("result", []):
+        rows = blk.get("results") or []
+        if rows:
+            return int(list(rows[0].values())[0])
+    return 0
+
+
+def main():
+    if not os.environ.get("CLOUDFLARE_API_TOKEN"):
+        print("АУДИТ ДАННЫХ: нет токена — пропуск (локальный прогон)")
+        print("SQL проверок: %d" % len(CHECKS))
+        return 0
+
+    bad = []
+    print("АУДИТ ДАННЫХ · %d законов, живущих в D1" % len(CHECKS))
+    print("─" * 68)
+    for c in CHECKS:
+        try:
+            n = d1(c["sql"])
+        except Exception as e:
+            print("  ? %-11s %-42s ошибка: %s" % (c["law"], c["name"][:42], e))
+            continue
+        mark = "✓" if n == 0 else "✗"
+        print("  %s %-11s %-42s %d" % (mark, c["law"], c["name"][:42], n))
+        if n:
+            bad.append((c, n))
+    print("─" * 68)
+
+    if bad:
+        print("\nНАРУШЕНИЯ В ДАННЫХ (%d закона):\n" % len(bad))
+        for c, n in bad:
+            print("  %s — %d\n     %s\n" % (c["law"], n, c["hint"]))
+        print("Свод: docs/LAWS.md")
+        return 1
+    print("Нарушений в данных нет ✓")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

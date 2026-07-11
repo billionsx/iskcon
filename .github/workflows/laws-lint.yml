@@ -16,5 +16,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Линтер законов + храповик долга (Д001 · Д003 · И001 · И003 · Т002 · Ц001)
+      - name: Линтер законов — КОД (Д001 · Д003 · И001 · Н001 · Н005 · Н016 · Н020 · Т002 · Ф006 · Ц001)
         run: python3 tools/laws-lint.py
+
+      # ЗКН-Р004/БТ/И/Сд: половина конституции живёт в ДАННЫХ, а не в коде.
+      # Линтер их не видит — именно там нарушения жили месяцами (649 ложных «золото»).
+      - name: Аудит законов — ДАННЫЕ (D1)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
+        run: python3 tools/data-audit.py
+
+      - name: Аудит конституции (свод против кода)
+        run: python3 tools/laws-audit.py
