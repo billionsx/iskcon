@@ -3,6 +3,7 @@ import { api } from "./api";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { cleanCardText } from "./cardText";
 import { replaceUrl } from "./nav";
+import { ScopeTitle, FilterChips, Disclosure, useDisclosure, type NavItem } from "./ui/nav4";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 type Person = {
@@ -77,30 +78,6 @@ function personWord(n: number): string {
   return "личностей";
 }
 
-function Pills({ value, onChange, items, count, sec }: {
-  value: string; onChange: (v: string) => void; items: [string, string][]; count?: (v: string) => number; sec?: boolean;
-}) {
-  const activeRef = useRef<HTMLButtonElement | null>(null);
-  useEffect(() => {
-    const el = activeRef.current;
-    if (el && typeof el.scrollIntoView === "function") {
-      try { el.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }); } catch { /* noop */ }
-    }
-  }, [value, items]);
-  return (
-    <div className="lh-pills">
-      {items.map(([v, label]) => {
-        const on = v === value;
-        const n = count ? count(v) : null;
-        return (
-          <button ref={on ? activeRef : undefined} key={v || "all"} type="button" onClick={() => onChange(v)} className={"lh-pill" + (sec ? " sec" : "") + (on ? " on" : "")}>
-            {label}{n != null ? <span className="lh-pill-n">{n}</span> : null}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
 
 function Row({ p, onOpen }: { p: Person; onOpen: (id: string, type: string | null) => void }) {
   const { openCardMenu } = useCardActions();
@@ -173,6 +150,9 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
     }
   }, [lila, subSel, grpSel]);
 
+  // ЗКН-Н006: данные уровней в формате NavItem (label + счётчик верхним индексом)
+  const grpWord = (n: number) => (n % 10 === 1 && n % 100 !== 11 ? "группа" : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? "группы" : "групп");
+
   const qq = q.trim().toLowerCase();
   const hit = (p: Person) => !qq || p.name.toLowerCase().includes(qq) || (p.note ?? "").toLowerCase().includes(qq) || (p.summary ?? "").toLowerCase().includes(qq);
   const lilaCount = (lv: string) => (items ?? []).filter((p) => p.lila === lv && hit(p)).length;
@@ -206,45 +186,25 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const shown = grouped ? sections.reduce((a, s) => a + s.rows.length, 0) : (subsubItems && grpSel ? flat.length : results.length);
   const lilaVisible = LILAS.filter(([v]) => lilaCount(v) > 0);
 
+  /* ЗКН-Н006 — данные четырёх уровней.
+     Tier-2 (лила) и Tier-3 (волна) — в NavItem; Tier-4 (группы) — секции списка. */
+  const lilaNav: NavItem[] = (lilaVisible.length ? lilaVisible : LILAS).map(([v, label]) => ({ id: v, label, count: lilaCount(v) }));
+  const subNav: NavItem[] = (subItems ?? []).map(([v, label]) => ({ id: v, label, count: subCount(v) }));
+  const dis = useDisclosure(sections.map((s) => s.gv));
+
   return (
     <div ref={rootRef}>
       <style>{`
-.lh-bar{position:sticky;top:var(--h-hall-tabs);z-index:8;margin:-6px -16px 6px;padding:10px 16px 8px;background:color-mix(in srgb, var(--color-bg) 84%, transparent);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);}
-.lh-search{position:relative;margin-bottom:14px;}
+
 .lh-search>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--color-label-3);pointer-events:none;}
 .lh-search>input{width:100%;box-sizing:border-box;padding:10px 38px 10px 36px;border-radius:12px;border:none;background:var(--color-bg-2);color:var(--color-label);font-family:var(--font-text);font-size:15px;letter-spacing:-0.2px;outline:none;}
 .lh-search>input::placeholder{color:var(--color-label-3);}
 .lh-clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:none;border-radius:50%;background:var(--color-bg-3);color:var(--color-label-2);cursor:pointer;display:grid;place-items:center;font-size:14px;line-height:1;}
-.lh-grp{margin-bottom:10px;}
 /* ЗКН-Н006: вес уровней убывает. Tier-2 — чёрные капсулы, Tier-3 — серые,
    Tier-4 — самые лёгкие (мельче кегль, тише цвет), иначе уровни сливаются. */
-/* ЗКН-Н006 — ВОРОНКА УРОВНЕЙ. Вес и размер убывают, иерархия читается:
- *   Tier-1  золотая рейка (HallTabs)          — sticky, навигация
- *   Tier-2  капсулы, чернильная заливка       — sticky под Tier-1, навигация
- *   Tier-3  призрачные капсулы, мельче        — скроллится, это фильтр
- *   Tier-4  текстовые ссылки, самые лёгкие    — скроллится, это под-фильтр
- *   Поиск   — под фильтрами, скроллится
- * Sticky только у навигации (Tier-1/2): 4 липких ряда съедали пол-экрана. */
-.lh-t3 .lh-pill{padding:6px 12px;font-size:13px;}
-.lh-t4 .lh-pill{padding:4px 10px;font-size:12px;border-radius:8px;}
-.lh-t4 .lh-pill:not(.on){color:var(--color-label-3);background:transparent;}
-.lh-t4 .lh-pill.on{background:transparent;color:var(--color-label);font-weight:700;box-shadow:inset 0 -2px 0 var(--color-gold);border-radius:0;}
-.lh-filters{margin-top:10px;}
-.lh-search{margin-top:12px;padding-top:12px;border-top:0.5px solid var(--color-hairline);}
-.lh-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.lh-search{position:relative;margin:4px 0 0;}
 .lh-pills::-webkit-scrollbar{display:none;}
-.lh-pill{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:999px;cursor:pointer;font-family:var(--font-text);font-size:14px;font-weight:600;letter-spacing:-0.2px;white-space:nowrap;background:var(--color-bg-2);color:var(--color-label-2);border:0.5px solid var(--color-hairline);transition:background .18s,color .18s,transform .09s;}
-.lh-pill:active{transform:scale(0.95);}
-.lh-pill.on{background:var(--color-label);color:var(--color-bg);border-color:transparent;}
-.lh-pill.sec{padding:7px 13px;font-size:13px;background:transparent;color:var(--color-label-3);border-color:transparent;}
-.lh-pill.sec.on{background:var(--color-bg-3);color:var(--color-label);}
-.lh-pill-n{font-size:11px;font-weight:700;opacity:.5;font-variant-numeric:tabular-nums;}
-.lh-pill.on .lh-pill-n{opacity:.72;}
 .lh-cap{margin:6px 4px 6px;font-family:var(--font-text);font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-label-3);text-transform:uppercase;}
-.lh-sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:20px 4px 3px;padding-bottom:2px;border-bottom:0.5px solid var(--color-hairline);}
-.lh-list>div:first-child .lh-sec-h{margin-top:2px;}
-.lh-sec-t{font-family:var(--font-text);font-size:13.5px;font-weight:700;letter-spacing:-0.1px;color:var(--color-label);}
-.lh-sec-n{font-family:var(--font-text);font-size:11px;font-weight:700;color:var(--color-label-3);font-variant-numeric:tabular-nums;}
 .lh-list{animation:lhfade .24s cubic-bezier(.32,.72,0,1);}
 @keyframes lhfade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 .lh-row{display:flex;align-items:center;gap:13px;width:100%;box-sizing:border-box;padding:11px 4px;border-bottom:0.5px solid var(--color-hairline);cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent;transition:opacity .15s ease;}
@@ -258,39 +218,34 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-chev{flex-shrink:0;color:var(--color-label-3);font-size:18px;margin-left:2px;}
       `}</style>
 
-      {/* ═══ ЗКН-Н006 · ВОРОНКА ЧЕТЫРЁХ УРОВНЕЙ ═══
-          Tier-1  витрины   — золотая рейка (HallTabs, выше) · STICKY · навигация
-          Tier-2  лила      — капсулы, чернильная заливка    · STICKY под Tier-1 · навигация
-          Tier-3  волна     — призрачные капсулы, мельче     · скроллится · фильтр
-          Tier-4  группа    — текстовые, золотая риска снизу · скроллится · под-фильтр
-          Поиск             — под фильтрами
-          Липнет только навигация: четыре липких ряда съедали пол-экрана. */}
-      <div className="lh-bar">
-        <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS} count={lilaCount} /></div>
+      {/* ═══ ЗКН-Н006 · ЧЕТЫРЕ УРОВНЯ = ЧЕТЫРЕ МЕХАНИЗМА (утв. 11.07.2026) ═══
+          Tier-1 витрины  — ЛИНИЯ    (HallTabs, золотая рейка · выше, в зале)
+          Tier-2 лила     — РАЗМЕР   (ScopeTitle, крупный кегль + вес)
+          Tier-3 волна    — КОНТУР   (FilterChips, обводка · активная золотом)
+          Tier-4 группа   — РАСКРЫТИЕ (Disclosure в списке — структура, не меню)
+          Ни один уровень не спутать с соседним. Заливок нет нигде. */}
+      <ScopeTitle items={lilaNav} active={lila} onChange={pickLila} ariaLabel="Лила" />
+      {subNav.length > 0 && <FilterChips items={subNav} active={subSel} onChange={pickSub} ariaLabel="Волна" />}
+
+      <div className="lh-search">
+        <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по имени или описанию" />
+        {q ? <button type="button" className="lh-clr" aria-label="Очистить" onClick={() => setQ("")}>✕</button> : null}
       </div>
 
-      <div className="lh-filters">
-        {subItems ? <div className="lh-grp lh-t3"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
-        {subsubItems ? <div className="lh-grp lh-t4"><Pills value={grpSel} onChange={setGrpSel} items={subsubItems} count={grpCount} sec /></div> : null}
-
-        <div className="lh-search">
-          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по имени или описанию" />
-          {q ? <button type="button" className="lh-clr" aria-label="Очистить" onClick={() => setQ("")}>✕</button> : null}
-        </div>
-      </div>
-      <div className="lh-cap">{shown} {personWord(shown)}</div>
+      <div className="lh-cap">{shown} {personWord(shown)}{sections.length > 1 ? ` · ${sections.length} ${grpWord(sections.length)}` : ""}</div>
 
       {!items ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-2)" }}>Загрузка…</div> : null}
       {items && shown === 0 ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-3)", padding: "40px 0", textAlign: "center" }}>Никого не найдено</div> : null}
       {items && shown > 0 ? (
-        <div className="lh-list" key={lila + subSel + grpSel + qq}>
+        <div className="lh-list" key={lila + subSel + qq}>
+          {/* Tier-4 — РАСКРЫТИЕ: группы это структура списка, а не ряд меню (ЗКН-Н006). */}
           {grouped
             ? sections.map((s) => (
-              <div key={s.gv}>
-                <div className="lh-sec-h"><span className="lh-sec-t">{s.label}</span><span className="lh-sec-n">{s.rows.length}</span></div>
+              <Disclosure key={s.gv} id={s.gv} title={s.label} count={s.rows.length}
+                open={dis.isOpen(s.gv)} onToggle={dis.toggle}>
                 {s.rows.map((p) => <Row key={p.slug} p={p} onOpen={onOpenEntity} />)}
-              </div>
+              </Disclosure>
             ))
             : flat.map((p) => <Row key={p.slug} p={p} onOpen={onOpenEntity} />)}
         </div>
