@@ -99,20 +99,33 @@ def main():
         for reg in REGIONS:
             url = "%s/centre-region/%s/" % (OFFICIAL, reg)
             try:
-                page.goto(url, wait_until="networkidle", timeout=60000)
+                # networkidle НЕ наступает: сайт держит соединения открытыми
+                # (long-poll/аналитика). Ждём разметку, а дальше даём JS время
+                # сходить за листингами — их мы и перехватим в on_response.
+                page.goto(url, wait_until="domcontentloaded", timeout=45000)
             except Exception as e:
-                print("::warning title=REGION::%s → %s" % (reg, str(e)[:60]))
+                print("::warning title=REGION::%s → %s" % (reg, str(e)[:70]))
                 continue
-            for _ in range(30):
+
+            before = len(found)
+            page.wait_for_timeout(6000)          # JS тянет первую пачку
+
+            for _ in range(40):                  # «Load More», пока растёт
+                grew = len(found)
                 try:
-                    btn = page.query_selector("a.load-more, button.load-more, .load_more_jobs")
+                    btn = page.query_selector(
+                        "a.load-more, button.load-more, .load_more_jobs, "
+                        "[class*=load-more], [class*=load_more]")
                     if not btn or not btn.is_visible():
                         break
                     btn.click()
-                    page.wait_for_timeout(1200)
                 except Exception:
                     break
-            print("  %-26s маркеров всего: %d" % (reg, len(found)))
+                page.wait_for_timeout(2500)
+                if len(found) == grew:           # перестало прибавлять — хватит
+                    break
+
+            print("  %-26s +%-4d всего: %d" % (reg, len(found) - before, len(found)))
             time.sleep(0.3)
 
         br.close()
