@@ -37,7 +37,8 @@ export function PersonHeroCard({
   const { on: favorited, toggle: toggleFav } = useFavorite(`entity:${id}`, { t: nameRu, s: summary || eyebrow || undefined, h: `/${encodeURIComponent(id)}` });
   const imgs = images && images.length ? images : (image ? [image] : []);
   const { idx, next, prev } = useCoverSlider(imgs.length);
-  const hasImg = imgs.length > 0;   // ЗКН-Д005: нет фото → белая подложка + золотой логотип
+  // ЗКН-Д005: нет фото → ТЁМНАЯ заглушка (логотип на #1E1E1E). Текст поверх обложки
+  // обязан лежать на тёмном, поэтому белая подложка здесь запрещена.
   const len = (nameRu || "").length;
   const nameSize = len > 22 ? 27 : len > 15 ? 32 : 38;
 
@@ -45,25 +46,23 @@ export function PersonHeroCard({
     <article
       style={{
         position: "relative", width: "100%", aspectRatio: "4 / 5", overflow: "hidden", borderRadius: 20,
-        border: "0.5px solid var(--color-hairline, rgba(0,0,0,.08))", background: hasImg ? GRAPHITE : "var(--color-bg-2)",
+        border: "0.5px solid var(--color-hairline, rgba(0,0,0,.08))", background: GRAPHITE,
         boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
         display: "flex", flexDirection: "column", justifyContent: "flex-end",
       }}>
       {imgs.length ? (
         <CoverImages images={imgs} alt={nameRu} idx={idx} />
       ) : (
-        <CoverFallback />
+        <CoverFallback dark />
       )}
-      {hasImg && <>
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
-        <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "86%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.7) 40%, rgba(0,0,0,0) 100%)" }} />
-      </>}
+      <div aria-hidden style={{ position: "absolute", insetInline: 0, top: 0, height: 120, pointerEvents: "none", background: "linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 100%)" }} />
+      <div aria-hidden style={{ position: "absolute", insetInline: 0, bottom: 0, height: "86%", pointerEvents: "none", background: "linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.7) 40%, rgba(0,0,0,0) 100%)" }} />
 
       {imgs.length > 1 && !presentational && <CoverTapZones onPrev={prev} onNext={next} />}
 
       {/* TOP: слот (лого/назад) · счётчик + стандартные действия */}
       <div style={{ position: "absolute", insetInline: 20, top: 20, zIndex: 20, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-        <span style={{ display: "flex", alignItems: "center", color: hasImg ? "#fff" : "var(--color-ink-on-white)", minWidth: 0 }}>{topLeft}</span>
+        <span style={{ display: "flex", alignItems: "center", color: "#fff", minWidth: 0 }}>{topLeft}</span>
         <div data-pdf-no-print style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {imgs.length > 1 && <CoverCounter idx={idx} total={imgs.length} />}
           {!presentational && (
@@ -80,18 +79,18 @@ export function PersonHeroCard({
         {eyebrow && (
           <div style={{ margin: "0 0 10px", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLD, lineHeight: 1.3 }}>{eyebrow}</div>
         )}
-        <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: nameSize, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.03em", color: hasImg ? "#fff" : "var(--color-ink-on-white)" }}>{nameRu}</h1>
+        <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: nameSize, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{nameRu}</h1>
         {nameIast && (
-          <div style={{ marginTop: 6, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.3, color: hasImg ? "rgba(255,255,255,.72)" : "var(--color-ink-on-white-2)" }}>{nameIast}</div>
+          <div style={{ marginTop: 6, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.3, color: "rgba(255,255,255,.72)" }}>{nameIast}</div>
         )}
-        {identity && <p style={{ margin: "16px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: hasImg ? "rgba(255,255,255,.96)" : "var(--color-ink-on-white)" }}>{cleanCardText(identity)}</p>}
+        {identity && <p style={{ margin: "16px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{cleanCardText(identity)}</p>}
         {summary && (
-          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: hasImg ? "rgba(255,255,255,.82)" : "var(--color-ink-on-white-2)", whiteSpace: "pre-line", display: "-webkit-box", WebkitLineClamp: 8, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanCardText(summary)}</p>
+          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", whiteSpace: "pre-line", display: "-webkit-box", WebkitLineClamp: 8, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanCardText(summary)}</p>
         )}
         {chips && chips.length > 0 && (
           <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {chips.map((c) => (
-              <span key={c} style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: hasImg ? "rgba(255,255,255,.15)" : "var(--color-fill-on-white)", border: hasImg ? "0.5px solid rgba(255,255,255,.18)" : "0.5px solid var(--color-hairline-on-white)", height: 26, padding: "0 11px", fontSize: "var(--text-footnote)", lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: hasImg ? "rgba(255,255,255,.95)" : "var(--color-ink-on-white)" }}>{c}</span>
+              <span key={c} style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.15)", border: "0.5px solid rgba(255,255,255,.18)", height: 26, padding: "0 11px", fontSize: "var(--text-footnote)", lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "rgba(255,255,255,.95)" }}>{c}</span>
             ))}
           </div>
         )}

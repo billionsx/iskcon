@@ -99,7 +99,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
       {hasPerson && (
         <div style={{ marginTop: 18 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-            <img src={COVER_FALLBACK} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "inherit" }} />
+            <img src={COVER_FALLBACK} alt="" loading="lazy" style={{ flexShrink: 0, width: 46, height: 46, borderRadius: "50%", objectFit: "cover", background: "var(--color-fill-1)" }} />
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.25, color: "var(--color-label)" }}>{name || "Личность"}</div>
               {chips.length > 0 && (
