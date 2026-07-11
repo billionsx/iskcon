@@ -1,4 +1,4 @@
-# ONE LOVE DESIGN
+# ISKCON DESIGN
 
 > Дизайн-система приложения **ISKCON ONE LOVE**. Источник истины домена **Д**
 > свода `docs/LAWS.md`. Утверждена 11.07.2026.

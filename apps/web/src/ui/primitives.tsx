@@ -1,5 +1,5 @@
 /**
- * ONE LOVE DESIGN — примитивы.
+ * ISKCON DESIGN — примитивы.
  * Общие UI-кирпичи приложения ISKCON ONE LOVE (ЗКН-Д002).
  *
  * Заменяют разрозненные локальные реализации (SectionHeader был
