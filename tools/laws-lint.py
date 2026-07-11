@@ -67,6 +67,12 @@ RULES = [
         "hint": "→ состояние навигации живёт в URL: pushUrl()/replaceUrl(). Было: bogSub, sadSub",
     },
     {
+        "id": "ЗКН-Н010",
+        "name": "второй липкий слой на top:0 (наложение)",
+        "pattern": re.compile(r"position:\s*sticky;\s*top:\s*0[;\"']"),
+        "hint": "→ липнуть ПОД вышестоящим: top: var(--h-hall-tabs). Два слоя на top:0 = нижний исчезает",
+    },
+    {
         "id": "ЗКН-Ц001",
         "name": "секрет в коде",
         "pattern": re.compile(r"(ghp_|github_pat_)[A-Za-z0-9_]{10,}"),

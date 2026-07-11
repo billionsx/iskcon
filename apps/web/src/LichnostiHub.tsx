@@ -127,7 +127,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const [subSel, setSubSel] = useState(() => readUrl().sub);
   const [grpSel, setGrpSel] = useState(() => readUrl().grp);
   const [q, setQ] = useState("");
-  const pickLila = (v: string) => { const arr = SUBS[v] || []; const firstReal = (arr.find(([sv]) => sv) || arr[0] || ["", ""])[0]; setLila(v); setSubSel(firstReal ?? ""); setGrpSel(""); };
+  const pickLila = (v: string) => { setLila(v); setSubSel(""); setGrpSel(""); };   // ЗКН-Н009: по умолчанию «Все»
   const pickSub = (v: string) => { setSubSel(v); setGrpSel(""); };
   const rootRef = useRef<HTMLDivElement>(null);
   const didMount = useRef(false);
@@ -209,7 +209,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   return (
     <div ref={rootRef}>
       <style>{`
-.lh-bar{position:sticky;top:0;z-index:8;margin:-6px -16px 6px;padding:10px 16px 8px;background:color-mix(in srgb, var(--color-bg) 84%, transparent);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);}
+.lh-bar{position:sticky;top:var(--h-hall-tabs);z-index:8;margin:-6px -16px 6px;padding:10px 16px 8px;background:color-mix(in srgb, var(--color-bg) 84%, transparent);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);}
 .lh-search{position:relative;margin-bottom:14px;}
 .lh-search>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--color-label-3);pointer-events:none;}
 .lh-search>input{width:100%;box-sizing:border-box;padding:10px 38px 10px 36px;border-radius:12px;border:none;background:var(--color-bg-2);color:var(--color-label);font-family:var(--font-text);font-size:15px;letter-spacing:-0.2px;outline:none;}
@@ -218,8 +218,18 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-grp{margin-bottom:10px;}
 /* ЗКН-Н006: вес уровней убывает. Tier-2 — чёрные капсулы, Tier-3 — серые,
    Tier-4 — самые лёгкие (мельче кегль, тише цвет), иначе уровни сливаются. */
-.lh-t4 .lh-pill{padding:5px 11px;font-size:12px;}
-.lh-t4 .lh-pill:not(.on){color:var(--color-label-3);opacity:.85;}
+/* ЗКН-Н006 — ВОРОНКА УРОВНЕЙ. Вес и размер убывают, иерархия читается:
+ *   Tier-1  золотая рейка (HallTabs)          — sticky, навигация
+ *   Tier-2  капсулы, чернильная заливка       — sticky под Tier-1, навигация
+ *   Tier-3  призрачные капсулы, мельче        — скроллится, это фильтр
+ *   Tier-4  текстовые ссылки, самые лёгкие    — скроллится, это под-фильтр
+ *   Поиск   — под фильтрами, скроллится
+ * Sticky только у навигации (Tier-1/2): 4 липких ряда съедали пол-экрана. */
+.lh-t3 .lh-pill{padding:6px 12px;font-size:13px;}
+.lh-t4 .lh-pill{padding:4px 10px;font-size:12px;border-radius:8px;}
+.lh-t4 .lh-pill:not(.on){color:var(--color-label-3);background:transparent;}
+.lh-t4 .lh-pill.on{background:transparent;color:var(--color-label);font-weight:700;box-shadow:inset 0 -2px 0 var(--color-gold);border-radius:0;}
+.lh-filters{margin-top:10px;}
 .lh-search{margin-top:12px;padding-top:12px;border-top:0.5px solid var(--color-hairline);}
 .lh-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .lh-pills::-webkit-scrollbar{display:none;}
@@ -248,12 +258,19 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-chev{flex-shrink:0;color:var(--color-label-3);font-size:18px;margin-left:2px;}
       `}</style>
 
-      {/* ЗКН-Н006: иерархия по убыванию веса — Tier-1 золотая рейка (HallTabs, выше),
-          Tier-2 лила (чёрные капсулы) → Tier-3 волна (серые) → Tier-4 группа (лёгкие).
-          Поиск идёт ПОД навигацией, а не между её уровнями. */}
+      {/* ═══ ЗКН-Н006 · ВОРОНКА ЧЕТЫРЁХ УРОВНЕЙ ═══
+          Tier-1  витрины   — золотая рейка (HallTabs, выше) · STICKY · навигация
+          Tier-2  лила      — капсулы, чернильная заливка    · STICKY под Tier-1 · навигация
+          Tier-3  волна     — призрачные капсулы, мельче     · скроллится · фильтр
+          Tier-4  группа    — текстовые, золотая риска снизу · скроллится · под-фильтр
+          Поиск             — под фильтрами
+          Липнет только навигация: четыре липких ряда съедали пол-экрана. */}
       <div className="lh-bar">
         <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS} count={lilaCount} /></div>
-        {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
+      </div>
+
+      <div className="lh-filters">
+        {subItems ? <div className="lh-grp lh-t3"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
         {subsubItems ? <div className="lh-grp lh-t4"><Pills value={grpSel} onChange={setGrpSel} items={subsubItems} count={grpCount} sec /></div> : null}
 
         <div className="lh-search">

@@ -133,13 +133,13 @@ export function HallTabs({ items, active, onChange, ariaLabel = "Разделы"
       style={{ position: "sticky", top: 0, zIndex: 30, margin: "-16px -16px 14px",
         background: "var(--color-glass-nav)", backdropFilter: "blur(40px) saturate(180%)",
         WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
-      <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+      <div ref={containerRef} style={{ display: "flex", alignItems: "stretch", height: "var(--h-hall-tabs)", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
         {items.map((t) => {
           const on = t.id === active;
           return (
             <button key={t.id} ref={(el) => { itemRefs.current[t.id] = el; }} type="button"
               role="tab" aria-selected={on} onClick={() => onChange(t.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "13px 16px",
+              style={{ position: "relative", flexShrink: 0, padding: "0 16px",
                 fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
                 background: "none", border: "none", cursor: "pointer",
                 color: on ? "var(--color-label)" : "var(--color-label-2)",
