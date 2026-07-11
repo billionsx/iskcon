@@ -10,12 +10,13 @@ import { recipeBySlug, deityById, DIFFICULTY_LABEL, DIETS, type Recipe } from ".
 import { chapterForRecipe } from "./cookbook";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
 import { NotesAtSource } from "../NotesAtSource";
+import { ROUTES, url } from "../routes";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
 export function recipeCtx(r: { slug: string; title: string; subtitle: string }): CardCtx {
   return {
     type: "recipe", id: r.slug, title: r.title, subtitle: r.subtitle,
-    url: `${ORIGIN}/prasadam/recipe/${r.slug}`,
+    url: url(ROUTES.recipe(r.slug)),
     context: `Рецепт · ${r.title} · /prasadam/recipe/${r.slug}`,
   };
 }

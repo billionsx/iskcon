@@ -28,6 +28,20 @@ jobs:
           bun-version: latest
       - name: Install deps
         run: bun install
+      # ── ЗКН-Пф001: версия кэша PDF выводится из СБОРКИ, а не из руки ──
+      # PDF отдаются immutable на год. Ключ кэша обязан меняться при каждом
+      # изменении содержимого, иначе PDF остаются старыми навсегда (так и было:
+      # PDF_CACHE_REV был ручной строкой «c3», её никто не бампал).
+      - name: Bump PDF cache revision from commit SHA
+        run: |
+          REV=$(git rev-parse --short HEAD)
+          cat > apps/web/src/pdfRev.ts <<EOF
+          /** ЗКН-Пф001: значение подставлено автоматически при деплое (SHA коммита).
+           *  Ручная правка бессмысленна — файл перезаписывается. */
+          export const PDF_CACHE_REV = "$REV";
+          EOF
+          echo "PDF_CACHE_REV = $REV"
+
       - name: Build site
         working-directory: apps/web
         run: bun run build

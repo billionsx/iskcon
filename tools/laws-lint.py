@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps" / "web" / "src"
 
 # cardText.ts САМ определяет запрещённые формы (в regex) — он освобождён.
-ALLOW = {"cardText.ts", "nav.ts"}
+ALLOW = {"cardText.ts", "nav.ts", "routes.ts"}
 
 RULES = [
     {
@@ -89,6 +89,12 @@ RULES = [
         "name": "жёсткий дефолт-фильтр при входе (вместо «Все»)",
         "pattern": re.compile(r"sub:\s*[\"'](wave-|rasa:|bhag-)"),
         "hint": "→ sub: \"\" («Все»). Вход на витрину без фильтра в адресе показывает ВСЁ",
+    },
+    {
+        "id": "ЗКН-Н020",
+        "name": "адрес собран строкой мимо реестра маршрутов",
+        "pattern": re.compile(r"\$\{ORIGIN\}/"),
+        "hint": "→ ROUTES.* + url() из ./routes. Переименование маршрута ломало QR-коды и ссылки",
     },
     {
         "id": "ЗКН-Ц001",
