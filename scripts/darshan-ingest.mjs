@@ -347,14 +347,52 @@ async function sendDarshanAlbums(urls, captionHtml, perAlbum = 10, maxAlbums = 2
   return { anchorId, ids };
 }
 
-// D1 через wrangler (CLOUDFLARE_API_TOKEN + account_id из env). База биндится в apps/web/wrangler.toml как «iskcon».
+// D1 напрямую через REST по UUID базы — БЕЗ wrangler и БЕЗ npx.
+//
+// ПОЧЕМУ ТАК. Раньше здесь был `npx wrangler d1 execute iskcon --config apps/web/wrangler.toml`.
+// Два скрытых предохранителя разом отказали 07.07.2026:
+//   • имя базы в аккаунте — «iskcon-db», а не «iskcon» (все остальные workflow зовут её верно);
+//     старый wrangler резолвил имя из локального wrangler.toml и это прощал;
+//   • коммит 232c4ca4 добавил в workflow `npm install --no-save sharp` → в job появился
+//     node_modules → npx перестал тянуть свежий wrangler из реестра и взял версию воркспейса,
+//     а она резолвит имя базы ПО АККАУНТУ. «iskcon» → not found → каждый вызов D1 падал.
+// Ингест при этом рапортовал «ok» (ошибка глоталась) — 4 дня зелёного CI и пустой ленты.
+//
+// REST по UUID не зависит ни от версии wrangler, ни от npx, ни от node_modules, ни от имени базы.
+const CF_ACCOUNT = process.env.CLOUDFLARE_ACCOUNT_ID || "d5cbe19470dc38599873eabfe148e6d1";
+const CF_DB_ID = process.env.D1_DATABASE_ID || "6226aded-dd03-4e74-977f-9cd0b509e73d";
+const D1_ERRORS = [];
+
 function d1(sql) {
-  const out = execFileSync("npx", ["wrangler", "d1", "execute", "iskcon", "--remote", "--json", "--config", "apps/web/wrangler.toml", "--command", sql], {
-    encoding: "utf8",
-    env: process.env,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  try { return JSON.parse(out); } catch { return null; }
+  const token = process.env.CLOUDFLARE_API_TOKEN;
+  if (!token) throw new Error("CLOUDFLARE_API_TOKEN не задан в окружении");
+  const url = `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT}/d1/database/${CF_DB_ID}/query`;
+  let out;
+  try {
+    out = execFileSync("curl", [
+      "-sS", "--max-time", "60", "-X", "POST", url,
+      "-H", `Authorization: Bearer ${token}`,
+      "-H", "Content-Type: application/json",
+      "--data-binary", "@-",
+    ], { input: JSON.stringify({ sql }), encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] });
+  } catch (e) {
+    throw d1Err(`сеть/curl: ${String((e && e.message) || e)}`);
+  }
+  let j;
+  try { j = JSON.parse(out); } catch { throw d1Err(`ответ не JSON: ${String(out).slice(0, 200)}`); }
+  if (!j.success) throw d1Err(`API: ${JSON.stringify(j.errors || j).slice(0, 300)}`);
+  return j.result; // [{ results: [...], success, meta }] — та же форма, что отдавал wrangler --json
+}
+
+// Любой отказ D1 регистрируется и роняет прогон в КРАСНЫЙ. Молчаливого «ok» больше нет.
+function d1Err(msg) {
+  if (D1_ERRORS.length < 10) D1_ERRORS.push(msg);
+  console.error("D1 ОТКАЗ:", msg);
+  return new Error(msg);
+}
+function d1Fail(slug, date, e) {
+  const msg = String((e && e.message) || e).slice(0, 300);
+  return `FAIL (в D1 НЕ записано, ${slug} ${date}): ${msg}`;
 }
 function alreadyPostedKey(channel, postId) {
   if (process.env.FORCE === "1") return false;
@@ -491,12 +529,13 @@ async function run() {
         if (dry) { preview.push(row); continue; }
         const imagesJson = JSON.stringify(imgsSel).replace(/'/g, "''");
         const capSql = caption.replace(/'/g, "''");
+        let posted = "ok (в приложение)";
         try {
           d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
               VALUES ('${gal.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.srcKey}','${src._postId}','${imagesJson}','${capSql}',NULL)
               ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-        } catch (e) { console.error("D1 insert failed:", String(e)); }
-        preview.push({ ...row, posted: "ok (в приложение)" });
+        } catch (e) { posted = d1Fail(src.slug, gal.date, e); }
+        preview.push({ ...row, posted });
         continue;
       }
       // Галерея пуста/недоступна — пропускаем источник. Никакого Telegram-фолбэка:
@@ -537,12 +576,13 @@ async function run() {
     // В приложение: пишем строку в D1 (в канал @iskcone больше не постим).
     const imagesJson = JSON.stringify(post.photos).replace(/'/g, "''");
     const capSql = caption.replace(/'/g, "''");
+    let posted = "ok (в приложение)";
     try {
       d1(`INSERT INTO darshan (date,temple_slug,temple_name,deities,src_channel,src_post_id,images_json,caption,tg_message_id)
           VALUES ('${row.date}','${src.slug}','${src.name.replace(/'/g, "''")}','${src.deities.replace(/'/g, "''")}','${src.channel}','${post.id}','${imagesJson}','${capSql}',NULL)
           ON CONFLICT(src_channel,src_post_id) DO UPDATE SET images_json=excluded.images_json, caption=excluded.caption, date=excluded.date`);
-    } catch (e) { console.error("D1 insert failed:", String(e)); }
-    preview.push({ ...row, posted: "ok (в приложение)" });
+    } catch (e) { posted = d1Fail(src.slug, row.date, e); }
+    preview.push({ ...row, posted });
   }
   }
   if (!_fixedDate) delete process.env.DARSHAN_DATE;
@@ -559,9 +599,18 @@ async function run() {
   RESULT.at = new Date().toISOString();
   RESULT.db_rows = dbRows;
   RESULT.items = preview;
+
+  // ГЛАВНОЕ ПРАВИЛО: если D1 не принял запись — прогон ОБЯЗАН упасть.
+  // Зелёный CI при пустой ленте — это то, что стоило нам 4 дней даршанов.
+  if (D1_ERRORS.length) {
+    RESULT.d1_errors = D1_ERRORS;
+    process.exitCode = 1;
+  }
+
   mkdirSync("data/darshan", { recursive: true });
   writeFileSync("data/darshan/_dryrun.json", JSON.stringify(RESULT, null, 2));
   console.log(JSON.stringify(RESULT, null, 2));
+  if (D1_ERRORS.length) console.error(`::error::D1 недоступна — даршаны НЕ записаны (${D1_ERRORS.length} отказов). Первый: ${D1_ERRORS[0]}`);
 }
 
 run().catch((e) => {
