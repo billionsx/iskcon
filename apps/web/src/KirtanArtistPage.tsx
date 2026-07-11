@@ -72,7 +72,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
 
       {playable && (
         <>
-          <button onClick={() => setOpen((v) => !v)} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "10px 14px", background: "var(--color-bg-3, #f2f2f7)", border: "none", borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", color: "var(--color-brand-blue)", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600 }}>
+          <button onClick={() => setOpen((v) => !v)} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "10px 14px", background: "var(--color-bg-3, #f2f2f7)", border: "none", borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", color: "var(--color-gold-deep)", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600 }}>
             <span>{open ? "Скрыть дорожки" : "Показать дорожки"}{tracks ? ` · ${tracks.length}` : ""}</span>
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform .2s" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
@@ -166,7 +166,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
 
         {/* Дискография */}
         <div style={{ marginTop: 28 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-brand-blue)", marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)", marginBottom: 12 }}>
             {albums.some((a) => a.archive) ? "Альбомы" : "Записи"}
           </div>
           {albums.length === 0 && (

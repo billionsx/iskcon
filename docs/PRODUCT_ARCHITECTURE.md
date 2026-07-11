@@ -237,7 +237,7 @@
 
 ## A. Двигатель платформы: турбины
 
-Двигатель бренда (как в apartsales: парсер фактов → аналитика оценок) состоит из **турбин** в двух контурах.
+Двигатель бренда (парсер фактов → аналитика оценок) состоит из **турбин** в двух контурах.
 
 **Контур 1 — Организация (мировой ИСККОН)** — держит глобальный контент живым и растит сеть:
 - **Т1 · Парсинг/Агрегация** (главная) — автоматически тянет книги, бхаджаны, храмы, расписания, календарь, лекции и трансляции, FFL-чаптеры из существующих источников ИСККОН и наполняет платформу. Основной онбординг (раздел D).
@@ -526,15 +526,15 @@ user_course_progress   user_id, course_offering_id, progress
 
 ## 10. Техническая архитектура
 
-Стек повторяет apartsales и реализован на Cloudflare (all-in-one):
+Стек реализован на Cloudflare (all-in-one):
 
-- **Монорепо:** Bun + Turborepo; `apps/api`, `apps/web`, `apps/mobile`, `packages/*` (как в apartsales).
+- **Монорепо:** Bun + Turborepo; `apps/api`, `apps/web`, `apps/mobile`, `packages/*`.
 - **API:** Cloudflare Workers + **Hono** + **Zod** + TypeScript (`apps/api`; развёрнут как `iskcon-api`). Ответы `{error:{code,message,requestId}}`, базовый путь `/v1`.
 - **База:** **Cloudflare D1** (SQLite) — `iskcon-db` (+ `iskcon-db-staging`). Изоляция тенантов в Worker (`center_admins`), не RLS.
 - **Кэш:** Cloudflare **KV** (`iskcon-cache`).
 - **Файлы/медиа:** Cloudflare **R2** (`iskcon-media`, после включения в дашборде).
 - **Поиск/ИИ:** Cloudflare **Vectorize** + **Workers AI** (семантический поиск и эмбеддинги — вместо pgvector).
-- **Веб:** **Cloudflare Pages** — Vite + React (как `apartsales/apps/web`); офлайн/PWA.
+- **Веб:** **Cloudflare Pages** — Vite + React; офлайн/PWA.
 - **Мобильное:** **Expo / React Native** (NativeWind), общий API.
 - **Авторизация:** JWT + **Better Auth** поверх D1 (единый аккаунт: email/Google/Apple/телефон).
 - **Платежи/пожертвования:** на реквизиты конкретного храма (Stripe Connect / модель Tithe.ly + локальные шлюзы, Razorpay для Индии).

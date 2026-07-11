@@ -1,7 +1,7 @@
 /**
  * HomeTabs — Tier-1 навигация Главной (стандарт BookTabs: золотая рейка 2px,
  * sticky «жидкое стекло», горизонтальная лента с автоцентровкой активного).
- * Уровни ниже — SectionSubTabs (Tier-2/Tier-3), как в apartsales.
+ * Уровни ниже — SectionSubTabs (Tier-2/Tier-3).
  */
 import { useEffect, useRef } from "react";
 

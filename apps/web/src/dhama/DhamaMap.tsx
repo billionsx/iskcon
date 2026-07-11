@@ -147,7 +147,7 @@ function FallbackList({ dhama, onOpen }: { dhama: Dhama; onOpen: (id: string) =>
             <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{KIND_RU[t.kind]}</span>
           </span>
           <a href={`https://maps.google.com/?q=${encodeURIComponent(mapsQuery(t))}`} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}
-            style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-brand-blue)", textDecoration: "none" }}>Карты ↗</a>
+            style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-gold-deep)", textDecoration: "none" }}>Карты ↗</a>
         </button>
       ))}
     </div>

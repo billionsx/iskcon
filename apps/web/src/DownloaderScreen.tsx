@@ -123,7 +123,7 @@ function TokenGate({ onSet }: { onSet: (t: string) => void }) {
           fontSize: 16,
           fontWeight: 600,
           color: "#fff",
-          background: val.trim() ? "var(--color-brand-blue)" : "var(--color-fill-2)",
+          background: val.trim() ? "var(--color-gold-deep)" : "var(--color-fill-2)",
           cursor: val.trim() ? "pointer" : "default",
         }}
       >
@@ -309,7 +309,7 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
           style={{
             border: "none",
             background: "transparent",
-            color: "var(--color-brand-blue)",
+            color: "var(--color-gold-deep)",
             fontSize: 16,
             cursor: "pointer",
             padding: "4px 4px 4px 0",
@@ -440,7 +440,7 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
                   fontSize: 16,
                   fontWeight: 600,
                   color: "#fff",
-                  background: !canStart || running ? "var(--color-fill-2)" : "var(--color-brand-blue)",
+                  background: !canStart || running ? "var(--color-fill-2)" : "var(--color-gold-deep)",
                   cursor: !canStart || running ? "default" : "pointer",
                 }}
               >
@@ -503,13 +503,13 @@ function StatusBlock({
             href={run.archiveUrl}
             target="_blank"
             rel="noreferrer"
-            style={resultBtn("var(--color-brand-blue)")}
+            style={resultBtn("var(--color-gold-deep)")}
           >
             Открыть на archive.org
           </a>
         )}
         {run.artifactId && (
-          <button onClick={() => onDownload(run.artifactId!)} style={resultBtn("var(--color-brand-blue)")}>
+          <button onClick={() => onDownload(run.artifactId!)} style={resultBtn("var(--color-gold-deep)")}>
             Скачать .zip{run.sizeBytes ? ` · ${human(run.sizeBytes)}` : ""}
           </button>
         )}
@@ -622,12 +622,12 @@ type BookDetail = {
 
 function bookColor(s: string): string {
   if (s === "DONE") return "#34c759";
-  if (s === "UPLOADING") return "var(--color-brand-blue)";
+  if (s === "UPLOADING") return "var(--color-gold-deep)";
   if (s === "ERROR") return "#ff453a";
   return "var(--color-label-3)"; // QUEUE
 }
 function runColor(r: RunRow): string {
-  if (r.status !== "completed") return "var(--color-brand-blue)";
+  if (r.status !== "completed") return "var(--color-gold-deep)";
   if (r.conclusion === "success") return "#34c759";
   if (r.conclusion === "cancelled") return "var(--color-label-3)";
   return "#ff453a";
@@ -729,7 +729,7 @@ function LiveMonitor({ token }: { token: string }) {
               {r.title || `run ${r.id}`}
             </span>
             <span style={{ fontSize: 11, color: "var(--color-label-3)" }}>{runWord(r)}</span>
-            <span style={{ fontSize: 11, color: "var(--color-brand-blue)" }}>лог&nbsp;↗</span>
+            <span style={{ fontSize: 11, color: "var(--color-gold-deep)" }}>лог&nbsp;↗</span>
           </a>
         ))}
         {runs.length === 0 && <span style={{ fontSize: 12, color: "var(--color-label-3)" }}>нет прогонов</span>}
@@ -740,7 +740,7 @@ function LiveMonitor({ token }: { token: string }) {
         {up > 0 && (
           <>
             {" · "}
-            <span style={{ color: "var(--color-brand-blue)" }}>{up} льётся</span>
+            <span style={{ color: "var(--color-gold-deep)" }}>{up} льётся</span>
           </>
         )}
         {q > 0 && (
@@ -790,13 +790,13 @@ function LiveMonitor({ token }: { token: string }) {
                       <div style={{ fontSize: 11, color: "var(--color-label-3)", marginBottom: 6 }}>
                         {d.relatedBook ? (
                           <>
-                            связана с книгой: <span style={{ color: "var(--color-brand-blue)" }}>{d.relatedBook}</span>
+                            связана с книгой: <span style={{ color: "var(--color-gold-deep)" }}>{d.relatedBook}</span>
                           </>
                         ) : (
                           "отдельный объект (без связи)"
                         )}
                         {" · "}
-                        <a href={d.detailsUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-brand-blue)" }}>
+                        <a href={d.detailsUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-gold-deep)" }}>
                           archive.org&nbsp;↗
                         </a>
                       </div>

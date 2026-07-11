@@ -84,7 +84,7 @@ function FitText({ text, max = 18.5, min = 12, style }: { text: string; max?: nu
 
 /* eyebrow-метка (Caption2, uppercase, трекинг) */
 function Eyebrow({ children, blue }: { children: React.ReactNode; blue?: boolean }) {
-  return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: blue ? "var(--color-brand-blue)" : "var(--color-label-2)" }}>{children}</div>;
+  return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: blue ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>{children}</div>;
 }
 
 /** Карточка стиха — тапабельное превью (как строка стиха в главе книги): метка ·
@@ -162,7 +162,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
         </div>
       </header>
       <div aria-hidden style={{ flexShrink: 0, height: 2.5, background: "var(--color-hairline)" }}>
-        <div style={{ height: "100%", width: `${((idx + 1) / Math.max(1, verses.length)) * 100}%`, background: "var(--color-brand-blue)", transition: "width .22s ease" }} />
+        <div style={{ height: "100%", width: `${((idx + 1) / Math.max(1, verses.length)) * 100}%`, background: "var(--color-gold-deep)", transition: "width .22s ease" }} />
       </div>
       <div ref={scRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
@@ -224,13 +224,13 @@ function CommentaryCard({ c, onView }: { c: MediaItem; onView: (m: ViewerMedia) 
   const u = (c.url || "").toLowerCase();
   const isPdf = u.includes(".pdf");
   const isImg = /\.(png|jpe?g|webp|gif)(\?|$)/.test(u);
-  const linkStyle = { display: "inline-flex", alignItems: "center", marginTop: text ? "var(--space-3)" : "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)", textDecoration: "none" } as const;
+  const linkStyle = { display: "inline-flex", alignItems: "center", marginTop: text ? "var(--space-3)" : "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-gold-deep)", textDecoration: "none" } as const;
   return (
     <div style={{ ...MCARD, padding: "var(--space-5)" }}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)", overflowWrap: "anywhere" }}>{c.title || "Комментарий"}</div>
       {(c.subtitle || c.date) ? <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[c.subtitle, c.date].filter(Boolean).join(" · ")}</div> : null}
       {text ? <div style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{shown}</div> : null}
-      {text && long ? <button onClick={() => setOpen((o) => !o)} style={{ marginTop: "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)" }}>{open ? "Свернуть" : "Читать полностью"}</button> : null}
+      {text && long ? <button onClick={() => setOpen((o) => !o)} style={{ marginTop: "var(--space-2)", padding: 0, border: "none", background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: "var(--weight-semibold)", color: "var(--color-gold-deep)" }}>{open ? "Свернуть" : "Читать полностью"}</button> : null}
       {hasUrl ? (
         isPdf || isImg
           ? <button onClick={() => onView({ type: isPdf ? "pdf" : "image", url: c.url || "", title: c.title || "Комментарий", subtitle: c.subtitle })} style={linkStyle}>{isPdf ? "Открыть PDF" : "Открыть"}</button>
@@ -268,9 +268,9 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
               const on = isCur && player.isPlaying;
               return (
                 <button key={i} onClick={() => { if (isCur) player.togglePlay(); else player.playBhajan(slug, i); }} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isCur ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-gold-deep)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon /> : <PlayIcon />}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-brand-blue)" : "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
+                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-gold-deep)" : "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.title || "Запись"}</span>
                     {r.subtitle ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{r.subtitle}</span> : null}
                   </span>
                   {r.duration ? <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)", flexShrink: 0 }}>{r.duration}</span> : null}
@@ -303,9 +303,9 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
               const label = isAudio ? "Аудио" : isYt ? "YouTube" : isExternal ? "Видео ↗" : "Видео";
               return (
                 <button key={i} onClick={handle} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: isCur ? "var(--color-fill-2, rgba(120,120,128,.10))" : "transparent", cursor: "pointer" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: isYt ? "#FF453A" : "var(--color-brand-blue)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon size={16} /> : <PlayIcon size={16} />}</span>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: isYt ? "#FF453A" : "var(--color-gold-deep)", color: "#fff", flexShrink: 0 }}>{on ? <PauseIcon size={16} /> : <PlayIcon size={16} />}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-brand-blue)" : "var(--color-label)", overflowWrap: "anywhere" }}>{l.title || "Лекция"}</span>
+                    <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-gold-deep)" : "var(--color-label)", overflowWrap: "anywhere" }}>{l.title || "Лекция"}</span>
                     {(l.subtitle || l.date) ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[l.subtitle, l.date].filter(Boolean).join(" · ")}</span> : null}
                   </span>
                   <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{label}</span>
@@ -331,7 +331,7 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
               const isPdf = (s.media_type || "image") === "pdf";
               return (
                 <button key={i} onClick={() => onView({ type: isPdf ? "pdf" : "image", url: s.url || "", title: s.title || "Ноты", subtitle: s.description })} style={{ ...ROW, width: "100%", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: "transparent", cursor: "pointer" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-fill-2, rgba(120,120,128,.12))", color: "var(--color-brand-blue)", flexShrink: 0 }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 34, height: 34, borderRadius: "50%", background: "var(--color-fill-2, rgba(120,120,128,.12))", color: "var(--color-gold-deep)", flexShrink: 0 }}>
                     <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /><circle cx="6.5" cy="18" r="2.5" fill="currentColor" /><circle cx="16.5" cy="16" r="2.5" fill="currentColor" /></svg>
                   </span>
                   <span style={{ flex: 1, minWidth: 0 }}>
@@ -446,7 +446,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
             <PlainBtn ariaLabel="Ещё" onClick={openMore}><MoreIcon size={16} /></PlainBtn>
           </span>
         )}
-        <div aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, width: `${prog * 100}%`, background: "var(--color-brand-blue)", borderRadius: "0 2px 2px 0", transition: "width .12s linear" }} />
+        <div aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, width: `${prog * 100}%`, background: "var(--color-gold-deep)", borderRadius: "0 2px 2px 0", transition: "width .12s linear" }} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>

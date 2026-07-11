@@ -659,7 +659,7 @@ function GroupSection({ group, onOpen }: { group: { label: string; order: number
         {more > 0 && (
           <button type="button" onClick={() => setOpen(true)}
             style={{ display: "inline-flex", alignItems: "center", padding: "8px 13px", borderRadius: 999, border: "none",
-              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)", cursor: "pointer" }}>
+              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>
             Ещё {more}
           </button>
         )}
@@ -712,7 +712,7 @@ function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkIte
         {more > 0 && (
           <button type="button" onClick={() => setOpen(true)}
             style={{ display: "inline-flex", alignItems: "center", padding: "8px 13px", borderRadius: 999, border: "none",
-              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)", cursor: "pointer" }}>
+              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>
             Ещё {more}
           </button>
         )}

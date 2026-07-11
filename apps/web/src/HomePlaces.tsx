@@ -5,7 +5,7 @@
  * home-catalog-load.yml из официального справочника). Поиск и фильтры —
  * серверные: /api/places (q · континент · страна) и /api/places/facets.
  *
- * Навигация по стандарту apartsales (три уровня на Главной):
+ * Навигация по стандарту ISKCON ONE LOVE (три уровня на Главной, ЗКН-Н004):
  *   Tier-1 — HomeTabs (Центры | Рестораны | …)
  *   Tier-2 — континенты (SectionSubTabs, sticky под Tier-1)
  *   Tier-3 — страны выбранного континента (SectionSubTabs, sticky под Tier-2)

@@ -45,7 +45,7 @@ function ActionsSheet({ open, items, onClose, onSelect }: { open: boolean; items
             {it.label}
           </button>
         ))}
-        <button onClick={onClose} style={{ width: "100%", marginTop: 8, padding: "14px", borderRadius: "var(--radius-control)", border: "none", background: "var(--color-bg-3)", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-brand-blue)", cursor: "pointer" }}>Отмена</button>
+        <button onClick={onClose} style={{ width: "100%", marginTop: 8, padding: "14px", borderRadius: "var(--radius-control)", border: "none", background: "var(--color-bg-3)", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>Отмена</button>
       </div>
     </div>
   );
@@ -79,12 +79,12 @@ interface ContentDetail {
 /** Редакционный pull-quote (Apple Books / News): крупный курсив слева,
  *  тонкая акцентная линия, структурированная атрибуция со ссылками. */
 function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: SignRef | null; onPerson: (slug: string) => void; onBook: (workId: string) => void; onRef: (href: string) => void }) {
-  const link: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-brand-blue)", cursor: "pointer" };
+  const link: React.CSSProperties = { background: "none", border: "none", padding: 0, margin: 0, font: "inherit", color: "var(--color-gold-deep)", cursor: "pointer" };
   const hasStruct = ref && (ref.author || ref.workName);
   // ридер есть для bg (товарная карточка) и cc/sb (референс-ридер)
   const deep = !!ref?.workId && ["bg", "cc", "sb"].includes(ref.workId);
   return (
-    <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid color-mix(in srgb, var(--color-brand-blue) 55%, transparent)" }}>
+    <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid color-mix(in srgb, var(--color-gold-deep) 55%, transparent)" }}>
       <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 22, lineHeight: 1.42, letterSpacing: "0.1px", color: "var(--color-label)" }}>
         {text}
       </blockquote>
@@ -262,7 +262,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
             <NavBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)} onGlass={1 - t}><MoreIcon size={16} /></NavBtn>
           </div>
         )}
-        <div aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, width: `${prog * 100}%`, background: "var(--color-brand-blue)", borderRadius: "0 2px 2px 0", transition: "width .12s linear" }} />
+        <div aria-hidden style={{ position: "absolute", left: 0, bottom: 0, height: 2, width: `${prog * 100}%`, background: "var(--color-gold-deep)", borderRadius: "0 2px 2px 0", transition: "width .12s linear" }} />
       </header>
 
       <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -283,7 +283,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
             <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-5) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + 64px + var(--player-extra))" }}>
               {/* заголовочный блок: eyebrow (мягкий регистр) + Large Title */}
               {data.kind && (
-                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-brand-blue)", marginBottom: "var(--space-2)" }}>
+                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", color: "var(--color-gold-deep)", marginBottom: "var(--space-2)" }}>
                   {data.kind}
                 </div>
               )}

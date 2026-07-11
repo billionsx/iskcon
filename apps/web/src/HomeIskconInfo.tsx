@@ -80,7 +80,7 @@ function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => v
 
           <a href={d.url} target="_blank" rel="noopener noreferrer"
             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 16, padding: "13px 16px", borderRadius: 14,
-              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, color: "var(--color-brand-blue)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, color: "var(--color-gold-deep)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
             Официальный источник
             <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </a>
@@ -107,7 +107,7 @@ function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash
       </div>
       <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.issuer}</div>
       <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label-2)" }}>{d.summary}</p>
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-brand-blue)" }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 12, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-gold-deep)" }}>
         Читать документ
       </span>
     </article>
@@ -231,7 +231,7 @@ export function HomeStructure() {
         ))}
       </div>
       <a href="https://gbc.iskcon.org/" target="_blank" rel="noopener noreferrer"
-        style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 22, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-brand-blue)", textDecoration: "none" }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: 3, marginTop: 22, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-gold-deep)", textDecoration: "none" }}>
         Официальный сайт GBC — gbc.iskcon.org
         <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </a>

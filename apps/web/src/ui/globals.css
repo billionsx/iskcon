@@ -68,18 +68,22 @@
   --color-red: #ff453a;
   --color-yellow: #ffd60a;
 
-  /* Apartsales brand — single source of truth in @apartsales/brand */
-  --color-brand-blue: #9c7c15;          /* бренд-золото (бывш. APARTSALES_BLUE): единый акцент приложения */
-  --color-brand-blue-50: #eaf5fe;
-  --color-brand-blue-100: #d0e9fd;
-  --color-brand-blue-200: #a1d2fb;
-  --color-brand-blue-300: #73bcf9;
-  --color-brand-blue-400: #4ea9f7;
-  --color-brand-blue-500: #9c7c15;
-  --color-brand-blue-600: #1f7ed9;
-  --color-brand-blue-700: #1865b0;
-  --color-brand-blue-800: #124d85;
-  --color-brand-blue-900: #0c355c;
+  /* ISKCON ONE LOVE — фирменное золото. Единственный источник истины (ЗКН-Д001).
+   * --color-gold      — золото логотипа ИСККОН и надписей-классификаций (ВБК/ВСК)
+   * --color-gold-deep — глубокий акцент интерфейса (ссылки, активные состояния)
+   * Шкала 50–900 выведена из золота: прежние синие остатки шаблона удалены. */
+  --color-gold: #D2AA1B;
+  --color-gold-deep: #9c7c15;
+  --color-gold-50: #fbf6e4;
+  --color-gold-100: #f5e9bc;
+  --color-gold-200: #ebd98c;
+  --color-gold-300: #e0c75b;
+  --color-gold-400: #d9b935;
+  --color-gold-500: #d2aa1b;
+  --color-gold-600: #b08e16;
+  --color-gold-700: #8a6f11;
+  --color-gold-800: #64500c;
+  --color-gold-900: #3e3208;
   --color-brand-black: #1e1e1e;
   --color-brand-white: #ffffff;
 
@@ -88,7 +92,7 @@
   --reader-accent-soft: rgba(227, 149, 58, 0.16);
 
   /* Default action color = brand blue. Components reference this, not raw hex. */
-  --color-blue: var(--color-brand-blue);
+  --color-blue: var(--color-gold-deep);
 
   /* Typography */
   --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -112,7 +116,7 @@
   --radius-squircle: 13px;
 
   /* ───────────────────────────────────────────────────────────
-   * Spacing scale — Apartsales standard.
+   * Spacing scale — стандарт ISKCON ONE LOVE (сетка 4pt, ЗКН-Д004).
    *
    * Применяется ВЕЗДЕ где есть вертикальный/секционный ритм.
    * Меняешь здесь — меняется во всех табах и блоках.
@@ -191,13 +195,13 @@
   --color-success: var(--color-green);
   --color-warning: var(--color-orange);
   --color-danger: var(--color-red);
-  --color-info: var(--color-brand-blue);
+  --color-info: var(--color-gold-deep);
 
   /* Семантические цвета — ТЕКСТ (контраст под тему) */
   --color-success-text: #30d158;
   --color-warning-text: #ff9f0a;
   --color-danger-text: #ff453a;
-  --color-info-text: var(--color-brand-blue);
+  --color-info-text: var(--color-gold-deep);
 
   /* Семантические тонированные подложки */
   --color-success-surface: rgba(48, 209, 88, 0.16);
@@ -426,7 +430,7 @@
   outline: none;
 }
 :where(button, a, [role='button'], [role='tab'], input, textarea, select):focus-visible {
-  outline: 2px solid var(--color-brand-blue);
+  outline: 2px solid var(--color-gold-deep);
   outline-offset: 2px;
   border-radius: var(--radius-squircle);
 }
