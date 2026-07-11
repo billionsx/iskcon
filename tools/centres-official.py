@@ -4,289 +4,130 @@
 
 ПОЧЕМУ ЭТОТ СКРИПТ СУЩЕСТВУЕТ.
 
-В базе было 956 центров, из них 792 БЕЗ координат — локатор мёртв. Первый порыв:
-геокодировать адреса. Разбор показал, что это было бы ошибкой:
+Локатор центров был мёртв: 792 из 956 без координат. Первый порыв — геокодировать
+адреса. Разбор показал, что это была бы ошибка:
 
   • 729 центров пришли из `centers.iskcondesiretree.com` — АРХИВА 2011–2013 годов.
     Ни у одного нет координат. За 14 лет часть центров переехала или закрылась.
-  • 164 центра пришли из `centres.iskcon.org` — ОФИЦИАЛЬНОГО директория ИСККОН.
-    У ВСЕХ 164 координаты есть.
+  • 164 центра — из `centres.iskcon.org`, ОФИЦИАЛЬНОГО директория. У ВСЕХ координаты.
 
 Официальный директорий создан ровно затем, чтобы устранить «неприятные сюрпризы
 вроде следования по карте к адресу храма и обнаружения себя посреди пустоты».
-Геокодировать протухшие адреса 2011 года = воспроизвести эту проблему и поставить
-на карту точки, ведущие в никуда. Это то же сломанное обещание, что ЗКН-Пр007.
+Геокодировать протухшие адреса 2011 года = воспроизвести эту проблему: поставить
+на карту точки, ведущие в никуда. То же сломанное обещание, что ЗКН-Пр007.
 
-ЧТО ДЕЛАЕТ СКРИПТ.
+ПОЧЕМУ ЧЕРЕЗ БРАУЗЕР.
 
-Тянет ВЕСЬ официальный директорий (664 центра: Индия 172 · Европа 103 · Россия 91 ·
-США/Канада 77 · Латинская Америка 49 · UK 44 · ЮВА 38 · Африка 36 · Океания 22 …).
-Сайт — WordPress + WP Job Manager: центры лежат в типе `job_listing`, координаты —
-в мете (`geolocation_lat` / `geolocation_long`).
+Проверено ФАКТОМ, а не догадкой: официальный сайт не отдаёт данные машинам.
+  • wp-json → таймаут (REST выключен)
+  • ?rest_route=… → возвращает HTML, не JSON
+  • /sitemap.xml, /wp-sitemap.xml, /sitemap_index.xml → ноль записей
+Листинги рисует JavaScript. Значит нужен настоящий браузер.
 
-ИСТОЧНИК ИСТИНЫ: официальный директорий. Архив desiretree остаётся ТОЛЬКО как
-запасной для центров, которых в официальном нет (и такие помечаются явно).
+Playwright в проекте УЖЕ есть — им пре-генерируются PDF книг в deploy-web.yml.
+Здесь он открывает страницы регионов и ПЕРЕХВАТЫВАЕТ сетевые ответы, которыми сайт
+наполняет карту: там координаты лежат структурно, а не в разметке.
 """
 import json
 import re
 import sys
 import time
-import urllib.parse
-import urllib.request
 
-OFFICIAL = "https://centres.iskcon.org"
-UA = "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"
-
-# WP Job Manager хранит листинги в этом типе. Пробуем по очереди — тема могла
-# переименовать CPT; скрипт обязан сказать, что именно сработало (или упасть).
-CPT_CANDIDATES = ["job_listing", "case27_listing", "listing", "centre"]
-
-
-def get(url: str, timeout: int = 45):
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.load(r)
-
-
-SITEMAPS = ["/wp-sitemap.xml", "/sitemap_index.xml", "/sitemap.xml"]
-
-
-def get_text(url: str, timeout: int = 40) -> str:
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read().decode("utf-8", "replace")
-
-
-def centre_urls():
-    """Адреса страниц центров — из карты сайта.
-
-    REST-API официального директория закрыт (wp-json уходит в таймаут), поэтому
-    идём честным путём: карта сайта → страницы центров. Медленнее, зато работает
-    и не зависит от того, включил ли админ REST.
-    """
-    seen, urls = set(), []
-    for sm in SITEMAPS:
-        try:
-            xml = get_text(OFFICIAL + sm)
-        except Exception:
-            continue
-        # индекс карт сайта → вложенные карты
-        subs = re.findall(r"<loc>\s*([^<]+?)\s*</loc>", xml)
-        for u in subs:
-            if not u.startswith(OFFICIAL):
-                continue
-            if "/centre/" in u:
-                if u not in seen:
-                    seen.add(u); urls.append(u)
-                continue
-            if u.endswith(".xml") and re.search(r"centre|listing|job", u, re.I):
-                try:
-                    sub = get_text(u)
-                except Exception:
-                    continue
-                for v in re.findall(r"<loc>\s*([^<]+?)\s*</loc>", sub):
-                    if "/centre/" in v and v not in seen:
-                        seen.add(v); urls.append(v)
-        if urls:
-            print("::notice title=SITEMAP::%s → центров=%d" % (sm, len(urls)))
-            break
-    if not urls:
-        # ДИАГНОСТИКА вместо новой догадки: доложить, что сайт реально отдаёт.
-        for sm in SITEMAPS:
-            try:
-                xml = get_text(OFFICIAL + sm)
-            except Exception as e:
-                print("::notice title=SM::%s → %s" % (sm, str(e)[:60])); continue
-            locs = re.findall(r"<loc>\s*([^<]+?)\s*</loc>", xml)
-            print("::notice title=SM::%s → loc=%d" % (sm, len(locs)))
-            for u in locs[:15]:
-                print("   %s" % u)
-        # AJAX WP Job Manager — второй законный путь
-        try:
-            aj = get_text(OFFICIAL + "/?rest_route=/wp/v2/types", timeout=60)
-            print("::notice title=TYPES::%s" % aj[:400])
-        except Exception as e:
-            print("::notice title=TYPES::недоступно: %s" % str(e)[:60])
-        raise SystemExit("::error title=NO-SITEMAP::карта сайта не отдала /centre/ — см. диагностику выше")
-    return urls
-
-
-LATLNG_RE = [
-    re.compile(r'"latitude"\s*:\s*"?(-?\d+\.\d+)"?[\s\S]{0,120}?"longitude"\s*:\s*"?(-?\d+\.\d+)"?'),
-    re.compile(r'data-lat=["\'](-?\d+\.\d+)["\'][\s\S]{0,160}?data-l(?:ng|ong)=["\'](-?\d+\.\d+)["\']'),
-    re.compile(r'geolocation_lat["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)[\s\S]{0,160}?geolocation_long["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)'),
+REGIONS = [
+    "india", "europe", "russia", "usa-canada", "latin-america-caribbean", "uk",
+    "southeast-asia", "africa", "oceania", "south-asia", "far-east-asia",
+    "central-asia", "asia-pacific", "middle-east", "latin-america", "us-canada",
 ]
-TITLE_RE = re.compile(r"<title>\s*(.*?)\s*</title>", re.S)
+OFFICIAL = "https://centres.iskcon.org"
+OUT = "apps/web/public/data/iskcon-centres-official.json"
+
+LAT_KEYS = ("lat", "latitude", "geolocation_lat", "_geolocation_lat")
+LNG_KEYS = ("lng", "long", "longitude", "geolocation_long", "_geolocation_long")
+NAME_KEYS = ("title", "name", "post_title", "listing_title")
 
 
-def parse_centre(url: str):
-    """Имя + координаты со страницы центра."""
-    try:
-        html = get_text(url, timeout=30)
-    except Exception:
-        return None
-    lat = lng = None
-    for rx in LATLNG_RE:
-        m = rx.search(html)
-        if m:
-            lat, lng = num(m.group(1)), num(m.group(2))
-            break
-    m = TITLE_RE.search(html)
-    name = strip_html(m.group(1)) if m else ""
-    name = re.sub(r"\s*[–|-]\s*ISKCON Centres.*$", "", name).strip()
-    if not name:
-        return None
-    return {"id": url.rstrip("/").split("/")[-1], "name": name, "address": "",
-            "lat": lat, "lng": lng, "website": url, "source": "centres.iskcon.org"}
-
-
-def discover_routes():
-    """Спросить у сайта, какие маршруты он отдаёт. Не угадывать."""
-    try:
-        idx = get("%s/wp-json/" % OFFICIAL)
-    except Exception as e:
-        raise SystemExit("::error title=NO-REST::wp-json недоступен: %s" % e)
-    routes = sorted(idx.get("routes", {}).keys())
-    print("::notice title=ROUTES::всего маршрутов=%d" % len(routes))
-    # показать всё, что похоже на листинги/центры
-    interesting = [r for r in routes if re.search(r"listing|centre|center|place|job|geo|map", r, re.I)]
-    for r in interesting[:40]:
-        print("  route: %s" % r)
-    return routes, interesting
-
-
-def find_cpt() -> str:
-    """Определить реальный тип записи для центров — по ответу сайта, не по догадке."""
-    routes, interesting = discover_routes()
-
-    # маршруты вида /wp/v2/<cpt> — берём кандидатов оттуда
-    cands = []
-    for r in routes:
-        m = re.match(r"^/wp/v2/([a-z0-9_\-]+)$", r)
-        if m and m.group(1) not in ("posts", "pages", "media", "users", "comments",
-                                    "categories", "tags", "taxonomies", "types",
-                                    "statuses", "settings", "themes", "blocks",
-                                    "search", "menu-items", "menus", "widgets"):
-            cands.append(m.group(1))
-    print("::notice title=CPT-CANDIDATES::%s" % (", ".join(cands) or "нет"))
-
-    for cpt in cands + CPT_CANDIDATES:
-        try:
-            arr = get("%s/wp-json/wp/v2/%s?per_page=1" % (OFFICIAL, cpt))
-            if isinstance(arr, list) and arr:
-                print("::notice title=CPT::тип записи центров = %s" % cpt)
-                return cpt
-        except Exception:
-            continue
-
-    raise SystemExit("::error title=CPT-NOT-FOUND::центры не отдаются через REST. "
-                     "Кандидаты: %s. Маршруты по теме: %s"
-                     % (", ".join(cands) or "нет", ", ".join(interesting[:8]) or "нет"))
-
-
-def num(v):
-    """Координата из меты. WP отдаёт мету по-разному: строкой, числом, списком."""
-    if isinstance(v, list):
-        v = v[0] if v else None
-    if v in (None, "", "0"):
-        return None
-    try:
-        f = float(v)
-        return f if -90.0 <= f <= 90.0 or abs(f) <= 180.0 else None
-    except (TypeError, ValueError):
-        return None
-
-
-def strip_html(s: str) -> str:
-    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", s or "")).strip()
-
-
-def fetch_all(cpt: str):
-    """Все центры официального директория с координатами."""
-    out, page = [], 1
-    while page < 20:                       # 664 центра ≈ 7 страниц по 100
-        url = "%s/wp-json/wp/v2/%s?per_page=100&page=%d" % (OFFICIAL, cpt, page)
-        try:
-            arr = get(url)
-        except Exception as e:
-            if page == 1:
-                raise
-            print("::warning title=PAGE::страница %d: %s" % (page, e))
-            break
-        if not isinstance(arr, list) or not arr:
-            break
-        out += arr
-        if len(arr) < 100:
-            break
-        page += 1
-        time.sleep(0.4)                    # вежливость к чужому серверу
-    return out
-
-
-LAT_KEYS = ("geolocation_lat", "_geolocation_lat", "latitude", "_latitude", "lat")
-LNG_KEYS = ("geolocation_long", "_geolocation_long", "geolocation_lng",
-            "longitude", "_longitude", "lng", "long")
-ADDR_KEYS = ("_job_location", "job_location", "geolocation_formatted_address",
-             "_geolocation_formatted_address", "address", "_address")
-
-
-def pick(meta: dict, keys) -> object:
-    for k in keys:
-        if k in meta and meta[k] not in (None, "", []):
-            return meta[k]
-    return None
-
-
-def normalize(rows):
-    places, no_coords = [], 0
-    for r in rows:
-        meta = r.get("meta") or {}
-        lat = num(pick(meta, LAT_KEYS))
-        lng = num(pick(meta, LNG_KEYS))
-        addr = pick(meta, ADDR_KEYS)
-        if isinstance(addr, list):
-            addr = addr[0] if addr else None
-        name = strip_html((r.get("title") or {}).get("rendered", ""))
-        if not name:
-            continue
-        if lat is None or lng is None:
-            no_coords += 1
-        places.append({
-            "id": r.get("slug") or str(r.get("id")),
-            "name": name,
-            "address": strip_html(str(addr or "")),
-            "lat": lat, "lng": lng,
-            "website": r.get("link"),
-            "source": "centres.iskcon.org",   # ОФИЦИАЛЬНЫЙ источник истины
-        })
-    return places, no_coords
+def dig(obj, acc):
+    """Рекурсивно собрать всё, что похоже на маркер карты (имя + координаты)."""
+    if isinstance(obj, dict):
+        lat = next((obj[k] for k in LAT_KEYS if k in obj), None)
+        lng = next((obj[k] for k in LNG_KEYS if k in obj), None)
+        nm = next((obj[k] for k in NAME_KEYS if k in obj), None)
+        if lat is not None and lng is not None:
+            try:
+                la, ln = float(lat), float(lng)
+                if -90 <= la <= 90 and -180 <= ln <= 180 and (la or ln):
+                    name = re.sub(r"<[^>]+>", " ", str(nm or "")).strip()
+                    name = re.sub(r"\s+", " ", name)
+                    if name:
+                        acc[name.lower()] = {
+                            "name": name, "lat": la, "lng": ln,
+                            "url": obj.get("url") or obj.get("permalink") or "",
+                            "source": "centres.iskcon.org",
+                        }
+            except (TypeError, ValueError):
+                pass
+        for v in obj.values():
+            dig(v, acc)
+    elif isinstance(obj, list):
+        for v in obj:
+            dig(v, acc)
 
 
 def main():
-    urls = centre_urls()
-    places = []
-    for i, u in enumerate(urls):
-        p = parse_centre(u)
-        if p:
-            places.append(p)
-        if i % 50 == 0:
-            print("  ...%d/%d" % (i, len(urls)))
-        time.sleep(0.25)                   # вежливость к чужому серверу
-    with_coords = sum(1 for p in places if p["lat"] is not None)
-    no_coords = len(places) - with_coords
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        raise SystemExit("::error title=NO-PLAYWRIGHT::нужен playwright + chromium")
 
-    print("::notice title=OFFICIAL::центров=%d  с координатами=%d  без=%d"
-          % (len(places), with_coords, no_coords))
+    found = {}
+    with sync_playwright() as pw:
+        br = pw.chromium.launch()
+        ctx = br.new_context(user_agent="iskcon-one-love/1.0 (+https://gaurangers.com)")
+        page = ctx.new_page()
 
-    if len(places) < 300:
-        raise SystemExit("::error title=TOO-FEW::официальный директорий отдал %d центров — "
-                         "ожидалось ~664. Скрейп неполон, не перезаписываю базу." % len(places))
+        def on_response(resp):
+            ct = (resp.headers or {}).get("content-type", "")
+            if "json" not in ct.lower():
+                return
+            try:
+                dig(resp.json(), found)
+            except Exception:
+                pass
 
-    out = {"places": places, "count": len(places), "with_coords": with_coords,
-           "source": "centres.iskcon.org"}
-    with open("apps/web/public/data/iskcon-centres-official.json", "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=1)
-    print("записано: apps/web/public/data/iskcon-centres-official.json")
+        page.on("response", on_response)
+
+        for reg in REGIONS:
+            url = "%s/centre-region/%s/" % (OFFICIAL, reg)
+            try:
+                page.goto(url, wait_until="networkidle", timeout=60000)
+            except Exception as e:
+                print("::warning title=REGION::%s → %s" % (reg, str(e)[:60]))
+                continue
+            for _ in range(30):
+                try:
+                    btn = page.query_selector("a.load-more, button.load-more, .load_more_jobs")
+                    if not btn or not btn.is_visible():
+                        break
+                    btn.click()
+                    page.wait_for_timeout(1200)
+                except Exception:
+                    break
+            print("  %-26s маркеров всего: %d" % (reg, len(found)))
+            time.sleep(0.3)
+
+        br.close()
+
+    places = sorted(found.values(), key=lambda p: p["name"])
+    print("::notice title=OFFICIAL::центров с координатами=%d" % len(places))
+
+    if len(places) < 200:
+        raise SystemExit("::error title=TOO-FEW::директорий дал %d центров, ожидалось ~664. "
+                         "Скрейп неполон — базу не трогаю." % len(places))
+
+    with open(OUT, "w", encoding="utf-8") as f:
+        json.dump({"places": places, "count": len(places),
+                   "source": "centres.iskcon.org"}, f, ensure_ascii=False, indent=1)
+    print("записано: %s" % OUT)
     return 0
 
 
