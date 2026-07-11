@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
+import { cleanCardText } from "./cardText";
 
 type Person = {
   slug: string; name: string; hero_image: string | null; n_quotes: number;
@@ -101,7 +102,7 @@ function Pills({ value, onChange, items, count, sec }: {
 
 function Row({ p, onOpen }: { p: Person; onOpen: (id: string, type: string | null) => void }) {
   const { openCardMenu } = useCardActions();
-  const desc = p.note || p.summary || (p.n_quotes ? `${p.n_quotes} цитат` : "");
+  const desc = cleanCardText(p.note || p.summary || (p.n_quotes ? `${p.n_quotes} цитат` : ""));  // ЗКН-Т002
   return (
     <div className="lh-row" role="button" tabIndex={0} onClick={() => onOpen(p.slug, null)}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(p.slug, null); } }}>

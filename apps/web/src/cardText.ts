@@ -39,3 +39,28 @@ export function cleanCardText(input: string | null | undefined): string {
 
   return s;
 }
+
+/**
+ * ЗАКОН ЗКН-Т002 — единая точка прогона прозы карточки.
+ * Любой текст ЛИЧНОСТИ в любой карточке идёт через cleanCardText.
+ *
+ * ВАЖНО (ЗКН-БТ004): чужой голос НЕ редактируется. Текст цитат (q.t), стихов и
+ * выдержек Прабхупады через этот фильтр НЕ пропускается — даже если внутри стоит
+ * неканоничная форма имени. Цитаты рендерятся напрямую (renderSanskrit).
+ */
+export function cleanCardFields<T extends Record<string, unknown>>(
+  obj: T,
+  fields: readonly (keyof T)[],
+): T {
+  const out = { ...obj };
+  for (const f of fields) {
+    const v = out[f];
+    if (typeof v === "string") (out as Record<string, unknown>)[f as string] = cleanCardText(v);
+    else if (Array.isArray(v)) {
+      (out as Record<string, unknown>)[f as string] = v.map((x) =>
+        typeof x === "string" ? cleanCardText(x) : x,
+      );
+    }
+  }
+  return out;
+}
