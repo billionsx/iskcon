@@ -33,6 +33,7 @@ import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { ROUTES, url } from "./routes";
+import { subscribeNav } from "./nav";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -2860,20 +2861,19 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     setReaderRef(null);
   };
 
-  // URL → состояние при «назад/вперёд» браузера (в пределах книги).
-  useEffect(() => {
-    const onPop = () => {
-      const base = `/book/${book.work}`;
-      const path = window.location.pathname;
-      if (!path.startsWith(base)) return;
-      if (book.prose) return; // прозовые книги не используют глубоких URL глав
-      const parts = path.split("/");        // ["", "book", work, a?, b?, c?]
-      if (book.hierarchical) openTarget.current(parts[3] || null, parts[4] || null, parts[5] || null);
-      else openTarget.current(null, parts[3] || null, parts[4] || null);
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, [book.hierarchical, book.work]);
+  /* URL → состояние при «назад/вперёд» (в пределах книги).
+   *
+   * ЗКН-Н002: свой `popstate` здесь ЗАПРЕЩЁН — два слушателя одного события
+   * race-ятся, порядок не гарантирован. Владелец `popstate` — App; он разбирает
+   * маршрут и ТОЛЬКО ПОТОМ оповещает подписчиков. Порядок детерминирован. */
+  useEffect(() => subscribeNav((path) => {
+    const base = `/book/${book.work}`;
+    if (!path.startsWith(base)) return;
+    if (book.prose) return;               // прозовые книги не используют глубоких URL глав
+    const parts = path.split("/");        // ["", "book", work, a?, b?, c?]
+    if (book.hierarchical) openTarget.current(parts[3] || null, parts[4] || null, parts[5] || null);
+    else openTarget.current(null, parts[3] || null, parts[4] || null);
+  }), [book.hierarchical, book.work, book.prose]);
 
   const openChapterByNumber = (num: string) => {
     const c = chapters?.find((x) => x.number === num);

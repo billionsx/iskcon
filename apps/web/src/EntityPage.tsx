@@ -1230,7 +1230,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     const SCRIPT = new Set(["bhagavatam", "gita", "cc", "ramayana", "mahabharata"]);
     const W = (c: string) => (c === "source-of-all" ? 3 : SCRIPT.has(c) ? 2 : c === "vraja" ? -1 : 0);
     const rest = cats.filter((c) => !used.has(c) && !c.startsWith("rasa:") && CATEGORY_RU[c]).sort((a, b) => W(b) - W(a));
-    const heroChips = FACT_CHIPS[id] ?? Array.from(new Set(rest.map((c) => CATEGORY_RU[c]))).slice(0, 4);
+    // ЗКН-К010: РОВНО 3 чипа. Четвёртый переносит ряд и ломает ВБК (ЗКН-К011).
+    const heroChips = (FACT_CHIPS[id] ?? Array.from(new Set(rest.map((c) => CATEGORY_RU[c])))).slice(0, 3);
     return { eyebrow, heroChips };
   })();
   // Эпитет на карточке (ВКЛ): профильное summary как авторитетная «надпись», иначе короткая заметка.

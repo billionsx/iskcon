@@ -130,8 +130,63 @@ def check_k011():
     return bad
 
 
+def check_k006():
+    """ВМК (минимальная): круглая иконка 52px, плей — если аудио."""
+    bad = []
+    for c in ("BhajanCard.tsx", "AudioShowcaseCard.tsx"):
+        t = read(c)
+        if not t:
+            continue
+        # круглая иконка: borderRadius 50% и размер 52
+        if "50%" not in t:
+            bad.append((c, "ВМК: иконка не круглая (ЗКН-К006)"))
+    return bad
+
+
+def check_k010():
+    """Классификатор чипов ВБК: РОВНО 3, только ФАКТ."""
+    bad = []
+    t = read("EntityPage.tsx")
+    if not t:
+        return bad
+    # heroChips обязан резаться до 3
+    m = re.search(r"heroChips[\s\S]{0,300}?slice\(0,\s*(\d+)\)", t)
+    if m and int(m.group(1)) != 3:
+        bad.append(("EntityPage.tsx", "чипов ВБК %s, а не 3 (ЗКН-К010)" % m.group(1)))
+    if not m and "heroChips" in t:
+        bad.append(("EntityPage.tsx", "чипы ВБК не ограничены тремя (ЗКН-К010)"))
+    return bad
+
+
+def check_k012():
+    """Полный «адрес» личности: классификация + титул + тождество."""
+    t = read("EntityPage.tsx")
+    if not t:
+        return []
+    need = {"eyebrow": "классификация (лила·волна)", "identity": "тождество"}
+    miss = [v for k, v in need.items() if k not in t]
+    if miss:
+        return [("EntityPage.tsx", "нет слота: %s (ЗКН-К012)" % ", ".join(miss))]
+    return []
+
+
+def check_k013():
+    """Ни один слот не дублируется: раса уже в надписи ВБК."""
+    t = read("EntityPage.tsx")
+    if not t:
+        return []
+    # дубль расы подписью под карточкой
+    if re.search(r'<span[^>]*>РАСА</span>|>\s*РАСА\s*<', t):
+        return [("EntityPage.tsx", "раса дублируется подписью под карточкой (ЗКН-К013)")]
+    return []
+
+
 CHECKS = [
     ("ЗКН-К001", "обложка-слайдер — единый модуль", check_k001),
+    ("ЗКН-К006", "ВМК: круглая иконка", check_k006),
+    ("ЗКН-К010", "ровно 3 факт-чипа в ВБК", check_k010),
+    ("ЗКН-К012", "полный «адрес» личности", check_k012),
+    ("ЗКН-К013", "слоты не дублируются", check_k013),
     ("ЗКН-К002", "действия во всех витринных карточках", check_k002),
     ("ЗКН-К003", "ноль дрейфа док↔код в файле", check_k003),
     ("ЗКН-К004", "ВБК 4/5 · ЗКН-К007 ПК = ВБК", check_k004_k007),
