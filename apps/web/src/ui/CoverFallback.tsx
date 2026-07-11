@@ -1,37 +1,37 @@
 /**
- * ISKCON DESIGN — единая заглушка обложки (ЗКН-Д005).
+ * ISKCON DESIGN — единые заглушки обложки (ЗКН-Д005).
  *
- * Нет загруженного изображения → золотой логотип ИСККОН на белом фоне.
- * Один ассет на ВСЕ типы: личности, книги, аудио, бхаджаны, места, рецепты.
+ * Нет загруженного изображения → логотип ИСККОН золотом. ДВА варианта — по тому,
+ * ложится ли на обложку текст:
  *
- * Отменяет прежний разнобой:
- *   · буква-инициал водяным знаком (PersonHeroCard, LichnostiHub, BooksHub…)
- *   · audio-cover.png / audio-cover-light.png (плеер, аудио-карточки)
+ *   ТЁМНАЯ (COVER_FALLBACK_DARK) — там, где ПОВЕРХ обложки идёт текст: ВБК, ВСК.
+ *     Фон #1E1E1E, 4/5, radius 20. Тёмные скримы и белый текст работают как с фото.
  *
- * Ассет: apps/web/public/cover-fallback.svg (белый фон + золото #D2AA1B).
- * Работает в обеих темах: фон у ассета собственный, белый.
+ *   БЕЛАЯ (COVER_FALLBACK) — там, где текста на обложке НЕТ: миниатюры, аватары
+ *     в списках, круглая иконка ВМК, аудио-обложка в плеере.
+ *
+ * Почему так: белая подложка под белым текстом нечитаема, а тёмный скрим поверх
+ * белой подложки превращает её в грязно-серую и гасит золото.
+ *
+ * Ассеты: apps/web/public/cover-fallback{,-dark}.svg — золото #D2AA1B.
  */
 import type { CSSProperties } from "react";
 
-/** Путь к единой заглушке. Использовать вместо любых локальных плейсхолдеров. */
+/** Белая заглушка — БЕЗ текста поверх (миниатюры, аватары, аудио). */
 export const COVER_FALLBACK = "/cover-fallback.svg";
 
+/** Тёмная заглушка — С текстом поверх (ВБК, ВСК). Фон #1E1E1E, 4/5. */
+export const COVER_FALLBACK_DARK = "/cover-fallback-dark.svg";
+
 /** Полноразмерная заглушка обложки — заполняет родителя (position: relative). */
-export function CoverFallback({ alt = "", style }: { alt?: string; style?: CSSProperties }) {
+export function CoverFallback({ dark = false, alt = "", style }: { dark?: boolean; alt?: string; style?: CSSProperties }) {
   return (
     <img
-      src={COVER_FALLBACK}
+      src={dark ? COVER_FALLBACK_DARK : COVER_FALLBACK}
       alt={alt}
       aria-hidden={alt ? undefined : true}
       loading="lazy"
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        ...style,
-      }}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", ...style }}
     />
   );
 }
