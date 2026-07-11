@@ -64,14 +64,12 @@ function MaskMark({ src, size = 56, pos = "center", color = "currentColor" }: { 
 }
 
 /* золотая монограмма-инициал (как у героев) — для строк книг без обложки */
-function BookMonogram({ ch, size = 50 }: { ch: string; size?: number }) {
+/** ЗКН-Д005: нет обложки → фирменная заглушка (логотип ИСККОН), а не буква. */
+function BookMonogram({ size = 50 }: { ch?: string; size?: number }) {
   return (
-    <span style={{ flexShrink: 0, width: size, height: size, borderRadius: 13, display: "grid", placeItems: "center",
-      border: `1.5px solid color-mix(in srgb, ${GOLD} 50%, transparent)`,
-      background: `color-mix(in srgb, ${GOLD} 9%, transparent)`,
-      color: GOLD, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 600, fontSize: size * 0.44, lineHeight: 1 }}>
-      {ch}
-    </span>
+    <img src={COVER_FALLBACK} alt="" loading="lazy"
+      style={{ flexShrink: 0, width: size, height: size, borderRadius: 13, objectFit: "cover",
+        border: `1.5px solid color-mix(in srgb, ${GOLD} 50%, transparent)`, background: "var(--color-bg-2)" }} />
   );
 }
 
