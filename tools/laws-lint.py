@@ -17,6 +17,7 @@
 
 Запуск: python3 tools/laws-lint.py
 """
+import json
 import re
 import sys
 from pathlib import Path
@@ -86,11 +87,81 @@ def check_prose_law():
     return []
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# ХРАПОВИК ДОЛГА (ЗКН-Д001) — ISKCON Design.
+#
+# Долг велик (~2000 магических значений), разовый рефакторинг опасен. Поэтому:
+# база фиксируется, сборка падает при РОСТЕ. Уменьшать можно и нужно — база
+# пересчитывается вниз (`python3 tools/laws-lint.py --update-baseline`).
+# ═══════════════════════════════════════════════════════════════════════════
+
+BASELINE = ROOT / "tools" / "laws-baseline.json"
+# tokens.ts и globals.css ОПРЕДЕЛЯЮТ токены — им можно
+DESIGN_EXEMPT = {"tokens.ts", "globals.css"}
+
+DEBT = {
+    "magic_font_size": {
+        "law": "ЗКН-Д001",
+        "name": "магический кегль вместо токена (fontSize: 13)",
+        "pattern": re.compile(r"fontSize:\s*[0-9]"),
+        "hint": "→ tk.text.* или var(--…); см. docs/STANDARD_design.md",
+    },
+    "hardcoded_hex": {
+        "law": "ЗКН-Д001",
+        "name": "голый hex вместо токена (#D2AA1B)",
+        "pattern": re.compile(r"[\"'`]#[0-9a-fA-F]{3,8}[\"'`]"),
+        "hint": "→ var(--color-gold) / var(--color-gold-deep); см. docs/STANDARD_design.md",
+    },
+}
+
+
+def count_debt():
+    counts = {k: 0 for k in DEBT}
+    for fp in sorted(SRC.rglob("*")):
+        if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
+            continue
+        try:
+            t = fp.read_text(encoding="utf-8")
+        except Exception:
+            continue
+        for k, d in DEBT.items():
+            counts[k] += len(d["pattern"].findall(t))
+    return counts
+
+
+def check_ratchet(update=False):
+    now = count_debt()
+    if update or not BASELINE.exists():
+        BASELINE.write_text(json.dumps(now, indent=2) + "\n", encoding="utf-8")
+        print("ХРАПОВИК: база записана → %s" % BASELINE.name)
+        for k, v in now.items():
+            print("  %-18s %d" % (k, v))
+        return []
+    base = json.loads(BASELINE.read_text(encoding="utf-8"))
+    bad = []
+    print("ХРАПОВИК ДОЛГА (ISKCON Design):")
+    for k, d in DEBT.items():
+        b, n = base.get(k, 0), now[k]
+        if n > b:
+            print("  ✗ %-18s %d  (база %d, ВЫРОС на %d)" % (k, n, b, n - b))
+            bad.append(({"id": "%s · %s" % (d["law"], k), "name": d["name"],
+                         "hint": d["hint"]},
+                        "долг вырос: %d → %d" % (b, n), 0, ""))
+        elif n < b:
+            print("  ↓ %-18s %d  (база %d, СНИЖЕН на %d) — обнови базу" % (k, n, b, b - n))
+        else:
+            print("  = %-18s %d  (база держится)" % (k, n))
+    return bad
+
+
 def main():
-    bad = check_rules() + check_prose_law()
+    if "--update-baseline" in sys.argv:
+        check_ratchet(update=True)
+        return 0
+    bad = check_rules() + check_prose_law() + check_ratchet()
     if not bad:
-        print("ЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
-        print("  проверено правил: %d + закон прозы (Т002)" % len(RULES))
+        print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
+        print("  правил: %d + закон прозы (Т002) + храповик долга (Д001)" % len(RULES))
         return 0
 
     by_rule = {}

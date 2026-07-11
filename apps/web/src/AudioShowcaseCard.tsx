@@ -10,7 +10,7 @@ import { useRef, useState } from "react";
 import { CardActionBtns } from "./cardActions";
 import { AUDIO_FALLBACK_COVER_LIGHT } from "./player/store";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 function fmtTime(sec: number): string {
   if (!isFinite(sec) || sec < 0) sec = 0;

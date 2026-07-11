@@ -14,7 +14,7 @@ import { COOKBOOK, chapterById, chapterRecipes, COOKBOOK_PRAYERS, type Block, ty
 import { DIFFICULTY_LABEL } from "./prasad";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
 const cookbookCtx: CardCtx = {

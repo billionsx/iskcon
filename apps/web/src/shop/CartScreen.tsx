@@ -41,7 +41,7 @@ const BLUE = "#9c7c15";
 const GREEN = "#34c759";
 const OK = "#1d9e75";
 const RED = "#ff3b30";
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 
 const USDT_TRC20 = "TRqkjRb8g4Yf3Ew9VoM9YxB1EETnTcB5Gp";

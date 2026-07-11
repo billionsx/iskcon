@@ -5,7 +5,7 @@
  */
 import { useEffect, useRef } from "react";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 export type HomeTabId =
   | "iskcon"       // ИСККОН — презентация

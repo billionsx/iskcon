@@ -21,7 +21,7 @@ import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
 import { type PlaceItem } from "./placesShared";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 interface Facets { total: number; continents: { id: string; n: number; countries: { id: string; ru: string; n: number }[] }[] }

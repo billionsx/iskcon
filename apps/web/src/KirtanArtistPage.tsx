@@ -15,7 +15,7 @@ import { usePlayer, fmtTime } from "./player/store";
 import { ArtistMono } from "./KirtansScreen";
 import { artistBySlug, albumsByArtist, albumCover, TYPE_LABEL, MOOD_LABEL, type KirtanAlbum } from "./kirtans";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 interface TrackLite { title: string; durationSec: number | null; pos: number }
 

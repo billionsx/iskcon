@@ -21,7 +21,7 @@ import { renderTerms } from "./ui/Skt";
 import { cleanCardText } from "./cardText";
 import { SectionSubTabs } from "./SectionSubTabs";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 // Канонический вывод расы из категорий реестра: гопи/манджари → мадхурья, гопа → сакхья.
 const CATEGORY_RASA: Record<string, string> = { gopi: "madhurya", manjari: "madhurya", gopa: "sakhya" };

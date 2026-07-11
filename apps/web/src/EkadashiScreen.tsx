@@ -6,7 +6,7 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { getEkadashiInfo, isEkadashiObserved, markEkadashiObserved, type EkadashiInfo } from "./ekadashi";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const INK = "var(--color-label)";
 const INK2 = "var(--color-label-2)";
 const INK3 = "var(--color-label-3)";

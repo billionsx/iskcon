@@ -19,7 +19,7 @@ import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { cleanCardText } from "./cardText";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 interface Item {
   id: string;

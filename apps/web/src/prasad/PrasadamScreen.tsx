@@ -23,7 +23,7 @@ import {
 } from "./prasad";
 import { useRecipes } from "./recipesHydrate";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 /* ───────── иконки (stroke-идиома приложения) ───────── */
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };

@@ -7,7 +7,7 @@ const INK2 = "#6e6e73";      // secondary label
 const INK3 = "#8e8e93";      // tertiary
 const GROUPED = "#f2f2f7";   // systemGroupedBackground
 const HAIR = "rgba(60,60,67,0.10)";
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const OK = "#1d9e75";
 
 const USDT_TRC20 = "TRqkjRb8g4Yf3Ew9VoM9YxB1EETnTcB5Gp";

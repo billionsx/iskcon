@@ -17,7 +17,7 @@ import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
 import { CalendarEventCard, type EventBrief } from "./CalendarEventCard";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "3";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 

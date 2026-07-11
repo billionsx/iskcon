@@ -62,7 +62,7 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
       >
         {/* прогресс — тонкая линия сверху */}
         <div aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: "rgba(255,255,255,0.12)" }}>
-          <div style={{ height: "100%", width: `${pct}%`, background: "#D2AA1B", transition: "width .25s linear" }} />
+          <div style={{ height: "100%", width: `${pct}%`, background: "var(--color-gold)", transition: "width .25s linear" }} />
         </div>
 
         <img src={p.cover} alt="" draggable={false}

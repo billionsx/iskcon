@@ -27,7 +27,7 @@ import { BookHeroCard } from "./BookHeroCard";
 import { searchBooks, highlight } from "./bookSearch";
 import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 /* подсветка совпадения в строке результата (как нативный поиск) */
 function Hi({ text, q }: { text: string; q: string }) {

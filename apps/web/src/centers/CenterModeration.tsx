@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } 
 import { useAuthed, requireAuth } from "./../account/track";
 import { centersClient, CENTER_TYPE_LABEL, type MyCenterItem } from "./api";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const L1 = "var(--color-label)";
 const L2 = "var(--color-label-2)";

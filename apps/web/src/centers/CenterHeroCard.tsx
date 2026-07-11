@@ -33,12 +33,12 @@ export interface CenterCardData {
 }
 
 export function centerAccent(type: CenterType): string {
-  if (type === "temple") return "#D2AA1B";
+  if (type === "temple") return "var(--color-gold)";
   if (type === "restaurant") return "#E8920C";
   if (type === "farm") return "#3FA34D";
   if (type === "namahatta") return "#4C6EF5";
   if (type === "preaching_center") return "#7048E8";
-  return "#D2AA1B";
+  return "var(--color-gold)";
 }
 
 export function centerMapsHref(c: { lat: number | null; lng: number | null; address: string | null }): string | null {

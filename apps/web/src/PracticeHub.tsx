@@ -6,7 +6,7 @@
  * обводок). Объём зафиксирован в docs/DECISIONS.md; разделы соответствуют
  * docs/PRODUCT_ARCHITECTURE.md и вехам docs/ROADMAP_MILESTONES.md.
  */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 type Glyph = React.ReactNode;
