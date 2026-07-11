@@ -56,11 +56,13 @@ function readUrl(): { lila: string; sub: string; grp: string } {
   const parts = (typeof window !== "undefined" ? window.location.pathname : "/").split("/").filter(Boolean);
   if (parts[0] === "dhana" && parts[1] && SLUG_LILA[parts[1]]) {
     const l = SLUG_LILA[parts[1]];
-    const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : (SUBS[l]?.[0]?.[0] ?? "");
+    // ЗКН-Н009: нет волны в адресе → «Все», а НЕ первая волна.
+    const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : "";
     const g = parts[3] && SLUG_SUBSUB[parts[3]] && SUBSUBS[s] ? SLUG_SUBSUB[parts[3]] : "";
     return { lila: l, sub: s, grp: g };
   }
-  return { lila: "lila-gauranga", sub: "wave-1", grp: "" };
+  // ЗКН-Н009: вход на /dhana без фильтров → Гауранга Лила + «Все» (не первая волна!)
+  return { lila: "lila-gauranga", sub: "", grp: "" };
 }
 
 function entityCtx(p: Person) {

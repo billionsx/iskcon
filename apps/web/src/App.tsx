@@ -539,7 +539,7 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
  * /dhana/<лила>/<волна>/<группа> → Личности с фильтрами (старые ссылки живы)
  * /dhana/books | bhajans | kirtans | recipes → соответствующая витрина
  * Слаги лил не пересекаются с id витрин, поэтому схема обратно совместима. */
-export const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "recipes", "dhama"] as const;
+export const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
 export function bogSubFromPath(path: string): string {
   const seg = path.split("/").filter(Boolean);          // ["dhana", ...]
   const s1 = seg[1] || "";
@@ -572,15 +572,15 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
     <div>
       {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
       <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
-        items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "recipes", label: "Рецепты" }, { id: "dhama", label: "Дхама" }]} />
+        items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "prasad", label: "Прасад" }, { id: "dhama", label: "Дхама" }]} />
       {sub === "lichnosti" && <LichnostiHub onOpenEntity={onOpenEntity} />}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
-      {sub === "recipes" && (
+      {sub === "prasad" && (
         <PrasadamScreen
           onBack={() => onOpenPath("/dhana")}
           onOpenRecipe={(sl) => onOpenPath("/prasadam/recipe/" + sl)}
-          onOpenBook={() => onOpenPath("/prasadam/book")}
+          onOpenBook={(chapterId) => onOpenPath(chapterId ? "/prasadam/book/" + chapterId : "/prasadam/book")}
           onOpenEntity={onOpenEntity}
           flash={flash ? () => {} : undefined}
         />
