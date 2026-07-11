@@ -9,6 +9,7 @@ import { HomeSheet } from "./HomeSheet";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { cleanCardText } from "./cardText";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { ROUTES, url } from "./routes";
 
 export type EventBrief = {
   name?: string; note?: string | null; summary?: string | null;
@@ -79,7 +80,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
   const ctx = entityId
     ? {
         type: "entity" as const, id: entityId, title: name || title, subtitle: desc || undefined,
-        url: `https://gaurangers.com/${encodeURIComponent(entityId)}`,
+        url: url(ROUTES.entity(entityId)),
         context: `Событие календаря · ${title} · /${entityId}`,
       }
     : null;

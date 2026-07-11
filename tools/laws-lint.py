@@ -95,8 +95,14 @@ RULES = [
     {
         "id": "ЗКН-Н020",
         "name": "адрес собран строкой мимо реестра маршрутов",
-        "pattern": re.compile(r"\$\{ORIGIN\}/"),
+        "pattern": re.compile(r"\$\{ORIGIN\}/|https://gaurangers\.com/"),
         "hint": "→ ROUTES.* + url() из ./routes. Переименование маршрута ломало QR-коды и ссылки",
+    },
+    {
+        "id": "ЗКН-С001",
+        "name": "Georgia у ТЕРМИНА (можно только у стиха/цитаты/пословного)",
+        "pattern": re.compile(r"class(Name)?=[\"']skt[\"'][\s\S]{0,40}font-scripture|SCRIPT_MARK[\s\S]{0,80}font-scripture"),
+        "hint": "→ термин обычным шрифтом. Georgia = «говорит не автор карточки» (ЗКН-С001)",
     },
     {
         "id": "ЗКН-Ц001",

@@ -1,3 +1,4 @@
+import { ROUTES, url } from "../routes";
 /**
  * dhamas — каталог святых дхам и их тиртх (святых мест).
  *
@@ -826,14 +827,14 @@ export function mapsDir(t: Tirtha): string {
 export function dhamaCtx(d: Dhama) {
   return {
     type: "dhama" as const, id: d.id, title: d.name, subtitle: d.tagline,
-    url: `https://gaurangers.com/dhama/${d.id}`,
+    url: url(ROUTES.tirtha(d.id)),
     context: `Дхама · ${d.name} · /dhama/${d.id}`,
   };
 }
 export function tirthaCtx(dhamaId: string, t: Tirtha) {
   return {
     type: "tirtha" as const, id: t.id, title: t.name, subtitle: t.iast || undefined,
-    url: `https://gaurangers.com/dhama/${dhamaId}/${t.id}`,
+    url: url(ROUTES.tirtha(dhamaId, t.id)),
     context: `Тиртха · ${t.name} · /dhama/${dhamaId}/${t.id}`,
   };
 }
