@@ -5,9 +5,9 @@ name: laws-lint
 on:
   push:
     branches: [main]
-    paths: ["apps/web/src/**", "tools/laws-lint.py", ".github/workflows/laws-lint.yml"]
+    paths: ["apps/web/src/**", "apps/web/worker.ts", "tools/**", "docs/LAWS.md", ".github/workflows/laws-lint.yml"]
   pull_request:
-    paths: ["apps/web/src/**"]
+    paths: ["apps/web/src/**", "apps/web/worker.ts", "tools/**"]
   workflow_dispatch:
 
 jobs:
