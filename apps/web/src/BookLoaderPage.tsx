@@ -317,7 +317,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "60px 22px" }}>
           <div style={{ ...card, textAlign: "center" }}>
             <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: "var(--color-label)" }}>Доступ к загрузчику</div>
-            <p style={{ margin: "8px 0 18px", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+            <p style={{ margin: "8px 0 18px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
               Введите ключ оператора (секрет <code>ADMIN_TOKEN</code> воркера). Он сохранится только на этом устройстве.
             </p>
             <input
@@ -380,10 +380,10 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>
             Библиотека · ингест
           </div>
-          <h1 style={{ margin: "2px 0 6px", fontSize: 24, fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
+          <h1 style={{ margin: "2px 0 6px", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
             Загрузчик книги
           </h1>
-          <p style={{ margin: "0 0 16px", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+          <p style={{ margin: "0 0 16px", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
             Тянет тексты с vedabase.io и пишет их в базу gaurangers (D1). «Загрузить» на главе или «Загрузить всю книгу» — воркер по очереди открывает каждый стих, разбирает на слои и сохраняет.
           </p>
 
@@ -400,7 +400,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                   height: 34,
                   padding: "0 14px",
                   borderRadius: 999,
-                  fontSize: 14,
+                  fontSize: "var(--text-subhead)",
                   fontWeight: 600,
                   fontFamily: "var(--font-text)",
                   background: w.id === work ? "var(--color-gold-deep)" : "var(--color-glass-regular)",
@@ -409,13 +409,13 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                 }}
               >
                 {w.title}
-                {!w.enabled && <span style={{ fontSize: 10, fontWeight: 700 }}>скоро</span>}
+                {!w.enabled && <span style={{ fontSize: "var(--text-caption2)", fontWeight: 700 }}>скоро</span>}
               </span>
             ))}
           </div>
 
           {err && (
-            <div style={{ ...card, marginBottom: 16, color: "#c0392b", fontSize: 14 }}>{err}</div>
+            <div style={{ ...card, marginBottom: 16, color: "#c0392b", fontSize: "var(--text-subhead)" }}>{err}</div>
           )}
 
           {/* слои */}
@@ -454,11 +454,11 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
 
           {/* таблица глав */}
           <div style={sectionLabel}>Главы</div>
-          <div style={{ margin: "0 0 8px", fontSize: 12.5, color: "var(--color-label-2)" }}>
+          <div style={{ margin: "0 0 8px", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>
             «Смотреть» — увидеть загруженные стихи прямо здесь. «Загрузить» — залить главу из источника.
           </div>
           <div style={{ borderRadius: 14, overflow: "hidden", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
-            {!status && <div style={{ padding: "28px 0", textAlign: "center", color: "var(--color-label-2)", fontSize: 14 }}>Загрузка статуса…</div>}
+            {!status && <div style={{ padding: "28px 0", textAlign: "center", color: "var(--color-label-2)", fontSize: "var(--text-subhead)" }}>Загрузка статуса…</div>}
             {status?.chapters.map((c, i) => {
               const sankDone = c.verses > 0 && c.deva >= c.verses;
               const open = openCh === c.number;
@@ -471,7 +471,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                       <div style={{ fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {c.number}. {c.title_ru || "—"}
                       </div>
-                      <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11.5, color: "var(--color-label-2)" }}>
+                      <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 6, fontSize: "var(--text-caption)", color: "var(--color-label-2)" }}>
                         <Chip label={`${c.verses} стихов`} />
                         <Chip label={`санскрит ${c.deva}/${c.verses}`} tone={sankDone ? "ok" : "muted"} />
                         {(layers.edition || c.translation > 0) && <Chip label={`перевод ${c.translation}`} tone={c.translation > 0 ? "ok" : "muted"} />}
@@ -514,7 +514,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           {log.length > 0 && (
             <>
               <div style={{ ...sectionLabel, marginTop: 22 }}>Журнал</div>
-              <div style={{ ...card, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 12.5, lineHeight: 1.7, color: "var(--color-label-2)" }}>
+              <div style={{ ...card, fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: "var(--text-footnote)", lineHeight: 1.7, color: "var(--color-label-2)" }}>
                 {log.map((l, i) => (
                   <div key={i} style={{ whiteSpace: "pre-wrap" }}>{l}</div>
                 ))}
@@ -525,13 +525,13 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
           {/* импорт файла / JSON (резерв или ручная загрузка) */}
           <button
             onClick={() => setJsonOpen((v) => !v)}
-            style={{ marginTop: 22, background: "none", border: "none", color: "var(--color-gold-deep)", fontSize: 14, fontWeight: 600, cursor: "pointer", padding: "4px 0", fontFamily: "var(--font-text)" }}
+            style={{ marginTop: 22, background: "none", border: "none", color: "var(--color-gold-deep)", fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", padding: "4px 0", fontFamily: "var(--font-text)" }}
           >
             {jsonOpen ? "▾ " : "▸ "}Загрузить из файла с компьютера / JSON
           </button>
           {jsonOpen && (
             <div style={{ ...card, marginTop: 8 }}>
-              <p style={{ margin: "0 0 12px", fontSize: 12.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+              <p style={{ margin: "0 0 12px", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
                 Если что-то не тянется с источника — загрузите главу из файла. Файл <code>.json</code> — массив стихов одной главы. Поля каждого стиха: <code>seg</code> («1» или «16-18»), <code>devanagari</code>, <code>translit</code>, <code>uvaca</code>, <code>tokens</code> (<code>[{`{term,gloss}`}]</code>), <code>translation</code>, <code>purport</code>. Запишется по включённым выше слоям.
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, flexWrap: "wrap" }}>
@@ -559,7 +559,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                 onChange={(e) => setJsonText(e.target.value)}
                 placeholder={'Содержимое файла появится здесь — или вставьте JSON вручную: [{"seg":"13","translit":"…","translation":"…"}]'}
                 rows={6}
-                style={{ ...input, height: "auto", padding: "10px 14px", resize: "vertical", fontFamily: "ui-monospace, monospace", fontSize: 12.5 }}
+                style={{ ...input, height: "auto", padding: "10px 14px", resize: "vertical", fontFamily: "ui-monospace, monospace", fontSize: "var(--text-footnote)" }}
               />
               <button onClick={importJson} disabled={busy} style={{ ...primaryBtn, marginTop: 10, opacity: busy ? 0.5 : 1 }}>
                 Загрузить главу из файла
@@ -585,7 +585,7 @@ function Header({ onBack, onLogout }: { onBack: () => void; onLogout: (() => voi
       </button>
       <div style={{ flex: 1, fontSize: "var(--text-callout)", fontWeight: 700, color: "var(--color-label)" }}>Загрузчик · CRM</div>
       {onLogout && (
-        <button onClick={onLogout} style={{ height: 34, padding: "0 12px", background: "none", border: "none", color: "var(--color-label-2)", fontSize: 14, cursor: "pointer", fontFamily: "var(--font-text)" }}>
+        <button onClick={onLogout} style={{ height: 34, padding: "0 12px", background: "none", border: "none", color: "var(--color-label-2)", fontSize: "var(--text-subhead)", cursor: "pointer", fontFamily: "var(--font-text)" }}>
           Выйти
         </button>
       )}
@@ -631,7 +631,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
         )}
       </div>
       {empty ? (
-        <div style={{ marginTop: 4, fontSize: 12.5, color: "var(--color-label-3, var(--color-label-2))" }}>пусто — не загружено</div>
+        <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", color: "var(--color-label-3, var(--color-label-2))" }}>пусто — не загружено</div>
       ) : (
         <>
           {v.devanagari && <div style={{ marginTop: 6, fontSize: "var(--text-subhead)", lineHeight: 1.6, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.devanagari}</div>}
@@ -647,7 +647,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
               ))}
             </div>
           )}
-          {v.translation && <div style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
+          {v.translation && <div style={{ marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
           {v.purport && (
             <div style={{ marginTop: 6, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
               {long && !more ? purp.slice(0, 280) + "…" : purp}

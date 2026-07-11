@@ -109,14 +109,14 @@ export default function CentersMap({ items, onOpen, height = 460 }: { items: Cen
 
   if (failed) {
     return (
-      <div style={{ borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", padding: "22px 18px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>
+      <div style={{ borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", padding: "22px 18px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", lineHeight: 1.5 }}>
         Карта недоступна. Переключитесь на «Список», чтобы увидеть центры.
       </div>
     );
   }
   if (geo.length === 0) {
     return (
-      <div style={{ borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", padding: "22px 18px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>
+      <div style={{ borderRadius: "var(--radius-lg)", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", padding: "22px 18px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", lineHeight: 1.5 }}>
         У найденных центров пока нет координат для карты.
       </div>
     );

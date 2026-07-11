@@ -253,7 +253,7 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isCha
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {data.map((group, gi) => (
             <div key={gi}>
-              {group.title && <div style={{ padding: "0 16px 6px", fontSize: 12.5, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: "rgba(60,60,67,0.55)" }}>{group.title}</div>}
+              {group.title && <div style={{ padding: "0 16px 6px", fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: "rgba(60,60,67,0.55)" }}>{group.title}</div>}
               <div style={{ borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.94)" }}>
               {group.items.map((it) => {
                 const color = it.danger ? "var(--color-red, #FF3B30)" : "var(--color-label, rgba(0,0,0,0.92))";
@@ -266,7 +266,7 @@ export function BookMenuSheet({ open, onClose, onSelect, variant = "book", isCha
                       background: "none", border: "none", cursor: "pointer", textAlign: "left",
                     }}>
                     <span style={{ width: ICON_BOX, height: ICON_BOX, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color }}>{it.Icon()}</span>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: 17.5, letterSpacing: "-0.01em", color, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", letterSpacing: "-0.01em", color, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
                   </button>
                 );
               })}

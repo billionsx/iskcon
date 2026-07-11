@@ -61,7 +61,7 @@ const Clock = ({ size = 26 }: { size?: number }) => (
 
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
 const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
-const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
+const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: "var(--text-callout)", color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
 
 type Editing = { mode: "new" } | { mode: "edit"; program: CenterProgram } | null;
 
@@ -194,7 +194,7 @@ export default function CenterSchedule({
     return (
       <Shell title="Расписание">
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
           <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
@@ -214,8 +214,8 @@ export default function CenterSchedule({
     return (
       <Shell title="Расписание">
         <div style={{ ...card, textAlign: "center", marginTop: 8 }}>
-          <p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>{phase === "notfound" ? "Центр не найден." : "Не удалось загрузить."}</p>
-          {phase === "error" && <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>Повторить</button>}
+          <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>{phase === "notfound" ? "Центр не найден." : "Не удалось загрузить."}</p>
+          {phase === "error" && <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Повторить</button>}
         </div>
       </Shell>
     );
@@ -224,7 +224,7 @@ export default function CenterSchedule({
     return (
       <Shell title="Расписание">
         <div style={{ ...card, textAlign: "center", marginTop: 8 }}>
-          <p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>Нет прав на изменение расписания этого центра.</p>
+          <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Нет прав на изменение расписания этого центра.</p>
         </div>
       </Shell>
     );
@@ -239,7 +239,7 @@ export default function CenterSchedule({
           <input style={inputStyle} value={fType} onChange={(e) => setFType(e.target.value)} placeholder="Напр. Мангала-арати" maxLength={40} />
           <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
             {QUICK.map((q) => (
-              <button key={q} type="button" onClick={() => setFType(q)} style={{ padding: "6px 11px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 12.5, fontWeight: 600, background: fType === q ? GOLD : FILL2, color: fType === q ? "#fff" : L2, WebkitTapHighlightColor: "transparent" }}>{q}</button>
+              <button key={q} type="button" onClick={() => setFType(q)} style={{ padding: "6px 11px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, background: fType === q ? GOLD : FILL2, color: fType === q ? "#fff" : L2, WebkitTapHighlightColor: "transparent" }}>{q}</button>
             ))}
           </div>
         </section>
@@ -263,12 +263,12 @@ export default function CenterSchedule({
           <div style={eyebrow}>Время</div>
           <div style={card}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontFamily: FT, fontSize: 14.5, color: L1 }}>Начало</span>
+              <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>Начало</span>
               <input type="time" value={fStart} onChange={(e) => setFStart(e.target.value)} style={{ fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "8px 12px", WebkitTapHighlightColor: "transparent" }} />
             </div>
             <div style={{ height: 1, background: HAIR, margin: "13px 0" }} />
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontFamily: FT, fontSize: 14.5, color: L1 }}>Окончание</span>
+              <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>Окончание</span>
               <input type="time" value={fEnd} onChange={(e) => setFEnd(e.target.value)} style={{ fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "8px 12px", WebkitTapHighlightColor: "transparent" }} />
             </div>
           </div>
@@ -280,7 +280,7 @@ export default function CenterSchedule({
         </section>
 
         {err && (
-          <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{err}</div>
+          <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600 }}>{err}</div>
         )}
 
         <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
@@ -305,8 +305,8 @@ export default function CenterSchedule({
       {programs.length === 0 ? (
         <div style={{ ...card, textAlign: "center", padding: "30px 22px" }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Clock size={26} /></span>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Расписание пусто</div>
-          <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Добавьте мангала-арати, гуру-пуджу, лекцию по «Бхагаватам», воскресный пир и другие программы.</p>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Расписание пусто</div>
+          <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>Добавьте мангала-арати, гуру-пуджу, лекцию по «Бхагаватам», воскресный пир и другие программы.</p>
           <button type="button" onClick={openNew} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
             <Plus size={18} />Добавить программу
           </button>
@@ -319,7 +319,7 @@ export default function CenterSchedule({
             return (
               <button key={pr.id} type="button" onClick={() => openEdit(pr)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", borderBottom: i === programs.length - 1 ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", textAlign: "left", fontFamily: FT, WebkitTapHighlightColor: "transparent" }}>
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: FT, fontSize: 15.5, fontWeight: 600, color: L1 }}>{programLabel(pr.type)}</span>
+                  <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 600, color: L1 }}>{programLabel(pr.type)}</span>
                   <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3 }}>{fmtDays(pr.days_of_week)}{note ? ` · ${note}` : ""}</span>
                 </span>
                 {time && <span style={{ fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT, whiteSpace: "nowrap" }}>{time}</span>}

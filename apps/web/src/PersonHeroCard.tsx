@@ -78,20 +78,20 @@ export function PersonHeroCard({
       {/* INFO — низ */}
       <div style={{ position: "relative", zIndex: 20, padding: 20, fontFamily: "var(--font-text)", pointerEvents: "none" }}>
         {eyebrow && (
-          <div style={{ margin: "0 0 10px", fontSize: 11.5, fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLD, lineHeight: 1.3 }}>{eyebrow}</div>
+          <div style={{ margin: "0 0 10px", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLD, lineHeight: 1.3 }}>{eyebrow}</div>
         )}
         <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: nameSize, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{nameRu}</h1>
         {nameIast && (
           <div style={{ marginTop: 6, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.3, color: "rgba(255,255,255,.72)" }}>{nameIast}</div>
         )}
-        {identity && <p style={{ margin: "16px 0 0", fontSize: 15.5, lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{cleanCardText(identity)}</p>}
+        {identity && <p style={{ margin: "16px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{cleanCardText(identity)}</p>}
         {summary && (
-          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: 14, lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", whiteSpace: "pre-line", display: "-webkit-box", WebkitLineClamp: 8, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanCardText(summary)}</p>
+          <p style={{ margin: identity ? "8px 0 0" : "16px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.45, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", whiteSpace: "pre-line", display: "-webkit-box", WebkitLineClamp: 8, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanCardText(summary)}</p>
         )}
         {chips && chips.length > 0 && (
           <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {chips.map((c) => (
-              <span key={c} style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.15)", border: "0.5px solid rgba(255,255,255,.18)", height: 26, padding: "0 11px", fontSize: 12.5, lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "rgba(255,255,255,.95)" }}>{c}</span>
+              <span key={c} style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.15)", border: "0.5px solid rgba(255,255,255,.18)", height: 26, padding: "0 11px", fontSize: "var(--text-footnote)", lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "rgba(255,255,255,.95)" }}>{c}</span>
             ))}
           </div>
         )}

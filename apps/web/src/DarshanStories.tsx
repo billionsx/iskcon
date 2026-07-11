@@ -115,7 +115,7 @@ const tray: CSSProperties = {
   scrollbarWidth: "none", margin: "6px -16px 0", padding: "4px 16px 6px",
 };
 const ringLabel = (on: boolean): CSSProperties => ({
-  fontFamily: FT, fontSize: 11.5, fontWeight: on ? 600 : 500, color: on ? L1 : L2,
+  fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: on ? 600 : 500, color: on ? L1 : L2,
   maxWidth: 74, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em",
 });
 const ringBtn: CSSProperties = {
@@ -483,7 +483,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
         {item.deities ? (
           <>
             {/* 1 — имена пар Божеств, жирно */}
-            <div style={{ fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "#fff" }}>{item.deities}</div>
+            <div style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "#fff" }}>{item.deities}</div>
             {/* 2 — «Ежедневный даршан» */}
             <div style={{ marginTop: 5, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 500, lineHeight: 1.3, color: "rgba(255,255,255,0.88)" }}>Ежедневный даршан</div>
             {/* 3 — Храм · ИСККОН-центр */}
@@ -494,14 +494,14 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
         ) : (
           <>
             {curCap && (
-              <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
+              <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "rgba(255,255,255,0.9)", whiteSpace: "pre-line",
                 ...(capOpen ? {} : { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }) }}>
                 {curCap}
               </p>
             )}
             {longCap && (
               <button type="button" onClick={() => setCapOpen((v) => !v)} onPointerDown={stop} onPointerUp={stop}
-                style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: "rgba(255,255,255,0.7)", fontFamily: FT, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
+                style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: "rgba(255,255,255,0.7)", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer" }}>
                 {capOpen ? "Свернуть" : "Ещё"}
               </button>
             )}

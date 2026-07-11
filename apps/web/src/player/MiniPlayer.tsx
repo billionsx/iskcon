@@ -69,10 +69,10 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
           style={{ height: 42, width: 42, borderRadius: 9, objectFit: "cover", flexShrink: 0, boxShadow: "0 2px 8px rgba(0,0,0,0.4)" }} />
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em" }}>
+          <div style={{ fontSize: "var(--text-subhead)", fontWeight: 600, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", letterSpacing: "-0.01em" }}>
             {p.track?.title ?? p.bookTitle}
           </div>
-          <div style={{ fontSize: 11.5, fontWeight: 400, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 1 }}>
+          <div style={{ fontSize: "var(--text-caption)", fontWeight: 400, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 1 }}>
             {subtitle}
           </div>
         </div>

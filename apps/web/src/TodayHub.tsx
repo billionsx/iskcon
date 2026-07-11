@@ -77,7 +77,7 @@ function Card({ children, onClick }: { children: ReactNode; onClick?: () => void
   return onClick ? <button onClick={onClick} style={{ ...base, border: base.border, padding: 0 }}>{children}</button> : <div style={base}>{children}</div>;
 }
 function Eyebrow({ children }: { children: ReactNode }) {
-  return <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: GOLD, fontFamily: FONT, marginBottom: 8 }}>{children}</div>;
+  return <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: GOLD, fontFamily: FONT, marginBottom: 8 }}>{children}</div>;
 }
 
 const LEVEL_LINE: Record<string, string> = {
@@ -113,7 +113,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
     return () => { alive = false; document.removeEventListener("visibilitychange", onVis); window.removeEventListener("focus", onVis); };
   }, []);
 
-  const label: CSSProperties = { fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase", margin: "22px 4px 8px" };
+  const label: CSSProperties = { fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase", margin: "22px 4px 8px" };
   const pct = Math.min(100, Math.round((japa.rounds / Math.max(1, japa.goal)) * 100));
   const done = japa.rounds >= japa.goal;
 
@@ -122,7 +122,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
       {/* Приветствие */}
       <div style={{ padding: "6px 4px 2px" }}>
         <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, letterSpacing: 0.3 }}>{ruDate()}</div>
-        <div style={{ fontSize: 25, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 3 }}>
+        <div style={{ fontSize: "var(--text-title1)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 3 }}>
           {name ? `Харе Кришна, ${name}` : "Харе Кришна"}
         </div>
         {level && <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>{LEVEL_LINE[level]}</div>}
@@ -138,10 +138,10 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
           <Card onClick={() => onOpenPath("/practice/verse")}>
             <div style={{ padding: "15px 16px" }}>
               <Eyebrow>{verse.label}</Eyebrow>
-              <div style={{ fontFamily: SERIF, fontSize: 17.5, lineHeight: 1.5, color: INK }}>
+              <div style={{ fontFamily: SERIF, fontSize: "var(--text-body)", lineHeight: 1.5, color: INK }}>
                 {verse.translation ? `«${verse.translation.length > 210 ? verse.translation.slice(0, 208).trimEnd() + "…" : verse.translation}»` : "Откройте стих дня"}
               </div>
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 10 }}>Читать со стихом и комментарием →</div>
+              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 10 }}>Читать со стихом и комментарием →</div>
             </div>
           </Card>
         </>
@@ -160,15 +160,15 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
               <div style={{ height: 8, borderRadius: 8, background: "rgba(120,120,128,0.18)", marginTop: 10, overflow: "hidden" }}>
                 <div style={{ width: `${pct}%`, height: "100%", borderRadius: 8, background: done ? "var(--color-success-text, #2a9c68)" : GOLD, transition: "width .3s" }} />
               </div>
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 11 }}>
+              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 11 }}>
                 {done ? "Норма закрыта — Харе Кришна ✓" : `Продолжить джапу →`}
               </div>
             </>
           ) : (
             <>
               <div style={{ fontSize: "var(--text-callout)", fontWeight: 600, color: INK, fontFamily: FONT }}>Повторяйте святое имя</div>
-              <div style={{ fontSize: 14, lineHeight: 1.45, color: INK2, fontFamily: FONT, marginTop: 5 }}>Харе Кришна, Харе Кришна, Кришна Кришна, Харе Харе… Начните с одного круга на чётках.</div>
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 11 }}>Открыть счётчик джапы →</div>
+              <div style={{ fontSize: "var(--text-subhead)", lineHeight: 1.45, color: INK2, fontFamily: FONT, marginTop: 5 }}>Харе Кришна, Харе Кришна, Кришна Кришна, Харе Харе… Начните с одного круга на чётках.</div>
+              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 11 }}>Открыть счётчик джапы →</div>
             </>
           )}
         </div>
@@ -186,7 +186,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase", color: INK3, fontFamily: FONT }}>{daysLabel(nextEv.days)}</div>
-                <div style={{ fontSize: 15.5, fontWeight: 600, color: INK, fontFamily: FONT, marginTop: 2, lineHeight: 1.3 }}>{nextEv.title}</div>
+                <div style={{ fontSize: "var(--text-callout)", fontWeight: 600, color: INK, fontFamily: FONT, marginTop: 2, lineHeight: 1.3 }}>{nextEv.title}</div>
               </div>
               <span style={{ color: INK3, flexShrink: 0 }}>›</span>
             </div>
@@ -201,7 +201,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
           ? [["Даршаны", () => onSub("feed")], ["Календарь", () => onSub("calendar")], ["Читать «Гиту»", () => onOpenPath("/book/bg")]]
           : [["Джапа", () => onOpenPath("/practice/japa")], ["Дневник", () => onOpenPath("/practice/diary")], ["Практика", () => onSub("practice")], ["Календарь", () => onSub("calendar")]]
         ).map(([t, go]) => (
-          <button key={t as string} onClick={go as () => void} style={{ padding: "10px 16px", borderRadius: 999, border: `1px solid ${HAIR}`, background: SURF, color: INK, fontFamily: FONT, fontSize: 14.5, fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{t as string}</button>
+          <button key={t as string} onClick={go as () => void} style={{ padding: "10px 16px", borderRadius: 999, border: `1px solid ${HAIR}`, background: SURF, color: INK, fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{t as string}</button>
         ))}
       </div>
     </div>

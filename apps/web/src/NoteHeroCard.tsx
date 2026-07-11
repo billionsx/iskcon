@@ -89,7 +89,7 @@ export function NoteHeroCard({ note, topLeft, onOpen, presentational, onMenuSele
         <div onClick={presentational ? undefined : () => onOpen?.()} style={{ position: "relative", zIndex: 20, padding: 20, cursor: onOpen && !presentational ? "pointer" : "default", fontFamily: "var(--font-text)", pointerEvents: "none" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 7, marginBottom: 9 }}>
             <span style={{ width: 7, height: 7, borderRadius: 2, background: src.accent }} />
-            <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: src.accent }}>{src.label}</span>
+            <span style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: src.accent }}>{src.label}</span>
             {note.pinned && <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,.55)" }}>· закреплено</span>}
           </div>
           <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</h3>

@@ -106,15 +106,15 @@ function EntityRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
       onPointerLeave={(e) => ((e.currentTarget as HTMLDivElement).style.opacity = "1")}>
       <Avatar item={item} size={44} />
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em",
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, letterSpacing: "-0.01em",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_ru || item.id}</span>
         {item.name_iast && (
-          <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12.5, color: "var(--color-label-3)", lineHeight: 1.25,
+          <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 1.25,
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_iast}</span>
         )}
       </span>
       <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={26} onMore={() => openCardMenu(entityCtx(item))} />
-      <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 18, marginLeft: 2 }}>›</span>
+      <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-body)", marginLeft: 2 }}>›</span>
     </div>
   );
 }
@@ -162,7 +162,7 @@ export function Rail({ title, params, orderIds, onOpen }: { title: string; param
       <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 6 }}>
         <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{title}</h3>
         {items && items.length > 1 && (
-          <span style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{items.length}</span>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{items.length}</span>
         )}
       </div>
       <div>
@@ -171,7 +171,7 @@ export function Rail({ title, params, orderIds, onOpen }: { title: string; param
       {items && !expanded && hidden > 0 && (
         <button type="button" onClick={() => setExpanded(true)}
           style={{ marginTop: 12, padding: "10px 16px", border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)",
-            borderRadius: 999, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+            borderRadius: 999, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           Показать всё <span style={{ color: "var(--color-label-3)", fontWeight: 500, marginLeft: 4 }}>{hidden}</span>
         </button>
       )}
@@ -272,8 +272,8 @@ function FacetHead({ kicker, title, sub }: { kicker: string; title: string; sub?
         <span aria-hidden style={{ width: 22, height: 3, borderRadius: 999, background: GOLD }} />
         <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", letterSpacing: "0.3px", color: GOLD }}>{kicker}</span>
       </div>
-      <h2 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{title}</h2>
-      {sub && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.45 }}>{cleanCardText(sub)}</p>}
+      <h2 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{title}</h2>
+      {sub && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", lineHeight: 1.45 }}>{cleanCardText(sub)}</p>}
     </div>
   );
 }
@@ -292,8 +292,8 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
       {/* Порог пред Личностью */}
       <div style={{ marginBottom: 6 }}>
         <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга Лилы"}</div>
-        <h1 style={{ margin: "3px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: "-0.5px", color: "var(--color-label)" }}>{K ? "Шри Кришна" : "Шри Гауранга"}</h1>
-        <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>
+        <h1 style={{ margin: "3px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--color-label)" }}>{K ? "Шри Кришна" : "Шри Гауранга"}</h1>
+        <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.5 }}>
           {K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гауранга Лиле."}
         </p>
       </div>
@@ -399,8 +399,8 @@ export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpe
           {col ? (
             <>
               <span aria-hidden style={{ display: "block", width: 30, height: 3, borderRadius: 999, background: GOLD, marginBottom: 12 }} />
-              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 27, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{col.title}</h1>
-              <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-2)", lineHeight: 1.45 }}>{col.subtitle}</p>
+              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{col.title}</h1>
+              <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.45 }}>{col.subtitle}</p>
               {col.rails.map((r) => <Rail key={r.title} title={r.title} params={r.params} orderIds={r.orderIds} onOpen={onOpen} />)}
             </>
           ) : (
@@ -444,7 +444,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna"
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{realm === "gauranga" ? "Гауранга Лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
         <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{realm === "gauranga" ? "Гауранга" : realm === "krishna" ? "Кришна" : "Герои"}</h2>
-        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Гауранга Махапрабху, Панча-таттва и все спутники Гауранга Лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
+        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Гауранга Махапрабху, Панча-таттва и все спутники Гауранга Лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
       </div>
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по героям…" inputMode="search"

@@ -57,8 +57,8 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
     <div style={{ fontFamily: "var(--font-text)" }}>
       <div style={{ padding: "20px 0 0" }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
-        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
-        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
+        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Личное пространство ежедневной практики: стих дня, джапа, дневник, прасад и путь преданного. Здесь будет ваш ежедневный заход в храм.
         </p>
       </div>
@@ -75,14 +75,14 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
                   <span aria-hidden style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}>{it.icon}</span>
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
                       {it.pri && <span title="Приоритет" aria-label="приоритет" style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: GOLD }} />}
                     </span>
-                    <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
+                    <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
                   </span>
                   {nav
                     ? <ChevR />
-                    : <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Скоро</span>}
+                    : <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Скоро</span>}
                 </>
               );
               return (

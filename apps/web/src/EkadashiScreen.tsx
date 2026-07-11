@@ -25,7 +25,7 @@ function Card({ children }: { children: ReactNode }) {
   return <div style={{ background: SURF, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden", marginTop: 14 }}>{children}</div>;
 }
 function Eyebrow({ children }: { children: ReactNode }) {
-  return <div style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: GOLD, fontFamily: FONT, marginBottom: 8 }}>{children}</div>;
+  return <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: GOLD, fontFamily: FONT, marginBottom: 8 }}>{children}</div>;
 }
 
 export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => void; onOpenPath: (path: string) => void }) {
@@ -54,7 +54,7 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
     </div>
   );
 
-  const label: CSSProperties = { fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase", margin: "22px 4px 0" };
+  const label: CSSProperties = { fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase", margin: "22px 4px 0" };
 
   let body: ReactNode;
   if (info === "loading") {
@@ -68,15 +68,15 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
         {/* Герой */}
         <div style={{ background: "linear-gradient(135deg, color-mix(in srgb, #D2AA1B 16%, var(--color-bg-2)), var(--color-bg-2))", borderRadius: 18, border: `0.5px solid ${HAIR}`, padding: "20px 18px", marginTop: 16 }}>
           <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, fontFamily: FONT }}>{today ? "Сегодня Экадаши" : "Следующий Экадаши"}</div>
-          <div style={{ fontSize: 27, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 6 }}>{info.name}-экадаши</div>
+          <div style={{ fontSize: "var(--text-title1)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 6 }}>{info.name}-экадаши</div>
           <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>{ruDate(info.date)} · {daysLabel(info.daysUntil)}</div>
         </div>
 
         {/* Отметка соблюдения */}
-        <button onClick={toggle} style={{ width: "100%", marginTop: 14, padding: "15px 18px", borderRadius: 14, cursor: "pointer", fontFamily: FONT, fontSize: 16.5, fontWeight: 650, border: `1.5px solid ${observed ? OK : GOLD}`, background: observed ? "color-mix(in srgb, #2a9c68 12%, transparent)" : GOLD, color: observed ? OK : "#1a1400", WebkitTapHighlightColor: "transparent", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <button onClick={toggle} style={{ width: "100%", marginTop: 14, padding: "15px 18px", borderRadius: 14, cursor: "pointer", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 650, border: `1.5px solid ${observed ? OK : GOLD}`, background: observed ? "color-mix(in srgb, #2a9c68 12%, transparent)" : GOLD, color: observed ? OK : "#1a1400", WebkitTapHighlightColor: "transparent", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {observed ? "✓ Пост соблюдён" : "Соблюдаю пост"}
         </button>
-        <div style={{ fontSize: 12.5, color: INK3, fontFamily: FONT, textAlign: "center", marginTop: 7, padding: "0 12px", lineHeight: 1.4 }}>Отметка сохраняется в дневник садханы.</div>
+        <div style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT, textAlign: "center", marginTop: 7, padding: "0 12px", lineHeight: 1.4 }}>Отметка сохраняется в дневник садханы.</div>
 
         {/* Парана */}
         <div style={label}>Выход из поста · парана</div>
@@ -84,12 +84,12 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
           <div style={{ padding: "16px 16px" }}>
             {info.paranStart ? (
               <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                <span style={{ fontSize: 30, fontWeight: 800, color: GOLD, fontFamily: FONT, letterSpacing: -0.5 }}>{info.paranStart}{info.paranEnd ? `–${info.paranEnd}` : ""}</span>
+                <span style={{ fontSize: "var(--text-title1)", fontWeight: 800, color: GOLD, fontFamily: FONT, letterSpacing: -0.5 }}>{info.paranStart}{info.paranEnd ? `–${info.paranEnd}` : ""}</span>
               </div>
             ) : (
               <div style={{ fontSize: "var(--text-callout)", color: INK2, fontFamily: FONT }}>Время уточняется в календаре</div>
             )}
-            <div style={{ fontSize: 14, color: INK2, fontFamily: FONT, marginTop: 8, lineHeight: 1.45 }}>
+            <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 8, lineHeight: 1.45 }}>
               Пост завершают на следующее утро{info.paranDate ? ` (${ruDate(info.paranDate)})` : ""} в отведённое время — по городу {info.city}.
             </div>
           </div>

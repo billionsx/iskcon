@@ -96,14 +96,14 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
             <div style={{ width: 60, height: 60, margin: "0 auto 14px", borderRadius: "50%", background: "rgba(210,170,27,0.14)", display: "grid", placeItems: "center" }}>
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke={GOLDT} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M5 12.5 10 17.5 19 6.5" /></svg>
             </div>
-            <div style={{ fontSize: 18, fontWeight: 700, color: INK, letterSpacing: "-0.01em" }}>Спасибо!</div>
-            <div style={{ fontSize: 14, color: INK2, marginTop: 4 }}>Ваше сообщение отправлено.</div>
+            <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: INK, letterSpacing: "-0.01em" }}>Спасибо!</div>
+            <div style={{ fontSize: "var(--text-subhead)", color: INK2, marginTop: 4 }}>Ваше сообщение отправлено.</div>
           </div>
         ) : (
           <>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 18, fontWeight: 700, color: INK, letterSpacing: "-0.01em" }}>Сообщить об ошибке</div>
+                <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: INK, letterSpacing: "-0.01em" }}>Сообщить об ошибке</div>
                 <div style={{ fontSize: "var(--text-footnote)", color: INK2, marginTop: 3, lineHeight: 1.35 }}>Опишите, что пошло не так — мы читаем каждое сообщение.</div>
               </div>
               <button type="button" aria-label="Закрыть" onClick={onClose} style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 30, height: 30, borderRadius: "50%", border: "none", background: FILL, color: INK2, cursor: "pointer" }}>
@@ -116,7 +116,7 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
                 const on = c.id === cat;
                 return (
                   <button key={c.id} type="button" onClick={() => setCat(c.id)}
-                    style={{ padding: "7px 13px", borderRadius: 999, fontSize: 13.5, fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-text)", transition: "background .15s, color .15s, border-color .15s",
+                    style={{ padding: "7px 13px", borderRadius: 999, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer", fontFamily: "var(--font-text)", transition: "background .15s, color .15s, border-color .15s",
                       background: on ? "rgba(210,170,27,0.15)" : FILL, color: on ? GOLDT : INK2, border: `1px solid ${on ? "rgba(210,170,27,0.55)" : "transparent"}` }}>
                     {c.label}
                   </button>
@@ -128,14 +128,14 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
               <textarea value={msg} maxLength={MAX} onChange={(e) => setMsg(e.target.value)} autoFocus
                 placeholder="Что случилось? Чем подробнее — тем лучше."
                 style={{ ...field, minHeight: 118, padding: "12px 14px 24px", resize: "vertical", lineHeight: 1.4 }} />
-              <span style={{ position: "absolute", right: 12, bottom: 8, fontSize: 11.5, color: INK3, fontVariantNumeric: "tabular-nums", pointerEvents: "none" }}>{trimmed.length}/{MAX}</span>
+              <span style={{ position: "absolute", right: 12, bottom: 8, fontSize: "var(--text-caption)", color: INK3, fontVariantNumeric: "tabular-nums", pointerEvents: "none" }}>{trimmed.length}/{MAX}</span>
             </div>
 
             <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" inputMode="email" autoComplete="email"
               placeholder="Email для ответа (необязательно)"
               style={{ ...field, height: 46, padding: "0 14px", marginTop: 10 }} />
 
-            <div style={{ fontSize: 11.5, color: INK3, marginTop: 10, lineHeight: 1.4 }}>
+            <div style={{ fontSize: "var(--text-caption)", color: INK3, marginTop: 10, lineHeight: 1.4 }}>
               К сообщению приложатся страница, версия приложения и тип устройства{context ? ` · ${context}` : ""}.
             </div>
 
@@ -148,11 +148,11 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
 
             <div style={{ display: "flex", gap: 10, marginTop: 18 }}>
               <button type="button" onClick={onClose} disabled={state === "sending"}
-                style={{ flexShrink: 0, height: 48, padding: "0 18px", borderRadius: 14, border: "none", background: FILL, color: INK, fontSize: 15.5, fontWeight: 600, cursor: state === "sending" ? "default" : "pointer", fontFamily: "var(--font-text)", opacity: state === "sending" ? 0.5 : 1 }}>
+                style={{ flexShrink: 0, height: 48, padding: "0 18px", borderRadius: 14, border: "none", background: FILL, color: INK, fontSize: "var(--text-callout)", fontWeight: 600, cursor: state === "sending" ? "default" : "pointer", fontFamily: "var(--font-text)", opacity: state === "sending" ? 0.5 : 1 }}>
                 Отмена
               </button>
               <button type="button" onClick={submit} disabled={!canSend}
-                style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: INK, color: "#fff", fontSize: 15.5, fontWeight: 600, cursor: canSend ? "pointer" : "default", fontFamily: "var(--font-text)", opacity: canSend ? 1 : 0.4, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: INK, color: "#fff", fontSize: "var(--text-callout)", fontWeight: 600, cursor: canSend ? "pointer" : "default", fontFamily: "var(--font-text)", opacity: canSend ? 1 : 0.4, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
                 {state === "sending" ? (<>
                   <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="none" stroke="#fff" strokeOpacity="0.3" strokeWidth="3" /><path d="M21 12a9 9 0 0 0-9-9" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite" /></path></svg>
                   Отправляем…

@@ -263,7 +263,7 @@ export default function NoteEditor({ id, onClose, onNavigate }: { id: string; on
       )}
 
       {/* дата */}
-      <div style={{ textAlign: "center", padding: "12px 16px 4px", fontFamily: "var(--font-text)", fontSize: 12.5, color: INK3 }}>{fmtStamp(stamp)}</div>
+      <div style={{ textAlign: "center", padding: "12px 16px 4px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK3 }}>{fmtStamp(stamp)}</div>
 
       {/* документ */}
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "4px 18px calc(80px + env(safe-area-inset-bottom,0px))" }}

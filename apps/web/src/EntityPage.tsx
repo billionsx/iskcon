@@ -158,7 +158,7 @@ function Chip({ label, onClick }: { label: string; onClick?: () => void }) {
     <button type="button" onClick={onClick} disabled={!interactive}
       style={{ display: "inline-flex", alignItems: "center", padding: "8px 13px", borderRadius: 999,
         border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)",
-        fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label)",
+        fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label)",
         cursor: interactive ? "pointer" : "default", textAlign: "left", lineHeight: 1.2,
         transition: "transform 120ms ease, opacity 120ms ease" }}
       onMouseDown={(e) => interactive && (e.currentTarget.style.opacity = "0.6")}
@@ -367,8 +367,8 @@ function SourceLink({ parts, onNavigate, size = 12.5 }: { parts: RefParts; onNav
 function Attribution({ src, onOpen, onNavigate, marginTop = 12 }: { src: LfSource; onOpen: (id: string, type: string | null) => void; onNavigate?: (href: string) => void; marginTop?: number }) {
   if (!src.by && !src.ref) return null;
   const speaker = src.byId
-    ? <button type="button" onClick={() => onOpen(src.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label)", cursor: "pointer" }}>{src.by}</button>
-    : <span style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-2)" }}>{src.by}</span>;
+    ? <button type="button" onClick={() => onOpen(src.byId!, "personality")} style={{ background: "none", border: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: "var(--color-label)", cursor: "pointer" }}>{src.by}</button>
+    : <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: "var(--color-label-2)" }}>{src.by}</span>;
   const parts = src.ref ? expandRef(src.ref) : null;
   if (parts && src.to) parts.to = src.to;
   return (
@@ -393,11 +393,11 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
   return (
     <blockquote style={{ margin: "20px 0 0", padding: q.gold ? "14px 18px 14px 18px" : "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, borderRadius: q.gold ? 12 : 0, background: q.gold ? "rgba(210,170,27,0.07)" : "transparent", whiteSpace: "pre-line" }}>
       {q.translit && (
-        <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16.5, lineHeight: 1.5, letterSpacing: "0.01em", color: "var(--color-label-2)", marginBottom: 10 }}>
+        <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-body)", lineHeight: 1.5, letterSpacing: "0.01em", color: "var(--color-label-2)", marginBottom: 10 }}>
           {stripWrap(q.translit)}
         </div>
       )}
-      <div style={{ fontFamily: "var(--font-text)", fontSize: 18, lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)" }}>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)" }}>
         {renderSanskrit(stripWrap(q.t))}
       </div>
       <Attribution src={q} onOpen={onOpen} onNavigate={onNavigate} marginTop={12} />
@@ -489,11 +489,11 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                       const inner = (
                         <>
                           <span style={{ flex: 1, minWidth: 0 }}>
-                            {tier.eyebrow && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</span>}
+                            {tier.eyebrow && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</span>}
                             <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</span>
-                            {tier.beings && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{tier.beings}</span>}
+                            {tier.beings && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{tier.beings}</span>}
                           </span>
-                          {interactive && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: 19, lineHeight: 1, transition: "transform .2s ease", transform: hasItems && isOpen ? "rotate(90deg)" : "none" }}>›</span>}
+                          {interactive && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: "var(--text-title3)", lineHeight: 1, transition: "transform .2s ease", transform: hasItems && isOpen ? "rotate(90deg)" : "none" }}>›</span>}
                         </>
                       );
                       return interactive
@@ -504,7 +504,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                     {notes.length > 0 && (
                       <div style={{ marginTop: 13 }}>
                         {notes.map((para, pi) => (
-                          <p key={pi} style={{ margin: pi === 0 ? 0 : "10px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.5 }}>{renderProse(para, onSub, onTab)}</p>
+                          <p key={pi} style={{ margin: pi === 0 ? 0 : "10px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", lineHeight: 1.5 }}>{renderProse(para, onSub, onTab)}</p>
                         ))}
                       </div>
                     )}
@@ -515,7 +515,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                           <button key={it.ref} type="button" onClick={() => onOpen?.(it.ref, null)}
                             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, width: "100%", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", padding: "10px 0", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                             <span style={{ flex: 1, minWidth: 0 }}>
-                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 500, color: "var(--color-label)", lineHeight: 1.25 }}>{it.name}</span>
+                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label)", lineHeight: 1.25 }}>{it.name}</span>
                               {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.35, marginTop: 2 }}>{it.desc}</span>}
                             </span>
                             <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-body)", lineHeight: 1 }}>›</span>
@@ -526,14 +526,14 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                     {/* метрика: явление на Земле + число качеств и процент */}
                     {(tier.count || tier.countNote || tier.appeared) && (
                       <div style={{ marginTop: 16, paddingTop: 13, borderTop: "0.5px solid var(--color-hairline)" }}>
-                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 13 : 0, paddingBottom: (tier.count || tier.countNote) ? 13 : 0, borderBottom: (tier.count || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
+                        {tier.appeared && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.45, marginBottom: (tier.count || tier.countNote) ? 13 : 0, paddingBottom: (tier.count || tier.countNote) ? 13 : 0, borderBottom: (tier.count || tier.countNote) ? "0.5px solid var(--color-hairline)" : "none" }}>{renderProse(tier.appeared, onSub, onTab)}</div>}
                         {tier.count && (
                           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                             <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em" }}>{tier.count}</span>
                             {pct != null && <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: "var(--text-footnote)", fontWeight: 600, color: toneFor(tier), lineHeight: 1 }}>{pct}%</span>}
                           </div>
                         )}
-                        {tier.countNote && <div style={{ marginTop: tier.count ? 6 : 0, fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{tier.countNote}</div>}
+                        {tier.countNote && <div style={{ marginTop: tier.count ? 6 : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{tier.countNote}</div>}
                       </div>
                     )}
                   </div>
@@ -543,7 +543,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
           </div>
         ))}
         {footer && (
-          <div style={{ marginTop: 22, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 400, color: "var(--color-label)", lineHeight: 1.55, letterSpacing: "-0.003em" }}>{renderProse(footer, onSub, onTab)}</div>
+          <div style={{ marginTop: 22, paddingTop: 16, borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 400, color: "var(--color-label)", lineHeight: 1.55, letterSpacing: "-0.003em" }}>{renderProse(footer, onSub, onTab)}</div>
         )}
       </div>
     </div>
@@ -559,9 +559,9 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
             <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</span>
             {g.items && g.items.length > 0 && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{g.items.length}</span>}
           </div>
-          {g.gloss && <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{renderProse(g.gloss, onSub, onTab)}</div>}
+          {g.gloss && <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{renderProse(g.gloss, onSub, onTab)}</div>}
           {g.note && (Array.isArray(g.note) ? g.note : [g.note]).filter(Boolean).map((para, pi) => (
-            <p key={pi} style={{ margin: pi === 0 ? "12px 0 0" : "11px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label)", lineHeight: 1.55 }}>{renderProse(para, onSub, onTab)}</p>
+            <p key={pi} style={{ margin: pi === 0 ? "12px 0 0" : "11px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", lineHeight: 1.55 }}>{renderProse(para, onSub, onTab)}</p>
           ))}
           {g.items && g.items.length > 0 && (
             <div style={{ marginTop: 12, borderTop: "0.5px solid var(--color-hairline)" }}>
@@ -575,12 +575,12 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
                       {it.tags && it.tags.length > 0 && (
                         <span style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 7 }}>
                           {it.tags.map((tag, ti) => (
-                            <span key={ti} style={{ fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.2px", color: "var(--color-label-2)", background: "color-mix(in srgb, var(--color-label) 7%, transparent)", padding: "2px 8px", borderRadius: 999, lineHeight: 1.35, whiteSpace: "nowrap" }}>{tag}</span>
+                            <span key={ti} style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.2px", color: "var(--color-label-2)", background: "color-mix(in srgb, var(--color-label) 7%, transparent)", padding: "2px 8px", borderRadius: 999, lineHeight: 1.35, whiteSpace: "nowrap" }}>{tag}</span>
                           ))}
                         </span>
                       )}
                     </span>
-                    {clickable && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: 18, lineHeight: 1 }}>›</span>}
+                    {clickable && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: "var(--text-body)", lineHeight: 1 }}>›</span>}
                   </>
                 );
                 return clickable
@@ -621,7 +621,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
                       return (
                         <div key={n} style={{ display: "flex", gap: 12, alignItems: "baseline", padding: "4px 0" }}>
                           <span style={{ flexShrink: 0, minWidth: 22, textAlign: "right", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLD, fontVariantNumeric: "tabular-nums", lineHeight: 1.5 }}>{n}</span>
-                          <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.5, color: "var(--color-label)" }}>{renderSanskrit(it)}</span>
+                          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.5, color: "var(--color-label)" }}>{renderSanskrit(it)}</span>
                         </div>
                       );
                     })}
@@ -664,7 +664,7 @@ function GroupSection({ group, onOpen }: { group: { label: string; order: number
         {more > 0 && (
           <button type="button" onClick={() => setOpen(true)}
             style={{ display: "inline-flex", alignItems: "center", padding: "8px 13px", borderRadius: 999, border: "none",
-              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>
+              background: "none", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>
             Ещё {more}
           </button>
         )}
@@ -717,7 +717,7 @@ function LinkSection({ kind, items, onNavigate }: { kind: string; items: LinkIte
         {more > 0 && (
           <button type="button" onClick={() => setOpen(true)}
             style={{ display: "inline-flex", alignItems: "center", padding: "8px 13px", borderRadius: 999, border: "none",
-              background: "none", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>
+              background: "none", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>
             Ещё {more}
           </button>
         )}
@@ -736,7 +736,7 @@ function NavCards({ cards, onNavigate, onOpenCollection }: { cards: NavCard[]; o
         <button key={c.title} type="button" onClick={() => { if (c.collection) onOpenCollection?.(c.collection); else if (c.to) onNavigate?.(c.to); }}
           style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "13px 15px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</div>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)" }}>{c.title}</div>
             {c.subtitle && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", marginTop: 2, lineHeight: 1.4 }}>{c.subtitle}</div>}
           </div>
           <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: "var(--text-title2)", lineHeight: 1 }}>›</span>
@@ -784,7 +784,7 @@ function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: str
   const cell: React.CSSProperties = { flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 9, padding: "2px 0", background: "none", border: "none", cursor: "pointer", color: "inherit", font: "inherit", WebkitTapHighlightColor: "transparent" };
   const chev: React.CSSProperties = { flexShrink: 0, display: "inline-flex", alignItems: "center", color: "var(--color-label)" };
   const col = (align: "flex-start" | "flex-end"): React.CSSProperties => ({ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0, alignItems: align });
-  const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--color-label-3)" };
+  const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--color-label-3)" };
   const title: React.CSSProperties = { maxWidth: "100%", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 };
   return (
     <nav aria-label="Листать раздел" style={{ display: "flex", gap: 16, marginTop: 30, paddingTop: 17, borderTop: "0.5px solid var(--color-hairline)" }}>
@@ -850,7 +850,7 @@ function RelRows({ group, onOpen }: { group: { label: string; order: number; ite
             style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 13px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
             <span style={{ display: "grid", placeItems: "center", height: 34, width: 34, flexShrink: 0, borderRadius: "50%", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "var(--text-subhead)" }}>{(it.name_ru || it.id).trim().charAt(0).toUpperCase()}</span>
             <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.name_ru || it.id}</span>
-            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 18, flexShrink: 0 }}>›</span>
+            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: "var(--text-body)", flexShrink: 0 }}>›</span>
           </button>
         ))}
       </div>
@@ -877,7 +877,7 @@ function PersonSubTabs({ items, active, onChange, stickyTop = 96 }: { items: { i
           const on = it.id === active;
           return (
             <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
-              style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 999, border: on ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)", cursor: "pointer", fontSize: 13.5, fontFamily: "var(--font-text)", fontWeight: 600, whiteSpace: "nowrap", background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label-2)", transition: "background .18s, color .18s", WebkitTapHighlightColor: "transparent" }}>
+              style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 999, border: on ? "0.5px solid transparent" : "0.5px solid var(--color-hairline)", cursor: "pointer", fontSize: "var(--text-footnote)", fontFamily: "var(--font-text)", fontWeight: 600, whiteSpace: "nowrap", background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label-2)", transition: "background .18s, color .18s", WebkitTapHighlightColor: "transparent" }}>
               {it.label}
             </button>
           );
@@ -899,7 +899,7 @@ function RealmSegment({ realm, onChange, stickyTop = 96 }: { realm: "material" |
           const on = o.id === realm;
           return (
             <button key={o.id} role="tab" aria-selected={on} type="button" onClick={() => onChange(o.id)}
-              style={{ flex: 1, padding: "10px 14px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: 14, fontFamily: "var(--font-text)", fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1.5px 4px rgba(0,0,0,0.10), 0 0 0 0.5px color-mix(in srgb, var(--color-label) 5%, transparent)" : "none", transition: "background .22s ease, color .18s ease, box-shadow .22s ease", WebkitTapHighlightColor: "transparent" }}>
+              style={{ flex: 1, padding: "10px 14px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", fontWeight: 600, letterSpacing: "-0.01em", whiteSpace: "nowrap", background: on ? "var(--color-bg)" : "transparent", color: on ? "var(--color-label)" : "var(--color-label-2)", boxShadow: on ? "0 1.5px 4px rgba(0,0,0,0.10), 0 0 0 0.5px color-mix(in srgb, var(--color-label) 5%, transparent)" : "none", transition: "background .22s ease, color .18s ease, box-shadow .22s ease", WebkitTapHighlightColor: "transparent" }}>
               {o.label}
             </button>
           );
@@ -1430,8 +1430,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                         {(data.links ?? []).filter((l) => l.kind === "scripture").map((c) => (
                           <button key={c.ref} type="button" onClick={() => onNavigate?.("/" + c.ref)}
                             style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 2, padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
-                            <span style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</span>
-                            {c.subtitle && <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.subtitle}</span>}
+                            <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{c.title}</span>
+                            {c.subtitle && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{c.subtitle}</span>}
                           </button>
                         ))}
                       </div>
@@ -1455,7 +1455,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                             <div key={d.templeSlug} style={{ overflow: "hidden", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)" }}>
                               <img src={d.images[0].startsWith("/") ? d.images[0] : `/api/img?u=${encodeURIComponent(d.images[0])}&w=1600`} alt={d.deities || d.templeName} loading="lazy" style={{ width: "100%", display: "block" }} />
                               <div style={{ padding: "10px 13px" }}>
-                                <div style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.templeName}</div>
+                                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{d.deities || d.templeName}</div>
                                 <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{d.templeName} · {d.date}</div>
                               </div>
                             </div>
@@ -1473,9 +1473,9 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                             style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
                             <span style={{ minWidth: 0, flex: 1 }}>
                               <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{c.name}</span>
-                              {c.city && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.city}</span>}
+                              {c.city && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{c.city}</span>}
                             </span>
-                            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 18, flexShrink: 0 }}>›</span>
+                            <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: "var(--text-body)", flexShrink: 0 }}>›</span>
                           </button>
                         ))}
                       </div>

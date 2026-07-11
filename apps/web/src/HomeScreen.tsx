@@ -41,8 +41,8 @@ function SectionHead({ eyebrow, title, subtitle }: { eyebrow?: string; title: st
   return (
     <div style={{ marginBottom: 16 }}>
       {eyebrow && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{eyebrow}</div>}
-      <h2 style={{ margin: eyebrow ? "5px 0 0" : 0, fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: TR_TITLE, lineHeight: 1.12, color: "var(--color-label)" }}>{title}</h2>
-      {subtitle && <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{subtitle}</p>}
+      <h2 style={{ margin: eyebrow ? "5px 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: TR_TITLE, lineHeight: 1.12, color: "var(--color-label)" }}>{title}</h2>
+      {subtitle && <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{subtitle}</p>}
     </div>
   );
 }
@@ -68,7 +68,7 @@ function Quote({ children, center = false, size = 15, color = "var(--color-label
   return <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: size, lineHeight: 1.6, letterSpacing: TR_BODY, color, textAlign: center ? "center" : "left" }}>{children}</blockquote>;
 }
 function Para({ children, mt = 0 }: { children: React.ReactNode; mt?: number }) {
-  return <p style={{ margin: `${mt}px 0 0`, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.6, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{children}</p>;
+  return <p style={{ margin: `${mt}px 0 0`, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.6, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{children}</p>;
 }
 
 /* ───────── галерея №1: крупный пейджинг-карусель (с «подглядыванием») ───────── */
@@ -122,7 +122,7 @@ function PlaceCard({ src, title, sub, pos = "center" }: { src: string; title: st
       <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 42%, transparent 64%)" }} />
       <div style={{ position: "absolute", left: 16, right: 16, bottom: 14 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: TR_TITLE, color: "#fff" }}>{title}</div>
-        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, letterSpacing: TR_BODY, color: "rgba(255,255,255,0.82)" }}>{sub}</div>
+        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", letterSpacing: TR_BODY, color: "rgba(255,255,255,0.82)" }}>{sub}</div>
       </div>
     </div>
   );
@@ -135,7 +135,7 @@ function NavCard({ mark, title, subtitle, onClick }: { mark: React.ReactNode; ti
       style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", padding: PAD, textAlign: "left", cursor: "pointer", border: "none", ...fill }}>
       <span style={{ flexShrink: 0, width: 48, display: "grid", placeItems: "center" }}>{mark}</span>
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{title}</span>
+        <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{title}</span>
         <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.4, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{subtitle}</span>
       </span>
       <span style={{ flexShrink: 0, color: "var(--color-label-3)", display: "grid", placeItems: "center" }}><ChevRightIcon size={18} /></span>
@@ -177,7 +177,7 @@ function CountUp({ value }: { value: string }) {
 function StatTile({ v, l }: { v: string; l: string }) {
   return (
     <div style={{ padding: PAD, ...fill }}>
-      <div style={{ fontFamily: "var(--font-display)", fontSize: 27, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)", lineHeight: 1, whiteSpace: "nowrap" }}><CountUp value={v} /></div>
+      <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)", lineHeight: 1, whiteSpace: "nowrap" }}><CountUp value={v} /></div>
       <div style={{ marginTop: 6, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", letterSpacing: TR_BODY, color: "var(--color-label-3)", lineHeight: 1.3 }}>{l}</div>
     </div>
   );
@@ -336,10 +336,10 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
         {/* scrollable content */}
         <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "10px 22px 32px", fontFamily: "var(--font-text)" }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ачарья-основатель</div>
-          <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: TR_HERO, lineHeight: 1.05, color: "var(--color-label)" }}>
+          <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: TR_HERO, lineHeight: 1.05, color: "var(--color-label)" }}>
             Шрила Прабхупада
           </h2>
-          <div style={{ marginTop: 4, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 14, color: "var(--color-label-3)" }}>
+          <div style={{ marginTop: 4, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>
             А. Ч. Бхактиведанта Свами · 1896 — 1977
           </div>
           <div style={{ marginTop: 16, borderRadius: 18, overflow: "hidden", background: IMG_BG }}>
@@ -353,10 +353,10 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
           {SP_BIO.map((p, i) => <Para key={i} mt={i ? 12 : 10}>{p}</Para>)}
 
           <div style={{ marginTop: 26, fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>За двенадцать лет проповеди</div>
-          <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)" }}>С 1965 по 1977 год Шрила Прабхупада:</p>
+          <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>С 1965 по 1977 год Шрила Прабхупада:</p>
           <ul style={{ margin: "10px 0 0", padding: 0, listStyle: "none" }}>
             {SP_BIO_BULLETS.map((b, i) => (
-              <li key={i} style={{ display: "flex", gap: 10, marginTop: i ? 8 : 0, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>
+              <li key={i} style={{ display: "flex", gap: 10, marginTop: i ? 8 : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>
                 <span aria-hidden style={{ flexShrink: 0, color: GOLD, fontWeight: 700 }}>·</span><span>{b}</span>
               </li>
             ))}
@@ -366,8 +366,8 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
           <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {SP_FACTS.map((f) => (
               <div key={f.t} style={{ padding: 14, ...fill, borderRadius: 14 }}>
-                <div style={{ fontFamily: "var(--font-display)", fontSize: 13.5, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{f.t}</div>
-                <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{f.d}</p>
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)" }}>{f.t}</div>
+                <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{f.d}</p>
               </div>
             ))}
           </div>
@@ -487,10 +487,10 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
             <div style={{ marginTop: 12, fontFamily: "var(--font-scripture)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-3)" }}>
               हरे कृष्ण हरे कृष्ण<br />कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम<br />राम राम हरे हरे
             </div>
-            <div style={{ marginTop: 14, fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: TR_TITLE, lineHeight: 1.55, color: "var(--color-label)" }}>
+            <div style={{ marginTop: 14, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: TR_TITLE, lineHeight: 1.55, color: "var(--color-label)" }}>
               Харе Кришна Харе Кришна<br />Кришна Кришна Харе Харе<br />Харе Рама Харе Рама<br />Рама Рама Харе Харе
             </div>
-            <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>
+            <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>
               Каждый может получить духовное благо от повторения маха-мантры Харе Кришна. Когда звучит трансцендентная вибрация святого имени, благо получают все живые существа — даже деревья, животные и насекомые. Так человек проявляет высшее милосердие ко всему миру.
             </p>
           </div>
@@ -585,7 +585,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
               {/* золотая точка-маркер на линии */}
               <span aria-hidden style={{ position: "absolute", left: -19, top: 6, width: 9, height: 9, borderRadius: "50%", background: GOLD, boxShadow: "0 0 0 4px var(--color-bg)" }} />
               <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-footnote)", fontWeight: 800, letterSpacing: "0.4px", color: GOLD, lineHeight: 1.2 }}>{t.y}</div>
-              <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{t.d}</p>
+              <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{t.d}</p>
             </div>
           ))}
         </div>
@@ -606,8 +606,8 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
           {PRINCIPLES.map((p) => (
             <div key={p.t} style={{ padding: PAD, ...fill, borderRadius: 16 }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 14.5, fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)", lineHeight: 1.2 }}>{p.t}</div>
-              <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{p.d}</p>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: TR_TITLE, color: "var(--color-label)", lineHeight: 1.2 }}>{p.t}</div>
+              <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{p.d}</p>
             </div>
           ))}
         </div>
@@ -623,8 +623,8 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
               <figcaption style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
                 <img src={`/media/voices/${v.img}.webp`} alt="" loading="lazy" style={{ flexShrink: 0, width: 40, height: 40, borderRadius: "50%", objectFit: "cover", background: IMG_BG }} />
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, letterSpacing: TR_BODY, color: "var(--color-label)" }}>{v.n}</div>
-                  <div style={{ marginTop: 1, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{v.r}</div>
+                  <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: TR_BODY, color: "var(--color-label)" }}>{v.n}</div>
+                  <div style={{ marginTop: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{v.r}</div>
                 </div>
               </figcaption>
             </figure>
@@ -649,7 +649,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
           {PURPOSES.map((p, i) => (
             <li key={i} style={{ display: "flex", gap: 13, padding: PAD, alignItems: "flex-start", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
               <span style={{ flexShrink: 0, width: 20, fontFamily: "var(--font-display)", fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLD, lineHeight: 1.55 }}>{String(i + 1).padStart(2, "0")}</span>
-              <span style={{ fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{p}</span>
+              <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{p}</span>
             </li>
           ))}
         </ul>

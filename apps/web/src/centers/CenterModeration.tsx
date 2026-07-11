@@ -101,7 +101,7 @@ export default function CenterModeration({
     return (
       <Shell>
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
           <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
@@ -120,8 +120,8 @@ export default function CenterModeration({
       <Shell>
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Shield size={26} /></span>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Доступ только для редакторов</div>
-          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Модерация центров доступна глобальным редакторам ИСККОН.</p>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Доступ только для редакторов</div>
+          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>Модерация центров доступна глобальным редакторам ИСККОН.</p>
         </div>
       </Shell>
     );
@@ -130,8 +130,8 @@ export default function CenterModeration({
     return (
       <Shell>
         <div style={{ ...card, textAlign: "center", marginTop: 8 }}>
-          <p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>Не удалось загрузить очередь.</p>
-          <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>Повторить</button>
+          <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Не удалось загрузить очередь.</p>
+          <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Повторить</button>
         </div>
       </Shell>
     );
@@ -146,8 +146,8 @@ export default function CenterModeration({
       {list.length === 0 ? (
         <div style={{ ...card, textAlign: "center", padding: "30px 22px" }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Shield size={26} /></span>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Очередь пуста</div>
-          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Новых заявок на проверку нет.</p>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Очередь пуста</div>
+          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>Новых заявок на проверку нет.</p>
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -165,7 +165,7 @@ export default function CenterModeration({
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.name}</span>
-                  <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {CENTER_TYPE_LABEL[it.type]}{place ? ` · ${place}` : ""} · {ago(it.updated_at)}
                   </span>
                 </span>

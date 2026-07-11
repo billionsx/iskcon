@@ -106,7 +106,7 @@ function Row({ ch, title, meta, sub, iast, toks, active, onTap }: { ch: string; 
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "flex", alignItems: "baseline", gap: 7, minWidth: 0 }}>
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hl(title, toks)}</span>
-          {meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{meta}</span>}
+          {meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{meta}</span>}
         </span>
         {iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{iast}</span>}
         {sub && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 1.35, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } as React.CSSProperties}>{hl(sub, toks)}</span>}
@@ -131,10 +131,10 @@ function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap
         </svg>
       </span>
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>{eyebrow}</span>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--color-label-3)" }}>{eyebrow}</span>
         <span style={{ display: "flex", alignItems: "baseline", gap: 7 }}>
-          <span style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
-          {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
+          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
+          {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
         </span>
         {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
       </span>
@@ -151,7 +151,7 @@ function MoreLink({ n, active, onTap }: { n: number; active: boolean; onTap: () 
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", textAlign: "left",
         padding: "11px 8px", paddingLeft: 61, margin: "0 -4px", borderRadius: 10, border: "none",
         background: active ? "var(--color-bg-2)" : "transparent", cursor: "pointer",
-        fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-2)" }}>
+        fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-2)" }}>
       <span>Показать все · {n}</span>
       <span style={{ color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </button>
@@ -182,7 +182,7 @@ function Chip({ label, count, active, onClick }: { label: string; count: number;
         border: active ? "0.5px solid var(--color-label)" : "0.5px solid var(--color-hairline)",
         background: active ? "var(--color-label)" : "var(--color-bg-2)",
         color: active ? "var(--color-bg)" : "var(--color-label-2)",
-        fontFamily: "var(--font-text)", fontSize: 14, fontWeight: active ? 600 : 500, lineHeight: 1, cursor: "pointer", whiteSpace: "nowrap",
+        fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 500, lineHeight: 1, cursor: "pointer", whiteSpace: "nowrap",
       }}>
       {label}<span style={{ fontVariantNumeric: "tabular-nums", opacity: 0.6, fontWeight: 500 }}>{count}</span>
     </button>
@@ -393,13 +393,13 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "0 0 10px" }}>
               <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-3)" }}>Недавнее</h3>
               <button type="button" onClick={clearRecent}
-                style={{ border: "none", background: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)", cursor: "pointer" }}>Очистить</button>
+                style={{ border: "none", background: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", cursor: "pointer" }}>Очистить</button>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {recent.map((t) => (
                 <button key={t} type="button" onClick={() => setQ(t)}
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 13px", borderRadius: 999, border: "0.5px solid var(--color-hairline)",
-                    background: "var(--color-bg-2)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1, cursor: "pointer" }}>
+                    background: "var(--color-bg-2)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1, cursor: "pointer" }}>
                   <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden style={{ opacity: 0.55 }}>
                     <path d="M12 7v5l3 2M21 12a9 9 0 1 1-3.5-7.1M21 4v4h-4" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
                   </svg>

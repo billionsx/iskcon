@@ -95,7 +95,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
           onClick={copyUrl}
           style={{ marginTop: 14, width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 14px", borderRadius: 12, border: `0.5px solid ${LINE}`, background: "#F6F6F8", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}
         >
-          <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.35, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{url.replace(/^https?:\/\//, "")}</span>
+          <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-footnote)", lineHeight: 1.35, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{url.replace(/^https?:\/\//, "")}</span>
           <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: 5, minWidth: 112, fontSize: "var(--text-footnote)", fontWeight: 600, color: copied ? "#1aa179" : GOLDT }}>
             {copied ? <CheckGlyph /> : <CopyGlyph />}{copied ? "Скопировано" : "Копировать"}
           </span>
@@ -103,7 +103,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
 
         <button
           onClick={onClose}
-          style={{ marginTop: 12, width: "100%", height: 46, borderRadius: 14, border: "none", background: INK, color: "#fff", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)" }}
+          style={{ marginTop: 12, width: "100%", height: 46, borderRadius: 14, border: "none", background: INK, color: "#fff", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)" }}
         >
           Готово
         </button>
@@ -129,7 +129,7 @@ function Identity({ data }: { data: QrData }) {
         <h1 style={{ margin: "20px 0 0", fontSize: "var(--text-title2)", lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
           {data.title}
         </h1>
-        {data.subtitle && <div style={{ marginTop: 6, fontSize: 14, fontWeight: 600, color: INK2 }}>{data.subtitle}</div>}
+        {data.subtitle && <div style={{ marginTop: 6, fontSize: "var(--text-subhead)", fontWeight: 600, color: INK2 }}>{data.subtitle}</div>}
         <Ornament />
       </>
     );
@@ -147,14 +147,14 @@ function Identity({ data }: { data: QrData }) {
             />
           </div>
         )}
-        <h1 style={{ margin: "16px 0 0", fontSize: 25, lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
+        <h1 style={{ margin: "16px 0 0", fontSize: "var(--text-title1)", lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
           {data.bookTitle}
         </h1>
         {data.bookSubtitle && (
           <div style={{ marginTop: 3, fontSize: "var(--text-subhead)", fontWeight: 600, color: INK2 }}>{data.bookSubtitle}</div>
         )}
         {data.tagline && (
-          <div style={{ marginTop: 8, fontSize: 13.5, color: INK3 }}>{data.tagline}</div>
+          <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", color: INK3 }}>{data.tagline}</div>
         )}
         <Ornament />
       </>
@@ -164,11 +164,11 @@ function Identity({ data }: { data: QrData }) {
   if (data.kind === "chapter") {
     return (
       <>
-        <div style={{ marginTop: 16, fontSize: 13.5, fontWeight: 600, color: INK2 }}>{data.bookTitle}</div>
+        <div style={{ marginTop: 16, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK2 }}>{data.bookTitle}</div>
         <div style={{ marginTop: 12, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT }}>
           Глава {data.chapterNumber}
         </div>
-        <h1 style={{ margin: "6px 0 0", fontSize: 24, lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
+        <h1 style={{ margin: "6px 0 0", fontSize: "var(--text-title2)", lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
           {data.chapterTitle}
         </h1>
         <Ornament />
@@ -179,8 +179,8 @@ function Identity({ data }: { data: QrData }) {
   // verse
   return (
     <>
-      <div style={{ marginTop: 16, fontSize: 13.5, fontWeight: 600, color: INK2 }}>{data.bookTitle}</div>
-      <div style={{ marginTop: 4, fontSize: 12.5, color: INK3 }}>
+      <div style={{ marginTop: 16, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK2 }}>{data.bookTitle}</div>
+      <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", color: INK3 }}>
         Глава {data.chapterNumber}{data.chapterTitle ? ` · ${data.chapterTitle}` : ""}
       </div>
       <div style={{ marginTop: 12, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLDT }}>
@@ -188,7 +188,7 @@ function Identity({ data }: { data: QrData }) {
       </div>
       {data.verseText && (
         <div style={{ margin: "12px auto 0", maxWidth: 264, textAlign: "left", paddingLeft: 16, borderLeft: `2px solid ${GOLD}` }}>
-          <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>
+          <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>
             {data.verseText}
           </p>
         </div>

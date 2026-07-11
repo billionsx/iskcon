@@ -188,7 +188,7 @@ function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: bo
       {/* подложка действия */}
       <button type="button" aria-label="Убрать из избранного" onClick={commit}
         style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 7, paddingRight: 22,
-          background: RED, color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600 }}>
+          background: RED, color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600 }}>
         <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path {...STROKE} stroke="#fff" d="M5 7h14M9.5 7V5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V7M7 7l.8 12a1 1 0 0 0 1 .9h6.4a1 1 0 0 0 1-.9L18 7" /></svg>
         Убрать
       </button>
@@ -201,7 +201,7 @@ function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: bo
           transition: drag.current ? "none" : "transform .26s cubic-bezier(.22,.61,.36,1)", touchAction: "pan-y", WebkitTapHighlightColor: "transparent" }}>
         <Tile it={it} />
         <span style={{ minWidth: 0, flex: 1 }}>
-          <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 16.5, fontWeight: 600,
+          <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600,
             letterSpacing: "-0.014em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
           {it.subtitle && (
             <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.subtitle}</span>
@@ -215,7 +215,7 @@ function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: bo
           <NoteMark size={16} />
           {notes.length > 1 && (
             <span style={{ position: "absolute", top: -3, right: -3, minWidth: 15, height: 15, padding: "0 3px", borderRadius: 999, background: GOLD, color: "#fff",
-              fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, lineHeight: "15px", textAlign: "center", border: "1.5px solid var(--color-bg-2)", fontVariantNumeric: "tabular-nums" }}>{notes.length}</span>
+              fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, lineHeight: "15px", textAlign: "center", border: "1.5px solid var(--color-bg-2)", fontVariantNumeric: "tabular-nums" }}>{notes.length}</span>
           )}
         </button>
         <Chevron />
@@ -232,10 +232,10 @@ function Pill({ label, count, active, accent, onClick }: { label: string; count:
       style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 7, height: 34, padding: "0 13px", borderRadius: 999, cursor: "pointer",
         border: active ? "none" : `0.5px solid ${LINE}`,
         background: active ? (accent ?? INK) : "rgba(120,120,128,0.10)",
-        color: active ? "#fff" : INK, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em",
+        color: active ? "#fff" : INK, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em",
         WebkitTapHighlightColor: "transparent", transition: "background .18s, color .18s" }}>
       {label}
-      <span style={{ display: "inline-grid", placeItems: "center", minWidth: 19, height: 19, padding: "0 5px", borderRadius: 999, fontSize: 11.5, fontWeight: 700,
+      <span style={{ display: "inline-grid", placeItems: "center", minWidth: 19, height: 19, padding: "0 5px", borderRadius: 999, fontSize: "var(--text-caption)", fontWeight: 700,
         background: active ? "rgba(255,255,255,0.26)" : "rgba(120,120,128,0.16)", color: active ? "#fff" : INK2, fontVariantNumeric: "tabular-nums" }}>{count}</span>
     </button>
   );
@@ -321,7 +321,7 @@ export default function FavoritesScreen({ onBack, onNavigate }: { onBack: () => 
         <div style={{ flex: 1, textAlign: "center", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Избранное</div>
         <button type="button" aria-label={sort === "recent" ? "Сортировка: недавние" : "Сортировка: А–Я"} onClick={() => setSort((s) => (s === "recent" ? "az" : "recent"))}
           style={{ display: "inline-flex", alignItems: "center", gap: 5, height: 32, padding: "0 11px 0 9px", borderRadius: 999, border: `0.5px solid ${LINE}`,
-            background: "rgba(120,120,128,0.10)", color: INK, cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
+            background: "rgba(120,120,128,0.10)", color: INK, cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
           <SortIcon /> {sort === "recent" ? "Недавние" : "А–Я"}
         </button>
       </header>
@@ -379,7 +379,7 @@ function Empty({ icon, title, sub }: { icon: ReactNode; title: string; sub: stri
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 40px 64px" }}>
       <span style={{ display: "grid", placeItems: "center", width: 72, height: 72, borderRadius: "50%", background: "rgba(120,120,128,0.12)", color: INK3 }}>{icon}</span>
       <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>{title}</h2>
-      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.5, color: INK2, maxWidth: 300 }}>{sub}</p>
+      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, maxWidth: 300 }}>{sub}</p>
     </div>
   );
 }

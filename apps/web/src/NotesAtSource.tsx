@@ -43,10 +43,10 @@ export function NotesAtSource({ kind, refId, accent = "var(--color-gold)" }: { k
                 background: "transparent", border: "none", borderTop: `0.5px solid color-mix(in srgb, ${accent} 16%, var(--color-hairline))`,
                 cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)" }}>
               <span style={{ minWidth: 0, flex: 1 }}>
-                <span style={{ display: "block", fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{noteTitle(n)}</span>
-                {preview && <span style={{ display: "block", marginTop: 1, fontSize: 12.5, color: "var(--color-label-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview}</span>}
+                <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{noteTitle(n)}</span>
+                {preview && <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-footnote)", color: "var(--color-label-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview}</span>}
               </span>
-              <span style={{ flexShrink: 0, fontSize: 11.5, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{fmtDate(n.updatedAt)}</span>
+              <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{fmtDate(n.updatedAt)}</span>
               <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
               </span>

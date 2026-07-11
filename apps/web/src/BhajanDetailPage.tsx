@@ -157,8 +157,8 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
       <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
         <PlainBtn ariaLabel="К бхаджану" onClick={onClose}><BackIcon size={22} /></PlainBtn>
         <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: "var(--weight-bold)", letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bhajanName}</div>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)" }}>Стих {v.ord} из {verses.length}</div>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bhajanName}</div>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-2)" }}>Стих {v.ord} из {verses.length}</div>
         </div>
       </header>
       <div aria-hidden style={{ flexShrink: 0, height: 2.5, background: "var(--color-hairline)" }}>
@@ -168,7 +168,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "var(--space-6) var(--pad-card) calc(env(safe-area-inset-bottom,0px) + var(--space-8) + var(--player-extra))" }}>
           <Eyebrow blue>{verseLabel(v.ord)}</Eyebrow>
           {v.translit && <FitText text={v.translit} max={21} min={13} style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-scripture)", fontStyle: "italic", lineHeight: 1.5, color: "var(--color-label)" }} />}
-          {v.text && <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-5)", borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 17.5, lineHeight: 1.7, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>}
+          {v.text && <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-5)", borderTop: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: 1.7, color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>}
           {hasWbw && (
             <div style={{ marginTop: "var(--space-5)", paddingTop: "var(--space-4)", borderTop: "0.5px solid var(--color-hairline)" }}>
               <Eyebrow blue>Пословный перевод</Eyebrow>
@@ -436,8 +436,8 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
         borderBottom: `0.5px solid color-mix(in srgb, var(--color-glass-stroke) ${Math.round(t * 100)}%, transparent)` }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", color: "var(--color-label)", background: "transparent", flexShrink: 0 }}><BackIcon size={22} /></button>
         <div style={{ flex: 1, minWidth: 0, paddingLeft: 2, opacity: t > 0.55 ? (t - 0.55) / 0.45 : 0, transform: t > 0.55 ? "none" : "translateY(3px)", transition: "opacity .15s, transform .15s" }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: "var(--weight-bold)", letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.name}</div>
-          {data?.author && <div style={{ fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.author}</div>}
+          <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data?.name}</div>
+          {data?.author && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{data.author}</div>}
         </div>
         {data && (
           <span style={{ display: "inline-flex", alignItems: "center", gap: 2, flexShrink: 0 }}>

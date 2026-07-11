@@ -43,8 +43,8 @@ const Trash = ({ size = 15 }: { size?: number }) => (
 
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
 const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
-const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
-const pill: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 10, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 12.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
+const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: "var(--text-callout)", color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
+const pill: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 10, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
 
 export default function CenterPhotos({ slug, onBack, flash }: { slug: string; onBack: () => void; flash?: (m: string) => void }) {
   const authed = useAuthed();
@@ -147,7 +147,7 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
     return (
       <Shell>
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
           <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
@@ -157,10 +157,10 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
     return (<Shell><div style={{ display: "grid", placeItems: "center", padding: "70px 0", color: L3 }}><span style={{ width: 26, height: 26, borderRadius: "50%", border: `2.5px solid ${HAIR}`, borderTopColor: GOLD, animation: "cpSpin .8s linear infinite" }} /></div><style>{`@keyframes cpSpin{to{transform:rotate(360deg)}}`}</style></Shell>);
   }
   if (phase === "notfound" || phase === "error" || !data) {
-    return (<Shell><div style={{ ...card, textAlign: "center", marginTop: 8 }}><p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>{phase === "notfound" ? "Центр не найден." : "Не удалось загрузить."}</p>{phase === "error" && <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>Повторить</button>}</div></Shell>);
+    return (<Shell><div style={{ ...card, textAlign: "center", marginTop: 8 }}><p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>{phase === "notfound" ? "Центр не найден." : "Не удалось загрузить."}</p>{phase === "error" && <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Повторить</button>}</div></Shell>);
   }
   if (data.can_manage === false) {
-    return (<Shell><div style={{ ...card, textAlign: "center", marginTop: 8 }}><p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>Нет прав на изменение.</p></div></Shell>);
+    return (<Shell><div style={{ ...card, textAlign: "center", marginTop: 8 }}><p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Нет прав на изменение.</p></div></Shell>);
   }
 
   return (
@@ -171,10 +171,10 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
         {draft.trim().length > 3 && (
           <div style={{ marginTop: 10, width: "100%", aspectRatio: "16 / 9", borderRadius: 14, background: `center/cover no-repeat url("${draft.trim()}"), ${FILL2}` }} />
         )}
-        <button type="button" onClick={add} disabled={busy} style={{ marginTop: 12, width: "100%", padding: "13px 0", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
+        <button type="button" onClick={add} disabled={busy} style={{ marginTop: 12, width: "100%", padding: "13px 0", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
           Добавить фото
         </button>
-        {err && <div style={{ marginTop: 12, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{err}</div>}
+        {err && <div style={{ marginTop: 12, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600 }}>{err}</div>}
       </section>
 
       <div style={{ height: 1, background: HAIR, margin: "20px 0" }} />
@@ -182,8 +182,8 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
       {photos.length === 0 ? (
         <div style={{ ...card, textAlign: "center", padding: "30px 22px" }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><ImageIco size={26} /></span>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Фотографий пока нет</div>
-          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Добавьте фото храма, алтаря, Божеств. Первая станет обложкой страницы центра.</p>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Фотографий пока нет</div>
+          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>Добавьте фото храма, алтаря, Божеств. Первая станет обложкой страницы центра.</p>
         </div>
       ) : (
         <>
@@ -193,7 +193,7 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
               <div key={src + i} style={{ borderRadius: 16, overflow: "hidden", background: FILL }}>
                 <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 9", background: `center/cover no-repeat url("${src}"), ${FILL2}` }}>
                   {i === 0 && (
-                    <span style={{ position: "absolute", top: 10, left: 10, display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "color-mix(in srgb, #000 55%, transparent)", color: "#fff", fontFamily: FT, fontSize: 11.5, fontWeight: 700, backdropFilter: "blur(6px)" }}>
+                    <span style={{ position: "absolute", top: 10, left: 10, display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, background: "color-mix(in srgb, #000 55%, transparent)", color: "#fff", fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, backdropFilter: "blur(6px)" }}>
                       <Star size={13} />Обложка
                     </span>
                   )}

@@ -81,8 +81,8 @@ export function AudioShowcaseCard({
 
         <div style={{ flex: 1, minWidth: 0, paddingTop: 1 }}>
           {kindLabel && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: GOLD }}>{kindLabel}</div>}
-          <div style={{ marginTop: kindLabel ? 2 : 0, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 650, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{title}</div>
-          {presenter && <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{presenter}</div>}
+          <div style={{ marginTop: kindLabel ? 2 : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 650, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{title}</div>
+          {presenter && <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{presenter}</div>}
         </div>
 
         <span style={{ flexShrink: 0 }}>

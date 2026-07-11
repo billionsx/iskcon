@@ -83,17 +83,17 @@ const groupLabel: CSSProperties = {
   textTransform: "uppercase", color: L3, margin: "0 4px 8px",
 };
 const inputStyle: CSSProperties = {
-  width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1,
+  width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: "var(--text-callout)", color: L1,
   background: "transparent", border: "none", outline: "none", padding: 0, WebkitTapHighlightColor: "transparent",
 };
 
 function Field({ label, children, hint, error }: { label: string; children: ReactNode; hint?: ReactNode; error?: string | null }) {
   return (
     <div style={{ padding: "11px 14px" }}>
-      <div style={{ fontFamily: FT, fontSize: 11.5, fontWeight: 600, color: error ? RED : L3, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, color: error ? RED : L3, marginBottom: 4 }}>{label}</div>
       {children}
       {(hint || error) && (
-        <div style={{ marginTop: 5, fontFamily: FT, fontSize: 11.5, lineHeight: 1.4, color: error ? RED : L3 }}>{error || hint}</div>
+        <div style={{ marginTop: 5, fontFamily: FT, fontSize: "var(--text-caption)", lineHeight: 1.4, color: error ? RED : L3 }}>{error || hint}</div>
       )}
     </div>
   );
@@ -270,8 +270,8 @@ export default function CenterEditor({
     return (
       <Shell>
         <div style={{ padding: 16, borderRadius: 18, background: FILL, textAlign: "center", marginTop: 8 }}>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
-          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Управление центром доступно вошедшим преданным.</p>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
+          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>Управление центром доступно вошедшим преданным.</p>
           <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
@@ -291,8 +291,8 @@ export default function CenterEditor({
     return (
       <Shell>
         <div style={{ padding: 16, borderRadius: 18, background: FILL, textAlign: "center", marginTop: 8 }}>
-          <p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>Не удалось загрузить центр.</p>
-          <button type="button" onClick={loadForEdit} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>Повторить</button>
+          <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Не удалось загрузить центр.</p>
+          <button type="button" onClick={loadForEdit} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Повторить</button>
         </div>
       </Shell>
     );
@@ -327,7 +327,7 @@ export default function CenterEditor({
           </Field>
         ) : (
           <Field label="Адрес страницы" hint="Адрес нельзя изменить после создания.">
-            <div style={{ fontFamily: FT, fontSize: 15.5, color: L2 }}>gaurangers.com/center/{form.slug}</div>
+            <div style={{ fontFamily: FT, fontSize: "var(--text-callout)", color: L2 }}>gaurangers.com/center/{form.slug}</div>
           </Field>
         )}
         {sep}
@@ -411,7 +411,7 @@ export default function CenterEditor({
       </Group>
 
       {generalErr && (
-        <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{generalErr}</div>
+        <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600 }}>{generalErr}</div>
       )}
 
       <button
