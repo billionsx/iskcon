@@ -443,7 +443,7 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
     <div style={{ fontFamily: "var(--font-text)" }}>
       {/* ЗКН-Н006: Tier-2 — общий FilterChips (контур, без заливки), а не чёрные капсулы */}
       <div ref={(el) => { subRef.current = el; if (el) setSubH(el.offsetHeight); }}>
-        <NavFilterChips items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} ariaLabel="Разделы страницы ИСККОН" />
+        <NavFilterChips sticky items={ISKCON_ANCHORS} active={activeAnchor} onChange={goAnchor} ariaLabel="Разделы страницы ИСККОН" />
       </div>
       {/* HERO */}
       <div id="hsec-about" style={{ paddingTop: 20 }} />

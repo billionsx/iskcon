@@ -17,6 +17,7 @@ import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById } from "../kirtans";
 import { type SubTabDef } from "../SectionSubTabs";
+import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
 const glass = (radius: number): CSSProperties => ({
@@ -85,18 +86,18 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
 
   const ORIGIN = "https://gaurangers.com";
   const artistSlug = isKirtan ? (albumById(p.book)?.artist ?? "") : "";
-  const kirtanUrl = artistSlug ? `${ORIGIN}/kirtan/${artistSlug}` : ORIGIN;
+  const kirtanUrl = artistSlug ? url(ROUTES.kirtanArtist(artistSlug)) : ORIGIN;
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
-  const bookUrl = `${ORIGIN}/book/${p.book}?listen`;
+  const bookUrl = url(ROUTES.book(p.book)) + "?listen";
   const lila = p.track?.lila;   // ЧЧ/ШБ
   const chapterUrl = isChapter
     ? (p.book === "bg"
-        ? `${ORIGIN}/book/bg/${ch}?listen`
+        ? url(ROUTES.book("bg", String(ch))) + "?listen"
         : lila
-          ? `${ORIGIN}/book/${p.book}/${lila}/${ch}?listen`
+          ? url(ROUTES.book(p.book, String(lila), String(ch))) + "?listen"
           : BOOK.prose
-            ? `${ORIGIN}/book/${p.book}/${ch}?listen`
+            ? url(ROUTES.book(p.book, String(ch))) + "?listen"
             : bookUrl)
     : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }

@@ -13,13 +13,14 @@ import type { ReactNode } from "react";
 import { COOKBOOK, chapterById, chapterRecipes, COOKBOOK_PRAYERS, type Block, type Chapter } from "./cookbook";
 import { DIFFICULTY_LABEL } from "./prasad";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
+import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
 
 const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
 const cookbookCtx: CardCtx = {
   type: "cookbook", id: "cookbook", title: COOKBOOK.title, subtitle: COOKBOOK.subtitle,
-  url: `${ORIGIN}/prasadam/book`, context: `Книга · ${COOKBOOK.title} · /prasadam/book`,
+  url: url(ROUTES.cookbook()), context: `Книга · ${COOKBOOK.title} · ${ROUTES.cookbook()}`,
 };
 
 /* ───────── иконки ───────── */
