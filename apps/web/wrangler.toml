@@ -42,7 +42,10 @@ crons = ["*/30 * * * *"]
 
 [[d1_databases]]
 binding = "DB"
-database_name = "iskcon"
+# Имя базы в аккаунте — ровно «iskcon-db». Здесь долго стояло «iskcon»: воркеру всё равно
+# (биндинг идёт по database_id), но любой `wrangler d1 execute iskcon` мимо этого конфига
+# получал not found. Держим имя равным реальному — иначе это мина.
+database_name = "iskcon-db"
 database_id = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 
 [[routes]]
