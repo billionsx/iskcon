@@ -111,6 +111,41 @@ CHECKS = [
         "hint": "→ сущность `chaitanya` обязана существовать; /gauranga — алиас (ЗКН-Сд002/Н015)",
     },
     {
+        "law": "ЗКН-Р001",
+        "name": "сущность без имени в реестре (id вместо имени)",
+        # id ≠ имя. Без записи в entity_names карточка покажет голый id.
+        "sql": """SELECT COUNT(*) AS n FROM entities e
+                  WHERE NOT EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id = e.id)""",
+        "hint": "→ занести имя в entity_names (ЗКН-Р001: правка в одном месте видна везде)",
+    },
+    {
+        "law": "ЗКН-Р004",
+        "name": "ручная метка «золото» (уровень ставит ГЕЙТ)",
+        "sql": "SELECT COUNT(*) AS n FROM entity_profiles WHERE level = 'gold'",
+        "hint": "→ золото присваивает только `goldforge audit` при исчерпании источников (ЗКН-Р003/Р004)",
+    },
+    {
+        "law": "ЗКН-П003",
+        "name": "прямой апостроф в ПРОЗЕ (в стихе — законен)",
+        # ВАЖНО: char(39) ЗАКОНЕН в транслитерации стиха («према крама бади' хайа») —
+        # это знак элизии, часть текста. Править его = испортить стих (ЗКН-БТ004).
+        # Ловим только апостроф в ПРОЗЕ (ключи "p" и "summary"), не в цитатах.
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.atom LIKE '%' || char(39) || '%'
+                    AND t.path NOT LIKE '%quotes%' AND t.path NOT LIKE '%cite%'
+                    AND t.path NOT LIKE '%.q%'""",
+        "hint": "→ в прозе — типографский апостроф. В транслитерации стиха прямой ЗАКОНЕН (ЗКН-БТ004)",
+    },
+    {
+        "law": "ЗКН-П006",
+        "name": "повествование без NARRATOR источника",
+        # ЧЧ → krishnadasa-kaviraja · ШБ → shukadeva · ЧБ → vrindavana-dasa-thakura
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.key='by'
+                    AND t.atom IN ('chaitanya-charitamrita','srimad-bhagavatam','chaitanya-bhagavata')""",
+        "hint": "→ `by` = ЛИЧНОСТЬ-рассказчик, не книга (ЗКН-П006)",
+    },
+    {
         "law": "ЗКН-Н008",
         "name": "нечитаемый слаг суб-таба в адресе",
         "sql": """SELECT COUNT(*) AS n FROM entity_profiles p,
