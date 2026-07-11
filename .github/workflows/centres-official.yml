@@ -31,7 +31,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Скрейп официального директория
+      # Официальный сайт не отдаёт данные машинам (REST выключен, карты сайта нет,
+      # листинги рисует JS) — нужен настоящий браузер. Playwright в проекте уже
+      # используется для пре-генерации PDF книг.
+      - name: Playwright + Chromium
+        run: |
+          pip install --quiet playwright
+          playwright install --with-deps chromium
+
+      - name: Скрейп официального директория (перехват данных карты)
         run: python3 tools/centres-official.py
 
       - name: Заливка в D1 (координаты — из официального источника)
