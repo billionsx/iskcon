@@ -28,5 +28,10 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: python3 tools/data-audit.py
 
+      # ЗКН-К: 12 законов карточек. До этого гейта стандарт ВБК/ВСК/ВМК/ПК
+      # не проверялся ничем — существовал только на бумаге.
+      - name: Аудит карточек (домен К)
+        run: python3 tools/cards-audit.py
+
       - name: Аудит конституции (свод против кода)
         run: python3 tools/laws-audit.py

@@ -64,9 +64,10 @@ def actual_level(lid: str) -> tuple[int, str]:
     # У5 — правило линтера, аудит данных или гейт CI
     if lid in lint:
         return 5, "правило в laws-lint.py"
-    data_audit = (ROOT / "tools" / "data-audit.py")
-    if data_audit.exists() and lid in data_audit.read_text(encoding="utf-8"):
-        return 5, "SQL-гейт в data-audit.py"
+    for gate, how in (("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек")):
+        g = ROOT / "tools" / gate
+        if g.exists() and lid in g.read_text(encoding="utf-8"):
+            return 5, how
     if lid in ci_all:
         return 5, "гейт в CI"
 
