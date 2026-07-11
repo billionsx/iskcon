@@ -67,7 +67,8 @@ def actual_level(lid: str) -> tuple[int, str]:
     for gate, how in (("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек"),
                       ("infra-audit.py", "гейт инфраструктуры"),
                       ("product-audit.py", "гейт продукта/книг"),
-                      ("pkl-audit.py", "гейт ПКЛ/реестра")):
+                      ("pkl-audit.py", "гейт ПКЛ/реестра"),
+                      ("nav-audit.py", "гейт навигации")):
         g = ROOT / "tools" / gate
         if g.exists() and lid in g.read_text(encoding="utf-8"):
             return 5, how

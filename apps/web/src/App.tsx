@@ -36,7 +36,7 @@ import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteA
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
-import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
+import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack, notifyNav } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
@@ -975,12 +975,15 @@ export default function App() {
     const onPop = (e: PopStateEvent) => {
       navSetIdxFromState(e.state);
       const path = window.location.pathname;
-      // Внутрикнижная навигация (глава/стих) — за неё отвечает BookDetailPage.
-      // Глобальный роутер её НЕ трогает, иначе двойная обработка одного popstate.
+      // ЗКН-Н002: App — ЕДИНСТВЕННЫЙ владелец popstate. Внутрикнижная навигация
+      // (глава/стих) не слушает событие сама, а ПОДПИСАНА (subscribeNav): сначала
+      // роутер, потом подписчики. Порядок детерминирован, гонки нет.
       const ob = openBookRef.current;
-      if (ob && (path === `/book/${ob}` || path.startsWith(`/book/${ob}/`))) return;
-      fromPop.current = true;
-      applyPath(path);
+      if (!(ob && (path === `/book/${ob}` || path.startsWith(`/book/${ob}/`)))) {
+        fromPop.current = true;
+        applyPath(path);
+      }
+      notifyNav(path);
     };
     window.addEventListener("popstate", onPop);
     applyPath(window.location.pathname);
