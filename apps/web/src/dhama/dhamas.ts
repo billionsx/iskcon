@@ -264,7 +264,7 @@ const vrindavan: Dhama = {
       id: "radha-damodara", dhama: "vrindavan", cluster: "town",
       name: "Храм Радха-Дамодара", iast: "Rādhā-Dāmodara Mandira", kind: "temple",
       lat: 27.5805, lng: 77.7032,
-      blurb: "Самадхи Рупы Госвами; бхаджан Шрилы Прабхупады",
+      blurb: "Самадхи Рупы Госвами. Бхаджан Шрилы Прабхупады",
       about: "Храм, основанный Дживой Госвами, хранит самадхи Рупы Госвами и говардхана-шилу с отпечатком стопы Кришны, данную Самим Господом Рагхунатхе дасу. В этих покоях Шрила Прабхупада несколько лет работал над переводом «Чайтанья-чаритамриты» перед отъездом на Запад.",
       persons: [P.rupa, P.jiva, P.raghunathadasa, P.prabhupada],
       maps: "Radha Damodar Temple Vrindavan",

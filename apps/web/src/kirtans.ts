@@ -295,7 +295,7 @@ export const KIRTAN_ALBUMS: KirtanAlbum[] = [
     moods: ["mahamantra", "krishna", "radha-krishna"],
     langs: ["sa", "bn"],
     composers: ["bhaktivinoda", "traditional"],
-    note: "Киртан и молитвы со скрипкой; дебютный альбом.",
+    note: "Киртан и молитвы со скрипкой. Дебютный альбом.",
   },
 ];
 
