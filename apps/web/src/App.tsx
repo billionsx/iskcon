@@ -553,13 +553,23 @@ function SegRow({ value, onChange, items }: { value: string; onChange: (v: strin
  * /dhana/<лила>/<волна>/<группа> → Личности с фильтрами (старые ссылки живы)
  * /dhana/books | bhajans | kirtans | recipes → соответствующая витрина
  * Слаги лил не пересекаются с id витрин, поэтому схема обратно совместима. */
-export const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "recipes"] as const;
+export const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "recipes", "dhama"] as const;
 export function bogSubFromPath(path: string): string {
   const seg = path.split("/").filter(Boolean);          // ["dhana", ...]
   const s1 = seg[1] || "";
   return (BOG_SUBS as readonly string[]).includes(s1) ? s1 : "lichnosti";
 }
-let sadSub = "feed"; // то же для Садханы: возврат из карточки (напр. из Календаря) восстанавливает подтаб
+/* ЗКН-Н005: суб-таб Садханы — сегмент URL, не переменная модуля.
+ * / → Лента (умолчание) · /practice · /calendar · /account */
+export const SAD_SUBS = ["feed", "practice", "calendar", "cabinet"] as const;
+const SAD_PATH: Record<string, string> = { feed: "/", practice: "/practice", calendar: "/calendar", cabinet: "/account" };
+export function sadSubFromPath(path: string): string {
+  const s0 = path.split("/").filter(Boolean)[0] || "";
+  if (s0 === "practice") return "practice";
+  if (s0 === "calendar") return "calendar";
+  if (s0 === "account") return "cabinet";
+  return "feed";
+}
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
   onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
@@ -574,7 +584,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   };
   return (
     <div>
-      <SegRow value={sub} onChange={pickSub} items={[["lichnosti", "Личности"], ["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"], ["recipes", "Рецепты"]]} />
+      <SegRow value={sub} onChange={pickSub} items={[["lichnosti", "Личности"], ["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"], ["recipes", "Рецепты"], ["dhama", "Дхама"]]} />
       {sub === "lichnosti" && <LichnostiHub onOpenEntity={onOpenEntity} />}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
@@ -587,6 +597,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
           flash={flash ? () => {} : undefined}
         />
       )}
+      {sub === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
       {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
     </div>
   );
@@ -595,8 +606,10 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
 function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void; flash?: string | null;
 }) {
-  const [sub, setSub] = useState(sadSub);
-  const pickSub = (v: string) => { sadSub = v; setSub(v); };
+  const [sub, setSub] = useState(() =>
+    typeof window === "undefined" ? "feed" : sadSubFromPath(window.location.pathname));
+  // ЗКН-Н005: переключение раздела меняет адресную строку (через nav.ts — ЗКН-Н001)
+  const pickSub = (v: string) => { setSub(v); pushUrl(SAD_PATH[v] || "/"); };
   return (
     <div>
       <SegRow value={sub} onChange={pickSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
@@ -784,7 +797,7 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "dhana", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "stories-tool", "entity", "person", "favorites", "notes", "note", "cart", "practice", "prasadam", "center", "centers", "my"];
+  const RESERVED = ["", "dhana", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "stories-tool", "entity", "person", "favorites", "notes", "note", "cart", "practice", "calendar", "prasadam", "center", "centers", "my"];
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
@@ -848,6 +861,9 @@ export default function App() {
     setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("sadhana"); return; }
+    // ЗКН-Н005: разделы Садханы — свои адреса (Практика / Календарь / Кабинет)
+    if (seg0 === "practice" && clean === "/practice") { setTab("sadhana"); return; }
+    if (seg0 === "calendar") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     if (seg0 === "dhana") { setTab("bogatstva"); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
