@@ -207,11 +207,33 @@ def check_ratchet(update=False):
     return bad
 
 
+def check_missing_imports():
+    """ЗКН-Ф006: отсутствующий импорт (TS2304) собирается vite'ом и падает
+    в браузере БЕЛОЙ СТРАНИЦЕЙ. esbuild не проверяет типы — нужен tsc."""
+    import subprocess
+    web = ROOT / "apps" / "web"
+    tsc = ROOT / "node_modules" / ".bin" / "tsc"
+    if not tsc.exists():
+        return []
+    try:
+        out = subprocess.run([str(tsc), "--noEmit", "-p", "tsconfig.json"],
+                             cwd=str(web), capture_output=True, text=True, timeout=180).stdout
+    except Exception:
+        return []
+    bad = []
+    for line in out.split("\n"):
+        if "TS2304" in line or "TS2552" in line:      # Cannot find name
+            bad.append(({"id": "ЗКН-Ф006", "name": "отсутствующий импорт (белая страница в проде)",
+                         "hint": "→ добавить импорт. vite соберёт, но браузер упадёт ReferenceError"},
+                        line.split("(")[0], 0, line.strip()[:90]))
+    return bad
+
+
 def main():
     if "--update-baseline" in sys.argv:
         check_ratchet(update=True)
         return 0
-    bad = check_rules() + check_prose_law() + check_floor_law() + check_ratchet()
+    bad = check_rules() + check_prose_law() + check_floor_law() + check_missing_imports() + check_ratchet()
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
         print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))

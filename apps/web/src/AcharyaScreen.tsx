@@ -18,6 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
 import { cleanCardText } from "./cardText";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 const GOLD = "var(--color-gold)";
 
