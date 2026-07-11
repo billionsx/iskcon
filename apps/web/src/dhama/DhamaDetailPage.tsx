@@ -17,6 +17,7 @@ import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
 import { NotesAtSource } from "../NotesAtSource";
+import { FilterChips as NavFilterChips } from "../ui/nav4";
 
 const NAV_H = 52;
 
@@ -218,10 +219,10 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         </div>
 
         {/* sub-tabs */}
-        <SectionSubTabs
-          items={[{ id: "places", label: "Места" }, { id: "parikrama", label: "Парикрама" }, { id: "map", label: "Карта" }, { id: "about", label: "О дхаме" }]}
-          active={sub} onChange={(id) => setSub(id as typeof sub)} variant="chips" tone="light" top={NAV_H} bleed={16} ariaLabel="Разделы дхамы"
-        />
+        {/* ЗКН-Н016: общий FilterChips (контур), а не чёрные капсулы */}
+        <NavFilterChips ariaLabel="Разделы дхамы"
+          items={[{ id: "places", label: "Места" }, { id: "parikrama", label: "Парикрама" }, { id: "map", label: "Карта" }]}
+          active={sub} onChange={(id) => setSub(id as typeof sub)} />
 
         <div style={{ padding: "10px 16px calc(env(safe-area-inset-bottom,0px) + 64px)" }}>
           {sub === "places" && (

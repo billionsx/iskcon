@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps" / "web" / "src"
 
 # cardText.ts САМ определяет запрещённые формы (в regex) — он освобождён.
-ALLOW = {"cardText.ts", "nav.ts", "routes.ts"}
+ALLOW = {"cardText.ts", "nav.ts", "routes.ts", "SectionSubTabs.tsx"}
 
 RULES = [
     {
@@ -80,9 +80,11 @@ RULES = [
     },
     {
         "id": "ЗКН-Н016",
-        "name": "своя копия чипов навигации мимо ui/nav4",
-        "pattern": re.compile(r"function (FilterChip|Pills|SegRow)\b"),
-        "hint": "→ импортировать из ./ui/nav4 (ЗКН-Н006/Н016). Своя копия = разъезд системы",
+        "name": "навигация мимо ui/nav4 (своя копия или старые чёрные капсулы)",
+        # Ловит и свои компоненты, и старый SectionSubTabs variant="chips" —
+        # именно им остались Центры/Рестораны/Документы/Календарь, и линтер их не видел.
+        "pattern": re.compile(r"function (FilterChip|Pills|SegRow)\b|variant=[\"']chips[\"']"),
+        "hint": "→ FilterChips/ScopeTitle/HallTabs из ./ui/nav4 (ЗКН-Н006/Н016)",
     },
     {
         "id": "ЗКН-Н009",

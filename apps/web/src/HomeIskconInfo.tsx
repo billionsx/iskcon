@@ -10,6 +10,7 @@ import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { useEffect, useMemo, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
+import { FilterChips as NavFilterChips } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -155,6 +156,12 @@ export function HomeDocuments({ stickyTop, flash, openSig }: { stickyTop: number
         </p>
       </div>
 
+      {/* ЗКН-Н016: общий FilterChips (контур), а не чёрные капсулы */}
+      <NavFilterChips sticky ariaLabel="Тип документа"
+        items={[{ id: "all", label: "Все" }, ...(Object.keys(DOC_TYPE_LABEL) as DocType[]).map((t) => ({ id: t, label: DOC_TYPE_LABEL[t] }))]}
+        active={type} onChange={(id) => setType(id as "all" | DocType)} />
+
+      {/* ЗКН-Н006: поиск ПОД навигацией */}
       <div role="search" style={{ position: "relative", marginTop: 14 }}>
         <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
           <svg width="17" height="17" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
@@ -171,11 +178,6 @@ export function HomeDocuments({ stickyTop, flash, openSig }: { stickyTop: number
           </button>
         )}
       </div>
-
-      <div style={{ height: 10 }} />
-      <SectionSubTabs variant="chips" ariaLabel="Тип документа" tone="light" top={stickyTop} bleed={16}
-        items={[{ id: "all", label: "Все" }, ...(Object.keys(DOC_TYPE_LABEL) as DocType[]).map((t) => ({ id: t, label: DOC_TYPE_LABEL[t] }))]}
-        active={type} onChange={(id) => setType(id as "all" | DocType)} />
 
       <div style={{ marginTop: 14 }} aria-live="polite">
         {docs === null && !failed ? (
