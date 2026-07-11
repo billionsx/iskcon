@@ -23,9 +23,9 @@ jobs:
       # Линтер их не видит — именно там нарушения жили месяцами (649 ложных «золото»).
       - name: Аудит законов — ДАННЫЕ (D1)
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # account_id и database_id берутся из wrangler.toml (это не секреты).
+          # Секрет только токен.
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          D1_DATABASE_ID: ${{ secrets.D1_DATABASE_ID }}
         run: python3 tools/data-audit.py
 
       - name: Аудит конституции (свод против кода)
