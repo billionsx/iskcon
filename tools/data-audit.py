@@ -71,6 +71,46 @@ CHECKS = [
         "hint": "→ NULL (тогда рисуется фирменная заглушка) — ЗКН-Д005/Д007",
     },
     {
+        "law": "ЗКН-БТ001",
+        "name": "цитата БЕЗ источника (фабрикация)",
+        # Жёсткий инвариант: нет источника → нет утверждения. Ноль. Всегда.
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.key='t'
+                    AND (t.path LIKE '%quotes%' OR t.path LIKE '%cite%')
+                    AND NOT EXISTS (SELECT 1 FROM json_tree(p.longform) r
+                                    WHERE r.key='ref' AND r.path = t.path)""",
+        "hint": "→ нет источника — нет утверждения (ЗКН-БТ001)",
+    },
+    {
+        "law": "ЗКН-БТ003",
+        "name": "цитата не до стиха (только книга/глава)",
+        # ХРАПОВИК: 68 таких на 11.07.2026. Чинить выдумыванием номера ЗАПРЕЩЕНО
+        # (это была бы фабрикация, ЗКН-БТ001) — стих ищется в источнике кузницей.
+        # Гейт держит долг от РОСТА: новая цитата обязана иметь стих.
+        "sql": """SELECT MAX(0, COUNT(*) - 68) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.key='ref'
+                    AND (t.path LIKE '%quotes%' OR t.path LIKE '%cite%')
+                    AND t.atom NOT GLOB '*[0-9]*'""",
+        "hint": "→ ссылка до КОНКРЕТНОГО стиха. Долг 68 — храповик: рост запрещён (ЗКН-БТ003)",
+    },
+    {
+        "law": "ЗКН-БТ006",
+        "name": "ссылка-огрызок (код вместо человеческой формы)",
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.key='ref'
+                    AND (t.path LIKE '%quotes%' OR t.path LIKE '%cite%')
+                    AND t.atom NOT GLOB '*[А-Яа-я]*'""",
+        "hint": "→ «Шри Чайтанья-чаритамрита, Ади-лила, глава 15, стих 135» (ЗКН-БТ006)",
+    },
+    {
+        "law": "ЗКН-Сд002",
+        "name": "Гауранга ≠ Чайтанья (разрыв тождества)",
+        # Гауранга Махапрабху = Шри Кришна Чайтанья Махапрабху — ОДНА Личность.
+        # Значит у неё один id и рабочий алиас (ЗКН-Н015).
+        "sql": "SELECT CASE WHEN EXISTS (SELECT 1 FROM entities WHERE id='chaitanya') THEN 0 ELSE 1 END AS n",
+        "hint": "→ сущность `chaitanya` обязана существовать; /gauranga — алиас (ЗКН-Сд002/Н015)",
+    },
+    {
         "law": "ЗКН-Н008",
         "name": "нечитаемый слаг суб-таба в адресе",
         "sql": """SELECT COUNT(*) AS n FROM entity_profiles p,
