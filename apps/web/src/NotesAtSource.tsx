@@ -27,7 +27,7 @@ export function NotesAtSource({ kind, refId, accent = "var(--color-gold)" }: { k
     <section aria-label="Ваши заметки" style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid color-mix(in srgb, ${accent} 26%, var(--color-hairline))`, background: `color-mix(in srgb, ${accent} 6%, var(--color-bg-2))` }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "11px 14px 7px" }}>
         <span style={{ display: "grid", placeItems: "center", width: 22, height: 22, borderRadius: 7, flexShrink: 0, color: accent, background: `color-mix(in srgb, ${accent} 16%, transparent)` }}><PencilGlyph color={accent} /></span>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label)" }}>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label)" }}>
           {notes.length === 1 ? "Ваша заметка" : `Ваши заметки · ${notes.length}`}
         </span>
       </div>

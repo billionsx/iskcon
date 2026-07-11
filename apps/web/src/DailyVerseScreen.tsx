@@ -102,7 +102,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: PAPER, fontFamily: FT }}>
       <header style={nav}>
         <button type="button" aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: INK, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Стих дня</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Стих дня</div>
         <span style={{ width: 38 }} />
       </header>
 
@@ -123,7 +123,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
               {/* прогресс системного чтения */}
               <div style={{ marginBottom: 22 }}>
                 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
-                  <span style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение Прабхупады</span>
+                  <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение Прабхупады</span>
                   <span style={{ fontFamily: FT, fontSize: 11.5, color: INK3, whiteSpace: "nowrap" }}>{numLabel} из {fmt(unit.total)}</span>
                 </div>
                 <div style={{ marginTop: 8, height: 4, borderRadius: 3, background: FILL, overflow: "hidden" }}>
@@ -140,7 +140,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
               ))}
 
               {!hasUnitPurport && (
-                <div style={{ marginTop: -16, marginBottom: 20, fontFamily: FT, fontSize: 13, color: INK3 }}>
+                <div style={{ marginTop: -16, marginBottom: 20, fontFamily: FT, fontSize: "var(--text-footnote)", color: INK3 }}>
                   К этим стихам комментария нет — продолжайте к следующему.
                 </div>
               )}
@@ -171,7 +171,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
         <div style={{ position: "sticky", bottom: 0, padding: "12px 16px calc(14px + env(safe-area-inset-bottom,0px))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
           <div style={{ maxWidth: 480, margin: "0 auto" }}>
             <button type="button" onClick={onNext} disabled={unit.done}
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", height: 50, borderRadius: 14, border: "none", background: unit.done ? FILL : GOLD, color: unit.done ? INK3 : "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: unit.done ? "default" : "pointer", WebkitTapHighlightColor: "transparent", boxShadow: unit.done ? "none" : "0 4px 16px color-mix(in srgb, " + GOLD + " 40%, transparent)" }}>
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", height: 50, borderRadius: 14, border: "none", background: unit.done ? FILL : GOLD, color: unit.done ? INK3 : "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: unit.done ? "default" : "pointer", WebkitTapHighlightColor: "transparent", boxShadow: unit.done ? "none" : "0 4px 16px color-mix(in srgb, " + GOLD + " 40%, transparent)" }}>
               {unit.done ? "Корпус прочитан" : <>Прочитано · дальше <ArrowR /></>}
             </button>
           </div>

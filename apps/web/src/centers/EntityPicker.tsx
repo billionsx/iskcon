@@ -75,7 +75,7 @@ export default function EntityPicker({
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg>
           <span style={{ fontFamily: FT, fontSize: 14.5, fontWeight: 600, color: L1 }}>{value.name}</span>
         </span>
-        <button type="button" onClick={() => onChange(null)} style={{ padding: "8px 12px", borderRadius: 11, border: "none", background: FILL2, color: L2, fontFamily: FT, fontSize: 13, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+        <button type="button" onClick={() => onChange(null)} style={{ padding: "8px 12px", borderRadius: 11, border: "none", background: FILL2, color: L2, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           Отвязать
         </button>
       </div>
@@ -119,7 +119,7 @@ export default function EntityPicker({
                 )}
                 <span style={{ minWidth: 0, flex: 1 }}>
                   <span style={{ display: "block", fontFamily: FT, fontSize: 14.5, fontWeight: 600, color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hitName(h)}</span>
-                  {h.type && <span style={{ display: "block", fontFamily: FT, fontSize: 12, color: L3 }}>{TYPE_LABEL[h.type] || h.type}{h.name_iast && h.name_ru ? ` · ${h.name_iast}` : ""}</span>}
+                  {h.type && <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-caption)", color: L3 }}>{TYPE_LABEL[h.type] || h.type}{h.name_iast && h.name_ru ? ` · ${h.name_iast}` : ""}</span>}
                 </span>
               </button>
             ))

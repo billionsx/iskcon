@@ -139,19 +139,19 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
             <button onClick={copy} style={{ ...row, borderTop: `0.5px solid ${HAIR}`, color: copied ? OK : INK }}>
               <CopyGlyph color={copied ? OK : INK2} />
               <span style={{ flex: 1 }}>{copied ? "Адрес скопирован" : "Копировать адрес"}</span>
-              {copied && <span style={{ fontSize: 16 }}>✓</span>}
+              {copied && <span style={{ fontSize: "var(--text-callout)" }}>✓</span>}
             </button>
             <button onClick={() => setShowQr((v) => !v)} style={{ ...row, borderTop: `0.5px solid ${HAIR}`, color: INK }}>
               <QrGlyph color={INK2} />
               <span style={{ flex: 1 }}>{showQr ? "Скрыть QR-код" : "Показать QR-код"}</span>
-              <span style={{ color: INK3, fontSize: 11 }}>{showQr ? "▲" : "▼"}</span>
+              <span style={{ color: INK3, fontSize: "var(--text-caption2)" }}>{showQr ? "▲" : "▼"}</span>
             </button>
             {showQr && (
               <div style={{ borderTop: `0.5px solid ${HAIR}`, padding: 18, display: "grid", placeItems: "center" }}>
                 <div style={{ width: 196, height: 196, display: "grid", placeItems: "center", borderRadius: 14, background: "#fff", boxShadow: "0 0 0 0.5px " + HAIR }}>
                   {qr
                     ? <img src={qr} alt="QR-код USDT TRC20" width={172} height={172} style={{ display: "block" }} />
-                    : <span style={{ fontSize: 13, color: INK3 }}>Генерация…</span>}
+                    : <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>Генерация…</span>}
                 </div>
               </div>
             )}

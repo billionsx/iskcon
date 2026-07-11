@@ -128,7 +128,7 @@ function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
           ? <img src={cover} alt="" loading="lazy" style={{ width: 50, height: 50, borderRadius: 11, objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
           : <BookMonogram ch={initial} />}
         <span style={{ minWidth: 0, flex: 1 }}>
-          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)",
+          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)",
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}><Hi text={book.title} q={query} /></span>
           {book.iast && (
             <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 12.5, color: "var(--color-label-3)",
@@ -138,7 +138,7 @@ function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
             <button type="button" onClick={() => onOpenAuthor(book.authorId!)} aria-label={`Автор: ${book.authorName}`}
               style={{ pointerEvents: "auto", marginTop: 6, display: "inline-flex", alignItems: "center", gap: 4, maxWidth: "100%",
                 padding: "3px 9px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-fill-1)",
-                fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 600, color: "var(--color-label-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
+                fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
               onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")}
               onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
               onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
@@ -150,7 +150,7 @@ function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
           ) : null}
         </span>
         {!book.readable && (
-          <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, color: "var(--color-label-3)", border: "0.5px solid var(--color-hairline)", borderRadius: 999, padding: "2px 8px" }}>скоро</span>
+          <span style={{ flexShrink: 0, fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)", border: "0.5px solid var(--color-hairline)", borderRadius: 999, padding: "2px 8px" }}>скоро</span>
         )}
         <Chevron muted={!book.readable} />
       </div>
@@ -188,9 +188,9 @@ function SectionCard({ title, subtitle, mark, accent, onClick }: { title: string
       </span>
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)" }}>{title}</span>
-        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", lineHeight: 1.4 }}>{subtitle}</span>
+        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", lineHeight: 1.4 }}>{subtitle}</span>
       </span>
-      <span style={{ flexShrink: 0, alignSelf: "flex-start", color: "var(--color-label-3)", fontSize: 22, lineHeight: 1, marginTop: 2 }}>›</span>
+      <span style={{ flexShrink: 0, alignSelf: "flex-start", color: "var(--color-label-3)", fontSize: "var(--text-title2)", lineHeight: 1, marginTop: 2 }}>›</span>
     </button>
   );
 }
@@ -218,7 +218,7 @@ export function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOp
     <section style={{ marginTop: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
         <span aria-hidden style={{ width: 18, height: 3, borderRadius: 999, background: GOLD }} />
-        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Продолжить чтение</h2>
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Продолжить чтение</h2>
       </div>
       <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 16, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
         {items.map((r, i) => {
@@ -239,7 +239,7 @@ export function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOp
                   ? <img src={cover} alt="" loading="lazy" style={{ width: 50, height: 50, borderRadius: 11, objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
                   : <BookMonogram ch={initial} />}
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
                   <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.label}</span>
                   {pct != null && (
                     <span style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 7 }}>
@@ -281,14 +281,14 @@ export function ReadingGoalCard() {
   const pct = Math.min(1, min / Math.max(1, goal));
   const done = min >= goal;
   const adjust = (d: number) => { const g = Math.min(120, Math.max(5, goal + d)); setReadingGoalMin(g); setGoal(g); setStreak(readingStreakDays(g)); };
-  const stepBtn: CSSProperties = { width: 34, height: 28, borderRadius: 9, border: "none", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
+  const stepBtn: CSSProperties = { width: 34, height: 28, borderRadius: 9, border: "none", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
   return (
     <section style={{ marginTop: 18 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
         <span aria-hidden style={{ width: 18, height: 3, borderRadius: 999, background: GOLD }} />
-        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Чтение сегодня</h2>
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Чтение сегодня</h2>
         {streak >= 1 && (
-          <span style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 600, color: "var(--color-label-2)" }}>
+          <span style={{ marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>
             <span aria-hidden style={{ width: 6, height: 6, borderRadius: "50%", background: GOLD }} />
             серия {streak} {plural(streak, "день", "дня", "дней")}
           </span>
@@ -374,8 +374,8 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
     <div>
       {/* шапка */}
       <div style={{ marginBottom: 4 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Библиотека</div>
-        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Книги</h1>
+        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Библиотека</div>
+        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Книги</h1>
         <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)", lineHeight: 1.4 }}>
           Священные тексты — от первоисточников парампары до изданий Шрилы Прабхупады
         </p>
@@ -394,7 +394,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           placeholder="Поиск книги, автора или санскрита" inputMode="search" enterKeyHint="search"
           autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по библиотеке"
           style={{ width: "100%", boxSizing: "border-box", padding: "12px 40px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
-            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
+            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
         {q && (
           <button type="button" aria-label="Очистить" onClick={() => { setQ(""); inputRef.current?.focus(); }}
             style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
@@ -409,7 +409,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
       {searching ? (
         <div style={{ marginTop: 16 }} aria-live="polite">
           {results.length === 0 ? (
-            <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.55 }}>
+            <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
               Ничего не найдено по запросу «{trimmed}».<br />Попробуйте название, автора или санскрит (IAST).
             </div>
           ) : (
@@ -484,13 +484,13 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
               >
                 <span style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, color: "var(--color-label)" }}>Скоро появятся</span>
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{soonBooks.length}</span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{soonBooks.length}</span>
                 </span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-label-3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ transform: soonOpen ? "rotate(180deg)" : "none", transition: "transform .2s" }}><path d="M6 9l6 6 6-6" /></svg>
               </button>
               {soonOpen && (
                 <div style={{ marginTop: 4 }}>
-                  <p style={{ margin: "0 4px 8px", fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.45 }}>
+                  <p style={{ margin: "0 4px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 1.45 }}>
                     Эти книги ещё готовятся — текст или аудио появятся позже.
                   </p>
                   <BookList books={soonBooks} onOpenBook={openBook} onOpenAuthor={openAuthor} />

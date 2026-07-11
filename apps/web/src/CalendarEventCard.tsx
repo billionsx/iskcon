@@ -90,10 +90,10 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
           <span aria-hidden style={{ width: 7, height: 7, borderRadius: "50%", background: meta.color }} />
           <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 700, letterSpacing: "-0.01em", color: meta.color }}>{meta.label}</span>
         </span>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, color: "var(--color-label-3)" }}>{fmtDate(date)}</span>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)" }}>{fmtDate(date)}</span>
       </div>
 
-      <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.2, color: "var(--color-label)", textWrap: "balance" }}>{title}</h2>
+      <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.2, color: "var(--color-label)", textWrap: "balance" }}>{title}</h2>
 
       {hasPerson && (
         <div style={{ marginTop: 18 }}>
@@ -106,7 +106,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
               {chips.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 5 }}>
                   {chips.map((c, i) => (
-                    <span key={i} style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.02em", padding: "3px 8px", borderRadius: 7, background: i === 0 ? "color-mix(in srgb, #D2AA1B 15%, transparent)" : "var(--color-glass-thin)", color: i === 0 ? "#9a7d10" : "var(--color-label-2)" }}>{c}</span>
+                    <span key={i} style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.02em", padding: "3px 8px", borderRadius: 7, background: i === 0 ? "color-mix(in srgb, #D2AA1B 15%, transparent)" : "var(--color-glass-thin)", color: i === 0 ? "#9a7d10" : "var(--color-label-2)" }}>{c}</span>
                   ))}
                 </div>
               )}
@@ -119,7 +119,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 20 }}>
             <button type="button" onClick={() => { if (entityId) onOpen(entityId); }}
-              style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "13px 16px", borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", WebkitTapHighlightColor: "transparent" }}>
+              style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "13px 16px", borderRadius: 14, border: "none", cursor: "pointer", background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", WebkitTapHighlightColor: "transparent" }}>
               Открыть карточку
               <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>

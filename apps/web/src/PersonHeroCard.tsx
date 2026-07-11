@@ -82,7 +82,7 @@ export function PersonHeroCard({
         )}
         <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: nameSize, lineHeight: 1.05, fontWeight: 800, letterSpacing: "-0.03em", color: "#fff" }}>{nameRu}</h1>
         {nameIast && (
-          <div style={{ marginTop: 6, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 16, lineHeight: 1.3, color: "rgba(255,255,255,.72)" }}>{nameIast}</div>
+          <div style={{ marginTop: 6, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.3, color: "rgba(255,255,255,.72)" }}>{nameIast}</div>
         )}
         {identity && <p style={{ margin: "16px 0 0", fontSize: 15.5, lineHeight: 1.35, fontWeight: 600, letterSpacing: "-0.01em", color: "rgba(255,255,255,.96)" }}>{cleanCardText(identity)}</p>}
         {summary && (

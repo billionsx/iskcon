@@ -50,7 +50,7 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
       <button onClick={onBack} aria-label="Назад" style={{ background: "none", border: "none", color: INK, cursor: "pointer", padding: 8, display: "grid", placeItems: "center" }}>
         <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7" /></svg>
       </button>
-      <span style={{ fontSize: 17, fontWeight: 650, color: INK, fontFamily: FONT }}>Экадаши</span>
+      <span style={{ fontSize: "var(--text-body)", fontWeight: 650, color: INK, fontFamily: FONT }}>Экадаши</span>
     </div>
   );
 
@@ -67,9 +67,9 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
       <>
         {/* Герой */}
         <div style={{ background: "linear-gradient(135deg, color-mix(in srgb, #D2AA1B 16%, var(--color-bg-2)), var(--color-bg-2))", borderRadius: 18, border: `0.5px solid ${HAIR}`, padding: "20px 18px", marginTop: 16 }}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, fontFamily: FONT }}>{today ? "Сегодня Экадаши" : "Следующий Экадаши"}</div>
+          <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, fontFamily: FONT }}>{today ? "Сегодня Экадаши" : "Следующий Экадаши"}</div>
           <div style={{ fontSize: 27, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 6 }}>{info.name}-экадаши</div>
-          <div style={{ fontSize: 15, color: INK2, fontFamily: FONT, marginTop: 4 }}>{ruDate(info.date)} · {daysLabel(info.daysUntil)}</div>
+          <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>{ruDate(info.date)} · {daysLabel(info.daysUntil)}</div>
         </div>
 
         {/* Отметка соблюдения */}
@@ -87,7 +87,7 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
                 <span style={{ fontSize: 30, fontWeight: 800, color: GOLD, fontFamily: FONT, letterSpacing: -0.5 }}>{info.paranStart}{info.paranEnd ? `–${info.paranEnd}` : ""}</span>
               </div>
             ) : (
-              <div style={{ fontSize: 16, color: INK2, fontFamily: FONT }}>Время уточняется в календаре</div>
+              <div style={{ fontSize: "var(--text-callout)", color: INK2, fontFamily: FONT }}>Время уточняется в календаре</div>
             )}
             <div style={{ fontSize: 14, color: INK2, fontFamily: FONT, marginTop: 8, lineHeight: 1.45 }}>
               Пост завершают на следующее утро{info.paranDate ? ` (${ruDate(info.paranDate)})` : ""} в отведённое время — по городу {info.city}.
@@ -100,12 +100,12 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
         <Card>
           <div style={{ padding: "16px 16px", fontFamily: FONT }}>
             <Eyebrow>Пост от зерна и бобовых</Eyebrow>
-            <div style={{ fontSize: 15, lineHeight: 1.55, color: INK }}>
+            <div style={{ fontSize: "var(--text-subhead)", lineHeight: 1.55, color: INK }}>
               В Экадаши преданные воздерживаются от зерновых (рис, пшеница, кукуруза) и бобовых (дал, горох, фасоль). Усиливают повторение святого имени, слушание и чтение — это главная цель дня.
             </div>
             <div style={{ height: "0.5px", background: HAIR, margin: "14px 0" }} />
             <Eyebrow>Что можно</Eyebrow>
-            <div style={{ fontSize: 15, lineHeight: 1.55, color: INK }}>
+            <div style={{ fontSize: "var(--text-subhead)", lineHeight: 1.55, color: INK }}>
               Фрукты, овощи, орехи, молочное, картофель. Предложите Кришне и почтите как прасад. Полный пост (без воды) — по силам и желанию.
             </div>
           </div>
@@ -113,10 +113,10 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
 
         {/* Рецепты */}
         <button onClick={() => onOpenPath("/prasadam")} style={{ width: "100%", marginTop: 14, padding: "15px 16px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: SURF, cursor: "pointer", fontFamily: FONT, display: "flex", alignItems: "center", gap: 12, WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
-          <span style={{ fontSize: 22 }}>🍲</span>
+          <span style={{ fontSize: "var(--text-title2)" }}>🍲</span>
           <span style={{ flex: 1 }}>
-            <span style={{ display: "block", fontSize: 16, fontWeight: 600, color: INK }}>Что готовить</span>
-            <span style={{ display: "block", fontSize: 13, color: INK3, marginTop: 1 }}>Рецепты прасада без зерна и бобовых</span>
+            <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, color: INK }}>Что готовить</span>
+            <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1 }}>Рецепты прасада без зерна и бобовых</span>
           </span>
           <span style={{ color: INK3 }}>›</span>
         </button>

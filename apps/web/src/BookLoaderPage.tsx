@@ -316,7 +316,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
         <Header onBack={onBack} onLogout={null} />
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "60px 22px" }}>
           <div style={{ ...card, textAlign: "center" }}>
-            <div style={{ fontSize: 17, fontWeight: 700, color: "var(--color-label)" }}>Доступ к загрузчику</div>
+            <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: "var(--color-label)" }}>Доступ к загрузчику</div>
             <p style={{ margin: "8px 0 18px", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
               Введите ключ оператора (секрет <code>ADMIN_TOKEN</code> воркера). Он сохранится только на этом устройстве.
             </p>
@@ -353,7 +353,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
             >
               Войти
             </button>
-            {err && <div style={{ marginTop: 12, fontSize: 13, color: "#c0392b" }}>{err}</div>}
+            {err && <div style={{ marginTop: 12, fontSize: "var(--text-footnote)", color: "#c0392b" }}>{err}</div>}
           </div>
         </div>
       </div>
@@ -377,7 +377,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
 
       <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 18px 60px" }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>
+          <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>
             Библиотека · ингест
           </div>
           <h1 style={{ margin: "2px 0 6px", fontSize: 24, fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
@@ -433,7 +433,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
               }
             />
             {!layers.edition && (
-              <div style={{ marginTop: 8, fontSize: 12, color: "#c0392b" }}>Включите загрузку слоёв.</div>
+              <div style={{ marginTop: 8, fontSize: "var(--text-caption)", color: "#c0392b" }}>Включите загрузку слоёв.</div>
             )}
           </div>
 
@@ -468,7 +468,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                 <div key={c.number} style={{ borderBottom: last && !open ? "none" : "0.5px solid var(--color-hairline)" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 14px" }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <div style={{ fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {c.number}. {c.title_ru || "—"}
                       </div>
                       <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 6, fontSize: 11.5, color: "var(--color-label-2)" }}>
@@ -497,9 +497,9 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                   {open && (
                     <div style={{ padding: "2px 14px 12px", borderTop: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
                       {previewLoading === c.number && !vs ? (
-                        <div style={{ padding: "14px 0", color: "var(--color-label-2)", fontSize: 13 }}>Загрузка стихов…</div>
+                        <div style={{ padding: "14px 0", color: "var(--color-label-2)", fontSize: "var(--text-footnote)" }}>Загрузка стихов…</div>
                       ) : !vs || vs.length === 0 ? (
-                        <div style={{ padding: "14px 0", color: "var(--color-label-2)", fontSize: 13 }}>Пока пусто — нажмите «Загрузить».</div>
+                        <div style={{ padding: "14px 0", color: "var(--color-label-2)", fontSize: "var(--text-footnote)" }}>Пока пусто — нажмите «Загрузить».</div>
                       ) : (
                         vs.map((v, idx) => <VersePreview key={idx} v={v} />)
                       )}
@@ -551,7 +551,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
                     }}
                   />
                 </label>
-                {fileName && <span style={{ fontSize: 13, color: "var(--color-label-2)" }}>{fileName}</span>}
+                {fileName && <span style={{ fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{fileName}</span>}
               </div>
               <input value={jsonCh} onChange={(e) => setJsonCh(e.target.value)} placeholder="Номер главы (например, 2)" style={{ ...input, marginBottom: 8 }} />
               <textarea
@@ -567,7 +567,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
             </div>
           )}
 
-          <p style={{ marginTop: 26, fontSize: 12, lineHeight: 1.55, color: "var(--color-label-3, var(--color-label-2))" }}>
+          <p style={{ marginTop: 26, fontSize: "var(--text-caption)", lineHeight: 1.55, color: "var(--color-label-3, var(--color-label-2))" }}>
             Источник — vedabase.io (раздел /ru/library). Загрузка идёт по стихам: деванагари и транслитерация (санскрит), а при включённом «Издании» — ещё пословный, перевод и комментарий. Запись в базу идемпотентная (повтор не дублирует), у каждого стиха сохраняется ссылка на оригинал.
           </p>
         </div>
@@ -583,7 +583,7 @@ function Header({ onBack, onLogout }: { onBack: () => void; onLogout: (() => voi
       <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}>
         <BackIcon size={22} />
       </button>
-      <div style={{ flex: 1, fontSize: 16, fontWeight: 700, color: "var(--color-label)" }}>Загрузчик · CRM</div>
+      <div style={{ flex: 1, fontSize: "var(--text-callout)", fontWeight: 700, color: "var(--color-label)" }}>Загрузчик · CRM</div>
       {onLogout && (
         <button onClick={onLogout} style={{ height: 34, padding: "0 12px", background: "none", border: "none", color: "var(--color-label-2)", fontSize: 14, cursor: "pointer", fontFamily: "var(--font-text)" }}>
           Выйти
@@ -597,8 +597,8 @@ function Toggle({ label, note, on, onToggle, warn }: { label: string; note?: str
   return (
     <button onClick={onToggle} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", padding: "10px 2px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}>
       <span style={{ minWidth: 0, paddingRight: 12 }}>
-        <span style={{ display: "block", fontSize: 15, color: "var(--color-label)" }}>{label}</span>
-        {note && <span style={{ display: "block", marginTop: 2, fontSize: 12, color: warn ? "#a8700a" : "var(--color-label-2)" }}>{note}</span>}
+        <span style={{ display: "block", fontSize: "var(--text-subhead)", color: "var(--color-label)" }}>{label}</span>
+        {note && <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-caption)", color: warn ? "#a8700a" : "var(--color-label-2)" }}>{note}</span>}
       </span>
       <span aria-hidden style={{ position: "relative", width: 42, height: 26, borderRadius: 999, flexShrink: 0, background: on ? (warn ? "#d99100" : "var(--color-gold-deep)") : "var(--color-glass-regular)", transition: "background .2s" }}>
         <span style={{ position: "absolute", top: 3, left: on ? 19 : 3, width: 20, height: 20, borderRadius: "50%", background: "#fff", transition: "left .2s", boxShadow: "0 1px 3px rgba(0,0,0,.3)" }} />
@@ -609,7 +609,7 @@ function Toggle({ label, note, on, onToggle, warn }: { label: string; note?: str
 
 function Chip({ label, tone = "muted" }: { label: string; tone?: "ok" | "muted" }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", height: 20, padding: "0 8px", borderRadius: 999, background: tone === "ok" ? "rgba(0,122,255,.12)" : "var(--color-glass-regular)", color: tone === "ok" ? "var(--color-gold-deep)" : "var(--color-label-2)", fontSize: 11, fontWeight: 600 }}>
+    <span style={{ display: "inline-flex", alignItems: "center", height: 20, padding: "0 8px", borderRadius: 999, background: tone === "ok" ? "rgba(0,122,255,.12)" : "var(--color-glass-regular)", color: tone === "ok" ? "var(--color-gold-deep)" : "var(--color-label-2)", fontSize: "var(--text-caption2)", fontWeight: 600 }}>
       {label}
     </span>
   );
@@ -623,9 +623,9 @@ function VersePreview({ v }: { v: PreviewVerse }) {
   return (
     <div style={{ padding: "12px 0", borderTop: "0.5px dashed var(--color-hairline)" }}>
       <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-gold-deep)" }}>{v.ref}</span>
+        <span style={{ fontSize: "var(--text-footnote)", fontWeight: 700, color: "var(--color-gold-deep)" }}>{v.ref}</span>
         {v.sourceUrl && (
-          <a href={v.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: 11, color: "var(--color-label-3, var(--color-label-2))" }}>
+          <a href={v.sourceUrl} target="_blank" rel="noreferrer" style={{ fontSize: "var(--text-caption2)", color: "var(--color-label-3, var(--color-label-2))" }}>
             источник ↗
           </a>
         )}
@@ -634,10 +634,10 @@ function VersePreview({ v }: { v: PreviewVerse }) {
         <div style={{ marginTop: 4, fontSize: 12.5, color: "var(--color-label-3, var(--color-label-2))" }}>пусто — не загружено</div>
       ) : (
         <>
-          {v.devanagari && <div style={{ marginTop: 6, fontSize: 15, lineHeight: 1.6, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.devanagari}</div>}
-          {v.translit && <div style={{ marginTop: 4, fontSize: 13, fontStyle: "italic", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>{v.translit}</div>}
+          {v.devanagari && <div style={{ marginTop: 6, fontSize: "var(--text-subhead)", lineHeight: 1.6, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.devanagari}</div>}
+          {v.translit && <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", fontStyle: "italic", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>{v.translit}</div>}
           {v.tokens.length > 0 && (
-            <div style={{ marginTop: 6, fontSize: 12, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+            <div style={{ marginTop: 6, fontSize: "var(--text-caption)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
               {v.tokens.map((t, i) => (
                 <span key={i}>
                   <b style={{ fontWeight: 600, color: "var(--color-label)" }}>{t.term}</b>
@@ -649,10 +649,10 @@ function VersePreview({ v }: { v: PreviewVerse }) {
           )}
           {v.translation && <div style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
           {v.purport && (
-            <div style={{ marginTop: 6, fontSize: 13, lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
+            <div style={{ marginTop: 6, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
               {long && !more ? purp.slice(0, 280) + "…" : purp}
               {long && (
-                <button onClick={() => setMore((m) => !m)} style={{ marginLeft: 6, background: "none", border: "none", color: "var(--color-gold-deep)", cursor: "pointer", fontSize: 12, padding: 0, fontFamily: "var(--font-text)" }}>
+                <button onClick={() => setMore((m) => !m)} style={{ marginLeft: 6, background: "none", border: "none", color: "var(--color-gold-deep)", cursor: "pointer", fontSize: "var(--text-caption)", padding: 0, fontFamily: "var(--font-text)" }}>
                   {more ? "свернуть" : "развернуть"}
                 </button>
               )}
@@ -667,7 +667,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
 /* ─────────── стили ─────────── */
 const page: CSSProperties = { display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)" };
 const card: CSSProperties = { borderRadius: 14, padding: "16px 18px", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" };
-const input: CSSProperties = { width: "100%", boxSizing: "border-box", height: 44, padding: "0 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-label)", fontSize: 15, fontFamily: "var(--font-text)", outline: "none" };
-const primaryBtn: CSSProperties = { height: 46, padding: "0 18px", borderRadius: 12, border: "none", background: "var(--color-gold-deep)", color: "#fff", fontSize: 15, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
-const sectionLabel: CSSProperties = { fontSize: 11, fontWeight: 600, letterSpacing: "1.4px", textTransform: "uppercase", color: "var(--color-label-2)", margin: "0 0 10px" };
-const ghostBtn: CSSProperties = { flexShrink: 0, height: 34, padding: "0 12px", borderRadius: 10, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
+const input: CSSProperties = { width: "100%", boxSizing: "border-box", height: 44, padding: "0 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-label)", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", outline: "none" };
+const primaryBtn: CSSProperties = { height: 46, padding: "0 18px", borderRadius: 12, border: "none", background: "var(--color-gold-deep)", color: "#fff", fontSize: "var(--text-subhead)", fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };
+const sectionLabel: CSSProperties = { fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "1.4px", textTransform: "uppercase", color: "var(--color-label-2)", margin: "0 0 10px" };
+const ghostBtn: CSSProperties = { flexShrink: 0, height: 34, padding: "0 12px", borderRadius: 10, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg)", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)", cursor: "pointer" };

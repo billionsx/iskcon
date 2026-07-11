@@ -24,11 +24,11 @@ const inputStyle: React.CSSProperties = {
   border: "1px solid var(--color-hairline)",
   borderRadius: "var(--radius-sm)",
   color: "var(--color-label)",
-  fontSize: 16,
+  fontSize: "var(--text-callout)",
   padding: "11px 12px",
   outline: "none",
 };
-const labelStyle: React.CSSProperties = { fontSize: 13, color: "var(--color-label-2)", margin: "0 0 6px", display: "block" };
+const labelStyle: React.CSSProperties = { fontSize: "var(--text-footnote)", color: "var(--color-label-2)", margin: "0 0 6px", display: "block" };
 
 type RunState =
   | { phase: "idle" }
@@ -46,14 +46,14 @@ function TokenGate({ onSet }: { onSet: (t: string) => void }) {
   const [val, setVal] = useState("");
   return (
     <div style={{ ...card, marginTop: 16 }}>
-      <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 4 }}>Доступ оператора</div>
-      <div style={{ fontSize: 13, color: "var(--color-label-2)", marginBottom: 14 }}>
+      <div style={{ fontSize: "var(--text-body)", fontWeight: 600, marginBottom: 4 }}>Доступ оператора</div>
+      <div style={{ fontSize: "var(--text-footnote)", color: "var(--color-label-2)", marginBottom: 14 }}>
         Введи ADMIN_TOKEN — он хранится только в этой вкладке.
       </div>
       <input type="password" value={val} placeholder="ADMIN_TOKEN" onChange={(e) => setVal(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter" && val.trim()) onSet(val.trim()); }} style={inputStyle} />
       <button onClick={() => val.trim() && onSet(val.trim())} disabled={!val.trim()}
-        style={{ marginTop: 12, width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 12, fontSize: 16, fontWeight: 600, color: "#fff", background: val.trim() ? "var(--color-gold-deep)" : "var(--color-fill-2)", cursor: val.trim() ? "pointer" : "default" }}>
+        style={{ marginTop: 12, width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 12, fontSize: "var(--text-callout)", fontWeight: 600, color: "#fff", background: val.trim() ? "var(--color-gold-deep)" : "var(--color-fill-2)", cursor: val.trim() ? "pointer" : "default" }}>
         Войти
       </button>
     </div>
@@ -143,8 +143,8 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
   return (
     <Wrap onBack={onBack}>
       <div style={{ ...card, marginTop: 16 }}>
-        <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 4 }}>Забор сторис канала</div>
-        <div style={{ fontSize: 13, color: "var(--color-label-2)", marginBottom: 14, lineHeight: 1.5 }}>
+        <div style={{ fontSize: "var(--text-body)", fontWeight: 600, marginBottom: 4 }}>Забор сторис канала</div>
+        <div style={{ fontSize: "var(--text-footnote)", color: "var(--color-label-2)", marginBottom: 14, lineHeight: 1.5 }}>
           Заберёт активные и закреплённые Stories канала через Telegram-сессию и опубликует на archive.org.
           Круг сторис в приложении обновится автоматически. Также идёт по расписанию каждые 3 ч.
         </div>
@@ -155,7 +155,7 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
         <input value={identifier} placeholder="iskcone-stories" onChange={(e) => setIdentifier(e.target.value)} style={{ ...inputStyle, marginBottom: 14 }} />
 
         <button onClick={start} disabled={busy}
-          style={{ width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 13, fontSize: 16, fontWeight: 700, color: "#fff", background: busy ? "var(--color-fill-2)" : "var(--color-gold-deep)", cursor: busy ? "default" : "pointer" }}>
+          style={{ width: "100%", border: "none", borderRadius: "var(--radius-sm)", padding: 13, fontSize: "var(--text-callout)", fontWeight: 700, color: "#fff", background: busy ? "var(--color-fill-2)" : "var(--color-gold-deep)", cursor: busy ? "default" : "pointer" }}>
           {run.phase === "starting" ? "Запуск…" : run.phase === "running" ? `Идёт забор · ${run.status}` : "Забрать сторис сейчас"}
         </button>
 
@@ -172,13 +172,13 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
 
       <div style={{ ...card, marginTop: 14 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-          <div style={{ fontSize: 15, fontWeight: 600 }}>Сейчас в круге{typeof mf?.count === "number" ? ` · ${stories.length}` : ""}</div>
+          <div style={{ fontSize: "var(--text-subhead)", fontWeight: 600 }}>Сейчас в круге{typeof mf?.count === "number" ? ` · ${stories.length}` : ""}</div>
           <button onClick={loadManifest} disabled={mfLoading}
-            style={{ border: "1px solid var(--color-hairline)", background: "var(--color-bg-3)", color: "var(--color-label-2)", borderRadius: 999, padding: "5px 12px", fontSize: 13, cursor: "pointer" }}>
+            style={{ border: "1px solid var(--color-hairline)", background: "var(--color-bg-3)", color: "var(--color-label-2)", borderRadius: 999, padding: "5px 12px", fontSize: "var(--text-footnote)", cursor: "pointer" }}>
             {mfLoading ? "…" : "Обновить"}
           </button>
         </div>
-        {mf?.generated_at && <div style={{ fontSize: 12, color: "var(--color-label-3)", marginBottom: 10 }}>Обновлено: {fmtTime(mf.generated_at)}</div>}
+        {mf?.generated_at && <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)", marginBottom: 10 }}>Обновлено: {fmtTime(mf.generated_at)}</div>}
         {stories.length === 0 ? (
           <div style={{ fontSize: 13.5, color: "var(--color-label-2)" }}>
             {mf && mf.ok === false ? "Манифест ещё не создан — запусти забор." : "Сторис не найдено. Если у канала сейчас нет активных Stories — это нормально."}
@@ -203,7 +203,7 @@ function Wrap({ children, onBack }: { children: React.ReactNode; onBack: () => v
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "max(12px, env(safe-area-inset-top)) 16px 40px" }}>
-        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, border: "none", background: "none", color: "var(--color-label-2)", fontSize: 15, cursor: "pointer", padding: 0 }}>
+        <button onClick={onBack} style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 8, border: "none", background: "none", color: "var(--color-label-2)", fontSize: "var(--text-subhead)", cursor: "pointer", padding: 0 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           Назад
         </button>

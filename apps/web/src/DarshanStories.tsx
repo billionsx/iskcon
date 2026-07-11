@@ -436,10 +436,10 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
           {imgs[0] ? <img src={px(imgs[0], 96)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} /> : <span style={{ color: "#fff" }}><Lotus s={18} /></span>}
         </span>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: FT, fontSize: 13, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {shortTemple(item.templeSlug, item.templeName)}
           </div>
-          <div style={{ fontFamily: FT, fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{humanDate(curYmd)}{curAt ? ` · ${humanTime(curAt)}` : ""}</div>
+          <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.7)" }}>{humanDate(curYmd)}{curAt ? ` · ${humanTime(curAt)}` : ""}</div>
         </div>
         <button type="button" aria-label="Закрыть" onClick={onClose} onPointerDown={stop} onPointerUp={stop}
           style={{ flexShrink: 0, width: 38, height: 38, borderRadius: "50%", border: "none", background: "rgba(255,255,255,0.14)", color: "#fff", display: "grid", placeItems: "center", cursor: "pointer", backdropFilter: "blur(8px)", WebkitTapHighlightColor: "transparent" }}>
@@ -475,7 +475,7 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
 
       {/* тост действий */}
       {toast && (
-        <div style={{ position: "absolute", left: "50%", bottom: "calc(116px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 6, background: "rgba(0,0,0,0.8)", color: "#fff", fontFamily: FT, fontSize: 13, fontWeight: 600, padding: "9px 16px", borderRadius: 999, backdropFilter: "blur(8px)", pointerEvents: "none", whiteSpace: "nowrap" }}>{toast}</div>
+        <div style={{ position: "absolute", left: "50%", bottom: "calc(116px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 6, background: "rgba(0,0,0,0.8)", color: "#fff", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, padding: "9px 16px", borderRadius: 999, backdropFilter: "blur(8px)", pointerEvents: "none", whiteSpace: "nowrap" }}>{toast}</div>
       )}
 
       {/* низ: имя Божеств + подпись (для ежедневных даршанов — единый 3-строчный стандарт) */}
@@ -485,10 +485,10 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
             {/* 1 — имена пар Божеств, жирно */}
             <div style={{ fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "#fff" }}>{item.deities}</div>
             {/* 2 — «Ежедневный даршан» */}
-            <div style={{ marginTop: 5, fontFamily: FT, fontSize: 13, fontWeight: 500, lineHeight: 1.3, color: "rgba(255,255,255,0.88)" }}>Ежедневный даршан</div>
+            <div style={{ marginTop: 5, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 500, lineHeight: 1.3, color: "rgba(255,255,255,0.88)" }}>Ежедневный даршан</div>
             {/* 3 — Храм · ИСККОН-центр */}
             {(item.place || item.caption) && (
-              <div style={{ marginTop: 2, fontFamily: FT, fontSize: 13, fontWeight: 400, lineHeight: 1.35, color: "rgba(255,255,255,0.62)" }}>{item.place || item.caption}</div>
+              <div style={{ marginTop: 2, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 400, lineHeight: 1.35, color: "rgba(255,255,255,0.62)" }}>{item.place || item.caption}</div>
             )}
           </>
         ) : (

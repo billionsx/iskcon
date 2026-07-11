@@ -28,7 +28,7 @@ const card: React.CSSProperties = {
   padding: 16,
 };
 const labelStyle: React.CSSProperties = {
-  fontSize: 13,
+  fontSize: "var(--text-footnote)",
   color: "var(--color-label-2)",
   marginBottom: 6,
   display: "block",
@@ -40,7 +40,7 @@ const inputStyle: React.CSSProperties = {
   border: "1px solid var(--color-hairline)",
   borderRadius: "var(--radius-sm)",
   color: "var(--color-label)",
-  fontSize: 16,
+  fontSize: "var(--text-callout)",
   padding: "11px 12px",
   outline: "none",
 };
@@ -96,8 +96,8 @@ function TokenGate({ onSet }: { onSet: (t: string) => void }) {
   const [val, setVal] = useState("");
   return (
     <div style={{ ...card, marginTop: 16 }}>
-      <div style={{ fontSize: 17, fontWeight: 600, marginBottom: 4 }}>Доступ оператора</div>
-      <div style={{ fontSize: 13, color: "var(--color-label-2)", marginBottom: 14 }}>
+      <div style={{ fontSize: "var(--text-body)", fontWeight: 600, marginBottom: 4 }}>Доступ оператора</div>
+      <div style={{ fontSize: "var(--text-footnote)", color: "var(--color-label-2)", marginBottom: 14 }}>
         Введи ADMIN_TOKEN. Он хранится только в этой вкладке и уходит по защищённому каналу
         на твой же домен.
       </div>
@@ -120,7 +120,7 @@ function TokenGate({ onSet }: { onSet: (t: string) => void }) {
           border: "none",
           borderRadius: "var(--radius-sm)",
           padding: "12px",
-          fontSize: 16,
+          fontSize: "var(--text-callout)",
           fontWeight: 600,
           color: "#fff",
           background: val.trim() ? "var(--color-gold-deep)" : "var(--color-fill-2)",
@@ -310,14 +310,14 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
             border: "none",
             background: "transparent",
             color: "var(--color-gold-deep)",
-            fontSize: 16,
+            fontSize: "var(--text-callout)",
             cursor: "pointer",
             padding: "4px 4px 4px 0",
           }}
         >
           ‹ Назад
         </button>
-        <div style={{ fontSize: 17, fontWeight: 600 }}>Загрузчик аудио</div>
+        <div style={{ fontSize: "var(--text-body)", fontWeight: 600 }}>Загрузчик аудио</div>
         {token && (
           <button
             onClick={logout}
@@ -437,7 +437,7 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
                   border: "none",
                   borderRadius: "var(--radius-sm)",
                   padding: "13px",
-                  fontSize: 16,
+                  fontSize: "var(--text-callout)",
                   fontWeight: 600,
                   color: "#fff",
                   background: !canStart || running ? "var(--color-fill-2)" : "var(--color-gold-deep)",
@@ -456,7 +456,7 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
 
             <LiveMonitor token={token} />
 
-            <p style={{ fontSize: 12, color: "var(--color-label-3)", marginTop: 18, lineHeight: 1.5 }}>
+            <p style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)", marginTop: 18, lineHeight: 1.5 }}>
               Тяжёлую работу делает раннер GitHub Actions (Python/Telethon) — браузер и Worker
               MTProto и большие файлы не тянут. Ключи Telegram/archive.org заданы в секретах
               репозитория; здесь они не вводятся.
@@ -514,7 +514,7 @@ function StatusBlock({
           </button>
         )}
         {!run.archiveUrl && !run.artifactId && mode === "upload" && (
-          <div style={{ fontSize: 13, color: "var(--color-label-2)", marginTop: 8 }}>
+          <div style={{ fontSize: "var(--text-footnote)", color: "var(--color-label-2)", marginTop: 8 }}>
             Файлы добавлены в объект книги на archive.org.
           </div>
         )}
@@ -545,7 +545,7 @@ function Row({ dot, text, pulse }: { dot: string; text: string; pulse?: boolean 
           animation: pulse ? "dlpulse 1.4s ease-in-out infinite" : undefined,
         }}
       />
-      <span style={{ fontSize: 15, color: "var(--color-label)" }}>{text}</span>
+      <span style={{ fontSize: "var(--text-subhead)", color: "var(--color-label)" }}>{text}</span>
       <style>{"@keyframes dlpulse{0%,100%{opacity:1}50%{opacity:.35}}"}</style>
     </div>
   );
@@ -560,7 +560,7 @@ function LogLink({ url }: { url: string }) {
       style={{
         display: "inline-block",
         marginTop: 10,
-        fontSize: 13,
+        fontSize: "var(--text-footnote)",
         color: "var(--color-label-2)",
         textDecoration: "none",
       }}
@@ -580,7 +580,7 @@ function resultBtn(bg: string): React.CSSProperties {
     border: "none",
     borderRadius: "var(--radius-sm)",
     padding: "12px",
-    fontSize: 16,
+    fontSize: "var(--text-callout)",
     fontWeight: 600,
     color: "#fff",
     background: bg,
@@ -700,13 +700,13 @@ function LiveMonitor({ token }: { token: string }) {
   return (
     <div style={{ ...card, marginTop: 16 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-        <h3 style={{ margin: 0, fontSize: 15, color: "var(--color-label)" }}>Процесс загрузки</h3>
-        <span style={{ fontSize: 12, color: "var(--color-label-3)" }}>
+        <h3 style={{ margin: 0, fontSize: "var(--text-subhead)", color: "var(--color-label)" }}>Процесс загрузки</h3>
+        <span style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>
           {ts ? `обновлено ${new Date(ts).toLocaleTimeString("ru-RU")}` : "загрузка…"}
         </span>
       </div>
 
-      <div style={{ fontSize: 12, color: "var(--color-label-2)", marginBottom: 6 }}>Заливки (CI)</div>
+      <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-2)", marginBottom: 6 }}>Заливки (CI)</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
         {runs.slice(0, 6).map((r) => (
           <a
@@ -725,17 +725,17 @@ function LiveMonitor({ token }: { token: string }) {
                 ...(r.status !== "completed" ? { animation: "dlpulse 1.4s ease-in-out infinite" } : {}),
               }}
             />
-            <span style={{ flex: 1, fontSize: 13, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span style={{ flex: 1, fontSize: "var(--text-footnote)", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {r.title || `run ${r.id}`}
             </span>
-            <span style={{ fontSize: 11, color: "var(--color-label-3)" }}>{runWord(r)}</span>
-            <span style={{ fontSize: 11, color: "var(--color-gold-deep)" }}>лог&nbsp;↗</span>
+            <span style={{ fontSize: "var(--text-caption2)", color: "var(--color-label-3)" }}>{runWord(r)}</span>
+            <span style={{ fontSize: "var(--text-caption2)", color: "var(--color-gold-deep)" }}>лог&nbsp;↗</span>
           </a>
         ))}
-        {runs.length === 0 && <span style={{ fontSize: 12, color: "var(--color-label-3)" }}>нет прогонов</span>}
+        {runs.length === 0 && <span style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>нет прогонов</span>}
       </div>
 
-      <div style={{ fontSize: 12, color: "var(--color-label-2)", marginBottom: 6 }}>
+      <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-2)", marginBottom: 6 }}>
         Книги на archive.org · <span style={{ color: "#34c759" }}>{done} готово</span>
         {up > 0 && (
           <>
@@ -769,25 +769,25 @@ function LiveMonitor({ token }: { token: string }) {
                     ...(b.status === "UPLOADING" ? { animation: "dlpulse 1.4s ease-in-out infinite" } : {}),
                   }}
                 />
-                <span style={{ flex: 1, fontSize: 13, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                <span style={{ flex: 1, fontSize: "var(--text-footnote)", color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {b.id.replace("iskcone-", "")}
                 </span>
-                <span style={{ fontSize: 12, color: "var(--color-label-2)" }}>{b.mp3 > 0 ? `${b.mp3} дор.` : "—"}</span>
-                <span style={{ fontSize: 11, color: "var(--color-label-3)", width: 12, textAlign: "center" }}>{isOpen ? "▾" : "▸"}</span>
+                <span style={{ fontSize: "var(--text-caption)", color: "var(--color-label-2)" }}>{b.mp3 > 0 ? `${b.mp3} дор.` : "—"}</span>
+                <span style={{ fontSize: "var(--text-caption2)", color: "var(--color-label-3)", width: 12, textAlign: "center" }}>{isOpen ? "▾" : "▸"}</span>
               </button>
               {isOpen && (
                 <div style={{ padding: "2px 10px 10px 26px", borderTop: "1px solid var(--color-hairline)" }}>
                   {!d ? (
-                    <div style={{ fontSize: 12, color: "var(--color-label-3)", padding: "8px 0" }}>загрузка…</div>
+                    <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)", padding: "8px 0" }}>загрузка…</div>
                   ) : (
                     <>
                       {(d.title || d.creator) && (
-                        <div style={{ fontSize: 12, color: "var(--color-label-2)", margin: "8px 0 4px" }}>
+                        <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-2)", margin: "8px 0 4px" }}>
                           {d.title}
                           {d.creator ? ` · ${d.creator}` : ""}
                         </div>
                       )}
-                      <div style={{ fontSize: 11, color: "var(--color-label-3)", marginBottom: 6 }}>
+                      <div style={{ fontSize: "var(--text-caption2)", color: "var(--color-label-3)", marginBottom: 6 }}>
                         {d.relatedBook ? (
                           <>
                             связана с книгой: <span style={{ color: "var(--color-gold-deep)" }}>{d.relatedBook}</span>
@@ -807,14 +807,14 @@ function LiveMonitor({ token }: { token: string }) {
                             label: c.name.replace(/^\d+_/, "").replace(/\.mp3$/i, ""),
                           }))
                       ).map((row, i) => (
-                        <div key={row.key} style={{ display: "flex", gap: 8, fontSize: 12, color: "var(--color-label)", padding: "3px 0" }}>
+                        <div key={row.key} style={{ display: "flex", gap: 8, fontSize: "var(--text-caption)", color: "var(--color-label)", padding: "3px 0" }}>
                           <span style={{ color: "var(--color-label-3)", width: 22, flexShrink: 0, textAlign: "right" }}>{i + 1}.</span>
                           <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{row.label}</span>
                           <span style={{ color: "#34c759", flexShrink: 0 }}>✓</span>
                         </div>
                       ))}
                       {(!d.chapters || d.chapters.length === 0) && (!d.tracks || d.tracks.length === 0) && (
-                        <div style={{ fontSize: 12, color: "var(--color-label-3)", padding: "4px 0" }}>дорожек пока нет (в очереди)</div>
+                        <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)", padding: "4px 0" }}>дорожек пока нет (в очереди)</div>
                       )}
                     </>
                   )}

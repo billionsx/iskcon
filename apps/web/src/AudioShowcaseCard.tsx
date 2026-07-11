@@ -80,7 +80,7 @@ export function AudioShowcaseCard({
         </button>
 
         <div style={{ flex: 1, minWidth: 0, paddingTop: 1 }}>
-          {kindLabel && <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: GOLD }}>{kindLabel}</div>}
+          {kindLabel && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase", color: GOLD }}>{kindLabel}</div>}
           <div style={{ marginTop: kindLabel ? 2 : 0, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 650, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{title}</div>
           {presenter && <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{presenter}</div>}
         </div>
@@ -91,7 +91,7 @@ export function AudioShowcaseCard({
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontVariantNumeric: "tabular-nums", color: "var(--color-label-3)", minWidth: 34, textAlign: "right" }}>{fmtTime(cur)}</span>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontVariantNumeric: "tabular-nums", color: "var(--color-label-3)", minWidth: 34, textAlign: "right" }}>{fmtTime(cur)}</span>
         <div role="slider" aria-label="Перемотка" aria-valuemin={0} aria-valuemax={Math.round(dur)} aria-valuenow={Math.round(cur)}
           onClick={(e) => seekTo(e.clientX, e.currentTarget)}
           onPointerDown={(e) => { try { (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId); } catch { /* noop */ } seekTo(e.clientX, e.currentTarget); }}
@@ -101,7 +101,7 @@ export function AudioShowcaseCard({
           <span style={{ position: "absolute", left: 0, width: `${pct * 100}%`, height: 4, borderRadius: 999, background: GOLD }} />
           <span style={{ position: "absolute", left: `calc(${pct * 100}% - 6px)`, width: 12, height: 12, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 4px rgba(0,0,0,.35)", border: `1px solid ${GOLD}` }} />
         </div>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontVariantNumeric: "tabular-nums", color: "var(--color-label-3)", minWidth: 34 }}>{total}</span>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontVariantNumeric: "tabular-nums", color: "var(--color-label-3)", minWidth: 34 }}>{total}</span>
       </div>
     </div>
   );

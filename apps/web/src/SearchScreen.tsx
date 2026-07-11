@@ -105,13 +105,13 @@ function Row({ ch, title, meta, sub, iast, toks, active, onTap }: { ch: string; 
       <Monogram ch={ch} />
       <span style={{ minWidth: 0, flex: 1 }}>
         <span style={{ display: "flex", alignItems: "baseline", gap: 7, minWidth: 0 }}>
-          <span style={{ fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hl(title, toks)}</span>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hl(title, toks)}</span>
           {meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{meta}</span>}
         </span>
-        {iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, color: "var(--color-label-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{iast}</span>}
-        {sub && <span style={{ fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)", lineHeight: 1.35, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } as React.CSSProperties}>{hl(sub, toks)}</span>}
+        {iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{iast}</span>}
+        {sub && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 1.35, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } as React.CSSProperties}>{hl(sub, toks)}</span>}
       </span>
-      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
+      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </div>
   );
 }
@@ -136,9 +136,9 @@ function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap
           <span style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
           {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
         </span>
-        {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
+        {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
       </span>
-      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 20 }}>›</span>
+      <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </button>
   );
 }
@@ -153,7 +153,7 @@ function MoreLink({ n, active, onTap }: { n: number; active: boolean; onTap: () 
         background: active ? "var(--color-bg-2)" : "transparent", cursor: "pointer",
         fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label-2)" }}>
       <span>Показать все · {n}</span>
-      <span style={{ color: "var(--color-label-3)", fontSize: 20 }}>›</span>
+      <span style={{ color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </button>
   );
 }
@@ -161,7 +161,7 @@ function MoreLink({ n, active, onTap }: { n: number; active: boolean; onTap: () 
 function Section({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
   return (
     <section style={{ marginTop: 18 }}>
-      <h3 style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-3)" }}>
+      <h3 style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-3)" }}>
         {title}{count != null && <span style={{ fontWeight: 500, opacity: 0.7 }}> · {count}</span>}
       </h3>
       {children}
@@ -373,7 +373,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         </button>
         <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder="Поиск по всему приложению…" inputMode="search"
           style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)",
-            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none" }} />
+            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none" }} />
       </div>
 
       {searching && present.length >= 2 && (
@@ -391,7 +391,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {!searching && recent.length > 0 && (
           <section style={{ marginTop: 16 }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "0 0 10px" }}>
-              <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-3)" }}>Недавнее</h3>
+              <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-3)" }}>Недавнее</h3>
               <button type="button" onClick={clearRecent}
                 style={{ border: "none", background: "none", padding: 0, fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-3)", cursor: "pointer" }}>Очистить</button>
             </div>
@@ -411,13 +411,13 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         )}
 
         {!searching && recent.length === 0 && (
-          <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.5 }}>
+          <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5 }}>
             Личности, книги, стихи, главы, молитвы,<br />киртаны, города, рецепты, разделы…<br />начните вводить имя, название или строку.
           </p>
         )}
 
         {nothing && (
-          <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</p>
+          <p style={{ marginTop: 28, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Ничего не найдено</p>
         )}
 
         {searching && r.exact && activeFilter === "all" && (
@@ -542,7 +542,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         )}
 
         {searching && loading && total === 0 && (
-          <p style={{ marginTop: 24, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Поиск…</p>
+          <p style={{ marginTop: 24, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Поиск…</p>
         )}
       </div>
     </div>

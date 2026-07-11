@@ -141,14 +141,14 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
   }
   return (
     <HomeSheet open={open} label="Выбор города" onClose={onClose}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
       <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите город</h2>
       <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
         Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Нет в списке? Введите любой город мира — рассчитаем календарь по нему.
       </p>
       <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-bg)", padding: "12px 0 8px" }}>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
-          style={{ width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)", outline: "none" }} />
+          style={{ width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", outline: "none" }} />
       </div>
       {!q.trim() && (
         <button type="button" onClick={useMyLocation} disabled={geoMe === "busy"} aria-label="Определить календарь по моей геолокации"
@@ -158,7 +158,7 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
             <path d="M12 2.2v3.1M12 18.7v3.1M2.2 12h3.1M18.7 12h3.1" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" />
             <circle cx="12" cy="12" r="7.8" fill="none" stroke={GOLD} strokeWidth="1.3" opacity="0.5" />
           </svg>
-          <span style={{ flex: 1, textAlign: "left", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>
+          <span style={{ flex: 1, textAlign: "left", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>
             {geoMe === "busy" ? "Определяем местоположение…" : "По моей геолокации"}
           </span>
         </button>
@@ -182,8 +182,8 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
                 style={{ display: "flex", width: "100%", alignItems: "center", gap: 11, padding: "13px 14px", textAlign: "left", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}><path d="M12 21s-6.7-5.4-6.7-10.3A6.7 6.7 0 0 1 12 4a6.7 6.7 0 0 1 6.7 6.7C18.7 15.6 12 21 12 21Z" fill="none" stroke={GOLD} strokeWidth="1.8" /><circle cx="12" cy="10.6" r="2.3" fill="none" stroke={GOLD} strokeWidth="1.8" /></svg>
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{geo.name}</span>
-                  <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>
+                  <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{geo.name}</span>
+                  <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>
                     {[geo.admin1, geo.country].filter(Boolean).join(", ") || "календарь по этому городу"}
                   </span>
                 </span>
@@ -197,14 +197,14 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
         )}
         {filtered.map((c) => (
           <section key={c.country} style={{ marginTop: 16 }}>
-            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{c.country}</div>
+            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{c.country}</div>
             <div style={{ overflow: "hidden", ...fill }}>
               {c.cities.map((x, i) => {
                 const on = x.key === current.key;
                 return (
                   <button key={x.key} type="button" onClick={() => { onPick(x); onClose(); }}
                     style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "12px 14px", textAlign: "left", background: "none", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                    <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: on ? 700 : 500, color: on ? GOLD : "var(--color-label)" }}>{x.ru}</span>
+                    <span style={{ flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: on ? 700 : 500, color: on ? GOLD : "var(--color-label)" }}>{x.ru}</span>
                     {on && <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="m5 12.5 4.2 4.2L19 7" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>}
                   </button>
                 );
@@ -294,7 +294,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Вайшнавский календарь</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Вайшнавский календарь</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 5 }}>
           <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-label)" }}>Календарь ИСККОН</h2>
           <button type="button" onClick={() => setPickOpen(true)} aria-label="Сменить город календаря"
@@ -312,13 +312,13 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       {/* hero — ближайший экадаши */}
       {nextEka && (
         <div style={{ marginTop: 16, padding: "20px 18px", borderRadius: 22, background: `linear-gradient(135deg, color-mix(in srgb, ${GOLD} 16%, var(--color-glass-thin)), var(--color-glass-thin))` }}>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ближайший экадаши · {loc.ru}</div>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ближайший экадаши · {loc.ru}</div>
           <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: 21, fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{nextEka.title.replace(" — пост", "")}</div>
           <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)" }}>
             {(() => { const f = fmtDay(nextEka.date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · пост
           </div>
           {nextParana && (
-            <div style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, color: "var(--color-label)" }}>
+            <div style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
               {(() => { const f = fmtDay(nextParana.date); return `${f.d} ${f.m}: ${paranaText}`; })()}
             </div>
@@ -332,7 +332,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         active={filt} onChange={(id) => setFilt(id as typeof filt)} />
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск: праздник, экадаши или имя" inputMode="search" aria-label="Поиск по календарю"
-        style={{ marginTop: 12, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)", outline: "none" }} />
+        style={{ marginTop: 12, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", outline: "none" }} />
 
       <div style={{ marginTop: 6 }} aria-live="polite">
         {err && (
@@ -355,7 +355,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           const [y, mo] = key.split("-").map(Number);
           return (
             <section key={key} style={{ marginTop: 20 }}>
-              <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, letterSpacing: "-0.015em", color: "var(--color-label)" }}>
+              <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.015em", color: "var(--color-label)" }}>
                 {MONTH_H[mo - 1]} <span style={{ color: "var(--color-label-3)", fontWeight: 600 }}>{y}</span>
               </div>
               <div style={{ overflow: "hidden", ...fill }}>

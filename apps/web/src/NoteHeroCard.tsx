@@ -92,15 +92,15 @@ export function NoteHeroCard({ note, topLeft, onOpen, presentational, onMenuSele
             <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: src.accent }}>{src.label}</span>
             {note.pinned && <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,.55)" }}>· закреплено</span>}
           </div>
-          <h3 style={{ margin: 0, fontSize: 28, lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</h3>
-          {preview && <p style={{ margin: "10px 0 0", fontSize: 15, lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{preview}</p>}
+          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.12, fontWeight: 800, letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</h3>
+          {preview && <p style={{ margin: "10px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.4, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.82)", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{preview}</p>}
           <div style={{ marginTop: 18, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {note.srcTitle && (
-              <span style={{ display: "inline-flex", alignItems: "center", maxWidth: "100%", borderRadius: 999, background: "rgba(255,255,255,.16)", height: 26, padding: "0 12px", fontSize: 13, lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", maxWidth: "100%", borderRadius: 999, background: "rgba(255,255,255,.16)", height: 26, padding: "0 12px", fontSize: "var(--text-footnote)", lineHeight: 1, fontWeight: 500, letterSpacing: "-0.01em", color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {note.srcTitle}{note.srcSubtitle ? ` · ${note.srcSubtitle}` : ""}
               </span>
             )}
-            <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.10)", height: 26, padding: "0 12px", fontSize: 13, lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.7)", fontVariantNumeric: "tabular-nums" }}>{fmtDate(note.updatedAt)}</span>
+            <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.10)", height: 26, padding: "0 12px", fontSize: "var(--text-footnote)", lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.7)", fontVariantNumeric: "tabular-nums" }}>{fmtDate(note.updatedAt)}</span>
           </div>
         </div>
       </article>

@@ -97,7 +97,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: L1, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Ятра · Центры</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Ятра · Центры</div>
         <span style={{ width: 38 }} />
       </header>
 
@@ -108,7 +108,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
             <div style={{ display: "flex", alignItems: "center", gap: 8, height: 40, padding: "0 12px", borderRadius: 12, background: "rgba(120,120,128,0.12)" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: L3, flexShrink: 0 }}><circle {...STROKE} cx="11" cy="11" r="7" /><path {...STROKE} d="m20 20-3.2-3.2" /></svg>
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Город, страна, название" inputMode="search"
-                style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: FT, fontSize: 15, color: L1 }} />
+                style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }} />
               {q && <button type="button" aria-label="Очистить" onClick={() => setQ("")} style={{ border: "none", background: "none", color: L3, cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
               </button>}
@@ -167,7 +167,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
               <div style={{ textAlign: "center", padding: "48px 20px", color: L2, fontFamily: FT, fontSize: 14.5 }}>Не удалось загрузить. Проверьте соединение.</div>
             ) : items.length === 0 ? (
               <div style={{ textAlign: "center", padding: "40px 20px" }}>
-                <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, color: L1 }}>Ничего не найдено</div>
+                <div style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: L1 }}>Ничего не найдено</div>
                 <p style={{ margin: "8px auto 16px", maxWidth: 300, fontFamily: FT, fontSize: 13.5, lineHeight: 1.5, color: L2 }}>Попробуйте изменить запрос или добавьте свой центр в каталог Ятры.</p>
                 <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ height: 44, padding: "0 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>Добавить центр</button>
               </div>

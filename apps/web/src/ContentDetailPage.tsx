@@ -40,12 +40,12 @@ function ActionsSheet({ open, items, onClose, onSelect }: { open: boolean; items
       <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, margin: "0 8px", marginBottom: "calc(8px + env(safe-area-inset-bottom,0px))", background: "var(--color-bg-2)", borderRadius: "var(--radius-glass)", padding: 8, boxShadow: "var(--shadow-card)" }}>
         <div style={{ height: 5, width: 36, borderRadius: 999, background: "var(--color-hairline)", margin: "6px auto 10px" }} />
         {items.map((it, i) => (
-          <button key={it.key} onClick={() => onSelect(it.key)} style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "13px 14px", background: "none", border: "none", borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: 17, color: it.danger ? "#FF453A" : "var(--color-label)", cursor: "pointer" }}>
+          <button key={it.key} onClick={() => onSelect(it.key)} style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", width: "100%", textAlign: "left", padding: "13px 14px", background: "none", border: "none", borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", color: it.danger ? "#FF453A" : "var(--color-label)", cursor: "pointer" }}>
             <span style={{ flexShrink: 0, color: it.danger ? "#FF453A" : "var(--color-label-2)" }}>{it.icon}</span>
             {it.label}
           </button>
         ))}
-        <button onClick={onClose} style={{ width: "100%", marginTop: 8, padding: "14px", borderRadius: "var(--radius-control)", border: "none", background: "var(--color-bg-3)", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>Отмена</button>
+        <button onClick={onClose} style={{ width: "100%", marginTop: 8, padding: "14px", borderRadius: "var(--radius-control)", border: "none", background: "var(--color-bg-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-gold-deep)", cursor: "pointer" }}>Отмена</button>
       </div>
     </div>
   );
@@ -85,7 +85,7 @@ function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: 
   const deep = !!ref?.workId && ["bg", "cc", "sb"].includes(ref.workId);
   return (
     <figure style={{ margin: "var(--space-8) 0 0", paddingLeft: "var(--space-5)", borderLeft: "2px solid color-mix(in srgb, var(--color-gold-deep) 55%, transparent)" }}>
-      <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 22, lineHeight: 1.42, letterSpacing: "0.1px", color: "var(--color-label)" }}>
+      <blockquote style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-title2)", lineHeight: 1.42, letterSpacing: "0.1px", color: "var(--color-label)" }}>
         {text}
       </blockquote>
       {ref && (hasStruct || ref.raw) && (

@@ -125,7 +125,7 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
       </button>
       {total > 1 && (
         <>
-          <span style={{ position: "absolute", top: "calc(env(safe-area-inset-top,0px) + 23px)", left: 16, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, color: "rgba(255,255,255,0.85)", zIndex: 2 }}>{index + 1} / {total}</span>
+          <span style={{ position: "absolute", top: "calc(env(safe-area-inset-top,0px) + 23px)", left: 16, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "rgba(255,255,255,0.85)", zIndex: 2 }}>{index + 1} / {total}</span>
           <button type="button" aria-label="Предыдущее" onClick={(e) => { e.stopPropagation(); go(-1); }} style={{ ...round, left: 14, top: "50%", marginTop: -20 }}>
             <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
@@ -295,7 +295,7 @@ function VoicePlayer({ a }: { a: TgAudio }) {
           <span style={{ position: "absolute", inset: 0, width: `${pct * 100}%`, borderRadius: 999, background: GOLD, transition: "width .2s linear" }} />
         </div>
       </div>
-      {a.meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>{a.meta}</span>}
+      {a.meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{a.meta}</span>}
     </div>
   );
 }
@@ -322,7 +322,7 @@ function TgAudioCard({ a, id, flash, onMore }: { a: TgAudio; id: string; flash?:
       </span>
       <span style={{ flex: 1, minWidth: 0 }}>
         <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</span>
-        {a.meta && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>{a.meta} · слушать в Telegram</span>}
+        {a.meta && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{a.meta} · слушать в Telegram</span>}
       </span>
       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
     </a>
@@ -496,7 +496,7 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
         {p.audios.map((a, i) => <TgAudioCard key={i} a={a} id={p.id} flash={flash} onMore={() => setMenu(true)} />)}
         {p.link && <TgLinkCard l={p.link} />}
         {(p.date || p.views) && (
-          <div style={{ marginTop: 8, fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 400, lineHeight: 1.3, color: "var(--color-label-3)" }}>
+          <div style={{ marginTop: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 400, lineHeight: 1.3, color: "var(--color-label-3)" }}>
             {fmtDate(p.date)}{p.date && p.views ? " · " : ""}{p.views ? `${p.views} просмотров` : ""}
           </div>
         )}
@@ -598,7 +598,7 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
           </div>
         )}
         {posts && posts.length > 0 && !hasMore && (
-          <p style={{ margin: "18px 2px 0", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>Вы долистали до начала канала.</p>
+          <p style={{ margin: "18px 2px 0", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>Вы долистали до начала канала.</p>
         )}
         {posts && posts.length === 0 && (
           <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>
@@ -647,7 +647,7 @@ export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: ()
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
-        <span style={{ flex: 1, minWidth: 0, textAlign: "center", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 700, letterSpacing: "0.04em", color: "var(--color-label)", paddingRight: 38 }}>ISKCON ONE LOVE</span>
+        <span style={{ flex: 1, minWidth: 0, textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "0.04em", color: "var(--color-label)", paddingRight: 38 }}>ISKCON ONE LOVE</span>
       </header>
 
       <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 0 40px" }}>

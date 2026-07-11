@@ -209,7 +209,7 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
             ? <KirtanHero cover={p.cover} title={p.bookTitle} artist={p.artist} note={albumById(p.book)?.note} coverActions={coverActions} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
           <div style={{ marginTop: 22 }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
+            <div style={{ fontSize: "var(--text-caption)", letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
               {isAdHoc ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
             </div>
             {hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
@@ -231,8 +231,8 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
         <div style={{ flexShrink: 0, padding: "12px 20px calc(env(safe-area-inset-bottom) + 12px)", borderTop: "0.5px solid rgba(255,255,255,0.10)",
           background: "rgba(16,16,18,0.62)", backdropFilter: "blur(30px) saturate(160%)", WebkitBackdropFilter: "blur(30px) saturate(160%)" }}>
           <div style={{ minWidth: 0, maxHeight: collapsed ? 0 : 56, opacity: collapsed ? 0 : 1, overflow: "hidden", transition: "max-height .28s ease, opacity .18s ease" }}>
-            <div style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
-            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{sub}{p.loading ? " · загрузка…" : ""}</div>
+            <div style={{ fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
+            <div style={{ fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{sub}{p.loading ? " · загрузка…" : ""}</div>
           </div>
           <div style={{ marginTop: 8 }}>
             <input type="range" aria-label="Перемотка" min={0} max={Math.max(1, Math.floor(p.duration))} step={1}
@@ -265,10 +265,10 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
                 {p.repeat === "one" ? <RepeatOneIcon size={22} /> : p.repeat === "library" ? <RepeatLibraryIcon size={22} /> : <RepeatIcon size={22} />}
               </button>
               <button type="button" aria-label="Скорость" aria-pressed={p.rate !== 1} onClick={() => p.cycleRate()}
-                style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
+                style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
             </div>
             {p.hasCommentary && <button type="button" aria-pressed={p.mode === "commentary"} onClick={() => p.setMode(p.mode === "commentary" ? "plain" : "commentary")}
-              style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", whiteSpace: "nowrap", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", transition: "color .2s", color: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.72)" }}>
+              style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", whiteSpace: "nowrap", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", transition: "color .2s", color: p.mode === "commentary" ? GOLD : "rgba(255,255,255,0.72)" }}>
               С комментариями
             </button>}
           </div>
@@ -313,7 +313,7 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
               border: `0.5px solid ${on ? "rgba(255,255,255,0.18)" : "transparent"}`,
               background: on ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.06)",
               color: on ? "#fff" : "rgba(255,255,255,0.6)",
-              fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
+              fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
               cursor: "pointer", fontFamily: "var(--font-text)", transition: "background .18s, color .18s, border-color .18s", WebkitTapHighlightColor: "transparent" }}>
             {it.label}
           </button>
@@ -337,8 +337,8 @@ function KirtanHero({ cover, title, artist, note, coverActions }: { cover: strin
       </div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, marginTop: 18 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.18 }}>{title}</div>
-          {artist && <div style={{ fontSize: 15, fontWeight: 500, color: GOLD, marginTop: 3 }}>{artist}</div>}
+          <div style={{ fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.18 }}>{title}</div>
+          {artist && <div style={{ fontSize: "var(--text-subhead)", fontWeight: 500, color: GOLD, marginTop: 3 }}>{artist}</div>}
           {note && <div style={{ fontSize: 12.5, lineHeight: 1.45, color: "rgba(255,255,255,0.55)", marginTop: 7 }}>{note}</div>}
         </div>
       </div>
@@ -353,9 +353,9 @@ function QueueRow({ t, active, num, onClick }: { t: Track; active: boolean; num?
     <button type="button" onClick={onClick}
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
         background: active ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff" }}>
-      <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: 13, fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
+      <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
       <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: active ? 600 : 400, color: active ? "#fff" : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
-      {t.durationSec ? <span style={{ flexShrink: 0, fontSize: 12, color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
+      {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
     </button>
   );
 }
