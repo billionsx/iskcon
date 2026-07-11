@@ -17,7 +17,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useFavorites, removeFavorite, type FavItem } from "./cardActions";
 import { useNotes, requestNote, requestOpenNote, type Note } from "./notes";
-import { BOOKS } from "./books";
+import { BOOKS, bookFullTitle } from "./books";
 
 /* ── палитра (зеркало книжного эталона) ── */
 const INK = "#1f2024";
@@ -115,11 +115,12 @@ function hrefFor(it: FavItem): string | null {
 function titleFor(it: FavItem): string {
   if (it.title) return it.title;
   const { type, id } = it;
-  if (type === "book") return BOOKS[id]?.titleLine1 ?? id.toUpperCase();
+  // ЗКН-Б001: название книги — только через bookFullTitle() (иначе видна половина)
+  if (type === "book") { const b = BOOKS[id]; return b ? bookFullTitle(b) : id.toUpperCase(); }
   if (type === "chapter" || type === "verse") {
     const w = id.split("/")[0];
     const ref = id.split("/").slice(1).join("/");
-    const bk = BOOKS[w]?.titleLine1;
+    const bkData = BOOKS[w]; const bk = bkData ? bookFullTitle(bkData) : undefined;   // ЗКН-Б001
     return bk ? `${bk}${ref ? " · " + ref : ""}` : id;
   }
   return id || CAT_META[catOf(type)].label;

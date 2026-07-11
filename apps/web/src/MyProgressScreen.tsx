@@ -12,7 +12,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { readingClient, type ReadUnit } from "./reading/api";
 import { getPlan } from "./reading/position";
 import { recentReadings, pctOf, readingMinutesToday, readingGoalMin, readingStreakDays, type ReadingRec } from "./reading";
-import { BOOKS } from "./books";
+import { BOOKS, bookFullTitle } from "./books";
 
 /* ── токены ── */
 const GOLD = "var(--color-gold)";
@@ -34,12 +34,9 @@ const Clock = () => (<svg width="15" height="15" viewBox="0 0 24 24" fill="none"
 
 const fmt = (n: number) => n.toLocaleString("ru-RU");
 function bookTitle(work: string): string {
+  // ЗКН-Б001: название книги собирает ТОЛЬКО bookFullTitle(). Своя копия расходится.
   const b = BOOKS[work];
-  if (!b) return work.toUpperCase();
-  const l1 = b.titleLine1 ?? "";
-  const l2 = b.titleLine2 ?? "";
-  if (!l2) return l1;
-  return l1 + (l1.endsWith("-") ? "" : " ") + l2;
+  return b ? bookFullTitle(b) : work.toUpperCase();
 }
 
 /** Кольцо прогресса. */

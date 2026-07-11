@@ -4,7 +4,7 @@
  * ⚠️ Цены и состав — стартовые. Отредактируйте под реальный ассортимент BBT/лавки.
  * Обложки книг переиспользуются из единого источника BOOKS.
  */
-import { BOOKS } from "../books";
+import { BOOKS, bookFullTitle } from "../books";
 import type { Product } from "./cart";
 
 const cover = (work: string): string | undefined => BOOKS[work]?.covers[0];
@@ -90,6 +90,6 @@ export function bookProduct(work: string): Product | undefined {
   }
   const b = BOOKS[work];
   if (!b) return undefined;
-  const title = [b.titleLine1, b.titleLine2].filter(Boolean).join(" ");
+  const title = bookFullTitle(b);   // ЗКН-Б001: своя склейка теряла висячий дефис
   return { id: `bk-${work}`, kind: "physical", title, subtitle: "Печатное издание · BBT", price: 590, cover: b.covers?.[0], weightG: 700 };
 }

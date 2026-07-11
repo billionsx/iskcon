@@ -449,7 +449,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna"
           {(!realm || realm === "gauranga") && (
           <SectionCard
             title="Шрила Прабхупада"
-            subtitle="Его Божественная Милость А.Ч. Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)"
+            subtitle="Его Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)"
             mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />}
             accent
             onClick={() => onOpen("prabhupada", "personality")}
