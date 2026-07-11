@@ -548,21 +548,45 @@ function SegRow({ value, onChange, items }: { value: string; onChange: (v: strin
   );
 }
 
-let bogSub = "lichnosti"; // сохраняем выбранный сабтаб Богатств между уходом в деталь и возвратом (history.back)
+/* ЗКН-Н005: суб-таб Богатств — сегмент URL, а не переменная в модуле.
+ * /dhana                        → Личности (умолчание)
+ * /dhana/<лила>/<волна>/<группа> → Личности с фильтрами (старые ссылки живы)
+ * /dhana/books | bhajans | kirtans | recipes → соответствующая витрина
+ * Слаги лил не пересекаются с id витрин, поэтому схема обратно совместима. */
+export const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "recipes"] as const;
+export function bogSubFromPath(path: string): string {
+  const seg = path.split("/").filter(Boolean);          // ["dhana", ...]
+  const s1 = seg[1] || "";
+  return (BOG_SUBS as readonly string[]).includes(s1) ? s1 : "lichnosti";
+}
 let sadSub = "feed"; // то же для Садханы: возврат из карточки (напр. из Календаря) восстанавливает подтаб
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
   onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
   onOpenArtist: (slug: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void;
 }) {
-  const [sub, setSub] = useState(bogSub);
-  const pickSub = (v: string) => { bogSub = v; setSub(v); };
+  const [sub, setSub] = useState(() =>
+    typeof window === "undefined" ? "lichnosti" : bogSubFromPath(window.location.pathname));
+  // ЗКН-Н005: переключение витрины меняет адресную строку (через nav.ts — ЗКН-Н001)
+  const pickSub = (v: string) => {
+    setSub(v);
+    pushUrl(v === "lichnosti" ? "/dhana" : "/dhana/" + v);
+  };
   return (
     <div>
-      <SegRow value={sub} onChange={pickSub} items={[["lichnosti", "Личности"], ["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"]]} />
+      <SegRow value={sub} onChange={pickSub} items={[["lichnosti", "Личности"], ["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"], ["recipes", "Рецепты"]]} />
       {sub === "lichnosti" && <LichnostiHub onOpenEntity={onOpenEntity} />}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+      {sub === "recipes" && (
+        <PrasadamScreen
+          onBack={() => onOpenPath("/dhana")}
+          onOpenRecipe={(sl) => onOpenPath("/prasadam/recipe/" + sl)}
+          onOpenBook={() => onOpenPath("/prasadam/book")}
+          onOpenEntity={onOpenEntity}
+          flash={flash ? () => {} : undefined}
+        />
+      )}
       {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
     </div>
   );
