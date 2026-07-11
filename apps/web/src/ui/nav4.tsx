@@ -39,8 +39,10 @@ function Sup({ n, tone = "quiet" }: { n?: number; tone?: "quiet" | "on" }) {
   if (n == null) return null;
   return (
     <sup style={{
-      fontSize: "var(--text-caption2)", fontWeight: 400, verticalAlign: "super",
-      fontVariantNumeric: "tabular-nums", marginLeft: 1,
+      /* ЗКН-Н013: настоящая степень (как xⁿ) — доля от кегля родителя, а не
+       * фиксированный размер. lineHeight:0 — чтобы не растягивать строку. */
+      fontSize: "0.56em", fontWeight: 500, verticalAlign: "super", lineHeight: 0,
+      fontVariantNumeric: "tabular-nums", marginLeft: 2, letterSpacing: 0,
       color: tone === "on" ? "var(--color-label-3)" : "var(--color-label-4, #c2c2c7)",
     }}>{n}</sup>
   );
