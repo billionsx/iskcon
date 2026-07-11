@@ -179,7 +179,7 @@ function ActionsSheet({ open, onClose, onSelect }: { open: boolean; onClose: () 
 function Toast({ msg }: { msg: string | null }) {
   if (!msg) return null;
   return (
-    <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "0 8px 24px rgba(0,0,0,.22)", textAlign: "center" }}>{msg}</div>
+    <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, boxShadow: "0 8px 24px rgba(0,0,0,.22)", textAlign: "center" }}>{msg}</div>
   );
 }
 
@@ -254,7 +254,7 @@ function Overview({ book }: { book: BookData }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
         <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
-        <p style={{ margin: 0, fontSize: 17.5, lineHeight: 1.55, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Бхагавад-гита» («Песнь Бога») — вершина ведической мысли и одно из самых читаемых священных писаний мира. Это беседа Верховной Личности Бога, Шри Кришны, и воина Арджуны на поле Курукшетра, перед началом великой битвы.
         </p>
         <p style={{ margin: "14px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.58, color: INK2 }}>
@@ -277,7 +277,7 @@ function Overview({ book }: { book: BookData }) {
 
       <section>
         <SectionTitle>О чём книга</SectionTitle>
-        <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.6, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.6, color: INK }}>
           Накануне братоубийственной войны Арджуна, видя перед собой родных и наставников, теряет волю сражаться и обращается к Кришне как к духовному учителю. Ответ Кришны и составляет «Гиту».
         </p>
         <p style={{ margin: "12px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.6, color: INK2 }}>
@@ -354,7 +354,7 @@ function CcOverview({ book }: { book: BookData }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
         <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
-        <p style={{ margin: 0, fontSize: 17.5, lineHeight: 1.55, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Шри Чайтанья-чаритамрита» («Нектар деяний Шри Чайтаньи») — главное и наиболее авторитетное произведение о жизни и учении Гауранги Махапрабху, золотого воплощения Господа, явившегося в Бенгалии около пятисот лет назад.
         </p>
         <p style={{ margin: "14px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.58, color: INK2 }}>
@@ -377,7 +377,7 @@ function CcOverview({ book }: { book: BookData }) {
 
       <section>
         <SectionTitle>О чём книга</SectionTitle>
-        <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.6, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.6, color: INK }}>
           В книге описаны явление, деяния и наставления Гауранги Махапрабху — Самого Кришны, принявшего настроение и облик Своего преданного, Шримати Радхарани. Господь Чайтанья положил начало движению санкиртаны — совместному пению святых имён Бога как пути самопознания для нынешней эпохи.
         </p>
         <p style={{ margin: "12px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.6, color: INK2 }}>
@@ -465,18 +465,18 @@ function SplAuthor() {
         <h1 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>
           Сатсварупа Дас<br />Госвами
         </h1>
-        <div style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.45, color: INK2 }}>
+        <div style={{ marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.45, color: INK2 }}>
           Ученик Шрилы Прабхупады · один из первых его учеников на Западе и духовный наставник в ИСККОН
         </div>
       </header>
 
       <section>
         <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
-          <p style={{ margin: 0, fontSize: 18, lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>
+          <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>
             «Шрила Прабхупада-лиламрита» — каноническое многотомное жизнеописание Ачарьи-основателя ИСККОН. Его герой — Шрила Прабхупада; его автор — Сатсварупа Дас Госвами.
           </p>
         </div>
-        <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.55, color: INK3 }}>
+        <p style={{ margin: "12px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: INK3 }}>
           Сатсварупа Дас Госвами лично знал Шрилу Прабхупаду и работал под его руководством; книга основана на письмах, дневниках, беседах и свидетельствах учеников.
         </p>
       </section>
@@ -506,7 +506,7 @@ export function Author() {
         <h1 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>
           А.&nbsp;Ч. Бхактиведанта<br />Свами Прабхупада
         </h1>
-        <div style={{ marginTop: 8, fontSize: 14.5, lineHeight: 1.45, color: INK2 }}>
+        <div style={{ marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.45, color: INK2 }}>
           Его Божественная Милость · Ачарья-основатель Международного общества сознания Кришны (ИСККОН)
         </div>
         <div style={{ marginTop: 12, display: "inline-flex", alignItems: "center", padding: "5px 12px", borderRadius: 999, border: `0.5px solid ${LINE}`, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK }}>
@@ -575,7 +575,7 @@ export function Author() {
           <KeyVal k="Кругосветных поездок" v="14" />
           <KeyVal k="Учеников" v="тысячи по миру" last />
         </div>
-        <p style={{ margin: "14px 0 0", fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>
+        <p style={{ margin: "14px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: INK2 }}>
           Его переводы ценятся учёными за точность, глубину и верность традиции и используются как учебные пособия в университетах. За одиннадцать лет, дав начало мировому движению, он обошёл земной шар четырнадцать раз.
         </p>
         <p style={{ margin: "10px 0 0", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: INK3 }}>
@@ -591,9 +591,9 @@ function Review({ text, name, role, last }: { text: string; name: string; role: 
   return (
     <div style={{ padding: "20px 0", borderBottom: last ? "none" : `0.5px solid ${LINE}` }}>
       <span aria-hidden style={{ display: "block", color: GOLD, fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "var(--text-display)", lineHeight: 1, height: 18 }}>“</span>
-      <p style={{ margin: "2px 0 0", fontSize: 16.5, lineHeight: 1.55, color: INK }}>{text}</p>
+      <p style={{ margin: "2px 0 0", fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>{text}</p>
       <div style={{ marginTop: 12 }}>
-        <div style={{ fontSize: 14.5, fontWeight: 700, color: INK }}>{name}</div>
+        <div style={{ fontSize: "var(--text-subhead)", fontWeight: 700, color: INK }}>{name}</div>
         <div style={{ fontSize: "var(--text-footnote)", lineHeight: 1.4, color: INK2, marginTop: 1 }}>{role}</div>
       </div>
     </div>
@@ -657,7 +657,7 @@ function Reviews() {
         </div>
       </section>
 
-      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+      <p style={{ margin: 0, fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3 }}>
         Отзывы учёных приведены в сокращении и переводе; их полные тексты опубликованы в изданиях книги и публикуются Bhaktivedanta Book Trust.
       </p>
     </div>
@@ -730,7 +730,7 @@ function CcReviews() {
         </div>
       </section>
 
-      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+      <p style={{ margin: 0, fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3 }}>
         Отзывы учёных приведены в сокращении и переводе; их полные тексты опубликованы в изданиях книги и публикуются Bhaktivedanta Book Trust.
       </p>
     </div>
@@ -744,7 +744,7 @@ function SbOverview({ book }: { book: BookData }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
         <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Ведическое писание</div>
-        <p style={{ margin: 0, fontSize: 17.5, lineHeight: 1.55, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Шримад-Бхагаватам» («Бхагавата-пурана») — величайшая из восемнадцати главных Пуран и, по слову самого писания, зрелый плод древа ведической литературы. Её составил мудрец Вьясадева как свой собственный естественный комментарий к «Веданта-сутре».
         </p>
         <p style={{ margin: "14px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.58, color: INK2 }}>
@@ -767,7 +767,7 @@ function SbOverview({ book }: { book: BookData }) {
 
       <section>
         <SectionTitle>О чём книга</SectionTitle>
-        <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.6, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.6, color: INK }}>
           Узнав, что ему осталось семь дней жизни, царь Парикшит оставляет царство и садится на берегу Ганги, чтобы услышать о Высшей Истине. Ответом мудреца Шукадевы Госвами на его вопрос «в чём долг человека перед смертью?» и становится «Шримад-Бхагаватам».
         </p>
         <p style={{ margin: "12px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.6, color: INK2 }}>
@@ -884,7 +884,7 @@ function SbReviews() {
         </p>
       </section>
 
-      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+      <p style={{ margin: 0, fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3 }}>
         Стихи писания приведены в переводе и сокращении; полные тексты с комментариями публикуются Bhaktivedanta Book Trust.
       </p>
     </div>
@@ -898,7 +898,7 @@ function NodOverview({ book }: { book: BookData }) {
     <div style={{ display: "flex", flexDirection: "column", gap: 36, padding: "26px 20px 12px" }}>
       <section>
         <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.8px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Наука преданности</div>
-        <p style={{ margin: 0, fontSize: 17.5, lineHeight: 1.55, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.55, color: INK }}>
           «Нектар преданности» — это изложение «Бхакти-расамрита-синдху», классического труда, написанного на санскрите Шрилой Рупой Госвами, главным из шести Госвами Вриндавана и ближайшим спутником Господа Чайтаньи Махапрабху.
         </p>
         <p style={{ margin: "14px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.58, color: INK2 }}>
@@ -920,7 +920,7 @@ function NodOverview({ book }: { book: BookData }) {
 
       <section>
         <SectionTitle>О чём книга</SectionTitle>
-        <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.6, color: INK }}>
+        <p style={{ margin: 0, fontSize: "var(--text-body)", lineHeight: 1.6, color: INK }}>
           Рупа Госвами сравнивает преданное служение с океаном нектара (бхакти-раса-амрита-синдху). «Нектар преданности» проводит читателя по этому океану: что такое чистая бхакти, кто способен ею заниматься, как её практиковать и каких оскорблений избегать.
         </p>
         <p style={{ margin: "12px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.6, color: INK2 }}>
@@ -1138,7 +1138,7 @@ function NodReviews() {
         </p>
       </section>
 
-      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.5, color: INK3 }}>
+      <p style={{ margin: 0, fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3 }}>
         Цитаты приведены в изложении; полный текст с комментариями публикуется Bhaktivedanta Book Trust.
       </p>
     </div>
@@ -1677,7 +1677,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "left", paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
-          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{renderTitle(chapter.title_ru)}</div>
+          <div style={{ fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{renderTitle(chapter.title_ru)}</div>
           <div style={{ fontSize: "var(--text-caption2)", color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Глава {chapter.number}{divShort ? ` · ${divShort}` : ""} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
@@ -1690,8 +1690,8 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
         <div style={{ margin: "0 auto", padding: "16px 22px calc(40px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
             <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}{divEyebrow ? ` · ${divEyebrow}` : ""}</div>
-            <h1 style={{ margin: 0, fontSize: 32, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
-            <div style={{ marginTop: 10, fontSize: 13.5, color: INK2 }}>{verses?.length ?? chapter.verses} стихов</div>
+            <h1 style={{ margin: 0, fontSize: "var(--text-display)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
+            <div style={{ marginTop: 10, fontSize: "var(--text-footnote)", color: INK2 }}>{verses?.length ?? chapter.verses} стихов</div>
           </div>
           <Ornament />
 
@@ -1708,7 +1708,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: "block", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
-                        <span style={{ display: "block", fontSize: 16.5, lineHeight: 1.5, color: tr ? INK : INK2, fontStyle: tr ? "normal" : "italic" }}>
+                        <span style={{ display: "block", fontSize: "var(--text-body)", lineHeight: 1.5, color: tr ? INK : INK2, fontStyle: tr ? "normal" : "italic" }}>
                           {tr ?? "перевод готовится"}
                         </span>
                       </span>
@@ -1795,7 +1795,7 @@ function CommentaryLabel({ demo }: { demo?: boolean }) {
   return <LayerLabel>Комментарий{demo && <DemoBadge />}</LayerLabel>;
 }
 function DemoBadge() {
-  return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: FILL, color: INK2, fontSize: 9.5, fontWeight: 700, letterSpacing: ".5px", verticalAlign: "middle" }}>демо</span>;
+  return <span style={{ marginLeft: 8, padding: "1px 7px", borderRadius: 999, background: FILL, color: INK2, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: ".5px", verticalAlign: "middle" }}>демо</span>;
 }
 
 interface VerseToken { term: string; gloss: string | null; }
@@ -1845,7 +1845,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
       <div data-pdf-block>
       <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
       {r.deva && (
-        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{scriptLines(r.deva)}</div>
+        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{scriptLines(r.deva)}</div>
       )}
       {r.translit && (
         <div style={{ marginBottom: 16 }}>
@@ -1859,7 +1859,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
       {hasWW && (
         <section style={{ marginBottom: 30 }}>
           <LayerLabel>Пословный перевод</LayerLabel>
-          <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.95, color: INK2 }}>
+          <p style={{ margin: 0, fontSize: "var(--text-subhead)", lineHeight: 1.95, color: INK2 }}>
             {r.tokens.map((t, i) => (
               <span key={i}>
                 <span style={{ fontStyle: "italic", color: INK }}>{t.term}</span>
@@ -1900,7 +1900,7 @@ export function ChapterPrint({ chapter, verses, newPage }: { chapter: ChapterRow
     <div style={newPage ? { breakBefore: "page" } : undefined}>
       <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
         <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>
-        <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
+        <h2 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
         <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", color: INK2 }}>{verses.length} стихов</div>
         <Ornament />
       </div>
@@ -2014,8 +2014,8 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
             const showNum = Number.isFinite(num) && num >= 1;
             return (
               <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
-                <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{showNum ? c.number : "◆"}</span>
-                <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
+                <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT }}>{showNum ? c.number : "◆"}</span>
+                <span style={{ flex: 1, fontSize: "var(--text-subhead)", color: INK }}>{c.title_ru}</span>
               </li>
             );
           })}
@@ -2030,7 +2030,7 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
           <div key={c.id} style={{ breakBefore: "page" }}>
             <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
               {showNum && <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {c.number}</div>}
-              <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{c.title_ru}</h2>
+              <h2 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{c.title_ru}</h2>
               <Ornament />
             </div>
             {paras.length === 0
@@ -2051,7 +2051,7 @@ export function ProseChapterPrint({ chapter, paras }: { chapter: ChapterRow; par
     <div style={{ color: INK }}>
       <div data-pdf-block style={{ textAlign: "center", margin: "0 0 8px" }}>
         {showNum && <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
-        <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
+        <h2 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: INK }}>{renderTitle(chapter.title_ru)}</h2>
         <Ornament />
       </div>
       {paras.length === 0
@@ -2241,7 +2241,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
-          <div style={{ fontSize: 15.5, fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
+          <div style={{ fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.01em", color: INK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{renderTitle(chapter.title_ru)}</div>
           <div style={{ fontSize: "var(--text-caption2)", color: INK2 }}>{numbered ? `Глава ${chapter.number} · ` : ""}{bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
@@ -2254,7 +2254,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         <div style={{ margin: "0 auto", padding: "16px 24px calc(48px + env(safe-area-inset-bottom) + var(--player-extra))" }}>
           <div style={{ textAlign: "center", marginBottom: 2 }}>
             {numbered && <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT, marginBottom: 12 }}>Глава {chapter.number}</div>}
-            <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
+            <h1 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.14, fontWeight: 800, letterSpacing: "-0.022em", color: INK }}>{renderTitle(chapter.title_ru)}</h1>
           </div>
           <Ornament />
 
@@ -2440,7 +2440,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
           {data && (
             <>
               {hasDeva && (
-                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: 19, lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{scriptLines(evDeva)}</div>
+                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{scriptLines(evDeva)}</div>
               )}
               {hasTranslit && (
                 <div style={{ marginBottom: 16 }}>
@@ -2454,7 +2454,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
               {hasWW && (
                 <section style={{ marginBottom: 30 }}>
                   <LayerLabel>Пословный перевод</LayerLabel>
-                  <p style={{ margin: 0, fontSize: 15.5, lineHeight: 1.95, color: INK2 }}>
+                  <p style={{ margin: 0, fontSize: "var(--text-subhead)", lineHeight: 1.95, color: INK2 }}>
                     {evTokens.map((t, i) => (
                       <span key={i}>
                         <span style={{ fontStyle: "italic", color: INK }}>{t.term}</span>
@@ -3017,14 +3017,14 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       {bookPct > 0 && !pdfHidden && (
         <div style={{ position: "fixed", inset: 0, zIndex: 3000, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
           <div style={{ position: "relative", width: 300, maxWidth: "calc(100% - 48px)", background: "#fff", borderRadius: 20, padding: "26px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
-            <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
+            <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: "var(--text-body)", lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
             <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em", color: "#1d1d1f", padding: "0 8px", textWrap: "balance" }}>{bookPctTitle}</div>
-            <div style={{ fontSize: 12.5, color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
+            <div style={{ fontSize: "var(--text-caption)", color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "var(--color-gold)", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
-            <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
+            <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
           </div>
         </div>
       )}
