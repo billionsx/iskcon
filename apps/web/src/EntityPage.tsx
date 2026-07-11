@@ -128,10 +128,6 @@ function expandRefs(s: string): string {
     .replace(/БГ /g, "Бхагавад-гита ");
 }
 
-function initialOf(d: EntityDetail): string {
-  const s = (d.name_iast || d.name_ru || "?").trim();
-  return s.charAt(0).toUpperCase();
-}
 
 function Monogram({ ch, size = 72 }: { ch: string; size?: number }) {
   return (
@@ -848,7 +844,7 @@ function RelRows({ group, onOpen }: { group: { label: string; order: number; ite
         {group.items.map((it) => (
           <button key={it.relation + it.id} type="button" onClick={() => onOpen(it.id, it.type)}
             style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 13px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
-            <span style={{ display: "grid", placeItems: "center", height: 34, width: 34, flexShrink: 0, borderRadius: "50%", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "var(--text-subhead)" }}>{(it.name_ru || it.id).trim().charAt(0).toUpperCase()}</span>
+            <img src={COVER_FALLBACK} alt="" loading="lazy" style={{ height: 34, width: 34, flexShrink: 0, borderRadius: "50%", objectFit: "cover", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }} />
             <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.name_ru || it.id}</span>
             <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: "var(--text-body)", flexShrink: 0 }}>›</span>
           </button>

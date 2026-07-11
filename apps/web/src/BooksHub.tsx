@@ -116,7 +116,6 @@ function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
   onOpenAuthor: (id: string) => void;
 }) {
   const cover = BOOKS[book.id]?.covers[0];
-  const initial = (book.iast || book.title || "?").trim().charAt(0).toUpperCase();
   return (
     <li style={{ position: "relative", borderBottom: last ? "none" : "0.5px solid var(--color-hairline)" }}>
       <button type="button" aria-label={`Открыть: ${book.title}`} onClick={() => onOpenBook(book)}
@@ -124,7 +123,7 @@ function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
       <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", pointerEvents: "none" }}>
         {cover
           ? <img src={cover} alt="" loading="lazy" style={{ width: 50, height: 50, borderRadius: 11, objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
-          : <BookMonogram ch={initial} />}
+          : <BookMonogram />}
         <span style={{ minWidth: 0, flex: 1 }}>
           <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)",
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}><Hi text={book.title} q={query} /></span>
@@ -225,7 +224,6 @@ export function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOp
           const title = b ? bookFullTitle(b) : r.label;
           const pct = pctOf(r);
           const eta = etaMinutesForBook(r);
-          const initial = (b?.iast || title || "?").trim().charAt(0).toUpperCase();
           return (
             <li key={r.work} style={{ position: "relative", borderBottom: i === items.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
               <button type="button" aria-label={`Продолжить: ${title}`} onClick={() => onOpenPath(r.href)}
@@ -235,7 +233,7 @@ export function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOp
                 onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}>
                 {cover
                   ? <img src={cover} alt="" loading="lazy" style={{ width: 50, height: 50, borderRadius: 11, objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
-                  : <BookMonogram ch={initial} />}
+                  : <BookMonogram />}
                 <span style={{ minWidth: 0, flex: 1 }}>
                   <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
                   <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.label}</span>

@@ -32,16 +32,12 @@ interface Item {
   image?: string | null;
 }
 
-function Monogram({ ch, size = 44 }: { ch: string; size?: number }) {
-  // Монограмма-буквица: первая графема IAST (с диакритикой) в Georgia-курсиве,
-  // мягкая нейтральная заливка. Не «контактный аватар» с золотым ободком, а
-  // буквица манускрипта — достойно и неброско.
+function Monogram({ size = 40 }: { ch?: string; size?: number }) {
+  // ЗКН-Д007: буква-монограмма — суррогат. Нет портрета → фирменная заглушка.
   return (
-    <div style={{ flexShrink: 0, width: size, height: size, borderRadius: "50%", display: "grid", placeItems: "center",
-      background: "var(--color-fill-1)",
-      color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontWeight: 500, fontSize: size * 0.42, lineHeight: 1, letterSpacing: "-0.01em" }}>
-      {ch}
-    </div>
+    <img src={COVER_FALLBACK} alt="" loading="lazy"
+      style={{ width: size, height: size, flexShrink: 0, borderRadius: "50%", objectFit: "cover",
+        background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }} />
   );
 }
 
@@ -53,17 +49,6 @@ function MaskMark({ src, size = 56, pos = "center" }: { src: string; size?: numb
 }
 
 /** Первая графема IAST (с диакритикой) для буквицы. Intl.Segmenter не рвёт диакритику. */
-function initialOf(it: Item): string {
-  const s = (it.name_iast || it.name_ru || "?").trim();
-  if (!s) return "?";
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const seg = new (Intl as any).Segmenter(undefined, { granularity: "grapheme" });
-    const it0 = seg.segment(s)[Symbol.iterator]().next().value;
-    if (it0?.segment) return (it0.segment as string).toUpperCase();
-  } catch { /* noop */ }
-  return s.charAt(0).toUpperCase();
-}
 
 function Avatar({ item, size }: { item: Item; size: number }) {
   if (item.image) {
@@ -73,7 +58,7 @@ function Avatar({ item, size }: { item: Item; size: number }) {
       </div>
     );
   }
-  return <Monogram ch={initialOf(item)} size={size} />;
+  return <Monogram size={size} />;
 }
 
 
