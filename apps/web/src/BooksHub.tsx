@@ -297,17 +297,18 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
 }) {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
+  const [soonOpen, setSoonOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const LIBRARY = useCatalog();   // источник истины — D1 (book_catalog); фолбэк — бандл
+  const byLineage = (l: Lineage) => LIBRARY.filter((b) => b.lineage === l);
+
   const LINEAGE_NAV: NavItem[] = [
     { id: "all", label: "Все", count: LIBRARY.length },
     { id: "prabhupada", label: "Шрила Прабхупада", count: LIBRARY.filter((b) => b.lineage === "prabhupada").length },
     { id: "acharya", label: "Ачарьи", count: LIBRARY.filter((b) => b.lineage === "acharya").length },
     { id: "iskcon", label: "Гуру ИСККОН", count: LIBRARY.filter((b) => b.lineage === "iskcon").length },
   ];
-  const [soonOpen, setSoonOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const LIBRARY = useCatalog();   // источник истины — D1 (book_catalog); фолбэк — бандл
-  const byLineage = (l: Lineage) => LIBRARY.filter((b) => b.lineage === l);
   // «Есть контент» = доступен текст (есть в BOOKS и не noText) ИЛИ аудио (AUDIO_WORKS).
   const hasContent = (id: string) => !!AUDIO_WORKS[id] || (!!BOOKS[id] && !BOOKS[id].noText);
 

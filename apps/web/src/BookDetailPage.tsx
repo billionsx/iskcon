@@ -1662,15 +1662,15 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
 
   const shareChapter = async () => {
     const label = `Глава ${chapter.number} · ${chapter.title_ru}`;
-    const url = url(ROUTES.book(work));
+    const shareUrl = url(ROUTES.book(work));
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
-        await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, url });
+        await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, shareUrl });
         return;
       }
     } catch { /* cancelled */ }
-    try { await navigator.clipboard.writeText(url); flash("Ссылка скопирована"); }
-    catch { flash(url); }
+    try { await navigator.clipboard.writeText(shareUrl); flash("Ссылка скопирована"); }
+    catch { flash(shareUrl); }
   };
 
   return (
@@ -2226,15 +2226,15 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const next = chapters && idx >= 0 && idx < chapters.length - 1 ? chapters[idx + 1] : null;
 
   const shareChapter = async () => {
-    const url = url(ROUTES.book(work));
+    const shareUrl = url(ROUTES.book(work));
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
-        await (navigator as Navigator).share({ title: `${chapter.title_ru} · ${bookTitle}`, text: `${chapter.title_ru} — ${bookTitle}`, url });
+        await (navigator as Navigator).share({ title: `${chapter.title_ru} · ${bookTitle}`, text: `${chapter.title_ru} — ${bookTitle}`, shareUrl });
         return;
       }
     } catch { /* cancelled */ }
-    try { await navigator.clipboard.writeText(url); flash("Ссылка скопирована"); }
-    catch { flash(url); }
+    try { await navigator.clipboard.writeText(shareUrl); flash("Ссылка скопирована"); }
+    catch { flash(shareUrl); }
   };
 
   return (
@@ -2944,8 +2944,8 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
 
   const shareBook = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : url(window.location.pathname);
-    const payload = { title: bookShareTitle(book), text: book.description, url };
+    const shareUrl = typeof window !== "undefined" ? window.location.href : url("/");
+    const payload = { title: bookShareTitle(book), text: book.description, shareUrl };
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
         await (navigator as Navigator).share(payload);
@@ -2953,10 +2953,10 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       }
     } catch { /* user cancelled — fall through */ }
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl);
       flash("Ссылка скопирована");
     } catch {
-      flash(url);
+      flash(shareUrl);
     }
   };
 

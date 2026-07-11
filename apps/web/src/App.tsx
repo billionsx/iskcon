@@ -639,14 +639,14 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   const bookMenu = (work: string, id: string) => {
     const b = BOOKS[work];
     if (!b) return;
-    const url = url(ROUTES.book(work));
+    const shareUrl = url(ROUTES.book(work));
     if (id === "share") {
-      if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: bookFullTitle(b), url }).catch(() => {});
-      else if (typeof navigator !== "undefined") navigator.clipboard?.writeText(url).catch(() => {});
+      if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: bookFullTitle(b), shareUrl }).catch(() => {});
+      else if (typeof navigator !== "undefined") navigator.clipboard?.writeText(shareUrl).catch(() => {});
       return;
     }
     if (id === "pdf") { setPdfHidden(false); void downloadBookPdf({ work: b.work, book: b, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
-    if (id === "qr") { setQr({ url, data: { kind: "book", bookTitle: bookFullTitle(b), tagline: b.tagline, cover: b.covers[0] } }); return; }
+    if (id === "qr") { setQr({ shareUrl, data: { kind: "book", bookTitle: bookFullTitle(b), tagline: b.tagline, cover: b.covers[0] } }); return; }
     if (id === "donate") { onDonate(); return; }
     if (id === "report") { setReportOpen(true); return; }
     if (id === "note") { requestNote({ kind: "book", ref: `book:${work}`, title: bookFullTitle(b), subtitle: b.tagline, href: `/book/${work}` }); return; }
