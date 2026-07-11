@@ -310,8 +310,8 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
           ? <img src={b.hero_image === AUDIO_FALLBACK_COVER ? AUDIO_FALLBACK_COVER_LIGHT : b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
           : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)", position: "relative", zIndex: 1, pointerEvents: "none" }} />}
         <span style={{ minWidth: 0, flex: 1, position: "relative", zIndex: 1, pointerEvents: "none" }}>
-          <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
-          {b.author && <span style={{ display: "block", marginTop: 2, fontSize: 13, color: "var(--color-label-2)" }}>{b.author}</span>}
+          <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
+          {b.author && <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{b.author}</span>}
         </span>
         <BhajanRowActions slug={b.slug} name={b.name} author={b.author} hasRecordings={b.has_recordings}
           onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })} />
@@ -328,26 +328,26 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
     <section style={{ marginTop: 28 }}>
       <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Молитвенник</div>
-          <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
+          <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Молитвенник</div>
+          <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
         </div>
-        <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+        <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>
           Весь каталог
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>
       {items && items.length > 0 && (
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
-          style={{ width: "100%", boxSizing: "border-box", marginBottom: 12, padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 15, outline: "none" }} />
+          style={{ width: "100%", boxSizing: "border-box", marginBottom: 12, padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", outline: "none" }} />
       )}
-      {!items && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
-      {items && items.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
-      {items && items.length > 0 && searching && filtered && filtered.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Ничего не найдено.</div>}
+      {!items && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
+      {items && items.length === 0 && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока пусто.</div>}
+      {items && items.length > 0 && searching && filtered && filtered.length === 0 && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Ничего не найдено.</div>}
       {searching
         ? (filtered && filtered.length > 0 ? listOf(filtered) : null)
         : groups.map((g) => (
             <div key={g.title} style={{ marginTop: 20 }}>
-              <div style={{ marginBottom: 8, fontSize: 13, fontWeight: 700, letterSpacing: "-0.1px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{g.title}</div>
+              <div style={{ marginBottom: 8, fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.1px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{g.title}</div>
               {listOf(g.list)}
             </div>
           ))}
@@ -421,8 +421,8 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
         <div style={{ flex: 1, minWidth: 0, fontSize: 15.5, fontWeight: 700, color: "var(--color-label)" }}>Каталог бхаджанов</div>
       </header>
 
-      {!items && !err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 0", fontSize: 15 }}>Загрузка…</div>}
-      {err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 16px", fontSize: 15 }}>Не удалось загрузить каталог.</div>}
+      {!items && !err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 0", fontSize: "var(--text-subhead)" }}>Загрузка…</div>}
+      {err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 16px", fontSize: "var(--text-subhead)" }}>Не удалось загрузить каталог.</div>}
 
       {items && (
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "12px 16px 56px" }}>
@@ -437,22 +437,22 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
           </div>
           {/* поиск */}
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
-            style={{ width: "100%", boxSizing: "border-box", margin: "2px 0 18px", padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 15, outline: "none" }} />
+            style={{ width: "100%", boxSizing: "border-box", margin: "2px 0 18px", padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", outline: "none" }} />
 
-          {filtered.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: 15 }}>Ничего не найдено.</div>}
+          {filtered.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: "var(--text-subhead)" }}>Ничего не найдено.</div>}
 
           {groups.map((g) => (
             <section key={g.author} style={{ marginBottom: 26 }}>
               <h2 style={{ margin: "0 0 10px", fontSize: 18, fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
               {g.books.map((bk) => (
                 <div key={(g.author) + "|" + (bk.book ?? "_")} style={{ marginBottom: 12 }}>
-                  {bk.book && <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-gold-deep)", margin: "8px 2px 6px" }}>{bk.book}</div>}
+                  {bk.book && <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-gold-deep)", margin: "8px 2px 6px" }}>{bk.book}</div>}
                   <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 14, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
                     {bk.rows.map((it, i) => (
                       <li key={it.slug} style={{ borderBottom: i === bk.rows.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
                         <button onClick={() => onOpen(it.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "12px 12px", textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                          <span style={{ minWidth: 0, flex: 1, fontSize: 15, fontWeight: 500, lineHeight: 1.3, color: "var(--color-label)" }}>{it.name}</span>
-                          {!it.has_text && <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-label-2)", border: "0.5px solid var(--color-hairline)", borderRadius: 999, padding: "2px 8px" }}>скоро</span>}
+                          <span style={{ minWidth: 0, flex: 1, fontSize: "var(--text-subhead)", fontWeight: 500, lineHeight: 1.3, color: "var(--color-label)" }}>{it.name}</span>
+                          {!it.has_text && <span style={{ flexShrink: 0, fontSize: "var(--text-caption2)", color: "var(--color-label-2)", border: "0.5px solid var(--color-hairline)", borderRadius: 999, padding: "2px 8px" }}>скоро</span>}
                           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </button>
                       </li>
@@ -665,18 +665,18 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
           <div style={{ position: "relative", width: 300, maxWidth: "calc(100% - 48px)", background: "#fff", borderRadius: 20, padding: "26px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
             <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
-            <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em", color: "#1d1d1f", padding: "0 8px", textWrap: "balance" }}>{bookPctTitle}</div>
+            <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em", color: "#1d1d1f", padding: "0 8px", textWrap: "balance" }}>{bookPctTitle}</div>
             <div style={{ fontSize: 12.5, color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "var(--color-gold)", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
-            <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
+            <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
             <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
           </div>
         </div>
       )}
       {bookPct > 0 && pdfHidden && (
-        <button type="button" onClick={() => setPdfHidden(false)} style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: "calc(84px + env(safe-area-inset-bottom))", zIndex: 1200, display: "flex", alignItems: "center", gap: 9, padding: "9px 14px", borderRadius: 999, border: "none", background: "#1d1d1f", color: "#fff", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,0.3)", cursor: "pointer", maxWidth: "86vw", WebkitTapHighlightColor: "transparent" }}>
+        <button type="button" onClick={() => setPdfHidden(false)} style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: "calc(84px + env(safe-area-inset-bottom))", zIndex: 1200, display: "flex", alignItems: "center", gap: 9, padding: "9px 14px", borderRadius: 999, border: "none", background: "#1d1d1f", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,0.3)", cursor: "pointer", maxWidth: "86vw", WebkitTapHighlightColor: "transparent" }}>
           <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--color-gold)", flexShrink: 0 }} />
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bookPctTitle} · {bookPct}%</span>
         </button>

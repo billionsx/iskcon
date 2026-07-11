@@ -107,13 +107,13 @@ export function CenterHeroCard({ center, topLeft, onOpen, presentational, onMenu
           <div style={{ display: "inline-flex", alignItems: "center", gap: 7, marginBottom: 9, flexWrap: "wrap" }}>
             <span style={{ width: 7, height: 7, borderRadius: 2, background: accent }} />
             <span style={{ fontSize: 11.5, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: accent }}>{CENTER_TYPE_LABEL[center.type]}</span>
-            {center.status === "live" && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "rgba(255,255,255,.6)" }}>· авторизовано ИСККОН</span>}
+            {center.status === "live" && <span style={{ fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "rgba(255,255,255,.6)" }}>· авторизовано ИСККОН</span>}
           </div>
-          <h3 style={{ margin: 0, fontSize: 28, lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{center.name}</h3>
+          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 800, letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{center.name}</h3>
           {place && <p style={{ margin: "8px 0 0", display: "inline-flex", alignItems: "center", gap: 5, fontSize: 14.5, fontWeight: 400, letterSpacing: "-0.01em", color: "rgba(255,255,255,.85)" }}><PinIcon size={14} />{place}</p>}
           <div style={{ marginTop: 16, display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             {typeof center.distance_km === "number" && (
-              <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.18)", height: 26, padding: "0 12px", fontSize: 13, lineHeight: 1, fontWeight: 600, color: "#fff", fontVariantNumeric: "tabular-nums" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, background: "rgba(255,255,255,.18)", height: 26, padding: "0 12px", fontSize: "var(--text-footnote)", lineHeight: 1, fontWeight: 600, color: "#fff", fontVariantNumeric: "tabular-nums" }}>
                 {center.distance_km < 1 ? `${Math.round(center.distance_km * 1000)} м` : `${center.distance_km.toFixed(center.distance_km < 10 ? 1 : 0)} км`}
               </span>
             )}

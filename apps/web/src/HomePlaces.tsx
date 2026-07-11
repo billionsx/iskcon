@@ -84,7 +84,7 @@ function ActionPill({ href, label, icon }: { href: string; label: string; icon: 
     <a href={href} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}
       onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
       style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 14px", borderRadius: 999, background: "var(--color-glass-regular)",
-        fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+        fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
       <Ic d={icon} size={15} />{label}
     </a>
   );
@@ -125,9 +125,9 @@ function PlaceCard({ p, onOpen, flash, dist }: { p: PlaceItem; onOpen: (p: Place
       style={{ padding: 18, cursor: "pointer", WebkitTapHighlightColor: "transparent", ...fill }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
           <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
-          <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>
+          <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>
             {[geoLine(p), dist != null ? kmLabel(dist) : ""].filter(Boolean).join(" · ")}
           </div>
         </div>
@@ -161,7 +161,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
   const site = p.website && /^https?:\/\//.test(p.website) ? p.website : p.website ? `http://${p.website}` : "";
   return (
     <HomeSheet open={!!p} label={p.nameRu || p.name} onClose={onClose}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
         {p.kind === "restaurant" ? "Ресторан ИСККОН" : `${p.category} ИСККОН`}
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -201,7 +201,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
         <InfoRow k="Email" v={p.email} last />
       </div>
 
-      <p style={{ margin: "16px 2px 0", fontFamily: "var(--font-text)", fontSize: 12, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+      <p style={{ margin: "16px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
         Данные — из нашей базы каталога ИСККОН; первоисточник — официальный справочник центров. Уточняйте расписание программ по контактам центра.
       </p>
     </HomeSheet>
@@ -358,7 +358,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
       </div>
@@ -374,7 +374,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
             placeholder={kind === "restaurant" ? "Город, страна или название" : "Город, страна или название центра"}
             inputMode="search" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по каталогу"
             style={{ width: "100%", boxSizing: "border-box", padding: "12px 38px", borderRadius: 14, border: "none",
-              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
+              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
           {q && (
             <button type="button" aria-label="Очистить" onClick={() => setQ("")}
               style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
@@ -424,7 +424,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
                 </div>
               ) : near && near.length > 0 ? (
                 <>
-                  <div style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: 13, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+                  <div style={{ margin: "0 2px 12px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
                     {geo ? `В «${geo.name}» ${kind === "restaurant" ? "ресторанов" : "центров"} нет — ${nearNote || "вот ближайшие:"}` : "Ближайшие:"}
                   </div>
                   <div style={{ display: "grid", gap: 12 }}>

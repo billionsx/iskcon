@@ -128,7 +128,7 @@ function CoverBox({ src, w, h, radius = 10, label }: { src: string | null; w: nu
     );
   }
   return (
-    <div style={{ width: w, height: h, borderRadius: radius, flexShrink: 0, background: "var(--color-bg-3)", color: INK3, display: "grid", placeItems: "center", fontSize: 11, fontWeight: 700, letterSpacing: 0.4, textAlign: "center", padding: 4 }}>
+    <div style={{ width: w, height: h, borderRadius: radius, flexShrink: 0, background: "var(--color-bg-3)", color: INK3, display: "grid", placeItems: "center", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: 0.4, textAlign: "center", padding: 4 }}>
       {label ?? ""}
     </div>
   );
@@ -137,7 +137,7 @@ function CoverBox({ src, w, h, radius = 10, label }: { src: string | null; w: nu
 function SectionTitle({ title, action }: { title: string; action?: { label: string; onClick: () => void } }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: "0 4px", marginBottom: 10 }}>
-      <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT }}>{title}</h3>
+      <h3 style={{ margin: 0, fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT }}>{title}</h3>
       {action && (
         <button onClick={action.onClick} style={{ background: "none", border: "none", padding: 0, color: GOLD, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
           {action.label}
@@ -177,7 +177,7 @@ function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
             <button type="button" onClick={() => requestNote()}
               style={{ width: "100%", aspectRatio: "4 / 5", borderRadius: 20, border: `1.5px dashed ${GOLD}88`, background: "linear-gradient(135deg, rgba(251,244,216,0.5) 0%, rgba(241,225,164,0.4) 100%)", color: GOLDT, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
               <span style={{ display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: "50%", background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,.08)" }}><PlusIco size={24} /></span>
-              <span style={{ fontSize: 15, fontWeight: 600 }}>Новая заметка</span>
+              <span style={{ fontSize: "var(--text-subhead)", fontWeight: 600 }}>Новая заметка</span>
             </button>
           </div>
         </HScroll>
@@ -233,7 +233,7 @@ function AuthPanel() {
 
   const fieldWrap: CSSProperties = { background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden", boxShadow: "var(--shadow-card)" };
   const rowStyle: CSSProperties = { display: "flex", alignItems: "center", height: 52, padding: "0 16px", gap: 10 };
-  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 17, color: INK, fontFamily: FONT, padding: 0 };
+  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: FONT, padding: 0 };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 16 }}>
@@ -321,7 +321,7 @@ function AuthPanel() {
         </div>
 
         {error && (
-          <p style={{ margin: "12px 4px 0", fontSize: 13, lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>
+          <p style={{ margin: "12px 4px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>
         )}
 
         {/* основная кнопка */}
@@ -330,7 +330,7 @@ function AuthPanel() {
           disabled={busy}
           style={{
             marginTop: 18, width: "100%", height: 52, borderRadius: 14, border: "none",
-            background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: 17, fontWeight: 600,
+            background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
             cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1, transition: "opacity 0.18s ease",
             WebkitTapHighlightColor: "transparent",
           }}
@@ -338,7 +338,7 @@ function AuthPanel() {
           {busy ? "Минуту…" : isReg ? "Создать аккаунт" : "Войти"}
         </button>
 
-        <p style={{ margin: "16px 4px 0", fontSize: 12, lineHeight: 1.5, color: INK3, fontFamily: FONT, textAlign: "center" }}>
+        <p style={{ margin: "16px 4px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: FONT, textAlign: "center" }}>
           {isReg
             ? "Регистрируясь, вы соглашаетесь хранить отметки чтения и прослушивания в своём аккаунте."
             : "Войдите, чтобы синхронизировать закладки и прогресс."}
@@ -362,7 +362,7 @@ function StatStrip({ stats }: { stats: Overview["stats"] }) {
       {items.map((it, i) => (
         <div key={it.label} style={{ flex: 1, minWidth: 0, padding: "16px 4px", textAlign: "center", borderLeft: i ? `0.5px solid ${HAIR}` : "none" }}>
           <div style={{ fontSize: 25, fontWeight: 700, letterSpacing: -0.5, color: INK, fontFamily: FONT, lineHeight: 1.1 }}>{it.value}</div>
-          <div style={{ marginTop: 3, fontSize: 11, fontWeight: 500, color: INK2, fontFamily: FONT }}>{it.label}</div>
+          <div style={{ marginTop: 3, fontSize: "var(--text-caption2)", fontWeight: 500, color: INK2, fontFamily: FONT }}>{it.label}</div>
         </div>
       ))}
     </div>
@@ -386,8 +386,8 @@ function ContinueCard({ item, onOpen }: { item: ReadingItem; onOpen: (p: string)
       style={{ flexShrink: 0, width: 116, background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}
     >
       <CoverBox src={meta.cover} w={116} h={154} radius={12} label={meta.title} />
-      <div style={{ marginTop: 8, fontSize: 13, fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{meta.title}</div>
-      <div style={{ marginTop: 2, fontSize: 12, color: INK2, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{item.label || "Продолжить"}</div>
+      <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{meta.title}</div>
+      <div style={{ marginTop: 2, fontSize: "var(--text-caption)", color: INK2, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{item.label || "Продолжить"}</div>
     </button>
   );
 }
@@ -404,8 +404,8 @@ function ListenCard({ item, onPlay }: { item: ListenItem; onPlay: (it: ListenIte
           <svg width={16} height={16} viewBox="0 0 24 24" aria-hidden><path fill="#fff" d="M8 5v14l11-7z" /></svg>
         </span>
       </div>
-      <div style={{ marginTop: 8, fontSize: 13, fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{item.title || "Без названия"}</div>
-      <div style={{ marginTop: 2, fontSize: 12, color: INK2, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{item.subtitle || item.artist || ""}</div>
+      <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{item.title || "Без названия"}</div>
+      <div style={{ marginTop: 2, fontSize: "var(--text-caption)", color: INK2, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>{item.subtitle || item.artist || ""}</div>
     </button>
   );
 }
@@ -425,8 +425,8 @@ function BookmarkRow({ item, last, onOpen }: { item: BookmarkItem; last: boolean
           </span>
         )}
         <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: "block", fontSize: 15, fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title || "Закладка"}</span>
-          {item.subtitle && <span style={{ display: "block", marginTop: 1, fontSize: 13, color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.subtitle}</span>}
+          <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title || "Закладка"}</span>
+          {item.subtitle && <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-footnote)", color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.subtitle}</span>}
         </span>
         {item.href && <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>}
       </button>
@@ -445,8 +445,8 @@ function ProfileHeader({ onEdit }: { onEdit: () => void }) {
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{display}</div>
-        {user?.spiritualName && <div style={{ marginTop: 1, fontSize: 13, fontWeight: 600, color: GOLD, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.spiritualName}</div>}
-        {user?.email && <div style={{ marginTop: 2, fontSize: 13, color: INK2, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>}
+        {user?.spiritualName && <div style={{ marginTop: 1, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.spiritualName}</div>}
+        {user?.email && <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: INK2, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>}
       </div>
       <button
         aria-label="Изменить профиль"
@@ -548,7 +548,7 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
   }
 
   const rowStyle: CSSProperties = { display: "flex", alignItems: "center", minHeight: 52, padding: "0 16px" };
-  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 17, color: INK, fontFamily: FONT, padding: "14px 0" };
+  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: FONT, padding: "14px 0" };
   const cardStyle: CSSProperties = { background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden" };
   const groupLabel: CSSProperties = { margin: "20px 6px 7px", fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase" };
   const hair = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
@@ -558,9 +558,9 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
       <div onClick={(e) => e.stopPropagation()} style={{ background: GROUPED, borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: "10px 16px calc(20px + env(safe-area-inset-bottom))", maxWidth: 480, width: "100%", margin: "0 auto", maxHeight: "92vh", overflowY: "auto" }}>
         <div style={{ width: 36, height: 5, borderRadius: 3, background: "rgba(0,0,0,0.18)", margin: "0 auto 14px", position: "sticky", top: 0 }} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-          <button onClick={onClose} style={{ background: "none", border: "none", color: INK2, fontSize: 16, fontFamily: FONT, cursor: "pointer", padding: 0 }}>Отмена</button>
-          <span style={{ fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Профиль преданного</span>
-          <button onClick={() => void save()} disabled={busy} style={{ background: "none", border: "none", color: GOLD, fontSize: 16, fontWeight: 600, fontFamily: FONT, cursor: "pointer", padding: 0, opacity: busy ? 0.5 : 1 }}>Готово</button>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: INK2, fontSize: "var(--text-callout)", fontFamily: FONT, cursor: "pointer", padding: 0 }}>Отмена</button>
+          <span style={{ fontSize: "var(--text-callout)", fontWeight: 600, color: INK, fontFamily: FONT }}>Профиль преданного</span>
+          <button onClick={() => void save()} disabled={busy} style={{ background: "none", border: "none", color: GOLD, fontSize: "var(--text-callout)", fontWeight: 600, fontFamily: FONT, cursor: "pointer", padding: 0, opacity: busy ? 0.5 : 1 }}>Готово</button>
         </div>
 
         <div style={groupLabel}>Кто вы</div>
@@ -576,7 +576,7 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
           {level && (
             <>
               {hair}
-              <p style={{ margin: 0, padding: "10px 16px", fontSize: 13, lineHeight: 1.45, color: INK2, fontFamily: FONT }}>
+              <p style={{ margin: 0, padding: "10px 16px", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: INK2, fontFamily: FONT }}>
                 {LEVEL_OPTS.find((o) => o.id === level)?.hint}
               </p>
             </>
@@ -588,12 +588,12 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
             <div style={groupLabel}>Практика</div>
             <div style={cardStyle}>
               <div style={rowStyle}>
-                <span style={{ fontSize: 17, color: INK, fontFamily: FONT }}>Норма кругов в день</span>
+                <span style={{ fontSize: "var(--text-body)", color: INK, fontFamily: FONT }}>Норма кругов в день</span>
                 <input inputMode="numeric" style={{ ...inputStyle, textAlign: "right", flex: "0 0 auto", width: 64 }} placeholder="16" value={chantNorm} onChange={(e) => setChantNorm(e.target.value.replace(/[^\d]/g, "").slice(0, 2))} />
               </div>
               {hair}
               <div style={rowStyle}>
-                <span style={{ fontSize: 17, color: INK, fontFamily: FONT, flexShrink: 0, marginRight: 12 }}>Следую 4 принципам с</span>
+                <span style={{ fontSize: "var(--text-body)", color: INK, fontFamily: FONT, flexShrink: 0, marginRight: 12 }}>Следую 4 принципам с</span>
                 <input type="date" style={{ ...inputStyle, textAlign: "right", colorScheme: "light" }} value={principlesSince} onChange={(e) => setPrinciplesSince(e.target.value)} />
               </div>
               {hair}
@@ -613,7 +613,7 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
           </>
         )}
 
-        <p style={{ margin: "18px 6px 0", fontSize: 12, lineHeight: 1.5, color: INK3, fontFamily: FONT }}>
+        <p style={{ margin: "18px 6px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: FONT }}>
           Ступень настраивает приложение под вас — от первых шагов до зрелой садханы. Ничего из этого не публикуется; данные видны только вам.
         </p>
       </div>
@@ -673,7 +673,7 @@ function NotificationsCard() {
         <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 14px" }}>
           <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><BellIco /></span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 16, color: INK, fontWeight: 500, fontFamily: FONT }}>Push-уведомления</div>
+            <div style={{ fontSize: "var(--text-callout)", color: INK, fontWeight: 500, fontFamily: FONT }}>Push-уведомления</div>
             <div style={{ fontSize: 12.5, color: INK3, fontFamily: FONT, marginTop: 1 }}>
               {!supported ? "Недоступно в этом браузере" : perm === "denied" ? "Разрешение запрещено в браузере" : on ? "Включены на этом устройстве" : "Тихие напоминания о практике"}
             </div>
@@ -687,7 +687,7 @@ function NotificationsCard() {
             <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px 11px 56px" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 15.5, color: INK, fontFamily: FONT }}>{c.label}</div>
-                <div style={{ fontSize: 12, color: INK3, fontFamily: FONT, marginTop: 1 }}>{c.sub}</div>
+                <div style={{ fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, marginTop: 1 }}>{c.sub}</div>
               </div>
               <Switch on={!!cats[c.id]} onToggle={() => toggleCat(c.id)} />
             </div>
@@ -711,7 +711,7 @@ function SettingsCard({ onEdit, onDonate, onLogout }: { onEdit: () => void; onDo
           <div key={r.label}>
             <button onClick={r.onClick} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
               <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: r.tint ? "rgba(210,170,27,0.14)" : "rgba(120,120,128,0.12)", color: r.tint || INK2 }}>{r.icon}</span>
-              <span style={{ flex: 1, fontSize: 16, color: INK, fontWeight: 500 }}>{r.label}</span>
+              <span style={{ flex: 1, fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>{r.label}</span>
               <span style={{ color: INK3 }}><ChevR /></span>
             </button>
             {i < rows.length - 1 && <div style={{ height: "0.5px", background: HAIR, marginLeft: 56 }} />}
@@ -720,7 +720,7 @@ function SettingsCard({ onEdit, onDonate, onLogout }: { onEdit: () => void; onDo
         <div style={{ height: "0.5px", background: HAIR, marginLeft: 56 }} />
         <button onClick={onLogout} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
           <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(255,59,48,0.12)", color: "var(--color-danger-text)" }}><SignOutIco size={18} /></span>
-          <span style={{ flex: 1, fontSize: 16, color: "var(--color-danger-text)", fontWeight: 500 }}>Выйти</span>
+          <span style={{ flex: 1, fontSize: "var(--text-callout)", color: "var(--color-danger-text)", fontWeight: 500 }}>Выйти</span>
         </button>
       </div>
     </div>
@@ -769,7 +769,7 @@ function SadhanaCard({ state, onOpen }: { state: SadhanaState; onOpen: () => voi
         </div>
       </div>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 800, letterSpacing: "-0.02em", color: done ? "#34C759" : INK }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 800, letterSpacing: "-0.02em", color: done ? "#34C759" : INK }}>
           {done ? "Норма выполнена" : "Круги сегодня"}
         </div>
         <div style={{ marginTop: 3, fontFamily: FONT, fontSize: 12.5, color: INK2, textTransform: "lowercase" }}>{bits.join(" · ")}</div>
@@ -838,10 +838,10 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
           <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1" /><circle cx="15" cy="6" r="2" /><circle cx="9" cy="12" r="2" /><circle cx="17" cy="18" r="2" /></g></svg>
         </span>
         <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{ display: "block", fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Настроить профиль</span>
-          <span style={{ display: "block", fontSize: 13, color: INK2, fontFamily: FONT, marginTop: 1 }}>Пошагово: ступень, имя и уведомления</span>
+          <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, color: INK, fontFamily: FONT }}>Настроить профиль</span>
+          <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK2, fontFamily: FONT, marginTop: 1 }}>Пошагово: ступень, имя и уведомления</span>
         </span>
-        <span style={{ color: INK3, flexShrink: 0, fontSize: 20 }}>›</span>
+        <span style={{ color: INK3, flexShrink: 0, fontSize: "var(--text-title3)" }}>›</span>
       </button>
 
       {ov && <StatStrip stats={ov.stats} />}
@@ -861,7 +861,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 21l-5 2.1 1-5.5-4-3.9 5.5-.8z" /></svg>
             </span>
             <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: "block", fontSize: 16, color: INK, fontWeight: 500 }}>Мой обет</span>
+              <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мой обет</span>
               <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Санкальпа на срок: служения, ежедневный контроль и отчёт</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
@@ -877,7 +877,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></svg>
             </span>
             <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: "block", fontSize: 16, color: INK, fontWeight: 500 }}>Каталог Ятры</span>
+              <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Каталог Ятры</span>
               <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храмы, нама-хатты, рестораны и фермы ИСККОН рядом</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
@@ -885,7 +885,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
           <button onClick={() => onOpenPath("/my/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", borderTop: `0.5px solid ${HAIR}`, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
             <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><TempleIco size={18} /></span>
             <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: "block", fontSize: 16, color: INK, fontWeight: 500 }}>Мои центры</span>
+              <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мои центры</span>
               <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на gaurangers.com</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
@@ -902,11 +902,11 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       {loaded && !hasAny && (
         <div style={{ background: SURFACE, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: "26px 22px", textAlign: "center" }}>
           <div style={{ width: 52, height: 52, margin: "0 auto 14px", borderRadius: "50%", background: "rgba(210,170,27,0.14)", color: GOLD, display: "grid", placeItems: "center" }}><BookIco size={26} /></div>
-          <div style={{ fontSize: 17, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.2 }}>Здесь будет ваша садхана</div>
+          <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.2 }}>Здесь будет ваша садхана</div>
           <p style={{ margin: "8px auto 18px", fontSize: 14, lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 280 }}>
             Закладки, прогресс чтения и прослушанные киртаны появятся, как только вы начнёте.
           </p>
-          <button onClick={() => onOpenPath("/books")} style={{ height: 46, padding: "0 22px", borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: 15, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          <button onClick={() => onOpenPath("/books")} style={{ height: 46, padding: "0 22px", borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
             Открыть библиотеку
           </button>
         </div>
@@ -954,7 +954,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
               return (
                 <button key={it.work} onClick={() => onOpenPath(`/book/${it.work}`)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
                   <CoverBox src={meta.cover} w={96} h={128} radius={10} label={meta.title} />
-                  <div style={{ marginTop: 6, fontSize: 12, fontWeight: 500, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{meta.title}</div>
+                  <div style={{ marginTop: 6, fontSize: "var(--text-caption)", fontWeight: 500, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{meta.title}</div>
                 </button>
               );
             })}
@@ -965,7 +965,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <NotificationsCard />
       <SettingsCard onEdit={() => setEditing(true)} onDonate={onDonate} onLogout={() => void doLogout()} />
 
-      <p style={{ textAlign: "center", fontSize: 12, color: INK3, fontFamily: FONT, margin: 0 }}>gaurangers.com · ИСККОН</p>
+      <p style={{ textAlign: "center", fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, margin: 0 }}>gaurangers.com · ИСККОН</p>
 
       {editing && <ProfileEditor onClose={() => setEditing(false)} />}
     </div>

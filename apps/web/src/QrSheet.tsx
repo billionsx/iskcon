@@ -88,7 +88,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
         <div style={{ width: 216, height: 216, margin: "20px auto 0", display: "grid", placeItems: "center", borderRadius: 16, background: "#fff", border: `0.5px solid ${LINE}` }}>
           {src
             ? <img src={src} alt="QR-код" width={192} height={192} style={{ display: "block" }} />
-            : <span style={{ fontSize: 13, color: INK3 }}>Генерация…</span>}
+            : <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>Генерация…</span>}
         </div>
 
         <button
@@ -96,7 +96,7 @@ export function QrSheet({ url, data, onClose }: { url: string; data: QrData; onC
           style={{ marginTop: 14, width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "10px 12px 10px 14px", borderRadius: 12, border: `0.5px solid ${LINE}`, background: "#F6F6F8", cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)" }}
         >
           <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, lineHeight: 1.35, color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{url.replace(/^https?:\/\//, "")}</span>
-          <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: 5, minWidth: 112, fontSize: 13, fontWeight: 600, color: copied ? "#1aa179" : GOLDT }}>
+          <span style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "flex-end", gap: 5, minWidth: 112, fontSize: "var(--text-footnote)", fontWeight: 600, color: copied ? "#1aa179" : GOLDT }}>
             {copied ? <CheckGlyph /> : <CopyGlyph />}{copied ? "Скопировано" : "Копировать"}
           </span>
         </button>
@@ -126,7 +126,7 @@ function Identity({ data }: { data: QrData }) {
   if (data.kind === "card") {
     return (
       <>
-        <h1 style={{ margin: "20px 0 0", fontSize: 22, lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
+        <h1 style={{ margin: "20px 0 0", fontSize: "var(--text-title2)", lineHeight: 1.18, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
           {data.title}
         </h1>
         {data.subtitle && <div style={{ marginTop: 6, fontSize: 14, fontWeight: 600, color: INK2 }}>{data.subtitle}</div>}
@@ -151,7 +151,7 @@ function Identity({ data }: { data: QrData }) {
           {data.bookTitle}
         </h1>
         {data.bookSubtitle && (
-          <div style={{ marginTop: 3, fontSize: 15, fontWeight: 600, color: INK2 }}>{data.bookSubtitle}</div>
+          <div style={{ marginTop: 3, fontSize: "var(--text-subhead)", fontWeight: 600, color: INK2 }}>{data.bookSubtitle}</div>
         )}
         {data.tagline && (
           <div style={{ marginTop: 8, fontSize: 13.5, color: INK3 }}>{data.tagline}</div>
@@ -165,7 +165,7 @@ function Identity({ data }: { data: QrData }) {
     return (
       <>
         <div style={{ marginTop: 16, fontSize: 13.5, fontWeight: 600, color: INK2 }}>{data.bookTitle}</div>
-        <div style={{ marginTop: 12, fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT }}>
+        <div style={{ marginTop: 12, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: GOLDT }}>
           Глава {data.chapterNumber}
         </div>
         <h1 style={{ margin: "6px 0 0", fontSize: 24, lineHeight: 1.15, fontWeight: 800, letterSpacing: "-0.02em", color: INK, fontFamily: "var(--font-display, var(--font-text))" }}>
@@ -183,7 +183,7 @@ function Identity({ data }: { data: QrData }) {
       <div style={{ marginTop: 4, fontSize: 12.5, color: INK3 }}>
         Глава {data.chapterNumber}{data.chapterTitle ? ` · ${data.chapterTitle}` : ""}
       </div>
-      <div style={{ marginTop: 12, fontSize: 12, fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLDT }}>
+      <div style={{ marginTop: 12, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "1.4px", textTransform: "uppercase", color: GOLDT }}>
         {data.verseLabel}
       </div>
       {data.verseText && (

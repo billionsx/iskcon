@@ -39,7 +39,7 @@ const Lotus = ({ size = 26 }: { size?: number }) => (
 );
 
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
-const eyebrow: CSSProperties = { fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
+const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
 const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
 
 type Editing = { mode: "new" } | { mode: "edit"; deity: CenterDeity } | null;
@@ -110,7 +110,7 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={editing ? () => setEditing(null) : onBack} style={iconBtn}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{title}</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{title}</div>
         {right ?? <span style={{ width: 38 }} />}
       </header>
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -124,7 +124,7 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
       <Shell title="Божества">
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
-          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Войти</button>
+          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
     );
@@ -161,8 +161,8 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
           <p style={{ margin: "9px 4px 0", fontFamily: FT, fontSize: 12.5, lineHeight: 1.5, color: L3 }}>Свяжите с Божеством из общего реестра — со страницы центра можно будет перейти к Нему, а на Его странице появится этот центр.</p>
         </section>
         {err && <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{err}</div>}
-        <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>{saving ? "Сохраняю…" : "Сохранить"}</button>
-        {editing.mode === "edit" && <button type="button" onClick={remove} disabled={saving} style={{ marginTop: 10, width: "100%", padding: "13px 0", borderRadius: 14, border: "none", background: "color-mix(in srgb, var(--color-danger) 11%, transparent)", color: RED, fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Удалить</button>}
+        <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>{saving ? "Сохраняю…" : "Сохранить"}</button>
+        {editing.mode === "edit" && <button type="button" onClick={remove} disabled={saving} style={{ marginTop: 10, width: "100%", padding: "13px 0", borderRadius: 14, border: "none", background: "color-mix(in srgb, var(--color-danger) 11%, transparent)", color: RED, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Удалить</button>}
       </Shell>
     );
   }
@@ -170,13 +170,13 @@ export default function CenterDeities({ slug, onBack, flash }: { slug: string; o
   const deities = data.deities;
   return (
     <Shell title="Божества" right={<button type="button" aria-label="Добавить" onClick={openNew} style={{ ...iconBtn, color: GOLDT }}><Plus /></button>}>
-      <p style={{ margin: "2px 4px 14px", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L3 }}>Божества центра «{data.center.name}» с временем даршана — отображаются на странице центра.</p>
+      <p style={{ margin: "2px 4px 14px", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L3 }}>Божества центра «{data.center.name}» с временем даршана — отображаются на странице центра.</p>
       {deities.length === 0 ? (
         <div style={{ ...card, textAlign: "center", padding: "30px 22px" }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Lotus size={26} /></span>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Божества не добавлены</div>
           <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Добавьте Божеств храма и время даршана.</p>
-          <button type="button" onClick={openNew} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Plus size={18} />Добавить Божество</button>
+          <button type="button" onClick={openNew} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Plus size={18} />Добавить Божество</button>
         </div>
       ) : (
         <div style={{ background: FILL, borderRadius: 18, overflow: "hidden" }}>

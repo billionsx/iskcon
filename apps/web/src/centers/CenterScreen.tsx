@@ -135,7 +135,7 @@ const programLabel = (t: string) => PROGRAM_LABEL[t] || t.replace(/_/g, " ");
 
 /* ───────────────────── переиспользуемые ───────────────────── */
 const eyebrow: CSSProperties = {
-  fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.6px",
+  fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px",
   textTransform: "uppercase", color: L3, margin: "0 2px 9px",
 };
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
@@ -168,8 +168,8 @@ function ProgramRow({ p, last }: { p: CenterProgram; last: boolean }) {
   return (
     <div style={{ padding: "12px 0", borderBottom: last ? "none" : `0.5px solid ${HAIR}` }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-        <span style={{ fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1 }}>{programLabel(p.type)}</span>
-        {time && <span style={{ fontFamily: FD, fontSize: 15, fontWeight: 700, color: GOLDT, whiteSpace: "nowrap" }}>{time}</span>}
+        <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1 }}>{programLabel(p.type)}</span>
+        {time && <span style={{ fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT, whiteSpace: "nowrap" }}>{time}</span>}
       </div>
       {(days || note) && (
         <div style={{ marginTop: 3, fontFamily: FT, fontSize: 12.5, color: L3 }}>
@@ -285,7 +285,7 @@ export default function CenterScreen({
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack} style={iconBtn}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em", color: L1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "0 4px" }}>{title}</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.02em", color: L1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", padding: "0 4px" }}>{title}</div>
         {data ? (
           <button type="button" aria-label="Поделиться" onClick={onShare} style={iconBtn}><Share /></button>
         ) : <span style={{ width: 38 }} />}
@@ -366,7 +366,7 @@ export default function CenterScreen({
                 ? c.status === "review" ? "Заявка на модерации" : "Черновик центра"
                 : c.status === "review" ? "Заявка на проверке ИСККОН" : c.status === "draft" ? "Это превью" : "Вы управляете центром"}
             </div>
-            <p style={{ margin: "5px 0 0", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L2 }}>
+            <p style={{ margin: "5px 0 0", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L2 }}>
               {canPublish && c.status !== "live"
                 ? c.status === "review"
                   ? "Проверьте профиль и расписание, затем опубликуйте либо верните на доработку."
@@ -434,7 +434,7 @@ export default function CenterScreen({
               {c.languages.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: c.address ? 13 : 0 }}>
                   {c.languages.map((l) => (
-                    <span key={l} style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 999, background: FILL2, color: L2, textTransform: "uppercase", letterSpacing: "0.3px" }}>{l}</span>
+                    <span key={l} style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, padding: "4px 10px", borderRadius: 999, background: FILL2, color: L2, textTransform: "uppercase", letterSpacing: "0.3px" }}>{l}</span>
                   ))}
                 </div>
               )}
@@ -496,7 +496,7 @@ export default function CenterScreen({
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {data.events.map((ev) => (
                 <div key={ev.id} style={{ ...card, display: "flex", gap: 13, alignItems: "flex-start" }}>
-                  <span style={{ display: "grid", placeItems: "center", width: 40, height: 40, flexShrink: 0, borderRadius: 12, background: `color-mix(in srgb, ${GOLD} 13%, transparent)`, color: GOLDT, fontFamily: FD, fontWeight: 800, fontSize: 12, lineHeight: 1, textAlign: "center" }}>
+                  <span style={{ display: "grid", placeItems: "center", width: 40, height: 40, flexShrink: 0, borderRadius: 12, background: `color-mix(in srgb, ${GOLD} 13%, transparent)`, color: GOLDT, fontFamily: FD, fontWeight: 800, fontSize: "var(--text-caption)", lineHeight: 1, textAlign: "center" }}>
                     {fmtEventDate(ev.starts_at).split(" ").slice(0, 2).join(" ")}
                   </span>
                   <div style={{ minWidth: 0, flex: 1 }}>
@@ -509,10 +509,10 @@ export default function CenterScreen({
                       <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{pickI18n(ev.title_i18n)}</div>
                     )}
                     {pickI18n(ev.description_i18n) && (
-                      <p style={{ margin: "3px 0 0", fontFamily: FT, fontSize: 13, lineHeight: 1.45, color: L2 }}>{pickI18n(ev.description_i18n)}</p>
+                      <p style={{ margin: "3px 0 0", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.45, color: L2 }}>{pickI18n(ev.description_i18n)}</p>
                     )}
                     {ev.livestream_url && (
-                      <a href={ev.livestream_url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 6, fontFamily: FT, fontSize: 13, fontWeight: 700, color: GOLDT, textDecoration: "none" }}>
+                      <a href={ev.livestream_url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", marginTop: 6, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLDT, textDecoration: "none" }}>
                         Трансляция →
                       </a>
                     )}
@@ -524,10 +524,10 @@ export default function CenterScreen({
         )}
 
         {/* ─── поделиться ─── */}
-        <button type="button" onClick={onShare} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 24, padding: "13px 0", borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: 15, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+        <button type="button" onClick={onShare} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 24, padding: "13px 0", borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <Share size={17} />Поделиться центром
         </button>
-        <p style={{ textAlign: "center", fontFamily: FT, fontSize: 12, color: L3, margin: "18px 0 0" }}>gaurangers.com · ИСККОН</p>
+        <p style={{ textAlign: "center", fontFamily: FT, fontSize: "var(--text-caption)", color: L3, margin: "18px 0 0" }}>gaurangers.com · ИСККОН</p>
       </div>
       {qr && typeof window !== "undefined" && (
         <QrSheet

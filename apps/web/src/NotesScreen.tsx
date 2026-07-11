@@ -93,7 +93,7 @@ function Row({ n, last, onOpen, reduce }: { n: Note; last: boolean; onOpen: () =
           </span>
           <span style={{ display: "flex", alignItems: "baseline", gap: 7, marginTop: 2 }}>
             <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: INK3, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{fmtShort(n.updatedAt)}</span>
-            <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: 13, color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview || (n.srcTitle ? n.srcTitle : "Нет дополнительного текста")}</span>
+            <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview || (n.srcTitle ? n.srcTitle : "Нет дополнительного текста")}</span>
           </span>
         </span>
         {!last && <span aria-hidden style={{ position: "absolute", left: 64, right: 0, bottom: 0, height: 0.5, background: LINE }} />}
@@ -107,8 +107,8 @@ function Section({ title, items, onOpen, reduce }: { title: string; items: Note[
   return (
     <div style={{ margin: "0 0 22px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "0 4px 8px" }}>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: INK2 }}>{title}</span>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 600, color: INK3 }}>{items.length}</span>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: INK2 }}>{title}</span>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: INK3 }}>{items.length}</span>
       </div>
       <div style={{ borderRadius: 16, overflow: "hidden", border: `0.5px solid ${LINE}`, background: "var(--color-bg-2)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
         {items.map((n, i) => <Row key={n.id} n={n} last={i === items.length - 1} onOpen={() => onOpen(n)} reduce={reduce} />)}
@@ -153,7 +153,7 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: INK, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <Back />
         </button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Заметки</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Заметки</div>
         <div style={{ width: 38 }} />
       </header>
 
@@ -165,7 +165,7 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
             <div style={{ display: "flex", alignItems: "center", gap: 8, height: 38, padding: "0 12px", borderRadius: 11, background: "rgba(120,120,128,0.12)" }}>
               <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: INK3, flexShrink: 0 }}><circle {...STROKE} cx="11" cy="11" r="7" /><path {...STROKE} d="m20 20-3.2-3.2" /></svg>
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск в заметках" inputMode="search"
-                style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: 15, color: INK }} />
+                style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: INK }} />
               {q && <button type="button" aria-label="Очистить" onClick={() => setQ("")} style={{ border: "none", background: "none", color: INK3, cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
               </button>}
@@ -174,7 +174,7 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
 
           <div style={{ padding: "4px 16px calc(96px + env(safe-area-inset-bottom,0px))" }}>
             {filtered.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "48px 20px", color: INK3, fontFamily: "var(--font-text)", fontSize: 15 }}>Ничего не найдено</div>
+              <div style={{ textAlign: "center", padding: "48px 20px", color: INK3, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Ничего не найдено</div>
             ) : (
               groups.map((g) => <Section key={g.title} title={g.title} items={g.items} onOpen={(n) => onNavigate("/note/" + n.id)} reduce={!!reduce} />)
             )}
@@ -196,9 +196,9 @@ function Empty({ onNew }: { onNew: () => void }) {
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 40px 64px" }}>
       <span style={{ display: "grid", placeItems: "center", width: 72, height: 72, borderRadius: "50%", background: "rgba(120,120,128,0.12)", color: INK3 }}><NotesGlyph size={34} /></span>
-      <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Заметок пока нет</h2>
+      <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Заметок пока нет</h2>
       <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.5, color: INK2, maxWidth: 320 }}>Услышали мысль в лекции, увидели даршан, прочли стих, что коснулся сердца — запишите. Из любой карточки, плеера и ридера можно сохранить «В заметки».</p>
-      <button type="button" onClick={onNew} style={{ marginTop: 22, height: 48, padding: "0 26px", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Новая заметка</button>
+      <button type="button" onClick={onNew} style={{ marginTop: 22, height: 48, padding: "0 26px", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Новая заметка</button>
     </div>
   );
 }

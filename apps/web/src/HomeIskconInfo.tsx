@@ -55,7 +55,7 @@ function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => v
     <HomeSheet open={!!d} label={d ? d.title : "Документ"} onClose={onClose}>
       {d && (
         <div style={{ padding: "0 20px 24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
             <span style={{ color: GOLD }}>{DOC_TYPE_LABEL[d.type]}</span>
             <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
             <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
@@ -64,11 +64,11 @@ function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => v
             <h3 style={{ margin: "7px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
             <CardActionBtns favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} onMore={() => openCardMenu(docCtx(d))} />
           </div>
-          <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-3)" }}>{d.issuer}</div>
+          <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{d.issuer}</div>
 
           <div style={{ marginTop: 16 }}>
             {d.body.map((p, i) => (
-              <p key={i} style={{ margin: i ? "12px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: 15, lineHeight: 1.62, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{p}</p>
+              <p key={i} style={{ margin: i ? "12px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.62, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{p}</p>
             ))}
           </div>
 
@@ -96,7 +96,7 @@ function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash
     <article role="button" tabIndex={0} onClick={onOpen}
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(); } }}
       style={{ padding: 18, ...fill, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase" }}>
         <span style={{ color: GOLD }}>{DOC_TYPE_LABEL[d.type]}</span>
         <span aria-hidden style={{ color: "var(--color-label-3)" }}>·</span>
         <span style={{ color: "var(--color-label-3)" }}>{d.year}</span>
@@ -148,7 +148,7 @@ export function HomeDocuments({ stickyTop, flash, openSig }: { stickyTop: number
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Документы ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Основополагающие, действующие и исторические документы общества — от Семи целей и Direction of Management до резолюций GBC и Свода законов. Каждый документ читается прямо в приложении.
@@ -162,7 +162,7 @@ export function HomeDocuments({ stickyTop, flash, openSig }: { stickyTop: number
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Название, год или орган"
           inputMode="search" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск документа"
           style={{ width: "100%", boxSizing: "border-box", padding: "12px 38px", borderRadius: 14, border: "none",
-            background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 16, color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
+            background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
         {q && (
           <button type="button" aria-label="Очистить" onClick={() => setQ("")}
             style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
@@ -214,7 +214,7 @@ export function HomeStructure() {
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Устройство общества</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Устройство общества</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Структура ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Шрила Прабхупада сознательно не назначил единого преемника: управление обществом он передал коллегиальному органу — GBC, сохранив за собой положение Ачарьи-основателя навсегда.
@@ -270,7 +270,7 @@ export function HomeLinks() {
   return (
     <div>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Навигатор</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Навигатор</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Ссылки ИСККОН</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Проверенные официальные ресурсы общества — сайты, библиотеки, святые места и миссии служения.
@@ -278,7 +278,7 @@ export function HomeLinks() {
       </div>
       {LINKS.map((g) => (
         <section key={g.group} style={{ marginTop: 26 }}>
-          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
+          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
           <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
             {g.items.map((it, i) => (
               <li key={it.t} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>

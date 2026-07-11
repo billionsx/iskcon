@@ -244,7 +244,7 @@ function streak(rounds: Round[], minRounds: number): number {
 function Tile({ value, label, sub, accent }: { value: string; label: string; sub?: string; accent?: string }) {
   return (
     <div style={{ flex: 1, minWidth: 0, padding: "13px 12px", borderRadius: 16, background: FILL, textAlign: "center" }}>
-      <div style={{ fontFamily: FD, fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: accent || L1, lineHeight: 1.05 }}>{value}</div>
+      <div style={{ fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: accent || L1, lineHeight: 1.05 }}>{value}</div>
       <div style={{ marginTop: 3, fontFamily: FT, fontSize: 11.5, fontWeight: 600, color: L2 }}>{label}</div>
       {sub && <div style={{ marginTop: 1, fontFamily: FT, fontSize: 10.5, color: L3 }}>{sub}</div>}
     </div>
@@ -404,7 +404,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: L1, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <Back />
         </button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Джапа</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Джапа</div>
         <button type="button" aria-label="Настройки" onClick={() => setShowSet((v) => !v)}
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: showSet ? GOLD : L1, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <Gear />
@@ -446,13 +446,13 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                       strokeDasharray={C} strokeDashoffset={C * (1 - ringFrac)} style={{ transition: "stroke-dashoffset .25s ease" }} />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
-                    <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLDT }}>Круг {roundsToday + 1}</div>
+                    <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLDT }}>Круг {roundsToday + 1}</div>
                     <div style={{ fontFamily: FD, fontSize: "clamp(56px, 19vw, 88px)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, color: L1 }}>{st.curBeads}</div>
                     <div style={{ fontFamily: FT, fontSize: 14, color: L2 }}>из {st.bpr}</div>
                   </div>
                   {flash > 0 && (
                     <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", pointerEvents: "none" }}>
-                      <div style={{ padding: "8px 18px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.01em", boxShadow: "0 10px 30px rgba(210,170,27,0.45)", animation: "japaPop .35s ease" }}>+1 круг</div>
+                      <div style={{ padding: "8px 18px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.01em", boxShadow: "0 10px 30px rgba(210,170,27,0.45)", animation: "japaPop .35s ease" }}>+1 круг</div>
                     </div>
                   )}
                 </button>
@@ -461,16 +461,16 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
               {/* мелкие контролы под кольцом */}
               <div style={{ display: "flex", justifyContent: "center", gap: 10, marginTop: 14 }}>
                 <button type="button" onClick={undoBead} disabled={st.curBeads <= 0}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 15px", borderRadius: 999, border: "none", background: FILL2, color: st.curBeads <= 0 ? L3 : L1, cursor: st.curBeads <= 0 ? "default" : "pointer", fontFamily: FT, fontSize: 13, fontWeight: 600, opacity: st.curBeads <= 0 ? 0.55 : 1, WebkitTapHighlightColor: "transparent" }}>− Бусина</button>
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 15px", borderRadius: 999, border: "none", background: FILL2, color: st.curBeads <= 0 ? L3 : L1, cursor: st.curBeads <= 0 ? "default" : "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, opacity: st.curBeads <= 0 ? 0.55 : 1, WebkitTapHighlightColor: "transparent" }}>− Бусина</button>
                 <button type="button" onClick={resetRound} disabled={st.curBeads === 0}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 15px", borderRadius: 999, border: "none", background: FILL2, color: st.curBeads === 0 ? L3 : RED, cursor: st.curBeads === 0 ? "default" : "pointer", fontFamily: FT, fontSize: 13, fontWeight: 600, opacity: st.curBeads === 0 ? 0.55 : 1, WebkitTapHighlightColor: "transparent" }}>Сбросить круг</button>
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 15px", borderRadius: 999, border: "none", background: FILL2, color: st.curBeads === 0 ? L3 : RED, cursor: st.curBeads === 0 ? "default" : "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, opacity: st.curBeads === 0 ? 0.55 : 1, WebkitTapHighlightColor: "transparent" }}>Сбросить круг</button>
               </div>
 
               {/* цель дня */}
               <div style={{ marginTop: 18, padding: 14, borderRadius: 16, background: FILL }}>
                 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: FT, fontSize: 13, fontWeight: 600, color: L2 }}>Цель сегодня</span>
-                  <span style={{ fontFamily: FD, fontSize: 15, fontWeight: 800, color: roundsToday >= st.goal ? GREEN : L1 }}>{roundsToday} / {st.goal} кругов</span>
+                  <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, color: L2 }}>Цель сегодня</span>
+                  <span style={{ fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 800, color: roundsToday >= st.goal ? GREEN : L1 }}>{roundsToday} / {st.goal} кругов</span>
                 </div>
                 <div style={{ marginTop: 9, height: 9, borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 9%, transparent)", overflow: "hidden" }}>
                   <div style={{ width: `${goalPct * 100}%`, height: "100%", borderRadius: 999, background: roundsToday >= st.goal ? GREEN : GOLD, transition: "width .35s ease" }} />
@@ -490,14 +490,14 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
               {/* метроном Маха-мантры */}
               <div style={{ marginTop: 20, padding: 16, borderRadius: 18, background: FILL }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
+                  <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
                   <button type="button" aria-label={sound ? "Звук включён" : "Звук выключен"} onClick={() => setSound((v) => !v)}
                     style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, border: "none", background: sound ? `color-mix(in srgb, ${GOLD} 16%, transparent)` : FILL2, color: sound ? GOLDT : L3, cursor: "pointer", fontFamily: FT, fontSize: 11.5, fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
                     <Bell /> {sound ? "Звук" : "Без звука"}
                   </button>
                 </div>
 
-                <div lang="sa" style={{ marginTop: 11, fontFamily: FS, fontStyle: "italic", fontSize: 15, lineHeight: 1.5, color: L2, textAlign: "center" }}>{MANTRA_DEV}</div>
+                <div lang="sa" style={{ marginTop: 11, fontFamily: FS, fontStyle: "italic", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2, textAlign: "center" }}>{MANTRA_DEV}</div>
 
                 <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: "5px 7px", justifyContent: "center" }}>
                   {MANTRA.map((w, i) => {
@@ -526,7 +526,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                     style={{ flexShrink: 0, width: 44, height: 26, borderRadius: 999, border: "none", padding: 2, cursor: "pointer", background: autoCount ? GREEN : "color-mix(in srgb, var(--color-label) 18%, transparent)", transition: "background .15s", WebkitTapHighlightColor: "transparent" }}>
                     <span style={{ display: "block", width: 22, height: 22, borderRadius: "50%", background: "#fff", transform: autoCount ? "translateX(18px)" : "translateX(0)", transition: "transform .18s", boxShadow: "0 1px 3px rgba(0,0,0,0.25)" }} />
                   </button>
-                  <span style={{ fontFamily: FT, fontSize: 13, color: L1 }}>Авто-счёт: каждая мантра = бусина</span>
+                  <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L1 }}>Авто-счёт: каждая мантра = бусина</span>
                 </label>
               </div>
             </>
@@ -564,7 +564,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
 
               {/* график */}
               <div style={{ marginTop: 16, padding: 16, borderRadius: 18, background: FILL }}>
-                <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, marginBottom: 12 }}>
+                <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, marginBottom: 12 }}>
                   {mode === "day" ? "Круги по часам" : mode === "year" ? "Круги по месяцам" : "Круги по дням"}
                 </div>
                 {an.totals.rounds > 0
@@ -577,14 +577,14 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                 <div style={{ flex: 1, padding: "14px 14px", borderRadius: 16, background: FILL, display: "flex", alignItems: "center", gap: 11 }}>
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, color: GOLD }}><Flame /></span>
                   <span>
-                    <span style={{ display: "block", fontFamily: FD, fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{liveStreak}</span>
+                    <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{liveStreak}</span>
                     <span style={{ fontFamily: FT, fontSize: 11.5, color: L2 }}>дней подряд</span>
                   </span>
                 </div>
                 <div style={{ flex: 1, padding: "14px 14px", borderRadius: 16, background: FILL, display: "flex", alignItems: "center", gap: 11 }}>
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GREEN} 16%, transparent)`, color: GREEN }}><Flame /></span>
                   <span>
-                    <span style={{ display: "block", fontFamily: FD, fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{normStreak}</span>
+                    <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{normStreak}</span>
                     <span style={{ fontFamily: FT, fontSize: 11.5, color: L2 }}>норма {st.goal} кр.</span>
                   </span>
                 </div>
@@ -622,7 +622,7 @@ function Row({ k, v, sub, top }: { k: string; v: string; sub?: string; top?: boo
         <span style={{ display: "block", fontFamily: FT, fontSize: 14, color: L1 }}>{k}</span>
         {sub && <span style={{ fontFamily: FT, fontSize: 11.5, color: L3 }}>{sub}</span>}
       </span>
-      <span style={{ flexShrink: 0, fontFamily: FD, fontSize: 15, fontWeight: 700, color: L1 }}>{v}</span>
+      <span style={{ flexShrink: 0, fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 700, color: L1 }}>{v}</span>
     </div>
   );
 }
@@ -630,13 +630,13 @@ function Row({ k, v, sub, top }: { k: string; v: string; sub?: string; top?: boo
 function Stepper({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (v: number) => void }) {
   const dec = () => onChange(Math.max(min, value - step));
   const inc = () => onChange(Math.min(max, value + step));
-  const btn: CSSProperties = { width: 36, height: 36, borderRadius: 10, border: "none", background: FILL2, color: L1, cursor: "pointer", fontSize: 20, fontWeight: 600, lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
+  const btn: CSSProperties = { width: 36, height: 36, borderRadius: 10, border: "none", background: FILL2, color: L1, cursor: "pointer", fontSize: "var(--text-title3)", fontWeight: 600, lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
       <span style={{ fontFamily: FT, fontSize: 14, color: L1 }}>{label}</span>
       <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
         <button type="button" aria-label="Меньше" onClick={dec} disabled={value <= min} style={{ ...btn, opacity: value <= min ? 0.5 : 1 }}>−</button>
-        <span style={{ minWidth: 34, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 800, color: L1 }}>{value}</span>
+        <span style={{ minWidth: 34, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: L1 }}>{value}</span>
         <button type="button" aria-label="Больше" onClick={inc} disabled={value >= max} style={{ ...btn, opacity: value >= max ? 0.5 : 1 }}>+</button>
       </span>
     </div>

@@ -120,7 +120,7 @@ function DarshanCard({ item }: { item: DarshanItem }) {
     <article style={{ borderRadius: 20, overflow: "hidden", background: FILL, border: `0.5px solid ${HAIR}` }}>
       <Gallery images={item.images} />
       <div style={{ padding: 16 }}>
-        <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLDT }}>{item.templeName}</div>
+        <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLDT }}>{item.templeName}</div>
         {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: L1 }}>{item.deities}</div>}
         <div style={{ marginTop: 4, fontFamily: FT, fontSize: 12.5, color: L3 }}>{humanDate(item.date)}</div>
         {item.caption && <div style={{ marginTop: 12 }}><Caption text={item.caption} /></div>}
@@ -148,7 +148,7 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
           <img key={i} src={px(src, 2560)} alt="Даршан" loading="lazy" style={{ width: "100%", height: "auto", display: "block", borderRadius: 14, marginBottom: 10 }} />
         ))}
         <div style={{ marginTop: 8, color: "#fff" }}>
-          <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>
+          <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>
           {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>{item.deities}</div>}
           <div style={{ marginTop: 4, fontFamily: FT, fontSize: 12.5, color: "rgba(255,255,255,0.55)" }}>{humanDate(item.date)}</div>
           {item.caption && <p style={{ marginTop: 12, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.82)", whiteSpace: "pre-line" }}>{item.caption}</p>}
@@ -221,7 +221,7 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={nav}>
         <button type="button" aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: L1, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Даршан дня</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Даршан дня</div>
         <span style={{ width: 38 }} />
       </header>
 
@@ -254,7 +254,7 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
 
               {archive.length > 0 && (
                 <>
-                  <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "8px 2px 0" }}>Архив даршанов</div>
+                  <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "8px 2px 0" }}>Архив даршанов</div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                     {archive.map((it) => <ArchiveThumb key={it.srcUrl} item={it} onOpen={() => setView(it)} />)}
                   </div>
@@ -268,7 +268,7 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
               )}
 
               <div style={{ margin: "8px 2px 0", textAlign: "center" }}>
-                <p style={{ margin: 0, fontFamily: FT, fontSize: 11, lineHeight: 1.5, color: L3 }}>
+                <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-caption2)", lineHeight: 1.5, color: L3 }}>
                   Даршаны — из официальных каналов ИСККОН Маяпур и Вриндаван.
                 </p>
                 <p style={{ margin: "6px 0 0", fontFamily: FT, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", color: GOLDT }}>

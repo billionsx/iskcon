@@ -37,7 +37,7 @@ function Header({ onBack, title, right }: { onBack: () => void; title: string; r
         style={{ display: "grid", placeItems: "center", width: 40, height: 40, borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <Back />
       </button>
-      <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
       {right && <span style={{ flexShrink: 0, marginRight: 4 }}>{right}</span>}
     </header>
   );
@@ -76,21 +76,21 @@ function Contents({ onBack, onOpenChapter, flash }: { onBack: () => void; onOpen
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <Header onBack={onBack} title="Кухня прасада" right={<CardActionBtns favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={32} onMore={() => openCardMenu(cookbookCtx)} />} />
       <div style={{ padding: "8px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Книга библиотеки</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Книга библиотеки</div>
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 32, fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.05, color: "var(--color-label)" }}>{COOKBOOK.title}</h1>
-        <div style={{ margin: "6px 0 0", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 17, color: "var(--color-label-3)" }}>{COOKBOOK.iast}</div>
+        <div style={{ margin: "6px 0 0", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-body)", color: "var(--color-label-3)" }}>{COOKBOOK.iast}</div>
         <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.6, color: "var(--color-label-2)" }}>{COOKBOOK.blurb}</p>
 
         {parts.map((g) => (
           <section key={g.part} style={{ marginTop: 28 }}>
-            <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.part}</div>
+            <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.part}</div>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-glass-thin)" }}>
               {g.items.map((ch, i) => (
                 <li key={ch.id} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
                   <button type="button" onClick={() => onOpenChapter(ch.id)}
                     style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "14px 16px", border: "none", background: "none", cursor: "pointer", textAlign: "left", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
                     {ch.number && (
-                      <span aria-hidden style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 9, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700 }}>{ch.number}</span>
+                      <span aria-hidden style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 9, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700 }}>{ch.number}</span>
                     )}
                     <span style={{ minWidth: 0, flex: 1 }}>
                       <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{ch.title}</span>
@@ -119,10 +119,10 @@ function ChapterView({ chapter, onBack, onOpenChapter, onOpenRecipe }: { chapter
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
       <Header onBack={onBack} title={COOKBOOK.title} />
       <div style={{ padding: "8px 16px 56px", maxWidth: 600, margin: "0 auto" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
           {chapter.number ? `${chapter.part} · Раздел ${chapter.number}` : chapter.part}
         </div>
-        <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.1, color: "var(--color-label)" }}>{chapter.title}</h1>
+        <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.1, color: "var(--color-label)" }}>{chapter.title}</h1>
         {chapter.subtitle && <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>{chapter.subtitle}</p>}
 
         <div style={{ marginTop: 22 }}>
@@ -139,7 +139,7 @@ function ChapterView({ chapter, onBack, onOpenChapter, onOpenRecipe }: { chapter
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{r.title}</span>
                     <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.subtitle}</span>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 12, marginTop: 6, fontFamily: "var(--font-text)", fontSize: 12, color: "var(--color-label-3)" }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 12, marginTop: 6, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ color: GOLD, display: "inline-flex" }}><Clock /></span>{r.minutes} мин</span>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ color: GOLD, display: "inline-flex" }}><Gauge /></span>{DIFFICULTY_LABEL[r.difficulty]}</span>
                     </span>
@@ -156,7 +156,7 @@ function ChapterView({ chapter, onBack, onOpenChapter, onOpenRecipe }: { chapter
           <div style={{ marginTop: 4, display: "grid", gap: 14 }}>
             {COOKBOOK_PRAYERS.map((pr) => (
               <div key={pr.to} style={{ padding: "16px 18px", borderRadius: 18, background: "var(--color-glass-thin)", borderLeft: `3px solid ${GOLD}` }}>
-                <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{pr.to}</div>
+                <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{pr.to}</div>
                 <div style={{ margin: "10px 0 0", display: "grid", gap: 3 }}>
                   {pr.lines.map((ln, i) => <div key={i} style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 15.5, lineHeight: 1.5, color: "var(--color-label)" }}>{ln}</div>)}
                 </div>
@@ -171,14 +171,14 @@ function ChapterView({ chapter, onBack, onOpenChapter, onOpenRecipe }: { chapter
           {prev && (
             <button type="button" onClick={() => onOpenChapter(prev.id)}
               style={{ flex: 1, minWidth: 0, padding: "13px 14px", borderRadius: 14, border: "none", background: "var(--color-glass-thin)", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
-              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11, color: "var(--color-label-3)" }}>Предыдущая</span>
+              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-3)" }}>Предыдущая</span>
               <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{prev.title}</span>
             </button>
           )}
           {next && (
             <button type="button" onClick={() => onOpenChapter(next.id)}
               style={{ flex: 1, minWidth: 0, padding: "13px 14px", borderRadius: 14, border: "none", background: "var(--color-glass-thin)", cursor: "pointer", textAlign: "right", WebkitTapHighlightColor: "transparent" }}>
-              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11, color: "var(--color-label-3)" }}>Следующая</span>
+              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-3)" }}>Следующая</span>
               <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{next.title}</span>
             </button>
           )}
@@ -198,7 +198,7 @@ function BlockView({ block }: { block: Block }) {
     return <h2 style={{ margin: "24px 0 10px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{block.text}</h2>;
   }
   if (block.type === "p") {
-    return <p style={{ margin: "0 0 14px", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.62, color: "var(--color-label)" }}>{block.text}</p>;
+    return <p style={{ margin: "0 0 14px", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.62, color: "var(--color-label)" }}>{block.text}</p>;
   }
   if (block.type === "ul") {
     return (
@@ -216,7 +216,7 @@ function BlockView({ block }: { block: Block }) {
       <div style={{ margin: "0 0 16px", borderRadius: 16, overflow: "hidden", background: "var(--color-glass-thin)" }}>
         {block.items.map((it, i) => (
           <div key={i} style={{ padding: "13px 16px", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 700, color: "var(--color-label)" }}>{it.t}</div>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 700, color: "var(--color-label)" }}>{it.t}</div>
             <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{it.d}</div>
           </div>
         ))}

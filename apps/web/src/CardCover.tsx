@@ -96,7 +96,7 @@ export function CoverTapZones({ onPrev, onNext }: { onPrev: (e?: ReactMouseEvent
 /** Пилюля-счётчик «n / N». */
 export function CoverCounter({ idx, total }: { idx: number; total: number }) {
   return (
-    <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: 11, fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+    <span style={{ borderRadius: 999, background: "rgba(0,0,0,.55)", padding: "2px 8px", fontSize: "var(--text-caption2)", fontWeight: 600, color: "#fff", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
       {idx + 1} / {total}
     </span>
   );

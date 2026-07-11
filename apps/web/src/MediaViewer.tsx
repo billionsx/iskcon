@@ -49,8 +49,8 @@ export function MediaViewer({ media, onClose }: { media: ViewerMedia | null; onC
           <CloseIcon />
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{media.title || "Просмотр"}</div>
-          {media.subtitle ? <div style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-text)", fontSize: 12, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{media.subtitle}</div> : null}
+          <div style={{ color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{media.title || "Просмотр"}</div>
+          {media.subtitle ? <div style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{media.subtitle}</div> : null}
         </div>
         <a href={media.url} target="_blank" rel="noreferrer" aria-label="Открыть в новой вкладке" title={ext}
           style={{ display: "grid", placeItems: "center", width: 40, height: 40, borderRadius: "50%", color: "rgba(255,255,255,0.7)", textDecoration: "none", flexShrink: 0 }}>
@@ -68,7 +68,7 @@ export function MediaViewer({ media, onClose }: { media: ViewerMedia | null; onC
           </div>
         )}
         {media.type === "youtube" && !yid && (
-          <a href={media.url} target="_blank" rel="noreferrer" style={{ color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, textDecoration: "underline" }}>Открыть видео ↗</a>
+          <a href={media.url} target="_blank" rel="noreferrer" style={{ color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", textDecoration: "underline" }}>Открыть видео ↗</a>
         )}
         {media.type === "iframe" && (
           <div style={{ width: "100%", maxWidth: 960, aspectRatio: "16 / 9", background: "#000", borderRadius: 14, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}>

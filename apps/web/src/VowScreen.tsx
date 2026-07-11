@@ -90,8 +90,8 @@ function VowDashboard({ vow }: { vow: Vow }) {
   };
 
   const card: React.CSSProperties = { borderRadius: 18, border: `0.5px solid ${HAIR}`, background: BG2, padding: 16 };
-  const stepBtn: React.CSSProperties = { width: 38, height: 36, border: "none", background: "none", color: L2, fontSize: 22, fontWeight: 400, cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
-  const stepNum: React.CSSProperties = { minWidth: 30, height: 36, border: "none", borderLeft: `0.5px solid ${HAIR}`, borderRight: `0.5px solid ${HAIR}`, background: "none", fontFamily: FD, fontSize: 16, fontWeight: 700, cursor: "pointer", padding: "0 8px" };
+  const stepBtn: React.CSSProperties = { width: 38, height: 36, border: "none", background: "none", color: L2, fontSize: "var(--text-title2)", fontWeight: 400, cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
+  const stepNum: React.CSSProperties = { minWidth: 30, height: 36, border: "none", borderLeft: `0.5px solid ${HAIR}`, borderRight: `0.5px solid ${HAIR}`, background: "none", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", padding: "0 8px" };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -99,8 +99,8 @@ function VowDashboard({ vow }: { vow: Vow }) {
       <div style={{ ...card, display: "flex", alignItems: "center", gap: 16 }}>
         <Ring pct={s.pct} />
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: FD, fontSize: 20, fontWeight: 800, letterSpacing: "-0.3px", color: L1, lineHeight: 1.12 }}>{vow.title}</div>
-          <div style={{ marginTop: 5, fontFamily: FT, fontSize: 13, color: L2 }}>{fmtDate(vow.startDate)} — {fmtDate(vow.endDate)}</div>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.3px", color: L1, lineHeight: 1.12 }}>{vow.title}</div>
+          <div style={{ marginTop: 5, fontFamily: FT, fontSize: "var(--text-footnote)", color: L2 }}>{fmtDate(vow.startDate)} — {fmtDate(vow.endDate)}</div>
           <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 11px", borderRadius: 999, background: `color-mix(in srgb, ${SAFFRON} 13%, transparent)`, color: SAFFRON, fontFamily: FT, fontSize: 12.5, fontWeight: 700 }}>
             {s.overdue ? "Срок завершён" : !s.started ? "Начнётся скоро" : `Осталось ${s.remaining} ${pluralDays(s.remaining)}`}
           </div>
@@ -110,8 +110,8 @@ function VowDashboard({ vow }: { vow: Vow }) {
       {/* отметка за сегодня */}
       <div style={card}>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 4 }}>
-          <h3 style={{ margin: 0, fontFamily: FD, fontSize: 17, fontWeight: 700, color: L1 }}>Сегодня</h3>
-          <span style={{ fontFamily: FT, fontSize: 13, fontWeight: 600, color: s.todayDone.length === vow.commitments.length ? SAFFRON : L3 }}>{s.todayDone.length} из {vow.commitments.length}</span>
+          <h3 style={{ margin: 0, fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, color: L1 }}>Сегодня</h3>
+          <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, color: s.todayDone.length === vow.commitments.length ? SAFFRON : L3 }}>{s.todayDone.length} из {vow.commitments.length}</span>
         </div>
         {s.overdue ? (
           <p style={{ margin: "6px 0 0", fontFamily: FT, fontSize: 13.5, color: L3, lineHeight: 1.5 }}>Срок обета завершён. Подведите итог ниже.</p>
@@ -150,11 +150,11 @@ function VowDashboard({ vow }: { vow: Vow }) {
 
       {/* отчёт */}
       <div style={card}>
-        <h3 style={{ margin: "0 0 12px", fontFamily: FD, fontSize: 17, fontWeight: 700, color: L1 }}>Отчёт</h3>
+        <h3 style={{ margin: "0 0 12px", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, color: L1 }}>Отчёт</h3>
         <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
           {[{ k: "Серия", v: `${s.current}` }, { k: "Лучшая", v: `${s.longest}` }, { k: "Пройдено", v: `${s.elapsed}/${s.dayTotal}` }].map((m) => (
             <div key={m.k} style={{ flex: 1, textAlign: "center", padding: "12px 6px", borderRadius: 13, background: "color-mix(in srgb, var(--color-label) 4%, transparent)" }}>
-              <div style={{ fontFamily: FD, fontSize: 22, fontWeight: 800, color: L1, lineHeight: 1 }}>{m.v}</div>
+              <div style={{ fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, color: L1, lineHeight: 1 }}>{m.v}</div>
               <div style={{ marginTop: 4, fontFamily: FT, fontSize: 11.5, color: L3 }}>{m.k}</div>
             </div>
           ))}
@@ -180,7 +180,7 @@ function VowDashboard({ vow }: { vow: Vow }) {
 
       {/* действия */}
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <button type="button" onClick={() => void shareReport()} style={{ height: 48, borderRadius: 14, border: `0.5px solid ${HAIR}`, background: BG2, color: L1, fontFamily: FT, fontSize: 15, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Поделиться отчётом</button>
+        <button type="button" onClick={() => void shareReport()} style={{ height: 48, borderRadius: 14, border: `0.5px solid ${HAIR}`, background: BG2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Поделиться отчётом</button>
         {confirmClose ? (
           <div style={{ ...card, padding: 14 }}>
             <div style={{ fontFamily: FT, fontSize: 14, color: L1, marginBottom: 12, lineHeight: 1.45 }}>
@@ -241,7 +241,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
     onDone();
   };
 
-  const sectionTitle: React.CSSProperties = { fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1, margin: "0 0 10px" };
+  const sectionTitle: React.CSSProperties = { fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, margin: "0 0 10px" };
   const chip = (on: boolean): React.CSSProperties => ({ height: 36, padding: "0 15px", borderRadius: 999, border: on ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", fontFamily: FT, fontSize: 14, fontWeight: 600, background: on ? SAFFRON : BG2, color: on ? "#fff" : L2, WebkitTapHighlightColor: "transparent" });
 
   return (
@@ -254,7 +254,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
       <div>
         <h3 style={sectionTitle}>Название</h3>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Например: Картика-врата"
-          style={{ width: "100%", boxSizing: "border-box", height: 46, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 15, color: L1, outline: "none" }} />
+          style={{ width: "100%", boxSizing: "border-box", height: 46, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: "var(--text-subhead)", color: L1, outline: "none" }} />
       </div>
 
       {/* срок */}
@@ -267,7 +267,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
         {dur === "custom" && (
           <div style={{ marginTop: 12 }}>
             <input type="date" value={customEnd} min={tomorrow} onChange={(e) => setCustomEnd(e.target.value)}
-              style={{ width: "100%", boxSizing: "border-box", height: 46, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 15, color: L1, outline: "none" }} />
+              style={{ width: "100%", boxSizing: "border-box", height: 46, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: "var(--text-subhead)", color: L1, outline: "none" }} />
             <div style={{ marginTop: 6, fontFamily: FT, fontSize: 12.5, color: L3 }}>Дата окончания (включительно). Начало — сегодня.</div>
           </div>
         )}
@@ -275,18 +275,18 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
 
       {/* служения */}
       <div>
-        <h3 style={sectionTitle}>Служения <span style={{ fontWeight: 500, color: L3, fontSize: 13 }}>· {count} выбрано</span></h3>
+        <h3 style={sectionTitle}>Служения <span style={{ fontWeight: 500, color: L3, fontSize: "var(--text-footnote)" }}>· {count} выбрано</span></h3>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {PRESET_COMMITMENTS.flatMap((c) => {
             const on = !!sel[c.id];
             const detail = c.id === "japa" ? `${japaRounds} ${roundsWord(japaRounds)}` : c.detail;
-            const stepBtn: React.CSSProperties = { width: 40, height: 38, border: "none", background: "none", color: L2, fontSize: 22, cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
+            const stepBtn: React.CSSProperties = { width: 40, height: 38, border: "none", background: "none", color: L2, fontSize: "var(--text-title2)", cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
             const nodes = [
               <button key={c.id} type="button" onClick={() => toggle(c)}
                 style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 13, border: on ? `1.5px solid ${SAFFRON}` : `0.5px solid ${HAIR}`, background: on ? `color-mix(in srgb, ${SAFFRON} 7%, transparent)` : BG2, cursor: "pointer", textAlign: "left" as const, WebkitTapHighlightColor: "transparent" }}>
                 <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 24, height: 24, borderRadius: "50%", border: on ? "none" : `2px solid ${HAIR}`, background: on ? SAFFRON : "transparent" }}>{on && <Check size={13} />}</span>
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: "block", fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1 }}>{c.label}</span>
+                  <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1 }}>{c.label}</span>
                   {detail && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{detail}</span>}
                 </span>
               </button>,
@@ -297,7 +297,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
                   <span style={{ fontFamily: FT, fontSize: 13.5, color: L2 }}>Кругов в день</span>
                   <span style={{ display: "inline-flex", alignItems: "center", borderRadius: 10, border: `0.5px solid ${HAIR}`, overflow: "hidden", background: BG2 }}>
                     <button type="button" aria-label="Меньше" onClick={() => changeRounds(japaRounds - 1)} style={stepBtn}>−</button>
-                    <span style={{ minWidth: 46, textAlign: "center", fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1 }}>{japaRounds}</span>
+                    <span style={{ minWidth: 46, textAlign: "center", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1 }}>{japaRounds}</span>
                     <button type="button" aria-label="Больше" onClick={() => changeRounds(japaRounds + 1)} style={stepBtn}>+</button>
                   </span>
                 </div>,
@@ -311,7 +311,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
               style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 13, border: `1.5px solid ${SAFFRON}`, background: `color-mix(in srgb, ${SAFFRON} 7%, transparent)`, cursor: "pointer", textAlign: "left" }}>
               <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 24, height: 24, borderRadius: "50%", background: SAFFRON }}><Check size={13} /></span>
               <span style={{ minWidth: 0, flex: 1 }}>
-                <span style={{ display: "block", fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1 }}>{c.label}</span>
+                <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1 }}>{c.label}</span>
                 {c.detail && <span style={{ display: "block", fontFamily: FT, fontSize: 12.5, color: L3 }}>{c.detail}</span>}
               </span>
               <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 12.5, color: L3 }}>убрать</span>
@@ -330,13 +330,13 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
             <input value={customUnit} onChange={(e) => setCustomUnit(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} placeholder="единица (поклонов, страниц…)" disabled={!(parseInt(customTarget, 10) > 1)}
               style={{ flex: 1, minWidth: 0, height: 40, padding: "0 12px", borderRadius: 10, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: 14, color: L1, outline: "none", opacity: parseInt(customTarget, 10) > 1 ? 1 : 0.5 }} />
           </div>
-          <div style={{ fontFamily: FT, fontSize: 12, color: L3, lineHeight: 1.45 }}>Цель и единица — необязательно. С целью служение считается числом (например, 108 · поклонов).</div>
+          <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L3, lineHeight: 1.45 }}>Цель и единица — необязательно. С целью служение считается числом (например, 108 · поклонов).</div>
         </div>
       </div>
 
       {/* действия */}
       <div style={{ display: "flex", gap: 10, paddingTop: 4 }}>
-        <button type="button" onClick={onCancel} style={{ flexShrink: 0, height: 50, padding: "0 20px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: "none", color: L2, fontFamily: FT, fontSize: 15, fontWeight: 600, cursor: "pointer" }}>Отмена</button>
+        <button type="button" onClick={onCancel} style={{ flexShrink: 0, height: 50, padding: "0 20px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: "none", color: L2, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer" }}>Отмена</button>
         <button type="button" onClick={submit} disabled={!valid} style={{ flex: 1, height: 50, borderRadius: 14, border: "none", background: valid ? SAFFRON : HAIR, color: "#fff", fontFamily: FT, fontSize: 15.5, fontWeight: 700, cursor: valid ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
       </div>
     </div>
@@ -348,14 +348,14 @@ function ArchiveList({ items }: { items: Vow[] }) {
   if (!items.length) return null;
   return (
     <div style={{ marginTop: 26 }}>
-      <h3 style={{ margin: "0 0 12px", fontFamily: FD, fontSize: 17, fontWeight: 700, color: L1 }}>Прошлые обеты</h3>
+      <h3 style={{ margin: "0 0 12px", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, color: L1 }}>Прошлые обеты</h3>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {items.map((v) => {
           const s = vowStats(v);
           return (
             <div key={v.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 14px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: BG2 }}>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ fontFamily: FT, fontSize: 15, fontWeight: 600, color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.title}</div>
+                <div style={{ fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.title}</div>
                 <div style={{ marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3 }}>{fmtDate(v.startDate)} — {fmtDate(v.endDate)} · {v.status === "completed" ? "завершён" : "прерван"} · {s.pct}%</div>
               </div>
               <button type="button" aria-label="Удалить" onClick={() => deleteArchived(v.id)} style={{ flexShrink: 0, width: 34, height: 34, display: "grid", placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: L3, cursor: "pointer" }}>
@@ -392,17 +392,17 @@ function CollectiveVowsSection() {
 
   return (
     <section style={{ marginTop: 28 }}>
-      <h3 style={{ margin: "0 4px 4px", fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Совместные враты</h3>
-      <p style={{ margin: "0 4px 14px", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L3 }}>Сангха без ленты и переписки — общее памятование и движение к цели вместе.</p>
+      <h3 style={{ margin: "0 4px 4px", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Совместные враты</h3>
+      <p style={{ margin: "0 4px 14px", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L3 }}>Сангха без ленты и переписки — общее памятование и движение к цели вместе.</p>
       {items.map((v) => {
         const pct = v.target > 0 ? Math.min(100, Math.round((v.total / v.target) * 100)) : 0;
         return (
           <div key={v.id} style={{ background: "var(--color-bg-2)", borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: "16px 16px", marginBottom: 12 }}>
-            <div style={{ fontFamily: FD, fontSize: 17, fontWeight: 700, color: L1 }}>{v.title}</div>
+            <div style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, color: L1 }}>{v.title}</div>
             {v.description && <div style={{ fontFamily: FT, fontSize: 13.5, lineHeight: 1.5, color: L2, marginTop: 5 }}>{v.description}</div>}
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginTop: 14 }}>
-              <span style={{ fontFamily: FD, fontSize: 20, fontWeight: 800, color: SAFFRON }}>{fmtNum(v.total)}</span>
-              <span style={{ fontFamily: FT, fontSize: 13, color: L3 }}>из {fmtNum(v.target)} {v.unit}</span>
+              <span style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: SAFFRON }}>{fmtNum(v.total)}</span>
+              <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>из {fmtNum(v.target)} {v.unit}</span>
             </div>
             <div style={{ height: 8, borderRadius: 8, background: "rgba(120,120,128,0.18)", marginTop: 8, overflow: "hidden" }}>
               <div style={{ width: `${pct}%`, height: "100%", borderRadius: 8, background: SAFFRON, transition: "width .3s" }} />
@@ -436,7 +436,7 @@ export default function VowScreen({ onBack }: { onBack: () => void }) {
       <header style={{ position: "sticky", top: 0, zIndex: 20, display: "flex", alignItems: "center", gap: 4, height: 52, padding: "0 6px",
         background: "color-mix(in srgb, var(--color-bg) 82%, transparent)", backdropFilter: "saturate(180%) blur(20px)", WebkitBackdropFilter: "saturate(180%) blur(20px)", borderBottom: `0.5px solid ${HAIR}` }}>
         <button type="button" aria-label="Назад" onClick={() => (creating ? setCreating(false) : onBack())} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: L1, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{heading}</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{heading}</div>
         <span style={{ width: 38 }} />
       </header>
 
@@ -462,7 +462,7 @@ export default function VowScreen({ onBack }: { onBack: () => void }) {
                   Санкальпа укрепляет духовную практику. Возьмите на себя конкретные служения на выбранный срок — и ведите ежедневный учёт с честным отчётом.
                 </p>
               </div>
-              <button type="button" onClick={() => setCreating(true)} style={{ width: "100%", height: 52, marginTop: 22, borderRadius: 15, border: "none", background: SAFFRON, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
+              <button type="button" onClick={() => setCreating(true)} style={{ width: "100%", height: 52, marginTop: 22, borderRadius: 15, border: "none", background: SAFFRON, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
               <CollectiveVowsSection />
               <ArchiveList items={archive} />
             </>

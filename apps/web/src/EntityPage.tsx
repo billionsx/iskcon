@@ -173,8 +173,8 @@ function Chip({ label, onClick }: { label: string; onClick?: () => void }) {
 function Eyebrow({ children, count }: { children: ReactNode; count?: number }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
-      <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{children}</h3>
-      {count != null && count > 1 && <span style={{ fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 700, color: GOLD, opacity: 0.55 }}>{count}</span>}
+      <h3 style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{children}</h3>
+      {count != null && count > 1 && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, color: GOLD, opacity: 0.55 }}>{count}</span>}
     </div>
   );
 }
@@ -192,7 +192,7 @@ function ProseSection({ label, text }: { label: string; text: string }) {
   return (
     <section style={{ marginTop: 26 }}>
       <Eyebrow>{label}</Eyebrow>
-      <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.55, color: "var(--color-label)", whiteSpace: "pre-line" }}>{text}</p>
+      <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.55, color: "var(--color-label)", whiteSpace: "pre-line" }}>{text}</p>
     </section>
   );
 }
@@ -453,7 +453,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
             {/* Заголовок обители (мира) — золотая засечка на оси */}
             <div style={{ position: "relative", marginTop: gi === 0 ? 0 : 22, marginBottom: 11 }}>
               <span aria-hidden style={{ position: "absolute", left: SX - PAD - 3, top: 1, width: 6, height: 6, borderRadius: "50%", background: GOLD, opacity: 0.55 }} />
-              <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.realm}</div>
+              <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.realm}</div>
             </div>
             {g.tiers.map((tier, ti) => {
               const apex = !!tier.apex;
@@ -490,7 +490,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                         <>
                           <span style={{ flex: 1, minWidth: 0 }}>
                             {tier.eyebrow && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 9.5, fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>{tier.eyebrow}</span>}
-                            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</span>
+                            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.2, letterSpacing: "-0.015em" }}>{tier.abode}</span>
                             {tier.beings && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 500, color: apex ? GOLD : "var(--color-label-2)", marginTop: 5, lineHeight: 1.4 }}>{tier.beings}</span>}
                           </span>
                           {interactive && <span aria-hidden style={{ flexShrink: 0, alignSelf: "center", color: "var(--color-label-3)", fontSize: 19, lineHeight: 1, transition: "transform .2s ease", transform: hasItems && isOpen ? "rotate(90deg)" : "none" }}>›</span>}
@@ -516,9 +516,9 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                             style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, width: "100%", background: "none", border: "none", borderBottom: "0.5px solid var(--color-hairline)", padding: "10px 0", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                             <span style={{ flex: 1, minWidth: 0 }}>
                               <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 500, color: "var(--color-label)", lineHeight: 1.25 }}>{it.name}</span>
-                              {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 12, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.35, marginTop: 2 }}>{it.desc}</span>}
+                              {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.35, marginTop: 2 }}>{it.desc}</span>}
                             </span>
-                            <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: 17, lineHeight: 1 }}>›</span>
+                            <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-body)", lineHeight: 1 }}>›</span>
                           </button>
                         ))}
                       </div>
@@ -530,7 +530,7 @@ function HierarchyDescent({ groups, footer, onOpen, onSub, onTab }: { groups: Hi
                         {tier.count && (
                           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
                             <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: numSize, fontWeight: 600, color: apex ? GOLD : "var(--color-label)", lineHeight: 1, letterSpacing: "-0.02em" }}>{tier.count}</span>
-                            {pct != null && <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: 13, fontWeight: 600, color: toneFor(tier), lineHeight: 1 }}>{pct}%</span>}
+                            {pct != null && <span style={{ fontFamily: "var(--font-text)", fontVariantNumeric: "tabular-nums", fontSize: "var(--text-footnote)", fontWeight: 600, color: toneFor(tier), lineHeight: 1 }}>{pct}%</span>}
                           </div>
                         )}
                         {tier.countNote && <div style={{ marginTop: tier.count ? 6 : 0, fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{tier.countNote}</div>}
@@ -556,8 +556,8 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
       {groups.map((g, gi) => (
         <div key={gi} style={{ marginTop: gi === 0 ? 0 : 30 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</span>
-            {g.items && g.items.length > 0 && <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{g.items.length}</span>}
+            <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{g.group}</span>
+            {g.items && g.items.length > 0 && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{g.items.length}</span>}
           </div>
           {g.gloss && <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4 }}>{renderProse(g.gloss, onSub, onTab)}</div>}
           {g.note && (Array.isArray(g.note) ? g.note : [g.note]).filter(Boolean).map((para, pi) => (
@@ -570,8 +570,8 @@ function FormCatalog({ groups, onOpen, onNavigate, onSub, onTab }: { groups: LfC
                 const inner = (
                   <>
                     <span style={{ flex: 1, minWidth: 0 }}>
-                      <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>{it.name}</span>
-                      {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4, marginTop: 2 }}>{renderProse(it.desc, onSub, onTab)}</span>}
+                      <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.3, letterSpacing: "-0.01em" }}>{it.name}</span>
+                      {it.desc && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 400, color: "var(--color-label-2)", lineHeight: 1.4, marginTop: 2 }}>{renderProse(it.desc, onSub, onTab)}</span>}
                       {it.tags && it.tags.length > 0 && (
                         <span style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 7 }}>
                           {it.tags.map((tag, ti) => (
@@ -603,7 +603,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
         <section key={i} style={{ marginTop: i === 0 ? 26 : 34 }}>
           {s.h && <Eyebrow>{cleanCardText(s.h)}</Eyebrow>}
           {(s.p ?? []).map((para, j) => (
-            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub, onTab)}</p>
+            <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub, onTab)}</p>
           ))}
           {s.hierarchy && s.hierarchy.length > 0 && <HierarchyDescent groups={s.hierarchy} footer={s.hierarchyFooter} onOpen={onOpen} onSub={onSub} onTab={onTab} />}
           {s.catalog && s.catalog.length > 0 && <FormCatalog groups={s.catalog} onOpen={onOpen} onNavigate={onNavigate} onSub={onSub} onTab={onTab} />}
@@ -614,13 +614,13 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
                 {(s.list ?? []).map((grp, gi) => (
                   <div key={gi} style={{ marginTop: gi === 0 ? 0 : 22 }}>
                     {grp.label && (
-                      <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 9 }}>{grp.label}</div>
+                      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD, marginBottom: 9 }}>{grp.label}</div>
                     )}
                     {grp.items.map((it) => {
                       n += 1;
                       return (
                         <div key={n} style={{ display: "flex", gap: 12, alignItems: "baseline", padding: "4px 0" }}>
-                          <span style={{ flexShrink: 0, minWidth: 22, textAlign: "right", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 700, color: GOLD, fontVariantNumeric: "tabular-nums", lineHeight: 1.5 }}>{n}</span>
+                          <span style={{ flexShrink: 0, minWidth: 22, textAlign: "right", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLD, fontVariantNumeric: "tabular-nums", lineHeight: 1.5 }}>{n}</span>
                           <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.5, color: "var(--color-label)" }}>{renderSanskrit(it)}</span>
                         </div>
                       );
@@ -737,9 +737,9 @@ function NavCards({ cards, onNavigate, onOpenCollection }: { cards: NavCard[]; o
           style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "13px 15px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{c.title}</div>
-            {c.subtitle && <div style={{ fontFamily: "var(--font-text)", fontSize: 13, color: "var(--color-label-2)", marginTop: 2, lineHeight: 1.4 }}>{c.subtitle}</div>}
+            {c.subtitle && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-2)", marginTop: 2, lineHeight: 1.4 }}>{c.subtitle}</div>}
           </div>
-          <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 22, lineHeight: 1 }}>›</span>
+          <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: "var(--text-title2)", lineHeight: 1 }}>›</span>
         </button>
       ))}
     </div>
@@ -785,7 +785,7 @@ function ReaderPager({ prevLabel, nextLabel, onPrev, onNext }: { prevLabel?: str
   const chev: React.CSSProperties = { flexShrink: 0, display: "inline-flex", alignItems: "center", color: "var(--color-label)" };
   const col = (align: "flex-start" | "flex-end"): React.CSSProperties => ({ display: "flex", flexDirection: "column", gap: 3, flex: 1, minWidth: 0, alignItems: align });
   const kicker: React.CSSProperties = { fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--color-label-3)" };
-  const title: React.CSSProperties = { maxWidth: "100%", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 };
+  const title: React.CSSProperties = { maxWidth: "100%", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 };
   return (
     <nav aria-label="Листать раздел" style={{ display: "flex", gap: 16, marginTop: 30, paddingTop: 17, borderTop: "0.5px solid var(--color-hairline)" }}>
       {onPrev ? (
@@ -826,7 +826,7 @@ function PersonTabs({ tabs, active, onChange, stickyTop = 52 }: { tabs: { id: st
           const on = t.id === active;
           return (
             <button key={t.id} ref={(el) => { tabRefs.current[t.id] = el; }} type="button" onClick={() => onChange(t.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "13px 14px", fontSize: 15, fontFamily: "var(--font-text)", background: "none", border: "none", cursor: "pointer", color: on ? "var(--color-label)" : "var(--color-label-3)", fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0, transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
+              style={{ position: "relative", flexShrink: 0, padding: "13px 14px", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", background: "none", border: "none", cursor: "pointer", color: on ? "var(--color-label)" : "var(--color-label-3)", fontWeight: on ? 700 : 500, letterSpacing: on ? "-0.01em" : 0, transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
               {t.label}
               {on && <span aria-hidden style={{ position: "absolute", insetInline: 10, bottom: 0, height: 2, borderRadius: 999, background: GOLD }} />}
             </button>
@@ -848,8 +848,8 @@ function RelRows({ group, onOpen }: { group: { label: string; order: number; ite
         {group.items.map((it) => (
           <button key={it.relation + it.id} type="button" onClick={() => onOpen(it.id, it.type)}
             style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 13px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit" }}>
-            <span style={{ display: "grid", placeItems: "center", height: 34, width: 34, flexShrink: 0, borderRadius: "50%", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15 }}>{(it.name_ru || it.id).trim().charAt(0).toUpperCase()}</span>
-            <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.name_ru || it.id}</span>
+            <span style={{ display: "grid", placeItems: "center", height: 34, width: 34, flexShrink: 0, borderRadius: "50%", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "var(--text-subhead)" }}>{(it.name_ru || it.id).trim().charAt(0).toUpperCase()}</span>
+            <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.name_ru || it.id}</span>
             <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 18, flexShrink: 0 }}>›</span>
           </button>
         ))}
@@ -917,17 +917,17 @@ function TabHeader({ tab, flush }: { tab: { kicker?: string; title?: string; lea
   return (
     <header style={{ marginTop: flush ? 0 : 18, marginBottom: 2 }}>
       {tab.kicker && (
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
           {tab.kicker}
         </div>
       )}
       {(tab.title || !tab.kicker) && (
-        <h1 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>
+        <h1 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>
           {tab.title || tab.label}
         </h1>
       )}
       {tab.lead && (
-        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label-2)", lineHeight: 1.45 }}>
+        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.45 }}>
           {tab.lead}
         </p>
       )}
@@ -1287,7 +1287,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
         </button>
-        <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingInline: 6 }}>{data?.name_ru || ""}</span>
+        <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingInline: 6 }}>{data?.name_ru || ""}</span>
         {data && (
           <CardActionBtns favKey={`entity:${id}`}
             meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/${encodeURIComponent(id)}` }}
@@ -1302,12 +1302,12 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
 
       <div style={{ padding: embedded ? "0 0 10px" : "12px 16px calc(48px + env(safe-area-inset-bottom,0px))" }}>
         {error && (
-          <div style={{ marginTop: 40, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>
+          <div style={{ marginTop: 40, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>
             Не удалось загрузить. Потяните назад и попробуйте снова.
           </div>
         )}
         {!data && !error && (
-          <div style={{ marginTop: 40, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: 15 }}>Загрузка…</div>
+          <div style={{ marginTop: 40, textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Загрузка…</div>
         )}
         {data && (
           <>
@@ -1377,8 +1377,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               <div style={{ marginBottom: tabs.length > 1 ? 6 : 0 }}>
                 {rasa && (
                   <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
+                    <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
                     <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
                   </div>
                 )}
@@ -1387,7 +1387,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                     <Eyebrow>Тайминг</Eyebrow>
                     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                       {(data.links ?? []).filter((l) => l.kind === "appearance" || l.kind === "disappearance").map((t) => (
-                        <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: 15, color: "var(--color-label)" }}>
+                        <div key={t.kind + ":" + t.ref} style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)" }}>
                           <span style={{ color: "var(--color-label-3)" }}>{t.kind === "appearance" ? "Явление" : "Уход"}</span>
                           {t.title && <span style={{ fontWeight: 600 }}> · {t.title}</span>}
                           {t.subtitle && <span style={{ color: "var(--color-label-3)" }}> · {t.subtitle}</span>}
@@ -1472,7 +1472,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                           <button key={c.id} type="button" onClick={onNavigate ? () => onNavigate(`/center/${c.slug}`) : undefined}
                             style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
                             <span style={{ minWidth: 0, flex: 1 }}>
-                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, color: "var(--color-label)" }}>{c.name}</span>
+                              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{c.name}</span>
                               {c.city && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{c.city}</span>}
                             </span>
                             <span aria-hidden style={{ color: "var(--color-label-3)", fontSize: 18, flexShrink: 0 }}>›</span>

@@ -116,7 +116,7 @@ function BhNavAction({ arrow, disabled, onClick, children }: { arrow?: "prev" | 
   return (
     <button type="button" disabled={disabled} onClick={onClick}
       onPointerDown={() => { if (!disabled) setPressed(true); }} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
-      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, height: 40, padding: "0 14px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", color: disabled ? "var(--color-label-3, var(--color-label-2))" : "var(--color-label)", opacity: disabled ? 0.45 : 1, fontFamily: "var(--font-text)", fontSize: 15, fontWeight: "var(--weight-semibold)", transition: "background .12s", WebkitTapHighlightColor: "transparent" }}>
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, height: 40, padding: "0 14px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", color: disabled ? "var(--color-label-3, var(--color-label-2))" : "var(--color-label)", opacity: disabled ? 0.45 : 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", transition: "background .12s", WebkitTapHighlightColor: "transparent" }}>
       {arrow === "prev" && <BackIcon size={18} />}
       {children}
       {arrow === "next" && <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><BackIcon size={18} /></span>}

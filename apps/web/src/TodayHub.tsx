@@ -121,11 +121,11 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
     <div style={{ display: "flex", flexDirection: "column" }}>
       {/* Приветствие */}
       <div style={{ padding: "6px 4px 2px" }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: GOLD, fontFamily: FONT, letterSpacing: 0.3 }}>{ruDate()}</div>
+        <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, letterSpacing: 0.3 }}>{ruDate()}</div>
         <div style={{ fontSize: 25, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 3 }}>
           {name ? `Харе Кришна, ${name}` : "Харе Кришна"}
         </div>
-        {level && <div style={{ fontSize: 15, color: INK2, fontFamily: FONT, marginTop: 4 }}>{LEVEL_LINE[level]}</div>}
+        {level && <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>{LEVEL_LINE[level]}</div>}
       </div>
 
       {/* Даршан дня */}
@@ -154,8 +154,8 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
           {practicing ? (
             <>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Круги джапы сегодня</span>
-                <span style={{ fontSize: 15, fontWeight: 700, color: done ? "var(--color-success-text, #2a9c68)" : GOLD, fontFamily: FONT }}>{japa.rounds} / {japa.goal}</span>
+                <span style={{ fontSize: "var(--text-callout)", fontWeight: 600, color: INK, fontFamily: FONT }}>Круги джапы сегодня</span>
+                <span style={{ fontSize: "var(--text-subhead)", fontWeight: 700, color: done ? "var(--color-success-text, #2a9c68)" : GOLD, fontFamily: FONT }}>{japa.rounds} / {japa.goal}</span>
               </div>
               <div style={{ height: 8, borderRadius: 8, background: "rgba(120,120,128,0.18)", marginTop: 10, overflow: "hidden" }}>
                 <div style={{ width: `${pct}%`, height: "100%", borderRadius: 8, background: done ? "var(--color-success-text, #2a9c68)" : GOLD, transition: "width .3s" }} />
@@ -166,7 +166,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
             </>
           ) : (
             <>
-              <div style={{ fontSize: 16, fontWeight: 600, color: INK, fontFamily: FONT }}>Повторяйте святое имя</div>
+              <div style={{ fontSize: "var(--text-callout)", fontWeight: 600, color: INK, fontFamily: FONT }}>Повторяйте святое имя</div>
               <div style={{ fontSize: 14, lineHeight: 1.45, color: INK2, fontFamily: FONT, marginTop: 5 }}>Харе Кришна, Харе Кришна, Кришна Кришна, Харе Харе… Начните с одного круга на чётках.</div>
               <div style={{ fontSize: 13.5, fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 11 }}>Открыть счётчик джапы →</div>
             </>
@@ -181,11 +181,11 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
           <Card onClick={() => (nextEv.type === "ekadasi" ? onOpenPath("/ekadashi") : onSub("calendar"))}>
             <div style={{ padding: "15px 16px", display: "flex", alignItems: "center", gap: 14 }}>
               <div style={{ flexShrink: 0, width: 52, textAlign: "center" }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: GOLD, fontFamily: FONT, lineHeight: 1 }}>{nextEv.days <= 0 ? "•" : nextEv.days}</div>
-                <div style={{ fontSize: 11, color: INK3, fontFamily: FONT, marginTop: 2 }}>{nextEv.days <= 1 ? "" : "дней"}</div>
+                <div style={{ fontSize: "var(--text-title2)", fontWeight: 800, color: GOLD, fontFamily: FONT, lineHeight: 1 }}>{nextEv.days <= 0 ? "•" : nextEv.days}</div>
+                <div style={{ fontSize: "var(--text-caption2)", color: INK3, fontFamily: FONT, marginTop: 2 }}>{nextEv.days <= 1 ? "" : "дней"}</div>
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase", color: INK3, fontFamily: FONT }}>{daysLabel(nextEv.days)}</div>
+                <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase", color: INK3, fontFamily: FONT }}>{daysLabel(nextEv.days)}</div>
                 <div style={{ fontSize: 15.5, fontWeight: 600, color: INK, fontFamily: FONT, marginTop: 2, lineHeight: 1.3 }}>{nextEv.title}</div>
               </div>
               <span style={{ color: INK3, flexShrink: 0 }}>›</span>

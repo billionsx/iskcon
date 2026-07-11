@@ -56,7 +56,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
       <div style={{ display: "flex", alignItems: "center", gap: 12, padding: 12 }}>
         <img src={albumCover(album)} alt="" loading="lazy" style={{ width: 64, height: 64, borderRadius: 12, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.25, color: "var(--color-label)" }}>{album.title}</div>
+          <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.25, color: "var(--color-label)" }}>{album.title}</div>
           <div style={{ marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{meta}</div>
           {album.note && <div style={{ marginTop: 5, fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-3, #8e8e93)" }}>{album.note}</div>}
         </div>
@@ -92,9 +92,9 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
                   <div key={i} role="button" tabIndex={0} onClick={() => player.playKirtan(album.id, i)}
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); player.playKirtan(album.id, i); } }}
                     style={{ display: "flex", width: "100%", boxSizing: "border-box", alignItems: "center", gap: 10, padding: "8px 14px", textAlign: "left", background: active ? "rgba(210,170,27,0.12)" : "none", borderTop: i === 0 ? "none" : "0.5px solid var(--color-hairline)", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)", WebkitTapHighlightColor: "transparent" }}>
-                    <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: 13, fontWeight: 600, color: active ? GOLD : "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{active ? "▶" : i + 1}</span>
+                    <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{active ? "▶" : i + 1}</span>
                     <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: active ? 600 : 400, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
-                    {t.durationSec ? <span style={{ flexShrink: 0, fontSize: 12, color: "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
+                    {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
                     <CardActionBtns favKey={`kirtan-track:${album.id}:${i}`} meta={favMetaFromCtx(trackCtx)} size={28} onMore={() => openCardMenu(trackCtx)} />
                   </div>
                 );
@@ -118,7 +118,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
         <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", gap: 6, padding: "0 8px", borderBottom: "0.5px solid var(--color-hairline)", background: "var(--color-bg)" }}>
           <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}><BackIcon /></button>
         </header>
-        <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--color-label-2)", fontSize: 15 }}>Исполнитель не найден.</div>
+        <div style={{ padding: "48px 16px", textAlign: "center", color: "var(--color-label-2)", fontSize: "var(--text-subhead)" }}>Исполнитель не найден.</div>
       </div>
     );
   }
@@ -137,14 +137,14 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 6 }}>
           <ArtistMono artist={artist} size={84} />
           <div style={{ minWidth: 0, flex: 1 }}>
-            {accent && <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD, marginBottom: 3 }}>Ачарья-основатель</div>}
+            {accent && <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD, marginBottom: 3 }}>Ачарья-основатель</div>}
             <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: "-0.4px", lineHeight: 1.12, color: "var(--color-label)" }}>{artist.name}</h1>
             <div style={{ marginTop: 4, fontSize: 13.5, color: "var(--color-label-2)" }}>{artist.role}</div>
           </div>
         </div>
 
         {(artist.era || artist.origin) && (
-          <div style={{ marginTop: 14, fontSize: 13, color: "var(--color-label-3, #8e8e93)", display: "flex", flexWrap: "wrap", gap: "2px 10px" }}>
+          <div style={{ marginTop: 14, fontSize: "var(--text-footnote)", color: "var(--color-label-3, #8e8e93)", display: "flex", flexWrap: "wrap", gap: "2px 10px" }}>
             {artist.era && <span>{artist.era}</span>}
             {artist.era && artist.origin && <span aria-hidden>·</span>}
             {artist.origin && <span>{artist.origin}</span>}
@@ -166,7 +166,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
 
         {/* Дискография */}
         <div style={{ marginTop: 28 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)", marginBottom: 12 }}>
+          <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)", marginBottom: 12 }}>
             {albums.some((a) => a.archive) ? "Альбомы" : "Записи"}
           </div>
           {albums.length === 0 && (

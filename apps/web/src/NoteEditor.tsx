@@ -255,7 +255,7 @@ export default function NoteEditor({ id, onClose, onNavigate }: { id: string; on
           <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path {...STROKE} d="M6 4h9l3 3v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" /><path {...STROKE} d="M14 4v4h4" /></svg>
         </span>
         <span style={{ minWidth: 0, flex: 1 }}>
-          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: INK3 }}>Из приложения</span>
+          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", color: INK3 }}>Из приложения</span>
           <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: 14.5, fontWeight: 600, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{note.srcTitle}{note.srcSubtitle ? ` · ${note.srcSubtitle}` : ""}</span>
         </span>
         {note.srcHref && <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden style={{ color: INK3, flexShrink: 0 }}><path {...STROKE} d="M9 5l7 7-7 7" /></svg>}
@@ -352,10 +352,10 @@ function ConfirmDelete({ onCancel, onConfirm }: { onCancel: () => void; onConfir
     <div onClick={onCancel} style={{ position: "fixed", inset: 0, zIndex: 120, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 440, margin: 8, marginBottom: "calc(8px + env(safe-area-inset-bottom,0px))" }}>
         <div style={{ borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.97)", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)" }}>
-          <div style={{ padding: "16px 18px 14px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 13, color: INK2, borderBottom: `0.5px solid ${LINE}` }}>Удалить заметку? Действие необратимо.</div>
-          <button type="button" onClick={onConfirm} className="nte-tool" style={{ display: "block", width: "100%", padding: "15px", border: "none", background: "none", color: RED, fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Удалить</button>
+          <div style={{ padding: "16px 18px 14px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK2, borderBottom: `0.5px solid ${LINE}` }}>Удалить заметку? Действие необратимо.</div>
+          <button type="button" onClick={onConfirm} className="nte-tool" style={{ display: "block", width: "100%", padding: "15px", border: "none", background: "none", color: RED, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Удалить</button>
         </div>
-        <button type="button" onClick={onCancel} className="nte-tool" style={{ marginTop: 8, display: "block", width: "100%", padding: "15px", borderRadius: 16, border: "none", background: "rgba(252,252,254,0.97)", color: "#0A84FF", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Отмена</button>
+        <button type="button" onClick={onCancel} className="nte-tool" style={{ marginTop: 8, display: "block", width: "100%", padding: "15px", borderRadius: 16, border: "none", background: "rgba(252,252,254,0.97)", color: "#0A84FF", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Отмена</button>
       </div>
     </div>
   );

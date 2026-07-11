@@ -54,7 +54,7 @@ export function BhajanCard({ bhajan, onOpen, flash }: { bhajan: BhajanCardData; 
         {/* верхний ряд: чип-категория · действия */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, minHeight: 28 }}>
           {chip
-            ? <span style={{ display: "inline-flex", alignItems: "center", maxWidth: "58%", borderRadius: 999, background: "rgba(255,255,255,.14)", height: 22, padding: "0 10px", fontSize: 12, lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.9)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chip}</span>
+            ? <span style={{ display: "inline-flex", alignItems: "center", maxWidth: "58%", borderRadius: 999, background: "rgba(255,255,255,.14)", height: 22, padding: "0 10px", fontSize: "var(--text-caption)", lineHeight: 1, fontWeight: 500, color: "rgba(255,255,255,.9)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{chip}</span>
             : <span />}
           <div style={{ display: "flex", alignItems: "center", gap: 6, pointerEvents: "auto" }}>
             <GlassBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => toggleFav(flash)}><HeartIcon size={15} filled={favorited} /></GlassBtn>

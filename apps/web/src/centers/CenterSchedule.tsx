@@ -60,7 +60,7 @@ const Clock = ({ size = 26 }: { size?: number }) => (
 );
 
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
-const eyebrow: CSSProperties = { fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
+const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
 const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
 
 type Editing = { mode: "new" } | { mode: "edit"; program: CenterProgram } | null;
@@ -181,7 +181,7 @@ export default function CenterSchedule({
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={editing ? () => setEditing(null) : onBack} style={iconBtn}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{title}</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{title}</div>
         {right ?? <span style={{ width: 38 }} />}
       </header>
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -195,7 +195,7 @@ export default function CenterSchedule({
       <Shell title="Расписание">
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
-          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Войти</button>
+          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
     );
@@ -250,11 +250,11 @@ export default function CenterSchedule({
             {DAY_ORDER.map((d) => {
               const on = fDays.includes(d);
               return (
-                <button key={d} type="button" onClick={() => toggleDay(d)} style={{ flex: 1, minWidth: 0, padding: "10px 0", borderRadius: 12, border: "none", cursor: "pointer", fontFamily: FD, fontSize: 13, fontWeight: 700, background: on ? GOLD : FILL2, color: on ? "#fff" : L2, WebkitTapHighlightColor: "transparent" }}>{RU_WD[d]}</button>
+                <button key={d} type="button" onClick={() => toggleDay(d)} style={{ flex: 1, minWidth: 0, padding: "10px 0", borderRadius: 12, border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-footnote)", fontWeight: 700, background: on ? GOLD : FILL2, color: on ? "#fff" : L2, WebkitTapHighlightColor: "transparent" }}>{RU_WD[d]}</button>
               );
             })}
           </div>
-          <button type="button" onClick={() => setFDays(allDays ? [] : [1, 2, 3, 4, 5, 6, 0])} style={{ marginTop: 9, background: "none", border: "none", padding: "2px 4px", cursor: "pointer", fontFamily: FT, fontSize: 13, fontWeight: 600, color: GOLDT, WebkitTapHighlightColor: "transparent" }}>
+          <button type="button" onClick={() => setFDays(allDays ? [] : [1, 2, 3, 4, 5, 6, 0])} style={{ marginTop: 9, background: "none", border: "none", padding: "2px 4px", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLDT, WebkitTapHighlightColor: "transparent" }}>
             {allDays ? "Снять все" : "Ежедневно"}
           </button>
         </section>
@@ -264,12 +264,12 @@ export default function CenterSchedule({
           <div style={card}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <span style={{ fontFamily: FT, fontSize: 14.5, color: L1 }}>Начало</span>
-              <input type="time" value={fStart} onChange={(e) => setFStart(e.target.value)} style={{ fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "8px 12px", WebkitTapHighlightColor: "transparent" }} />
+              <input type="time" value={fStart} onChange={(e) => setFStart(e.target.value)} style={{ fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "8px 12px", WebkitTapHighlightColor: "transparent" }} />
             </div>
             <div style={{ height: 1, background: HAIR, margin: "13px 0" }} />
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
               <span style={{ fontFamily: FT, fontSize: 14.5, color: L1 }}>Окончание</span>
-              <input type="time" value={fEnd} onChange={(e) => setFEnd(e.target.value)} style={{ fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "8px 12px", WebkitTapHighlightColor: "transparent" }} />
+              <input type="time" value={fEnd} onChange={(e) => setFEnd(e.target.value)} style={{ fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, background: FILL2, border: "none", borderRadius: 10, padding: "8px 12px", WebkitTapHighlightColor: "transparent" }} />
             </div>
           </div>
         </section>
@@ -283,11 +283,11 @@ export default function CenterSchedule({
           <div style={{ marginTop: 14, padding: "11px 14px", borderRadius: 12, background: "color-mix(in srgb, var(--color-danger) 12%, transparent)", color: RED, fontFamily: FT, fontSize: 13.5, fontWeight: 600 }}>{err}</div>
         )}
 
-        <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
+        <button type="button" onClick={save} disabled={saving} style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
           {saving ? "Сохраняю…" : "Сохранить"}
         </button>
         {editing.mode === "edit" && (
-          <button type="button" onClick={remove} disabled={saving} style={{ marginTop: 10, width: "100%", padding: "13px 0", borderRadius: 14, border: "none", background: "color-mix(in srgb, var(--color-danger) 11%, transparent)", color: RED, fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
+          <button type="button" onClick={remove} disabled={saving} style={{ marginTop: 10, width: "100%", padding: "13px 0", borderRadius: 14, border: "none", background: "color-mix(in srgb, var(--color-danger) 11%, transparent)", color: RED, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
             Удалить программу
           </button>
         )}
@@ -299,7 +299,7 @@ export default function CenterSchedule({
   const programs = data.programs;
   return (
     <Shell title="Расписание" right={<button type="button" aria-label="Добавить" onClick={openNew} style={{ ...iconBtn, color: GOLDT }}><Plus /></button>}>
-      <p style={{ margin: "2px 4px 14px", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L3 }}>
+      <p style={{ margin: "2px 4px 14px", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L3 }}>
         Программы дня центра «{data.center.name}». Они отображаются на странице центра.
       </p>
       {programs.length === 0 ? (
@@ -307,7 +307,7 @@ export default function CenterSchedule({
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Clock size={26} /></span>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Расписание пусто</div>
           <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Добавьте мангала-арати, гуру-пуджу, лекцию по «Бхагаватам», воскресный пир и другие программы.</p>
-          <button type="button" onClick={openNew} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          <button type="button" onClick={openNew} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
             <Plus size={18} />Добавить программу
           </button>
         </div>
@@ -322,7 +322,7 @@ export default function CenterSchedule({
                   <span style={{ display: "block", fontFamily: FT, fontSize: 15.5, fontWeight: 600, color: L1 }}>{programLabel(pr.type)}</span>
                   <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3 }}>{fmtDays(pr.days_of_week)}{note ? ` · ${note}` : ""}</span>
                 </span>
-                {time && <span style={{ fontFamily: FD, fontSize: 15, fontWeight: 700, color: GOLDT, whiteSpace: "nowrap" }}>{time}</span>}
+                {time && <span style={{ fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT, whiteSpace: "nowrap" }}>{time}</span>}
                 <span style={{ color: L3, flexShrink: 0 }}><Chev /></span>
               </button>
             );

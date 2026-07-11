@@ -82,7 +82,7 @@ function PrimaryBtn({ label, onClick, disabled, busy }: { label: string; onClick
       style={{
         width: "100%", padding: "17px 20px", borderRadius: 16, border: "none",
         cursor: disabled || busy ? "default" : "pointer", background: GOLD, color: ON_GOLD,
-        fontFamily: TEXT, fontSize: 17, fontWeight: 640, letterSpacing: 0.2, opacity: disabled ? 0.5 : 1,
+        fontFamily: TEXT, fontSize: "var(--text-body)", fontWeight: 640, letterSpacing: 0.2, opacity: disabled ? 0.5 : 1,
         boxShadow: "0 6px 18px rgba(210,170,27,0.20)", WebkitTapHighlightColor: "transparent",
         display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
       }}>
@@ -94,7 +94,7 @@ function PrimaryBtn({ label, onClick, disabled, busy }: { label: string; onClick
 function SubtleBtn({ label, onClick, disabled }: { label: string; onClick: () => void; disabled?: boolean }) {
   return (
     <button className="onb-press" onClick={onClick} disabled={disabled}
-      style={{ width: "100%", padding: "15px 20px", borderRadius: 16, border: "none", background: "transparent", color: INK2, fontFamily: TEXT, fontSize: 16, fontWeight: 550, cursor: "pointer", WebkitTapHighlightColor: "transparent", opacity: disabled ? 0.5 : 1 }}>
+      style={{ width: "100%", padding: "15px 20px", borderRadius: 16, border: "none", background: "transparent", color: INK2, fontFamily: TEXT, fontSize: "var(--text-callout)", fontWeight: 550, cursor: "pointer", WebkitTapHighlightColor: "transparent", opacity: disabled ? 0.5 : 1 }}>
       {label}
     </button>
   );
@@ -153,7 +153,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
   const sub: CSSProperties = { fontSize: 16.5, lineHeight: 1.45, color: INK2, margin: "13px 0 0", fontWeight: 400 };
   const groupCard: CSSProperties = { background: CARD, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: SHADOW, overflow: "hidden" };
   const rowStyle: CSSProperties = { display: "flex", alignItems: "center", minHeight: 56, padding: "0 16px" };
-  const input: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: 17, color: INK, fontFamily: TEXT, padding: "16px 0" };
+  const input: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: TEXT, padding: "16px 0" };
   const hair = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
   const stepClass = dir >= 0 ? "onb-fwd" : "onb-back";
 
@@ -170,7 +170,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 30 }}>
         <button className="onb-press" aria-label="Назад" onClick={goBack} style={{ background: "none", border: "none", padding: 6, margin: -6, cursor: "pointer", display: "flex", WebkitTapHighlightColor: "transparent" }}><IcChevron /></button>
         {step <= 2
-          ? <button className="onb-press" onClick={() => finish()} style={{ background: "none", border: "none", color: INK2, fontFamily: TEXT, fontSize: 16, fontWeight: 500, cursor: "pointer", padding: "6px 2px", WebkitTapHighlightColor: "transparent" }}>Пропустить</button>
+          ? <button className="onb-press" onClick={() => finish()} style={{ background: "none", border: "none", color: INK2, fontFamily: TEXT, fontSize: "var(--text-callout)", fontWeight: 500, cursor: "pointer", padding: "6px 2px", WebkitTapHighlightColor: "transparent" }}>Пропустить</button>
           : <span style={{ width: 20 }} />}
       </div>
       <Dots />
@@ -188,7 +188,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
     content = (
       <div style={{ ...main, justifyContent: "center", alignItems: "center", textAlign: "center", paddingTop: "env(safe-area-inset-top)" }}>
         <img className="onb-rise" src="/iskcon-one-love-mark.svg" alt="" width={104} height={104} style={{ marginBottom: 30 }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-        <div className="onb-rise" style={{ animationDelay: ".08s", fontSize: 13, fontWeight: 700, letterSpacing: 2.5, color: GOLD, textTransform: "uppercase" }}>Харе Кришна</div>
+        <div className="onb-rise" style={{ animationDelay: ".08s", fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: 2.5, color: GOLD, textTransform: "uppercase" }}>Харе Кришна</div>
         <h1 className="onb-rise" style={{ ...h1, animationDelay: ".16s", fontSize: 32, maxWidth: 340, marginTop: 14 }}>Добро пожаловать<br />в ISKCON ONE LOVE</h1>
         <p className="onb-rise" style={{ ...sub, animationDelay: ".24s", maxWidth: 322 }}>Ваш дом в сознании Кришны: священные тексты, святые имена, вайшнавский календарь, даршаны и живая садхана — в одном месте.</p>
       </div>
@@ -209,7 +209,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
                   style={{ display: "flex", alignItems: "center", gap: 14, textAlign: "left", width: "100%", padding: "12px 16px", background: on ? GOLD_SOFT : "transparent", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                   <Chip on={on}><LevelIcon id={o.id} c={on ? ON_GOLD : GOLD} /></Chip>
                   <span style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ display: "block", fontSize: 17, fontWeight: 600, color: INK, fontFamily: TEXT }}>{o.label}</span>
+                    <span style={{ display: "block", fontSize: "var(--text-body)", fontWeight: 600, color: INK, fontFamily: TEXT }}>{o.label}</span>
                     <span style={{ display: "block", fontSize: 13.5, color: INK2, fontFamily: TEXT, marginTop: 1 }}>{o.hint}</span>
                   </span>
                   <span style={{ width: 22, height: 22, borderRadius: "50%", flex: "0 0 auto", display: "grid", placeItems: "center", background: on ? GOLD : "transparent", border: on ? "none" : `1.6px solid ${INK3}` }}>{on && <IcCheck />}</span>
@@ -234,7 +234,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
             <>{hair}
               <div style={{ ...rowStyle, justifyContent: "space-between" }}>
                 <span style={{ display: "flex", flexDirection: "column" }}>
-                  <span style={{ fontSize: 17, color: INK, fontFamily: TEXT }}>Норма кругов в день</span>
+                  <span style={{ fontSize: "var(--text-body)", color: INK, fontFamily: TEXT }}>Норма кругов в день</span>
                   <span style={{ fontSize: 12.5, color: INK3, fontFamily: TEXT, marginTop: 1 }}>16 — стандарт для инициированных</span>
                 </span>
                 <div style={{ display: "flex", alignItems: "center", gap: 2, background: FILL, borderRadius: 11, padding: 3 }}>
@@ -256,12 +256,12 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
         <div style={{ flex: "0 0 auto", height: 6 }} />
         {/* Образ: превью реального уведомления — по языку Apple Fitness. */}
         <div style={{ margin: "8px auto 26px", width: "100%", maxWidth: 320, background: FILL, borderRadius: 26, padding: "22px 16px 18px" }}>
-          <div style={{ fontFamily: DISPLAY, fontSize: 34, fontWeight: 300, color: INK3, letterSpacing: 1, lineHeight: 1, marginBottom: 16 }}>09:41</div>
+          <div style={{ fontFamily: DISPLAY, fontSize: "var(--text-display)", fontWeight: 300, color: INK3, letterSpacing: 1, lineHeight: 1, marginBottom: 16 }}>09:41</div>
           <div style={{ display: "flex", alignItems: "center", gap: 11, textAlign: "left", background: CARD, borderRadius: 15, border: `0.5px solid ${HAIR}`, boxShadow: SHADOW, padding: "11px 13px" }}>
             <img src="/iskcon-one-love-mark.svg" alt="" width={34} height={34} style={{ flex: "0 0 auto" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
             <span style={{ minWidth: 0 }}>
               <span style={{ display: "block", fontSize: 13.5, fontWeight: 700, color: INK, fontFamily: TEXT, letterSpacing: 0.2 }}>ISKCON ONE LOVE</span>
-              <span style={{ display: "block", fontSize: 13, color: INK2, fontFamily: TEXT, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Стих дня · «Бхагавад-гита» 1.1</span>
+              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK2, fontFamily: TEXT, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Стих дня · «Бхагавад-гита» 1.1</span>
             </span>
           </div>
         </div>
@@ -290,7 +290,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
     content = (
       <div key="s4" className="onb-rise" style={{ ...main, justifyContent: "center", alignItems: "center", textAlign: "center", paddingTop: "env(safe-area-inset-top)" }}>
         <img src="/iskcon-one-love-mark.svg" alt="" width={100} height={100} style={{ marginBottom: 28 }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: 2.5, color: GOLD, textTransform: "uppercase" }}>Всё готово</div>
+        <div style={{ fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: 2.5, color: GOLD, textTransform: "uppercase" }}>Всё готово</div>
         <h1 style={{ ...h1, maxWidth: 330, marginTop: 12 }}>{nm ? `Харе Кришна, ${nm}!` : "Добро пожаловать домой"}</h1>
         <p style={{ ...sub, maxWidth: 320 }}>{lvHint}</p>
       </div>

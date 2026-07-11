@@ -17,7 +17,7 @@ function GroupedList({ groups }: { groups: MoreGroup[] }) {
     <>
       {groups.map((g) => (
         <section key={g.group} style={{ marginTop: 26 }}>
-          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
+          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
           <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
             {g.items.map((it, i) => (
               <li key={it.t} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
@@ -51,7 +51,7 @@ function GroupedList({ groups }: { groups: MoreGroup[] }) {
 function Head({ eyebrow, title, sub }: { eyebrow: string; title: string; sub: string }) {
   return (
     <div style={{ padding: "20px 0 0" }}>
-      <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{eyebrow}</div>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{eyebrow}</div>
       <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
       <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
     </div>

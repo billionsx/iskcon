@@ -91,13 +91,13 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
     background: "color-mix(in srgb, var(--color-bg) 82%, transparent)", backdropFilter: "saturate(180%) blur(20px)", WebkitBackdropFilter: "saturate(180%) blur(20px)", borderBottom: `0.5px solid ${HAIR}`,
   };
   const card: CSSProperties = { borderRadius: 20, background: FILL, padding: "18px 16px" };
-  const sectionLabel: CSSProperties = { margin: "26px 2px 10px", fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3 };
+  const sectionLabel: CSSProperties = { margin: "26px 2px 10px", fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3 };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={nav}>
         <button type="button" aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: L1, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Мой прогресс</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Мой прогресс</div>
         <span style={{ width: 38 }} />
       </header>
 
@@ -116,7 +116,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
               </div>
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение</div>
+              <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение</div>
               <div style={{ marginTop: 4, fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: L1, lineHeight: 1.15 }}>
                 {planErr ? "Прабхупада" : `${fmt(corpusRead)} из ${fmt(corpusTotal || 25016)}`}
               </div>
@@ -134,13 +134,13 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
           <div style={{ ...sectionLabel }}>Чтение по времени</div>
           <div style={{ display: "flex", gap: 12 }}>
             <div style={{ ...card, flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7, color: GOLDT }}><Clock /><span style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, color: L2 }}>Сегодня</span></div>
-              <div style={{ marginTop: 8, fontFamily: FD, fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{today} <span style={{ fontSize: 13, color: L3, fontWeight: 600 }}>/ {goal} мин</span></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, color: GOLDT }}><Clock /><span style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, color: L2 }}>Сегодня</span></div>
+              <div style={{ marginTop: 8, fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{today} <span style={{ fontSize: "var(--text-footnote)", color: L3, fontWeight: 600 }}>/ {goal} мин</span></div>
               <div style={{ marginTop: 10 }}><Bar pct={goalPct} /></div>
             </div>
             <div style={{ ...card, flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 7, color: GOLDT }}><Flame /><span style={{ fontFamily: FT, fontSize: 12, fontWeight: 600, color: L2 }}>Стрик</span></div>
-              <div style={{ marginTop: 8, fontFamily: FD, fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{streak} <span style={{ fontSize: 13, color: L3, fontWeight: 600 }}>{streak % 10 === 1 && streak % 100 !== 11 ? "день" : (streak % 10 >= 2 && streak % 10 <= 4 && (streak % 100 < 10 || streak % 100 >= 20)) ? "дня" : "дней"}</span></div>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, color: GOLDT }}><Flame /><span style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, color: L2 }}>Стрик</span></div>
+              <div style={{ marginTop: 8, fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{streak} <span style={{ fontSize: "var(--text-footnote)", color: L3, fontWeight: 600 }}>{streak % 10 === 1 && streak % 100 !== 11 ? "день" : (streak % 10 >= 2 && streak % 10 <= 4 && (streak % 100 < 10 || streak % 100 >= 20)) ? "дня" : "дней"}</span></div>
               <div style={{ marginTop: 8, fontFamily: FT, fontSize: 11.5, lineHeight: 1.4, color: L3 }}>дней подряд с выполненной целью</div>
             </div>
           </div>
@@ -161,8 +161,8 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
                     <button type="button" onClick={() => r.href && onOpen(r.href)}
                       style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "13px 15px", border: "none", background: "none", cursor: "pointer", textAlign: "left", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
                       <span style={{ minWidth: 0, flex: 1 }}>
-                        <span style={{ display: "block", fontFamily: FT, fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em", color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bookTitle(r.work)}</span>
-                        <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12, color: L2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.label}</span>
+                        <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bookTitle(r.work)}</span>
+                        <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: "var(--text-caption)", color: L2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.label}</span>
                         <span style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
                           <span style={{ flex: 1 }}><Bar pct={pct ?? 0} /></span>
                           <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 11.5, fontWeight: 700, color: pct ? GOLDT : L3, minWidth: 30, textAlign: "right" }}>{pct ? `${pct}%` : "—"}</span>

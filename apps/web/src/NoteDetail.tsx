@@ -75,8 +75,8 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
     return (
       <div style={{ position: "fixed", inset: 0, zIndex: 70, background: "var(--color-bg)", display: "grid", placeItems: "center" }}>
         <div style={{ textAlign: "center", fontFamily: "var(--font-text)", color: INK3 }}>
-          <p style={{ fontSize: 15, color: INK2 }}>Заметка не найдена.</p>
-          <button onClick={onBack} style={{ marginTop: 8, height: 42, padding: "0 20px", borderRadius: 12, border: "none", background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: 15, fontWeight: 600, cursor: "pointer" }}>Назад</button>
+          <p style={{ fontSize: "var(--text-subhead)", color: INK2 }}>Заметка не найдена.</p>
+          <button onClick={onBack} style={{ marginTop: 8, height: 42, padding: "0 20px", borderRadius: 12, border: "none", background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer" }}>Назад</button>
         </div>
       </div>
     );
@@ -117,7 +117,7 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
         <div ref={bodyRef} data-pdf-root style={{ marginTop: 22 }}>
           {notePreview(note)
             ? <div className="note-view" dangerouslySetInnerHTML={{ __html: note.body || "" }} />
-            : <p style={{ fontFamily: "var(--font-text)", fontSize: 16, color: INK3, margin: 0 }}>Пустая заметка — нажмите «Редактировать», чтобы добавить текст.</p>}
+            : <p style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: INK3, margin: 0 }}>Пустая заметка — нажмите «Редактировать», чтобы добавить текст.</p>}
         </div>
 
         {/* метка времени */}
@@ -127,7 +127,7 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
 
         {/* первичное действие */}
         <button data-pdf-no-print type="button" className="nd-press" onClick={() => setEditing(true)}
-          style={{ marginTop: 18, width: "100%", height: 50, display: "flex", alignItems: "center", justifyContent: "center", gap: 9, borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2, #fff)", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          style={{ marginTop: 18, width: "100%", height: 50, display: "flex", alignItems: "center", justifyContent: "center", gap: 9, borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2, #fff)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <PencilIcon size={19} /> Редактировать
         </button>
       </div>
@@ -139,13 +139,13 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
         <div onClick={() => setConfirmDel(false)} style={{ position: "fixed", inset: 0, zIndex: 2100, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.32)" }}>
           <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 420, margin: "0 10px max(16px, env(safe-area-inset-bottom))", borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.98)", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)" }}>
             <div style={{ padding: "18px 18px 14px", textAlign: "center", fontFamily: "var(--font-text)" }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: INK }}>Удалить заметку?</div>
+              <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, color: INK }}>Удалить заметку?</div>
               <div style={{ marginTop: 4, fontSize: 13.5, color: INK2, lineHeight: 1.4 }}>Это действие необратимо.</div>
             </div>
             <button type="button" onClick={() => { deleteNote(note.id); setConfirmDel(false); onBack(); }}
-              style={{ width: "100%", height: 52, border: "none", borderTop: `0.5px solid ${LINE}`, background: "none", color: RED, fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, cursor: "pointer" }}>Удалить</button>
+              style={{ width: "100%", height: 52, border: "none", borderTop: `0.5px solid ${LINE}`, background: "none", color: RED, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, cursor: "pointer" }}>Удалить</button>
             <button type="button" onClick={() => setConfirmDel(false)}
-              style={{ width: "100%", height: 52, border: "none", borderTop: `0.5px solid ${LINE}`, background: "none", color: INK, fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 400, cursor: "pointer" }}>Отмена</button>
+              style={{ width: "100%", height: 52, border: "none", borderTop: `0.5px solid ${LINE}`, background: "none", color: INK, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 400, cursor: "pointer" }}>Отмена</button>
           </div>
         </div>,
         document.body

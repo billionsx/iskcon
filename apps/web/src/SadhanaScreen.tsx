@@ -130,7 +130,7 @@ function Tile({ value, label, accent }: { value: string; label: string; accent?:
   return (
     <div style={{ flex: 1, minWidth: 0, padding: "13px 10px", borderRadius: 16, background: FILL, textAlign: "center" }}>
       <div style={{ fontFamily: FD, fontSize: 21, fontWeight: 800, letterSpacing: "-0.02em", color: accent || L1, lineHeight: 1.05 }}>{value}</div>
-      <div style={{ marginTop: 3, fontFamily: FT, fontSize: 11, fontWeight: 600, color: L2 }}>{label}</div>
+      <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 600, color: L2 }}>{label}</div>
     </div>
   );
 }
@@ -140,7 +140,7 @@ function StreakCard({ icon, value, label, tone }: { icon: ReactNode; value: numb
     <div style={{ flex: 1, padding: 14, borderRadius: 16, background: FILL, display: "flex", alignItems: "center", gap: 11 }}>
       <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${tone} 16%, transparent)`, color: tone }}>{icon}</span>
       <span style={{ minWidth: 0 }}>
-        <span style={{ display: "block", fontFamily: FD, fontSize: 20, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{value}</span>
+        <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{value}</span>
         <span style={{ fontFamily: FT, fontSize: 11.5, color: L2 }}>{label}</span>
       </span>
     </div>
@@ -175,7 +175,7 @@ function Heatmap({ roundsByDay, goal }: { roundsByDay: Map<string, number>; goal
   return (
     <div style={{ padding: 16, borderRadius: 18, background: FILL, marginTop: 12 }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
-        <span style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3 }}>Карта практики</span>
+        <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3 }}>Карта практики</span>
         <span style={{ fontFamily: FT, fontSize: 10.5, color: L3 }}>10 недель</span>
       </div>
       <div style={{ display: "flex", gap: 7, alignItems: "stretch" }}>
@@ -220,7 +220,7 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
     } catch { setBusy(false); }
   };
 
-  const lbl: CSSProperties = { display: "block", fontFamily: FT, fontSize: 12, fontWeight: 700, color: L2, marginBottom: 7 };
+  const lbl: CSSProperties = { display: "block", fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, color: L2, marginBottom: 7 };
   const field: CSSProperties = { width: "100%", boxSizing: "border-box", padding: "11px 12px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL, fontFamily: FT, outline: "none" };
 
   return (
@@ -238,21 +238,21 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
         <label style={lbl}>Чтение Прабхупады</label>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
           <button type="button" onClick={() => setRead((v) => Math.max(0, v - 15))} disabled={read <= 0} style={{ ...sheetBtn, opacity: read <= 0 ? 0.5 : 1 }}>−15</button>
-          <span style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 800, color: read > 0 ? L1 : L3 }}>{read > 0 ? fmtMin(read) : "—"}</span>
+          <span style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: read > 0 ? L1 : L3 }}>{read > 0 ? fmtMin(read) : "—"}</span>
           <button type="button" onClick={() => setRead((v) => Math.min(1440, v + 15))} style={sheetBtn}>+15</button>
           <button type="button" onClick={() => setRead((v) => Math.min(1440, v + 30))} style={sheetBtn}>+30</button>
         </div>
 
         <label style={lbl}>Подъём (мангала-арати)</label>
-        <input type="time" value={rose} onChange={(e) => setRose(e.target.value)} style={{ ...field, color: rose ? L1 : L3, fontSize: 15, fontWeight: 600, marginBottom: 16, colorScheme: "dark light" }} />
+        <input type="time" value={rose} onChange={(e) => setRose(e.target.value)} style={{ ...field, color: rose ? L1 : L3, fontSize: "var(--text-subhead)", fontWeight: 600, marginBottom: 16, colorScheme: "dark light" }} />
 
         <label style={lbl}>Заметка дня</label>
         <textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 500))} rows={3} placeholder="Реализации, благодарности, планы…"
           style={{ ...field, resize: "none", color: L1, fontSize: 14, lineHeight: 1.5, marginBottom: 18 }} />
 
         <div style={{ display: "flex", gap: 10 }}>
-          <button type="button" onClick={onClose} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Отмена</button>
-          <button type="button" onClick={save} disabled={busy} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.7 : 1, boxShadow: "0 8px 22px rgba(210,170,27,0.4)" }}>{busy ? "Сохранение…" : "Сохранить"}</button>
+          <button type="button" onClick={onClose} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Отмена</button>
+          <button type="button" onClick={save} disabled={busy} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: busy ? 0.7 : 1, boxShadow: "0 8px 22px rgba(210,170,27,0.4)" }}>{busy ? "Сохранение…" : "Сохранить"}</button>
         </div>
       </div>
     </div>
@@ -377,7 +377,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack} style={iconBtn()}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Дневник садханы</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Дневник садханы</div>
         {st
           ? <button type="button" aria-label="Настройки" onClick={() => setShowSet((v) => !v)} style={iconBtn(showSet)}><Gear /></button>
           : <span style={{ width: 38 }} />}
@@ -424,7 +424,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                     <span style={{ fontFamily: FT, fontSize: 14, color: L1 }}>Цель в день (кругов)</span>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
                       <button type="button" aria-label="Меньше" onClick={() => bumpGoal(goal - (goal > 16 ? 4 : 1))} disabled={goal <= 1} style={{ ...miniBtn, width: 36, minWidth: 36, opacity: goal <= 1 ? 0.5 : 1 }}>−</button>
-                      <span style={{ minWidth: 30, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 800, color: L1 }}>{goal}</span>
+                      <span style={{ minWidth: 30, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: L1 }}>{goal}</span>
                       <button type="button" aria-label="Больше" onClick={() => bumpGoal(goal + (goal >= 16 ? 4 : 1))} disabled={goal >= 64} style={{ ...miniBtn, width: 36, minWidth: 36, opacity: goal >= 64 ? 0.5 : 1 }}>+</button>
                     </span>
                   </div>
@@ -435,7 +435,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
               )}
 
               {/* герой: круги сегодня */}
-              <div style={{ fontFamily: FT, fontSize: 12, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: L3, margin: "0 2px 10px" }}>
+              <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: L3, margin: "0 2px 10px" }}>
                 {relDay(st.today)}, {prettyDate(st.today)}
               </div>
               <button type="button" onClick={openJapa} aria-label="Открыть счётчик джапы"
@@ -452,7 +452,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                    <span style={{ fontFamily: FD, fontSize: 17, fontWeight: 800, letterSpacing: "-0.02em", color: done ? GREEN : L1 }}>
+                    <span style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", color: done ? GREEN : L1 }}>
                       {done ? "Норма выполнена" : `${todayRounds} ${pluralRu(todayRounds, "круг", "круга", "кругов")}`}
                     </span>
                     {done && <span style={{ color: GREEN, display: "inline-flex" }}><Check /></span>}
@@ -473,7 +473,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Book /></span>
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span style={{ display: "block", fontFamily: FT, fontSize: 14, color: L1 }}>Чтение Прабхупады</span>
-                    <span style={{ display: "block", marginTop: 1, fontFamily: FD, fontSize: 16, fontWeight: 800, color: readMin > 0 ? L1 : L3 }}>{readMin > 0 ? fmtMin(readMin) : "—"}</span>
+                    <span style={{ display: "block", marginTop: 1, fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 800, color: readMin > 0 ? L1 : L3 }}>{readMin > 0 ? fmtMin(readMin) : "—"}</span>
                   </span>
                   <span style={{ display: "inline-flex", gap: 6, flexShrink: 0 }}>
                     <button type="button" aria-label="−15 минут" onClick={() => bumpRead(-15)} disabled={readMin <= 0} style={{ ...miniBtn, opacity: readMin <= 0 ? 0.5 : 1 }}>−15</button>
@@ -483,7 +483,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <div style={{ display: "flex", gap: 7, marginTop: 11, paddingLeft: 50 }}>
                   {[30, 60].map((q) => (
                     <button key={q} type="button" onClick={() => bumpRead(q)}
-                      style={{ padding: "5px 12px", borderRadius: 999, border: "none", background: FILL2, color: L2, fontFamily: FT, fontSize: 12, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                      style={{ padding: "5px 12px", borderRadius: 999, border: "none", background: FILL2, color: L2, fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                       +{q} мин
                     </button>
                   ))}
@@ -525,7 +525,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
 
               {/* неделя */}
               <div style={{ ...card, marginTop: 12 }}>
-                <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, marginBottom: 14 }}>Эта неделя</div>
+                <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, marginBottom: 14 }}>Эта неделя</div>
                 <div style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 96 }}>
                   {st.week.map((w) => {
                     const frac = Math.min(1, w.rounds / Math.max(1, weekMax));
@@ -536,7 +536,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                       <div key={w.day} title={`${prettyDate(w.day)}: ${w.rounds} кр.`} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", gap: 6 }}>
                         <div style={{ fontFamily: FT, fontSize: 10, fontWeight: 700, color: w.rounds > 0 ? L2 : "transparent", lineHeight: 1 }}>{w.rounds || 0}</div>
                         <div style={{ width: "100%", maxWidth: 30, height: h, borderRadius: 6, background: col, outline: w.today ? `2px solid ${GOLD}` : "none", outlineOffset: 1, transition: "height .3s ease" }} />
-                        <div style={{ fontFamily: FT, fontSize: 11, fontWeight: w.today ? 800 : 500, color: w.today ? GOLDT : L3, lineHeight: 1 }}>{RU_WD1[wd]}</div>
+                        <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: w.today ? 800 : 500, color: w.today ? GOLDT : L3, lineHeight: 1 }}>{RU_WD1[wd]}</div>
                       </div>
                     );
                   })}
@@ -556,7 +556,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
               {/* история */}
               {st.history.length > 0 && (
                 <>
-                  <div style={{ fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "22px 2px 10px" }}>История</div>
+                  <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3, margin: "22px 2px 10px" }}>История</div>
                   <div style={{ borderRadius: 16, background: FILL, overflow: "hidden" }}>
                     {st.history.slice(0, 30).map((d, i) => (
                       <button type="button" key={d.day} onClick={() => setEditDay(d)} aria-label={`Изменить день: ${relDay(d.day)}`}
@@ -568,9 +568,9 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                           <span style={{ fontFamily: FT, fontSize: 13.5, fontWeight: 700, color: d.rounds >= goal ? GREEN : L1 }}>
                             {d.rounds} {pluralRu(d.rounds, "круг", "круга", "кругов")}
                           </span>
-                          {d.reading_min > 0 && <span style={{ fontFamily: FT, fontSize: 12, color: L2 }}>чтение {fmtMin(d.reading_min)}</span>}
-                          {d.rose_at && <span style={{ fontFamily: FT, fontSize: 12, color: L2 }}>подъём {d.rose_at}</span>}
-                          {d.note && <span style={{ flexBasis: "100%", fontFamily: FT, fontSize: 12, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.note}</span>}
+                          {d.reading_min > 0 && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>чтение {fmtMin(d.reading_min)}</span>}
+                          {d.rose_at && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>подъём {d.rose_at}</span>}
+                          {d.note && <span style={{ flexBasis: "100%", fontFamily: FT, fontSize: "var(--text-caption)", color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.note}</span>}
                         </span>
                         {d.rounds >= goal && <span style={{ flexShrink: 0, color: GREEN, display: "inline-flex" }}><Check /></span>}
                         <span style={{ flexShrink: 0, display: "inline-flex" }}><Chevron /></span>
@@ -580,7 +580,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 </>
               )}
 
-              <p style={{ margin: "18px 2px 0", fontFamily: FT, fontSize: 11, lineHeight: 1.5, color: L3, textAlign: "center" }}>
+              <p style={{ margin: "18px 2px 0", fontFamily: FT, fontSize: "var(--text-caption2)", lineHeight: 1.5, color: L3, textAlign: "center" }}>
                 Круги берутся из счётчика джапы. Серия не прерывается, если сегодняшняя норма ещё не закрыта.
               </p>
             </>

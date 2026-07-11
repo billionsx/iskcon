@@ -47,8 +47,8 @@ function SectionHead({ eyebrow, title, action }: { eyebrow: string; title: strin
   return (
     <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
       <div>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
-        <h2 style={{ margin: "2px 0 0", fontSize: 22, fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{title}</h2>
+        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
+        <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{title}</h2>
       </div>
       {action}
     </div>
@@ -65,7 +65,7 @@ function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }
         <span aria-hidden style={{ position: "absolute", right: 10, bottom: 10, width: 38, height: 38, borderRadius: "50%", display: "grid", placeItems: "center", background: "rgba(255,255,255,0.92)", color: "#1d1d1f", boxShadow: "0 3px 12px rgba(0,0,0,0.3)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
         </span>
-        <span style={{ position: "absolute", left: 10, top: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#fff", fontSize: 11, fontWeight: 600, letterSpacing: "0.01em" }}>{TYPE_LABEL[album.type]}</span>
+        <span style={{ position: "absolute", left: 10, top: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.01em" }}>{TYPE_LABEL[album.type]}</span>
       </div>
       <div style={{ marginTop: 9, fontSize: 14.5, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
       <div style={{ marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
@@ -119,8 +119,8 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     <div style={{ fontFamily: "var(--font-text)" }}>
       {/* Заголовок раздела */}
       <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Аудиотека</div>
-        <h1 style={{ margin: "2px 0 0", fontSize: 28, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Киртаны и бхаджаны</h1>
+        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Аудиотека</div>
+        <h1 style={{ margin: "2px 0 0", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Киртаны и бхаджаны</h1>
         <p style={{ margin: "8px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "var(--color-label-2)", maxWidth: 520 }}>
           Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана и фестивалей наших дней.
         </p>
@@ -166,7 +166,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       {/* Жанры и настроения */}
       <section style={{ marginTop: 30 }}>
         <SectionHead eyebrow="Классификации" title="Жанры и настроения" action={
-          (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
+          (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
         } />
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {types.map((t) => (
@@ -189,7 +189,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
                   <button onClick={() => can ? player.playKirtan(al.id) : onOpenArtist(al.artist)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
                     <img src={albumCover(al)} alt="" loading="lazy" style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
                     <span style={{ minWidth: 0, flex: 1 }}>
-                      <span style={{ display: "block", fontSize: 15, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{al.title}</span>
+                      <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{al.title}</span>
                       <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{ar?.name} · {TYPE_LABEL[al.type]}</span>
                     </span>
                     {can
@@ -206,13 +206,13 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       {/* Тексты бхаджанов (молитвенник) */}
       <section style={{ marginTop: 30 }}>
         <SectionHead eyebrow="Молитвенник" title="Тексты бхаджанов" action={
-          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 13, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>
             Весь каталог
             <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
         } />
-        {!bhajans && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Загрузка…</div>}
-        {bhajans && bhajans.length === 0 && <div style={{ fontSize: 15, color: "var(--color-label-2)" }}>Пока пусто.</div>}
+        {!bhajans && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
+        {bhajans && bhajans.length === 0 && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока пусто.</div>}
         {bhajans && bhajans.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {bhajans.slice(0, 6).map((b) => (

@@ -56,7 +56,7 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
       <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Личное пространство ежедневной практики: стих дня, джапа, дневник, прасад и путь преданного. Здесь будет ваш ежедневный заход в храм.
@@ -65,7 +65,7 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
 
       {GROUPS.map((g) => (
         <section key={g.group} style={{ marginTop: 26 }}>
-          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
+          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
           <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
             {g.items.map((it, i) => {
               const activate = it.to ? () => onOpen?.(it.to!) : it.go;

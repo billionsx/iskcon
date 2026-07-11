@@ -70,7 +70,7 @@ export function SectionSubTabs({
                 onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
                 onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
                 style={{ flexShrink: 0, padding: "7px 13px", borderRadius: 999, border: "none", cursor: "pointer",
-                  fontSize: 13, fontFamily: "var(--font-text)", letterSpacing: "-0.01em", whiteSpace: "nowrap",
+                  fontSize: "var(--text-footnote)", fontFamily: "var(--font-text)", letterSpacing: "-0.01em", whiteSpace: "nowrap",
                   background: on ? c.active : "var(--color-glass-regular)",
                   color: on ? chipFg : c.inactive, fontWeight: 600,
                   transition: "background .18s, color .18s", WebkitTapHighlightColor: "transparent" }}>
@@ -91,7 +91,7 @@ export function SectionSubTabs({
           const on = it.id === active;
           return (
             <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "11px 14px", fontSize: 13, background: "none", border: "none", cursor: "pointer", color: on ? c.active : c.inactive, fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
+              style={{ position: "relative", flexShrink: 0, padding: "11px 14px", fontSize: "var(--text-footnote)", background: "none", border: "none", cursor: "pointer", color: on ? c.active : c.inactive, fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
               {it.label}
               {on && <span aria-hidden style={{ position: "absolute", insetInline: 12, bottom: 0, height: 2, borderRadius: 999, background: c.rail }} />}
             </button>

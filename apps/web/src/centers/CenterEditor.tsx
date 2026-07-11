@@ -79,7 +79,7 @@ const numOrNull = (s: string): number | null => {
 
 /* ───────────────────── поля ───────────────────── */
 const groupLabel: CSSProperties = {
-  fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.6px",
+  fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px",
   textTransform: "uppercase", color: L3, margin: "0 4px 8px",
 };
 const inputStyle: CSSProperties = {
@@ -257,7 +257,7 @@ export default function CenterEditor({
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack} style={iconBtn}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{isEdit ? "Правка центра" : "Новый центр"}</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>{isEdit ? "Правка центра" : "Новый центр"}</div>
         <span style={{ width: 38 }} />
       </header>
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -272,7 +272,7 @@ export default function CenterEditor({
         <div style={{ padding: 16, borderRadius: 18, background: FILL, textAlign: "center", marginTop: 8 }}>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
           <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>Управление центром доступно вошедшим преданным.</p>
-          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Войти</button>
+          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
     );
@@ -341,7 +341,7 @@ export default function CenterEditor({
                   type="button"
                   onClick={() => set("type", t)}
                   style={{
-                    padding: "7px 13px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 13, fontWeight: 600,
+                    padding: "7px 13px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600,
                     background: on ? GOLD : FILL2, color: on ? "#fff" : L2, WebkitTapHighlightColor: "transparent",
                   }}
                 >
@@ -418,13 +418,13 @@ export default function CenterEditor({
         type="button"
         onClick={save}
         disabled={saving}
-        style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 16, fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}
+        style={{ marginTop: 22, width: "100%", padding: "14px 0", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", opacity: saving ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}
       >
         {saving ? "Сохраняю…" : isEdit ? "Сохранить" : "Создать центр"}
       </button>
 
       {!isEdit && (
-        <p style={{ margin: "12px 4px 0", fontFamily: FT, fontSize: 12, lineHeight: 1.5, color: L3, textAlign: "center" }}>
+        <p style={{ margin: "12px 4px 0", fontFamily: FT, fontSize: "var(--text-caption)", lineHeight: 1.5, color: L3, textAlign: "center" }}>
           Центр создаётся как черновик. Заполните профиль и отправьте на проверку — после подтверждения ИСККОН он появится в каталоге.
         </p>
       )}

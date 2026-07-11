@@ -88,7 +88,7 @@ export default function CenterModeration({
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack} style={iconBtn}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Модерация</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Модерация</div>
         <span style={{ width: 38 }} />
       </header>
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -102,7 +102,7 @@ export default function CenterModeration({
       <Shell>
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
-          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Войти</button>
+          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
     );
@@ -140,7 +140,7 @@ export default function CenterModeration({
   const list = items ?? [];
   return (
     <Shell>
-      <p style={{ margin: "2px 4px 14px", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L3 }}>
+      <p style={{ margin: "2px 4px 14px", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L3 }}>
         Центры, отправленные на проверку. Откройте центр, чтобы опубликовать его или вернуть на доработку.
       </p>
       {list.length === 0 ? (
@@ -164,7 +164,7 @@ export default function CenterModeration({
                   {!it.photos[0] && <Temple size={24} />}
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: FD, fontSize: 16, fontWeight: 700, color: L1, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.name}</span>
+                  <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.name}</span>
                   <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {CENTER_TYPE_LABEL[it.type]}{place ? ` · ${place}` : ""} · {ago(it.updated_at)}
                   </span>

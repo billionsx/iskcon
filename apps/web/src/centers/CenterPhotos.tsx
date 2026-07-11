@@ -42,7 +42,7 @@ const Trash = ({ size = 15 }: { size?: number }) => (
 );
 
 const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
-const eyebrow: CSSProperties = { fontFamily: FT, fontSize: 11, fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
+const eyebrow: CSSProperties = { fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: L3, margin: "0 4px 8px" };
 const inputStyle: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
 const pill: CSSProperties = { display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 12px", borderRadius: 10, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 12.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
 
@@ -134,7 +134,7 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
     <div style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--color-bg)", fontFamily: FT }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack} style={iconBtn}><Back /></button>
-        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Фотографии</div>
+        <div style={{ flex: 1, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: L1 }}>Фотографии</div>
         <span style={{ width: 38 }} />
       </header>
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
@@ -148,7 +148,7 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
       <Shell>
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
           <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>Войдите, чтобы продолжить</div>
-          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15, fontWeight: 700, cursor: "pointer" }}>Войти</button>
+          <button type="button" onClick={requireAuth} style={{ marginTop: 16, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Войти</button>
         </div>
       </Shell>
     );
@@ -187,7 +187,7 @@ export default function CenterPhotos({ slug, onBack, flash }: { slug: string; on
         </div>
       ) : (
         <>
-          <p style={{ margin: "0 4px 12px", fontFamily: FT, fontSize: 13, lineHeight: 1.5, color: L3 }}>Первая фотография — обложка центра. Перетаскивать нельзя, но можно поднять выше или назначить обложкой.</p>
+          <p style={{ margin: "0 4px 12px", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L3 }}>Первая фотография — обложка центра. Перетаскивать нельзя, но можно поднять выше или назначить обложкой.</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {photos.map((src, i) => (
               <div key={src + i} style={{ borderRadius: 16, overflow: "hidden", background: FILL }}>

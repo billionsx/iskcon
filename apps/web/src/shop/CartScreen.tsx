@@ -91,7 +91,7 @@ function Primary({ children, onClick, disabled, color = INK, busy }: { children:
   return (
     <button type="button" onClick={onClick} disabled={disabled || busy}
       style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 9, width: "100%", height: 54, borderRadius: 14, border: "none",
-        background: disabled ? "rgba(60,60,67,0.18)" : color, color: "#fff", fontFamily: "var(--font-text)", fontSize: 17, fontWeight: 600, letterSpacing: "-0.01em",
+        background: disabled ? "rgba(60,60,67,0.18)" : color, color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.01em",
         cursor: disabled || busy ? "default" : "pointer", opacity: busy ? 0.75 : 1, transition: "opacity .15s,background .15s", WebkitTapHighlightColor: "transparent" }}>
       {busy ? <Spinner /> : children}
     </button>
@@ -163,7 +163,7 @@ function CatalogView({ onAskDonation }: { onAskDonation: () => void }) {
   const donQty = qtyOf("donation");
   return (
     <div style={{ padding: "12px 16px calc(28px + env(safe-area-inset-bottom,0px))" }}>
-      <div style={{ fontFamily: "var(--font-display)", fontSize: 13, color: INK2, lineHeight: 1.5, margin: "2px 2px 18px" }}>
+      <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-footnote)", color: INK2, lineHeight: 1.5, margin: "2px 2px 18px" }}>
         Книги, атрибуты и цифровые материалы. Каждая покупка поддерживает миссию Шрилы Прабхупады.
       </div>
       {catalogNow().map((g) => (
@@ -219,8 +219,8 @@ function CartLineRow({ line, reduce, onEditDonation }: { line: CartLine; reduce:
           <div style={{ marginTop: 7, display: "flex", alignItems: "center", gap: 10 }}>
             {k === "physical" && <Stepper qty={line.qty} onDec={() => setQty(id, line.qty - 1)} onInc={() => setQty(id, line.qty + 1)} />}
             {k === "digital" && <span style={{ fontSize: 12.5, fontWeight: 600, color: INK2, background: FILL, borderRadius: 999, padding: "5px 11px" }}>Цифровой товар</span>}
-            {k === "donation" && <button type="button" onClick={onEditDonation} style={{ fontSize: 13, fontWeight: 600, color: BLUE, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}>Изменить сумму</button>}
-            <span style={{ marginLeft: "auto", fontSize: 15, fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(lineTotal(line))}</span>
+            {k === "donation" && <button type="button" onClick={onEditDonation} style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: BLUE, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}>Изменить сумму</button>}
+            <span style={{ marginLeft: "auto", fontSize: "var(--text-subhead)", fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(lineTotal(line))}</span>
           </div>
         </div>
       </div>
@@ -269,8 +269,8 @@ function DeliveryView({ contact, set }: { contact: Contact; set: (c: Contact) =>
             <button key={id} type="button" onClick={() => set({ ...contact, method: id })}
               style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6, padding: "13px 14px", borderRadius: 14, cursor: "pointer", textAlign: "left", border: on ? `1.6px solid ${BLUE}` : `1px solid ${LINE}`, background: CARD, WebkitTapHighlightColor: "transparent" }}>
               <span style={{ color: on ? BLUE : INK2 }}>{icon}</span>
-              <span style={{ fontFamily: "var(--font-display)", fontSize: 15, fontWeight: 600, color: INK }}>{label}</span>
-              <span style={{ fontSize: 12, color: INK3 }}>{hint}</span>
+              <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 600, color: INK }}>{label}</span>
+              <span style={{ fontSize: "var(--text-caption)", color: INK3 }}>{hint}</span>
             </button>
           );
         })}
@@ -309,7 +309,7 @@ function PayRow({ icon, title, sub, on, onClick, withTop }: { icon: ReactNode; t
   );
 }
 function SbpMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: 5, background: "linear-gradient(135deg,#f9a01b,#7b1fa2 55%,#1aa5b8)", color: "#fff", fontSize: 9, fontWeight: 800, letterSpacing: "-0.5px" }}>СБП</span>; }
-function UsdtMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: "50%", background: "#26a17b", color: "#fff", fontSize: 13, fontWeight: 800 }}>₮</span>; }
+function UsdtMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: "50%", background: "#26a17b", color: "#fff", fontSize: "var(--text-footnote)", fontWeight: 800 }}>₮</span>; }
 const brandGlyph = (b: string) => b === "visa" ? "VISA" : b === "mc" ? "MC" : b === "mir" ? "Мир" : b === "amex" ? "AMEX" : b === "unionpay" ? "UP" : "Карта";
 
 function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onAddCard, applePay, onExpress, copied, onCopy, showQr, setShowQr, qr }: {
@@ -320,7 +320,7 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
     <div style={{ padding: "14px 16px calc(28px + env(safe-area-inset-bottom,0px))" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: CARD, borderRadius: 14, padding: "14px 16px", marginBottom: 18 }}>
         <span style={{ fontSize: 14.5, color: INK2 }}>К оплате</span>
-        <span style={{ fontSize: 22, fontWeight: 800, color: INK, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>{fmtRub(total)}</span>
+        <span style={{ fontSize: "var(--text-title2)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>{fmtRub(total)}</span>
       </div>
 
       {applePay && (
@@ -329,7 +329,7 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
             <AppleLogo size={20} /> Pay
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 2px 14px", color: INK3 }}>
-            <span style={{ flex: 1, height: 0.5, background: LINE }} /><span style={{ fontSize: 12 }}>или способ оплаты</span><span style={{ flex: 1, height: 0.5, background: LINE }} />
+            <span style={{ flex: 1, height: 0.5, background: LINE }} /><span style={{ fontSize: "var(--text-caption)" }}>или способ оплаты</span><span style={{ flex: 1, height: 0.5, background: LINE }} />
           </div>
         </>
       )}
@@ -346,7 +346,7 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
                   <span style={{ flexShrink: 0, display: "grid", placeItems: "center", minWidth: 40, height: 24, padding: "0 6px", borderRadius: 5, background: "#1d1d1f", color: "#fff", fontSize: 10, fontWeight: 800, letterSpacing: "0.02em" }}>{brandGlyph(c.brand)}</span>
                   <button type="button" onClick={() => setSelCard(on ? null : c.id)} style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", cursor: "pointer", textAlign: "left", padding: 0 }}>
                     <span style={{ fontSize: 14.5, color: INK, fontVariantNumeric: "tabular-nums" }}>•••• {c.last4}</span>
-                    <span style={{ fontSize: 12, color: INK3 }}>{c.exp}</span>
+                    <span style={{ fontSize: "var(--text-caption)", color: INK3 }}>{c.exp}</span>
                     <span style={{ marginLeft: "auto" }}><RadioDot on={on} /></span>
                   </button>
                   <button type="button" aria-label="Удалить карту" onClick={() => { removeSavedCard(c.id); if (on) setSelCard(null); }} style={{ flexShrink: 0, border: "none", background: "transparent", color: INK3, cursor: "pointer", padding: 4, display: "grid", placeItems: "center" }}><Trash size={15} color={INK3} /></button>
@@ -373,18 +373,18 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
             <div style={{ padding: "14px 16px 13px" }}>
               <div style={{ fontSize: 11.5, color: INK3, marginBottom: 5 }}>Кошелёк</div>
               <code style={{ display: "block", fontSize: 13.5, lineHeight: 1.4, color: INK, wordBreak: "break-all", fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace" }}>{USDT_TRC20}</code>
-              <div style={{ marginTop: 6, fontSize: 13, fontWeight: 700, color: INK }}>Сумма: {fmtRub(total)} <span style={{ color: INK3, fontWeight: 400 }}>· отправьте эквивалент в USDT</span></div>
+              <div style={{ marginTop: 6, fontSize: "var(--text-footnote)", fontWeight: 700, color: INK }}>Сумма: {fmtRub(total)} <span style={{ color: INK3, fontWeight: 400 }}>· отправьте эквивалент в USDT</span></div>
             </div>
             <button onClick={onCopy} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", borderTop: `0.5px solid ${HAIR}`, background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 500, color: copied ? OK : INK, textAlign: "left" }}>
               <CopyIc color={copied ? OK : INK2} /><span style={{ flex: 1 }}>{copied ? "Адрес скопирован" : "Копировать адрес"}</span>{copied && <CheckMark size={16} color={OK} />}
             </button>
             <button onClick={() => setShowQr(!showQr)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", borderTop: `0.5px solid ${HAIR}`, background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 500, color: INK, textAlign: "left" }}>
-              <QrIc /><span style={{ flex: 1 }}>{showQr ? "Скрыть QR-код" : "Показать QR-код"}</span><span style={{ color: INK3, fontSize: 11 }}>{showQr ? "▲" : "▼"}</span>
+              <QrIc /><span style={{ flex: 1 }}>{showQr ? "Скрыть QR-код" : "Показать QR-код"}</span><span style={{ color: INK3, fontSize: "var(--text-caption2)" }}>{showQr ? "▲" : "▼"}</span>
             </button>
             {showQr && (
               <div style={{ borderTop: `0.5px solid ${HAIR}`, padding: 18, display: "grid", placeItems: "center" }}>
                 <div style={{ width: 196, height: 196, display: "grid", placeItems: "center", borderRadius: 14, background: "#fff", boxShadow: `0 0 0 0.5px ${HAIR}` }}>
-                  {qr ? <img src={qr} alt="QR USDT TRC20" width={172} height={172} style={{ display: "block" }} /> : <span style={{ fontSize: 13, color: INK3 }}>Генерация…</span>}
+                  {qr ? <img src={qr} alt="QR USDT TRC20" width={172} height={172} style={{ display: "block" }} /> : <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>Генерация…</span>}
                 </div>
               </div>
             )}
@@ -409,8 +409,8 @@ function CardSheet({ onClose, onSave }: { onClose: () => void; onSave: (c: { bra
       <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: GROUPED, borderRadius: "24px 24px 0 0", padding: "10px 16px calc(20px + env(safe-area-inset-bottom,0px))", maxHeight: "92dvh", overflowY: "auto", fontFamily: "var(--font-text)" }}>
         <div style={{ width: 38, height: 5, borderRadius: 3, background: "rgba(60,60,67,0.3)", margin: "0 auto 14px" }} />
         <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
-          <h2 style={{ flex: 1, margin: 0, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Новая карта</h2>
-          <span style={{ display: "inline-grid", placeItems: "center", minWidth: 46, height: 26, padding: "0 8px", borderRadius: 6, background: "#1d1d1f", color: "#fff", fontSize: 11, fontWeight: 800 }}>{brand.label}</span>
+          <h2 style={{ flex: 1, margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Новая карта</h2>
+          <span style={{ display: "inline-grid", placeItems: "center", minWidth: 46, height: 26, padding: "0 8px", borderRadius: 6, background: "#1d1d1f", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 800 }}>{brand.label}</span>
         </div>
         <GroupCard>
           <Field first mono label="Номер" value={num} onChange={(v) => setNum(groupCard(v))} placeholder="0000 0000 0000 0000" inputMode="numeric" autoComplete="cc-number" maxLength={24} invalid={digits.length >= 13 && !numOk} />
@@ -436,7 +436,7 @@ function AmountSheet({ initial, onClose, onApply }: { initial: number; onClose: 
     <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 1600, display: "flex", alignItems: "flex-end", justifyContent: "center", background: "rgba(0,0,0,0.42)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 480, background: GROUPED, borderRadius: "24px 24px 0 0", padding: "10px 16px calc(20px + env(safe-area-inset-bottom,0px))", fontFamily: "var(--font-text)" }}>
         <div style={{ width: 38, height: 5, borderRadius: 3, background: "rgba(60,60,67,0.3)", margin: "0 auto 14px" }} />
-        <h2 style={{ margin: "0 0 16px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Сумма пожертвования</h2>
+        <h2 style={{ margin: "0 0 16px", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Сумма пожертвования</h2>
         <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
           {DONATION_PRESETS.map((p) => {
             const on = n === p;
@@ -446,8 +446,8 @@ function AmountSheet({ initial, onClose, onApply }: { initial: number; onClose: 
         <GroupCard>
           <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px" }}>
             <input value={val} onChange={(e) => setVal(e.target.value.replace(/\D/g, "").slice(0, 7))} placeholder="Другая сумма" inputMode="numeric"
-              style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: 22, fontWeight: 700, color: INK, letterSpacing: "-0.02em" }} />
-            <span style={{ fontSize: 22, fontWeight: 700, color: INK3 }}>₽</span>
+              style={{ flex: 1, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-title2)", fontWeight: 700, color: INK, letterSpacing: "-0.02em" }} />
+            <span style={{ fontSize: "var(--text-title2)", fontWeight: 700, color: INK3 }}>₽</span>
           </div>
         </GroupCard>
         <div style={{ marginTop: 18 }}>
@@ -484,7 +484,7 @@ function EmptyCart({ onShop }: { onShop: () => void }) {
       <span style={{ display: "grid", placeItems: "center", width: 76, height: 76, borderRadius: "50%", background: FILL, color: INK3 }}><Bag size={34} /></span>
       <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: 21, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Корзина пуста</h2>
       <p style={{ margin: "8px 0 20px", fontSize: 14.5, lineHeight: 1.5, color: INK2, maxWidth: 280 }}>Загляните в магазин: книги, атрибуты для практики и цифровые материалы.</p>
-      <button type="button" onClick={onShop} style={{ height: 46, padding: "0 22px", borderRadius: 13, border: "none", background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: 16, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Перейти в магазин</button>
+      <button type="button" onClick={onShop} style={{ height: 46, padding: "0 22px", borderRadius: 13, border: "none", background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Перейти в магазин</button>
     </div>
   );
 }
@@ -560,10 +560,10 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
           <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
             <Emblem size={34} color={GOLD} />
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>ISKCON ONE LOVE</div>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700 }}>Заказ {o.orderNo}</div>
+              <div style={{ fontSize: "var(--text-caption2)", letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>ISKCON ONE LOVE</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 700 }}>Заказ {o.orderNo}</div>
             </div>
-            <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999, ...(paid ? { background: "rgba(52,199,89,0.25)", color: "#5ee07f" } : { background: "rgba(210,170,27,0.25)", color: "#f2cf4f" }) }}>{paid ? "Оплата получена" : "Ожидает оплаты"}</span>
+            <span style={{ marginLeft: "auto", fontSize: "var(--text-caption2)", fontWeight: 700, padding: "4px 10px", borderRadius: 999, ...(paid ? { background: "rgba(52,199,89,0.25)", color: "#5ee07f" } : { background: "rgba(210,170,27,0.25)", color: "#f2cf4f" }) }}>{paid ? "Оплата получена" : "Ожидает оплаты"}</span>
           </div>
           <div style={{ display: "flex", gap: 26, marginTop: 18 }}>
             <div><div style={{ fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Сумма</div><div style={{ fontSize: 21, fontWeight: 800, letterSpacing: "-0.02em" }}>{fmtRub(o.total)}</div></div>
@@ -584,8 +584,8 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
           ))}
           <div style={{ height: 0.5, background: HAIR, margin: "10px 0" }} />
           <KvLine k="Получение" v={""} />
-          <div style={{ marginTop: -8, fontSize: 13, color: INK2, lineHeight: 1.4 }}>{where}</div>
-          <div style={{ marginTop: 8, fontSize: 13, color: INK2 }}>Оплата: <span style={{ color: INK, fontWeight: 600 }}>{o.methodLabel}</span></div>
+          <div style={{ marginTop: -8, fontSize: "var(--text-footnote)", color: INK2, lineHeight: 1.4 }}>{where}</div>
+          <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", color: INK2 }}>Оплата: <span style={{ color: INK, fontWeight: 600 }}>{o.methodLabel}</span></div>
           <div style={{ marginTop: 18, paddingTop: 14, borderTop: `0.5px solid ${HAIR}` }}>
             <Barcode seed={o.orderNo} />
             <div style={{ textAlign: "center", marginTop: 8, fontSize: 11.5, letterSpacing: "0.18em", color: INK3, fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace" }}>{o.orderNo}</div>
@@ -725,7 +725,7 @@ export default function CartScreen({ onClose }: { onClose: () => void }) {
         <div style={{ flex: 1, display: "flex", justifyContent: "center", padding: "0 4px" }}>
           {view === "cart"
             ? <div style={{ width: "100%", maxWidth: 250 }}><Segmented value={tab} onChange={(v) => setTab(v)} options={[{ id: "shop", label: "Магазин" }, { id: "cart", label: count ? `Корзина · ${count}` : "Корзина" }]} /></div>
-            : <span style={{ fontFamily: "var(--font-display)", fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>{title}</span>}
+            : <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>{title}</span>}
         </div>
         {view === "cart" && tab === "cart" && count > 0
           ? <button type="button" onClick={() => clearCart()} style={{ flexShrink: 0, height: 38, padding: "0 10px", border: "none", background: "none", color: INK2, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Очистить</button>
@@ -738,7 +738,7 @@ export default function CartScreen({ onClose }: { onClose: () => void }) {
           {steps.map((s, i) => (
             <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ display: "grid", placeItems: "center", width: 20, height: 20, borderRadius: "50%", fontSize: 11, fontWeight: 700, background: i <= stepIdx ? INK : FILL, color: i <= stepIdx ? "#fff" : INK3 }}>{i < stepIdx ? "✓" : i + 1}</span>
+                <span style={{ display: "grid", placeItems: "center", width: 20, height: 20, borderRadius: "50%", fontSize: "var(--text-caption2)", fontWeight: 700, background: i <= stepIdx ? INK : FILL, color: i <= stepIdx ? "#fff" : INK3 }}>{i < stepIdx ? "✓" : i + 1}</span>
                 <span style={{ fontSize: 12.5, fontWeight: i === stepIdx ? 700 : 500, color: i === stepIdx ? INK : INK3 }}>{s}</span>
               </span>
               {i < steps.length - 1 && <span style={{ width: 18, height: 0.5, background: i < stepIdx ? INK : LINE }} />}

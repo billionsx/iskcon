@@ -83,7 +83,7 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
     }
   }
 
-  const field: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: FILL, border: `0.5px solid ${LINE}`, borderRadius: 13, color: INK, fontSize: 15, fontFamily: "var(--font-text)", outline: "none" };
+  const field: React.CSSProperties = { width: "100%", boxSizing: "border-box", background: FILL, border: `0.5px solid ${LINE}`, borderRadius: 13, color: INK, fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", outline: "none" };
 
   return (
     <div onClick={() => { if (state !== "sending") onClose(); }}
@@ -104,7 +104,7 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 18, fontWeight: 700, color: INK, letterSpacing: "-0.01em" }}>Сообщить об ошибке</div>
-                <div style={{ fontSize: 13, color: INK2, marginTop: 3, lineHeight: 1.35 }}>Опишите, что пошло не так — мы читаем каждое сообщение.</div>
+                <div style={{ fontSize: "var(--text-footnote)", color: INK2, marginTop: 3, lineHeight: 1.35 }}>Опишите, что пошло не так — мы читаем каждое сообщение.</div>
               </div>
               <button type="button" aria-label="Закрыть" onClick={onClose} style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 30, height: 30, borderRadius: "50%", border: "none", background: FILL, color: INK2, cursor: "pointer" }}>
                 <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" /></svg>
@@ -140,9 +140,9 @@ export function ReportSheet({ open, onClose, context }: { open: boolean; onClose
             </div>
 
             {state === "error" && (
-              <div style={{ marginTop: 12, fontSize: 13, color: "#c0392b", background: "rgba(192,57,43,0.08)", border: "0.5px solid rgba(192,57,43,0.25)", borderRadius: 12, padding: "10px 12px" }}>
+              <div style={{ marginTop: 12, fontSize: "var(--text-footnote)", color: "#c0392b", background: "rgba(192,57,43,0.08)", border: "0.5px solid rgba(192,57,43,0.25)", borderRadius: 12, padding: "10px 12px" }}>
                 Не удалось отправить. Попробуйте ещё раз.
-                {dbg && <div style={{ marginTop: 6, fontSize: 11, opacity: 0.8, wordBreak: "break-all", fontFamily: "ui-monospace, monospace" }}>debug: {dbg}</div>}
+                {dbg && <div style={{ marginTop: 6, fontSize: "var(--text-caption2)", opacity: 0.8, wordBreak: "break-all", fontFamily: "ui-monospace, monospace" }}>debug: {dbg}</div>}
               </div>
             )}
 
