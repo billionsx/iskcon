@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
+import { ROUTES, url } from "./routes";
 
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -45,7 +46,7 @@ function docCtx(d: IskconDoc) {
   return {
     type: "doc" as const, id: d.id, title: d.title,
     subtitle: `${DOC_TYPE_LABEL[d.type]} · ${d.year}`,
-    url: `https://gaurangers.com/doc/${encodeURIComponent(d.id)}`,
+    url: url("/doc/" + d.id),
     context: `Документ · ${d.title} (${d.year}) · /doc/${d.id}`,
   };
 }

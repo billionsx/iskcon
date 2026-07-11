@@ -18,6 +18,7 @@ import { usePlayer } from "./player/store";
 import { MediaViewer, type ViewerMedia } from "./MediaViewer";
 import { NotesAtSource } from "./NotesAtSource";
 import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
+import { ROUTES, url } from "./routes";
 
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; }
 const sp = ({ size = 24 }: IconProps) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
@@ -405,7 +406,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
     if (!data) return;
     openCardMenu({
       type: "bhajan", id: slug, title: data.name, subtitle: data.author || undefined,
-      url: `https://gaurangers.com/bhajan/${encodeURIComponent(slug)}`,
+      url: url(ROUTES.bhajan(slug)),
       context: `Бхаджан · ${data.name} · /bhajan/${slug}`,
     });
   };

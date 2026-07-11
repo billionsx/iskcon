@@ -14,6 +14,7 @@ import { api } from "./api";
 import { usePlayer, fmtTime } from "./player/store";
 import { ArtistMono } from "./KirtansScreen";
 import { artistBySlug, albumsByArtist, albumCover, TYPE_LABEL, MOOD_LABEL, type KirtanAlbum } from "./kirtans";
+import { ROUTES, url } from "./routes";
 
 const GOLD = "var(--color-gold)";
 
@@ -28,7 +29,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
   const { openCardMenu } = useCardActions();
   const albumCtx = {
     type: "kirtan-album" as const, id: album.id, title: album.title, subtitle: artistName,
-    url: `https://gaurangers.com/kirtan/${encodeURIComponent(artistSlug)}`,
+    url: url(ROUTES.kirtanArtist(artistSlug)),
     context: `Киртан-альбом · ${artistName} — ${album.title} · /kirtan/${artistSlug}`,
   };
   const player = usePlayer();
@@ -84,7 +85,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
                 const active = player.kind === "kirtan" && player.book === album.id && player.index === i;
                 const trackCtx = {
                   type: "kirtan-track" as const, id: album.id, title: t.title, subtitle: `${artistName} — ${album.title}`,
-                  url: `https://gaurangers.com/kirtan/${encodeURIComponent(artistSlug)}`,
+                  url: url(ROUTES.kirtanArtist(artistSlug)),
                   context: `Киртан-дорожка · ${artistName} — ${album.title} · ${t.title}`,
                   pdfExtra: { album: album.id, track: t.title },
                 };

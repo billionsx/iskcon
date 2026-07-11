@@ -21,6 +21,7 @@ import { renderTerms } from "./ui/Skt";
 import { cleanCardText } from "./cardText";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { ROUTES, url } from "./routes";
 
 const GOLD = "var(--color-gold)";
 
@@ -1338,7 +1339,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
             meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/${encodeURIComponent(id)}` }}
             onMore={() => openCardMenu({
             type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
-            url: `https://gaurangers.com/${encodeURIComponent(id)}`,
+            url: url(ROUTES.entity(id)),
             context: `Герой · ${data.name_ru || id} · /entity/${id}`,
           })} />
         )}
@@ -1368,7 +1369,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               chips={heroChips}
               onMore={() => openCardMenu({
                 type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
-                url: `https://gaurangers.com/${encodeURIComponent(id)}`,
+                url: url(ROUTES.entity(id)),
                 context: `Герой · ${data.name_ru || id} · /entity/${id}`,
               })}
             />
@@ -1425,13 +1426,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               <>
             {(rasa || (data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance")) && (
               <div style={{ marginBottom: tabs.length > 1 ? 6 : 0 }}>
-                {rasa && (
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Раса</span>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{rasa.label}</span>
-                    <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>· {rasa.gloss}</span>
-                  </div>
-                )}
+                {/* ЗКН-К004: раса УЖЕ в надписи карточки («КРИШНА ЛИЛА · МАДХУРЬЯ»).
+                    Дублировать её подписью под карточкой запрещено (ЗКН-К013). */}
                 {(data.links ?? []).some((l) => l.kind === "appearance" || l.kind === "disappearance") && (
                   <div style={{ marginTop: rasa ? 14 : 0 }}>
                     <Eyebrow>Тайминг</Eyebrow>

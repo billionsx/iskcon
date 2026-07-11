@@ -42,6 +42,7 @@ import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
 import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
+import { ROUTES, url } from "./routes";
 
 /* ═════════ ICONS — иконки приложения ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -317,7 +318,7 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
           {b.author && <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{b.author}</span>}
         </span>
         <BhajanRowActions slug={b.slug} name={b.name} author={b.author} hasRecordings={b.has_recordings}
-          onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: `https://gaurangers.com/bhajan/${encodeURIComponent(b.slug)}`, context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })} />
+          onMore={() => openCardMenu({ type: "bhajan", id: b.slug, title: b.name, subtitle: b.author || undefined, url: url(ROUTES.bhajan(b.slug)), context: `Бхаджан · ${b.name} · /bhajan/${b.slug}` })} />
       </div>
     </li>
   );
@@ -638,7 +639,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   const bookMenu = (work: string, id: string) => {
     const b = BOOKS[work];
     if (!b) return;
-    const url = `https://gaurangers.com/book/${work}`;
+    const url = url(ROUTES.book(work));
     if (id === "share") {
       if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title: bookFullTitle(b), url }).catch(() => {});
       else if (typeof navigator !== "undefined") navigator.clipboard?.writeText(url).catch(() => {});

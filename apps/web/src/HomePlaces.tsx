@@ -21,6 +21,7 @@ import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
 import { type PlaceItem } from "./placesShared";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
+import { ROUTES, url } from "./routes";
 
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -111,7 +112,7 @@ function placeCtx(p: PlaceItem) {
     id: p.id,
     title: p.nameRu || p.name,
     subtitle: where || undefined,
-    url: `https://gaurangers.com/place/${encodeURIComponent(p.id)}`,
+    url: url("/place/" + p.id),
     context: `${p.kind === "restaurant" ? "Ресторан" : "Центр"} · ${p.nameRu || p.name}${p.addressRu || p.address ? ` · ${p.addressRu || p.address}` : ""} · /place/${p.id}`,
   };
 }

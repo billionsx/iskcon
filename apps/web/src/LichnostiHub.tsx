@@ -5,6 +5,7 @@ import { cleanCardText } from "./cardText";
 import { replaceUrl } from "./nav";
 import { ScopeTitle, FilterChips, Disclosure, useDisclosure, type NavItem } from "./ui/nav4";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { ROUTES, url } from "./routes";
 
 type Person = {
   slug: string; name: string; hero_image: string | null; n_quotes: number;
@@ -68,7 +69,7 @@ function readUrl(): { lila: string; sub: string; grp: string } {
 function entityCtx(p: Person) {
   return {
     type: "entity" as const, id: p.slug, title: p.name, subtitle: p.note || undefined,
-    url: `https://gaurangers.com/${encodeURIComponent(p.slug)}`,
+    url: url(ROUTES.entity(p.slug)),
     context: `Герой · ${p.name} · /entity/${p.slug}`,
   };
 }

@@ -32,6 +32,7 @@ import { downloadCcBookPdf, downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { SectionSubTabs } from "./SectionSubTabs";
+import { ROUTES, url } from "./routes";
 
 /* ───────── palette (fixed: white · graphite · gold) ───────── */
 const PAPER = "#ffffff";
@@ -1661,7 +1662,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
 
   const shareChapter = async () => {
     const label = `Глава ${chapter.number} · ${chapter.title_ru}`;
-    const url = `https://gaurangers.com/book/${work}`;
+    const url = url(ROUTES.book(work));
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
         await (navigator as Navigator).share({ title: `${label} · ${bookTitle}`, text: `${label} — ${bookTitle}`, url });
@@ -1757,7 +1758,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
           return;
         }
         if (id === "qr") {
-          onQr(`https://gaurangers.com/book/${work}${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`, {
+          onQr(url(ROUTES.book(work)) + `${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`, {
             kind: "chapter",
             bookTitle,
             chapterNumber: chapter.number,
@@ -2225,7 +2226,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const next = chapters && idx >= 0 && idx < chapters.length - 1 ? chapters[idx + 1] : null;
 
   const shareChapter = async () => {
-    const url = `https://gaurangers.com/book/${work}`;
+    const url = url(ROUTES.book(work));
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
         await (navigator as Navigator).share({ title: `${chapter.title_ru} · ${bookTitle}`, text: `${chapter.title_ru} — ${bookTitle}`, url });
@@ -2292,8 +2293,8 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
         if (id === "share") { void shareChapter(); return; }
         if (id === "pdf") { if (paras && paras.length) setPrinting(true); else flash("Глава ещё загружается…"); return; }
         if (id === "qr") {
-          if (numbered) onQr(`https://gaurangers.com${prHref}`, { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
-          else { const bk = BOOKS[work]; onQr(`https://gaurangers.com/book/${work}`, { kind: "book", bookTitle, tagline: bk?.tagline, cover: bk?.covers?.[0] }); }
+          if (numbered) onQr(url(window.location.pathname), { kind: "chapter", bookTitle, chapterNumber: chapter.number, chapterTitle: chapter.title_ru });
+          else { const bk = BOOKS[work]; onQr(url(ROUTES.book(work)), { kind: "book", bookTitle, tagline: bk?.tagline, cover: bk?.covers?.[0] }); }
           return;
         }
         onMenuAction(id);
@@ -2371,9 +2372,9 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
   const verseSeg = (data?.ref ?? refStr).split(".").pop() ?? "";            // "40" | "13" | "16-17"
   const verseUrl = work !== "bg"
     ? (divParts.length >= 3
-        ? `https://gaurangers.com/book/${work}/${divParts[1]}/${divParts[2]}${verseSeg ? `/${verseSeg}` : ""}`
-        : `https://gaurangers.com/book/${work}`)
-    : `https://gaurangers.com/book/${work}/${chapterNo}${verseSeg ? `/${verseSeg}` : ""}`;
+        ? url(ROUTES.book(work, divParts[1], divParts[2])) + (verseSeg ? `/${verseSeg}` : "")
+        : url(ROUTES.book(work)))
+    : url(ROUTES.book(work, String(chapterNo))) + (verseSeg ? `/${verseSeg}` : "");
   const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"] | ["sb","1","9"]
   const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
   const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
@@ -2943,7 +2944,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const cancelPdf = () => { pdfCancel.current = true; pdfAbort.current?.abort(); setBookPct(0); setPdfHidden(false); };
 
   const shareBook = async () => {
-    const url = typeof window !== "undefined" ? window.location.href : `https://gaurangers.com/book/${book.slug}`;
+    const url = typeof window !== "undefined" ? window.location.href : url(window.location.pathname);
     const payload = { title: bookShareTitle(book), text: book.description, url };
     try {
       if (typeof navigator !== "undefined" && (navigator as Navigator).share) {
@@ -2974,7 +2975,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     if (id === "share") { void shareBook(); return; }
     if (id === "pdf") { void downloadBookPdf({ work: book.work, book, onStatus: flash, onProgress: setBookPct, onTitle: setBookPctTitle, cancelRef: pdfCancel, abortRef: pdfAbort }); return; }
     if (id === "qr") {
-      openQr(`https://gaurangers.com/book/${book.work}`, {
+      openQr(url(ROUTES.book(book.work)), {
         kind: "book",
         bookTitle: bookFullTitle(book),
         tagline: book.tagline,
