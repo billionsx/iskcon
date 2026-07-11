@@ -97,11 +97,21 @@ def main():
     print("мест без координат со ссылкой на источник: %d" % len(rows))
 
     found = miss = 0
+    fail_streak = 0
     for i, r in enumerate(rows):
         try:
-            html = get(r["vp_link"])
-        except Exception:
+            html = get(r["vp_link"], timeout=12)
+            fail_streak = 0
+        except Exception as e:
             miss += 1
+            fail_streak += 1
+            # ЗКН-Ц003: падать БЫСТРО, если источник молчит. Иначе скрипт часами
+            # висит на таймаутах и создаёт видимость работы. 15 отказов подряд =
+            # источник недоступен из CI (так было с centres.iskcon.org).
+            if fail_streak >= 15:
+                raise SystemExit("::error title=SOURCE-DOWN::15 отказов подряд — "
+                                 "источник не отвечает из CI (%s). Последняя ошибка: %s"
+                                 % (r["vp_link"].split("/")[2], str(e)[:60]))
             continue
         lat, lng = coords_from(html)
         if lat is None:
