@@ -20,6 +20,7 @@ import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
 import { type PlaceItem } from "./placesShared";
+import { FilterChips as NavFilterChips } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -363,6 +364,20 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
       </div>
 
+      {/* ЗКН-Н006: Tier-2 континенты */}
+      {/* Tier-2: континенты */}
+      <NavFilterChips sticky ariaLabel="Континенты"
+        items={[{ id: "all", label: "Все" }, ...continents.map((c) => ({ id: c, label: c }))]}
+        active={cont} onChange={setCont} />
+
+      {/* ЗКН-Н006: Tier-3 страны — общий FilterChips (контур) */}
+      {cont !== "all" && countries.length > 1 && (
+        <NavFilterChips ariaLabel="Страны"
+          items={[{ id: "all", label: "Все" }, ...countries.map((c) => ({ id: c.id, label: c.ru, count: c.n }))]}
+          active={ctry} onChange={setCtry} />
+      )}
+
+      {/* ЗКН-Н006: поиск идёт ПОД навигацией, а не между её уровнями */}
       {/* поиск — липкий к верху (как в календаре), над фильтрами */}
       <div ref={(el) => { sRef.current = el; if (el) setSH(el.offsetHeight); }}
         style={{ position: "sticky", top: stickyTop, zIndex: 18, marginTop: 14, paddingBottom: 10, background: "var(--color-bg)" }}>
@@ -384,19 +399,6 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
           )}
         </div>
       </div>
-
-      {/* Tier-2: континенты */}
-      <SectionSubTabs variant="chips" ariaLabel="Континенты" tone="light" top={stickyTop + sH} bleed={16}
-        navRef={(el) => { t2Ref.current = el; if (el) setT2H(el.offsetHeight); }}
-        items={[{ id: "all", label: "Все" }, ...continents.map((c) => ({ id: c, label: c }))]}
-        active={cont} onChange={setCont} />
-
-      {/* Tier-3: страны выбранного континента */}
-      {cont !== "all" && countries.length > 1 && (
-        <SectionSubTabs variant="chips" ariaLabel="Страны" tone="light" top={stickyTop + sH + t2H} bleed={16}
-          items={[{ id: "all", label: "Все страны" }, ...countries.map((c) => ({ id: c.id, label: c.ru }))]}
-          active={ctry} onChange={setCtry} />
-      )}
 
       {/* результаты */}
       <div style={{ marginTop: 14 }} aria-live="polite">

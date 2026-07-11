@@ -16,6 +16,7 @@ import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
 import { CalendarEventCard, type EventBrief } from "./CalendarEventCard";
+import { FilterChips as NavFilterChips } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "3";
@@ -327,8 +328,8 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       )}
 
       <div style={{ height: 10 }} />
-      <SectionSubTabs variant="chips" ariaLabel="Фильтр календаря" tone="light" top={stickyTop} bleed={16}
-        items={[{ id: "all", label: "Все" }, { id: "ekadasi", label: "Экадаши" }, { id: "festival", label: "Праздники" }, { id: "vaisnava", label: "Вайшнавы" }]}
+      <NavFilterChips sticky ariaLabel="Фильтр календаря"
+        items={[{ id: "all", label: "Все" }, { id: "ekadasi", label: "Экадаши" }, { id: "festival", label: "Праздники" }]}
         active={filt} onChange={(id) => setFilt(id as typeof filt)} />
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск: праздник, экадаши или имя" inputMode="search" aria-label="Поиск по календарю"
