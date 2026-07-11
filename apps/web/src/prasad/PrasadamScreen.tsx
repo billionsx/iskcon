@@ -22,6 +22,7 @@ import {
   type Category, type DietTag, type Recipe,
 } from "./prasad";
 import { useRecipes } from "./recipesHydrate";
+import { FilterChips as NavFilterChips, type NavItem } from "../ui/nav4";
 
 const GOLD = "var(--color-gold)";
 
@@ -120,17 +121,6 @@ function SubTabs({ items, active, onChange }: { items: { id: SectionId; label: s
 }
 
 /* ═══════════════════ общие примитивы ═══════════════════ */
-function FilterChip({ on, onClick, children, title }: { on: boolean; onClick: () => void; children: ReactNode; title?: string }) {
-  return (
-    <button type="button" onClick={onClick} title={title}
-      style={{ flexShrink: 0, padding: "7px 13px", borderRadius: 999, cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, whiteSpace: "nowrap", transition: "background .15s, color .15s, border-color .15s", WebkitTapHighlightColor: "transparent",
-        border: on ? `1px solid color-mix(in srgb, ${GOLD} 45%, transparent)` : "1px solid transparent",
-        background: on ? `color-mix(in srgb, ${GOLD} 15%, transparent)` : "var(--color-glass-thin)",
-        color: on ? GOLD : "var(--color-label-2)" }}>
-      {children}
-    </button>
-  );
-}
 
 function Eyebrow({ children }: { children: ReactNode }) {
   return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>{children}</div>;
@@ -160,6 +150,8 @@ const FEATURED = ["sweet-rice", "gulab-jamun", "paneer-butter-masala", "khichri"
 
 function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (slug: string) => void; onOpenBook: () => void; flash?: (m: string) => void }) {
   const [category, setCategory] = useState<Category | null>(null);
+  const CAT_NAV: NavItem[] = [{ id: "all", label: "Все" }, ...CATEGORIES.map((c) => ({ id: c, label: c }))];
+  const DIET_NAV: NavItem[] = [{ id: "any", label: "Любая" }, ...DIETS.map((d) => ({ id: d.id, label: d.label ?? d.id }))];
   const [diet, setDiet] = useState<DietTag | null>(null);
   const rv = useRecipes();   // реактивная гидрация рецептов из БД (сид → БД)
   const results = useMemo(() => filterRecipes(category, diet), [category, diet, rv]);
@@ -186,20 +178,14 @@ function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (sl
       </div>
 
       <div style={{ marginTop: 14 }}><Eyebrow>Категории</Eyebrow></div>
-      <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "10px 0 2px", marginInline: -16, paddingInline: 16, scrollbarWidth: "none" }}>
-        <FilterChip on={category === null} onClick={() => setCategory(null)}>Все</FilterChip>
-        {CATEGORIES.map((c) => (
-          <FilterChip key={c.id} on={category === c.id} onClick={() => setCategory(category === c.id ? null : c.id)}>{c.label}</FilterChip>
-        ))}
-      </div>
+      {/* ЗКН-Н006: Tier-3 — общий FilterChips (контур), а не своя копия */}
+      <NavFilterChips items={CAT_NAV} active={category ?? "all"}
+        onChange={(v) => setCategory(v === "all" ? null : (v as Category))} ariaLabel="Категория" />
 
       <div style={{ marginTop: 14 }}><Eyebrow>Диета</Eyebrow></div>
-      <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "10px 0 2px", marginInline: -16, paddingInline: 16, scrollbarWidth: "none" }}>
-        <FilterChip on={diet === null} onClick={() => setDiet(null)}>Любая</FilterChip>
-        {DIETS.map((d) => (
-          <FilterChip key={d.id} on={diet === d.id} onClick={() => setDiet(diet === d.id ? null : d.id)} title={d.hint}>{d.label}</FilterChip>
-        ))}
-      </div>
+      {/* ЗКН-Н006: Tier-4 — общий FilterChips (контур) */}
+      <NavFilterChips items={DIET_NAV} active={diet ?? "any"}
+        onChange={(v) => setDiet(v === "any" ? null : v)} ariaLabel="Диета" />
 
       <div style={{ margin: "20px 0 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)" }}>
         {results.length === 0 ? "Ничего не найдено — смягчите фильтры." : `Найдено: ${results.length}`}

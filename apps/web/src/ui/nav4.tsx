@@ -99,7 +99,7 @@ export function ScopeTitle({ items, active, onChange, ariaLabel = "Област�
   }, [active]);
   return (
     <nav ref={cRef} aria-label={ariaLabel}
-      style={{ display: "flex", alignItems: "baseline", gap: 14, padding: "13px 0 0",
+      style={{ display: "flex", alignItems: "baseline", gap: 14, padding: "6px 0 0",
         overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
       {items.map((t) => {
         const on = t.id === active;
@@ -132,7 +132,7 @@ export function FilterChips({ items, active, onChange, ariaLabel = "Фильтр
   }, [active]);
   return (
     <nav ref={cRef} aria-label={ariaLabel}
-      style={{ display: "flex", gap: 7, padding: "11px 0 12px", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+      style={{ display: "flex", gap: 7, padding: "12px 0 0", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
       {items.map((t) => {
         const on = t.id === active;
         return (
