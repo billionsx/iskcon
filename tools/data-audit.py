@@ -78,10 +78,27 @@ CHECKS = [
 ]
 
 
+ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
+
+
+def ids_from_wrangler():
+    """account_id и database_id — НЕ секреты, они лежат в wrangler.toml.
+    Секрет только токен. Так аудит не зависит от того, заведены ли лишние секреты."""
+    import re
+    cfg = (ROOT / "apps" / "web" / "wrangler.toml")
+    if not cfg.exists():
+        return None, None
+    t = cfg.read_text(encoding="utf-8")
+    a = re.search(r'account_id\s*=\s*"([^"]+)"', t)
+    d = re.search(r'database_id\s*=\s*"([^"]+)"', t)
+    return (a.group(1) if a else None), (d.group(1) if d else None)
+
+
 def d1(sql: str):
-    acc = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
+    wa, wd = ids_from_wrangler()
+    acc = os.environ.get("CLOUDFLARE_ACCOUNT_ID") or wa
     tok = os.environ.get("CLOUDFLARE_API_TOKEN")
-    dbid = os.environ.get("D1_DATABASE_ID")
+    dbid = os.environ.get("D1_DATABASE_ID") or wd
     if not (acc and tok and dbid):
         return None
     url = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
@@ -110,7 +127,10 @@ def main():
         try:
             n = d1(c["sql"])
         except Exception as e:
-            print("  ? %-11s %-42s ошибка: %s" % (c["law"], c["name"][:42], e))
+            print("  ? %-11s %-42s ошибка: %s" % (c["law"], c["name"][:42], str(e)[:30]))
+            continue
+        if n is None:
+            print("  ? %-11s %-42s нет доступа к D1" % (c["law"], c["name"][:42]))
             continue
         mark = "✓" if n == 0 else "✗"
         print("  %s %-11s %-42s %d" % (mark, c["law"], c["name"][:42], n))
