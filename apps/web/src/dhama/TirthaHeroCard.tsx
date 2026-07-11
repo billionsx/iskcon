@@ -9,6 +9,7 @@ import { BookMenuSheet } from "../BookMenuSheet";
 import { HeartIcon, MoreIcon } from "../ui/icons";
 import { useFavorite } from "../cardActions";
 import { KIND_RU, mapsQuery, type Tirtha } from "./dhamas";
+import { CoverFallback } from "../ui/CoverFallback";
 
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 const PinIcon = ({ size = 18 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><g {...STROKE}><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></svg>;
@@ -47,7 +48,9 @@ export function TirthaHeroCard({ dhamaId, tirtha, accent, dhamaName, clusterTitl
           boxShadow: "var(--shadow-card, 0 8px 30px rgba(0,0,0,.12))",
           display: "flex", flexDirection: "column", justifyContent: "flex-end",
         }}>
-        {t.hero_image && (
+        {/* ЗКН-Д005: нет фото → тёмная фирменная заглушка (текст лежит поверх обложки) */}
+      {!t.hero_image && <CoverFallback dark />}
+      {t.hero_image && (
           <img src={t.hero_image} alt="" aria-hidden loading="lazy"
             onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />

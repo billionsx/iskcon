@@ -216,6 +216,11 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-search>input::placeholder{color:var(--color-label-3);}
 .lh-clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:none;border-radius:50%;background:var(--color-bg-3);color:var(--color-label-2);cursor:pointer;display:grid;place-items:center;font-size:14px;line-height:1;}
 .lh-grp{margin-bottom:10px;}
+/* ЗКН-Н006: вес уровней убывает. Tier-2 — чёрные капсулы, Tier-3 — серые,
+   Tier-4 — самые лёгкие (мельче кегль, тише цвет), иначе уровни сливаются. */
+.lh-t4 .lh-pill{padding:5px 11px;font-size:12px;}
+.lh-t4 .lh-pill:not(.on){color:var(--color-label-3);opacity:.85;}
+.lh-search{margin-top:12px;padding-top:12px;border-top:0.5px solid var(--color-hairline);}
 .lh-pills{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .lh-pills::-webkit-scrollbar{display:none;}
 .lh-pill{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:999px;cursor:pointer;font-family:var(--font-text);font-size:14px;font-weight:600;letter-spacing:-0.2px;white-space:nowrap;background:var(--color-bg-2);color:var(--color-label-2);border:0.5px solid var(--color-hairline);transition:background .18s,color .18s,transform .09s;}
@@ -243,19 +248,20 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
 .lh-chev{flex-shrink:0;color:var(--color-label-3);font-size:18px;margin-left:2px;}
       `}</style>
 
+      {/* ЗКН-Н006: иерархия по убыванию веса — Tier-1 золотая рейка (HallTabs, выше),
+          Tier-2 лила (чёрные капсулы) → Tier-3 волна (серые) → Tier-4 группа (лёгкие).
+          Поиск идёт ПОД навигацией, а не между её уровнями. */}
       <div className="lh-bar">
+        <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS} count={lilaCount} /></div>
+        {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
+        {subsubItems ? <div className="lh-grp lh-t4"><Pills value={grpSel} onChange={setGrpSel} items={subsubItems} count={grpCount} sec /></div> : null}
+
         <div className="lh-search">
-          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M20 20l-3.4-3.4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по имени или описанию" />
           {q ? <button type="button" className="lh-clr" aria-label="Очистить" onClick={() => setQ("")}>✕</button> : null}
         </div>
-
-        <div className="lh-grp"><Pills value={lila} onChange={pickLila} items={lilaVisible.length ? lilaVisible : LILAS.slice(0, 1)} count={lilaCount} /></div>
-        {subItems ? <div className="lh-grp"><Pills value={subSel} onChange={pickSub} items={subItems} count={subCount} sec /></div> : null}
-        {/* ЗКН-Н006: четвёртый уровень (кластеры) УБРАН — максимум 3 уровня.
-            Кластеры уже показаны заголовками секций внутри списка (см. sections). */}
       </div>
-
       <div className="lh-cap">{shown} {personWord(shown)}</div>
 
       {!items ? <div style={{ fontFamily: "var(--font-text)", fontSize: "15px", color: "var(--color-label-2)" }}>Загрузка…</div> : null}

@@ -259,7 +259,8 @@ function VideoBox({ v, id }: { v: TgVideo; id: string }) {
         ...(v.round ? { width: 240, height: 240, borderRadius: "50%", overflow: "hidden", margin: "14px auto" } : {}) }}>
       {v.thumb
         ? <img src={v.thumb} alt="" loading="lazy" style={{ width: "100%", height: v.round ? "100%" : undefined, display: "block", objectFit: "cover", ...(v.round ? {} : { aspectRatio: "16 / 9" }) }} />
-        : <div style={{ aspectRatio: v.round ? "1 / 1" : "16 / 9", background: "var(--color-glass-regular)" }} />}
+        : <img src={COVER_FALLBACK} alt="" loading="lazy" style={{ width: "100%", aspectRatio: v.round ? "1 / 1" : "16 / 9", objectFit: "cover", borderRadius: v.round ? "50%" : undefined }} />}
+      {false && <div style={{ aspectRatio: v.round ? "1 / 1" : "16 / 9", background: "var(--color-glass-regular)" }} />}
       <span aria-hidden style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center" }}>
         <span style={{ width: 54, height: 54, borderRadius: "50%", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", display: "grid", placeItems: "center" }}>
           <svg width="20" height="20" viewBox="0 0 24 24" style={{ marginLeft: 3 }}><path d="M8 5v14l11-7z" fill="#fff" /></svg>
