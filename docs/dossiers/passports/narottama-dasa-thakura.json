@@ -10,5 +10,11 @@
     "narottam",
     "нароттам"
   ],
-  "excludes": []
+  "excludes": [],
+  "require": [
+    "дас",
+    "das",
+    "тхакур",
+    "thakur"
+  ]
 }
