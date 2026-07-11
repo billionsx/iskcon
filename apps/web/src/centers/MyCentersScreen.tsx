@@ -120,11 +120,11 @@ export default function MyCentersScreen({
       <Shell>
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: 8 }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Temple size={26} /></span>
-          <div style={{ fontFamily: FD, fontSize: 21, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Мои центры</div>
-          <p style={{ margin: "9px auto 0", maxWidth: 320, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Мои центры</div>
+          <p style={{ margin: "9px auto 0", maxWidth: 320, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>
             Войдите, чтобы добавить храм, нама-хатту или проповеднический центр и вести его страницу на gaurangers.com.
           </p>
-          <button type="button" onClick={requireAuth} style={{ marginTop: 18, width: "100%", padding: "13px 0", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 15.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          <button type="button" onClick={requireAuth} style={{ marginTop: 18, width: "100%", padding: "13px 0", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
             Войти
           </button>
         </div>
@@ -146,8 +146,8 @@ export default function MyCentersScreen({
     return (
       <Shell>
         <div style={{ ...card, textAlign: "center", marginTop: 8 }}>
-          <p style={{ margin: 0, fontFamily: FT, fontSize: 14.5, color: L2 }}>Не удалось загрузить список.</p>
-          <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>
+          <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Не удалось загрузить список.</p>
+          <button type="button" onClick={load} style={{ marginTop: 14, padding: "10px 20px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>
             Повторить
           </button>
         </div>
@@ -164,8 +164,8 @@ export default function MyCentersScreen({
     >
       <span style={{ display: "grid", placeItems: "center", width: 44, height: 44, flexShrink: 0, borderRadius: 13, background: `color-mix(in srgb, ${GOLD} 20%, transparent)`, color: GOLDT }}><Shield size={22} /></span>
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: "block", fontFamily: FD, fontSize: 15.5, fontWeight: 800, letterSpacing: "-0.01em", color: L1 }}>Модерация центров</span>
-        <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3 }}>{reviewCount > 0 ? `${reviewCount} на проверке` : "Очередь пуста"}</span>
+        <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 800, letterSpacing: "-0.01em", color: L1 }}>Модерация центров</span>
+        <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>{reviewCount > 0 ? `${reviewCount} на проверке` : "Очередь пуста"}</span>
       </span>
       {reviewCount > 0 && (
         <span style={{ display: "grid", placeItems: "center", minWidth: 22, height: 22, padding: "0 6px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FD, fontSize: "var(--text-caption)", fontWeight: 800 }}>{reviewCount}</span>
@@ -181,7 +181,7 @@ export default function MyCentersScreen({
         <div style={{ ...card, textAlign: "center", padding: "30px 22px", marginTop: modEntry ? 0 : 8 }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Temple size={26} /></span>
           <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Здесь будут ваши центры</div>
-          <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>
+          <p style={{ margin: "9px auto 18px", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>
             Добавьте храм, нама-хатту, ферму или ресторан. После проверки ИСККОН центр появится в общем каталоге.
           </p>
           <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "12px 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
@@ -205,10 +205,10 @@ export default function MyCentersScreen({
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.name}</span>
-                  <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: 12.5, color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {CENTER_TYPE_LABEL[it.type]}{place ? ` · ${place}` : ""}
                   </span>
-                  <span style={{ display: "inline-block", marginTop: 7, fontFamily: FT, fontSize: 10.5, fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: tone.bg, color: tone.fg }}>
+                  <span style={{ display: "inline-block", marginTop: 7, fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, padding: "2px 8px", borderRadius: 999, background: tone.bg, color: tone.fg }}>
                     {STATUS_LABEL[it.status]}
                   </span>
                 </span>

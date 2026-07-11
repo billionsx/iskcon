@@ -139,7 +139,7 @@ function SectionTitle({ title, action }: { title: string; action?: { label: stri
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: "0 4px", marginBottom: 10 }}>
       <h3 style={{ margin: 0, fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT }}>{title}</h3>
       {action && (
-        <button onClick={action.onClick} style={{ background: "none", border: "none", padding: 0, color: GOLD, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+        <button onClick={action.onClick} style={{ background: "none", border: "none", padding: 0, color: GOLD, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
           {action.label}
         </button>
       )}
@@ -184,9 +184,9 @@ function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
       ) : (
         <div style={{ ...cardStyle, padding: "20px 18px", textAlign: "center" }}>
           <div style={{ width: 46, height: 46, margin: "0 auto 12px", borderRadius: 12, background: "linear-gradient(135deg, #fbf4d8 0%, #f1e1a4 100%)", color: GOLDT, display: "grid", placeItems: "center", border: `0.5px solid ${GOLD}55` }}><NoteIco size={24} /></div>
-          <div style={{ fontSize: 15.5, fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.1 }}>Записывайте ценное</div>
-          <p style={{ margin: "6px auto 16px", fontSize: 13.5, lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 264 }}>Услышали стих или мысль, которую хочется сохранить, — добавьте её из меню «…» в любом разделе или начните прямо сейчас.</p>
-          <button onClick={() => requestNote()} style={{ height: 44, padding: "0 20px", borderRadius: 13, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: 14.5, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Новая заметка</button>
+          <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.1 }}>Записывайте ценное</div>
+          <p style={{ margin: "6px auto 16px", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 264 }}>Услышали стих или мысль, которую хочется сохранить, — добавьте её из меню «…» в любом разделе или начните прямо сейчас.</p>
+          <button onClick={() => requestNote()} style={{ height: 44, padding: "0 20px", borderRadius: 13, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Новая заметка</button>
         </div>
       )}
     </section>
@@ -241,8 +241,8 @@ function AuthPanel() {
       <div style={{ width: 76, height: 76, borderRadius: "50%", display: "grid", placeItems: "center", background: SURFACE, border: `1px solid ${HAIR}`, boxShadow: "var(--shadow-card)", marginBottom: 16 }}>
         <img src="/iskcon-sign.svg" alt="" style={{ width: 40, height: 40, opacity: 0.92 }} />
       </div>
-      <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700, letterSpacing: -0.4, color: INK, fontFamily: FONT, textAlign: "center" }}>Личный кабинет</h2>
-      <p style={{ margin: "8px 0 22px", fontSize: 14, lineHeight: 1.5, color: INK2, fontFamily: FONT, textAlign: "center", maxWidth: 300 }}>
+      <h2 style={{ margin: 0, fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.4, color: INK, fontFamily: FONT, textAlign: "center" }}>Личный кабинет</h2>
+      <p style={{ margin: "8px 0 22px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, textAlign: "center", maxWidth: 300 }}>
         Закладки, прогресс чтения и история прослушивания — на всех ваших устройствах.
       </p>
 
@@ -256,7 +256,7 @@ function AuthPanel() {
                 key={m}
                 onClick={() => { setMode(m); setError(null); }}
                 style={{
-                  flex: 1, height: 34, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: FONT, fontSize: 14,
+                  flex: 1, height: 34, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: FONT, fontSize: "var(--text-subhead)",
                   fontWeight: on ? 600 : 500, color: on ? INK : INK2,
                   background: on ? SURFACE : "transparent",
                   boxShadow: on ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
@@ -361,7 +361,7 @@ function StatStrip({ stats }: { stats: Overview["stats"] }) {
     <div style={{ display: "flex", background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
       {items.map((it, i) => (
         <div key={it.label} style={{ flex: 1, minWidth: 0, padding: "16px 4px", textAlign: "center", borderLeft: i ? `0.5px solid ${HAIR}` : "none" }}>
-          <div style={{ fontSize: 25, fontWeight: 700, letterSpacing: -0.5, color: INK, fontFamily: FONT, lineHeight: 1.1 }}>{it.value}</div>
+          <div style={{ fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.5, color: INK, fontFamily: FONT, lineHeight: 1.1 }}>{it.value}</div>
           <div style={{ marginTop: 3, fontSize: "var(--text-caption2)", fontWeight: 500, color: INK2, fontFamily: FONT }}>{it.label}</div>
         </div>
       ))}
@@ -440,11 +440,11 @@ function ProfileHeader({ onEdit }: { onEdit: () => void }) {
   const display = (user?.name || "").trim() || "Преданный";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 14, background: SURFACE, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: 16 }}>
-      <div style={{ width: 60, height: 60, borderRadius: "50%", flexShrink: 0, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#E8C84A,#C09400)", color: "#fff", fontSize: 23, fontWeight: 700, fontFamily: FONT, boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)" }}>
+      <div style={{ width: 60, height: 60, borderRadius: "50%", flexShrink: 0, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#E8C84A,#C09400)", color: "#fff", fontSize: "var(--text-title2)", fontWeight: 700, fontFamily: FONT, boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)" }}>
         {initials(user?.name ?? null, user?.email ?? null)}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 19, fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{display}</div>
+        <div style={{ fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{display}</div>
         {user?.spiritualName && <div style={{ marginTop: 1, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.spiritualName}</div>}
         {user?.email && <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: INK2, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>}
       </div>
@@ -484,7 +484,7 @@ function SegPicker<T extends string>({ value, options, onChange }: { value: T | 
             key={o.id}
             onClick={() => onChange(o.id)}
             style={{
-              padding: "8px 14px", borderRadius: 999, cursor: "pointer", fontFamily: FONT, fontSize: 14.5, fontWeight: on ? 600 : 500,
+              padding: "8px 14px", borderRadius: 999, cursor: "pointer", fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: on ? 600 : 500,
               border: `1px solid ${on ? GOLD : HAIR}`,
               background: on ? "color-mix(in srgb, #D2AA1B 15%, transparent)" : "transparent",
               color: on ? "color-mix(in srgb, #D2AA1B 82%, var(--color-label))" : INK,
@@ -550,7 +550,7 @@ function ProfileEditor({ onClose }: { onClose: () => void }) {
   const rowStyle: CSSProperties = { display: "flex", alignItems: "center", minHeight: 52, padding: "0 16px" };
   const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: FONT, padding: "14px 0" };
   const cardStyle: CSSProperties = { background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden" };
-  const groupLabel: CSSProperties = { margin: "20px 6px 7px", fontSize: 12.5, fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase" };
+  const groupLabel: CSSProperties = { margin: "20px 6px 7px", fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT, textTransform: "uppercase" };
   const hair = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
 
   return (
@@ -674,7 +674,7 @@ function NotificationsCard() {
           <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><BellIco /></span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: "var(--text-callout)", color: INK, fontWeight: 500, fontFamily: FONT }}>Push-уведомления</div>
-            <div style={{ fontSize: 12.5, color: INK3, fontFamily: FONT, marginTop: 1 }}>
+            <div style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT, marginTop: 1 }}>
               {!supported ? "Недоступно в этом браузере" : perm === "denied" ? "Разрешение запрещено в браузере" : on ? "Включены на этом устройстве" : "Тихие напоминания о практике"}
             </div>
           </div>
@@ -686,7 +686,7 @@ function NotificationsCard() {
             <div style={{ height: "0.5px", background: HAIR, marginLeft: 56 }} />
             <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px 11px 56px" }}>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 15.5, color: INK, fontFamily: FONT }}>{c.label}</div>
+                <div style={{ fontSize: "var(--text-callout)", color: INK, fontFamily: FONT }}>{c.label}</div>
                 <div style={{ fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, marginTop: 1 }}>{c.sub}</div>
               </div>
               <Switch on={!!cats[c.id]} onToggle={() => toggleCat(c.id)} />
@@ -764,8 +764,8 @@ function SadhanaCard({ state, onOpen }: { state: SadhanaState; onOpen: () => voi
           <circle cx="70" cy="70" r={RAD} fill="none" stroke={tone} strokeWidth="10" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - frac)} style={{ transition: "stroke-dashoffset .35s ease" }} />
         </svg>
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: INK }}>{r}</span>
-          <span style={{ fontFamily: FONT, fontSize: 10, color: INK2, marginTop: 1 }}>из {g}</span>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: INK }}>{r}</span>
+          <span style={{ fontFamily: FONT, fontSize: "var(--text-caption2)", color: INK2, marginTop: 1 }}>из {g}</span>
         </div>
       </div>
       <div style={{ minWidth: 0, flex: 1 }}>
@@ -862,7 +862,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
             </span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мой обет</span>
-              <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Санкальпа на срок: служения, ежедневный контроль и отчёт</span>
+              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Санкальпа на срок: служения, ежедневный контроль и отчёт</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
           </button>
@@ -878,7 +878,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
             </span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Каталог Ятры</span>
-              <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храмы, нама-хатты, рестораны и фермы ИСККОН рядом</span>
+              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храмы, нама-хатты, рестораны и фермы ИСККОН рядом</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
           </button>
@@ -886,7 +886,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
             <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><TempleIco size={18} /></span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мои центры</span>
-              <span style={{ display: "block", fontSize: 12.5, color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на gaurangers.com</span>
+              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на gaurangers.com</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
           </button>
@@ -896,14 +896,14 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <NotesSection onOpenPath={onOpenPath} />
 
       {!loaded && (
-        <div style={{ display: "flex", justifyContent: "center", padding: "30px 0", color: INK3, fontSize: 14, fontFamily: FONT }}>Загружаю…</div>
+        <div style={{ display: "flex", justifyContent: "center", padding: "30px 0", color: INK3, fontSize: "var(--text-subhead)", fontFamily: FONT }}>Загружаю…</div>
       )}
 
       {loaded && !hasAny && (
         <div style={{ background: SURFACE, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: "26px 22px", textAlign: "center" }}>
           <div style={{ width: 52, height: 52, margin: "0 auto 14px", borderRadius: "50%", background: "rgba(210,170,27,0.14)", color: GOLD, display: "grid", placeItems: "center" }}><BookIco size={26} /></div>
           <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.2 }}>Здесь будет ваша садхана</div>
-          <p style={{ margin: "8px auto 18px", fontSize: 14, lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 280 }}>
+          <p style={{ margin: "8px auto 18px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 280 }}>
             Закладки, прогресс чтения и прослушанные киртаны появятся, как только вы начнёте.
           </p>
           <button onClick={() => onOpenPath("/books")} style={{ height: 46, padding: "0 22px", borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
@@ -981,7 +981,7 @@ export default function AccountScreen({ onOpenPath, onDonate, flash }: { onOpenP
     // фон-вынос на всю ширину: сгруппированный серый iOS под белыми карточками
     <div style={{ margin: "-16px -16px -116px", padding: "16px 16px calc(120px + env(safe-area-inset-bottom))", minHeight: "calc(100dvh - 56px)", background: GROUPED }}>
       {status === "loading" ? (
-        <div style={{ display: "flex", justifyContent: "center", paddingTop: 80, color: INK3, fontSize: 14, fontFamily: FONT }}>Загружаю…</div>
+        <div style={{ display: "flex", justifyContent: "center", paddingTop: 80, color: INK3, fontSize: "var(--text-subhead)", fontFamily: FONT }}>Загружаю…</div>
       ) : status === "guest" ? (
         <AuthPanel />
       ) : (

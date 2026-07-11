@@ -142,8 +142,8 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
   return (
     <HomeSheet open={open} label="Выбор города" onClose={onClose}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь по городу</div>
-      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите город</h2>
-      <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите город</h2>
+      <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
         Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Нет в списке? Введите любой город мира — рассчитаем календарь по нему.
       </p>
       <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-bg)", padding: "12px 0 8px" }}>
@@ -164,19 +164,19 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
         </button>
       )}
       {!q.trim() && geoMe === "denied" && (
-        <div style={{ margin: "8px 2px 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-3)" }}>Доступ к геолокации запрещён. Разрешите его в настройках браузера или выберите город вручную.</div>
+        <div style={{ margin: "8px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-3)" }}>Доступ к геолокации запрещён. Разрешите его в настройках браузера или выберите город вручную.</div>
       )}
       {!q.trim() && geoMe === "error" && (
-        <div style={{ margin: "8px 2px 0", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-3)" }}>Не удалось определить местоположение. Выберите город вручную.</div>
+        <div style={{ margin: "8px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-3)" }}>Не удалось определить местоположение. Выберите город вручную.</div>
       )}
       <div style={{ marginTop: 12 }}>
         {!locs && <div style={{ height: 120, ...fill, opacity: 0.6 }} />}
         {locs && !hasDirect && geoBusy && (
-          <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Ищем город…</div>
+          <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>Ищем город…</div>
         )}
         {locs && !hasDirect && !geoBusy && geo && (
           <section style={{ marginTop: 4 }}>
-            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>Найден город:</div>
+            <div style={{ margin: "0 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>Найден город:</div>
             <div style={{ overflow: "hidden", ...fill }}>
               <button type="button" onClick={() => { onPick({ ru: geo.name, key: `@${geo.lat.toFixed(4)},${geo.lng.toFixed(4)}`, lat: geo.lat, lng: geo.lng, tz: geo.tz }); onClose(); }}
                 style={{ display: "flex", width: "100%", alignItems: "center", gap: 11, padding: "13px 14px", textAlign: "left", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
@@ -193,7 +193,7 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
           </section>
         )}
         {locs && !hasDirect && !geoBusy && !geo && q.trim().length >= 2 && (
-          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Город не найден. Проверьте написание.</div>
+          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>Город не найден. Проверьте написание.</div>
         )}
         {filtered.map((c) => (
           <section key={c.country} style={{ marginTop: 16 }}>
@@ -296,15 +296,15 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       <div style={{ padding: "20px 0 0" }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Вайшнавский календарь</div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 5 }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-label)" }}>Календарь ИСККОН</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--color-label)" }}>Календарь ИСККОН</h2>
           <button type="button" onClick={() => setPickOpen(true)} aria-label="Сменить город календаря"
-            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, border: `1px solid color-mix(in srgb, ${GOLD} 45%, transparent)`, background: `color-mix(in srgb, ${GOLD} 10%, transparent)`, cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)" }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 999, border: `1px solid color-mix(in srgb, ${GOLD} 45%, transparent)`, background: `color-mix(in srgb, ${GOLD} 10%, transparent)`, cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
             <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><path d="M12 21s-6.7-5.4-6.7-10.3A6.7 6.7 0 0 1 12 4a6.7 6.7 0 0 1 6.7 6.7C18.7 15.6 12 21 12 21Z" fill="none" stroke={GOLD} strokeWidth="1.8" /><circle cx="12" cy="10.6" r="2.3" fill="none" stroke={GOLD} strokeWidth="1.8" /></svg>
             {loc.ru}
             <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
         </div>
-        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Экадаши, праздники и дни великих вайшнавов по расчётам GCal — официальной программы Календарного комитета GBC. Время — по городу {loc.ru}.
         </p>
       </div>
@@ -313,8 +313,8 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       {nextEka && (
         <div style={{ marginTop: 16, padding: "20px 18px", borderRadius: 22, background: `linear-gradient(135deg, color-mix(in srgb, ${GOLD} 16%, var(--color-glass-thin)), var(--color-glass-thin))` }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ближайший экадаши · {loc.ru}</div>
-          <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: 21, fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{nextEka.title.replace(" — пост", "")}</div>
-          <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-2)" }}>
+          <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{nextEka.title.replace(" — пост", "")}</div>
+          <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>
             {(() => { const f = fmtDay(nextEka.date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · пост
           </div>
           {nextParana && (
@@ -336,7 +336,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
 
       <div style={{ marginTop: 6 }} aria-live="polite">
         {err && (
-          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Календарь для города «{loc.ru}» сейчас недоступен.{" "}
             {loc.key !== DEFAULT_LOC.key && (
               <button type="button" onClick={() => setLoc(DEFAULT_LOC)} style={{ padding: 0, border: "none", background: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "inherit", fontWeight: 600, color: "var(--color-gold-deep)" }}>Показать Вриндаван</button>
@@ -349,7 +349,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           </div>
         )}
         {all && q.trim() && filtered.length === 0 && (
-          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>Ничего не найдено.</div>
+          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>Ничего не найдено.</div>
         )}
         {all && months.map(([key, evs]) => {
           const [y, mo] = key.split("-").map(Number);
@@ -367,11 +367,11 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                   const inner = (
                     <>
                       <div style={{ flexShrink: 0, width: 44, textAlign: "center" }}>
-                        <div style={{ fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 700, lineHeight: 1, color: isToday ? GOLD : "var(--color-label)" }}>{f.d}</div>
-                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: isToday ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, lineHeight: 1, color: isToday ? GOLD : "var(--color-label)" }}>{f.d}</div>
+                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: isToday ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
                       </div>
                       <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.35, color: "var(--color-label)" }}>{e.title}</div>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.35, color: "var(--color-label)" }}>{e.title}</div>
                         <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: meta.color }}>{isToday ? "Сегодня · " : ""}{meta.label}{linked ? " · Герой" : ""}</div>
                       </div>
                       {tappable && (
@@ -396,7 +396,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           );
         })}
         {all && (
-          <p style={{ margin: "18px 2px 0", fontFamily: "var(--font-text)", fontSize: 11.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+          <p style={{ margin: "18px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Время параны указано по местному времени города «{loc.ru}». Расчёты — GCal (Гаурабда), официальный движок Календарного комитета GBC.
           </p>
         )}

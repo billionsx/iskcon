@@ -73,6 +73,29 @@ def check_rules():
     return bad
 
 
+def check_floor_law():
+    """ЗКН-Д006: пол типографики 11px. Ниже — нечитаемо (Apple HIG + правило globals.css).
+    Исключения: печатная вёрстка (mm/pt), декоративные глифы, водяные знаки."""
+    import re as _re
+    pat = _re.compile(r"fontSize:\s*(\d+(?:\.\d+)?)(?![\d.])")
+    pr = _re.compile(r"\d+(mm|pt)\b")
+    GLYPHS = "◆●•★▸▾·✦"
+    bad = []
+    for fp in sorted(SRC.rglob("*")):
+        if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT | {"PdfDoc.tsx", "pdf.ts", "pdfCover.ts"}:
+            continue
+        for i, line in enumerate(fp.read_text(encoding="utf-8").split("\n"), 1):
+            if pr.search(line) or any(g in line for g in GLYPHS):
+                continue
+            for m in pat.finditer(line):
+                v = float(m.group(1))
+                if v < 11:
+                    bad.append(({"id": "ЗКН-Д006", "name": "кегль ниже пола 11px",
+                                 "hint": "→ var(--text-caption2) (11px). Ниже 11px текст нечитаем (Apple HIG)"},
+                                str(fp.relative_to(ROOT)), i, line.strip()[:80]))
+    return bad
+
+
 def check_prose_law():
     """ЗКН-Т002: EntityPage — единая точка прозы обязана прогонять cleanCardText."""
     ep = SRC / "EntityPage.tsx"
@@ -158,10 +181,10 @@ def main():
     if "--update-baseline" in sys.argv:
         check_ratchet(update=True)
         return 0
-    bad = check_rules() + check_prose_law() + check_ratchet()
+    bad = check_rules() + check_prose_law() + check_floor_law() + check_ratchet()
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
-        print("  правил: %d + закон прозы (Т002) + храповик долга (Д001)" % len(RULES))
+        print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))
         return 0
 
     by_rule = {}

@@ -31,10 +31,10 @@ function IskconMark({ size = 56 }: { size?: number }) {
 }
 
 const SectionHeader = ({ children }: { children: ReactNode }) => (
-  <div style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: INK3, margin: "0 0 9px 16px" }}>{children}</div>
+  <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: INK3, margin: "0 0 9px 16px" }}>{children}</div>
 );
 const Footnote = ({ children }: { children: ReactNode }) => (
-  <div style={{ fontSize: 12.5, lineHeight: 1.42, color: INK3, margin: "9px 16px 0" }}>{children}</div>
+  <div style={{ fontSize: "var(--text-footnote)", lineHeight: 1.42, color: INK3, margin: "9px 16px 0" }}>{children}</div>
 );
 
 function CloseGlyph() {
@@ -87,7 +87,7 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
   };
 
   const card: CSSProperties = { background: "#fff", borderRadius: 14, overflow: "hidden" };
-  const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", background: "transparent", fontSize: 15.5, fontWeight: 500, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)", textAlign: "left" };
+  const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", background: "transparent", fontSize: "var(--text-callout)", fontWeight: 500, letterSpacing: "-0.01em", cursor: "pointer", fontFamily: "var(--font-text)", textAlign: "left" };
 
   return (
     <div
@@ -107,10 +107,10 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
         </button>
         {/* ── header ── */}
         <IskconMark size={56} />
-        <h1 style={{ margin: "18px 0 0", fontSize: 26, lineHeight: 1.1, fontWeight: 700, letterSpacing: "-0.022em", color: INK, textAlign: "center", fontFamily: "var(--font-text)" }}>
+        <h1 style={{ margin: "18px 0 0", fontSize: "var(--text-title1)", lineHeight: 1.1, fontWeight: 700, letterSpacing: "-0.022em", color: INK, textAlign: "center", fontFamily: "var(--font-text)" }}>
           Поддержать
         </h1>
-        <p style={{ margin: "11px auto 0", maxWidth: 300, fontSize: 14, lineHeight: 1.5, color: INK2, textAlign: "center" }}>
+        <p style={{ margin: "11px auto 0", maxWidth: 300, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, textAlign: "center" }}>
           Ваш вклад помогает распространять и развивать послание Шрилы Прабхупады и Шри Кришны Чайтаньи Махапрабху через онлайн-проект ISKCON ONE LOVE.
         </p>
 
@@ -121,7 +121,7 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
             href={YOOMONEY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 54, borderRadius: 14, background: INK, color: "#fff", fontSize: 16.5, fontWeight: 600, letterSpacing: "-0.01em", textDecoration: "none" }}
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 54, borderRadius: 14, background: INK, color: "#fff", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.01em", textDecoration: "none" }}
           >
             Поддержать через ЮMoney
           </a>
@@ -133,8 +133,8 @@ export function DonateModal({ onClose }: { onClose: () => void }) {
           <SectionHeader>Криптовалюта · USDT (TRC20)</SectionHeader>
           <div style={card}>
             <div style={{ padding: "14px 16px 13px" }}>
-              <div style={{ fontSize: 11.5, color: INK3, marginBottom: 5 }}>Адрес кошелька</div>
-              <code style={{ display: "block", fontSize: 13.5, lineHeight: 1.4, color: INK, wordBreak: "break-all", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>{USDT_TRC20}</code>
+              <div style={{ fontSize: "var(--text-caption)", color: INK3, marginBottom: 5 }}>Адрес кошелька</div>
+              <code style={{ display: "block", fontSize: "var(--text-footnote)", lineHeight: 1.4, color: INK, wordBreak: "break-all", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}>{USDT_TRC20}</code>
             </div>
             <button onClick={copy} style={{ ...row, borderTop: `0.5px solid ${HAIR}`, color: copied ? OK : INK }}>
               <CopyGlyph color={copied ? OK : INK2} />

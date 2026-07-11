@@ -72,7 +72,7 @@ function Row({ n, last, onOpen, reduce }: { n: Note; last: boolean; onOpen: () =
   return (
     <div style={{ position: "relative", maxHeight: removing ? 0 : 260, opacity: removing ? 0 : 1, overflow: "hidden", transition: reduce ? "none" : "max-height .24s ease, opacity .2s ease" }}>
       <button type="button" aria-label="Удалить заметку" onClick={commit}
-        style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 7, paddingRight: 22, background: RED, color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600 }}>
+        style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 7, paddingRight: 22, background: RED, color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600 }}>
         <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path {...STROKE} stroke="#fff" d="M5 7h14M9.5 7V5.5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V7M7 7l.8 12a1 1 0 0 0 1 .9h6.4a1 1 0 0 0 1-.9L18 7" /></svg>
         Удалить
       </button>
@@ -89,10 +89,10 @@ function Row({ n, last, onOpen, reduce }: { n: Note; last: boolean; onOpen: () =
         <span style={{ minWidth: 0, flex: 1 }}>
           <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
             {n.pinned && <span style={{ color: GOLD, flexShrink: 0, display: "inline-flex" }}><PinBadge /></span>}
-            <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-display)", fontSize: 16.5, fontWeight: 600, letterSpacing: "-0.014em", color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
+            <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.014em", color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
           </span>
           <span style={{ display: "flex", alignItems: "baseline", gap: 7, marginTop: 2 }}>
-            <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, color: INK3, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{fmtShort(n.updatedAt)}</span>
+            <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK3, flexShrink: 0, fontVariantNumeric: "tabular-nums" }}>{fmtShort(n.updatedAt)}</span>
             <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview || (n.srcTitle ? n.srcTitle : "Нет дополнительного текста")}</span>
           </span>
         </span>
@@ -197,7 +197,7 @@ function Empty({ onNew }: { onNew: () => void }) {
     <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "0 40px 64px" }}>
       <span style={{ display: "grid", placeItems: "center", width: 72, height: 72, borderRadius: "50%", background: "rgba(120,120,128,0.12)", color: INK3 }}><NotesGlyph size={34} /></span>
       <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Заметок пока нет</h2>
-      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.5, color: INK2, maxWidth: 320 }}>Услышали мысль в лекции, увидели даршан, прочли стих, что коснулся сердца — запишите. Из любой карточки, плеера и ридера можно сохранить «В заметки».</p>
+      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, maxWidth: 320 }}>Услышали мысль в лекции, увидели даршан, прочли стих, что коснулся сердца — запишите. Из любой карточки, плеера и ридера можно сохранить «В заметки».</p>
       <button type="button" onClick={onNew} style={{ marginTop: 22, height: 48, padding: "0 26px", borderRadius: 14, border: "none", background: GOLD, color: "#fff", fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Новая заметка</button>
     </div>
   );

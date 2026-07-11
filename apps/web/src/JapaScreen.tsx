@@ -245,8 +245,8 @@ function Tile({ value, label, sub, accent }: { value: string; label: string; sub
   return (
     <div style={{ flex: 1, minWidth: 0, padding: "13px 12px", borderRadius: 16, background: FILL, textAlign: "center" }}>
       <div style={{ fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: accent || L1, lineHeight: 1.05 }}>{value}</div>
-      <div style={{ marginTop: 3, fontFamily: FT, fontSize: 11.5, fontWeight: 600, color: L2 }}>{label}</div>
-      {sub && <div style={{ marginTop: 1, fontFamily: FT, fontSize: 10.5, color: L3 }}>{sub}</div>}
+      <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, color: L2 }}>{label}</div>
+      {sub && <div style={{ marginTop: 1, fontFamily: FT, fontSize: "var(--text-caption2)", color: L3 }}>{sub}</div>}
     </div>
   );
 }
@@ -267,7 +267,7 @@ function Bars({ buckets }: { buckets: Bucket[] }) {
       </div>
       <div style={{ display: "flex", gap: buckets.length > 20 ? 2 : 5, marginTop: 7, padding: "0 2px" }}>
         {buckets.map((b, i) => (
-          <div key={i} style={{ flex: 1, minWidth: 0, textAlign: "center", fontFamily: FT, fontSize: 9.5, color: b.strong ? GOLDT : L3, fontWeight: b.strong ? 700 : 500, whiteSpace: "nowrap", overflow: "hidden" }}>{b.label}</div>
+          <div key={i} style={{ flex: 1, minWidth: 0, textAlign: "center", fontFamily: FT, fontSize: "var(--text-caption2)", color: b.strong ? GOLDT : L3, fontWeight: b.strong ? 700 : 500, whiteSpace: "nowrap", overflow: "hidden" }}>{b.label}</div>
         ))}
       </div>
     </div>
@@ -388,12 +388,12 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
     borderBottom: `0.5px solid ${HAIR}`,
   };
   const seg = (on: boolean): CSSProperties => ({
-    flex: 1, padding: "8px 0", borderRadius: 9, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 13.5,
+    flex: 1, padding: "8px 0", borderRadius: 9, border: "none", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)",
     fontWeight: on ? 700 : 500, color: on ? "#fff" : L2, background: on ? GOLD : "transparent", WebkitTapHighlightColor: "transparent",
     transition: "background .15s, color .15s",
   });
   const chip = (on: boolean): CSSProperties => ({
-    flexShrink: 0, padding: "7px 13px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 12.5,
+    flexShrink: 0, padding: "7px 13px", borderRadius: 999, border: "none", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)",
     fontWeight: on ? 700 : 500, color: on ? "#fff" : L2, background: on ? GOLD : FILL2, WebkitTapHighlightColor: "transparent",
   });
 
@@ -428,7 +428,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
               <div style={{ height: 10 }} />
               <Stepper label="Бусин в круге" value={st.bpr} min={4} max={216} step={st.bpr >= 108 ? 8 : 1}
                 onChange={(v) => commit({ ...stRef.current, bpr: v })} />
-              <p style={{ margin: "10px 2px 0", fontFamily: FT, fontSize: 11.5, lineHeight: 1.5, color: L3 }}>
+              <p style={{ margin: "10px 2px 0", fontFamily: FT, fontSize: "var(--text-caption)", lineHeight: 1.5, color: L3 }}>
                 Стандарт ИСККОН — 16 кругов по 108 бусин. Одна бусина — одна Маха-мантра (16 имён).
               </p>
             </div>
@@ -448,7 +448,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
                     <div style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLDT }}>Круг {roundsToday + 1}</div>
                     <div style={{ fontFamily: FD, fontSize: "clamp(56px, 19vw, 88px)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, color: L1 }}>{st.curBeads}</div>
-                    <div style={{ fontFamily: FT, fontSize: 14, color: L2 }}>из {st.bpr}</div>
+                    <div style={{ fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>из {st.bpr}</div>
                   </div>
                   {flash > 0 && (
                     <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", pointerEvents: "none" }}>
@@ -483,7 +483,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                 <Tile value={fmt(roundsToday)} label="Круги" accent={roundsToday >= st.goal ? GREEN : undefined} />
                 <Tile value={fmt(namesToday)} label="Имён сегодня" accent={GOLDT} />
               </div>
-              <div style={{ marginTop: 8, fontFamily: FT, fontSize: 11.5, color: L3, textAlign: "center" }}>
+              <div style={{ marginTop: 8, fontFamily: FT, fontSize: "var(--text-caption)", color: L3, textAlign: "center" }}>
                 Время сегодня: {fmtDur(secToday)} · стрик {liveStreak} {liveStreak === 1 ? "день" : "дн."}
               </div>
 
@@ -492,7 +492,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
                   <button type="button" aria-label={sound ? "Звук включён" : "Звук выключен"} onClick={() => setSound((v) => !v)}
-                    style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, border: "none", background: sound ? `color-mix(in srgb, ${GOLD} 16%, transparent)` : FILL2, color: sound ? GOLDT : L3, cursor: "pointer", fontFamily: FT, fontSize: 11.5, fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
+                    style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 999, border: "none", background: sound ? `color-mix(in srgb, ${GOLD} 16%, transparent)` : FILL2, color: sound ? GOLDT : L3, cursor: "pointer", fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
                     <Bell /> {sound ? "Звук" : "Без звука"}
                   </button>
                 </div>
@@ -503,7 +503,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   {MANTRA.map((w, i) => {
                     const on = playing && i === tok;
                     return (
-                      <span key={i} style={{ fontFamily: FT, fontSize: 15.5, fontWeight: on ? 800 : 500, letterSpacing: "-0.01em", color: on ? "#fff" : L1, background: on ? GOLD : "transparent", borderRadius: 8, padding: on ? "1px 8px" : "1px 2px", transition: "background .08s, color .08s" }}>{w}</span>
+                      <span key={i} style={{ fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: on ? 800 : 500, letterSpacing: "-0.01em", color: on ? "#fff" : L1, background: on ? GOLD : "transparent", borderRadius: 8, padding: on ? "1px 8px" : "1px 2px", transition: "background .08s, color .08s" }}>{w}</span>
                     );
                   })}
                 </div>
@@ -516,7 +516,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   <div style={{ flex: 1, display: "flex", gap: 6 }}>
                     {(["slow", "mid", "fast"] as const).map((s) => (
                       <button key={s} type="button" onClick={() => setSpeed(s)}
-                        style={{ flex: 1, padding: "9px 0", borderRadius: 11, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 12.5, fontWeight: speed === s ? 700 : 500, color: speed === s ? "#fff" : L2, background: speed === s ? "#1c1c1e" : FILL2, WebkitTapHighlightColor: "transparent" }}>{SPEED_LABEL[s]}</button>
+                        style={{ flex: 1, padding: "9px 0", borderRadius: 11, border: "none", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: speed === s ? 700 : 500, color: speed === s ? "#fff" : L2, background: speed === s ? "#1c1c1e" : FILL2, WebkitTapHighlightColor: "transparent" }}>{SPEED_LABEL[s]}</button>
                     ))}
                   </div>
                 </div>
@@ -541,13 +541,13 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
 
               {mode === "range" && (
                 <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
-                  <label style={{ flex: 1, fontFamily: FT, fontSize: 11.5, color: L2 }}>С
+                  <label style={{ flex: 1, fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>С
                     <input type="date" value={rFrom} max={rTo} onChange={(e) => setRFrom(e.target.value)}
-                      style={{ display: "block", width: "100%", marginTop: 4, padding: "9px 10px", borderRadius: 11, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: 13.5 }} />
+                      style={{ display: "block", width: "100%", marginTop: 4, padding: "9px 10px", borderRadius: 11, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-footnote)" }} />
                   </label>
-                  <label style={{ flex: 1, fontFamily: FT, fontSize: 11.5, color: L2 }}>По
+                  <label style={{ flex: 1, fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>По
                     <input type="date" value={rTo} min={rFrom} max={todayStr} onChange={(e) => setRTo(e.target.value)}
-                      style={{ display: "block", width: "100%", marginTop: 4, padding: "9px 10px", borderRadius: 11, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: 13.5 }} />
+                      style={{ display: "block", width: "100%", marginTop: 4, padding: "9px 10px", borderRadius: 11, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-footnote)" }} />
                   </label>
                 </div>
               )}
@@ -569,7 +569,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                 </div>
                 {an.totals.rounds > 0
                   ? <Bars buckets={an.buckets} />
-                  : <div style={{ padding: "26px 0", textAlign: "center", fontFamily: FT, fontSize: 13.5, color: L3 }}>За этот период ещё нет кругов</div>}
+                  : <div style={{ padding: "26px 0", textAlign: "center", fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>За этот период ещё нет кругов</div>}
               </div>
 
               {/* стрик */}
@@ -578,14 +578,14 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, color: GOLD }}><Flame /></span>
                   <span>
                     <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{liveStreak}</span>
-                    <span style={{ fontFamily: FT, fontSize: 11.5, color: L2 }}>дней подряд</span>
+                    <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>дней подряд</span>
                   </span>
                 </div>
                 <div style={{ flex: 1, padding: "14px 14px", borderRadius: 16, background: FILL, display: "flex", alignItems: "center", gap: 11 }}>
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GREEN} 16%, transparent)`, color: GREEN }}><Flame /></span>
                   <span>
                     <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{normStreak}</span>
-                    <span style={{ fontFamily: FT, fontSize: 11.5, color: L2 }}>норма {st.goal} кр.</span>
+                    <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>норма {st.goal} кр.</span>
                   </span>
                 </div>
               </div>
@@ -619,8 +619,8 @@ function Row({ k, v, sub, top }: { k: string; v: string; sub?: string; top?: boo
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "13px 15px", borderTop: top ? `0.5px solid ${HAIR}` : "none" }}>
       <span style={{ minWidth: 0 }}>
-        <span style={{ display: "block", fontFamily: FT, fontSize: 14, color: L1 }}>{k}</span>
-        {sub && <span style={{ fontFamily: FT, fontSize: 11.5, color: L3 }}>{sub}</span>}
+        <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>{k}</span>
+        {sub && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L3 }}>{sub}</span>}
       </span>
       <span style={{ flexShrink: 0, fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 700, color: L1 }}>{v}</span>
     </div>
@@ -633,7 +633,7 @@ function Stepper({ label, value, min, max, step, onChange }: { label: string; va
   const btn: CSSProperties = { width: 36, height: 36, borderRadius: 10, border: "none", background: FILL2, color: L1, cursor: "pointer", fontSize: "var(--text-title3)", fontWeight: 600, lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-      <span style={{ fontFamily: FT, fontSize: 14, color: L1 }}>{label}</span>
+      <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>{label}</span>
       <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
         <button type="button" aria-label="Меньше" onClick={dec} disabled={value <= min} style={{ ...btn, opacity: value <= min ? 0.5 : 1 }}>−</button>
         <span style={{ minWidth: 34, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: L1 }}>{value}</span>

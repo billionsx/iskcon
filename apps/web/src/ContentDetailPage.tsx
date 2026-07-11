@@ -53,7 +53,7 @@ function ActionsSheet({ open, items, onClose, onSelect }: { open: boolean; items
 
 function Toast({ msg }: { msg: string | null }) {
   if (!msg) return null;
-  return <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, maxWidth: 340, padding: "11px 18px", borderRadius: 999, background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, boxShadow: "var(--shadow-card)", textAlign: "center", animation: "fadein 160ms ease" }}>{msg}</div>;
+  return <div style={{ position: "fixed", left: "50%", bottom: "calc(40px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 90, maxWidth: 340, padding: "11px 18px", borderRadius: 999, background: "var(--color-label)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, boxShadow: "var(--shadow-card)", textAlign: "center", animation: "fadein 160ms ease" }}>{msg}</div>;
 }
 
 function LogoMark({ src, label, height }: { src: string; label: string; height: number }) {
@@ -158,7 +158,7 @@ function ContentNavAction({ arrow, disabled, onClick, children }: { arrow?: "pre
   return (
     <button type="button" disabled={disabled} onClick={onClick}
       onPointerDown={() => { if (!disabled) setPressed(true); }} onPointerUp={off} onPointerLeave={off} onPointerCancel={off}
-      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, minWidth: 0, height: 40, padding: "0 12px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", color: disabled ? "var(--color-label-3, var(--color-label-2))" : "var(--color-label)", opacity: disabled ? 0.4 : 1, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: "var(--weight-semibold)", transition: "background .12s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap", overflow: "hidden" }}>
+      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 5, minWidth: 0, height: 40, padding: "0 12px", borderRadius: 12, border: "none", cursor: disabled ? "default" : "pointer", background: !disabled && pressed ? "var(--color-fill-2, rgba(120,120,128,.12))" : "transparent", color: disabled ? "var(--color-label-3, var(--color-label-2))" : "var(--color-label)", opacity: disabled ? 0.4 : 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-semibold)", transition: "background .12s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap", overflow: "hidden" }}>
       {arrow === "prev" && <BackIcon size={18} />}
       <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{children}</span>
       {arrow === "next" && <span style={{ display: "inline-flex", transform: "scaleX(-1)" }}><BackIcon size={18} /></span>}

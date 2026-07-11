@@ -129,7 +129,7 @@ const Check = () => (<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden
 function Tile({ value, label, accent }: { value: string; label: string; accent?: string }) {
   return (
     <div style={{ flex: 1, minWidth: 0, padding: "13px 10px", borderRadius: 16, background: FILL, textAlign: "center" }}>
-      <div style={{ fontFamily: FD, fontSize: 21, fontWeight: 800, letterSpacing: "-0.02em", color: accent || L1, lineHeight: 1.05 }}>{value}</div>
+      <div style={{ fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: accent || L1, lineHeight: 1.05 }}>{value}</div>
       <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 600, color: L2 }}>{label}</div>
     </div>
   );
@@ -141,7 +141,7 @@ function StreakCard({ icon, value, label, tone }: { icon: ReactNode; value: numb
       <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${tone} 16%, transparent)`, color: tone }}>{icon}</span>
       <span style={{ minWidth: 0 }}>
         <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{value}</span>
-        <span style={{ fontFamily: FT, fontSize: 11.5, color: L2 }}>{label}</span>
+        <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>{label}</span>
       </span>
     </div>
   );
@@ -176,12 +176,12 @@ function Heatmap({ roundsByDay, goal }: { roundsByDay: Map<string, number>; goal
     <div style={{ padding: 16, borderRadius: 18, background: FILL, marginTop: 12 }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 12 }}>
         <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: L3 }}>Карта практики</span>
-        <span style={{ fontFamily: FT, fontSize: 10.5, color: L3 }}>10 недель</span>
+        <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: L3 }}>10 недель</span>
       </div>
       <div style={{ display: "flex", gap: 7, alignItems: "stretch" }}>
         <div style={{ display: "grid", gridTemplateRows: "repeat(7, 1fr)", gap: 3, flexShrink: 0 }}>
           {HM_WD.map((w, i) => (
-            <span key={i} style={{ fontFamily: FT, fontSize: 8.5, color: L3, display: "flex", alignItems: "center", lineHeight: 1 }}>{w}</span>
+            <span key={i} style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: L3, display: "flex", alignItems: "center", lineHeight: 1 }}>{w}</span>
           ))}
         </div>
         <div style={{ flex: 1, display: "grid", gridTemplateColumns: `repeat(${HM_WEEKS}, 1fr)`, gridTemplateRows: "repeat(7, 1fr)", gridAutoFlow: "column", gap: 3 }}>
@@ -192,17 +192,17 @@ function Heatmap({ roundsByDay, goal }: { roundsByDay: Map<string, number>; goal
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6, marginTop: 12 }}>
-        <span style={{ fontFamily: FT, fontSize: 10, color: L3 }}>меньше</span>
+        <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: L3 }}>меньше</span>
         {["color-mix(in srgb, var(--color-label) 8%, transparent)", `color-mix(in srgb, ${GOLD} 45%, transparent)`, `color-mix(in srgb, ${GOLD} 70%, transparent)`, GOLD].map((bg, i) => (
           <span key={i} style={{ width: 11, height: 11, borderRadius: 3, background: bg }} />
         ))}
-        <span style={{ fontFamily: FT, fontSize: 10, color: L3 }}>больше</span>
+        <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: L3 }}>больше</span>
       </div>
     </div>
   );
 }
 
-const sheetBtn: CSSProperties = { minWidth: 56, height: 40, padding: "0 14px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent", display: "inline-grid", placeItems: "center" };
+const sheetBtn: CSSProperties = { minWidth: 56, height: 40, padding: "0 14px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent", display: "inline-grid", placeItems: "center" };
 
 /** Лист редактирования любого дня дневника: чтение/подъём/заметка (круги — read-only). */
 function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; initial: SadhanaDay; goal: number; onClose: () => void; onSaved: (s: SadhanaState, day: string) => void }) {
@@ -230,10 +230,10 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
         style={{ width: "100%", maxWidth: 480, background: "var(--color-bg-2)", borderTopLeftRadius: 22, borderTopRightRadius: 22, padding: "8px 18px calc(20px + env(safe-area-inset-bottom,0px))", boxShadow: "0 -10px 44px rgba(0,0,0,0.32)", animation: "sadSheet .28s cubic-bezier(.32,.72,0,1)" }}>
         <div style={{ width: 38, height: 5, borderRadius: 3, background: HAIR, margin: "0 auto 14px" }} />
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
-          <span style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{relDay(day)}</span>
-          <span style={{ fontFamily: FT, fontSize: 12.5, fontWeight: 700, color: done ? GREEN : L2 }}>{initial.rounds} {pluralRu(initial.rounds, "круг", "круга", "кругов")}</span>
+          <span style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{relDay(day)}</span>
+          <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: done ? GREEN : L2 }}>{initial.rounds} {pluralRu(initial.rounds, "круг", "круга", "кругов")}</span>
         </div>
-        <p style={{ margin: "3px 0 16px", fontFamily: FT, fontSize: 11.5, color: L3 }}>Круги берутся из счётчика и здесь не меняются.</p>
+        <p style={{ margin: "3px 0 16px", fontFamily: FT, fontSize: "var(--text-caption)", color: L3 }}>Круги берутся из счётчика и здесь не меняются.</p>
 
         <label style={lbl}>Чтение Прабхупады</label>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
@@ -248,7 +248,7 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
 
         <label style={lbl}>Заметка дня</label>
         <textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 500))} rows={3} placeholder="Реализации, благодарности, планы…"
-          style={{ ...field, resize: "none", color: L1, fontSize: 14, lineHeight: 1.5, marginBottom: 18 }} />
+          style={{ ...field, resize: "none", color: L1, fontSize: "var(--text-subhead)", lineHeight: 1.5, marginBottom: 18 }} />
 
         <div style={{ display: "flex", gap: 10 }}>
           <button type="button" onClick={onClose} style={{ flex: 1, height: 48, borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Отмена</button>
@@ -370,7 +370,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
   const card: CSSProperties = { padding: 16, borderRadius: 18, background: FILL };
   const miniBtn: CSSProperties = {
     minWidth: 44, height: 34, padding: "0 12px", borderRadius: 10, border: "none", background: FILL2, color: L1,
-    cursor: "pointer", fontFamily: FT, fontSize: 14, fontWeight: 700, display: "inline-grid", placeItems: "center", WebkitTapHighlightColor: "transparent",
+    cursor: "pointer", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, display: "inline-grid", placeItems: "center", WebkitTapHighlightColor: "transparent",
   };
 
   return (
@@ -390,12 +390,12 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
           {status === "guest" && (
             <div style={{ ...card, textAlign: "center", padding: "34px 22px", marginTop: 8 }}>
               <div style={{ width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Flame /></div>
-              <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Ведите дневник садханы</div>
-              <p style={{ margin: "8px auto 18px", maxWidth: 320, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: L2 }}>
+              <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Ведите дневник садханы</div>
+              <p style={{ margin: "8px auto 18px", maxWidth: 320, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: L2 }}>
                 Круги джапы, чтение книг и время подъёма — со стриками, статистикой и историей. Войдите, чтобы практика сохранялась на всех устройствах.
               </p>
               <button type="button" onClick={() => requireAuth()}
-                style={{ padding: "11px 26px", borderRadius: 999, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", boxShadow: "0 8px 22px rgba(210,170,27,0.4)", WebkitTapHighlightColor: "transparent" }}>
+                style={{ padding: "11px 26px", borderRadius: 999, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", boxShadow: "0 8px 22px rgba(210,170,27,0.4)", WebkitTapHighlightColor: "transparent" }}>
                 Войти
               </button>
             </div>
@@ -403,13 +403,13 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
 
           {/* — загрузка — */}
           {status !== "guest" && loading && (
-            <div style={{ padding: "60px 0", textAlign: "center", color: L3, fontFamily: FT, fontSize: 14 }}>Загрузка…</div>
+            <div style={{ padding: "60px 0", textAlign: "center", color: L3, fontFamily: FT, fontSize: "var(--text-subhead)" }}>Загрузка…</div>
           )}
 
           {/* — ошибка — */}
           {status !== "guest" && !loading && failed && (
             <div style={{ ...card, textAlign: "center", padding: "34px 22px", marginTop: 8 }}>
-              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: 14, color: L2 }}>Не удалось загрузить дневник.</p>
+              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Не удалось загрузить дневник.</p>
               <button type="button" onClick={() => void load()} style={{ ...miniBtn, minWidth: 120 }}>Повторить</button>
             </div>
           )}
@@ -421,14 +421,14 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
               {showSet && (
                 <div style={{ ...card, marginBottom: 16 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                    <span style={{ fontFamily: FT, fontSize: 14, color: L1 }}>Цель в день (кругов)</span>
+                    <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>Цель в день (кругов)</span>
                     <span style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
                       <button type="button" aria-label="Меньше" onClick={() => bumpGoal(goal - (goal > 16 ? 4 : 1))} disabled={goal <= 1} style={{ ...miniBtn, width: 36, minWidth: 36, opacity: goal <= 1 ? 0.5 : 1 }}>−</button>
                       <span style={{ minWidth: 30, textAlign: "center", fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: L1 }}>{goal}</span>
                       <button type="button" aria-label="Больше" onClick={() => bumpGoal(goal + (goal >= 16 ? 4 : 1))} disabled={goal >= 64} style={{ ...miniBtn, width: 36, minWidth: 36, opacity: goal >= 64 ? 0.5 : 1 }}>+</button>
                     </span>
                   </div>
-                  <p style={{ margin: "10px 2px 0", fontFamily: FT, fontSize: 11.5, lineHeight: 1.5, color: L3 }}>
+                  <p style={{ margin: "10px 2px 0", fontFamily: FT, fontSize: "var(--text-caption)", lineHeight: 1.5, color: L3 }}>
                     Стандарт ИСККОН — 16 кругов в день. Цель общая со счётчиком джапы.
                   </p>
                 </div>
@@ -446,8 +446,8 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                     <circle cx="88" cy="88" r={R} fill="none" stroke={ringColor} strokeWidth="11" strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C * (1 - goalPct)} style={{ transition: "stroke-dashoffset .35s ease, stroke .2s" }} />
                   </svg>
                   <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontFamily: FD, fontSize: 30, fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: L1 }}>{todayRounds}</span>
-                    <span style={{ fontFamily: FT, fontSize: 10.5, color: L2, marginTop: 1 }}>из {goal}</span>
+                    <span style={{ fontFamily: FD, fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: L1 }}>{todayRounds}</span>
+                    <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", color: L2, marginTop: 1 }}>из {goal}</span>
                   </div>
                 </div>
                 <div style={{ minWidth: 0, flex: 1 }}>
@@ -457,10 +457,10 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                     </span>
                     {done && <span style={{ color: GREEN, display: "inline-flex" }}><Check /></span>}
                   </div>
-                  <div style={{ marginTop: 3, fontFamily: FT, fontSize: 12.5, color: L2 }}>
+                  <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-footnote)", color: L2 }}>
                     {done ? "Харе Кришна! Можно продолжать." : `Ещё ${goal - todayRounds} ${pluralRu(goal - todayRounds, "круг", "круга", "кругов")} до нормы`}
                   </div>
-                  <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 4, fontFamily: FT, fontSize: 12.5, fontWeight: 600, color: GOLDT }}>
+                  <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 4, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLDT }}>
                     Открыть счётчик <Chevron />
                   </div>
                 </div>
@@ -472,7 +472,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Book /></span>
                   <span style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ display: "block", fontFamily: FT, fontSize: 14, color: L1 }}>Чтение Прабхупады</span>
+                    <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>Чтение Прабхупады</span>
                     <span style={{ display: "block", marginTop: 1, fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 800, color: readMin > 0 ? L1 : L3 }}>{readMin > 0 ? fmtMin(readMin) : "—"}</span>
                   </span>
                   <span style={{ display: "inline-flex", gap: 6, flexShrink: 0 }}>
@@ -495,11 +495,11 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Sun /></span>
                   <span style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ display: "block", fontFamily: FT, fontSize: 14, color: L1 }}>Подъём (мангала-арати)</span>
-                    <span style={{ display: "block", marginTop: 1, fontFamily: FT, fontSize: 11.5, color: L3 }}>Во сколько встали сегодня</span>
+                    <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }}>Подъём (мангала-арати)</span>
+                    <span style={{ display: "block", marginTop: 1, fontFamily: FT, fontSize: "var(--text-caption)", color: L3 }}>Во сколько встали сегодня</span>
                   </span>
                   <input type="time" value={roseAt} onChange={(e) => { setRoseAt(e.target.value); void send({ roseAt: e.target.value || null }); }}
-                    style={{ flexShrink: 0, padding: "8px 10px", borderRadius: 10, border: `0.5px solid ${HAIR}`, background: FILL2, color: roseAt ? L1 : L3, fontFamily: FT, fontSize: 14.5, fontWeight: 600, colorScheme: "dark light" }} />
+                    style={{ flexShrink: 0, padding: "8px 10px", borderRadius: 10, border: `0.5px solid ${HAIR}`, background: FILL2, color: roseAt ? L1 : L3, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, colorScheme: "dark light" }} />
                 </div>
 
                 <div style={{ height: 1, background: HAIR, margin: "14px 0" }} />
@@ -509,7 +509,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                   <span style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Pencil /></span>
                   <textarea value={note} onChange={(e) => setNote(e.target.value.slice(0, 500))} onBlur={() => send({ note })}
                     placeholder="Заметка дня: реализации, благодарности, планы…" rows={2}
-                    style={{ flex: 1, minWidth: 0, resize: "none", padding: "9px 11px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL2, color: L1, fontFamily: FT, fontSize: 13.5, lineHeight: 1.5, outline: "none" }} />
+                    style={{ flex: 1, minWidth: 0, resize: "none", padding: "9px 11px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, outline: "none" }} />
                 </div>
               </div>
 
@@ -534,7 +534,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                     const col = w.done ? GREEN : w.rounds > 0 ? `color-mix(in srgb, ${GOLD} 55%, transparent)` : "color-mix(in srgb, var(--color-label) 8%, transparent)";
                     return (
                       <div key={w.day} title={`${prettyDate(w.day)}: ${w.rounds} кр.`} style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", height: "100%", gap: 6 }}>
-                        <div style={{ fontFamily: FT, fontSize: 10, fontWeight: 700, color: w.rounds > 0 ? L2 : "transparent", lineHeight: 1 }}>{w.rounds || 0}</div>
+                        <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, color: w.rounds > 0 ? L2 : "transparent", lineHeight: 1 }}>{w.rounds || 0}</div>
                         <div style={{ width: "100%", maxWidth: 30, height: h, borderRadius: 6, background: col, outline: w.today ? `2px solid ${GOLD}` : "none", outlineOffset: 1, transition: "height .3s ease" }} />
                         <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: w.today ? 800 : 500, color: w.today ? GOLDT : L3, lineHeight: 1 }}>{RU_WD1[wd]}</div>
                       </div>
@@ -562,10 +562,10 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                       <button type="button" key={d.day} onClick={() => setEditDay(d)} aria-label={`Изменить день: ${relDay(d.day)}`}
                         style={{ width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "12px 15px", borderTop: i ? `0.5px solid ${HAIR}` : "none", background: "none", border: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", font: "inherit" }}>
                         <span style={{ flexShrink: 0, width: 64 }}>
-                          <span style={{ display: "block", fontFamily: FD, fontSize: 13.5, fontWeight: 700, color: L1, lineHeight: 1.2 }}>{relDay(d.day)}</span>
+                          <span style={{ display: "block", fontFamily: FD, fontSize: "var(--text-footnote)", fontWeight: 700, color: L1, lineHeight: 1.2 }}>{relDay(d.day)}</span>
                         </span>
                         <span style={{ minWidth: 0, flex: 1, display: "flex", flexWrap: "wrap", gap: "2px 12px", alignItems: "baseline" }}>
-                          <span style={{ fontFamily: FT, fontSize: 13.5, fontWeight: 700, color: d.rounds >= goal ? GREEN : L1 }}>
+                          <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: d.rounds >= goal ? GREEN : L1 }}>
                             {d.rounds} {pluralRu(d.rounds, "круг", "круга", "кругов")}
                           </span>
                           {d.reading_min > 0 && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>чтение {fmtMin(d.reading_min)}</span>}

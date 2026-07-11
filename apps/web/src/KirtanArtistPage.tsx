@@ -57,8 +57,8 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
         <img src={albumCover(album)} alt="" loading="lazy" style={{ width: 64, height: 64, borderRadius: 12, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.01em", lineHeight: 1.25, color: "var(--color-label)" }}>{album.title}</div>
-          <div style={{ marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{meta}</div>
-          {album.note && <div style={{ marginTop: 5, fontSize: 12.5, lineHeight: 1.4, color: "var(--color-label-3, #8e8e93)" }}>{album.note}</div>}
+          <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{meta}</div>
+          {album.note && <div style={{ marginTop: 5, fontSize: "var(--text-footnote)", lineHeight: 1.4, color: "var(--color-label-3, #8e8e93)" }}>{album.note}</div>}
         </div>
         <span style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
           <CardActionBtns favKey={`kirtan-album:${album.id}`} meta={favMetaFromCtx(albumCtx)} size={32} onMore={() => openCardMenu(albumCtx)} />
@@ -72,14 +72,14 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
 
       {playable && (
         <>
-          <button onClick={() => setOpen((v) => !v)} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "10px 14px", background: "var(--color-bg-3, #f2f2f7)", border: "none", borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", color: "var(--color-gold-deep)", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600 }}>
+          <button onClick={() => setOpen((v) => !v)} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "10px 14px", background: "var(--color-bg-3, #f2f2f7)", border: "none", borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", color: "var(--color-gold-deep)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600 }}>
             <span>{open ? "Скрыть дорожки" : "Показать дорожки"}{tracks ? ` · ${tracks.length}` : ""}</span>
             <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden style={{ transform: open ? "rotate(90deg)" : "none", transition: "transform .2s" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
           {open && (
             <div style={{ borderTop: "0.5px solid var(--color-hairline)" }}>
-              {loading && <div style={{ padding: "14px", fontSize: 13.5, color: "var(--color-label-2)" }}>Загрузка дорожек…</div>}
-              {tracks && tracks.length === 0 && !loading && <div style={{ padding: "14px", fontSize: 13.5, color: "var(--color-label-2)" }}>Дорожки появятся позже.</div>}
+              {loading && <div style={{ padding: "14px", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>Загрузка дорожек…</div>}
+              {tracks && tracks.length === 0 && !loading && <div style={{ padding: "14px", fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>Дорожки появятся позже.</div>}
               {tracks && tracks.map((t, i) => {
                 const active = player.kind === "kirtan" && player.book === album.id && player.index === i;
                 const trackCtx = {
@@ -93,7 +93,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
                     onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); player.playKirtan(album.id, i); } }}
                     style={{ display: "flex", width: "100%", boxSizing: "border-box", alignItems: "center", gap: 10, padding: "8px 14px", textAlign: "left", background: active ? "rgba(210,170,27,0.12)" : "none", borderTop: i === 0 ? "none" : "0.5px solid var(--color-hairline)", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)", WebkitTapHighlightColor: "transparent" }}>
                     <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{active ? "▶" : i + 1}</span>
-                    <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: active ? 600 : 400, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
+                    <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
                     {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
                     <CardActionBtns favKey={`kirtan-track:${album.id}:${i}`} meta={favMetaFromCtx(trackCtx)} size={28} onMore={() => openCardMenu(trackCtx)} />
                   </div>
@@ -129,7 +129,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
     <div onScroll={(e) => setScrolled((e.currentTarget as HTMLDivElement).scrollTop > 10)} style={{ height: "100%", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)" }}>
       <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", gap: 6, padding: "0 8px", background: scrolled ? "var(--color-bg)" : "transparent", borderBottom: `0.5px solid ${scrolled ? "var(--color-hairline)" : "transparent"}`, transition: "background .2s, border-color .2s", backdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none", WebkitBackdropFilter: scrolled ? "saturate(180%) blur(20px)" : "none" }}>
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "var(--color-glass-regular)", cursor: "pointer", color: "var(--color-label)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}><BackIcon /></button>
-        <div style={{ flex: 1, minWidth: 0, fontSize: 15.5, fontWeight: 700, color: "var(--color-label)", opacity: scrolled ? 1 : 0, transition: "opacity .2s", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingRight: 8 }}>{artist.name}</div>
+        <div style={{ flex: 1, minWidth: 0, fontSize: "var(--text-callout)", fontWeight: 700, color: "var(--color-label)", opacity: scrolled ? 1 : 0, transition: "opacity .2s", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingRight: 8 }}>{artist.name}</div>
       </header>
 
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "8px 16px 56px", fontFamily: "var(--font-text)" }}>
@@ -138,8 +138,8 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
           <ArtistMono artist={artist} size={84} />
           <div style={{ minWidth: 0, flex: 1 }}>
             {accent && <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD, marginBottom: 3 }}>Ачарья-основатель</div>}
-            <h1 style={{ margin: 0, fontSize: 26, fontWeight: 800, letterSpacing: "-0.4px", lineHeight: 1.12, color: "var(--color-label)" }}>{artist.name}</h1>
-            <div style={{ marginTop: 4, fontSize: 13.5, color: "var(--color-label-2)" }}>{artist.role}</div>
+            <h1 style={{ margin: 0, fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", lineHeight: 1.12, color: "var(--color-label)" }}>{artist.name}</h1>
+            <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>{artist.role}</div>
           </div>
         </div>
 
@@ -152,14 +152,14 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
         )}
 
         {artist.full && artist.full !== artist.name && (
-          <div style={{ marginTop: 10, fontSize: 14, color: "var(--color-label)", fontWeight: 500 }}>{artist.full}</div>
+          <div style={{ marginTop: 10, fontSize: "var(--text-subhead)", color: "var(--color-label)", fontWeight: 500 }}>{artist.full}</div>
         )}
 
-        <p style={{ margin: "14px 0 0", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label)" }}>{artist.bio}</p>
+        <p style={{ margin: "14px 0 0", fontSize: "var(--text-callout)", lineHeight: 1.55, color: "var(--color-label)" }}>{artist.bio}</p>
 
         {artist.entityId && onOpenEntity && (
           <button type="button" onClick={() => onOpenEntity(artist.entityId!, "personality")}
-            style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 15px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)" }}>
+            style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 15px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
             Страница личности →
           </button>
         )}
@@ -170,7 +170,7 @@ export default function KirtanArtistPage({ slug, onBack, onOpenEntity }: { slug:
             {albums.some((a) => a.archive) ? "Альбомы" : "Записи"}
           </div>
           {albums.length === 0 && (
-            <div style={{ padding: "16px", borderRadius: 16, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", fontSize: 14, color: "var(--color-label-2)" }}>
+            <div style={{ padding: "16px", borderRadius: 16, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>
               Записи готовятся.
             </div>
           )}

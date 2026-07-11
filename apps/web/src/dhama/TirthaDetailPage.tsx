@@ -187,7 +187,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
           {/* источник: BBT-книга (курсивом, как цитата) либо подпись о традиции */}
           {t.source && (
             <div style={{ marginTop: "var(--space-4)", display: "flex", gap: "var(--space-2)", alignItems: "baseline", flexWrap: "wrap" }}>
-              <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 10.5, fontWeight: "var(--weight-bold)", letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Источник</span>
+              <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Источник</span>
               <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-normal)", color: "var(--color-label-2)", fontStyle: t.source.startsWith("«") ? "italic" : "normal" }}>{t.source}</span>
             </div>
           )}

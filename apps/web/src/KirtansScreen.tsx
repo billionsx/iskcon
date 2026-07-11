@@ -67,8 +67,8 @@ function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }
         </span>
         <span style={{ position: "absolute", left: 10, top: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.01em" }}>{TYPE_LABEL[album.type]}</span>
       </div>
-      <div style={{ marginTop: 9, fontSize: 14.5, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
-      <div style={{ marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
+      <div style={{ marginTop: 9, fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
+      <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
     </button>
   );
 }
@@ -111,7 +111,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     border: `0.5px solid ${on ? "transparent" : "var(--color-hairline)"}`,
     background: on ? "var(--color-label)" : "var(--color-bg-2)",
     color: on ? "var(--color-bg)" : "var(--color-label)",
-    fontSize: 13.5, fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
+    fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
     transition: "background .15s, color .15s, border-color .15s", WebkitTapHighlightColor: "transparent",
   });
 
@@ -121,7 +121,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Аудиотека</div>
         <h1 style={{ margin: "2px 0 0", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Киртаны и бхаджаны</h1>
-        <p style={{ margin: "8px 0 0", fontSize: 14.5, lineHeight: 1.45, color: "var(--color-label-2)", maxWidth: 520 }}>
+        <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.45, color: "var(--color-label-2)", maxWidth: 520 }}>
           Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана и фестивалей наших дней.
         </p>
       </div>
@@ -151,10 +151,10 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
                 <button onClick={() => onOpenArtist(a.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
                   <ArtistMono artist={a} />
                   <span style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ display: "block", fontSize: 15.5, fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{a.name}</span>
+                    <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{a.name}</span>
                     <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.role}{a.era ? ` · ${a.era}` : ""}</span>
                   </span>
-                  {cnt > 0 && <span style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 600, color: GOLD, marginRight: 2 }}>{cnt}♪</span>}
+                  {cnt > 0 && <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", fontWeight: 600, color: GOLD, marginRight: 2 }}>{cnt}♪</span>}
                   <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </button>
               </li>
@@ -180,7 +180,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
         {(fType || fMood) && (
           <ul style={{ margin: "14px 0 0", padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-            {filtered.length === 0 && <li style={{ padding: "16px", fontSize: 14, color: "var(--color-label-2)" }}>Пока нет записей по этому фильтру.</li>}
+            {filtered.length === 0 && <li style={{ padding: "16px", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока нет записей по этому фильтру.</li>}
             {filtered.map((al, i) => {
               const ar = artistBySlug(al.artist);
               const can = !!al.archive;

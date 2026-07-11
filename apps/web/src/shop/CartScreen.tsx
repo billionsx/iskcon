@@ -76,10 +76,10 @@ const Emblem = ({ size = 44, color = GOLD }: { size?: number; color?: string }) 
 
 /* ───────── мелкие примитивы ───────── */
 function SectionLabel({ children }: { children: ReactNode }) {
-  return <div style={{ fontSize: 12.5, fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: INK3, margin: "0 0 9px 16px" }}>{children}</div>;
+  return <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "0.02em", textTransform: "uppercase", color: INK3, margin: "0 0 9px 16px" }}>{children}</div>;
 }
 function Footnote({ children }: { children: ReactNode }) {
-  return <div style={{ fontSize: 12.5, lineHeight: 1.45, color: INK3, margin: "9px 16px 0" }}>{children}</div>;
+  return <div style={{ fontSize: "var(--text-footnote)", lineHeight: 1.45, color: INK3, margin: "9px 16px 0" }}>{children}</div>;
 }
 function GroupCard({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return <div style={{ background: CARD, borderRadius: 14, overflow: "hidden", ...style }}>{children}</div>;
@@ -116,7 +116,7 @@ function Stepper({ qty, onDec, onInc }: { qty: number; onDec: () => void; onInc:
   return (
     <div style={{ display: "inline-flex", alignItems: "center", background: FILL, borderRadius: 999, height: 34 }} onClick={(e) => e.stopPropagation()}>
       <button type="button" aria-label="Меньше" onClick={onDec} style={btn}>{qty <= 1 ? <Trash size={15} color={RED} /> : <Minus size={16} />}</button>
-      <span style={{ minWidth: 22, textAlign: "center", fontSize: 15.5, fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{qty}</span>
+      <span style={{ minWidth: 22, textAlign: "center", fontSize: "var(--text-callout)", fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{qty}</span>
       <button type="button" aria-label="Больше" onClick={onInc} style={btn}><Plus size={16} /></button>
     </div>
   );
@@ -130,10 +130,10 @@ function Field({ label, value, onChange, placeholder, type = "text", inputMode, 
 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: 48, padding: "8px 16px", borderTop: first ? "none" : `0.5px solid ${HAIR}` }}>
-      <label style={{ flexShrink: 0, width: 96, fontSize: 14.5, color: INK2 }}>{label}</label>
+      <label style={{ flexShrink: 0, width: 96, fontSize: "var(--text-subhead)", color: INK2 }}>{label}</label>
       <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} type={type} inputMode={inputMode} autoComplete={autoComplete} maxLength={maxLength}
         style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", textAlign: "right",
-          fontFamily: mono ? "ui-monospace,SFMono-Regular,Menlo,monospace" : "var(--font-text)", fontSize: 15.5, color: invalid ? RED : INK, letterSpacing: mono ? "0.02em" : 0 }} />
+          fontFamily: mono ? "ui-monospace,SFMono-Regular,Menlo,monospace" : "var(--font-text)", fontSize: "var(--text-callout)", color: invalid ? RED : INK, letterSpacing: mono ? "0.02em" : 0 }} />
     </div>
   );
 }
@@ -145,9 +145,9 @@ function CatalogRow({ p, first, onAdd }: { p: Product; first: boolean; onAdd: ()
     <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 14px", borderTop: first ? "none" : `0.5px solid ${HAIR}`, background: CARD }}>
       <Thumb line={p} size={54} />
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{p.title}</div>
-        {p.subtitle && <div style={{ marginTop: 2, fontSize: 12.5, color: INK3, lineHeight: 1.3 }}>{p.subtitle}</div>}
-        <div style={{ marginTop: 4, fontSize: 14.5, fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(p.price)}</div>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{p.title}</div>
+        {p.subtitle && <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3 }}>{p.subtitle}</div>}
+        <div style={{ marginTop: 4, fontSize: "var(--text-subhead)", fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(p.price)}</div>
       </div>
       {q > 0 ? (
         <Stepper qty={q} onDec={() => setQty(p.id, q - 1)} onInc={() => setQty(p.id, q + 1)} />
@@ -181,7 +181,7 @@ function CatalogView({ onAskDonation }: { onAskDonation: () => void }) {
           <button type="button" onClick={onAskDonation} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "12px 14px", border: "none", background: CARD, cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
             <Thumb line={{ emblem: true, kind: "donation", title: "Пожертвование" }} size={54} />
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 600, color: INK, letterSpacing: "-0.01em" }}>Поддержать проект</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 600, color: INK, letterSpacing: "-0.01em" }}>Поддержать проект</div>
               <div style={{ marginTop: 2, fontSize: 12.5, color: INK3 }}>{donQty > 0 ? "Сумма добавлена в корзину" : "Любая сумма · ISKCON ONE LOVE"}</div>
             </div>
             <Chevron />
@@ -207,18 +207,18 @@ function CartLineRow({ line, reduce, onEditDonation }: { line: CartLine; reduce:
   const k = line.product.kind;
   return (
     <div style={{ position: "relative", maxHeight: removing ? 0 : 260, opacity: removing ? 0 : 1, overflow: "hidden", transition: reduce ? "none" : "max-height .24s ease,opacity .2s ease" }}>
-      <button type="button" aria-label="Удалить" onClick={commit} style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 7, paddingRight: 22, background: RED, color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600 }}>
+      <button type="button" aria-label="Удалить" onClick={commit} style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 7, paddingRight: 22, background: RED, color: "#fff", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600 }}>
         <Trash size={17} /> Удалить
       </button>
       <div onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
         style={{ position: "relative", display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", background: CARD, transform: `translateX(${dx}px)`, transition: drag.current ? "none" : "transform .26s cubic-bezier(.22,.61,.36,1)", touchAction: "pan-y" }}>
         <Thumb line={line.product} size={58} />
         <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{line.product.title}</div>
-          {line.product.subtitle && <div style={{ marginTop: 2, fontSize: 12.5, color: INK3 }}>{line.product.subtitle}</div>}
+          <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{line.product.title}</div>
+          {line.product.subtitle && <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: INK3 }}>{line.product.subtitle}</div>}
           <div style={{ marginTop: 7, display: "flex", alignItems: "center", gap: 10 }}>
             {k === "physical" && <Stepper qty={line.qty} onDec={() => setQty(id, line.qty - 1)} onInc={() => setQty(id, line.qty + 1)} />}
-            {k === "digital" && <span style={{ fontSize: 12.5, fontWeight: 600, color: INK2, background: FILL, borderRadius: 999, padding: "5px 11px" }}>Цифровой товар</span>}
+            {k === "digital" && <span style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: INK2, background: FILL, borderRadius: 999, padding: "5px 11px" }}>Цифровой товар</span>}
             {k === "donation" && <button type="button" onClick={onEditDonation} style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: BLUE, background: "transparent", border: "none", padding: 0, cursor: "pointer" }}>Изменить сумму</button>}
             <span style={{ marginLeft: "auto", fontSize: "var(--text-subhead)", fontWeight: 700, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(lineTotal(line))}</span>
           </div>
@@ -301,14 +301,14 @@ function PayRow({ icon, title, sub, on, onClick, withTop }: { icon: ReactNode; t
     <button type="button" onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 56, padding: "10px 16px", border: "none", borderTop: withTop ? `0.5px solid ${HAIR}` : "none", background: CARD, cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
       <span style={{ flexShrink: 0, color: INK }}>{icon}</span>
       <span style={{ minWidth: 0, flex: 1 }}>
-        <span style={{ display: "block", fontSize: 15.5, fontWeight: 500, color: INK, lineHeight: 1.25 }}>{title}</span>
-        {sub && <span style={{ display: "block", marginTop: 1, fontSize: 12.5, color: INK3 }}>{sub}</span>}
+        <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 500, color: INK, lineHeight: 1.25 }}>{title}</span>
+        {sub && <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-footnote)", color: INK3 }}>{sub}</span>}
       </span>
       <RadioDot on={on} />
     </button>
   );
 }
-function SbpMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: 5, background: "linear-gradient(135deg,#f9a01b,#7b1fa2 55%,#1aa5b8)", color: "#fff", fontSize: 9, fontWeight: 800, letterSpacing: "-0.5px" }}>СБП</span>; }
+function SbpMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: 5, background: "linear-gradient(135deg,#f9a01b,#7b1fa2 55%,#1aa5b8)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 800, letterSpacing: "-0.5px" }}>СБП</span>; }
 function UsdtMark() { return <span style={{ display: "inline-grid", placeItems: "center", width: 21, height: 21, borderRadius: "50%", background: "#26a17b", color: "#fff", fontSize: "var(--text-footnote)", fontWeight: 800 }}>₮</span>; }
 const brandGlyph = (b: string) => b === "visa" ? "VISA" : b === "mc" ? "MC" : b === "mir" ? "Мир" : b === "amex" ? "AMEX" : b === "unionpay" ? "UP" : "Карта";
 
@@ -319,13 +319,13 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
   return (
     <div style={{ padding: "14px 16px calc(28px + env(safe-area-inset-bottom,0px))" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: CARD, borderRadius: 14, padding: "14px 16px", marginBottom: 18 }}>
-        <span style={{ fontSize: 14.5, color: INK2 }}>К оплате</span>
+        <span style={{ fontSize: "var(--text-subhead)", color: INK2 }}>К оплате</span>
         <span style={{ fontSize: "var(--text-title2)", fontWeight: 800, color: INK, letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>{fmtRub(total)}</span>
       </div>
 
       {applePay && (
         <>
-          <button type="button" onClick={onExpress} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, width: "100%", height: 50, borderRadius: 13, border: "none", background: "#000", color: "#fff", fontFamily: "var(--font-text)", fontSize: 18, fontWeight: 600, cursor: "pointer", letterSpacing: "-0.01em", WebkitTapHighlightColor: "transparent" }}>
+          <button type="button" onClick={onExpress} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7, width: "100%", height: 50, borderRadius: 13, border: "none", background: "#000", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, cursor: "pointer", letterSpacing: "-0.01em", WebkitTapHighlightColor: "transparent" }}>
             <AppleLogo size={20} /> Pay
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 2px 14px", color: INK3 }}>
@@ -343,7 +343,7 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
               const on = selCard === c.id;
               return (
                 <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 11, padding: "9px 16px 9px 22px" }}>
-                  <span style={{ flexShrink: 0, display: "grid", placeItems: "center", minWidth: 40, height: 24, padding: "0 6px", borderRadius: 5, background: "#1d1d1f", color: "#fff", fontSize: 10, fontWeight: 800, letterSpacing: "0.02em" }}>{brandGlyph(c.brand)}</span>
+                  <span style={{ flexShrink: 0, display: "grid", placeItems: "center", minWidth: 40, height: 24, padding: "0 6px", borderRadius: 5, background: "#1d1d1f", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 800, letterSpacing: "0.02em" }}>{brandGlyph(c.brand)}</span>
                   <button type="button" onClick={() => setSelCard(on ? null : c.id)} style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, border: "none", background: "transparent", cursor: "pointer", textAlign: "left", padding: 0 }}>
                     <span style={{ fontSize: 14.5, color: INK, fontVariantNumeric: "tabular-nums" }}>•••• {c.last4}</span>
                     <span style={{ fontSize: "var(--text-caption)", color: INK3 }}>{c.exp}</span>
@@ -353,7 +353,7 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
                 </div>
               );
             })}
-            <button type="button" onClick={onAddCard} style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "10px 16px 10px 22px", border: "none", background: "transparent", color: BLUE, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
+            <button type="button" onClick={onAddCard} style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", padding: "10px 16px 10px 22px", border: "none", background: "transparent", color: BLUE, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
               <Plus size={16} /> Добавить карту
             </button>
           </div>
@@ -371,14 +371,14 @@ function PaymentView({ method, setMethod, total, cards, selCard, setSelCard, onA
           <SectionLabel>Адрес USDT (TRC20)</SectionLabel>
           <GroupCard>
             <div style={{ padding: "14px 16px 13px" }}>
-              <div style={{ fontSize: 11.5, color: INK3, marginBottom: 5 }}>Кошелёк</div>
-              <code style={{ display: "block", fontSize: 13.5, lineHeight: 1.4, color: INK, wordBreak: "break-all", fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace" }}>{USDT_TRC20}</code>
+              <div style={{ fontSize: "var(--text-caption)", color: INK3, marginBottom: 5 }}>Кошелёк</div>
+              <code style={{ display: "block", fontSize: "var(--text-footnote)", lineHeight: 1.4, color: INK, wordBreak: "break-all", fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace" }}>{USDT_TRC20}</code>
               <div style={{ marginTop: 6, fontSize: "var(--text-footnote)", fontWeight: 700, color: INK }}>Сумма: {fmtRub(total)} <span style={{ color: INK3, fontWeight: 400 }}>· отправьте эквивалент в USDT</span></div>
             </div>
-            <button onClick={onCopy} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", borderTop: `0.5px solid ${HAIR}`, background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 500, color: copied ? OK : INK, textAlign: "left" }}>
+            <button onClick={onCopy} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", borderTop: `0.5px solid ${HAIR}`, background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 500, color: copied ? OK : INK, textAlign: "left" }}>
               <CopyIc color={copied ? OK : INK2} /><span style={{ flex: 1 }}>{copied ? "Адрес скопирован" : "Копировать адрес"}</span>{copied && <CheckMark size={16} color={OK} />}
             </button>
-            <button onClick={() => setShowQr(!showQr)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", borderTop: `0.5px solid ${HAIR}`, background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 500, color: INK, textAlign: "left" }}>
+            <button onClick={() => setShowQr(!showQr)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", minHeight: 52, padding: "0 16px", border: "none", borderTop: `0.5px solid ${HAIR}`, background: "transparent", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 500, color: INK, textAlign: "left" }}>
               <QrIc /><span style={{ flex: 1 }}>{showQr ? "Скрыть QR-код" : "Показать QR-код"}</span><span style={{ color: INK3, fontSize: "var(--text-caption2)" }}>{showQr ? "▲" : "▼"}</span>
             </button>
             {showQr && (
@@ -440,7 +440,7 @@ function AmountSheet({ initial, onClose, onApply }: { initial: number; onClose: 
         <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
           {DONATION_PRESETS.map((p) => {
             const on = n === p;
-            return <button key={p} type="button" onClick={() => setVal(String(p))} style={{ flex: 1, height: 44, borderRadius: 12, border: on ? `1.6px solid ${GOLD}` : `1px solid ${LINE}`, background: on ? `${GOLD}1a` : CARD, color: INK, fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 700, cursor: "pointer", fontVariantNumeric: "tabular-nums", WebkitTapHighlightColor: "transparent" }}>{p}</button>;
+            return <button key={p} type="button" onClick={() => setVal(String(p))} style={{ flex: 1, height: 44, borderRadius: 12, border: on ? `1.6px solid ${GOLD}` : `1px solid ${LINE}`, background: on ? `${GOLD}1a` : CARD, color: INK, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", fontVariantNumeric: "tabular-nums", WebkitTapHighlightColor: "transparent" }}>{p}</button>;
           })}
         </div>
         <GroupCard>
@@ -466,7 +466,7 @@ function Segmented<T extends string>({ value, onChange, options }: { value: T; o
         const on = o.id === value;
         return (
           <button key={o.id} type="button" onClick={() => onChange(o.id)} aria-pressed={on}
-            style={{ flex: 1, height: 32, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600,
+            style={{ flex: 1, height: 32, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600,
               color: on ? INK : INK2, background: on ? CARD : "transparent", boxShadow: on ? "0 1px 4px rgba(0,0,0,0.12),0 0 0 0.5px rgba(0,0,0,0.04)" : "none",
               transition: "background .18s,color .18s", WebkitTapHighlightColor: "transparent" }}>
             {o.label}
@@ -482,8 +482,8 @@ function EmptyCart({ onShop }: { onShop: () => void }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", padding: "64px 40px" }}>
       <span style={{ display: "grid", placeItems: "center", width: 76, height: 76, borderRadius: "50%", background: FILL, color: INK3 }}><Bag size={34} /></span>
-      <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: 21, fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Корзина пуста</h2>
-      <p style={{ margin: "8px 0 20px", fontSize: 14.5, lineHeight: 1.5, color: INK2, maxWidth: 280 }}>Загляните в магазин: книги, атрибуты для практики и цифровые материалы.</p>
+      <h2 style={{ margin: "20px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>Корзина пуста</h2>
+      <p style={{ margin: "8px 0 20px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, maxWidth: 280 }}>Загляните в магазин: книги, атрибуты для практики и цифровые материалы.</p>
       <button type="button" onClick={onShop} style={{ height: 46, padding: "0 22px", borderRadius: 13, border: "none", background: INK, color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Перейти в магазин</button>
     </div>
   );
@@ -551,8 +551,8 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
     <div style={{ padding: "8px 16px calc(28px + env(safe-area-inset-bottom,0px))", maxWidth: 420, margin: "0 auto" }}>
       <div style={{ textAlign: "center", padding: "14px 0 22px" }}>
         <span style={{ display: "grid", placeItems: "center", width: 74, height: 74, borderRadius: "50%", background: GOLD, margin: "0 auto", boxShadow: "0 10px 30px rgba(210,170,27,0.4)" }}><CheckMark size={42} color="#fff" /></span>
-        <h1 style={{ margin: "18px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>Заказ оформлен</h1>
-        <p style={{ margin: "9px auto 0", maxWidth: 300, fontSize: 14, lineHeight: 1.5, color: INK2 }}>{paid ? "Оплата получена. Мы приступаем к обработке заказа." : "Состав заказа отправлен команде. Подтвердим оплату — статус обновится здесь."}</p>
+        <h1 style={{ margin: "18px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>Заказ оформлен</h1>
+        <p style={{ margin: "9px auto 0", maxWidth: 300, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2 }}>{paid ? "Оплата получена. Мы приступаем к обработке заказа." : "Состав заказа отправлен команде. Подтвердим оплату — статус обновится здесь."}</p>
       </div>
 
       <div style={{ borderRadius: 20, overflow: "hidden", boxShadow: "0 18px 50px rgba(0,0,0,0.18)", background: CARD }}>
@@ -566,8 +566,8 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
             <span style={{ marginLeft: "auto", fontSize: "var(--text-caption2)", fontWeight: 700, padding: "4px 10px", borderRadius: 999, ...(paid ? { background: "rgba(52,199,89,0.25)", color: "#5ee07f" } : { background: "rgba(210,170,27,0.25)", color: "#f2cf4f" }) }}>{paid ? "Оплата получена" : "Ожидает оплаты"}</span>
           </div>
           <div style={{ display: "flex", gap: 26, marginTop: 18 }}>
-            <div><div style={{ fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Сумма</div><div style={{ fontSize: 21, fontWeight: 800, letterSpacing: "-0.02em" }}>{fmtRub(o.total)}</div></div>
-            <div><div style={{ fontSize: 10.5, letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Позиций</div><div style={{ fontSize: 21, fontWeight: 800 }}>{itemsCount}</div></div>
+            <div><div style={{ fontSize: "var(--text-caption2)", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Сумма</div><div style={{ fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em" }}>{fmtRub(o.total)}</div></div>
+            <div><div style={{ fontSize: "var(--text-caption2)", letterSpacing: "0.06em", textTransform: "uppercase", color: "rgba(255,255,255,0.55)" }}>Позиций</div><div style={{ fontSize: "var(--text-title2)", fontWeight: 800 }}>{itemsCount}</div></div>
           </div>
         </div>
         <div style={{ position: "relative", height: 22 }}>
@@ -578,8 +578,8 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
         <div style={{ padding: "6px 20px 20px" }}>
           {o.lines.map((l) => (
             <div key={l.product.id} style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "5px 0" }}>
-              <span style={{ minWidth: 0, flex: 1, fontSize: 14, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.product.title}{l.product.kind === "physical" && l.qty > 1 ? ` ×${l.qty}` : ""}</span>
-              <span style={{ fontSize: 14, fontWeight: 600, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(lineTotal(l))}</span>
+              <span style={{ minWidth: 0, flex: 1, fontSize: "var(--text-subhead)", color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.product.title}{l.product.kind === "physical" && l.qty > 1 ? ` ×${l.qty}` : ""}</span>
+              <span style={{ fontSize: "var(--text-subhead)", fontWeight: 600, color: INK, fontVariantNumeric: "tabular-nums" }}>{fmtRub(lineTotal(l))}</span>
             </div>
           ))}
           <div style={{ height: 0.5, background: HAIR, margin: "10px 0" }} />
@@ -588,7 +588,7 @@ function DoneView({ o, onDone }: { o: Placed; onDone: () => void }) {
           <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", color: INK2 }}>Оплата: <span style={{ color: INK, fontWeight: 600 }}>{o.methodLabel}</span></div>
           <div style={{ marginTop: 18, paddingTop: 14, borderTop: `0.5px solid ${HAIR}` }}>
             <Barcode seed={o.orderNo} />
-            <div style={{ textAlign: "center", marginTop: 8, fontSize: 11.5, letterSpacing: "0.18em", color: INK3, fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace" }}>{o.orderNo}</div>
+            <div style={{ textAlign: "center", marginTop: 8, fontSize: "var(--text-caption)", letterSpacing: "0.18em", color: INK3, fontFamily: "ui-monospace,SFMono-Regular,Menlo,monospace" }}>{o.orderNo}</div>
           </div>
         </div>
       </div>
@@ -728,7 +728,7 @@ export default function CartScreen({ onClose }: { onClose: () => void }) {
             : <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.02em", color: INK }}>{title}</span>}
         </div>
         {view === "cart" && tab === "cart" && count > 0
-          ? <button type="button" onClick={() => clearCart()} style={{ flexShrink: 0, height: 38, padding: "0 10px", border: "none", background: "none", color: INK2, fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Очистить</button>
+          ? <button type="button" onClick={() => clearCart()} style={{ flexShrink: 0, height: 38, padding: "0 10px", border: "none", background: "none", color: INK2, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Очистить</button>
           : <span style={{ width: 40 }} />}
       </header>
 
@@ -739,7 +739,7 @@ export default function CartScreen({ onClose }: { onClose: () => void }) {
             <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ display: "grid", placeItems: "center", width: 20, height: 20, borderRadius: "50%", fontSize: "var(--text-caption2)", fontWeight: 700, background: i <= stepIdx ? INK : FILL, color: i <= stepIdx ? "#fff" : INK3 }}>{i < stepIdx ? "✓" : i + 1}</span>
-                <span style={{ fontSize: 12.5, fontWeight: i === stepIdx ? 700 : 500, color: i === stepIdx ? INK : INK3 }}>{s}</span>
+                <span style={{ fontSize: "var(--text-footnote)", fontWeight: i === stepIdx ? 700 : 500, color: i === stepIdx ? INK : INK3 }}>{s}</span>
               </span>
               {i < steps.length - 1 && <span style={{ width: 18, height: 0.5, background: i < stepIdx ? INK : LINE }} />}
             </div>

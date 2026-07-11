@@ -108,7 +108,7 @@ function SubTabs({ items, active, onChange }: { items: { id: SectionId; label: s
           const on = it.id === active;
           return (
             <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "11px 15px", fontSize: 13.5, background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", color: on ? "#fff" : "rgba(255,255,255,0.5)", fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
+              style={{ position: "relative", flexShrink: 0, padding: "11px 15px", fontSize: "var(--text-footnote)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", color: on ? "#fff" : "rgba(255,255,255,0.5)", fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
               {it.label}
               {on && <span aria-hidden style={{ position: "absolute", insetInline: 13, bottom: 0, height: 2, borderRadius: 999, background: "#fff" }} />}
             </button>
@@ -139,7 +139,7 @@ function SectionTitle({ children, sub }: { children: ReactNode; sub?: string }) 
   return (
     <div style={{ marginBottom: 14 }}>
       <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.025em", color: "var(--color-label)" }}>{children}</h2>
-      {sub && <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>}
+      {sub && <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>}
     </div>
   );
 }
@@ -174,8 +174,8 @@ function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (sl
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" /><path d="M8 4v14" /></svg>
         </span>
         <span style={{ minWidth: 0, flex: 1 }}>
-          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>Книга «Кухня прасада»</span>
-          <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>Философия, продукты и специи, техники, рецепты и подношение</span>
+          <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)" }}>Книга «Кухня прасада»</span>
+          <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>Философия, продукты и специи, техники, рецепты и подношение</span>
         </span>
         <ChevR />
       </button>
@@ -201,7 +201,7 @@ function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (sl
         ))}
       </div>
 
-      <div style={{ margin: "20px 0 10px", fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: "var(--color-label-3)" }}>
+      <div style={{ margin: "20px 0 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)" }}>
         {results.length === 0 ? "Ничего не найдено — смягчите фильтры." : `Найдено: ${results.length}`}
       </div>
 
@@ -259,12 +259,12 @@ function MatchSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }
       <div style={{ height: 1, background: "var(--color-hairline)", margin: "24px 0 20px" }} />
 
       {selected.size === 0 ? (
-        <div style={{ padding: "26px 18px", textAlign: "center", borderRadius: 18, background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.55, color: "var(--color-label-2)" }}>
+        <div style={{ padding: "26px 18px", textAlign: "center", borderRadius: 18, background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-2)" }}>
           Отметьте хотя бы один продукт — и здесь появятся подходящие блюда, отсортированные по тому, насколько полно подходит ваш набор.
         </div>
       ) : (
         <>
-          <div style={{ margin: "0 0 12px", fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: "var(--color-label-3)" }}>
+          <div style={{ margin: "0 0 12px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)" }}>
             {results.length === 0 ? "Совпадений нет — добавьте продукты." : `Подходящих блюд: ${results.length}`}
           </div>
           {results.length > 0 && (
@@ -278,7 +278,7 @@ function MatchSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }
                     style={{ display: "flex", alignItems: "flex-start", gap: 13, width: "100%", padding: "13px 14px", border: "none", background: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
                     <span style={{ minWidth: 0, flex: 1 }}>
                       <span style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                        <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{m.recipe.title}</span>
+                        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)" }}>{m.recipe.title}</span>
                         <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 999, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.2px",
                           background: full ? `color-mix(in srgb, ${GOLD} 18%, transparent)` : "var(--color-glass-regular)",
                           color: full ? GOLD : "var(--color-label-2)" }}>
@@ -286,12 +286,12 @@ function MatchSection({ onOpenRecipe }: { onOpenRecipe: (slug: string) => void }
                         </span>
                       </span>
                       {!full && (
-                        <span style={{ display: "block", marginTop: 5, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-3)" }}>
+                        <span style={{ display: "block", marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-3)" }}>
                           не хватает: {missLabels.join(", ")}
                         </span>
                       )}
                       {full && (
-                        <span style={{ display: "block", marginTop: 5, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>
+                        <span style={{ display: "block", marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>
                           можно готовить из того, что есть
                         </span>
                       )}
@@ -328,14 +328,14 @@ function DeitiesSection({ onOpenRecipe, onOpenEntity, flash }: { onOpenRecipe: (
                   </button>
                 ) : d.name}
               </h3>
-              <p style={{ margin: "9px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>{d.blurb}</p>
+              <p style={{ margin: "9px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-2)" }}>{d.blurb}</p>
 
               <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
                 <Lotus size={14} /> Особенно дорого
               </div>
               <ul style={{ margin: "8px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 6 }}>
                 {d.loves.map((l, i) => (
-                  <li key={i} style={{ display: "flex", gap: 9, fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label)" }}>
+                  <li key={i} style={{ display: "flex", gap: 9, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>
                     <span aria-hidden style={{ color: GOLD, flexShrink: 0 }}>·</span>{l}
                   </li>
                 ))}
@@ -343,7 +343,7 @@ function DeitiesSection({ onOpenRecipe, onOpenEntity, flash }: { onOpenRecipe: (
 
               {recipes.length > 0 && (
                 <>
-                  <div style={{ marginTop: 16, marginBottom: 9, fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 600, color: "var(--color-label-3)" }}>Чем порадовать</div>
+                  <div style={{ marginTop: 16, marginBottom: 9, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)" }}>Чем порадовать</div>
                   <div style={{ display: "flex", gap: 11, overflowX: "auto", paddingBottom: 4, marginInline: -18, paddingInline: 18, scrollbarWidth: "none" }}>
                     {recipes.map((r) => <RecipeCard key={r.slug} slug={r.slug} onOpen={onOpenRecipe} flash={flash} width={150} />)}
                   </div>
@@ -369,7 +369,7 @@ function OfferingSection() {
         {OFFERING_PRINCIPLES.map((p) => (
           <div key={p.title} style={{ padding: "15px 16px", borderRadius: 16, background: "var(--color-glass-thin)" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 700, color: "var(--color-label)" }}>{p.title}</div>
-            <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.55, color: "var(--color-label-2)" }}>{p.body}</p>
+            <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-2)" }}>{p.body}</p>
           </div>
         ))}
       </div>
@@ -381,8 +381,8 @@ function OfferingSection() {
           <li key={i} style={{ display: "flex", gap: 14, padding: "0 0 18px", alignItems: "flex-start" }}>
             <span aria-hidden style={{ flexShrink: 0, width: 27, height: 27, borderRadius: "50%", display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, color: GOLD, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, marginTop: 1 }}>{i + 1}</span>
             <span style={{ minWidth: 0 }}>
-              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>{s.t}</span>
-              <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.55, color: "var(--color-label-2)" }}>{s.d}</span>
+              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)" }}>{s.t}</span>
+              <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-2)" }}>{s.d}</span>
             </span>
           </li>
         ))}
@@ -390,7 +390,7 @@ function OfferingSection() {
 
       {/* Молитвы */}
       <div style={{ marginTop: 14 }}><Eyebrow>Молитвы подношения</Eyebrow></div>
-      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-3)" }}>
+      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-3)" }}>
         Прочтите каждую молитву трижды, поднося пищу с почтением.
       </p>
       <div style={{ marginTop: 14, display: "grid", gap: 14 }}>
@@ -399,17 +399,17 @@ function OfferingSection() {
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{pr.to}</div>
             <div style={{ margin: "10px 0 0", display: "grid", gap: 3 }}>
               {pr.lines.map((ln, i) => (
-                <div key={i} style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 15.5, lineHeight: 1.5, color: "var(--color-label)" }}>{ln}</div>
+                <div key={i} style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.5, color: "var(--color-label)" }}>{ln}</div>
               ))}
             </div>
-            <p style={{ margin: "11px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>{pr.meaning}</p>
+            <p style={{ margin: "11px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "var(--color-label-2)" }}>{pr.meaning}</p>
           </div>
         ))}
       </div>
 
       {/* Классика */}
       <div style={{ marginTop: 30 }}><Eyebrow>Классика — для изучения</Eyebrow></div>
-      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-3)" }}>
+      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-3)" }}>
         Канонические труды по кухне прасада, заложившие стандарт ИСККОН.
       </p>
       <div style={{ marginTop: 14 }}>
@@ -418,7 +418,7 @@ function OfferingSection() {
             <div key={b.title} style={{ padding: "14px 16px" }}>
               <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{b.title}</div>
               <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD }}>{b.author}</div>
-              <p style={{ margin: "6px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>{b.note}</p>
+              <p style={{ margin: "6px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{b.note}</p>
             </div>
           ))}
         </GroupedList>

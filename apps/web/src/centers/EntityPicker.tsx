@@ -73,7 +73,7 @@ export default function EntityPicker({
       <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 11, background: `color-mix(in srgb, ${GOLD} 13%, transparent)`, border: `0.5px solid color-mix(in srgb, ${GOLD} 36%, transparent)` }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg>
-          <span style={{ fontFamily: FT, fontSize: 14.5, fontWeight: 600, color: L1 }}>{value.name}</span>
+          <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1 }}>{value.name}</span>
         </span>
         <button type="button" onClick={() => onChange(null)} style={{ padding: "8px 12px", borderRadius: 11, border: "none", background: FILL2, color: L2, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           Отвязать
@@ -82,7 +82,7 @@ export default function EntityPicker({
     );
   }
 
-  const input: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: 15.5, color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
+  const input: CSSProperties = { width: "100%", boxSizing: "border-box", fontFamily: FT, fontSize: "var(--text-callout)", color: L1, background: FILL2, border: "none", outline: "none", borderRadius: 12, padding: "11px 13px", WebkitTapHighlightColor: "transparent" };
 
   return (
     <div style={{ position: "relative" }}>
@@ -99,9 +99,9 @@ export default function EntityPicker({
       {open && q.trim().length >= 2 && (
         <div style={{ marginTop: 8, borderRadius: 14, border: `0.5px solid ${HAIR}`, background: "var(--color-bg-2)", overflow: "hidden" }}>
           {loading && hits.length === 0 ? (
-            <div style={{ padding: "13px 14px", fontFamily: FT, fontSize: 13.5, color: L3 }}>Поиск…</div>
+            <div style={{ padding: "13px 14px", fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>Поиск…</div>
           ) : hits.length === 0 ? (
-            <div style={{ padding: "13px 14px", fontFamily: FT, fontSize: 13.5, color: L3 }}>Ничего не найдено</div>
+            <div style={{ padding: "13px 14px", fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>Ничего не найдено</div>
           ) : (
             hits.map((h, i) => (
               <button
@@ -118,7 +118,7 @@ export default function EntityPicker({
                   </span>
                 )}
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: "block", fontFamily: FT, fontSize: 14.5, fontWeight: 600, color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hitName(h)}</span>
+                  <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, color: L1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{hitName(h)}</span>
                   {h.type && <span style={{ display: "block", fontFamily: FT, fontSize: "var(--text-caption)", color: L3 }}>{TYPE_LABEL[h.type] || h.type}{h.name_iast && h.name_ru ? ` · ${h.name_iast}` : ""}</span>}
                 </span>
               </button>

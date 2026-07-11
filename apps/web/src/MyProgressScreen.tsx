@@ -110,21 +110,21 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
               <Ring pct={corpusPct} />
               <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center" }}>
                 <div>
-                  <div style={{ fontFamily: FD, fontSize: 26, fontWeight: 800, letterSpacing: "-0.02em", color: L1, lineHeight: 1 }}>{corpusPctLabel}<span style={{ fontSize: 14, color: L3 }}>%</span></div>
-                  <div style={{ marginTop: 3, fontFamily: FT, fontSize: 10.5, color: L3 }}>корпуса</div>
+                  <div style={{ fontFamily: FD, fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.02em", color: L1, lineHeight: 1 }}>{corpusPctLabel}<span style={{ fontSize: "var(--text-subhead)", color: L3 }}>%</span></div>
+                  <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-caption2)", color: L3 }}>корпуса</div>
                 </div>
               </div>
             </div>
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение</div>
-              <div style={{ marginTop: 4, fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: L1, lineHeight: 1.15 }}>
+              <div style={{ marginTop: 4, fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1, lineHeight: 1.15 }}>
                 {planErr ? "Прабхупада" : `${fmt(corpusRead)} из ${fmt(corpusTotal || 25016)}`}
               </div>
-              <div style={{ marginTop: 2, fontFamily: FT, fontSize: 12.5, lineHeight: 1.4, color: L2 }}>
+              <div style={{ marginTop: 2, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.4, color: L2 }}>
                 {plan ? (corpusRead > 0 ? `Сейчас: ${plan.workName}` : "Стих за стихом: БГ → ШБ → ЧЧ") : "стихов прочитано"}
               </div>
               <button type="button" onClick={() => onOpen("/practice/verse")}
-                style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 7, height: 38, padding: "0 14px", borderRadius: 11, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 13.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 7, height: 38, padding: "0 14px", borderRadius: 11, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 {corpusRead > 0 ? "Продолжить" : "Начать"} <ArrowR />
               </button>
             </div>
@@ -141,7 +141,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
             <div style={{ ...card, flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 7, color: GOLDT }}><Flame /><span style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, color: L2 }}>Стрик</span></div>
               <div style={{ marginTop: 8, fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{streak} <span style={{ fontSize: "var(--text-footnote)", color: L3, fontWeight: 600 }}>{streak % 10 === 1 && streak % 100 !== 11 ? "день" : (streak % 10 >= 2 && streak % 10 <= 4 && (streak % 100 < 10 || streak % 100 >= 20)) ? "дня" : "дней"}</span></div>
-              <div style={{ marginTop: 8, fontFamily: FT, fontSize: 11.5, lineHeight: 1.4, color: L3 }}>дней подряд с выполненной целью</div>
+              <div style={{ marginTop: 8, fontFamily: FT, fontSize: "var(--text-caption)", lineHeight: 1.4, color: L3 }}>дней подряд с выполненной целью</div>
             </div>
           </div>
 
@@ -149,8 +149,8 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
           <div style={{ ...sectionLabel }}>Книги</div>
           {books.length === 0 ? (
             <div style={{ ...card, textAlign: "center", padding: "30px 22px" }}>
-              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: L2 }}>Вы ещё не начали читать. Откройте любую книгу — прогресс появится здесь.</p>
-              <button type="button" onClick={() => onOpen("/")} style={{ height: 40, padding: "0 18px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>К библиотеке</button>
+              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: L2 }}>Вы ещё не начали читать. Откройте любую книгу — прогресс появится здесь.</p>
+              <button type="button" onClick={() => onOpen("/")} style={{ height: 40, padding: "0 18px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>К библиотеке</button>
             </div>
           ) : (
             <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", borderRadius: 18, background: FILL }}>
@@ -165,7 +165,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
                         <span style={{ display: "block", marginTop: 2, fontFamily: FT, fontSize: "var(--text-caption)", color: L2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{r.label}</span>
                         <span style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
                           <span style={{ flex: 1 }}><Bar pct={pct ?? 0} /></span>
-                          <span style={{ flexShrink: 0, fontFamily: FT, fontSize: 11.5, fontWeight: 700, color: pct ? GOLDT : L3, minWidth: 30, textAlign: "right" }}>{pct ? `${pct}%` : "—"}</span>
+                          <span style={{ flexShrink: 0, fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 700, color: pct ? GOLDT : L3, minWidth: 30, textAlign: "right" }}>{pct ? `${pct}%` : "—"}</span>
                         </span>
                       </span>
                       <ChevR />
@@ -176,7 +176,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
             </ul>
           )}
 
-          <p style={{ margin: "22px 4px 0", fontFamily: FT, fontSize: 11.5, lineHeight: 1.5, color: L3 }}>
+          <p style={{ margin: "22px 4px 0", fontFamily: FT, fontSize: "var(--text-caption)", lineHeight: 1.5, color: L3 }}>
             Прогресс хранится на этом устройстве. Цель и стрик чтения настраиваются в дневнике садханы.
           </p>
         </div>

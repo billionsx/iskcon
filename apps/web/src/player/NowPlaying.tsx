@@ -185,7 +185,7 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
             <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
-              <div style={{ fontSize: 13.5, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
+              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
               <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isAdHoc ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : isAudiobook ? bookFullTitle(BOOK) : `${sub} · ${bookFullTitle(BOOK)}`}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -238,7 +238,7 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
             <input type="range" aria-label="Перемотка" min={0} max={Math.max(1, Math.floor(p.duration))} step={1}
               value={Math.floor(p.currentTime)} onChange={(e) => p.seek(Number(e.target.value))}
               style={{ width: "100%", accentColor: GOLD, height: 16, cursor: "pointer" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: "rgba(255,255,255,0.5)", marginTop: -1, fontVariantNumeric: "tabular-nums" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.5)", marginTop: -1, fontVariantNumeric: "tabular-nums" }}>
               <span>{fmtTime(p.currentTime)}</span><span>−{fmtTime(remaining)}</span>
             </div>
           </div>
@@ -276,7 +276,7 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
       </div>
 
       {toast && (
-        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: 14, fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: "var(--text-subhead)", fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
@@ -339,7 +339,7 @@ function KirtanHero({ cover, title, artist, note, coverActions }: { cover: strin
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.18 }}>{title}</div>
           {artist && <div style={{ fontSize: "var(--text-subhead)", fontWeight: 500, color: GOLD, marginTop: 3 }}>{artist}</div>}
-          {note && <div style={{ fontSize: 12.5, lineHeight: 1.45, color: "rgba(255,255,255,0.55)", marginTop: 7 }}>{note}</div>}
+          {note && <div style={{ fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "rgba(255,255,255,0.55)", marginTop: 7 }}>{note}</div>}
         </div>
       </div>
       {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>{coverActions}</div>}
@@ -354,7 +354,7 @@ function QueueRow({ t, active, num, onClick }: { t: Track; active: boolean; num?
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
         background: active ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff" }}>
       <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
-      <span style={{ flex: 1, minWidth: 0, fontSize: 14.5, fontWeight: active ? 600 : 400, color: active ? "#fff" : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? "#fff" : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
     </button>
   );

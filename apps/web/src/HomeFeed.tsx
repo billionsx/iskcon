@@ -196,7 +196,7 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
             </div>
           ))}
         </div>
-        <span style={{ position: "absolute", top: 16, left: 16, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{display.length}</span>
+        <span style={{ position: "absolute", top: 16, left: 16, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: "var(--text-caption)", fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{display.length}</span>
         <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 14, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none", zIndex: 3 }}>
           {display.map((_, i) => (
             <span key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: i === idx ? "#fff" : "rgba(255,255,255,0.5)", boxShadow: "0 0 2px rgba(0,0,0,0.4)", transition: "background .2s" }} />
@@ -266,7 +266,7 @@ function VideoBox({ v, id }: { v: TgVideo; id: string }) {
         </span>
       </span>
       {v.duration && (
-        <span style={{ position: "absolute", left: 10, bottom: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 700, color: "#fff", letterSpacing: "0.2px" }}>{v.duration}</span>
+        <span style={{ position: "absolute", left: 10, bottom: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, color: "#fff", letterSpacing: "0.2px" }}>{v.duration}</span>
       )}
     </div>
   );
@@ -290,7 +290,7 @@ function VoicePlayer({ a }: { a: TgAudio }) {
           : <svg width="15" height="15" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" fill="currentColor" /></svg>}
       </button>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)" }}>{a.title}</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>{a.title}</div>
         <div style={{ position: "relative", height: 4, marginTop: 7, borderRadius: 999, background: "var(--color-glass-thin)" }}>
           <span style={{ position: "absolute", inset: 0, width: `${pct * 100}%`, borderRadius: 999, background: GOLD, transition: "width .2s linear" }} />
         </div>
@@ -321,7 +321,7 @@ function TgAudioCard({ a, id, flash, onMore }: { a: TgAudio; id: string; flash?:
           : <svg width="17" height="17" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /><circle cx="6.5" cy="18" r="2.5" fill="#fff" /><circle cx="16.5" cy="16" r="2.5" fill="#fff" /></svg>}
       </span>
       <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</span>
+        <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.title}</span>
         {a.meta && <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{a.meta} · слушать в Telegram</span>}
       </span>
       <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -336,8 +336,8 @@ function TgLinkCard({ l }: { l: TgLink }) {
       style={{ display: "block", margin: "12px 14px 0", borderRadius: 16, overflow: "hidden", border: "1px solid var(--color-separator)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
       {l.img && <img src={l.img} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "16 / 8", objectFit: "cover" }} />}
       <span style={{ display: "block", padding: "10px 14px 12px" }}>
-        {l.title && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 700, color: "var(--color-label)" }}>{l.title}</span>}
-        {l.desc && <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{l.desc}</span>}
+        {l.title && <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, color: "var(--color-label)" }}>{l.title}</span>}
+        {l.desc && <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>{l.desc}</span>}
       </span>
     </a>
   );
@@ -483,11 +483,11 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
       {/* подпись + техданные (дата · просмотры) */}
       <div style={{ padding: "11px 14px 14px" }}>
         {p.text.trim() && (
-          <div style={{ fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
             {renderRich(p.rich.length > 0 ? p.rich : [{ t: "t", v: p.text }], long && !open ? 170 : null)}
             {long && (
               <button type="button" onClick={onToggle}
-                style={{ marginLeft: 4, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, color: "var(--color-label-3)", WebkitTapHighlightColor: "transparent" }}>
+                style={{ marginLeft: 4, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label-3)", WebkitTapHighlightColor: "transparent" }}>
                 {open ? "свернуть" : "ещё"}
               </button>
             )}
@@ -567,14 +567,14 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
       <style>{`.iol-feed-carousel::-webkit-scrollbar{display:none}@keyframes feedspin{to{transform:rotate(360deg)}}`}</style>
 
       <div style={{ padding: "20px 0 0" }}>
-        <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+        <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           Вдохновение дарами, которые принес Шрила Прабхупада в этой беспрецедентной волне Гауранга Лилы — Международное общество сознание Кришны (ИСККОН), развивающееся по всему миру и распространяющее Прему высшего порядка.
         </p>
       </div>
 
       <div style={{ marginTop: 28 }} aria-live="polite">
         {err && (
-          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Лента временно недоступна.<br />
             <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал в Telegram →</a>
           </div>
@@ -601,14 +601,14 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
           <p style={{ margin: "18px 2px 0", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>Вы долистали до начала канала.</p>
         )}
         {posts && posts.length === 0 && (
-          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, color: "var(--color-label-3)" }}>
+          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>
             Пока нет постов. <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a>
           </div>
         )}
       </div>
 
       {toast && (
-        <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
+        <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: "var(--text-footnote)", lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
       )}
     </div>
   );
@@ -657,7 +657,7 @@ export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: ()
           </div>
         )}
         {state === "error" && (
-          <div style={{ padding: "40px 16px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+          <div style={{ padding: "40px 16px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Не удалось открыть пост.<br />
             <a href={postUrl(id)} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть в Telegram →</a>
           </div>
@@ -669,7 +669,7 @@ export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: ()
 
       <style>{`@keyframes feedspin{to{transform:rotate(360deg)}}`}</style>
       {toast && (
-        <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
+        <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: "var(--text-footnote)", lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
       )}
     </div>
   );

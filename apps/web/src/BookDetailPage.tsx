@@ -1921,7 +1921,7 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
           <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
         </div>
         <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{renderTitle(book.titleLine1)}</h1>
-        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{renderTitle(book.titleLine2)}</div>}
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: "var(--text-title1)", fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{renderTitle(book.titleLine2)}</div>}
         <div style={{ marginTop: "7mm", fontSize: 12.5, letterSpacing: "3px", textTransform: "uppercase", color: INK2 }}>Полное издание с комментариями</div>
         <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
       </div>
@@ -1931,9 +1931,9 @@ export function BookPrint({ book, chapters, versesByCh }: { book: BookData; chap
         <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
           {chapters.map((c) => (
             <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
-              <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{c.number}</span>
-              <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
-              <span style={{ fontSize: 12.5, color: INK3 }}>{c.verses} стихов</span>
+              <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT }}>{c.number}</span>
+              <span style={{ flex: 1, fontSize: "var(--text-callout)", color: INK }}>{c.title_ru}</span>
+              <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>{c.verses} стихов</span>
             </li>
           ))}
         </ol>
@@ -1971,9 +1971,9 @@ export function LilaPrint({ book, lilaLabel, range, chapters, versesByCh, bare }
             <ol style={{ margin: 0, padding: 0, listStyle: "none" }}>
               {chapters.map((c) => (
                 <li key={c.id} style={{ display: "flex", alignItems: "baseline", gap: 12, padding: "7px 0", borderBottom: `0.5px solid ${LINE}` }}>
-                  <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: 14, fontWeight: 700, color: GOLDT }}>{c.number}</span>
-                  <span style={{ flex: 1, fontSize: 15.5, color: INK }}>{c.title_ru}</span>
-                  <span style={{ fontSize: 12.5, color: INK3 }}>{c.verses} стихов</span>
+                  <span style={{ width: 22, flexShrink: 0, textAlign: "center", fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT }}>{c.number}</span>
+                  <span style={{ flex: 1, fontSize: "var(--text-callout)", color: INK }}>{c.title_ru}</span>
+                  <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>{c.verses} стихов</span>
                 </li>
               ))}
             </ol>
@@ -2001,7 +2001,7 @@ export function ProsePrint({ book, chapters, parasByCh }: { book: BookData; chap
           <span style={{ position: "absolute", top: "-8pt", left: "50%", transform: "translateX(-50%)", background: "#fff", padding: "0 6px", color: GOLD, fontSize: "9pt" }}>◆</span>
         </div>
         <h1 style={{ margin: "16mm 0 0", fontSize: 40, lineHeight: 1.06, fontWeight: 800, letterSpacing: "-0.02em", color: INK }}>{renderTitle(book.titleLine1)}</h1>
-        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: 27, fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{renderTitle(book.titleLine2)}</div>}
+        {book.titleLine2 && <div style={{ marginTop: 4, fontSize: "var(--text-title1)", fontWeight: 600, letterSpacing: "-0.01em", color: INK }}>{renderTitle(book.titleLine2)}</div>}
         <div style={{ marginTop: "7mm", fontSize: 12.5, letterSpacing: "3px", textTransform: "uppercase", color: INK2 }}>{book.tagline}</div>
         <p style={{ margin: "20mm auto 0", maxWidth: 430, fontSize: 14.5, lineHeight: 1.55, color: INK2 }}>{book.author}</p>
       </div>

@@ -149,8 +149,8 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
   const header: CSSProperties = { padding: "calc(12px + env(safe-area-inset-top)) 20px 0" };
   const main: CSSProperties = { flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "0 24px", display: "flex", flexDirection: "column" };
   const footer: CSSProperties = { padding: "12px 24px calc(20px + env(safe-area-inset-bottom))", display: "flex", flexDirection: "column", gap: 2 };
-  const h1: CSSProperties = { fontFamily: DISPLAY, fontSize: 30, fontWeight: 700, color: INK, lineHeight: 1.12, letterSpacing: -0.5, margin: 0 };
-  const sub: CSSProperties = { fontSize: 16.5, lineHeight: 1.45, color: INK2, margin: "13px 0 0", fontWeight: 400 };
+  const h1: CSSProperties = { fontFamily: DISPLAY, fontSize: "var(--text-title1)", fontWeight: 700, color: INK, lineHeight: 1.12, letterSpacing: -0.5, margin: 0 };
+  const sub: CSSProperties = { fontSize: "var(--text-body)", lineHeight: 1.45, color: INK2, margin: "13px 0 0", fontWeight: 400 };
   const groupCard: CSSProperties = { background: CARD, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: SHADOW, overflow: "hidden" };
   const rowStyle: CSSProperties = { display: "flex", alignItems: "center", minHeight: 56, padding: "0 16px" };
   const input: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: TEXT, padding: "16px 0" };
@@ -189,7 +189,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
       <div style={{ ...main, justifyContent: "center", alignItems: "center", textAlign: "center", paddingTop: "env(safe-area-inset-top)" }}>
         <img className="onb-rise" src="/iskcon-one-love-mark.svg" alt="" width={104} height={104} style={{ marginBottom: 30 }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
         <div className="onb-rise" style={{ animationDelay: ".08s", fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: 2.5, color: GOLD, textTransform: "uppercase" }}>Харе Кришна</div>
-        <h1 className="onb-rise" style={{ ...h1, animationDelay: ".16s", fontSize: 32, maxWidth: 340, marginTop: 14 }}>Добро пожаловать<br />в ISKCON ONE LOVE</h1>
+        <h1 className="onb-rise" style={{ ...h1, animationDelay: ".16s", fontSize: "var(--text-display)", maxWidth: 340, marginTop: 14 }}>Добро пожаловать<br />в ISKCON ONE LOVE</h1>
         <p className="onb-rise" style={{ ...sub, animationDelay: ".24s", maxWidth: 322 }}>Ваш дом в сознании Кришны: священные тексты, святые имена, вайшнавский календарь, даршаны и живая садхана — в одном месте.</p>
       </div>
     );
@@ -210,7 +210,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
                   <Chip on={on}><LevelIcon id={o.id} c={on ? ON_GOLD : GOLD} /></Chip>
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: "block", fontSize: "var(--text-body)", fontWeight: 600, color: INK, fontFamily: TEXT }}>{o.label}</span>
-                    <span style={{ display: "block", fontSize: 13.5, color: INK2, fontFamily: TEXT, marginTop: 1 }}>{o.hint}</span>
+                    <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK2, fontFamily: TEXT, marginTop: 1 }}>{o.hint}</span>
                   </span>
                   <span style={{ width: 22, height: 22, borderRadius: "50%", flex: "0 0 auto", display: "grid", placeItems: "center", background: on ? GOLD : "transparent", border: on ? "none" : `1.6px solid ${INK3}` }}>{on && <IcCheck />}</span>
                 </button>
@@ -235,11 +235,11 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
               <div style={{ ...rowStyle, justifyContent: "space-between" }}>
                 <span style={{ display: "flex", flexDirection: "column" }}>
                   <span style={{ fontSize: "var(--text-body)", color: INK, fontFamily: TEXT }}>Норма кругов в день</span>
-                  <span style={{ fontSize: 12.5, color: INK3, fontFamily: TEXT, marginTop: 1 }}>16 — стандарт для инициированных</span>
+                  <span style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: TEXT, marginTop: 1 }}>16 — стандарт для инициированных</span>
                 </span>
                 <div style={{ display: "flex", alignItems: "center", gap: 2, background: FILL, borderRadius: 11, padding: 3 }}>
                   <button className="onb-press" aria-label="Меньше" onClick={() => setNorm((n) => Math.max(1, n - 1))} style={stepBtn}>−</button>
-                  <span style={{ minWidth: 32, textAlign: "center", fontSize: 18, fontWeight: 650, color: INK, fontFamily: DISPLAY, fontVariantNumeric: "tabular-nums" }}>{norm}</span>
+                  <span style={{ minWidth: 32, textAlign: "center", fontSize: "var(--text-body)", fontWeight: 650, color: INK, fontFamily: DISPLAY, fontVariantNumeric: "tabular-nums" }}>{norm}</span>
                   <button className="onb-press" aria-label="Больше" onClick={() => setNorm((n) => Math.min(64, n + 1))} style={stepBtn}>+</button>
                 </div>
               </div>
@@ -260,7 +260,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
           <div style={{ display: "flex", alignItems: "center", gap: 11, textAlign: "left", background: CARD, borderRadius: 15, border: `0.5px solid ${HAIR}`, boxShadow: SHADOW, padding: "11px 13px" }}>
             <img src="/iskcon-one-love-mark.svg" alt="" width={34} height={34} style={{ flex: "0 0 auto" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
             <span style={{ minWidth: 0 }}>
-              <span style={{ display: "block", fontSize: 13.5, fontWeight: 700, color: INK, fontFamily: TEXT, letterSpacing: 0.2 }}>ISKCON ONE LOVE</span>
+              <span style={{ display: "block", fontSize: "var(--text-footnote)", fontWeight: 700, color: INK, fontFamily: TEXT, letterSpacing: 0.2 }}>ISKCON ONE LOVE</span>
               <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK2, fontFamily: TEXT, marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Стих дня · «Бхагавад-гита» 1.1</span>
             </span>
           </div>
@@ -310,4 +310,4 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
   );
 }
 
-const stepBtn: CSSProperties = { width: 34, height: 34, borderRadius: 9, border: "none", background: "transparent", color: INK, fontFamily: TEXT, fontSize: 21, fontWeight: 500, lineHeight: 1, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
+const stepBtn: CSSProperties = { width: 34, height: 34, borderRadius: 9, border: "none", background: "transparent", color: INK, fontFamily: TEXT, fontSize: "var(--text-title2)", fontWeight: 500, lineHeight: 1, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };

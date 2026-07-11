@@ -42,7 +42,7 @@ function MetaPill({ icon, children }: { icon: React.ReactNode; children: React.R
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{children}</h2>;
+  return <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--color-label)" }}>{children}</h2>;
 }
 
 export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOffering, onOpenBookChapter, onOpenEntity, flash }: {
@@ -80,7 +80,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
           {recipe.region ?? "Прасад"}
         </div>
-        <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08, color: "var(--color-label)" }}>
+        <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.08, color: "var(--color-label)" }}>
           {recipe.title}
         </h1>
         {recipe.sanskrit && (
@@ -88,7 +88,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
             {recipe.sanskrit}
           </div>
         )}
-        <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label-2)" }}>
+        <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.55, color: "var(--color-label-2)" }}>
           {recipe.subtitle}
         </p>
 
@@ -116,7 +116,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
             <div style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
               <Lotus size={15} /> Кому особенно дорого
             </div>
-            <div style={{ marginTop: 6, fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.5, color: "var(--color-label)" }}>
+            <div style={{ marginTop: 6, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>
               {cooks.map((c, i) => (
                 <span key={c!.id}>
                   {i > 0 && <span style={{ color: "var(--color-label-3)" }}> · </span>}
@@ -139,7 +139,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
             {recipe.ingredients.map((ing, i) => (
               <li key={i} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 14, padding: "13px 16px", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
                 <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)" }}>{ing.item}</span>
-                {ing.amount && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: 13.5, fontWeight: 600, color: "var(--color-label-3)", textAlign: "right" }}>{ing.amount}</span>}
+                {ing.amount && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)", textAlign: "right" }}>{ing.amount}</span>}
               </li>
             ))}
           </ul>
@@ -154,7 +154,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
                 <span aria-hidden style={{ flexShrink: 0, width: 27, height: 27, borderRadius: "50%", display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, color: GOLD, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, marginTop: 1 }}>
                   {i + 1}
                 </span>
-                <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, lineHeight: 1.55, color: "var(--color-label)", paddingTop: 2 }}>{step}</span>
+                <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", lineHeight: 1.55, color: "var(--color-label)", paddingTop: 2 }}>{step}</span>
               </li>
             ))}
           </ol>
@@ -166,7 +166,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD, marginBottom: 7 }}>
               Настрой повара
             </div>
-            <p style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 15.5, lineHeight: 1.6, color: "var(--color-label)" }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-callout)", lineHeight: 1.6, color: "var(--color-label)" }}>
               {recipe.note}
             </p>
           </section>
@@ -177,8 +177,8 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
           style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", marginTop: 26, padding: "16px 16px", borderRadius: 18, border: "none", background: "var(--color-glass-thin)", color: "var(--color-label)", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
           <span aria-hidden style={{ flexShrink: 0, width: 38, height: 38, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Lotus size={20} /></span>
           <span style={{ minWidth: 0, flex: 1 }}>
-            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>Как подносить прасад</span>
-            <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>Молитвы, процедура и настрой подношения</span>
+            <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)" }}>Как подносить прасад</span>
+            <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>Молитвы, процедура и настрой подношения</span>
           </span>
           <ChevR />
         </button>
@@ -195,7 +195,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" /><path d="M8 4v14" /></svg>
               </span>
               <span style={{ minWidth: 0, flex: 1 }}>
-                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, color: "var(--color-label)" }}>Читать в книге</span>
+                <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)" }}>Читать в книге</span>
                 <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>«Кухня прасада» · {ch.title}</span>
               </span>
               <ChevR />

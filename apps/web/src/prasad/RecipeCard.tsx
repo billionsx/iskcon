@@ -38,7 +38,7 @@ export default function RecipeCard({ slug, onOpen, flash, width = 172 }: {
       <div style={{ position: "relative", height: 126, overflow: "hidden" }}>
         <RecipeCover category={r.category} slug={r.slug} name={r.sanskrit || r.title} glyphSize={40} />
         {cat && (
-          <span style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.34)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: coverFor(r.category).accent }}>{cat}</span>
+          <span style={{ position: "absolute", top: 10, left: 10, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.34)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: coverFor(r.category).accent }}>{cat}</span>
         )}
         <span style={{ position: "absolute", top: 8, right: 8 }}>
           <CardActionBtns favKey={`recipe:${r.slug}`} meta={favMetaFromCtx(recipeCtx(r))} flash={flash} dark size={30} onMore={() => openCardMenu(recipeCtx(r))} />
@@ -46,8 +46,8 @@ export default function RecipeCard({ slug, onOpen, flash, width = 172 }: {
       </div>
       {/* подпись */}
       <div style={{ padding: "11px 13px 13px" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 36 }}>{r.title}</div>
-        <div style={{ display: "flex", alignItems: "center", gap: 11, marginTop: 8, fontFamily: "var(--font-text)", fontSize: 11.5, color: "var(--color-label-3)" }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", minHeight: 36 }}>{r.title}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 11, marginTop: 8, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ color: GOLD, display: "inline-flex" }}><Clock /></span>{r.minutes} мин</span>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><span style={{ color: GOLD, display: "inline-flex" }}><Gauge /></span>{DIFFICULTY_LABEL[r.difficulty]}</span>
         </div>

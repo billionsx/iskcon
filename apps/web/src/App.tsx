@@ -352,7 +352,7 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
             </div>
           ))}
       {!searching && items && items.length > 0 && (
-        <button onClick={onOpenCatalog} style={{ marginTop: 18, width: "100%", padding: "12px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: 14, fontWeight: 600, fontFamily: "var(--font-text)" }}>
+        <button onClick={onOpenCatalog} style={{ marginTop: 18, width: "100%", padding: "12px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-subhead)", fontWeight: 600, fontFamily: "var(--font-text)" }}>
           Открыть весь каталог →
         </button>
       )}
@@ -418,7 +418,7 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
         <button aria-label="Назад" onClick={onBack} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", border: "none", background: "none", cursor: "pointer", color: "var(--color-label)" }}>
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontSize: 15.5, fontWeight: 700, color: "var(--color-label)" }}>Каталог бхаджанов</div>
+        <div style={{ flex: 1, minWidth: 0, fontSize: "var(--text-callout)", fontWeight: 700, color: "var(--color-label)" }}>Каталог бхаджанов</div>
       </header>
 
       {!items && !err && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "48px 0", fontSize: "var(--text-subhead)" }}>Загрузка…</div>}
@@ -431,7 +431,7 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
             {CAT_SEGMENTS.filter((s) => s.id === "all" || segCount(s.id) > 0).map((s) => {
               const on = seg === s.id;
               return (
-                <button key={s.id} onClick={() => setSeg(s.id)} style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, border: on ? "none" : "0.5px solid var(--color-hairline)", background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", WebkitTapHighlightColor: "transparent" }}>{s.label}</button>
+                <button key={s.id} onClick={() => setSeg(s.id)} style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, border: on ? "none" : "0.5px solid var(--color-hairline)", background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", WebkitTapHighlightColor: "transparent" }}>{s.label}</button>
               );
             })}
           </div>
@@ -443,7 +443,7 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
 
           {groups.map((g) => (
             <section key={g.author} style={{ marginBottom: 26 }}>
-              <h2 style={{ margin: "0 0 10px", fontSize: 18, fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
+              <h2 style={{ margin: "0 0 10px", fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.2px", color: "var(--color-label)" }}>{g.author}</h2>
               {g.books.map((bk) => (
                 <div key={(g.author) + "|" + (bk.book ?? "_")} style={{ marginBottom: 12 }}>
                   {bk.book && <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "1px", textTransform: "uppercase", color: "var(--color-gold-deep)", margin: "8px 2px 6px" }}>{bk.book}</div>}
@@ -538,7 +538,7 @@ function SegRow({ value, onChange, items }: { value: string; onChange: (v: strin
         return (
           <button key={id} role="tab" aria-selected={on} onClick={() => onChange(id)}
             style={{ flexShrink: 0, padding: "8px 16px", borderRadius: 999, border: "none", cursor: "pointer",
-              fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, letterSpacing: "-0.2px",
+              fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.2px",
               background: on ? "var(--color-label)" : "var(--color-bg-2)", color: on ? "var(--color-bg)" : "var(--color-label-2)" }}>
             {label}
           </button>
@@ -660,18 +660,18 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
       <TabBar active={tab} onChange={onChange} scrollRef={mainRef} />
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Главная · ${bookFullTitle(BOOKS.bg)}`} />
-      {toast && <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: 13.5, lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>}
+      {toast && <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 1100, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: "var(--text-footnote)", lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>}
       {bookPct > 0 && !pdfHidden && (
         <div style={{ position: "fixed", inset: 0, zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.45)" }}>
           <div style={{ position: "relative", width: 300, maxWidth: "calc(100% - 48px)", background: "#fff", borderRadius: 20, padding: "26px 22px 20px", boxShadow: "0 20px 60px rgba(0,0,0,0.35)", fontFamily: "var(--font-text)", textAlign: "center" }}>
-            <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 18, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
+            <button type="button" aria-label="Отменить загрузку" onClick={cancelPdf} style={{ position: "absolute", top: 12, right: 12, width: 28, height: 28, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.06)", color: "#6e6e73", cursor: "pointer", display: "grid", placeItems: "center", fontSize: "var(--text-body)", lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>×</button>
             <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em", color: "#1d1d1f", padding: "0 8px", textWrap: "balance" }}>{bookPctTitle}</div>
-            <div style={{ fontSize: 12.5, color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
+            <div style={{ fontSize: "var(--text-footnote)", color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
               <div style={{ width: `${bookPct}%`, height: "100%", background: "var(--color-gold)", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
-            <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
+            <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
           </div>
         </div>
       )}
@@ -1267,7 +1267,7 @@ export default function App() {
         <MiniPlayer tabBarVisible={tabBarVisible || overlayTabBar} />
         <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { div: null, chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onOpenBhajan={setOpenBhajan} onDonate={openDonate} />
         {appToast && (
-          <div role="status" aria-live="polite" style={{ position: "fixed", left: "50%", bottom: "calc(94px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 4000, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 92%, transparent)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, lineHeight: 1.35, boxShadow: "var(--shadow-card)", pointerEvents: "none", textAlign: "center" }}>
+          <div role="status" aria-live="polite" style={{ position: "fixed", left: "50%", bottom: "calc(94px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 4000, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 92%, transparent)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.35, boxShadow: "var(--shadow-card)", pointerEvents: "none", textAlign: "center" }}>
             {appToast}
           </div>
         )}

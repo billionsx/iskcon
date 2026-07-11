@@ -76,7 +76,7 @@ function Segmented<T extends string>({
               cursor: "pointer",
               borderRadius: "var(--radius-xs)",
               padding: "8px 10px",
-              fontSize: 14,
+              fontSize: "var(--text-subhead)",
               fontWeight: on ? 600 : 500,
               color: on ? "var(--color-label)" : "var(--color-label-2)",
               background: on ? "var(--color-bg)" : "transparent",
@@ -326,7 +326,7 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
               border: "none",
               background: "transparent",
               color: "var(--color-label-2)",
-              fontSize: 14,
+              fontSize: "var(--text-subhead)",
               cursor: "pointer",
             }}
           >
@@ -340,7 +340,7 @@ export default function DownloaderScreen({ onBack }: { onBack: () => void }) {
           <TokenGate onSet={setTokenPersist} />
         ) : (
           <>
-            <p style={{ fontSize: 14, color: "var(--color-label-2)", margin: "0 0 16px" }}>
+            <p style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)", margin: "0 0 16px" }}>
               Выгружает все аудио из Telegram-канала. <b style={{ color: "var(--color-label)" }}>Архив .zip</b> —
               соберёт файлы и даст ссылку на скачивание. <b style={{ color: "var(--color-label)" }}>На archive.org</b> —
               зальёт напрямую и свяжет с книгой.

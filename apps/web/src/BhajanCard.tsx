@@ -63,8 +63,8 @@ export function BhajanCard({ bhajan, onOpen, flash }: { bhajan: BhajanCardData; 
           </div>
         </div>
         {/* название · автор */}
-        <h3 style={{ margin: "11px 0 0", fontSize: 18.5, lineHeight: 1.22, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{bhajan.name}</h3>
-        {bhajan.author && <p style={{ margin: "5px 0 0", fontSize: 13.5, lineHeight: 1.3, color: "rgba(255,255,255,.64)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bhajan.author}</p>}
+        <h3 style={{ margin: "11px 0 0", fontSize: "var(--text-title3)", lineHeight: 1.22, fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{bhajan.name}</h3>
+        {bhajan.author && <p style={{ margin: "5px 0 0", fontSize: "var(--text-footnote)", lineHeight: 1.3, color: "rgba(255,255,255,.64)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{bhajan.author}</p>}
       </div>
     </article>
   );

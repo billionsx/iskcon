@@ -109,12 +109,12 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
       <div ref={scroller} style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 480, margin: "0 auto", padding: "20px 20px calc(120px + env(safe-area-inset-bottom,0px))" }}>
 
-          {loading && <div style={{ padding: "70px 0", textAlign: "center", color: INK3, fontFamily: FT, fontSize: 14 }}>Загрузка…</div>}
+          {loading && <div style={{ padding: "70px 0", textAlign: "center", color: INK3, fontFamily: FT, fontSize: "var(--text-subhead)" }}>Загрузка…</div>}
 
           {!loading && failed && (
             <div style={{ borderRadius: 18, background: FILL, padding: "34px 22px", textAlign: "center" }}>
-              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: 14, color: INK2 }}>Не удалось загрузить стих.</p>
-              <button type="button" onClick={() => void load(getPlan().from)} style={{ minWidth: 120, height: 40, padding: "0 16px", borderRadius: 11, border: "none", background: FILL, color: INK, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>Повторить</button>
+              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: "var(--text-subhead)", color: INK2 }}>Не удалось загрузить стих.</p>
+              <button type="button" onClick={() => void load(getPlan().from)} style={{ minWidth: 120, height: 40, padding: "0 16px", borderRadius: 11, border: "none", background: FILL, color: INK, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Повторить</button>
             </div>
           )}
 
@@ -124,12 +124,12 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
               <div style={{ marginBottom: 22 }}>
                 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
                   <span style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Системное чтение Прабхупады</span>
-                  <span style={{ fontFamily: FT, fontSize: 11.5, color: INK3, whiteSpace: "nowrap" }}>{numLabel} из {fmt(unit.total)}</span>
+                  <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: INK3, whiteSpace: "nowrap" }}>{numLabel} из {fmt(unit.total)}</span>
                 </div>
                 <div style={{ marginTop: 8, height: 4, borderRadius: 3, background: FILL, overflow: "hidden" }}>
                   <div style={{ width: `${pct}%`, height: "100%", background: GOLD, borderRadius: 3, transition: "width .3s" }} />
                 </div>
-                <div style={{ marginTop: 9, fontFamily: FT, fontSize: 12.5, color: INK2 }}>
+                <div style={{ marginTop: 9, fontFamily: FT, fontSize: "var(--text-footnote)", color: INK2 }}>
                   {unit.workName}{multi && <span style={{ color: INK3 }}> · {verses.length} стихов до комментария</span>}
                 </div>
               </div>
@@ -146,18 +146,18 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
               )}
 
               <button type="button" onClick={() => onOpenVerse(unit.startId)}
-                style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 42, padding: "0 16px", borderRadius: 12, border: `1px solid ${LINE}`, background: PAPER, color: INK, fontFamily: FT, fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 42, padding: "0 16px", borderRadius: 12, border: `1px solid ${LINE}`, background: PAPER, color: INK, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 <BookIcon /> Открыть и читать в книге
               </button>
 
               {/* навигация по прочитанному */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginTop: 18 }}>
                 <button type="button" onClick={onPrev} disabled={!canBack}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 38, padding: "0 12px", borderRadius: 10, border: "none", background: "none", color: canBack ? INK2 : "transparent", fontFamily: FT, fontSize: 13.5, fontWeight: 600, cursor: canBack ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 38, padding: "0 12px", borderRadius: 10, border: "none", background: "none", color: canBack ? INK2 : "transparent", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: canBack ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>
                   <ArrowL /> Назад
                 </button>
                 <button type="button" onClick={onReset}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 38, padding: "0 12px", borderRadius: 10, border: "none", background: "none", color: INK3, fontFamily: FT, fontSize: 12.5, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, height: 38, padding: "0 12px", borderRadius: 10, border: "none", background: "none", color: INK3, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                   <Restart /> Сначала
                 </button>
               </div>

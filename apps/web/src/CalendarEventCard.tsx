@@ -88,7 +88,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
       <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 12 }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 11px", borderRadius: 999, background: "var(--color-glass-regular)" }}>
           <span aria-hidden style={{ width: 7, height: 7, borderRadius: "50%", background: meta.color }} />
-          <span style={{ fontFamily: "var(--font-text)", fontSize: 12.5, fontWeight: 700, letterSpacing: "-0.01em", color: meta.color }}>{meta.label}</span>
+          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.01em", color: meta.color }}>{meta.label}</span>
         </span>
         <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-3)" }}>{fmtDate(date)}</span>
       </div>
@@ -98,11 +98,11 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
       {hasPerson && (
         <div style={{ marginTop: 18 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 13 }}>
-            <span style={{ display: "grid", placeItems: "center", flexShrink: 0, width: 46, height: 46, borderRadius: "50%", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontWeight: 500, fontSize: 19 }}>
+            <span style={{ display: "grid", placeItems: "center", flexShrink: 0, width: 46, height: 46, borderRadius: "50%", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-scripture)", fontWeight: 500, fontSize: "var(--text-title3)" }}>
               {(name || "?").trim().charAt(0).toUpperCase()}
             </span>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontFamily: "var(--font-text)", fontSize: 16.5, fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.25, color: "var(--color-label)" }}>{name || "Личность"}</div>
+              <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1.25, color: "var(--color-label)" }}>{name || "Личность"}</div>
               {chips.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5, marginTop: 5 }}>
                   {chips.map((c, i) => (
@@ -114,7 +114,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
           </div>
 
           {desc && (
-            <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>{desc}</p>
+            <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{desc}</p>
           )}
 
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 20 }}>
@@ -129,7 +129,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
       )}
 
       {!hasPerson && (
-        <p style={{ margin: "16px 0 0", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+        <p style={{ margin: "16px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
           {type === "ekadasi" ? "День экадаши — пост и усиленная духовная практика." : type === "parana" ? "Время выхода из поста (парана)." : "Событие вайшнавского календаря."}
         </p>
       )}

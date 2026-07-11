@@ -28,12 +28,12 @@ function GroupedList({ groups }: { groups: MoreGroup[] }) {
                   style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
                   <span style={{ minWidth: 0, flex: 1 }}>
                     <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: 15.5, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
+                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
                       {it.badge && (
-                        <span style={{ flexShrink: 0, padding: "2px 7px", borderRadius: 999, background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, fontFamily: "var(--font-text)", fontSize: 10, fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>{it.badge}</span>
+                        <span style={{ flexShrink: 0, padding: "2px 7px", borderRadius: 999, background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>{it.badge}</span>
                       )}
                     </span>
-                    <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: 12.5, lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
+                    <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
                   </span>
                   <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}>
                     <svg width="15" height="15" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -52,8 +52,8 @@ function Head({ eyebrow, title, sub }: { eyebrow: string; title: string; sub: st
   return (
     <div style={{ padding: "20px 0 0" }}>
       <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{eyebrow}</div>
-      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
-      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
+      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
+      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
     </div>
   );
 }

@@ -126,7 +126,7 @@ function PlaceCard({ p, onOpen, flash, dist }: { p: PlaceItem; onOpen: (p: Place
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{p.category}</div>
-          <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
+          <h3 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.014em", lineHeight: 1.22, color: "var(--color-label)" }}>{p.nameRu || p.name}</h3>
           <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>
             {[geoLine(p), dist != null ? kmLabel(dist) : ""].filter(Boolean).join(" · ")}
           </div>
@@ -135,7 +135,7 @@ function PlaceCard({ p, onOpen, flash, dist }: { p: PlaceItem; onOpen: (p: Place
           onMore={() => openCardMenu(placeCtx(p))} />
       </div>
       {p.address && (
-        <div style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: 13.5, lineHeight: 1.5, color: "var(--color-label-2)" }}>
+        <div style={{ marginTop: 12, display: "flex", gap: 8, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
           <span style={{ color: "var(--color-label-3)", marginTop: 1 }}><Ic d={I.pin} size={15} /></span>
           <span>{p.addressRu || p.address}</span>
         </div>
@@ -149,8 +149,8 @@ function InfoRow({ k, v, last }: { k: string; v: string; last?: boolean }) {
   if (!v) return null;
   return (
     <div style={{ display: "flex", justifyContent: "space-between", gap: 14, padding: "11px 0", borderBottom: last ? "none" : "1px solid var(--color-separator)" }}>
-      <span style={{ fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)", flexShrink: 0 }}>{k}</span>
-      <span style={{ fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 500, color: "var(--color-label)", textAlign: "right", overflowWrap: "anywhere" }}>{v}</span>
+      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)", flexShrink: 0 }}>{k}</span>
+      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label)", textAlign: "right", overflowWrap: "anywhere" }}>{v}</span>
     </div>
   );
 }
@@ -165,13 +165,13 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
         {p.kind === "restaurant" ? "Ресторан ИСККОН" : `${p.category} ИСККОН`}
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-        <h2 style={{ margin: "5px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>{p.nameRu || p.name}</h2>
+        <h2 style={{ margin: "5px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>{p.nameRu || p.name}</h2>
         <CardActionBtns favKey={`${p.kind}:${p.id}`} meta={favMetaFromCtx(placeCtx(p))} flash={flash} onMore={() => openCardMenu(placeCtx(p))} />
       </div>
       {p.nameRu && p.nameRu !== p.name && (
-        <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>{p.name}</div>
+        <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{p.name}</div>
       )}
-      <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: 14, color: "var(--color-label-3)" }}>
+      <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>
         {geoLine(p)}
       </div>
 
@@ -184,7 +184,7 @@ function PlaceSheet({ p, onClose, flash }: { p: PlaceItem | null; onClose: () =>
 
       {p.address && (
         <div style={{ marginTop: 18, padding: 16, ...fill }}>
-          <div style={{ display: "flex", gap: 9, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label)" }}>
+          <div style={{ display: "flex", gap: 9, alignItems: "flex-start", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label)" }}>
             <span style={{ color: GOLD, marginTop: 2 }}><Ic d={I.pin} size={16} /></span>
             <span>{p.addressRu || p.address}</span>
           </div>
@@ -359,8 +359,8 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
     <div>
       <div style={{ padding: "20px 0 0" }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каталог</div>
-        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
-        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: 14, lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
+        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>{title}</h2>
+        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>{sub}</p>
       </div>
 
       {/* поиск — липкий к верху (как в календаре), над фильтрами */}
@@ -401,7 +401,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
       {/* результаты */}
       <div style={{ marginTop: 14 }} aria-live="polite">
         {err && (
-          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
             Каталог обновляется. Попробуйте позже —<br />данные загружаются из нашей базы.
           </div>
         )}
@@ -413,13 +413,13 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
         {items && (
           <>
             {items.length > 0 && (
-              <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: 12.5, color: "var(--color-label-3)" }}>
+              <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>
                 {total} {kind === "restaurant" ? "ресторанов" : "центров"}
               </div>
             )}
             {items.length === 0 ? (
               nearBusy ? (
-                <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+                <div style={{ padding: "22px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
                   Ищем ближайшие {kind === "restaurant" ? "рестораны" : "центры"}…
                 </div>
               ) : near && near.length > 0 ? (
@@ -432,7 +432,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
                   </div>
                 </>
               ) : (
-                <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: 14.5, lineHeight: 1.55, color: "var(--color-label-3)" }}>
+                <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
                   Ничего не найдено{q.trim() ? <> по запросу «{q.trim()}»</> : ""}.
                 </div>
               )
@@ -445,7 +445,7 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
               <button type="button" onClick={loadMore} disabled={loadingMore}
                 onPointerDown={(e) => (e.currentTarget.style.opacity = "0.6")} onPointerUp={(e) => (e.currentTarget.style.opacity = "1")} onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
                 style={{ marginTop: 14, width: "100%", padding: "13px 0", borderRadius: 14, border: "none", background: "var(--color-glass-regular)",
-                  fontFamily: "var(--font-text)", fontSize: 14.5, fontWeight: 600, color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                  fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 {loadingMore ? "Загружаем…" : `Показать ещё ${Math.min(30, total - items.length)}`}
               </button>
             )}

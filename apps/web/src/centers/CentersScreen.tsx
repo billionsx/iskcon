@@ -121,7 +121,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
               const on = type === t.id;
               return (
                 <button key={t.id} type="button" onClick={() => setType(t.id)}
-                  style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, border: on ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", fontFamily: FT, fontSize: 13.5, fontWeight: 600, letterSpacing: "-0.01em", background: on ? L1 : FILL, color: on ? "var(--color-bg-2, #fff)" : L2, WebkitTapHighlightColor: "transparent" }}>{t.label}</button>
+                  style={{ flexShrink: 0, height: 34, padding: "0 14px", borderRadius: 999, border: on ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", background: on ? L1 : FILL, color: on ? "var(--color-bg-2, #fff)" : L2, WebkitTapHighlightColor: "transparent" }}>{t.label}</button>
               );
             })}
           </div>
@@ -133,7 +133,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
                 const on = view === id;
                 return (
                   <button key={id} type="button" onClick={() => setView(id)}
-                    style={{ height: 30, padding: "0 18px", borderRadius: 9, border: "none", cursor: "pointer", fontFamily: FT, fontSize: 13.5, fontWeight: 600,
+                    style={{ height: 30, padding: "0 18px", borderRadius: 9, border: "none", cursor: "pointer", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600,
                       background: on ? "var(--color-bg)" : "transparent", color: on ? L1 : L2, boxShadow: on ? "0 1px 3px rgba(0,0,0,0.12)" : "none", WebkitTapHighlightColor: "transparent" }}>{label}</button>
                 );
               })}
@@ -149,10 +149,10 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
                   <style>{`@keyframes cenSpin{to{transform:rotate(360deg)}}`}</style>
                 </div>
               ) : mapPhase === "error" ? (
-                <div style={{ textAlign: "center", padding: "48px 20px", color: L2, fontFamily: FT, fontSize: 14.5 }}>Не удалось загрузить карту. Проверьте соединение.</div>
+                <div style={{ textAlign: "center", padding: "48px 20px", color: L2, fontFamily: FT, fontSize: "var(--text-subhead)" }}>Не удалось загрузить карту. Проверьте соединение.</div>
               ) : (
                 <>
-                  <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, margin: "2px 2px 12px" }}>
+                  <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, margin: "2px 2px 12px" }}>
                     {mapItems.filter((c) => c.lat != null && c.lng != null).length} на карте{mapItems.length >= MAP_LIMIT ? " · уточните поиск, чтобы увидеть все" : ""}. Коснитесь метки, чтобы открыть центр.
                   </div>
                   <CentersMap items={mapItems} onOpen={(slug) => onOpenPath(`/center/${slug}`)} />
@@ -164,22 +164,22 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <style>{`@keyframes cenSpin{to{transform:rotate(360deg)}}`}</style>
               </div>
             ) : phase === "error" ? (
-              <div style={{ textAlign: "center", padding: "48px 20px", color: L2, fontFamily: FT, fontSize: 14.5 }}>Не удалось загрузить. Проверьте соединение.</div>
+              <div style={{ textAlign: "center", padding: "48px 20px", color: L2, fontFamily: FT, fontSize: "var(--text-subhead)" }}>Не удалось загрузить. Проверьте соединение.</div>
             ) : items.length === 0 ? (
               <div style={{ textAlign: "center", padding: "40px 20px" }}>
                 <div style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, color: L1 }}>Ничего не найдено</div>
-                <p style={{ margin: "8px auto 16px", maxWidth: 300, fontFamily: FT, fontSize: 13.5, lineHeight: 1.5, color: L2 }}>Попробуйте изменить запрос или добавьте свой центр в каталог Ятры.</p>
-                <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ height: 44, padding: "0 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>Добавить центр</button>
+                <p style={{ margin: "8px auto 16px", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.5, color: L2 }}>Попробуйте изменить запрос или добавьте свой центр в каталог Ятры.</p>
+                <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ height: 44, padding: "0 22px", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Добавить центр</button>
               </div>
             ) : (
               <>
-                <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, margin: "2px 2px 12px" }}>{items.length} {items.length % 10 === 1 && items.length % 100 !== 11 ? "центр" : items.length % 10 >= 2 && items.length % 10 <= 4 && (items.length % 100 < 10 || items.length % 100 >= 20) ? "центра" : "центров"}</div>
+                <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, margin: "2px 2px 12px" }}>{items.length} {items.length % 10 === 1 && items.length % 100 !== 11 ? "центр" : items.length % 10 >= 2 && items.length % 10 <= 4 && (items.length % 100 < 10 || items.length % 100 >= 20) ? "центра" : "центров"}</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {items.map((it) => (
                     <CenterHeroCard key={it.id} center={it} onOpen={() => onOpenPath(`/center/${it.slug}`)} onMenuSelect={onMenu(it)} />
                   ))}
                 </div>
-                <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 18, padding: "13px 0", borderRadius: 14, border: `1px dashed ${GOLD}88`, background: "none", color: GOLD, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 18, padding: "13px 0", borderRadius: 14, border: `1px dashed ${GOLD}88`, background: "none", color: GOLD, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                   Добавить свой центр
                 </button>
               </>

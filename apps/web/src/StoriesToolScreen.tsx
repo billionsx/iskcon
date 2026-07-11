@@ -160,13 +160,13 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
         </button>
 
         {run.phase === "done" && (
-          <div style={{ marginTop: 12, fontSize: 14, color: run.conclusion === "success" ? "var(--color-green, #2e7d32)" : "var(--color-label)" }}>
+          <div style={{ marginTop: 12, fontSize: "var(--text-subhead)", color: run.conclusion === "success" ? "var(--color-green, #2e7d32)" : "var(--color-label)" }}>
             {run.conclusion === "success" ? "✓ Готово — манифест обновлён ниже." : `Завершено: ${run.conclusion}`}
             {run.htmlUrl && <> · <a href={run.htmlUrl} target="_blank" rel="noreferrer" style={{ color: "var(--color-gold-deep)" }}>лог</a></>}
           </div>
         )}
         {run.phase === "failed" && (
-          <div style={{ marginTop: 12, fontSize: 14, color: "var(--color-red, #c62828)" }}>{run.message}</div>
+          <div style={{ marginTop: 12, fontSize: "var(--text-subhead)", color: "var(--color-red, #c62828)" }}>{run.message}</div>
         )}
       </div>
 
@@ -180,7 +180,7 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
         </div>
         {mf?.generated_at && <div style={{ fontSize: "var(--text-caption)", color: "var(--color-label-3)", marginBottom: 10 }}>Обновлено: {fmtTime(mf.generated_at)}</div>}
         {stories.length === 0 ? (
-          <div style={{ fontSize: 13.5, color: "var(--color-label-2)" }}>
+          <div style={{ fontSize: "var(--text-footnote)", color: "var(--color-label-2)" }}>
             {mf && mf.ok === false ? "Манифест ещё не создан — запусти забор." : "Сторис не найдено. Если у канала сейчас нет активных Stories — это нормально."}
           </div>
         ) : (
@@ -188,8 +188,8 @@ export default function StoriesToolScreen({ onBack }: { onBack: () => void }) {
             {stories.map((s) => (
               <div key={s.id} style={{ position: "relative", aspectRatio: "9 / 16", borderRadius: 10, overflow: "hidden", background: "var(--color-bg-3)" }}>
                 <img src={IA_BASE + s.file} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-                {s.pinned && <span style={{ position: "absolute", top: 4, left: 4, fontSize: 10, fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 6, padding: "1px 5px" }}>закреп.</span>}
-                {s.type === "video" && <span style={{ position: "absolute", top: 4, right: 4, fontSize: 10, color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 6, padding: "1px 5px" }}>видео</span>}
+                {s.pinned && <span style={{ position: "absolute", top: 4, left: 4, fontSize: "var(--text-caption2)", fontWeight: 700, color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 6, padding: "1px 5px" }}>закреп.</span>}
+                {s.type === "video" && <span style={{ position: "absolute", top: 4, right: 4, fontSize: "var(--text-caption2)", color: "#fff", background: "rgba(0,0,0,0.5)", borderRadius: 6, padding: "1px 5px" }}>видео</span>}
               </div>
             ))}
           </div>

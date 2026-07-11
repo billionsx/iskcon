@@ -121,7 +121,7 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
         </div>
 
         {/* метка времени */}
-        <div data-pdf-no-print style={{ marginTop: 22, paddingTop: 14, borderTop: `0.5px solid ${LINE}`, fontFamily: "var(--font-text)", fontSize: 12.5, color: INK3 }}>
+        <div data-pdf-no-print style={{ marginTop: 22, paddingTop: 14, borderTop: `0.5px solid ${LINE}`, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: INK3 }}>
           Изменено: {fmtFull(note.updatedAt)}
         </div>
 
@@ -140,7 +140,7 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
           <div onClick={(e) => e.stopPropagation()} style={{ width: "100%", maxWidth: 420, margin: "0 10px max(16px, env(safe-area-inset-bottom))", borderRadius: 16, overflow: "hidden", background: "rgba(252,252,254,0.98)", backdropFilter: "blur(30px)", WebkitBackdropFilter: "blur(30px)" }}>
             <div style={{ padding: "18px 18px 14px", textAlign: "center", fontFamily: "var(--font-text)" }}>
               <div style={{ fontSize: "var(--text-callout)", fontWeight: 700, color: INK }}>Удалить заметку?</div>
-              <div style={{ marginTop: 4, fontSize: 13.5, color: INK2, lineHeight: 1.4 }}>Это действие необратимо.</div>
+              <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", color: INK2, lineHeight: 1.4 }}>Это действие необратимо.</div>
             </div>
             <button type="button" onClick={() => { deleteNote(note.id); setConfirmDel(false); onBack(); }}
               style={{ width: "100%", height: 52, border: "none", borderTop: `0.5px solid ${LINE}`, background: "none", color: RED, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, cursor: "pointer" }}>Удалить</button>

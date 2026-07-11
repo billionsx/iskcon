@@ -153,7 +153,7 @@ function ActionTile({ icon, label, href, onClick }: { icon: ReactNode; label: st
   const inner = (
     <span style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
       <span style={{ display: "grid", placeItems: "center", width: 46, height: 46, borderRadius: 14, background: FILL2, color: GOLDT }}>{icon}</span>
-      <span style={{ fontFamily: FT, fontSize: 11.5, fontWeight: 600, color: L2 }}>{label}</span>
+      <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", fontWeight: 600, color: L2 }}>{label}</span>
     </span>
   );
   const style: CSSProperties = { flex: 1, minWidth: 0, textDecoration: "none", background: "none", border: "none", padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
@@ -172,7 +172,7 @@ function ProgramRow({ p, last }: { p: CenterProgram; last: boolean }) {
         {time && <span style={{ fontFamily: FD, fontSize: "var(--text-subhead)", fontWeight: 700, color: GOLDT, whiteSpace: "nowrap" }}>{time}</span>}
       </div>
       {(days || note) && (
-        <div style={{ marginTop: 3, fontFamily: FT, fontSize: 12.5, color: L3 }}>
+        <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>
           {days}{days && note ? " · " : ""}{note}
         </div>
       )}
@@ -311,16 +311,16 @@ export default function CenterScreen({
       <Shell title="">
         <div style={{ ...card, textAlign: "center", margin: "16px", padding: "30px 22px" }}>
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Temple size={26} /></span>
-          <div style={{ fontFamily: FD, fontSize: 19, fontWeight: 800, color: L1 }}>
+          <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, color: L1 }}>
             {phase === "notfound" ? "Центр не найден" : "Не удалось загрузить"}
           </div>
-          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: 14, lineHeight: 1.5, color: L2 }}>
+          <p style={{ margin: "9px auto 0", maxWidth: 300, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>
             {phase === "notfound"
               ? "Возможно, центр ещё не опубликован или ссылка устарела."
               : "Проверьте соединение и попробуйте снова."}
           </p>
           {phase === "error" && (
-            <button type="button" onClick={load} style={{ marginTop: 16, padding: "10px 22px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer" }}>
+            <button type="button" onClick={load} style={{ marginTop: 16, padding: "10px 22px", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>
               Повторить
             </button>
           )}
@@ -361,7 +361,7 @@ export default function CenterScreen({
         {/* ─── управление (админ/редактор) ─── */}
         {canManage && (
           <div style={{ marginTop: 16, padding: 15, borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 9%, var(--color-glass-thin))` }}>
-            <div style={{ fontFamily: FT, fontSize: 13.5, fontWeight: 700, color: GOLDT }}>
+            <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLDT }}>
               {canPublish && c.status !== "live"
                 ? c.status === "review" ? "Заявка на модерации" : "Черновик центра"
                 : c.status === "review" ? "Заявка на проверке ИСККОН" : c.status === "draft" ? "Это превью" : "Вы управляете центром"}
@@ -385,7 +385,7 @@ export default function CenterScreen({
                 { icon: <LotusG size={16} />, label: "Божества", to: `/center/${slug}/deities` },
                 { icon: <CalG size={16} />, label: "События", to: `/center/${slug}/events` },
               ].map((m) => (
-                <button key={m.label} type="button" onClick={() => onOpenPath(m.to)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                <button key={m.label} type="button" onClick={() => onOpenPath(m.to)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                   {m.icon}{m.label}
                 </button>
               ))}
@@ -394,17 +394,17 @@ export default function CenterScreen({
               <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
                 {c.status !== "live" ? (
                   <>
-                    <button type="button" onClick={() => moderate("live", "Центр опубликован")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Опубликовать</button>
+                    <button type="button" onClick={() => moderate("live", "Центр опубликован")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Опубликовать</button>
                     {c.status === "review" && (
-                      <button type="button" onClick={() => moderate("draft", "Возвращено на доработку")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Вернуть</button>
+                      <button type="button" onClick={() => moderate("draft", "Возвращено на доработку")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Вернуть</button>
                     )}
                   </>
                 ) : (
-                  <button type="button" onClick={() => moderate("draft", "Снято с публикации")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Снять с публикации</button>
+                  <button type="button" onClick={() => moderate("draft", "Снято с публикации")} disabled={busy} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>Снять с публикации</button>
                 )}
               </div>
             ) : c.status === "draft" ? (
-              <button type="button" onClick={submitReview} disabled={busy} style={{ marginTop: 10, width: "100%", padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: 14.5, fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
+              <button type="button" onClick={submitReview} disabled={busy} style={{ marginTop: 10, width: "100%", padding: "11px 0", borderRadius: 12, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: busy ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
                 Отправить на проверку
               </button>
             ) : null}
@@ -428,7 +428,7 @@ export default function CenterScreen({
               {c.address && (
                 <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                   <span style={{ color: GOLDT, marginTop: 1 }}><Pin /></span>
-                  <span style={{ fontFamily: FT, fontSize: 14.5, lineHeight: 1.5, color: L1 }}>{c.address}</span>
+                  <span style={{ fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L1 }}>{c.address}</span>
                 </div>
               )}
               {c.languages.length > 0 && (
@@ -454,8 +454,8 @@ export default function CenterScreen({
         ) : canManage ? (
           <Section title="Расписание">
             <div style={{ ...card, textAlign: "center" }}>
-              <div style={{ fontFamily: FT, fontSize: 13.5, color: L3 }}>Расписание программ пока не заполнено.</div>
-              <button type="button" onClick={() => onOpenPath(`/center/${slug}/schedule`)} style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 11, border: "none", background: FILL2, color: GOLDT, fontFamily: FT, fontSize: 13.5, fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+              <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>Расписание программ пока не заполнено.</div>
+              <button type="button" onClick={() => onOpenPath(`/center/${slug}/schedule`)} style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 11, border: "none", background: FILL2, color: GOLDT, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 <ClockG size={15} />Заполнить расписание
               </button>
             </div>
@@ -474,14 +474,14 @@ export default function CenterScreen({
                     {d.photos[0] && <span style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: `center/cover no-repeat url("${d.photos[0]}")` }} />}
                     <div style={{ minWidth: 0 }}>
                       {d.deity_entity_id ? (
-                        <button type="button" onClick={() => onOpenPath(`/entity/${d.deity_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                        <button type="button" onClick={() => onOpenPath(`/entity/${d.deity_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
                           {name}
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg>
                         </button>
                       ) : (
-                        <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{name}</div>
+                        <div style={{ fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1 }}>{name}</div>
                       )}
-                      {times && <div style={{ fontFamily: FT, fontSize: 12.5, color: L3, marginTop: 2 }}>Даршан: {times}</div>}
+                      {times && <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, marginTop: 2 }}>Даршан: {times}</div>}
                     </div>
                   </div>
                 );
@@ -501,12 +501,12 @@ export default function CenterScreen({
                   </span>
                   <div style={{ minWidth: 0, flex: 1 }}>
                     {ev.festival_entity_id ? (
-                      <button type="button" onClick={() => onOpenPath(`/entity/${ev.festival_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                      <button type="button" onClick={() => onOpenPath(`/entity/${ev.festival_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
                         {pickI18n(ev.title_i18n)}
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg>
                       </button>
                     ) : (
-                      <div style={{ fontFamily: FD, fontSize: 15.5, fontWeight: 700, color: L1 }}>{pickI18n(ev.title_i18n)}</div>
+                      <div style={{ fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1 }}>{pickI18n(ev.title_i18n)}</div>
                     )}
                     {pickI18n(ev.description_i18n) && (
                       <p style={{ margin: "3px 0 0", fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.45, color: L2 }}>{pickI18n(ev.description_i18n)}</p>

@@ -102,11 +102,11 @@ function Caption({ text }: { text: string }) {
   const long = text.length > 150 || text.includes("\n");
   return (
     <div>
-      <p style={{ margin: 0, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: L2, whiteSpace: "pre-line",
+      <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: L2, whiteSpace: "pre-line",
         ...(open ? {} : { display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }) }}>{text}</p>
       {long && (
         <button type="button" onClick={() => setOpen((v) => !v)}
-          style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: GOLDT, fontFamily: FT, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
+          style={{ marginTop: 6, padding: 0, border: "none", background: "none", color: GOLDT, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer" }}>
           {open ? "Свернуть" : "Читать полностью"}
         </button>
       )}
@@ -121,11 +121,11 @@ function DarshanCard({ item }: { item: DarshanItem }) {
       <Gallery images={item.images} />
       <div style={{ padding: 16 }}>
         <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLDT }}>{item.templeName}</div>
-        {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: L1 }}>{item.deities}</div>}
-        <div style={{ marginTop: 4, fontFamily: FT, fontSize: 12.5, color: L3 }}>{humanDate(item.date)}</div>
+        {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, color: L1 }}>{item.deities}</div>}
+        <div style={{ marginTop: 4, fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>{humanDate(item.date)}</div>
         {item.caption && <div style={{ marginTop: 12 }}><Caption text={item.caption} /></div>}
         <a href={link.href} target="_blank" rel="noopener noreferrer"
-          style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: FILL2, color: L1, fontFamily: FT, fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>
+          style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, textDecoration: "none" }}>
           {link.tg ? <TgIcon /> : <SiteIcon />} {link.tg ? "Открыть в Telegram" : "Открыть на сайте храма"}
         </a>
       </div>
@@ -149,11 +149,11 @@ function Lightbox({ item, onClose }: { item: DarshanItem; onClose: () => void })
         ))}
         <div style={{ marginTop: 8, color: "#fff" }}>
           <div style={{ fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.6)" }}>{item.templeName}</div>
-          {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: 19, fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>{item.deities}</div>}
-          <div style={{ marginTop: 4, fontFamily: FT, fontSize: 12.5, color: "rgba(255,255,255,0.55)" }}>{humanDate(item.date)}</div>
-          {item.caption && <p style={{ marginTop: 12, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: "rgba(255,255,255,0.82)", whiteSpace: "pre-line" }}>{item.caption}</p>}
+          {item.deities && <div style={{ marginTop: 5, fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff" }}>{item.deities}</div>}
+          <div style={{ marginTop: 4, fontFamily: FT, fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.55)" }}>{humanDate(item.date)}</div>
+          {item.caption && <p style={{ marginTop: 12, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "rgba(255,255,255,0.82)", whiteSpace: "pre-line" }}>{item.caption}</p>}
           <a href={link.href} target="_blank" rel="noopener noreferrer"
-            style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,0.14)", color: "#fff", fontFamily: FT, fontSize: 12.5, fontWeight: 600, textDecoration: "none" }}>
+            style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,0.14)", color: "#fff", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, textDecoration: "none" }}>
             {link.tg ? <TgIcon /> : <SiteIcon />} {link.tg ? "Открыть в Telegram" : "Открыть на сайте храма"}
           </a>
         </div>
@@ -170,7 +170,7 @@ function ArchiveThumb({ item, onOpen }: { item: DarshanItem; onOpen: () => void 
       {ok && item.images[0]
         ? <img src={px(item.images[0], 400)} alt="" loading="lazy" onError={() => setOk(false)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
         : <span style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: L3 }}><Lotus /></span>}
-      <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "16px 8px 6px", background: "linear-gradient(transparent, rgba(0,0,0,0.6))", color: "#fff", fontFamily: FT, fontSize: 10.5, fontWeight: 600, textAlign: "left" }}>
+      <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "16px 8px 6px", background: "linear-gradient(transparent, rgba(0,0,0,0.6))", color: "#fff", fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 600, textAlign: "left" }}>
         {item.date.slice(8, 10)}.{item.date.slice(5, 7)} · {item.templeSlug === "mayapur" ? "Маяпур" : item.templeSlug === "vrindavan" ? "Вриндаван" : item.templeSlug}
       </span>
     </button>
@@ -228,12 +228,12 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 540, margin: "0 auto", padding: "16px 16px calc(40px + env(safe-area-inset-bottom,0px))", display: "flex", flexDirection: "column", gap: 16 }}>
 
-          {loading && <div style={{ padding: "60px 0", textAlign: "center", color: L3, fontFamily: FT, fontSize: 14 }}>Загрузка…</div>}
+          {loading && <div style={{ padding: "60px 0", textAlign: "center", color: L3, fontFamily: FT, fontSize: "var(--text-subhead)" }}>Загрузка…</div>}
 
           {!loading && failed && (
             <div style={{ borderRadius: 18, background: FILL, padding: "34px 22px", textAlign: "center" }}>
-              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: 14, color: L2 }}>Не удалось загрузить даршан.</p>
-              <button type="button" onClick={() => void load()} style={{ minWidth: 120, height: 40, padding: "0 16px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>Повторить</button>
+              <p style={{ margin: "0 0 16px", fontFamily: FT, fontSize: "var(--text-subhead)", color: L2 }}>Не удалось загрузить даршан.</p>
+              <button type="button" onClick={() => void load()} style={{ minWidth: 120, height: 40, padding: "0 16px", borderRadius: 11, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>Повторить</button>
             </div>
           )}
 
@@ -244,11 +244,11 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
               ) : (
                 <div style={{ borderRadius: 18, background: FILL, padding: "34px 22px", textAlign: "center" }}>
                   <div style={{ width: 54, height: 54, margin: "0 auto 14px", borderRadius: 16, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}><Lotus /></div>
-                  <div style={{ fontFamily: FD, fontSize: 18, fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Даршан скоро появится</div>
-                  <p style={{ margin: "8px auto 18px", maxWidth: 320, fontFamily: FT, fontSize: 13.5, lineHeight: 1.55, color: L2 }}>
+                  <div style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Даршан скоро появится</div>
+                  <p style={{ margin: "8px auto 18px", maxWidth: 320, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: L2 }}>
                     Сегодняшний даршан Божеств из дхам публикуется утром. Загляните чуть позже.
                   </p>
-                  <a href="https://t.me/iskcone" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FT, fontSize: 13.5, fontWeight: 700, textDecoration: "none" }}><TgIcon /> Канал @iskcone</a>
+                  <a href="https://t.me/iskcone" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, padding: "9px 16px", borderRadius: 999, background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, textDecoration: "none" }}><TgIcon /> Канал @iskcone</a>
                 </div>
               )}
 
@@ -260,7 +260,7 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
                   </div>
                   {oldest !== null && (
                     <button type="button" onClick={() => void loadMore()} disabled={more}
-                      style={{ alignSelf: "center", marginTop: 4, minWidth: 160, height: 42, borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: 14, fontWeight: 700, cursor: "pointer", opacity: more ? 0.6 : 1 }}>
+                      style={{ alignSelf: "center", marginTop: 4, minWidth: 160, height: 42, borderRadius: 12, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", opacity: more ? 0.6 : 1 }}>
                       {more ? "Загрузка…" : "Показать ещё"}
                     </button>
                   )}
@@ -271,7 +271,7 @@ export default function DarshanScreen({ onBack }: { onBack: () => void }) {
                 <p style={{ margin: 0, fontFamily: FT, fontSize: "var(--text-caption2)", lineHeight: 1.5, color: L3 }}>
                   Даршаны — из официальных каналов ИСККОН Маяпур и Вриндаван.
                 </p>
-                <p style={{ margin: "6px 0 0", fontFamily: FT, fontSize: 10.5, fontWeight: 700, letterSpacing: "0.08em", color: GOLDT }}>
+                <p style={{ margin: "6px 0 0", fontFamily: FT, fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.08em", color: GOLDT }}>
                   ISKCON ONE LOVE
                 </p>
               </div>
