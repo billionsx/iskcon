@@ -91,7 +91,23 @@ def centre_urls():
             print("::notice title=SITEMAP::%s → центров=%d" % (sm, len(urls)))
             break
     if not urls:
-        raise SystemExit("::error title=NO-SITEMAP::карта сайта не отдала ни одной страницы /centre/")
+        # ДИАГНОСТИКА вместо новой догадки: доложить, что сайт реально отдаёт.
+        for sm in SITEMAPS:
+            try:
+                xml = get_text(OFFICIAL + sm)
+            except Exception as e:
+                print("::notice title=SM::%s → %s" % (sm, str(e)[:60])); continue
+            locs = re.findall(r"<loc>\s*([^<]+?)\s*</loc>", xml)
+            print("::notice title=SM::%s → loc=%d" % (sm, len(locs)))
+            for u in locs[:15]:
+                print("   %s" % u)
+        # AJAX WP Job Manager — второй законный путь
+        try:
+            aj = get_text(OFFICIAL + "/?rest_route=/wp/v2/types", timeout=60)
+            print("::notice title=TYPES::%s" % aj[:400])
+        except Exception as e:
+            print("::notice title=TYPES::недоступно: %s" % str(e)[:60])
+        raise SystemExit("::error title=NO-SITEMAP::карта сайта не отдала /centre/ — см. диагностику выше")
     return urls
 
 
