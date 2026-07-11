@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { recordJapa, type JapaRoundDTO } from "./account/track";
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const GREEN = "#34C759";
 const RED = "#FF3B30";

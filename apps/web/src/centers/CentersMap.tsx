@@ -44,7 +44,7 @@ function loadLeaflet(): Promise<unknown> {
   return leafletPromise;
 }
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 export default function CentersMap({ items, onOpen, height = 460 }: { items: CenterListItem[]; onOpen: (slug: string) => void; height?: number }) {
   const elRef = useRef<HTMLDivElement>(null);

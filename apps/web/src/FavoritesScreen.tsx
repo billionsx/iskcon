@@ -24,7 +24,7 @@ const INK = "#1f2024";
 const INK2 = "#70727b";
 const INK3 = "#a7a8b0";
 const LINE = "rgba(0,0,0,0.08)";
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const RED = "#FF3B30";
 
@@ -32,7 +32,7 @@ const RED = "#FF3B30";
 type CatKey = "book" | "chapter" | "verse" | "kirtan" | "bhajan" | "entity" | "centre" | "restaurant" | "doc" | "feed" | "other";
 const CAT_ORDER: CatKey[] = ["book", "chapter", "verse", "kirtan", "bhajan", "entity", "centre", "restaurant", "doc", "feed", "other"];
 const CAT_META: Record<CatKey, { label: string; accent: string }> = {
-  book: { label: "Книги", accent: "#D2AA1B" },
+  book: { label: "Книги", accent: "var(--color-gold)" },
   chapter: { label: "Главы", accent: "#0CA678" },
   verse: { label: "Стихи", accent: "#E8920C" },
   kirtan: { label: "Киртаны", accent: "#E64980" },

@@ -25,7 +25,7 @@ import { QrSheet } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
 import { exportToPdf, downloadServerPdf } from "./pdf";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20 };
 
 interface TgSeg { t: "t" | "a"; v: string; href?: string }

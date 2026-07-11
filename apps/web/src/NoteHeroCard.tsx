@@ -16,16 +16,16 @@ const GRAPHITE = "radial-gradient(120% 80% at 50% 0%, #3a3a40 0%, #2a2a2f 45%, #
 
 /** Цвет/подпись/глиф источника заметки — общий язык с иконками в хабе. */
 export function noteSource(kind?: string): { accent: string; label: string } {
-  if (!kind) return { accent: "#D2AA1B", label: "Заметка" };
+  if (!kind) return { accent: "var(--color-gold)", label: "Заметка" };
   if (kind === "verse") return { accent: "#E8920C", label: "Стих" };
   if (kind === "chapter") return { accent: "#E8920C", label: "Глава" };
-  if (kind === "book") return { accent: "#D2AA1B", label: "Книга" };
+  if (kind === "book") return { accent: "var(--color-gold)", label: "Книга" };
   if (kind.indexOf("kirtan") === 0) return { accent: "#E64980", label: "Киртан" };
   if (kind === "bhajan") return { accent: "#7048E8", label: "Бхаджан" };
   if (kind === "entity") return { accent: "#4C6EF5", label: "Личность" };
   if (kind === "place" || kind === "centre" || kind === "restaurant") return { accent: "#1098AD", label: "Место" };
   if (kind === "doc") return { accent: "#0CA678", label: "Статья" };
-  return { accent: "#D2AA1B", label: "Заметка" };
+  return { accent: "var(--color-gold)", label: "Заметка" };
 }
 
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };

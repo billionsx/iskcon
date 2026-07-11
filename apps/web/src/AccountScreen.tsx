@@ -22,7 +22,7 @@ import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, u
 
 /* ─────────────────────────── палитра/токены ─────────────────────────── */
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const GROUPED = "#f2f2f7";
 const SURFACE = "var(--color-bg-2)";

@@ -21,7 +21,7 @@ import { darshanClient, type DarshanItem } from "./darshan/api";
 import { useFavorite } from "./cardActions";
 
 /* ── токены ── */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const FT = "var(--font-text)";
 const FD = "var(--font-display)";
 const L1 = "var(--color-label)";

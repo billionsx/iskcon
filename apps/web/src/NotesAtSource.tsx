@@ -19,7 +19,7 @@ const PencilGlyph = ({ color }: { color: string }) => (
   </svg>
 );
 
-export function NotesAtSource({ kind, refId, accent = "#D2AA1B" }: { kind: string; refId: string; accent?: string }) {
+export function NotesAtSource({ kind, refId, accent = "var(--color-gold)" }: { kind: string; refId: string; accent?: string }) {
   const notes = useNotesForRef(kind, refId);
   if (notes.length === 0) return null;
 

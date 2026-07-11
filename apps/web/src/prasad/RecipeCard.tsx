@@ -14,7 +14,7 @@ import { CardActionBtns, favMetaFromCtx, useCardActions } from "../cardActions";
 import { recipeCtx } from "./RecipeDetail";
 import { RecipeCover, coverFor } from "./covers";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const ic = (s: number) => ({ width: s, height: s, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, "aria-hidden": true as const });
 const Clock = () => <svg {...ic(13)}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></svg>;
 const Gauge = () => <svg {...ic(13)}><path d="M4 18a8 8 0 0 1 16 0" /><path d="M12 18l4-5" /></svg>;

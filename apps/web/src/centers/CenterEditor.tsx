@@ -21,7 +21,7 @@ import {
 } from "./api";
 
 /* ───────────────────── палитра ───────────────────── */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const RED = "var(--color-danger-text)";
 const L1 = "var(--color-label)";

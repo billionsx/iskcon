@@ -15,7 +15,7 @@ export type EventBrief = {
 };
 
 const TYPE_META: Record<string, { label: string; color: string }> = {
-  ekadasi: { label: "Экадаши", color: "#D2AA1B" },
+  ekadasi: { label: "Экадаши", color: "var(--color-gold)" },
   parana: { label: "Парана", color: "var(--color-label-3)" },
   festival: { label: "Праздник", color: "var(--color-gold-deep)" },
   appearance: { label: "Явление", color: "#2E9E5B" },

@@ -40,7 +40,7 @@ const INK2 = "#70727b";  // вторичный
 const INK3 = "#a7a8b0";  // метаданные / шевроны
 const LINE = "rgba(0,0,0,0.08)";       // хейрлайн
 const FILL = "rgba(0,0,0,0.045)";      // лёгкая заливка (нажатие/чипы)
-const GOLD = "#D2AA1B";  // тонкие линии / заливки / точки
+const GOLD = "var(--color-gold)";  // тонкие линии / заливки / точки
 const GOLDT = "#9c7c15"; // золото для мелкого текста (контраст на белом)
 const GOLD_SOFT = "rgba(210,170,27,0.10)";
 
@@ -3021,7 +3021,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
             <div style={{ fontSize: 16, fontWeight: 700, lineHeight: 1.3, letterSpacing: "-0.01em", color: "#1d1d1f", padding: "0 8px", textWrap: "balance" }}>{bookPctTitle}</div>
             <div style={{ fontSize: 12.5, color: "#8e8e93", marginTop: 5 }}>Это может занять 1–2 минуты</div>
             <div style={{ marginTop: 16, height: 8, borderRadius: 999, background: "#ececed", overflow: "hidden" }}>
-              <div style={{ width: `${bookPct}%`, height: "100%", background: "#D2AA1B", borderRadius: 999, transition: "width 0.4s ease" }} />
+              <div style={{ width: `${bookPct}%`, height: "100%", background: "var(--color-gold)", borderRadius: 999, transition: "width 0.4s ease" }} />
             </div>
             <div style={{ marginTop: 8, fontSize: 13, fontWeight: 700, color: "#9c7c15" }}>{bookPct}%</div>
             <button type="button" onClick={() => setPdfHidden(true)} style={{ marginTop: 14, width: "100%", padding: "10px 0", borderRadius: 12, border: "none", background: "#f2f2f7", color: "#1d1d1f", fontFamily: "var(--font-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Свернуть</button>
@@ -3030,7 +3030,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       )}
       {bookPct > 0 && pdfHidden && (
         <button type="button" onClick={() => setPdfHidden(false)} style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: "calc(84px + env(safe-area-inset-bottom))", zIndex: 3000, display: "flex", alignItems: "center", gap: 9, padding: "9px 14px", borderRadius: 999, border: "none", background: "#1d1d1f", color: "#fff", fontFamily: "var(--font-text)", fontSize: 13, fontWeight: 600, boxShadow: "0 8px 24px rgba(0,0,0,0.3)", cursor: "pointer", maxWidth: "86vw", WebkitTapHighlightColor: "transparent" }}>
-          <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "#D2AA1B", flexShrink: 0 }} />
+          <span aria-hidden style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--color-gold)", flexShrink: 0 }} />
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bookPctTitle} · {bookPct}%</span>
         </button>
       )}

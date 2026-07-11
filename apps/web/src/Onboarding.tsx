@@ -21,7 +21,7 @@ import { markOnboarded, setLocalDevotee, getLocalDevotee, LEVEL_META } from "./d
 import type { DevoteeLevel } from "./account/api";
 
 /* Единый акцент приложения — золото (как в TodayHub / Экадаши). */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLD_SOFT = "rgba(210,170,27,0.10)";
 const ON_GOLD = "#1c1600";
 /* Семантические токены темы. */

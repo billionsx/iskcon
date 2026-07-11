@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 /* ═══════════════ ДОКУМЕНТЫ ═══════════════ */

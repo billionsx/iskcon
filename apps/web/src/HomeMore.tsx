@@ -6,7 +6,7 @@
  * Кураторские каталоги официальных и авторитетных ресурсов.
  */
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
 
 interface MoreItem { t: string; d: string; url: string; badge?: string }

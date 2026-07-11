@@ -21,7 +21,7 @@ import {
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 interface BhajanListItem { slug: string; name: string; author: string | null; hero_image: string | null; category: string | null; has_recordings?: boolean; }
 

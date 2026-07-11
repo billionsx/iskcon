@@ -13,7 +13,7 @@ import { readingClient } from "./reading/api";
 import { getPlan } from "./reading/position";
 import { DarshanRings } from "./DarshanStories";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const INK = "var(--color-label)";
 const INK2 = "var(--color-label-2)";
 const INK3 = "var(--color-label-3)";

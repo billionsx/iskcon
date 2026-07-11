@@ -7,7 +7,7 @@ const INK2 = "#70727b";
 const INK3 = "#a7a8b0";
 const LINE = "rgba(0,0,0,0.08)";
 const FILL = "#F4F4F7";
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 
 const MAX = 2000;

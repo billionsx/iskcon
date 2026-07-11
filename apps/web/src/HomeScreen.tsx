@@ -22,7 +22,7 @@ import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeEducation, HomeNews } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const S = 44;   // воздух между секциями
 const PAD = 16; // боковой отступ контейнера
 

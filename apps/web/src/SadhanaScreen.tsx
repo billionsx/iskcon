@@ -26,7 +26,7 @@ import { readingMinutesToday, recentReadings, READING_CHANGED_EVENT, type Readin
 import { ContinueShelf, ReadingGoalCard } from "./BooksHub";
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const GREEN = "#34C759";
 const L1 = "var(--color-label)";

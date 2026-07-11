@@ -18,7 +18,7 @@ import { BOOKS, bookFullTitle } from "../books";
 import { albumById } from "../kirtans";
 import { type SubTabDef } from "../SectionSubTabs";
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const glass = (radius: number): CSSProperties => ({
   background: "rgba(255,255,255,0.10)",
   backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)",

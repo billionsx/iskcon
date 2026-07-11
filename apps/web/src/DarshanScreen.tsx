@@ -13,7 +13,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import { darshanClient, type DarshanItem } from "./darshan/api";
 
 /* ── токены ── */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const L1 = "var(--color-label)";
 const L2 = "var(--color-label-2)";

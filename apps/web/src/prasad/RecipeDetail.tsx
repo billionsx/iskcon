@@ -20,7 +20,7 @@ export function recipeCtx(r: { slug: string; title: string; subtitle: string }):
   };
 }
 
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 
 /* ───────── иконки (STROKE-стиль приложения) ───────── */
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };

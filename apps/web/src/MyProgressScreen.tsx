@@ -15,7 +15,7 @@ import { recentReadings, pctOf, readingMinutesToday, readingGoalMin, readingStre
 import { BOOKS } from "./books";
 
 /* ── токены ── */
-const GOLD = "#D2AA1B";
+const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
 const L1 = "var(--color-label)";
 const L2 = "var(--color-label-2)";
