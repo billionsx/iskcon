@@ -94,10 +94,10 @@ export function usePlayer(): PlayerApi {
 export const PLAYER_RATES = [1, 1.25, 1.5, 2];
 /** Единая запасная обложка плеера (фирменный знак ISKCON ONE LOVE) — для любого
  *  аудио без собственной обложки. Источник — apps/web/public/audio-cover.png. */
-export const AUDIO_FALLBACK_COVER = "/audio-cover.png";
+export const AUDIO_FALLBACK_COVER = "/cover-fallback.svg";        // ЗКН-Д005
 /** Обложка фирменного знака для СПИСКА бхаджанов — золото на белом (всегда,
  *  вне зависимости от темы). В плеере используется тёмная AUDIO_FALLBACK_COVER. */
-export const AUDIO_FALLBACK_COVER_LIGHT = "/audio-cover-light.png";
+export const AUDIO_FALLBACK_COVER_LIGHT = "/cover-fallback.svg";  // ЗКН-Д005 — один ассет на обе темы
 // Отображаемые название/обложка плеера по книге (источник — books.ts).
 const BOOK_AUDIO: Record<string, { title: string; cover: string }> = {
   bg: { title: "Бхагавад-гита как она есть", cover: BOOKS.bg?.covers?.[0] ?? AUDIO_FALLBACK_COVER },
