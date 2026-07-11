@@ -11,10 +11,18 @@
     "нароттам"
   ],
   "excludes": [],
-  "require": [
+  "qualifiers": [
     "дас",
     "das",
     "тхакур",
-    "thakur"
+    "thakur",
+    "махашая",
+    "mahasaya"
+  ],
+  "homonyms": [
+    "дхира",
+    "dhira",
+    "лучший из людей",
+    "best of men"
   ]
 }
