@@ -22,7 +22,8 @@ import {
   type Category, type DietTag, type Recipe,
 } from "./prasad";
 import { useRecipes } from "./recipesHydrate";
-import { FilterChips as NavFilterChips, type NavItem } from "../ui/nav4";
+import { FilterChips as NavFilterChips, ScopeTitle, type NavItem } from "../ui/nav4";
+import { COOKBOOK } from "./cookbook";
 
 const GOLD = "var(--color-gold)";
 
@@ -37,8 +38,12 @@ const Check = ({ size = 15 }: { size?: number }) => <svg {...ic(size)}><path {..
 const ChevR = ({ size = 18 }: { size?: number }) => <svg {...ic(size)} style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path {...S} d="M9 5l7 7-7 7" /></svg>;
 
 /* ───────── секции навигации ───────── */
-type SectionId = "recipes" | "match" | "deities" | "offering";
-const SECTIONS: { id: SectionId; label: string }[] = [
+/* ЗКН-Н017: витрина «Прасад» — книга «Кухня прасада» это ГЛАВНАЯ страница,
+ * рецепты и прочее — разделы Tier-2 (ScopeTitle), а не отдельные экраны.
+ * Внутри зала у витрины НЕТ своей кнопки «назад» и своей шапки: навигация — HallTabs. */
+type SectionId = "book" | "recipes" | "match" | "deities" | "offering";
+const SECTIONS: NavItem[] = [
+  { id: "book", label: "Книга" },
   { id: "recipes", label: "Рецепты" },
   { id: "match", label: "Подбор" },
   { id: "deities", label: "Кому дорого" },
@@ -46,13 +51,13 @@ const SECTIONS: { id: SectionId; label: string }[] = [
 ];
 
 export default function PrasadamScreen({
-  initialSection = "recipes", onBack, onOpenRecipe, onSectionChange, onOpenBook, onOpenEntity, flash,
+  initialSection = "book", onBack, onOpenRecipe, onSectionChange, onOpenBook, onOpenEntity, flash,
 }: {
   initialSection?: SectionId;
   onBack: () => void;
   onOpenRecipe: (slug: string) => void;
   onSectionChange?: (id: SectionId) => void;
-  onOpenBook: () => void;
+  onOpenBook: (chapterId?: string) => void;
   onOpenEntity?: (id: string, type: string | null) => void;
   flash?: (m: string) => void;
 }) {
@@ -69,20 +74,13 @@ export default function PrasadamScreen({
   };
 
   return (
-    <div ref={scrollRef} style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      {/* sticky-хром: шапка + сегменты единым блоком (надёжная стопка) */}
-      <div style={{ position: "sticky", top: 0, zIndex: 30, background: "var(--color-glass-nav)", backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)", borderBottom: "0.5px solid var(--color-hairline)" }}>
-        <header style={{ display: "flex", alignItems: "center", gap: 4, padding: "10px 8px 4px" }}>
-          <button type="button" aria-label="Назад" onClick={onBack}
-            style={{ display: "grid", placeItems: "center", width: 40, height: 40, borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-            <Back />
-          </button>
-          <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>Прасадам</span>
-        </header>
-        <SubTabs items={SECTIONS} active={section} onChange={go} />
-      </div>
+    <div ref={scrollRef}>
+      {/* ЗКН-Н017: своей шапки и «назад» у витрины НЕТ — навигация зала это HallTabs.
+          Разделы — Tier-2 (ScopeTitle) из общего модуля. */}
+      <ScopeTitle items={SECTIONS} active={section} onChange={(v) => go(v as SectionId)} ariaLabel="Разделы прасада" />
 
       <div style={{ padding: "18px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
+        {section === "book" && <CookbookInline onOpenChapter={(id) => onOpenBook?.(id)} onOpenRecipe={onOpenRecipe} flash={flash} />}
         {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} flash={flash} />}
         {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
         {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} onOpenEntity={onOpenEntity} flash={flash} />}
@@ -93,32 +91,6 @@ export default function PrasadamScreen({
 }
 
 /* ═══════════════════ сегменты (рейка, tone=dark) ═══════════════════ */
-function SubTabs({ items, active, onChange }: { items: { id: SectionId; label: string }[]; active: SectionId; onChange: (id: SectionId) => void }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-  useEffect(() => {
-    const el = itemRefs.current[active]; const cont = containerRef.current;
-    if (!el || !cont) return;
-    const target = el.offsetLeft - (cont.clientWidth - el.clientWidth) / 2;
-    cont.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
-  }, [active]);
-  return (
-    <nav aria-label="Разделы прасадама">
-      <div ref={containerRef} style={{ display: "flex", alignItems: "center", overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-        {items.map((it) => {
-          const on = it.id === active;
-          return (
-            <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "11px 15px", fontSize: "var(--text-footnote)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", color: on ? "#fff" : "rgba(255,255,255,0.5)", fontWeight: on ? 600 : 500, transition: "color .15s", WebkitTapHighlightColor: "transparent", whiteSpace: "nowrap" }}>
-              {it.label}
-              {on && <span aria-hidden style={{ position: "absolute", insetInline: 13, bottom: 0, height: 2, borderRadius: 999, background: "#fff" }} />}
-            </button>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
 
 /* ═══════════════════ общие примитивы ═══════════════════ */
 
@@ -410,5 +382,40 @@ function OfferingSection() {
         </GroupedList>
       </div>
     </>
+  );
+}
+
+
+/* ЗКН-Н017: книга «Кухня прасада» — ГЛАВНАЯ страница витрины Прасад.
+ * Показываем оглавление; глава открывается переходом (а не раздутием страницы). */
+function CookbookInline({ onOpenChapter, onOpenRecipe, flash }: {
+  onOpenChapter: (id: string) => void;
+  onOpenRecipe: (slug: string) => void;
+  flash?: (m: string) => void;
+}) {
+  void onOpenRecipe; void flash;
+  return (
+    <div style={{ marginTop: 16 }}>
+      <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.025em", color: "var(--color-label)" }}>
+        Кухня прасада
+      </h1>
+      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.5 }}>
+        {COOKBOOK.subtitle}
+      </p>
+      <div style={{ marginTop: 18 }}>
+        {COOKBOOK.chapters.map((ch) => (
+          <button key={ch.id} type="button" onClick={() => onOpenChapter(ch.id)}
+            style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left",
+              padding: "13px 0", background: "none", border: "none",
+              borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+            <span style={{ flex: 1, minWidth: 0 }}>
+              <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{ch.title}</span>
+              <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{ch.subtitle ?? ch.part}</span>
+            </span>
+            <span aria-hidden style={{ color: "var(--color-label-3)", flexShrink: 0 }}>›</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
