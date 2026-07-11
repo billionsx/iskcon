@@ -621,7 +621,7 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
         items={[{ id: "feed", label: "Лента" }, { id: "practice", label: "Практика" }, { id: "calendar", label: "Календарь" }, { id: "cabinet", label: "Кабинет" }]} />
       {sub === "feed" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
-      {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
+      {sub === "calendar" && <HomeCalendar stickyTop={46} onOpenEntity={onOpenEntity} />}
       {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
     </div>
   );
