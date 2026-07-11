@@ -37,6 +37,8 @@ import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack } from "./nav";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { HallTabs } from "./SectionSubTabs";
 import { api } from "./api";
 import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
@@ -306,8 +308,9 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
     <li key={b.slug} style={{ borderBottom: isLast ? "none" : "0.5px solid var(--color-hairline)" }}>
       <div style={{ position: "relative", display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
         <button aria-label={`Открыть: ${b.name}`} onClick={() => onOpen(b.slug)} style={{ position: "absolute", inset: 0, background: "none", border: "none", cursor: "pointer", zIndex: 0 }} />
-        {b.hero_image
-          ? <img src={b.hero_image === AUDIO_FALLBACK_COVER ? AUDIO_FALLBACK_COVER_LIGHT : b.hero_image} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
+        {/* ЗКН-Д005: нет обложки → фирменная заглушка, а не битая картинка */}
+        {(b.hero_image || COVER_FALLBACK)
+          ? <img src={b.hero_image || COVER_FALLBACK} alt="" loading="lazy" style={{ width: 52, height: 52, borderRadius: 10, objectFit: "cover", flexShrink: 0, position: "relative", zIndex: 1, pointerEvents: "none" }} />
           : <span style={{ width: 52, height: 52, borderRadius: 10, flexShrink: 0, background: "var(--color-glass-regular)", position: "relative", zIndex: 1, pointerEvents: "none" }} />}
         <span style={{ minWidth: 0, flex: 1, position: "relative", zIndex: 1, pointerEvents: "none" }}>
           <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{b.name}</span>
@@ -584,7 +587,9 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   };
   return (
     <div>
-      <SegRow value={sub} onChange={pickSub} items={[["lichnosti", "Личности"], ["books", "Книги"], ["bhajans", "Бхаджаны"], ["kirtans", "Киртаны"], ["recipes", "Рецепты"], ["dhama", "Дхама"]]} />
+      {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
+      <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
+        items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "recipes", label: "Рецепты" }, { id: "dhama", label: "Дхама" }]} />
       {sub === "lichnosti" && <LichnostiHub onOpenEntity={onOpenEntity} />}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
@@ -612,7 +617,8 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   const pickSub = (v: string) => { setSub(v); pushUrl(SAD_PATH[v] || "/"); };
   return (
     <div>
-      <SegRow value={sub} onChange={pickSub} items={[["feed", "Лента"], ["practice", "Практика"], ["calendar", "Календарь"], ["cabinet", "Кабинет"]]} />
+      <HallTabs active={sub} onChange={pickSub} ariaLabel="Разделы Садханы"
+        items={[{ id: "feed", label: "Лента" }, { id: "practice", label: "Практика" }, { id: "calendar", label: "Календарь" }, { id: "cabinet", label: "Кабинет" }]} />
       {sub === "feed" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={0} onOpenEntity={onOpenEntity} />}
