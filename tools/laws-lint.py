@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps" / "web" / "src"
 
 # cardText.ts САМ определяет запрещённые формы (в regex) — он освобождён.
-ALLOW = {"cardText.ts"}
+ALLOW = {"cardText.ts", "nav.ts"}
 
 RULES = [
     {
@@ -53,6 +53,12 @@ RULES = [
         "name": "суррогатная обложка (спектрограмма / буква-монограмма / авто-парсинг)",
         "pattern": re.compile(r"archive\.org/services/img|audio-cover(-light)?\.png|/covers/[a-z-]+-ia\.jpg"),
         "hint": "→ COVER_FALLBACK / <CoverFallback dark /> (ЗКН-Д005/Д007). Суррогат хуже честной заглушки",
+    },
+    {
+        "id": "ЗКН-Н001",
+        "name": "прямая запись истории мимо nav.ts",
+        "pattern": re.compile(r"history\.(push|replace)State"),
+        "hint": "→ pushUrl() / replaceUrl() из ./nav. Сырой replaceState стирает appIdx и ломает «назад»",
     },
     {
         "id": "ЗКН-Ц001",

@@ -16,6 +16,7 @@ import { api } from "../api";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById, artistBySlug, albumCover } from "../kirtans";
 import { recordListen } from "../account/track";
+import { replaceUrl } from "../nav";
 import { createWebEngine, type AudioEngine } from "./engine";
 
 export type AudioMode = "plain" | "commentary";
@@ -198,7 +199,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const lila = hier ? seg[2] : undefined;
       const chSeg = hier ? seg[3] : seg[2];
       const ch = chSeg ? parseInt(chSeg, 10) : NaN;
-      try { history.replaceState(null, "", location.pathname); } catch { /* ignore */ }
+      replaceUrl(location.pathname);   // ЗКН-Н001: nav.ts сохраняет appIdx (raw replaceState стирал его и ломал «назад»)
       if (ch) playChapter(bk, ch, "plain", lila); else playBook({ book: bk, mode: "plain" });
       return () => eng.destroy();
     }

@@ -1,7 +1,7 @@
 /**
  * PracticeHub — подтаб «Садхана» на Главной: хаб ежедневной практики преданного.
  * Пока заглушка: разделы перечислены карточками с бейджем «Скоро» — это каркас,
- * по которому будут собраны джапа, дневник, стих/даршан дня, прасад, новости,
+ * по которому будут собраны джапа, дневник, стих/даршан дня, новости,
  * изучение и путь. Дизайн повторяет язык Главной (золото + мягкая заливка без
  * обводок). Объём зафиксирован в docs/DECISIONS.md; разделы соответствуют
  * docs/PRODUCT_ARCHITECTURE.md и вехам docs/ROADMAP_MILESTONES.md.
@@ -40,10 +40,7 @@ const GROUPS: Group[] = [
     { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-diary")) },
     { icon: ICON.moon, t: "Экадаши", d: "Дни поста, время параны по городу, отметка соблюдения", to: "/ekadashi" },
   ] },
-  { group: "Прасад", items: [
-    { icon: ICON.bowl, t: "Рецепты прасада", d: "100 рецептов, подбор по продуктам и диете, что дорого Божествам, подношение", to: "/prasadam" },
-    { icon: ICON.bookmark, t: "Книга «Кухня прасада»", d: "Философия, продукты и специи, техники, рецепты и подношение", to: "/prasadam/book" },
-  ] },
+  // ЗКН-Н007: прасад убран из «Практики» → витрина «Рецепты» в Богатствах
   { group: "Изучение", items: [
     { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано: системное чтение, книги, время и стрик", go: () => window.dispatchEvent(new CustomEvent("iol:open-progress")) },
   ] },
@@ -59,7 +56,7 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
         <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Личное пространство ежедневной практики: стих дня, джапа, дневник, прасад и путь преданного. Здесь будет ваш ежедневный заход в храм.
+          Личное пространство ежедневной практики: стих дня, джапа, дневник и путь преданного. Здесь будет ваш ежедневный заход в храм.
         </p>
       </div>
 

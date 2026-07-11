@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { cleanCardText } from "./cardText";
+import { replaceUrl } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 type Person = {
@@ -168,7 +169,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
     const gslug = grpSel && SUBSUBS[subSel] ? SUBSUB_SLUG[grpSel] : "";
     const path = "/dhana/" + lslug + (sslug ? "/" + sslug : "") + (sslug && gslug ? "/" + gslug : "");
     if (window.location.pathname !== path) {
-      try { window.history.replaceState(window.history.state, "", path); } catch { /* noop */ }
+      replaceUrl(path);   // ЗКН-Н001: историю пишет только nav.ts
     }
   }, [lila, subSel, grpSel]);
 
