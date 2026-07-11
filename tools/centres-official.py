@@ -48,6 +48,82 @@ def get(url: str, timeout: int = 45):
         return json.load(r)
 
 
+SITEMAPS = ["/wp-sitemap.xml", "/sitemap_index.xml", "/sitemap.xml"]
+
+
+def get_text(url: str, timeout: int = 40) -> str:
+    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read().decode("utf-8", "replace")
+
+
+def centre_urls():
+    """Адреса страниц центров — из карты сайта.
+
+    REST-API официального директория закрыт (wp-json уходит в таймаут), поэтому
+    идём честным путём: карта сайта → страницы центров. Медленнее, зато работает
+    и не зависит от того, включил ли админ REST.
+    """
+    seen, urls = set(), []
+    for sm in SITEMAPS:
+        try:
+            xml = get_text(OFFICIAL + sm)
+        except Exception:
+            continue
+        # индекс карт сайта → вложенные карты
+        subs = re.findall(r"<loc>\s*([^<]+?)\s*</loc>", xml)
+        for u in subs:
+            if not u.startswith(OFFICIAL):
+                continue
+            if "/centre/" in u:
+                if u not in seen:
+                    seen.add(u); urls.append(u)
+                continue
+            if u.endswith(".xml") and re.search(r"centre|listing|job", u, re.I):
+                try:
+                    sub = get_text(u)
+                except Exception:
+                    continue
+                for v in re.findall(r"<loc>\s*([^<]+?)\s*</loc>", sub):
+                    if "/centre/" in v and v not in seen:
+                        seen.add(v); urls.append(v)
+        if urls:
+            print("::notice title=SITEMAP::%s → центров=%d" % (sm, len(urls)))
+            break
+    if not urls:
+        raise SystemExit("::error title=NO-SITEMAP::карта сайта не отдала ни одной страницы /centre/")
+    return urls
+
+
+LATLNG_RE = [
+    re.compile(r'"latitude"\s*:\s*"?(-?\d+\.\d+)"?[\s\S]{0,120}?"longitude"\s*:\s*"?(-?\d+\.\d+)"?'),
+    re.compile(r'data-lat=["\'](-?\d+\.\d+)["\'][\s\S]{0,160}?data-l(?:ng|ong)=["\'](-?\d+\.\d+)["\']'),
+    re.compile(r'geolocation_lat["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)[\s\S]{0,160}?geolocation_long["\']?\s*[:=]\s*["\']?(-?\d+\.\d+)'),
+]
+TITLE_RE = re.compile(r"<title>\s*(.*?)\s*</title>", re.S)
+
+
+def parse_centre(url: str):
+    """Имя + координаты со страницы центра."""
+    try:
+        html = get_text(url, timeout=30)
+    except Exception:
+        return None
+    lat = lng = None
+    for rx in LATLNG_RE:
+        m = rx.search(html)
+        if m:
+            lat, lng = num(m.group(1)), num(m.group(2))
+            break
+    m = TITLE_RE.search(html)
+    name = strip_html(m.group(1)) if m else ""
+    name = re.sub(r"\s*[–|-]\s*ISKCON Centres.*$", "", name).strip()
+    if not name:
+        return None
+    return {"id": url.rstrip("/").split("/")[-1], "name": name, "address": "",
+            "lat": lat, "lng": lng, "website": url, "source": "centres.iskcon.org"}
+
+
 def discover_routes():
     """Спросить у сайта, какие маршруты он отдаёт. Не угадывать."""
     try:
@@ -171,10 +247,17 @@ def normalize(rows):
 
 
 def main():
-    cpt = find_cpt()
-    rows = fetch_all(cpt)
-    places, no_coords = normalize(rows)
-    with_coords = len(places) - no_coords
+    urls = centre_urls()
+    places = []
+    for i, u in enumerate(urls):
+        p = parse_centre(u)
+        if p:
+            places.append(p)
+        if i % 50 == 0:
+            print("  ...%d/%d" % (i, len(urls)))
+        time.sleep(0.25)                   # вежливость к чужому серверу
+    with_coords = sum(1 for p in places if p["lat"] is not None)
+    no_coords = len(places) - with_coords
 
     print("::notice title=OFFICIAL::центров=%d  с координатами=%d  без=%d"
           % (len(places), with_coords, no_coords))
@@ -184,7 +267,7 @@ def main():
                          "ожидалось ~664. Скрейп неполон, не перезаписываю базу." % len(places))
 
     out = {"places": places, "count": len(places), "with_coords": with_coords,
-           "source": "centres.iskcon.org", "cpt": cpt}
+           "source": "centres.iskcon.org"}
     with open("apps/web/public/data/iskcon-centres-official.json", "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     print("записано: apps/web/public/data/iskcon-centres-official.json")
