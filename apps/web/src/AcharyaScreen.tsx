@@ -17,6 +17,7 @@ import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
+import { cleanCardText } from "./cardText";
 
 const GOLD = "#D2AA1B";
 
@@ -236,7 +237,7 @@ const COLLECTIONS: Record<string, Collection> = {
   },
   gauranga: {
     title: "Гауранга лила",
-    subtitle: "Игры Шри Чайтаньи Махапрабху и Его спутников",
+    subtitle: "Игры Гауранги Махапрабху и Его спутников",
     rails: [
       { title: "Панча-таттва", params: "ids=chaitanya,nityananda,advaita,gadadhara,srivasa", orderIds: ["chaitanya", "nityananda", "advaita", "gadadhara", "srivasa"] },
       { title: "Спутники Гауранги", params: `dataset=${GAURA_DS}&limit=60` },
@@ -272,7 +273,7 @@ function FacetHead({ kicker, title, sub }: { kicker: string; title: string; sub?
         <span style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: 13, letterSpacing: "0.3px", color: GOLD }}>{kicker}</span>
       </div>
       <h2 style={{ margin: "4px 0 0", fontFamily: "var(--font-display)", fontSize: 23, fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>{title}</h2>
-      {sub && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.45 }}>{sub}</p>}
+      {sub && <p style={{ margin: "3px 0 0", fontFamily: "var(--font-text)", fontSize: 13.5, color: "var(--color-label-2)", lineHeight: 1.45 }}>{cleanCardText(sub)}</p>}
     </div>
   );
 }

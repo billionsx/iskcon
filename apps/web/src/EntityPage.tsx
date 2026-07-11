@@ -18,6 +18,7 @@ import { PersonHeroCard } from "./PersonHeroCard";
 import { galleryFor } from "./personaGallery";
 import { Rail } from "./AcharyaScreen";
 import { renderTerms } from "./ui/Skt";
+import { cleanCardText } from "./cardText";
 import { SectionSubTabs } from "./SectionSubTabs";
 
 const GOLD = "#D2AA1B";
@@ -304,7 +305,11 @@ function renderSanskrit(text: string | null | undefined): ReactNode {
 // Инлайн-проза со ссылками на суб-табы: токен [[subId|подпись]] становится
 // тихой ссылкой-кнопкой, переключающей суб-таб тем же обработчиком, что и чипы
 // (с прокруткой к началу раздела). Остальной текст идёт через renderSanskrit.
-function renderProse(text: string, onSub?: (id: string) => void, onTab?: (id: string) => void): ReactNode {
+function renderProse(raw: string, onSub?: (id: string) => void, onTab?: (id: string) => void): ReactNode {
+  // ЗКН-Т002: вся проза карточки проходит закон текста. Единая точка — нарушение
+  // невозможно, что бы ни лежало в БД. Цитаты (q.t) сюда НЕ попадают: они идут
+  // через renderSanskrit напрямую — чужой голос не редактируется (ЗКН-БТ004).
+  const text = cleanCardText(raw);
   if (!text) return null;
   if ((!onSub && !onTab) || text.indexOf("[[") === -1) return renderSanskrit(text);
   const out: ReactNode[] = [];
@@ -596,7 +601,7 @@ function LongformArticle({ sections, onOpen, onNavigate, onSub, onTab }: { secti
     <div>
       {sections.map((s, i) => (
         <section key={i} style={{ marginTop: i === 0 ? 26 : 34 }}>
-          {s.h && <Eyebrow>{s.h}</Eyebrow>}
+          {s.h && <Eyebrow>{cleanCardText(s.h)}</Eyebrow>}
           {(s.p ?? []).map((para, j) => (
             <p key={j} style={{ margin: j === 0 ? 0 : "13px 0 0", fontFamily: "var(--font-text)", fontSize: 16, lineHeight: 1.65, color: "var(--color-label)" }}>{renderProse(para, onSub, onTab)}</p>
           ))}
@@ -1117,7 +1122,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     : prevTabObj ? { on: true, label: prevTabObj.label, go: () => goToTab(prevTabObj.id) }
     : { on: false, label: "", go: () => {} };
 
-  // тождество Гаура↔Кришна-лила одной строкой (для ВКЛ)
+  // тождество Гауранга Лила ↔ Кришна Лила одной строкой (для ВКЛ)
   const idRel = [
     ...(data?.out ?? []).map((r) => ({ r, dir: "out" as const })),
     ...(data?.in ?? []).map((r) => ({ r, dir: "in" as const })),
