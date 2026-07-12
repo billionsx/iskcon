@@ -1,3 +1,4 @@
+import { COVER_FALLBACK } from "./ui/CoverFallback";
 /**
  * Book data model — single source of truth for book unit cards (юнит-стандарт)
  * and the product detail page. Add a new book = add an entry here.
@@ -88,6 +89,41 @@ export const BOOKS: Record<string, BookData> = {
     hierarchical: true,
     uniformTitle: true,
     hideCardIast: true,
+  },
+  cb: {
+    id: "cb",
+    work: "cb",
+    slug: "chaitanya-bhagavata",
+    titleLine1: "Шри Чайтанья-",
+    titleLine2: "бхагавата",
+    iast: "Śrī Caitanya-bhāgavata",
+    tagline: "Первое жизнеописание Гауранги Махапрабху",
+    author: "Шрила Вриндаван дас Тхакур",
+    description:
+      "Вриндаван дас Тхакур, названный Вьясой лил Господа, описал явление, детство и санкиртану Гауранги Махапрабху в Навадвипе. Внесены Ади-кханда и Антья-кханда с комментариями «Гаудия-бхашья» Шрилы Бхактисиддханты Сарасвати. Мадхья-кханда готовится.",
+    publisher: "bbt",
+    covers: [COVER_FALLBACK],
+    chips: ["27 глав", "6 400+ стихов", "500+ лет"],
+    hierarchical: true,
+    uniformTitle: true,
+  },
+  cm: {
+    id: "cm",
+    work: "cm",
+    slug: "chaitanya-mangala",
+    titleLine1: "Шри Чайтанья-",
+    titleLine2: "мангала",
+    iast: "Śrī Caitanya-maṅgala",
+    tagline: "Лилы Господа языком песни",
+    author: "Шрила Лочана дас Тхакур",
+    description:
+      "Жизнеописание Гауранги Махапрабху, сложенное бенгальским поэтом XVI века. Лочана дас Тхакур передаёт лилы Господа языком песни: Сутра-, Ади-, Мадхья- и Шеша-кханда. Перевод Субхаг Свами.",
+    publisher: "bbt",
+    covers: [COVER_FALLBACK],
+    chips: ["28 глав", "4 кханды", "500+ лет"],
+    hierarchical: true,
+    prose: true,
+    uniformTitle: true,
   },
   sb: {
     id: "sb",
