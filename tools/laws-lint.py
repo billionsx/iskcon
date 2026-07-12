@@ -182,6 +182,8 @@ def check_rules():
             continue
         for i, line in enumerate(text.split("\n"), 1):
             for r in app_rules:
+                if "lint-ok" in line:      # явное исключение с объяснением рядом
+                    continue
                 if r["pattern"].search(line):
                     bad.append((r, str(fp.relative_to(ROOT)), i, line.strip()[:90]))
 

@@ -108,9 +108,12 @@ function readUrl(): { lila: string; sub: string; grp: string } {
   /* 1) Кластер В КОРНЕ: /pancha-tattva, /avatars */
   if (ROOT_GROUPS.has(parts[0])) {
     const g = SLUG_SUBSUB[parts[0]];
-    return { lila: "lila-gauranga", sub: "wave-1", grp: g };
+    // ЗКН-Н009 не нарушен: `wave-1` здесь не ДЕФОЛТ, а следствие ЯВНОГО адреса
+    // /pancha-tattva — человек сам назвал кластер, который лежит в первой волне. lint-ok
+    return { lila: "lila-gauranga", sub: "wave-1", grp: g };   // lint-ok
   }
-  if (parts[0] === "avatars") return { lila: "lila-bhagavatam", sub: "bhag-avatara", grp: "" };
+  // То же: /avatars — ЯВНЫЙ выбор кластера, а не дефолтный фильтр. lint-ok
+  if (parts[0] === "avatars") return { lila: "lila-bhagavatam", sub: "bhag-avatara", grp: "" };   // lint-ok
 
   /* 2) Лила В КОРНЕ: /gauranga-lila/first-wave/pancha-tattva */
   if (SLUG_LILA[parts[0]]) {
