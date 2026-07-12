@@ -212,18 +212,20 @@ CHECKS = [
         # Проектный КАНОН, а не пересказ источников. Ключевое расхождение:
         # Рагхунатха Бхатта = **РАСА**-манджари (не Рага, как у части источников).
         # Ростер — тождества в графе, а не текст в прозе: их можно проверить.
-        "sql": """SELECT COUNT(*) AS n FROM (
-                    SELECT 'rupa-goswami' AS g, 'rupa-manjari' AS m
-                    UNION ALL SELECT 'sanatana-goswami','lavanga-manjari'
-                    UNION ALL SELECT 'jiva-goswami','vilasa-manjari'
-                    UNION ALL SELECT 'raghunatha-bhatta-goswami','rasa-manjari'
-                    UNION ALL SELECT 'raghunatha-das-goswami','tulasi-manjari'
-                    UNION ALL SELECT 'gopala-bhatta-goswami','guna-manjari'
-                    UNION ALL SELECT 'lokanatha-goswami','manjulali-manjari'
-                    UNION ALL SELECT 'krishnadasa-kaviraja','kasturi-manjari'
-                    UNION ALL SELECT 'bhugarbha-goswami','prema-manjari'
-                    UNION ALL SELECT 'narottama-dasa-thakura','champaka-manjari'
-                  ) k
+        # ⚠️ Цепочка UNION ALL из 10 звеньев превышает лимит D1
+        # («too many terms in compound SELECT»). Берём CTE с VALUES.
+        "sql": """WITH kanon(g, m) AS (VALUES
+                    ('rupa-goswami','rupa-manjari'),
+                    ('sanatana-goswami','lavanga-manjari'),
+                    ('jiva-goswami','vilasa-manjari'),
+                    ('raghunatha-bhatta-goswami','rasa-manjari'),
+                    ('raghunatha-das-goswami','tulasi-manjari'),
+                    ('gopala-bhatta-goswami','guna-manjari'),
+                    ('lokanatha-goswami','manjulali-manjari'),
+                    ('krishnadasa-kaviraja','kasturi-manjari'),
+                    ('bhugarbha-goswami','prema-manjari'),
+                    ('narottama-dasa-thakura','champaka-manjari'))
+                  SELECT COUNT(*) AS n FROM kanon k
                   WHERE NOT EXISTS (SELECT 1 FROM entity_relations r
                                     WHERE r.from_id = k.g
                                       AND r.relation = 'gauranga-lila-identity'
