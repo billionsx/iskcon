@@ -122,7 +122,7 @@ def check_b007():
     if not t:
         return []
     # книги, внесённые ингестом (у них в D1 есть стихи)
-    ingested = ["cb", "cm", "br"]
+    ingested = ["cb", "cm", "br", "ndm"]
     miss = [w for w in ingested if ('work: "%s"' % w) not in t]
     if miss:
         return [("books.ts", "нет в бандле: %s — читалка молча откроет «Бхагавад-гиту» (ЗКН-Б007)"
