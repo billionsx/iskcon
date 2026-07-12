@@ -23,6 +23,7 @@ import os
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 
 UA = "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"
@@ -101,8 +102,13 @@ def d1(sql, params=None):
     req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                  headers={"Authorization": "Bearer " + tok,
                                           "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        return json.load(r)
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.load(r)
+    except urllib.error.HTTPError as e:
+        # ЗКН-Ф014: молча падать нельзя — скажи, ЧТО именно не так.
+        raise SystemExit("::error title=D1::HTTP %s — %s\n  SQL: %s"
+                         % (e.code, e.read().decode("utf-8", "replace")[:280], sql[:110]))
 
 
 def main():

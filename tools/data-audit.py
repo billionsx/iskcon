@@ -15,6 +15,7 @@
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 
 CHECKS = [
@@ -324,8 +325,15 @@ def d1(sql: str):
     req = urllib.request.Request(
         url, data=json.dumps({"sql": sql}).encode(),
         headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        body = json.load(r)
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            body = json.load(r)
+    except urllib.error.HTTPError as e:
+        # ЗКН-Ф014: скрипт говорит, ЧТО именно сломалось. Без этого CI показывает
+        # лишь «exit code 1», и настоящая ошибка (напр. «too many SQL variables»)
+        # остаётся невидимой.
+        raise SystemExit("::error title=D1::HTTP %s — %s\n  SQL: %s"
+                         % (e.code, e.read().decode("utf-8", "replace")[:280], sql[:110]))
     for blk in body.get("result", []):
         rows = blk.get("results") or []
         if rows:
