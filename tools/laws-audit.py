@@ -72,6 +72,12 @@ def actual_level(lid: str) -> tuple[int, str]:
     if lid in ("ЗКН-Н025", "ЗКН-Н026") and (ROOT / "tools" / "url-audit.py").exists():
         return 5, "гейт адресов (url-audit.py)"
 
+    # Н027/Н028 механизированы в nav-audit (check_n027 ловит и то, и другое).
+    if lid in ("ЗКН-Н027", "ЗКН-Н028"):
+        t = (ROOT / "tools" / "nav-audit.py").read_text(encoding="utf-8")
+        if "check_n027" in t:
+            return 5, "гейт навигации (check_n027)"
+
     for gate, how in (("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек"),
                       ("infra-audit.py", "гейт инфраструктуры"),
                       ("product-audit.py", "гейт продукта/книг"),
