@@ -64,6 +64,10 @@ def actual_level(lid: str) -> tuple[int, str]:
     # У5 — правило линтера, аудит данных или гейт CI
     if lid in lint:
         return 5, "правило в laws-lint.py"
+    # ЗКН-Ц004 механизирован ЗДЕСЬ ЖЕ: аудитор падает на пропавшем гейте.
+    if lid == "ЗКН-Ц004":
+        return 5, "гейт в laws-audit.py"
+
     for gate, how in (("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек"),
                       ("infra-audit.py", "гейт инфраструктуры"),
                       ("product-audit.py", "гейт продукта/книг"),
@@ -139,6 +143,26 @@ def main():
     print("─" * 74)
     print("%-29s %5d  %20d/%d  (%.0f%%)" % ("ИТОГО", len(laws), tot_mech, len(laws), 100 * tot_mech / len(laws)))
     print()
+
+    # ЗКН-Ц004: УДАЛЕНИЕ ГЕЙТА НЕ ПРОХОДИТ МОЛЧА.
+    #
+    # Вырезая один блок из data-audit.py, я срезал вместе с ним ТРИ соседних
+    # (Б004/Б005/Б006) — гейт каталога книг молча исчез, а свод продолжал
+    # объявлять их У5. Обнаружилось случайно, при следующем аудите.
+    #
+    # Теперь это ошибка: закон объявлен У5, а механизма нет → аудит ПАДАЕТ.
+    lost = [l for l in laws if l["declared"] >= 5 and l["actual"] < 4]
+    if lost:
+        print("═" * 74)
+        print("✗ ГЕЙТ ПРОПАЛ: закон объявлен У5, а механизма НЕТ (%d)" % len(lost))
+        print("═" * 74)
+        for law in lost:
+            print("  %-11s объявлен У%d, фактически У%d — %s"
+                  % (law["id"], law["declared"], law["actual"], law["how"]))
+            print("             %s" % law["text"][:78])
+        print()
+        print("Либо вернуть гейт, либо понизить уровень в docs/LAWS.md.")
+        return 1
 
     if gap:
         print("═" * 74)

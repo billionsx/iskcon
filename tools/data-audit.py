@@ -206,6 +206,85 @@ CHECKS = [
         "hint": "→ слаг отражает СМЫСЛ: «Джугал-кунда» → jugal-kunda, а не trashed (ЗКН-Н008/Р008)",
     },
     {
+        "law": "ЗКН-Сд001",
+        "name": "Кришна — свайам-бхагаван и ХАБ графа",
+        # *kṛṣṇas tu bhagavān svayam* (ШБ 1.3.28). Это не украшение свода, а
+        # ИНВАРИАНТ ДАННЫХ: Кришна — узел с категорией `svayam-bhagavan`, и на Нём
+        # сходится граф. Потеряется категория или связи — рухнет ось таксономии.
+        "sql": """SELECT CASE
+                    WHEN NOT EXISTS (SELECT 1 FROM entity_categories
+                                     WHERE entity_id='krishna' AND category='svayam-bhagavan') THEN 1
+                    WHEN (SELECT COUNT(*) FROM entity_relations
+                          WHERE from_id='krishna' OR to_id='krishna') < 20 THEN 1
+                    ELSE 0 END AS n""",
+        "hint": "→ у `krishna` категория `svayam-bhagavan` и ≥20 связей: Он хаб графа (ЗКН-Сд001)",
+    },
+    {
+        "law": "ЗКН-Сд003",
+        "name": "гуру ИСККОН — ВНУТРИ Гауранга Лилы, не отложены",
+        # ИСККОН — беспрецедентная волна Гауранга Лилы, а не приложение к ней.
+        # Гуру GBC классифицируются ВНУТРИ лилы как её герои.
+        "sql": """SELECT COUNT(*) AS n FROM entities e
+                  WHERE e.dataset = 'Гуру ИСККОН (GBC)'
+                    AND NOT EXISTS (SELECT 1 FROM entity_categories c
+                                    WHERE c.entity_id = e.id AND c.category = 'gauranga-lila')""",
+        "hint": "→ гуру GBC — герои Гауранга Лилы, а не отдельный список (ЗКН-Сд003)",
+    },
+    {
+        "law": "ЗКН-Сд005",
+        "name": "ПЕРСОНАЛИЗМ: личность вне графа (сирота)",
+        # Всё висит на графе Личностей (самбандха → абхидхея → прайоджана).
+        # Личность без единой связи выпадает из персоналистской архитектуры.
+        #
+        # Было 66 сирот. Среди них — **Шачи Деви, мать Гауранги Махапрабху**,
+        # не связанная с Ним (оказалась ДУБЛЕМ: `saci-devi` с богатым досье и
+        # `shachidevi` — узлом графа; слиты). И четыре экспансии — Маха-Вишну,
+        # Санкаршана, Васудева, Гарбходакашайи Вишну — висели без связи с Кришной.
+        #
+        # ХРАПОВИК 62: остальным связь надо УСТАНОВИТЬ по источнику, а не выдумать
+        # (ЗКН-БТ001). Среди них ISKCON-преданные (нужен `disciple-of`) и гаудия-вайшнавы.
+        "sql": """SELECT MAX(0, COUNT(*) - 62) AS n FROM entities e
+                  WHERE e.type = 'personality'
+                    AND NOT EXISTS (SELECT 1 FROM entity_relations r
+                                    WHERE r.from_id = e.id OR r.to_id = e.id)""",
+        "hint": "→ личность обязана висеть на графе. Долг 62 — храповик: рост запрещён (ЗКН-Сд005)",
+    },
+    {
+        "law": "ЗКН-Б004",
+        "name": "КАТАЛОГ КНИГ: канон имён",
+        # Гейты стерегли код и досье, а каталог книг — НЕТ. Там жили: автор
+        # «Шри Шикшаштаки» = «Шри Чайтанья Махапрабху» (голая форма, ЗКН-И001),
+        # полусокращённый титул Прабхупады, точка с запятой в описании.
+        "sql": """SELECT COUNT(*) AS n FROM book_catalog
+                  WHERE instr(COALESCE(author_name,'') || COALESCE(title,'') || COALESCE(note,''),
+                              'Шри Чайтанья Махапрабху') > 0
+                     OR (instr(COALESCE(author_name,'') || COALESCE(note,''), 'Божественная Милость') > 0
+                         AND instr(COALESCE(author_name,'') || COALESCE(note,''), 'Абхай Чаранаравинда') = 0)
+                     OR instr(COALESCE(note,''), '; ') > 0""",
+        "hint": "→ канон имён действует и в каталоге книг (ЗКН-И001 · И004 · Т001)",
+    },
+    {
+        "law": "ЗКН-Б005",
+        "name": "книга без автора-ЛИЧНОСТИ (граф разорван)",
+        # От «Бхакти-расамрита-синдху» нельзя было пройти к Рупе Госвами: связи не было
+        # у 18 книг. Двух авторов пришлось СОЗДАТЬ — их не было в реестре вовсе:
+        # Парашара Муни и Махараджа Кулашекхара.
+        # ХРАПОВИК 2: современные биографы — им карточка личности не нужна.
+        "sql": """SELECT MAX(0, COUNT(*) - 2) AS n FROM book_catalog b
+                  WHERE b.author_entity_id IS NULL
+                    AND b.id NOT IN ('vedas','upanishads')
+                    AND b.author_name IS NOT NULL AND b.author_name <> ''""",
+        "hint": "→ связать книгу с личностью автора (ЗКН-Б005). Веды/Упанишады — исключение",
+    },
+    {
+        "law": "ЗКН-Б006",
+        "name": "книга-призрак: ссылка на несуществующую личность",
+        "sql": """SELECT COUNT(*) AS n FROM book_catalog b
+                  WHERE b.author_entity_id IS NOT NULL
+                    AND NOT EXISTS (SELECT 1 FROM entities e WHERE e.id = b.author_entity_id)""",
+        "hint": "→ ссылка ведёт в никуда: личности с таким id нет (ЗКН-Б006)",
+    },
+    {
         "law": "ЗКН-Н008",
         "name": "нечитаемый слаг суб-таба в адресе",
         "sql": """SELECT COUNT(*) AS n FROM entity_profiles p,
