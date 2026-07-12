@@ -98,7 +98,7 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
       window.location.reload();
     });
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").then((reg) => {
+      navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }).then((reg) => {
         reg.update().catch(() => {});
         setInterval(() => reg.update().catch(() => {}), 120000);
       }).catch(() => {});
