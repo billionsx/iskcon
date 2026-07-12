@@ -1034,7 +1034,13 @@ const RESERVED: readonly string[] = [
     if (seg0 === "hero") { setTab("bogatstva"); return; }
     if (LILA_ROOTS.includes(seg0)) { setTab("bogatstva"); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
+    /* ЗКН-Н033 — ЦАРСТВО: /krishna и /gauranga. Подтаб — В АДРЕСЕ.
+     *
+     * Ветки для `/gauranga` НЕ БЫЛО ВОВСЕ. Адрес падал в запасной `setTab("iskcon")`
+     * в самом конце applyPath — и основа, поставленная BASE_OF, МОЛЧА ПЕРЕБИВАЛАСЬ.
+     * Так терялось 13 адресов. */
     if (seg0 === "krishna") { setTab("krishna"); return; }
+    if (seg0 === "gauranga") { setTab("gauranga"); return; }
     if (seg0 === "dhama") {
       const parts = clean.split("/");               // ["", "dhama", <id>, <tirthaId>?]
       const did = parts[2];
@@ -1194,8 +1200,16 @@ const RESERVED: readonly string[] = [
       return;
     }
 
-    if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
-    setTab("iskcon");
+    if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // личность в корне → резолвер
+
+    /* ЗКН-Н033 — ЗАПАСНОЙ НЕ ПЕРЕБИВАЕТ ОСНОВУ.
+     *
+     * Здесь стояло голое `setTab("iskcon")` — и оно МОЛЧА ПЕРЕБИВАЛО основу,
+     * поставленную BASE_OF, для КАЖДОГО адреса, у которого не нашлось своей ветки.
+     * Ветки для `/gauranga` не было — и клик по Гауранге уводил в ИСККОН.
+     *
+     * Теперь: основа есть → она и остаётся. Нет — только тогда ИСККОН. */
+    if (!BASE_OF[seg0]) setTab("iskcon");
   }
 
   // инициализация из URL + кнопки назад/вперёд (единственный popstate на приложение)
