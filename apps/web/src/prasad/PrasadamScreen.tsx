@@ -144,7 +144,11 @@ function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (sl
     <>
       <SectionTitle sub={`${RECIPE_COUNT} рецептов прасада — традиционная саттвичная кухня без лука и чеснока.`}>Библиотека рецептов</SectionTitle>
 
-      <button type="button" onClick={onOpenBook}
+      {/* ⚠️ ЗКН-Ф018 — `onClick={onOpenBook}` передавал СОБЫТИЕ МЫШИ как аргумент.
+          Оно улетало в адрес и превращалось в `/prasad/book/[object Object]` —
+          «Глава не найдена». Обработчик клика ВСЕГДА получает событие: если
+          функция ждёт другой аргумент, звать её надо через стрелку. */}
+      <button type="button" onClick={() => onOpenBook()}
         style={{ display: "flex", alignItems: "center", gap: 14, width: "100%", marginBottom: 4, padding: "16px 16px", borderRadius: 18, border: "none", background: `color-mix(in srgb, ${GOLD} 9%, transparent)`, cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
         <span aria-hidden style={{ flexShrink: 0, width: 42, height: 42, borderRadius: 12, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 16%, transparent)`, color: GOLD }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H18a2 2 0 0 1 2 2v13a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" /><path d="M8 4v14" /></svg>

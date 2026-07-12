@@ -164,8 +164,53 @@ def check_f004():
     return []
 
 
+def check_f017():
+    """ЗКН-Ф017 — SERVICE WORKER ОБЯЗАН ВЕРНУТЬ RESPONSE. ВСЕГДА.
+
+    ЭТО БЫЛ КОРЕНЬ ВСЕХ БЕЛЫХ ЭКРАНОВ.
+
+    В `sw.js` стояло:
+        const net = fetch(req).then(...).catch(() => hit);
+        return hit || net;
+
+    Если в кеше ПУСТО (`hit === undefined`) И сеть упала — `.catch(() => hit)`
+    отдаёт `undefined`. `respondWith` получает Promise<undefined>, и браузер
+    бросает:
+        TypeError: Failed to convert value to 'Response'.
+
+    Ответа НЕТ → страница не грузится → БЕЛЫЙ ЭКРАН. И это било по «назад»
+    ВЕЗДЕ — из дхамы, из киртана, из Бхагавад-гиты: «назад» это НАВИГАЦИЯ, а
+    навигация шла через тот же сломанный SW.
+
+    А в ветке навигации стояло `Response.error()` — ЯВНЫЙ сетевой сбой; браузер
+    честно показывал пустоту («resulted in a network error response»).
+
+    Из `respondWith` ВСЕГДА выходит настоящий Response. Пустоту — НИКОГДА.
+    """
+    p = ROOT / "apps" / "web" / "public" / "sw.js"
+    if not p.exists():
+        return []
+    # Комментарии не проверяем: в них закон ОБЪЯСНЯЕТСЯ, а не нарушается.
+    t = "\n".join(l for l in read(p).split("\n")
+                   if not l.strip().startswith(("*", "//", "/*")))
+    bad = []
+
+    if "Response.error()" in t:
+        bad.append(("sw.js", "Response.error() = явный сетевой сбой → БЕЛЫЙ ЭКРАН. "
+                             "Отдавать оболочку или честную страницу (ЗКН-Ф017)"))
+    if ".catch(() => hit)" in t:
+        bad.append(("sw.js", "`.catch(() => hit)` вернёт undefined, если кеш пуст → "
+                             "«Failed to convert value to Response» → БЕЛЫЙ ЭКРАН (ЗКН-Ф017)"))
+    # каждая ветка respondWith обязана кончаться Response
+    if t.count("respondWith") > 0 and "return new Response" not in t:
+        bad.append(("sw.js", "нет запасного `new Response` — ветка может отдать undefined "
+                             "(ЗКН-Ф017)"))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Ф001", "registry-load выключен (он DROP+CREATE)", check_f001),
+    ("ЗКН-Ф017", "service worker всегда отдаёт Response", check_f017),
     ("ЗКН-Ф004", "откат D1 Time Travel на месте", check_f004),
     ("ЗКН-Пл009", "координата человека не перезаписывается", check_pl009),
     ("ЗКН-Ф003", "критерий свежести деплоя на месте", check_f003),
