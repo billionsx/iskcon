@@ -2071,7 +2071,9 @@ export default {
       const nameRu = canon("ru");
       // фото личности из перенесённого контента iskcone (там, где есть)
       const IMG_ALIAS: Record<string, string> = { nrisimha: "narasimha", matsya: "matsia", "baladeva-vidyabhushana": "baladeva-vidiabhushana" };
-      const cslug = "/ru/" + (IMG_ALIAS[id] ?? id);
+      // ЗКН-Н023: слаг — ИМЯ, а не путь. Префикс «/ru/» был чужим путём
+      // с сайта-источника, утёкшим в нашу базу. Слаги очищены.
+      const cslug = IMG_ALIAS[id] ?? id;
       const imgRow = await env.DB.prepare(
         `SELECT hero_image FROM content_items
          WHERE type='personality' AND lang='ru' AND hero_image IS NOT NULL AND hero_image != ''

@@ -240,47 +240,47 @@ interface BhajanListItem { slug: string; name: string; author: string | null; he
 /* Структура молитвенника по службам Храмов ИСККОН (как на iskcone.com/ru/bhajans). */
 const BHAJAN_SECTIONS: { title: string; slugs: string[] }[] = [
   { title: "Службы храмов ИСККОН", slugs: [
-    "/ru/bhajans/visvanatha-chakravarti-thakur/shree-shree-gurv-ashtaka",
-    "/ru/bhajans/tulasi", "/ru/bhajans/govindam",
-    "/ru/bhajans/narottam-das-thakur/shree-guru-vandana",
-    "/ru/sri-narasimha-pranama", "/ru/srila-prabhupada-pranama-mantra",
-    "/ru/pancha-tattva-maha-mantra", "/ru/maha-mantra",
-    "/ru/sri-sri-siksastaka", "/ru/sri-vaisnava-pranama",
-    "/ru/gaura-arati", "/ru/tilaka", "/ru/prema-dhavani", "/ru/nama-aparadha",
+    "visvanatha-chakravarti-thakur-shree-shree-gurv-ashtaka",
+    "tulasi", "govindam",
+    "narottam-das-thakur-shree-guru-vandana",
+    "sri-narasimha-pranama", "srila-prabhupada-pranama-mantra",
+    "pancha-tattva-maha-mantra", "maha-mantra",
+    "sri-sri-siksastaka", "sri-vaisnava-pranama",
+    "gaura-arati", "tilaka", "prema-dhavani", "nama-aparadha",
   ] },
   { title: "Молитвы перед лекциями", slugs: [
-    "/ru/katha-mantra", "/ru/srimad-bhagavatam-pranama", "/ru/jaya-radha-madhava",
+    "katha-mantra", "srimad-bhagavatam-pranama", "jaya-radha-madhava",
   ] },
   { title: "Другие важные молитвы", slugs: [
-    "/ru/prasada-mantra", "/ru/narayana-kavacha",
+    "prasada-mantra", "narayana-kavacha",
   ] },
   { title: "Молитвы и бхаджаны", slugs: [
-    "/ru/bhajans/rupa-goswami/shree-radhika-stava", "/ru/bhajans/radharani-ki-jay",
-    "/ru/bhajans/shree-radha-stotram", "/ru/shrinivas-acharia/sad-goswami-ashtakam",
-    "/ru/bhajans/narottam-das-thakur/je-anilo-prema-dhana",
-    "/ru/bhajans/narottam-das-thakur/shree-krishna-chaytaniya-prabhu",
-    "/ru/bhajans/narottam-das-thakur/hari-hari",
-    "/ru/bhajans/narottam-das-thakur/gauranga-bolite-habe",
-    "/ru/bhajans/narottam-das-thakur/shree-radha-nishtha",
-    "/ru/bhajans/narottam-das-thakur/vaishnava-vigyapti",
-    "/ru/bhajans/narottam-das-thakur/shree-rupa-manjari-pada",
-    "/ru/bhajans/narottam-das-thakur/nama-sankirtana",
-    "/ru/bhajans/narottam-das-thakur/vrindavana-ramia-sthana",
-    "/ru/bhajans/lochan-das-thakur/parama-koruna",
-    "/ru/bhajans/bhaktivinod-thakur/gurudev",
-    "/ru/bhajans/bhaktivinod-thakur/ohe-vaishnava-thakur",
-    "/ru/bhajans/vasudeva-ghosh/gauranga-tumi-more-doya-na-chariho",
-    "/ru/bhajans/damodarashtaka",
+    "rupa-goswami-shree-radhika-stava", "radharani-ki-jay",
+    "shree-radha-stotram", "shrinivas-acharia-sad-goswami-ashtakam",
+    "narottam-das-thakur-je-anilo-prema-dhana",
+    "narottam-das-thakur-shree-krishna-chaytaniya-prabhu",
+    "narottam-das-thakur-hari-hari",
+    "narottam-das-thakur-gauranga-bolite-habe",
+    "narottam-das-thakur-shree-radha-nishtha",
+    "narottam-das-thakur-vaishnava-vigyapti",
+    "narottam-das-thakur-shree-rupa-manjari-pada",
+    "narottam-das-thakur-nama-sankirtana",
+    "narottam-das-thakur-vrindavana-ramia-sthana",
+    "lochan-das-thakur-parama-koruna",
+    "bhaktivinod-thakur-gurudev",
+    "bhaktivinod-thakur-ohe-vaishnava-thakur",
+    "vasudeva-ghosh-gauranga-tumi-more-doya-na-chariho",
+    "damodarashtaka",
   ] },
   { title: "Молитвы ачарьям", slugs: [
-    "/ru/srila-bhaktisiddhanta-sarasvati-mantra", "/ru/gaurakisor-das-babaji-pranama",
-    "/ru/bhaktivinod-thakur-pranama", "/ru/jagannatha-das-babaji-pranama",
-    "/ru/madhvacharia-vandana", "/ru/madhavendra-puri-vandana",
-    "/ru/shrila-sanatana-goswami-vighyapti", "/ru/shrila-rupa-goswami-vighyapti",
-    "/ru/shri-shukadeva-goswami-pranama",
+    "srila-bhaktisiddhanta-sarasvati-mantra", "gaurakisor-das-babaji-pranama",
+    "bhaktivinod-thakur-pranama", "jagannatha-das-babaji-pranama",
+    "madhvacharia-vandana", "madhavendra-puri-vandana",
+    "shrila-sanatana-goswami-vighyapti", "shrila-rupa-goswami-vighyapti",
+    "shri-shukadeva-goswami-pranama",
   ] },
   { title: "Молитвы Шрилы Прабхупады", slugs: [
-    "/ru/prabhupada/markine-bhagavat-dharma", "/ru/prabhupada/molitva-lotosnim-stopam-krishni",
+    "prabhupada-markine-bhagavat-dharma", "prabhupada-molitva-lotosnim-stopam-krishni",
   ] },
 ];
 
@@ -986,7 +986,7 @@ export default function App() {
     }
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "post") { const pid = clean.split("/")[2] ?? ""; if (pid) { setOpenPost(pid); return; } }
-    if (clean.startsWith("/ru/bhajans/")) { setOpenBhajan(clean); return; }
+    if (clean.startsWith("bhajans-")) { setOpenBhajan(clean); return; }
     if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
     if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
