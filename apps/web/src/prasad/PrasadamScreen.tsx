@@ -123,7 +123,18 @@ const FEATURED = ["sweet-rice", "gulab-jamun", "paneer-butter-masala", "khichri"
 
 function RecipesSection({ onOpenRecipe, onOpenBook, flash }: { onOpenRecipe: (slug: string) => void; onOpenBook: () => void; flash?: (m: string) => void }) {
   const [category, setCategory] = useState<Category | null>(null);
-  const CAT_NAV: NavItem[] = [{ id: "all", label: "Все" }, ...CATEGORIES.map((c) => ({ id: c, label: c }))];
+  /* ⚠️ ЗКН-Ф016 — ЗДЕСЬ ЖИЛ КРАШ, ДАВАВШИЙ БЕЛЫЙ ЭКРАН.
+   *
+   * Стояло `CATEGORIES.map((c) => ({ id: c, label: c }))`, но CATEGORIES — это
+   * УЖЕ `{id, label}[]`. Получалось `{ id: {id,label}, label: {id,label} }`,
+   * React пытался отрендерить ОБЪЕКТ как текст и падал:
+   *   «Minified React error #31: object with keys {id, label}»
+   *
+   * Экран Рецептов не открывался ВООБЩЕ — белый лист.
+   *
+   * Сборка это НЕ ЛОВИЛА: esbuild не проверяет типы. `tsc` ругался, но я счёл
+   * ошибку «старой и неважной». Ошибка типа = КРАШ В БРАУЗЕРЕ. */
+  const CAT_NAV: NavItem[] = [{ id: "all", label: "Все" }, ...CATEGORIES];
   const DIET_NAV: NavItem[] = [{ id: "any", label: "Любая" }, ...DIETS.map((d) => ({ id: d.id, label: d.label ?? d.id }))];
   const [diet, setDiet] = useState<DietTag | null>(null);
   const rv = useRecipes();   // реактивная гидрация рецептов из БД (сид → БД)

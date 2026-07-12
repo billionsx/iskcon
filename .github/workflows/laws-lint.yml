@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Установка зависимостей (нужны типы React для tsc)
+        run: npm install --no-audit --no-fund
+
       - name: Линтер законов — КОД (Д001 · Д003 · И001 · Н001 · Н005 · Н016 · Н020 · Т002 · Ф006 · Ц001)
         run: python3 tools/laws-lint.py
 

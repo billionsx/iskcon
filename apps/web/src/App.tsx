@@ -45,6 +45,7 @@ import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
 import { ROUTES, url, canonicalPath, ROOTS } from "./routes";
 import { HUB_TOP } from "./ui/HubHeader";
+import { ErrorBoundary } from "./ui/ErrorBoundary";
 
 /* ═════════ ICONS — иконки приложения ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -589,7 +590,9 @@ export function sadSubFromPath(path: string): string {
 }
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
-  onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
+  onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void;
+  /* ЗКН-Ф016: flash — ФУНКЦИЯ показа сообщения, а не строка. Тип врал. */
+  flash?: (m: string) => void;
   onOpenArtist: (slug: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void;
 }) {
   /* ЗКН-Н031 — ВИТРИНА ВЫВОДИТСЯ ИЗ АДРЕСА, А НЕ ПОМНИТСЯ.
@@ -690,7 +693,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
           onOpenRecipe={(sl) => onOpenPath("/prasad/" + sl)}
           onOpenBook={(chapterId) => onOpenPath(chapterId ? "/prasad/book/" + chapterId : "/prasad/book")}
           onOpenEntity={onOpenEntity}
-          flash={flash ? () => {} : undefined}
+          flash={flash}
         />
       )}
       {sub === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
@@ -701,7 +704,8 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
 }
 
 function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
-  onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void; flash?: string | null;
+  onOpenPath: (path: string) => void; onOpenEntity: (id: string, type: string | null) => void; onDonate: () => void;
+  flash?: (m: string) => void;
 }) {
   const [sub, setSub] = useState(() =>
     typeof window === "undefined" ? "feed" : sadSubFromPath(window.location.pathname));
@@ -765,6 +769,11 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
       <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("sadhana"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "sadhana" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
+          {/* ЗКН-Ф016 — ОДИН КРАШ НЕ УБИВАЕТ ВСЁ ПРИЛОЖЕНИЕ.
+           * Без границы React размонтирует ВСЁ ДЕРЕВО при первом же исключении:
+           * человек видит белый лист ВЕЗДЕ, пока не перезагрузит. Так один битый
+           * экран (Рецепты, React #31) делал мёртвым всё приложение. */}
+          <ErrorBoundary>
           <Suspense fallback={<ScreenFallback />}>
           {/* ЗКН-Н028 — key ЗАСТАВЛЯЕТ ПЕРЕМОНТИРОВАТЬ ПРИ СМЕНЕ ЦАРСТВА.
            * Без него React переиспользует компонент, и ПОДТАБ ПЕРЕНОСИТСЯ:
@@ -788,6 +797,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
            *
            * Второй путь удалён. Витрина живёт ТОЛЬКО в зале. */}
           </Suspense>
+          </ErrorBoundary>
         </div>
       </main>
       <TabBar active={tab} onChange={onChange} scrollRef={mainRef} />
