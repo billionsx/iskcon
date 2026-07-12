@@ -75,13 +75,19 @@ const SUB_SLUG: Record<string, string> = {
   "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya",
   "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya",
   "bhag-avatara": "avatars", "bhag-rishi": "rishis", "bhag-bhakta": "bhaktas",
-  "bhag-deva": "devas", "bhag-asura": "asuras",
+  "bhag-deva": "demigods", "bhag-asura": "asuras",
   "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata",
 };
 
 /* Кластеры, чьё имя известно само по себе — живут в КОРНЕ (решение основателя). */
+/* Кластеры Бхагаватам — все В КОРНЕ (решение основателя):
+ * имена свободны и говорят сами за себя. */
 const ROOT_SUBS: Record<string, string> = {
   "bhag-avatara": "avatars",
+  "bhag-rishi": "rishis",
+  "bhag-bhakta": "bhaktas",
+  "bhag-deva": "demigods",
+  "bhag-asura": "asuras",
   "bhag-ramayana": "ramayana-lila",
   "bhag-mahabharata": "mahabharata-lila",
 };
@@ -113,7 +119,11 @@ function readUrl(): { lila: string; sub: string; grp: string } {
     return { lila: "lila-gauranga", sub: "wave-1", grp: g };   // lint-ok
   }
   // То же: /avatars — ЯВНЫЙ выбор кластера, а не дефолтный фильтр. lint-ok
-  if (parts[0] === "avatars") return { lila: "lila-bhagavatam", sub: "bhag-avatara", grp: "" };   // lint-ok
+  const BHAG_ROOT: Record<string, string> = {
+    avatars: "bhag-avatara", rishis: "bhag-rishi", bhaktas: "bhag-bhakta",
+    demigods: "bhag-deva", asuras: "bhag-asura",
+  };
+  if (BHAG_ROOT[parts[0]]) return { lila: "lila-bhagavatam", sub: BHAG_ROOT[parts[0]], grp: "" };   // lint-ok
 
   /* 2) Лила В КОРНЕ: /gauranga-lila/first-wave/pancha-tattva */
   if (SLUG_LILA[parts[0]]) {
