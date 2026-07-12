@@ -36,7 +36,7 @@ import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteA
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
-import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack, notifyNav } from "./nav";
+import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack, notifyNav, subscribeNav } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
@@ -564,9 +564,30 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
 }) {
   const [sub, setSub] = useState(() =>
     typeof window === "undefined" ? "lichnosti" : bogSubFromPath(window.location.pathname));
+
+  /* ЗКН-Н007 — ВХОД В ЛИЧНОСТИ = «ГЕРОИ».
+   *
+   *   /dhana                 → «Герои»: выбор царства
+   *                            (Шрила Прабхупада · Кришна Лила · Гауранга Лила · Бхагаватам)
+   *   /dhana/krishna-lila    → «Герои» внутри Кришна Лилы
+   *   /dhana/gauranga-lila   → «Герои» внутри Гауранга Лилы
+   *   /dhana/vse             → полный список: четырёхуровневое меню (ЗКН-Н006)
+   *
+   * Раньше /dhana сразу открывал список из 730 личностей — без входа и выбора. */
+  const [deep, setDeep] = useState(() => {
+    if (typeof window === "undefined") return "";
+    const seg = window.location.pathname.split("/").filter(Boolean);
+    return seg[0] === "dhana" && seg[1] === "lichnosti" ? (seg[2] || "") :
+           seg[0] === "dhana" && !BOG_SUBS.includes(seg[1] || "") ? (seg[1] || "") : "";
+  });
+  useEffect(() => subscribeNav(() => {
+    const seg = window.location.pathname.split("/").filter(Boolean);
+    setDeep(seg[0] === "dhana" && !BOG_SUBS.includes(seg[1] || "") ? (seg[1] || "") : "");
+  }), []);
   // ЗКН-Н005: переключение витрины меняет адресную строку (через nav.ts — ЗКН-Н001)
   const pickSub = (v: string) => {
     setSub(v);
+    setDeep("");
     pushUrl(v === "lichnosti" ? "/dhana" : "/dhana/" + v);
   };
   return (
@@ -574,7 +595,17 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
       {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
       <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
         items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "prasad", label: "Прасад" }, { id: "dhama", label: "Дхама" }]} />
-      {sub === "lichnosti" && <LichnostiHub onOpenEntity={onOpenEntity} />}
+      {/* ЗКН-Н007: вход в Личности — «Герои» (выбор царства: Прабхупада · Кришна Лила ·
+          Гауранга Лила · Бхагаватам). Из царства — в четырёхуровневое меню (LichnostiHub).
+          Адрес /dhana/vse — полный список. */}
+      {sub === "lichnosti" && (deep === "vse"
+        ? <LichnostiHub onOpenEntity={onOpenEntity} />
+        : <AcharyaScreen
+            realm={deep === "krishna-lila" ? "krishna" : deep === "gauranga-lila" ? "gauranga" : null}
+            onOpenPath={(pp) => { if (pp.startsWith("/dhana/")) { setDeep(pp.split("/")[2] || ""); pushUrl(pp); } else onOpenPath(pp); }}
+            onOpen={onOpenEntity}
+            onOpenCollection={onOpenCollection}
+          />)}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
       {sub === "prasad" && (

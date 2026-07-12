@@ -402,10 +402,11 @@ export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpe
   if (realm) return <RealmHall realm={realm} onOpen={onOpen} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} />;
 
   // ── Режим лендинга (карточки разделов + поиск) ──
-  return <AcharyaLanding onOpen={onOpen} onOpenCollection={onOpenCollection} />;
+  return <AcharyaLanding realm={realm} onOpen={onOpen} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} />;
 }
 
-function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void }) {
+function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void; onOpenPath?: (path: string) => void;
+}) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Item[] | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -479,7 +480,17 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection }: { realm?: "krishna"
             onClick={() => openCol("bhagavatam")}
           />
           )}
-        </div>
+        
+          {/* ЗКН-Н007: отсюда — в полный список личностей (четырёхуровневое меню). */}
+          <SectionCard
+            title="Все личности"
+            subtitle={realm === "krishna" ? "Полный список спутников Кришна Лилы — по волнам и кластерам"
+                      : realm === "gauranga" ? "Полный список спутников Гауранга Лилы — по волнам и кластерам"
+                      : "Полный список — 730 личностей по лилам, волнам и кластерам"}
+            mark={<MaskMark src="/lotus.svg" size={44} />}
+            onClick={() => onOpenPath?.("/dhana/vse")}
+          />
+</div>
       )}
     </div>
   );

@@ -209,12 +209,12 @@ const STATS = [
   { v: "300+", l: "ресторанов" }, { v: "100+", l: "гуру и наставников" },
 ];
 const FORMS = [
-  { t: "Мантра", d: "Звуковая форма Кришны и Шримати Радхарани (Харе). Повторение мантры Харе Кришна (тихо — джапа, громко — киртан) помогает очистить ум и сердце, мгновенно соединяя вас с Богом и позволяя ощущать Его присутствие.", go: "kirtans" },
-  { t: "Книги", d: "Литературная форма Кришны и Шримати Радхарани (Харе). Изучение священных писаний, таких как «Бхагавад-гита», «Шримад-Бхагаватам» и «Шри Чайтанья-чаритамрита», позволит вам встретить Бога на страницах этих текстов.", go: "books" },
-  { t: "Божества", d: "Проявленные формы Кришны и Шримати Радхарани (Харе) в этом мире неотличны от их вечных духовных форм, что позволяет преданным служить Им непосредственно." },
-  { t: "Прасад", d: "Вегетарианская пища, предложенная Кришне и Шримати Радхарани (Харе), становится освящённой и передаёт духовную силу и любовь, помогая очищать ум и тело, а также устанавливать связь с Богом." },
-  { t: "Садху", d: "Святые, хранящие в своих сердцах Кришну и Шримати Радхарани (Харе), являются духовными наставниками и учителями, источниками вдохновения, показывающими живой пример преданности, служения и любви.", go: "acharya" },
-  { t: "Дхама", d: "Святые места, неотличные от духовного мира, где обитают Кришна и Шримати Радхарани (Харе). Посещение Дхамы углубляет духовное сознание и помогает почувствовать близость к Богу. Примеры Дхамы — Вриндаван и Маяпур." },
+  { t: "Мантра", d: "Звуковая форма Кришны и Шримати Радхарани (Харе). Повторение мантры Харе Кришна (тихо — джапа, громко — киртан) помогает очистить ум и сердце, мгновенно соединяя вас с Богом и позволяя ощущать Его присутствие.", to: "/dhana/bhajans" },
+  { t: "Книги", d: "Литературная форма Кришны и Шримати Радхарани (Харе). Изучение священных писаний, таких как «Бхагавад-гита», «Шримад-Бхагаватам» и «Шри Чайтанья-чаритамрита», позволит вам встретить Бога на страницах этих текстов.", to: "/dhana/books" },
+  { t: "Божества", d: "Проявленные формы Кришны и Шримати Радхарани (Харе) в этом мире неотличны от их вечных духовных форм, что позволяет преданным служить Им непосредственно.", to: "/dhana/dhama" },
+  { t: "Прасад", d: "Вегетарианская пища, предложенная Кришне и Шримати Радхарани (Харе), становится освящённой и передаёт духовную силу и любовь, помогая очищать ум и тело, а также устанавливать связь с Богом.", to: "/dhana/prasad" },
+  { t: "Садху", d: "Святые, хранящие в своих сердцах Кришну и Шримати Радхарани (Харе), являются духовными наставниками и учителями, источниками вдохновения, показывающими живой пример преданности, служения и любви.", to: "/dhana" },
+  { t: "Дхама", d: "Святые места, неотличные от духовного мира, где обитают Кришна и Шримати Радхарани (Харе). Посещение Дхамы углубляет духовное сознание и помогает почувствовать близость к Богу. Примеры Дхамы — Вриндаван и Маяпур.", to: "/dhana/dhama" },
 ];
 const PRINCIPLES = [
   { t: "Без мяса", d: "Преданные воздерживаются от употребления мяса, рыбы и яиц, ведя образ жизни, который соответствует принципу ахимсы — ненасилия." },
@@ -387,8 +387,9 @@ function PrabhupadaSheet({ open, onClose }: { open: boolean; onClose: () => void
 }
 
 /* ───────── экран ───────── */
-function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBookMenu, flash, stickyTop, scrollRoot }: {
+function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBookMenu, flash, stickyTop, scrollRoot, onOpenPath }: {
   onChange: (tab: string) => void;
+  onOpenPath?: (path: string) => void;
   onOpenBook: (work: string) => void;
   onOpenEntity: (id: string, type: string | null) => void;
   onDonate: () => void;
@@ -515,10 +516,10 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <SectionHead eyebrow="Практика" title="Высший образ жизни" subtitle="Духовный путь бхакти-йоги — это практика любовного преданного служения Богу, воплощённому в вечной божественной паре: Кришне и Шримати Радхарани (Харе)." />
         <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
           {FORMS.map((f, i) => {
-            const tap = !!f.go;
+            const tap = !!f.to;
             return (
               <li key={f.t} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
-                <button type="button" disabled={!tap} onClick={() => f.go && onChange(f.go)}
+                <button type="button" disabled={!tap} onClick={() => f.to && onOpenPath?.(f.to)}
                   onPointerDown={(e) => { if (tap) e.currentTarget.style.background = "var(--color-hover)"; }}
                   onPointerUp={(e) => { if (tap) e.currentTarget.style.background = "transparent"; }}
                   onPointerLeave={(e) => { if (tap) e.currentTarget.style.background = "transparent"; }}
@@ -678,9 +679,9 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
       <Section id="hsec-next">
         <SectionHead title="Продолжите путь" />
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <NavCard mark={<MaskMark src="/bbt.svg" size={44} />} title="Книги" subtitle="Бхагавад-гита, Шримад-Бхагаватам и наследие ачарьев" onClick={() => onChange("books")} />
-          <NavCard mark={<MaskMark src="/gauranga.svg" size={44} />} title="Киртаны" subtitle="Бхаджаны, молитвы и мантры" onClick={() => onChange("kirtans")} />
-          <NavCard mark={<MaskMark src="/prabhupada.svg" size={44} />} title="Герои" subtitle="Господь, аватары и спутники" onClick={() => onChange("acharya")} />
+          <NavCard mark={<MaskMark src="/bbt.svg" size={44} />} title="Книги" subtitle="Бхагавад-гита, Шримад-Бхагаватам и наследие ачарьев" onClick={() => onOpenPath?.("/dhana/books")} />
+          <NavCard mark={<MaskMark src="/gauranga.svg" size={44} />} title="Киртаны" subtitle="Бхаджаны, молитвы и мантры" onClick={() => onOpenPath?.("/dhana/kirtans")} />
+          <NavCard mark={<MaskMark src="/prabhupada.svg" size={44} />} title="Герои" subtitle="Господь, аватары и спутники" onClick={() => onOpenPath?.("/dhana")} />
           <NavCard mark={<MaskMark src="/iskcon.svg" size={44} />} title="Поддержать служение" subtitle="Стать частью миссии" onClick={onDonate} />
         </div>
       </Section>
