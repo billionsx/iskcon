@@ -2373,6 +2373,30 @@ export default {
       return handlePdf(env, url);
     }
 
+    /* ЗКН-Ф020 — /sw.js НИКОГДА НЕ КЕШИРУЕТСЯ. ЭТО БЫЛ ЗАМКНУТЫЙ КРУГ.
+     *
+     * Service Worker обновляется, ТОЛЬКО когда браузер сходит за новым файлом
+     * `/sw.js`. А браузер, по спецификации, уважает `Cache-Control` НА САМОМ ЭТОМ
+     * ФАЙЛЕ. Здесь он уходил через ASSETS как обычная статика — С КЕШЕМ.
+     *
+     * Круг замкнулся:
+     *     старый SW отдаёт старый бандл  →  правки не доезжают до человека
+     *     новый sw.js не запрашивается   →  старый SW не сменится никогда
+     *
+     * Я чинил, деплоил — а основатель видел ПРЕЖНИЕ БАГИ в новом деплое. Это и
+     * есть «ничего не изменилось» после КАЖДОЙ починки. Недели отладки ушли на
+     * поиск багов, которые уже были исправлены, но не доехали.
+     *
+     * `index.html` от кеша защищён (ниже). `sw.js` — не был. */
+    if (url.pathname === "/sw.js") {
+      const swRes = await env.ASSETS.fetch(request);
+      const out = new Response(swRes.body, swRes);
+      out.headers.set("Cache-Control", "no-cache, must-revalidate");
+      out.headers.set("CDN-Cache-Control", "no-cache");
+      out.headers.set("Cloudflare-CDN-Cache-Control", "no-cache");
+      return out;
+    }
+
     const res = await env.ASSETS.fetch(request);
     const ct = res.headers.get("content-type") || "";
     if (ct.includes("text/html")) {
