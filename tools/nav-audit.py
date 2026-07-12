@@ -433,7 +433,169 @@ def check_n035():
     return bad
 
 
+
+
+def func_body(src: str, name: str) -> str:
+    """Тело компонента: от его объявления до следующего объявления верхнего уровня.
+
+    Баланс фигурных скобок здесь НЕ работает: деструктуризация параметра
+    `function Hall({ a, b }: {...})` схлопывает счётчик ДО тела — и гейт «не видел»
+    подписку, стоящую ниже. Гейт, который врёт, хуже отсутствующего.
+    """
+    i = src.find("function " + name)
+    if i < 0:
+        return ""
+    m = re.search(r"\n(?=(?:export )?(?:function|const|class|type|interface) )", src[i + 1:])
+    return src[i: i + 1 + m.start()] if m else src[i:]
+
+
+def strip_comments(src: str) -> str:
+    """Убрать /* */ и // …, сохранив номера строк (переводы строк остаются)."""
+    def blank(m):
+        return re.sub(r"[^\n]", " ", m.group(0))
+    src = re.sub(r"/\*.*?\*/", blank, src, flags=re.S)
+    src = re.sub(r"//[^\n]*", blank, src)
+    return src
+
+
+def check_n040():
+    """ЗКН-Н040 — РОУТЕР НЕ СТАВИТ ВКЛАДКУ, КОТОРОЙ НЕТ. (корень белых экранов)
+
+    `Screen` рисует ровно те вкладки, что перечислены в TAB_IDS. Любой
+    `setTab("что-то-другое")` = экран, который не рисует НИЧЕГО: белый лист,
+    молча, без ошибки в консоли. Так жили /books, /kirtans, /dhama, /feed,
+    /account, /acharya — витрина открывалась мышью из зала, но тот же адрес
+    «по ссылке» или «назад» давал пустоту.
+    """
+    bad = []
+    app = ROOT / "apps/web/src/App.tsx"
+    src = read(app)
+    code = strip_comments(src)          # комментарии — летопись прошлых багов, не код
+    m = re.search(r'export const TAB_IDS = \[([^\]]+)\]', src)
+    if not m:
+        return [(app.name, "TAB_IDS не найден — источник законных вкладок утрачен")]
+    tabs = set(re.findall(r'"([^"]+)"', m.group(1)))
+    for mm in re.finditer(r'setTab\("([^"]+)"\)', code):
+        if mm.group(1) not in tabs:
+            ln = code[: mm.start()].count("\n") + 1
+            bad.append((app.name, f"стр.{ln}: setTab(\"{mm.group(1)}\") — вкладки нет в TAB_IDS → БЕЛЫЙ ЭКРАН"))
+    # Screen обязан рисовать каждую законную вкладку
+    for t in sorted(tabs):
+        if f'tab === "{t}"' not in src:
+            bad.append((app.name, f"вкладка «{t}» объявлена, но Screen её не рисует"))
+    return bad
+
+
+def check_n039():
+    """ЗКН-Н039 — ИСТОРИЮ ПИШЕТ ТОЛЬКО nav.ts, И ОН ЖЕ БУДИТ РОУТЕР.
+
+    Прямой `history.pushState` в обход nav.ts = адрес сменился, а роутер и
+    подписчики (подтабы залов, ПКЛ) об этом не знают. Экран и адрес расходятся.
+    """
+    bad = []
+    for f in files():
+        if f.name == "nav.ts":
+            continue
+        src = strip_comments(read(f))
+        for mm in re.finditer(r'(?:window\.)?history\.(pushState|replaceState)\(', src):
+            ln = src[: mm.start()].count("\n") + 1
+            bad.append((f.name, f"стр.{ln}: history.{mm.group(1)} в обход nav.ts (pushUrl/replaceUrl)"))
+    return bad
+
+
+def check_n042():
+    """ЗКН-Н042 — КНОПКА ВЕДЁТ НА ЖИВОЙ АДРЕС.
+
+    Каждый in-app адрес обязан иметь основу в BASE_OF (или быть оверлеем
+    приложения). Адрес без основы роутер не опознаёт: он падает в запасную
+    ветку и открывает НЕ ТО. Так «Практика → Мантра» вела на /kirtans, а
+    /kirtans не был известен ни одной вкладке.
+    """
+    bad = []
+    app = ROOT / "apps/web/src/App.tsx"
+    src = read(app)
+    mb = re.search(r'const BASE_OF: Record<string, string> = \{(.*?)\n  \};', src, re.S)
+    mo = re.search(r'const APP_OVERLAY = new Set\(\[([^\]]+)\]\)', src)
+    if not mb or not mo:
+        return [(app.name, "BASE_OF / APP_OVERLAY не найдены")]
+    known = set(re.findall(r'(\w+):\s*"', mb.group(1))) | set(re.findall(r'"([^"]+)"', mo.group(1)))
+    known |= {"", "gauranga-lila", "krishna-lila", "bhagavatam-lila", "mahabharata-lila",
+              "ramayana-lila", "pancha-tattva", "avatars", "rishis", "bhaktas",
+              "demigods", "asuras"}   # лилы и кластеры — в корне (ЗКН-Н023)
+    known |= {"books"}                # витрина книг
+    # Ссылки-намерения из компонентов: to: "/x" и onOpenPath("/x")
+    for f in files():
+        fsrc = read(f)
+        for mm in re.finditer(r'(?:to:|onOpenPath\?\?\(|onOpenPath\()\s*"(/[^"]*)"', fsrc):
+            seg0 = mm.group(1).strip("/").split("/")[0]
+            if seg0 and seg0 not in known:
+                ln = fsrc[: mm.start()].count("\n") + 1
+                bad.append((f.name, f"стр.{ln}: адрес «{mm.group(1)}» без основы в BASE_OF"))
+    return bad
+
+
+
+def check_n041():
+    """ЗКН-Н041 — ПИСАТЕЛЬ И ЧИТАТЕЛЬ АДРЕСА — ОДИН СЛОВАРЬ.
+
+    Каждый адрес, на который SAD_PATH отправляет раздел Садханы, обязан
+    читаться обратно тем же именем раздела. Разъезд молчалив: нажал —
+    работает, вернулся «назад» — снова Лента.
+    """
+    app = ROOT / "apps/web/src/App.tsx"
+    src = read(app)
+    m = re.search(r'const SAD_PATH: Record<string, string> = \{([^}]+)\}', src)
+    r = re.search(r'export function sadSubFromPath\(path: string\): string \{(.*?)\n\}', src, re.S)
+    if not m or not r:
+        return [(app.name, "SAD_PATH / sadSubFromPath не найдены")]
+    reader = strip_comments(r.group(1))
+    bad = []
+    for sec, path in re.findall(r'(\w+):\s*"([^"]+)"', m.group(1)):
+        seg0 = path.strip("/").split("/")[0]
+        if not seg0:                                   # "/" — Лента, значение по умолчанию
+            if 'return "feed"' not in reader:
+                bad.append((app.name, "корень «/» не читается как Лента"))
+            continue
+        if f'"{seg0}"' not in reader:
+            bad.append((app.name, f'SAD_PATH.{sec} шлёт на «{path}», а sadSubFromPath сегмент «{seg0}» не знает'))
+        elif f'return "{sec}"' not in reader:
+            bad.append((app.name, f'адрес «{path}» не читается обратно как раздел «{sec}»'))
+    # Зал Садханы обязан быть подписан на адрес (Богатства — были, Садхана — нет)
+    for hall in ("SadhanaHall", "BogatstvaHall"):
+        body = func_body(src, hall)
+        if not body:
+            bad.append((app.name, f"{hall} не найден"))
+        elif "subscribeNav" not in body:
+            bad.append((app.name, f"{hall} не подписан на адрес — «назад» не переключит раздел"))
+    return bad
+
+
+def check_n043():
+    """ЗКН-Н043 — ФЛАГ «ПРИШЛО ИЗ РОУТЕРА» НЕ ДОЛЖЕН ЗАЛИПАТЬ.
+
+    Эффект-синхронизатор сбрасывает `fromPop`, но бежит только когда что-то
+    изменилось. Если применённый путь ничего не изменил — флаг залипает и
+    съедает СЛЕДУЮЩИЙ честный переход. `routeGen` обязан быть в зависимостях.
+    """
+    app = ROOT / "apps/web/src/App.tsx"
+    src = strip_comments(read(app))
+    bad = []
+    if "setRouteGen" not in src:
+        return [(app.name, "routeGen отсутствует — fromPop может залипнуть навсегда")]
+    m = re.search(r'if \(fromPop\.current\) \{ fromPop\.current = false; return; \}(.*?)\}, \[([^\]]+)\]', src, re.S)
+    if not m:
+        return [(app.name, "эффект-синхронизатор «состояние → URL» не найден")]
+    if "routeGen" not in m.group(2):
+        bad.append((app.name, "routeGen не в зависимостях синхронизатора — флаг fromPop залипнет"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н040", "роутер не ставит вкладку, которой нет", check_n040),
+    ("ЗКН-Н039", "историю пишет только nav.ts", check_n039),
+    ("ЗКН-Н042", "кнопка ведёт на живой адрес", check_n042),
+    ("ЗКН-Н041", "писатель и читатель адреса — один словарь", check_n041),
+    ("ЗКН-Н043", "флаг «из роутера» не залипает", check_n043),
     ("ЗКН-Н027", "один экран — один путь рендера", check_n027),
     ("ЗКН-Н035", "экран сменился → адрес сменился", check_n035),
     ("ЗКН-Н033", "запасной не перебивает основу", check_n033),
