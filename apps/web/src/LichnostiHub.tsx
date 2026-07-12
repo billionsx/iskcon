@@ -64,7 +64,7 @@ const SUBSUBS: Record<string, [string, string][]> = {
 const LILA_SLUG: Record<string, string> = {
   "lila-gauranga": "gauranga-lila",
   "lila-krishna": "krishna-lila",
-  "lila-bhagavatam": "hero/shrimad-bhagavatam",
+  "lila-bhagavatam": "bhagavatam-lila",
   "lila-other": "hero/drugie",
 };
 
@@ -82,8 +82,8 @@ const SUB_SLUG: Record<string, string> = {
 /* Кластеры, чьё имя известно само по себе — живут в КОРНЕ (решение основателя). */
 const ROOT_SUBS: Record<string, string> = {
   "bhag-avatara": "avatars",
-  "bhag-ramayana": "hero/ramayana",
-  "bhag-mahabharata": "hero/mahabharata",
+  "bhag-ramayana": "ramayana-lila",
+  "bhag-mahabharata": "mahabharata-lila",
 };
 
 const SLUG_LILA: Record<string, string> = Object.fromEntries(
@@ -123,19 +123,9 @@ function readUrl(): { lila: string; sub: string; grp: string } {
     return { lila: l, sub: s, grp: g };
   }
 
-  /* 3) Лила ПОД /hero: /hero/shrimad-bhagavatam, /hero/mahabharata */
-  if (parts[0] === "hero") {
-    if (!parts[1]) return { lila: "lila-gauranga", sub: "", grp: "" };
-    const two = "hero/" + parts[1];
-    if (SLUG_LILA[two]) {
-      const l = SLUG_LILA[two];
-      const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : "";
-      return { lila: l, sub: s, grp: "" };
-    }
-    // /hero/mahabharata · /hero/ramayana — кластер Бхагаватам напрямую
-    const sub = SLUG_SUB[parts[1]];
-    if (sub) return { lila: "lila-bhagavatam", sub, grp: "" };
-  }
+  /* 3) Эпосы — тоже В КОРНЕ: /mahabharata-lila, /ramayana-lila */
+  if (parts[0] === "mahabharata-lila") return { lila: "lila-bhagavatam", sub: "bhag-mahabharata", grp: "" };   // lint-ok
+  if (parts[0] === "ramayana-lila") return { lila: "lila-bhagavatam", sub: "bhag-ramayana", grp: "" };   // lint-ok
 
   // ЗКН-Н009: вход без фильтров → Гауранга Лила + «Все» (не первая волна!)
   return { lila: "lila-gauranga", sub: "", grp: "" };

@@ -65,7 +65,9 @@ export const ROUTES = {
   // ── Личности: лила в корне, если имя не занято книгой ──
   gaurangaLila: (wave?: string) => ["/gauranga-lila", wave].filter(Boolean).join("/"),
   krishnaLila: (rasa?: string) => ["/krishna-lila", rasa].filter(Boolean).join("/"),
-  bhagavatam: (sub?: string) => ["/hero/shrimad-bhagavatam", sub].filter(Boolean).join("/"),
+  bhagavatam: (sub?: string) => ["/bhagavatam-lila", sub].filter(Boolean).join("/"),
+  mahabharata: () => "/mahabharata-lila",
+  ramayana: () => "/ramayana-lila",
 
   // ── Прасад ──
   recipe: (slug: string) => `/prasad/${slug}`,
@@ -107,7 +109,8 @@ export const ROOTS = [
   // лилы и кластеры В КОРНЕ (решение основателя)
   // ⚠️ advaita и nityananda в корень НЕЛЬЗЯ — это Адвайта Ачарья и Нитьянанда
   // Прабху, живые личности. Корень принадлежит им.
-  "gauranga-lila", "krishna-lila", "pancha-tattva", "avatars",
+  "gauranga-lila", "krishna-lila", "bhagavatam-lila", "mahabharata-lila",
+  "ramayana-lila", "pancha-tattva", "avatars",
   // разделы
   "iskcon", "krishna", "gauranga",
   // служебные
@@ -129,7 +132,10 @@ export const LEGACY: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
   // личности
   [/^\/(?:dhana|lichnosti|acharya)\/gauranga-lila(\/.*)?$/, (m) => "/gauranga-lila" + (m[1] || "")],
   [/^\/(?:dhana|lichnosti|acharya)\/krishna-lila(\/.*)?$/, (m) => "/krishna-lila" + (m[1] || "")],
-  [/^\/(?:dhana|lichnosti|acharya)\/shrimad-bhagavatam(\/.*)?$/, (m) => "/hero/shrimad-bhagavatam" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/shrimad-bhagavatam(\/.*)?$/, (m) => "/bhagavatam-lila" + (m[1] || "")],
+  [/^\/hero\/shrimad-bhagavatam(\/.*)?$/, (m) => "/bhagavatam-lila" + (m[1] || "")],
+  [/^\/hero\/mahabharata$/, () => "/mahabharata-lila"],
+  [/^\/hero\/ramayana$/, () => "/ramayana-lila"],
   [/^\/(?:dhana|lichnosti|acharya)\/books(\/.*)?$/, (m) => "/books" + (m[1] || "")],
   [/^\/(?:dhana|lichnosti|acharya)\/bhajans(\/.*)?$/, (m) => "/bhajans" + (m[1] || "")],
   [/^\/(?:dhana|lichnosti|acharya)\/kirtans(\/.*)?$/, (m) => "/kirtans" + (m[1] || "")],

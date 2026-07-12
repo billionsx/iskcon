@@ -694,21 +694,21 @@ const KIND_ORDER = ["work", "dhama", "tirtha", "dish", "kirtan", "bhajan", "temp
  * Слаги отличались (`volna-2` в досье vs `2-volna` в витрине) — мост переводит.
  */
 const BRIDGE_WAVE: Record<string, string> = {
-  "volna-1": "/lichnosti/gauranga-lila/1-volna",
-  "volna-2": "/lichnosti/gauranga-lila/2-volna",
-  "volna-3": "/lichnosti/gauranga-lila/3-volna",
-  "volna-4": "/lichnosti/gauranga-lila/4-volna",
-  "volna-5": "/lichnosti/gauranga-lila/5-volna",
-  "volna-iskcon": "/lichnosti/gauranga-lila/bespretsedentnaya",
-  "volny": "/lichnosti/gauranga-lila",
+  "volna-1": "/gauranga-lila/first-wave",
+  "volna-2": "/gauranga-lila/second-wave",
+  "volna-3": "/gauranga-lila/third-wave",
+  "volna-4": "/gauranga-lila/fourth-wave",
+  "volna-5": "/gauranga-lila/fifth-wave",
+  "volna-iskcon": "/hero/gauranga-lila/bespretsedentnaya",
+  "volny": "/gauranga-lila",
 };
 const BRIDGE_RASA: Record<string, string> = {
-  shanta: "/lichnosti/krishna-lila/shanta",
-  dasya: "/lichnosti/krishna-lila/dasya",
-  sakhya: "/lichnosti/krishna-lila/sakhya",
-  vatsalya: "/lichnosti/krishna-lila/vatsalya",
-  madhurya: "/lichnosti/krishna-lila/madhurya",
-  "pyat-ras": "/lichnosti/krishna-lila",
+  shanta: "/hero/krishna-lila/shanta",
+  dasya: "/hero/krishna-lila/dasya",
+  sakhya: "/hero/krishna-lila/sakhya",
+  vatsalya: "/hero/krishna-lila/vatsalya",
+  madhurya: "/hero/krishna-lila/madhurya",
+  "pyat-ras": "/krishna-lila",
 };
 
 /** Ссылка «Смотреть всех» из суб-таба досье в витрину Личностей. */
