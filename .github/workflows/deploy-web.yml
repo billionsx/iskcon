@@ -187,16 +187,39 @@ jobs:
         working-directory: apps/web
         run: |
           set -e
+          # ЗКН-Ф021 — ГЕЙТ ПРОВЕРЯЕТ ТО, ЧТО ВИДИТ ЧЕЛОВЕК.
+          #
+          # Здесь стоял ТОЛЬКО путь-cache-buster (/__deploycheck-$RANDOM). Такого
+          # адреса нет ни в одном кеше — запрос всегда доходил до воркера, и гейт
+          # ВСЕГДА был зелёным. А человек ходит по РЕАЛЬНЫМ адресам (/, /books,
+          # /kirtans) — и получал старую оболочку из кеша «края». Гейт говорил
+          # «свежая сборка», пока люди неделями сидели на старом коде.
+          #
+          # Теперь проверяем и служебный путь (воркер жив), и НАСТОЯЩИЕ адреса.
           EXPECTED=$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' dist/index.html | head -1)
           echo "ожидаемый бандл (только что собран): $EXPECTED"
           if [ -z "$EXPECTED" ]; then echo "::error::не удалось определить собранный бандл из dist/index.html"; exit 1; fi
-          LIVE=""
+
+          check() {   # $1 — адрес, который откроет человек
+            curl -s --max-time 25 "https://gaurangers.com$1" \
+              | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1
+          }
+
+          PATHS="/__deploycheck-$RANDOM /  /books /kirtans /dhama"
           for i in 1 2 3 4 5 6; do
-            # путь-cache-buster → запрос доходит до воркера, минуя кэш «края»
-            LIVE=$(curl -s --max-time 25 "https://gaurangers.com/__deploycheck-$RANDOM-$i" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
-            echo "попытка $i: прод отдаёт $LIVE"
-            if [ "$LIVE" = "$EXPECTED" ]; then echo "OK: боевой сайт отдаёт свежую сборку $EXPECTED"; exit 0; fi
+            ALL_OK=1
+            for P in $PATHS; do
+              LIVE=$(check "$P")
+              if [ "$LIVE" != "$EXPECTED" ]; then
+                echo "попытка $i: $P отдаёт ${LIVE:-<пусто>} (ждём $EXPECTED)"
+                ALL_OK=0
+              fi
+            done
+            if [ "$ALL_OK" = "1" ]; then
+              echo "OK: боевой сайт отдаёт свежую сборку $EXPECTED на ВСЕХ проверенных адресах"
+              exit 0
+            fi
             sleep 10
           done
-          echo "::error::Прод НЕ отдаёт свежую сборку ($EXPECTED); отдаёт: ${LIVE:-<пусто>}. Деплой не вступил в силу — новая версия не переключена на 100% или ассеты не залиты."
+          echo "::error::Прод НЕ отдаёт свежую сборку ($EXPECTED) на реальных адресах. Кеш «края» держит старую оболочку."
           exit 1
