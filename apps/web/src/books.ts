@@ -90,6 +90,23 @@ export const BOOKS: Record<string, BookData> = {
     uniformTitle: true,
     hideCardIast: true,
   },
+  ndm: {
+    id: "ndm",
+    work: "ndm",
+    slug: "navadvipa-dhama-mahatmya",
+    titleLine1: "Навадвипа-дхама-",
+    titleLine2: "махатмья",
+    iast: "Navadvīpa-dhāma-māhātmya",
+    tagline: "Слава девяти островов Навадвипы",
+    author: "Шрила Бхактивинода Тхакур",
+    description:
+      "Паломничество по девяти островам Навадвипа-дхамы: Нитьянанда Прабху ведёт Дживу Госвами и раскрывает славу каждого места. Практическое руководство для парикрамы.",
+    publisher: "bbt",
+    covers: [COVER_FALLBACK],
+    chips: ["18 глав", "9 островов", "XIX век"],
+    prose: true,
+    uniformTitle: true,
+  },
   br: {
     id: "br",
     work: "br",
