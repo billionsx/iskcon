@@ -112,7 +112,7 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
         </Card>
 
         {/* Рецепты */}
-        <button onClick={() => onOpenPath("/prasadam")} style={{ width: "100%", marginTop: 14, padding: "15px 16px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: SURF, cursor: "pointer", fontFamily: FONT, display: "flex", alignItems: "center", gap: 12, WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
+        <button onClick={() => onOpenPath("/prasad")} style={{ width: "100%", marginTop: 14, padding: "15px 16px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: SURF, cursor: "pointer", fontFamily: FONT, display: "flex", alignItems: "center", gap: 12, WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
           <span style={{ fontSize: "var(--text-title2)" }}>🍲</span>
           <span style={{ flex: 1 }}>
             <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, color: INK }}>Что готовить</span>

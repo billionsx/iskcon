@@ -294,9 +294,11 @@ CHECKS = [
                           WHERE EXISTS (SELECT 1 FROM entities e
                                         WHERE e.id = b.slug AND e.type = 'personality'))
                        + (SELECT COUNT(*) FROM book_catalog
-                          WHERE slug IN ('lichnosti','books','bhajans','kirtans','prasad',
-                                         'dhama','iskcon','practice','calendar','account',
-                                         'search','favorites','notes','cart'))
+                          WHERE slug IN ('sadhana','japa','story','verse','promise','progress',
+                                         'darshan','calendar','ekadashi','id','hero','books',
+                                         'bhajans','kirtans','prasad','dhama','iskcon',
+                                         'gauranga-lila','krishna-lila','pancha-tattva','avatars',
+                                         'search','favorites','notes','cart','donate'))
                        + (SELECT COUNT(*) - COUNT(DISTINCT slug) FROM book_catalog) AS n""",
         "hint": "→ адрес книги — ПОЛНОЕ имя: /brahma-samhita, а не /book/bs (ЗКН-Н023)",
     },
@@ -327,9 +329,18 @@ CHECKS = [
         # адресе. То же в `content_items` (170 записей).
         #
         # Слаг: `gaura-arati`. Без слэшей, без языка, без префиксов.
+        # И §4: корень раздела не может быть занят ЛИЧНОСТЬЮ.
+        # Так `advaita` и `nityananda` чуть не ушли в корень как кластеры — а это
+        # Адвайта Ачарья и Нитьянанда Прабху, и корень принадлежит ИМ.
         "sql": """SELECT (SELECT COUNT(*) FROM prayers WHERE instr(slug, '/') > 0)
-                       + (SELECT COUNT(*) FROM content_items WHERE instr(slug, '/') > 0) AS n""",
-        "hint": "→ слаг — ИМЯ: без слэшей и языковых префиксов (ЗКН-Н023)",
+                       + (SELECT COUNT(*) FROM content_items WHERE instr(slug, '/') > 0)
+                       + (SELECT COUNT(*) FROM entities WHERE type = 'personality'
+                          AND id IN ('sadhana','japa','story','verse','promise','progress',
+                                     'darshan','calendar','ekadashi','id','hero','books',
+                                     'bhajans','kirtans','prasad','dhama','iskcon',
+                                     'gauranga-lila','krishna-lila','pancha-tattva','avatars',
+                                     'search','favorites','notes','cart','donate')) AS n""",
+        "hint": "→ слаг — ИМЯ без слэшей; корень раздела не занят личностью (ЗКН-Н023)",
     },
     {
         "law": "ЗКН-Сд001",

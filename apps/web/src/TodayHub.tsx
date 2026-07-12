@@ -135,7 +135,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
       {verse && (
         <>
           <div style={label}>Стих дня</div>
-          <Card onClick={() => onOpenPath("/practice/verse")}>
+          <Card onClick={() => onOpenPath("/verse")}>
             <div style={{ padding: "15px 16px" }}>
               <Eyebrow>{verse.label}</Eyebrow>
               <div style={{ fontFamily: SERIF, fontSize: "var(--text-body)", lineHeight: 1.5, color: INK }}>
@@ -149,7 +149,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
 
       {/* Садхана */}
       <div style={label}>Садхана</div>
-      <Card onClick={() => onOpenPath("/practice/japa")}>
+      <Card onClick={() => onOpenPath("/japa")}>
         <div style={{ padding: "15px 16px" }}>
           {practicing ? (
             <>
@@ -199,7 +199,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {(level === "guest"
           ? [["Даршаны", () => onSub("feed")], ["Календарь", () => onSub("calendar")], ["Читать «Гиту»", () => onOpenPath("/books/bg")]]
-          : [["Джапа", () => onOpenPath("/practice/japa")], ["Дневник", () => onOpenPath("/practice/diary")], ["Практика", () => onSub("practice")], ["Календарь", () => onSub("calendar")]]
+          : [["Джапа", () => onOpenPath("/japa")], ["Дневник", () => onOpenPath("/story")], ["Практика", () => onSub("practice")], ["Календарь", () => onSub("calendar")]]
         ).map(([t, go]) => (
           <button key={t as string} onClick={go as () => void} style={{ padding: "10px 16px", borderRadius: 999, border: `1px solid ${HAIR}`, background: SURF, color: INK, fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{t as string}</button>
         ))}

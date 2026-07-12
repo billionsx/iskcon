@@ -848,15 +848,15 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
 
       {sad && (
         <section>
-          <SectionTitle title="Садхана сегодня" action={{ label: "Дневник", onClick: () => onOpenPath("/practice/diary") }} />
-          <SadhanaCard state={sad} onOpen={() => onOpenPath("/practice/diary")} />
+          <SectionTitle title="Садхана сегодня" action={{ label: "Дневник", onClick: () => onOpenPath("/story") }} />
+          <SadhanaCard state={sad} onOpen={() => onOpenPath("/story")} />
         </section>
       )}
 
       <section>
         <SectionTitle title="Практика" />
         <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-          <button onClick={() => onOpenPath("/practice/vow")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+          <button onClick={() => onOpenPath("/promise")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
             <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(221,122,30,0.14)", color: "#DD7A1E" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 21l-5 2.1 1-5.5-4-3.9 5.5-.8z" /></svg>
             </span>
@@ -872,7 +872,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <section>
         <SectionTitle title="Служение" />
         <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-          <button onClick={() => onOpenPath("/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+          <button onClick={() => onOpenPath("/iskcon/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
             <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(76,110,245,0.14)", color: "#4C6EF5" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></svg>
             </span>

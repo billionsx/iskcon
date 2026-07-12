@@ -40,75 +40,121 @@ export const ORIGIN = "https://gaurangers.com";
  */
 export const ROUTES = {
   home: () => "/",
-  practice: () => "/practice",
-  calendar: () => "/calendar",
-  account: () => "/account",
 
-  // ── Богатства: шесть витрин, каждая — КОРЕНЬ ──
-  lichnosti: (lila?: string, wave?: string, group?: string) =>
-    ["/lichnosti", lila, wave, group].filter(Boolean).join("/"),
-  /* ЗКН-Н023 §2 + ЗКН-БТ006 — КНИГА ОТКРЫВАЕТСЯ ПО ПОЛНОМУ ИМЕНИ, В КОРНЕ.
-   *
-   *   /bhagavad-gita        не /book/bg
-   *   /brahma-samhita       не /book/bs
-   *   /bhagavad-gita/2/13   глава → стих
-   *
-   * «bs» — это ШИФР, а не имя. Человек не знает, что такое «bs», и адрес ему
-   * ничего не говорит. `/books` без аргумента — витрина. */
+  // ── Садхана ──
+  sadhana: () => "/sadhana",
+  japa: () => "/japa",
+  story: () => "/story",           // дневник садханы
+  verse: () => "/verse",
+  promise: () => "/promise",       // обеты
+  progress: () => "/progress",
+  darshan: () => "/darshan",
+  calendar: () => "/calendar",
+  ekadashi: () => "/ekadashi",
+  id: () => "/id",                 // кабинет
+
+  // ── Богатства: витрины ──
+  hero: () => "/hero",             // Личности
   books: () => "/books",
-  bookRead: (slug: string, ...rest: string[]) =>
-    ["", slug, ...rest].filter((x) => x !== undefined && x !== null).join("/") || "/",
   bhajans: (slug?: string) => (slug ? `/bhajans/${slug}` : "/bhajans"),
   kirtans: (slug?: string) => (slug ? `/kirtans/${slug}` : "/kirtans"),
   prasad: () => "/prasad",
   dhama: (dhamaId?: string, tirthaId?: string) =>
     ["/dhama", dhamaId, tirthaId].filter(Boolean).join("/"),
 
-  // ── Внутри витрин ──
-  recipe: (slug: string) => `/prasad/recipe/${slug}`,
-  cookbook: (chapterId?: string) => (chapterId ? `/prasad/book/${chapterId}` : "/prasad/book"),
-  center: (id: string) => `/iskcon/centers/${id}`,
+  // ── Личности: лила в корне, если имя не занято книгой ──
+  gaurangaLila: (wave?: string) => ["/gauranga-lila", wave].filter(Boolean).join("/"),
+  krishnaLila: (rasa?: string) => ["/krishna-lila", rasa].filter(Boolean).join("/"),
+  bhagavatam: (sub?: string) => ["/hero/shrimad-bhagavatam", sub].filter(Boolean).join("/"),
 
-  // ── Личность — в корне ──
+  // ── Прасад ──
+  recipe: (slug: string) => `/prasad/${slug}`,
+  cookbook: (chapterId?: string) => (chapterId ? `/prasad/book/${chapterId}` : "/prasad/book"),
+
+  // ── Книга: КОРЕНЬ, полное имя ──
+  bookRead: (slug: string, ...rest: string[]) =>
+    ["", slug, ...rest].filter(Boolean).join("/") || "/",
+
+  // ── Личность: КОРЕНЬ ──
   entity: (id: string) => `/${id}`,
 
-  // ── Разделы ──
+  // ── ИСККОН ──
   iskcon: (sub?: string) => (sub ? `/iskcon/${sub}` : "/iskcon"),
+  center: (id: string) => `/iskcon/centers/${id}`,
+
   krishna: (tab?: string, sub?: string) => ["/krishna", tab, sub].filter(Boolean).join("/"),
   gauranga: (tab?: string, sub?: string) => ["/gauranga", tab, sub].filter(Boolean).join("/"),
 
-  // ── Совместимость: старые адреса (только для 301) ──
-  book: (work: string, ...rest: string[]) => ["/books", work, ...rest].join("/"),
+  // ── Совместимость (только для 301) ──
+  practice: () => "/sadhana",
+  account: () => "/id",
+  lichnosti: () => "/hero",
+  dhana: () => "/hero",
+  book: (work: string, ...rest: string[]) => ["", work, ...rest].filter(Boolean).join("/"),
   bhajan: (slug: string) => `/bhajans/${slug}`,
   kirtanArtist: (slug: string) => `/kirtans/${slug}`,
-  dhana: () => "/lichnosti",
-  tirtha: (dhamaId: string, tirthaId?: string) =>
-    tirthaId ? `/dhama/${dhamaId}/${tirthaId}` : `/dhama/${dhamaId}`,
+  tirtha: (d: string, t?: string) => (t ? `/dhama/${d}/${t}` : `/dhama/${d}`),
 } as const;
 
 /** ЗКН-Н023 §4: корни разделов. Слаг личности не может совпасть ни с одним. */
 export const ROOTS = [
-  "", "practice", "calendar", "account",
-  "lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama",
+  "",
+  // садхана
+  "sadhana", "japa", "story", "verse", "promise", "progress", "darshan",
+  "calendar", "ekadashi", "id",
+  // богатства
+  "hero", "books", "bhajans", "kirtans", "prasad", "dhama",
+  // лилы и кластеры В КОРНЕ (решение основателя)
+  // ⚠️ advaita и nityananda в корень НЕЛЬЗЯ — это Адвайта Ачарья и Нитьянанда
+  // Прабху, живые личности. Корень принадлежит им.
+  "gauranga-lila", "krishna-lila", "pancha-tattva", "avatars",
+  // разделы
   "iskcon", "krishna", "gauranga",
-  "search", "favorites", "notes", "cart", "feed", "map", "admin", "my",
+  // служебные
+  "search", "favorites", "notes", "cart", "donate", "feed", "map", "admin", "my",
 ] as const;
 
 /** ЗКН-Н023 §6: старый адрес → новый. Ломать чужую ссылку = ломать обещание. */
 export const LEGACY: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
-  [/^\/dhana\/books(\/.*)?$/, (m) => "/books" + (m[1] || "")],
-  [/^\/dhana\/bhajans(\/.*)?$/, (m) => "/bhajans" + (m[1] || "")],
-  [/^\/dhana\/kirtans(\/.*)?$/, (m) => "/kirtans" + (m[1] || "")],
-  [/^\/dhana\/prasad(\/.*)?$/, (m) => "/prasad" + (m[1] || "")],
-  [/^\/dhana\/dhama(\/.*)?$/, (m) => "/dhama" + (m[1] || "")],
-  [/^\/dhana(\/.*)?$/, (m) => "/lichnosti" + (m[1] || "")],
-  [/^\/acharya(\/.*)?$/, (m) => "/lichnosti" + (m[1] || "")],
-  // /book/bg → /bhagavad-gita (шифр разворачивается в полное имя в App)
+  // садхана
+  [/^\/practice\/japa$/, () => "/japa"],
+  [/^\/practice\/diary$/, () => "/story"],
+  [/^\/practice\/verse$/, () => "/verse"],
+  [/^\/practice\/vow$/, () => "/promise"],
+  [/^\/practice\/progress$/, () => "/progress"],
+  [/^\/practice\/darshan$/, () => "/darshan"],
+  [/^\/practice(\/.*)?$/, (m) => "/sadhana" + (m[1] || "")],
+  [/^\/account(\/.*)?$/, (m) => "/id" + (m[1] || "")],
+
+  // личности
+  [/^\/(?:dhana|lichnosti|acharya)\/gauranga-lila(\/.*)?$/, (m) => "/gauranga-lila" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/krishna-lila(\/.*)?$/, (m) => "/krishna-lila" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/shrimad-bhagavatam(\/.*)?$/, (m) => "/hero/shrimad-bhagavatam" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/books(\/.*)?$/, (m) => "/books" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/bhajans(\/.*)?$/, (m) => "/bhajans" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/kirtans(\/.*)?$/, (m) => "/kirtans" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/prasad(\/.*)?$/, (m) => "/prasad" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)\/dhama(\/.*)?$/, (m) => "/dhama" + (m[1] || "")],
+  [/^\/(?:dhana|lichnosti|acharya)(\/.*)?$/, (m) => "/hero" + (m[1] || "")],
+
+  // старые волны
+  [/^\/gauranga-lila\/1-volna(\/.*)?$/, (m) => "/gauranga-lila/first-wave" + (m[1] || "")],
+  [/^\/gauranga-lila\/2-volna(\/.*)?$/, (m) => "/gauranga-lila/second-wave" + (m[1] || "")],
+  [/^\/gauranga-lila\/3-volna(\/.*)?$/, (m) => "/gauranga-lila/third-wave" + (m[1] || "")],
+  [/^\/gauranga-lila\/4-volna(\/.*)?$/, (m) => "/gauranga-lila/fourth-wave" + (m[1] || "")],
+  [/^\/gauranga-lila\/5-volna(\/.*)?$/, (m) => "/gauranga-lila/fifth-wave" + (m[1] || "")],
+
+  // книги, бхаджаны, киртаны, прасад, центры
   [/^\/books?\/([a-z0-9-]+)((?:\/.*)?)$/, (m) => "/" + m[1] + (m[2] || "")],
   [/^\/bhajan\/(.+)$/, (m) => "/bhajans/" + m[1]],
   [/^\/kirtan\/(.+)$/, (m) => "/kirtans/" + m[1]],
-  [/^\/prasadam\/(.+)$/, (m) => "/prasad/" + m[1]],
+  [/^\/prasadam\/recipe\/(.+)$/, (m) => "/prasad/" + m[1]],
+  [/^\/prasad\/recipe\/(.+)$/, (m) => "/prasad/" + m[1]],
+  [/^\/prasadam(\/.*)?$/, (m) => "/prasad" + (m[1] || "")],
   [/^\/center\/(.+)$/, (m) => "/iskcon/centers/" + m[1]],
+  [/^\/centers$/, () => "/iskcon/centers"],
+  [/^\/entity\/(.+)$/, (m) => "/" + m[1]],
+  [/^\/person\/(.+)$/, (m) => "/" + m[1]],
 ];
 
 /** Привести старый адрес к новому. Вернёт null, если адрес уже канонический. */

@@ -736,7 +736,7 @@ function BridgeLink({ href, label, onNavigate }: { href: string; label: string; 
 
 function kindHref(kind: string, ref: string): string | null {
   switch (kind) {
-    case "dish": return "/prasad/recipe/" + ref;
+    case "dish": return "/prasad/" + ref;
     case "dhama": return "/dhama/" + ref;
     case "tirtha": return "/dhama/" + ref;   // ref = "<dhamaId>/<tirthaId>"
     case "kirtan": return "/kirtans/" + ref;  // ref = слаг исполнителя
@@ -1303,7 +1303,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   }, [realm, hasRealmSplit]);
   // Синхронизация tab/sub → URL-хеш (embedded режим): /krishna#parikary/shanta.
   // replaceUrl, а не pushUrl — переключение внутри карточки не должно засорять
-  // back-стек. При клике на «Барсана» pushUrl("/person/barsana") сохраняет
+  // back-стек. При клике на «Барсана» pushUrl("/barsana") сохраняет
   // ТЕКУЩИЙ URL (с хешем) в истории — Back вернёт сюда же.
   useEffect(() => {
     if (!embedded || typeof window === "undefined") return;

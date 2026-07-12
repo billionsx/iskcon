@@ -549,7 +549,15 @@ export /* ЗКН-Н007: слаги лил — вход в четырёхуров
    «Бхагавад-гита» отдельной лилой НЕ живёт: в ней было ДВА героя (Арджуна и
    Санджая), и оба — из Махабхараты, описанной в Шримад-Бхагаватам. Вкладка ради
    двух человек — не структура, а шум. Оба перенесены в Бхагаватам → Махабхарата. */
-const LILA_SLUGS = ["gauranga-lila", "krishna-lila", "shrimad-bhagavatam", "drugie"];
+/* ЗКН-Н023 — КОРНИ ЛИЧНОСТЕЙ.
+ * Лила и кластер живут в КОРНЕ, если их имя не занято книгой:
+ *   /gauranga-lila /krishna-lila /pancha-tattva /avatars
+ * Занято книгой → под /hero: /hero/shrimad-bhagavatam /hero/mahabharata */
+/* ⚠️ В КОРЕНЬ идут ТОЛЬКО те, чьё имя СВОБОДНО.
+ * `advaita` и `nityananda` в корень НЕЛЬЗЯ: это Адвайта Ачарья и Нитьянанда
+ * Прабху — живые личности, и корень уже принадлежит им. Их кластеры остаются
+ * вложенными: /gauranga-lila/first-wave/nityananda. Гейт это стережёт. */
+const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "pancha-tattva", "avatars"];
 
 const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
 export function bogSubFromPath(path: string): string {
@@ -560,7 +568,7 @@ export function bogSubFromPath(path: string): string {
 /* ЗКН-Н005: суб-таб Садханы — сегмент URL, не переменная модуля.
  * / → Лента (умолчание) · /practice · /calendar · /account */
 export const SAD_SUBS = ["feed", "practice", "calendar", "cabinet"] as const;
-const SAD_PATH: Record<string, string> = { feed: "/", practice: "/practice", calendar: "/calendar", cabinet: "/account" };
+const SAD_PATH: Record<string, string> = { feed: "/", practice: "/sadhana", calendar: "/calendar", cabinet: "/id" };
 export function sadSubFromPath(path: string): string {
   const s0 = path.split("/").filter(Boolean)[0] || "";
   if (s0 === "practice") return "practice";
@@ -585,21 +593,28 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
    *   /dhana/vse             → полный список: четырёхуровневое меню (ЗКН-Н006)
    *
    * Раньше /dhana сразу открывал список из 730 личностей — без входа и выбора. */
-  const [deep, setDeep] = useState(() => {
-    if (typeof window === "undefined") return "";
+  /* ЗКН-Н023 — ГДЕ МЫ В ЛИЧНОСТЯХ.
+   *
+   *   /hero                     витрина: три входа
+   *   /gauranga-lila/…          лила в КОРНЕ  → четырёхуровневое меню
+   *   /pancha-tattva            кластер в КОРНЕ → меню
+   *   /hero/shrimad-bhagavatam  имя занято книгой → под /hero → меню
+   *
+   * Меню показываем, если адрес НЕ равен просто «/hero». */
+  const inMenu = () => {
+    if (typeof window === "undefined") return false;
     const seg = window.location.pathname.split("/").filter(Boolean);
-    return seg[0] === "dhana" && seg[1] === "lichnosti" ? (seg[2] || "") :
-           seg[0] === "dhana" && !BOG_SUBS.includes(seg[1] || "") ? (seg[1] || "") : "";
-  });
-  useEffect(() => subscribeNav(() => {
-    const seg = window.location.pathname.split("/").filter(Boolean);
-    setDeep(seg[0] === "dhana" && !BOG_SUBS.includes(seg[1] || "") ? (seg[1] || "") : "");
-  }), []);
+    if (!seg.length) return false;
+    if (LILA_ROOTS.includes(seg[0])) return true;
+    return seg[0] === "hero" && !!seg[1];
+  };
+  const [deep, setDeep] = useState(inMenu);
+  useEffect(() => subscribeNav(() => setDeep(inMenu())), []);
   // ЗКН-Н005: переключение витрины меняет адресную строку (через nav.ts — ЗКН-Н001)
   const pickSub = (v: string) => {
     setSub(v);
-    setDeep("");
-    pushUrl(v === "lichnosti" ? "/lichnosti" : "/lichnosti/" + v);
+    setDeep(false);
+    pushUrl(v === "lichnosti" ? "/hero" : "/" + v);
   };
   return (
     <div>
@@ -630,8 +645,8 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
       {sub === "prasad" && (
         <PrasadamScreen
-          onBack={() => onOpenPath("/lichnosti")}
-          onOpenRecipe={(sl) => onOpenPath("/prasad/recipe/" + sl)}
+          onBack={() => onOpenPath("/hero")}
+          onOpenRecipe={(sl) => onOpenPath("/prasad/" + sl)}
           onOpenBook={(chapterId) => onOpenPath(chapterId ? "/prasad/book/" + chapterId : "/prasad/book")}
           onOpenEntity={onOpenEntity}
           flash={flash ? () => {} : undefined}
@@ -856,13 +871,13 @@ const RESERVED: readonly string[] = [
 ];
   function pathFromState(): string {
     if (openCart) return "/cart";
-    if (openJapa) return "/practice/japa";
-    if (openDiary) return "/practice/diary";
-    if (openVow) return "/practice/vow";
-    if (openDarshan) return "/practice/darshan";
-    if (openDailyVerse) return "/practice/verse";
+    if (openJapa) return "/japa";
+    if (openDiary) return "/story";
+    if (openVow) return "/promise";
+    if (openDarshan) return "/darshan";
+    if (openDailyVerse) return "/verse";
     if (openEkadashi) return "/ekadashi";
-    if (openProgress) return "/practice/progress";
+    if (openProgress) return "/progress";
     if (openCenterNew) return "/my/centers/new";
     if (openModeration) return "/centers/review";
     if (openCenterSchedule) return `/iskcon/centers/${openCenterSchedule}/schedule`;
@@ -870,10 +885,10 @@ const RESERVED: readonly string[] = [
     if (openCenterEvents) return `/iskcon/centers/${openCenterEvents}/events`;
     if (openCenterPhotos) return `/iskcon/centers/${openCenterPhotos}/photos`;
     if (openCenterEdit) return `/iskcon/centers/${openCenterEdit}/edit`;
-    if (openCenters) return "/centers";
+    if (openCenters) return "/iskcon/centers";
     if (openMyCenters) return "/my/centers";
     if (openCenter) return `/iskcon/centers/${openCenter}`;
-    if (prasadamRecipe) return "/prasad/recipe/" + prasadamRecipe;
+    if (prasadamRecipe) return "/prasad/" + prasadamRecipe;
     if (cookbookChapter) return "/prasad/book/" + cookbookChapter;
     if (openCookbook) return "/prasad/book";
     if (prasadamSection) return prasadamSection === "offering" ? "/prasad/offering" : "/prasad";
@@ -895,7 +910,7 @@ const RESERVED: readonly string[] = [
     if (openDhama) return "/dhama/" + openDhama;
     // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
     if (tab === "krishna") return (typeof window !== "undefined" && window.location.pathname.startsWith("/krishna")) ? window.location.pathname : "/krishna";
-    if (tab === "bogatstva") return (typeof window !== "undefined" && window.location.pathname.startsWith("/lichnosti")) ? window.location.pathname : "/lichnosti";
+    if (tab === "bogatstva") return (typeof window !== "undefined" && window.location.pathname.startsWith("/hero")) ? window.location.pathname : "/hero";
     return (tab === "home" || tab === "sadhana") ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
@@ -918,7 +933,15 @@ const RESERVED: readonly string[] = [
     const seg0 = clean.split("/")[1] ?? "";
     if (clean === "/") { setTab("sadhana"); return; }
     // ЗКН-Н005: разделы Садханы — свои адреса (Практика / Календарь / Кабинет)
-    if (seg0 === "practice" && clean === "/practice") { setTab("sadhana"); return; }
+    /* ЗКН-Н023 — САДХАНА: каждый инструмент в КОРНЕ (схема основателя).
+     *   /sadhana /japa /story /verse /promise /progress /darshan /calendar /ekadashi /id */
+    if (seg0 === "sadhana") { setTab("sadhana"); return; }
+    if (["japa", "story", "verse", "promise", "progress", "darshan"].includes(seg0)) {
+      setTab("sadhana");
+      window.dispatchEvent(new CustomEvent("iol:open-" + seg0));
+      return;
+    }
+    if (seg0 === "id") { setTab("sadhana"); return; }
     if (seg0 === "calendar") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
     /* ЗКН-Н023 §6 — СТАРЫЙ АДРЕС НЕ ЛОМАЕТСЯ.
@@ -930,7 +953,13 @@ const RESERVED: readonly string[] = [
     const canon = canonicalPath(clean);
     if (canon) { replaceUrl(canon); navigate(canon); return; }
 
-    if (seg0 === "lichnosti") { setTab("bogatstva"); return; }
+    /* ЗКН-Н023 — ЛИЧНОСТИ: витрина /hero, лилы В КОРНЕ.
+     *   /hero                       витрина: три входа
+     *   /gauranga-lila/first-wave   лила → волна
+     *   /pancha-tattva              кластер в корне
+     *   /hero/shrimad-bhagavatam    имя занято КНИГОЙ → под /hero */
+    if (seg0 === "hero") { setTab("bogatstva"); return; }
+    if (LILA_ROOTS.includes(seg0)) { setTab("bogatstva"); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
     if (seg0 === "krishna") { setTab("krishna"); return; }
     if (seg0 === "dhama") {
@@ -960,17 +989,17 @@ const RESERVED: readonly string[] = [
     if (clean === "/notes") { setOpenNotes(true); return; }
     if (seg0 === "note") { const nid = clean.split("/")[2]; if (nid) { setOpenNoteId(nid); return; } }
     if (clean === "/cart") { setOpenCart(true); return; }
-    if (clean === "/practice/japa") { setOpenJapa(true); return; }
-    if (clean === "/practice/diary") { setOpenDiary(true); return; }
-    if (clean === "/practice/vow") { setOpenVow(true); return; }
-    if (clean === "/practice/darshan") { setOpenDarshan(true); return; }
-    if (clean === "/practice/verse") { setOpenDailyVerse(true); return; }
+    if (clean === "/japa") { setOpenJapa(true); return; }
+    if (clean === "/story") { setOpenDiary(true); return; }
+    if (clean === "/promise") { setOpenVow(true); return; }
+    if (clean === "/darshan") { setOpenDarshan(true); return; }
+    if (clean === "/verse") { setOpenDailyVerse(true); return; }
     if (clean === "/ekadashi") { setOpenEkadashi(true); return; }
-    if (clean === "/practice/progress") { setOpenProgress(true); return; }
+    if (clean === "/progress") { setOpenProgress(true); return; }
     if (clean === "/centers/review") { setOpenModeration(true); return; }
     if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
     if (clean === "/my/centers") { setOpenMyCenters(true); return; }
-    if (clean === "/centers") { setOpenCenters(true); return; }
+    if (clean === "/iskcon/centers") { setOpenCenters(true); return; }
     if (seg0 === "prasad") {
       const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
       if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
@@ -1079,7 +1108,7 @@ const RESERVED: readonly string[] = [
 
   // Гость попытался сохранить закладку из ридера → ведём в кабинет (вход).
   useEffect(() => {
-    const onAuthReq = () => navigate("/account");
+    const onAuthReq = () => navigate("/id");
     window.addEventListener(AUTH_REQUIRED_EVENT, onAuthReq);
     return () => window.removeEventListener(AUTH_REQUIRED_EVENT, onAuthReq);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1089,7 +1118,7 @@ const RESERVED: readonly string[] = [
   // через событие, чтобы не пробрасывать navigate сквозь дерево. Идём через
   // navigate → корректный URL /practice/japa, история и кнопка «назад».
   useEffect(() => {
-    const onJapa = () => navigate("/practice/japa");
+    const onJapa = () => navigate("/japa");
     window.addEventListener("iol:open-japa", onJapa);
     return () => window.removeEventListener("iol:open-japa", onJapa);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1098,7 +1127,7 @@ const RESERVED: readonly string[] = [
   // Открытие дневника садханы из хаба «Садхана» — через событие (как джапа):
   // navigate → /practice/diary, корректная история и кнопка «назад».
   useEffect(() => {
-    const onDiary = () => navigate("/practice/diary");
+    const onDiary = () => navigate("/story");
     window.addEventListener("iol:open-diary", onDiary);
     return () => window.removeEventListener("iol:open-diary", onDiary);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1106,7 +1135,7 @@ const RESERVED: readonly string[] = [
 
   // Открытие даршана дня из хаба «Садхана» — через событие.
   useEffect(() => {
-    const onDarshan = () => navigate("/practice/darshan");
+    const onDarshan = () => navigate("/darshan");
     window.addEventListener("iol:open-darshan", onDarshan);
     return () => window.removeEventListener("iol:open-darshan", onDarshan);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1114,7 +1143,7 @@ const RESERVED: readonly string[] = [
 
   // Открытие «Стиха дня» (системное чтение) из хаба «Садхана».
   useEffect(() => {
-    const onDaily = () => navigate("/practice/verse");
+    const onDaily = () => navigate("/verse");
     window.addEventListener("iol:open-daily-verse", onDaily);
     return () => window.removeEventListener("iol:open-daily-verse", onDaily);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1122,7 +1151,7 @@ const RESERVED: readonly string[] = [
 
   // Открытие «Моего прогресса» (дашборд чтения) из хаба «Садхана».
   useEffect(() => {
-    const onProg = () => navigate("/practice/progress");
+    const onProg = () => navigate("/progress");
     window.addEventListener("iol:open-progress", onProg);
     return () => window.removeEventListener("iol:open-progress", onProg);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1313,19 +1342,19 @@ const RESERVED: readonly string[] = [
           </main>
         ) : prasadamRecipe ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} onOpenOffering={() => navigate("/prasad/offering")} onOpenBookChapter={(id) => navigate("/prasad/book/" + id)} onOpenEntity={openEntityTarget} />
+            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasad/" + s)} onOpenOffering={() => navigate("/prasad/offering")} onOpenBookChapter={(id) => navigate("/prasad/book/" + id)} onOpenEntity={openEntityTarget} />
           </main>
         ) : cookbookChapter ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasad/book/" + id)} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} />
+            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasad/book/" + id)} onOpenRecipe={(s) => navigate("/prasad/" + s)} />
           </main>
         ) : openCookbook ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasad/book/" + id)} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} />
+            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasad/book/" + id)} onOpenRecipe={(s) => navigate("/prasad/" + s)} />
           </main>
         ) : prasadamSection ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasad/offering" : "/prasad")} onOpenBook={() => navigate("/prasad/book")} onOpenEntity={openEntityTarget} />
+            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasad/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasad/offering" : "/prasad")} onOpenBook={() => navigate("/prasad/book")} onOpenEntity={openEntityTarget} />
           </main>
         ) : openNoteId ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>

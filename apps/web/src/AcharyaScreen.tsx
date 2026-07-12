@@ -425,19 +425,19 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
           title="Гауранга Лила"
           subtitle="Кришна в облике преданного. Пять волн санкиртаны — от Панча-таттвы до ачарьев и ИСККОН"
           mark={<MaskMark src="/gauranga.svg" size={48} />}
-          onClick={() => onOpenPath?.("/lichnosti/gauranga-lila")}
+          onClick={() => onOpenPath?.("/gauranga-lila")}
         />
         <SectionCard
           title="Кришна Лила"
           subtitle="Свайам Бхагаван во Врадже. Спутники по расам — от покоя шанты до мадхурьи манджари"
           mark={<MaskMark src="/vraj.svg" size={48} />}
-          onClick={() => onOpenPath?.("/lichnosti/krishna-lila")}
+          onClick={() => onOpenPath?.("/krishna-lila")}
         />
         <SectionCard
           title="Шримад Бхагаватам"
           subtitle="Зрелый плод Вед. Аватары и мудрецы, цари и преданные, полубоги и демоны"
           mark={<MaskMark src="/bbt.svg" size={48} />}
-          onClick={() => onOpenPath?.("/lichnosti/shrimad-bhagavatam")}
+          onClick={() => onOpenPath?.("/hero/shrimad-bhagavatam")}
         />
       </div>
     </div>

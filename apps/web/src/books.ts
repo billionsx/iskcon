@@ -209,7 +209,7 @@ export const BOOKS: Record<string, BookData> = {
   brs: {
     id: "brs",
     work: "brs",
-    slug: "nektar-predannosti",
+    slug: "nectar-of-devotion",
     titleLine1: "Нектар",
     titleLine2: "преданности",
     iast: "Bhakti-rasāmṛta-sindhu",
@@ -363,7 +363,7 @@ export const BOOKS: Record<string, BookData> = {
   rv: {
     id: "rv",
     work: "rv",
-    slug: "radzha-vidya",
+    slug: "raja-vidya",
     titleLine1: "Раджа-видья",
     iast: "Rāja-vidyā",
     tagline: "Царь знания",
@@ -445,7 +445,7 @@ export const BOOKS: Record<string, BookData> = {
   sc: {
     id: "sc",
     work: "sc",
-    slug: "eshche-odin-shans",
+    slug: "still-another-chance",
     titleLine1: "Ещё",
     titleLine2: "один шанс",
     iast: "A Second Chance",
@@ -466,7 +466,7 @@ export const BOOKS: Record<string, BookData> = {
   tqk: {
     id: "tqk",
     work: "tqk",
-    slug: "molitvy-czaricy-kunti",
+    slug: "prayers-of-queen-kunti",
     titleLine1: "Молитвы",
     titleLine2: "царицы Кунти",
     iast: "Teachings of Queen Kuntī",
@@ -544,7 +544,7 @@ export const BOOKS: Record<string, BookData> = {
   "siksastaka": {
     id: "siksastaka",
     work: "siksastaka",
-    slug: "siksastaka",
+    slug: "shikshashtaka",
     titleLine1: "Шри",
     titleLine2: "Шикшаштака",
     iast: "Śrī Śikṣāṣṭaka",
