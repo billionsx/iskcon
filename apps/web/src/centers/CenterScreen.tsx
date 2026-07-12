@@ -474,7 +474,7 @@ export default function CenterScreen({
                     {d.photos[0] && <span style={{ width: 44, height: 44, borderRadius: 12, flexShrink: 0, background: `center/cover no-repeat url("${d.photos[0]}")` }} />}
                     <div style={{ minWidth: 0 }}>
                       {d.deity_entity_id ? (
-                        <button type="button" onClick={() => onOpenPath(`/entity/${d.deity_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                        <button type="button" onClick={() => onOpenPath(`/${d.deity_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
                           {name}
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg>
                         </button>
@@ -501,7 +501,7 @@ export default function CenterScreen({
                   </span>
                   <div style={{ minWidth: 0, flex: 1 }}>
                     {ev.festival_entity_id ? (
-                      <button type="button" onClick={() => onOpenPath(`/entity/${ev.festival_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+                      <button type="button" onClick={() => onOpenPath(`/${ev.festival_entity_id}`)} style={{ display: "inline-flex", alignItems: "center", gap: 5, padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
                         {pickI18n(ev.title_i18n)}
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0 }}><path d="M9 6l6 6-6 6" /></svg>
                       </button>

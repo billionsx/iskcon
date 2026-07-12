@@ -55,5 +55,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: python3 tools/pkl-audit.py
 
+      - name: Аудит адресов (переезды — ЗКН-Н025)
+        run: python3 tools/url-audit.py
+
       - name: Аудит конституции (свод против кода)
         run: python3 tools/laws-audit.py

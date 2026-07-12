@@ -437,7 +437,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
           title="Шримад Бхагаватам"
           subtitle="Зрелый плод Вед. Аватары и мудрецы, цари и преданные, полубоги и демоны"
           mark={<MaskMark src="/bbt.svg" size={48} />}
-          onClick={() => onOpenPath?.("/hero/shrimad-bhagavatam")}
+          onClick={() => onOpenPath?.("/bhagavatam-lila")}
         />
       </div>
     </div>

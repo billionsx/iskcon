@@ -557,7 +557,8 @@ export /* ЗКН-Н007: слаги лил — вход в четырёхуров
  * `advaita` и `nityananda` в корень НЕЛЬЗЯ: это Адвайта Ачарья и Нитьянанда
  * Прабху — живые личности, и корень уже принадлежит им. Их кластеры остаются
  * вложенными: /gauranga-lila/first-wave/nityananda. Гейт это стережёт. */
-const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "pancha-tattva", "avatars"];
+const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "bhagavatam-lila",
+                    "mahabharata-lila", "ramayana-lila", "pancha-tattva", "avatars"];
 
 const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
 export function bogSubFromPath(path: string): string {
@@ -631,15 +632,19 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
        * договорённость разъедется снова. Витрина об отступе не знает. */}
       <div style={{ marginTop: HUB_TOP }}>
       {/* ЗКН-Н007 — «ГЕРОИ» ТОЛЬКО НА ПЕРВОМ ЭКРАНЕ.
-          /dhana        → «Герои»: выбор царства (Прабхупада · Кришна Лила · Гауранга Лила · Бхагаватам)
-          /dhana/<что-угодно-глубже> → четырёхуровневое меню Личностей со ВСЕМИ 730.
-          Оборачивать вложенные уровни в «Героев» — значит сломать меню. */}
+       *   /hero              → витрина: три входа
+       *   всё глубже         → четырёхуровневое меню (LichnostiHub)
+       * Оборачивать вложенные уровни в «Героев» — значит сломать меню.
+       *
+       * ⚠️ ЗКН-Н025: здесь ЖИЛ мёртвый обработчик `pp.startsWith("/hero/")`
+       * после переезда адресов на `/gauranga-lila`. Условие не срабатывало, и
+       * кнопки витрины переставали вести вглубь. Адрес переехал — читатель нет. */}
       {sub === "lichnosti" && (deep
         ? <LichnostiHub onOpenEntity={onOpenEntity} />
         : <AcharyaScreen
             onOpen={onOpenEntity}
             onOpenCollection={onOpenCollection}
-            onOpenPath={(pp) => { if (pp.startsWith("/lichnosti/")) { setDeep(pp.split("/")[2] || "vse"); pushUrl(pp); } else onOpenPath(pp); }}
+            onOpenPath={(pp) => { pushUrl(pp); setDeep(true); }}
           />)}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
@@ -905,7 +910,7 @@ const RESERVED: readonly string[] = [
     if (openContent) return openContent;   // slug сам по себе путь
     if (openEntity) return "/" + openEntity;
     if (openPost) return "/post/" + openPost;
-    if (openCollection) return "/acharya/" + openCollection;
+    if (openCollection) return "/hero/" + openCollection;
     if (openTirtha) return "/dhama/" + openTirtha.dhama + "/" + openTirtha.id;
     if (openDhama) return "/dhama/" + openDhama;
     // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
