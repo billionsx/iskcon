@@ -65,8 +65,27 @@ MOVED = {
 ALLOW = {"routes.ts", "url-audit.py"}
 
 
-def main():
+def check_iskcon_tabs():
+    """ЗКН-Н026 — ЭКРАН БЕЗ АДРЕСА КАК БУДТО НЕ СУЩЕСТВУЕТ.
+
+    Вкладки ИСККОН держались в `sessionStorage` и адрес НЕ ПИСАЛИ вовсе.
+    Человек открывал «Центры», а в строке оставалось `/books`: разделом нельзя
+    было поделиться, положить в закладку, вернуться назад.
+    """
+    t = (SRC / "HomeTabs.tsx").read_text(encoding="utf-8")
+    h = (SRC / "HomeScreen.tsx").read_text(encoding="utf-8")
     bad = []
+    if "pathOfTab" not in t or "tabFromPath" not in t:
+        bad.append(("HomeTabs.tsx", "нет pathOfTab/tabFromPath — у вкладок ИСККОН нет адреса (ЗКН-Н026)"))
+    if "pushUrl(pathOfTab" not in h:
+        bad.append(("HomeScreen.tsx", "переключение вкладки НЕ пишет адрес (ЗКН-Н026)"))
+    if 'sessionStorage.getItem("home-tab")' in h:
+        bad.append(("HomeScreen.tsx", "вкладка читается из sessionStorage, а не из АДРЕСА (ЗКН-Н026)"))
+    return bad
+
+
+def main():
+    bad = [(f, 0, "", "", m) for f, m in check_iskcon_tabs()]
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in ALLOW:
             continue
@@ -91,6 +110,7 @@ def main():
 
     if not bad:
         print("ЗКН-Н025: мёртвых читателей адресов нет ✓")
+        print("ЗКН-Н026: у вкладок ИСККОН есть адреса ✓")
         print("  переездов в реестре: %d" % len(MOVED))
         return 0
 
