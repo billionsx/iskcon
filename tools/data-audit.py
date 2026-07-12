@@ -207,6 +207,75 @@ CHECKS = [
         "hint": "→ слаг отражает СМЫСЛ: «Джугал-кунда» → jugal-kunda, а не trashed (ЗКН-Н008/Р008)",
     },
     {
+        "law": "ЗКН-П007",
+        "name": "КАНОН РОСТЕРА МАНДЖАРИ (приоритетнее ГГД/Роузена)",
+        # Проектный КАНОН, а не пересказ источников. Ключевое расхождение:
+        # Рагхунатха Бхатта = **РАСА**-манджари (не Рага, как у части источников).
+        # Ростер — тождества в графе, а не текст в прозе: их можно проверить.
+        "sql": """SELECT COUNT(*) AS n FROM (
+                    SELECT 'rupa-goswami' AS g, 'rupa-manjari' AS m
+                    UNION ALL SELECT 'sanatana-goswami','lavanga-manjari'
+                    UNION ALL SELECT 'jiva-goswami','vilasa-manjari'
+                    UNION ALL SELECT 'raghunatha-bhatta-goswami','rasa-manjari'
+                    UNION ALL SELECT 'raghunatha-das-goswami','tulasi-manjari'
+                    UNION ALL SELECT 'gopala-bhatta-goswami','guna-manjari'
+                    UNION ALL SELECT 'lokanatha-goswami','manjulali-manjari'
+                    UNION ALL SELECT 'krishnadasa-kaviraja','kasturi-manjari'
+                    UNION ALL SELECT 'bhugarbha-goswami','prema-manjari'
+                    UNION ALL SELECT 'narottama-dasa-thakura','champaka-manjari'
+                  ) k
+                  WHERE NOT EXISTS (SELECT 1 FROM entity_relations r
+                                    WHERE r.from_id = k.g
+                                      AND r.relation = 'gauranga-lila-identity'
+                                      AND r.to_id = k.m)""",
+        "hint": "→ канонический ростер манджари — тождества в графе. "
+                "Рагхунатха Бхатта = РАСА-манджари, не Рага (ЗКН-П007)",
+    },
+    {
+        "law": "ЗКН-П004",
+        "name": "дословная цитата из НЕВНЕСЁННОЙ книги",
+        # Вербатим-цитата разрешена ТОЛЬКО если источник есть в приложении и на него
+        # можно перейти. Иначе — факты русской прозой со ссылкой (`cite`), а не `q`.
+        # Внесены: ЧЧ · ЧБ · ЧМ · БР · НДМ · ШБ · БГ и др. (book_catalog.readable=1).
+        # ЧТО СЧИТАЕТСЯ «ИСТОЧНИК В ПРИЛОЖЕНИИ»:
+        #   • книга с readable=1 (ЧЧ · ЧБ · ЧМ · БР · НДМ · ШБ · БГ …)
+        #   • БХАДЖАН из `prayers` (339 молитв — они в приложении, их можно цитировать)
+        #   • ЛИЧНОСТЬ-рассказчик (цитата, приписанная человеку, а не книге)
+        #
+        # ХРАПОВИК 21: главный долг — «Гаура-ганоддеша-дипика» (27 дословных цитат,
+        # текста книги у нас нет). Либо внести книгу, либо перевести цитаты в прозу
+        # со ссылкой `cite`. Выдумывать текст ЗАПРЕЩЕНО (ЗКН-БТ001).
+        "sql": """SELECT MAX(0, COUNT(*) - 21) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.key = 'ref'
+                    AND t.path LIKE '%quotes%'
+                    AND NOT EXISTS (
+                      SELECT 1 FROM book_catalog b
+                      WHERE b.readable = 1 AND instr(t.atom, substr(b.title, 1, 12)) > 0)
+                    AND NOT EXISTS (
+                      SELECT 1 FROM prayers pr
+                      WHERE pr.name IS NOT NULL AND length(pr.name) > 8
+                        AND instr(t.atom, substr(pr.name, 1, 10)) > 0)
+                    AND NOT EXISTS (
+                      SELECT 1 FROM entity_names n
+                      WHERE length(n.value) > 8 AND instr(t.atom, n.value) > 0)""",
+        "hint": "→ дословно цитировать можно ТОЛЬКО то, что ЕСТЬ в приложении: книгу, "
+                "бхаджан или личность. Долг 21 — храповик: рост запрещён (ЗКН-П004)",
+    },
+    {
+        "law": "ЗКН-Пр002",
+        "name": "ЦЕНТР ПРОСЛАВЛЕНИЯ — Прабхупада и ИСККОН в Гауранга Лиле",
+        # Не «один из ачарьев», а Ачарья-основатель, явивший беспрецедентную волну.
+        # Инвариант: `prabhupada` — узел Гауранга Лилы, связанный с сампрадаей.
+        # Смешение сампрадай ЗАПРЕЩЕНО: у Прабхупады нет `disciple-of` вне гаудия-линии.
+        "sql": """SELECT CASE
+                    WHEN NOT EXISTS (SELECT 1 FROM entity_categories
+                                     WHERE entity_id='prabhupada' AND category='lila-gauranga') THEN 1
+                    WHEN NOT EXISTS (SELECT 1 FROM entity_relations
+                                     WHERE from_id='prabhupada' AND relation='disciple-of') THEN 1
+                    ELSE 0 END AS n""",
+        "hint": "→ `prabhupada` — узел Гауранга Лилы с линией ученической преемственности (ЗКН-Пр002)",
+    },
+    {
         "law": "ЗКН-Сд001",
         "name": "Кришна — свайам-бхагаван и ХАБ графа",
         # *kṛṣṇas tu bhagavān svayam* (ШБ 1.3.28). Это не украшение свода, а
@@ -225,10 +294,14 @@ CHECKS = [
         "name": "гуру ИСККОН — ВНУТРИ Гауранга Лилы, не отложены",
         # ИСККОН — беспрецедентная волна Гауранга Лилы, а не приложение к ней.
         # Гуру GBC классифицируются ВНУТРИ лилы как её герои.
+        # ⚠️ В базе ДВЕ категории на одно понятие: `lila-gauranga` (448 — по ней
+        # ФИЛЬТРУЕТ приложение) и `gauranga-lila` (394 — метка для чипа).
+        # Первая версия гейта проверяла `gauranga-lila` и ВРАЛА: у Прабхупады её нет.
+        # Проверяем ту, по которой приложение реально показывает личность.
         "sql": """SELECT COUNT(*) AS n FROM entities e
                   WHERE e.dataset = 'Гуру ИСККОН (GBC)'
                     AND NOT EXISTS (SELECT 1 FROM entity_categories c
-                                    WHERE c.entity_id = e.id AND c.category = 'gauranga-lila')""",
+                                    WHERE c.entity_id = e.id AND c.category = 'lila-gauranga')""",
         "hint": "→ гуру GBC — герои Гауранга Лилы, а не отдельный список (ЗКН-Сд003)",
     },
     {
