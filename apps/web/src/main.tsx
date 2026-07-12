@@ -65,6 +65,29 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
   // — один раз перезагружаем страницу, чтобы подхватить свежий бандл без ручного
   // Cmd+Shift+R. Анти-цикл — через sessionStorage.
   if ("serviceWorker" in navigator) {
+    /* ЗКН-Ф020 — РАЗРЫВ ЗАМКНУТОГО КРУГА.
+     *
+     * У людей уже стоит СЛОМАННЫЙ SW: он кэшировал бандл «сначала кеш» и мог
+     * вернуть `undefined` вместо Response (белый экран). Пока он жив, до человека
+     * не доедет НИЧЕГО — включая починку самого SW.
+     *
+     * Одноразовая чистка: если версия кеша устарела, СНОСИМ все кеши и
+     * ПЕРЕРЕГИСТРИРУЕМ воркера. Метка в localStorage — чтобы сделать это ровно
+     * один раз. */
+    const HEAL_KEY = "__sw_heal_v5";
+    if (!localStorage.getItem(HEAL_KEY)) {
+      localStorage.setItem(HEAL_KEY, "1");
+      void (async () => {
+        try {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((k) => caches.delete(k)));
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((r) => r.unregister()));
+        } catch { /* ничего не поделать */ }
+        window.location.reload();
+      })();
+    }
+
     const hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.addEventListener("controllerchange", () => {
       if (!hadController) return;

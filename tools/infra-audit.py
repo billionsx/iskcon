@@ -207,6 +207,18 @@ def check_f017():
         bad.append(("sw.js", "оболочка и бандл берутся ИЗ КЕША — правки не доедут "
                              "до человека (ЗКН-Ф019)"))
 
+    # ЗКН-Ф020 — /sw.js НИКОГДА не кешируется. Это был ЗАМКНУТЫЙ КРУГ:
+    #   старый SW отдаёт старый бандл  →  правки не доезжают
+    #   новый sw.js не запрашивается   →  старый SW не сменится никогда
+    w = read(ROOT / "apps" / "web" / "worker.ts")
+    if 'url.pathname === "/sw.js"' not in w:
+        bad.append(("worker.ts", "/sw.js отдаётся с кешем — браузер не увидит нового SW, "
+                                 "и правки НИКОГДА не доедут до человека (ЗКН-Ф020)"))
+    m = read(ROOT / "apps" / "web" / "src" / "main.tsx")
+    if 'updateViaCache: "none"' not in m:
+        bad.append(("main.tsx", "register без `updateViaCache: \"none\"` — браузер возьмёт "
+                                "sw.js из HTTP-кеша и не обновит воркера (ЗКН-Ф020)"))
+
     if t.count("respondWith") > 0 and "return new Response" not in t:
         bad.append(("sw.js", "нет запасного `new Response` — ветка может отдать undefined "
                              "(ЗКН-Ф017)"))
