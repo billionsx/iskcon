@@ -461,7 +461,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
             title="Радха-Кришна лила"
             subtitle="Вечные игры Господа и Его спутников во Вриндаване"
             mark={<MaskMark src="/vraj.svg" size={48} />}
-            onClick={() => openCol("radha-krishna")}
+            onClick={() => onOpenPath?.("/dhana/krishna-lila")}
           />
           )}
           {(!realm || realm === "gauranga") && (
@@ -469,7 +469,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
             title="Гауранга Лила"
             subtitle="Гауранга Махапрабху и Панча-таттва"
             mark={<MaskMark src="/gauranga.svg" size={48} />}
-            onClick={() => openCol("gauranga")}
+            onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
           />
           )}
           {(!realm || realm === "krishna") && (
@@ -477,19 +477,10 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
             title="Шримад Бхагаватам"
             subtitle="Воплощения и аватары Господа, Его великие преданные"
             mark={<MaskMark src="/bbt.svg" size={48} />}
-            onClick={() => openCol("bhagavatam")}
+            onClick={() => onOpenPath?.("/dhana/shrimad-bhagavatam")}
           />
           )}
         
-          {/* ЗКН-Н007: отсюда — в полный список личностей (четырёхуровневое меню). */}
-          <SectionCard
-            title="Все личности"
-            subtitle={realm === "krishna" ? "Полный список спутников Кришна Лилы — по волнам и кластерам"
-                      : realm === "gauranga" ? "Полный список спутников Гауранга Лилы — по волнам и кластерам"
-                      : "Полный список — 730 личностей по лилам, волнам и кластерам"}
-            mark={<MaskMark src="/lotus.svg" size={44} />}
-            onClick={() => onOpenPath?.("/dhana/vse")}
-          />
 </div>
       )}
     </div>
