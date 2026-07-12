@@ -1065,6 +1065,13 @@ const RESERVED: readonly string[] = [
     if (seg0 === "kirtans") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
     if (seg0 === "lichnosti-collection") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
+    /* ЗКН-Н023 — ИСККОН: ВКЛАДКА ЖИВЁТ В АДРЕСЕ.
+     *   /iskcon /iskcon/news /iskcon/centers /iskcon/restaurants
+     *   /iskcon/education /iskcon/structure /iskcon/documents /iskcon/links
+     * Было: вкладка держалась в sessionStorage, адрес не менялся — разделом
+     * нельзя было поделиться. Экран без адреса — как будто его нет. */
+    if (seg0 === "iskcon") { setTab("iskcon"); return; }
+
     /* ЗКН-Н023 — КНИГА В КОРНЕ ПО ПОЛНОМУ ИМЕНИ.
      *
      *   /bhagavad-gita        книга
