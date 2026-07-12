@@ -154,7 +154,7 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
     if (!lslug) return;
     const sslug = subSel ? SUB_SLUG[subSel] : "";
     const gslug = grpSel && SUBSUBS[subSel] ? SUBSUB_SLUG[grpSel] : "";
-    const path = "/dhana/" + lslug + (sslug ? "/" + sslug : "") + (sslug && gslug ? "/" + gslug : "");
+    const path = "/lichnosti/" + lslug + (sslug ? "/" + sslug : "") + (sslug && gslug ? "/" + gslug : "");
     if (window.location.pathname !== path) {
       replaceUrl(path);   // ЗКН-Н001: историю пишет только nav.ts
     }

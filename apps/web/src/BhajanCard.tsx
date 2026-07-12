@@ -37,7 +37,7 @@ export interface BhajanCardData {
 }
 
 export function BhajanCard({ bhajan, onOpen, flash }: { bhajan: BhajanCardData; onOpen?: () => void; flash?: (m: string) => void }) {
-  const { on: favorited, toggle: toggleFav } = useFavorite(`bhajan:${bhajan.slug}`, { t: bhajan.name, s: bhajan.author || undefined, h: `/bhajan/${bhajan.slug}` });
+  const { on: favorited, toggle: toggleFav } = useFavorite(`bhajan:${bhajan.slug}`, { t: bhajan.name, s: bhajan.author || undefined, h: `/bhajans/${bhajan.slug}` });
   const { openCardMenu } = useCardActions();
   const player = usePlayer();
   const chip = bhajan.category || bhajan.sourceText || bhajan.section || null;

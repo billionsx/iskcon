@@ -1153,10 +1153,10 @@ function versePathFor(work: string, division: string | undefined, ref: string): 
   const dv = (division ?? "").split(".").filter(Boolean); // ["sb","1","9"] | ["cc","adi","7"] | ["bg","2"]
   const vseg = ref.split(".").pop() ?? "";
   if (work !== "bg") {
-    return dv.length >= 3 ? `/book/${work}/${dv[1]}/${dv[2]}${vseg ? `/${vseg}` : ""}` : `/book/${work}`;
+    return dv.length >= 3 ? `/books/${work}/${dv[1]}/${dv[2]}${vseg ? `/${vseg}` : ""}` : `/books/${work}`;
   }
   const ch = dv.length >= 2 ? dv[dv.length - 1] : (ref.split(".")[0] ?? "");
-  return `/book/${work}/${ch}${vseg ? `/${vseg}` : ""}`;
+  return `/books/${work}/${ch}${vseg ? `/${vseg}` : ""}`;
 }
 
 export interface ChapterRow { id: string; number: string; title_ru: string; title_en: string; source_url: string; verses: number; }
@@ -1490,7 +1490,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
   const [flashVref, setFlashVref] = useState<string | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
-  const favHref = hierarchical ? `/book/${work}/${chapter.id.split(".")[1] ?? ""}/${chapter.number}` : `/book/${work}/${chapter.number}`;
+  const favHref = hierarchical ? `/books/${work}/${chapter.id.split(".")[1] ?? ""}/${chapter.number}` : `/books/${work}/${chapter.number}`;
   const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: favHref });
   const [printing, setPrinting] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -1748,7 +1748,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
             ref: `chapter:${work}/${chapter.id || chapter.number}`,
             title: chapter.title_ru,
             subtitle: `Глава ${chapter.number} · ${bookTitle}`,
-            href: `/book/${work}${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`,
+            href: `/books/${work}${hierarchical ? `/${chapter.id.split(".")[1]}/${chapter.number}` : `/${chapter.number}`}`,
           });
           return;
         }
@@ -2147,7 +2147,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   const [paras, setParas] = useState<ProsePara[] | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState(false);
-  const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: `/book/${work}/${chapter.number}` });
+  const { on: fav, toggle: toggleFav } = useFavorite(`chapter:${work}/${chapter.id || chapter.number}`, { t: chapter.title_ru, s: `Глава ${chapter.number} · ${bookTitle}`, h: `/books/${work}/${chapter.number}` });
   const moreRef = useRef<HTMLSpanElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const printRef = useRef<HTMLDivElement>(null);
@@ -2156,7 +2156,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
 
   const n = Number(chapter.number);
   const numbered = n >= 1 && n <= 999;
-  const prHref = numbered ? `/book/${work}/${chapter.number}` : `/book/${work}`;
+  const prHref = numbered ? `/books/${work}/${chapter.number}` : `/books/${work}`;
   const prLabel = chapter.title_ru || (numbered ? `Глава ${chapter.number}` : bookTitle);
   const prog = useMemo(() => {
     const i = chapters ? chapters.findIndex((c) => c.id === chapter.id) : -1;
@@ -2287,7 +2287,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
             ref: `chapter:${work}/${chapter.id || chapter.number}`,
             title: chapter.title_ru,
             subtitle: `Глава ${chapter.number} · ${bookTitle}`,
-            href: `/book/${work}/${chapter.number}`,
+            href: `/books/${work}/${chapter.number}`,
           });
           return;
         }
@@ -2771,7 +2771,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   useEffect(() => {
     if (navLock.current || typeof window === "undefined") return;
     if (book.hierarchical) {
-      const base = `/book/${book.work}`;
+      const base = `/books/${book.work}`;
       let path = base;
       if (readerRef) {
         const pr = readerRef.split(".");                 // ["cc","madhya","6","140"]
@@ -2790,7 +2790,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       return;
     }
     if (!chapters) return;
-    const base = `/book/${book.work}`;
+    const base = `/books/${book.work}`;
     let path = base;
     if (readerRef) {
       const rd = readerRef.replace(/^[^\d]*/, "");
@@ -2814,7 +2814,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const goBack = () => {
     if (typeof window === "undefined") return;
     if (canGoBack()) { window.history.back(); return; }
-    const base = `/book/${book.work}`;
+    const base = `/books/${book.work}`;
     if (book.hierarchical) {
       if (readerRef) { setReaderRef(null); replaceUrl(openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base); return; }
       if (openChapter) { setOpenChapter(null); replaceUrl(base); return; }
@@ -2832,7 +2832,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const goToChapter = () => {
     if (!readerRef) return;
     setChapterScrollTo(readerRef); // проскроллить главу к этому стиху
-    const base = `/book/${book.work}`;
+    const base = `/books/${book.work}`;
     if (openChapter) {
       replaceUrl(book.hierarchical ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : `${base}/${openChapter.number}`);
       setReaderRef(null);
@@ -2856,7 +2856,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const toContents = (chId: string) => {
     setContentsFlashId(chId);
     setTab("contents");
-    replaceUrl(`/book/${book.work}`);
+    replaceUrl(`/books/${book.work}`);
     setOpenChapter(null);
     setReaderRef(null);
   };
@@ -2867,7 +2867,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
    * race-ятся, порядок не гарантирован. Владелец `popstate` — App; он разбирает
    * маршрут и ТОЛЬКО ПОТОМ оповещает подписчиков. Порядок детерминирован. */
   useEffect(() => subscribeNav((path) => {
-    const base = `/book/${book.work}`;
+    const base = `/books/${book.work}`;
     if (!path.startsWith(base)) return;
     if (book.prose) return;               // прозовые книги не используют глубоких URL глав
     const parts = path.split("/");        // ["", "book", work, a?, b?, c?]
@@ -2969,7 +2969,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const menuAction = (id: string) => {
     setMoreOpen(false);
     if (id === "note") {
-      requestNote({ kind: "book", ref: `book:${book.work}`, title: bookFullTitle(book), subtitle: book.tagline, href: `/book/${book.work}` });
+      requestNote({ kind: "book", ref: `book:${book.work}`, title: bookFullTitle(book), subtitle: book.tagline, href: `/books/${book.work}` });
       return;
     }
     if (id === "share") { void shareBook(); return; }

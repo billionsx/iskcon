@@ -278,6 +278,47 @@ CHECKS = [
         "hint": "→ `prabhupada` — узел Гауранга Лилы с линией ученической преемственности (ЗКН-Пр002)",
     },
     {
+        "law": "ЗКН-Н023b",
+        "name": "АДРЕС КНИГИ: полное имя, без шифра и лишней папки",
+        # Основатель поймал: `gaurangers.com/book/bs`. Двойное нарушение —
+        # лишняя папка `/book/` И ШИФР «bs» вместо имени. Человек не прочтёт «bs».
+        #
+        # Стало: `/brahma-samhita`. Внутренний ключ (`id`) остаётся коротким —
+        # на нём висят стихи и разделы; наружу идёт СЛАГ.
+        #
+        # Гейт: у каждой книги есть слаг, он не шифр, уникален и не сталкивается
+        # ни с личностью, ни с корнем раздела.
+        "sql": """SELECT (SELECT COUNT(*) FROM book_catalog
+                          WHERE slug IS NULL OR slug = '' OR length(slug) <= 4)
+                       + (SELECT COUNT(*) FROM book_catalog b
+                          WHERE EXISTS (SELECT 1 FROM entities e
+                                        WHERE e.id = b.slug AND e.type = 'personality'))
+                       + (SELECT COUNT(*) FROM book_catalog
+                          WHERE slug IN ('lichnosti','books','bhajans','kirtans','prasad',
+                                         'dhama','iskcon','practice','calendar','account',
+                                         'search','favorites','notes','cart'))
+                       + (SELECT COUNT(*) - COUNT(DISTINCT slug) FROM book_catalog) AS n""",
+        "hint": "→ адрес книги — ПОЛНОЕ имя: /brahma-samhita, а не /book/bs (ЗКН-Н023)",
+    },
+    {
+        "law": "ЗКН-БТ006c",
+        "name": "СОКРАЩЕНИЕ В ССЫЛКЕ (человек видит «РКГД, 14»)",
+        # Основатель поймал на карточке Ангады: под текстом стояло «РКГД, 14».
+        # Это НЕ ссылка — это шифр. Читатель не знает, что такое РКГД, и перейти
+        # некуда. Ссылка пишется ПОЛНОСТЬЮ: название · раздел · глава · стих.
+        #
+        # Было 132: НП (63) · РКГД (45) · ПЛ (16) · БРС (8).
+        "sql": """SELECT COUNT(*) AS n FROM entity_profiles p, json_tree(p.longform) t
+                  WHERE json_valid(p.longform) AND t.key = 'ref' AND t.atom IS NOT NULL
+                    AND (t.atom GLOB 'РКГД*' OR t.atom GLOB 'НП [0-9]*'
+                         OR t.atom GLOB 'ПЛ [0-9]*' OR t.atom GLOB 'БРС*'
+                         OR t.atom GLOB 'ГГД [0-9]*' OR t.atom GLOB 'ЧЧ [0-9]*'
+                         OR t.atom GLOB 'ШБ [0-9]*' OR t.atom GLOB 'БГ [0-9]*'
+                         OR t.atom GLOB 'ЧБ [0-9]*')""",
+        "hint": "→ ссылка пишется ПОЛНОСТЬЮ: «Нектар преданности», глава 41 — "
+                "а не «НП 41» (ЗКН-БТ006)",
+    },
+    {
         "law": "ЗКН-Н023",
         "name": "СЛАГ — ИМЯ, А НЕ ПУТЬ (чужой путь в базе)",
         # У ВСЕХ 339 бхаджанов слаг был `/ru/gaura-arati` — путь с сайта-источника

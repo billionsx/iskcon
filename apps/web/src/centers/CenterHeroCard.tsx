@@ -66,7 +66,7 @@ export function CenterHeroCard({ center, topLeft, onOpen, presentational, onMenu
   const { idx, next, prev } = useCoverSlider(photos.length);
   const place = [center.city, center.region, center.country].filter(Boolean).join(" · ");
   const mapsHref = centerMapsHref(center);
-  const { on: favorited, toggle: toggleFav } = useFavorite(`center:${center.slug}`, { t: center.name, s: place || CENTER_TYPE_LABEL[center.type], h: `/center/${center.slug}` });
+  const { on: favorited, toggle: toggleFav } = useFavorite(`center:${center.slug}`, { t: center.name, s: place || CENTER_TYPE_LABEL[center.type], h: `/iskcon/centers/${center.slug}` });
 
   return (
     <>

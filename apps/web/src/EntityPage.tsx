@@ -224,19 +224,19 @@ function expandRef(ref: string): RefParts {
   const vw = (v: string) => (/[-–—]/.test(v) ? "стихи " : "стих ") + dash(v); // «стих N» / «стихи N–M»
   // Шримад-Бхагаватам (песнь.глава.стих[-стих])
   let m = r.match(/^(?:ШБ|Шримад-Бхагаватам)\s+(\d+)\.(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Шримад-Бхагаватам", loc: "Песнь "+m[1]+", глава "+m[2]+", "+vw(m[3]), to: "/book/sb/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
+  if (m) return { book: "Шримад-Бхагаватам", loc: "Песнь "+m[1]+", глава "+m[2]+", "+vw(m[3]), to: "/books/sb/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
   m = r.match(/^(?:ШБ|Шримад-Бхагаватам)\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Шримад-Бхагаватам", loc: "Песнь "+m[1]+", глава "+m[2], to: "/book/sb/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Шримад-Бхагаватам", loc: "Песнь "+m[1]+", глава "+m[2], to: "/books/sb/"+m[1]+"/"+head(m[2]) };
   // Бхагавад-гита (глава.стих[-стих])
   m = r.match(/^(?:БГ|Бхагавад-гита)\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Бхагавад-гита как она есть", loc: "глава "+m[1]+", "+vw(m[2]), to: "/book/bg/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Бхагавад-гита как она есть", loc: "глава "+m[1]+", "+vw(m[2]), to: "/books/bg/"+m[1]+"/"+head(m[2]) };
   // Чайтанья-чаритамрита — 3 части (book / lila / loc); диапазоны и алиас «Ч.-ч.»
   // (запятая после кода допускается: «Ч.-ч., Мадхья 8.57» нормализуется в рендере).
   m = r.match(/^(?:ЧЧ|Ч\.-?ч\.|Чайтанья-чаритамрита),?\s+(Ади|Мадхья|Антья)\s+(\d+(?:[-–—]\d+)?)(?:\.(\d+(?:[-–—]\d+)?))?$/);
   if (m) {
     const slug = m[1] === "Ади" ? "adi" : m[1] === "Мадхья" ? "madhya" : "antya";
     const loc = m[3] ? "глава "+m[2]+", "+vw(m[3]) : "глава "+m[2];
-    const to  = m[3] ? "/book/cc/"+slug+"/"+head(m[2])+"/"+head(m[3]) : "/book/cc/"+slug+"/"+head(m[2]);
+    const to  = m[3] ? "/books/cc/"+slug+"/"+head(m[2])+"/"+head(m[3]) : "/books/cc/"+slug+"/"+head(m[2]);
     return { book: "Шри Чайтанья-чаритамрита", lila: m[1]+"-лила", loc, to };
   }
   // Бхакти-расамрита-синдху (оригинальная нумерация раздел.волна.стих) —
@@ -252,18 +252,18 @@ function expandRef(ref: string): RefParts {
   m = r.match(/^(?:НП|Нектар преданности)\s+(\d+)(?:\.(\d+(?:[-–—]\d+)?))?$/);
   if (m) {
     const loc = m[2] ? "глава "+m[1]+", "+vw(m[2]) : "глава "+m[1];
-    const to  = m[2] ? "/book/brs/"+m[1]+"/"+head(m[2]) : "/book/brs/"+m[1];
+    const to  = m[2] ? "/books/brs/"+m[1]+"/"+head(m[2]) : "/books/brs/"+m[1];
     return { book: "Нектар преданности", loc, to };
   }
   // Брахма-самхита (глава.стих) — deep-link в читалку
   m = r.match(/^Брахма-самхита\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Брахма-самхита", loc: "глава "+m[1]+", "+vw(m[2]), to: "/book/bs/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Брахма-самхита", loc: "глава "+m[1]+", "+vw(m[2]), to: "/books/bs/"+m[1]+"/"+head(m[2]) };
   // Вишну-пурана (книга.глава.стих) — иерархический deep-link
   m = r.match(/^Вишну-пурана\s+(\d+)\.(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Вишну-пурана", loc: "Книга "+m[1]+", глава "+m[2]+", "+vw(m[3]), to: "/book/vp/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
+  if (m) return { book: "Вишну-пурана", loc: "Книга "+m[1]+", глава "+m[2]+", "+vw(m[3]), to: "/books/vp/"+m[1]+"/"+m[2]+"/"+head(m[3]) };
   // Кришна-сандарбха (ануччхеда N) — deep-link (плоская книга, глава 1)
   m = r.match(/^Кришна-сандарбха\s+(\d+)$/);
-  if (m) return { book: "Кришна-сандарбха", loc: "Ануччхеда " + m[1], to: "/book/ks/1/"+m[1] };
+  if (m) return { book: "Кришна-сандарбха", loc: "Ануччхеда " + m[1], to: "/books/ks/1/"+m[1] };
   m = r.match(/^Кришна-сандарбха\s+(.+)$/);
   if (m) return { book: "Кришна-сандарбха", loc: "Ануччхеда " + m[1].replace(/^ануч[.\s]*/i, "") };
   // Лагху-бхагаватамрита
@@ -271,7 +271,7 @@ function expandRef(ref: string): RefParts {
   if (m) return { book: "Лагху-бхагаватамрита", loc: m[1] };
   // Говинда-лиламрита (глава.стих) — deep-link; голый «Говинда-лиламрита» без номера остаётся академическим
   m = r.match(/^Говинда-лиламрита\s+(\d+)\.(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Говинда-лиламрита", loc: "глава "+m[1]+", "+vw(m[2]), to: "/book/gl/"+m[1]+"/"+head(m[2]) };
+  if (m) return { book: "Говинда-лиламрита", loc: "глава "+m[1]+", "+vw(m[2]), to: "/books/gl/"+m[1]+"/"+head(m[2]) };
   m = r.match(/^Говинда-лиламрита(?:\s+(.+))?$/);
   if (m) return { book: "Говинда-лиламрита", loc: m[1] };
   // Гита-говинда
@@ -279,7 +279,7 @@ function expandRef(ref: string): RefParts {
   if (m) return { book: "Гита-говинда", loc: m[1] };
   // Упадешамрита (Нектар наставлений, work noi — одна глава из 11 стихов): deep-link
   m = r.match(/^Упадешамрита\s+(\d+(?:[-–—]\d+)?)$/);
-  if (m) return { book: "Упадешамрита", loc: vw(m[1]), to: "/book/noi/1/"+head(m[1]) };
+  if (m) return { book: "Упадешамрита", loc: vw(m[1]), to: "/books/noi/1/"+head(m[1]) };
   // Универсальный academic-fallback: «Название X.Y.Z» → {book, loc} без deep-link.
   // Покрывает Вишну-пурану, Упадешамриту, Падма-пурану (с номером) и т.п.,
   // чтобы они рендерились академически, а не сырой строкой.
@@ -694,21 +694,21 @@ const KIND_ORDER = ["work", "dhama", "tirtha", "dish", "kirtan", "bhajan", "temp
  * Слаги отличались (`volna-2` в досье vs `2-volna` в витрине) — мост переводит.
  */
 const BRIDGE_WAVE: Record<string, string> = {
-  "volna-1": "/dhana/gauranga-lila/1-volna",
-  "volna-2": "/dhana/gauranga-lila/2-volna",
-  "volna-3": "/dhana/gauranga-lila/3-volna",
-  "volna-4": "/dhana/gauranga-lila/4-volna",
-  "volna-5": "/dhana/gauranga-lila/5-volna",
-  "volna-iskcon": "/dhana/gauranga-lila/bespretsedentnaya",
-  "volny": "/dhana/gauranga-lila",
+  "volna-1": "/lichnosti/gauranga-lila/1-volna",
+  "volna-2": "/lichnosti/gauranga-lila/2-volna",
+  "volna-3": "/lichnosti/gauranga-lila/3-volna",
+  "volna-4": "/lichnosti/gauranga-lila/4-volna",
+  "volna-5": "/lichnosti/gauranga-lila/5-volna",
+  "volna-iskcon": "/lichnosti/gauranga-lila/bespretsedentnaya",
+  "volny": "/lichnosti/gauranga-lila",
 };
 const BRIDGE_RASA: Record<string, string> = {
-  shanta: "/dhana/krishna-lila/shanta",
-  dasya: "/dhana/krishna-lila/dasya",
-  sakhya: "/dhana/krishna-lila/sakhya",
-  vatsalya: "/dhana/krishna-lila/vatsalya",
-  madhurya: "/dhana/krishna-lila/madhurya",
-  "pyat-ras": "/dhana/krishna-lila",
+  shanta: "/lichnosti/krishna-lila/shanta",
+  dasya: "/lichnosti/krishna-lila/dasya",
+  sakhya: "/lichnosti/krishna-lila/sakhya",
+  vatsalya: "/lichnosti/krishna-lila/vatsalya",
+  madhurya: "/lichnosti/krishna-lila/madhurya",
+  "pyat-ras": "/lichnosti/krishna-lila",
 };
 
 /** Ссылка «Смотреть всех» из суб-таба досье в витрину Личностей. */
@@ -736,12 +736,12 @@ function BridgeLink({ href, label, onNavigate }: { href: string; label: string; 
 
 function kindHref(kind: string, ref: string): string | null {
   switch (kind) {
-    case "dish": return "/prasadam/recipe/" + ref;
+    case "dish": return "/prasad/recipe/" + ref;
     case "dhama": return "/dhama/" + ref;
     case "tirtha": return "/dhama/" + ref;   // ref = "<dhamaId>/<tirthaId>"
-    case "kirtan": return "/kirtan/" + ref;  // ref = слаг исполнителя
+    case "kirtan": return "/kirtans/" + ref;  // ref = слаг исполнителя
     case "bhajan": return ref;               // ref = полный слаг бхаджана (/ru/bhajans/...)
-    case "work":   return "/book/" + ref;    // ref = id произведения (bg, sb, cc…) → читалка
+    case "work":   return "/books/" + ref;    // ref = id произведения (bg, sb, cc…) → читалка
     default: return null; // остальные виды получат маршруты по мере ввода рефов
   }
 }
@@ -1516,7 +1516,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                       <Eyebrow count={centers.length}>Центры</Eyebrow>
                       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                         {centers.map((c) => (
-                          <button key={c.id} type="button" onClick={onNavigate ? () => onNavigate(`/center/${c.slug}`) : undefined}
+                          <button key={c.id} type="button" onClick={onNavigate ? () => onNavigate(`/iskcon/centers/${c.slug}`) : undefined}
                             style={{ textAlign: "left", display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "inherit", font: "inherit", width: "100%" }}>
                             <span style={{ minWidth: 0, flex: 1 }}>
                               <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>{c.name}</span>

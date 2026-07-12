@@ -206,7 +206,7 @@ export default function CenterEditor({
         .create(input)
         .then((r) => {
           flash?.("Центр создан — это черновик");
-          onOpenPath(`/center/${r.slug}`);
+          onOpenPath(`/iskcon/centers/${r.slug}`);
         })
         .catch((e: { code?: string }) => setErr(e?.code || "error"))
         .finally(() => setSaving(false));

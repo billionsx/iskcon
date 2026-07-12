@@ -284,7 +284,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         cover: cfg.cover,
         album: bookRef.current, // машинный id книги/альбома — для «продолжить слушать»
         artist: isK ? (t.artist || cfg.artist || null) : null,
-        href: isK ? null : `/book/${bookRef.current}`,
+        href: isK ? null : `/books/${bookRef.current}`,
         durationSec: t.durationSec ?? null,
         positionSec: 0,
       });

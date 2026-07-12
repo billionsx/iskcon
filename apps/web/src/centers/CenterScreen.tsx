@@ -343,9 +343,9 @@ export default function CenterScreen({
     if (id === "share") onShare();
     else if (id === "qr") setQr(true);
     else if (id === "route" && mapsHref) { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }
-    else if (id === "note") requestNote({ kind: "centre", ref: c.id, title: c.name, subtitle: place || CENTER_TYPE_LABEL[c.type], href: `/center/${slug}` });
-    else if (id === "edit") onOpenPath(`/center/${slug}/edit`);
-    else if (id === "schedule") onOpenPath(`/center/${slug}/schedule`);
+    else if (id === "note") requestNote({ kind: "centre", ref: c.id, title: c.name, subtitle: place || CENTER_TYPE_LABEL[c.type], href: `/iskcon/centers/${slug}` });
+    else if (id === "edit") onOpenPath(`/iskcon/centers/${slug}/edit`);
+    else if (id === "schedule") onOpenPath(`/iskcon/centers/${slug}/schedule`);
     else if (id === "report") flash?.("Спасибо! Передадим команде ИСККОН.");
   };
 
@@ -379,11 +379,11 @@ export default function CenterScreen({
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
               {[
-                { icon: <Pencil size={16} />, label: "Профиль", to: `/center/${slug}/edit` },
-                { icon: <ImageG size={16} />, label: "Фото", to: `/center/${slug}/photos` },
-                { icon: <ClockG size={16} />, label: "Расписание", to: `/center/${slug}/schedule` },
-                { icon: <LotusG size={16} />, label: "Божества", to: `/center/${slug}/deities` },
-                { icon: <CalG size={16} />, label: "События", to: `/center/${slug}/events` },
+                { icon: <Pencil size={16} />, label: "Профиль", to: `/iskcon/centers/${slug}/edit` },
+                { icon: <ImageG size={16} />, label: "Фото", to: `/iskcon/centers/${slug}/photos` },
+                { icon: <ClockG size={16} />, label: "Расписание", to: `/iskcon/centers/${slug}/schedule` },
+                { icon: <LotusG size={16} />, label: "Божества", to: `/iskcon/centers/${slug}/deities` },
+                { icon: <CalG size={16} />, label: "События", to: `/iskcon/centers/${slug}/events` },
               ].map((m) => (
                 <button key={m.label} type="button" onClick={() => onOpenPath(m.to)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "11px 0", borderRadius: 12, border: "none", background: FILL2, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                   {m.icon}{m.label}
@@ -455,7 +455,7 @@ export default function CenterScreen({
           <Section title="Расписание">
             <div style={{ ...card, textAlign: "center" }}>
               <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3 }}>Расписание программ пока не заполнено.</div>
-              <button type="button" onClick={() => onOpenPath(`/center/${slug}/schedule`)} style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 11, border: "none", background: FILL2, color: GOLDT, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+              <button type="button" onClick={() => onOpenPath(`/iskcon/centers/${slug}/schedule`)} style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6, padding: "9px 18px", borderRadius: 11, border: "none", background: FILL2, color: GOLDT, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 <ClockG size={15} />Заполнить расписание
               </button>
             </div>
