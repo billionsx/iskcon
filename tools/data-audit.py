@@ -167,13 +167,13 @@ CHECKS = [
         # есть Говинда-гхат в трёх местах и Дауджи-мандир в трёх. Поэтому сверяем
         # ТОЛЬКО внутри кластера.
         #
-        # ХРАПОВИК: 10 таких пар на 12.07.2026. Слияние требует суждения (у какой
-        # записи лучше контент?) — машинно не решается. Гейт держит долг от РОСТА.
-        "sql": """SELECT MAX(0, COUNT(*) - 10) AS n FROM tirthas a JOIN tirthas b
+        # ДОЛГ ЗАКРЫТ 12.07.2026: все 12 дублей слиты (курируемая запись выжила,
+        # скрейп отдал ей свой текст и был удалён). Храповик снят — теперь НОЛЬ.
+        "sql": """SELECT COUNT(*) AS n FROM tirthas a JOIN tirthas b
                   ON a.cluster = b.cluster AND a.dhama_id = b.dhama_id AND a.id < b.id
                   AND lower(replace(replace(replace(a.name,'-',''),' ',''),'а','')) =
                       lower(replace(replace(replace(b.name,'-',''),' ',''),'а',''))""",
-        "hint": "→ одно место — одна запись. Долг 10 пар, храповик: рост запрещён (ЗКН-Р007)",
+        "hint": "→ одно место — одна запись (ЗКН-Р007). Долг закрыт: было 12 дублей, стало 0",
     },
     {
         "law": "ЗКН-БТ007",
@@ -193,6 +193,17 @@ CHECKS = [
                      OR instr(COALESCE(blurb,'') || COALESCE(about,''), 'отфоткать') > 0
                      OR instr(COALESCE(blurb,'') || COALESCE(about,''), 'Надо перепроверить') > 0""",
         "hint": "→ описание — это ОПИСАНИЕ. Источник в поле source, заметки редактора — не в проде (ЗКН-БТ007)",
+    },
+    {
+        "law": "ЗКН-Р008",
+        "name": "МУСОРНЫЙ id (он попадает в адрес)",
+        # Из CMS-импорта утекли: `trashed` (артефакт корзины!), `gokula-7264`,
+        # `akrura-bhavan-6002` — числовые хвосты. Человек видел /dhama/vrindavan/trashed.
+        "sql": """SELECT COUNT(*) AS n FROM tirthas
+                  WHERE id GLOB '*-[0-9][0-9][0-9]*'
+                     OR id IN ('trashed','draft','untitled','new','test','revision')
+                     OR id GLOB '[0-9]*'""",
+        "hint": "→ слаг отражает СМЫСЛ: «Джугал-кунда» → jugal-kunda, а не trashed (ЗКН-Н008/Р008)",
     },
     {
         "law": "ЗКН-Н008",
