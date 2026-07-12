@@ -68,6 +68,10 @@ def actual_level(lid: str) -> tuple[int, str]:
     if lid == "ЗКН-Ц004":
         return 5, "гейт в laws-audit.py"
 
+    # Гейты, живущие в отдельных инструментах.
+    if lid in ("ЗКН-Н025", "ЗКН-Н026") and (ROOT / "tools" / "url-audit.py").exists():
+        return 5, "гейт адресов (url-audit.py)"
+
     for gate, how in (("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек"),
                       ("infra-audit.py", "гейт инфраструктуры"),
                       ("product-audit.py", "гейт продукта/книг"),
