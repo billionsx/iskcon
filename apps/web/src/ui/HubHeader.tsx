@@ -67,4 +67,4 @@ export function HubHeader({ eyebrow, title, subtitle, action }: {
  * Расстояние от нижнего меню (Tier-1) до надписи золотом — ЕДИНОЕ.
  * Витрина оборачивается этим отступом, а не выдумывает свой.
  */
-export const HUB_TOP = 20;
+export const HUB_TOP = 28;   // эталон — как в Бхаджанах

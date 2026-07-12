@@ -396,13 +396,12 @@ function CookbookInline({ onOpenChapter, onOpenRecipe, flash }: {
 }) {
   void onOpenRecipe; void flash;
   return (
-    <div style={{ marginTop: 16 }}>
-      <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.025em", color: "var(--color-label)" }}>
-        Кухня прасада
-      </h1>
-      <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.5 }}>
-        {COOKBOOK.subtitle}
-      </p>
+    <div>
+      <HubHeader
+        eyebrow="Кухня прасада"
+        title="Прасад"
+        subtitle="Пища, предложенная Господу, — милость. Как готовить, предлагать и вкушать"
+      />
       <div style={{ marginTop: 18 }}>
         {COOKBOOK.chapters.map((ch) => (
           <button key={ch.id} type="button" onClick={() => onOpenChapter(ch.id)}

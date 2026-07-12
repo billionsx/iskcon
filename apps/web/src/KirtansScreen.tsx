@@ -62,7 +62,7 @@ function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }
         <span style={{ position: "absolute", left: 10, top: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.01em" }}>{TYPE_LABEL[album.type]}</span>
       </div>
       <div style={{ marginTop: 9, fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
-      <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
+      <div style={{  fontSize: "var(--text-footnote)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
     </button>
   );
 }

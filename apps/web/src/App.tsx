@@ -44,6 +44,7 @@ import { api } from "./api";
 import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
 import { ROUTES, url, canonicalPath, ROOTS } from "./routes";
+import { HUB_TOP } from "./ui/HubHeader";
 
 /* ═════════ ICONS — иконки приложения ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -605,6 +606,15 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
       {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
       <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
         items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "prasad", label: "Прасад" }, { id: "dhama", label: "Дхама" }]} />
+
+      {/* ЗКН-Н024 — РАССТОЯНИЕ ОТ МЕНЮ ДО НАДПИСИ: ЕДИНОЕ, ОДИН РАЗ, В ЗАЛЕ.
+       *
+       * Витрины ставили отступ каждая по-своему: Бхаджаны 28, остальные — НИКАК,
+       * и шапка липла к меню. Переключаешь вкладку — текст прыгает.
+       *
+       * Отступ живёт ЗДЕСЬ, а не в витринах: пока каждая ставит свой, любая
+       * договорённость разъедется снова. Витрина об отступе не знает. */}
+      <div style={{ marginTop: HUB_TOP }}>
       {/* ЗКН-Н007 — «ГЕРОИ» ТОЛЬКО НА ПЕРВОМ ЭКРАНЕ.
           /dhana        → «Герои»: выбор царства (Прабхупада · Кришна Лила · Гауранга Лила · Бхагаватам)
           /dhana/<что-угодно-глубже> → четырёхуровневое меню Личностей со ВСЕМИ 730.
@@ -629,6 +639,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
       )}
       {sub === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
       {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+      </div>
     </div>
   );
 }
