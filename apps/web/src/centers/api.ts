@@ -274,7 +274,7 @@ export const centersClient = {
     request<{ items: EntityCenterHit[] }>("GET", `/centers${qs({ entity: entityId })}`),
   /** Создать центр → 'draft', текущий пользователь становится админом. */
   create: (input: CenterCreateInput) =>
-    request<{ id: string; slug: string; status: CenterStatus }>("POST", "/centers", input),
+    request<{ id: string; slug: string; status: CenterStatus }>("POST", "/iskcon/centers", input),
   /** Правка центра по id (поля + смена статуса). */
   update: (id: string, patch: CenterPatch) =>
     request<{ id: string; updated: boolean }>("PATCH", `/centers/${encodeURIComponent(id)}`, patch),

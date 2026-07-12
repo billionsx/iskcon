@@ -95,7 +95,7 @@ const RECIPE_DOCS: Doc[] = RECIPES.map((r) => ({
   subtitle: r.subtitle,
   titleFold: fold(r.title),
   hay: mkHay(r.title, r.sanskrit, r.subtitle, CAT_LABEL[r.category], r.region, r.diets.map((d) => DIET_LABEL[d]).join(" ")),
-  nav: { kind: "path", href: "/prasad/recipe/" + r.slug },
+  nav: { kind: "path", href: "/prasad/" + r.slug },
 }));
 
 /* ─────────────────────────── киртан-исполнители ──────────────────────────── */
@@ -117,12 +117,12 @@ const KIRTAN_DOCS: Doc[] = KIRTAN_ARTISTS.map((a) => ({
 interface Tool { id: string; title: string; subtitle: string; keywords: string; href: string }
 const TOOLS: Tool[] = [
   { id: "calendar", title: "Календарь", subtitle: "Вайшнавский календарь", keywords: "экадаши праздники посты дни ачарьев гаурабда панчанга", href: "/calendar" },
-  { id: "japa", title: "Джапа", subtitle: "Счётчик кругов", keywords: "мала чётки мантра харе кришна джапа-медитация круги", href: "/practice/japa" },
-  { id: "diary", title: "Дневник садханы", subtitle: "Практика по дням", keywords: "отчёт привычки трекер дисциплина дневник", href: "/practice/diary" },
-  { id: "vow", title: "Обет", subtitle: "Зарок и тапасья", keywords: "врата пост тапасья зарок дисциплина обещание", href: "/practice/vow" },
-  { id: "darshan", title: "Даршан", subtitle: "Божества храмов", keywords: "алтарь божества вриндаван маяпур фото мурти изображения", href: "/practice/darshan" },
-  { id: "verse", title: "Стих дня", subtitle: "Ежедневный стих", keywords: "стих дня бхагавад-гита шлока ежедневный", href: "/practice/verse" },
-  { id: "progress", title: "Мой прогресс", subtitle: "Статистика практики", keywords: "прогресс статистика достижения кругов джапа", href: "/practice/progress" },
+  { id: "japa", title: "Джапа", subtitle: "Счётчик кругов", keywords: "мала чётки мантра харе кришна джапа-медитация круги", href: "/japa" },
+  { id: "diary", title: "Дневник садханы", subtitle: "Практика по дням", keywords: "отчёт привычки трекер дисциплина дневник", href: "/story" },
+  { id: "vow", title: "Обет", subtitle: "Зарок и тапасья", keywords: "врата пост тапасья зарок дисциплина обещание", href: "/promise" },
+  { id: "darshan", title: "Даршан", subtitle: "Божества храмов", keywords: "алтарь божества вриндаван маяпур фото мурти изображения", href: "/darshan" },
+  { id: "verse", title: "Стих дня", subtitle: "Ежедневный стих", keywords: "стих дня бхагавад-гита шлока ежедневный", href: "/verse" },
+  { id: "progress", title: "Мой прогресс", subtitle: "Статистика практики", keywords: "прогресс статистика достижения кругов джапа", href: "/progress" },
   { id: "notes", title: "Заметки", subtitle: "Личные записи", keywords: "заметки записи конспекты мысли закладки текста", href: "/notes" },
   { id: "favorites", title: "Избранное", subtitle: "Сохранённое", keywords: "избранное закладки сохранённое любимое", href: "/favorites" },
   { id: "prasadam", title: "Прасадам", subtitle: "Рецепты и кухня", keywords: "рецепты кухня вегетарианская еда готовка прасад блюда", href: "/prasad" },
@@ -130,7 +130,7 @@ const TOOLS: Tool[] = [
   { id: "offering", title: "Подношение Божеству", subtitle: "Бхога и молитвы", keywords: "подношение бхога оффер молитвы предложение пищи", href: "/prasad/offering" },
   { id: "shop", title: "Магазин", subtitle: "Книги, атрибуты, пожертвования", keywords: "магазин корзина купить заказ книги bbt мала чётки благовония пожертвование донат", href: "/cart" },
   { id: "dhama", title: "Святые дхамы", subtitle: "Вриндаван · Навадвипа · Пури", keywords: "дхама тиртхи паломничество вриндаван навадвипа пури места", href: "/dhama" },
-  { id: "centers", title: "Центры ИСККОН", subtitle: "Храмы и общины", keywords: "центры храмы ятры общины найти центр сообщество", href: "/centers" },
+  { id: "centers", title: "Центры ИСККОН", subtitle: "Храмы и общины", keywords: "центры храмы ятры общины найти центр сообщество", href: "/iskcon/centers" },
   { id: "books", title: "Книги", subtitle: "Библиотека писаний", keywords: "книги библиотека писания бхагавад-гита шримад-бхагаватам чайтанья-чаритамрита", href: "/books" },
   { id: "kirtans", title: "Аудио · Киртаны", subtitle: "Бхаджаны и мантры", keywords: "аудио киртаны бхаджаны музыка мантры слушать плеер", href: "/kirtans" },
 ];

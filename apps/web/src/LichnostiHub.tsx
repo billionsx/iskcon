@@ -46,24 +46,108 @@ const SUBSUBS: Record<string, [string, string][]> = {
   ],
 };
 
-const LILA_SLUG: Record<string, string> = { "lila-gauranga": "gauranga-lila", "lila-krishna": "krishna-lila", "lila-bhagavatam": "shrimad-bhagavatam", "lila-other": "drugie" };
-const SUB_SLUG: Record<string, string> = { "wave-1": "1-volna", "wave-2": "2-volna", "wave-3": "3-volna", "wave-4": "4-volna", "wave-5": "5-volna", "wave-iskcon": "bespretsedentnaya", "wave-sampradaya": "acharyi-sampradaya", "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya", "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya", "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata", "bhag-avatara": "avatary", "bhag-devata": "polubogi", "bhag-rishi": "mudretsy", "bhag-bhakta": "tsari-predannye", "bhag-asura": "demony" };
-const SLUG_LILA: Record<string, string> = Object.fromEntries(Object.entries(LILA_SLUG).map(([k, v]) => [v, k]));
-const SLUG_SUB: Record<string, string> = Object.fromEntries(Object.entries(SUB_SLUG).map(([k, v]) => [v, k]));
-const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nilachala": "nilachala", "w1-vrindavana": "vrindavan", "w1-shrikhanda": "shri-khanda", "w1-kulinagrama": "kulina-grama", "w1-nityananda": "svita-nityanandy", "w1-korni": "korni", "w1-goswami": "shest-gosvami", "w2-acharyas": "tri-acharyi", "w2-parivara": "ucheniki-sputniki", "ws-madhva": "brahma-madhva", "ws-shri": "shri-sampradaya", "ws-kumara": "kumara-sampradaya", "ws-rudra": "rudra-sampradaya", "ws-rishi": "mudretsy", "wi-founders": "prabhupada-osnovateli", "wi-guru": "iniciiruyushchie-guru", "wi-lilamrita": "prabhupada-lilamrita", "wi-mission": "missiya-iskcon" };
-const SLUG_SUBSUB: Record<string, string> = Object.fromEntries(Object.entries(SUBSUB_SLUG).map(([k, v]) => [v, k]));
+/* ЗКН-Н023 — АДРЕСА ЛИЧНОСТЕЙ (схема основателя).
+ *
+ * Лила — в КОРНЕ, если её имя не занято книгой:
+ *   /gauranga-lila                 Гауранга Лила
+ *   /gauranga-lila/first-wave      волна
+ *   /pancha-tattva                 кластер — В КОРНЕ (известное имя)
+ *   /krishna-lila                  Кришна Лила
+ *   /krishna-lila/madhurya         раса
+ *
+ * Лила под /hero, если имя ЗАНЯТО КНИГОЙ:
+ *   /hero/shrimad-bhagavatam       ← `/shrimad-bhagavatam` это КНИГА
+ *   /hero/mahabharata              ← и это книга
+ *   /hero/ramayana                 ← и это
+ *   /avatars                       кластер — в корне (имя свободно)
+ */
+const LILA_SLUG: Record<string, string> = {
+  "lila-gauranga": "gauranga-lila",
+  "lila-krishna": "krishna-lila",
+  "lila-bhagavatam": "hero/shrimad-bhagavatam",
+  "lila-other": "hero/drugie",
+};
+
+const SUB_SLUG: Record<string, string> = {
+  "wave-1": "first-wave", "wave-2": "second-wave", "wave-3": "third-wave",
+  "wave-4": "fourth-wave", "wave-5": "fifth-wave",
+  "wave-iskcon": "unprecedented-wave", "wave-sampradaya": "sampradaya-acharyas",
+  "rasa:shanta": "shanta", "rasa:dasya": "dasya", "rasa:sakhya": "sakhya",
+  "rasa:vatsalya": "vatsalya", "rasa:madhurya": "madhurya",
+  "bhag-avatara": "avatars", "bhag-rishi": "rishis", "bhag-bhakta": "bhaktas",
+  "bhag-deva": "devas", "bhag-asura": "asuras",
+  "bhag-ramayana": "ramayana", "bhag-mahabharata": "mahabharata",
+};
+
+/* Кластеры, чьё имя известно само по себе — живут в КОРНЕ (решение основателя). */
+const ROOT_SUBS: Record<string, string> = {
+  "bhag-avatara": "avatars",
+  "bhag-ramayana": "hero/ramayana",
+  "bhag-mahabharata": "hero/mahabharata",
+};
+
+const SLUG_LILA: Record<string, string> = Object.fromEntries(
+  Object.entries(LILA_SLUG).map(([k, v]) => [v, k]));
+const SLUG_SUB: Record<string, string> = Object.fromEntries(
+  Object.entries(SUB_SLUG).map(([k, v]) => [v, k]));
+
+const SUBSUB_SLUG: Record<string, string> = { "w1-pancha": "pancha-tattva", "w1-navadvipa": "navadvipa", "w1-nityananda": "nityananda", "w1-advaita": "advaita" };
+const SLUG_SUBSUB: Record<string, string> = Object.fromEntries(
+  Object.entries(SUBSUB_SLUG).map(([k, v]) => [v, k]));
+
+/* Кластеры первой волны — тоже в корне: /pancha-tattva (решение основателя). */
+/* В корень — ТОЛЬКО `pancha-tattva`: `navadvipa`, `nityananda`, `advaita`
+ * заняты личностями (Нитьянанда Прабху, Адвайта Ачарья) и дхамой. */
+const ROOT_GROUPS = new Set(["pancha-tattva"]);
 
 function readUrl(): { lila: string; sub: string; grp: string } {
-  const parts = (typeof window !== "undefined" ? window.location.pathname : "/").split("/").filter(Boolean);
-  if (parts[0] === "dhana" && parts[1] && SLUG_LILA[parts[1]]) {
-    const l = SLUG_LILA[parts[1]];
-    // ЗКН-Н009: нет волны в адресе → «Все», а НЕ первая волна.
-    const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : "";
-    const g = parts[3] && SLUG_SUBSUB[parts[3]] && SUBSUBS[s] ? SLUG_SUBSUB[parts[3]] : "";
+  const path = typeof window !== "undefined" ? window.location.pathname : "/";
+  const parts = path.split("/").filter(Boolean);
+  if (!parts.length) return { lila: "lila-gauranga", sub: "", grp: "" };
+
+  /* 1) Кластер В КОРНЕ: /pancha-tattva, /avatars */
+  if (ROOT_GROUPS.has(parts[0])) {
+    const g = SLUG_SUBSUB[parts[0]];
+    return { lila: "lila-gauranga", sub: "wave-1", grp: g };
+  }
+  if (parts[0] === "avatars") return { lila: "lila-bhagavatam", sub: "bhag-avatara", grp: "" };
+
+  /* 2) Лила В КОРНЕ: /gauranga-lila/first-wave/pancha-tattva */
+  if (SLUG_LILA[parts[0]]) {
+    const l = SLUG_LILA[parts[0]];
+    const s = parts[1] && SLUG_SUB[parts[1]] ? SLUG_SUB[parts[1]] : "";
+    const g = parts[2] && SLUG_SUBSUB[parts[2]] && SUBSUBS[s] ? SLUG_SUBSUB[parts[2]] : "";
     return { lila: l, sub: s, grp: g };
   }
-  // ЗКН-Н009: вход на /dhana без фильтров → Гауранга Лила + «Все» (не первая волна!)
+
+  /* 3) Лила ПОД /hero: /hero/shrimad-bhagavatam, /hero/mahabharata */
+  if (parts[0] === "hero") {
+    if (!parts[1]) return { lila: "lila-gauranga", sub: "", grp: "" };
+    const two = "hero/" + parts[1];
+    if (SLUG_LILA[two]) {
+      const l = SLUG_LILA[two];
+      const s = parts[2] && SLUG_SUB[parts[2]] ? SLUG_SUB[parts[2]] : "";
+      return { lila: l, sub: s, grp: "" };
+    }
+    // /hero/mahabharata · /hero/ramayana — кластер Бхагаватам напрямую
+    const sub = SLUG_SUB[parts[1]];
+    if (sub) return { lila: "lila-bhagavatam", sub, grp: "" };
+  }
+
+  // ЗКН-Н009: вход без фильтров → Гауранга Лила + «Все» (не первая волна!)
   return { lila: "lila-gauranga", sub: "", grp: "" };
+}
+
+/** Адрес для выбранного среза. Обратная сторона readUrl. */
+function writeUrl(lila: string, sub: string, grp: string): string | null {
+  // кластер в корне
+  if (grp && SUBSUB_SLUG[grp]) return "/" + SUBSUB_SLUG[grp];
+  if (sub && ROOT_SUBS[sub]) return "/" + ROOT_SUBS[sub];
+
+  const lslug = LILA_SLUG[lila];
+  if (!lslug) return null;
+  const sslug = sub ? SUB_SLUG[sub] : "";
+  return "/" + lslug + (sslug ? "/" + sslug : "");
 }
 
 function entityCtx(p: Person) {
@@ -150,11 +234,8 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   }, []);
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const lslug = LILA_SLUG[lila];
-    if (!lslug) return;
-    const sslug = subSel ? SUB_SLUG[subSel] : "";
-    const gslug = grpSel && SUBSUBS[subSel] ? SUBSUB_SLUG[grpSel] : "";
-    const path = "/lichnosti/" + lslug + (sslug ? "/" + sslug : "") + (sslug && gslug ? "/" + gslug : "");
+    const path = writeUrl(lila, subSel, grpSel && SUBSUBS[subSel] ? grpSel : "");
+    if (!path) return;
     if (window.location.pathname !== path) {
       replaceUrl(path);   // ЗКН-Н001: историю пишет только nav.ts
     }

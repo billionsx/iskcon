@@ -267,7 +267,7 @@ export async function runNotifications(env: DB): Promise<void> {
     const planned: { cat: string; title: string; body: string; url: string }[] = [];
 
     if (u.cats.verse && hour === 8) {
-      planned.push({ cat: "verse", title: "Стих дня", body: "Начните день со священного слова — откройте стих дня.", url: "/practice/verse" });
+      planned.push({ cat: "verse", title: "Стих дня", body: "Начните день со священного слова — откройте стих дня.", url: "/verse" });
     }
     if (u.cats.ekadashi && hour === 18) {
       const ek = await env.DB.prepare(
@@ -296,7 +296,7 @@ export async function runNotifications(env: DB): Promise<void> {
       ]);
       const tn = todayR?.n ?? 0, yn = yestR?.n ?? 0;
       if (tn < goal && yn >= goal) {
-        planned.push({ cat: "streak", title: "Серия под угрозой", body: `Сегодня закрыто ${tn} из ${goal} кругов — не прерывайте практику.`, url: "/practice/japa" });
+        planned.push({ cat: "streak", title: "Серия под угрозой", body: `Сегодня закрыто ${tn} из ${goal} кругов — не прерывайте практику.`, url: "/japa" });
       }
     }
 

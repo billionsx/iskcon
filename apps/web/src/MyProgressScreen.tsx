@@ -120,7 +120,7 @@ export default function MyProgressScreen({ onBack, onOpen }: { onBack: () => voi
               <div style={{ marginTop: 2, fontFamily: FT, fontSize: "var(--text-footnote)", lineHeight: 1.4, color: L2 }}>
                 {plan ? (corpusRead > 0 ? `Сейчас: ${plan.workName}` : "Стих за стихом: БГ → ШБ → ЧЧ") : "стихов прочитано"}
               </div>
-              <button type="button" onClick={() => onOpen("/practice/verse")}
+              <button type="button" onClick={() => onOpen("/verse")}
                 style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 7, height: 38, padding: "0 14px", borderRadius: 11, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                 {corpusRead > 0 ? "Продолжить" : "Начать"} <ArrowR />
               </button>
