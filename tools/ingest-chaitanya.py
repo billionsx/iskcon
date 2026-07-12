@@ -424,22 +424,28 @@ def load(vs, titles=None):
        "VALUES ('cb-ru','cb','ru','Шри Чайтанья-бхагавата',"
        "'Комментарии Шрилы Бхактисиддханты Сарасвати','«Шри Гаурамрита»')")
 
-    # 2) разделы: кханда → главы (с названиями из оглавления)
-    for kh, titles in CHAPTERS.items():
+    # 2) разделы: кханда → главы.
+    #    Ади — названия из оглавления; Мадхья и Антья — из МАРКЕРОВ КОНЦА
+    #    («Так заканчивается двадцать восьмая глава … — "Господь принимает санньясу"»).
+    KH_ALL = {"adi": "Ади-кханда", "madhya": "Мадхья-кханда", "antya": "Антья-кханда"}
+    for i, kh in enumerate(("adi", "madhya", "antya"), 1):
         d1("INSERT OR REPLACE INTO divisions (id, work_id, parent_id, level, number, title, ordinal) "
            "VALUES (?,'cb',NULL,'division',?,?,?)",
-           ["cb." + kh, kh, json.dumps({"ru": KH_TITLE[kh]}, ensure_ascii=False),
-            str(1 if kh == "adi" else 3)])
-        for i, t in enumerate(titles, 1):
+           ["cb." + kh, kh, json.dumps({"ru": KH_ALL[kh]}, ensure_ascii=False), str(i)])
+
+    n_ch = 0
+    for kh, count in (("adi", 17), ("madhya", 28), ("antya", 10)):
+        for i in range(1, count + 1):
+            t = titles.get((kh, i))
+            if not t and kh == "adi" and i <= len(CHAPTERS["adi"]):
+                t = CHAPTERS["adi"][i - 1]
             d1("INSERT OR REPLACE INTO divisions (id, work_id, parent_id, level, number, title, ordinal) "
                "VALUES (?,'cb',?,'chapter',?,?,?)",
                ["cb.%s.%d" % (kh, i), "cb." + kh, str(i),
-                json.dumps({"ru": t}, ensure_ascii=False), str(i)])
-    print("издание и %d разделов записаны" % (2 + sum(len(t) for t in CHAPTERS.values())))
+                json.dumps({"ru": t or "Глава %d" % i}, ensure_ascii=False), str(i)])
+            n_ch += 1
+    print("разделов записано: %d (глав: %d)" % (3 + n_ch, n_ch))
 
-    # ⚠️ ЛИМИТ D1: «too many SQL variables». У verses 6 полей на стих,
-    # 40 стихов = 240 переменных — сверх предела. Держим ≤ 100 переменных:
-    # 16 стихов × 6 = 96.
     B = 16
     total = 0
     for i in range(0, len(vs), B):
