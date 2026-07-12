@@ -24,6 +24,7 @@ import {
 import { useRecipes } from "./recipesHydrate";
 import { FilterChips as NavFilterChips, ScopeTitle, type NavItem } from "../ui/nav4";
 import { COOKBOOK } from "./cookbook";
+import { HubHeader } from "../ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
 

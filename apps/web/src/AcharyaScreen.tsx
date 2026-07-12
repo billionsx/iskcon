@@ -20,6 +20,7 @@ import { BackIcon } from "./ui/icons";
 import { cleanCardText } from "./cardText";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { ROUTES, url } from "./routes";
+import { HubHeader } from "./ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
 
@@ -409,18 +410,11 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
 }) {
   return (
     <div>
-      {/* ЗКН-Н007 — ШАПКА ВИТРИНЫ, как у остальных Богатств.
-       *
-       * Надпись НЕ повторяет вкладку: вкладка называется «Личности», значит
-       * надпись говорит ДРУГОЕ — чем эти личности являются в архитектуре
-       * приложения (ЗКН-Сд005: персонализм, всё висит на графе Личностей). */}
-      <div style={{ marginBottom: 4 }}>
-        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Вечные спутники</div>
-        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Герои</h1>
-        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.4 }}>
-          Абсолют — Личность, и путь к Нему идёт через личности. Три лилы, в каждой свой строй
-        </p>
-      </div>
+      <HubHeader
+        eyebrow="Вечные спутники"
+        title="Герои"
+        subtitle="Абсолют — Личность, и путь к Нему идёт через личности"
+      />
 
       {/* ТРИ ВХОДА. Описание каждого — по тому, ЧТО за ним реально открывается:
        *   Гауранга Лила  → волны (I–V, беспрецедентная, ачарьи сампрадай)

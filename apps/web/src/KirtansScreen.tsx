@@ -21,6 +21,7 @@ import {
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { HubHeader } from "./ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
 
@@ -110,14 +111,11 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
-      {/* Заголовок раздела */}
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Аудиотека</div>
-        <h1 style={{ margin: "2px 0 0", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Киртаны и бхаджаны</h1>
-        <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.45, color: "var(--color-label-2)", maxWidth: 520 }}>
-          Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана и фестивалей наших дней.
-        </p>
-      </div>
+      <HubHeader
+        eyebrow="Аудиотека"
+        title="Киртаны"
+        subtitle="Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана"
+      />
 
       {/* Слушать сейчас */}
       {playable.length > 0 && (
