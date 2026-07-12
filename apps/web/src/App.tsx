@@ -33,6 +33,7 @@ import { HomeCalendar } from "./HomeCalendar";
 import { HomeFeed, FeedPostFocus } from "./HomeFeed";
 import { DarshanRings } from "./DarshanStories";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
+import { HubHeader } from "./ui/HubHeader";
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
@@ -330,16 +331,17 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
 
   return (
     <section style={{ marginTop: 28 }}>
-      <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
-        <div>
-          <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Молитвенник</div>
-          <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>Бхаджаны</h2>
-        </div>
-        <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>
-          Весь каталог
-          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        </button>
-      </div>
+      <HubHeader
+        eyebrow="Молитвенник"
+        title="Бхаджаны"
+        subtitle="Песни ачарьев — от служб храмов ИСККОН до сокровенных молитв Госвами"
+        action={
+          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 999, border: "0.5px solid var(--color-gold)", background: "transparent", color: "var(--color-gold-deep)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer" }}>
+            Весь каталог
+            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+        }
+      />
       {items && items.length > 0 && (
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
           style={{ width: "100%", boxSizing: "border-box", marginBottom: 12, padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", outline: "none" }} />
@@ -542,7 +544,11 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
  * Слаги лил не пересекаются с id витрин, поэтому схема обратно совместима. */
 export /* ЗКН-Н007: слаги лил — вход в четырёхуровневое меню Личностей.
    Те же, что в LichnostiHub::LILA_SLUG — иначе витрина уведёт в никуда. */
-const LILA_SLUGS = ["gauranga-lila", "krishna-lila", "shrimad-bhagavatam", "bhagavad-gita", "drugie"];
+/* ЗКН-Н007: слаги лил — вход в четырёхуровневое меню Личностей.
+   «Бхагавад-гита» отдельной лилой НЕ живёт: в ней было ДВА героя (Арджуна и
+   Санджая), и оба — из Махабхараты, описанной в Шримад-Бхагаватам. Вкладка ради
+   двух человек — не структура, а шум. Оба перенесены в Бхагаватам → Махабхарата. */
+const LILA_SLUGS = ["gauranga-lila", "krishna-lila", "shrimad-bhagavatam", "drugie"];
 
 const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
 export function bogSubFromPath(path: string): string {
