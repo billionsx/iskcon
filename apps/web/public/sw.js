@@ -8,7 +8,7 @@
  * смена байтов этого файла триггерит обновление SW (браузер тянет /sw.js в обход
  * HTTP-кэша), activate сносит все прежние кэши, clients.claim + перезагрузка на
  * клиенте подхватывают свежий бандл. */
-const CACHE = "iol-v4";
+const CACHE = "iol-v5";
 const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/favicon.svg"];
 
 self.addEventListener("install", (e) => {
@@ -31,6 +31,29 @@ self.addEventListener("fetch", (e) => {
   try { url = new URL(req.url); } catch { return; }
   if (url.origin !== self.location.origin) return;     // внешнее — браузеру
   if (url.pathname.startsWith("/api/")) return;          // динамика — всегда сеть
+
+  /* ЗКН-Ф019 — КОД ПРИЛОЖЕНИЯ НИКОГДА НЕ БЕРЁТСЯ ИЗ КЕША ПЕРВЫМ.
+   *
+   * SW кэшировал ВСЁ подряд «сначала кеш». Оболочка (`index.html`) и бандл
+   * попадали в кеш — и человек ГОДАМИ жил на старом коде: я чиню, деплою,
+   * а у него из кеша поднимается прежняя сборка. Правки НЕ ДОЕЗЖАЛИ.
+   *
+   * Оболочка и JS/CSS — ВСЕГДА из сети. Кешируем только то, что не меняет
+   * поведение: картинки, шрифты, иконки. */
+  const isCode = /\.(?:js|css|html)$/.test(url.pathname) || url.pathname === "/";
+  if (isCode) {
+    e.respondWith((async () => {
+      try {
+        const res = await fetch(req);
+        if (res) return res;
+      } catch { /* офлайн */ }
+      const cache = await caches.open(CACHE);
+      const hit = await cache.match(req);
+      if (hit) return hit;
+      return new Response("", { status: 504 });
+    })());
+    return;
+  }
 
   /* ЗКН-Ф017 — SERVICE WORKER ОБЯЗАН ВЕРНУТЬ RESPONSE. ВСЕГДА.
    *

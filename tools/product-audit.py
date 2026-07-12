@@ -156,8 +156,28 @@ def check_pr005():
     return bad
 
 
+def check_r011():
+    """ЗКН-Р011 — ЗНАЧЕНИЕ ФИЛЬТРА В КОДЕ ОБЯЗАНО СУЩЕСТВОВАТЬ В БАЗЕ.
+
+    Фильтр книг искал `lineage === "iskcon"`, а в базе — **"guru-iskcon"**.
+    Счётчик показывал 0, хотя книги есть. Ноль выглядит как «книг нет», а не
+    как «фильтр сломан» — молчаливая ложь.
+    """
+    t = (SRC / "BooksHub.tsx").read_text(encoding="utf-8")
+    body = "\n".join(l for l in t.split("\n")
+                      if not l.strip().startswith(("*", "//", "/*")))
+    VALID = {"prabhupada", "acharya", "guru-iskcon", "all"}
+    bad = []
+    for m in re.finditer(r'b\.lineage === "([a-z-]+)"', body):
+        if m.group(1) not in VALID:
+            bad.append(("BooksHub.tsx", "фильтр ищет lineage «%s» — такого значения в базе "
+                                        "НЕТ, счётчик покажет 0 (ЗКН-Р011)" % m.group(1)))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Б007", "книга в D1 → обязана быть в бандле", check_b007),
+    ("ЗКН-Р011", "значение фильтра существует в базе", check_r011),
     ("ЗКН-Пр005", "гаятри — только по уровню (упреждающе)", check_pr005),
     ("ЗКН-Пр001", "нет соц-графа (чаты/подписки/комменты)", check_pr001),
     ("ЗКН-Пр003", "AI только со ссылкой на стих", check_pr003),

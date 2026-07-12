@@ -1285,6 +1285,14 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     // ПКЛ долгоживущий. В оверлее /person/<id> хеш не используем.
     let hashTab = "", hashSub = "";
     if (embedded && typeof window !== "undefined") {
+      /* ЗКН-Н038: читаем адрес, ТОЛЬКО если он наш. Чужой — берём умолчание. */
+      const mine = (REALM_BASE[id] ?? "/" + id).slice(1);
+      const cur0 = window.location.pathname.split("/").filter(Boolean)[0] ?? "";
+      if (cur0 !== mine) {
+        setTab(dos ? dos.tabs[0].id : (tabs[0]?.id ?? ""));
+        pendingSubFromHash.current = null;
+        return;
+      }
       // Новый формат — путь /<герой>/<таб>/<подтаб>; seg[0] — id героя (krishna).
       const seg = (initialPathRef.current || "").split("/").filter(Boolean);
       hashTab = decodeURIComponent(seg[1] || "");
@@ -1353,6 +1361,21 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
      * своё состояние на ЧУЖОЙ адрес.
      *
      * Основа выводится из САМОГО компонента: он знает, чьё он досье. */
+    /* ЗКН-Н038 — КОМПОНЕНТ НЕ ПИШЕТ ЧУЖОЙ АДРЕС.
+     *
+     * ЭТО И БЫЛО ПРИЧИНОЙ, ЧТО ПОДТАБ ПЕРЕЕЗЖАЛ МЕЖДУ ЦАРСТВАМИ.
+     *
+     * При клике «Гауранга» адрес мгновенно становится `/gauranga`, но старый
+     * EntityPage(krishna) ЕЩЁ ЖИВ (React размонтирует его в следующем проходе).
+     * Его эффект-писатель срабатывает — и вписывает СВОЙ таб/подтаб на УЖЕ ЧУЖОЙ
+     * адрес: `/gauranga/rupa/zolotaya`. Человек жал Гаурангу и попадал в «Рупу».
+     *
+     * Проверка владения: адрес не мой — не трогаю. Ни `key`, ни подписка этого
+     * не лечили: беда была не в чтении, а в ЗАПИСИ. */
+    const myBase = (REALM_BASE[id] ?? "/" + id).slice(1);
+    const nowSeg0 = window.location.pathname.split("/").filter(Boolean)[0] ?? "";
+    if (nowSeg0 !== myBase) return;          // адрес уже не наш — молчим
+
     const base = REALM_BASE[id] ?? "/" + id;
     // Главный экран ПКЛ (первый таб + его первый видимый подтаб) — чистый /krishna
     // без хвоста; остальное — путь /krishna/<таб>/<подтаб> (без решётки).

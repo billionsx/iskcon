@@ -202,6 +202,11 @@ def check_f017():
         bad.append(("sw.js", "`.catch(() => hit)` вернёт undefined, если кеш пуст → "
                              "«Failed to convert value to Response» → БЕЛЫЙ ЭКРАН (ЗКН-Ф017)"))
     # каждая ветка respondWith обязана кончаться Response
+    # ЗКН-Ф019: код приложения — всегда из сети, иначе человек живёт на старом коде
+    if "const isCode" not in t:
+        bad.append(("sw.js", "оболочка и бандл берутся ИЗ КЕША — правки не доедут "
+                             "до человека (ЗКН-Ф019)"))
+
     if t.count("respondWith") > 0 and "return new Response" not in t:
         bad.append(("sw.js", "нет запасного `new Response` — ветка может отдать undefined "
                              "(ЗКН-Ф017)"))
