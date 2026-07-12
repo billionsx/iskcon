@@ -2388,6 +2388,32 @@ export default {
      * поиск багов, которые уже были исправлены, но не доехали.
      *
      * `index.html` от кеша защищён (ниже). `sw.js` — не был. */
+    /* ЗКН-Ф020 — АВАРИЙНЫЙ ВЫХОД: gaurangers.com/fresh
+     *
+     * Если человек застрял на старом сломанном воркере (а он отдаёт старый бандл
+     * и не даёт себя обновить), этот адрес — гарантированный выход. Он идёт МИМО
+     * приложения: чистая страница сносит ВСЕ воркеры и ВСЕ кеши, затем уводит
+     * на главную. Никакой SW ей помешать не может — она приходит из сети. */
+    if (url.pathname === "/fresh") {
+      return new Response(
+        "<!doctype html><meta charset=utf-8><title>Обновление…</title>" +
+        "<body style=\"font-family:system-ui;padding:60px;text-align:center;color:#555\">" +
+        "<p>Сбрасываю кеш…</p><script>" +
+        "(async()=>{try{" +
+        "const rs=await navigator.serviceWorker.getRegistrations();" +
+        "await Promise.all(rs.map(r=>r.unregister()));" +
+        "const ks=await caches.keys();" +
+        "await Promise.all(ks.map(k=>caches.delete(k)));" +
+        "}catch(e){}" +
+        "location.replace('/');})();" +
+        "<\/script>",
+        { status: 200, headers: {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store",
+        } }
+      );
+    }
+
     if (url.pathname === "/sw.js") {
       const swRes = await env.ASSETS.fetch(request);
       const out = new Response(swRes.body, swRes);

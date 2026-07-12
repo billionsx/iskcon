@@ -404,10 +404,12 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         </div>
       ) : (
         <>
-          {/* ── Шрила Прабхупада ── */}
+          {/* ЗКН-Н036 — ЗАГОЛОВКИ ЛИНИЙ УБРАНЫ.
+              Были: «Шрила Прабхупада · Ачарья-основатель ИСККОН — канон…»,
+              «Ачарьи-вайшнавы», «Гуру ИСККОН» — они дублировали ФИЛЬТР сверху.
+              Человек уже выбрал линию чипом; повторять её заголовком — шум. */}
           {(filter === "all" || filter === "prabhupada") && (
             <section>
-              <SectionHeader title={LINEAGE_LABEL.prabhupada} note={LINEAGE_NOTE.prabhupada} />
               {/* ЗКН-Н036: карточка «Шрила Прабхупада» убрана — она вела на личность,
                   а раздел Книг про КНИГИ. Личность живёт в Личностях. */}
               {heroStack(byLineage("prabhupada"))}
@@ -417,7 +419,6 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           {/* ── Ачарьи-вайшнавы ── */}
           {(filter === "all" || filter === "acharya") && (
             <section>
-              <SectionHeader title={LINEAGE_LABEL.acharya} note={LINEAGE_NOTE.acharya} />
               {heroStack(byLineage("acharya"))}
             </section>
           )}
@@ -425,7 +426,6 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           {/* ── Гуру ИСККОН ── */}
           {(filter === "all" || filter === "guru-iskcon") && (
             <section>
-              <SectionHeader title={LINEAGE_LABEL["guru-iskcon"]} note={LINEAGE_NOTE["guru-iskcon"]} />
               {heroStack(byLineage("guru-iskcon"))}
               {/* ЗКН-Н036: карточка «Преемники Прабхупады» убрана — вела на список
                   ЛИЧНОСТЕЙ, а раздел «Книги» про КНИГИ. Гуру живут в Личностях. */}
