@@ -1052,7 +1052,20 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
    *
    * Адрес — единственный источник истины. Компонент на него ПОДПИСАН. */
   const initialHashRef = useRef(typeof window !== "undefined" ? (window.location.hash || "") : "");
-  const initialPathRef = useRef(typeof window !== "undefined" ? (window.location.pathname || "") : "");
+  /* ЗКН-Н037 — ПУТЬ ЧИТАЕТСЯ СВЕЖИМ, А НЕ ИЗ РЕФА, СНЯТОГО ПРИ МОНТИРОВАНИИ.
+   *
+   * `useRef(window.location.pathname)` снимает путь ОДИН РАЗ и держит его вечно.
+   * Дальше компонент живёт со снимком: адрес сменился — снимок нет.
+   *
+   * Так смена царства уносила подтаб: Кришна/Гуна → нажал Гауранга → в адресе
+   * `/gauranga`, а компонент читал СТАРЫЙ снимок и восстанавливал «Гуну».
+   *
+   * `pathNow` — состояние, ПОДПИСАННОЕ на адрес. Меняется адрес — меняется оно,
+   * и эффекты пересчитываются. Снимка нет. */
+  const [pathNow, setPathNow] = useState(
+    typeof window !== "undefined" ? (window.location.pathname || "") : "");
+  useEffect(() => subscribeNav(() => setPathNow(window.location.pathname || "")), []);
+  const initialPathRef = { current: pathNow };
   const hashConsumedRef = useRef(false);
 
   useEffect(() => {
@@ -1294,7 +1307,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     initialHashRef.current = "";
     initialPathRef.current = "";
     hashConsumedRef.current = true;
-  }, [id, data?.id, embedded]);
+  }, [id, data?.id, embedded, pathNow]);
   // при смене Tier-1 таба в досье — выставить первый суб-таб (либо из хеша
   // если он валиден для этого таба и это первое монтирование).
   useEffect(() => {
@@ -1316,28 +1329,9 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     if (!visibleSubs.find((st) => st.id === sub)) setSub(visibleSubs[0]?.id ?? "");
   }, [realm, hasRealmSplit]);
 
-  /* ЗКН-Н033 — АДРЕС СМЕНИЛСЯ → ТАБ И ПОДТАБ ПЕРЕСЧИТЫВАЮТСЯ ИЗ НЕГО.
-   *
-   * Без этого компонент держит подтаб от ПРЕДЫДУЩЕГО адреса. Так Гауранга
-   * открывалась сразу в «Качествах»: адрес стал /gauranga, а `tab` остался «guna».
-   *
-   * Основа своя (REALM_BASE), а не из адреса — иначе прочитаем чужой сегмент. */
-  useEffect(() => {
-    if (!embedded || typeof window === "undefined") return;
-    return subscribeNav(() => {
-      const segs = window.location.pathname.split("/").filter(Boolean);
-      const myBase = (REALM_BASE[id] ?? "/" + id).slice(1);
-      if (segs[0] !== myBase) return;              // адрес не наш — не трогаем
-
-      const dos = dossier;
-      const defaultTab = dos?.tabs?.[0]?.id ?? "";
-      const t = segs[1] ? decodeURIComponent(segs[1]) : "";
-      const nextTab = dos?.tabs?.some((x) => x.id === t) ? t : defaultTab;
-      setTab(nextTab);
-      pendingSubFromHash.current = segs[2] ? decodeURIComponent(segs[2]) : null;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [embedded, id, dossier]);
+  /* ЗКН-Н037: отдельная подписка не нужна — `pathNow` уже подписан на адрес,
+   * и эффект чтения адреса (ниже) от него зависит. Две подписки на одно спорили
+   * между собой: одна ставила таб из адреса, вторая — из снимка. */
   // Синхронизация tab/sub → URL-хеш (embedded режим): /krishna#parikary/shanta.
   // replaceUrl, а не pushUrl — переключение внутри карточки не должно засорять
   // back-стек. При клике на «Барсана» pushUrl("/barsana") сохраняет

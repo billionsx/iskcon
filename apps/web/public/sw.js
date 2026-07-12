@@ -8,7 +8,7 @@
  * смена байтов этого файла триггерит обновление SW (браузер тянет /sw.js в обход
  * HTTP-кэша), activate сносит все прежние кэши, clients.claim + перезагрузка на
  * клиенте подхватывают свежий бандл. */
-const CACHE = "iol-v3";
+const CACHE = "iol-v4";
 const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/favicon.svg"];
 
 self.addEventListener("install", (e) => {
@@ -32,28 +32,73 @@ self.addEventListener("fetch", (e) => {
   if (url.origin !== self.location.origin) return;     // внешнее — браузеру
   if (url.pathname.startsWith("/api/")) return;          // динамика — всегда сеть
 
-  // Навигация — network-first, офлайн-фолбэк на оболочку.
+  /* ЗКН-Ф017 — SERVICE WORKER ОБЯЗАН ВЕРНУТЬ RESPONSE. ВСЕГДА.
+   *
+   * ЗДЕСЬ ЖИЛ КОРЕНЬ ВСЕХ БЕЛЫХ ЭКРАНОВ.
+   *
+   * Было:
+   *     const net = fetch(req).then(...).catch(() => hit);
+   *     return hit || net;
+   *
+   * Если в кеше ПУСТО (`hit === undefined`) И сеть упала — `.catch(() => hit)`
+   * отдаёт `undefined`. `respondWith` получает Promise<undefined>, и браузер
+   * бросает:
+   *
+   *     TypeError: Failed to convert value to 'Response'.
+   *
+   * Ответа НЕТ → страница не грузится → БЕЛЫЙ ЭКРАН. И это било по «назад»
+   * ВЕЗДЕ — из дхамы, из киртана, из Бхагавад-гиты: «назад» это НАВИГАЦИЯ,
+   * а навигация шла через тот же сломанный SW.
+   *
+   * А в ветке навигации стояло `Response.error()` — ЯВНЫЙ сетевой сбой, и
+   * браузер честно показывал пустоту («resulted in a network error response»).
+   *
+   * ПРАВИЛО: из `respondWith` ВСЕГДА выходит настоящий Response. Пустоту —
+   * НИКОГДА.
+   */
+
+  // Навигация — сеть, при сбое оболочка из кеша.
   if (req.mode === "navigate") {
     e.respondWith((async () => {
       try {
-        return await fetch(req);
-      } catch {
-        const cache = await caches.open(CACHE);
-        return (await cache.match("/")) || Response.error();
-      }
+        const res = await fetch(req);
+        if (res) return res;
+      } catch { /* сеть недоступна — идём в кеш */ }
+
+      const cache = await caches.open(CACHE);
+      const shell = (await cache.match("/")) || (await cache.match("/index.html"));
+      if (shell) return shell;
+
+      return new Response(
+        "<!doctype html><meta charset=utf-8><title>Нет сети</title>" +
+        "<body style=\"font-family:system-ui;padding:48px;text-align:center;color:#666\">" +
+        "<p>Нет соединения. Обновите страницу.</p>",
+        { status: 200, headers: { "Content-Type": "text/html; charset=utf-8" } }
+      );
     })());
     return;
   }
 
-  // Статика — cache-first + фоновое обновление.
+  // Статика — сначала кеш, затем сеть. Из обеих веток ВСЕГДА выходит Response.
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
     const hit = await cache.match(req);
-    const net = fetch(req).then((res) => {
-      if (res && res.status === 200 && res.type === "basic") cache.put(req, res.clone());
-      return res;
-    }).catch(() => hit);
-    return hit || net;
+    if (hit) {
+      fetch(req).then((res) => {
+        if (res && res.status === 200 && res.type === "basic") cache.put(req, res.clone());
+      }).catch(() => {});
+      return hit;
+    }
+
+    try {
+      const res = await fetch(req);
+      if (res && res.status === 200 && res.type === "basic") {
+        cache.put(req, res.clone()).catch(() => {});
+      }
+      if (res) return res;
+    } catch { /* сеть недоступна */ }
+
+    return new Response("", { status: 504, statusText: "Gateway Timeout" });
   })());
 });
 
