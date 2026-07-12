@@ -31,6 +31,7 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -296,8 +297,18 @@ def d1(sql: str, params=None):
     req = urllib.request.Request(url, data=json.dumps(body).encode(),
                                  headers={"Authorization": "Bearer " + tok,
                                           "Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=120) as r:
-        return json.load(r)
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            out = json.load(r)
+    except urllib.error.HTTPError as e:
+        # ЗКН-Ц003: молча падать нельзя — скажи, ЧТО именно не так.
+        detail = e.read().decode("utf-8", "replace")[:400]
+        raise SystemExit("::error title=D1::HTTP %s — %s\n  SQL: %s"
+                         % (e.code, detail, sql[:120]))
+    if not out.get("success", True):
+        raise SystemExit("::error title=D1::%s\n  SQL: %s"
+                         % (json.dumps(out.get("errors"), ensure_ascii=False)[:300], sql[:120]))
+    return out
 
 
 # Названия глав из оглавления источника — чтобы читатель видел не «Глава 7»,
