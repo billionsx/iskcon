@@ -9,6 +9,7 @@
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
 import { CATEGORY_RU, RASA_RU } from "./entityLabels";
+import { formatSourceRef } from "./sourceRef";
 import { CardActionBtns, useCardActions, favMetaFromCtx, type CardCtx } from "./cardActions";
 import { useEffect, useRef, useState, Fragment, type ReactNode } from "react";
 import { api } from "./api";
@@ -1113,6 +1114,9 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     return null;
   })();
   const rasa = rasaKey ? RASA_RU[rasaKey] ?? null : null;
+  // ЗКН-БТ001/БТ006: сырую пометку («ГГД 193») приводим к человеческой форме
+  // («Гаура-ганоддеша-дипика, стих 193») и ПОКАЗЫВАЕМ. Не выдумываем: не распознали — как есть.
+  const sourceLine = formatSourceRef(data?.source_ref);
   const article: LfSection[] | null = (() => {
     const raw = data?.profile?.longform;
     if (!raw) return null;
@@ -1532,6 +1536,26 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
               )}
             </div>
             </>
+            )}
+
+            {/* ЗКН-БТ001 — ИСТОЧНИК ВИДЕН ЧЕЛОВЕКУ.
+                450 карточек личностей из 728 утверждали что-то, НЕ показывая, откуда
+                это известно. Источник всё это время лежал в базе (`source_ref` = «ГГД 193»)
+                и приходил в карточку — но не рисовался. Нет источника → нет утверждения. */}
+            {sourceLine && (
+              <div style={{
+                marginTop: 22, paddingTop: 12,
+                borderTop: "0.5px solid var(--color-hairline)",
+                fontSize: "var(--text-footnote)", color: "var(--color-label-3)",
+                fontFamily: "var(--font-text)",
+              }}>
+                <span style={{
+                  textTransform: "uppercase", letterSpacing: "0.06em",
+                  fontSize: "0.85em", fontWeight: 600, color: "var(--color-label-4)",
+                  marginRight: 8,
+                }}>Источник</span>
+                {sourceLine}
+              </div>
             )}
           </>
         )}
