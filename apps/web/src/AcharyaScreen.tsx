@@ -407,69 +407,31 @@ export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpe
 
 function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void; onOpenPath?: (path: string) => void;
 }) {
-  const [q, setQ] = useState("");
-  const [results, setResults] = useState<Item[] | null>(null);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    const query = q.trim();
-    if (timer.current) clearTimeout(timer.current);
-    if (query.length < 2) { setResults(null); return; }
-    timer.current = setTimeout(() => {
-      fetch(api(`/entities?q=${encodeURIComponent(query)}&limit=40`))
-        .then((r) => r.json())
-        .then((d) => setResults((d.items as Item[]) ?? []))
-        .catch(() => setResults([]));
-    }, 220);
-    return () => { if (timer.current) clearTimeout(timer.current); };
-  }, [q]);
-
-  const searching = q.trim().length >= 2;
-  const openCol = (k: string) => onOpenCollection?.(k);
-
   return (
-    <div>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{realm === "gauranga" ? "Гауранга Лила" : realm === "krishna" ? "Верховная Личность" : "Личности"}</div>
-        <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{realm === "gauranga" ? "Гауранга" : realm === "krishna" ? "Кришна" : "Герои"}</h2>
-        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.4 }}>{realm === "gauranga" ? "Гауранга Махапрабху, Панча-таттва и все спутники Гауранга Лилы" : realm === "krishna" ? "Господь Шри Кришна, Его имена, формы, аватары и вечные спутники Враджа" : "Господь, Его воплощения и вечные спутники"}</p>
-      </div>
-
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по героям…" inputMode="search"
-        style={{ width: "100%", boxSizing: "border-box", padding: "12px 15px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
-          background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none" }} />
-
-      {searching ? (
-        <div style={{ marginTop: 14 }}>
-          {results === null && <div style={{ padding: "20px 0", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Поиск…</div>}
-          {results && results.length === 0 && <div style={{ padding: "20px 0", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Ничего не найдено</div>}
-          {results && results.map((it) => <ResultRow key={it.id} item={it} onOpen={onOpen} />)}
-        </div>
-      ) : (
-        <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
-          {/* ЗКН-Н007 — ВИТРИНА ЛИЧНОСТЕЙ: РОВНО ТРИ ВХОДА.
-              Каждый ведёт в утверждённое четырёхуровневое меню своей лилы
-              (волны → кластеры). Порядок закреплён основателем. */}
-          <SectionCard
-            title="Гауранга Лила"
-            subtitle="Гауранга Махапрабху, Панча-таттва и все спутники"
-            mark={<MaskMark src="/gauranga.svg" size={48} />}
-            onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
-          />
-          <SectionCard
-            title="Кришна Лила"
-            subtitle="Вечные игры Господа и Его спутников во Вриндаване"
-            mark={<MaskMark src="/vraj.svg" size={48} />}
-            onClick={() => onOpenPath?.("/dhana/krishna-lila")}
-          />
-          <SectionCard
-            title="Шримад Бхагаватам"
-            subtitle="Воплощения и аватары Господа, Его великие преданные"
-            mark={<MaskMark src="/bbt.svg" size={48} />}
-            onClick={() => onOpenPath?.("/dhana/shrimad-bhagavatam")}
-          />
-</div>
-      )}
+    /* ЗКН-Н007 — ВИТРИНА ЛИЧНОСТЕЙ: РОВНО ТРИ КНОПКИ.
+     *
+     * Ни заголовка, ни подзаголовка, ни поиска — витрина это ВХОД, а не экран.
+     * Каждая кнопка ведёт в утверждённое четырёхуровневое меню своей лилы
+     * (волны → кластеры). Порядок закреплён основателем. */
+    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <SectionCard
+        title="Гауранга Лила"
+        subtitle="Гауранга Махапрабху, Панча-таттва и все спутники"
+        mark={<MaskMark src="/gauranga.svg" size={48} />}
+        onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
+      />
+      <SectionCard
+        title="Кришна Лила"
+        subtitle="Вечные игры Господа и Его спутников во Вриндаване"
+        mark={<MaskMark src="/vraj.svg" size={48} />}
+        onClick={() => onOpenPath?.("/dhana/krishna-lila")}
+      />
+      <SectionCard
+        title="Шримад Бхагаватам"
+        subtitle="Воплощения и аватары Господа, Его великие преданные"
+        mark={<MaskMark src="/bbt.svg" size={48} />}
+        onClick={() => onOpenPath?.("/dhana/shrimad-bhagavatam")}
+      />
     </div>
   );
 }
