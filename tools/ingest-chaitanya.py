@@ -300,8 +300,52 @@ def d1(sql: str, params=None):
         return json.load(r)
 
 
+# Названия глав из оглавления источника — чтобы читатель видел не «Глава 7»,
+# а «Вишварупа принимает санньясу».
+CHAPTERS = {
+    "adi": ["Описание деяний Шри Чайтаньи", "Явление Золотого Господа", "Гороскоп Господа",
+            "Церемония наречения именем. Детские игры и похищение Господа",
+            "Нимай вкушает подношение странствующего брахмана",
+            "Начальная школа и детские шалости Нимая", "Вишварупа принимает санньясу",
+            "Уход Джаганнатхи Мишры",
+            "Детские игры Нитьянанды и Его паломничество по святым местам",
+            "Женитьба Господа на Лакшмиприе", "Встреча с Ишварой Пури",
+            "Странствия Господа по Навадвипе", "Победа над великим ученым Кешавой",
+            "Господь посещает Восточную Бенгалию. Уход Лакшмиприи",
+            "Женитьба на Вишнуприе", "Величие Харидаса Тхакура",
+            "Господь отправляется в Гаю"],
+    "antya": ["Новая встреча в доме Адвайты Ачарьи",
+              "Описание путешествий Господа по Бхуванешваре и другим местам",
+              "Махапрабху освобождает Сарвабхауму, проявление шестирукой формы",
+              "Описания игр Шри Ачьютананды и поклонение Шри Мадхавендре Пури",
+              "Игры Нитьянанды Прабху", "Слава Нитьянанды",
+              "Игры в саду Шри Гададхары",
+              "Развлечения Махапрабху на озере Нарендра-саровара",
+              "Слава Адвайты Прабху", "Слава Шри Пундарики Видьянидхи"],
+}
+KH_TITLE = {"adi": "Ади-кханда", "antya": "Антья-кханда"}
+
+
 def load(vs):
     """Пишем стихи пачками. Параметризовано — кавычки в тексте не ломают SQL."""
+    # 1) издание
+    d1("INSERT OR REPLACE INTO editions (id, work_id, lang, title, translator, source) "
+       "VALUES ('cb-ru','cb','ru','Шри Чайтанья-бхагавата',"
+       "'Комментарии Шрилы Бхактисиддханты Сарасвати','«Шри Гаурамрита»')")
+
+    # 2) разделы: кханда → главы (с названиями из оглавления)
+    for kh, titles in CHAPTERS.items():
+        d1("INSERT OR REPLACE INTO divisions (id, work_id, parent_id, level, number, title, ordinal) "
+           "VALUES (?,'cb',NULL,'division',?,?,?)",
+           ["cb." + kh, kh, json.dumps({"ru": KH_TITLE[kh]}, ensure_ascii=False),
+            str(1 if kh == "adi" else 3)])
+        for i, t in enumerate(titles, 1):
+            d1("INSERT OR REPLACE INTO divisions (id, work_id, parent_id, level, number, title, ordinal) "
+               "VALUES (?,'cb',?,'chapter',?,?,?)",
+               ["cb.%s.%d" % (kh, i), "cb." + kh, str(i),
+                json.dumps({"ru": t}, ensure_ascii=False), str(i)])
+    print("издание и %d разделов записаны" % (2 + sum(len(t) for t in CHAPTERS.values())))
+
     B = 40
     total = 0
     for i in range(0, len(vs), B):
@@ -315,11 +359,12 @@ def load(vs):
            "(id,work_id,division_id,ref,ordinal,devanagari,translit,uvaca,source_url) "
            "VALUES " + ph_v, pr_v)
 
-        ph_t = ",".join(["(?,?,'cb-ru',?,?)"] * len(chunk))
+        # verse_texts.id — INTEGER AUTOINCREMENT: свой id передавать НЕЛЬЗЯ.
+        ph_t = ",".join(["(?,'cb-ru',?,?)"] * len(chunk))
         pr_t = []
         for v in chunk:
-            pr_t += [v["id"] + ".ru", v["id"], v["translation"] or "", v["purport"] or ""]
-        d1("INSERT OR REPLACE INTO verse_texts (id,verse_id,edition_id,translation,purport) "
+            pr_t += [v["id"], v["translation"] or "", v["purport"] or ""]
+        d1("INSERT OR REPLACE INTO verse_texts (verse_id,edition_id,translation,purport) "
            "VALUES " + ph_t, pr_t)
 
         total += len(chunk)
