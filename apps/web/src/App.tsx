@@ -37,7 +37,7 @@ import { HubHeader } from "./ui/HubHeader";
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
-import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack, notifyNav, subscribeNav } from "./nav";
+import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack, applyRoute, setRouter, subscribeNav } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
@@ -113,6 +113,25 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
  * Плавающая «таблетка», два размера (обычный ↔ компактный при прокрутке),
  * овальное выделение активного таба, иконки — логотипы через CSS-маску
  * (цвет = --color-label, т.е. чёрные в светлой теме / белые в тёмной). */
+/* ЗКН-Н040 — ЗАКОННЫХ ВКЛАДОК РОВНО СТОЛЬКО, СКОЛЬКО РИСУЕТ `Screen`.
+ *
+ * ЭТО И БЫЛ КОРЕНЬ БЕЛЫХ ЭКРАНОВ ПО ВСЕМУ ПРИЛОЖЕНИЮ.
+ *
+ * `Screen` умеет рисовать пять вкладок. А маршрутизатор ставил ещё шесть,
+ * которых НЕ СУЩЕСТВУЕТ: "books", "kirtans", "dhama", "acharya", "account",
+ * "feed". Незаконная вкладка = ни одна ветка не совпала = ПУСТОЙ ЭКРАН.
+ *
+ * Что видел человек:
+ *   ИСККОН → Практика → «Мантра»  → /kirtans  → белый лист
+ *   Дхама → место → «назад»       → /dhama    → белый лист
+ *   Бхагавад-гита → «назад»       → /books    → белый лист
+ *
+ * Теперь список ОДИН, и он же — источник для нижнего меню, для маршрутизатора
+ * и для запасной ветки `Screen`. Разъехаться нечему. */
+export const TAB_IDS = ["sadhana", "krishna", "gauranga", "iskcon", "bogatstva"] as const;
+export type TabId = typeof TAB_IDS[number];
+export function isTabId(v: string): v is TabId { return (TAB_IDS as readonly string[]).includes(v); }
+
 const TABS = [
   { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
   { id: "krishna", label: "Кришна", src: "/vraj.svg", wide: false },
@@ -581,11 +600,17 @@ export function bogSubFromPath(path: string): string {
  * / → Лента (умолчание) · /practice · /calendar · /account */
 export const SAD_SUBS = ["feed", "practice", "calendar", "cabinet"] as const;
 const SAD_PATH: Record<string, string> = { feed: "/", practice: "/sadhana", calendar: "/calendar", cabinet: "/id" };
+/* ЗКН-Н041 — ПИСАТЕЛЬ И ЧИТАТЕЛЬ АДРЕСА — ОДИН СЛОВАРЬ.
+ *
+ * Писатель слал «Практику» на `/sadhana`, а читатель искал сегмент `practice`.
+ * Писатель слал «Кабинет» на `/id`, читатель искал `account`. Оба разъехались
+ * молча: нажал «Практика» — работает; вернулся «назад» или обновил страницу —
+ * снова «Лента». Раздел, в который нельзя вернуться, — это раздел без адреса. */
 export function sadSubFromPath(path: string): string {
   const s0 = path.split("/").filter(Boolean)[0] || "";
-  if (s0 === "practice") return "practice";
+  if (s0 === "sadhana" || s0 === "practice") return "practice";   // practice — старый адрес
   if (s0 === "calendar") return "calendar";
-  if (s0 === "account") return "cabinet";
+  if (s0 === "id" || s0 === "account") return "cabinet";          // account — старый адрес
   return "feed";
 }
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
@@ -709,6 +734,10 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
 }) {
   const [sub, setSub] = useState(() =>
     typeof window === "undefined" ? "feed" : sadSubFromPath(window.location.pathname));
+  /* ЗКН-Н031 — РАЗДЕЛ ВЫВОДИТСЯ ИЗ АДРЕСА, А НЕ ПОМНИТСЯ.
+   * Зал Садханы НЕ был подписан на адрес вовсе: «назад» из Практики в Ленту
+   * менял адрес, а зал продолжал рисовать Практику. Богатства подписаны — Садхана нет. */
+  useEffect(() => subscribeNav(() => setSub(sadSubFromPath(window.location.pathname))), []);
   // ЗКН-Н005: переключение раздела меняет адресную строку (через nav.ts — ЗКН-Н001)
   const pickSub = (v: string) => { setSub(v); pushUrl(SAD_PATH[v] || "/"); };
   return (
@@ -783,7 +812,10 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
           {tab === "gauranga" && <EntityPage key="realm-gauranga" id="chaitanya" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
           {tab === "iskcon" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} onBookMenu={bookMenu} flash={flash} onOpenPath={onOpenPath} />}
           {tab === "bogatstva" && <BogatstvaHall onOpenBook={onOpenBook} onBookMenu={bookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} onOpenArtist={onOpenKirtanArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
-          {tab === "sadhana" && <SadhanaHall onOpenPath={onOpenPath} onOpenEntity={onOpenEntity} onDonate={onDonate} flash={flash} />}
+          {(tab === "sadhana" || !isTabId(tab)) && <SadhanaHall onOpenPath={onOpenPath} onOpenEntity={onOpenEntity} onDonate={onDonate} flash={flash} />}
+          {/* ЗКН-Н040 — ЭКРАН НИКОГДА НЕ БЫВАЕТ ПУСТЫМ.
+            * Незаконная вкладка рисовала НИЧЕГО — молча, без ошибки, без следа.
+            * Теперь такая вкладка ведёт в Садхану: человек всегда видит приложение. */}
           {/* ЗКН-Н027 — ОДИН ЭКРАН — ОДИН ПУТЬ РЕНДЕРА.
            *
            * ЗДЕСЬ ЖИЛИ ПАРАЛЛЕЛЬНЫЕ ПУТИ: витрины рисовались ДВАЖДЫ —
@@ -892,6 +924,9 @@ export default function App() {
   const [openDhama, setOpenDhama] = useState<string | null>(null);
   const [openTirtha, setOpenTirtha] = useState<{ dhama: string; id: string } | null>(null);
   const fromPop = useRef(false);
+  /* ЗКН-Н043: поколение маршрута. Растёт на каждом применении пути — чтобы
+   * эффект-синхронизатор просыпался ВСЕГДА и сбрасывал `fromPop` (см. ниже). */
+  const [routeGen, setRouteGen] = useState(0);
   // Текущий открытый код книги — для делегирования внутрикнижного popstate (замыкание onPop иначе видит устаревшее значение).
   const openBookRef = useRef<string | null>(null);
   openBookRef.current = openBook;
@@ -957,10 +992,19 @@ const RESERVED: readonly string[] = [
     if (openCollection) return "/hero/" + openCollection;
     if (openTirtha) return "/dhama/" + openTirtha.dhama + "/" + openTirtha.id;
     if (openDhama) return "/dhama/" + openDhama;
-    // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
-    if (tab === "krishna") return (typeof window !== "undefined" && window.location.pathname.startsWith("/krishna")) ? window.location.pathname : "/krishna";
-    if (tab === "bogatstva") return (typeof window !== "undefined" && window.location.pathname.startsWith("/hero")) ? window.location.pathname : "/hero";
-    return (tab === "home" || tab === "sadhana") ? "/" : "/" + tab;
+    /* ЗКН-Н042 — У ВКЛАДКИ МНОГО ЗАКОННЫХ АДРЕСОВ. НЕЛЬЗЯ СВОДИТЬ ЕЁ К ОДНОМУ.
+     *
+     * Было: вкладка «Богатства» отдавала `/hero` с ЛЮБОГО адреса, кроме `/hero*`.
+     * Значит, стоя на `/kirtans`, любое изменение состояния роняло эффект
+     * «состояние → URL», тот видел `/hero` ≠ `/kirtans` и ПЕРЕПИСЫВАЛ адрес.
+     * Адрес прыгал сам, без клика — а «назад» вёл в никуда.
+     *
+     * Правило простое: BASE_OF уже знает, какой вкладке принадлежит адрес.
+     * Принадлежит текущей — он и есть истина, трогать его нельзя. */
+    const seg0 = (typeof window === "undefined" ? "/" : window.location.pathname)
+      .split("/").filter(Boolean)[0] ?? "";
+    if (BASE_OF[seg0] === tab) return window.location.pathname;
+    return HOME_OF[tab] ?? "/";
   }
   function resolveAndOpen(slug: string) {
     fetch(api(`/content/resolve?slug=${encodeURIComponent(slug)}`))
@@ -993,16 +1037,18 @@ const RESERVED: readonly string[] = [
    *                       Закрыл — вернулся туда, где стоял.
    */
   const BASE_OF: Record<string, string> = {
-    // Садхана
+    // Садхана (корень «/» — это Лента Садханы; «feed» — её же адрес)
+    "": "sadhana", feed: "sadhana",
     japa: "sadhana", story: "sadhana", verse: "sadhana", promise: "sadhana",
     darshan: "sadhana", progress: "sadhana", ekadashi: "sadhana",
     calendar: "sadhana", id: "sadhana", sadhana: "sadhana",
     // ИСККОН
     iskcon: "iskcon", my: "iskcon", centers: "iskcon", center: "iskcon",
     place: "iskcon", doc: "iskcon", post: "iskcon", restaurant: "iskcon",
-    // Богатства
+    // Богатства (включая лилы и кластеры личностей — они живут в корне)
     hero: "bogatstva", books: "bogatstva", bhajans: "bogatstva",
     kirtans: "bogatstva", prasad: "bogatstva", dhama: "bogatstva",
+    ...Object.fromEntries(LILA_ROOTS.map((r) => [r, "bogatstva"])),
     // Царства
     krishna: "krishna", gauranga: "gauranga",
   };
@@ -1050,7 +1096,22 @@ const RESERVED: readonly string[] = [
      * Один путь, а не два. */
     if (seg0 === "id") { setTab("sadhana"); return; }
     if (seg0 === "calendar") { setTab("sadhana"); return; }
-    if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
+    /* ЗКН-Н040 — ⚠️ ЗДЕСЬ ЖИЛ КОРЕНЬ БЕЛЫХ ЭКРАНОВ ВСЕГО ПРИЛОЖЕНИЯ.
+     *
+     * Строка ставила вкладку по имени первого сегмента и делала `return`.
+     * В списке было ШЕСТЬ имён, которых `Screen` НЕ РИСУЕТ: books · kirtans ·
+     * dhama · acharya · account · feed. Вкладка ставилась — экран не рисовался.
+     *
+     * Хуже: `return` обрывал разбор, и НАСТОЯЩИЕ обработчики этих адресов
+     * (ниже: /books → зал, /kirtans → зал, /dhama → зал) СТАНОВИЛИСЬ
+     * НЕДОСТИЖИМЫ. Витрина работала, только если в неё ткнуть из зала мышью;
+     * тот же адрес «по ссылке» или «назад» давал белый лист.
+     *
+     * Теперь вкладка ставится ТОЛЬКО законная. Остальные адреса идут дальше —
+     * к своим витринам. */
+    if (isTabId(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
+    /* ЗКН-Н040 — /feed это Лента Садханы, а не вкладка. */
+    if (clean === "/feed") { setTab("sadhana"); return; }
     /* ЗКН-Н023 §6 — СТАРЫЙ АДРЕС НЕ ЛОМАЕТСЯ.
      *
      * Ссылки уже разошлись: в закладках, в QR-кодах на печатных материалах,
@@ -1058,14 +1119,22 @@ const RESERVED: readonly string[] = [
      * Старый адрес МОЛЧА приводится к новому (replaceUrl, без записи в историю),
      * и дальше маршрутизатор видит только канонический вид. */
     const canon = canonicalPath(clean);
-    if (canon) { replaceUrl(canon); navigate(canon); return; }
+    if (canon) { replaceUrl(canon); applyPath(canon); return; }   // ЗКН-Н039: без второй записи в историю
 
     /* ЗКН-Н023 — ЛИЧНОСТИ: витрина /hero, лилы В КОРНЕ.
      *   /hero                       витрина: три входа
      *   /gauranga-lila/first-wave   лила → волна
      *   /pancha-tattva              кластер в корне
      *   /hero/shrimad-bhagavatam    имя занято КНИГОЙ → под /hero */
-    if (seg0 === "hero") { setTab("bogatstva"); return; }
+    /* ЗКН-Н035 — АДРЕС, КОТОРЫЙ ПИШУТ, ОБЯЗАН ЧИТАТЬСЯ.
+     * `pathFromState` писал коллекцию как /hero/<ключ>, а разбор её не знал:
+     * «назад» на этот адрес открывал голую витрину — карточка исчезала. */
+    if (seg0 === "hero") {
+      const ck = clean.split("/")[2] ?? "";
+      setTab("bogatstva");
+      if (ck) setOpenCollection(ck);
+      return;
+    }
     if (LILA_ROOTS.includes(seg0)) { setTab("bogatstva"); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
     /* ЗКН-Н033 — ЦАРСТВО: /krishna и /gauranga. Подтаб — В АДРЕСЕ.
@@ -1090,17 +1159,15 @@ const RESERVED: readonly string[] = [
     if (clean === "/bhajans") { setTab("bogatstva"); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
     if (clean === "/search") { setOpenSearch(true); return; }
-    if (clean === "/calendar" || seg0 === "calendar") {
-      // Календарь живёт подтабом «Главной» (ISKCON). Город уже положен в localStorage
-      // (cal-loc) вызывающим — свежий HomeCalendar прочитает его при монтировании.
-      // Подтаб выбираем тремя каналами: синглтон homeNav (надёжно, синхронно),
-      // sessionStorage (дубль) и событие home-open (если HomeScreen уже смонтирован).
-      setTab("iskcon");
-      requestHomeTab("calendar");
-      try { sessionStorage.setItem("home-tab", "calendar"); } catch { /* noop */ }
-      try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: "calendar" } })); } catch { /* noop */ }
-      return;
-    }
+    /* ЗКН-Н040 — ⚠️ ВТОРОЙ БЕЛЫЙ ЭКРАН: КАЛЕНДАРЬ.
+     *
+     * Здесь `/calendar` уводило в ИСККОН и просило подтаб «calendar».
+     * Подтаба с таким именем в ИСККОН НЕТ (HOME_TABS: ИСККОН · Новости · Центры ·
+     * Рестораны · Образование · Структура · Документы · Ссылки) — ни одна ветка
+     * не совпадала, и под меню ИСККОН зияла пустота.
+     *
+     * Календарь живёт в САДХАНЕ (Лента · Практика · Календарь · Кабинет) — так же
+     * говорит и BASE_OF. Две записи об одном разошлись, и победила неверная. */
     if (clean === "/notes") { setOpenNotes(true); return; }
     if (seg0 === "note") { const nid = clean.split("/")[2]; if (nid) { setOpenNoteId(nid); return; } }
     if (clean === "/cart") { setOpenCart(true); return; }
@@ -1252,21 +1319,39 @@ const RESERVED: readonly string[] = [
     if (!BASE_OF[seg0]) setTab("iskcon");
   }
 
+  /* ЗКН-Н039 — РОУТЕР ПРИЛОЖЕНИЯ. ОДНА ДОРОГА ДЛЯ КЛИКА И ДЛЯ «НАЗАД».
+   *
+   * Раньше их было две: «назад» пересчитывал состояние через applyPath, а клик
+   * (pushUrl из зала/вкладки/книги) менял адрес МОЛЧА. Один и тот же адрес вёл
+   * себя по-разному в зависимости от того, как в него попали, — отсюда
+   * «работает через раз».
+   *
+   * Теперь запись истории ЛЮБЫМ способом зовёт `route` (см. nav.ts):
+   *   история → route (это состояние App) → подписчики (подтабы залов).
+   *
+   * Книга — единственное исключение: пока она открыта, адреса вида
+   * /bhagavad-gita/2/13 принадлежат ЕЙ, и она разбирает их сама (подпиской).
+   * Иначе applyPath пересобирал бы книгу на каждом перелистывании главы. */
+  const route = (path: string) => {
+    const ob = openBookRef.current;
+    if (ob && (path === `/${bookSlug(ob)}` || path.startsWith(`/${bookSlug(ob)}/`))) return;
+    fromPop.current = true;
+    applyPath(path);
+    setRouteGen((g) => g + 1);   // ЗКН-Н043: гарантирует пробуждение эффекта-синхронизатора
+  };
+  const routeRef = useRef(route);
+  routeRef.current = route;
+
   // инициализация из URL + кнопки назад/вперёд (единственный popstate на приложение)
   useEffect(() => {
     navInit();
+    setRouter((path) => routeRef.current(path));
     const onPop = (e: PopStateEvent) => {
       navSetIdxFromState(e.state);
-      const path = window.location.pathname;
       // ЗКН-Н002: App — ЕДИНСТВЕННЫЙ владелец popstate. Внутрикнижная навигация
       // (глава/стих) не слушает событие сама, а ПОДПИСАНА (subscribeNav): сначала
       // роутер, потом подписчики. Порядок детерминирован, гонки нет.
-      const ob = openBookRef.current;
-      if (!(ob && (path === `/${bookSlug(ob)}` || path.startsWith(`/${bookSlug(ob)}/`)))) {
-        fromPop.current = true;
-        applyPath(path);
-      }
-      notifyNav(path);
+      applyRoute(window.location.pathname);
     };
     window.addEventListener("popstate", onPop);
     applyPath(window.location.pathname);
@@ -1338,13 +1423,21 @@ const RESERVED: readonly string[] = [
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // состояние → URL (push нового уровня), кроме случаев применения из popstate
+  /* ЗКН-Н043 — ФЛАГ «ПРИШЛО ИЗ РОУТЕРА» НЕ ДОЛЖЕН ЗАЛИПАТЬ.
+   *
+   * `fromPop` ставился в applyPath, а сбрасывался ЗДЕСЬ. Но этот эффект бежит
+   * только когда что-то ИЗМЕНИЛОСЬ. Если applyPath ничего не изменил (частый
+   * случай: применили тот же адрес), флаг оставался поднятым НАВСЕГДА — и съедал
+   * СЛЕДУЮЩИЙ честный переход: экран менялся, адрес — нет.
+   *
+   * `routeGen` растёт на каждом применении пути → эффект просыпается ВСЕГДА →
+   * флаг сбрасывается ВСЕГДА. Залипнуть нечему. */
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
     const next = pathFromState();
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openEkadashi, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader, openStoriesTool]);
+  }, [routeGen, tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openEkadashi, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader, openStoriesTool]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -1382,6 +1475,7 @@ const RESERVED: readonly string[] = [
     fromPop.current = true;
     replaceUrl(home);
     applyPath(home);
+    setRouteGen((g) => g + 1);
   }
 
   // Переход по in-app пути (строки «Избранного» и пр.): пушим уровень и применяем тот же роутер.
@@ -1400,8 +1494,12 @@ const RESERVED: readonly string[] = [
    * Всё открытие идёт ЧЕРЕЗ `navigate`: он пишет адрес И применяет его.
    * Двух путей нет. */
   function navigate(href: string) {
-    if (typeof window !== "undefined" && window.location.pathname !== href) pushUrl(href);
-    applyPath(href);
+    if (typeof window === "undefined") return;
+    /* ЗКН-Н039: pushUrl сам зовёт роутер и подписчиков — второй applyPath не нужен
+     * (он давал двойное применение и лишний сброс оверлеев). Если адрес тот же —
+     * новую запись не плодим, но путь применяем: экран мог разойтись с адресом. */
+    if (window.location.pathname !== href) pushUrl(href);
+    else applyRoute(href);
   }
 
   // Донат — собственный адрес /donate (оверлей поверх текущего экрана; ссылку можно переслать).
@@ -1420,19 +1518,25 @@ const RESERVED: readonly string[] = [
   function openRef(href: string) {
     const [kind, work, div, ch, v] = href.split(":");
     if (!work) return;
-    // Любое место писания открывается в загруженной книге /book/ (стаб /read удалён).
-    if (kind === "book") { navigate(`/${bookSlug(BOOKS[work] ? work : "bg")}`); return; }
-    if (work === "bg") { navigate("/books/bg"); return; }
+    /* ЗКН-Н023 — КНИГА ЖИВЁТ В КОРНЕ ПО ПОЛНОМУ ИМЕНИ: /bhagavad-gita/2/13.
+     * Здесь строился СТАРЫЙ адрес `/books/bg/2/13` — витрина плюс шифр. Он спасался
+     * только 301-редиректом, а до редиректа успевал лечь в историю лишней записью:
+     * «назад» приходилось жать дважды, и один из этих шагов вёл на /books. */
+    const bw = BOOKS[work] ? work : "bg";
+    if (kind === "book") { navigate(`/${bookSlug(bw)}`); return; }
     const seg = kind === "verse" ? `/${div ?? ""}/${ch ?? ""}/${v ?? ""}` : kind === "chap" ? `/${div ?? ""}/${ch ?? ""}` : "";
-    navigate(`/books/${work}${seg}`.replace(/\/+$/, ""));
+    navigate(`/${bookSlug(bw)}${seg}`.replace(/\/+$/, ""));
   }
   // Открыть конкретный стих по его id («Стих дня» → читалка): БГ — книга, ШБ/ЧЧ — референс-ридер.
   function openVerseId(id: string) {
     const p = id.split(".");                 // bg.2.13 | bg.13.1-2 | sb.1.9.40 | cc.adi.1.19
     const work = p[0];
     if (!work) return;
-    if (work === "bg") navigate(`/books/bg/${p[1] ?? ""}/${p[2] ?? ""}`.replace(/\/+$/, ""));
-    else navigate(`/books/${work}/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`.replace(/\/+$/, ""));
+    const bw = BOOKS[work] ? work : "bg";
+    const tail = BOOKS[bw]?.hierarchical
+      ? `/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`   // sb.1.9.40 · cc.adi.1.19
+      : `/${p[1] ?? ""}/${p[2] ?? ""}`;                // bg.2.13
+    navigate(`/${bookSlug(bw)}${tail}`.replace(/\/+$/, ""));
   }
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
   /* ЗКН-Н035 — ЭКРАН СМЕНИЛСЯ → АДРЕС СМЕНИЛСЯ. ВСЕГДА.

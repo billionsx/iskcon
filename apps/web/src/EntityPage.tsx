@@ -1065,7 +1065,20 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const [pathNow, setPathNow] = useState(
     typeof window !== "undefined" ? (window.location.pathname || "") : "");
   useEffect(() => subscribeNav(() => setPathNow(window.location.pathname || "")), []);
-  const initialPathRef = { current: pathNow };
+  /* ЗКН-Н038 — ⚠️ ЗДЕСЬ БЫЛ «ПЕРЕЕЗД ПОДТАБА МЕЖДУ ЦАРСТВАМИ».
+   *
+   * `const initialPathRef = { current: pathNow }` — это НЕ ref. Это обычный объект,
+   * который пересоздаётся на КАЖДОМ рендере, а строка `initialPathRef.current = ""`
+   * (ниже, «путь применён») не сохранялась НИГДЕ — на следующем рендере объект
+   * рождался заново, снова с путём внутри.
+   *
+   * Что видел человек: стоишь на Кришне в «Гуне» → жмёшь «Гауранга» → карточка
+   * Гауранги грузит данные, эффект-читатель просыпается второй раз, берёт из этого
+   * «рефа» СТАРЫЙ путь /krishna/…/guna — и открывает «Гуну» уже в Гауранге.
+   *
+   * Настоящий `useRef`: адрес читается ОДИН раз (deep-link), затем гасится
+   * навсегда. Дальше источник истины — `pathNow`, подписанный на адрес. */
+  const initialPathRef = useRef(typeof window !== "undefined" ? (window.location.pathname || "") : "");
   const hashConsumedRef = useRef(false);
 
   useEffect(() => {
@@ -1293,8 +1306,10 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
         pendingSubFromHash.current = null;
         return;
       }
-      // Новый формат — путь /<герой>/<таб>/<подтаб>; seg[0] — id героя (krishna).
-      const seg = (initialPathRef.current || "").split("/").filter(Boolean);
+      /* Новый формат — путь /<герой>/<таб>/<подтаб>; seg[0] — id героя (krishna).
+       * Берём СВЕЖИЙ адрес (он уже наш — проверено выше), а снимок при монтировании
+       * нужен лишь на первом проходе, пока подписка ещё не отработала. */
+      const seg = (pathNow || initialPathRef.current || "").split("/").filter(Boolean);
       hashTab = decodeURIComponent(seg[1] || "");
       hashSub = decodeURIComponent(seg[2] || "");
       if (!hashTab) {
