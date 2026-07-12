@@ -299,7 +299,12 @@ const DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|a
 // НЕ-даршан: афиши/анонсы/программы/астрономия. Высокоточный отсев — ловит постеры Экадаши,
 // флаеры лекций (сессии/регистрация/venue), фото луны/затмений и т.п. Намеренно НЕ включает
 // «фестиваль/утсав» — фестивальные даршаны Божеств реальны и должны проходить.
-const NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|\bкурс\b|\bpresents\b|представляет|philosophy of|admission|\bticket\b|\bбилет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|ekadas|экада[шс]|mahadvadas|махадвадаш|двадаш|dvadas|dwadas|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|\bзакат\b|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
+/* ЗКН-Ф011 — `\b` НЕ РАБОТАЕТ С КИРИЛЛИЦЕЙ.
+ * В JS `\b` определяется через `\w` = [A-Za-z0-9_]. Кириллицы там нет.
+ * Здесь ЖИЛИ ТРИ МЁРТВЫХ УСЛОВИЯ: `\bкурс\b`, `\bбилет`, `\bзакат\b` —
+ * они НИКОГДА не срабатывали, и фильтр молча пропускал посты про курсы,
+ * билеты и закаты. Для кириллицы граница — явный просмотр: (?<![А-Яа-яЁё]). */
+const NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|(?<![А-Яа-яЁё])курс(?![А-Яа-яЁё])|\bpresents\b|представляет|philosophy of|admission|\bticket\b|(?<![А-Яа-яЁё])билет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|ekadas|экада[шс]|mahadvadas|махадвадаш|двадаш|dvadas|dwadas|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|(?<![А-Яа-яЁё])закат(?![А-Яа-яЁё])|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
 
 /* ── источник: галерея даршана Маяпура (mayapur.com, оригиналы ~1920px) ── */
 // Индекс server-rendered (блоки «дата DD/MM/YYYY → /media/album/N»). Полные кадры

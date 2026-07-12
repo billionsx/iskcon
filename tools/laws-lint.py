@@ -144,6 +144,20 @@ RULES = [
         "hint": "→ COVER_FALLBACK_DARK: на обложке-герое лежит текст (ЗКН-Д005/Д007)",
     },
     {
+        "id": "ЗКН-Ф011",
+        "name": "`\\b` в регулярке С КИРИЛЛИЦЕЙ (не сработает)",
+        # В JavaScript `\b` определяется через `\w` = [A-Za-z0-9_]. Кириллицы там НЕТ.
+        # `/^ГГД\b/` НЕ совпадает с «ГГД 193» — и функция МОЛЧА возвращает вход.
+        # Вместо `\b` — явный просмотр вперёд: (?![А-Яа-яЁёA-Za-z]).
+        # Ловим `\b` ВПРИТЫК к кириллице — только там он не сработает.
+        # `\brsvp\b` рядом с русскими словами в одной регулярке — НЕ нарушение:
+        # `\b` стоит у латиницы, с ней он работает.
+        # Комментарии пропускаем: там закон ОБЪЯСНЯЕТСЯ, а не нарушается.
+        "pattern": re.compile(r"^(?!\s*(?:\*|//|#)).*?(\\b[А-Яа-яЁё]|[А-Яа-яЁё]\\b)"),
+        "hint": "→ `\\b` не работает с кириллицей (JS: \\w = [A-Za-z0-9_]). "
+                "Взять (?![А-Яа-яЁёA-Za-z]) (ЗКН-Ф011)",
+    },
+    {
         "id": "ЗКН-Ц001",
         "name": "секрет в коде",
         "pattern": re.compile(r"(ghp_|github_pat_)[A-Za-z0-9_]{10,}"),
@@ -153,7 +167,12 @@ RULES = [
 
 
 def check_rules():
+    """Правила без пометки — по коду приложения. С пометкой `"scope": "tools"` —
+    по инструментам и воркфлоу: ловушки Ф011–Ф014 живут именно там."""
     bad = []
+    app_rules = [r for r in RULES if r.get("scope") != "tools"]
+    tool_rules = [r for r in RULES if r.get("scope") == "tools"]
+
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx", ".css") or fp.name in ALLOW:
             continue
@@ -162,9 +181,20 @@ def check_rules():
         except Exception:
             continue
         for i, line in enumerate(text.split("\n"), 1):
-            for r in RULES:
+            for r in app_rules:
                 if r["pattern"].search(line):
                     bad.append((r, str(fp.relative_to(ROOT)), i, line.strip()[:90]))
+
+    if tool_rules:
+        for fp in sorted((ROOT / "tools").rglob("*.py")):
+            try:
+                text = fp.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            for i, line in enumerate(text.split("\n"), 1):
+                for r in tool_rules:
+                    if r["pattern"].search(line):
+                        bad.append((r, str(fp.relative_to(ROOT)), i, line.strip()[:90]))
     return bad
 
 
@@ -224,6 +254,16 @@ DEBT = {
         "pattern": re.compile(r"fontSize:\s*[0-9]"),
         "hint": "→ tk.text.* или var(--…); см. docs/STANDARD_design.md",
     },
+    "bare_urlopen": {
+        "law": "ЗКН-Ф014",
+        "name": "urlopen БЕЗ перехвата HTTPError (падает молча)",
+        # `urlopen` кидает HTTPError на 400, и без перехвата CI показывает лишь
+        # «exit code 1». Три прогона ушли впустую, пока d1() не начал печатать тело
+        # ответа: настоящей ошибкой было «too many SQL variables».
+        # Долг — старые разовые скрипты. Новые обязаны ловить и печатать.
+        "scope": "tools",
+        "hint": "→ try/except urllib.error.HTTPError + напечатать тело ответа (ЗКН-Ф014)",
+    },
     "hardcoded_hex": {
         "law": "ЗКН-Д001",
         "name": "голый hex вместо токена (#D2AA1B)",
@@ -233,8 +273,25 @@ DEBT = {
 }
 
 
+def count_bare_urlopen():
+    """ЗКН-Ф014: `urlopen` без try/except HTTPError — падает молча."""
+    n = 0
+    for fp in sorted((ROOT / "tools").rglob("*.py")):
+        try:
+            lines = fp.read_text(encoding="utf-8").split("\n")
+        except Exception:
+            continue
+        for i, l in enumerate(lines):
+            if "urllib.request.urlopen" not in l:
+                continue
+            if "try:" not in "\n".join(lines[max(0, i - 3):i + 1]):
+                n += 1
+    return n
+
+
 def count_debt():
     counts = {k: 0 for k in DEBT}
+    counts["bare_urlopen"] = count_bare_urlopen()
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
             continue
@@ -243,6 +300,8 @@ def count_debt():
         except Exception:
             continue
         for k, d in DEBT.items():
+            if d.get("scope") == "tools":
+                continue
             counts[k] += len(d["pattern"].findall(t))
     return counts
 

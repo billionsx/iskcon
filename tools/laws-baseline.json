@@ -1,4 +1,5 @@
 {
-  "magic_font_size": 31,
-  "hardcoded_hex": 447
+  "magic_font_size": 30,
+  "bare_urlopen": 16,
+  "hardcoded_hex": 445
 }
