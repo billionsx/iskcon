@@ -90,6 +90,23 @@ export const BOOKS: Record<string, BookData> = {
     uniformTitle: true,
     hideCardIast: true,
   },
+  br: {
+    id: "br",
+    work: "br",
+    slug: "bhakti-ratnakara",
+    titleLine1: "Бхакти-",
+    titleLine2: "ратнакара",
+    iast: "Bhakti-ratnākara",
+    tagline: "Пятнадцать волн о наследии Госвами",
+    author: "Шрила Нарахари Чакраварти",
+    description:
+      "Как наследие Госвами Вриндавана пришло в Гауда-дешу: пятнадцать волн о Шринивасе Ачарье, Нароттаме дасе Тхакуре и Шьямананде Пандите. Текст на английском — русский перевод готовится.",
+    publisher: "bbt",
+    covers: [COVER_FALLBACK],
+    chips: ["15 волн", "на английском", "XVIII век"],
+    prose: true,
+    uniformTitle: true,
+  },
   cb: {
     id: "cb",
     work: "cb",
