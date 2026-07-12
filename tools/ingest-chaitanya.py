@@ -357,7 +357,10 @@ def load(vs):
                 json.dumps({"ru": t}, ensure_ascii=False), str(i)])
     print("издание и %d разделов записаны" % (2 + sum(len(t) for t in CHAPTERS.values())))
 
-    B = 40
+    # ⚠️ ЛИМИТ D1: «too many SQL variables». У verses 6 полей на стих,
+    # 40 стихов = 240 переменных — сверх предела. Держим ≤ 100 переменных:
+    # 16 стихов × 6 = 96.
+    B = 16
     total = 0
     for i in range(0, len(vs), B):
         chunk = vs[i:i + B]
@@ -379,7 +382,7 @@ def load(vs):
            "VALUES " + ph_t, pr_t)
 
         total += len(chunk)
-        if (i // B) % 20 == 0:
+        if (i // B) % 60 == 0:
             print("  ...%d/%d" % (total, len(vs)))
 
     r = d1("SELECT COUNT(*) AS n FROM verses WHERE work_id='cb'")
