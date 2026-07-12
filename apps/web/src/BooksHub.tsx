@@ -308,7 +308,12 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
     { id: "all", label: "Все", count: LIBRARY.length },
     { id: "prabhupada", label: "Шрила Прабхупада", count: LIBRARY.filter((b) => b.lineage === "prabhupada").length },
     { id: "acharya", label: "Ачарьи", count: LIBRARY.filter((b) => b.lineage === "acharya").length },
-    { id: "iskcon", label: "Гуру ИСККОН", count: LIBRARY.filter((b) => b.lineage === "iskcon").length },
+    /* ⚠️ ЗКН-Р011 — ЗДЕСЬ ЖИЛ НОЛЬ.
+     * Фильтр искал `lineage === "iskcon"`, а в базе значение — **"guru-iskcon"**.
+     * Счётчик показывал 0, хотя книги есть («Уроки любви» Бхакти Вигьяны Госвами
+     * Махараджа и др.). Значение в коде и значение в базе РАЗОШЛИСЬ, и никто
+     * этого не заметил: ноль выглядит как «книг нет», а не как «фильтр сломан». */
+    { id: "guru-iskcon", label: "Гуру ИСККОН", count: LIBRARY.filter((b) => b.lineage === "guru-iskcon").length },
   ];
   // «Есть контент» = доступен текст (есть в BOOKS и не noText) ИЛИ аудио (AUDIO_WORKS).
   const hasContent = (id: string) => !!AUDIO_WORKS[id] || (!!BOOKS[id] && !BOOKS[id].noText);
@@ -403,13 +408,8 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
           {(filter === "all" || filter === "prabhupada") && (
             <section>
               <SectionHeader title={LINEAGE_LABEL.prabhupada} note={LINEAGE_NOTE.prabhupada} />
-              <SectionCard
-                title="Шрила Прабхупада"
-                subtitle="Ачарья-основатель ИСККОН — об авторе и его трудах"
-                mark={<MaskMark src="/prabhupada.svg" size={52} pos="center bottom" />}
-                accent
-                onClick={() => onOpenEntity("prabhupada", "personality")}
-              />
+              {/* ЗКН-Н036: карточка «Шрила Прабхупада» убрана — она вела на личность,
+                  а раздел Книг про КНИГИ. Личность живёт в Личностях. */}
               {heroStack(byLineage("prabhupada"))}
             </section>
           )}
@@ -427,14 +427,8 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
             <section>
               <SectionHeader title={LINEAGE_LABEL["guru-iskcon"]} note={LINEAGE_NOTE["guru-iskcon"]} />
               {heroStack(byLineage("guru-iskcon"))}
-              <div style={{ marginTop: 14 }}>
-                <SectionCard
-                  title="Преемники Прабхупады"
-                  subtitle="Духовные учителя ИСККОН, дающие посвящение и продолжающие линию"
-                  mark={<MaskMark src="/iskcon-sign.svg" size={40} />}
-                  onClick={() => onOpenCollection("iskcon-gurus")}
-                />
-              </div>
+              {/* ЗКН-Н036: карточка «Преемники Прабхупады» убрана — вела на список
+                  ЛИЧНОСТЕЙ, а раздел «Книги» про КНИГИ. Гуру живут в Личностях. */}
             </section>
           )}
 

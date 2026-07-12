@@ -73,13 +73,19 @@ def actual_level(lid: str) -> tuple[int, str]:
         return 5, "гейт адресов (url-audit.py)"
 
     # Д009 — токен SECTION_GAP в общем компоненте шапки.
+    if lid == "ЗКН-Ф019":
+        t = (ROOT / "tools" / "infra-audit.py").read_text(encoding="utf-8")
+        if "check_f017" in t:
+            return 5, "гейт инфраструктуры"
+
     if lid == "ЗКН-Д009":
         t = (ROOT / "apps" / "web" / "src" / "ui" / "HubHeader.tsx").read_text(encoding="utf-8")
         if "SECTION_GAP" in t:
             return 5, "токен в ui/HubHeader.tsx"
 
     # Н027/Н028 механизированы в nav-audit (check_n027 ловит и то, и другое).
-    if lid in ("ЗКН-Н027", "ЗКН-Н028", "ЗКН-Н029", "ЗКН-Н030", "ЗКН-Н031", "ЗКН-Н032", "ЗКН-Н033", "ЗКН-Н034", "ЗКН-Н035", "ЗКН-Н036"):
+    if lid in ("ЗКН-Н027", "ЗКН-Н028", "ЗКН-Н029", "ЗКН-Н030", "ЗКН-Н031", "ЗКН-Н032", "ЗКН-Н033", "ЗКН-Н034", "ЗКН-Н035", "ЗКН-Н036",
+                   "ЗКН-Н037", "ЗКН-Н038"):
         t = (ROOT / "tools" / "nav-audit.py").read_text(encoding="utf-8")
         if "check_n027" in t or "check_n029" in t or "check_n031" in t or "check_n033" in t or "check_n035" in t:
             return 5, "гейт навигации (check_n027)"
