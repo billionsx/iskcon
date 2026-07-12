@@ -71,49 +71,82 @@ def is_translit(line: str) -> bool:
     Первая версия определителя знала только про диакритику — и в Антье
     поменяла местами транслитерацию и перевод (проверка это поймала).
     """
-    if not line or len(line) > 110:
+    if not line:
         return False
-    if any(ch in DIACRITICS for ch in line):
+
+    # Кириллическая транслитерация — по диакритике. Она короткая (строка стиха).
+    if len(line) <= 110 and any(ch in DIACRITICS for ch in line):
         return True
-    # латиница в русской книге = транслитерация (кириллицы почти нет)
+
+    # ЛАТИНСКАЯ транслитерация — по СОСТАВУ, а не по длине.
+    # Ограничение длины отвергало 593-знаковую строку в Мадхье, и латиница
+    # уходила в перевод. Признак — латиница ПРИ ОТСУТСТВИИ кириллицы.
     lat = len(LATIN.findall(line))
     cyr = len(CYRILLIC.findall(line))
-    return lat >= 6 and lat > cyr * 2
+    return lat >= 6 and cyr <= 2
 
 
-# ГРАНИЦЫ ТЕЛА (проверены по оглавлению этого издания — «Шри Гаурамрита»,
-# сокращённая редакция: Ади 17 глав · Мадхья 12 · Антья 10).
+# РАЗМЕТКА ГЛАВ — ДВУМЯ РАЗНЫМИ СПОСОБАМИ (это и сбивало с толку).
 #
-# ⚠️ МАДХЬЯ НЕ ВНОСИТСЯ. В источнике её главы не размечены: заголовков нет,
-# нумерация стихов сбрасывается внутри глав, названия из оглавления попадают
-# во второе оглавление, а не в тело. Разобрать адрес стиха НЕВОЗМОЖНО.
+#   Ади-кханда    — ЗАГОЛОВКАМИ  «Глава 7. Вишварупа принимает санньясу»   → 17 глав
+#   Мадхья, Антья — МАРКЕРАМИ КОНЦА:                                        → 28 и 10
+#       «Так заканчивается двадцать восьмая глава … Мадхья-кханды —
+#        "Господь принимает санньясу"»
 #
-# Записать 5024 стиха с ВЫДУМАННЫМИ адресами глав хуже, чем не записать:
-# каждая ссылка вела бы не туда (ЗКН-БТ001 · ЗКН-Пр007). Мадхья ждёт чистого
-# источника. Ади и Антья разобраны ТОЧНО — счёт глав сходится с оглавлением.
-ZONES = [("adi", 95, 29037, 17), ("antya", 63959, None, 10)]
+# Первый заход искал только заголовки, не нашёл их в Мадхье — и я решил, что
+# структуры нет. Она была: просто в другом месте строки и словами, а не цифрой.
+# Маркеры конца идут ПОДРЯД без пропусков (1…28, 1…10) — это и есть сверка.
+#
+# Заодно маркер отдаёт НАЗВАНИЕ главы — не нужно тянуть его из оглавления.
+ZONES = [("adi", 95, 29037, 17)]        # Ади — по заголовкам
+
+ORD = {"первая": 1, "вторая": 2, "третья": 3, "четвёртая": 4, "четвертая": 4,
+       "пятая": 5, "шестая": 6, "седьмая": 7, "восьмая": 8, "девятая": 9,
+       "десятая": 10, "одиннадцатая": 11, "двенадцатая": 12, "тринадцатая": 13,
+       "четырнадцатая": 14, "пятнадцатая": 15, "шестнадцатая": 16,
+       "семнадцатая": 17, "восемнадцатая": 18, "девятнадцатая": 19, "двадцатая": 20}
+TENS = {"двадцать": 20, "тридцать": 30}
+
+END_RX = re.compile(
+    r"^(?:Так|На этом)\s+заканчивается\s+((?:двадцать|тридцать)\s+)?([а-яё]+)\s+глава"
+    r"[^«\"]*?(Ади|Мадхья|Мадхьяк|Антья)", re.I)
+TITLE_RX = re.compile(r"[«\"]([^»\"]+)[»\"]")
+
+
+def end_marker(line):
+    """Маркер конца главы → (кханда, номер, название). Иначе None."""
+    m = END_RX.match(line)
+    if not m:
+        return None
+    n = ORD.get(m.group(2).lower(), 0)
+    if m.group(1):
+        n += TENS.get(m.group(1).strip().lower(), 0)
+    if not n:
+        return None
+    kh = m.group(3).lower().replace("мадхьяк", "мадхья")
+    kh = {"ади": "adi", "мадхья": "madhya", "антья": "antya"}[kh]
+    t = TITLE_RX.search(line)
+    return kh, n, (t.group(1).strip() if t else None)
 
 
 def parse_cb(path: Path):
-    """«Чайтанья-бхагавата»: Ади + Антья. Мадхья пропущена (см. выше)."""
+    """«Чайтанья-бхагавата» целиком: Ади 17 · Мадхья 28 · Антья 10 = 55 глав."""
     lines = [l.strip() for l in path.read_text(encoding="utf-8-sig").split("\n")]
     out = []
+    titles = {}
+
+    # ── 1. АДИ — по заголовкам «Глава N.» ──
     for kh, a, b, expect in ZONES:
-        b = b or len(lines)
-        chapter = 0
-        prev = 0
-        cur = None
-        in_purport = False
+        chapter, prev, cur, in_purport = 0, 0, None, False
         for i in range(a, min(b, len(lines))):
             line = lines[i]
             if not line:
                 continue
-
             m = VERSE_RX.match(line)
             if m:
                 num = int(m.group(1))
                 if num == 1 and (prev >= 2 or prev == 0):
-                    chapter += 1          # глава кончилась там, где нумерация сброшена
+                    chapter += 1
                 prev = num
                 if cur:
                     out.append(cur)
@@ -121,7 +154,6 @@ def parse_cb(path: Path):
                        "bengali": [], "translit": [], "translation": [], "purport": []}
                 in_purport = False
                 continue
-
             if not cur:
                 continue
             if PURPORT_RX.match(line):
@@ -137,27 +169,75 @@ def parse_cb(path: Path):
                 cur["translation"].append(line)
         if cur:
             out.append(cur)
-            cur = None
-
         got = len({(v["kh"], v["ch"]) for v in out if v["kh"] == kh})
-        mark = "✓" if got == expect else "✗"
-        print("  %s %-6s глав=%2d (оглавление: %2d)" % (mark, kh, got, expect))
         if got != expect:
-            raise SystemExit("::error title=PARSE::%s: глав %d вместо %d — разбор неверен, "
-                             "в базу НЕ пишу" % (kh, got, expect))
+            raise SystemExit("::error title=PARSE::%s: глав %d вместо %d" % (kh, got, expect))
+        print("  ✓ %-6s глав=%2d (по заголовкам)" % (kh, got))
 
-    KH_RU = {"adi": "Ади", "antya": "Антья"}
-    verses = []
-    seen = {}
+    # ── 2. МАДХЬЯ и АНТЬЯ — по МАРКЕРАМ КОНЦА главы ──
+    # Стихи копим, пока не встретим «Так заканчивается N-я глава …-кханды».
+    # Тогда весь накопленный блок — это глава N. Так адрес берётся из книги.
+    buf, cur, in_purport = [], None, False
+    seen = {"madhya": 0, "antya": 0}
+    for i in range(29037, len(lines)):
+        line = lines[i]
+        if not line:
+            continue
+
+        em = end_marker(line)
+        if em:
+            kh, n, title = em
+            if kh in ("madhya", "antya"):
+                if cur:
+                    buf.append(cur)
+                    cur = None
+                for v in buf:
+                    v["kh"], v["ch"] = kh, n
+                out.extend(buf)
+                buf = []
+                seen[kh] = max(seen[kh], n)
+                if title:
+                    titles[(kh, n)] = title
+                continue
+
+        m = VERSE_RX.match(line)
+        if m:
+            if cur:
+                buf.append(cur)
+            cur = {"kh": None, "ch": None, "num": int(m.group(1)),
+                   "bengali": [], "translit": [], "translation": [], "purport": []}
+            in_purport = False
+            continue
+        if not cur:
+            continue
+        if PURPORT_RX.match(line):
+            in_purport = True
+            continue
+        if in_purport:
+            cur["purport"].append(line)
+        elif BENGALI.search(line):
+            cur["bengali"].append(line)
+        elif is_translit(line):
+            cur["translit"].append(line)
+        else:
+            cur["translation"].append(line)
+
+    for kh, expect in (("madhya", 28), ("antya", 10)):
+        if seen[kh] != expect:
+            raise SystemExit("::error title=PARSE::%s: глав %d вместо %d — в базу НЕ пишу"
+                             % (kh, seen[kh], expect))
+        print("  ✓ %-6s глав=%2d (по маркерам конца)" % (kh, seen[kh]))
+
+    KH_RU = {"adi": "Ади", "madhya": "Мадхья", "antya": "Антья"}
+    verses, uniq = [], {}
     for v in out:
+        if v["kh"] is None or v["ch"] is None:
+            continue                      # стих вне главы — не вносим
         base = "cb.%s.%d.%d" % (v["kh"], v["ch"], v["num"])
-        # Дубль номера внутри главы = стих-двойник (шлока на два блока). Не теряем:
-        # различаем суффиксом, а не молча перетираем (ЗКН-БТ001).
-        seen[base] = seen.get(base, 0) + 1
-        vid = base if seen[base] == 1 else "%s-%d" % (base, seen[base])
+        uniq[base] = uniq.get(base, 0) + 1
+        vid = base if uniq[base] == 1 else "%s-%d" % (base, uniq[base])
         verses.append({
-            "id": vid,
-            "work_id": "cb",
+            "id": vid, "work_id": "cb",
             "division_id": "cb.%s.%d" % (v["kh"], v["ch"]),
             "ref": "ЧБ %s %d.%d" % (KH_RU[v["kh"]], v["ch"], v["num"]),
             "ordinal": v["num"],
@@ -166,7 +246,7 @@ def parse_cb(path: Path):
             "translation": "\n".join(v["translation"]) or None,
             "purport": "\n".join(v["purport"]) or None,
         })
-    return verses
+    return verses, titles
 
 
 def parse(path: Path, work: str, abbr: str):
@@ -259,12 +339,11 @@ def main():
         raise SystemExit("::error::нет файла %s" % path)
 
     print("«Чайтанья-бхагавата» — сверка разбора с оглавлением:")
-    vs = parse_cb(path)
+    vs, titles = parse_cb(path)
     with_tr = sum(1 for v in vs if v["translation"])
     with_pu = sum(1 for v in vs if v["purport"])
     print("\nстихов=%d  с переводом=%d  с комментарием Бхактисиддханты=%d"
           % (len(vs), with_tr, with_pu))
-    print("МАДХЬЯ НЕ ВНЕСЕНА: в источнике её главы не размечены (см. шапку файла).")
 
     out = ROOT / "build/cb-verses.json"
     out.parent.mkdir(exist_ok=True)
@@ -275,7 +354,7 @@ def main():
         print("нет токена — в базу не пишу (локальный прогон)")
         return 0
 
-    load(vs)
+    load(vs, titles)
     return 0
 
 
@@ -337,8 +416,9 @@ CHAPTERS = {
 KH_TITLE = {"adi": "Ади-кханда", "antya": "Антья-кханда"}
 
 
-def load(vs):
+def load(vs, titles=None):
     """Пишем стихи пачками. Параметризовано — кавычки в тексте не ломают SQL."""
+    titles = titles or {}
     # 1) издание
     d1("INSERT OR REPLACE INTO editions (id, work_id, lang, title, translator, source) "
        "VALUES ('cb-ru','cb','ru','Шри Чайтанья-бхагавата',"
