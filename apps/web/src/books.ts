@@ -1,4 +1,6 @@
-import { COVER_FALLBACK } from "./ui/CoverFallback";
+// ЗКН-Д005/Д007: у ГЕРОЯ книги текст лежит ПОВЕРХ обложки → заглушка ТЁМНАЯ.
+// Белая — только там, где текста на обложке нет (миниатюры, аватары).
+import { COVER_FALLBACK_DARK } from "./ui/CoverFallback";
 /**
  * Book data model — single source of truth for book unit cards (юнит-стандарт)
  * and the product detail page. Add a new book = add an entry here.
@@ -102,7 +104,7 @@ export const BOOKS: Record<string, BookData> = {
     description:
       "Паломничество по девяти островам Навадвипа-дхамы: Нитьянанда Прабху ведёт Дживу Госвами и раскрывает славу каждого места. Практическое руководство для парикрамы.",
     publisher: "bbt",
-    covers: [COVER_FALLBACK],
+    covers: [COVER_FALLBACK_DARK],
     chips: ["18 глав", "9 островов", "XIX век"],
     prose: true,
     uniformTitle: true,
@@ -119,7 +121,7 @@ export const BOOKS: Record<string, BookData> = {
     description:
       "Как наследие Госвами Вриндавана пришло в Гауда-дешу: пятнадцать волн о Шринивасе Ачарье, Нароттаме дасе Тхакуре и Шьямананде Пандите. Текст на английском — русский перевод готовится.",
     publisher: "bbt",
-    covers: [COVER_FALLBACK],
+    covers: [COVER_FALLBACK_DARK],
     chips: ["15 волн", "на английском", "XVIII век"],
     prose: true,
     uniformTitle: true,
@@ -136,7 +138,7 @@ export const BOOKS: Record<string, BookData> = {
     description:
       "Вриндаван дас Тхакур, названный Вьясой лил Господа, описал явление, детство и санкиртану Гауранги Махапрабху в Навадвипе. Внесены Ади-кханда и Антья-кханда с комментариями «Гаудия-бхашья» Шрилы Бхактисиддханты Сарасвати. Мадхья-кханда готовится.",
     publisher: "bbt",
-    covers: [COVER_FALLBACK],
+    covers: [COVER_FALLBACK_DARK],
     chips: ["27 глав", "6 400+ стихов", "500+ лет"],
     hierarchical: true,
     uniformTitle: true,
@@ -153,7 +155,7 @@ export const BOOKS: Record<string, BookData> = {
     description:
       "Жизнеописание Гауранги Махапрабху, сложенное бенгальским поэтом XVI века. Лочана дас Тхакур передаёт лилы Господа языком песни: Сутра-, Ади-, Мадхья- и Шеша-кханда. Перевод Субхаг Свами.",
     publisher: "bbt",
-    covers: [COVER_FALLBACK],
+    covers: [COVER_FALLBACK_DARK],
     chips: ["28 глав", "4 кханды", "500+ лет"],
     hierarchical: true,
     prose: true,

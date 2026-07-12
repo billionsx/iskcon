@@ -595,16 +595,16 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
       {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
       <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
         items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "prasad", label: "Прасад" }, { id: "dhama", label: "Дхама" }]} />
-      {/* ЗКН-Н007: вход в Личности — «Герои» (выбор царства: Прабхупада · Кришна Лила ·
-          Гауранга Лила · Бхагаватам). Из царства — в четырёхуровневое меню (LichnostiHub).
-          Адрес /dhana/vse — полный список. */}
-      {sub === "lichnosti" && (deep === "vse"
+      {/* ЗКН-Н007 — «ГЕРОИ» ТОЛЬКО НА ПЕРВОМ ЭКРАНЕ.
+          /dhana        → «Герои»: выбор царства (Прабхупада · Кришна Лила · Гауранга Лила · Бхагаватам)
+          /dhana/<что-угодно-глубже> → четырёхуровневое меню Личностей со ВСЕМИ 730.
+          Оборачивать вложенные уровни в «Героев» — значит сломать меню. */}
+      {sub === "lichnosti" && (deep
         ? <LichnostiHub onOpenEntity={onOpenEntity} />
         : <AcharyaScreen
-            realm={deep === "krishna-lila" ? "krishna" : deep === "gauranga-lila" ? "gauranga" : null}
-            onOpenPath={(pp) => { if (pp.startsWith("/dhana/")) { setDeep(pp.split("/")[2] || ""); pushUrl(pp); } else onOpenPath(pp); }}
             onOpen={onOpenEntity}
             onOpenCollection={onOpenCollection}
+            onOpenPath={(pp) => { if (pp.startsWith("/dhana/")) { setDeep(pp.split("/")[2] || "vse"); pushUrl(pp); } else onOpenPath(pp); }}
           />)}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
