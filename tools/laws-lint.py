@@ -256,6 +256,13 @@ DEBT = {
         "pattern": re.compile(r"fontSize:\s*[0-9]"),
         "hint": "→ tk.text.* или var(--…); см. docs/STANDARD_design.md",
     },
+    "type_errors": {
+        "law": "ЗКН-Ф016",
+        "name": "ошибка типа (= КРАШ в браузере)",
+        "scope": "tsc",
+        "hint": "→ ошибка типа падает в браузере как React #31 и УБИВАЕТ ВСЁ приложение "
+                "(белый лист везде). Сборка esbuild этого не ловит (ЗКН-Ф016)",
+    },
     "bare_urlopen": {
         "law": "ЗКН-Ф014",
         "name": "urlopen БЕЗ перехвата HTTPError (падает молча)",
@@ -273,6 +280,29 @@ DEBT = {
         "hint": "→ var(--color-gold) / var(--color-gold-deep); см. docs/STANDARD_design.md",
     },
 }
+
+
+def count_type_errors():
+    """ЗКН-Ф016 — ОШИБКА ТИПА = КРАШ В БРАУЗЕРЕ.
+
+    В экране Рецептов стояло `CATEGORIES.map((c) => ({ id: c, label: c }))`,
+    где CATEGORIES — УЖЕ `{id, label}[]`. React получал ОБЪЕКТ вместо текста
+    и падал: «Minified React error #31».
+
+    И вот что важнее самой ошибки: React, не найдя границы ошибок, размонтирует
+    ВСЁ ДЕРЕВО. Человек видел белый лист ВЕЗДЕ — на «назад», на любой вкладке —
+    пока не перезагрузит. ОДИН битый экран делал мёртвым ВСЁ приложение.
+
+    Сборка это НЕ ЛОВИЛА: esbuild не проверяет типы. `tsc` ругался — но типы
+    React вообще не были установлены (223 ошибки, из них 89 — «нет namespace
+    React»), и никто в этот шум не смотрел.
+
+    Теперь: типы установлены, ошибок 20, ХРАПОВИК. Рост запрещён.
+    """
+    import subprocess
+    r = subprocess.run(["../../node_modules/.bin/tsc", "--noEmit", "-p", "tsconfig.json"],
+                       cwd=str(ROOT / "apps" / "web"), capture_output=True, text=True)
+    return sum(1 for l in (r.stdout + r.stderr).split("\n") if "error TS" in l)
 
 
 def count_bare_urlopen():
@@ -294,6 +324,7 @@ def count_bare_urlopen():
 def count_debt():
     counts = {k: 0 for k in DEBT}
     counts["bare_urlopen"] = count_bare_urlopen()
+    counts["type_errors"] = count_type_errors()
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
             continue
@@ -302,7 +333,7 @@ def count_debt():
         except Exception:
             continue
         for k, d in DEBT.items():
-            if d.get("scope") == "tools":
+            if d.get("scope") in ("tools", "tsc"):
                 continue
             counts[k] += len(d["pattern"].findall(t))
     return counts
