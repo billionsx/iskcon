@@ -365,11 +365,16 @@ def check_n033():
         if 'seg0 === "%s"' % realm not in app:
             bad.append(("App.tsx", "нет ветки для /%s — адрес уедет в запасной (ЗКН-Н033)" % realm))
 
-    # 3. подтаб ВЫВОДИТСЯ из адреса, а не помнится.
-    #    Ищем ВЫЗОВ, а не упоминание: слово может остаться в комментарии.
-    if "return subscribeNav(() => {" not in ent:
-        bad.append(("EntityPage.tsx", "подтаб не подписан на адрес — смена царства унесёт "
-                                      "его с собой (ЗКН-Н033)"))
+    # 3. ПУТЬ ЧИТАЕТСЯ СВЕЖИМ (ЗКН-Н037), а не из снимка при монтировании.
+    #
+    #    `useRef(window.location.pathname)` снимает путь ОДИН РАЗ и держит вечно:
+    #    адрес сменился — снимок нет. Так смена царства уносила подтаб.
+    #    Верно: состояние `pathNow`, ПОДПИСАННОЕ на адрес.
+    if "const [pathNow, setPathNow]" not in ent:
+        bad.append(("EntityPage.tsx", "путь читается из СНИМКА при монтировании — смена "
+                                      "царства унесёт подтаб с собой (ЗКН-Н037)"))
+    if "setPathNow(window.location.pathname" not in ent:
+        bad.append(("EntityPage.tsx", "`pathNow` не подписан на смену адреса (ЗКН-Н037)"))
     return bad
 
 
