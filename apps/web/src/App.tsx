@@ -558,13 +558,23 @@ export /* ЗКН-Н007: слаги лил — вход в четырёхуров
  * Прабху — живые личности, и корень уже принадлежит им. Их кластеры остаются
  * вложенными: /gauranga-lila/first-wave/nityananda. Гейт это стережёт. */
 const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "bhagavatam-lila",
-                    "mahabharata-lila", "ramayana-lila", "pancha-tattva", "avatars"];
+                    "mahabharata-lila", "ramayana-lila", "pancha-tattva",
+                    "avatars", "rishis", "bhaktas", "demigods", "asuras"];
 
 const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
+/* ЗКН-Н025 — ВИТРИНА ЧИТАЕТСЯ ИЗ ПЕРВОГО СЕГМЕНТА.
+ *
+ * Было `seg[1]` — под старый адрес `/dhana/books`. После переезда витрина живёт
+ * в КОРНЕ (`/books`), и функция всегда возвращала «личности»: верхнее меню
+ * рисовало не ту вкладку, а на `/books` и `/dhama` меню пропадало вовсе.
+ *
+ * Опять то же самое: адрес переехал — читатель остался. */
 export function bogSubFromPath(path: string): string {
-  const seg = path.split("/").filter(Boolean);          // ["dhana", ...]
-  const s1 = seg[1] || "";
-  return (BOG_SUBS as readonly string[]).includes(s1) ? s1 : "lichnosti";
+  const seg = path.split("/").filter(Boolean);
+  const s0 = seg[0] || "";
+  if ((BOG_SUBS as readonly string[]).includes(s0)) return s0;
+  if (s0 === "hero" || LILA_ROOTS.includes(s0)) return "lichnosti";
+  return "lichnosti";
 }
 /* ЗКН-Н005: суб-таб Садханы — сегмент URL, не переменная модуля.
  * / → Лента (умолчание) · /practice · /calendar · /account */
@@ -1005,11 +1015,22 @@ const RESERVED: readonly string[] = [
     if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
     if (clean === "/my/centers") { setOpenMyCenters(true); return; }
     if (clean === "/iskcon/centers") { setOpenCenters(true); return; }
+    /* ЗКН-Н023 — ПРАСАД: рецепт живёт в /prasad/<рецепт>, без папки «recipe».
+     *   /prasad              витрина
+     *   /prasad/book         книга «Кухня прасада»
+     *   /prasad/book/<гл>    глава
+     *   /prasad/offering     подношение
+     *   /prasad/<рецепт>     РЕЦЕПТ — прямо здесь
+     *
+     * ⚠️ ЗКН-Н025: обработчик ждал `/prasad/recipe/<x>` после того, как адрес
+     * переехал на `/prasad/<x>`. Рецепты не открывались — пустые экраны. */
     if (seg0 === "prasad") {
-      const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
-      if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
-      if (parts[2] === "book") { if (parts[3]) setCookbookChapter(parts[3]); else setOpenCookbook(true); return; }
-      setPrasadamSection(parts[2] === "offering" ? "offering" : "recipes");
+      const parts = clean.split("/");
+      const p2 = parts[2] || "";
+      if (p2 === "book") { if (parts[3]) setCookbookChapter(parts[3]); else setOpenCookbook(true); return; }
+      if (p2 === "offering") { setPrasadamSection("offering"); setTab("bogatstva"); return; }
+      if (p2) { setPrasadamRecipe(p2); return; }          // /prasad/<рецепт>
+      setPrasadamSection("recipes");
       return;
     }
     /* ЗКН-Н023 — /books это ВИТРИНА. Сама книга живёт в КОРНЕ по полному имени:
@@ -1046,7 +1067,12 @@ const RESERVED: readonly string[] = [
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "post") { const pid = clean.split("/")[2] ?? ""; if (pid) { setOpenPost(pid); return; } }
     if (clean.startsWith("bhajans-")) { setOpenBhajan(clean); return; }
-    if (seg0 === "bhajans") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
+    /* ЗКН-Н025: без слага — В ЗАЛ Богатств, а не в старую вкладку «home». */
+    if (seg0 === "bhajans") {
+      const bslug = clean.split("/")[2] ?? "";
+      if (bslug) setOpenBhajan(bslug); else setTab("bogatstva");
+      return;
+    }
     if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
       const sub: HomeTabId = seg0 === "doc" ? "documents" : seg0 === "restaurant" ? "restaurants" : "centres";
@@ -1062,7 +1088,11 @@ const RESERVED: readonly string[] = [
       try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: sub, id: pid } })); } catch { /* noop */ }
       return;
     }
-    if (seg0 === "kirtans") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
+    if (seg0 === "kirtans") {
+      const ks = clean.split("/")[2] ?? "";
+      if (ks) setOpenKirtanArtist(ks); else setTab("bogatstva");
+      return;
+    }
     if (seg0 === "lichnosti-collection") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
     /* ЗКН-Н023 — ИСККОН: ВКЛАДКА ЖИВЁТ В АДРЕСЕ.

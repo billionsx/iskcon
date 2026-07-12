@@ -321,6 +321,20 @@ CHECKS = [
                 "а не «НП 41» (ЗКН-БТ006)",
     },
     {
+        "law": "ЗКН-Р010",
+        "name": "ОДНА СТРАНА — ОДНО НАПИСАНИЕ (фильтр троится)",
+        # В каталоге центров США жили под ТРЕМЯ написаниями:
+        #   «United States Of America» (56) · «United States of America» (10)
+        #   · «United States» (2)
+        # Фильтр по странам строил ТРИ вкладки «США» — человек видел неразбериху
+        # и не мог найти свой центр. Ср. ЗКН-Р009 (одно понятие — одна категория).
+        "sql": """SELECT COUNT(*) AS n FROM (
+                    SELECT lower(replace(replace(country, ' Of ', ' of '), '  ', ' ')) AS k
+                    FROM places WHERE country IS NOT NULL AND country <> ''
+                    GROUP BY k HAVING COUNT(DISTINCT country) > 1)""",
+        "hint": "→ одна страна — одно написание. Фильтр иначе троится (ЗКН-Р010)",
+    },
+    {
         "law": "ЗКН-Н023",
         "name": "СЛАГ — ИМЯ, А НЕ ПУТЬ (чужой путь в базе)",
         # У ВСЕХ 339 бхаджанов слаг был `/ru/gaura-arati` — путь с сайта-источника

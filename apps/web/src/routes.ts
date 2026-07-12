@@ -110,7 +110,8 @@ export const ROOTS = [
   // ⚠️ advaita и nityananda в корень НЕЛЬЗЯ — это Адвайта Ачарья и Нитьянанда
   // Прабху, живые личности. Корень принадлежит им.
   "gauranga-lila", "krishna-lila", "bhagavatam-lila", "mahabharata-lila",
-  "ramayana-lila", "pancha-tattva", "avatars",
+  "ramayana-lila", "pancha-tattva", "avatars", "rishis", "bhaktas",
+  "demigods", "asuras",
   // разделы
   "iskcon", "krishna", "gauranga",
   // служебные
