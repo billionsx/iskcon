@@ -135,8 +135,39 @@ def check_pl004():
     return bad
 
 
+def check_pl009():
+    """ЗКН-Пл009: машина НЕ перезаписывает существующую координату.
+
+    У «Шриваса-анганы» и «Самадхи Чанда Кази» данные расходятся с геосервисом на
+    1.8 и 4 км — потому что есть исторический спор, где эти места (Маяпур или
+    город Навадвипа). Позиция приложения по спорному вопросу — решение ЧЕЛОВЕКА.
+    Скрипт заполняет только ПУСТОЕ: `WHERE lat IS NULL`.
+    """
+    bad = []
+    for name in ("vraja-coords.py", "centres-official.py"):
+        p = ROOT / "tools" / name
+        if not p.exists():
+            continue
+        t = read(p)
+        for i, l in enumerate(t.split("\n"), 1):
+            if "UPDATE tirthas SET lat" in l or "UPDATE places SET lat" in l:
+                if "IS NULL" not in l:
+                    bad.append((name, "UPDATE координаты без `WHERE lat IS NULL` (%d) — "
+                                      "машина перезапишет решение человека (ЗКН-Пл009)" % i))
+    return bad
+
+
+def check_f004():
+    """ЗКН-Ф004: откат D1 Time Travel — проверенная процедура, воркфлоу на месте."""
+    if not (CI / "d1-time-travel.yml").exists():
+        return [("workflows", "нет d1-time-travel.yml — откат базы не механизирован (ЗКН-Ф004)")]
+    return []
+
+
 CHECKS = [
     ("ЗКН-Ф001", "registry-load выключен (он DROP+CREATE)", check_f001),
+    ("ЗКН-Ф004", "откат D1 Time Travel на месте", check_f004),
+    ("ЗКН-Пл009", "координата человека не перезаписывается", check_pl009),
     ("ЗКН-Ф003", "критерий свежести деплоя на месте", check_f003),
     ("ЗКН-Ф006", "гейт tsc против белых страниц", check_f006),
     ("ЗКН-Ф007", "схема D1 зеркалится миграциями", check_f007),
