@@ -28,7 +28,7 @@ export function ActionBtn({ active, activeColor, ariaLabel, onClick, children }:
 }
 
 export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational, coverActions, onListen, canOrder }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean; coverActions?: ReactNode; onListen?: () => void; canOrder?: boolean }) {
-  const { on: favorited, toggle: toggleFav } = useFavorite(`book:${book.work}`, { t: bookFullTitle(book), s: book.tagline, h: `/book/${book.work}` });
+  const { on: favorited, toggle: toggleFav } = useFavorite(`book:${book.work}`, { t: bookFullTitle(book), s: book.tagline, h: `/books/${book.work}` });
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);

@@ -285,7 +285,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
       ? "Первые шаги — святое имя и «Бхагавад-гита». Всё готово, чтобы начать."
       : "Ваша садхана ждёт. Начните с кругов джапы — счётчик и стрик уже настроены.";
     const cta = practicing ? { label: "Начать джапу", to: "/practice/japa" as string | undefined }
-      : level === "neophyte" ? { label: "Открыть «Бхагавад-гиту»", to: "/book/bg" }
+      : level === "neophyte" ? { label: "Открыть «Бхагавад-гиту»", to: "/books/bg" }
       : { label: "Войти в приложение", to: undefined };
     content = (
       <div key="s4" className="onb-rise" style={{ ...main, justifyContent: "center", alignItems: "center", textAlign: "center", paddingTop: "env(safe-area-inset-top)" }}>

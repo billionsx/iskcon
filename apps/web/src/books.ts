@@ -164,7 +164,7 @@ export const BOOKS: Record<string, BookData> = {
   sb: {
     id: "sb",
     work: "sb",
-    slug: "srimad-bhagavatam",
+    slug: "shrimad-bhagavatam",
     titleLine1: "Шримад-",
     titleLine2: "Бхагаватам",
     iast: "Śrīmad-Bhāgavatam",
@@ -209,7 +209,7 @@ export const BOOKS: Record<string, BookData> = {
   brs: {
     id: "brs",
     work: "brs",
-    slug: "nectar-of-devotion",
+    slug: "nektar-predannosti",
     titleLine1: "Нектар",
     titleLine2: "преданности",
     iast: "Bhakti-rasāmṛta-sindhu",
@@ -230,7 +230,7 @@ export const BOOKS: Record<string, BookData> = {
   iso: {
     id: "iso",
     work: "iso",
-    slug: "sri-isopanisad",
+    slug: "shri-ishopanishad",
     titleLine1: "Шри",
     titleLine2: "Ишопанишад",
     iast: "Śrī Īśopaniṣad",
@@ -322,7 +322,7 @@ export const BOOKS: Record<string, BookData> = {
   noi: {
     id: "noi",
     work: "noi",
-    slug: "nectar-of-instruction",
+    slug: "nektar-nastavleniy",
     titleLine1: "Нектар",
     titleLine2: "наставлений",
     iast: "Upadeśāmṛta",
@@ -342,7 +342,7 @@ export const BOOKS: Record<string, BookData> = {
   owk: {
     id: "owk",
     work: "owk",
-    slug: "on-the-way-to-krishna",
+    slug: "na-puti-k-krishne",
     titleLine1: "На пути",
     titleLine2: "к Кришне",
     iast: "On the Way to Kṛṣṇa",
@@ -363,7 +363,7 @@ export const BOOKS: Record<string, BookData> = {
   rv: {
     id: "rv",
     work: "rv",
-    slug: "raja-vidya",
+    slug: "radzha-vidya",
     titleLine1: "Раджа-видья",
     iast: "Rāja-vidyā",
     tagline: "Царь знания",
@@ -382,7 +382,7 @@ export const BOOKS: Record<string, BookData> = {
   pop: {
     id: "pop",
     work: "pop",
-    slug: "path-of-perfection",
+    slug: "put-k-sovershenstvu",
     titleLine1: "Путь",
     titleLine2: "к совершенству",
     iast: "The Path of Perfection",
@@ -403,7 +403,7 @@ export const BOOKS: Record<string, BookData> = {
   bbd: {
     id: "bbd",
     work: "bbd",
-    slug: "beyond-birth-and-death",
+    slug: "po-tu-storonu-rozhdeniya-i-smerti",
     titleLine1: "По ту сторону",
     titleLine2: "рождения и смерти",
     iast: "Beyond Birth and Death",
@@ -424,7 +424,7 @@ export const BOOKS: Record<string, BookData> = {
   poy: {
     id: "poy",
     work: "poy",
-    slug: "perfection-of-yoga",
+    slug: "sovershenstvo-yogi",
     titleLine1: "Совершенство",
     titleLine2: "йоги",
     iast: "The Perfection of Yoga",
@@ -445,7 +445,7 @@ export const BOOKS: Record<string, BookData> = {
   sc: {
     id: "sc",
     work: "sc",
-    slug: "second-chance",
+    slug: "eshche-odin-shans",
     titleLine1: "Ещё",
     titleLine2: "один шанс",
     iast: "A Second Chance",
@@ -466,7 +466,7 @@ export const BOOKS: Record<string, BookData> = {
   tqk: {
     id: "tqk",
     work: "tqk",
-    slug: "teachings-of-queen-kunti",
+    slug: "molitvy-czaricy-kunti",
     titleLine1: "Молитвы",
     titleLine2: "царицы Кунти",
     iast: "Teachings of Queen Kuntī",
@@ -487,7 +487,7 @@ export const BOOKS: Record<string, BookData> = {
   lob: {
     id: "lob",
     work: "lob",
-    slug: "light-of-the-bhagavata",
+    slug: "svet-bhagavaty",
     titleLine1: "Свет",
     titleLine2: "Бхагаваты",
     iast: "Light of the Bhāgavata",
@@ -1095,3 +1095,30 @@ export const LIBRARY: CatalogBook[] = [
 
 /** Порядок секций хаба. */
 export const LINEAGE_ORDER: Lineage[] = ["prabhupada", "acharya", "guru-iskcon"];
+
+
+/* ЗКН-Н023 + ЗКН-БТ006 — АДРЕС КНИГИ: ПОЛНОЕ ИМЯ, В КОРНЕ.
+ *
+ *   /bhagavad-gita        а не /book/bg
+ *   /brahma-samhita       а не /book/bs
+ *   /bhagavad-gita/2/13   глава → стих
+ *
+ * «bs» — ШИФР, а не имя: человек его не прочтёт и не запомнит. Внутренний ключ
+ * (`work`) остаётся коротким — на нём висят стихи, издания и разделы. Наружу
+ * идёт слаг.
+ */
+export const WORK_TO_SLUG: Record<string, string> =
+  Object.fromEntries(Object.values(BOOKS).map((b) => [b.work, b.slug]));
+
+export const SLUG_TO_WORK: Record<string, string> =
+  Object.fromEntries(Object.values(BOOKS).map((b) => [b.slug, b.work]));
+
+/** Слаг книги для адреса. Неизвестная книга → сам ключ (лучше, чем пусто). */
+export function bookSlug(work: string): string {
+  return WORK_TO_SLUG[work] ?? work;
+}
+
+/** Ключ книги из слага в адресе. Неизвестный слаг → null. */
+export function bookWork(slug: string): string | null {
+  return SLUG_TO_WORK[slug] ?? (BOOKS[slug] ? slug : null);
+}

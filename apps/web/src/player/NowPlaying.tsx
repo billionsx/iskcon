@@ -133,7 +133,7 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
           ref: `book:${p.book}`,
           title: bookFullTitle(BOOK),
           subtitle: p.track?.title || sub,
-          href: `/book/${p.book}`,
+          href: `/books/${p.book}`,
         });
       }
       return;

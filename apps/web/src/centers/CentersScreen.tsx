@@ -72,7 +72,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
   }, [view, q, type]);
 
   const onMenu = (it: CenterListItem) => (id: string) => {
-    const url = (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com") + "/center/" + it.slug;
+    const url = (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com") + "/iskcon/centers/" + it.slug;
     const place = [it.city, it.country].filter(Boolean).join(", ");
     if (id === "share") {
       const nav = typeof navigator !== "undefined" ? navigator : null;
@@ -81,9 +81,9 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
     } else if (id === "route") {
       const h = centerMapsHref(it); if (h) { try { window.open(h, "_blank", "noopener"); } catch { /* noop */ } }
     } else if (id === "note") {
-      requestNote({ kind: "centre", ref: it.id, title: it.name, subtitle: place || CENTER_TYPE_LABEL[it.type], href: `/center/${it.slug}` });
+      requestNote({ kind: "centre", ref: it.id, title: it.name, subtitle: place || CENTER_TYPE_LABEL[it.type], href: `/iskcon/centers/${it.slug}` });
     } else {
-      onOpenPath(`/center/${it.slug}`);
+      onOpenPath(`/iskcon/centers/${it.slug}`);
     }
   };
 
@@ -155,7 +155,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
                   <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, margin: "2px 2px 12px" }}>
                     {mapItems.filter((c) => c.lat != null && c.lng != null).length} на карте{mapItems.length >= MAP_LIMIT ? " · уточните поиск, чтобы увидеть все" : ""}. Коснитесь метки, чтобы открыть центр.
                   </div>
-                  <CentersMap items={mapItems} onOpen={(slug) => onOpenPath(`/center/${slug}`)} />
+                  <CentersMap items={mapItems} onOpen={(slug) => onOpenPath(`/iskcon/centers/${slug}`)} />
                 </>
               )
             ) : phase === "loading" ? (
@@ -176,7 +176,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <div style={{ fontFamily: FT, fontSize: "var(--text-footnote)", color: L3, margin: "2px 2px 12px" }}>{items.length} {items.length % 10 === 1 && items.length % 100 !== 11 ? "центр" : items.length % 10 >= 2 && items.length % 10 <= 4 && (items.length % 100 < 10 || items.length % 100 >= 20) ? "центра" : "центров"}</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {items.map((it) => (
-                    <CenterHeroCard key={it.id} center={it} onOpen={() => onOpenPath(`/center/${it.slug}`)} onMenuSelect={onMenu(it)} />
+                    <CenterHeroCard key={it.id} center={it} onOpen={() => onOpenPath(`/iskcon/centers/${it.slug}`)} onMenuSelect={onMenu(it)} />
                   ))}
                 </div>
                 <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 18, padding: "13px 0", borderRadius: 14, border: `1px dashed ${GOLD}88`, background: "none", color: GOLD, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>

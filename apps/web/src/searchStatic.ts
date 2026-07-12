@@ -95,7 +95,7 @@ const RECIPE_DOCS: Doc[] = RECIPES.map((r) => ({
   subtitle: r.subtitle,
   titleFold: fold(r.title),
   hay: mkHay(r.title, r.sanskrit, r.subtitle, CAT_LABEL[r.category], r.region, r.diets.map((d) => DIET_LABEL[d]).join(" ")),
-  nav: { kind: "path", href: "/prasadam/recipe/" + r.slug },
+  nav: { kind: "path", href: "/prasad/recipe/" + r.slug },
 }));
 
 /* ─────────────────────────── киртан-исполнители ──────────────────────────── */
@@ -109,7 +109,7 @@ const KIRTAN_DOCS: Doc[] = KIRTAN_ARTISTS.map((a) => ({
   subtitle: a.role,
   titleFold: fold(a.name),
   hay: mkHay(a.name, a.full, a.role, a.origin, a.bio, albumsByArtist(a.slug), "киртан бхаджан аудио музыка"),
-  nav: { kind: "path", href: "/kirtan/" + a.slug },
+  nav: { kind: "path", href: "/kirtans/" + a.slug },
 }));
 
 /* ───────────────────────── разделы и инструменты ─────────────────────────── */
@@ -125,9 +125,9 @@ const TOOLS: Tool[] = [
   { id: "progress", title: "Мой прогресс", subtitle: "Статистика практики", keywords: "прогресс статистика достижения кругов джапа", href: "/practice/progress" },
   { id: "notes", title: "Заметки", subtitle: "Личные записи", keywords: "заметки записи конспекты мысли закладки текста", href: "/notes" },
   { id: "favorites", title: "Избранное", subtitle: "Сохранённое", keywords: "избранное закладки сохранённое любимое", href: "/favorites" },
-  { id: "prasadam", title: "Прасадам", subtitle: "Рецепты и кухня", keywords: "рецепты кухня вегетарианская еда готовка прасад блюда", href: "/prasadam" },
-  { id: "cookbook", title: "Поваренная книга", subtitle: "Кулинарная книга", keywords: "поваренная кулинарная книга рецепты главы", href: "/prasadam/book" },
-  { id: "offering", title: "Подношение Божеству", subtitle: "Бхога и молитвы", keywords: "подношение бхога оффер молитвы предложение пищи", href: "/prasadam/offering" },
+  { id: "prasadam", title: "Прасадам", subtitle: "Рецепты и кухня", keywords: "рецепты кухня вегетарианская еда готовка прасад блюда", href: "/prasad" },
+  { id: "cookbook", title: "Поваренная книга", subtitle: "Кулинарная книга", keywords: "поваренная кулинарная книга рецепты главы", href: "/prasad/book" },
+  { id: "offering", title: "Подношение Божеству", subtitle: "Бхога и молитвы", keywords: "подношение бхога оффер молитвы предложение пищи", href: "/prasad/offering" },
   { id: "shop", title: "Магазин", subtitle: "Книги, атрибуты, пожертвования", keywords: "магазин корзина купить заказ книги bbt мала чётки благовония пожертвование донат", href: "/cart" },
   { id: "dhama", title: "Святые дхамы", subtitle: "Вриндаван · Навадвипа · Пури", keywords: "дхама тиртхи паломничество вриндаван навадвипа пури места", href: "/dhama" },
   { id: "centers", title: "Центры ИСККОН", subtitle: "Храмы и общины", keywords: "центры храмы ятры общины найти центр сообщество", href: "/centers" },

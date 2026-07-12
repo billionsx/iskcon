@@ -157,7 +157,7 @@ export default function CenterModeration({
               <button
                 key={it.id}
                 type="button"
-                onClick={() => onOpenPath(`/center/${it.slug}`)}
+                onClick={() => onOpenPath(`/iskcon/centers/${it.slug}`)}
                 style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: 14, borderRadius: 18, border: "none", background: FILL, cursor: "pointer", textAlign: "left", fontFamily: FT, WebkitTapHighlightColor: "transparent" }}
               >
                 <span style={{ display: "grid", placeItems: "center", width: 50, height: 50, flexShrink: 0, borderRadius: 14, overflow: "hidden", background: it.photos[0] ? `center/cover no-repeat url("${it.photos[0]}")` : `color-mix(in srgb, ${GOLD} 13%, transparent)`, color: GOLDT }}>

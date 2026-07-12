@@ -99,15 +99,15 @@ function HeartOutline({ size = 30 }: { size?: number }) { return <svg width={siz
 function hrefFor(it: FavItem): string | null {
   if (it.href) return it.href;
   const { type, id } = it;
-  if (type === "book") return `/book/${id}`;
+  if (type === "book") return `/books/${id}`;
   if (type === "entity") return `/${id}`;
   if (type === "doc") return `/doc/${id}`;
   if (type === "centre" || type === "restaurant") return `/place/${id}`;
-  if (type === "bhajan") return id.charAt(0) === "/" ? id : `/bhajan/${id}`;
+  if (type === "bhajan") return id.charAt(0) === "/" ? id : `/bhajans/${id}`;
   if (type === "chapter" || type === "verse") {
     const [w, ...rest] = id.split("/");
     const tail = rest.join("/");
-    if (w && tail) return `/book/${w}/${tail.replace(/\./g, "/")}`;
+    if (w && tail) return `/books/${w}/${tail.replace(/\./g, "/")}`;
   }
   if (type.indexOf("kirtan") === 0) return "/kirtans";
   return null;

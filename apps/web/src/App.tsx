@@ -20,7 +20,7 @@ import { ScreenFallback } from "./ScreenFallback";
 import { requestHomeTab } from "./homeNav";
 import type { HomeTabId } from "./HomeTabs";
 import { DonateModal } from "./DonateModal";
-import { BOOKS, bookFullTitle } from "./books";
+import { BOOKS, bookFullTitle, bookSlug, bookWork } from "./books";
 import { downloadBookPdf } from "./bookPdf";
 import { QrSheet, type QrData } from "./QrSheet";
 import { ReportSheet } from "./ReportSheet";
@@ -43,7 +43,7 @@ import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
 import { useCartCount } from "./shop/cart";
 import { getDhama } from "./dhama/dhamas";
-import { ROUTES, url } from "./routes";
+import { ROUTES, url, canonicalPath, ROOTS } from "./routes";
 
 /* ═════════ ICONS — иконки приложения ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
@@ -224,7 +224,7 @@ function FlatRowBtn({ ariaLabel, onClick, color, children }: { ariaLabel: string
   );
 }
 function BhajanRowActions({ slug, name, author, hasRecordings, onMore }: { slug: string; name: string; author: string | null; hasRecordings?: boolean; onMore: () => void }) {
-  const { on, toggle } = useFavorite(`bhajan:${slug}`, { t: name, s: author || undefined, h: `/bhajan/${slug}` });
+  const { on, toggle } = useFavorite(`bhajan:${slug}`, { t: name, s: author || undefined, h: `/bhajans/${slug}` });
   const player = usePlayer();
   return (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 2, position: "relative", zIndex: 1 }}>
@@ -598,7 +598,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   const pickSub = (v: string) => {
     setSub(v);
     setDeep("");
-    pushUrl(v === "lichnosti" ? "/dhana" : "/dhana/" + v);
+    pushUrl(v === "lichnosti" ? "/lichnosti" : "/lichnosti/" + v);
   };
   return (
     <div>
@@ -614,15 +614,15 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
         : <AcharyaScreen
             onOpen={onOpenEntity}
             onOpenCollection={onOpenCollection}
-            onOpenPath={(pp) => { if (pp.startsWith("/dhana/")) { setDeep(pp.split("/")[2] || "vse"); pushUrl(pp); } else onOpenPath(pp); }}
+            onOpenPath={(pp) => { if (pp.startsWith("/lichnosti/")) { setDeep(pp.split("/")[2] || "vse"); pushUrl(pp); } else onOpenPath(pp); }}
           />)}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
       {sub === "prasad" && (
         <PrasadamScreen
-          onBack={() => onOpenPath("/dhana")}
-          onOpenRecipe={(sl) => onOpenPath("/prasadam/recipe/" + sl)}
-          onOpenBook={(chapterId) => onOpenPath(chapterId ? "/prasadam/book/" + chapterId : "/prasadam/book")}
+          onBack={() => onOpenPath("/lichnosti")}
+          onOpenRecipe={(sl) => onOpenPath("/prasad/recipe/" + sl)}
+          onOpenBook={(chapterId) => onOpenPath(chapterId ? "/prasad/book/" + chapterId : "/prasad/book")}
           onOpenEntity={onOpenEntity}
           flash={flash ? () => {} : undefined}
         />
@@ -690,7 +690,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     if (id === "qr") { setQr({ shareUrl, data: { kind: "book", bookTitle: bookFullTitle(b), tagline: b.tagline, cover: b.covers[0] } }); return; }
     if (id === "donate") { onDonate(); return; }
     if (id === "report") { setReportOpen(true); return; }
-    if (id === "note") { requestNote({ kind: "book", ref: `book:${work}`, title: bookFullTitle(b), subtitle: b.tagline, href: `/book/${work}` }); return; }
+    if (id === "note") { requestNote({ kind: "book", ref: `book:${work}`, title: bookFullTitle(b), subtitle: b.tagline, href: `/${bookSlug(work)}` }); return; }
     onOpenBook(work);
   };
   return (
@@ -828,7 +828,21 @@ export default function App() {
   // slug = путь напрямую: /ru/krishna, /dasa/…, /batumi (контент или бхаджан —
   // различаем резолвером при холодном входе). Структурные: /bhajans каталог,
   // /book/{id}/{div?}/{ch?}/{v?}, /, /feed, /search, /map, /passport.
-  const RESERVED = ["", "dhana", "books", "kirtans", "kirtan", "acharya", "dhama", "account", "feed", "search", "map", "passport", "bhajans", "book", "read", "admin", "downloader", "stories-tool", "entity", "person", "favorites", "notes", "note", "cart", "practice", "calendar", "prasadam", "center", "centers", "my"];
+  /* ЗКН-Н023 §4 — КОРНИ РАЗДЕЛОВ ЗАРЕЗЕРВИРОВАНЫ.
+ *
+ * Личности живут в КОРНЕ (`/abhimanyu`) — это самый частый адрес, и он обязан
+ * быть коротким. Но раз так, слаг личности НЕ МОЖЕТ совпасть с корнем раздела:
+ * иначе `/books` перестанет открывать Книги и откроет личность по имени «books».
+ *
+ * Источник истины — ROOTS из routes.ts. Дублировать список здесь нельзя: он
+ * разъедется (так `lichnosti`, `prasad` и `iskcon` уже выпали из RESERVED). */
+const RESERVED: readonly string[] = [
+  ...ROOTS,
+  // служебные, не разделы
+  "kirtan", "book", "bhajan", "read", "admin", "downloader", "stories-tool",
+  "entity", "person", "note", "center", "centers", "passport", "dhana", "acharya",
+  "prasadam", "donate", "share",
+];
   function pathFromState(): string {
     if (openCart) return "/cart";
     if (openJapa) return "/practice/japa";
@@ -840,24 +854,24 @@ export default function App() {
     if (openProgress) return "/practice/progress";
     if (openCenterNew) return "/my/centers/new";
     if (openModeration) return "/centers/review";
-    if (openCenterSchedule) return `/center/${openCenterSchedule}/schedule`;
-    if (openCenterDeities) return `/center/${openCenterDeities}/deities`;
-    if (openCenterEvents) return `/center/${openCenterEvents}/events`;
-    if (openCenterPhotos) return `/center/${openCenterPhotos}/photos`;
-    if (openCenterEdit) return `/center/${openCenterEdit}/edit`;
+    if (openCenterSchedule) return `/iskcon/centers/${openCenterSchedule}/schedule`;
+    if (openCenterDeities) return `/iskcon/centers/${openCenterDeities}/deities`;
+    if (openCenterEvents) return `/iskcon/centers/${openCenterEvents}/events`;
+    if (openCenterPhotos) return `/iskcon/centers/${openCenterPhotos}/photos`;
+    if (openCenterEdit) return `/iskcon/centers/${openCenterEdit}/edit`;
     if (openCenters) return "/centers";
     if (openMyCenters) return "/my/centers";
-    if (openCenter) return `/center/${openCenter}`;
-    if (prasadamRecipe) return "/prasadam/recipe/" + prasadamRecipe;
-    if (cookbookChapter) return "/prasadam/book/" + cookbookChapter;
-    if (openCookbook) return "/prasadam/book";
-    if (prasadamSection) return prasadamSection === "offering" ? "/prasadam/offering" : "/prasadam";
+    if (openCenter) return `/iskcon/centers/${openCenter}`;
+    if (prasadamRecipe) return "/prasad/recipe/" + prasadamRecipe;
+    if (cookbookChapter) return "/prasad/book/" + cookbookChapter;
+    if (openCookbook) return "/prasad/book";
+    if (prasadamSection) return prasadamSection === "offering" ? "/prasad/offering" : "/prasad";
     if (openAdmin) return "/admin";
     if (openDownloader) return "/downloader";
     if (openStoriesTool) return "/stories-tool";
-    if (openBook) { const base = `/book/${openBook}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
+    if (openBook) { const base = `/${bookSlug(openBook)}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     if (openBhajan) return openBhajan;     // slug сам по себе путь
-    if (openKirtanArtist) return "/kirtan/" + openKirtanArtist;
+    if (openKirtanArtist) return "/kirtans/" + openKirtanArtist;
     if (openFavorites) return "/favorites";
     if (openNoteId) return "/note/" + openNoteId;
     if (openNotes) return "/notes";
@@ -870,7 +884,7 @@ export default function App() {
     if (openDhama) return "/dhama/" + openDhama;
     // Кришна-ПКЛ держит подтаб прямо в пути (/krishna/<таб>/<подтаб>) — не сбрасываем его при ре-синхронизации.
     if (tab === "krishna") return (typeof window !== "undefined" && window.location.pathname.startsWith("/krishna")) ? window.location.pathname : "/krishna";
-    if (tab === "bogatstva") return (typeof window !== "undefined" && window.location.pathname.startsWith("/dhana")) ? window.location.pathname : "/dhana";
+    if (tab === "bogatstva") return (typeof window !== "undefined" && window.location.pathname.startsWith("/lichnosti")) ? window.location.pathname : "/lichnosti";
     return (tab === "home" || tab === "sadhana") ? "/" : "/" + tab;
   }
   function resolveAndOpen(slug: string) {
@@ -896,7 +910,16 @@ export default function App() {
     if (seg0 === "practice" && clean === "/practice") { setTab("sadhana"); return; }
     if (seg0 === "calendar") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
-    if (seg0 === "dhana") { setTab("bogatstva"); return; }
+    /* ЗКН-Н023 §6 — СТАРЫЙ АДРЕС НЕ ЛОМАЕТСЯ.
+     *
+     * Ссылки уже разошлись: в закладках, в QR-кодах на печатных материалах,
+     * в чужих постах. Ломать чужую ссылку — то же, что ломать обещание.
+     * Старый адрес МОЛЧА приводится к новому (replaceUrl, без записи в историю),
+     * и дальше маршрутизатор видит только канонический вид. */
+    const canon = canonicalPath(clean);
+    if (canon) { replaceUrl(canon); navigate(canon); return; }
+
+    if (seg0 === "lichnosti") { setTab("bogatstva"); return; }
     // Кришна-ПКЛ: /krishna и /krishna/<таб>/<подтаб> — EntityPage прочитает таб/подтаб из пути.
     if (seg0 === "krishna") { setTab("krishna"); return; }
     if (seg0 === "dhama") {
@@ -937,27 +960,18 @@ export default function App() {
     if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
     if (clean === "/my/centers") { setOpenMyCenters(true); return; }
     if (clean === "/centers") { setOpenCenters(true); return; }
-    if (seg0 === "prasadam") {
+    if (seg0 === "prasad") {
       const parts = clean.split("/");   // ["", "prasadam", ("recipe"|"offering"|"book")?, <slug|chapter>?]
       if (parts[2] === "recipe" && parts[3]) { setPrasadamRecipe(parts[3]); return; }
       if (parts[2] === "book") { if (parts[3]) setCookbookChapter(parts[3]); else setOpenCookbook(true); return; }
       setPrasadamSection(parts[2] === "offering" ? "offering" : "recipes");
       return;
     }
-    if (seg0 === "book") {
-      const parts = clean.split("/");           // ["", "book", <work>, a?, b?, c?]
-      const work = parts[2] || "bg";
-      const bk = BOOKS[work] ? work : "bg";
-      if (BOOKS[bk]?.hierarchical) {
-        // /book/<work>/<lila|canto>/<chapter>/<verse?>
-        setBookTarget(parts[3] ? { div: parts[3], chapter: parts[4] ?? null, verse: parts[5] ?? null } : null);
-      } else {
-        // /book/<work>/<chapter>/<verse?>
-        setBookTarget(parts[3] ? { div: null, chapter: parts[3], verse: parts[4] ?? null } : null);
-      }
-      setOpenBook(bk);
-      return;
-    }
+    /* ЗКН-Н023 — /books это ВИТРИНА. Сама книга живёт в КОРНЕ по полному имени:
+     *   /bhagavad-gita          книга
+     *   /bhagavad-gita/2/13     глава → стих
+     * «/book/bg» было двойным нарушением: лишняя папка И шифр вместо имени. */
+    if (seg0 === "books" && !clean.split("/")[2]) { setTab("bogatstva"); return; }
     if (seg0 === "admin") { setOpenAdmin(true); return; }
     if (seg0 === "downloader") { setOpenDownloader(true); return; }
     if (seg0 === "stories-tool") { setOpenStoriesTool(true); return; }
@@ -987,7 +1001,7 @@ export default function App() {
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "post") { const pid = clean.split("/")[2] ?? ""; if (pid) { setOpenPost(pid); return; } }
     if (clean.startsWith("bhajans-")) { setOpenBhajan(clean); return; }
-    if (seg0 === "bhajan") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
+    if (seg0 === "bhajans") { const bslug = clean.split("/")[2] ?? ""; if (bslug) setOpenBhajan(bslug); else { setTab("home"); setOpenCatalog(true); } return; }
     if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
       const sub: HomeTabId = seg0 === "doc" ? "documents" : seg0 === "restaurant" ? "restaurants" : "centres";
@@ -1003,9 +1017,29 @@ export default function App() {
       try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: sub, id: pid } })); } catch { /* noop */ }
       return;
     }
-    if (seg0 === "kirtan") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
-    if (seg0 === "acharya") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
+    if (seg0 === "kirtans") { const s = clean.split("/")[2] ?? ""; if (s) setOpenKirtanArtist(s); else setTab("kirtans"); return; }
+    if (seg0 === "lichnosti-collection") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
+    /* ЗКН-Н023 — КНИГА В КОРНЕ ПО ПОЛНОМУ ИМЕНИ.
+     *
+     *   /bhagavad-gita        книга
+     *   /bhagavad-gita/2/13   глава → стих
+     *
+     * Проверяется РАНЬШЕ личности: иначе `/bhagavad-gita` уйдёт в резолвер имён
+     * и не найдётся. Столкновений нет — проверено: ни один слаг книги не совпадает
+     * со слагом личности (гейт `data-audit.py`). */
+    const bw = bookWork(seg0);
+    if (bw) {
+      const parts = clean.split("/");
+      if (BOOKS[bw]?.hierarchical) {
+        setBookTarget(parts[2] ? { div: parts[2], chapter: parts[3] ?? null, verse: parts[4] ?? null } : null);
+      } else {
+        setBookTarget(parts[2] ? { div: null, chapter: parts[2], verse: parts[3] ?? null } : null);
+      }
+      setOpenBook(bw);
+      return;
+    }
+
     if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
     setTab("home");
   }
@@ -1020,7 +1054,7 @@ export default function App() {
       // (глава/стих) не слушает событие сама, а ПОДПИСАНА (subscribeNav): сначала
       // роутер, потом подписчики. Порядок детерминирован, гонки нет.
       const ob = openBookRef.current;
-      if (!(ob && (path === `/book/${ob}` || path.startsWith(`/book/${ob}/`)))) {
+      if (!(ob && (path === `/${bookSlug(ob)}` || path.startsWith(`/${bookSlug(ob)}/`)))) {
         fromPop.current = true;
         applyPath(path);
       }
@@ -1136,18 +1170,18 @@ export default function App() {
     const [kind, work, div, ch, v] = href.split(":");
     if (!work) return;
     // Любое место писания открывается в загруженной книге /book/ (стаб /read удалён).
-    if (kind === "book") { navigate(`/book/${BOOKS[work] ? work : "bg"}`); return; }
-    if (work === "bg") { navigate("/book/bg"); return; }
+    if (kind === "book") { navigate(`/${bookSlug(BOOKS[work] ? work : "bg")}`); return; }
+    if (work === "bg") { navigate("/books/bg"); return; }
     const seg = kind === "verse" ? `/${div ?? ""}/${ch ?? ""}/${v ?? ""}` : kind === "chap" ? `/${div ?? ""}/${ch ?? ""}` : "";
-    navigate(`/book/${work}${seg}`.replace(/\/+$/, ""));
+    navigate(`/books/${work}${seg}`.replace(/\/+$/, ""));
   }
   // Открыть конкретный стих по его id («Стих дня» → читалка): БГ — книга, ШБ/ЧЧ — референс-ридер.
   function openVerseId(id: string) {
     const p = id.split(".");                 // bg.2.13 | bg.13.1-2 | sb.1.9.40 | cc.adi.1.19
     const work = p[0];
     if (!work) return;
-    if (work === "bg") navigate(`/book/bg/${p[1] ?? ""}/${p[2] ?? ""}`.replace(/\/+$/, ""));
-    else navigate(`/book/${work}/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`.replace(/\/+$/, ""));
+    if (work === "bg") navigate(`/books/bg/${p[1] ?? ""}/${p[2] ?? ""}`.replace(/\/+$/, ""));
+    else navigate(`/books/${work}/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`.replace(/\/+$/, ""));
   }
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
   function openEntityTarget(id: string, type: string | null) {
@@ -1268,19 +1302,19 @@ export default function App() {
           </main>
         ) : prasadamRecipe ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onOpenOffering={() => navigate("/prasadam/offering")} onOpenBookChapter={(id) => navigate("/prasadam/book/" + id)} onOpenEntity={openEntityTarget} />
+            <RecipeDetail slug={prasadamRecipe} onBack={goBack} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} onOpenOffering={() => navigate("/prasad/offering")} onOpenBookChapter={(id) => navigate("/prasad/book/" + id)} onOpenEntity={openEntityTarget} />
           </main>
         ) : cookbookChapter ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} />
+            <CookbookScreen chapterId={cookbookChapter} onBack={goBack} onOpenChapter={(id) => navigate("/prasad/book/" + id)} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} />
           </main>
         ) : openCookbook ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasadam/book/" + id)} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} />
+            <CookbookScreen chapterId={null} onBack={goBack} onOpenChapter={(id) => navigate("/prasad/book/" + id)} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} />
           </main>
         ) : prasadamSection ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasadam/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasadam/offering" : "/prasadam")} onOpenBook={() => navigate("/prasadam/book")} onOpenEntity={openEntityTarget} />
+            <PrasadamScreen initialSection={prasadamSection} onBack={goBack} onOpenRecipe={(s) => navigate("/prasad/recipe/" + s)} onSectionChange={(id) => replaceUrl(id === "offering" ? "/prasad/offering" : "/prasad")} onOpenBook={() => navigate("/prasad/book")} onOpenEntity={openEntityTarget} />
           </main>
         ) : openNoteId ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
