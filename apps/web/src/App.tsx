@@ -540,7 +540,11 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
  * /dhana/<лила>/<волна>/<группа> → Личности с фильтрами (старые ссылки живы)
  * /dhana/books | bhajans | kirtans | recipes → соответствующая витрина
  * Слаги лил не пересекаются с id витрин, поэтому схема обратно совместима. */
-export const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
+export /* ЗКН-Н007: слаги лил — вход в четырёхуровневое меню Личностей.
+   Те же, что в LichnostiHub::LILA_SLUG — иначе витрина уведёт в никуда. */
+const LILA_SLUGS = ["gauranga-lila", "krishna-lila", "shrimad-bhagavatam", "bhagavad-gita", "drugie"];
+
+const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
 export function bogSubFromPath(path: string): string {
   const seg = path.split("/").filter(Boolean);          // ["dhana", ...]
   const s1 = seg[1] || "";

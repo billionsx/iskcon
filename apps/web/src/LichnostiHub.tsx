@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./api";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
 import { cleanCardText } from "./cardText";
-import { replaceUrl } from "./nav";
+import { replaceUrl , subscribeNav } from "./nav";
 import { ScopeTitle, FilterChips, Disclosure, useDisclosure, type NavItem } from "./ui/nav4";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { ROUTES, url } from "./routes";
@@ -106,6 +106,13 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
   const [lila, setLila] = useState(() => readUrl().lila);
   const [subSel, setSubSel] = useState(() => readUrl().sub);
   const [grpSel, setGrpSel] = useState(() => readUrl().grp);
+
+  /* ЗКН-Н002 · ЗКН-Н003: «назад» внутри меню возвращает на предыдущий уровень.
+   * Своего popstate здесь быть НЕ может (владелец — App); подписываемся. */
+  useEffect(() => subscribeNav(() => {
+    const u = readUrl();
+    setLila(u.lila); setSubSel(u.sub); setGrpSel(u.grp);
+  }), []);
   const [q, setQ] = useState("");
   const pickLila = (v: string) => { setLila(v); setSubSel(""); setGrpSel(""); };   // ЗКН-Н009: по умолчанию «Все»
   const pickSub = (v: string) => { setSubSel(v); setGrpSel(""); };
