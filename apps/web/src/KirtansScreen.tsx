@@ -5,7 +5,6 @@
  *  • «Слушать сейчас»     — альбомы со звуком (Internet Archive), тап → плеер;
  *  • «Исполнители»        — полный реестр киртания, тап → страница исполнителя;
  *  • «Жанры и настроения» — классификации (тип/настроение), фильтруют альбомы;
- *  • «Тексты бхаджанов»   — молитвенник (полные тексты), как было раньше.
  *
  * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
  */
@@ -21,7 +20,7 @@ import {
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
-import { HubHeader } from "./ui/HubHeader";
+import { HubHeader, SECTION_GAP } from "./ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
 
@@ -119,7 +118,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
       {/* Слушать сейчас */}
       {playable.length > 0 && (
-        <section style={{ marginTop: 26 }}>
+        <section style={{ marginTop: SECTION_GAP }}>
           <SectionHead eyebrow="Звучит" title="Слушать сейчас" />
           <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", margin: "0 -16px", padding: "2px 16px 4px" }}>
             {playable.map((al) => (
@@ -130,7 +129,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       )}
 
       {/* Исполнители */}
-      <section style={{ marginTop: 30 }}>
+      <section style={{ marginTop: SECTION_GAP }}>
         <SectionHead eyebrow="Голоса святого имени" title="Исполнители" />
         <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
           {kirtanArtists().map((a, i) => {
@@ -155,7 +154,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       </section>
 
       {/* Жанры и настроения */}
-      <section style={{ marginTop: 30 }}>
+      <section style={{ marginTop: SECTION_GAP }}>
         <SectionHead eyebrow="Классификации" title="Жанры и настроения" action={
           (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
         } />
@@ -194,29 +193,14 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         )}
       </section>
 
-      {/* Тексты бхаджанов (молитвенник) */}
-      <section style={{ marginTop: 30 }}>
-        <SectionHead eyebrow="Молитвенник" title="Тексты бхаджанов" action={
-          <button onClick={onOpenCatalog} style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>
-            Весь каталог
-            <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-        } />
-        {!bhajans && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
-        {bhajans && bhajans.length === 0 && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока пусто.</div>}
-        {bhajans && bhajans.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {bhajans.slice(0, 6).map((b) => (
-              <BhajanCard
-                key={b.slug}
-                bhajan={{ slug: b.slug, name: b.name, author: b.author, category: b.category, hasRecordings: b.has_recordings }}
-                onOpen={() => onOpenBhajan(b.slug)}
-                flash={flash}
-              />
-            ))}
-          </div>
-        )}
-      </section>
+      {/* ЗКН-Н036 — ОДНО СОДЕРЖИМОЕ — ОДНО МЕСТО.
+       *
+       * Здесь был блок с текстами — тот же молитвенник, что и во вкладке
+       * «Бхаджаны». Одно и то же в двух местах: человек не понимает, где искать,
+       * и не знает, полный ли список перед ним.
+       *
+       * Киртаны — это ЗВУК (альбомы, исполнители, жанры).
+       * Бхаджаны — это ТЕКСТ (молитвенник). Не смешивать. */}
       {toast && (
         <div role="status" style={{ position: "fixed", left: "50%", bottom: "calc(env(safe-area-inset-bottom,0px) + 84px)", transform: "translateX(-50%)", zIndex: 60, padding: "10px 16px", borderRadius: 999, background: "rgba(0,0,0,.82)", color: "#fff", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote, 13px)", fontWeight: 500, backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", boxShadow: "0 8px 30px rgba(0,0,0,.3)", pointerEvents: "none" }}>{toast}</div>
       )}

@@ -28,7 +28,7 @@ import { searchBooks, highlight } from "./bookSearch";
 import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { FilterChips as NavFilterChips, type NavItem } from "./ui/nav4";
-import { HubHeader } from "./ui/HubHeader";
+import { HubHeader, SECTION_GAP } from "./ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
 
@@ -189,7 +189,7 @@ export function ContinueShelf({ items, onOpenPath }: { items: ReadingRec[]; onOp
     return h < 10 ? `~${(Math.round(h * 2) / 2).toString().replace(".", ",")} ч` : `~${Math.round(h)} ч`;
   };
   return (
-    <section style={{ marginTop: 18 }}>
+    <section style={{ marginTop: SECTION_GAP }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
         <span aria-hidden style={{ width: 18, height: 3, borderRadius: 999, background: GOLD }} />
         <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Продолжить чтение</h2>
@@ -256,7 +256,7 @@ export function ReadingGoalCard() {
   const adjust = (d: number) => { const g = Math.min(120, Math.max(5, goal + d)); setReadingGoalMin(g); setGoal(g); setStreak(readingStreakDays(g)); };
   const stepBtn: CSSProperties = { width: 34, height: 28, borderRadius: 9, border: "none", background: "var(--color-fill-1)", color: "var(--color-label-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" };
   return (
-    <section style={{ marginTop: 18 }}>
+    <section style={{ marginTop: SECTION_GAP }}>
       <div style={{ display: "flex", alignItems: "center", gap: 9, margin: "0 2px 11px" }}>
         <span aria-hidden style={{ width: 18, height: 3, borderRadius: 999, background: GOLD }} />
         <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.2px", color: "var(--color-label)" }}>Чтение сегодня</h2>
@@ -442,7 +442,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
 
           {/* ── Скоро появятся (нет ни текста, ни аудио) — сворачиваемый ── */}
           {soonBooks.length > 0 && (
-            <section style={{ marginTop: 20 }}>
+            <section style={{ marginTop: SECTION_GAP }}>
               <button
                 type="button"
                 onClick={() => setSoonOpen((v) => !v)}

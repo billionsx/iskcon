@@ -33,16 +33,16 @@ interface Group { group: string; items: Row[] }
 
 const GROUPS: Group[] = [
   { group: "Каждый день", items: [
-    { icon: ICON.verse, t: "Стих дня", d: "Системное чтение Прабхупады — стих за стихом, БГ → ШБ → ЧЧ", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-daily-verse")) },
+    { icon: ICON.verse, t: "Стих дня", d: "Системное чтение Прабхупады — стих за стихом, БГ → ШБ → ЧЧ", pri: true, to: "/verse" },
   ] },
   { group: "Моя практика", items: [
-    { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-japa")) },
-    { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, go: () => window.dispatchEvent(new CustomEvent("iol:open-diary")) },
+    { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, to: "/japa" },
+    { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, to: "/story" },
     // ЗКН-Н007: Экадаши убраны из «Моей практики» — они живут в Календаре.
   ] },
   // ЗКН-Н007: прасад убран из «Практики» → витрина «Рецепты» в Богатствах
   { group: "Изучение", items: [
-    { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано: системное чтение, книги, время и стрик", go: () => window.dispatchEvent(new CustomEvent("iol:open-progress")) },
+    { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано: системное чтение, книги, время и стрик", to: "/progress" },
   ] },
   { group: "Рост", items: [
     { icon: ICON.path, t: "Путь преданного", d: "Ступени от шраддхи к преме, цели и достижения" },

@@ -604,6 +604,16 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
     typeof window === "undefined" ? "lichnosti" : bogSubFromPath(window.location.pathname));
   useEffect(() => subscribeNav(() => setSub(bogSubFromPath(window.location.pathname))), []);
 
+  /* Раздел Прасада — ИЗ АДРЕСА: /prasad → книга, /prasad/recipes → рецепты и т.д. */
+  const prasadFromPath = () => {
+    if (typeof window === "undefined") return "book";
+    const seg = window.location.pathname.split("/").filter(Boolean);
+    const s2 = seg[0] === "prasad" ? (seg[1] || "") : "";
+    return (["recipes", "match", "deities", "offering"] as const).includes(s2 as never) ? s2 : "book";
+  };
+  const [prasadSection, setPrasadSection] = useState(prasadFromPath);
+  useEffect(() => subscribeNav(() => setPrasadSection(prasadFromPath())), []);
+
   /* ЗКН-Н007 — ВХОД В ЛИЧНОСТИ = «ГЕРОИ».
    *
    *   /dhana                 → «Герои»: выбор царства
@@ -667,8 +677,15 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
           />)}
       {sub === "books" && <BooksHub onOpenBook={onOpenBook} onBookMenu={onBookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} />}
       {sub === "bhajans" && <BhajanShelf onOpen={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+      {/* ЗКН-Н035 — РАЗДЕЛ ПРАСАДА ЖИВЁТ В АДРЕСЕ.
+       *
+       * Зал НЕ передавал `onSectionChange` — Прасад менял раздел молча, адрес
+       * оставался `/prasad`, а «Рецепты» открывались в никуда (белый экран).
+       * И `initialSection` не передавался: раздел из адреса не читался вовсе. */}
       {sub === "prasad" && (
         <PrasadamScreen
+          initialSection={prasadSection}
+          onSectionChange={(id) => replaceUrl(id === "book" ? "/prasad" : "/prasad/" + id)}
           onBack={() => onOpenPath("/hero")}
           onOpenRecipe={(sl) => onOpenPath("/prasad/" + sl)}
           onOpenBook={(chapterId) => onOpenPath(chapterId ? "/prasad/book/" + chapterId : "/prasad/book")}
@@ -1009,11 +1026,18 @@ const RESERVED: readonly string[] = [
     /* ЗКН-Н023 — САДХАНА: каждый инструмент в КОРНЕ (схема основателя).
      *   /sadhana /japa /story /verse /promise /progress /darshan /calendar /ekadashi /id */
     if (seg0 === "sadhana") { setTab("sadhana"); return; }
-    if (["japa", "story", "verse", "promise", "progress", "darshan"].includes(seg0)) {
-      setTab("sadhana");
-      window.dispatchEvent(new CustomEvent("iol:open-" + seg0));
-      return;
-    }
+    /* ⚠️ ЗКН-Н034 — ЗДЕСЬ ЖИЛ ПЕРЕХВАТЧИК, УБИВАВШИЙ ВСЮ ПРАКТИКУ.
+     *
+     * Эта ветка ловила /japa, /story, /verse … ПЕРВОЙ, слала событие и делала
+     * `return`. Настоящие обработчики (`setOpenJapa(true)` и прочие, ниже по
+     * коду) НИКОГДА НЕ ДОСТИГАЛИСЬ — ни одна кнопка Практики не открывалась.
+     *
+     * Вдобавок имена событий НЕ СОВПАДАЛИ: кнопка слала `iol:open-daily-verse`,
+     * ветка — `iol:open-verse`; кнопка `iol:open-diary`, ветка `iol:open-story`.
+     * Слушателя не было ни у одного, кроме джапы.
+     *
+     * СОБЫТИЯ ВЫБРОШЕНЫ. Кнопка ведёт ПО АДРЕСУ, адрес открывает экран.
+     * Один путь, а не два. */
     if (seg0 === "id") { setTab("sadhana"); return; }
     if (seg0 === "calendar") { setTab("sadhana"); return; }
     if (["krishna", "gauranga", "iskcon", "bogatstva", "sadhana", "books", "kirtans", "acharya", "dhama", "account", "feed"].includes(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
@@ -1094,12 +1118,18 @@ const RESERVED: readonly string[] = [
       const parts = clean.split("/");
       const p2 = parts[2] || "";
       if (p2 === "book") { if (parts[3]) setCookbookChapter(parts[3]); else setOpenCookbook(true); return; }
-      if (p2) {
-        // /prasad/offering и /prasad/<рецепт>
-        if (p2 === "offering") setPrasadamSection("offering"); else setPrasadamRecipe(p2);
-        setTab("bogatstva");
-        return;
-      }
+      /* ЗКН-Н035 — РАЗДЕЛЫ Прасада — часть ВИТРИНЫ, а не оверлей:
+       *   /prasad            книга «Кухня прасада»
+       *   /prasad/recipes    рецепты
+       *   /prasad/match      подбор
+       *   /prasad/deities    Божества
+       *   /prasad/offering   подношение
+       * Рисует их зал (sub === "prasad"), раздел читается из адреса.
+       *
+       * Оверлей — только конкретный рецепт: /prasad/<рецепт>. */
+      const SECTIONS = ["recipes", "match", "deities", "offering"];
+      if (p2 && SECTIONS.includes(p2)) { setTab("bogatstva"); return; }
+      if (p2) { setPrasadamRecipe(p2); setTab("bogatstva"); return; }
       /* ⚠️ ЗКН-Н031 — ВИТРИНА НЕ СТАВИТ ОВЕРЛЕЙ.
        *
        * Здесь стояло `setPrasadamSection("recipes")` — и оверлей ПОДМЕНЯЛ ВЕСЬ
@@ -1345,6 +1375,20 @@ const RESERVED: readonly string[] = [
   }
 
   // Переход по in-app пути (строки «Избранного» и пр.): пушим уровень и применяем тот же роутер.
+  /* ЗКН-Н035 — ЭКРАН СМЕНИЛСЯ → АДРЕС СМЕНИЛСЯ. ВСЕГДА.
+   *
+   * В `Screen` стояли ПРЯМЫЕ сеттеры: `onOpenBhajan={setOpenBhajan}`,
+   * `onOpenBook={(w) => setOpenBook(w)}`, `onOpenContent={(sl) => navigate("/" + String(sl).replace(/^\//, ""))}`,
+   * `openEntityTarget` без адреса. Экран открывался, а адрес НЕ МЕНЯЛСЯ.
+   *
+   * Что видел человек: из Календаря открыл Бхактивиноду Тхакура — в строке
+   * остался `/calendar`. Отправил ссылку другу — тот получил КАЛЕНДАРЬ.
+   * Нажал «назад» — история не знает про карточку, и его выбросило на `/verse`.
+   *
+   * Адрес — обещание: «вот что ты сейчас видишь». Экран без адреса ЛЖЁТ.
+   *
+   * Всё открытие идёт ЧЕРЕЗ `navigate`: он пишет адрес И применяет его.
+   * Двух путей нет. */
   function navigate(href: string) {
     if (typeof window !== "undefined" && window.location.pathname !== href) pushUrl(href);
     applyPath(href);
@@ -1381,11 +1425,25 @@ const RESERVED: readonly string[] = [
     else navigate(`/books/${work}/${p[1] ?? ""}/${p[2] ?? ""}/${p[3] ?? ""}`.replace(/\/+$/, ""));
   }
   // Открытие связанной сущности: книги-читалки уходят в ридер, остальное — в EntityPage.
+  /* ЗКН-Н035 — ЭКРАН СМЕНИЛСЯ → АДРЕС СМЕНИЛСЯ. ВСЕГДА.
+   *
+   * Было: `openEntityTarget` открывал карточку личности и АДРЕС НЕ ТРОГАЛ.
+   * Последствия, которые видел человек:
+   *   • из Календаря открыл Бхактивиноду Тхакура — в строке остался `/calendar`.
+   *     Отправил ссылку другу — тот получил КАЛЕНДАРЬ, а не личность.
+   *   • нажал «назад» — история не знает про карточку, и его выбросило
+   *     на `/verse` (предыдущую запись).
+   *
+   * Адрес — это обещание: «вот что ты сейчас видишь». Экран без адреса лжёт.
+   *
+   * Теперь: открылась карточка → адрес стал `/<личность>` (ЗКН-Н023: в корне). */
   function openEntityTarget(id: string, type: string | null) {
     setOpenCollection(null);
     setOpenBhajan(null); setOpenKirtanArtist(null); setOpenBook(null); setBookTarget(null); setOpenCatalog(false); setOpenContent(null); setOpenPost(null);
     if (type === "scripture" && BOOKS[id]) { setOpenEntity(null); openRef("book:" + id); return; }
     setOpenEntity(id);
+    // адрес личности — в КОРНЕ (ЗКН-Н023). pushUrl, чтобы «назад» вернул откуда пришёл.
+    if (typeof window !== "undefined" && window.location.pathname !== "/" + id) pushUrl("/" + id);
   }
   const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
   // Главное нижнее меню остаётся поверх страниц-оверлеев со скроллом (книга, ПКЛ,
@@ -1562,7 +1620,18 @@ const RESERVED: readonly string[] = [
             <CenterScreen slug={openCenter} onBack={goBack} onOpenPath={navigate} flash={flash} />
           </main>
         ) : (
-          <Screen tab={tab} onChange={setTab} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onOpenBhajan={setOpenBhajan} onOpenKirtanArtist={setOpenKirtanArtist} onOpenCatalog={() => setOpenCatalog(true)} onOpenContent={setOpenContent} onOpenEntity={openEntityTarget} onOpenCollection={setOpenCollection} onFavorites={() => setOpenFavorites(true)} onDonate={openDonate} onOpenPath={navigate} onSearch={() => navigate("/search")} />
+          <Screen tab={tab} onChange={setTab}
+            onOpenBook={(work) => navigate("/" + bookSlug(work))}
+            onOpenBhajan={(slug) => navigate("/bhajans/" + slug)}
+            onOpenKirtanArtist={(slug) => navigate("/kirtans/" + slug)}
+            onOpenCatalog={() => navigate("/bhajans")}
+            onOpenContent={(slug) => navigate("/" + String(slug).replace(/^\//, ""))}
+            onOpenEntity={openEntityTarget}
+            onOpenCollection={setOpenCollection}
+            onFavorites={() => navigate("/favorites")}
+            onDonate={openDonate}
+            onOpenPath={navigate}
+            onSearch={() => navigate("/search")} />
         )}
         </Suspense>
         </CardActionsProvider>
@@ -1570,7 +1639,10 @@ const RESERVED: readonly string[] = [
         {donate && <DonateModal onClose={closeDonate} />}
         {showOnboarding && <Onboarding navigate={navigate} onClose={() => setShowOnboarding(false)} />}
         <MiniPlayer tabBarVisible={tabBarVisible || overlayTabBar} />
-        <NowPlaying onOpenBook={(book, chapter) => { setBookTarget(chapter ? { div: null, chapter: String(chapter), verse: null } : null); setOpenBook(BOOKS[book] ? book : "bg"); }} onOpenBhajan={setOpenBhajan} onDonate={openDonate} />
+        <NowPlaying
+          onOpenBook={(book, chapter) => navigate("/" + bookSlug(BOOKS[book] ? book : "bg") + (chapter ? "/" + chapter : ""))}
+          onOpenBhajan={(slug) => navigate("/bhajans/" + slug)}
+          onDonate={openDonate} />
         {appToast && (
           <div role="status" aria-live="polite" style={{ position: "fixed", left: "50%", bottom: "calc(94px + env(safe-area-inset-bottom,0px))", transform: "translateX(-50%)", zIndex: 4000, maxWidth: 360, padding: "11px 18px", borderRadius: 999, background: "color-mix(in srgb, var(--color-label) 92%, transparent)", color: "var(--color-bg)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.35, boxShadow: "var(--shadow-card)", pointerEvents: "none", textAlign: "center" }}>
             {appToast}
