@@ -12,7 +12,12 @@ import { CATEGORY_RU, RASA_RU } from "./entityLabels";
 import { CardActionBtns, useCardActions, favMetaFromCtx, type CardCtx } from "./cardActions";
 import { useEffect, useRef, useState, Fragment, type ReactNode } from "react";
 import { api } from "./api";
-import { replaceUrl } from "./nav";
+import { replaceUrl, subscribeNav } from "./nav";
+
+/* ЗКН-Н032 — ОСНОВА БЕРЁТСЯ ИЗ СЕБЯ, А НЕ ИЗ АДРЕСА.
+ * Компонент знает, чьё он досье. Читать первый сегмент ТЕКУЩЕГО адреса нельзя:
+ * при смене царства он уже чужой, и компонент допишет свой подтаб на чужую основу. */
+const REALM_BASE: Record<string, string> = { krishna: "/krishna", chaitanya: "/gauranga" };
 import { BackIcon } from "./ui/icons";
 import { PersonHeroCard } from "./PersonHeroCard";
 import { galleryFor } from "./personaGallery";
@@ -1037,6 +1042,15 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   // Deep-link: захватываем исходный хеш ДО того, как эффект-писатель его затрёт.
   // Без этого write-эффект на маунте пишет #<defaultTab> и read-эффект (ждущий
   // данных) читает уже затёртый хеш — ссылка вида /#avatara/ierarhiya не открывается.
+  /* ЗКН-Н033 — ПОДТАБ ВЫВОДИТСЯ ИЗ АДРЕСА, А НЕ ПОМНИТСЯ.
+   *
+   * Было: `tab`/`sub` — состояние компонента, снятое с адреса ОДИН РАЗ при
+   * монтировании (useRef). Адрес менялся — состояние оставалось. Отсюда:
+   * смена царства уносила подтаб с собой (Кришна/Качества → Гауранга/Качества),
+   * и никакой `key` этого не лечил: гонка была не в монтировании, а в том, что
+   * компонент ПОМНИЛ подтаб вместо того, чтобы ЧИТАТЬ его.
+   *
+   * Адрес — единственный источник истины. Компонент на него ПОДПИСАН. */
   const initialHashRef = useRef(typeof window !== "undefined" ? (window.location.hash || "") : "");
   const initialPathRef = useRef(typeof window !== "undefined" ? (window.location.pathname || "") : "");
   const hashConsumedRef = useRef(false);
@@ -1301,6 +1315,29 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     if (!hasRealmSplit) return;
     if (!visibleSubs.find((st) => st.id === sub)) setSub(visibleSubs[0]?.id ?? "");
   }, [realm, hasRealmSplit]);
+
+  /* ЗКН-Н033 — АДРЕС СМЕНИЛСЯ → ТАБ И ПОДТАБ ПЕРЕСЧИТЫВАЮТСЯ ИЗ НЕГО.
+   *
+   * Без этого компонент держит подтаб от ПРЕДЫДУЩЕГО адреса. Так Гауранга
+   * открывалась сразу в «Качествах»: адрес стал /gauranga, а `tab` остался «guna».
+   *
+   * Основа своя (REALM_BASE), а не из адреса — иначе прочитаем чужой сегмент. */
+  useEffect(() => {
+    if (!embedded || typeof window === "undefined") return;
+    return subscribeNav(() => {
+      const segs = window.location.pathname.split("/").filter(Boolean);
+      const myBase = (REALM_BASE[id] ?? "/" + id).slice(1);
+      if (segs[0] !== myBase) return;              // адрес не наш — не трогаем
+
+      const dos = dossier;
+      const defaultTab = dos?.tabs?.[0]?.id ?? "";
+      const t = segs[1] ? decodeURIComponent(segs[1]) : "";
+      const nextTab = dos?.tabs?.some((x) => x.id === t) ? t : defaultTab;
+      setTab(nextTab);
+      pendingSubFromHash.current = segs[2] ? decodeURIComponent(segs[2]) : null;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [embedded, id, dossier]);
   // Синхронизация tab/sub → URL-хеш (embedded режим): /krishna#parikary/shanta.
   // replaceUrl, а не pushUrl — переключение внутри карточки не должно засорять
   // back-стек. При клике на «Барсана» pushUrl("/barsana") сохраняет
@@ -1322,7 +1359,6 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
      * своё состояние на ЧУЖОЙ адрес.
      *
      * Основа выводится из САМОГО компонента: он знает, чьё он досье. */
-    const REALM_BASE: Record<string, string> = { krishna: "/krishna", chaitanya: "/gauranga" };
     const base = REALM_BASE[id] ?? "/" + id;
     // Главный экран ПКЛ (первый таб + его первый видимый подтаб) — чистый /krishna
     // без хвоста; остальное — путь /krishna/<таб>/<подтаб> (без решётки).
