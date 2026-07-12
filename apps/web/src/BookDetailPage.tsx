@@ -2875,9 +2875,21 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     const base = `/${bookSlug(book.work)}`;
     if (!path.startsWith(base)) return;
     if (book.prose) return;               // прозовые книги не используют глубоких URL глав
-    const parts = path.split("/");        // ["", "book", work, a?, b?, c?]
-    if (book.hierarchical) openTarget.current(parts[3] || null, parts[4] || null, parts[5] || null);
-    else openTarget.current(null, parts[3] || null, parts[4] || null);
+    /* ⚠️ ЗКН-Н025 — ИНДЕКСЫ СЪЕХАЛИ НА ОДИН. ГЛАВЫ И СТИХИ НЕ ОТКРЫВАЛИСЬ.
+     *
+     * Разбор был написан под СТАРУЮ схему `/book/<шифр>/<глава>/<стих>`:
+     *     ["", "book", "bg", "2", "13"]  →  глава в parts[3], стих в parts[4]
+     *
+     * После переезда книга живёт в КОРНЕ (ЗКН-Н023):
+     *     /bhagavad-gita/2/13  →  ["", "bhagavad-gita", "2", "13"]
+     *                             глава в parts[2], стих в parts[3]
+     *
+     * Папки `/book/` больше нет — а индексы остались от неё. Книга читала
+     * ПУСТОТУ и никуда не переходила. Опять одно и то же: адрес переехал,
+     * читатель остался. */
+    const parts = path.split("/");        // ["", "<книга>", a?, b?, c?]
+    if (book.hierarchical) openTarget.current(parts[2] || null, parts[3] || null, parts[4] || null);
+    else openTarget.current(null, parts[2] || null, parts[3] || null);
   }), [book.hierarchical, book.work, book.prose]);
 
   const openChapterByNumber = (num: string) => {
