@@ -246,8 +246,49 @@ def check_n027():
     return bad
 
 
+def check_n029():
+    """ЗКН-Н029 — КАЖДЫЙ АДРЕС ОБЪЯВЛЯЕТ ОСНОВУ. ЗКН-Н030 — «закрыть» ≠ «назад».
+
+    Было: 25 из 42 веток `applyPath` открывали оверлей, НЕ СКАЗАВ, что под ним.
+    Человек стоял на «Богатства → Книги», жал «Джапа» — открывался счётчик, а
+    закрыв его, попадал В КНИГИ, хотя джапа это Садхана. Свежий заход по ссылке
+    `/japa` давал оверлей НАД ПУСТОТОЙ.
+
+    Оверлей без основы — это оверлей над неизвестностью.
+
+    Механизм: таблица BASE_OF (адрес → основа) + APP_OVERLAY (поиск, избранное,
+    корзина — основу не трогают). Основа ставится ПЕРВОЙ, до разбора оверлея.
+
+    И: `closeOverlay()` возвращает к ОСНОВЕ АДРЕСА, а не на «/».
+    """
+    t = (SRC / "App.tsx").read_text(encoding="utf-8")
+    bad = []
+
+    if "const BASE_OF" not in t:
+        bad.append(("App.tsx", "нет таблицы BASE_OF — адреса не объявляют основу (ЗКН-Н029)"))
+    if "const APP_OVERLAY" not in t:
+        bad.append(("App.tsx", "нет APP_OVERLAY — поиск/избранное будут сбивать основу (ЗКН-Н029)"))
+    if "if (!APP_OVERLAY.has(seg0)) {" not in t:
+        bad.append(("App.tsx", "основа не ставится ПЕРВОЙ в applyPath (ЗКН-Н029)"))
+    if "function closeOverlay" not in t:
+        bad.append(("App.tsx", "нет closeOverlay — «закрыть» неотличимо от «назад» (ЗКН-Н030)"))
+    if 'replaceUrl("/");\n    applyPath("/");' in t and "closeOverlay" not in t:
+        bad.append(("App.tsx", "goBack без истории выкидывает на «/» — теряется раздел (ЗКН-Н030)"))
+
+    # Каждая ОСНОВА из BASE_OF обязана быть законной вкладкой
+    LEGAL = {"sadhana", "krishna", "gauranga", "iskcon", "bogatstva"}
+    m = re.search(r"const BASE_OF[^{]*\{([\s\S]*?)\n  \};", t)
+    if m:
+        for base in set(re.findall(r':\s*"([a-z]+)"', m.group(1))):
+            if base not in LEGAL:
+                bad.append(("App.tsx", "BASE_OF ведёт на вкладку «%s», которой НЕТ — "
+                                       "будет белый экран (ЗКН-Н027)" % base))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Н027", "один экран — один путь рендера", check_n027),
+    ("ЗКН-Н029", "каждый адрес объявляет основу", check_n029),
     ("ЗКН-Н024", "шапка ОДНА на всё приложение", check_n024),
     ("ЗКН-Н002", "один глобальный popstate", check_n002),
     ("ЗКН-Н004", "верхнее меню на месте", check_n004),

@@ -937,6 +937,43 @@ const RESERVED: readonly string[] = [
       })
       .catch(() => { fromPop.current = true; setOpenContent(slug); });
   }
+  /* ЗКН-Н029 — КАЖДЫЙ АДРЕС ОБЪЯВЛЯЕТ ОСНОВУ.
+   *
+   * Было: 25 из 42 веток `applyPath` открывали оверлей, НЕ СКАЗАВ, что под ним.
+   * Человек стоял на «Богатства → Книги», жал «Джапа» — открывался счётчик, а
+   * закрыв его, он попадал В КНИГИ, хотя джапа это Садхана. А свежий заход по
+   * ссылке `/japa` (закладка, QR) давал оверлей НАД ПУСТОТОЙ.
+   *
+   * Оверлей без основы — это оверлей над неизвестностью.
+   *
+   * ДВА ВИДА ОВЕРЛЕЕВ, и их нельзя путать:
+   *
+   *   ОВЕРЛЕЙ РАЗДЕЛА   — приходит СО СВОЕЙ основой (джапа → Садхана,
+   *                       центры → ИСККОН, читалка → Богатства).
+   *                       Закрыл — попал в свой раздел.
+   *
+   *   ОВЕРЛЕЙ ПРИЛОЖЕНИЯ — надстройка над ЛЮБЫМ экраном (поиск, избранное,
+   *                       корзина, заметки, донат). ОСНОВУ НЕ МЕНЯЕТ.
+   *                       Закрыл — вернулся туда, где стоял.
+   */
+  const BASE_OF: Record<string, string> = {
+    // Садхана
+    japa: "sadhana", story: "sadhana", verse: "sadhana", promise: "sadhana",
+    darshan: "sadhana", progress: "sadhana", ekadashi: "sadhana",
+    calendar: "sadhana", id: "sadhana", sadhana: "sadhana",
+    // ИСККОН
+    iskcon: "iskcon", my: "iskcon", centers: "iskcon", center: "iskcon",
+    place: "iskcon", doc: "iskcon", post: "iskcon", restaurant: "iskcon",
+    // Богатства
+    hero: "bogatstva", books: "bogatstva", bhajans: "bogatstva",
+    kirtans: "bogatstva", prasad: "bogatstva", dhama: "bogatstva",
+    // Царства
+    krishna: "krishna", gauranga: "gauranga",
+  };
+
+  /** Оверлеи ПРИЛОЖЕНИЯ: ложатся поверх ЛЮБОГО экрана, основу не трогают. */
+  const APP_OVERLAY = new Set(["search", "favorites", "notes", "note", "cart", "donate"]);
+
   function applyPath(path: string) {
     fromPop.current = true;
     const clean = (path || "/").replace(/\/+$/, "") || "/";
@@ -944,6 +981,20 @@ const RESERVED: readonly string[] = [
     setDonate(false);
     setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
+
+    /* ЗКН-Н029 — ОСНОВА СТАВИТСЯ ПЕРВОЙ, ДО РАЗБОРА ОВЕРЛЕЯ.
+     *
+     * Оверлей РАЗДЕЛА приносит свою основу: /japa → Садхана, /iskcon/centers →
+     * ИСККОН, /prasad/<рецепт> → Богатства. Тогда закрыть оверлей = попасть
+     * в СВОЙ раздел, а не туда, где случайно стоял.
+     *
+     * Оверлей ПРИЛОЖЕНИЯ (поиск · избранное · корзина · заметки · донат)
+     * основу НЕ трогает: закрыл — вернулся, откуда пришёл. */
+    if (!APP_OVERLAY.has(seg0)) {
+      const base = BASE_OF[seg0];
+      if (base) setTab(base);
+    }
+
     if (clean === "/") { setTab("sadhana"); return; }
     // ЗКН-Н005: разделы Садханы — свои адреса (Практика / Календарь / Кабинет)
     /* ЗКН-Н023 — САДХАНА: каждый инструмент в КОРНЕ (схема основателя).
@@ -1229,11 +1280,40 @@ const RESERVED: readonly string[] = [
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
+  /* ЗКН-Н030 — «НАЗАД» И «ЗАКРЫТЬ» — РАЗНОЕ.
+   *
+   * «Назад» (жест, кнопка браузера) — шаг ПО ИСТОРИИ.
+   * «Закрыть» (крестик на карточке) — СНЯТЬ ОВЕРЛЕЙ и показать ОСНОВУ.
+   *
+   * Разница видна, когда человек пришёл ПО ПРЯМОЙ ССЫЛКЕ (закладка, QR):
+   * истории НЕТ. Раньше `goBack` в этом случае выкидывал на «/» — то есть
+   * в Садхану, чем бы человек ни занимался. Открыл рецепт по ссылке, закрыл —
+   * и оказался не в Прасаде, а на главной. Это ломает доверие к крестику.
+   *
+   * Теперь: нет истории → возвращаемся К ОСНОВЕ ЭТОГО АДРЕСА.
+   *   /prasad/sweet-lassi → закрыть → /prasad   (а не «/»)
+   *   /japa               → закрыть → /sadhana
+   *   /iskcon/centers     → закрыть → /iskcon
+   */
+  const HOME_OF: Record<string, string> = {
+    sadhana: "/sadhana", bogatstva: "/hero", iskcon: "/iskcon",
+    krishna: "/krishna", gauranga: "/gauranga",
+  };
+
   function goBack() {
     if (canGoBack()) { window.history.back(); return; }
+    closeOverlay();
+  }
+
+  /** Снять оверлей и показать ОСНОВУ текущего адреса. */
+  function closeOverlay() {
+    const seg0 = (typeof window === "undefined" ? "" : window.location.pathname)
+      .split("/").filter(Boolean)[0] ?? "";
+    const base = BASE_OF[seg0] ?? tab;          // оверлей приложения → основа не менялась
+    const home = HOME_OF[base] ?? "/";
     fromPop.current = true;
-    replaceUrl("/");
-    applyPath("/");
+    replaceUrl(home);
+    applyPath(home);
   }
 
   // Переход по in-app пути (строки «Избранного» и пр.): пушим уровень и применяем тот же роутер.
