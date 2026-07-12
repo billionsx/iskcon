@@ -67,3 +67,38 @@ export function HomeTabs({ active, onChange, navRef }: {
     </nav>
   );
 }
+
+
+/* ЗКН-Н023 — АДРЕС ВКЛАДКИ ИСККОН.
+ *
+ * Слаг вкладки — по-английски и читаемо: `centers`, а не `centres`
+ * (ЗКН-Н023: адрес читает человек). Внутренний id остаётся как есть.
+ */
+const TAB_SLUG: Record<string, string> = {
+  iskcon: "",
+  news: "news",
+  centres: "centers",
+  restaurants: "restaurants",
+  education: "education",
+  structure: "structure",
+  documents: "documents",
+  links: "links",
+};
+
+const SLUG_TAB: Record<string, HomeTabId> = Object.fromEntries(
+  Object.entries(TAB_SLUG).filter(([, v]) => v).map(([k, v]) => [v, k as HomeTabId])
+) as Record<string, HomeTabId>;
+
+/** Адрес вкладки: /iskcon, /iskcon/centers … */
+export function pathOfTab(id: HomeTabId): string {
+  const slug = TAB_SLUG[id];
+  return slug ? "/iskcon/" + slug : "/iskcon";
+}
+
+/** Вкладка из адреса. Неизвестный адрес → «ИСККОН». */
+export function tabFromPath(): HomeTabId {
+  if (typeof window === "undefined") return "iskcon";
+  const seg = window.location.pathname.split("/").filter(Boolean);
+  if (seg[0] !== "iskcon" || !seg[1]) return "iskcon";
+  return SLUG_TAB[seg[1]] ?? "iskcon";
+}

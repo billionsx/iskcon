@@ -14,7 +14,7 @@ import { api } from "./api";
 import { BOOKS, AUDIO_WORKS } from "./books";
 import { catalogNow } from "./bookCatalog";
 import { BookHeroCard } from "./BookHeroCard";
-import { HomeTabs, HOME_TABS, type HomeTabId } from "./HomeTabs";
+import { HomeTabs, HOME_TABS, pathOfTab, tabFromPath, type HomeTabId } from "./HomeTabs";
 import { takeHomeTab } from "./homeNav";
 import { SectionSubTabs } from "./SectionSubTabs";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
@@ -22,6 +22,8 @@ import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeEducation, HomeNews } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
+import { pushUrl, subscribeNav } from "./nav";
+import { HubHeader } from "./ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
 const S = 44;   // воздух между секциями
@@ -38,15 +40,19 @@ function MaskMark({ src, size = 28, color = "var(--color-label)", pos = "center"
     WebkitMaskImage: `url(${src})`, maskImage: `url(${src})`, WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
     WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: pos, maskPosition: pos }} />;
 }
+/* ЗКН-Н024 — ШАПКА ОДНА НА ВСЁ ПРИЛОЖЕНИЕ.
+ *
+ * Здесь ЖИЛА ВТОРАЯ шапка — со своими отступами (16 против 14), своим тегом
+ * (h2 против h1), своим весом надписи (700 против 600) и своим отступом
+ * описания (8 против 4). Человек переходил из Богатств в ИСККОН — и текст
+ * прыгал. Две шапки в одном приложении — это две разные типографики.
+ *
+ * SectionHead теперь ОБЁРТКА над общим HubHeader: раздел ВНУТРИ экрана (level 2).
+ */
 function SectionHead({ eyebrow, title, subtitle }: { eyebrow?: string; title: string; subtitle?: string }) {
-  return (
-    <div style={{ marginBottom: 16 }}>
-      {eyebrow && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>{eyebrow}</div>}
-      <h2 style={{ margin: eyebrow ? "5px 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: TR_TITLE, lineHeight: 1.12, color: "var(--color-label)" }}>{title}</h2>
-      {subtitle && <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>{subtitle}</p>}
-    </div>
-  );
+  return <HubHeader eyebrow={eyebrow ?? ""} title={title} subtitle={subtitle} level={2} />;
 }
+
 function Section({ children, top = S, id }: { children: React.ReactNode; top?: number; id?: string }) {
   return <section id={id} style={{ marginTop: top }}>{children}</section>;
 }
@@ -732,15 +738,24 @@ export default function HomeScreen(props: {
 }) {
   // Подтаб живёт в sessionStorage: открытие героя/оверлея размонтирует HomeScreen,
   // и «назад» должен вернуть в тот же раздел (например, «Календарь»), а не на «ИСККОН».
-  const [homeTab, setHomeTab] = useState<HomeTabId>(() => {
-    try {
-      const pend = takeHomeTab();
-      if (pend && HOME_TABS.some((t) => t.id === pend)) return pend;
-      const v = sessionStorage.getItem("home-tab") as HomeTabId | null;
-      if (v && HOME_TABS.some((t) => t.id === v)) return v;
-    } catch { /* noop */ }
-    return "iskcon";
-  });
+  /* ЗКН-Н023 · ЗКН-Н005 — ВКЛАДКА ИСККОН ЖИВЁТ В АДРЕСЕ, А НЕ В ПАМЯТИ СЕССИИ.
+   *
+   * Было: вкладка держалась в `sessionStorage`, адрес не менялся вовсе. Человек
+   * открывал «Центры», а в строке оставалось `/books` — разделом НЕЛЬЗЯ БЫЛО
+   * ПОДЕЛИТЬСЯ, нельзя было положить в закладку, нельзя было вернуться назад.
+   * Экран есть, а адреса у него нет — значит его как бы и нет.
+   *
+   *   /iskcon              ИСККОН
+   *   /iskcon/news         Новости
+   *   /iskcon/centers      Центры
+   *   /iskcon/restaurants  Рестораны
+   *   /iskcon/education    Образование
+   *   /iskcon/structure    Структура
+   *   /iskcon/documents    Документы
+   *   /iskcon/links        Ссылки
+   */
+  const [homeTab, setHomeTab] = useState<HomeTabId>(() => tabFromPath());
+  useEffect(() => subscribeNav(() => setHomeTab(tabFromPath())), []);
   useEffect(() => { try { sessionStorage.setItem("home-tab", homeTab); } catch { /* noop */ } }, [homeTab]);
   // Нижняя «Главная» (повторный тап) и логотип ISKCON ONE LOVE возвращают в корень главной.
   useEffect(() => {
@@ -773,6 +788,7 @@ export default function HomeScreen(props: {
   };
   const switchTab = (id: HomeTabId) => {
     setHomeTab(id);
+    pushUrl(pathOfTab(id));      // ЗКН-Н005: вкладка меняет адресную строку
     const root = scrollRoot();
     if (root) root.scrollTo({ top: 0 });
   };

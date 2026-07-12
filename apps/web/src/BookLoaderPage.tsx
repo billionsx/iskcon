@@ -12,6 +12,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { BackIcon } from "./ui/icons";
 import { api } from "./api";
+import { HubHeader } from "./ui/HubHeader";
 
 interface ChapterStatusRow {
   number: string;
@@ -377,12 +378,7 @@ export default function BookLoaderPage({ onBack }: { onBack: () => void }) {
 
       <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
         <div style={{ maxWidth: 680, margin: "0 auto", padding: "20px 18px 60px" }}>
-          <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>
-            Библиотека · ингест
-          </div>
-          <h1 style={{ margin: "2px 0 6px", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.3px", color: "var(--color-label)" }}>
-            Загрузчик книги
-          </h1>
+          <HubHeader eyebrow="Библиотека · ингест" title="Загрузчик книги" />
           <p style={{ margin: "0 0 16px", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
             Тянет тексты с vedabase.io и пишет их в базу gaurangers (D1). «Загрузить» на главе или «Загрузить всю книгу» — воркер по очереди открывает каждый стих, разбирает на слои и сохраняет.
           </p>

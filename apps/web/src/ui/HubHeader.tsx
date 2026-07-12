@@ -29,16 +29,19 @@
  */
 import type { ReactNode } from "react";
 
-export function HubHeader({ eyebrow, title, subtitle, action }: {
+export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
   /** Надпись золотом — КОНТЕКСТ раздела. Не повторяет вкладку. */
   eyebrow: string;
   /** Имя раздела. */
   title: string;
-  /** Ориентир: что здесь найдётся. Обязателен. */
-  subtitle: string;
+  /** Ориентир: что здесь найдётся. Обязателен для шапки ЭКРАНА. */
+  subtitle?: string;
   /** Действие справа (например «Весь каталог»). */
   action?: ReactNode;
+  /** 1 — шапка ЭКРАНА (h1). 2 — шапка раздела ВНУТРИ экрана (h2). */
+  level?: 1 | 2;
 }) {
+  const H = level === 1 ? "h1" : "h2";
   return (
     <div style={{ marginBottom: 14, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
       <div style={{ minWidth: 0 }}>
@@ -47,15 +50,18 @@ export function HubHeader({ eyebrow, title, subtitle, action }: {
           textTransform: "uppercase", color: "var(--color-gold-deep)",
         }}>{eyebrow}</div>
 
-        <h1 style={{
-          margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)",
+        <H style={{
+          margin: "2px 0 0", fontFamily: "var(--font-display)",
+          fontSize: level === 1 ? "var(--text-title1)" : "var(--text-title2)",
           fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)",
-        }}>{title}</h1>
+        }}>{title}</H>
 
-        <p style={{
-          margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
-          color: "var(--color-label-2)", lineHeight: 1.4,
-        }}>{subtitle}</p>
+        {subtitle ? (
+          <p style={{
+            margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+            color: "var(--color-label-2)", lineHeight: 1.4,
+          }}>{subtitle}</p>
+        ) : null}
       </div>
 
       {action ? <div style={{ flexShrink: 0, paddingTop: 4 }}>{action}</div> : null}
