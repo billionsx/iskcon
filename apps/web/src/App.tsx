@@ -592,8 +592,17 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   onOpenCollection: (key: string) => void; onOpenPath: (path: string) => void; flash?: string | null;
   onOpenArtist: (slug: string) => void; onOpenBhajan: (slug: string) => void; onOpenCatalog: () => void;
 }) {
+  /* ЗКН-Н031 — ВИТРИНА ВЫВОДИТСЯ ИЗ АДРЕСА, А НЕ ПОМНИТСЯ.
+   *
+   * Было: `sub` читался ТОЛЬКО при монтировании зала и на смену адреса НЕ был
+   * подписан. Отсюда «через раз»:
+   *   из ИСККОН на /kirtans  → tab меняется → зал МОНТИРУЕТСЯ → sub верный  ✓
+   *   из /books  на /kirtans → tab тот же   → зал НЕ монтируется → sub СТАРЫЙ ✗
+   *
+   * Адрес — источник истины. Зал его читает, а не помнит. */
   const [sub, setSub] = useState(() =>
     typeof window === "undefined" ? "lichnosti" : bogSubFromPath(window.location.pathname));
+  useEffect(() => subscribeNav(() => setSub(bogSubFromPath(window.location.pathname))), []);
 
   /* ЗКН-Н007 — ВХОД В ЛИЧНОСТИ = «ГЕРОИ».
    *
@@ -1085,9 +1094,14 @@ const RESERVED: readonly string[] = [
         setTab("bogatstva");
         return;
       }
-      /* ⚠️ ЗКН-Н027: здесь НЕ ЗВАЛСЯ setTab — вкладка оставалась чужой,
-       * а `tab === "prasad"` не существовало вовсе → БЕЛЫЙ ЭКРАН. */
-      setPrasadamSection("recipes");
+      /* ⚠️ ЗКН-Н031 — ВИТРИНА НЕ СТАВИТ ОВЕРЛЕЙ.
+       *
+       * Здесь стояло `setPrasadamSection("recipes")` — и оверлей ПОДМЕНЯЛ ВЕСЬ
+       * ЭКРАН (тернарная цепочка в Screen: 36 ветвей, каждая рисуется ВМЕСТО
+       * приложения, без нижнего меню и без зала). Голый `/prasad` — это ВИТРИНА,
+       * её рисует зал: sub === "prasad" → PrasadamScreen.
+       *
+       * Оверлей ставится ТОЛЬКО на адрес глубже витрины: /prasad/<рецепт>. */
       setTab("bogatstva");
       return;
     }

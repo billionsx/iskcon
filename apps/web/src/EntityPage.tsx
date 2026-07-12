@@ -1309,8 +1309,21 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
     if (!embedded || typeof window === "undefined") return;
     if (!tab) return;
     if (!hashConsumedRef.current) return; // ждём применения исходного deep-link
-    const segs = window.location.pathname.split("/").filter(Boolean);
-    const base = "/" + (segs[0] || id);                          // /krishna
+    /* ЗКН-Н032 — ОСНОВА БЕРЁТСЯ ИЗ СЕБЯ, А НЕ ИЗ АДРЕСА.
+     *
+     * Здесь стояло `segs[0]` — первый сегмент ТЕКУЩЕГО адреса. При смене царства
+     * это ломалось так:
+     *   1. Клик «Гауранга» → адрес становится /gauranga
+     *   2. Старый EntityPage(krishna) ЕЩЁ НЕ РАЗМОНТИРОВАН, его эффект срабатывает
+     *   3. Он берёт segs[0] = "gauranga" (уже новый!) и дописывает СВОЙ подтаб
+     *      → /gauranga/guna/milost
+     *
+     * Человек нажимал Гаурангу и попадал сразу в «Качества». Компонент писал
+     * своё состояние на ЧУЖОЙ адрес.
+     *
+     * Основа выводится из САМОГО компонента: он знает, чьё он досье. */
+    const REALM_BASE: Record<string, string> = { krishna: "/krishna", chaitanya: "/gauranga" };
+    const base = REALM_BASE[id] ?? "/" + id;
     // Главный экран ПКЛ (первый таб + его первый видимый подтаб) — чистый /krishna
     // без хвоста; остальное — путь /krishna/<таб>/<подтаб> (без решётки).
     const defaultTabId = dossier?.tabs?.[0]?.id ?? "";
