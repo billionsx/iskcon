@@ -408,30 +408,44 @@ export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpe
 function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void; onOpenPath?: (path: string) => void;
 }) {
   return (
-    /* ЗКН-Н007 — ВИТРИНА ЛИЧНОСТЕЙ: РОВНО ТРИ КНОПКИ.
-     *
-     * Ни заголовка, ни подзаголовка, ни поиска — витрина это ВХОД, а не экран.
-     * Каждая кнопка ведёт в утверждённое четырёхуровневое меню своей лилы
-     * (волны → кластеры). Порядок закреплён основателем. */
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <SectionCard
-        title="Гауранга Лила"
-        subtitle="Гауранга Махапрабху, Панча-таттва и все спутники"
-        mark={<MaskMark src="/gauranga.svg" size={48} />}
-        onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
-      />
-      <SectionCard
-        title="Кришна Лила"
-        subtitle="Вечные игры Господа и Его спутников во Вриндаване"
-        mark={<MaskMark src="/vraj.svg" size={48} />}
-        onClick={() => onOpenPath?.("/dhana/krishna-lila")}
-      />
-      <SectionCard
-        title="Шримад Бхагаватам"
-        subtitle="Воплощения и аватары Господа, Его великие преданные"
-        mark={<MaskMark src="/bbt.svg" size={48} />}
-        onClick={() => onOpenPath?.("/dhana/shrimad-bhagavatam")}
-      />
+    <div>
+      {/* ЗКН-Н007 — ШАПКА ВИТРИНЫ, как у остальных Богатств.
+       *
+       * Надпись НЕ повторяет вкладку: вкладка называется «Личности», значит
+       * надпись говорит ДРУГОЕ — чем эти личности являются в архитектуре
+       * приложения (ЗКН-Сд005: персонализм, всё висит на графе Личностей). */}
+      <div style={{ marginBottom: 4 }}>
+        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>Вечные спутники</div>
+        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)" }}>Герои</h1>
+        <p style={{ margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.4 }}>
+          Абсолют — Личность, и путь к Нему идёт через личности. Три лилы, в каждой свой строй
+        </p>
+      </div>
+
+      {/* ТРИ ВХОДА. Описание каждого — по тому, ЧТО за ним реально открывается:
+       *   Гауранга Лила  → волны (I–V, беспрецедентная, ачарьи сампрадай)
+       *   Кришна Лила    → расы (шанта · дасья · сакхья · ватсалья · мадхурья)
+       *   Шримад Бхагаватам → чины (аватары · мудрецы · цари · полубоги · демоны · эпосы) */}
+      <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+        <SectionCard
+          title="Гауранга Лила"
+          subtitle="Кришна в облике преданного. Пять волн санкиртаны — от Панча-таттвы до ачарьев и ИСККОН"
+          mark={<MaskMark src="/gauranga.svg" size={48} />}
+          onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
+        />
+        <SectionCard
+          title="Кришна Лила"
+          subtitle="Свайам Бхагаван во Врадже. Спутники по расам — от покоя шанты до мадхурьи манджари"
+          mark={<MaskMark src="/vraj.svg" size={48} />}
+          onClick={() => onOpenPath?.("/dhana/krishna-lila")}
+        />
+        <SectionCard
+          title="Шримад Бхагаватам"
+          subtitle="Зрелый плод Вед. Аватары и мудрецы, цари и преданные, полубоги и демоны"
+          mark={<MaskMark src="/bbt.svg" size={48} />}
+          onClick={() => onOpenPath?.("/dhana/shrimad-bhagavatam")}
+        />
+      </div>
     </div>
   );
 }
