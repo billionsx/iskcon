@@ -72,6 +72,12 @@ def actual_level(lid: str) -> tuple[int, str]:
     if lid in ("ЗКН-Н025", "ЗКН-Н026") and (ROOT / "tools" / "url-audit.py").exists():
         return 5, "гейт адресов (url-audit.py)"
 
+    # Д009 — токен SECTION_GAP в общем компоненте шапки.
+    if lid == "ЗКН-Д009":
+        t = (ROOT / "apps" / "web" / "src" / "ui" / "HubHeader.tsx").read_text(encoding="utf-8")
+        if "SECTION_GAP" in t:
+            return 5, "токен в ui/HubHeader.tsx"
+
     # Н027/Н028 механизированы в nav-audit (check_n027 ловит и то, и другое).
     if lid in ("ЗКН-Н027", "ЗКН-Н028", "ЗКН-Н029", "ЗКН-Н030", "ЗКН-Н031", "ЗКН-Н032", "ЗКН-Н033", "ЗКН-Н034", "ЗКН-Н035", "ЗКН-Н036"):
         t = (ROOT / "tools" / "nav-audit.py").read_text(encoding="utf-8")
