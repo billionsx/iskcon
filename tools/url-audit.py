@@ -88,8 +88,38 @@ def check_iskcon_tabs():
     return bad
 
 
+def check_book_depth():
+    """ЗКН-Н025 — ИНДЕКСЫ СЕГМЕНТОВ СЪЕЗЖАЮТ ВМЕСТЕ С АДРЕСОМ.
+
+    Разбор адреса книги был написан под СТАРУЮ схему `/book/<шифр>/<глава>/<стих>`:
+        ["", "book", "bg", "2", "13"]  →  глава в parts[3], стих в parts[4]
+
+    После переезда книга живёт в КОРНЕ:
+        /bhagavad-gita/2/13  →  ["", "bhagavad-gita", "2", "13"]
+                                глава в parts[2], стих в parts[3]
+
+    Папки `/book/` больше НЕТ — а индексы остались от неё. Книга читала ПУСТОТУ,
+    и главы со стихами НЕ ОТКРЫВАЛИСЬ.
+
+    Это тот же ЗКН-Н025 в новом обличье: адрес переехал — читатель остался.
+    Только здесь переехали не имена, а ГЛУБИНА. Гейт стережёт и её.
+    """
+    t = (SRC / "BookDetailPage.tsx").read_text(encoding="utf-8")
+    body = "\n".join(l for l in t.split("\n")
+                      if not l.strip().startswith(("*", "//", "/*")))
+    bad = []
+    # книга в корне → глава в parts[2]. parts[3] как ГЛАВА = старая схема /book/<шифр>/
+    if re.search(r'openTarget\.current\(parts\[3\]', body) or \
+       re.search(r'openTarget\.current\(null, parts\[3\]', body):
+        bad.append(("BookDetailPage.tsx",
+                    "разбор адреса книги считает от СТАРОЙ схемы /book/<шифр>/ — "
+                    "книга живёт в КОРНЕ, глава в parts[2] (ЗКН-Н025)"))
+    return bad
+
+
 def main():
     bad = [(f, 0, "", "", m) for f, m in check_iskcon_tabs()]
+    bad += [(f, 0, "", "", m) for f, m in check_book_depth()]
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in ALLOW:
             continue
@@ -115,6 +145,7 @@ def main():
     if not bad:
         print("ЗКН-Н025: мёртвых читателей адресов нет ✓")
         print("ЗКН-Н026: у вкладок ИСККОН есть адреса ✓")
+        print("ЗКН-Н025: глубина книги (глава/стих) читается верно ✓")
         print("  переездов в реестре: %d" % len(MOVED))
         return 0
 
