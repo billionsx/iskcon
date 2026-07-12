@@ -447,40 +447,27 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
         </div>
       ) : (
         <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
-          {(!realm || realm === "gauranga") && (
+          {/* ЗКН-Н007 — ВИТРИНА ЛИЧНОСТЕЙ: РОВНО ТРИ ВХОДА.
+              Каждый ведёт в утверждённое четырёхуровневое меню своей лилы
+              (волны → кластеры). Порядок закреплён основателем. */}
           <SectionCard
-            title="Шрила Прабхупада"
-            subtitle="Его Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами — Ачарья-основатель Международного общества сознания Кришны (ИСККОН)"
-            mark={<MaskMark src="/prabhupada.svg" size={56} pos="center bottom" />}
-            accent
-            onClick={() => onOpen("prabhupada", "personality")}
+            title="Гауранга Лила"
+            subtitle="Гауранга Махапрабху, Панча-таттва и все спутники"
+            mark={<MaskMark src="/gauranga.svg" size={48} />}
+            onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
           />
-          )}
-          {(!realm || realm === "krishna") && (
           <SectionCard
-            title="Радха-Кришна лила"
+            title="Кришна Лила"
             subtitle="Вечные игры Господа и Его спутников во Вриндаване"
             mark={<MaskMark src="/vraj.svg" size={48} />}
             onClick={() => onOpenPath?.("/dhana/krishna-lila")}
           />
-          )}
-          {(!realm || realm === "gauranga") && (
-          <SectionCard
-            title="Гауранга Лила"
-            subtitle="Гауранга Махапрабху и Панча-таттва"
-            mark={<MaskMark src="/gauranga.svg" size={48} />}
-            onClick={() => onOpenPath?.("/dhana/gauranga-lila")}
-          />
-          )}
-          {(!realm || realm === "krishna") && (
           <SectionCard
             title="Шримад Бхагаватам"
             subtitle="Воплощения и аватары Господа, Его великие преданные"
             mark={<MaskMark src="/bbt.svg" size={48} />}
             onClick={() => onOpenPath?.("/dhana/shrimad-bhagavatam")}
           />
-          )}
-        
 </div>
       )}
     </div>
