@@ -197,7 +197,57 @@ def check_n024():
     return bad
 
 
+def check_n027():
+    """ЗКН-Н027 — ОДИН ЭКРАН, ОДИН ПУТЬ РЕНДЕРА. ВКЛАДКА — ТОЛЬКО ЗАКОННАЯ.
+
+    ЭТО КОРЕНЬ ЦЕЛОГО КЛАССА ПОЛОМОК, и он держался месяцами.
+
+    В приложении жили ДВА пути к одному экрану:
+        tab === "bogatstva" → зал → HallTabs + витрина      ✓ С МЕНЮ
+        tab === "books"     → BooksHub НАПРЯМУЮ             ✗ БЕЗ МЕНЮ
+    И так же: kirtans · dhama · acharya · account · home.
+
+    Отсюда «один и тот же адрес то открывается, то нет»: попадёшь через адрес —
+    увидишь меню; попадёшь через `setTab("books")` — не увидишь. Ничего не падает,
+    сборка зелёная, экран просто НЕ ТОТ.
+
+    А `tab === "prasad"` НЕ СУЩЕСТВОВАЛО вовсе — `setTab` ставил вкладку, которую
+    никто не рисует → БЕЛЫЙ ЭКРАН.
+
+    ДВА ПРАВИЛА:
+      1. `setTab` принимает ТОЛЬКО одну из пяти вкладок нижнего меню.
+      2. Витрина Богатств рисуется ТОЛЬКО в зале — второго пути нет.
+    """
+    LEGAL = {"sadhana", "krishna", "gauranga", "iskcon", "bogatstva"}
+    HUBS = ("BooksHub", "KirtansScreen", "DhamaScreen", "PrasadamScreen", "AcharyaScreen")
+
+    app = SRC / "App.tsx"
+    t = app.read_text(encoding="utf-8")
+    bad = []
+
+    for i, line in enumerate(t.split("\n"), 1):
+        st = line.strip()
+        if st.startswith(("*", "//", "/*")):
+            continue
+
+        # 1. незаконная вкладка = белый экран
+        for m in re.finditer(r'setTab\("([a-z-]+)"\)', line):
+            if m.group(1) not in LEGAL:
+                bad.append(("App.tsx:%d" % i,
+                            "setTab(\"%s\") — такой вкладки НЕТ, будет БЕЛЫЙ ЭКРАН. "
+                            "Законные: %s (ЗКН-Н027)" % (m.group(1), " · ".join(sorted(LEGAL)))))
+
+        # 2. витрина в обход зала
+        m = re.match(r'\{tab === "([a-z-]+)" && <(\w+)', st)
+        if m and m.group(2) in HUBS and m.group(1) != "bogatstva":
+            bad.append(("App.tsx:%d" % i,
+                        "<%s> рисуется в обход зала — витрина живёт ТОЛЬКО в зале "
+                        "(ЗКН-Н027)" % m.group(2)))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н027", "один экран — один путь рендера", check_n027),
     ("ЗКН-Н024", "шапка ОДНА на всё приложение", check_n024),
     ("ЗКН-Н002", "один глобальный popstate", check_n002),
     ("ЗКН-Н004", "верхнее меню на месте", check_n004),

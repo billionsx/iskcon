@@ -740,29 +740,27 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
           <Suspense fallback={<ScreenFallback />}>
-          {tab === "krishna" && <EntityPage id="krishna" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
-          {tab === "gauranga" && <EntityPage id="chaitanya" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
+          {/* ЗКН-Н028 — key ЗАСТАВЛЯЕТ ПЕРЕМОНТИРОВАТЬ ПРИ СМЕНЕ ЦАРСТВА.
+           * Без него React переиспользует компонент, и ПОДТАБ ПЕРЕНОСИТСЯ:
+           * был на Кришна → «Качества», нажал Гауранга — попал сразу в «Качества»,
+           * а не на главный экран. Царство сменилось, состояние — нет. */}
+          {tab === "krishna" && <EntityPage key="realm-krishna" id="krishna" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
+          {tab === "gauranga" && <EntityPage key="realm-gauranga" id="chaitanya" embedded onBack={() => {}} onOpen={onOpenEntity} onNavigate={onOpenPath} onOpenCollection={onOpenCollection} />}
           {tab === "iskcon" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} onBookMenu={bookMenu} flash={flash} onOpenPath={onOpenPath} />}
           {tab === "bogatstva" && <BogatstvaHall onOpenBook={onOpenBook} onBookMenu={bookMenu} onOpenEntity={onOpenEntity} onOpenCollection={onOpenCollection} onOpenPath={onOpenPath} flash={flash} onOpenArtist={onOpenKirtanArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
           {tab === "sadhana" && <SadhanaHall onOpenPath={onOpenPath} onOpenEntity={onOpenEntity} onDonate={onDonate} flash={flash} />}
-          {tab === "books" && (
-            <BooksHub
-              onOpenBook={onOpenBook}
-              onBookMenu={bookMenu}
-              onOpenEntity={onOpenEntity}
-              onOpenCollection={onOpenCollection}
-              onOpenPath={onOpenPath}
-              flash={flash}
-            />
-          )}
-          {tab === "home" && <HomeScreen onChange={onChange} onOpenBook={onOpenBook} onOpenEntity={onOpenEntity} onDonate={onDonate} onBookMenu={bookMenu} flash={flash} onOpenPath={onOpenPath} />}
-          {tab === "kirtans" && (
-            <KirtansScreen onOpenArtist={onOpenKirtanArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />
-          )}
-          {tab === "feed" && <FeedScreen onOpen={onOpenContent} />}
-          {tab === "acharya" && <AcharyaScreen onOpen={onOpenEntity} onOpenCollection={onOpenCollection} />}
-          {tab === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
-          {tab === "account" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
+          {/* ЗКН-Н027 — ОДИН ЭКРАН — ОДИН ПУТЬ РЕНДЕРА.
+           *
+           * ЗДЕСЬ ЖИЛИ ПАРАЛЛЕЛЬНЫЕ ПУТИ: витрины рисовались ДВАЖДЫ —
+           *   `tab === "bogatstva"` → зал → HallTabs + витрина   ✓ с меню
+           *   `tab === "books"`     → BooksHub НАПРЯМУЮ          ✗ БЕЗ меню
+           * И так же: kirtans · dhama · acharya · account · home.
+           *
+           * Отсюда «один и тот же адрес то открывается, то нет»: попадёшь через
+           * адрес — увидишь меню, попадёшь через `setTab("books")` — не увидишь.
+           * А `tab === "prasad"` НЕ СУЩЕСТВОВАЛО вовсе → БЕЛЫЙ ЭКРАН.
+           *
+           * Второй путь удалён. Витрина живёт ТОЛЬКО в зале. */}
           </Suspense>
         </div>
       </main>
@@ -980,14 +978,16 @@ const RESERVED: readonly string[] = [
     if (seg0 === "dhama") {
       const parts = clean.split("/");               // ["", "dhama", <id>, <tirthaId>?]
       const did = parts[2];
+      /* ⚠️ ЗКН-Н027: здесь стояло `setTab("dhama")` — вкладки с таким именем НЕТ,
+       * витрина живёт в зале. Незаконная вкладка = БЕЛЫЙ ЭКРАН. */
+      setTab("bogatstva");
       if (did && getDhama(did)) {
-        setTab("dhama");
         if (parts[3]) setOpenTirtha({ dhama: did, id: parts[3] });
         else setOpenDhama(did);
-      } else { setTab("dhama"); }
+      }
       return;
     }
-    if (clean === "/bhajans") { setTab("home"); setOpenCatalog(true); return; }
+    if (clean === "/bhajans") { setTab("bogatstva"); return; }
     if (clean === "/favorites") { setOpenFavorites(true); return; }
     if (clean === "/search") { setOpenSearch(true); return; }
     if (clean === "/calendar" || seg0 === "calendar") {
@@ -995,7 +995,7 @@ const RESERVED: readonly string[] = [
       // (cal-loc) вызывающим — свежий HomeCalendar прочитает его при монтировании.
       // Подтаб выбираем тремя каналами: синглтон homeNav (надёжно, синхронно),
       // sessionStorage (дубль) и событие home-open (если HomeScreen уже смонтирован).
-      setTab("home");
+      setTab("iskcon");
       requestHomeTab("calendar");
       try { sessionStorage.setItem("home-tab", "calendar"); } catch { /* noop */ }
       try { window.dispatchEvent(new CustomEvent("home-open", { detail: { tab: "calendar" } })); } catch { /* noop */ }
@@ -1028,9 +1028,16 @@ const RESERVED: readonly string[] = [
       const parts = clean.split("/");
       const p2 = parts[2] || "";
       if (p2 === "book") { if (parts[3]) setCookbookChapter(parts[3]); else setOpenCookbook(true); return; }
-      if (p2 === "offering") { setPrasadamSection("offering"); setTab("bogatstva"); return; }
-      if (p2) { setPrasadamRecipe(p2); return; }          // /prasad/<рецепт>
+      if (p2) {
+        // /prasad/offering и /prasad/<рецепт>
+        if (p2 === "offering") setPrasadamSection("offering"); else setPrasadamRecipe(p2);
+        setTab("bogatstva");
+        return;
+      }
+      /* ⚠️ ЗКН-Н027: здесь НЕ ЗВАЛСЯ setTab — вкладка оставалась чужой,
+       * а `tab === "prasad"` не существовало вовсе → БЕЛЫЙ ЭКРАН. */
       setPrasadamSection("recipes");
+      setTab("bogatstva");
       return;
     }
     /* ЗКН-Н023 — /books это ВИТРИНА. Сама книга живёт в КОРНЕ по полному имени:
@@ -1044,7 +1051,7 @@ const RESERVED: readonly string[] = [
     if (seg0 === "center") {
       const parts = clean.split("/");        // ["", "center", <slug>, "edit"?]
       const cslug = parts[2] ?? "";
-      if (!cslug) { setTab("home"); return; }
+      if (!cslug) { setTab("iskcon"); return; }
       if (parts[3] === "edit") setOpenCenterEdit(cslug);
       else if (parts[3] === "schedule") setOpenCenterSchedule(cslug);
       else if (parts[3] === "deities") setOpenCenterDeities(cslug);
@@ -1076,7 +1083,7 @@ const RESERVED: readonly string[] = [
     if (seg0 === "place" || seg0 === "doc" || seg0 === "restaurant") {
       const pid = clean.split("/")[2] ?? "";
       const sub: HomeTabId = seg0 === "doc" ? "documents" : seg0 === "restaurant" ? "restaurants" : "centres";
-      setTab("home");
+      setTab("iskcon");
       requestHomeTab(sub);
       try {
         sessionStorage.setItem("home-tab", sub);
@@ -1093,7 +1100,7 @@ const RESERVED: readonly string[] = [
       if (ks) setOpenKirtanArtist(ks); else setTab("bogatstva");
       return;
     }
-    if (seg0 === "lichnosti-collection") { const ck = clean.split("/")[2] ?? ""; setTab("acharya"); if (ck) setOpenCollection(ck); return; }
+    if (seg0 === "lichnosti-collection") { const ck = clean.split("/")[2] ?? ""; setTab("bogatstva"); if (ck) setOpenCollection(ck); return; }
     if (seg0 === "dasa") { setOpenContent(clean); return; }            // только статьи под /dasa
     /* ЗКН-Н023 — ИСККОН: ВКЛАДКА ЖИВЁТ В АДРЕСЕ.
      *   /iskcon /iskcon/news /iskcon/centers /iskcon/restaurants
@@ -1123,7 +1130,7 @@ const RESERVED: readonly string[] = [
     }
 
     if (!RESERVED.includes(seg0)) { resolveAndOpen(clean); return; }    // /ru/… или /batumi → резолвер
-    setTab("home");
+    setTab("iskcon");
   }
 
   // инициализация из URL + кнопки назад/вперёд (единственный popstate на приложение)
