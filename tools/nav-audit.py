@@ -180,6 +180,14 @@ def check_n024():
         t = p.read_text(encoding="utf-8")
         if "HubHeader" not in t:
             bad.append((f, "витрина «%s» рисует шапку САМА — звать HubHeader (ЗКН-Н024)" % tab))
+            continue
+        # Отступ от меню живёт В ЗАЛЕ (HUB_TOP). Витрина свой ставить не смеет —
+        # иначе шапки снова разъедутся (было: Бхаджаны 28, остальные никак).
+        i = t.find("<HubHeader")
+        head = t[:i]
+        m = list(re.finditer(r"<div style=\{\{[^}]*marginTop[^}]*\}\}>\s*$", head.rstrip()))
+        if m:
+            bad.append((f, "витрина «%s» ставит СВОЙ отступ сверху — он в зале, HUB_TOP (ЗКН-Н024)" % tab))
     return bad
 
 

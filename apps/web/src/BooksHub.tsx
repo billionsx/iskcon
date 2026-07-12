@@ -329,7 +329,7 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
 
   // Витрина ВКП (как у Прабхупады): крупные карточки только для книг с контентом.
   const heroStack = (books: CatalogBook[]) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 14, }}>
       {books.filter((b) => hasContent(b.id) && BOOKS[b.id]).map((b) => {
         const work = b.id;
         const bk = BOOKS[work];

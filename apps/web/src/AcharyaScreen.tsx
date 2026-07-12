@@ -352,7 +352,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
           <Rail title="Нилачала · Джаганнатха Пури" params="category=nilachala&limit=12" onOpen={onOpen} />
         </>
       )}
-      <div style={{ marginTop: 16 }}>
+      <div style={{ }}>
         <SectionCard title={K ? "Враджа-мандала на карте" : "Дхамы на карте"} subtitle={K ? "Двенадцать лесов Враджа, Говардхан, Радха-кунда" : "Навадвипа, Джаганнатха Пури и святые дхамы"}
           mark={<MaskMark src="/vraj.svg" size={44} />} onClick={() => onOpenPath?.("/dhama")} />
       </div>
