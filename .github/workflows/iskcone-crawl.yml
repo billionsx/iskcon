@@ -58,7 +58,7 @@ jobs:
                "/ru/narasimha","/ru/matsia","/ru/kurma","/evpatoria","/batumi","/mahabhava","/dasa"]
           seeds=["https://iskcone.com/"]+["https://iskcone.com"+p for p in nav]
           seen=set(); queue=list(dict.fromkeys(seeds)); pages=0; imgtot=0; errors=0; failed=[]
-          q("DELETE FROM tilda_assets", []); q("DELETE FROM tilda_pages", [])
+          # ⚠️ ЗКН-Р002: снос таблиц убран — заливка недеструктивна.
           while queue and pages<400:
               url=queue.pop(0)
               if url in seen: continue

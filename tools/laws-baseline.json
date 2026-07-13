@@ -2,5 +2,6 @@
   "magic_font_size": 30,
   "bare_urlopen": 16,
   "hardcoded_hex": 445,
-  "type_errors": 20
+  "type_errors": 19,
+  "long_union": 0
 }

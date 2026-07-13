@@ -51,7 +51,7 @@ jobs:
             [ "$(jq -r '.status' /tmp/pages.json)" = "FOUND" ] || { echo "ABORT: pageslist status $(jq -r '.status' /tmp/pages.json)"; return; }
 
             # clean slate, then refill ONLY this project
-            d1 "DELETE FROM tilda_assets" "[]"; d1 "DELETE FROM tilda_pages" "[]"
+            # ⚠️ ЗКН-Р002: снос таблиц убран — заливка недеструктивна.
 
             total=0; assets=0; errors=0
             for pageid in $(jq -r '.result[]?.id' /tmp/pages.json); do

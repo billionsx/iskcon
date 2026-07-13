@@ -72,7 +72,7 @@ jobs:
                   i+=1
               return verses
 
-          q("DELETE FROM prayer_verses", [])
+          # ⚠️ ЗКН-Р002: снос убран — заливка недеструктивна.
           songs=vt=sigc=0
           for r in rows:
               vs=parse_page(r.get("html") or "")

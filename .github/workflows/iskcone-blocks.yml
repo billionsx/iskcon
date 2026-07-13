@@ -54,7 +54,8 @@ jobs:
                        FROM content_items ci JOIN tilda_pages t ON '/'||t.alias=ci.slug
                        WHERE ci.lang='ru' AND ci.type IN ('article','personality','center')""")
 
-          q("DELETE FROM content_blocks", [])
+          # ⚠️ ЗКН-Р002: снос таблицы убран. INSERT OR REPLACE обновляет своё,
+          # не трогая чужое. «Снести и залить» теряет всё, чего не дал разбор.
           pages=blocks=imgc=0
           for t in targets:
               html=t.get("html") or ""

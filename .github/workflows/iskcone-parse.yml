@@ -68,7 +68,8 @@ jobs:
 
           rows=q("SELECT alias, title, descr, images_json, img_count FROM tilda_pages")["result"][0]["results"]
           print("pages:", len(rows))
-          q("DELETE FROM content_items", [])
+          # ⚠️ ЗКН-Р002: снос убран. У 170 записей ВЫЧИЩЕННЫЕ слаги — прогон
+          # вернул бы чужие пути `/ru/…` с исходного сайта.
           counts={}
           for r in rows:
               a=r["alias"]; t,st=classify(a); lang=lang_of(a)
