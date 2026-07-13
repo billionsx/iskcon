@@ -613,12 +613,19 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             if tid not in have and tid not in FORGE_TABS:
                 tabs.append(heal(t, HN, slugmap))
 
+    # Пустые секции чистим ТОЛЬКО в своих табах. В курированном табе секция без
+    # цитат — это авторская проза куратора, а не пустота. Резать её — уничтожать
+    # работу человека (ЗКН-Р002). Храповик поймал это на Шриле Прабхупаде:
+    # «секций стало МЕНЬШЕ: 15 → 8» — я вырезал его «Ачарью» и «Гуру».
     for t in tabs:
+        if t.get("id") not in FORGE_TABS:
+            continue
         for sub in t.get("subtabs", []):
             sub["sections"] = [x for x in sub["sections"]
                                if x.get("quotes") or x.get("cite") or x.get("see")]
         t["subtabs"] = [x for x in t.get("subtabs", []) if x["sections"]]
-    tabs = [t for t in tabs if t.get("subtabs") or t.get("sections")]
+    tabs = [t for t in tabs
+            if t.get("id") not in FORGE_TABS or t.get("subtabs") or t.get("sections")]
 
     dedupe_headings({"tabs": tabs})
     return {"tabs": tabs}
