@@ -99,15 +99,42 @@ def check() -> None:
     if n_no_src:
         fail("ПР006", f"{n_no_src} стихов без source_url — происхождение недоказуемо", n_no_src)
 
+    # ПР003 (в редакции 13.07.2026 — поправка ПР009): «оригиналом» считается
+    # деванагари/IAST ЛИБО ИЗДАНИЕ-ПОСРЕДНИК С ПРАВАМИ. Прежняя редакция
+    # запрещала посредника вовсе — это было чрезмерно: так переведена половина
+    # русской вайшнавской библиотеки. Но посредник обязан быть PUBLISHABLE:
+    # производное наследует правовой класс (ПР009).
     n_orphan = d1.scalar("""
         SELECT COUNT(*) FROM verse_texts t
         JOIN verses v ON v.id = t.verse_id
+        LEFT JOIN editions e ON e.id = t.edition_id
+        LEFT JOIN editions p ON p.id = e.via_edition
         WHERE COALESCE(t.translation,'') <> ''
           AND COALESCE(v.devanagari,'') = ''
           AND COALESCE(v.translit,'') = ''
+          AND NOT (COALESCE(e.via_edition,'') <> ''
+                   AND COALESCE(p.license,'') IN ('public-domain','own-translation','licensed'))
     """) or 0
     if n_orphan:
-        fail("ПР003", f"{n_orphan} переводов без оригинала (нечего было переводить)", n_orphan)
+        fail("ПР003", f"{n_orphan} переводов без оригинала и без лицензированного посредника", n_orphan)
+
+    # ── ПР009: ПОСРЕДНИК РАЗРЕШЁН, НО ПРАВА НЕ ОТМЫВАЕТ ───────────────────────
+    # Перевод — производное произведение. Русский текст, снятый с `pending`-
+    # переложения, ОСТАЁТСЯ `pending`. Смена языка права не отмывает.
+    for r in d1.query("""
+        SELECT e.id, COALESCE(e.via_edition,'') AS via,
+               COALESCE(p.license,'') AS via_lic,
+               CASE WHEN p.id IS NULL THEN 1 ELSE 0 END AS via_missing
+        FROM editions e
+        LEFT JOIN editions p ON p.id = e.via_edition
+        WHERE COALESCE(e.via_edition,'') <> ''
+    """):
+        if r["via_missing"]:
+            fail("ПР009", f"издание {r['id']}: посредник `{r['via']}` не существует")
+        elif r["via_lic"] not in PUBLISHABLE:
+            fail("ПР009",
+                 f"издание {r['id']}: посредник `{r['via']}` с правами "
+                 f"`{r['via_lic'] or 'нет'}` — производное наследует дефект")
 
     # ── ПР004: дубли ref ──────────────────────────────────────────────────────
     for r in d1.query("""

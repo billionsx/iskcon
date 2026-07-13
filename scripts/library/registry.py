@@ -259,9 +259,24 @@ _w(
     id="br", title_ru="Бхакти-ратнакара", iast="Bhakti-ratnākara",
     author_entity="narahari-chakravarti", century="XVIII",
     orig_lang="bn", rights=PENDING, scheme="taranga.verse",
-    sources=[Source("repo", "docs/sources/bhakti-ratnakara/Bhakti-Ratnakara.EN.txt",
-                    "repo-local", PENDING, "")],
-    note="4 669 стихов (EN). Бенгальский оригинал — PD.",
+    sources=[
+        # ОРИГИНАЛ (PD) — дорога, названная ПР007 и LEGAL.md §2.3.
+        # Бенгальский, Ramdeb Mishra, Муршидабад; 622 с.; archive.org помечает
+        # dc.rights = "In Public Domain". Второе изд. — Радхараман-пресс, 1913.
+        Source("archive.org", "https://archive.org/details/in.ernet.dli.2015.356261",
+               "bn-1888", PD, "Digital Library of India · Bangiya Sahitya Parishad"),
+        Source("archive.org", "https://archive.org/details/BhaktiRatnakar",
+               "bn-1913", PD, "2-е изд., ред. Расабихари Санкхья Тиртха"),
+        # ПОСРЕДНИК — НЕ ГОДИТСЯ (ПР009 п.3): переводчик АНОНИМЕН, права
+        # неустановимы. Посредником может быть только PUBLISHABLE-издание.
+        # Оставляем как справочный материал для человека-редактора, не как базу.
+        Source("repo", "docs/sources/bhakti-ratnakara/Bhakti-Ratnakara.EN.txt",
+               "repo-local", PENDING, "англ. переложение, переводчик неизвестен"),
+    ],
+    note="Оригинал (бенгали, PD) найден 13.07.2026 — переводим с него, "
+         "license=own-translation. Англ. переложение анонимно (PENDING): "
+         "по ПР009 посредником быть не может. В D1 4 669 блоков EN, из них "
+         "1 590 рефов досочинены загрузчиком (долг ПР008).",
 )
 
 _w(
