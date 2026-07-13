@@ -28,30 +28,6 @@
      ]
     }
    ]
-  },
-  {
-   "id": "istochniki",
-   "label": "Источники",
-   "kicker": "ПРОВЕНАНС",
-   "subtabs": [
-    {
-     "id": "biblioteka",
-     "label": "Библиотека",
-     "sections": [
-      {
-       "h": "Prabhupada Shikshamrita.RU",
-       "p": [
-        "Пассажей с именем героя: 2, упоминаний: 2. Первоисточник даёт факты в прозу жития. Дословная цитата отсюда появится, когда книга будет внесена в приложение (ЗКН-П004)."
-       ],
-       "cite": [
-        {
-         "ref": "docs/sources/prabhupada-shikshamrita/Prabhupada-Shikshamrita.RU.txt"
-        }
-       ]
-      }
-     ]
-    }
-   ]
   }
  ]
 }
