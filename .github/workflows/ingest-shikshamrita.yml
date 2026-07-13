@@ -44,8 +44,12 @@ jobs:
           rq = urllib.request.Request(
               "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (ACC, DB),
               data=json.dumps({"sql":
-                  "SELECT COUNT(*) AS n, COUNT(DISTINCT purport) AS tem "
-                  "FROM verses WHERE work_id = 'prabhupada-shikshamrita'"}).encode(),
+                  "SELECT (SELECT COUNT(*) FROM verses "
+                  "        WHERE work_id='prabhupada-shikshamrita') AS n, "
+                  "       (SELECT COUNT(*) FROM verse_texts t "
+                  "        WHERE t.edition_id='prabhupada-shikshamrita-ru' "
+                  "          AND NOT EXISTS (SELECT 1 FROM verses v WHERE v.id=t.verse_id)) "
+                  "        AS sirot"}).encode(),
               headers={"Authorization": "Bearer " + os.environ["CF_TOKEN"],
                        "Content-Type": "application/json"})
           try:
@@ -54,7 +58,14 @@ jobs:
           except urllib.error.HTTPError as e:      # ЗКН-Ф014
               print("HTTP %d: %s" % (e.code, e.read().decode()[:300])); raise
           row = d["result"][0]["results"][0]
-          print("наставлений в базе: %d" % row["n"])
+          print("наставлений: %d · сирот: %d" % (row["n"], row["sirot"]))
           if row["n"] < 5000:
               raise SystemExit("залилось меньше 5000 — заливка неполна")
+          if row["sirot"]:
+              # ⚠️ ТЕКСТ БЕЗ СКЕЛЕТА — МОЛЧАЛИВАЯ ПОЛОВИНЧАТОСТЬ.
+              #
+              # `verse_texts` льются своим ключом и проходят ВСЕГДА. `verses`
+              # могут затереть друг друга (не уникальный `ref`) — и тогда текст
+              # ЕСТЬ, а наставления в книге НЕТ. Ни ошибки, ни падения.
+              raise SystemExit("%d текстов без скелета — заливка половинчата" % row["sirot"])
           PY
