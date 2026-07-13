@@ -72,6 +72,37 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
     setActiveDiv((prev) => curDiv ?? (prev || divisions[0]?.id || ""));
   }, [curDiv, hierQueue]);
 
+  // ── ШБ: ТРИ уровня очереди — ПЕСНЬ → ГЛАВА → СТИХ ──
+  // У ЧЧ дорожка это ГЛАВА, поэтому одного ряда пилюль (лилы) хватает. У ШБ дорожка —
+  // СТИХ, а манифест приходит по ОДНОЙ песни (13 253 дорожки одним куском не грузят).
+  // Без верхнего ряда песней человек видел одну песнь и думал, что залита только она.
+  const cantoTabs: SubTabDef[] = (p.cantos ?? []).map((c) => ({ id: String(c.canto), label: `Песнь ${c.canto}` }));
+  const multiCanto = cantoTabs.length > 0;
+  const [browseCanto, setBrowseCanto] = useState("");
+  const [browseTracks, setBrowseTracks] = useState<Track[]>([]);
+  useEffect(() => { setBrowseCanto(p.scope || cantoTabs[0]?.id || ""); }, [p.scope, cantoTabs.length]);
+  useEffect(() => {
+    if (!multiCanto || !browseCanto) { setBrowseTracks([]); return; }
+    let live = true;
+    void p.tracksFor(browseCanto).then((t) => { if (live) setBrowseTracks(t); });
+    return () => { live = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [browseCanto, multiCanto, p.scope, p.tracks]);
+
+  const chapTabs: SubTabDef[] = [];
+  const seenCh = new Set<string>();
+  for (const t of browseTracks) {
+    const g = t.group ?? "";
+    if (g && !seenCh.has(g)) { seenCh.add(g); chapTabs.push({ id: g, label: t.groupLabel ?? g }); }
+  }
+  const [activeCh, setActiveCh] = useState("");
+  const playingHere = browseCanto === p.scope;
+  useEffect(() => {
+    const cur = playingHere ? p.track?.group : undefined;
+    setActiveCh((prev) => cur ?? (chapTabs.some((c) => c.id === prev) ? prev : (chapTabs[0]?.id ?? "")));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p.track?.group, playingHere, browseCanto, chapTabs.length]);
+
   if (!p.active) return null;
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
@@ -223,18 +254,35 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
             <div style={{ fontSize: "var(--text-caption)", letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
               {isAdHoc ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
             </div>
-            {hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
-            <div style={{ paddingTop: hierQueue ? 10 : 0 }}>
-              {p.tracks.map((t, i) => {
-                // иерархическая книга: показываем только активную песнь/лилу
-                // (вступление без лилы — при активной первой песне/лиле).
-                if (hierQueue) {
-                  const g = gid(t);
-                  const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
-                  if (!show) return null;
-                }
-                return <QueueRow key={t.file} t={t} active={i === p.index} num={isAdHoc ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
-              })}
+            {multiCanto
+              ? <>
+                  <DivisionPills items={cantoTabs} active={browseCanto} onChange={setBrowseCanto} />
+                  {chapTabs.length > 1 && (
+                    <div style={{ marginTop: 8 }}>
+                      <DivisionPills items={chapTabs} active={activeCh} onChange={setActiveCh} />
+                    </div>
+                  )}
+                </>
+              : hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
+            <div style={{ paddingTop: (multiCanto || hierQueue) ? 10 : 0 }}>
+              {multiCanto
+                ? (browseTracks.length
+                    ? browseTracks.map((t) => {
+                        if ((t.group ?? "") !== activeCh) return null;
+                        return <QueueRow key={t.file} t={t} active={playingHere && p.track?.file === t.file}
+                          onClick={() => p.playTrack(browseCanto, t.file)} />;
+                      })
+                    : <div style={{ padding: "18px 4px", color: "rgba(255,255,255,0.45)", fontSize: "var(--text-footnote)" }}>Загрузка…</div>)
+                : p.tracks.map((t, i) => {
+                    // иерархическая книга: показываем только активную лилу
+                    // (вступление без лилы — при активной первой лиле).
+                    if (hierQueue) {
+                      const g = gid(t);
+                      const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
+                      if (!show) return null;
+                    }
+                    return <QueueRow key={t.file} t={t} active={i === p.index} num={isAdHoc ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
+                  })}
             </div>
           </div>
         </div>

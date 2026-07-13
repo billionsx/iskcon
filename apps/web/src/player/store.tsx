@@ -42,7 +42,7 @@ export interface Track {
   album?: string;       // киртан: альбом
 }
 interface ModeData { identifier: string; tracks: Track[] }
-interface CantoRef { canto: number; label: string; tracks: number }
+export interface CantoRef { canto: number; label: string; tracks: number }
 interface Manifest {
   book: string;
   modes: { plain: ModeData; commentary?: ModeData };
@@ -80,6 +80,13 @@ export interface PlayerApi {
   artist: string;         // киртан: исполнитель (для подзаголовков); "" для книг
   hasCommentary: boolean; // прятать тумблер «комментарии», когда их нет (ЧЧ/киртаны)
   // точки входа
+  // ШБ: очередь трёхуровневая — ПЕСНЬ → ГЛАВА → СТИХ. Манифест приходит по одной песни
+  // (13 253 дорожки одним куском не грузят), поэтому список песней и дорожки ЧУЖОЙ песни
+  // плеер отдаёт отдельно: иначе человек видит одну песнь и думает, что залита только она.
+  cantos: CantoRef[];                                  // песни, где озвучка уже есть
+  scope: string;                                       // песнь, которая ИГРАЕТ
+  tracksFor(canto: string): Promise<Track[]>;          // дорожки песни, НЕ трогая воспроизведение
+  playTrack(canto: string, file: string): void;        // включить дорожку (можно из другой песни)
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string, ref?: string | null): void;
   playKirtan(albumId: string, startIndex?: number): void;
@@ -197,6 +204,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const manifestRef = useRef<Manifest | null>(null);
   const bookRef = useRef("bg");
   const scopeRef = useRef("");   // ШБ: песнь, которой ограничен манифест ("" — книга целиком)
+  const [scopeId, setScopeId] = useState("");          // тот же раздел, но для перерисовки
+  const scopeCache = useRef<Record<string, Track[]>>({});  // дорожки чужих песней — на просмотр
   const sourceRef = useRef<Source>("book");
   const modeRef = useRef<AudioMode>("plain");
   const indexRef = useRef(0);
@@ -218,7 +227,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   repeatRef.current = repeat;
 
   const engineRef = useRef<AudioEngine | null>(null);
-  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; ref?: string | null; expand?: boolean; index?: number } | null>(null);
+  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; ref?: string | null; file?: string; expand?: boolean; index?: number } | null>(null);
   const restoreRef = useRef<{ time: number } | null>(null);
 
   const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
@@ -284,7 +293,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       .then((m: Manifest & { title?: string; cover?: string; artist?: string }) => {
         if (src === "bhajan") bhajanMeta[want] = { title: m.title || "Бхаджан", cover: m.cover || "", artist: m.artist || "" };
         m.book = want; // ключ кэша = полный book id (вкл. суффикс ::lec)
-        if (m.scope) scopeRef.current = m.scope; // раздел не задали — воркер выбрал первый с озвучкой
+        if (m.scope) { scopeRef.current = m.scope; setScopeId(m.scope); } // раздел не задали — воркер выбрал первый
         manifestRef.current = m; setManifest(m); return m;
       });
   }
@@ -347,7 +356,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     pendingRef.current = null;
     const list = (m.modes[p.mode] ?? m.modes.plain).tracks;
     let i = 0;
-    if (p.index != null) {
+    if (p.file && list.some((t) => t.file === p.file)) {
+      i = list.findIndex((t) => t.file === p.file);   // точная дорожка (тап по очереди)
+    } else if (p.index != null) {
       i = p.index >= 0 && p.index < list.length ? p.index : 0;
     } else if (p.ref && list.some((t) => trackCoversRef(t, p.ref!))) {
       i = list.findIndex((t) => trackCoversRef(t, p.ref!));   // точное попадание в стих (ШБ)
@@ -371,7 +382,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (b === bookRef.current && src === sourceRef.current && scope === scopeRef.current) return;
     bookRef.current = b; setBookId(b);
     sourceRef.current = src; setSource(src);
-    scopeRef.current = scope;
+    scopeRef.current = scope; setScopeId(scope);
     manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги/раздела
     seqRef.current = [];
   }
@@ -391,6 +402,31 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
+  /** Дорожки ЛЮБОЙ песни — для просмотра очереди, БЕЗ смены воспроизведения.
+   *  Играющая песнь берётся из манифеста; чужая тянется один раз и кэшируется. */
+  function tracksFor(canto: string): Promise<Track[]> {
+    const m = manifestRef.current;
+    if (m && canto === scopeRef.current) return Promise.resolve((m.modes[modeRef.current] ?? m.modes.plain).tracks);
+    const hit = scopeCache.current[canto];
+    if (hit) return Promise.resolve(hit);
+    return fetch(api(`/books/${bookRef.current}/audio?canto=${encodeURIComponent(canto)}`))
+      .then((r) => r.json())
+      .then((mm: Manifest) => {
+        const t = mm.modes?.plain?.tracks ?? [];
+        scopeCache.current[canto] = t;
+        return t;
+      })
+      .catch(() => []);
+  }
+
+  /** Включить конкретную дорожку — в том числе из ДРУГОЙ песни (тап по очереди). */
+  function playTrack(canto: string, file: string) {
+    switchBook(bookRef.current, "book", canto);
+    pendingRef.current = { mode: modeRef.current, chapter: null, file, expand: true };
+    restoreRef.current = null;
+    ensureManifest().then((m) => applyPending(m, true));
+  }
+
   function playKirtan(albumId: string, startIndex?: number) {
     switchBook(albumId, "kirtan");
     pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand: true };
@@ -453,7 +489,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const cur = Number(scopeRef.current) || 0;
     const nxt = (m.cantos ?? []).map((c) => c.canto).filter((c) => c > cur).sort((a, b) => a - b)[0];
     if (!nxt) return false;
-    scopeRef.current = String(nxt);
+    scopeRef.current = String(nxt); setScopeId(String(nxt));
     manifestRef.current = null; setManifest(null); seqRef.current = [];
     pendingRef.current = { mode: modeRef.current, chapter: null, index: 0, expand: false };
     restoreRef.current = null;
@@ -579,6 +615,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     isPlaying, currentTime, duration, rate, order: orderMode, repeat,
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
+    cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
     playBook, playChapter, playKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),
