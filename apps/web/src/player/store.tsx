@@ -30,14 +30,28 @@ export interface Track {
   file: string;
   url: string;
   durationSec: number | null;
-  lila?: string;        // ЧЧ: adi|madhya|antya
-  lilaLabel?: string;   // ЧЧ: «Ади-лила»
-  part?: number | null; // ЧЧ: часть составной главы
+  lila?: string;        // ЧЧ: adi|madhya|antya · ШБ: номер песни
+  lilaLabel?: string;   // ЧЧ: «Ади-лила» · ШБ: «Песнь 10»
+  part?: number | null; // ЧЧ: часть составной главы · ШБ: позиция стиха в главе
+  group?: string;       // суб-таб очереди; по умолчанию = lila. ШБ: глава внутри песни
+  groupLabel?: string;  // ШБ: «Глава 14»
+  ref?: string | null;  // ШБ: стих дорожки («ШБ 10.14.21-22»)
   artist?: string;      // киртан: исполнитель
   album?: string;       // киртан: альбом
 }
 interface ModeData { identifier: string; tracks: Track[] }
-interface Manifest { book: string; modes: { plain: ModeData; commentary?: ModeData }; lilas?: { lila: string; label: string }[] }
+interface CantoRef { canto: number; label: string; tracks: number }
+interface Manifest {
+  book: string;
+  modes: { plain: ModeData; commentary?: ModeData };
+  lilas?: { lila: string; label: string }[];
+  scope?: string;      // ШБ: песнь, которой ограничен манифест
+  cantos?: CantoRef[]; // ШБ: песни, где озвучка уже есть
+}
+
+/** Книги, чей манифест приходит НЕ целиком, а разделом (ШБ: одна песнь = 784…3662 дорожки;
+ *  все 12 песней — 13 256 дорожек, такую очередь незачем ни грузить, ни рисовать). */
+const SCOPED_BOOKS = new Set(["sb"]);
 
 export type RepeatMode = "off" | "book" | "library" | "one";
 export type OrderMode = "forward" | "shuffle" | "reverse";
@@ -152,6 +166,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // Зеркала для долгоживущих обработчиков (избегаем устаревших замыканий).
   const manifestRef = useRef<Manifest | null>(null);
   const bookRef = useRef("bg");
+  const scopeRef = useRef("");   // ШБ: песнь, которой ограничен манифест ("" — книга целиком)
   const sourceRef = useRef<Source>("book");
   const modeRef = useRef<AudioMode>("plain");
   const indexRef = useRef(0);
@@ -207,11 +222,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(PERSIST_KEY) ?? localStorage.getItem("iol.player.bg.v1");
       if (raw) {
-        const s = JSON.parse(raw) as { book?: string; mode: AudioMode; chapter: number | null; time: number; rate: number };
+        const s = JSON.parse(raw) as { book?: string; scope?: string | null; mode: AudioMode; chapter: number | null; time: number; rate: number };
         if (s && (s.mode === "plain" || s.mode === "commentary")) {
           const bk = s.book && BOOKS[s.book] ? s.book : "bg";
           bookRef.current = bk; setBookId(bk);
-          pendingRef.current = { mode: s.mode, chapter: s.chapter, expand: false };
+          scopeRef.current = SCOPED_BOOKS.has(bk) && s.scope ? String(s.scope) : "";
+          pendingRef.current = { mode: s.mode, chapter: s.chapter, lila: scopeRef.current || undefined, expand: false };
           restoreRef.current = { time: s.time || 0 };
           if (s.rate) { rateRef.current = s.rate; setRate(s.rate); }
           ensureManifest().then((m) => applyPending(m, false));
@@ -225,18 +241,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   function ensureManifest(): Promise<Manifest> {
     const want = bookRef.current;
     const src = sourceRef.current;
+    const scope = scopeRef.current;
     const cur = manifestRef.current;
-    if (cur && cur.book === want) return Promise.resolve(cur);
+    if (cur && cur.book === want && (cur.scope ?? "") === scope) return Promise.resolve(cur);
     const bhajIsLec = src === "bhajan" && want.endsWith("::lec");
     const bhajBase = bhajIsLec ? want.slice(0, -5) : want;
     const path = src === "kirtan" ? `/kirtans/${want}/audio`
       : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
-      : `/books/${want}/audio`;
+      : `/books/${want}/audio${scope ? `?canto=${encodeURIComponent(scope)}` : ""}`;
     return fetch(api(path))
       .then((r) => r.json())
       .then((m: Manifest & { title?: string; cover?: string; artist?: string }) => {
         if (src === "bhajan") bhajanMeta[want] = { title: m.title || "Бхаджан", cover: m.cover || "", artist: m.artist || "" };
         m.book = want; // ключ кэша = полный book id (вкл. суффикс ::lec)
+        if (m.scope) scopeRef.current = m.scope; // раздел не задали — воркер выбрал первый с озвучкой
         manifestRef.current = m; setManifest(m); return m;
       });
   }
@@ -247,7 +265,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const m = manifestRef.current; if (!m) return;
       const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
       localStorage.setItem(PERSIST_KEY, JSON.stringify({
-        book: bookRef.current, mode: modeRef.current, chapter: t?.chapter ?? null, time: Math.floor(timeRef.current), rate: rateRef.current,
+        book: bookRef.current, scope: scopeRef.current || null, mode: modeRef.current, chapter: t?.chapter ?? null,
+        time: Math.floor(timeRef.current), rate: rateRef.current,
       }));
     } catch { /* ignore */ }
   }
@@ -315,21 +334,24 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
 
   // ── точки входа ──
-  function switchBook(b: string, src: Source = "book") {
-    if (b === bookRef.current && src === sourceRef.current) return;
+  function switchBook(b: string, src: Source = "book", scope = "") {
+    if (b === bookRef.current && src === sourceRef.current && scope === scopeRef.current) return;
     bookRef.current = b; setBookId(b);
     sourceRef.current = src; setSource(src);
-    manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги/альбома
+    scopeRef.current = scope;
+    manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги/раздела
     seqRef.current = [];
   }
   function playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }) {
-    switchBook(opts?.book ?? bookRef.current, "book");
+    const b = opts?.book ?? bookRef.current;
+    switchBook(b, "book", SCOPED_BOOKS.has(b) ? (scopeRef.current || "1") : "");
     pendingRef.current = { mode: opts?.mode ?? "plain", chapter: opts?.chapter ?? null, expand: opts?.expand ?? true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
   function playChapter(book: string, chapter: number, md: AudioMode, lila?: string) {
-    switchBook(book, "book");
+    // ШБ: lila из читалки — это НОМЕР ПЕСНИ, он же раздел манифеста.
+    switchBook(book, "book", SCOPED_BOOKS.has(book) ? (lila || scopeRef.current || "1") : "");
     pendingRef.current = { mode: md, chapter, lila, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
@@ -383,8 +405,25 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return;
     }
     const ni = relIndex(1);
-    if (ni >= 0) loadIndex(m, modeRef.current, ni, true);
-    else setPlaying(false);
+    if (ni >= 0) { loadIndex(m, modeRef.current, ni, true); return; }
+    if (advanceScope(m)) return;   // ШБ: конец песни — не конец книги
+    setPlaying(false);
+  }
+  /** ШБ: манифест ограничен песнью. Дойдя до её конца, подхватываем следующую песнь с
+   *  озвучкой — иначе слушатель упирался бы в тишину на границе тома. Повтор/перемешивание
+   *  границу не переступают: там человек явно попросил крутиться внутри раздела. */
+  function advanceScope(m: Manifest): boolean {
+    if (!SCOPED_BOOKS.has(bookRef.current)) return false;
+    if (orderModeRef.current !== "forward" || repeatRef.current !== "off") return false;
+    const cur = Number(scopeRef.current) || 0;
+    const nxt = (m.cantos ?? []).map((c) => c.canto).filter((c) => c > cur).sort((a, b) => a - b)[0];
+    if (!nxt) return false;
+    scopeRef.current = String(nxt);
+    manifestRef.current = null; setManifest(null); seqRef.current = [];
+    pendingRef.current = { mode: modeRef.current, chapter: null, index: 0, expand: false };
+    restoreRef.current = null;
+    ensureManifest().then((mm) => applyPending(mm, true)).catch(() => setPlaying(false));
+    return true;
   }
   function goNext() { advance(false); }
   function goPrev() {

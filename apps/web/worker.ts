@@ -511,9 +511,12 @@ interface AudioTrack {
   file: string;
   url: string;            // same-origin proxy URL
   durationSec: number | null;
-  lila?: string;          // CC only: adi|madhya|antya
-  lilaLabel?: string;     // CC only: «Ади-лила»
+  lila?: string;          // CC: adi|madhya|antya · SB: номер песни (синхронизация с читалкой)
+  lilaLabel?: string;     // CC: «Ади-лила» · SB: «Песнь 10»
   part?: number | null;   // CC only: part index when a chapter is split (else null)
+  group?: string;         // суб-таб очереди; по умолчанию = lila. ШБ: глава внутри песни
+  groupLabel?: string;    // ШБ: «Глава 14»
+  ref?: string | null;    // ШБ: стих дорожки («ШБ 10.14.21-22»)
   artist?: string;        // kirtan only: исполнитель (отображаемое имя)
   album?: string;         // kirtan only: название альбома
 }
@@ -874,6 +877,83 @@ async function ccAudioManifest(env: Env, origin: string): Promise<Response> {
   flat.forEach((t, i) => (t.pos = i));
   // Та же форма, что у БГ (modes.plain.tracks) + группировка по лилам для UI. Комментариев пока нет.
   return json({ book: "cc", lilas, modes: { plain: { identifier: CC_AUDIO_LILAS[0].identifier, tracks: flat } } });
+}
+
+// ── Шримад-Бхагаватам: озвучка СТИХ ЗА СТИХОМ с комментариями ──
+// Один объект archive.org на песнь (iskcone-sb-1 … iskcone-sb-12); дорожка = стих
+// (стих + комментарий), плюс введение к каждой главе. Всего 13 256 дорожек — поэтому
+// плейлист строится из D1 (таблица sb_audio, наполняет воркфлоу sb-audio), а НЕ разбором
+// метаданных archive.org: иначе каждый запрос тянул бы с IA мегабайты JSON.
+// Манифест ограничен ОДНОЙ песнью (?canto=N): у БТТ песнь — самостоятельный том, и очередь
+// на 13 тысяч дорожек не нужна ни человеку, ни телефону. Границу песни плеер переступает сам.
+const SB_CANTO_NAMES: Record<number, string> = {
+  1: "Творение", 2: "Космическое проявление", 3: "Статус-кво",
+  4: "Творение четвёртого уровня", 5: "Движущая сила творения",
+  6: "Предписанные обязанности человечества", 7: "Наука о Боге",
+  8: "Сворачивание космического проявления", 9: "Освобождение",
+  10: "Summum Bonum", 11: "Всеобщая история", 12: "Век деградации",
+};
+
+async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null): Promise<Response> {
+  const empty = (c: number) => json({
+    book: "sb", scope: String(c), cantos: [],
+    modes: { plain: { identifier: `iskcone-sb-${c}`, tracks: [] } },
+  });
+
+  // Песни, где озвучка РЕАЛЬНО залита (ЗКН-Пр007: обещаем только то, что есть).
+  let avail: { canto: number; n: number }[] = [];
+  try {
+    const r = await env.DB.prepare(
+      `SELECT canto, COUNT(*) AS n FROM sb_audio GROUP BY canto ORDER BY canto`
+    ).all<{ canto: number; n: number }>();
+    avail = r.results ?? [];
+  } catch { return empty(Number(cantoRaw) || 1); }        // таблицы ещё нет — тишина, а не ошибка
+  if (!avail.length) return empty(Number(cantoRaw) || 1);
+
+  const asked = Number(cantoRaw);
+  const canto = avail.some((a) => a.canto === asked) ? asked : avail[0].canto;
+  const identifier = `iskcone-sb-${canto}`;
+
+  // Названия глав — из D1 (единый источник структуры книги; 'sb.1.%' не цепляет 'sb.11.…').
+  const titles = new Map<number, string>();
+  const ch = await env.DB.prepare(
+    `SELECT CAST(number AS INTEGER) AS n, json_extract(title,'$.ru') AS t
+     FROM divisions WHERE work_id='sb' AND level='chapter' AND id LIKE ?`
+  ).bind(`sb.${canto}.%`).all<{ n: number; t: string }>();
+  for (const r of ch.results ?? []) titles.set(r.n, r.t);
+
+  const rows = await env.DB.prepare(
+    `SELECT chapter, seq, kind, ref, title, duration, src
+     FROM sb_audio WHERE canto=? ORDER BY chapter, seq`
+  ).bind(canto).all<{ chapter: number; seq: number; kind: string; ref: string | null; title: string; duration: number | null; src: string }>();
+
+  const tracks: AudioTrack[] = (rows.results ?? []).map((r, i) => ({
+    // Передняя материя песни (chapter=0) — вступление: главы у неё нет, читалку не дёргает.
+    kind: r.chapter ? "chapter" : "intro",
+    pos: i,
+    chapter: r.chapter || null,
+    title: r.title,
+    file: r.src.slice(r.src.lastIndexOf("/") + 1),
+    url: `${origin}${r.src}`,
+    durationSec: r.duration ?? null,
+    lila: String(canto),                    // слот ЧЧ: у ШБ это ПЕСНЬ — по ней читалка идёт за плеером
+    lilaLabel: `Песнь ${canto}`,
+    part: r.seq,
+    group: `${canto}.${r.chapter}`,         // суб-табы очереди = главы песни
+    groupLabel: r.chapter ? `Глава ${r.chapter}` : "Вступление",
+    ref: r.ref,
+  }));
+
+  return json({
+    book: "sb",
+    scope: String(canto),
+    cantos: avail.map((a) => ({
+      canto: a.canto,
+      label: `Песнь ${a.canto}${SB_CANTO_NAMES[a.canto] ? ` «${SB_CANTO_NAMES[a.canto]}»` : ""}`,
+      tracks: a.n,
+    })),
+    modes: { plain: { identifier, tracks } },
+  });
 }
 
 // ── Киртаны и бхаджаны: альбом = IA-элемент; трек-лист строится live из метаданных ──
@@ -1844,6 +1924,10 @@ export default {
     }
     if (url.pathname === "/api/books/spl/audio") {
       return splAudioManifest(env, url.origin);
+    }
+    // ШБ: озвучка стих за стихом; манифест по ОДНОЙ песни (?canto=N) — иначе очередь на 13 тыс. дорожек
+    if (url.pathname === "/api/books/sb/audio") {
+      return sbAudioManifest(env, url.origin, url.searchParams.get("canto"));
     }
     // Любая другая работа со своей аудиокнигой → общий хэндлер (треки из iskcone-<work>,
     // заголовки из playlist.json). Спец-хэндлеры bg/cc/brs/spl обработаны выше; работы без

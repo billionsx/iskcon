@@ -52,19 +52,25 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
     return () => { document.body.style.overflow = prev; };
   }, [p.expanded]);
 
-  // Песни/лилы для суб-табов очереди — выводим из самих треков (иерархические книги).
+  // Суб-табы очереди — из самих треков. По умолчанию раздел = лила (ЧЧ), но трек может
+  // задать свою группу: у ШБ манифест приходит одной песнью, а очередь режется по ГЛАВАМ
+  // (784…3662 стиха в песни — плоским списком это не очередь, а стена).
+  const gid = (t: { group?: string; lila?: string }) => t.group ?? t.lila;
   const divisions: SubTabDef[] = [];
   const seenDiv = new Set<string>();
-  for (const t of p.tracks) { if (t.lila && !seenDiv.has(t.lila)) { seenDiv.add(t.lila); divisions.push({ id: t.lila, label: t.lilaLabel ?? t.lila }); } }
+  for (const t of p.tracks) {
+    const g = gid(t);
+    if (g && !seenDiv.has(g)) { seenDiv.add(g); divisions.push({ id: g, label: t.groupLabel ?? t.lilaLabel ?? g }); }
+  }
   const hierQueue = divisions.length > 1;
   const [activeDiv, setActiveDiv] = useState("");
+  const curDiv = p.track ? gid(p.track) : undefined;
   // Активный подраздел следует за играющим треком; тап пользователя сохраняется,
-  // пока воспроизведение не пересечёт границу песни/лилы.
+  // пока воспроизведение не пересечёт границу главы/песни/лилы.
   useEffect(() => {
     if (!hierQueue) return;
-    const cur = p.track?.lila;
-    setActiveDiv((prev) => cur ?? (prev || divisions[0]?.id || ""));
-  }, [p.track?.lila, hierQueue]);
+    setActiveDiv((prev) => curDiv ?? (prev || divisions[0]?.id || ""));
+  }, [curDiv, hierQueue]);
 
   if (!p.active) return null;
 
@@ -219,7 +225,8 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
                 // иерархическая книга: показываем только активную песнь/лилу
                 // (вступление без лилы — при активной первой песне/лиле).
                 if (hierQueue) {
-                  const show = t.lila ? t.lila === activeDiv : activeDiv === divisions[0]?.id;
+                  const g = gid(t);
+                  const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
                   if (!show) return null;
                 }
                 return <QueueRow key={t.file} t={t} active={i === p.index} num={isAdHoc ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
