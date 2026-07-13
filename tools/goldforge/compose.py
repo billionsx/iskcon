@@ -34,9 +34,22 @@ MAX_PURPORT = 1000          # выдержка из комментария (до
 MAX_QUOTE = 1500            # «Прабхупада-шикшамрита» держит письма целиком — стена текста
 MIN_QUOTE = 30              # «А.Ч. Бхактиведанта Свами» — подпись (3 слова), а не цитата
 MIN_WORDS = 5               # стих может быть коротким, но он — фраза
-# Повествовательные источники (там ЖИТИЕ) против доктринальных (там УПОМИНАНИЯ).
-# Смешивать нельзя: «Нектар преданности, глава 19» — не эпизод биографии.
-NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
+# ═══ ВИД ИСТОЧНИКА. Раздел определяет РОЛЬ факта × ВИД ИСТОЧНИКА ═══════════
+#
+# Мало знать, ЧТО факт даёт. Надо знать, ОТКУДА он взят: письмо ученику — не
+# шастра и не прославление, жизнеописание — не учение, а наставление — не житие.
+# Без этой матрицы конвейер положил письмо Шрилы Прабхупады из «Шикшамриты» в
+# раздел «Прославление · В шастрах».
+NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}   # рассказывают о жизни
+SHASTRA = {"sb", "bg", "bs", "iso", "noi", "brs", "ks", "rkgd", "vp",
+           "siksastaka", "manah-siksa", "mukunda-mala-stotra"}   # писание
+TEACHING = {"prabhupada-shikshamrita"}                     # письма и наставления
+POPULAR = {"owk", "rv", "pop", "bbd", "poy", "sc", "tqk", "lob"}  # его книги-беседы
+
+# Куда пускать факт: РОЛЬ × ВИД. Пустая клетка — в бриф, не в карточку.
+LIFE_SRC = NARRATIVE | SHASTRA          # где герой ДЕЙСТВУЕТ = житие
+WORD_SRC = TEACHING | POPULAR           # где герой ГОВОРИТ = его слово
+GLORY_SRC = NARRATIVE | SHASTRA         # славить может шастра, а не письмо
 MAX_PER_SECTION = 14        # глава редко даёт больше — а если даёт, это уже не глава
 MAX_PER_WORK = 180          # книга-о-герое не переписывается в карточку, а линкуется
 MAX_CARD = 600_000          # воркер отдаёт longform ЦЕЛИКОМ: карточка обязана влезать
@@ -76,12 +89,17 @@ def top_div(f):
     return parts[1] if len(parts) > 1 else ""
 
 
+DIV_WORD = {"sb": "Песнь", "spl": "Том", "br": "Волна", "cb": "Кханда"}
+
+
 def div_label(f):
+    """Верхний раздел книги называется по-своему: у ШБ — Песнь, у «Лиламриты» —
+    ТОМ, а не Глава. Мелочь, которая выдаёт машину, не читавшую книгу."""
     t = top_div(f)
     if not t:
         return f.get("book") or f["src"]
     if t.isdigit():
-        return ("Песнь %s" if f["src"] == "sb" else "Глава %s") % t
+        return "%s %s" % (DIV_WORD.get(f["src"], "Глава"), t)
     return "%s-лила" % LILA_LABEL.get(t, t.capitalize())
 
 
@@ -306,11 +324,13 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
 
     # ЗАКОН НЕОБХОДИМОСТИ: в карточку идут ТОЛЬКО роли, которые что-то дают
     actor_all = pick("k1-books-app", "translation", ("актор",))
-    actor = [f for f in actor_all if f["src"] in NARRATIVE]
-    speech = [f for f in actor_all if f["src"] not in NARRATIVE]   # его слово, не житие
+    actor = [f for f in actor_all if f["src"] in LIFE_SRC]      # действует → житие
+    speech = [f for f in actor_all if f["src"] in WORD_SRC]     # говорит → его слово
     labour = pick("k1-books-app", "translation", ("труд",))
     author = pick("k1-books-app", "translation", ("авторитет",))
-    glory = pick("k1-books-app", "translation", ("качество",))
+    # Славить героя может шастра или жизнеописание. Письмо ученику — не может.
+    glory = [f for f in pick("k1-books-app", "translation", ("качество",))
+             if f["src"] in GLORY_SRC]
     purports = pick("k1-books-app", "purport", roles.IN_CARD)
     bhajans = pick("k4-bhajans-app")
     archive = pick("k2-archive")
@@ -337,10 +357,14 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
                          % ", ".join("«%s»" % b for b in own_bhajans[:8]))
         vk.append(section("Наследие, оставленное лиле", lines, hero=HN))
     if top:
+        me = hero == "prabhupada"
         vk.append(section(
-            "Шрила Прабхупада о его вкладе",
-            ["Что даёт этот раздел: оценка вклада %s в миссию Шри Кришны Чайтаньи "
-             "Махапрабху — словами Шрилы Прабхупады, дословно из комментариев." % gen],
+            "Его миссия — своими словами" if me else "Шрила Прабхупада о его вкладе",
+            ["Что даёт этот раздел: %s"
+             % ("как Шрила Прабхупада сам говорит о своей миссии — дословно."
+                if me else
+                "оценка вклада %s в миссию Шри Кришны Чайтаньи Махапрабху — словами "
+                "Шрилы Прабхупады, дословно из комментариев." % gen)],
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see:
         vk.append(section("Связи в лиле",
@@ -398,18 +422,26 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
                                   "sections": tr}]})
 
     # ── ТАБ · УЧЕНИЕ И АВТОРИТЕТ — где на него ССЫЛАЮТСЯ ─────────────────
-    uch = {}
-    for f in author + speech:
-        uch.setdefault(f["book"], []).append(f)
-    subs = [{"id": slugify(book), "label": book, "sections": [section(
-        "%s · %s" % (book, div_label(fs[0])),
-        ["Что даёт этот раздел: его слово — как учение и как авторитет, на который "
-         "ссылаются источники."],
-        quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION * 2]],
-        hero=HN)]} for book, fs in uch.items()]
+    subs = []
+    for pool, sid, label, what in (
+            (speech, "ego-slovo", "Его слово",
+             "Что даёт этот раздел: его собственные наставления, письма и беседы."),
+            (author, "avtoritet", "На него ссылаются",
+             "Что даёт этот раздел: места, где источники приводят его слово КАК "
+             "ДОКАЗАТЕЛЬСТВО — прамана.")):
+        by_book = {}
+        for f in pool:
+            by_book.setdefault(f["book"], []).append(f)
+        for book, fs in by_book.items():
+            subs.append({"id": slugify("%s %s" % (sid, book)),
+                         "label": "%s · %s" % (label, book),
+                         "sections": [section(
+                             "%s · %s" % (book, div_label(fs[0])), [what],
+                             quotes=[quote_of(f, forms, ids_ok, used)
+                                     for f in fs[:MAX_PER_SECTION * 2]], hero=HN)]})
     if subs:
         tabs.append({"id": "uchenie", "label": "Учение и авторитет",
-                     "kicker": "ПРАМАНА", "subtabs": subs})
+                     "kicker": "СЛОВО И ПРАМАНА", "subtabs": subs})
 
     # ── ТАБ · ПРОСЛАВЛЕНИЕ ───────────────────────────────────────────────
     subs = []
