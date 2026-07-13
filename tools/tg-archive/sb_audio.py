@@ -32,6 +32,7 @@ Env: TG_API_ID, TG_API_HASH, TG_SESSION_STRING, IA_ACCESS_KEY, IA_SECRET_KEY,
      TIME_BUDGET_MIN (по умолчанию 320), IA_PARALLEL (по умолчанию 3).
 """
 import asyncio
+import collections
 import json
 import os
 import re
@@ -260,6 +261,7 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     md_done = existed
     n_up = n_fail = 0
     reg_from = 0
+    errs: collections.Counter = collections.Counter()
 
     def flush(force: bool = False) -> None:
         # Пишем в D1 ПОРЦИЯМИ: у песни 10 это 3662 файла — обрыв раннера не должен обнулять учёт.
@@ -288,15 +290,25 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     sem_up = asyncio.Semaphore(PARALLEL)
 
     async def one(msg, remote: str, row: dict):
+        # Три попытки на файл: прогон идёт часами без присмотра, и разовый 503 от archive.org
+        # или обрыв соединения не должен стоить файла. Что не взялось и после трёх — уедет
+        # в остаток и будет повторено самодокатом.
         dest = WORK / remote
-        try:
-            async with sem_dl:
-                await fetch(msg, dest)
-            async with sem_up:
-                await loop.run_in_executor(pool, do_upload, remote, str(dest), {})
-            return row
-        finally:
-            dest.unlink(missing_ok=True)
+        last = None
+        for attempt in range(3):
+            try:
+                async with sem_dl:
+                    await fetch(msg, dest)
+                async with sem_up:
+                    await loop.run_in_executor(pool, do_upload, remote, str(dest), {})
+                dest.unlink(missing_ok=True)
+                return row
+            except Exception as e:
+                last = e
+                dest.unlink(missing_ok=True)
+                if attempt < 2:
+                    await asyncio.sleep(5 * (attempt + 1))
+        raise RuntimeError(f"{type(last).__name__}: {last}")
 
     # ── 2. Первый файл — отдельно и синхронно: он создаёт объект и несёт метаданные ──
     if plan and not md_done:
@@ -329,6 +341,7 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
         for (m, rn, rw, sz, dp), r in zip(part, res):
             if isinstance(r, BaseException):
                 n_fail += 1
+                errs[str(r)[:80]] += 1
                 print(f"✗ {rn}: {r}")
             else:
                 n_up += 1
@@ -351,6 +364,8 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
         pl.unlink(missing_ok=True)
 
     flush(force=True)
+    for msg_txt, cnt in errs.most_common(3):
+        print(f"::warning::Песнь {canto}: {cnt}× {msg_txt}")
     print(f"::notice::Песнь {canto}: залито {n_up}, уже было {n_skip}, ошибок {n_fail}, "
           f"в D1 {reg_from} · {'ДОКАТАНА' if exhausted and not n_fail else 'ОСТАЛОСЬ — перезапусти'}")
     return exhausted and n_fail == 0
