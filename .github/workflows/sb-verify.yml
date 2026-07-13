@@ -43,6 +43,13 @@ jobs:
           fi
           echo "::notice::Самодокат жив: GH_TOKEN запускает воркфлоу (204)"
 
+      # ПОЛНАЯ сверка каналов с книгой — независимо от того, сколько уже залито.
+      # Отвечает на вопрос «какие стихи чтец не записал» по СЫРЫМ именам файлов.
+      - name: "Сверка КАНАЛ ↔ КНИГА (немые стихи всех 12 песней)"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python tools/tg-archive/sb_gaps.py
+
       - name: "Сверка"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
