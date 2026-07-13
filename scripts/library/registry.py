@@ -305,6 +305,53 @@ _w(
     note="2 стиха в БД. Оригинал PD. H.H. Wilson (1840) — PD.",
 )
 
+# ── УЖЕ ПЕРЕВЕДЕНО НАМИ. Прецедент, найденный в БД: кто-то в проекте уже сделал
+#    ровно то, что делает конвейер — свой перевод с открытого оригинала.
+#    Помечено было «© ISKCON ONE LOVE», теперь класс own-translation.
+#    Это и есть путь Шрилы Прабхупады: он переводил с санскрита, а не
+#    перепечатывал чужие переводы.
+
+_w(
+    id="siksastaka", title_ru="Шри Шикшаштака", iast="Śrī Śikṣāṣṭaka",
+    author_entity="chaitanya", century="XVI",
+    orig_lang="sa", rights=OWN, scheme="verse",
+    sources=[Source("gaurangers", "docs/sources/", "sanskrit", PD,
+                    "Оригинал Гауранги Махапрабху — общественное достояние")],
+    note="8 стихов. Наш перевод. Единственное, что Махапрабху записал Сам.",
+)
+
+_w(
+    id="manah-siksa", title_ru="Манах-шикша", iast="Manaḥ-śikṣā",
+    author_entity="raghunatha-das-goswami", century="XVI",
+    orig_lang="sa", rights=OWN, scheme="verse",
+    sources=[Source("gaurangers", "docs/sources/", "sanskrit", PD, "")],
+    note="11 стихов. Наш перевод.",
+)
+
+_w(
+    id="mukunda-mala-stotra", title_ru="Мукунда-мала-стотра",
+    iast="Mukunda-mālā-stotra",
+    author_entity="kulashekhara", century="IX",
+    orig_lang="sa", rights=OWN, scheme="verse",
+    sources=[Source("gaurangers", "docs/sources/", "sanskrit", PD, "")],
+    note="40 стихов. Наш перевод. Махараджа Кулашекхара.",
+)
+
+_w(
+    id="prabhupada-shikshamrita", title_ru="Прабхупада-шикшамрита",
+    iast="Prabhupāda-śikṣāmṛta",
+    author_entity="prabhupada", century="XX",
+    orig_lang="en", rights=PENDING, scheme="section.item",
+    sources=[Source("repo", "docs/sources/prabhupada-shikshamrita/Prabhupada-Shikshamrita.RU.txt",
+                    "repo-local", PENDING, "7.7 МБ в репозитории")],
+    note=(
+        "5 328 записей — и до 13.07.2026 этой работы НЕ БЫЛО в таблице `works` "
+        "вообще. Стихи лежали, работа отсутствовала: они были невидимы для любого "
+        "запроса через works. Дыра закрыта, проверка добавлена в гейт (ПР001)."
+    ),
+)
+
+
 # ── Только по лицензии. Оригинала в PD не существует. ────────────────────────
 
 _w(

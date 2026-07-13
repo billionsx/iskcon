@@ -46,7 +46,7 @@ def _save(counts: dict) -> None:
     BASELINE.write_text(json.dumps(counts, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")
 
-# ── Б006: запрещённые формы имён (docs/STANDARD_canonical_names.md) ──────────
+# ── ПР005: запрещённые формы имён (docs/STANDARD_canonical_names.md) ─────────
 BAD_NAMES = [
     (r"Шри Чайтанья Махапрабху", "Гауранга Махапрабху / Шри Кришна Чайтанья Махапрабху"),
     (r"(?<![-\w])Чайтанья Махапрабху", "Гауранга Махапрабху"),
@@ -71,7 +71,7 @@ def fail(law: str, msg: str, n: int = 1) -> None:
 
 
 def check() -> None:
-    # ── Б001 / Б008 ──────────────────────────────────────────────────────────
+    # ── ПР001 / ПР007 ─────────────────────────────────────────────────────────
     for r in d1.query("SELECT id, work_id, lang, COALESCE(license,'') AS lic FROM editions"):
         if not r["lic"]:
             fail("ПР001", f"издание {r['id']} без license")
@@ -80,7 +80,17 @@ def check() -> None:
         if r["work_id"] not in WORKS:
             fail("ПР001", f"работа {r['work_id']} не внесена в registry.py")
 
-    # ── Б003 / Б007: стих без оригинала и без источника ──────────────────────
+    # ── ПР001: СИРОТСКИЕ СТИХИ. Работы нет в `works` — стихи невидимы для любого
+    #    запроса через works. Так пряталось 5 387 стихов, включая всю
+    #    «Прабхупада-шикшамриту» (5 328). Гейт нашёл это, я — нет.
+    for r in d1.query("""
+        SELECT work_id, COUNT(*) AS n FROM verses
+        WHERE work_id NOT IN (SELECT id FROM works)
+        GROUP BY work_id
+    """):
+        fail("ПР001", "%d стихов работы `%s` — работы нет в `works`"
+             % (r["n"], r["work_id"]), r["n"])
+    # ── ПР003 / ПР006: стих без оригинала и без источника ─────────────────────
     n_no_src = d1.scalar(
         "SELECT COUNT(*) FROM verses WHERE source_url IS NULL OR source_url=''") or 0
     if n_no_src:
@@ -96,14 +106,14 @@ def check() -> None:
     if n_orphan:
         fail("ПР003", f"{n_orphan} переводов без оригинала (нечего было переводить)", n_orphan)
 
-    # ── Б004: дубли ref ──────────────────────────────────────────────────────
+    # ── ПР004: дубли ref ──────────────────────────────────────────────────────
     for r in d1.query("""
         SELECT work_id, ref, COUNT(*) c FROM verses
         GROUP BY work_id, ref HAVING c > 1 LIMIT 20
     """):
         fail("ПР004", f"дубль стиха {r['work_id']} {r['ref']} ×{r['c']}")
 
-    # ── Б005: книга без автора-личности ──────────────────────────────────────
+    # ── Б005: книга без автора-личности (СУЩЕСТВУЮЩИЙ закон, был не механизован)
     for r in d1.query("""
         SELECT w.id FROM works w
         WHERE w.author_id IS NULL
@@ -118,7 +128,7 @@ def check() -> None:
     """):
         fail("Б005", f"работа {r['id']}: автор `{r['author_id']}` не найден в entities")
 
-    # ── Б002: draft не может быть published ──────────────────────────────────
+    # ── ПР002: draft не может быть published ──────────────────────────────────
     n_draft_pub = d1.scalar("""
         SELECT COUNT(*) FROM verse_texts t
         JOIN editions e ON e.id = t.edition_id
@@ -129,7 +139,7 @@ def check() -> None:
     if n_draft_pub:
         fail("ПР002", f"{n_draft_pub} машинных переводов помечены published без ревьюера", n_draft_pub)
 
-    # ── Б006: канонические имена в наших переводах ───────────────────────────
+    # ── ПР005: канонические имена в наших переводах ───────────────────────────
     bad = 0
     for r in d1.query("""
         SELECT t.verse_id, t.translation FROM verse_texts t
