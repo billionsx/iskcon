@@ -69,6 +69,15 @@ def chunks(seq, n):
 
 
 def ors(col, forms):
-    """OR-цепочка instr() по формам имени. Кириллица в LIKE не работает."""
-    safe = [f.replace("'", "''") for f in forms]
-    return " OR ".join("instr(lower(coalesce(%s,'')),'%s')>0" % (col, f) for f in safe)
+    """OR-цепочка instr() по формам имени.
+
+    ДВЕ ловушки SQLite, обе стоили бы карточке 90% материала:
+      • LIKE по кириллице не работает  → только instr()
+      • lower() опускает ТОЛЬКО ASCII  → instr(lower('Джива'),'джива') = 0
+    Поэтому никакого lower(): ищем и строчную форму, и с заглавной.
+    """
+    out = []
+    for f in forms:
+        for v in {f, f[:1].upper() + f[1:]}:
+            out.append("instr(coalesce(%s,''),'%s')>0" % (col, v.replace("'", "''")))
+    return " OR ".join(out)

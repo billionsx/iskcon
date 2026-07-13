@@ -78,6 +78,13 @@ def tier(text, forms, quals, homs, strict=()):
     for s in strict:
         if fold(s) in f:
             return "strong"
+    # Имя собственное в русском тексте — с ЗАГЛАВНОЙ. Если все вхождения основы
+    # строчные, это нарицательное: «джива» = душа, «нароттама» = лучший из людей.
+    # Правило общее и снимает главную ловушку жатвы без ручных списков омонимов.
+    hits = list(pattern(forms).finditer(fold(text)))
+    if hits and all(not text[m.start():m.start() + 1].isupper() for m in hits
+                    if m.start() < len(text)):
+        return "homonym"
     pat = pattern(forms)
     best = "candidate"
     for m in pat.finditer(f):
@@ -96,11 +103,13 @@ def k1_books_app(strict, forms, quals, homs):
     это и есть гарантия дословности — руками текст не набирается никогда."""
     if not d1.available():
         return []
-    where = "(%s) OR (%s)" % (d1.ors("vt.translation", forms), d1.ors("vt.purport", forms))
-    ids = d1.query(
+    # ПРОХОД А — точное имя: эти стихи станут ДОСЛОВНЫМИ цитатами.
+    exact = list(strict) or list(forms)
+    where = "(%s) OR (%s)" % (d1.ors("vt.translation", exact), d1.ors("vt.purport", exact))
+    ids = [r["id"] for r in (d1.query(
         "SELECT v.id FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id "
-        "WHERE %s ORDER BY v.work_id, v.division_id, v.ordinal" % where) or []
-    ids = [r["id"] for r in ids]
+        "WHERE %s ORDER BY v.work_id, v.division_id, v.ordinal" % where) or [])]
+    ids = list(dict.fromkeys(ids))
     out = []
     slugs = {r["id"]: (r["slug"], r["title"])
              for r in (d1.query("SELECT id, slug, title FROM book_catalog WHERE readable=1") or [])}
@@ -136,6 +145,24 @@ def k1_books_app(strict, forms, quals, homs):
                     "ordinal": r.get("ordinal") or 0,
                     "tier": tier(txt, forms, quals, homs, strict), "at": now(),
                 })
+    # ПРОХОД Б — широкий (основа имени): в книгу НЕ идёт, идёт в бриф куратору.
+    # Ничего не выбрасываем (ЗКН-П009), но и не топим карточку чужим текстом:
+    # берём только ссылку и окно вокруг имени, а не весь комментарий.
+    wide = "(%s) OR (%s)" % (d1.ors("vt.translation", forms), d1.ors("vt.purport", forms))
+    seen = set(ids)
+    for r in (d1.query(
+            "SELECT v.id, v.ref, v.work_id, substr(coalesce(vt.translation,'')||' | '||"
+            "coalesce(vt.purport,''),1,400) AS snip FROM verses v "
+            "JOIN verse_texts vt ON vt.verse_id=v.id WHERE %s LIMIT 4000" % wide) or []):
+        if r["id"] in seen:
+            continue
+        seen.add(r["id"])
+        out.append({"ch": "k1-books-app", "src": r["work_id"], "id": r["id"], "ref": r["ref"],
+                    "kind": "wide", "to": None, "text": r["snip"] or "", "by": None,
+                    "byId": None, "book": r["work_id"], "div": "", "div_title": "",
+                    "ordinal": 0, "tier": tier(r["snip"] or "", forms, quals, homs, strict),
+                    "at": now()})
+
     for r in (d1.query("SELECT slug, personality_slug, text, source, speaker FROM quotes "
                        "WHERE %s" % d1.ors("text", forms)) or []):
         out.append({"ch": "k1-books-app", "src": "quotes", "id": r.get("slug") or "",

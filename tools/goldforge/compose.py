@@ -194,6 +194,7 @@ def build(dossier, hero_names, keep=None):
 
     k1 = by_ch("k1-books-app")
     verses = [f for f in k1 if f["kind"] == "translation"]
+    # kind="wide" — только окно вокруг имени, не дословный стих: в цитаты не идёт
     purports = [f for f in k1 if f["kind"] == "purport"]
     bhajans = by_ch("k4-bhajans-app")
     archive = by_ch("k2-archive")
