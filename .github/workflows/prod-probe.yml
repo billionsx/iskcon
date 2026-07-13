@@ -2,49 +2,35 @@ name: prod-probe
 on:
   workflow_dispatch:
 
-# ЗОНД ПРОДА — что РЕАЛЬНО отдаёт боевой сайт на адресах, по которым ходит человек.
-# Гейт деплоя проверял ЧЕТЫРЕ адреса (/, /books, /kirtans, /dhama) — а человек стоял
-# на /sadhana и /hero. Прежде чем что-то чинить, надо ЗНАТЬ, а не предполагать.
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Снять показания
+      - name: Воркер против домена
         run: |
-          PATHS="/ /sadhana /darshan /hero /books /kirtans /prasad /calendar /id"
-          echo "::notice::=== какой бандл отдаётся на каждом адресе ==="
-          BUNDLES=""
-          for P in $PATHS; do
-            B=$(curl -s --max-time 25 "https://gaurangers.com$P" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
-            echo "::notice::$P → ${B:-<ПУСТО>}"
-            BUNDLES="$BUNDLES $B"
+          WD=https://iskcon-web.ceo-5cb.workers.dev
+          AP=https://gaurangers.com
+
+          hash() { curl -s --max-time 25 "$1" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1; }
+
+          HW=$(hash "$WD/")
+          HA=$(hash "$AP/")
+          HB=$(hash "$AP/?cb=$RANDOM$RANDOM")
+          echo "::notice::workers.dev  → ${HW:-<пусто>}"
+          echo "::notice::gaurangers   → ${HA:-<пусто>}"
+          echo "::notice::gaurangers?cb→ ${HB:-<пусто>}"
+
+          for pair in "workers.dev|$WD|$HW" "apex|$AP|$HA"; do
+            NAME=${pair%%|*}; rest=${pair#*|}; BASE=${rest%%|*}; H=${rest##*|}
+            [ -z "$H" ] && continue
+            curl -s --max-time 60 "$BASE$H" -o /tmp/e.js
+            if grep -q "darshan/all" /tmp/e.js; then
+              echo "::notice::$NAME: ВТОРАЯ ПАРТИЯ ЕСТЬ (darshan/all найден)"
+            else
+              echo "::error::$NAME: второй партии НЕТ (darshan/all отсутствует)"
+            fi
           done
 
-          UNIQ=$(echo "$BUNDLES" | tr ' ' '\n' | grep -v '^$' | sort -u | tr '\n' ' ')
-          echo "::notice::РАЗНЫХ БАНДЛОВ НА ПРОДЕ: $UNIQ"
-
-          MAIN=$(curl -s --max-time 25 "https://gaurangers.com/" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
-          echo "::notice::=== содержимое бандла с корня: $MAIN ==="
-          curl -s --max-time 60 "https://gaurangers.com$MAIN" -o /tmp/main.js
-          echo "::notice::размер: $(wc -c < /tmp/main.js) байт"
-
-          # index-*.js — точка входа; сама витрина Садханы может лежать в чанке.
-          # Ищем маркеры ВТОРОЙ партии во ВСЕХ чанках, на которые ссылается вход.
-          for M in "Даршан" "darshan/all" "BOG_PATH" "Поиск личности"; do
-            if grep -q "$M" /tmp/main.js; then echo "::notice::вход: «$M» ЕСТЬ"; else echo "::warning::вход: «$M» НЕТ"; fi
-          done
-
-          echo "::notice::=== ищем во всех чанках ==="
-          grep -oE '/assets/[A-Za-z0-9_.-]+\.js' /tmp/main.js | sort -u | head -40 > /tmp/chunks.txt
-          echo "::notice::чанков: $(wc -l < /tmp/chunks.txt)"
-          HIT_D=0; HIT_A=0
-          while read -r C; do
-            curl -s --max-time 30 "https://gaurangers.com$C" -o /tmp/c.js || continue
-            grep -q "Даршан" /tmp/c.js && { echo "::notice::«Даршан» найден в $C"; HIT_D=1; }
-            grep -q "darshan/all" /tmp/c.js && { echo "::notice::«darshan/all» найден в $C"; HIT_A=1; }
-          done < /tmp/chunks.txt
-          [ "$HIT_D" = "1" ] || echo "::error::«Даршан» НЕ НАЙДЕН НИ В ОДНОМ ЧАНКЕ — прод отдаёт СТАРЫЙ код"
-          [ "$HIT_A" = "1" ] || echo "::error::«darshan/all» НЕ НАЙДЕН — вторая партия не на проде"
-
-          echo "::notice::=== заголовки оболочки /sadhana ==="
-          curl -sI --max-time 25 "https://gaurangers.com/sadhana" | tr -d '\r' | grep -iE "cache|age|cf-cache|etag" | while read -r L; do echo "::notice::$L"; done
+          echo "::notice::--- заголовки apex / ---"
+          curl -sI --max-time 25 "$AP/" | tr -d '\r' | grep -iE '^(cache-control|cf-cache-status|age|server|etag|x-robots)' \
+            | while read -r L; do echo "::notice::$L"; done
