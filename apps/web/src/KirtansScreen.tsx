@@ -2,9 +2,12 @@
  * KirtansScreen — витрина аудиотеки раздела «Киртаны».
  *
  * Секции:
- *  • «Слушать сейчас»     — альбомы со звуком (Internet Archive), тап → плеер;
- *  • «Исполнители»        — полный реестр киртания, тап → страница исполнителя;
- *  • «Жанры и настроения» — классификации (тип/настроение), фильтруют альбомы;
+ *  • альбомы со звуком (Internet Archive), тап → плеер;
+ *  • полный реестр киртания, тап → страница исполнителя;
+ *  • чипы-классификации (тип/настроение), фильтруют альбомы.
+ *
+ * ЗКН-Н036 (решение основателя 13.07.2026): НАДПИСЕЙ НАД РАЗДЕЛАМИ НЕТ и плашек
+ * типа на обложках НЕТ. Содержимое говорит само за себя.
  *
  * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
  */
@@ -37,7 +40,7 @@ export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number 
   );
 }
 
-/** Карточка проигрываемого альбома в «Слушать сейчас». */
+/** Карточка проигрываемого альбома. */
 function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }) {
   const artist = artistBySlug(album.artist);
   return (
@@ -47,7 +50,9 @@ function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }
         <span aria-hidden style={{ position: "absolute", right: 10, bottom: 10, width: 38, height: 38, borderRadius: "50%", display: "grid", placeItems: "center", background: "rgba(255,255,255,0.92)", color: "#1d1d1f", boxShadow: "0 3px 12px rgba(0,0,0,0.3)" }}>
           <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
         </span>
-        <span style={{ position: "absolute", left: 10, top: 10, padding: "3px 8px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#fff", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.01em" }}>{TYPE_LABEL[album.type]}</span>
+        {/* ЗКН-Н036 · решение основателя 13.07.2026 — плашка типа с обложки УБРАНА.
+            Тип альбома («Киртан» / «Бхаджан») уже назван чипами-фильтром ниже.
+            Надпись поверх обложки повторяла его и загораживала образ. */}
       </div>
       <div style={{ marginTop: 9, fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
       <div style={{  fontSize: "var(--text-footnote)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
@@ -189,7 +194,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         </div>
       ) : (
       <>
-      {/* Слушать сейчас */}
       {playable.length > 0 && (
         <section style={{ marginTop: SECTION_GAP }}>
           <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", margin: "0 -16px", padding: "2px 16px 4px" }}>
@@ -200,14 +204,12 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         </section>
       )}
 
-      {/* Исполнители */}
       <section style={{ marginTop: SECTION_GAP }}>
         <ul style={LIST_UL}>
           {kirtanArtists().map((a, i) => artistRow(a, i === kirtanArtists().length - 1))}
         </ul>
       </section>
 
-      {/* Жанры и настроения */}
       <section style={{ marginTop: SECTION_GAP }}>
         {/* ЗКН-Н036 · решение основателя 13.07.2026 — НАДПИСИ УБРАНЫ.
             Здесь стояли три вторые шапки: «ЗВУЧИТ · Слушать сейчас»,

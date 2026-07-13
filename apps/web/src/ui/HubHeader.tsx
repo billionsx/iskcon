@@ -43,28 +43,39 @@ export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
 }) {
   const H = level === 1 ? "h1" : "h2";
   return (
-    <div style={{ marginBottom: 14, display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
-      <div style={{ minWidth: 0 }}>
-        <div style={{
-          fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
-          textTransform: "uppercase", color: "var(--color-gold-deep)",
-        }}>{eyebrow}</div>
+    /* ЗКН-Н024 — ПОДЗАГОЛОВОК ВСЕГДА ВО ВСЮ ШИРИНУ.
+     *
+     * Здесь стоял ОДИН flex-ряд: [надзаголовок · заголовок · подзаголовок] [кнопка].
+     * Кнопка «Весь каталог» (≈150px) отжимала текстовую колонку — и подзаголовок
+     * Бхаджанов ломался в узкий обрубок в три строки, тогда как в остальных
+     * витринах (где кнопки нет) он шёл во всю ширину. Одна и та же шапка выглядела
+     * по-разному — ровно то, что ЗКН-Н024 и запрещает.
+     *
+     * Кнопка живёт в ряду с ЗАГОЛОВКОМ. Подзаголовок — строкой ниже, на всю ширину. */
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{
+            fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
+            textTransform: "uppercase", color: "var(--color-gold-deep)",
+          }}>{eyebrow}</div>
 
-        <H style={{
-          margin: "2px 0 0", fontFamily: "var(--font-display)",
-          fontSize: level === 1 ? "var(--text-title1)" : "var(--text-title2)",
-          fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)",
-        }}>{title}</H>
+          <H style={{
+            margin: "2px 0 0", fontFamily: "var(--font-display)",
+            fontSize: level === 1 ? "var(--text-title1)" : "var(--text-title2)",
+            fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)",
+          }}>{title}</H>
+        </div>
 
-        {subtitle ? (
-          <p style={{
-            margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
-            color: "var(--color-label-2)", lineHeight: 1.4,
-          }}>{subtitle}</p>
-        ) : null}
+        {action ? <div style={{ flexShrink: 0, paddingTop: 4 }}>{action}</div> : null}
       </div>
 
-      {action ? <div style={{ flexShrink: 0, paddingTop: 4 }}>{action}</div> : null}
+      {subtitle ? (
+        <p style={{
+          margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+          color: "var(--color-label-2)", lineHeight: 1.4,
+        }}>{subtitle}</p>
+      ) : null}
     </div>
   );
 }
