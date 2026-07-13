@@ -284,8 +284,12 @@ def cmd_gate(a):
     cf = DOSSIERS / ("%s.counts.json" % a.entity_id)
     gate.OWN_NUMBERS = set(json.loads(cf.read_text(encoding="utf-8"))) if cf.exists() else set()
     print("ГЕЙТ · %s" % a.entity_id)
-    bad = gate.run(book, dos, prev_card(a.entity_id) if not a.no_ratchet else None,
-                   pp.get("short"), pp.get("full"))
+    base = None
+    if not a.no_ratchet:
+        prevp = DOSSIERS / ("%s.prev.json" % a.entity_id)
+        base = (json.loads(prevp.read_text(encoding="utf-8")) if prevp.exists()
+                else prev_card(a.entity_id))
+    bad = gate.run(book, dos, base, pp.get("short"), pp.get("full"))
     st = compose.stats(book)
     used = set(dos["stats"]["per_channel"])
     strong = dos["stats"]["per_tier"].get("strong", 0)

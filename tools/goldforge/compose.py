@@ -32,7 +32,8 @@ from .channels import WORKS, fold, pattern
 
 MAX_PURPORT = 1000          # выдержка из комментария (дословная, не пересказ)
 MAX_QUOTE = 1500            # «Прабхупада-шикшамрита» держит письма целиком — стена текста
-MIN_QUOTE = 60              # «А.Ч. Бхактиведанта Свами» — это подпись, а не цитата
+MIN_QUOTE = 30              # «А.Ч. Бхактиведанта Свами» — подпись (3 слова), а не цитата
+MIN_WORDS = 5               # стих может быть коротким, но он — фраза
 # Повествовательные источники (там ЖИТИЕ) против доктринальных (там УПОМИНАНИЯ).
 # Смешивать нельзя: «Нектар преданности, глава 19» — не эпизод биографии.
 NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
@@ -139,7 +140,7 @@ def quote_of(f, forms, ids_ok, used=None):
         used.add(ref)
     lim = MAX_PURPORT if f["kind"] == "purport" else MAX_QUOTE
     t = extract(f["text"], forms, lim)
-    if len(t.strip()) < MIN_QUOTE:
+    if len(t.strip()) < MIN_QUOTE or len(t.split()) < MIN_WORDS:
         return None                        # подпись, колонтитул, обрывок — не цитата
     why = canon.anachronism(t, f.get("byId"))
     if why:
