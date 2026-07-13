@@ -25,7 +25,10 @@ on:
         default: "320"
       parallel:
         description: "Параллельных заливок на archive.org"
-        default: "3"
+        default: "4"
+      dl:
+        description: "Параллельных скачиваний из Telegram"
+        default: "6"
 
 permissions:
   contents: read
@@ -57,7 +60,8 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           SB_CANTOS: ${{ inputs.cantos }}
           TIME_BUDGET_MIN: ${{ inputs.budget || '320' }}
-          IA_PARALLEL: ${{ inputs.parallel || '3' }}
+          IA_PARALLEL: ${{ inputs.parallel || '4' }}
+          DL_PARALLEL: ${{ inputs.dl || '6' }}
         run: |
           set +e
           python sb_audio.py 2>&1 | tail -c 400000 | tee /tmp/sb.log
