@@ -3,6 +3,37 @@
 Материал, который конвейер НЕ внёс в книгу автоматически.
 Он не выброшен (ЗКН-П009) — он ждёт решения человека.
 
+## Пустые упоминания — имя есть, факта нет: 25
+
+ЗКН-П016: факт, который не даёт ни события, ни труда, ни учения, ни славы,
+ни связи, в книгу о личности не входит. Он здесь — реши сам.
+
+- **ЧЧ Ади 1.19** — Автор «Шри Чайтанья-чаритамриты» выражает почтение трем Божествам Вриндавана: Шри Радхе-Мадана-мохану, Шри Радхе-Говиндадеве и Шри Радхе-Гопинатхаджи.
+- **ЧЧ Ади 12.82** — Бхугарбха Госвами, чье имя в кришна-лиле Према-манджари, был близким другом Локанатхи Госвами, построившего храм Гокулананды, один из семи главных хра
+- **ЧЧ Ади 7.164** — Рупа Госвами и Санатана Госвами пришли во Вриндаван, когда там не было ни единого храма, но благодаря проповеди им со временем удалось возвести там не
+- **ЧЧ Мадхья 18.49** — Вместе с Рупой Госвами в Матхуре находились Гопала Бхатта Госвами, Рагхунатха дас Госвами, Рагхунатха Бхатта Госвами и Локанатха дас Госвами.
+- **ЧЧ Ади 12.64** — Локанатха Пандит, Мурари Пандит, Шри Харичарана и Мадхава Пандит были тридцать третьей, тридцать четвертой, тридцать пятой и тридцать шестой ветвями А
+- **БР 1.204** — Lokanatha, Bhugarva, Pandita Kasiwara, Sri Paramananda and the other devotees all showered thier love on Gopala Bhatta.202-203 | 
+- **БР 1.225** — I have heard from an old Vaisnava that Lokanatha Gosvami gave the same order that his name not be used.225 | 
+- **БР 1.293** — He visited many holy places before reaching Vrndavana where he took initiation from Lokanath Gosvami.293 | 
+- **БР 1.299** — The old brahmana Padmanava was the father of Lokanatha and a favorite associate of Advaita Prabhu.298 | 
+- **БР 1.301** — Mahaprabhu Gauracandra showered Lokanatha with favor and advised him to leave for Vrndavana immdiately.300 | 
+- **БР 1.303** — As an ascetic Mahaprabhu would travel to Vrndavana and he sent Lokanatha there in advance.302 | 
+- **БР 1.304** — Lokanath understood the Lord's intentions and kwew that Mahaprabhu wuld accept sannyas in a day or two.303 | 
+- **БР 1.308** — Lokanatha dedicated himself to the gracious feet of Mahaprabhu, bowed at the feet of the associates of Mahaprabhu and left Navadvipa.307 | 
+- **БР 1.311** — From there Mahaprabhu travelled to South India.  When Lokanatha heard about Mahaprabhu's intinary he also started for the South.310 | 
+- **БР 1.312** — From South India Mahaprabhu went to Vrndavana.  Lokanatha got news of that and immediatetly headed toward Vraja.  311 | 
+- **БР 1.313** — From Vrndavana Mahaprabhu started for Prayag and when Lokanath heard that he became extremely perturbed.312 | 
+- **БР 1.315** — Lokanatha could  not disobey the order of Mahaprabhu and remianed in seclusion on Vrndavana.314 | 
+- **БР 1.319** — Prabhu Lokanatha became experienced in every every sphere of life and remained in the serivce of Srimat Govinda and others for a long time.318 | 
+- **БР 1.321** — In the book Hari Bhakti Vilasa, Gosvami Sanatana mentioned Lokanatha's name while starting Mangala charana.320 | 
+- **БР 1.322** — He wrote, " May Sri Kashiswara Gosvami Prabhu increase the beauty of Vrndavana by his presence and may Krsnadasa Kaviraja Prabhu and Sri Lokanatha Pra
+- **БР 1.324** — "I sing the praise of Srimat Kashiswara, Srimat Lokanatha and Srimat Krsnadasa Prabhu who have dedicated themselves to the feet of Lord Sri Govinda.32
+- **БР 1.328** — Mahaprabhu understood the desire of Lokanatha and appeared before him disguised and carrying a deity of Krsna.  327 | 
+- **БР 1.340** — After living a long time in Umrao Lokanatha went to Vrndavana where the Gosvamis heartly accepted him and cared for him.341 | 
+- **БР 14.4** — Glory to Raghunatha dasa, Raghunatha Bhatta, Sri Gopala, Sri Bugarba, Sri Lokanath and Sri Jiva Gosvami.  Glory to all the devotees of Sri Gauracandra
+- **БР 15.2** — Glory to Narahari, Raghunandana, Vijaya, Vasu Ramananda, Jagadisa, Sri Sankaranandamaya and Kashimisra.  Glory to Kashiswara, Karnapura, Chakravarty  
+
 ## Кандидаты (голое имя — нужен взгляд куратора): 50
 
 - **ЧЧ Ади 12.88** · `k1-books-app` — Важной ветвью Гададхары Пандита считается Шивананда Чакраварти, тридцать третья ветвь. Он постоянно, с непоколебимой верой жил во Вриндаване. | В «Гаура-ганоддеша-дипике»
@@ -56,8 +87,6 @@
 - **Prabhupada-Shikshamrita.RU.txt, offset 3954451** · `k2-archive` — ираясь на учение Господа Кришны и Бхагавад-гиту. Поэтому нам надлежит изо всех сил трудиться ради этой цели, и если ты последуешь путем Шри Чайтаньи Махапрабху, сделать э
 - **«Шри Гаура ганнодеша дипика», куплет 105** · `k4-bhajans-app` — Четверо ученых преданных, участвовавших в играх Господа Чайтаньи — Кашинатха, Локанатха, Шринатха и Раманатха — были воплощениями четырех Кумаров. В этом нет никаких сомн
 
-## Омонимы (нарицательное, в книгу не идут): 3
+## Омонимы (нарицательное, в книгу не идут): 1
 
 - Rosen_Vaishnava-Saints.RU.txt, offset 228482 · `k2-archive`
-- ISKCON guru system · `k6-wikipedia`
-- Advaita Parivāra · `k6-wikipedia`

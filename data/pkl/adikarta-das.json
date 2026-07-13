@@ -28,36 +28,6 @@
      ]
     }
    ]
-  },
-  {
-   "id": "istochniki",
-   "label": "Источники",
-   "kicker": "ПРОВЕНАНС",
-   "subtabs": [
-    {
-     "id": "onlayn",
-     "label": "Онлайн",
-     "sections": [
-      {
-       "h": "ISKCON News",
-       "p": [
-        "Прочитано страниц: 3. Внешний источник даёт ФАКТ и дату — в прозу жития. Дословной шастра-цитатой он не становится: цитата живёт только там, где книга внесена в приложение (ЗКН-П004)."
-       ],
-       "cite": [
-        {
-         "ref": "ISKCON News | Cintamani Dham in Irvine, Kentucky, USA: A Blossoming ISKCON Farm  — https://iskconnews.org/cintamani-dham-in-irvine-kentucky-usa-a-blossoming-iskcon-farm-community/"
-        },
-        {
-         "ref": "ISKCON News | ISKCON Patna Hosts Amrit Utsav Festival for 1,500+ Devotees | ISKC — https://iskconnews.org/iskcon-patna-hosts-amrit-utsav-festival-for-1500-devotees/"
-        },
-        {
-         "ref": "ISKCON News | ISKCON Family Finds Real Wealth in Cows and the Land | ISKCON News — https://iskconnews.org/iskcon-family-finds-real-wealth-in-cows-and-the-land/"
-        }
-       ]
-      }
-     ]
-    }
-   ]
   }
  ]
 }
