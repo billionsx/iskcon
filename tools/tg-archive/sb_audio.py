@@ -198,7 +198,17 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     playlist: list[dict] = []
     inflight: list = []
     n_up = n_skip = n_fail = 0
+    reg_from = 0
     exhausted = True
+
+    def flush(force: bool = False) -> None:
+        # Пишем в D1 ПОРЦИЯМИ, а не одним пакетом в конце: у песни 10 это 3662 файла —
+        # обрыв раннера обнулял бы весь учёт, и не было бы видно живого прогресса.
+        nonlocal reg_from
+        if len(rows_ok) - reg_from >= (1 if force else 200):
+            register(rows_ok[reg_from:])
+            reg_from = len(rows_ok)
+            print(f"::notice::Песнь {canto}: в D1 {reg_from} дорожек…")
 
     def do_upload(remote: str, path: str, md: dict):
         resps = ia_upload(ident, files={remote: path}, metadata=md, access_key=ak, secret_key=sk,
@@ -281,6 +291,7 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
                 else:
                     keep.append((t, rw, p))
             inflight = keep
+            flush()
 
         task = asyncio.ensure_future(loop.run_in_executor(pool, do_upload, remote, str(dest), {}))
         inflight.append((task, row, str(dest)))
@@ -305,9 +316,9 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
             print(f"playlist.json не залит: {e}")
         pl.unlink(missing_ok=True)
 
-    n_reg = register(rows_ok) if rows_ok else 0
+    flush(force=True)
     print(f"::notice::Песнь {canto}: залито {n_up}, уже было {n_skip}, ошибок {n_fail}, "
-          f"в D1 {n_reg} · {'ДОКАТАНА' if exhausted and not n_fail else 'ОСТАЛОСЬ — перезапусти'}")
+          f"в D1 {reg_from} · {'ДОКАТАНА' if exhausted and not n_fail else 'ОСТАЛОСЬ — перезапусти'}")
     return exhausted and n_fail == 0
 
 
