@@ -564,7 +564,12 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     if keep:
         have = {t["id"] for t in tabs}
         for t in keep.get("tabs", []):
-            if t.get("id") not in have:
+            tid = t.get("id")
+            # Таб, который СТРОИТ конвейер, но в этой сборке не построил, —
+            # УСТАРЕЛ, а не «сохранён». Так вчерашняя свалка «Упоминания в
+            # книгах» переезжала в новую карточку под видом работы куратора и
+            # ломала её дублями. Переносим ТОЛЬКО чужие, рукописные табы.
+            if tid not in have and tid not in FORGE_TABS:
                 tabs.append(heal(t, HN, slugmap))
 
     for t in tabs:

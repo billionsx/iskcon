@@ -276,12 +276,24 @@ def containment(book, dossier):
     return bad
 
 
+def curated_only(book):
+    """Только рукописные табы. Машинные — не «наследие», а прошлый черновик."""
+    return {"tabs": [t for t in (book or {}).get("tabs", [])
+                     if t.get("id") not in FORGE_TABS]}
+
+
 def ratchet(book, prev):
-    """Храповик: новая книга не беднее старой (ЗКН-Р002 — ничего не пропадает)."""
+    """Храповик: НЕ ТЕРЯТЬ РАБОТУ ЧЕЛОВЕКА (ЗКН-Р002).
+
+    Мерить надо курированные табы. Мерил всю карточку — и закон охранял мою же
+    вчерашнюю свалку: чистка обязана уменьшить машинную часть, а храповик её за
+    это блокировал.
+    """
     if not prev:
         return []
+
     def count(b):
-        j = json.dumps(b, ensure_ascii=False)
+        j = json.dumps(curated_only(b), ensure_ascii=False)
         return j.count('"h":'), j.count('"ref":')
     ns, nq = count(book)
     os_, oq = count(prev)
