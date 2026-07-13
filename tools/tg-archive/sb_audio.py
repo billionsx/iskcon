@@ -47,8 +47,11 @@ from tg_archive import build_client, load_dotenv_if_present, slug  # noqa: E402
 WORK = Path(__file__).parent / "sb_work"
 START = time.time()
 BUDGET = float(os.getenv("TIME_BUDGET_MIN") or 320) * 60
-PARALLEL = int(os.getenv("IA_PARALLEL") or 4)      # параллельных заливок на archive.org
-DL_PARALLEL = int(os.getenv("DL_PARALLEL") or 6)   # параллельных скачиваний из Telegram
+PARALLEL = int(os.getenv("IA_PARALLEL") or 6)       # параллельных заливок на archive.org
+DL_PARALLEL = int(os.getenv("DL_PARALLEL") or 12)  # параллельных скачиваний из Telegram
+# Замер на живом канале: последовательно — 3.5 файла/мин; 6 потоков — 18.9. Узкое место —
+# именно скачивание, и оно масштабируется линейно. FloodWait перехватывается и пережидается,
+# так что перебор с параллелизмом сам себя тормозит, а не ломает.
 CHUNK = 120                                        # размер порции: сверка бюджета и запись в D1
 
 ACCOUNT = os.getenv("CF_ACCOUNT_ID", "d5cbe19470dc38599873eabfe148e6d1")
