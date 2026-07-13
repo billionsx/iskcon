@@ -13,6 +13,7 @@ import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS, BOOKS, bookSlug } from "./books";
 import { PDF_CACHE_REV } from "./pdfRev";
 import { api } from "./api";
+import { sbChapterHasAudio } from "./sbAudio";
 import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
@@ -1683,7 +1684,15 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
           <div style={{ fontSize: "var(--text-caption2)", color: INK2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Глава {chapter.number}{divShort ? ` · ${divShort}` : ""} · {bookTitle}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } player.playChapter(work, Number(chapter.number) || 1, "plain", hierarchical ? chapter.id.split(".")[1] : undefined); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={async () => {
+          if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; }
+          const div = hierarchical ? chapter.id.split(".")[1] : undefined;
+          const n = Number(chapter.number) || 1;
+          // ШБ: озвучка приезжает песнь за песнью — на неозвученной главе честно «скоро»,
+          // а не молча чужая дорожка (ЗКН-Б007).
+          if (work === "sb" && div && !(await sbChapterHasAudio(div, n))) { flash("Озвучка этой главы — скоро"); return; }
+          player.playChapter(work, n, "plain", div);
+        }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={moreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
@@ -2426,7 +2435,12 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
           })()}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila, data?.ref ?? null); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={async () => {
+          if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; }
+          if (work === "bg") { player.playChapter(work, Number(chapterNo) || 1, "commentary"); return; }
+          if (work === "sb" && ccLila && !(await sbChapterHasAudio(ccLila, ccChapterNum))) { flash("Озвучка этой главы — скоро"); return; }
+          player.playChapter(work, ccChapterNum, "plain", ccLila, data?.ref ?? null);
+        }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 
