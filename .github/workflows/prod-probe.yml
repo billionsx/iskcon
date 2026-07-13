@@ -1,17 +1,50 @@
 name: prod-probe
 on:
   workflow_dispatch:
+    inputs:
+      absent:
+        description: 'Строки, которых на живом проде быть НЕ ДОЛЖНО (через |)'
+        required: false
+        default: ''
+      expect:
+        description: 'Строки, которые на живом проде БЫТЬ ОБЯЗАНЫ (через |)'
+        required: false
+        default: ''
 
+# ЗКН-Р015 — «ГОТОВО» = УВИДЕЛ НА ЖИВОМ. Не «задеплоил», не «гейт зелёный».
+# Этот зонд качает ВСЕ чанки боевого сайта и проверяет приёмку по строкам.
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Тело ошибки
+      - name: Приёмка на живом проде
         run: |
-          echo "::notice::--- /api/entities?q=прабхупада ---"
-          curl -s -G --max-time 25 "https://gaurangers.com/api/entities" --data-urlencode "q=прабхупада" -o /tmp/b.txt -w "%{http_code}" > /tmp/c.txt
-          echo "::notice::HTTP $(cat /tmp/c.txt)"
-          head -c 900 /tmp/b.txt | tr '\n' ' ' | fold -w 150 | while read -r L; do echo "::error::$L"; done
-          echo "::notice::--- контрольный: без q ---"
-          curl -s --max-time 25 "https://gaurangers.com/api/entities?limit=2" -o /tmp/b2.txt -w "%{http_code}" > /tmp/c2.txt
-          echo "::notice::HTTP $(cat /tmp/c2.txt) · $(head -c 120 /tmp/b2.txt | tr '\n' ' ')"
+          AP=https://gaurangers.com
+          E=$(curl -s --max-time 25 "$AP/" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+          echo "::notice::вход: $E"
+          curl -s --max-time 60 "$AP$E" -o /tmp/all.js
+          # все чанки, на которые ссылается вход
+          grep -oE '/assets/[A-Za-z0-9_.-]+\.js' /tmp/all.js | sort -u > /tmp/chunks.txt
+          echo "::notice::чанков: $(wc -l < /tmp/chunks.txt)"
+          while read -r C; do curl -s --max-time 30 "$AP$C" >> /tmp/all.js || true; done < /tmp/chunks.txt
+          echo "::notice::скачано всего: $(wc -c < /tmp/all.js) байт"
+
+          FAIL=0
+          IFS='|'
+          for S in ${{ github.event.inputs.absent }}; do
+            [ -z "$S" ] && continue
+            if grep -qF "$S" /tmp/all.js; then
+              echo "::error::НЕ УБРАНО: «$S» всё ещё в боевом бандле"; FAIL=1
+            else
+              echo "::notice::убрано ✓ «$S»"
+            fi
+          done
+          for S in ${{ github.event.inputs.expect }}; do
+            [ -z "$S" ] && continue
+            if grep -qF "$S" /tmp/all.js; then
+              echo "::notice::на месте ✓ «$S»"
+            else
+              echo "::error::НЕ ДОЕХАЛО: «$S» в боевом бандле НЕТ"; FAIL=1
+            fi
+          done
+          exit $FAIL
