@@ -255,9 +255,25 @@ async def main_run() -> int:
                     except FloodWaitError as e:
                         print("FloodWait %ss" % e.seconds)
                         await asyncio.sleep(e.seconds + 1)
-                async with sem_up:
-                    await loop.run_in_executor(
-                        pool, do_upload, r["identifier"], fname, str(dest), r["name"])
+                # ⚠️ ТРИ ПОПЫТКИ С РАСТУЩЕЙ ПАУЗОЙ.
+                #
+                # 12 воркеров лезут в ОДИН элемент archive.org — и когда элемента
+                # ещё нет, он отбивается на гонке создания (503/SlowDown). Без
+                # повтора это давало 46 ошибок на 126 попыток: треть записей
+                # просто терялась. Тот же урок уже оплачен на Шримад-Бхагаватам.
+                last = None
+                for attempt in range(3):
+                    try:
+                        async with sem_up:
+                            await loop.run_in_executor(
+                                pool, do_upload, r["identifier"], fname, str(dest), r["name"])
+                        last = None
+                        break
+                    except Exception as e:
+                        last = e
+                        await asyncio.sleep((5, 20, 60)[attempt])
+                if last:
+                    raise last
             finally:
                 dest.unlink(missing_ok=True)
 
