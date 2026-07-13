@@ -142,8 +142,13 @@ def quote_of(f, forms, ids_ok, used=None):
     return q
 
 
+OWN_NUMBERS = set()          # числа, посчитанные конвейером (не факты источника)
+
+
 def section(h, p, quotes=None, cite=None, see=None, hero=None):
     quotes = [q for q in (quotes or []) if q]          # снятые дубли отсеиваются
+    for line in (p or []):
+        OWN_NUMBERS.update(re.findall(r"\d{2,6}", str(line)))
     s = {"h": canon.clean_card_text(canon.enforce_hero(h, *hero) if hero else h)}
     if p:
         s["p"] = [canon.clean_card_text(canon.enforce_hero(x, *hero) if hero else x) for x in p]

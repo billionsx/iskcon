@@ -43,6 +43,11 @@ STOP_CAPS = {
 CAP = re.compile(r"(?<![А-Яа-яЁё])([А-ЯЁ][а-яё]{2,})")
 NUM = re.compile(r"\b(\d{2,4})\b")
 SENT_START = ".!?«»(\n\u2014"          # после них заглавная — это НЕ имя, а начало фразы
+OWN_NUMBERS = set()                   # бухгалтерия конвейера (ставит goldforge)
+# Поля, которые гейт содержания НЕ судит:
+#   label / kicker — наша навигация («Вклад в Гауранга Лилу»), не утверждение
+#   see[].t        — имена из `entity_names`, они уже проверены графом (byId)
+NOT_A_CLAIM = (".label", ".kicker")
 
 
 def _proper(text):
@@ -113,7 +118,12 @@ def structure(book, hero_short, hero_full):
     hs, refs = [], []
     for path, kind, v in walk(book):
         if kind == "authored":
-            for why in canon.prose_violations(v, hero_short, hero_full):
+            # «Вклад в Гауранга Лилу» — название вкладки и каноническое понятие
+            # проекта. Требовать в нём полного имени героя = требовать «Вклад в
+            # Гауранга Махапрабху Лилу». Навигация не склоняется.
+            nav = path.endswith(NOT_A_CLAIM)
+            for why in canon.prose_violations(v, None if nav else hero_short,
+                                              None if nav else hero_full):
                 bad.append((path, why))
             if path.endswith(".h"):
                 hs.append(v)
@@ -251,14 +261,16 @@ def containment(book, dossier):
     for path, kind, v in walk(book):
         if kind != "authored" or not v:
             continue
-        if path.endswith(".label") or path.endswith(".kicker"):
-            continue                                   # навигация — не утверждение
+        if path.endswith(NOT_A_CLAIM) or ".see[" in path:
+            continue                    # навигация и подписи графа — не утверждения
         for w in _proper(v):
             if w in STOP_CAPS or len(w) < 4:
                 continue
             if not in_corpus(w, corpus):
                 bad.append((path, "ФАБРИКАЦИЯ: имени «%s» нет в источниках" % w))
         for n in NUM.findall(v):
+            if n in OWN_NUMBERS:
+                continue                # это НАШ счётчик, а не факт из источника
             if n not in corpus:
                 bad.append((path, "ФАБРИКАЦИЯ: числа «%s» нет в источниках" % n))
     return bad

@@ -241,6 +241,10 @@ def cmd_compose(a):
     CARDS.mkdir(parents=True, exist_ok=True)
     card = CARDS / ("%s.json" % a.entity_id)
     card.write_text(json.dumps(book, ensure_ascii=False, indent=1), encoding="utf-8")
+    # Конвейер предъявляет гейту свою бухгалтерию: числа, которые он ПОСЧИТАЛ,
+    # а не взял из источника. Всё прочее по-прежнему обязано иметь улику.
+    (DOSSIERS / ("%s.counts.json" % a.entity_id)).write_text(
+        json.dumps(sorted(compose.OWN_NUMBERS), ensure_ascii=False), encoding="utf-8")
     st = compose.stats(book)
     print("книга: %s" % card)
     print("  табов %d · суб-табов %d · секций %d · цитат %d · %s симв."
@@ -277,6 +281,8 @@ def cmd_gate(a):
         sys.exit("нет книги %s — сначала compose" % card)
     book = json.loads(card.read_text(encoding="utf-8"))
     pp = dos["passport"]
+    cf = DOSSIERS / ("%s.counts.json" % a.entity_id)
+    gate.OWN_NUMBERS = set(json.loads(cf.read_text(encoding="utf-8"))) if cf.exists() else set()
     print("ГЕЙТ · %s" % a.entity_id)
     bad = gate.run(book, dos, prev_card(a.entity_id) if not a.no_ratchet else None,
                    pp.get("short"), pp.get("full"))
