@@ -1,0 +1,116 @@
+name: br-reocr
+
+# ПЕРЕOCR БЕНГАЛЬСКОГО ОРИГИНАЛА (ЗКН-ПР010).
+#
+# Установлено прогоном br-probe: годного бенгальского текста нет НИ В ОДНОЙ копии
+# на архиве. У издания 1888 г. OCR от IA (tesseract 5.0.0-alpha, 2020) развалил
+# слова: каноническое «ভক্তিরত্নাকর» — 0 раз из 492 близких форм. Систематическая
+# путаница конъюнкта ত্ন→ত্ব по всей книге. У издания 1913 г. текстового слоя нет.
+#
+# Но СКАНЫ есть: 600 ppi, JP2. Распознаём заново — Surya (трансформерный OCR,
+# сильный на индийских письменностях), а не tesseract, который уже провалился.
+#
+# СУДЬЯ — ПР010, не «на глаз»: доля канонического якоря ≥ 80% или источник негоден.
+# Если Surya не вытянет — это тоже результат, и он честно ляжет в реестр.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: "Сколько страниц распознать (0 = все 622). Пилот: 40."
+        default: "40"
+
+permissions:
+  contents: write
+
+jobs:
+  reocr:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+
+      - name: Install
+        run: |
+          pip install --quiet internetarchive pillow
+          pip install --quiet surya-ocr || echo "::warning::surya недоступна — падаю на tesseract-best"
+
+      - name: Pull scans
+        run: |
+          python3 - <<'PY'
+          from internetarchive import download
+          # JP2-архив 600 ppi, 532 МБ — исходные страницы, а не битый текст
+          download("in.ernet.dli.2015.356261",
+                   files=["2015.356261.Bhaktiratnakar_jp2.zip"],
+                   destdir="_scan", verbose=True)
+          print("::notice::сканы скачаны")
+          PY
+          cd _scan/in.ernet.dli.2015.356261 && unzip -q *_jp2.zip && ls | head -2
+
+      - name: Re-OCR + judge by ПР010
+        run: |
+          python3 - <<'PY'
+          import os, pathlib, sys
+          sys.path.insert(0, ".")
+          from scripts.library.integrity import variants
+
+          ANCHOR = "ভক্তিরত্নাকর"
+          N = int(os.environ.get("PAGES", "40") or 0)
+
+          root = next(pathlib.Path("_scan/in.ernet.dli.2015.356261").glob("*_jp2"))
+          pages = sorted(root.glob("*.jp2"))
+          if N: pages = pages[:N]
+          print(f"::notice::страниц к распознаванию: {len(pages)}")
+
+          from PIL import Image
+          imgs = []
+          for p in pages:
+              try:
+                  imgs.append(Image.open(p).convert("RGB"))
+              except Exception as e:
+                  print(f"::warning::{p.name}: {e}")
+
+          text = ""
+          try:
+              from surya.recognition import RecognitionPredictor
+              from surya.detection import DetectionPredictor
+              rec, det = RecognitionPredictor(), DetectionPredictor()
+              out = rec(imgs, [["bn"]] * len(imgs), det)
+              text = "\n".join(l.text for pg in out for l in pg.text_lines)
+              engine = "surya"
+          except Exception as e:
+              print(f"::warning::surya не отработала ({type(e).__name__}: {e}) — tesseract-best")
+              os.system("sudo apt-get install -qq -y tesseract-ocr tesseract-ocr-ben >/dev/null 2>&1")
+              import subprocess
+              parts = []
+              for p in pages:
+                  Image.open(p).convert("RGB").save("/tmp/p.png")
+                  parts.append(subprocess.run(
+                      ["tesseract", "/tmp/p.png", "stdout", "-l", "ben", "--oem", "1"],
+                      capture_output=True, text=True).stdout)
+              text = "\n".join(parts)
+              engine = "tesseract-lstm"
+
+          v = variants(text, ANCHOR)
+          exact, tot = v.get(ANCHOR, 0), sum(v.values())
+          share = (exact / tot * 100) if tot else 0.0
+          nb = sum(1 for c in text if "\u0980" <= c <= "\u09FF")
+
+          print(f"::notice::движок: {engine} · бенгальских букв: {nb:,}")
+          print(f"::notice::ПР010 — канон «{ANCHOR}»: {exact} из {tot} = {share:.1f}% (порог 80%)")
+          for w, c in v.most_common(5):
+              print(f"::notice::   {w} ×{c}{'  ← КАНОН' if w == ANCHOR else ''}")
+
+          pathlib.Path("_out").mkdir(exist_ok=True)
+          pathlib.Path("_out/reocr.txt").write_text(text, encoding="utf-8")
+
+          if share >= 80:
+              print(f"::notice::ГОДЕН. Перевод с оригинала (PD) стал возможен.")
+          else:
+              print(f"::error::ПР010: {share:.1f}% < 80% — {engine} тоже не вытянул старую бенгальскую печать")
+          PY
+        env:
+          PAGES: ${{ inputs.pages }}
