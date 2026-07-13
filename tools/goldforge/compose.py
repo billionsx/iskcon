@@ -27,7 +27,7 @@ import json
 import re
 from pathlib import Path
 
-from . import canon, d1
+from . import canon, d1, role as roles
 from .channels import WORKS, fold, pattern
 
 MAX_PURPORT = 1000          # выдержка из комментария (дословная, не пересказ)
@@ -133,6 +133,10 @@ def quote_of(f, forms, ids_ok, used=None):
     проходит проверку анахронизмом, а не проходит — снимается вместе с цитатой:
     ссылка на источник остаётся правдой, ложное свидетельство — нет.
     """
+    # ЗКН-П016: факт без роли — факт, который ничего не даёт. Он не цитируется.
+    # Это ПОСЛЕДНИЙ рубеж: даже если сборка ошибётся разделом, свалка не пройдёт.
+    if f["ch"] == "k1-books-app" and f.get("role") not in roles.IN_CARD:
+        return None
     ref = ref_of(f)
     if used is not None:
         if ref in used:
@@ -250,7 +254,15 @@ def cap(pool, per_work=MAX_PER_WORK):
 
 
 def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
-    """Досье → книга. Ничего не выдумывает: всё, что попадает в текст, лежит в досье."""
+    """Досье → КНИГА О ЛИЧНОСТИ.
+
+    ЗКН-П016. Раздел карточки определяет РОЛЬ факта, а не книга, в которой он
+    лежит. Факт, который не даёт ни события, ни труда, ни учения, ни славы, ни
+    связи, В КАРТОЧКУ НЕ ВХОДИТ — он уходит в бриф куратору.
+
+    Прежняя сборка была свальщиком: «все стихи, где встретилось имя», разложенные
+    по книгам и главам. Сто цитат, из которых девяносто не говорят о герое ничего.
+    """
     hero = dossier["entity_id"]
     full = hero_names["full"]
     short = hero_names["short"]
@@ -260,31 +272,39 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     forms = dossier["passport"]["forms"]
     ids_ok = verified_ids([f.get("byId") for f in F] + [hero])
     used = set()
-    # Куратор уже что-то процитировал в старой карточке. Машина не станет
-    # цитировать то же второй раз — иначе слияние даёт двойников на экране.
     if keep:
         used |= {q["ref"] for _p, k, q in _walk_quotes(keep) if q.get("ref")}
     see = graph_see(hero, ids_ok)
+    slugmap = work_slugs()
 
-    def by_ch(*chs):
-        return [f for f in F if f["ch"] in chs]
+    def pick(ch, kind=None, role=None):
+        out = [f for f in F if f["ch"] == ch]
+        if kind:
+            out = [f for f in out if f["kind"] == kind]
+        if role:
+            out = [f for f in out if f.get("role") in role]
+        return out
 
-    k1 = by_ch("k1-books-app")
-    verses = [f for f in k1 if f["kind"] == "translation"]
-    # kind="wide" — только окно вокруг имени, не дословный стих: в цитаты не идёт
-    purports = [f for f in k1 if f["kind"] == "purport"]
-    bhajans = by_ch("k4-bhajans-app")
-    archive = by_ch("k2-archive")
-    online = by_ch("k3-books-web", "k5-bhajans-web", "k6-wikipedia", "k7-iskcon-web")
+    # ЗАКОН НЕОБХОДИМОСТИ: в карточку идут ТОЛЬКО роли, которые что-то дают
+    actor = pick("k1-books-app", "translation", ("актор",))
+    labour = pick("k1-books-app", "translation", ("труд",))
+    author = pick("k1-books-app", "translation", ("авторитет",))
+    glory = pick("k1-books-app", "translation", ("качество",))
+    purports = pick("k1-books-app", "purport", roles.IN_CARD)
+    bhajans = pick("k4-bhajans-app")
+    archive = pick("k2-archive")
+    online = [f for f in F if f["ch"] in ("k3-books-web", "k5-bhajans-web",
+                                          "k6-wikipedia", "k7-iskcon-web")]
 
-    verses, cut_v = cap(verses, per_work)
+    actor, cut_a = cap(actor, per_work)
     purports, cut_p = cap(purports, per_work)
     tabs = []
 
     # ── ТАБ 0 · ВКЛАД В ГАУРАНГА ЛИЛУ (крит. 10 — ВСЕГДА первый) ──────────
     books = own_works(hero)
     own_bhajans = sorted({f["book"] for f in bhajans if f.get("byId") == hero})
-    top = sorted(purports, key=lambda f: -len(f["text"]))[:6]
+    top = sorted([f for f in purports if f.get("role") in ("качество", "авторитет")],
+                 key=lambda f: -len(f["text"]))[:6]
     vk = []
     if books or own_bhajans:
         lines = []
@@ -298,8 +318,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     if top:
         vk.append(section(
             "Шрила Прабхупада о его вкладе",
-            ["Оценка вклада %s в миссию Шри Кришны Чайтаньи Махапрабху — словами "
-             "Шрилы Прабхупады, дословно из комментариев." % gen],
+            ["Что даёт этот раздел: оценка вклада %s в миссию Шри Кришны Чайтаньи "
+             "Махапрабху — словами Шрилы Прабхупады, дословно из комментариев." % gen],
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see:
         vk.append(section("Связи в лиле",
@@ -310,61 +330,97 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         txt = (note or [{}])[0].get("note") if note else None
         vk.append(section("Место в Гауранга Лиле",
                           [txt] if txt else ["Материал собран в разделах ниже."], hero=HN))
-    if vk:
-        tabs.append({"id": "vklad-gauranga-lila", "label": "Вклад в Гауранга Лилу",
-                     "kicker": "МИССИЯ", "subtabs": [
-                         {"id": "missiya", "label": "Миссия", "sections": vk}]})
+    tabs.append({"id": "vklad-gauranga-lila", "label": "Вклад в Гауранга Лилу",
+                 "kicker": "МИССИЯ", "subtabs": [
+                     {"id": "missiya", "label": "Миссия", "sections": vk}]})
 
-    # ── ТАБ · ЖИТИЕ (повествование первоисточников; секция = глава) ───────
-    def verse_tab(pool, tab_id, label, kicker):
-        zh = {}
-        for f in sorted(pool, key=lambda x: (x["src"], x.get("div", ""), x.get("ordinal", 0))):
-            zh.setdefault((f["src"], top_div(f)), {}).setdefault(chapter_label(f), []).append(f)
-        subs2 = []
-        for (src, _t), chapters in zh.items():
-            sample = next(iter(next(iter(chapters.values()))))
-            secs2 = []
-            for h, fs in chapters.items():
-                wk = WORKS.get(src, {})
-                fs = sorted(fs, key=lambda x: x.get("ordinal", 0))[:MAX_PER_SECTION]
-                line = "Стихов в этой главе: %d." % len(fs)
-                secs2.append(section(h, [line],
-                                     quotes=[quote_of(f, forms, ids_ok, used) for f in fs],
-                                     hero=HN))
-            subs2.append({"id": slugify("%s %s" % (sample.get("book", src), div_label(sample))),
-                          "label": "%s · %s" % (sample.get("book", src), div_label(sample)),
-                          "sections": secs2})
-        if subs2:
-            tabs.append({"id": tab_id, "label": label, "kicker": kicker, "subtabs": subs2})
-
-    verse_tab([f for f in verses if f["src"] in NARRATIVE], "zhitie", "Житие", "ИСТОЧНИКИ ЛИЛЫ")
-    verse_tab([f for f in verses if f["src"] not in NARRATIVE], "upominaniya",
-              "Упоминания в книгах", "ШАСТРЫ")
-
+    # ── ТАБ · ЖИТИЕ — только там, где герой ДЕЙСТВУЕТ ─────────────────────
     zh = {}
-    for f in []:
-        key = (f["src"], top_div(f))
-        zh.setdefault(key, {}).setdefault(chapter_label(f), []).append(f)
+    for f in sorted(actor, key=lambda x: (x["src"], x.get("div", ""), x.get("ordinal", 0))):
+        zh.setdefault((f["src"], top_div(f)), {}).setdefault(chapter_label(f), []).append(f)
     subs = []
     for (src, _t), chapters in zh.items():
         sample = next(iter(next(iter(chapters.values()))))
-        sid = slugify("%s %s" % (sample.get("book", src), div_label(sample)))
         secs = []
         for h, fs in chapters.items():
-            wk = WORKS.get(src, {})
-            nar = (wk.get("narrator") or [None])[0]
-            line = "Стихов о %s в этой главе: %d." % (gen.replace("Дживы", "Дживе"), len(fs))
-            if nar:
-                line += " Повествует %s." % nar
-            secs.append(section(h, [line],
-                                quotes=[quote_of(f, forms, ids_ok, used) for f in fs], hero=HN))
-        subs.append({"id": sid, "label": "%s · %s" % (sample.get("book", src), div_label(sample)),
+            fs = sorted(fs, key=lambda x: x.get("ordinal", 0))[:MAX_PER_SECTION]
+            secs.append(section(h, ["Эпизод: здесь %s действует." % full],
+                                quotes=[quote_of(f, forms, ids_ok, used) for f in fs],
+                                hero=HN))
+        subs.append({"id": slugify("%s %s" % (sample.get("book", src), div_label(sample))),
+                     "label": "%s · %s" % (sample.get("book", src), div_label(sample)),
                      "sections": secs})
     if subs:
-        tabs.append({"id": "zhitie", "label": "Житие", "kicker": "ИСТОЧНИКИ ЛИЛЫ",
+        tabs.append({"id": "zhitie", "label": "Житие", "kicker": "СОБЫТИЯ",
                      "subtabs": subs})
 
-    # ── ТАБ · ШРИЛА ПРАБХУПАДА О ГЕРОЕ (секция = верхний раздел книги) ────
+    # ── ТАБ · ТРУДЫ ──────────────────────────────────────────────────────
+    tr = []
+    if books:
+        tr.append(section(
+            "Книги в библиотеке приложения",
+            ["Что даёт этот раздел: его труды, которые можно открыть и читать целиком."],
+            cite=[{"ref": b["title"], "to": "/" + b["slug"]} for b in books], hero=HN))
+    by_work = {}
+    for f in labour:
+        by_work.setdefault(f["book"], []).append(f)
+    for book, fs in by_work.items():
+        tr.append(section(
+            "О его трудах · %s" % book,
+            ["Что даёт этот раздел: свидетельства источников о трудах %s." % gen],
+            quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION]],
+            hero=HN))
+    if tr:
+        tabs.append({"id": "trudy", "label": "Труды", "kicker": "НАСЛЕДИЕ",
+                     "subtabs": [{"id": "knigi", "label": "Книги и свидетельства",
+                                  "sections": tr}]})
+
+    # ── ТАБ · УЧЕНИЕ И АВТОРИТЕТ — где на него ССЫЛАЮТСЯ ─────────────────
+    uch = {}
+    for f in author:
+        uch.setdefault(f["book"], []).append(f)
+    subs = [{"id": slugify(book), "label": book, "sections": [section(
+        "%s · %s" % (book, div_label(fs[0])),
+        ["Что даёт этот раздел: здесь на %s ссылаются как на авторитет — его слово "
+         "приводится как доказательство." % full],
+        quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION * 2]],
+        hero=HN)]} for book, fs in uch.items()]
+    if subs:
+        tabs.append({"id": "uchenie", "label": "Учение и авторитет",
+                     "kicker": "ПРАМАНА", "subtabs": subs})
+
+    # ── ТАБ · ПРОСЛАВЛЕНИЕ ───────────────────────────────────────────────
+    subs = []
+    if glory:
+        secs = []
+        gl = {}
+        for f in glory:
+            gl.setdefault(f["book"], []).append(f)
+        for book, fs in gl.items():
+            secs.append(section(book, ["Что даёт этот раздел: как источники славят %s." % gen],
+                                quotes=[quote_of(f, forms, ids_ok, used)
+                                        for f in fs[:MAX_PER_SECTION]], hero=HN))
+        subs.append({"id": "v-shastrah", "label": "В шастрах", "sections": secs})
+    by_song = {}
+    for f in bhajans:
+        if f["kind"] == "bhajan":
+            by_song.setdefault(f["book"], []).append(f)
+    if by_song:
+        mine = {k: v for k, v in by_song.items() if any(x.get("byId") == hero for x in v)}
+        other = {k: v for k, v in by_song.items() if k not in mine}
+        for label, group, sid in (("Его сочинения", mine, "sochineniya"),
+                                  ("Молитвы к нему", other, "molitvy")):
+            if not group:
+                continue
+            secs = [section(name, [], quotes=[quote_of(f, forms, ids_ok, used)
+                                              for f in sorted(fs, key=lambda x: x["ordinal"])],
+                            hero=HN) for name, fs in group.items()]
+            subs.append({"id": sid, "label": label, "sections": secs})
+    if subs:
+        tabs.append({"id": "proslavlenie", "label": "Прославление",
+                     "kicker": "СЛАВА", "subtabs": subs})
+
+    # ── ТАБ · ШРИЛА ПРАБХУПАДА О НЁМ (комментарии — только по существу) ───
     pr = {}
     for f in sorted(purports, key=lambda x: (x["src"], x.get("div", ""), x.get("ordinal", 0))):
         pr.setdefault(f["src"], {}).setdefault(div_label(f), []).append(f)
@@ -373,18 +429,20 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         book = next(iter(next(iter(groups.values()))))["book"]
         secs = [section(
             "%s · %s" % (book, g),
-            ["Дословные выдержки из комментариев Шрилы Прабхупады к стихам этого "
-             "раздела: %d." % len(fs)],
-            quotes=[quote_of(f, forms, ids_ok, used) for f in fs], hero=HN)
-            for g, fs in groups.items()]
+            ["Что даёт этот раздел: то, что Шрила Прабхупада говорит о %s по существу — "
+             "не мимоходом." % ("нём" if hero != "prabhupada" else "себе")],
+            quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION]],
+            hero=HN) for g, fs in groups.items()]
         subs.append({"id": slugify(book), "label": book, "sections": secs})
-    if subs:
+    if subs and hero != "prabhupada":
         tabs.append({"id": "prabhupada", "label": "Шрила Прабхупада о нём",
                      "kicker": "КОММЕНТАРИИ", "subtabs": subs})
+    elif subs:
+        tabs.append({"id": "prabhupada", "label": "Его комментарии",
+                     "kicker": "СЛОВО", "subtabs": subs})
 
-    # ── КНИГА, КОТОРАЯ ВСЯ О НЁМ: ссылка, а не переписывание ─────────────
-    slugmap = work_slugs()
-    over = {**cut_v, **cut_p}
+    # ── КНИГА, КОТОРАЯ ВСЯ О НЁМ ─────────────────────────────────────────
+    over = {**cut_a, **cut_p}
     if over:
         secs = []
         for w, (n, title) in sorted(over.items(), key=lambda kv: -kv[1][0]):
@@ -398,28 +456,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
                      "subtabs": [{"id": "polnye-knigi", "label": "Полные книги",
                                   "sections": secs}]})
 
-    # ── ТАБ · БХАДЖАНЫ И МОЛИТВЫ ─────────────────────────────────────────
-    by_song = {}
-    for f in bhajans:
-        if f["kind"] == "bhajan":
-            by_song.setdefault(f["book"], []).append(f)
-    if by_song:
-        mine = {k: v for k, v in by_song.items() if any(x.get("byId") == hero for x in v)}
-        other = {k: v for k, v in by_song.items() if k not in mine}
-        subs = []
-        for label, group, sid in (("Его сочинения", mine, "sochineniya"),
-                                  ("Прославления", other, "proslavleniya")):
-            if not group:
-                continue
-            secs = [section(name, [], quotes=[quote_of(f, forms, ids_ok, used)
-                                              for f in sorted(fs, key=lambda x: x["ordinal"])],
-                            hero=HN)
-                    for name, fs in group.items()]
-            subs.append({"id": sid, "label": label, "sections": secs})
-        tabs.append({"id": "bhajany", "label": "Бхаджаны и молитвы",
-                     "kicker": "ПЕСНИ", "subtabs": subs})
-
-    # ── ТАБ · ИСТОЧНИКИ (внешнее — ФАКТ + ссылка, НИКОГДА не дословно) ───
+    # ── ТАБ · ИСТОЧНИКИ (провенанс) ──────────────────────────────────────
     subs = []
     if archive:
         by_file = {}
@@ -451,21 +488,16 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             secs.append(section(
                 SITE_NAMES.get(site, site),
                 ["Прочитано страниц: %d. Внешний источник даёт ФАКТ и дату — в прозу "
-                 "жития. Дословной шастра-цитатой он не становится: цитата живёт только "
-                 "там, где книга внесена в приложение (ЗКН-П004)." % len(pages)],
+                 "жития. Дословной шастра-цитатой он не становится (ЗКН-П004)." % len(pages)],
                 cite=pages[:12], hero=HN))
         subs.append({"id": "onlayn", "label": "Онлайн", "sections": secs})
     if subs:
         tabs.append({"id": "istochniki", "label": "Источники",
                      "kicker": "ПРОВЕНАНС", "subtabs": subs})
 
-    # ── СОХРАННОСТЬ: старые табы, которых конвейер не пересобирает (ЗКН-Р002).
-    # Мы их не выбрасываем — но и не принимаем как есть: прогоняем через те же
-    # законы. Конвейер ЛЕЧИТ то, что переносит: канон имён, «;», апостроф,
-    # легаси-адрес `/book/cc/…` → канонический `/chaitanya-charitamrita/…`.
+    # ── СОХРАННОСТЬ рукописных табов (ЗКН-Р002), с лечением ──────────────
     if keep:
         have = {t["id"] for t in tabs}
-        slugmap = work_slugs()
         for t in keep.get("tabs", []):
             if t.get("id") not in have:
                 tabs.append(heal(t, HN, slugmap))
@@ -473,20 +505,12 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     for t in tabs:
         for sub in t.get("subtabs", []):
             sub["sections"] = [x for x in sub["sections"]
-                               if x.get("quotes") or x.get("cite") or x.get("see") or x.get("p")]
+                               if x.get("quotes") or x.get("cite") or x.get("see")]
         t["subtabs"] = [x for x in t.get("subtabs", []) if x["sections"]]
     tabs = [t for t in tabs if t.get("subtabs") or t.get("sections")]
 
     dedupe_headings({"tabs": tabs})
     return {"tabs": tabs}
-
-
-def _walk_quotes(book):
-    for t in book.get("tabs", []):
-        for sub in (t.get("subtabs") or [{"sections": t.get("sections") or []}]):
-            for sec in sub.get("sections", []):
-                for q in ([sec["quote"]] if sec.get("quote") else []) + sec.get("quotes", []):
-                    yield (None, "quote", q)
 
 
 def work_slugs():

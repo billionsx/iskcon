@@ -26,7 +26,7 @@ import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import d1, web
+from . import d1, role, web
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES_DIR = ROOT / "docs" / "sources"
@@ -118,7 +118,7 @@ def tier(text, forms, quals, homs, strict=()):
 
 
 # ═══ k1 · книги приложения ════════════════════════════════════════════════
-def k1_books_app(strict, forms, quals, homs):
+def k1_books_app(strict, forms, quals, homs, works=()):
     """Стихи и комментарии по ВСЕМ книгам. Текст берётся ИЗ БД (ЗКН-П002):
     это и есть гарантия дословности — руками текст не набирается никогда."""
     if not d1.available():
@@ -172,6 +172,7 @@ def k1_books_app(strict, forms, quals, homs):
                 out.append({
                     "ch": "k1-books-app", "src": w, "id": r["id"], "ref": r["ref"],
                     "kind": kind, "to": to, "text": txt,
+                    "role": role.classify(txt, pattern(forms), works),
                     "by": (who or [None, None])[0], "byId": (who or [None, None])[1],
                     "book": book, "div": r["division_id"], "div_title": dt,
                     "ordinal": r.get("ordinal") or 0,
@@ -193,7 +194,7 @@ def k1_books_app(strict, forms, quals, homs):
                     "kind": "wide", "to": None, "text": r["snip"] or "", "by": None,
                     "byId": None, "book": r["work_id"], "div": "", "div_title": "",
                     "ordinal": 0, "tier": tier(r["snip"] or "", forms, quals, homs, strict),
-                    "at": now()})
+                    "role": "упоминание", "at": now()})
 
     for r in (d1.query("SELECT slug, personality_slug, text, source, speaker FROM quotes "
                        "WHERE %s" % d1.ors("text", forms)) or []):
@@ -311,6 +312,17 @@ def web_channel(ch, names, strict, forms, quals, homs):
     return out
 
 
+def hero_works(hero):
+    """Названия его трудов — по ним узнаётся роль «труд»."""
+    if not d1.available():
+        return []
+    out = [r["title"] for r in (d1.query(
+        "SELECT title FROM book_catalog WHERE author_entity_id=?1", [hero]) or [])]
+    out += [r["name"] for r in (d1.query(
+        "SELECT name FROM prayers WHERE author_slug=?1", [hero]) or []) if r.get("name")]
+    return [t for t in out if t and len(t) > 4]
+
+
 def harvest(passport, only=None, net=True):
     forms = passport["forms"]
     strict = passport.get("strict", [])
@@ -321,8 +333,9 @@ def harvest(passport, only=None, net=True):
     hero = passport["entity_id"]
     want = set(only or CHANNELS)
     out = []
+    works = hero_works(hero)
     if "k1" in want or "k1-books-app" in want:
-        out += k1_books_app(strict, forms, quals, homs)
+        out += k1_books_app(strict, forms, quals, homs, works)
     if "k2" in want or "k2-archive" in want:
         out += k2_archive(strict, forms, quals, homs, ex)
     if "k4" in want or "k4-bhajans-app" in want:
