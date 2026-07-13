@@ -1754,7 +1754,7 @@ const RESERVED: readonly string[] = [
         {showOnboarding && <Onboarding navigate={navigate} onClose={() => setShowOnboarding(false)} />}
         <MiniPlayer tabBarVisible={tabBarVisible || overlayTabBar} />
         <NowPlaying
-          onOpenBook={(book, chapter) => navigate("/" + bookSlug(BOOKS[book] ? book : "bg") + (chapter ? "/" + chapter : ""))}
+          onOpenPath={(path) => navigate(path)}
           onOpenBhajan={(slug) => navigate("/bhajans/" + slug)}
           onDonate={openDonate} />
         {appToast && (

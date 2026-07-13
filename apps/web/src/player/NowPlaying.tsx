@@ -14,7 +14,7 @@ import { requestNote } from "../notes";
 import { QrSheet, type QrData } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
-import { BOOKS, bookFullTitle } from "../books";
+import { BOOKS, bookFullTitle, bookSlug } from "../books";
 import { albumById } from "../kirtans";
 import { type SubTabDef } from "../SectionSubTabs";
 import { ROUTES, url } from "../routes";
@@ -27,7 +27,7 @@ const glass = (radius: number): CSSProperties => ({
 });
 const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0, background: "none", border: "none", padding: 0 });
 
-export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?: (book: string, chapter?: number | null) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void } = {}) {
+export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -96,22 +96,26 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
   const bookUrl = url(ROUTES.book(p.book)) + "?listen";
-  const lila = p.track?.lila;   // ЧЧ/ШБ
-  const chapterUrl = isChapter
-    ? (p.book === "bg"
-        ? url(ROUTES.book("bg", String(ch))) + "?listen"
-        : lila
-          ? url(ROUTES.book(p.book, String(lila), String(ch))) + "?listen"
-          : BOOK.prose
-            ? url(ROUTES.book(p.book, String(ch))) + "?listen"
-            : bookUrl)
-    : bookUrl;
+  const lila = p.track?.lila;   // ЧЧ: лила · ШБ: песнь
+
+  /** ЗКН-Б009: АУДИО И ТЕКСТ — ОДНА КНИГА. Кнопка ведёт в ТО ЖЕ место, где играет звук.
+   *  У ШБ дорожка — это СТИХ, значит открывать надо СТИХ. Раньше для иерархических книг
+   *  (ШБ/ЧЧ) глава просто ОТБРАСЫВАЛАСЬ, и человек падал на обложку книги. */
+  const verseSeg = p.track?.ref ? (String(p.track.ref).split(".").pop() ?? "") : "";
+  const textPath = isAdHoc
+    ? null
+    : !isChapter
+      ? `/${bookSlug(p.book)}`
+      : BOOK.hierarchical && lila
+        ? `/${bookSlug(p.book)}/${lila}/${ch}${verseSeg ? `/${verseSeg}` : ""}`
+        : `/${bookSlug(p.book)}/${ch}`;
+  const chapterUrl = textPath ? `${ORIGIN}${textPath}?listen` : bookUrl;
   function flash(m: string) { setToast(m); if (toastTimer.current) window.clearTimeout(toastTimer.current); toastTimer.current = window.setTimeout(() => setToast(null), 1900); }
   function doShare(url: string, title: string) {
     if (typeof navigator !== "undefined" && navigator.share) navigator.share({ title, url }).catch(() => {});
     else { try { void navigator.clipboard?.writeText(url); flash("Ссылка скопирована"); } catch { /* ignore */ } }
   }
-  function readBook() { p.close(); onOpenBook?.(p.book, isChapter && (p.book === "bg" || BOOK.prose) ? ch : null); }
+  function readBook() { p.close(); if (textPath) onOpenPath?.(textPath); }
   function openText() {
     if (p.kind === "bhajan") { p.close(); onOpenBhajan?.((p.book || "").split("::")[0]); return; }
     readBook();

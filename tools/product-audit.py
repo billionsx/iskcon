@@ -175,7 +175,44 @@ def check_r011():
     return bad
 
 
+def check_b009():
+    """ЗКН-Б009: АУДИО И ТЕКСТ — ОДНА КНИГА. Переход в ОБЕ стороны, в ТО ЖЕ место.
+
+    Связь ломается тихо и однобоко: «Слушать» из текста делают сразу, а обратный
+    путь забывают — и человек, слушая ШБ 1.1.5, жмёт «Читать» и падает на ОБЛОЖКУ
+    книги. Так и было: NowPlaying отбрасывал главу у иерархических книг (ШБ/ЧЧ).
+
+    Проверяем ЧЕТЫРЕ звена (все — код, не намерения):
+      1. плеер знает адрес текста (`textPath`) и уважает иерархию (`hierarchical`);
+      2. кнопка «Читать» ведёт по этому адресу, а не в корень книги;
+      3. дорожка несёт `ref` — ключ стиха (иначе «то же место» недостижимо);
+      4. читалка следует за звуком по `player.track?.ref`.
+    """
+    bad = []
+    np = (SRC / "player" / "NowPlaying.tsx")
+    st = (SRC / "player" / "store.tsx")
+    bd = (SRC / "BookDetailPage.tsx")
+    t_np = np.read_text(encoding="utf-8") if np.exists() else ""
+    t_st = st.read_text(encoding="utf-8") if st.exists() else ""
+    t_bd = bd.read_text(encoding="utf-8") if bd.exists() else ""
+
+    if "textPath" not in t_np or "hierarchical" not in t_np:
+        bad.append(("player/NowPlaying.tsx",
+                    "плеер не строит адрес текста с учётом иерархии — «Читать» уронит на обложку"))
+    if "onOpenPath?.(textPath)" not in t_np:
+        bad.append(("player/NowPlaying.tsx",
+                    "кнопка «Читать» не ведёт в место звучания (ЗКН-Б009)"))
+    if "ref?: string | null" not in t_st:
+        bad.append(("player/store.tsx",
+                    "дорожка не несёт ref стиха — связь до стиха невозможна"))
+    if "player.track?.ref" not in t_bd:
+        bad.append(("BookDetailPage.tsx",
+                    "читалка не следует за звуком по ref стиха (ЗКН-Б009)"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Б009", "аудио ↔ текст: переход в обе стороны", check_b009),
     ("ЗКН-Б007", "книга в D1 → обязана быть в бандле", check_b007),
     ("ЗКН-Р011", "значение фильтра существует в базе", check_r011),
     ("ЗКН-Пр005", "гаятри — только по уровню (упреждающе)", check_pr005),

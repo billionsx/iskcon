@@ -1633,19 +1633,24 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
     return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
   }, [scrollToVerse, verses]);
 
-  // Аудио → текст для книг из ОДНОГО раздела (стихи/мантры: Ишопанишад, Брахма-самхита).
-  // В такой аудиокниге один трек = один стих по порядку, поэтому при СМЕНЕ трека скроллим
-  // к verses[index] и коротко подсвечиваем. В многоглавных книгах трек = глава — сюда не
-  // заходим (отбор по chapters.length === 1), там за главой следит BookDetailPage.
-  const lastAudioIdxRef = useRef<number | null>(null);
+  // ЗКН-Б009: ТЕКСТ ИДЁТ ЗА ЗВУКОМ ДО СТИХА.
+  //
+  // Два случая, оба ведут к одному стиху:
+  //  • Дорожка несёт `ref` (ШБ: озвучка по-стиховая) — берём стих ПО КЛЮЧУ. Это точно:
+  //    работает и в многоглавной книге, и на слитых стихах («ШБ 1.10.9-10»).
+  //  • Книга из ОДНОГО раздела (Ишопанишад, Брахма-самхита) — `ref` у дорожки нет,
+  //    но трек N = стих N по порядку, берём по индексу.
+  // Раньше был только второй случай — и текст стоял мёртво, пока звук шёл по главе.
+  const lastAudioIdxRef = useRef<string | null>(null);
   useEffect(() => {
-    if (!chapters || chapters.length !== 1) return;
     if (!player.active || player.book !== work || !verses || verses.length === 0) return;
-    const i = player.index;
-    if (i == null || lastAudioIdxRef.current === i) return;
-    const v = verses[i];
+    const tref = player.track?.ref ?? null;
+    const single = !!chapters && chapters.length === 1;
+    const v = tref ? verses.find((x) => x.ref === tref) : (single ? verses[player.index] : undefined);
     if (!v) return;
-    lastAudioIdxRef.current = i;
+    const key = v.ref;
+    if (lastAudioIdxRef.current === key) return;
+    lastAudioIdxRef.current = key;
     const cont = scrollElRef.current;
     if (!cont) return;
     const raf = requestAnimationFrame(() => {
@@ -1658,7 +1663,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
       }
     });
     return () => cancelAnimationFrame(raf);
-  }, [player.active, player.book, player.index, verses, chapters, work]);
+  }, [player.active, player.book, player.index, player.track, verses, chapters, work]);
 
   const anyDemo = !!verses && verses.some((v) => !v.translation && DEMO_VERSES[v.ref]?.translation);
 
