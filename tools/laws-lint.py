@@ -516,7 +516,7 @@ def check_unique_ids():
     # Долг зафиксирован и расти не может: любой НОВЫЙ дубль валит линтер.
     LEGACY = {"ЗКН-Сд005", "ЗКН-Ц004", "ЗКН-Ц006"}
     dupes = [(i, n) for i, n in collections.Counter(ids).items() if n > 1 and i not in LEGACY]
-    rule = {"id": "ЗКН-Ц-ID", "name": "номер закона уникален",
+    rule = {"id": "ЗКН-Ц010", "name": "номер закона уникален",
             "hint": "два закона под одним номером — ссылка ведёт в два места, гейт не привязать"}
     return [(rule, "docs/LAWS.md", 0, "%s — занят %d раза" % (i, n)) for i, n in sorted(dupes)]
 
