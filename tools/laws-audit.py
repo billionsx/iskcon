@@ -73,6 +73,12 @@ def actual_level(lid: str) -> tuple[int, str]:
         return 5, "гейт адресов (url-audit.py)"
 
     # Д009 — токен SECTION_GAP в общем компоненте шапки.
+    # Ц005 — линтер исключает сам себя из обхода.
+    if lid == "ЗКН-Ц005":
+        t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
+        if 'fp.name == "laws-lint.py"' in t:
+            return 5, "линтер исключает себя (laws-lint.py)"
+
     if lid == "ЗКН-Ф019":
         t = (ROOT / "tools" / "infra-audit.py").read_text(encoding="utf-8")
         if "check_f017" in t:
