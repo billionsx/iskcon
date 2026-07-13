@@ -360,15 +360,21 @@ def cmd_forge(a):
 
 
 def cmd_queue(a):
-    """Очередь ковки: самые бедные карточки — первыми."""
+    """Очередь ковки: самые бедные карточки — первыми, уже выкованные — вон.
+
+    `--since` отсекает тех, кого кузница уже прошла в эту волну. Без него
+    самоцепочка ходила бы по кругу вечно: выкованная карточка становится
+    богатой, уезжает в конец очереди — и через 700 шагов возвращается.
+    """
+    since = a.since or "1970-01-01"
     rows = d1.query(
         "SELECT e.id, coalesce(length(p.longform),0) AS n FROM entities e "
         "LEFT JOIN entity_profiles p ON p.entity_id=e.id "
         "WHERE e.type='personality' AND e.status='published' "
-        "ORDER BY n ASC, e.id LIMIT ?1", [int(a.only or 0) or 730]) or []
-    ids = [r["id"] for r in rows]
-    print(",".join(ids))
-    print("\n# личностей в очереди: %d" % len(ids), file=sys.stderr)
+        "AND (p.updated_at IS NULL OR p.updated_at < ?1) "
+        "ORDER BY n ASC, e.id LIMIT ?2", [since, int(a.limit or 730)]) or []
+    print(",".join(r["id"] for r in rows))
+    print("# в очереди: %d" % len(rows), file=sys.stderr)
 
 
 def cmd_sql(a):
@@ -399,6 +405,8 @@ def main():
         p.add_argument("--no-ratchet", action="store_true")
         p.add_argument("--dry", action="store_true")
         p.add_argument("--force", action="store_true")
+        p.add_argument("--since", default="")
+        p.add_argument("--limit", default="")
         return p
 
     for name, fn in (("passport", lambda a: cmd_passport(a) and 0),

@@ -11,8 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       ids:
-        description: "id через запятую (очередь)"
+        description: "id через запятую · или `auto` — кузница сама возьмёт самых бедных"
         required: true
+      since:
+        description: "для auto: не трогать тех, кого уже ковали после этой даты (ГГГГ-ММ-ДД)"
+        default: ""
       batch:
         description: "сколько ковать за один прогон"
         default: "5"
@@ -49,6 +52,16 @@ jobs:
           set -o pipefail
           IDS="${{ inputs.ids }}"
           N="${{ inputs.batch }}"
+          SINCE="${{ inputs.since }}"
+          [ -z "$SINCE" ] && SINCE="$(date -u +%Y-%m-%d)"
+          if [ "$IDS" = "auto" ]; then
+            IDS="$(python3 tools/goldforge/goldforge.py queue --since "$SINCE" --limit "$N")"
+            echo "::notice::очередь из D1: $IDS"
+            if [ -z "$IDS" ]; then
+              echo "::notice::ОЧЕРЕДЬ ПУСТА — вся библиотека выкована"
+              echo "rest=" >> "$GITHUB_OUTPUT"; exit 0
+            fi
+          fi
           KEEP=""
           [ "${{ inputs.keep_old }}" = "true" ] && KEEP="--keep-old"
           IFS=',' read -ra ALL <<< "$IDS"
@@ -71,6 +84,7 @@ jobs:
             fi
             echo "::endgroup::"
           done
+          if [ "${{ inputs.ids }}" = "auto" ]; then REST="auto"; fi
           echo "rest=${REST#,}" >> "$GITHUB_OUTPUT"
           {
             echo "## Пакет: выковано $OK · не прошло гейт $FAIL"
@@ -105,5 +119,6 @@ jobs:
           gh workflow run pkl-forge-batch.yml -R "${{ github.repository }}" \
             -f ids="${{ steps.batch.outputs.rest }}" \
             -f batch="${{ inputs.batch }}" \
+            -f since="${{ inputs.since }}" \
             -f keep_old="${{ inputs.keep_old }}"
           echo "::notice::очередь продолжена: ${{ steps.batch.outputs.rest }}"
