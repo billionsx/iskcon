@@ -144,33 +144,67 @@ def ensure_schema():
             seq INTEGER NOT NULL, kind TEXT NOT NULL, ref TEXT, title TEXT NOT NULL,
             duration INTEGER, src TEXT NOT NULL)""")
     d1("CREATE INDEX IF NOT EXISTS idx_sb_audio_pos ON sb_audio(canto, chapter, seq)")
+    try:    # ОДНА дорожка может покрывать НЕСКОЛЬКО стихов книги (аудио «18-20» = книга «18-19» + «20»)
+        d1("ALTER TABLE sb_audio ADD COLUMN covers TEXT")
+    except SystemExit:
+        pass
 
 
 def register(rows):
     """Пишем в D1 только подтверждённо залитое. Чанк 10×9=90 биндов < лимита D1 (~100)."""
     n = 0
-    for i in range(0, len(rows), 10):
+    for i in range(0, len(rows), 9):   # 9 строк × 10 полей = 90 биндов < лимита D1 (ЗКН-Ф013)
         chunk = rows[i:i + 10]
         vals, params = [], []
         for k, r in enumerate(chunk):
-            b = k * 9
-            vals.append(f"(?{b+1},?{b+2},?{b+3},?{b+4},?{b+5},?{b+6},?{b+7},?{b+8},?{b+9})")
+            b = k * 10
+            vals.append("(" + ",".join(f"?{b+j}" for j in range(1, 11)) + ")")
             params += [r["file"], r["canto"], r["chapter"], r["seq"], r["kind"],
-                       r["ref"], r["title"], r["duration"], r["src"]]
-        d1("INSERT OR REPLACE INTO sb_audio (file,canto,chapter,seq,kind,ref,title,duration,src) "
+                       r["ref"], r.get("covers"), r["title"], r["duration"], r["src"]]
+        d1("INSERT OR REPLACE INTO sb_audio "
+           "(file,canto,chapter,seq,kind,ref,covers,title,duration,src) "
            "VALUES " + ",".join(vals), params)
         n += len(chunk)
     return n
 
 
-def book_refs(canto: int) -> set[str]:
-    """Стихи ПЕСНИ так, как они есть В КНИГЕ. Ключ дорожки сверяется с ними, а не
-    принимается на веру (ЗКН-Пл014). Канал и издание расходятся: в ШБ 5.15 книга слила
-    стих в «14-15», а в канале лежат ОБА файла («текст 14-15» и лишний «текст 15»);
-    у ШБ 4.29 книга кончается стихом 85, а в канале есть ещё 86, 87, 88."""
+def nums(spec: str) -> set[int]:
+    """«18-20» → {18,19,20}; «7» → {7}. Диапазон в подписи — это НАБОР стихов."""
+    parts = [p for p in str(spec).split("-") if p.strip().isdigit()]
+    if not parts:
+        return set()
+    a = int(parts[0])
+    b = int(parts[-1])
+    return set(range(min(a, b), max(a, b) + 1))
+
+
+def book_map(canto: int) -> dict[int, list[tuple[str, set[int]]]]:
+    """Стихи ПЕСНИ так, как они РАЗБИТЫ В КНИГЕ: глава → [(ref, набор номеров)].
+
+    Нарезка канала и издания расходится, и это НЕ ошибка — это разные разбиения:
+      • ШБ 6.15 — аудио слило «18-20» ОДНИМ файлом, книга делит «18-19» и «20».
+        Файл покрывает ОБА стиха книги. Погасить связь — недодать: звук-то есть.
+      • ШБ 5.15 — книга слила «14-15», а в канале лежат и «14-15», и лишний «текст 15».
+        Одиночный «15» не покрывает «14-15» целиком → это дорожка ВНЕ издания.
+      • ШБ 4.29 — книга кончается стихом 85, в канале есть ещё 86-88 → вне издания.
+
+    Правило одно: дорожка связывается со стихом книги, только если ПОЛНОСТЬЮ его
+    покрывает. Совпадение проверяется, а не принимается (ЗКН-Пл014).
+    """
     rows = d1("SELECT ref FROM verses WHERE work_id='sb' AND division_id LIKE ?1",
               [f"sb.{canto}.%"])
-    return {r["ref"] for r in rows}
+    out: dict[int, list[tuple[str, set[int]]]] = {}
+    for r in rows:
+        ref = r["ref"]                         # «ШБ 6.15.18-19»
+        tail = ref.split(".")
+        try:
+            ch = int(tail[1])
+        except (IndexError, ValueError):
+            continue
+        out.setdefault(ch, []).append((ref, nums(tail[-1])))
+    for ch in out:
+        out[ch].sort(key=lambda x: min(x[1]) if x[1] else 0)
+    return out
 
 
 def canto_metadata(canto: int) -> dict:
@@ -227,7 +261,7 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     playlist: list[dict] = []
     seq_by_ch: dict[int, int] = {}
     seen_ref: set[str] = set()   # в каналах есть дубли поста («текст 032» и «текст 32» — один стих)
-    refs = book_refs(canto)      # стихи ПЕСНИ так, как они есть в книге
+    bmap = book_map(canto)       # как стихи РАЗБИТЫ в книге
     n_skip = n_dup = n_extra = 0
     entity = await client.get_entity(channel)
     async for msg in client.iter_messages(entity, reverse=True):
@@ -248,16 +282,25 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
         seq = seq_by_ch.get(ch, 0)
         seq_by_ch[ch] = seq + 1
         remote = f"{ch:03d}.{seq:03d}.{label}.mp3"
-        ref = f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None
-        if ref and ref not in refs:
-            # Такого стиха в книге НЕТ. Файл льём (архив полон), но связь не выдумываем:
-            # ref гасим, вид — «вне издания». Ложная ссылка на несуществующий стих —
-            # это фабрикация (ЗКН-БТ001), и человек бы её не заметил.
-            n_extra += 1
-            print(f"дорожка вне издания: {orig} → {ref} (в книге такого стиха нет)")
-            kind, ref = "extra", None
+        ref = None
+        covers: list[str] = []
+        if kind == "verse":
+            got = nums(spec)
+            # Дорожка связывается со стихом книги, только если ПОЛНОСТЬЮ его покрывает.
+            covers = [r for r, ns in bmap.get(ch, []) if ns and ns <= got]
+            if covers:
+                ref = covers[0]
+            else:
+                # Такого стиха в книге НЕТ (или дорожка покрывает его лишь частью).
+                # Файл льём — архив полон, — но связь не выдумываем: это была бы
+                # фабрикация (ЗКН-БТ001), и человек бы её не заметил.
+                n_extra += 1
+                print(f"вне издания: {orig} (в книге такого разбиения нет)")
+                kind = "extra"
         row = {"file": f"{ident}/{remote}", "canto": canto, "chapter": ch, "seq": seq,
-               "kind": kind, "ref": ref, "title": track_title(kind, spec, orig, note),
+               "kind": kind, "ref": ref,
+               "covers": json.dumps(covers, ensure_ascii=False) if covers else None,
+               "title": track_title(kind, spec, orig, note),
                "duration": dur, "src": f"/audio/{ident}/{remote}"}
         playlist.append({"file": remote, "title": row["title"], "ref": ref, "orig": orig})
 

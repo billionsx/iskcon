@@ -524,6 +524,10 @@ interface AudioTrack {
   groupLabel?: string;    // ШБ: «Глава 14»
   chapterTitle?: string;  // ШБ: «Молитвы Господа Брахмы» — название главы для подписи плеера
   ref?: string | null;    // ШБ: стих дорожки («ШБ 10.14.21-22»)
+  covers?: string[];      // ШБ: ВСЕ стихи книги, которые дорожка покрывает. Нарезка канала и
+                          // издания расходится: аудио «18-20» = книга «18-19» + «20» — один
+                          // файл на ДВА стиха. Иначе «Слушать» со стиха 20 сказал бы «скоро»,
+                          // хотя звук есть.
   artist?: string;        // kirtan only: исполнитель (отображаемое имя)
   album?: string;         // kirtan only: название альбома
 }
@@ -901,6 +905,14 @@ const SB_CANTO_NAMES: Record<number, string> = {
   10: "Summum Bonum", 11: "Всеобщая история", 12: "Век деградации",
 };
 
+function parseCovers(raw: string | null): string[] | undefined {
+  if (!raw) return undefined;
+  try {
+    const a = JSON.parse(raw);
+    return Array.isArray(a) && a.length ? (a as string[]) : undefined;
+  } catch { return undefined; }
+}
+
 function sbCantoList(avail: { canto: number; n: number }[]) {
   return avail.map((a) => ({
     canto: a.canto,
@@ -950,9 +962,9 @@ async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null
   for (const r of ch.results ?? []) titles.set(r.n, r.t);
 
   const rows = await env.DB.prepare(
-    `SELECT chapter, seq, kind, ref, title, duration, src
+    `SELECT chapter, seq, kind, ref, covers, title, duration, src
      FROM sb_audio WHERE canto=? ORDER BY chapter, seq`
-  ).bind(canto).all<{ chapter: number; seq: number; kind: string; ref: string | null; title: string; duration: number | null; src: string }>();
+  ).bind(canto).all<{ chapter: number; seq: number; kind: string; ref: string | null; covers: string | null; title: string; duration: number | null; src: string }>();
 
   const tracks: AudioTrack[] = (rows.results ?? []).map((r, i) => ({
     // Передняя материя песни (chapter=0) — вступление: главы у неё нет, читалку не дёргает.
@@ -970,6 +982,7 @@ async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null
     groupLabel: r.chapter ? `Глава ${r.chapter}` : "Вступление",
     chapterTitle: titles.get(r.chapter) || undefined,  // «Вопросы мудрецов» — в подпись плеера
     ref: r.ref,
+    covers: parseCovers(r.covers),
   }));
 
   return json({

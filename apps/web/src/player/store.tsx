@@ -37,6 +37,7 @@ export interface Track {
   groupLabel?: string;  // ШБ: «Глава 14»
   chapterTitle?: string; // ШБ: «Молитвы Господа Брахмы»
   ref?: string | null;  // ШБ: стих дорожки («ШБ 10.14.21-22»)
+  covers?: string[];    // ШБ: ВСЕ стихи книги, покрытые дорожкой (аудио «18-20» = книга «18-19» + «20»)
   artist?: string;      // киртан: исполнитель
   album?: string;       // киртан: альбом
 }
@@ -108,6 +109,13 @@ export function usePlayer(): PlayerApi {
 }
 
 export const PLAYER_RATES = [1, 1.25, 1.5, 2];
+
+/** Покрывает ли дорожка этот стих книги. Нарезка канала и издания расходится: аудио «18-20»
+ *  = книга «18-19» + «20». Искать по одному `ref` — значит сказать «скоро» на стих 20,
+ *  хотя звук есть. */
+export function trackCoversRef(t: Track, ref: string): boolean {
+  return t.ref === ref || !!t.covers?.includes(ref);
+}
 
 /**
  * Подпись дорожки книги — ОДНА на все поверхности плеера (мини-плеер, Now Playing,
@@ -341,8 +349,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     let i = 0;
     if (p.index != null) {
       i = p.index >= 0 && p.index < list.length ? p.index : 0;
-    } else if (p.ref && list.some((t) => t.ref === p.ref)) {
-      i = list.findIndex((t) => t.ref === p.ref);   // точное попадание в стих (ШБ)
+    } else if (p.ref && list.some((t) => trackCoversRef(t, p.ref!))) {
+      i = list.findIndex((t) => trackCoversRef(t, p.ref!));   // точное попадание в стих (ШБ)
     } else if (p.chapter != null) {
       const f = list.findIndex((t) => t.chapter === p.chapter && (p.lila == null || t.lila === p.lila));
       i = f >= 0 ? f : 0;

@@ -1646,7 +1646,8 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
     if (!player.active || player.book !== work || !verses || verses.length === 0) return;
     const tref = player.track?.ref ?? null;
     const single = !!chapters && chapters.length === 1;
-    const v = tref ? verses.find((x) => x.ref === tref) : (single ? verses[player.index] : undefined);
+    const cov = player.track?.covers ?? (tref ? [tref] : []);
+    const v = cov.length ? verses.find((x) => cov.includes(x.ref)) : (single ? verses[player.index] : undefined);
     if (!v) return;
     const key = v.ref;
     if (lastAudioIdxRef.current === key) return;
