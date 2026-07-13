@@ -190,22 +190,62 @@ def main():
         print("  текст:     %s…" % u["text"][:120])
         return
 
-    # ЗКН-Р002: недеструктивно — INSERT OR REPLACE, без сноса таблицы
-    # ЗКН-Ф013: 5 полей × 20 строк = 100 переменных — на пределе, берём 15
-    B = 15
-    done = 0
-    for i in range(0, len(units), B):
-        chunk = units[i:i + B]
-        ph = ",".join(["(?,?,?,?,?)"] * len(chunk))
+    # ── СХЕМА: editions → divisions → verses → verse_texts ─────────────────
+    #
+    # `verses` — СКЕЛЕТ (id, раздел, порядок). Текст живёт в `verse_texts`,
+    # связка по `verse_id` + `edition_id`. Первый заход я лил translation прямо
+    # в `verses` — там таких полей НЕТ, и заливка упала.
+    #
+    # ТЕМА становится РАЗДЕЛОМ: «Живопись», «Общество преданных», «Проповедь на
+    # Западе». Наставление — единицей внутри неё.
+
+    ED = WORK + "-ru"
+    d1("INSERT OR REPLACE INTO editions (id, work_id, lang, title) VALUES (?,?,?,?)",
+       [ED, WORK, "ru", "Прабхупада-шикшамрита"])
+
+    # разделы = темы, в порядке первого появления
+    topics, seen = [], set()
+    for u in units:
+        t = u["topic"] or "Без темы"
+        if t not in seen:
+            seen.add(t); topics.append(t)
+    tid = {t: "%s.%d" % (WORK, i) for i, t in enumerate(topics, 1)}
+
+    # ЗКН-Ф013: 4 поля × 20 = 80 переменных
+    for i in range(0, len(topics), 20):
+        ch = topics[i:i + 20]
+        ph = ",".join(["(?,?,?,?)"] * len(ch))
         prm = []
-        for n, u in enumerate(chunk, start=i + 1):
-            ref = "%s %d" % (u["date"], n)
-            sig = " · ".join(x for x in (u["topic"], u["sub"], u["attr"]) if x)
-            prm += [WORK, ref, n, u["text"], sig]
-        d1("INSERT OR REPLACE INTO verses (work_id, ref, ord, translation, purport) "
-           "VALUES " + ph, prm)
+        for t in ch:
+            prm += [tid[t], WORK, json.dumps({"ru": t}, ensure_ascii=False),
+                    str(topics.index(t) + 1)]
+        d1("INSERT OR REPLACE INTO divisions (id, work_id, title, ordinal) VALUES " + ph, prm)
+    print("разделов (тем): %d" % len(topics))
+
+    # ЗКН-Р002: недеструктивно — INSERT OR REPLACE, без сноса таблицы
+    # ЗКН-Ф013: verses 5 полей × 18 = 90; verse_texts 4 × 20 = 80
+    per_topic = {}
+    done = 0
+    for i in range(0, len(units), 18):
+        chunk = units[i:i + 18]
+        vph, vprm, tph, tprm = [], [], [], []
+        for u in chunk:
+            t = u["topic"] or "Без темы"
+            per_topic[t] = per_topic.get(t, 0) + 1
+            n = per_topic[t]
+            vid = "%s.%d" % (tid[t], n)
+            ref = "%s · %s" % (t, u["date"])
+            vph.append("(?,?,?,?,?)")
+            vprm += [vid, WORK, tid[t], ref, n]
+            tph.append("(?,?,?,?)")
+            tprm += [vid, ED, u["text"], u["attr"] or None]
+        d1("INSERT OR REPLACE INTO verses (id, work_id, division_id, ref, ordinal) "
+           "VALUES " + ",".join(vph), vprm)
+        d1("INSERT OR REPLACE INTO verse_texts (verse_id, edition_id, translation, purport) "
+           "VALUES " + ",".join(tph), tprm)
         done += len(chunk)
-        print("  залито %d / %d" % (done, len(units)))
+        if done % 900 == 0 or done == len(units):
+            print("  залито %d / %d" % (done, len(units)))
 
     d1("UPDATE book_catalog SET readable = 1 WHERE id = ?", [WORK])
     print("книга открыта для чтения")
