@@ -16,7 +16,7 @@ import { api } from "./api";
 import { usePlayer } from "./player/store";
 import { BhajanCard } from "./BhajanCard";
 import {
-  kirtanArtists, kirtanAlbums, albumCover, artistPlayableCount,
+  kirtanArtists, kirtanAlbums, albumsByArtist, albumCover, artistPlayableCount,
   artistBySlug,
   TYPE_LABEL,
   type KirtanArtist, type KirtanAlbum,
@@ -74,7 +74,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
   const nq = norm(trimmed);
   const hitArtists = useMemo(
-    () => (!searching ? [] : kirtanArtists().filter((a) => norm(`${a.name} ${a.full ?? ""} ${a.role} ${a.era ?? ""} ${a.origin ?? ""}`).includes(nq))),
+    () => (!searching ? [] : kirtanArtists().filter((a) => albumsByArtist(a.slug).length > 0 && norm(`${a.name} ${a.full ?? ""} ${a.role} ${a.era ?? ""} ${a.origin ?? ""}`).includes(nq))),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [nq, searching, kv],
   );
@@ -87,6 +87,20 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   /* ЗКН-Д002: строка исполнителя и строка альбома рисуются В ОДНОМ месте —
      и в разделах, и в результатах поиска. Копия разъедется. */
   const LIST_UL: React.CSSProperties = { margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" };
+
+  /* ЗКН-Н018 — ВИТРИНА ПОКАЗЫВАЕТ ТО, ЧТО МОЖНО ОТКРЫТЬ.
+   *
+   * В реестре 143 киртания — их имена приехали из канала. Но записи есть пока
+   * не у всех: заливка 36 ГБ на archive.org идёт порциями. Показать все 143 —
+   * значит показать 140 тупиков: человек тыкает имя и попадает в пустоту.
+   *
+   * Показываем ТЕХ, У КОГО ЕСТЬ ЗАПИСИ. Заливка добивает исполнителя — он
+   * появляется в списке сам. Список растёт на глазах, а не врёт заранее. */
+  const withMusic = useMemo(
+    () => kirtanArtists().filter((a) => albumsByArtist(a.slug).length > 0),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [kv],
+  );
 
   const artistRow = (a: KirtanArtist, isLast: boolean) => {
     const cnt = artistPlayableCount(a.slug);
@@ -160,7 +174,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
           Витрина = шапка · поиск · исполнители. Всё остальное — за поиском. */}
       <section style={{ marginTop: SECTION_GAP }}>
         <ul style={LIST_UL}>
-          {kirtanArtists().map((a, i) => artistRow(a, i === kirtanArtists().length - 1))}
+          {withMusic.map((a, i) => artistRow(a, i === withMusic.length - 1))}
         </ul>
       </section>
 
