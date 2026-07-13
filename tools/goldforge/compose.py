@@ -316,8 +316,9 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
 
     # Книга, чей ГЕРОЙ — он сам: там пустых упоминаний не бывает, там житие.
     for f in F:
-        if (f["ch"] == "k1-books-app" and f.get("role") == "упоминание"
-                and WORKS.get(f["src"], {}).get("about") == hero):
+        if (f["ch"] == "k1-books-app"
+                and WORKS.get(f["src"], {}).get("about") == hero
+                and f.get("role") in ("упоминание", "качество", "перечисление")):
             f["role"] = "актор"
 
     def pick(ch, kind=None, role=None):
