@@ -80,6 +80,24 @@ def actual_level(lid: str) -> tuple[int, str]:
         if "ЗКН-Пл011" in t:
             return 5, "гейт данных (data-audit.py)"
 
+    # Ц007 — храповик долга в данных: поле `baseline` в проверках.
+    # Пл013 — автоматизм это механизм: шаг «Самодокат жив?» в sb-verify.
+    if lid == "ЗКН-Пл013":
+        w = ROOT / ".github" / "workflows" / "sb-verify.yml"
+        if w.exists() and "Самодокат жив" in w.read_text(encoding="utf-8"):
+            return 5, "шаг «Самодокат жив?» (sb-verify.yml)"
+
+    if lid == "ЗКН-Ц007":
+        t = (ROOT / "tools" / "data-audit.py").read_text(encoding="utf-8")
+        if '"baseline"' in t and 'c.get("baseline"' in t:
+            return 5, "храповик долга (data-audit.py · baseline)"
+
+    # Сд005 — одна вечная форма, один человек.
+    if lid == "ЗКН-Сд005":
+        t = (ROOT / "tools" / "data-audit.py").read_text(encoding="utf-8")
+        if "ЗКН-Сд005" in t:
+            return 5, "гейт данных (data-audit.py)"
+
     if lid == "ЗКН-Ц006":
         t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
         if "is_comment" in t:
