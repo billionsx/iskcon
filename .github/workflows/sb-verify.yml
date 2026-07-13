@@ -9,6 +9,7 @@ on:
     paths:
       - ".github/workflows/sb-verify.yml"
       - "tools/tg-archive/sb_verify.py"
+      - "tools/tg-archive/sb_gaps.py"
 
 permissions:
   contents: write
