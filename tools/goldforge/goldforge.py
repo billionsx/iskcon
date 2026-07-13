@@ -221,7 +221,10 @@ def cmd_compose(a):
     keep = prev_card(a.entity_id) if a.keep_old else None
     tiers = ("strong",) if not a.candidates else ("strong", "candidate")
     sel = dict(dos, findings=[f for f in dos["findings"] if f["tier"] in tiers])
-    book = compose.build(sel, hero, keep=keep)
+    book, per_work, size = compose.build_fit(sel, hero, keep=keep)
+    if per_work < compose.MAX_PER_WORK:
+        print("  вес: потолок по книге снижен до %d — карточка обязана влезать (%s симв.)"
+              % (per_work, format(size, ",").replace(",", " ")))
     ev = {compose.ref_of(f): f["text"] for f in sel["findings"]}
     if not a.no_prose:
         _, msg = prose.polish(book, hero["full"], ev)
@@ -341,6 +344,18 @@ def cmd_forge(a):
     return cmd_publish(a)
 
 
+def cmd_queue(a):
+    """Очередь ковки: самые бедные карточки — первыми."""
+    rows = d1.query(
+        "SELECT e.id, coalesce(length(p.longform),0) AS n FROM entities e "
+        "LEFT JOIN entity_profiles p ON p.entity_id=e.id "
+        "WHERE e.type='personality' AND e.status='published' "
+        "ORDER BY n ASC, e.id LIMIT ?1", [int(a.only or 0) or 730]) or []
+    ids = [r["id"] for r in rows]
+    print(",".join(ids))
+    print("\n# личностей в очереди: %d" % len(ids), file=sys.stderr)
+
+
 def cmd_sql(a):
     doc = load_passport(a.entity_id)
     print("-- k1\nSELECT v.ref FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id "
@@ -355,7 +370,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     def common(p):
-        p.add_argument("entity_id")
+        p.add_argument("entity_id", nargs="?", default="")
         p.add_argument("--name", action="append")
         p.add_argument("--form", action="append")
         p.add_argument("--exclude", action="append")
@@ -378,6 +393,7 @@ def main():
                      ("audit", lambda a: cmd_gate(a)[0]),
                      ("publish", cmd_publish),
                      ("forge", cmd_forge),
+                     ("queue", lambda a: cmd_queue(a) and 0),
                      ("sql", lambda a: cmd_sql(a) and 0)):
         common(sub.add_parser(name)).set_defaults(func=fn)
     a = ap.parse_args()

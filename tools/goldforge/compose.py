@@ -37,6 +37,7 @@ MAX_QUOTE = 1500            # «Прабхупада-шикшамрита» де
 NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
 MAX_PER_SECTION = 14        # глава редко даёт больше — а если даёт, это уже не глава
 MAX_PER_WORK = 180          # книга-о-герое не переписывается в карточку, а линкуется
+MAX_CARD = 600_000          # воркер отдаёт longform ЦЕЛИКОМ: карточка обязана влезать
 TRANSLIT_MAP = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh",
     "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
@@ -158,6 +159,9 @@ def section(h, p, quotes=None, cite=None, see=None, hero=None):
 def verified_ids(cands):
     """byId обязан существовать в `entities` — иначе ссылка ведёт в никуда."""
     cands = sorted({c for c in cands if c})
+    ck = ("ids", tuple(cands))
+    if ck in _CACHE:
+        return _CACHE[ck]
     if not cands or not d1.available():
         return set()
     ok = set()
@@ -165,6 +169,7 @@ def verified_ids(cands):
         inlist = ",".join("'" + c.replace("'", "''") + "'" for c in chunk)
         for r in (d1.query("SELECT id FROM entities WHERE id IN (%s)" % inlist) or []):
             ok.add(r["id"])
+    _CACHE[ck] = ok
     return ok
 
 
@@ -193,6 +198,24 @@ def own_works(hero):
                     [hero]) or []
 
 
+_CACHE = {}
+
+
+def build_fit(dossier, hero_names, keep=None):
+    """Собрать книгу, ужимая потолок по книгам, пока карточка не влезет.
+
+    У Шрилы Прабхупады «Лиламрита» — 8 585 стихов, у Гауранги Махапрабху три
+    полных жизнеописания. Без этого карточка вырастет в мегабайты, и страница,
+    которая грузит longform целиком, встанет колом на телефоне.
+    """
+    for per_work in (MAX_PER_WORK, 120, 80, 50, 30, 20):
+        book = build(dossier, hero_names, keep=keep, per_work=per_work)
+        size = len(json.dumps(book, ensure_ascii=False))
+        if size <= MAX_CARD:
+            return book, per_work, size
+    return book, 20, size
+
+
 def cap(pool, per_work=MAX_PER_WORK):
     """Отобрать самое плотное по книге. Остальное — в бриф, не в мусор."""
     by_work, out, cut = {}, [], {}
@@ -206,7 +229,7 @@ def cap(pool, per_work=MAX_PER_WORK):
     return out, cut
 
 
-def build(dossier, hero_names, keep=None):
+def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     """Досье → книга. Ничего не выдумывает: всё, что попадает в текст, лежит в досье."""
     hero = dossier["entity_id"]
     full = hero_names["full"]
@@ -234,8 +257,8 @@ def build(dossier, hero_names, keep=None):
     archive = by_ch("k2-archive")
     online = by_ch("k3-books-web", "k5-bhajans-web", "k6-wikipedia", "k7-iskcon-web")
 
-    verses, cut_v = cap(verses)
-    purports, cut_p = cap(purports)
+    verses, cut_v = cap(verses, per_work)
+    purports, cut_p = cap(purports, per_work)
     tabs = []
 
     # ── ТАБ 0 · ВКЛАД В ГАУРАНГА ЛИЛУ (крит. 10 — ВСЕГДА первый) ──────────
@@ -453,8 +476,10 @@ def _walk_quotes(book):
 def work_slugs():
     if not d1.available():
         return {}
-    return {r["id"]: r["slug"] for r in (d1.query(
-        "SELECT id, slug FROM book_catalog WHERE readable=1 AND slug IS NOT NULL") or [])}
+    if "slugs" not in _CACHE:
+        _CACHE["slugs"] = {r["id"]: r["slug"] for r in (d1.query(
+            "SELECT id, slug FROM book_catalog WHERE readable=1 AND slug IS NOT NULL") or [])}
+    return _CACHE["slugs"]
 
 
 def fix_to(to, slugmap):
