@@ -125,6 +125,15 @@ def cmd_passport(a):
         sys.exit("нет имён: ни в entity_names, ни в --name")
     pp = PASSPORTS / ("%s.json" % a.entity_id)
     old = json.loads(pp.read_text(encoding="utf-8")) if pp.exists() else {}
+    # ПАСПОРТ КУРАТОРА СИЛЬНЕЕ АВТОМАТИКИ. У Господа автоформы дают основу
+    # «кришн» — она стоит в десятках тысяч стихов как имя Самого Кришны.
+    # У Шрилы Прабхупады «Прабхупада» — ТИТУЛ, его носил и его гуру. Такие
+    # паспорта пишутся рукой и не пересобираются.
+    if old.get("curated"):
+        print("паспорт: %s (КУРИРОВАННЫЙ — не пересобираю)" % pp)
+        print("  полное имя: «%s» · точных форм %d · основ %d"
+              % (old["full"], len(old["strict"]), len(old["forms"])))
+        return old
     short, full = full_name(a.entity_id, names)
     strict = sorted({s for n in names if re.search(r"[А-Яа-я]", n) and len(n.split()) > 1
                      for s in declensions(n)})

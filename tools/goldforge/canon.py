@@ -102,30 +102,59 @@ def clean_card_text(s):
     return s.strip()
 
 
+CASES = ("ой", "ою", "ы", "и", "е", "у", "а")
+
+
+def _title_of(short, full):
+    """Титул и его место. «Джива Госвами» — сзади. «Шрила Прабхупада» — СПЕРЕДИ.
+
+    Прежний код резал строку по длине краткого имени и на Прабхупаде получал
+    «дупада»: он молча считал, что титул всегда идёт после имени.
+    """
+    if full.startswith(short):
+        return full[len(short):].strip(), "after"
+    if full.endswith(short):
+        return full[:-len(short)].strip(), "before"
+    return "", ""
+
+
+def _decline(title, word):
+    """«Шрила» + «Прабхупады» → «Шрилы Прабхупады». Титул склоняется вместе с именем."""
+    if not title.endswith("а"):
+        return title
+    for end in CASES:
+        if word.endswith(end):
+            return title[:-1] + end
+    return title
+
+
 def enforce_hero(s, short, full):
     """ЗКН-П003 крит.11 — имя героя в авторских полях ВСЕГДА полное.
 
-    «Джива» → «Джива Госвами» во всех падежах. Не трогаем: составные через
-    дефис («Виласа-манджари»), уже полную форму, и слова, где основа —
-    часть другого имени.
+    «Джива» → «Джива Госвами», «Прабхупада» → «Шрила Прабхупада» — во всех
+    падежах. Не трогаем составные через дефис («Виласа-манджари») и уже полную
+    форму.
     """
     if not s or not short:
         return s
-    # падежные окончания русского имени: Джив|а,ы,е,у,ой
     stem = short.rstrip("аяыиеуой")
     if len(stem) < 4:
         return s
-    title = full[len(short):].strip()               # «Госвами», «Тхакур», …
+    title, where = _title_of(short, full)
     if not title:
         return s
     rx = re.compile(r"(?<![А-Яа-я-])(%s[а-я]{0,3})(?![А-Яа-я-])" % re.escape(stem))
 
     def sub(m):
         word = m.group(1)
-        tail = s[m.end():m.end() + len(title) + 2]
-        if tail.lstrip().startswith(title):         # уже полное — не трогаем
+        if where == "after":
+            if s[m.end():].lstrip().startswith(title):
+                return word
+            return "%s %s" % (word, title)
+        t = _decline(title, word)
+        if s[:m.start()].rstrip().endswith(t):
             return word
-        return "%s %s" % (word, title)
+        return "%s %s" % (t, word)
     return rx.sub(sub, s)
 
 
@@ -148,11 +177,13 @@ def prose_violations(s, hero_short=None, hero_full=None):
         bad.append("ЗКН-П003 прямой апостроф в прозе")
     if hero_short and hero_full:
         stem = hero_short.rstrip("аяыиеуой")
-        if len(stem) >= 4:
-            title = hero_full[len(hero_short):].strip()
+        title, where = _title_of(hero_short, hero_full)
+        if len(stem) >= 4 and title:
             for m in re.finditer(r"(?<![А-Яа-я-])%s[а-я]{0,3}(?![А-Яа-я-])" % re.escape(stem), s):
-                tail = s[m.end():m.end() + len(title) + 2].lstrip()
-                if title and not tail.startswith(title):
-                    bad.append("ЗКН-П003/11 голое имя героя «%s»" % m.group(0))
+                word = m.group(0)
+                ok = (s[m.end():].lstrip().startswith(title) if where == "after"
+                      else s[:m.start()].rstrip().endswith(_decline(title, word)))
+                if not ok:
+                    bad.append("ЗКН-П003/11 голое имя героя «%s»" % word)
                     break
     return bad
