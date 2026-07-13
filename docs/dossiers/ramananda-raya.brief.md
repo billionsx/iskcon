@@ -3,7 +3,7 @@
 Материал, который конвейер НЕ внёс в книгу автоматически.
 Он не выброшен (ЗКН-П009) — он ждёт решения человека.
 
-## Кандидаты (голое имя — нужен взгляд куратора): 296
+## Кандидаты (голое имя — нужен взгляд куратора): 465
 
 - **ЧБ Ади 1.170** · `k1-books-app` — В Антья-кханде Господь дарует спасение Шри Рамананде Раю и совершает игры в Матхуре.
 - **ЧЧ Антья 5.26** · `k1-books-app` — Каждый день он обучал этих девадаси танцу. Кто среди ничтожных живых существ, чьи умы всегда поглощены материальными чувственными наслаждениями, может понять состояние ум
@@ -106,14 +106,35 @@
 - **ЧЧ Антья 2.135** · `k1-books-app` — Парамананда Пури сказал: «Мой дорогой Господь Чайтанья, Ты независимый Господь, Личность Бога. Ты можешь поступать так, как соизволишь. Кто может указывать Тебе?» | 
 - **ЧЧ Антья 2.137** · `k1-books-app` — Сказав это, Парамананда Пури отправился к себе. После этого все преданные пришли к Харидасу-младшему. | 
 
-## Омонимы (нарицательное, в книгу не идут): 9
+## Омонимы (нарицательное, в книгу не идут): 30
 
 - ЧЧ Мадхья 8.56 · `k1-books-app`
 - ЧЧ Антья 4.108-110 · `k1-books-app`
 - ЧЧ Антья 10.140-141 · `k1-books-app`
+- ЧБ Мадхья 6.149 · `k1-books-app`
+- ЧБ Мадхья 16.103 · `k1-books-app`
 - ЧБ Мадхья 17.112 · `k1-books-app`
+- ЧБ Мадхья 19.155 · `k1-books-app`
+- ЧБ Мадхья 23.498 · `k1-books-app`
+- ЧБ Мадхья 24.56 · `k1-books-app`
+- ЧБ Антья 2.3 · `k1-books-app`
+- ЧБ Антья 5.34 · `k1-books-app`
+- ЧБ Антья 5.286 · `k1-books-app`
+- ЧБ Антья 10.37 · `k1-books-app`
+- Bhakti-Ratnakara.excerpts.EN.txt, offset 46909 · `k2-archive`
 - VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 36676 · `k2-archive`
 - VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 45484 · `k2-archive`
 - VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 49241 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 2709142 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 3646866 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 3992159 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 4001775 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 4061899 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 4083835 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 4915207 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 4972113 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 5060724 · `k2-archive`
+- VrindavanaDasa_Chaitanya-Bhagavata.RU.txt, offset 5438861 · `k2-archive`
+- Lives-of-the-Saints.EN.txt, offset 667548 · `k2-archive`
 - Шри Чайтанья-чаритамрита Антйа-лӣла̄ 9.122 · `k3-books-web`
 - Prataparudra Deva · `k6-wikipedia`
