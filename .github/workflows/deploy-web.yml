@@ -42,6 +42,14 @@ jobs:
           EOF
           echo "PDF_CACHE_REV = $REV"
 
+      # ── ЗКН-Ф021: ШТАМП СБОРКИ. Гейт ниже ищет ЭТОТ SHA в теле живого бандла ──
+      - name: Штамп сборки (SHA коммита в бандл)
+        run: |
+          SHA=$(git rev-parse HEAD)
+          sed -i "s|export const BUILD_SHA = \".*\";|export const BUILD_SHA = \"$SHA\";|" apps/web/src/buildStamp.ts
+          echo "BUILD_SHA = $SHA"
+          grep BUILD_SHA apps/web/src/buildStamp.ts | tail -1
+
       - name: Build site
         working-directory: apps/web
         run: bun run build
@@ -154,12 +162,40 @@ jobs:
           ACCT=d5cbe19470dc38599873eabfe148e6d1
           API=https://api.cloudflare.com/client/v4
           auth=(-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json")
+          # ЗКН-Ф021 — ПРОМОУШЕН ОБЯЗАН БЫТЬ ПОДТВЕРЖДЁН, А НЕ ОТПРАВЛЕН.
+          #
+          # Здесь было: взять «последнюю версию», послать POST — и ЖИТЬ ДАЛЬШЕ,
+          # не глядя на ответ (`set +e`, результат только в echo). Если промоушен
+          # не проходил, `wrangler deploy` оставлял НОВУЮ версию залитой, а боевой
+          # трафик — НА СТАРОЙ. Сайт молча отдавал вчерашний код, деплой рапортовал
+          # успех. Именно так две подряд правки не доехали до людей.
+          #
+          # Теперь: промоутим и ПЕРЕЧИТЫВАЕМ живой deployment. Не совпало — ОШИБКА.
           LATEST=$(curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/versions?per_page=1" "${auth[@]}" | jq -r '.result.items[0].id')
-          echo "latest version = $LATEST"
-          if [ -n "$LATEST" ] && [ "$LATEST" != "null" ]; then
-            RESP=$(curl -s -X POST "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments?force=true" "${auth[@]}" \
-              --data "{\"strategy\":\"percentage\",\"annotations\":{\"workers/triggered_by\":\"ci-promote\"},\"versions\":[{\"version_id\":\"$LATEST\",\"percentage\":100}]}")
-            echo "promote-to-100%: $(printf '%s' "$RESP" | jq -c '{success,errors}')"
+          echo "::notice::залита версия = $LATEST"
+          if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
+            echo "::error::не удалось прочитать id залитой версии — промоушен невозможен"; exit 1
+          fi
+          RESP=$(curl -s -X POST "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments?force=true" "${auth[@]}" \
+            --data "{\"strategy\":\"percentage\",\"annotations\":{\"workers/triggered_by\":\"ci-promote\"},\"versions\":[{\"version_id\":\"$LATEST\",\"percentage\":100}]}")
+          OK=$(printf '%s' "$RESP" | jq -r '.success')
+          echo "::notice::промоушен ответил success=$OK"
+          if [ "$OK" != "true" ]; then
+            echo "::error::промоушен версии ОТКЛОНЁН: $(printf '%s' "$RESP" | jq -c '.errors')"; exit 1
+          fi
+          # перечитать: какая версия РЕАЛЬНО держит 100% трафика
+          LIVE=$(curl -s "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments?per_page=1" "${auth[@]}" \
+                 | jq -r '.result.deployments[0].versions[0].version_id')
+          echo "::notice::боевая версия = $LIVE"
+          if [ "$LIVE" != "$LATEST" ]; then
+            echo "::error::трафик НЕ переведён: боевая версия $LIVE, а залита $LATEST. Прод остался бы на старом коде."; exit 1
+          fi
+          # Край Cloudflare кэширует HTML вопреки no-store (видели cf-cache-status: HIT).
+          # Сносим кэш зоны — иначе люди часами получают старую оболочку.
+          ZONE=$(curl -s "$API/zones?name=gaurangers.com" "${auth[@]}" | jq -r '.result[0].id')
+          if [ -n "$ZONE" ] && [ "$ZONE" != "null" ]; then
+            PR=$(curl -s -X POST "$API/zones/$ZONE/purge_cache" "${auth[@]}" --data '{"purge_everything":true}' | jq -r '.success')
+            echo "::notice::кэш зоны снесён: success=$PR"
           fi
 
       - name: Verify (workers.dev instant + apex), record into D1
@@ -183,43 +219,43 @@ jobs:
           bunx wrangler d1 execute iskcon-db --remote \
             --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'web apex',${acode:-0},'$(echo "$axr" | tr -d "\"'" | cut -c1-150)');" || true
 
-      - name: Подтвердить, что прод реально отдаёт свежую сборку (иначе ОШИБКА)
+      - name: Подтвердить, что прод реально отдаёт ЭТУ сборку (иначе ОШИБКА)
         working-directory: apps/web
         run: |
           set -e
-          # ЗКН-Ф021 — ГЕЙТ ПРОВЕРЯЕТ ТО, ЧТО ВИДИТ ЧЕЛОВЕК.
+          # ЗКН-Ф021 — ГЕЙТ ПРОВЕРЯЕТ СОДЕРЖИМОЕ, А НЕ ИМЯ ФАЙЛА.
           #
-          # Здесь стоял ТОЛЬКО путь-cache-buster (/__deploycheck-$RANDOM). Такого
-          # адреса нет ни в одном кеше — запрос всегда доходил до воркера, и гейт
-          # ВСЕГДА был зелёным. А человек ходит по РЕАЛЬНЫМ адресам (/, /books,
-          # /kirtans) — и получал старую оболочку из кеша «края». Гейт говорил
-          # «свежая сборка», пока люди неделями сидели на старом коде.
+          # Прошлая версия гейта сверяла ХЭШ: `/assets/index-<hash>.js` из свежей
+          # dist/index.html против того, что отдаёт сайт. Гейт был ЗЕЛЁНЫЙ дважды
+          # подряд — и оба раза на проде лежал СТАРЫЙ бандл. Две дыры:
           #
-          # Теперь проверяем и служебный путь (воркер жив), и НАСТОЯЩИЕ адреса.
-          EXPECTED=$(grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' dist/index.html | head -1)
-          echo "ожидаемый бандл (только что собран): $EXPECTED"
-          if [ -z "$EXPECTED" ]; then echo "::error::не удалось определить собранный бандл из dist/index.html"; exit 1; fi
+          #   1. ХЭШ СОВПАДАЕТ, если правка легла в лениво-подгружаемый чанк:
+          #      входной чанк не изменился → «ожидаемое» равно «живому» → зелено,
+          #      хотя не уехало НИЧЕГО.
+          #   2. ХЭШ НЕ ГОВОРИТ О СОДЕРЖИМОМ. Совпал — и ладно.
+          #
+          # Теперь ищем В ТЕЛЕ живого файла ШТАМП ЭТОГО КОММИТА. Случайно совпасть
+          # нечему. И проверяем ОБА входа: apex (через край) и workers.dev (мимо
+          # края) — расхождение между ними и есть «кэш держит старое».
+          SHA=$(git rev-parse HEAD)
+          echo "::notice::ищем на проде штамп $SHA"
 
-          check() {   # $1 — адрес, который откроет человек
-            curl -s --max-time 25 "https://gaurangers.com$1" \
-              | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1
+          probe() {   # $1 — база
+            local B=$(curl -s --max-time 25 "$1/" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
+            [ -z "$B" ] && { echo "NOBUNDLE"; return; }
+            curl -s --max-time 60 "$1$B" | grep -q "$SHA" && echo "OK $B" || echo "STALE $B"
           }
 
-          PATHS="/__deploycheck-$RANDOM /  /books /kirtans /dhama"
-          for i in 1 2 3 4 5 6; do
-            ALL_OK=1
-            for P in $PATHS; do
-              LIVE=$(check "$P")
-              if [ "$LIVE" != "$EXPECTED" ]; then
-                echo "попытка $i: $P отдаёт ${LIVE:-<пусто>} (ждём $EXPECTED)"
-                ALL_OK=0
-              fi
-            done
-            if [ "$ALL_OK" = "1" ]; then
-              echo "OK: боевой сайт отдаёт свежую сборку $EXPECTED на ВСЕХ проверенных адресах"
-              exit 0
-            fi
-            sleep 10
+          for i in 1 2 3 4 5 6 7 8; do
+            A=$(probe "https://gaurangers.com")
+            W=$(probe "https://iskcon-web.ceo-5cb.workers.dev")
+            echo "::notice::попытка $i · apex: $A · workers.dev: $W"
+            case "$A $W" in
+              OK*\ OK*) echo "::notice::прод отдаёт ЭТУ сборку ($SHA) и на домене, и на воркере"; exit 0;;
+            esac
+            sleep 12
           done
-          echo "::error::Прод НЕ отдаёт свежую сборку ($EXPECTED) на реальных адресах. Кеш «края» держит старую оболочку."
+          echo "::error::Прод НЕ отдаёт эту сборку ($SHA). apex: $A · workers.dev: $W"
+          echo "::error::Если workers.dev OK, а apex STALE — старую оболочку держит кэш края."
+          echo "::error::Если оба STALE — трафик не переведён на новую версию воркера."
           exit 1

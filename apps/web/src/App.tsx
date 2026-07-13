@@ -35,6 +35,7 @@ import { DarshanRings } from "./DarshanStories";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
 import { HubHeader, HubSearch, HubCount, HubEmpty } from "./ui/HubHeader";
 import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
+import { BUILD_SHA } from "./buildStamp";   // ЗКН-Ф021: штамп сборки — гейт ищет его на живом сайте
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
@@ -47,6 +48,15 @@ import { getDhama } from "./dhama/dhamas";
 import { ROUTES, url, canonicalPath, ROOTS } from "./routes";
 import { HUB_TOP } from "./ui/HubHeader";
 import { ErrorBoundary } from "./ui/ErrorBoundary";
+
+/* ЗКН-Ф021: штамп обязан ОСТАТЬСЯ в бандле. Просто объявленная константа
+ * вылетает при tree-shaking — гейт искал бы то, чего в файле нет. Пишем её в
+ * `window` и в data-атрибут: и в бандле цела, и видно с любого экрана
+ *   (в консоли: __IOL_BUILD__   ·   в DOM: <html data-build="…">). */
+if (typeof window !== "undefined") {
+  (window as unknown as Record<string, string>).__IOL_BUILD__ = BUILD_SHA;
+  document.documentElement.setAttribute("data-build", BUILD_SHA);
+}
 
 /* ═════════ ICONS — иконки приложения ═════════ */
 interface IconProps extends Omit<SVGProps<SVGSVGElement>, "width" | "height"> { size?: number; filled?: boolean; }
