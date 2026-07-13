@@ -55,7 +55,8 @@ TR = [
 
 def translit_ru(name: str) -> str:
     out = []
-    for word in fix_mojibake(name).split():
+    name = re.sub(r"^\s*(HH|HG|His Holiness|His Grace)\s+", "", fix_mojibake(name), flags=re.I)
+    for word in name.split():
         if re.search(r"[А-Яа-яЁё]", word):     # уже по-русски
             out.append(word)
             continue
@@ -96,6 +97,35 @@ def slugify(name: str) -> str:
     return re.sub(r"-{2,}", "-", s)[:48] or "artist"
 
 
+# ── ЯВНЫЕ СИНОНИМЫ. Транслитерация их не сводит: «Vijiana»/«Vijnana»,
+#    «Indradumna»/«Indradyumna», «Bringa»/«Bhrnga». Пишем руками — это канон,
+#    а не догадка. Ключ слева (как выходит из key_of) → ключ справа.
+ALIAS = {
+    "indraduna": "indradiuna",          # Indradumna → Indradyumna
+    "indradiuna": "indradiuna",
+    "bakti viiana": "bakti vinana",     # Bhakti Vijiana → Bhakti Vijnana
+    "bakti bringa govinda": "bakti brnga govinda",
+    "bakti bringa govind": "bakti brnga govinda",
+}
+
+# ── НЕ ИСПОЛНИТЕЛИ. Это названия песен и рубрик, просочившиеся в имя файла.
+NOT_ARTIST_KEYS = {
+    "ie anilo prema dhana", "gaurang", "x iagi", "sounds",
+}
+
+
+# ── ЗАЩИТА ОТ ЛОЖНОЙ ПРИВЯЗКИ.
+#
+# «Mukunda Prabhu» (киртания) автоматом привязался к герою «Мукунда Госвами»
+# (ачарья ИСККОН). Это РАЗНЫЕ ЛЮДИ. Односложный ключ («mukunda», «sulochana»,
+# «gauranga») совпадает у десятка человек — по нему связывать НЕЛЬЗЯ.
+#
+# Ложная привязка хуже отсутствующей: она врёт уверенно. Связываем только по
+# ключу из ДВУХ И БОЛЕЕ слов; односложные оставляем без героя и помечаем.
+def linkable(key: str) -> bool:
+    return len(key.split()) >= 2
+
+
 def cmd_match() -> int:
     roster = json.loads((HERE / "kirtans_roster.json").read_text(encoding="utf-8"))
     heroes = d1(
@@ -117,10 +147,10 @@ def cmd_match() -> int:
 
     out, linked, reviewed = [], 0, 0
     for a in roster["artists"]:
-        if a["n"] < 1:
+        if a["n"] < 1 or a["key"] in NOT_ARTIST_KEYS:
             continue
-        k = a["key"]
-        hero = by_key.get(k)
+        k = ALIAS.get(a["key"], a["key"])
+        hero = by_key.get(k) if linkable(k) else None
         # исполнитель уже есть в D1? тогда его slug и имя — главные (правка основателя)
         slug = by_ekey.get(k) or slugify(a["display"])
         cur = existing.get(slug)
