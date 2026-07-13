@@ -151,7 +151,7 @@
     362,
     363
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
@@ -510,8 +510,8 @@
     1148,
     1150
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "sarvatma",
@@ -578,11 +578,11 @@
     1734,
     1735
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
-   "slug": "hh-bhaktivaibhava-swami",
+   "slug": "bhaktivaibhava-swami",
    "name_ru": "Бхактивайбхава Свами",
    "name_channel": "HH Bhaktivaibhava Swami",
    "key": "bhaktivaibhav",
@@ -687,8 +687,8 @@
     549,
     550
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "sacinandana-swami",
@@ -775,8 +775,8 @@
     1751,
     1778
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "indradumna-swami",
@@ -814,8 +814,8 @@
     387,
     388
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "madhava",
@@ -882,8 +882,8 @@
     899,
     1769
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "adi-rasa-prabhu",
@@ -914,8 +914,8 @@
     45,
     46
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "thakur-haridas-prabhu",
@@ -946,8 +946,8 @@
     930,
     943
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "lokanath-swami-maharaj",
@@ -976,8 +976,8 @@
     415,
     416
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "chaitania-chandra-charan-prabhu",
@@ -1005,7 +1005,7 @@
     218,
     219
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
@@ -1032,8 +1032,8 @@
     1021,
     1732
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "ananda-vardhana-swami",
@@ -1058,8 +1058,8 @@
     166,
     1770
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "mukunda-prabhu",
@@ -1084,8 +1084,8 @@
     1767,
     1773
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "sulochana-prabhu",
@@ -1110,8 +1110,8 @@
     745,
     1777
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "bhaktisvarupa-damodara-goswami",
@@ -1135,8 +1135,8 @@
     203,
     204
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "bhakti-vijiana-goswami",
@@ -1159,8 +1159,8 @@
     192,
     193
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "acyuta-gopi-devi-dasi",
@@ -1182,8 +1182,8 @@
     11,
     12
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "purnachandra-das-goswami",
@@ -1204,8 +1204,8 @@
     511,
     1775
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "radha-govinda-prabhu",
@@ -1226,11 +1226,11 @@
     518,
     1078
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
-   "slug": "hg-bada-haridas-prabhu",
+   "slug": "bada-haridas-prabhu",
    "name_ru": "Бада Харидас",
    "name_channel": "HG Bada Haridas prabhu",
    "key": "bad haridas",
@@ -1268,8 +1268,8 @@
     928,
     1744
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "bhakti-charu-swami",
@@ -1289,7 +1289,7 @@
     891,
     892
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
@@ -1309,8 +1309,8 @@
     177,
     941
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "bhakti-tirtha-swami",
@@ -1329,7 +1329,7 @@
     182,
     183
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
@@ -1349,11 +1349,11 @@
     750,
     751
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
-   "slug": "hg-yadubara-prabhu",
+   "slug": "yadubara-prabhu",
    "name_ru": "Ядубара Прабху",
    "name_channel": "HG Yadubara prabhu",
    "key": "iadubar",
@@ -1389,11 +1389,11 @@
     935,
     936
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
-   "slug": "hh-prabhavisnu-swami",
+   "slug": "prabhavisnu-swami",
    "name_ru": "Прабхависну Свами",
    "name_channel": "HH Prabhavisnu Swami",
    "key": "prabhavisnu",
@@ -1429,8 +1429,8 @@
     1129,
     1131
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "jayapataka-swami",
@@ -1448,8 +1448,8 @@
     395,
     396
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "yamuna-devi-dasi",
@@ -1467,8 +1467,8 @@
     867,
     920
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "sundarangi-devi-dasi",
@@ -1486,8 +1486,8 @@
     1740,
     1752
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "akincana-krishna-das-babaji-maharaja",
@@ -1504,8 +1504,8 @@
     1000,
     1015
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "akshara-prabhu",
@@ -1522,8 +1522,8 @@
     154,
     155
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "je-anilo-prema-dhana",
@@ -1540,8 +1540,8 @@
     399,
     400
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "aditi-dukha",
@@ -1558,8 +1558,8 @@
     1096,
     1102
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "shishtakrit",
@@ -1576,8 +1576,8 @@
     1143,
     1145
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "gaura-vani",
@@ -1597,7 +1597,7 @@
    "needs_review": false
   },
   {
-   "slug": "hh-bhakti-bhrnga-govinda-swami",
+   "slug": "bhakti-bhrnga-govinda-swami",
    "name_ru": "Бхакти Бхрнга Говинда Свами Махарадж",
    "name_channel": "HH Bhakti Bhrnga Govinda Swami",
    "key": "bhakti bhrng govind",
@@ -1626,8 +1626,8 @@
     220,
     221
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "janardana-prabhu",
@@ -1642,8 +1642,8 @@
     390,
     391
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "premanjali-dd",
@@ -1658,8 +1658,8 @@
     502,
     503
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "rati-shekhar-prabhu",
@@ -1674,8 +1674,8 @@
     551,
     552
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "suhotra-swami",
@@ -1690,8 +1690,8 @@
     733,
     734
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "vrajendra-kumar-prabhu",
@@ -1706,8 +1706,8 @@
     861,
     862
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "nama-sankirtana-prabhu",
@@ -1722,8 +1722,8 @@
     902,
     903
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "kadamba-kanana-swami",
@@ -1738,8 +1738,8 @@
     911,
     912
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "krishna-keshava",
@@ -1754,56 +1754,8 @@
     974,
     1731
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-50-kirtan-premi-das-prabhu-kirtan-1-at-da",
-   "name_ru": "Киртан 50 Киртан Преми Дас Прабху Киртан 1 Ат Даллас",
-   "name_channel": "Kirtan 50 Kirtan Premi Das Prabhu Kirtan 1 at Dallas",
-   "key": "kirtan 50 kirtan premi kirtan 1 at dalas",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 2,
-   "gb": 0.26,
-   "msg_ids": [
-    983,
-    1733
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-premi-prabhu-s-kirtan-day-2-kirtan-rasa-2",
-   "name_ru": "Киртан Преми Прабху'с Киртан | Дай 2 | Киртан Раса 2024 | Дубай",
-   "name_channel": "Kirtan Premi Prabhu's Kirtan | Day 2 | Kirtan Rasa 2024 | Dubai",
-   "key": "kirtan premi s kirtan dai 2 kirtan ras 2024 dubai",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 2,
-   "gb": 0.26,
-   "msg_ids": [
-    987,
-    1737
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-m-sarvatma-prabhu-vechernii-kirtan-29-08-2016-",
-   "name_ru": "Е М Сарватма прабху вечерний киртан 29 08 2016 Бхакти Сангама",
-   "name_channel": "Е М Сарватма прабху вечерний киртан 29 08 2016 Бхакти Сангама",
-   "key": "e m sarvatm vecerni kirtan 29 08 2016 bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 2,
-   "gb": 0.22,
-   "msg_ids": [
-    997,
-    1167
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "indradyumna-swami",
@@ -1822,23 +1774,7 @@
    "needs_review": false
   },
   {
-   "slug": "e-m-sarvatma-prabhu-shri-nrisimha-29-08-2016-bha",
-   "name_ru": "Е М Сарватма прабху Шри Нрисимха 29 08 2016 Бхакти Сангама",
-   "name_channel": "Е М Сарватма прабху Шри Нрисимха 29 08 2016 Бхакти Сангама",
-   "key": "e m sarvatm nrisimh 29 08 2016 bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 2,
-   "gb": 0.03,
-   "msg_ids": [
-    1017,
-    1168
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "hg-acyuta-priya-prabhu",
+   "slug": "acyuta-priya-prabhu",
    "name_ru": "Ачюта Прия Дас",
    "name_channel": "HG Acyuta Priya prabhu",
    "key": "aciut pri",
@@ -1854,7 +1790,7 @@
    "needs_review": false
   },
   {
-   "slug": "hh-devamrita-swami",
+   "slug": "devamrita-swami",
    "name_ru": "Девамрита Свами",
    "name_channel": "HH Devamrita Swami",
    "key": "devamrit",
@@ -1882,8 +1818,8 @@
     1092,
     1156
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "pavana-prabhu",
@@ -1898,8 +1834,8 @@
     1139,
     1742
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "ananga-kishor-prabhu",
@@ -1913,8 +1849,8 @@
    "msg_ids": [
     167
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "gaurangi-devi-dasi",
@@ -1928,8 +1864,8 @@
    "msg_ids": [
     222
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "gopal-krishna-goswami-jiv-jago",
@@ -1943,8 +1879,8 @@
    "msg_ids": [
     223
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "jahnavi-harrison",
@@ -1973,38 +1909,8 @@
    "msg_ids": [
     589
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "srila-prabhupada-yamuna-dasi",
-   "name_ru": "Срила Прабхупада & Ямуна Даси",
-   "name_channel": "Srila Prabhupada & Yamuna Dasi",
-   "key": "prabhupad iamun",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.01,
-   "msg_ids": [
-    613
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "x-jagi-kirtan-parama-karuna-pre-festival-of-the-",
-   "name_ru": "Кс Джаги Киртан Парама Каруна @пре Фестивал Оф Тхе Холй Наме Киртанс",
-   "name_channel": "x Jagi Kirtan Parama Karuna @Pre Festival of the Holy Name Kirtans",
-   "key": "x iagi kirtan param karun pre festival of te holi name kirtans",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.06,
-   "msg_ids": [
-    868
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-tarana-prabhu",
@@ -2018,8 +1924,8 @@
    "msg_ids": [
     869
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-adharam-madhuram",
@@ -2033,8 +1939,8 @@
    "msg_ids": [
     870
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-chakrini",
@@ -2048,8 +1954,8 @@
    "msg_ids": [
     871
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-jai-sri-radheee",
@@ -2063,8 +1969,8 @@
    "msg_ids": [
     872
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-manah-shiksha-raghunath-das-goswami",
@@ -2078,8 +1984,8 @@
    "msg_ids": [
     874
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-prapannam-prabhu",
@@ -2093,8 +1999,8 @@
    "msg_ids": [
     875
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-radharani-kripa",
@@ -2108,8 +2014,8 @@
    "msg_ids": [
     876
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-sad-goswami-ashtaka",
@@ -2123,8 +2029,8 @@
    "msg_ids": [
     877
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-shikshashtaka",
@@ -2138,8 +2044,8 @@
    "msg_ids": [
     878
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-tears-dd",
@@ -2153,8 +2059,8 @@
    "msg_ids": [
     879
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-vraja-gopal-prabhu",
@@ -2168,8 +2074,8 @@
    "msg_ids": [
     880
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "x-vraja-kirtans",
@@ -2183,23 +2089,8 @@
    "msg_ids": [
     881
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "gour-krishna-hh-sacinandana-swami-amsterdam-kirt",
-   "name_ru": "Гоур Кришна & Хх Сачинандана Свами Амстердам Киртан Мела",
-   "name_channel": "Gour Krishna & HH Sacinandana Swami Amsterdam Kirtan Mela",
-   "key": "gaur krisn sacinandan amsterdam kirtan mel",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.08,
-   "msg_ids": [
-    901
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "shrila-prabhupada-mukunda-mala-stotra",
@@ -2213,23 +2104,8 @@
    "msg_ids": [
     904
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "ego-bozhestvennaya-milost-shrila-prabhupada-muku",
-   "name_ru": "Его Божественная Милость Шрила Прабхупада Мукунда мала стотра молитвы",
-   "name_channel": "Его Божественная Милость Шрила Прабхупада Мукунда мала стотра молитвы",
-   "key": "ego boiestvenai milost sril prabhupad mukund mal stotr molitvi",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.03,
-   "msg_ids": [
-    906
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "vatsala-prabhu",
@@ -2243,68 +2119,8 @@
    "msg_ids": [
     909
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "2023-12-04-bb-govinda-swami",
-   "name_ru": "2023.12.04 Бб Говинда Свами",
-   "name_channel": "2023.12.04 BB Govinda Swami",
-   "key": "2023 12 04 b govind",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.09,
-   "msg_ids": [
-    913
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "2023-12-03-bb-govinda-swami",
-   "name_ru": "2023.12.03 Бб Говинда Свами",
-   "name_channel": "2023.12.03 BB Govinda Swami",
-   "key": "2023 12 03 b govind",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.09,
-   "msg_ids": [
-    914
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "2023-12-02-bb-govinda-swami",
-   "name_ru": "2023.12.02 Бб Говинда Свами",
-   "name_channel": "2023.12.02 BB Govinda Swami",
-   "key": "2023 12 02 b govind",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.09,
-   "msg_ids": [
-    915
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "2023-12-01-bb-govinda-swami",
-   "name_ru": "2023.12.01 Бб Говинда Свами",
-   "name_channel": "2023.12.01 BB Govinda Swami",
-   "key": "2023 12 01 b govind",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.03,
-   "msg_ids": [
-    916
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "sundara-govinda-prabhu",
@@ -2318,23 +2134,8 @@
    "msg_ids": [
     917
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "the-name-gives-me-shelter-live",
-   "name_ru": "Тхе Наме Гивес Ме Шелтер (ливе)",
-   "name_channel": "The Name Gives Me Shelter (Live)",
-   "key": "te name gives me selter live",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.02,
-   "msg_ids": [
-    918
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "radha-krishna-pranama",
@@ -2348,23 +2149,8 @@
    "msg_ids": [
     919
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "radhe-govinda-special-acyuta-gopi-day-1-final-ki",
-   "name_ru": "Радхе Говинда Спечиал | Ачюта Гопи Дай 1 Финал Киртан |",
-   "name_channel": "Radhe Govinda Special | Acyuta Gopi Day 1 Final Kirtan |",
-   "key": "radhe govind special aciut gopi dai 1 final kirtan",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.07,
-   "msg_ids": [
-    921
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "nityananda-bhajan-band-gauranga-bolite-habe",
@@ -2378,8 +2164,8 @@
    "msg_ids": [
     922
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "mekhala-dasi-gauranga-bolite-habe",
@@ -2393,8 +2179,8 @@
    "msg_ids": [
     923
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "kishori-mohan-das-gauranga-bolite-habe",
@@ -2408,8 +2194,8 @@
    "msg_ids": [
     924
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "govardhan-gauranga-bolite-habe",
@@ -2423,53 +2209,8 @@
    "msg_ids": [
     925
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "shivarama-swami-saci-suta-prabhu",
-   "name_ru": "Шиварама Свами & Сачи Сута Прабху",
-   "name_channel": "Shivarama Swami & Saci Suta Prabhu",
-   "key": "sivaram saci sut",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.12,
-   "msg_ids": [
-    927
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "bitu-malik-kirtan-narada-kunda",
-   "name_ru": "Биту Малик – Киртан Нарада Кунда",
-   "name_channel": "Биту Малик – Киртан Нарада Кунда",
-   "key": "bitu malik kirtan narad kund",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.01,
-   "msg_ids": [
-    929
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "amala-harinam-nadiya-mani",
-   "name_ru": "Амала Харинам & Надия Мани",
-   "name_channel": "Amala Harinam & Nadiya Mani",
-   "key": "amal harinam nadi mani",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.1,
-   "msg_ids": [
-    942
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "parama-karuna",
@@ -2483,23 +2224,8 @@
    "msg_ids": [
     949
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "chakrini-hey-gopinath-radhadesh-mellows-11",
-   "name_ru": "Чакрини Хей Гопинатх (радхадеш Мелловс 11)",
-   "name_channel": "Chakrini Hey Gopinath (Radhadesh Mellows 11)",
-   "key": "cakrini hei gopinat radhades melovs 1",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.02,
-   "msg_ids": [
-    971
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "amala-harinam-prabhu-gaura",
@@ -2513,8 +2239,8 @@
    "msg_ids": [
     981
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "madhurika-devi-dasi",
@@ -2528,83 +2254,8 @@
    "msg_ids": [
     982
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-premi-prabhu-final-kirtan-day-2-kirtan-ra",
-   "name_ru": "Киртан Преми Прабху Финал Киртан | Дай 2 | Киртан Раса",
-   "name_channel": "Kirtan Premi Prabhu Final Kirtan | Day 2 | Kirtan Rasa",
-   "key": "kirtan premi final kirtan dai 2 kirtan ras",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.22,
-   "msg_ids": [
-    984
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-premi-prabhu-s-final-kirtan-day-1-kirtan-",
-   "name_ru": "Киртан Преми Прабху'с Финал Киртан | Дай 1 | Киртан Раса Дубай",
-   "name_channel": "Kirtan Premi Prabhu's Final Kirtan | Day 1 | Kirtan Rasa Dubai",
-   "key": "kirtan premi s final kirtan dai 1 kirtan ras dubai",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.19,
-   "msg_ids": [
-    985
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-premi-prabhu-s-kirtan-day-2-kirtan-rasa-2",
-   "name_ru": "Киртан Преми Прабху'с Киртан | Дай 2 | Киртан Раса 2023 | Дубай",
-   "name_channel": "Kirtan Premi Prabhu's Kirtan | Day 2 | Kirtan Rasa 2023 | Dubai",
-   "key": "kirtan premi s kirtan dai 2 kirtan ras 2023 dubai",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.13,
-   "msg_ids": [
-    986
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-premi-prabhu-s-kirtan-day-3-kirtan-rasa-2",
-   "name_ru": "Киртан Преми Прабху'с Киртан | Дай 3 | Киртан Раса 2023 | Дубай",
-   "name_channel": "Kirtan Premi Prabhu's Kirtan | Day 3 | Kirtan Rasa 2023 | Dubai",
-   "key": "kirtan premi s kirtan dai 3 kirtan ras 2023 dubai",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.08,
-   "msg_ids": [
-    988
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "kirtan-premi-prabhu-s-kirtan-day-3-kirtan-rasa-2",
-   "name_ru": "Киртан Преми Прабху'с Киртан | Дай 3 | Киртан Раса 2024 | Дубай",
-   "name_channel": "Kirtan Premi Prabhu's Kirtan | Day 3 | Kirtan Rasa 2024 | Dubai",
-   "key": "kirtan premi s kirtan dai 3 kirtan ras 2024 dubai",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.1,
-   "msg_ids": [
-    989
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "caitania-nitai-prabhu-kirtan-grodno",
@@ -2618,8 +2269,8 @@
    "msg_ids": [
     990
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "caitania-nitai-prabhu-kirtan-smolensk",
@@ -2633,149 +2284,14 @@
    "msg_ids": [
     991
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
-   "slug": "01-melody-of-gour-govinda-swami-maharaj",
-   "name_ru": "01 Мелодй Оф Гоур Говинда Свами Махарадж",
-   "name_channel": "01 Melody of Gour Govinda Swami Maharaj",
-   "key": "01 melodi of gaur govind",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.01,
-   "msg_ids": [
-    993
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "bhakti-sangama-2015-2015-08-27-vechernii",
-   "name_ru": "Бхакти Сангама 2015 2015 08 27 Вечерний",
-   "name_channel": "Бхакти Сангама 2015 2015 08 27 Вечерний",
-   "key": "bhakti sangam 2015 2015 08 27 vecerni",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.15,
-   "msg_ids": [
-    994
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-m-odzhasvi-prabhu-non-stop-kirtan-2-09-16-bhak",
-   "name_ru": "Е М Оджасви прабху нон стоп киртан 2 09 16 Бхакти Сангама",
-   "name_channel": "Е М Оджасви прабху нон стоп киртан 2 09 16 Бхакти Сангама",
-   "key": "e m oiasvi non stop kirtan 2 09 16 bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.18,
-   "msg_ids": [
-    995
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-s-b-b-govinda-svami-non-stop-kirtan-31-08-2016",
-   "name_ru": "Е С Б Б Говинда Свами нон стоп киртан 31 08 2016 Бхакти Сангама",
-   "name_channel": "Е С Б Б Говинда Свами нон стоп киртан 31 08 2016 Бхакти Сангама",
-   "key": "e s b b govind non stop kirtan 31 08 2016 bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.16,
-   "msg_ids": [
-    996
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-m-nirandzhana-svami-vechernii-kirtan-30-08-201",
-   "name_ru": "Е М Ниранджана Свами вечерний киртан 30 08 2016 Бхакти Сангама",
-   "name_channel": "Е М Ниранджана Свами вечерний киртан 30 08 2016 Бхакти Сангама",
-   "key": "e m niranian vecerni kirtan 30 08 2016 bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.07,
-   "msg_ids": [
-    1001
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-m-madhava-prabhu-vechernii-kirtan-30-08-2016-b",
-   "name_ru": "Е М Мадхава прабху вечерний киртан 30 08 2016 Бхакти Сангама",
-   "name_channel": "Е М Мадхава прабху вечерний киртан 30 08 2016 Бхакти Сангама",
-   "key": "e m madhav vecerni kirtan 30 08 2016 bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.06,
-   "msg_ids": [
-    1004
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "havi-prabhu-ilan-chester-kirtan-bhakti-sangama",
-   "name_ru": "Хави Прабху Илан Честер Киртан Бхакти Сангама",
-   "name_channel": "Havi Prabhu Ilan Chester Киртан Бхакти Сангама",
-   "key": "havi ilan cester kirtan bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.09,
-   "msg_ids": [
-    1012
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-s-indradyumna-svami-kirtan-bhakti-sangama",
-   "name_ru": "Е С Индрадьюмна Свами Киртан Бхакти Сангама",
-   "name_channel": "Е С Индрадьюмна Свами Киртан Бхакти Сангама",
-   "key": "e s indradiumn kirtan bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.05,
-   "msg_ids": [
-    1013
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-s-bhakti-bringa-govinda-svami-bakti-sangama",
-   "name_ru": "Е С Бхакти Бринга Говинда Свами Бакти Сангама",
-   "name_channel": "Е С Бхакти Бринга Говинда Свами Бакти Сангама",
-   "key": "e s bhakti bring govind bakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.06,
-   "msg_ids": [
-    1020
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "hh-devamrta-swami",
+   "slug": "devamrta-swami",
    "name_ru": "Девамрта Свами",
    "name_channel": "HH Devamrta Swami",
-   "key": "devamrt",
+   "key": "devamrit",
    "entity_id": null,
    "hero_ru": null,
    "n_files": 1,
@@ -2787,37 +2303,7 @@
    "needs_review": true
   },
   {
-   "slug": "havi-prabhu-bhakti-sangama",
-   "name_ru": "Хави прабху Бхакти Сангама",
-   "name_channel": "Хави прабху Бхакти Сангама",
-   "key": "havi bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.03,
-   "msg_ids": [
-    1024
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "e-s-bhakti-bringa-govinda-maharadzh-bhakti-sanga",
-   "name_ru": "Е С Бхакти Бринга Говинда Махарадж Бхакти Сангама",
-   "name_channel": "Е С Бхакти Бринга Говинда Махарадж Бхакти Сангама",
-   "key": "e s bhakti bring govind maharai bhakti sangam",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.05,
-   "msg_ids": [
-    1030
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "hg-veda-vyasa-prabhu",
+   "slug": "veda-vyasa-prabhu",
    "name_ru": "Веда Вяса Прабху",
    "name_channel": "HG Veda Vyasa prabhu",
    "key": "ved vias",
@@ -2843,8 +2329,8 @@
    "msg_ids": [
     1116
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "indradi-umna-svami",
@@ -2858,8 +2344,8 @@
    "msg_ids": [
     1118
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "suri-a-nandini-kirtan-govindy-maharadzha",
@@ -2873,8 +2359,8 @@
    "msg_ids": [
     1134
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "achi-uta-prii-a",
@@ -2888,8 +2374,8 @@
    "msg_ids": [
     1142
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "chandra-shekhar-achari-a",
@@ -2903,8 +2389,8 @@
    "msg_ids": [
     1144
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "mahamantra",
@@ -2918,8 +2404,8 @@
    "msg_ids": [
     1741
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "madhuri-pura-dasa-bhaja-gauranga",
@@ -2933,53 +2419,8 @@
    "msg_ids": [
     1745
    ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "g-a-u-r-a-n-g-a",
-   "name_ru": "Г А У Р А Н Г А",
-   "name_channel": "G A U R A N G A",
-   "key": "g u r n g",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.02,
-   "msg_ids": [
-    1754
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "rlk17xqek8wj3kfpzcd9-qnbqf9xtfou",
-   "name_ru": "Рлк17кскек8вдж3кфпзчд9+кнбкф9кстфоу",
-   "name_channel": "rLK17XqEk8Wj3kfpzCD9+qNBQF9XTfOU",
-   "key": "rlk17xqek8vi3kfpzcd9 qnbqf9xtfou",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.01,
-   "msg_ids": [
-    1768
-   ],
-   "existing": false,
-   "needs_review": true
-  },
-  {
-   "slug": "govaindam-yamuna-devi-dasi-srila-prabhupada",
-   "name_ru": "Говайндам Ямуна Деви Даси & Срила Прабхупада",
-   "name_channel": "Govaindam Yamuna Devi Dasi & Srila Prabhupada",
-   "key": "govaindam iamun prabhupad",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 1,
-   "gb": 0.01,
-   "msg_ids": [
-    1771
-   ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "hare-krishna",
@@ -2993,8 +2434,8 @@
    "msg_ids": [
     1772
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "mukunda-mala-stotra",
@@ -3008,8 +2449,8 @@
    "msg_ids": [
     1774
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "sri-sri-sad-gosvamy-astaka",
@@ -3023,8 +2464,8 @@
    "msg_ids": [
     1776
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "vrinda-das",
@@ -3038,8 +2479,8 @@
    "msg_ids": [
     1781
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "guru-vandana",
@@ -3053,8 +2494,8 @@
    "msg_ids": [
     1782
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   }
  ],
  "unresolved": [
