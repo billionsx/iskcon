@@ -59,13 +59,8 @@ def _call(prompt):
         with urllib.request.urlopen(req, timeout=90) as r:
             d = json.load(r)
     except urllib.error.HTTPError as e:
-<<<<<<< HEAD
         body = e.read().decode("utf-8", "replace")[:300]
         raise RuntimeError("Anthropic API HTTP %s — %s" % (e.code, body)) from e
-=======
-        print("HTTP %d: %s" % (e.code, e.read().decode()[:300]))
-        raise
->>>>>>> 4742b275 (Ф014: goldforge/prose.py и library/d1.py падали молча — HTTPError перехвачен, тело ответа печатается)
     txt = "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text")
     txt = txt.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     return json.loads(txt).get("p", "").strip()
