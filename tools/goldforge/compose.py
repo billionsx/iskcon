@@ -179,6 +179,13 @@ def quote_of(f, forms, ids_ok, used=None):
     t = extract(f["text"], forms, lim)
     if len(t.strip()) < MIN_QUOTE or len(t.split()) < MIN_WORDS:
         return None                        # подпись, колонтитул, обрывок — не цитата
+    # ЦИТАТА ОБЯЗАНА НЕСТИ ФАКТ. Роль присвоена ПАССАЖУ, а в карточку идёт
+    # ВЫРЕЗКА из него. Бывает, что факт остался за краем окна — и на экран
+    # выходит абзац, где имя есть, а смысла нет. Проверяем то, что УВИДИТ ЧЕЛОВЕК.
+    if f["ch"] == "k1-books-app" and len(t) < len(f["text"]):
+        keep_roles = roles.IN_CARD
+        if roles.classify(t, pattern(forms), ()) not in keep_roles:
+            return None
     why = canon.anachronism(t, f.get("byId"))
     if why:
         return None                        # ЗКН-П014: ложное свидетельство — вон
