@@ -86,6 +86,8 @@ def main():
     print(f"\n=== ВНЕ ИЗДАНИЯ (чтец записал, в книге нет): {len(extras)} ===")
     for e in extras:
         print(f"  {e}")
+    if extras:
+        print("::notice::ВНЕ ИЗДАНИЯ: " + " · ".join(extras))
 
 
 if __name__ == "__main__":
