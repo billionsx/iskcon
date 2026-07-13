@@ -74,6 +74,11 @@ def actual_level(lid: str) -> tuple[int, str]:
 
     # Д009 — токен SECTION_GAP в общем компоненте шапки.
     # Ц005 — линтер исключает сам себя из обхода.
+    if lid == "ЗКН-Ц006":
+        t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
+        if "is_comment" in t:
+            return 5, "линтер стережёт КОД, не комментарий"
+
     if lid == "ЗКН-Ц005":
         t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
         if 'fp.name == "laws-lint.py"' in t:
