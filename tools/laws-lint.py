@@ -559,12 +559,36 @@ def check_unique_ids():
     return [(rule, "docs/LAWS.md", 0, "%s — занят %d раза" % (i, n)) for i, n in sorted(dupes)]
 
 
+def check_d002_primitives():
+    """ЗКН-Д002 — ПОВТОРЯЮЩИЙСЯ БЛОК БЕРЁТСЯ ИЗ ПРИМИТИВОВ, А НЕ КОПИРУЕТСЯ.
+
+    Русское число (`plural`) лежало слово-в-слово в СЕМИ файлах: BooksHub,
+    KirtansScreen, DhamaScreen, DhamaDetailPage — и под псевдонимами `pluralRu`
+    (SadhanaScreen), `pluralDays` (VowScreen, AccountScreen). Семь копий — семь
+    мест, куда правка не доедет; и семь способов написать «3 дня» по-разному.
+
+    Правило простое и проверяемое: объявлять `plural*` вне `ui/primitives.tsx`
+    нельзя. Нужна новая общая функция — она едет в примитивы, а не в файл рядом.
+    """
+    rule = {"id": "ЗКН-Д002", "name": "повторяющийся блок — из примитивов",
+            "hint": "объявлять plural/pluralRu/pluralDays вне ui/primitives.tsx запрещено"}
+    bad = []
+    home = SRC / "ui" / "primitives.tsx"
+    for fp in sorted(SRC.rglob("*.tsx")) + sorted(SRC.rglob("*.ts")):
+        if fp == home:
+            continue
+        for i, line in enumerate(fp.read_text(encoding="utf-8").split("\n"), 1):
+            if re.search(r"\bfunction\s+plural[A-Za-z]*\s*\(", line):
+                bad.append((rule, str(fp.relative_to(ROOT)), i, line.strip()[:80]))
+    return bad
+
+
 def main():
     if "--update-baseline" in sys.argv:
         check_ratchet(update=True)
         return 0
     bad = (check_rules() + check_prose_law() + check_floor_law() + check_missing_imports()
-           + check_unique_ids() + check_ratchet())
+           + check_unique_ids() + check_d002_primitives() + check_ratchet())
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
         print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))

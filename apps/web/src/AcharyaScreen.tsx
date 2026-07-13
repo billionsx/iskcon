@@ -20,7 +20,8 @@ import { BackIcon } from "./ui/icons";
 import { cleanCardText } from "./cardText";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { ROUTES, url } from "./routes";
-import { HubHeader } from "./ui/HubHeader";
+import { HubHeader, HubSearch, HubCount, HubEmpty } from "./ui/HubHeader";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 const GOLD = "var(--color-gold)";
 
@@ -408,6 +409,32 @@ export default function AcharyaScreen({ collection, realm, onBack, onOpen, onOpe
 
 function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm?: "krishna" | "gauranga" | null; onOpen: (id: string, type: string | null) => void; onOpenCollection?: (key: string) => void; onOpenPath?: (path: string) => void;
 }) {
+  /* ЗКН-Н044 — У ВИТРИНЫ ЕСТЬ ПОИСК.
+   *
+   * Здесь его НЕ БЫЛО — при 706 личностях в реестре. Шапка файла обещала
+   * «живой поиск по всем героям», `ResultRow` лежал готовым и НИ РАЗУ не
+   * вызывался: поиск когда-то выпилили, мёртвый код остался, обещание — тоже.
+   * Найти героя по имени было нельзя: только листать четырёхуровневое меню.
+   *
+   * Ищем через `/entities?q=` — GLOB по ВСЕМ именам (рус · англ · IAST),
+   * регистронезависимо для кириллицы. Санскрит ищется наравне с русским. */
+  const [q, setQ] = useState("");
+  const [hits, setHits] = useState<Item[] | null>(null);
+  const trimmed = q.trim();
+  const searching = trimmed.length >= 2;
+
+  useEffect(() => {
+    if (!searching) { setHits(null); return; }
+    let alive = true;
+    const t = setTimeout(() => {
+      fetch(api(`/entities?q=${encodeURIComponent(trimmed)}&limit=60`))
+        .then((r) => r.json())
+        .then((d) => { if (alive) setHits((d.items as Item[]) ?? []); })
+        .catch(() => { if (alive) setHits([]); });
+    }, 180);   // пауза набора: не бомбим сервер на каждой букве
+    return () => { alive = false; clearTimeout(t); };
+  }, [trimmed, searching]);
+
   return (
     <div>
       <HubHeader
@@ -416,10 +443,29 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
         subtitle="Абсолют — Личность, и путь к Нему идёт через личности"
       />
 
-      {/* ТРИ ВХОДА. Описание каждого — по тому, ЧТО за ним реально открывается:
+      {/* ЗКН-Н044: поиск витрины — общий HubSearch, а не своя копия */}
+      <HubSearch value={q} onChange={setQ}
+        placeholder="Поиск личности по имени или санскриту" ariaLabel="Поиск по личностям"
+        onSubmit={() => { if (hits && hits.length > 0) onOpen(hits[0].id, hits[0].type); }} />
+
+      {searching ? (
+        <div style={{ marginTop: 16 }} aria-live="polite">
+          {hits === null ? (
+            <>{Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}</>
+          ) : hits.length === 0 ? (
+            <HubEmpty query={trimmed} hint="Попробуйте имя, титул или санскрит (IAST)." />
+          ) : (
+            <>
+              <HubCount>{hits.length} {plural(hits.length, "личность", "личности", "личностей")}</HubCount>
+              {hits.map((it) => <ResultRow key={it.id} item={it} onOpen={onOpen} />)}
+            </>
+          )}
+        </div>
+      ) : (
+      /* ТРИ ВХОДА. Описание каждого — по тому, ЧТО за ним реально открывается:
        *   Гауранга Лила  → волны (I–V, беспрецедентная, ачарьи сампрадай)
        *   Кришна Лила    → расы (шанта · дасья · сакхья · ватсалья · мадхурья)
-       *   Шримад Бхагаватам → чины (аватары · мудрецы · цари · полубоги · демоны · эпосы) */}
+       *   Шримад Бхагаватам → чины (аватары · мудрецы · цари · полубоги · демоны · эпосы) */
       <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 12 }}>
         <SectionCard
           title="Гауранга Лила"
@@ -440,6 +486,7 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
           onClick={() => onOpenPath?.("/bhagavatam-lila")}
         />
       </div>
+      )}
     </div>
   );
 }

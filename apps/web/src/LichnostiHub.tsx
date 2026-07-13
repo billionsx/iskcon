@@ -5,6 +5,7 @@ import { cleanCardText } from "./cardText";
 import { replaceUrl , subscribeNav } from "./nav";
 import { ScopeTitle, FilterChips, Disclosure, useDisclosure, type NavItem } from "./ui/nav4";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { HubSearch } from "./ui/HubHeader";   // ЗКН-Н044: поиск — один на все витрины
 import { ROUTES, url } from "./routes";
 
 type Person = {
@@ -290,13 +291,8 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
     <div ref={rootRef}>
       <style>{`
 
-.lh-search>svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--color-label-3);pointer-events:none;}
-.lh-search>input{width:100%;box-sizing:border-box;padding:10px 38px 10px 36px;border-radius:12px;border:none;background:var(--color-bg-2);color:var(--color-label);font-family:var(--font-text);font-size:15px;letter-spacing:-0.2px;outline:none;}
-.lh-search>input::placeholder{color:var(--color-label-3);}
-.lh-clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:none;border-radius:50%;background:var(--color-bg-3);color:var(--color-label-2);cursor:pointer;display:grid;place-items:center;font-size:14px;line-height:1;}
 /* ЗКН-Н006: вес уровней убывает. Tier-2 — чёрные капсулы, Tier-3 — серые,
    Tier-4 — самые лёгкие (мельче кегль, тише цвет), иначе уровни сливаются. */
-.lh-search{position:relative;margin:16px 0 0;}
 .lh-pills::-webkit-scrollbar{display:none;}
 .lh-cap{margin:14px 4px 6px;font-family:var(--font-text);font-size:12px;font-weight:700;letter-spacing:0.04em;color:var(--color-label-3);text-transform:uppercase;}
 .lh-list{animation:lhfade .24s cubic-bezier(.32,.72,0,1);}
@@ -321,11 +317,12 @@ export default function LichnostiHub({ onOpenEntity }: { onOpenEntity: (id: stri
       <ScopeTitle items={lilaNav} active={lila} onChange={pickLila} ariaLabel="Лила" />
       {subNav.length > 0 && <FilterChips sticky stickyTop="calc(var(--h-hall-tabs) + 40px)" items={subNav} active={subSel} onChange={pickSub} ariaLabel="Волна" />}
 
-      <div className="lh-search">
-        <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по имени или описанию" />
-        {q ? <button type="button" className="lh-clr" aria-label="Очистить" onClick={() => setQ("")}>✕</button> : null}
-      </div>
+      {/* ЗКН-Н044: поиск — общий HubSearch. Здесь жила ЧЕТВЁРТАЯ копия строки
+          поиска (свои .lh-search/.lh-clr): радиус 12 против 14, без рамки,
+          кегль 15 против callout, крестик 22 против 26. Внутри одной витрины
+          «Личности» поле выглядело иначе, чем на её же первом экране. */}
+      <HubSearch value={q} onChange={setQ}
+        placeholder="Поиск личности по имени или описанию" ariaLabel="Поиск по личностям" />
 
       <div className="lh-cap">{shown} {personWord(shown)}{sections.length > 1 ? ` · ${sections.length} ${grpWord(sections.length)}` : ""}</div>
 

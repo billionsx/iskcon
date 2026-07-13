@@ -33,7 +33,8 @@ import { HomeCalendar } from "./HomeCalendar";
 import { HomeFeed, FeedPostFocus } from "./HomeFeed";
 import { DarshanRings } from "./DarshanStories";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
-import { HubHeader } from "./ui/HubHeader";
+import { HubHeader, HubSearch, HubCount, HubEmpty } from "./ui/HubHeader";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
@@ -351,7 +352,10 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
   );
 
   return (
-    <section style={{ marginTop: 28 }}>
+    /* ЗКН-Н024: своего отступа сверху НЕТ — он один, в зале (HUB_TOP).
+       Здесь стоял ещё один `marginTop: 28` поверх зального: шапка Бхаджанов
+       сидела на 28px ниже, чем во всех остальных витринах. */
+    <section>
       <HubHeader
         eyebrow="Молитвенник"
         title="Бхаджаны"
@@ -363,15 +367,22 @@ function BhajanShelf({ onOpen, onOpenCatalog }: { onOpen: (slug: string) => void
           </button>
         }
       />
+      {/* ЗКН-Н044: поиск витрины — общий HubSearch, а не голый input */}
       {items && items.length > 0 && (
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
-          style={{ width: "100%", boxSizing: "border-box", marginBottom: 12, padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", outline: "none" }} />
+        <HubSearch value={q} onChange={setQ}
+          placeholder="Поиск бхаджана или автора" ariaLabel="Поиск по молитвеннику"
+          onSubmit={() => { if (filtered && filtered.length > 0) onOpen(filtered[0].slug); }} />
       )}
       {!items && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
       {items && items.length === 0 && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока пусто.</div>}
-      {items && items.length > 0 && searching && filtered && filtered.length === 0 && <div style={{ fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Ничего не найдено.</div>}
+      {items && items.length > 0 && searching && filtered && filtered.length === 0 && <HubEmpty query={q.trim()} hint="Попробуйте название бхаджана или имя автора." />}
       {searching
-        ? (filtered && filtered.length > 0 ? listOf(filtered) : null)
+        ? (filtered && filtered.length > 0
+            ? <div style={{ marginTop: 16 }} aria-live="polite">
+                <HubCount>{filtered.length} {plural(filtered.length, "бхаджан", "бхаджана", "бхаджанов")}</HubCount>
+                {listOf(filtered)}
+              </div>
+            : null)
         : groups.map((g) => (
             <div key={g.title} style={{ marginTop: 20 }}>
               <div style={{ marginBottom: 8, fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.1px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{g.title}</div>
@@ -462,9 +473,11 @@ function BhajanCatalog({ onOpen, onBack }: { onOpen: (slug: string) => void; onB
               );
             })}
           </div>
-          {/* поиск */}
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск по названию или автору" inputMode="search"
-            style={{ width: "100%", boxSizing: "border-box", margin: "2px 0 18px", padding: "10px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", color: "var(--color-label)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", outline: "none" }} />
+          {/* ЗКН-Н044: «Весь каталог» — продолжение витрины Бхаджанов. Поле здесь
+              было ТЕМ ЖЕ голым input: в витрине поиск новый, нажал каталог — старый. */}
+          <HubSearch value={q} onChange={setQ}
+            placeholder="Поиск бхаджана или автора" ariaLabel="Поиск по каталогу бхаджанов"
+            onSubmit={() => { if (filtered.length > 0) onOpen(filtered[0].slug); }} />
 
           {filtered.length === 0 && <div style={{ textAlign: "center", color: "var(--color-label-2)", padding: "40px 0", fontSize: "var(--text-subhead)" }}>Ничего не найдено.</div>}
 
@@ -581,7 +594,10 @@ const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "bhagavatam-lila",
                     "mahabharata-lila", "ramayana-lila", "pancha-tattva",
                     "avatars", "rishis", "bhaktas", "demigods", "asuras"];
 
-const BOG_SUBS = ["lichnosti", "books", "bhajans", "kirtans", "prasad", "dhama"] as const;
+/* ЗКН-Н007 — ПОРЯДОК ВИТРИН ОДИН, И ОН ЗДЕСЬ.
+ * Книги · Личности · Бхаджаны · Киртаны · Дхама · Прасад (утв. основателем 13.07.2026).
+ * Список и рейка HallTabs идут ОДНИМ порядком: два порядка = два разных приложения. */
+const BOG_SUBS = ["books", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"] as const;
 /* ЗКН-Н025 — ВИТРИНА ЧИТАЕТСЯ ИЗ ПЕРВОГО СЕГМЕНТА.
  *
  * Было `seg[1]` — под старый адрес `/dhana/books`. После переезда витрина живёт
@@ -678,7 +694,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
     <div>
       {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
       <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
-        items={[{ id: "lichnosti", label: "Личности" }, { id: "books", label: "Книги" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "prasad", label: "Прасад" }, { id: "dhama", label: "Дхама" }]} />
+        items={[{ id: "books", label: "Книги" }, { id: "lichnosti", label: "Личности" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "dhama", label: "Дхама" }, { id: "prasad", label: "Прасад" }]} />
 
       {/* ЗКН-Н024 — РАССТОЯНИЕ ОТ МЕНЮ ДО НАДПИСИ: ЕДИНОЕ, ОДИН РАЗ, В ЗАЛЕ.
        *

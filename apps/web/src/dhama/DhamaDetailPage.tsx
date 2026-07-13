@@ -18,6 +18,7 @@ import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
 import { NotesAtSource } from "../NotesAtSource";
 import { FilterChips as NavFilterChips } from "../ui/nav4";
+import { plural } from "../ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 const NAV_H = 52;
 
@@ -324,9 +325,3 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
   );
 }
 
-function plural(n: number, one: string, few: string, many: string): string {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}

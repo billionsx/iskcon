@@ -10,19 +10,14 @@ import { useDhamas } from "./dhamasHydrate";
 import { DhamaHeroCard, dhamaMapsHref } from "./DhamaHeroCard";
 import { TirthaHeroCard, tirthaMapsHref } from "./TirthaHeroCard";
 import { requestNote } from "../notes";
-import { HubHeader } from "../ui/HubHeader";
+import { HubHeader, HubSearch, HubCount, HubEmpty } from "../ui/HubHeader";
+import { plural } from "../ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 /** Регистронезависимое сравнение без диакритики (IAST: Rādhā ↔ radha). */
 function norm(s: string): string {
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 const KIND_ORDER: TirthaKind[] = ["temple", "kunda", "ghat", "hill", "forest", "river", "samadhi", "island", "village", "place"];
-function plural(n: number, one: string, few: string, many: string): string {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}
 
 function shareUrl(url: string, title: string) {
   const nav = typeof navigator !== "undefined" ? (navigator as Navigator & { share?: (d: { title: string; url: string }) => Promise<void> }) : null;
@@ -89,17 +84,13 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
         subtitle="Земли, неотличные от духовного мира, где Господь являет Свои вечные игры"
       />
 
-      {/* поиск по всем святым местам */}
+      {/* ЗКН-Н044: поиск витрины — общий HubSearch, а не своя капсула */}
+      <HubSearch value={q} onChange={setQ}
+        placeholder="Поиск святого места" ariaLabel="Поиск по святым местам"
+        onSubmit={() => { if (results.length > 0) onOpenTirtha?.(results[0].dhama, results[0].id); }} />
+
       <div style={{ marginBottom: "var(--space-4)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "var(--space-2)", height: 40, padding: "0 12px", borderRadius: "var(--radius-control)", background: "var(--color-fill-1)" }}>
-          <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: "var(--color-label-3)", flexShrink: 0 }}><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.2-3.2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Найти святое место" inputMode="search"
-            style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", color: "var(--color-label)" }} />
-          {q && <button type="button" aria-label="Очистить" className="tap-press" onClick={() => setQ("")} style={{ border: "none", background: "none", color: "var(--color-label-3)", cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
-          </button>}
-        </div>
-        <div style={{ display: "flex", gap: "var(--space-2)", overflowX: "auto", padding: "10px 0 0", scrollbarWidth: "none" }}>
+        <div style={{ display: "flex", gap: "var(--space-2)", overflowX: "auto", padding: "12px 0 0", scrollbarWidth: "none" }}>
           {(["all", ...presentKinds] as ("all" | TirthaKind)[]).map((k) => {
             const on = kind === k;
             return (
@@ -114,13 +105,10 @@ export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: str
 
       {searching ? (
         results.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "48px 20px" }}>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: "var(--weight-heavy)", color: "var(--color-label)" }}>Ничего не найдено</div>
-            <p style={{ margin: "8px auto 0", maxWidth: 300, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-normal)", color: "var(--color-label-2)" }}>Измените запрос или выберите другой тип места.</p>
-          </div>
+          <HubEmpty query={q.trim()} hint="Измените запрос или выберите другой тип места." />
         ) : (
           <>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)", margin: "0 2px 12px" }}>{results.length} {plural(results.length, "место", "места", "мест")}</div>
+            <HubCount>{results.length} {plural(results.length, "место", "места", "мест")}</HubCount>
             <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
               {results.map((t) => {
                 const d = getDhama(t.dhama)!;

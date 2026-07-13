@@ -179,7 +179,9 @@ def actual_level(lid: str) -> tuple[int, str]:
         if "check_n027" in t or "check_n029" in t or "check_n031" in t or "check_n033" in t or "check_n035" in t:
             return 5, "гейт навигации (check_n027)"
 
-    for gate, how in (("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек"),
+    # ЗКН-Р014 — гейт типов: дельта к зафиксированному фону (tsc-gate.py).
+    for gate, how in (("tsc-gate.py", "гейт типов (дельта к фону)"),
+                      ("data-audit.py", "SQL-гейт данных"), ("cards-audit.py", "гейт карточек"),
                       ("infra-audit.py", "гейт инфраструктуры"),
                       ("product-audit.py", "гейт продукта/книг"),
                       ("pkl-audit.py", "гейт ПКЛ/реестра"),

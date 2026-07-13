@@ -1,0 +1,17 @@
+[
+  "apps/web/src/AccountScreen.tsx: error TS2322: Type 'Dispatch<SetStateAction<\"\" | DevoteeLevel>>' is not assignable to type '(v: string) => void'.",
+  "apps/web/src/AccountScreen.tsx: error TS2322: Type 'Dispatch<SetStateAction<\"\" | Initiation>>' is not assignable to type '(v: string) => void'.",
+  "apps/web/src/App.tsx: error TS2322: Type '(work: string, id: string) => void' is not assignable to type '(work: string) => void'.",
+  "apps/web/src/App.tsx: error TS2322: Type 'string' is not assignable to type 'SectionId'.",
+  "apps/web/src/App.tsx: error TS2353: Object literal may only specify known properties, and 'shareUrl' does not exist in type 'SetStateAction<{ url: string; data: QrData; }>'.",
+  "apps/web/src/App.tsx: error TS2353: Object literal may only specify known properties, and 'shareUrl' does not exist in type 'ShareData'.",
+  "apps/web/src/App.tsx: error TS2440: Import declaration conflicts with local declaration of 'HeartIcon'.",
+  "apps/web/src/BookDetailPage.tsx: error TS2353: Object literal may only specify known properties, and 'shareUrl' does not exist in type 'ShareData'.",
+  "apps/web/src/BookDetailPage.tsx: error TS2353: Object literal may only specify known properties, and 'shareUrl' does not exist in type 'ShareData'.",
+  "apps/web/src/DownloaderScreen.tsx: error TS2322: Type 'Dispatch<SetStateAction<IaMode>>' is not assignable to type '(v: string) => void'.",
+  "apps/web/src/DownloaderScreen.tsx: error TS2322: Type 'Dispatch<SetStateAction<Mode>>' is not assignable to type '(v: string) => void'.",
+  "apps/web/src/DownloaderScreen.tsx: error TS2339: Property 'htmlUrl' does not exist on type '{ phase: \"idle\"; } | { phase: \"failed\"; tag?: string; htmlUrl?: string; message: string; }'.",
+  "apps/web/src/DownloaderScreen.tsx: error TS2339: Property 'htmlUrl' does not exist on type '{ phase: \"idle\"; } | { phase: \"failed\"; tag?: string; htmlUrl?: string; message: string; }'.",
+  "apps/web/src/DownloaderScreen.tsx: error TS2339: Property 'message' does not exist on type '{ phase: \"idle\"; } | { phase: \"failed\"; tag?: string; htmlUrl?: string; message: string; }'.",
+  "apps/web/src/prasad/PrasadamScreen.tsx: error TS2345: Argument of type 'string' is not assignable to parameter of type 'SetStateAction<DietTag>'."
+]

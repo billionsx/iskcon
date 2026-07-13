@@ -19,6 +19,7 @@ import { albumById } from "./kirtans";
 import { useNotes, requestNote, requestOpenNote, shareNote, togglePin, type Note } from "./notes";
 import { NoteHeroCard } from "./NoteHeroCard";
 import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, updateCats, loadCats, type PushCats } from "./push";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 /* ─────────────────────────── палитра/токены ─────────────────────────── */
 
@@ -737,13 +738,6 @@ function fmtMinShort(min: number): string {
   const h = Math.floor(m / 60); const r = m % 60;
   return r ? `${h} ч ${r} мин` : `${h} ч`;
 }
-function pluralDays(n: number): string {
-  const a = Math.abs(n) % 100; const b = a % 10;
-  if (a > 10 && a < 20) return "дней";
-  if (b > 1 && b < 5) return "дня";
-  if (b === 1) return "день";
-  return "дней";
-}
 
 /** Карточка «Садхана сегодня» в кабинете: кольцо кругов, серия, чтение → дневник. */
 function SadhanaCard({ state, onOpen }: { state: SadhanaState; onOpen: () => void }) {
@@ -753,7 +747,7 @@ function SadhanaCard({ state, onOpen }: { state: SadhanaState; onOpen: () => voi
   const RAD = 58, CIRC = 2 * Math.PI * RAD;
   const frac = Math.min(1, r / Math.max(1, g));
   const read = state.todayRow.reading_min;
-  const bits: string[] = [`серия ${state.stats.currentStreak} ${pluralDays(state.stats.currentStreak)}`];
+  const bits: string[] = [`серия ${state.stats.currentStreak} ${plural(state.stats.currentStreak, "день", "дня", "дней")}`];
   if (read > 0) bits.push(`чтение ${fmtMinShort(read)}`);
   return (
     <button onClick={onOpen} aria-label="Открыть дневник садханы"

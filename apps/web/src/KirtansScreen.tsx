@@ -13,14 +13,15 @@ import { api } from "./api";
 import { usePlayer } from "./player/store";
 import { BhajanCard } from "./BhajanCard";
 import {
-  kirtanArtists, playableAlbums, albumCover, albumsByArtist, artistPlayableCount,
+  kirtanArtists, kirtanAlbums, playableAlbums, albumCover, artistPlayableCount,
   artistBySlug, filterAlbums, moodsInCatalog, typesInCatalog,
   TYPE_LABEL, MOOD_LABEL,
   type KirtanArtist, type KirtanAlbum, type KirtanType, type KirtanMood,
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
-import { HubHeader, SECTION_GAP } from "./ui/HubHeader";
+import { HubHeader, HubSearch, HubCount, HubEmpty, SECTION_GAP } from "./ui/HubHeader";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 const GOLD = "var(--color-gold)";
 
@@ -99,6 +100,68 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     return () => { live = false; };
   }, []);
 
+  /* ЗКН-Н044 — У ВИТРИНЫ ЕСТЬ ПОИСК.
+   *
+   * Здесь его НЕ БЫЛО. Аудиотека росла — исполнители, альбомы, жанры, — а найти
+   * в ней конкретную запись можно было только глазами, пролистав всю страницу.
+   * Ищем по исполнителям (имя · титул · роль · эпоха) и альбомам (название ·
+   * исполнитель · описание · год). */
+  const [q, setQ] = useState("");
+  const trimmed = q.trim();
+  const searching = trimmed.length >= 2;
+  const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+  const nq = norm(trimmed);
+  const hitArtists = useMemo(
+    () => (!searching ? [] : kirtanArtists().filter((a) => norm(`${a.name} ${a.full ?? ""} ${a.role} ${a.era ?? ""} ${a.origin ?? ""}`).includes(nq))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nq, searching, kv],
+  );
+  const hitAlbums = useMemo(
+    () => (!searching ? [] : kirtanAlbums().filter((al) => norm(`${al.title} ${artistBySlug(al.artist)?.name ?? ""} ${al.note ?? ""} ${al.year ?? ""} ${TYPE_LABEL[al.type]}`).includes(nq))),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nq, searching, kv],
+  );
+
+  /* ЗКН-Д002: строка исполнителя и строка альбома рисуются В ОДНОМ месте —
+     и в разделах, и в результатах поиска. Копия разъедется. */
+  const LIST_UL: React.CSSProperties = { margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" };
+
+  const artistRow = (a: KirtanArtist, isLast: boolean) => {
+    const cnt = artistPlayableCount(a.slug);
+    return (
+      <li key={a.slug} style={{ borderBottom: isLast ? "none" : "0.5px solid var(--color-hairline)" }}>
+        <button onClick={() => onOpenArtist(a.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+          <ArtistMono artist={a} />
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{a.name}</span>
+            <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.role}{a.era ? ` · ${a.era}` : ""}</span>
+          </span>
+          {cnt > 0 && <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", fontWeight: 600, color: GOLD, marginRight: 2 }}>{cnt}♪</span>}
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+      </li>
+    );
+  };
+
+  const albumRow = (al: KirtanAlbum, isLast: boolean) => {
+    const ar = artistBySlug(al.artist);
+    const can = !!al.archive;
+    return (
+      <li key={al.id} style={{ borderBottom: isLast ? "none" : "0.5px solid var(--color-hairline)" }}>
+        <button onClick={() => (can ? player.playKirtan(al.id) : onOpenArtist(al.artist))} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
+          <img src={albumCover(al)} alt="" loading="lazy" style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
+          <span style={{ minWidth: 0, flex: 1 }}>
+            <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{al.title}</span>
+            <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{ar?.name} · {TYPE_LABEL[al.type]}</span>
+          </span>
+          {can
+            ? <span aria-hidden style={{ flexShrink: 0, width: 30, height: 30, borderRadius: "50%", display: "grid", placeItems: "center", background: "var(--color-label)", color: "var(--color-bg)" }}><svg width="14" height="14" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg></span>
+            : <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+        </button>
+      </li>
+    );
+  };
+
   const chip = (on: boolean): React.CSSProperties => ({
     flexShrink: 0, padding: "8px 15px", borderRadius: 999, cursor: "pointer", fontFamily: "var(--font-text)",
     border: `0.5px solid ${on ? "transparent" : "var(--color-hairline)"}`,
@@ -116,6 +179,28 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         subtitle="Святое имя в голосах ачарьев и киртания — от первых записей Шрилы Прабхупады до Вриндавана"
       />
 
+      {/* ЗКН-Н044: поиск витрины — общий HubSearch, а не своя копия */}
+      <HubSearch value={q} onChange={setQ}
+        placeholder="Поиск киртании, альбома или жанра" ariaLabel="Поиск по аудиотеке"
+        onSubmit={() => {
+          if (hitAlbums.length > 0) { const al = hitAlbums[0]; if (al.archive) player.playKirtan(al.id); else onOpenArtist(al.artist); }
+          else if (hitArtists.length > 0) onOpenArtist(hitArtists[0].slug);
+        }} />
+
+      {searching ? (
+        <div style={{ marginTop: 16 }} aria-live="polite">
+          {hitArtists.length + hitAlbums.length === 0 ? (
+            <HubEmpty query={trimmed} hint="Попробуйте имя киртании, название альбома или жанр." />
+          ) : (
+            <>
+              <HubCount>{hitArtists.length + hitAlbums.length} {plural(hitArtists.length + hitAlbums.length, "запись", "записи", "записей")}</HubCount>
+              {hitArtists.length > 0 && <ul style={LIST_UL}>{hitArtists.map((a, i) => artistRow(a, i === hitArtists.length - 1))}</ul>}
+              {hitAlbums.length > 0 && <ul style={{ ...LIST_UL, marginTop: hitArtists.length ? 14 : 0 }}>{hitAlbums.map((al, i) => albumRow(al, i === hitAlbums.length - 1))}</ul>}
+            </>
+          )}
+        </div>
+      ) : (
+      <>
       {/* Слушать сейчас */}
       {playable.length > 0 && (
         <section style={{ marginTop: SECTION_GAP }}>
@@ -131,25 +216,8 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       {/* Исполнители */}
       <section style={{ marginTop: SECTION_GAP }}>
         <SectionHead eyebrow="Голоса святого имени" title="Исполнители" />
-        <ul style={{ margin: 0, padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-          {kirtanArtists().map((a, i) => {
-            const cnt = artistPlayableCount(a.slug);
-            const total = albumsByArtist(a.slug).length;
-            const meta = cnt > 0 ? `${cnt} ${plural(cnt, "альбом", "альбома", "альбомов")} со звуком` : (total > 0 ? "Записи" : a.role);
-            return (
-              <li key={a.slug} style={{ borderBottom: i === kirtanArtists().length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                <button onClick={() => onOpenArtist(a.slug)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                  <ArtistMono artist={a} />
-                  <span style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{a.name}</span>
-                    <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.role}{a.era ? ` · ${a.era}` : ""}</span>
-                  </span>
-                  {cnt > 0 && <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", fontWeight: 600, color: GOLD, marginRight: 2 }}>{cnt}♪</span>}
-                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </button>
-              </li>
-            );
-          })}
+        <ul style={LIST_UL}>
+          {kirtanArtists().map((a, i) => artistRow(a, i === kirtanArtists().length - 1))}
         </ul>
       </section>
 
@@ -169,29 +237,15 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         </div>
 
         {(fType || fMood) && (
-          <ul style={{ margin: "14px 0 0", padding: 0, listStyle: "none", borderRadius: 18, overflow: "hidden", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
+          <ul style={{ ...LIST_UL, marginTop: 14 }}>
             {filtered.length === 0 && <li style={{ padding: "16px", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока нет записей по этому фильтру.</li>}
-            {filtered.map((al, i) => {
-              const ar = artistBySlug(al.artist);
-              const can = !!al.archive;
-              return (
-                <li key={al.id} style={{ borderBottom: i === filtered.length - 1 ? "none" : "0.5px solid var(--color-hairline)" }}>
-                  <button onClick={() => can ? player.playKirtan(al.id) : onOpenArtist(al.artist)} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: 10, textAlign: "left", background: "none", border: "none", cursor: "pointer", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>
-                    <img src={albumCover(al)} alt="" loading="lazy" style={{ width: 48, height: 48, borderRadius: 10, objectFit: "cover", flexShrink: 0, background: "var(--color-bg-3, #e9e9ee)" }} />
-                    <span style={{ minWidth: 0, flex: 1 }}>
-                      <span style={{ display: "block", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)" }}>{al.title}</span>
-                      <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)" }}>{ar?.name} · {TYPE_LABEL[al.type]}</span>
-                    </span>
-                    {can
-                      ? <span aria-hidden style={{ flexShrink: 0, width: 30, height: 30, borderRadius: "50%", display: "grid", placeItems: "center", background: "var(--color-label)", color: "var(--color-bg)" }}><svg width="14" height="14" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg></span>
-                      : <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-2)" }}><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
-                  </button>
-                </li>
-              );
-            })}
+            {filtered.map((al, i) => albumRow(al, i === filtered.length - 1))}
           </ul>
         )}
       </section>
+
+      </>
+      )}
 
       {/* ЗКН-Н036 — ОДНО СОДЕРЖИМОЕ — ОДНО МЕСТО.
        *
@@ -208,9 +262,3 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   );
 }
 
-function plural(n: number, one: string, few: string, many: string): string {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}

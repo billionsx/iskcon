@@ -24,6 +24,7 @@ import { requireAuth } from "./account/track";
 import { accountClient, type SadhanaState, type SadhanaPatch, type SadhanaDay, type JapaSyncRound } from "./account/api";
 import { readingMinutesToday, recentReadings, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 import { ContinueShelf, ReadingGoalCard } from "./BooksHub";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
 const GOLD = "var(--color-gold)";
@@ -66,13 +67,6 @@ function fmtMin(min: number): string {
   if (m < 60) return `${m} мин`;
   const h = Math.floor(m / 60); const r = m % 60;
   return r ? `${h} ч ${r} мин` : `${h} ч`;
-}
-function pluralRu(n: number, one: string, few: string, many: string): string {
-  const a = Math.abs(n) % 100; const b = a % 10;
-  if (a > 10 && a < 20) return many;
-  if (b > 1 && b < 5) return few;
-  if (b === 1) return one;
-  return many;
 }
 
 /* ───────────────────────── локальный счётчик (для дозаливки/цели) ───────────────────────── */
@@ -231,7 +225,7 @@ function DayEditor({ day, initial, goal, onClose, onSaved }: { day: string; init
         <div style={{ width: 38, height: 5, borderRadius: 3, background: HAIR, margin: "0 auto 14px" }} />
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 10 }}>
           <span style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>{relDay(day)}</span>
-          <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: done ? GREEN : L2 }}>{initial.rounds} {pluralRu(initial.rounds, "круг", "круга", "кругов")}</span>
+          <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: done ? GREEN : L2 }}>{initial.rounds} {plural(initial.rounds, "круг", "круга", "кругов")}</span>
         </div>
         <p style={{ margin: "3px 0 16px", fontFamily: FT, fontSize: "var(--text-caption)", color: L3 }}>Круги берутся из счётчика и здесь не меняются.</p>
 
@@ -453,12 +447,12 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                     <span style={{ fontFamily: FD, fontSize: "var(--text-body)", fontWeight: 800, letterSpacing: "-0.02em", color: done ? GREEN : L1 }}>
-                      {done ? "Норма выполнена" : `${todayRounds} ${pluralRu(todayRounds, "круг", "круга", "кругов")}`}
+                      {done ? "Норма выполнена" : `${todayRounds} ${plural(todayRounds, "круг", "круга", "кругов")}`}
                     </span>
                     {done && <span style={{ color: GREEN, display: "inline-flex" }}><Check /></span>}
                   </div>
                   <div style={{ marginTop: 3, fontFamily: FT, fontSize: "var(--text-footnote)", color: L2 }}>
-                    {done ? "Харе Кришна! Можно продолжать." : `Ещё ${goal - todayRounds} ${pluralRu(goal - todayRounds, "круг", "круга", "кругов")} до нормы`}
+                    {done ? "Харе Кришна! Можно продолжать." : `Ещё ${goal - todayRounds} ${plural(goal - todayRounds, "круг", "круга", "кругов")} до нормы`}
                   </div>
                   <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 4, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLDT }}>
                     Открыть счётчик <Chevron />
@@ -519,7 +513,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
 
               {/* стрики */}
               <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-                <StreakCard icon={<Flame />} value={st.stats.currentStreak} label={`${pluralRu(st.stats.currentStreak, "день", "дня", "дней")} подряд`} tone={GOLD} />
+                <StreakCard icon={<Flame />} value={st.stats.currentStreak} label={`${plural(st.stats.currentStreak, "день", "дня", "дней")} подряд`} tone={GOLD} />
                 <StreakCard icon={<Trophy />} value={st.stats.longestStreak} label="рекорд серии" tone={GREEN} />
               </div>
 
@@ -566,7 +560,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
                         </span>
                         <span style={{ minWidth: 0, flex: 1, display: "flex", flexWrap: "wrap", gap: "2px 12px", alignItems: "baseline" }}>
                           <span style={{ fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700, color: d.rounds >= goal ? GREEN : L1 }}>
-                            {d.rounds} {pluralRu(d.rounds, "круг", "круга", "кругов")}
+                            {d.rounds} {plural(d.rounds, "круг", "круга", "кругов")}
                           </span>
                           {d.reading_min > 0 && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>чтение {fmtMin(d.reading_min)}</span>}
                           {d.rose_at && <span style={{ fontFamily: FT, fontSize: "var(--text-caption)", color: L2 }}>подъём {d.rose_at}</span>}

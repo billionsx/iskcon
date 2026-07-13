@@ -27,7 +27,7 @@
  *   ОПИСАНИЕ           — ОРИЕНТИР. Что человек здесь найдёт. Обязательно:
  *                        витрина без описания оставляет гостя в догадках.
  */
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 
 export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
   /** Надпись золотом — КОНТЕКСТ раздела. Не повторяет вкладку. */
@@ -65,6 +65,85 @@ export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
       </div>
 
       {action ? <div style={{ flexShrink: 0, paddingTop: 4 }}>{action}</div> : null}
+    </div>
+  );
+}
+
+/**
+ * ЗКН-Н044 — ПОИСК ВИТРИНЫ: ОДИН КОМПОНЕНТ НА ВСЕ БОГАТСТВА.
+ *
+ * ПОЧЕМУ ЭТОТ КОМПОНЕНТ ЖИВЁТ РЯДОМ С ШАПКОЙ.
+ *
+ * Шапку общим компонентом мы уже свели (ЗКН-Н024) — а поиск оставили каждому.
+ * И он разъехался ровно так же, только хуже: разъехалось само НАЛИЧИЕ.
+ *
+ *   Книги      лупа · очистка · Enter → первый · рамка-волосок  ← эталон
+ *   Бхаджаны   голый input: ни лупы, ни очистки, радиус 12, кегль другой
+ *   Дхама      капсула fill-1 высотой 40: ни рамки, ни клавиатуры
+ *   Личности   поиска НЕТ (хотя 706 героев и ResultRow лежит мёртвым кодом)
+ *   Киртаны    поиска НЕТ
+ *   Прасад     поиска НЕТ
+ *
+ * Человек переключает вкладку — и поле то есть, то нет, то другое. Витрина без
+ * поиска — это витрина, в которой нельзя ничего найти: 706 личностей, 178
+ * бхаджанов, сотни рецептов лежат за перелистыванием.
+ *
+ * ЛЕЧИТСЯ ТОЛЬКО ОБЩИМ КОМПОНЕНТОМ — как и шапка. Пока каждая витрина рисует
+ * поле сама, любая договорённость разъедется снова. Гейт запрещает рисовать
+ * строку поиска в обход этого файла.
+ *
+ * ЭТАЛОН — КНИГИ: лупа слева · крестик очистки справа · Esc сбрасывает ·
+ * Enter открывает первый результат · нативная клавиатура поиска.
+ */
+export function HubSearch({ value, onChange, placeholder, ariaLabel, onSubmit }: {
+  value: string;
+  onChange: (v: string) => void;
+  /** Что ищем — словами витрины: «Поиск книги, автора или санскрита». */
+  placeholder: string;
+  ariaLabel?: string;
+  /** Enter → открыть первый результат. Нет результата — ничего не делаем. */
+  onSubmit?: () => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  return (
+    <div role="search" style={{ position: "relative", marginTop: 14 }}>
+      <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
+        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+      </span>
+      <input ref={ref} value={value} onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") onChange("");
+          else if (e.key === "Enter") { e.currentTarget.blur(); onSubmit?.(); }
+        }}
+        placeholder={placeholder} inputMode="search" enterKeyHint="search"
+        autoComplete="off" autoCorrect="off" spellCheck={false} aria-label={ariaLabel ?? placeholder}
+        style={{ width: "100%", boxSizing: "border-box", padding: "12px 40px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
+          background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
+      {value && (
+        <button type="button" aria-label="Очистить" onClick={() => { onChange(""); ref.current?.focus(); }}
+          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
+            background: "var(--color-fill-1)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+          <svg width="13" height="13" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** ЗКН-Н044: строка счёта над результатами — одна на все витрины. */
+export function HubCount({ children }: { children: ReactNode }) {
+  return (
+    <div style={{ margin: "2px 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>
+      {children}
+    </div>
+  );
+}
+
+/** ЗКН-Н044: пустой результат — один текст, одна типографика, все витрины. */
+export function HubEmpty({ query, hint }: { query: string; hint?: string }) {
+  return (
+    <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
+      Ничего не найдено по запросу «{query}».{hint ? <><br />{hint}</> : null}
     </div>
   );
 }

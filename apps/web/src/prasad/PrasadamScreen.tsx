@@ -18,13 +18,14 @@ import RecipeCard from "./RecipeCard";
 import {
   CATEGORIES, DIETS, DIFFICULTY_LABEL, PANTRY, PANTRY_LABEL,
   DEITIES, OFFERING_PRINCIPLES, OFFERING_STEPS, OFFERING_PRAYERS, CLASSICS,
-  filterRecipes, matchByPantry, recipeBySlug, RECIPE_COUNT,
+  filterRecipes, matchByPantry, recipeBySlug, RECIPES, RECIPE_COUNT,
   type Category, type DietTag, type Recipe,
 } from "./prasad";
 import { useRecipes } from "./recipesHydrate";
 import { FilterChips as NavFilterChips, ScopeTitle, type NavItem } from "../ui/nav4";
 import { COOKBOOK } from "./cookbook";
-import { HubHeader } from "../ui/HubHeader";
+import { HubHeader, HubSearch, HubCount, HubEmpty } from "../ui/HubHeader";
+import { plural } from "../ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 const GOLD = "var(--color-gold)";
 
@@ -74,19 +75,77 @@ export default function PrasadamScreen({
     scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
   };
 
+  /* ЗКН-Н044 — У ВИТРИНЫ ЕСТЬ ПОИСК, И ОН НАД РАЗДЕЛАМИ.
+   *
+   * Поиска здесь не было ВООБЩЕ — при сотнях рецептов. А шапка витрины пряталась
+   * ВНУТРИ раздела «Книга»: на «Рецептах», «Подборе», «Кому дорого» и
+   * «Подношении» её не существовало. Человек переключал вкладку Богатств —
+   * и надзаголовок с заголовком то был, то исчезал.
+   *
+   * Шапка и поиск принадлежат ВИТРИНЕ, а не одному её разделу. */
+  const [q, setQ] = useState("");
+  const trimmed = q.trim();
+  const searching = trimmed.length >= 2;
+  const rv = useRecipes();   // реактивная гидрация рецептов из БД
+  const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+  const hits = useMemo(() => {
+    if (!searching) return [] as Recipe[];
+    const nq = norm(trimmed);
+    return RECIPES.filter((r) => norm(
+      `${r.title} ${r.sanskrit ?? ""} ${r.subtitle} ${r.region ?? ""} ${r.ingredients.map((i) => i.item).join(" ")}`,
+    ).includes(nq));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trimmed, searching, rv]);
+
   return (
     <div ref={scrollRef}>
-      {/* ЗКН-Н017: своей шапки и «назад» у витрины НЕТ — навигация зала это HallTabs.
-          Разделы — Tier-2 (ScopeTitle) из общего модуля. */}
-      <ScopeTitle items={SECTIONS} active={section} onChange={(v) => go(v as SectionId)} ariaLabel="Разделы прасада" />
+      {/* ЗКН-Н017: своей шапки-с-«назад» у витрины НЕТ — навигация зала это HallTabs.
+          Но шапка ВИТРИНЫ (надзаголовок/заголовок/подзаголовок) обязательна — ЗКН-Н024. */}
+      <HubHeader
+        eyebrow="Кухня прасада"
+        title="Прасад"
+        subtitle="Пища, предложенная Господу, — милость. Как готовить, предлагать и вкушать"
+      />
 
-      <div style={{ padding: "18px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
-        {section === "book" && <CookbookInline onOpenChapter={(id) => onOpenBook?.(id)} onOpenRecipe={onOpenRecipe} flash={flash} />}
-        {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} flash={flash} />}
-        {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
-        {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} onOpenEntity={onOpenEntity} flash={flash} />}
-        {section === "offering" && <OfferingSection />}
-      </div>
+      {/* ЗКН-Н044: поиск витрины — общий HubSearch */}
+      <HubSearch value={q} onChange={setQ}
+        placeholder="Поиск блюда, продукта или региона" ariaLabel="Поиск по кухне прасада"
+        onSubmit={() => { if (hits.length > 0) onOpenRecipe(hits[0].slug); }} />
+
+      {searching ? (
+        <div style={{ marginTop: 16 }} aria-live="polite">
+          {hits.length === 0 ? (
+            <HubEmpty query={trimmed} hint="Попробуйте название блюда, продукт или регион." />
+          ) : (
+            <>
+              <HubCount>{hits.length} {plural(hits.length, "рецепт", "рецепта", "рецептов")}</HubCount>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 12 }}>
+                {hits.map((r) => <RecipeCard key={r.slug} slug={r.slug} onOpen={onOpenRecipe} flash={flash} width="100%" />)}
+              </div>
+            </>
+          )}
+        </div>
+      ) : (
+        <>
+          {/* Разделы — Tier-2 (ScopeTitle) из общего модуля.
+              ЗКН-Н021: обёртка <div> вокруг липкого меню ЗАПРЕЩЕНА — она становится
+              его контейнером нулевой высоты и sticky умирает. Воздух даём РАСПОРКОЙ-СОСЕДОМ. */}
+          <div aria-hidden style={{ height: 18 }} />
+          <ScopeTitle items={SECTIONS} active={section} onChange={(v) => go(v as SectionId)} ariaLabel="Разделы прасада" />
+
+          {/* ЗКН-Н024: своего бокового отступа у витрины НЕТ — он один, в зале (16px).
+              Здесь стоял ЕЩЁ один `padding: 18px 16px`: содержимое Прасада было
+              вдвинуто на 16px глубже, чем во всех остальных витринах, и не совпадало
+              даже со своей же рейкой разделов. */}
+          <div style={{ paddingTop: 18 }}>
+            {section === "book" && <CookbookInline onOpenChapter={(id) => onOpenBook?.(id)} onOpenRecipe={onOpenRecipe} flash={flash} />}
+            {section === "recipes" && <RecipesSection onOpenRecipe={onOpenRecipe} onOpenBook={onOpenBook} flash={flash} />}
+            {section === "match" && <MatchSection onOpenRecipe={onOpenRecipe} />}
+            {section === "deities" && <DeitiesSection onOpenRecipe={onOpenRecipe} onOpenEntity={onOpenEntity} flash={flash} />}
+            {section === "offering" && <OfferingSection />}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -412,12 +471,10 @@ function CookbookInline({ onOpenChapter, onOpenRecipe, flash }: {
   void onOpenRecipe; void flash;
   return (
     <div>
-      <HubHeader
-        eyebrow="Кухня прасада"
-        title="Прасад"
-        subtitle="Пища, предложенная Господу, — милость. Как готовить, предлагать и вкушать"
-      />
-      <div style={{ marginTop: 18 }}>
+      {/* ЗКН-Н024: шапка витрины уехала НАВЕРХ, к витрине. Здесь она жила внутри
+          ОДНОГО раздела — и в остальных четырёх разделах Прасада её не было. */}
+      <SectionTitle sub="Оглавление: философия, продукты и специи, техники, рецепты и подношение">Кухня прасада</SectionTitle>
+      <div>
         {COOKBOOK.chapters.map((ch) => (
           <button key={ch.id} type="button" onClick={() => onOpenChapter(ch.id)}
             style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left",

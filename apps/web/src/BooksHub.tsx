@@ -11,7 +11,7 @@
  * Меню книги (PDF/QR/поделиться/поддержать/ошибка) живёт в App (там состояние PDF/QR/
  * отчёта) и приходит как onBookMenu(work, id). Визуальный язык — общий с приложением.
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import {
   BOOKS,
@@ -28,7 +28,8 @@ import { searchBooks, highlight } from "./bookSearch";
 import { recentReadings, pctOf, etaMinutesForBook, readingMinutesToday, readingGoalMin, setReadingGoalMin, readingStreakDays, READING_CHANGED_EVENT, type ReadingRec } from "./reading";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { FilterChips as NavFilterChips, type NavItem } from "./ui/nav4";
-import { HubHeader, SECTION_GAP } from "./ui/HubHeader";
+import { HubHeader, HubSearch, HubCount, HubEmpty, SECTION_GAP } from "./ui/HubHeader";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 const GOLD = "var(--color-gold)";
 
@@ -47,12 +48,6 @@ function Hi({ text, q }: { text: string; q: string }) {
 }
 
 /* русское склонение счётного слова */
-function plural(n: number, one: string, few: string, many: string): string {
-  const m10 = n % 10, m100 = n % 100;
-  if (m10 === 1 && m100 !== 11) return one;
-  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
-  return many;
-}
 
 /* монохромный логотип через CSS-маску (цвет = currentColor родителя) */
 function MaskMark({ src, size = 56, pos = "center", color = "currentColor" }: { src: string; size?: number; pos?: string; color?: string }) {
@@ -299,7 +294,6 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"all" | Lineage>("all");
   const [soonOpen, setSoonOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const LIBRARY = useCatalog();   // источник истины — D1 (book_catalog); фолбэк — бандл
   const byLineage = (l: Lineage) => LIBRARY.filter((b) => b.lineage === l);
@@ -363,28 +357,10 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
         subtitle="Священные тексты — от первоисточников парампары до изданий Шрилы Прабхупады"
       />
 
-      {/* поиск — нативная строка: лупа + очистка + клавиатура (Enter → первый, Esc → сброс) */}
-      <div role="search" style={{ position: "relative", marginTop: 14 }}>
-        <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-        </span>
-        <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setQ("");
-            else if (e.key === "Enter" && results.length > 0) { e.currentTarget.blur(); openBook(results[0]); }
-          }}
-          placeholder="Поиск книги, автора или санскрита" inputMode="search" enterKeyHint="search"
-          autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по библиотеке"
-          style={{ width: "100%", boxSizing: "border-box", padding: "12px 40px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
-            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
-        {q && (
-          <button type="button" aria-label="Очистить" onClick={() => { setQ(""); inputRef.current?.focus(); }}
-            style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
-              background: "var(--color-fill-1)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
-            <svg width="13" height="13" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
-          </button>
-        )}
-      </div>
+      {/* ЗКН-Н044: поиск витрины — общий HubSearch, а не своя копия */}
+      <HubSearch value={q} onChange={setQ}
+        placeholder="Поиск книги, автора или санскрита" ariaLabel="Поиск по библиотеке"
+        onSubmit={() => { if (results.length > 0) openBook(results[0]); }} />
 
       {/* ЗКН-Н006: Tier-3 — общий FilterChips (контур), а не своя копия */}
       <NavFilterChips items={LINEAGE_NAV} active={filter} onChange={(v) => setFilter(v as "all" | Lineage)} ariaLabel="Линия" />
@@ -392,12 +368,10 @@ export default function BooksHub({ onOpenBook, onBookMenu, onOpenEntity, onOpenC
       {searching ? (
         <div style={{ marginTop: 16 }} aria-live="polite">
           {results.length === 0 ? (
-            <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
-              Ничего не найдено по запросу «{trimmed}».<br />Попробуйте название, автора или санскрит (IAST).
-            </div>
+            <HubEmpty query={trimmed} hint="Попробуйте название, автора или санскрит (IAST)." />
           ) : (
             <>
-              <div style={{ margin: "2px 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{results.length} {plural(results.length, "книга", "книги", "книг")}</div>
+              <HubCount>{results.length} {plural(results.length, "книга", "книги", "книг")}</HubCount>
               {heroStack(results)}
             </>
           )}

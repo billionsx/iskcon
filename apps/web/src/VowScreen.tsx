@@ -12,6 +12,7 @@ import {
   type Commitment, type Vow,
 } from "./vows";
 import { listCollectiveVows, contributeCollective, type CollectiveVow } from "./collectiveVows";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
 const SAFFRON = "#DD7A1E";
 const L1 = "var(--color-label)";
@@ -26,9 +27,7 @@ const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeL
 const Back = () => <svg width={24} height={24} viewBox="0 0 24 24" aria-hidden><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>;
 const Check = ({ size = 15 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" d="M5 12.5l4.5 4.5L19 6.5" /></svg>;
 
-function pluralDays(n: number): string { const m10 = n % 10, m100 = n % 100; if (m10 === 1 && m100 !== 11) return "день"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "дня"; return "дней"; }
-function roundsWord(r: number): string { const m10 = r % 10, m100 = r % 100; if (m10 === 1 && m100 !== 11) return "круг"; if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return "круга"; return "кругов"; }
-function japaCommitment(r: number): Commitment { return { id: "japa", label: "Джапа", detail: `${r} ${roundsWord(r)}`, target: r, unit: "кругов" }; }
+function japaCommitment(r: number): Commitment { return { id: "japa", label: "Джапа", detail: `${r} ${plural(r, "круг", "круга", "кругов")}`, target: r, unit: "кругов" }; }
 
 function Ring({ pct, size = 88, stroke = 9, accent = SAFFRON }: { pct: number; size?: number; stroke?: number; accent?: string }) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(100, pct)) / 100);
@@ -102,7 +101,7 @@ function VowDashboard({ vow }: { vow: Vow }) {
           <div style={{ fontFamily: FD, fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.3px", color: L1, lineHeight: 1.12 }}>{vow.title}</div>
           <div style={{ marginTop: 5, fontFamily: FT, fontSize: "var(--text-footnote)", color: L2 }}>{fmtDate(vow.startDate)} — {fmtDate(vow.endDate)}</div>
           <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 11px", borderRadius: 999, background: `color-mix(in srgb, ${SAFFRON} 13%, transparent)`, color: SAFFRON, fontFamily: FT, fontSize: "var(--text-footnote)", fontWeight: 700 }}>
-            {s.overdue ? "Срок завершён" : !s.started ? "Начнётся скоро" : `Осталось ${s.remaining} ${pluralDays(s.remaining)}`}
+            {s.overdue ? "Срок завершён" : !s.started ? "Начнётся скоро" : `Осталось ${s.remaining} ${plural(s.remaining, "день", "дня", "дней")}`}
           </div>
         </div>
       </div>
@@ -279,7 +278,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {PRESET_COMMITMENTS.flatMap((c) => {
             const on = !!sel[c.id];
-            const detail = c.id === "japa" ? `${japaRounds} ${roundsWord(japaRounds)}` : c.detail;
+            const detail = c.id === "japa" ? `${japaRounds} ${plural(japaRounds, "круг", "круга", "кругов")}` : c.detail;
             const stepBtn: React.CSSProperties = { width: 40, height: 38, border: "none", background: "none", color: L2, fontSize: "var(--text-title2)", cursor: "pointer", lineHeight: 1, display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" };
             const nodes = [
               <button key={c.id} type="button" onClick={() => toggle(c)}

@@ -271,3 +271,21 @@ export function Caption({ children }: { children: ReactNode }) {
     </p>
   );
 }
+
+/**
+ * ЗКН-Д002 — РУССКОЕ ЧИСЛО: ОДНА ФУНКЦИЯ, А НЕ ЧЕТЫРЕ КОПИИ.
+ *
+ * Одна и та же `plural` лежала слово-в-слово в BooksHub, KirtansScreen,
+ * DhamaScreen и DhamaDetailPage. Четыре копии — четыре места, где правка
+ * не доедет. Повторяющийся блок берётся из примитивов.
+ *
+ *   plural(1, "книга", "книги", "книг")  → «книга»
+ *   plural(3, …)                          → «книги»
+ *   plural(7, …)                          → «книг»
+ */
+export function plural(n: number, one: string, few: string, many: string): string {
+  const m10 = n % 10, m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
+}
