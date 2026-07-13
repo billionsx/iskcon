@@ -135,6 +135,15 @@ EN_TITLES = {
     "freedom from anxiety": "Свобода от тревог",
 }
 
+# Английские СЛОВА, стоящие вперемешку с именами собственными («Gauradesh Mellows
+# Екатеринбург»). Целиком такой оборот в словарь не занесёшь — переводим по слову.
+EN_WORD = {
+    "mellows": "расы", "nightkirtans": "ночные киртаны", "slowtunes": "медленные напевы",
+    "temple": "храм", "evening": "вечер", "morning": "утро", "night": "ночь",
+    "eclipse": "затмение", "solar": "солнечное", "abhisek": "абхишека",
+    "prayers": "молитвы", "prayer": "молитва", "verses": "стихи", "tune": "напев",
+}
+
 PRAYERS: dict = {}
 
 
@@ -170,7 +179,15 @@ def key(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
-def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
+# Остаточные титулы: после резки имени они висят в начале названия
+#   «Mukunda Das. Raga of Separation» → срезали «Mukunda» → осталось «Das Raga…»
+RESIDUE = re.compile(
+    r"^\s*(?:das|dasa|dasi|devi|prabhu|swami|goswami|gosvami|maharaj|maharaja|babaji|"
+    r"srila|sri|hh|hg|дас|даси|деви|прабху|свами|госвами|махарадж|бабаджи|шрила|шри)"
+    r"[\s.,\-–—:]*", re.I)
+
+
+def make_title(fname: str, artist_ru: str, variants: list | None = None) -> str:
     """СТАНДАРТ (утв. основателем 13.07.2026):
 
         <Исполнитель>. <Название>
@@ -198,15 +215,22 @@ def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
         s = s[: m.start()] + " " + s[m.end():]
 
     # ИМЯ ИСПОЛНИТЕЛЯ ИЗ ФАЙЛА — вон (оно встанет впереди из реестра).
-    # Резать надо ЛАТИНСКИМ вариантом: русское имя из базы («Ачьюта Гопи Деви
-    # Даси») с латиницей в файле («Acyuta Gopi Devi Dasi») не совпадает.
-    for nm in (artist_lat, artist_ru):
-        if not nm:
-            continue
+    #
+    # ⚠️ Резать надо ВСЕМИ написаниями, что встречались в канале. Я резал двумя —
+    #    реестровым («Мукунда Дас») и канальным из карты («Mukunda Prabhu») — а в
+    #    файлах он ещё и «Mukunda Das». Третий вариант оставался в названии:
+    #    «Мукунда Дас. Das Raga of Separation».
+    names = [n for n in ([artist_ru] + list(variants or [])) if n]
+    for nm in sorted(names, key=len, reverse=True):
         s = re.sub(r"^\s*" + re.escape(nm) + r"\s*[.\-–—:,]*\s*", "", s, flags=re.I)
         for w in sorted(set(nm.split()), key=len, reverse=True):
             if len(w) >= 4:
                 s = re.sub(r"\b" + re.escape(w) + r"\w*", " ", s, flags=re.I)
+    s = re.sub(r"\s+", " ", s).strip(" .,-–—:")
+    prev = None
+    while s != prev:                    # остаточные титулы: «Das …», «прабху …»
+        prev = s
+        s = RESIDUE.sub("", s)
 
     # НОМЕР — как в файле («01»), без «№».
     num = ""
@@ -230,7 +254,11 @@ def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
             core = s                          # незнакомый английский оборот — как есть:
                                               # мусорная транслитерация хуже латиницы
         elif LAT.search(s):
-            core = translit_ru(s)             # санскрит — передаём звучание
+            # английские слова — переводим, санскрит — транслитерируем
+            core = " ".join(
+                (EN_WORD[w.lower()].capitalize() if i == 0 else EN_WORD[w.lower()])
+                if w.lower() in EN_WORD else (translit_word(w) if LAT.search(w) else w)
+                for i, w in enumerate(s.split()))
         else:
             core = s[0].upper() + s[1:]
     if not core or len(core) < 2:
@@ -310,11 +338,20 @@ def main() -> int:
             fixed += 1
     print("::notice::имён исправлено: %d" % fixed)
     artists = {a["slug"]: a["name"] for a in d1("SELECT slug, name FROM kirtan_artists")}
-    lat = {}
+    # ВСЕ написания имени, что встретились в канале, — из реестра разбора.
+    variants: dict = {}
     mp = Path(__file__).parent / "kirtans_map.json"
+    ros = Path(__file__).parent / "kirtans_roster.json"
+    key_to_slug = {}
     if mp.exists():
         for a in json.loads(mp.read_text(encoding="utf-8"))["artists"]:
-            lat[a["slug"]] = a.get("name_channel") or ""
+            variants.setdefault(a["slug"], set()).add(a.get("name_channel") or "")
+            key_to_slug[a["key"]] = a["slug"]
+    if ros.exists():
+        for a in json.loads(ros.read_text(encoding="utf-8"))["artists"]:
+            slug = key_to_slug.get(a["key"])
+            if slug:
+                variants.setdefault(slug, set()).update(a.get("variants", {}).keys())
 
     # ── ПЕРЕСТАНОВКА ДОРОЖЕК К ПРАВИЛЬНЫМ ИСПОЛНИТЕЛЯМ ──
     #
@@ -341,7 +378,8 @@ def main() -> int:
     changed = 0
     for t in tracks:
         pref = "" if t["artist_slug"] in NO_PREFIX else artists.get(t["artist_slug"], "")
-        new = make_title(t["file"], pref, lat.get(t["artist_slug"], "") or artists.get(t["artist_slug"], ""))
+        vs = sorted(variants.get(t["artist_slug"], set()), key=len, reverse=True)
+        new = make_title(t["file"], pref, vs + [artists.get(t["artist_slug"], "")])
         if new and new != t["title"]:
             d1("UPDATE kirtan_tracks SET title=?2 WHERE id=?1", [t["id"], new])
             changed += 1
