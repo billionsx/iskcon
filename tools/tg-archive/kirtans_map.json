@@ -641,8 +641,8 @@
     1154,
     1155
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "radhanatha-swami",
@@ -779,11 +779,11 @@
    "needs_review": false
   },
   {
-   "slug": "indradumna-swami",
-   "name_ru": "Индрадумна Свами",
+   "slug": "indradyumna-swami",
+   "name_ru": "Индрадьюмна Свами",
    "name_channel": "Indradumna Swami",
-   "key": "indradumn",
-   "entity_id": null,
+   "key": "indradiumn",
+   "entity_id": "indradyumna-swami",
    "hero_ru": null,
    "n_files": 25,
    "gb": 1.65,
@@ -1142,9 +1142,9 @@
    "slug": "bhakti-vijiana-goswami",
    "name_ru": "Бхакти Виджиана Госвами",
    "name_channel": "Bhakti Vijiana Goswami",
-   "key": "bhakti vian",
-   "entity_id": null,
-   "hero_ru": null,
+   "key": "bhakti vinan",
+   "entity_id": "bhakti-vijnana-goswami",
+   "hero_ru": "Бхакти Вигьяна Госвами Махарадж",
    "n_files": 10,
    "gb": 0.44,
    "msg_ids": [
@@ -1247,7 +1247,7 @@
     1056,
     1060
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
@@ -1296,9 +1296,9 @@
    "slug": "bhakti-bringa-govinda-swami",
    "name_ru": "Бхакти Бринга Говинда Свами",
    "name_channel": "Bhakti Bringa Govinda Swami",
-   "key": "bhakti bring govind",
-   "entity_id": null,
-   "hero_ru": null,
+   "key": "bhakti bhrng govind",
+   "entity_id": "bhakti-bhrnga-govinda-swami",
+   "hero_ru": "Бхакти Бхрнга Говинда Свами Махарадж",
    "n_files": 6,
    "gb": 0.57,
    "msg_ids": [
@@ -1369,8 +1369,8 @@
     1052,
     1067
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "shyamananda-kirtan-mandali",
@@ -1409,8 +1409,8 @@
     1138,
     1140
    ],
-   "existing": false,
-   "needs_review": true
+   "existing": true,
+   "needs_review": false
   },
   {
    "slug": "govinda-maharadzh",
@@ -1526,24 +1526,6 @@
    "needs_review": false
   },
   {
-   "slug": "je-anilo-prema-dhana",
-   "name_ru": "Дже Анило Према Дхана",
-   "name_channel": "Je Anilo Prema Dhana",
-   "key": "ie anilo prem dhan",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 4,
-   "gb": 0.05,
-   "msg_ids": [
-    397,
-    398,
-    399,
-    400
-   ],
-   "existing": true,
-   "needs_review": false
-  },
-  {
    "slug": "aditi-dukha",
    "name_ru": "Адити Дукха",
    "name_channel": "Адити Дукха",
@@ -1610,7 +1592,7 @@
     1028,
     1034
    ],
-   "existing": false,
+   "existing": true,
    "needs_review": false
   },
   {
@@ -2291,7 +2273,7 @@
    "slug": "devamrta-swami",
    "name_ru": "Девамрта Свами",
    "name_channel": "HH Devamrta Swami",
-   "key": "devamrit",
+   "key": "devamrt",
    "entity_id": null,
    "hero_ru": null,
    "n_files": 1,
