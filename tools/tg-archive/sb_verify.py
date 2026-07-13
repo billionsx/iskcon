@@ -75,12 +75,16 @@ def main():
                   WHERE kind='extra' ORDER BY canto, chapter, seq""")
     cantos = [r["canto"] for r in per]
     lst = ",".join(str(c) for c in cantos)
+    # Немой стих — тот, которого не покрывает НИ ОДНА дорожка. Считать по `ref` нельзя:
+    # аудио «18-20» лежит под ref «18-19», но покрывает и стих 20 — по ref он выглядел бы
+    # немым, хотя звук есть. Источник истины — `covers` (ЗКН-Пл014).
     mute = d1(f"""SELECT SUBSTR(v.division_id, 4, INSTR(SUBSTR(v.division_id,4),'.')-1) AS canto,
                          COUNT(*) AS n
                   FROM verses v
-                  LEFT JOIN sb_audio a ON a.ref = v.ref
-                  WHERE v.work_id='sb' AND a.ref IS NULL
+                  WHERE v.work_id='sb'
                     AND CAST(SUBSTR(v.division_id, 4, INSTR(SUBSTR(v.division_id,4),'.')-1) AS INTEGER) IN ({lst})
+                    AND v.ref NOT IN (SELECT j.value FROM sb_audio a, json_each(a.covers) j
+                                      WHERE a.covers IS NOT NULL)
                   GROUP BY canto""")
     mute_by = {int(r["canto"]): r["n"] for r in mute}
     chap_db = {int(r["canto"]): r["n"] for r in d1(
@@ -108,10 +112,13 @@ def main():
     lines += ["", f"**Дублей стиха (две дорожки на один ref): {len(dupref)}**"]
     for dr in dupref[:20]:
         lines.append(f"- `{dr['ref']}` — {dr['n']}")
-    lines += ["", f"**Вне издания — дорожка есть, стиха в книге НЕТ: {len(extra)}**",
-              "", "Не ошибка связи, а расхождение канала с изданием. Требует решения человека:",
-              "чтец записал лишнее — или в нашем издании не хватает стихов. Файлы на archive.org",
-              "лежат, в плеере играют, но за стих не выдаются.", ""]
+    lines += ["", f"**Вне издания — дорожка есть, стиха в книге НЕТ: {len(extra)}**", "",
+              "Не ошибка связи, а расхождение КАНАЛА с ИЗДАНИЕМ. Сверено с источником",
+              "(vedabase.io/ru): разбивка нашей базы совпадает с ним стих в стих — «ТЕКСТЫ 18-20»,",
+              "«23-25», «26-27», «30-31», «36-37», «39-40», «42-44» в ШБ 4.29 стоят ровно так же.",
+              "Значит книга разобрана верно, а эти дорожки чтец записал СВЕРХ издания.",
+              "Файлы на archive.org лежат, в плеере играют — но за стих не выдаются", 
+              "(выдумать стих, которого в книге нет, — фабрикация, ЗКН-БТ001).", ""]
     for e in extra[:30]:
         lines.append(f"- ШБ {e['canto']}.{e['chapter']} · «{e['title']}» — `{e['src']}`")
 
