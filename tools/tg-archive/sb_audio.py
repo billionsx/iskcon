@@ -80,21 +80,25 @@ RX_CANTO_FRONT = re.compile(r'^шб[\s_]*(\d{1,2})[\s_]+(?!\d)', re.I)  # «шб
 
 
 def parse_name(orig: str):
-    """Имя файла из канала → (глава, вид, спецификатор стиха, метка).
-    глава 0 = передняя материя песни. вид: verse | intro | front."""
+    """Имя файла из канала → (глава, вид, номер стиха для ref, метка файла).
+    глава 0 = передняя материя песни. вид: verse | intro | front.
+
+    ВАЖНО: канал нумерует стихи с ведущим нулём («шб 1.1 текст 01»), а книга — нет
+    («ШБ 1.1.1»). Ключ связи (`ref`) НОРМАЛИЗУЕТСЯ, а метка файла остаётся СЫРОЙ:
+    имена на archive.org уже розданы, менять их — значит перезалить всё заново.
+    Гейт sb-verify поймал это на первой же песни: 197 стихов оказались «немыми»."""
     n = (orig or "").strip()
     stem = re.sub(r'\.[A-Za-z0-9]{2,4}$', '', n)
     m = RX_TEXT.match(stem)
     if m:
         ch = int(m.group(2))
-        spec = re.sub(r'\s*[-–—]\s*', '-', m.group(3).strip())
-        return ch, "verse", spec, f"t{spec}"
+        raw = re.sub(r'\s*[-–—]\s*', '-', m.group(3).strip())          # «01» | «09-10»
+        spec = "-".join(str(int(x)) for x in raw.split("-") if x.isdigit())  # «1» | «9-10»
+        return ch, "verse", (spec or raw), f"t{raw}"
     m = RX_INTRO.match(stem)
     if m:
         ch = int(m.group(2))
         return ch, "intro", None, "vvedenie"
-    if RX_CANTO_FRONT.match(stem) or not stem.lower().startswith("шб"):
-        return 0, "front", None, slug(stem, "chast")
     return 0, "front", None, slug(stem, "chast")
 
 
@@ -206,7 +210,8 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     rows_ok: list[dict] = []
     playlist: list[dict] = []
     seq_by_ch: dict[int, int] = {}
-    n_skip = 0
+    seen_ref: set[str] = set()   # в каналах есть дубли поста («текст 032» и «текст 32» — один стих)
+    n_skip = n_dup = 0
     entity = await client.get_entity(channel)
     async for msg in client.iter_messages(entity, reverse=True):
         doc = msg.audio or (msg.document if msg.document and
@@ -226,20 +231,31 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
         seq = seq_by_ch.get(ch, 0)
         seq_by_ch[ch] = seq + 1
         remote = f"{ch:03d}.{seq:03d}.{label}.mp3"
+        ref = f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None
         row = {"file": f"{ident}/{remote}", "canto": canto, "chapter": ch, "seq": seq,
-               "kind": kind, "ref": (f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None),
-               "title": track_title(kind, spec, orig), "duration": dur,
-               "src": f"/audio/{ident}/{remote}"}
-        playlist.append({"file": remote, "title": row["title"], "ref": row["ref"], "orig": orig})
+               "kind": kind, "ref": ref, "title": track_title(kind, spec, orig),
+               "duration": dur, "src": f"/audio/{ident}/{remote}"}
+        playlist.append({"file": remote, "title": row["title"], "ref": ref, "orig": orig})
+
+        # Дубль поста: файл на archive.org кладём (архив полон), но в ПЛЕЙЛИСТ стих идёт
+        # один раз — иначе человек услышал бы его дважды подряд.
+        dup = bool(ref) and ref in seen_ref
+        if ref:
+            seen_ref.add(ref)
+        if dup:
+            n_dup += 1
+            print(f"дубль поста → в плейлист не беру: {orig} ({ref})")
+
         if remote in have:
             n_skip += 1
-            rows_ok.append(row)
+            if not dup:
+                rows_ok.append(row)
         else:
-            plan.append((msg, remote, row, getattr(doc, "size", 0) or 0))
+            plan.append((msg, remote, row, getattr(doc, "size", 0) or 0, dup))
 
     todo_gb = sum(p[3] for p in plan) / 1e9
     print(f"::notice::Песнь {canto} → {ident}: уже залито {n_skip}, осталось {len(plan)} "
-          f"({todo_gb:.2f} GB)")
+          f"({todo_gb:.2f} GB), дублей поста {n_dup}")
 
     md_done = existed
     n_up = n_fail = 0
@@ -284,13 +300,14 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
 
     # ── 2. Первый файл — отдельно и синхронно: он создаёт объект и несёт метаданные ──
     if plan and not md_done:
-        msg, remote, row, _ = plan.pop(0)
+        msg, remote, row, _, dup0 = plan.pop(0)
         dest = WORK / remote
         try:
             await fetch(msg, dest)
             await loop.run_in_executor(pool, do_upload, remote, str(dest), canto_metadata(canto))
             n_up += 1
-            rows_ok.append(row)
+            if not dup0:
+                rows_ok.append(row)
             md_done = True
         except Exception as e:
             print(f"::error::Песнь {canto}: не создан объект ({remote}): {e}")
@@ -307,17 +324,18 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
             print(f"::notice::Песнь {canto}: бюджет времени исчерпан — сворачиваюсь штатно")
             break
         part = plan[i:i + CHUNK]
-        res = await asyncio.gather(*[one(m, rn, rw) for m, rn, rw, _ in part],
+        res = await asyncio.gather(*[one(m, rn, rw) for m, rn, rw, _, _ in part],
                                    return_exceptions=True)
-        for (m, rn, rw, sz), r in zip(part, res):
+        for (m, rn, rw, sz, dp), r in zip(part, res):
             if isinstance(r, BaseException):
                 n_fail += 1
                 print(f"✗ {rn}: {r}")
             else:
                 n_up += 1
-                rows_ok.append(rw)
+                if not dp:
+                    rows_ok.append(rw)
         flush()
-        b0 += sum(sz for _, _, _, sz in part)
+        b0 += sum(sz for _, _, _, sz, _ in part)
         el = max(1.0, time.time() - t0)
         print(f"::notice::Песнь {canto}: {n_up}/{len(plan) + 1} · {b0/1e9:.2f} GB · "
               f"{b0/1e6/el:.2f} МБ/с · ошибок {n_fail}")
