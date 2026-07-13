@@ -127,7 +127,11 @@ const EKADASI_RU: Record<string, string> = {
 
 /* ── праздники и события: подстрока (lowercase) → перевод ───────────── */
 const FEST: ReadonlyArray<[string, { ru: string; type: CalType; id?: string }]> = [
-  ["gaura purnima", { ru: "Гаура-пурнима — явление Шри Чайтаньи Махапрабху", type: "festival", id: "chaitanya" }],
+  /* ЗКН-И001 — ГОЛАЯ ФОРМА ЗАПРЕЩЕНА. Здесь стояло «явление Шри Чайтаньи Махапрабху» —   lint-ok: комментарий НАЗЫВАЕТ снятую форму, как это делает cardText.ts (он в ALLOW по той же причине)
+   и стояло В ПРОДЕ, потому что линтер имён смотрел только в `apps/web/src`, а этот файл
+   лежит РЯДОМ с ним. Гаура-пурнима — явление в Навадвипе, каноническая форма «Гауранга
+   Махапрабху» (форма с санньясой — «Шри Кришна Чайтанья Махапрабху» — для Пури). */
+  ["gaura purnima", { ru: "Гаура-пурнима — явление Шри Гауранги Махапрабху", type: "festival", id: "chaitanya" }],
   ["krsna janmastami", { ru: "Шри Кришна-джанмаштами — явление Господа Шри Кришны", type: "festival", id: "krishna" }],
   ["janmastami", { ru: "Шри Кришна-джанмаштами — явление Господа Шри Кришны", type: "festival", id: "krishna" }],
   ["radhastami", { ru: "Радхаштами — явление Шримати Радхарани", type: "festival", id: "radharani" }],
@@ -259,6 +263,10 @@ function ruTitle(t: string): { title: string; type: CalType; entityId?: string }
   if (m) return { title: `Начало ${ORD[m[1]]} месяца Чатурмасьи`, type: "other" };
   m = low.match(/last day of the (first|second|third|fourth) caturmasya month/);
   if (m) return { title: `${ORD_N[m[1]].replace(/^./, (c) => c.toUpperCase())} месяц Чатурмасьи — последний день`, type: "other" };
+  // «continues» — середина месяца Чатурмасьи. Ловились только «begins» и «last day»,
+  // и эта строка уходила на экран СЫРЫМ АНГЛИЙСКИМ. В живом фиде их 2, в архиве за 10 лет — десятки.
+  m = low.match(/(first|second|third|fourth) month of caturmasya continues/);
+  if (m) return { title: `${ORD_N[m[1]].replace(/^./, (c) => c.toUpperCase())} месяц Чатурмасьи продолжается`, type: "other" };
   // санкранти
   m = low.match(/([a-z]+) sankranti \(sun enters ([a-z]+) on (\d{1,2}) ([a-z]{3})[^,]*, (\d{1,2}:\d{2})/);
   if (m) {
@@ -324,6 +332,51 @@ async function fetchFeed(env: CalAssetsEnv, origin: string, slug: string): Promi
   return null;
 }
 
+/* ── АРХИВ ПРОШЛОГО: 2016-01-01 … 2025-12-31 ──────────────────────────────
+ * Живой фид считает 2026-01-01 → 2028-02-04 — прошлого в приложении не было
+ * ВООБЩЕ. Архив (scripts/gcal/generate_past_archive.py) закрывает 10 лет назад
+ * ТЕМ ЖЕ движком GCAL и по ТЕМ ЖЕ координатам города: титхи определяется на
+ * восходе В ТОЧКЕ, поэтому общий «мировой» архив показал бы девоту в Сиднее
+ * чужой день экадаши (замер: у Нью-Йорка ~45% событий на другой дате, чем у
+ * Вриндавана). Один фид на город — единственный честный вариант (ЗКН-БТ002).
+ *
+ * Формат компактный (10 лет сырым JSON = 165 КБ × 4403 города = 700 МБ):
+ *   { from:"2016-01-01", t:[<уникальные summary>], e:"<день36>.<индекс36> …" }
+ * Разворачиваем обратно в {date, summary} и гоним через ТОТ ЖЕ buildEvents(),
+ * что и живой фид, — русификация едина по построению, а не по договорённости.
+ */
+type GcalPast = { from?: string; to?: string; t?: string[]; e?: string; location?: { name?: string } };
+const B36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+function un36(s: string): number {
+  let n = 0;
+  for (let i = 0; i < s.length; i++) n = n * 36 + B36.indexOf(s[i]);
+  return n;
+}
+function isoPlus(from: string, days: number): string {
+  const [y, m, d] = from.split("-").map(Number);
+  const t = new Date(Date.UTC(y, m - 1, d + days));
+  return t.toISOString().slice(0, 10);
+}
+export function expandPast(a: GcalPast): { date: string; title: string }[] {
+  const from = a.from || "", dict = a.t || [], packed = a.e || "";
+  if (!from || !dict.length || !packed) return [];
+  const out: { date: string; title: string }[] = [];
+  for (const tok of packed.split(" ")) {
+    const dot = tok.indexOf(".");
+    if (dot < 1) continue;
+    const title = dict[un36(tok.slice(dot + 1))];
+    if (title) out.push({ date: isoPlus(from, un36(tok.slice(0, dot))), title });
+  }
+  return out;
+}
+async function fetchPast(env: CalAssetsEnv, origin: string, slug: string): Promise<GcalPast | null> {
+  try {
+    const r = await env.ASSETS.fetch(new Request(origin + "/data/gcal-past/" + slug + ".json"));
+    if (r.ok) return (await r.json()) as GcalPast;
+  } catch { /* архива нет */ }
+  return null;
+}
+
 /* ── сборка русифицированных событий из сырого фида ──────────────────────
  * Чистая функция (без рантайм-зависимостей) → тестируется отдельно.
  *  · «Ksaya/Vrddhi tithi …» — астрономические пометки альманаха (выпавшая/
@@ -374,7 +427,7 @@ export function buildEvents(raw: { date: string; title: string }[]): CalEvent[] 
 // воркера (caches.default) на 24 часа и НЕ сбрасывается при деплое. Поэтому при
 // ЛЮБОЙ правке маппинга событий/личностей (PERSON/DISAMBIG/FEST/ruTitle) —
 // увеличиваем версию, иначе прод продолжит отдавать устаревшие entityId.
-const CAL_CACHE_VER = "2026-07-10-3";
+const CAL_CACHE_VER = "2026-07-13-1";
 
 export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv): Promise<Response | null> {
   if (url.pathname !== "/api/calendar") return null;
@@ -392,6 +445,32 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
   // проде оставались старыми даже после исправлений в PERSON/DISAMBIG/FEST. Вычисление
   // лёгкое (строковый матчинг ~350 событий), считаем свежее на каждый запрос.
   void CAL_CACHE_VER;
+
+  /* АРХИВ ПРОШЛОГО (?past=1) — отдельная ветка, живой путь не трогаем.
+   * Клиент грузит его ЛЕНИВО: только когда человек уходит в месяц до 2026-го.
+   * Держать 10 лет в горячем ответе значило бы платить за них на каждом открытии
+   * календаря, где нужен всего лишь «ближайший экадаши». */
+  if (url.searchParams.get("past") === "1") {
+    let arch: GcalPast | null = null;
+    if (locValid) arch = await fetchPast(env, url.origin, citySlug(rawLoc));
+    if (!arch && hasCoords) {
+      const ns = await nearestSlug(env, url.origin, lat, lng);
+      if (ns) arch = await fetchPast(env, url.origin, ns);
+    }
+    if (!arch && !locValid && !hasCoords) arch = await fetchPast(env, url.origin, citySlug("Vrindavan [India]"));
+    const rawPast = arch ? expandPast(arch) : [];
+    if (rawPast.length < 50) {
+      return new Response(JSON.stringify({ error: "no archive for location", loc: rawLoc }), {
+        status: 404, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+      });
+    }
+    rawPast.sort((a, b) => a.date.localeCompare(b.date));
+    return new Response(JSON.stringify({
+      loc: locValid ? rawLoc : (arch?.location?.name || rawLoc || ""),
+      span: { from: arch?.from || "", to: arch?.to || "" },
+      events: buildEvents(rawPast),
+    }), { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" } });
+  }
 
   // Источник — self-hosted фид GCal (Гаурабда, Календарный комитет GBC): ассет
   // /data/gcal/<slug>.json, посчитанный движком GCAL по координатам города. Точный
@@ -417,7 +496,11 @@ export async function calendarApi(request: Request, url: URL, env: CalAssetsEnv)
   const events = buildEvents(raw);
 
   const label = locValid ? rawLoc : (feed?.location?.name || rawLoc || "");
-  return new Response(JSON.stringify({ loc: label, events }), {
+  return new Response(JSON.stringify({
+    loc: label,
+    span: { from: raw[0].date, to: raw[raw.length - 1].date },
+    events,
+  }), {
     headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
   });
 }

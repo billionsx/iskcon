@@ -5,7 +5,13 @@ import { accountApi } from "./src/account/server";
 import { pushApi, runNotifications } from "./src/push/server";
 import { vowsApi } from "./src/vows/server";
 import { centersApi } from "./src/centers/server";
-import { darshanApi } from "./src/darshan/server";
+import { darshanApi, DARSHAN_RE, NON_DARSHAN_RE } from "./src/darshan/server";
+/* ЗКН-Н020 — АДРЕС ТОЛЬКО ИЗ РЕЕСТРА. Воркер собирал боевой домен СТРОКОЙ — а это
+ * адреса, уходящие НАРУЖУ НАВСЕГДА: `bookPageUrl` печатается в метаданные Internet
+ * Archive, ссылка подтверждения — в почту. И `bookPageUrl` вёл на `/books/<слаг>`,
+ * хотя книга по ЗКН-Н023b живёт В КОРНЕ (`/brahma-samhita`). Ссылка была МЁРТВАЯ —
+ * ровно та поломка, ради которой Н020 и написан: адрес переехал, писатель остался. */
+import { ROUTES, url } from "./src/routes";
 import { readingApi } from "./src/reading/server";
 import { downloaderApi } from "./src/downloader/server";
 import { storiesSyncApi } from "./src/stories/server";
@@ -723,7 +729,7 @@ async function bookMetaResponse(env: Env, work: string): Promise<Response> {
       collection: "opensource_audio",
     },
     relatedBookUrl,
-    bookPageUrl: `https://gaurangers.com/books/${b.slug}`,
+    bookPageUrl: url(ROUTES.book(b.slug)),
   });
 }
 
@@ -1248,7 +1254,7 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
   const fmt = (n: number) => n.toLocaleString("ru-RU") + " \u20bd";
   const ship = contact.method === "pickup" ? "Самовывоз" : ([contact.country, contact.city, contact.street, contact.zip].filter(Boolean).join(", ") || "—");
   const subject = `ISKCON ONE LOVE — заказ ${orderNo} · ${fmt(total)}`;
-  const confirmUrl = env.ADMIN_TOKEN ? `https://gaurangers.com/api/order/confirm?no=${encodeURIComponent(orderNo)}&token=${encodeURIComponent(env.ADMIN_TOKEN)}` : "";
+  const confirmUrl = env.ADMIN_TOKEN ? url(`/api/order/confirm?no=${encodeURIComponent(orderNo)}&token=${encodeURIComponent(env.ADMIN_TOKEN)}`) : "";
   const lns = items.map((it) => `• ${it.title}${it.kind === "physical" && it.qty > 1 ? ` ×${it.qty}` : ""} — ${fmt(it.sum)}`);
   const meta: Array<[string, string]> = [
     ["Сумма", fmt(total)], ["Товары", fmt(goods)], ...(shipping ? [["Доставка", fmt(shipping)] as [string, string]] : []),
@@ -1417,8 +1423,13 @@ const IG_TARGETS: { user: string; slug: string; deities: string; place: string }
 // Распознавание даршана по подписи IG-поста. NON: афиши/анонсы/программы/астрономия
 // (постеры Экадаши, флаеры лекций — сессии/регистрация/venue, фото луны/затмений). POS:
 // даршанная лексика + имена Божеств. «Фестиваль/утсав» НЕ режем — фестивальные даршаны реальны.
-const IG_NON_DARSHAN_RE = /регистрац|зарегистрир|\brsvp\b|sign[\s-]?up|\bregister\b|registration|register here|link in bio|ссылк[аи]\s+в\s+(?:био|шапке|описании|профиле)|save the date|\bwebinar\b|вебинар|\bseminar\b|семинар|workshop|мастер-?класс|\blecture\b|лекци|\bsession\b|сесси[яюий]|\bcourse\b|\bкурс\b|\bpresents\b|представляет|philosophy of|admission|\bticket\b|\bбилет|book\s+(?:now|your)|\bvenue\b|programme|\bschedule\b|расписани[ея]|пожертвован|donation|\bdonate\b|приглаша(?:ем|ет|ю)|invitation|\binvite\b|\bparana\b|парана|nirjala|нирджала|total fast|even from water|полнолуни|full moon|\bpurnima\b|пурнима|new moon|амавас|\bamavas|eclipse|затмени|grahan|\bзакат\b|\bsunset\b|sunrise|рассвет|qr\s*code|сканируй/i;
-const IG_DARSHAN_RE = /darshan|даршан|mangala|mangal|shringar|sringar|aarti|arati|abhishek|rajbhog|raj bhog|sandhya|deity|deities|gaura|nitai|radha|krishna|kṛṣṇa|balaram|madhava|govinda|gopinath|gopal|madan|vrindavan|радха|кришна|гопинатх|мадан|говинда|вриндаван|баларам/i;
+/* ЗКН-Н036 · ЗКН-Ф011 — ОДНО СОДЕРЖИМОЕ, ОДНО МЕСТО. Здесь ЛЕЖАЛА ВТОРАЯ КОПИЯ
+ * фильтра даршанов. Копию в `src/darshan/server.ts` починили (три мёртвых условия
+ * `\\bкурс\\b`, `\\bбилет`, `\\bзакат\\b` — `\\b` не работает с кириллицей) и дополнили
+ * отсевом постеров экадаши. А ЭТУ — НЕТ: линтер не смотрел за пределы `apps/web/src`,
+ * и копии молча разошлись. Фильтр воркера продолжал пропускать курсы, билеты и закаты.
+ * Копий больше нет — берём канон из одного места. */
+
 
 async function igSid(env: Env): Promise<string> {
   try { const r = await env.DB.prepare("SELECT v FROM ig_config WHERE k='ig_sessionid'").first(); return (r && (r as { v?: string }).v) || ""; } catch { return ""; }
@@ -1541,8 +1552,8 @@ function igPickLatestPhoto(posts: IgPost[]): { ts: number; urls: string[]; thumb
   // луны), затем предпочитаем пост с даршанной лексикой; иначе свежайший НЕ-афишный пост.
   // Если все недавние посты — не даршаны, возвращаем null (лучше пропустить день, чем
   // выложить афишу/луну как «ежедневный даршан»).
-  const ok = photos.filter((p) => !IG_NON_DARSHAN_RE.test(p.caption || ""));
-  const top = ok.find((p) => IG_DARSHAN_RE.test(p.caption || "")) || ok[0] || null;
+  const ok = photos.filter((p) => !NON_DARSHAN_RE.test(p.caption || ""));
+  const top = ok.find((p) => DARSHAN_RE.test(p.caption || "")) || ok[0] || null;
   if (!top) return null;
   const ts = top.ts || Math.floor(Date.now() / 1000);
   return { ts, urls: top.urls, thumbs: top.thumbs, postUrl: top.shortcode ? `https://www.instagram.com/p/${top.shortcode}/` : "https://www.instagram.com/" };
@@ -1741,8 +1752,8 @@ export default {
     // Apex и www привязаны к воркеру как custom_domain (сертификат Cloudflare есть на
     // обоих), поэтому воркер исполняется на обоих хостах и здесь приводит любой вход к
     // единому каноничному origin, сохраняя путь и query-строку:
-    //   www.gaurangers.com/*   → https://gaurangers.com/*   (301)
-    //   http://<любой хост>/*  → https://gaurangers.com/*   (301)
+    //   www.gaurangers.com/*   → https://gaurangers.com/*   (301)   lint-ok: комментарий ОПИСЫВАЕТ канонический origin, а не строит адрес
+    //   http://<любой хост>/*  → https://gaurangers.com/*   (301)   lint-ok: то же — описание редиректа, не построение адреса
     if (url.hostname === "www.gaurangers.com" || url.protocol === "http:") {
       url.hostname = "gaurangers.com";
       url.protocol = "https:";
