@@ -304,8 +304,8 @@
    "name_ru": "Аиндра Прабху",
    "name_channel": "Aindra Das",
    "key": "aindr",
-   "entity_id": "aindra-das",
-   "hero_ru": "Аиндра дас",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 103,
    "gb": 3.88,
    "msg_ids": [
@@ -418,11 +418,11 @@
   },
   {
    "slug": "niranjana-swami",
-   "name_ru": "Ниранджана Свами Махарадж",
+   "name_ru": "Ниранджана Свами",
    "name_channel": "Niranjana Swami",
    "key": "niranian",
-   "entity_id": "niranjana-swami",
-   "hero_ru": "Ниранджана Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 83,
    "gb": 3.85,
    "msg_ids": [
@@ -511,7 +511,7 @@
     1150
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "sarvatma",
@@ -583,11 +583,11 @@
   },
   {
    "slug": "hh-bhaktivaibhava-swami",
-   "name_ru": "Бхактивайбхава Свами Махарадж",
+   "name_ru": "Бхактивайбхава Свами",
    "name_channel": "HH Bhaktivaibhava Swami",
    "key": "bhaktivaibhav",
-   "entity_id": "bhaktivaibhava-swami",
-   "hero_ru": "Бхактивайбхава Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 49,
    "gb": 0.64,
    "msg_ids": [
@@ -642,15 +642,15 @@
     1155
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "radhanatha-swami",
-   "name_ru": "Радханатх Свами Махарадж",
+   "name_ru": "Радханатха Свами",
    "name_channel": "Radhanatha Swami",
    "key": "radhanat",
-   "entity_id": "radhanath-swami",
-   "hero_ru": "Радханатх Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 32,
    "gb": 0.75,
    "msg_ids": [
@@ -688,7 +688,7 @@
     550
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "sacinandana-swami",
@@ -696,7 +696,7 @@
    "name_channel": "Sachinandana Swami",
    "key": "sacinandan",
    "entity_id": "sacinandana-swami",
-   "hero_ru": "Шачинандана Свами Махарадж",
+   "hero_ru": null,
    "n_files": 32,
    "gb": 1.87,
    "msg_ids": [
@@ -738,11 +738,11 @@
   },
   {
    "slug": "vishnujana",
-   "name_ru": "Вишнуджана Свами Махарадж",
+   "name_ru": "Вишнуджана",
    "name_channel": "Vishnujana",
    "key": "visnuian",
-   "entity_id": "vishnujana-swami",
-   "hero_ru": "Вишнуджана Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 28,
    "gb": 0.35,
    "msg_ids": [
@@ -776,7 +776,7 @@
     1778
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "indradumna-swami",
@@ -822,8 +822,8 @@
    "name_ru": "Мадхава Прабху",
    "name_channel": "Madhava Prabhu",
    "key": "madhav",
-   "entity_id": "madhava-jv",
-   "hero_ru": "Мадхава",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 22,
    "gb": 2.48,
    "msg_ids": [
@@ -954,8 +954,8 @@
    "name_ru": "Локанатх Свами Махарадж",
    "name_channel": "Lokanath Swami Maharaj",
    "key": "lokanat",
-   "entity_id": "lokanath-swami",
-   "hero_ru": "Локанатх Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 16,
    "gb": 2.15,
    "msg_ids": [
@@ -977,7 +977,7 @@
     416
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "chaitania-chandra-charan-prabhu",
@@ -1010,11 +1010,11 @@
   },
   {
    "slug": "shivarama-swami",
-   "name_ru": "Шиварама Свами Махарадж",
+   "name_ru": "Шиварама Свами",
    "name_channel": "Shivarama Swami",
    "key": "sivaram",
-   "entity_id": "sivarama-swami",
-   "hero_ru": "Шиварама Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 13,
    "gb": 0.74,
    "msg_ids": [
@@ -1033,7 +1033,7 @@
     1732
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "ananda-vardhana-swami",
@@ -1063,11 +1063,11 @@
   },
   {
    "slug": "mukunda-prabhu",
-   "name_ru": "Мукунда Госвами Махарадж",
+   "name_ru": "Мукунда Прабху",
    "name_channel": "Mukunda Prabhu",
    "key": "mukund",
-   "entity_id": "mukunda-goswami",
-   "hero_ru": "Мукунда Госвами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 12,
    "gb": 1.1,
    "msg_ids": [
@@ -1085,15 +1085,15 @@
     1773
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "sulochana-prabhu",
-   "name_ru": "Сулочана",
+   "name_ru": "Сулочана Прабху",
    "name_channel": "Sulochana Prabhu",
    "key": "sulocan",
-   "entity_id": "sulochana",
-   "hero_ru": "Сулочана",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 12,
    "gb": 0.64,
    "msg_ids": [
@@ -1111,7 +1111,7 @@
     1777
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "bhaktisvarupa-damodara-goswami",
@@ -1354,11 +1354,11 @@
   },
   {
    "slug": "hg-yadubara-prabhu",
-   "name_ru": "Ядубара дас",
+   "name_ru": "Ядубара Прабху",
    "name_channel": "HG Yadubara prabhu",
    "key": "iadubar",
-   "entity_id": "yadubara-das",
-   "hero_ru": "Ядубара дас",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 6,
    "gb": 0.35,
    "msg_ids": [
@@ -1370,7 +1370,7 @@
     1067
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "shyamananda-kirtan-mandali",
@@ -1394,7 +1394,7 @@
   },
   {
    "slug": "hh-prabhavisnu-swami",
-   "name_ru": "Хх Прабхависну Свами",
+   "name_ru": "Прабхависну Свами",
    "name_channel": "HH Prabhavisnu Swami",
    "key": "prabhavisnu",
    "entity_id": null,
@@ -1434,11 +1434,11 @@
   },
   {
    "slug": "jayapataka-swami",
-   "name_ru": "Джаяпатака Свами Махарадж",
+   "name_ru": "Джаяпатака Свами",
    "name_channel": "Jayapataka Swami",
    "key": "iaiapatak",
-   "entity_id": "jayapataka-swami",
-   "hero_ru": "Джаяпатака Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 5,
    "gb": 0.15,
    "msg_ids": [
@@ -1449,15 +1449,15 @@
     396
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "yamuna-devi-dasi",
-   "name_ru": "Ямуна деви",
+   "name_ru": "Ямуна Деви Даси",
    "name_channel": "Yamuna Devi Dasi",
    "key": "iamun",
-   "entity_id": "yamuna-devi",
-   "hero_ru": "Ямуна деви",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 5,
    "gb": 0.09,
    "msg_ids": [
@@ -1468,7 +1468,7 @@
     920
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "sundarangi-devi-dasi",
@@ -1595,23 +1595,6 @@
    ],
    "existing": true,
    "needs_review": false
-  },
-  {
-   "slug": "gauranga",
-   "name_ru": "Гауранга",
-   "name_channel": "Gauranga",
-   "key": "gaurang",
-   "entity_id": null,
-   "hero_ru": null,
-   "n_files": 3,
-   "gb": 0.24,
-   "msg_ids": [
-    940,
-    973,
-    1743
-   ],
-   "existing": false,
-   "needs_review": true
   },
   {
    "slug": "hh-bhakti-bhrnga-govinda-swami",
@@ -1828,7 +1811,7 @@
    "name_channel": "HH Indradyumna Swami",
    "key": "indradiumn",
    "entity_id": "indradyumna-swami",
-   "hero_ru": "Индрадюмна Свами Махарадж",
+   "hero_ru": null,
    "n_files": 2,
    "gb": 0.2,
    "msg_ids": [
@@ -1872,11 +1855,11 @@
   },
   {
    "slug": "hh-devamrita-swami",
-   "name_ru": "Девамрита Свами Махарадж",
+   "name_ru": "Девамрита Свами",
    "name_channel": "HH Devamrita Swami",
    "key": "devamrit",
-   "entity_id": "devamrita-swami",
-   "hero_ru": "Девамрита Свами Махарадж",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 2,
    "gb": 0.08,
    "msg_ids": [
@@ -1884,7 +1867,7 @@
     1111
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "i-adubara",
@@ -2250,18 +2233,18 @@
   },
   {
    "slug": "vatsala-prabhu",
-   "name_ru": "Ватсала Дас",
+   "name_ru": "Ватсала Прабху",
    "name_channel": "vatsala prabhu",
    "key": "vatsal",
-   "entity_id": "vatsala-das",
-   "hero_ru": "Ватсала Дас",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 1,
    "gb": 0.02,
    "msg_ids": [
     909
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "2023-12-04-bb-govinda-swami",
@@ -2790,7 +2773,7 @@
   },
   {
    "slug": "hh-devamrta-swami",
-   "name_ru": "Хх Девамрта Свами",
+   "name_ru": "Девамрта Свами",
    "name_channel": "HH Devamrta Swami",
    "key": "devamrt",
    "entity_id": null,
@@ -2835,7 +2818,7 @@
   },
   {
    "slug": "hg-veda-vyasa-prabhu",
-   "name_ru": "Хг Веда Вяса Прабху",
+   "name_ru": "Веда Вяса Прабху",
    "name_channel": "HG Veda Vyasa prabhu",
    "key": "ved vias",
    "entity_id": null,
@@ -3045,18 +3028,18 @@
   },
   {
    "slug": "vrinda-das",
-   "name_ru": "Вринда-деви",
+   "name_ru": "Вринда Дас",
    "name_channel": "Vrinda Das",
    "key": "vrind",
-   "entity_id": "vrinda-devi",
-   "hero_ru": "Вринда-деви",
+   "entity_id": null,
+   "hero_ru": null,
    "n_files": 1,
    "gb": 0.06,
    "msg_ids": [
     1781
    ],
    "existing": false,
-   "needs_review": false
+   "needs_review": true
   },
   {
    "slug": "guru-vandana",
