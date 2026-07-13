@@ -329,10 +329,15 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     slugmap = work_slugs()
 
     # Книга, чей ГЕРОЙ — он сам: там пустых упоминаний не бывает, там житие.
+    own = own_work_ids(hero)
     for f in F:
-        if (f["ch"] == "k1-books-app"
-                and WORKS.get(f["src"], {}).get("about") == hero
-                and f.get("role") in ("упоминание", "качество", "перечисление")):
+        if f["ch"] != "k1-books-app":
+            continue
+        about_him = WORKS.get(f["src"], {}).get("about") == hero
+        his_book = f["src"] in own
+        if (about_him or his_book) and f.get("role") in ("упоминание", "перечисление"):
+            f["role"] = "актор"          # его книга или книга о нём — там нет пустот
+        elif about_him and f.get("role") == "качество":
             f["role"] = "актор"
 
     def pick(ch, kind=None, role=None):
@@ -347,7 +352,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     # АВТОРСТВО решает, чьё это слово. «По ту сторону рождения и смерти» —
     # книга Шрилы Прабхупады, и цитата оттуда НЕ становится «словом Рупы
     # Госвами» только потому, что он там действует.
-    mine = own_work_ids(hero)
+    mine = own
     actor_all = pick("k1-books-app", "translation", ("актор",))
     speech = [f for f in F if f["ch"] == "k1-books-app" and f["src"] in mine
               and f["kind"] == "translation" and f.get("role") in roles.IN_CARD]
