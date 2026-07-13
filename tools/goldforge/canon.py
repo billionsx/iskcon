@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""
+КАНОН ИМЁН И ТЕКСТА — законы, вшитые в кузницу (не в память).
+
+Порт `apps/web/src/cardText.ts::cleanCardText` на питон + гейты, которых в
+рантайме нет: полное имя героя, прямой апостроф, «Гаура-лила».
+
+Законы: ЗКН-Т001 (нет «;») · ЗКН-И001 (нет голой «Шри Чайтанья Махапрабху») ·
+ЗКН-И002 (нет голой «Радхарани») · ЗКН-И003 («Гауранга Лила» без дефиса) ·
+ЗКН-И004 (нет «А.Ч.») · ЗКН-П003 крит.9/11 (канон + полное имя героя).
+
+ГРАНИЦА ЗАКОНА (ЗКН-БТ004 — чужой голос не редактируется):
+  • ПРАВИМ авторские поля: p · h · label · kicker · see.t · by
+  • НЕ ТРОГАЕМ: q.t (дословная цитата), q.translit, названия книг, slug/id
+
+Именно поэтому cleanCardText в кузнице вызывается ТОЛЬКО из compose для
+авторских полей, а гейт проверяет цитаты на дословность, а не на канон.
+"""
+import re
+
+# ── Господь: голые формы → канон ──────────────────────────────────────────
+# Полная санньяса-форма «Шри Кришна Чайтанья Махапрабху» НЕ трогается: между
+# «Шри» и «Чайтанья» стоит «Кришна», regex её не задевает (как в cardText.ts).
+LORD = [
+    (re.compile(r"Шри\s+Чайтанья\s+Махапрабху"), "Гауранга Махапрабху"),
+    (re.compile(r"Шри\s+Чайтаньи\s+Махапрабху"), "Гауранги Махапрабху"),
+    (re.compile(r"Шри\s+Чайтанье\s+Махапрабху"), "Гауранге Махапрабху"),
+    (re.compile(r"Шри\s+Чайтанью\s+Махапрабху"), "Гаурангу Махапрабху"),
+    (re.compile(r"Шри\s+Чайтаньей\s+Махапрабху"), "Гаурангой Махапрабху"),
+    (re.compile(r"Шри\s+Чайтаньею\s+Махапрабху"), "Гаурангою Махапрабху"),
+]
+# Лила — с заглавной, без дефиса (ЗКН-И003)
+LILA = [
+    (re.compile(r"Гаура-лил([аыеуой])"), lambda m: "Гауранга Лил" + m.group(1)),
+    (re.compile(r"Гауранга-лил([аыеуой])"), lambda m: "Гауранга Лил" + m.group(1)),
+    (re.compile(r"Кришна-лил([аыеуой])"), lambda m: "Кришна Лил" + m.group(1)),
+]
+# Прабхупада: полусокращённый титул запрещён (ЗКН-И004)
+ABHAY = (re.compile(r"Е[её]\s+Божественная\s+Милость\s+А\.\s?Ч\.\s*"),
+         "Его Божественная Милость Абхай Чаранаравинда ")
+
+# ── Гейты (что ловим в авторской прозе) ───────────────────────────────────
+BARE_LORD = re.compile(r"(?<!Кришна )Чайтань[а-я]*\s+Махапрабху")
+BARE_RADHA = re.compile(r"(?<!Шримати )(?<!Шримати\s)Радхаран[иию]")
+SEMICOLON = re.compile(r";")
+APOSTROPHE = re.compile(r"'")          # ЗКН-П003: прямой апостроф — только в стихе
+HYPHEN_LILA = re.compile(r"[Гг]аура-лил|[Гг]ауранга-лил|[Кк]ришна-лил")
+HALF_TITLE = re.compile(r"А\.\s?Ч\.\s+Бхактиведанта")
+
+# Составные, которые НЕЛЬЗЯ трогать при подстановке полного имени героя
+# (ловушки-коллизии из плейбука: «Рупа-манджари», «Гопала-чампу», «Санатана-шикша»).
+COMPOUND = re.compile(r"[А-Яа-я]+-[а-я]+")
+
+
+def clean_card_text(s):
+    """ЗКН-Т002 · У4: единственная точка прогона авторской прозы."""
+    s = re.sub(r"[ \t]+", " ", (s or "")).strip()
+    if not s:
+        return ""
+    if ";" in s:                                    # ЗКН-Т001
+        parts = [p.strip() for p in s.split(";") if p.strip()]
+        s = ". ".join(p if i == 0 else p[0].upper() + p[1:] for i, p in enumerate(parts))
+        s = re.sub(r"\.\s*\.", ".", s)
+        s = re.sub(r"\s{2,}", " ", s).strip()
+    for rx, rep in LORD:                            # ЗКН-И001
+        s = rx.sub(rep, s)
+    for rx, rep in LILA:                            # ЗКН-И003
+        s = rx.sub(rep, s)
+    s = ABHAY[0].sub(ABHAY[1], s)                   # ЗКН-И004
+    s = s.replace("'", "\u2019")                    # прямой апостроф — вон из прозы
+    return s.strip()
+
+
+def enforce_hero(s, short, full):
+    """ЗКН-П003 крит.11 — имя героя в авторских полях ВСЕГДА полное.
+
+    «Джива» → «Джива Госвами» во всех падежах. Не трогаем: составные через
+    дефис («Виласа-манджари»), уже полную форму, и слова, где основа —
+    часть другого имени.
+    """
+    if not s or not short:
+        return s
+    # падежные окончания русского имени: Джив|а,ы,е,у,ой
+    stem = short.rstrip("аяыиеуой")
+    if len(stem) < 4:
+        return s
+    title = full[len(short):].strip()               # «Госвами», «Тхакур», …
+    if not title:
+        return s
+    rx = re.compile(r"(?<![А-Яа-я-])(%s[а-я]{0,3})(?![А-Яа-я-])" % re.escape(stem))
+
+    def sub(m):
+        word = m.group(1)
+        tail = s[m.end():m.end() + len(title) + 2]
+        if tail.lstrip().startswith(title):         # уже полное — не трогаем
+            return word
+        return "%s %s" % (word, title)
+    return rx.sub(sub, s)
+
+
+def prose_violations(s, hero_short=None, hero_full=None):
+    """Что запрещено в авторском поле. Пусто = чисто."""
+    bad = []
+    if not s:
+        return bad
+    if SEMICOLON.search(s):
+        bad.append("ЗКН-Т001 «;»")
+    if BARE_LORD.search(s):
+        bad.append("ЗКН-И001 голая «Чайтанья Махапрабху»")
+    if BARE_RADHA.search(s):
+        bad.append("ЗКН-И002 голая «Радхарани»")
+    if HYPHEN_LILA.search(s):
+        bad.append("ЗКН-И003 «Гаура-лила» через дефис")
+    if HALF_TITLE.search(s):
+        bad.append("ЗКН-И004 «А.Ч.» — полусокращённый титул")
+    if APOSTROPHE.search(s):
+        bad.append("ЗКН-П003 прямой апостроф в прозе")
+    if hero_short and hero_full:
+        stem = hero_short.rstrip("аяыиеуой")
+        if len(stem) >= 4:
+            title = hero_full[len(hero_short):].strip()
+            for m in re.finditer(r"(?<![А-Яа-я-])%s[а-я]{0,3}(?![А-Яа-я-])" % re.escape(stem), s):
+                tail = s[m.end():m.end() + len(title) + 2].lstrip()
+                if title and not tail.startswith(title):
+                    bad.append("ЗКН-П003/11 голое имя героя «%s»" % m.group(0))
+                    break
+    return bad

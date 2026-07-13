@@ -32,6 +32,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 FORGE = ROOT / "tools" / "goldforge" / "goldforge.py"
+FORGE_DIR = ROOT / "tools" / "goldforge"
 PASSPORTS = ROOT / "docs" / "dossiers" / "passports"
 
 
@@ -87,16 +88,67 @@ def check_gold_evidence():
     return bad
 
 
+def forge_src():
+    if not FORGE_DIR.exists():
+        return ""
+    return "\n".join(p.read_text(encoding="utf-8") for p in sorted(FORGE_DIR.glob("*.py")))
+
+
 def check_forge_channels():
-    """ЗКН-П001: шесть каналов жатвы объявлены в кузнице."""
+    """ЗКН-П001: СЕМЬ каналов жатвы не просто объявлены — реализованы.
+
+    Объявить канал в словаре и не написать сборщик — это У1 (документ), а не У5.
+    Поэтому гейт требует и имя канала, и функцию, которая его собирает.
+    """
     if not FORGE.exists():
         return [("goldforge.py", "кузницы нет (ЗКН-Пл005)")]
-    t = FORGE.read_text(encoding="utf-8")
-    need = ["k1", "k2", "k3", "k4", "k5", "k6"]
-    miss = [k for k in need if not re.search(r'\b%s\b' % k, t)]
+    t = forge_src()
+    # Канал считается объявленным, только если он ЗАРЕГИСТРИРОВАН в CHANNELS.
+    # Упоминание «k7» в комментарии — не канал. Гейт, который ловит слово, а не
+    # реестр, зелёный при удалённом канале: проверено на живом нарушении.
+    ch = re.search(r"CHANNELS\s*=\s*\{(.*?)\}", t, re.S)
+    reg = re.findall(r'"(k\d)-[a-z-]+"\s*:', ch.group(1) if ch else "")
+    miss = [k for k in ("k1", "k2", "k3", "k4", "k5", "k6", "k7") if k not in reg]
     if miss:
-        return [("goldforge.py", "нет каналов жатвы: %s (ЗКН-П001)" % ", ".join(miss))]
-    return []
+        return [("goldforge", "каналы не в реестре CHANNELS: %s (ЗКН-П001)" % ", ".join(miss))]
+    bad = []
+    for fn in ("k1_books_app", "k2_archive", "k4_bhajans_app", "web_channel"):
+        if fn not in t:
+            bad.append(("goldforge", "канал объявлен, но не собирается: %s (ЗКН-П001)" % fn))
+    if "sources.json" not in t:
+        bad.append(("goldforge", "нет реестра внешних источников (ЗКН-П001 k3/k5/k6/k7)"))
+    return bad
+
+
+def check_forge_pipeline():
+    """ЗКН-П010: карточка собирается КОНВЕЙЕРОМ, а не руками.
+
+    Стадии обязаны существовать все: паспорт → жатва → сборка → гейт → запись.
+    Пропала любая — и «сборка» опять становится ручным трудом, который никто
+    не может проверить.
+    """
+    t = forge_src()
+    if not t:
+        return [("goldforge", "кузницы нет (ЗКН-П010)")]
+    miss = [s for s in ("passport", "harvest", "compose", "gate", "publish")
+            if 'sub.add_parser("%s")' % s not in t and '("%s"' % s not in t]
+    return [("goldforge", "нет стадии конвейера: %s (ЗКН-П010)" % ", ".join(miss))] if miss else []
+
+
+def check_no_fabrication_gate():
+    """ЗКН-П011: ноль фабрикации — ПРОВЕРЯЕТСЯ, а не обещается.
+
+    Пока этот закон жил в документе, он держался на добросовестности. Гейт
+    содержания берёт каждое имя собственное и каждое число из авторской прозы
+    и требует предъявить источник в досье.
+    """
+    t = forge_src()
+    bad = []
+    if "def containment" not in t:
+        bad.append(("goldforge/gate.py", "нет гейта содержания (ЗКН-П011)"))
+    if "def verbatim" not in t:
+        bad.append(("goldforge/gate.py", "нет сверки дословности цитат (ЗКН-П012)"))
+    return bad
 
 
 def check_forge_confidence():
@@ -156,9 +208,11 @@ def check_p008():
 
 CHECKS = [
     ("ЗКН-П008", "метод ПКЛ записан в плейбуке", check_p008),
+    ("ЗКН-П010", "карточка собирается конвейером", check_forge_pipeline),
+    ("ЗКН-П011", "гейт нулевой фабрикации существует", check_no_fabrication_gate),
     ("ЗКН-Р004", "золото ТОЛЬКО с уликой (паспорт)", check_gold_evidence),
     ("ЗКН-Р003", "вердикт выносит гейт, не человек", check_forge_gate),
-    ("ЗКН-П001", "шесть каналов жатвы", check_forge_channels),
+    ("ЗКН-П001", "СЕМЬ каналов жатвы реализованы", check_forge_channels),
     ("ЗКН-П009", "ничего не выбрасывается (тиры)", check_forge_confidence),
 ]
 
