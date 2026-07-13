@@ -504,6 +504,9 @@ def heal(node, hero, slugmap):
                           if isinstance(x, str) else x for x in v]
             elif k == "to" and isinstance(v, str):
                 out[k] = fix_to(v, slugmap)
+            elif k == "see" and isinstance(v, list):
+                out[k] = [{**x, "t": canon.clean_card_text(x.get("t", ""))}
+                          if isinstance(x, dict) else x for x in v]
             elif k in ("t", "translit"):        # ЗКН-БТ004: чужой голос не правим
                 out[k] = v
             else:
