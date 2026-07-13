@@ -547,22 +547,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         tabs.append({"id": "prabhupada", "label": "Его комментарии",
                      "kicker": "СЛОВО", "subtabs": subs})
 
-    # ── КНИГА, КОТОРАЯ ВСЯ О НЁМ ─────────────────────────────────────────
-    over = {**cut_a, **cut_p}
-    if over:
-        secs = []
-        for w, (n, title) in sorted(over.items(), key=lambda kv: -kv[1][0]):
-            secs.append(section(
-                title,
-                ["Эта книга говорит о герое на протяжении всего текста: в карточку взято "
-                 "самое плотное, ещё %d мест ждут в самой книге. Карточка — свод, а не "
-                 "копия библиотеки." % n],
-                cite=[{"ref": title, "to": "/" + slugmap.get(w, w)}], hero=HN))
-        tabs.append({"id": "kniga-o-nem", "label": "Книги о нём", "kicker": "ЦЕЛИКОМ",
-                     "subtabs": [{"id": "polnye-knigi", "label": "Полные книги",
-                                  "sections": secs}]})
-
     # ── ТАБ · ИСТОЧНИКИ (провенанс) ──────────────────────────────────────
+    over = {**cut_a, **cut_p}
     # «Книги о нём» — тоже провенанс, а не глава. Отдельная вкладка под одну
     # ссылку — это шум в оглавлении.
     subs = []
