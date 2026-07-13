@@ -45,7 +45,7 @@ jobs:
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
           TG_CHANNELS: ${{ inputs.channel || '@iskconecom' }}
           TG_LIMIT: ${{ inputs.limit }}
-          PROBE_OUT: tools/tg-archive/kirtans_probe.json
+          PROBE_OUT: kirtans_probe.json      # working-directory уже tools/tg-archive
         run: python tg_probe.py
 
       - name: Отчёт (логи недоступны — печатаем аннотациями)
