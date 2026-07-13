@@ -87,7 +87,11 @@ def d1(sql: str, params=None):
 
 
 def slugify(name: str) -> str:
-    s = fix_mojibake(name).lower()
+    # ⚠️ «HH Bhaktivaibhava Swami» давал слаг `hh-bhaktivaibhava-swami`, а слаг —
+    #    это ВЕЧНЫЙ адрес элемента на archive.org. Обращение в адрес не пускаем.
+    s = re.sub(r"^\s*(hh|hg|his holiness|his grace|е\s*с|е\s*м|шрила|шри)\b[\s.\-]*",
+               "", fix_mojibake(name).strip(), flags=re.I)
+    s = s.lower()
     s = "".join(
         {"а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ё":"e","ж":"zh","з":"z","и":"i",
          "й":"y","к":"k","л":"l","м":"m","н":"n","о":"o","п":"p","р":"r","с":"s","т":"t",
@@ -101,17 +105,60 @@ def slugify(name: str) -> str:
 #    «Indradumna»/«Indradyumna», «Bringa»/«Bhrnga». Пишем руками — это канон,
 #    а не догадка. Ключ слева (как выходит из key_of) → ключ справа.
 ALIAS = {
-    "indraduna": "indradiuna",          # Indradumna → Indradyumna
+    # Индрадьюмна разъехался на ТРИ строки: indradumna / indradi-umna / indradyumna.
+    "indraduna": "indradiuna",
     "indradiuna": "indradiuna",
-    "bakti viiana": "bakti vinana",     # Bhakti Vijiana → Bhakti Vijnana
+    "indradiumna": "indradiuna",
+    # Бхакти Вигьяна: Vijiana / Vijnana
+    "bakti viiana": "bakti vinana",
+    # Бхакти Бхринга Говинда = Б.Б. Говинда Свами — ОДИН человек, три написания
     "bakti bringa govinda": "bakti brnga govinda",
     "bakti bringa govind": "bakti brnga govinda",
+    "b b govinda": "bakti brnga govinda",
+    "bb govinda": "bakti brnga govinda",
+    # Девамрита / Девамрта
+    "devamrt": "devamrit",
+    "devamrita": "devamrit",
 }
 
 # ── НЕ ИСПОЛНИТЕЛИ. Это названия песен и рубрик, просочившиеся в имя файла.
 NOT_ARTIST_KEYS = {
     "ie anilo prema dhana", "gaurang", "x iagi", "sounds",
 }
+
+# ── «ЭТО ВООБЩЕ ЧЕЛОВЕК?»
+#
+# Я записал в базу 140 «исполнителей» — и десятки из них людьми не были:
+#
+#     «01 Мелодй Оф Гоур Говинда Свами Махарадж»          ← название дорожки
+#     «2023.12.01 Бб Говинда Свами»                        ← дата
+#     «Е С Индрадьюмна Свами Киртан Бхакти Сангама»        ← название события
+#     «Радхе Говинда Спечиал | Ачюта Гопи Дай 1 Финал…»    ← афиша
+#
+# Все они прошли, потому что проверки НЕ БЫЛО. Слаг такого «исполнителя» ушёл бы
+# в АДРЕС НА archive.org — а он вечный. Признаки не-человека простые и жёсткие:
+EVENT_WORDS = re.compile(
+    r"\b(бхакти\s*сангама|bhakti\s*sangama|киртан\s*мела|kirtan\s*mela|фестивал|festival|"
+    r"финал|final|day\s*\d|дай\s*\d|нон[\s-]*стоп|non[\s-]*stop|special|спечиал|мелод|melody|"
+    r"вечерний|утренний|live|запис)\b", re.I)
+
+
+def is_person(name: str) -> bool:
+    s = fix_mojibake(name or "").strip()
+    if not s or len(s) < 3:
+        return False
+    if re.search(r"\d", s):                 # в имени человека цифр не бывает
+        return False
+    if "|" in s or "&" in s:                # афиша, а не имя
+        return False
+    if EVENT_WORDS.search(s):               # название события
+        return False
+    words = [w for w in re.split(r"[\s.]+", s) if w]
+    if len(words) > 5:                      # имя длиннее пяти слов = утекло название
+        return False
+    if len(words) == 1 and len(s) < 5:
+        return False
+    return True
 
 
 # ── ЗАЩИТА ОТ ЛОЖНОЙ ПРИВЯЗКИ.
@@ -145,9 +192,12 @@ def cmd_match() -> int:
     existing = {r["slug"]: r for r in d1("SELECT slug, name, role, entity_id FROM kirtan_artists")}
     by_ekey = {key_of(r["name"]): s for s, r in existing.items()}
 
-    out, linked, reviewed = [], 0, 0
+    out, linked, reviewed, dropped = [], 0, 0, 0
     for a in roster["artists"]:
         if a["n"] < 1 or a["key"] in NOT_ARTIST_KEYS:
+            continue
+        if not is_person(a["display"]):
+            dropped += 1
             continue
         k = ALIAS.get(a["key"], a["key"])
         hero = by_key.get(k) if linkable(k) else None
@@ -184,8 +234,8 @@ def cmd_match() -> int:
     dest = HERE / "kirtans_map.json"
     dest.write_text(json.dumps({"artists": out, "unresolved": roster["unresolved"]},
                                ensure_ascii=False, indent=1), encoding="utf-8")
-    print("::notice::СВЕДЕНО: %d исполнителей · с героем: %d · без героя (транслит, на проверку): %d"
-          % (len(out), linked, reviewed))
+    print("::notice::СВЕДЕНО: %d исполнителей · с героем: %d · без героя (на проверку): %d · отсеяно не-людей: %d"
+          % (len(out), linked, reviewed, dropped))
     for r in sorted(out, key=lambda x: -x["n_files"])[:40]:
         mark = "герой" if r["entity_id"] else "—"
         print("::notice::  %4d  %5.2f ГБ  %-28s  %-30s  %s"
@@ -196,8 +246,9 @@ def cmd_match() -> int:
 def cmd_register() -> int:
     m = json.loads((HERE / "kirtans_map.json").read_text(encoding="utf-8"))
     n = 0
+    floor = int(os.getenv("MIN_FILES") or "3")
     for r in m["artists"]:
-        if r["n_files"] < 1:
+        if r["n_files"] < floor:            # одиночки — почти всегда обрывки, не люди
             continue
         d1(
             """INSERT INTO kirtan_artists (slug, name, role, entity_id, sort)
