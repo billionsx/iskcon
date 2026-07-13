@@ -45,6 +45,7 @@ REQUIRED = {"k1-books-app", "k2-archive", "k4-bhajans-app"}
 
 WINDOW = 1200
 NEAR = 60
+PER_WORK_FETCH = 420   # больше из одной книги в карточку всё равно не войдёт
 MAX_SUFFIX = 4
 
 
@@ -110,6 +111,13 @@ def k1_books_app(strict, forms, quals, homs):
         "SELECT v.id FROM verses v JOIN verse_texts vt ON vt.verse_id=v.id "
         "WHERE %s ORDER BY v.work_id, v.division_id, v.ordinal" % where) or [])]
     ids = list(dict.fromkeys(ids))
+    per_book, keep = {}, []
+    for i in ids:
+        w = i.split(".")[0]
+        per_book[w] = per_book.get(w, 0) + 1
+        if per_book[w] <= PER_WORK_FETCH:
+            keep.append(i)
+    ids = keep
     out = []
     slugs = {r["id"]: (r["slug"], r["title"])
              for r in (d1.query("SELECT id, slug, title FROM book_catalog WHERE readable=1") or [])}
