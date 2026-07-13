@@ -208,6 +208,30 @@ def load_dossier(eid):
     return json.loads(dp.read_text(encoding="utf-8"))
 
 
+def keep_source(eid):
+    """Что переносим при перековке — РАБОТА ЧЕЛОВЕКА, а не то, что от неё осталось.
+
+    Моя чистка «пустых секций» съела у Шрилы Прабхупады четыре курированных
+    таба — «Ранние годы», «Вриндаван», «ИСККОН», «Книги»: в них была только
+    авторская проза, без цитат. В базе их уже нет. Но есть резерв — карточка
+    ДО кузницы. Берём главы оттуда И из базы: что уцелело, что курировали
+    позже — всё вместе, по id, оригинал сильнее.
+    """
+    live = prev_card(eid) or {"tabs": []}
+    prevp = DOSSIERS / ("%s.prev.json" % eid)
+    if not prevp.exists():
+        return live
+    orig = json.loads(prevp.read_text(encoding="utf-8"))
+    merged, seen = [], set()
+    for t in orig.get("tabs", []) + live.get("tabs", []):
+        tid = t.get("id")
+        if tid in seen:
+            continue
+        seen.add(tid)
+        merged.append(t)
+    return {"tabs": merged}
+
+
 def prev_card(eid):
     if not d1.available():
         return None
@@ -227,7 +251,7 @@ def cmd_compose(a):
     pp = dos["passport"]
     hero = {"short": pp.get("short") or a.entity_id, "full": pp.get("full") or a.entity_id,
             "gen": pp.get("gen") or pp.get("full") or a.entity_id}
-    keep = prev_card(a.entity_id) if a.keep_old else None
+    keep = keep_source(a.entity_id) if a.keep_old else None
     tiers = ("strong",) if not a.candidates else ("strong", "candidate")
     sel = dict(dos, findings=[f for f in dos["findings"] if f["tier"] in tiers])
     book, per_work, size = compose.build_fit(sel, hero, keep=keep)
