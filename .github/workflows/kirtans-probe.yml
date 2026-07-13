@@ -23,7 +23,7 @@ on:
         default: ""
 
 permissions:
-  contents: read
+  contents: write      # реестр коммитится в репозиторий
 
 jobs:
   probe:
@@ -85,7 +85,30 @@ jobs:
                                (x.get("caption") or "")[:40]))
           PY
 
+      # ── РАЗБОР: исполнитель для КАЖДОГО файла (три источника) ──
+      - name: Разбор в реестр исполнителей
+        working-directory: tools/tg-archive
+        env:
+          PROBE_IN: /tmp/probe.json
+          ROSTER_OUT: kirtans_roster.json
+        run: python kirtans_plan.py
+
+      # Логи Actions мне недоступны (чужой хост) — реестр КОММИТИМ в репозиторий.
+      - name: Реестр — в репозиторий
+        run: |
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+          git add tools/tg-archive/kirtans_roster.json
+          git diff --cached --quiet && { echo "реестр не изменился"; exit 0; }
+          git commit -m "Киртаны: реестр исполнителей канала [skip ci]"
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase -q origin main && git push -q origin HEAD:main && break
+            sleep 5
+          done
+
       - uses: actions/upload-artifact@v4
         with:
           name: kirtans-probe
-          path: /tmp/probe.json
+          path: |
+            /tmp/probe.json
+            tools/tg-archive/kirtans_roster.json
