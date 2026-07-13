@@ -1,0 +1,127 @@
+# Бриф куратора · narottama-dasa-thakura
+
+Материал, который конвейер НЕ внёс в книгу автоматически.
+Он не выброшен (ЗКН-П009) — он ждёт решения человека.
+
+## Кандидаты (голое имя — нужен взгляд куратора): 383
+
+- **ЧЧ Ади 1.46** · `k1-books-app` — «Человеку следует знать, что ачарья — это Я, и никогда не проявлять неуважения к нему. Ачарье нельзя завидовать, считая его простым смертным, ибо он — представитель всех 
+- **ЧЧ Ади 7.17** · `k1-books-app` — Преданных во главе с Гададхарой Пандитом следует считать воплощениями внутренней энергии Личности Бога. Это приближенные слуги Господа. | Шри Бхактисиддханта Сарасвати Тх
+- **ЧЧ Ади 7.34** · `k1-books-app` — Шри Чайтанья Махапрабху жил семейной жизнью до двадцати четырех лет. Ему еще не исполнилось двадцати пяти, когда Он принял санньясу. | Существуют четыре уклада духовной ж
+- **ЧЧ Ади 8.7** · `k1-books-app` — Тот, кто не признает величия Панча-таттвы и в то же время делает вид, что преданно служит Кришне, никогда не обретет милости Кришны и не приблизится к высшей цели. | Тот,
+- **ЧЧ Ади 8.17** · `k1-books-app` — «Углубляя свои философские познания, человек способен осознать свою духовную природу и обрести освобождение, а совершая жертвоприношения и благочестивые поступки, можно п
+- **ЧЧ Ади 8.60** · `k1-books-app` — Ананта Ачарья был вместилищем всех добродетелей. Никому не под силу постичь его величие. А Пандит Харидас был его возлюбленным учеником. | Шрила Бхактисиддханта Сарасвати
+- **ЧЧ Ади 10.78-79** · `k1-books-app` — Шри Кхандаваси Мукунда и его сын Рагхунандана были тридцать девятой ветвью того древа, Нарахари был сороковой, Чиранджива — сорок первой, а Сулочана — сорок второй. Все о
+- **ЧЧ Ади 10.85** · `k1-books-app` — Среди всех прочих ветвей Рупа и Санатана были главной ветвью. Анупама, Джива Госвами и другие во главе с Раджендрой были побегами той ветви. | В «Гаура-ганоддеша-дипике» 
+- **ЧЧ Ади 12.17** · `k1-books-app` — Когда Адвайта Ачарья услышал от Своего пятилетнего сына Ачьютананды эти правдивые слова, Он ощутил великую радость. | В своем комментарии к стихам 13 – 17 Бхактисиддханта
+- **ЧЧ Ади 12.88** · `k1-books-app` — Важной ветвью Гададхары Пандита считается Шивананда Чакраварти, тридцать третья ветвь. Он постоянно, с непоколебимой верой жил во Вриндаване. | В «Гаура-ганоддеша-дипике»
+- **ЧЧ Ади 14.50** · `k1-books-app` — Обращаясь к девушкам, Господь говорил: «Поклоняйтесь Мне, и Я дам вам хороших мужей и благословлю вас. Ганга и богиня Дурга — Мои служанки. Что говорить о других полубога
+- **ЧЧ Мадхья 3.167** · `k1-books-app` — Охваченная материнской любовью к Господу Чайтанье Махапрабху, Шачидеви одновременно испытывала счастье, страх и смирение. При этом ее тело под влиянием экстаза тоже прете
+- **ЧЧ Мадхья 4.79** · `k1-books-app` — Удивительный праздник и церемония установления Шри Гопаладжи были организованы всего за один день. Несомненно, это удалось только благодаря могуществу Гопалы. Однако лишь
+- **ЧЧ Мадхья 8.138** · `k1-books-app` — «В духовном царстве Вриндавана Кришна — духовный, вечно юный бог любви. Ему поклоняются с помощью мантры Кама-гаятри, содержащей духовное семя клим». | Вриндаван так опис
+- **ЧЧ Мадхья 11.88** · `k1-books-app` — «А вот Говинда Гхош, Мадхава Гхош и Ва̄судева Гхош. Киртаны этих трех братьев доставляют Господу огромное удовольствие». | Говинда Гхош, также известный как Гхош Тхакур, 
+- **ЧЧ Мадхья 14.16** · `k1-books-app` — Как могущественна милость Шри Чайтаньи Махапрабху! Даже не спросив царя ни о чем, Господь сделал так, что все его желания исполнились. | Милость Шри Чайтаньи Махапрабху о
+- **ЧЧ Мадхья 15.163** · `k1-books-app` — «Дорогой Господь, я готов вечно страдать в аду за грехи всех живых существ. Только, пожалуйста, исцели их от недуга материального бытия». | Шрила Бхактисиддханта Сарасват
+- **ЧЧ Антья 7.53** · `k1-books-app` — Шри Чайтанья Махапрабху знал, что сердце Валлабхи Бхатты исполнено гордости, и потому Он произнес эту речь, намекая на то, как можно по-настоящему понять смысл преданного
+- **ШБ 1.10.20** · `k1-books-app` — Поглощенные мыслями о трансцендентных качествах Господа, воспеваемого в изысканных стихах, женщины на крышах домов Хастинапура заговорили о Нем. И их речи были привлекате
+- **ШБ 1.13.28** · `k1-books-app` — Поэтому немедленно отправляйся на север, ничего не говоря своим родственникам, так как скоро наступит время, которое лишит людей всех хороших качеств. | Разочарование в ж
+- **ШБ 1.13.30** · `k1-books-app` — Благородная и целомудренная Гандхари, дочь Субалы, царя Кандагара [или Гандхары], последовала за своим мужем, увидав, что тот направляется в Гималаи, которые радуют тех, 
+- **ШБ 3.3.26** · `k1-books-app` — Прибыв туда, они совершили омовение и почтили предков, полубогов и великих мудрецов, предложив им воду этого святого места и умилостивив их своим подношением. Затем они п
+- **ШБ 4.21.39** · `k1-books-app` — Верховный Господь, ни от кого не зависящий и пребывающий в сердце каждого живого существа, очень доволен теми, кто идет по Его стопам и целиком посвящает себя служению по
+- **ШБ 4.26.12** · `k1-books-app` — Затем царь Пуранджана надел на себя соответствующие случаю украшения. После этого он умастил свое тело ароматной сандаловой пастой и надел на себя свежие гирлянды. Так ца
+- **ШБ 4.29.55** · `k1-books-app` — Дорогой царь, постарайся понять смысл рассказанной мной аллегорической истории об олене. Полностью осознав свою духовную природу, прекрати слушать столь милые твоему серд
+- **ШБ 5.1.6** · `k1-books-app` — О Махараджа Парикшит, царевич Прияврата был великим преданным, ибо, служа лотосным стопам духовного учителя, Нарады, он в совершенстве постиг трансцендентную науку. Позна
+- **ШБ 5.1.17** · `k1-books-app` — Тому, кто не владеет своими чувствами, всегда угрожает опасность стать жертвой материальной энергии, ведь, даже если он скитается по лесам, ведя жизнь отшельника, его соп
+- **ШБ 5.1.22** · `k1-books-app` — Так с помощью Господа Брахмы Сваямбхува Ману исполнил свой замысел. С дозволения великого мудреца Нарады он передал сыну бразды правления вселенной и велел ему защищать о
+- **ШБ 5.9.9-10** · `k1-books-app` — Люди, лишенные духовного знания, в сущности, ничем не лучше животных. Единственное различие между ними в том, что у животных четыре ноги, а у людей две. Такие двуногие жи
+- **ШБ 5.14.5** · `k1-books-app` — Иногда обусловленной душе, ведущей семейную жизнь и привязанной к своим деньгам и собственности, досаждают низкие, завистливые люди, чьи слова сродни укусам комаров и сле
+- **ШБ 5.26.23** · `k1-books-app` — Потерявшие всякий стыд мужья падших женщин, дочерей шудр, живут как животные, не зная благонравия, чистоты и самоограничения. После смерти они попадают в ад Пуйода, котор
+- **ШБ 6.1.16** · `k1-books-app` — О царь, человек смоет все грехи, если будет служить истинному преданному Господа и научится у него отдавать всего себя служению лотосным стопам Кришны. От греховной сквер
+- **ШБ 6.7.21** · `k1-books-app` — Господь Брахма сказал: О лучшие из полубогов, к несчастью, материальное богатство затмило ваш разум, и, когда в собрание к вам пришел Брихаспати, вы не приняли его как по
+- **ШБ 6.11.18** · `k1-books-app` — Но если, о великий герой Индра, в этой битве ты разобьешь мое войско и ударом молнии сумеешь обезглавить меня, тогда я буду счастлив отдать свое тело другим живым существ
+- **ШБ 6.15.18-19** · `k1-books-app` — Дорогой царь, тебе, возвышенному преданному Верховной Личности Бога, не пристало так скорбеть из-за утраты сына. Мы пришли, чтобы развеять твою напрасную скорбь, вызванну
+- **ШБ 7.10.12** · `k1-books-app` — Неважно, что ты сейчас в материальном мире. Всегда, непрерывно слушай Мои наставления и в мыслях своих неизменно будь со Мной, ибо Я — Сверхдуша, пребывающая в сердце каж
+- **ШБ 7.13.32** · `k1-books-app` — Брахман продолжал: Я вижу, как богатые люди, не владеющие своими чувствами и охваченные жаждой наживы, страдают бессонницей, ибо при всем своем богатстве они боятся опасн
+- **ШБ 7.15.52** · `k1-books-app` — Дваждырожденный брахман [двиджа] обретает жизнь по милости своих родителей, совершивших очистительный обряд гарбхадхану. Есть также другие очистительные обряды, которые д
+- **ШБ 8.5.25** · `k1-books-app` — Там [на острове Шветадвипа] Господь Брахма вознес молитвы Верховному Господу, хотя сам никогда не видел Его. Просто потому, что Брахма знал о Верховной Личности Бога из в
+- **ШБ 10.2.31** · `k1-books-app` — О Господь, подобный сияющему солнцу, Ты всегда готов осуществить желание Своего преданного, и потому Тебя называют древом желаний [ва̄н̃чха̄-калпатару]. Когда ачарьи, укр
+- **ШБ 10.3.37-38** · `k1-books-app` — О Моя безгрешная мать Деваки, постоянно погруженные в мысли обо Мне, с сердцем, исполненным глубокой веры и преданности, вы двенадцать тысяч небесных лет совершали аскети
+- **ШБ 10.10.25** · `k1-books-app` — «Эти двое юношей — сыновья богача Куверы, и Мне нет до них никакого дела, но Деварши Нарада — Мой преданный, который очень дорог Мне и любит Меня, и, поскольку Он хотел, 
+- **ШБ 11.17.27** · `k1-books-app` — Человеку следует знать, что ачарья — это Я, и никогда не проявлять неуважения к нему. Ачарье нельзя завидовать, считая его простым смертным, ибо он — представитель всех п
+- **БР 1.271** · `k1-books-app` — I will discuss the relation between Ramacandra and Narottama later on, but here I aam giving it in a nutshell.27 | 
+- **БР 1.272** · `k1-books-app` — Kaviraja and Narottama insiparable and people used to utter their names as though they were one person - like Nara-Narayan.272-273 | 
+- **БР 1.277** · `k1-books-app` — Sri Narottama | 
+- **БР 1.278** · `k1-books-app` — Sri Narottama was a great Vaisnava and a life long brahmacari who had visited all the holy places.278 | 
+- **БР 1.279** · `k1-books-app` — In Sri Sangita Madhava the same description of Narottama has been given.279 | 
+- **БР 1.280** · `k1-books-app` — Ordinary people could not understand the depth  of Narottama's character.  He had taken birth simply out of attraction for Sri Caitanya.280 | 
+- **БР 1.281** · `k1-books-app` — Narottama was born on the day of the full moon in the month of Magha.  Just as the moon grows fuller day by day so also Narottama grew.281 | 
+- **БР 1.287** · `k1-books-app` — Once an envoy came from the king of Gauda and Narottama's father and uncle were called to Gauda for some important business with the king.287 | 
+- **БР 1.291** · `k1-books-app` — Narottama cautiously left his house, carrying the memory of the feet of Mahaprabhu in his mind.291 | 
+- **БР 1.292** · `k1-books-app` — On the day of the full moon in the month of Kartika Narottama left his house as a bright and beautiful young man.292 | 
+- **БР 1.294** · `k1-books-app` — Lokanatha accepted Narottama as his disciple on the day of the full moon in the month of Sravana.294 | 
+- **БР 1.345** · `k1-books-app` — At that time Narottama arrived in Vrndavana and immediately engaged himself in the continous service of Sri Lokanatha.345 | 
+- **БР 1.346** · `k1-books-app` — Lokanatha was satisfied with Narottama's attitude and gave him Diksha mantra.346 | 
+- **БР 1.347** · `k1-books-app` — Sri Gopala Bhatta and the other Vaisnavas accepted Narottama as an intimate friend.347 | 
+- **БР 1.398** · `k1-books-app` — "He who drowns in the ocean of Gauranga's eternal love becomes an intimate associate of Sri Radha Madhava.  He who though lives in a home or in a forest can cry out takin
+- **БР 1.414** · `k1-books-app` — I have not given many details but have tried to present the intimate relationships of Sri Narottama and Sri Shyamananda in a nutshell.412 | 
+- **БР 1.415** · `k1-books-app` — In Vrndavana, Narottama had been floating in the river of devotional love but due to the wish of Prabhu he left Vrndavana for Gaudadesa.413 | 
+- **БР 1.417** · `k1-books-app` — There was a disciple of Narottama named Sri Vasanta who was born of a brahmin family and was a great poet.415 | 
+- **БР 1.418** · `k1-books-app` — He composes some songs in which he described the travels of Sri Narottama.416 | 
+- **БР 1.423** · `k1-books-app` — In this way, vasanta described the qualities of Narottama.421 | 
+- **БР 1.425** · `k1-books-app` — In sincere obsrvance of that order Narottama cared for six deities at one time.424 | 
+- **БР 1.428** · `k1-books-app` — The people of all classes an creeds got enormous pleasur from the sankirtana sung by Narottama.428 | 
+- **БР 1.429** · `k1-books-app` — The associates of Gauranga in Gaudadesa were very happy to have Narottama in their midst.429 | 
+- **БР 1.431** · `k1-books-app` — She was a experienced lady in devotional matters and she loved Narottama very much.431 | 
+- **БР 1.434** · `k1-books-app` — I am a worthless person, how can I describe the favor which Jahnavi devi showered on Narottama.434 | 
+- **БР 1.436** · `k1-books-app` — Many persons became his disciples, namely Ganga Narayana, Santosha and many others.  All credits went to Sri Narottama for this.436-437 | 
+- **БР 1.437** · `k1-books-app` — Sri Govinda Kaviraja composed some songs which eulogised Narottama.438 | 
+- **БР 1.452** · `k1-books-app` — The verses composed by him grew in beauty and flavor and Narottama, Ramacandra Kaviraja and others were always engaged to taste their substantial sweetness.452 | 
+- **БР 1.468** · `k1-books-app` — Sri Krsnananda's son was Srila Narottama whose character has already been described.467 | 
+- **БР 1.472** · `k1-books-app` — He was the brother and disciple of Sri Narottama and remained always in the service of his guru, Krsna and the Vaisnavas.471 | 
+- **БР 1.475** · `k1-books-app` — Oh by the wonderful endeavor of Sri Santosha Dutta the deity of Sri Gauranga then Sri Radha ramana and at last Sri Radha Kanta revealed themselves! Oh what nectarine devo
+- **БР 1.478** · `k1-books-app` — Others thought it was by the mercy of Narottama Kaviraja that Santosha was empowered to success in the devotional sphere.477 | 
+- **БР 1.482** · `k1-books-app` — Sri Kaviraja and Narottama passed their lives in the village of Kheturi with these great and qualified devotees.481 | 
+- **БР 1.789** · `k1-books-app` — He returned to Gaudadesa shortly from Vrndavana and began to stay with Narottama happliy.884 | 
+- **БР 4.451** · `k1-books-app` — Although he had heard the nameof Narottama he had never gotten the opportunity to meet him.406 | 
+- **БР 4.452** · `k1-books-app` — He decided that if he ever got the opportunity to meet Narottama he would not allow him to leave his association.407 | 
+- **БР 4.453** · `k1-books-app` — He began to weep over these thoughts because he did not know if or when he would ever get the opportunity to meet Narottama.408 | 
+- **БР 4.458** · `k1-books-app` — Srinivasa told Narottama that he felt fortunate to get Narottama's gem-like association.413 | 
+- **БР 4.459** · `k1-books-app` — In the same mood Narottama spoke many pleasing things to Srinivasa and the ears of every listener was soothed.414 | 
+- **БР 4.460** · `k1-books-app` — Srinivasa embraced Narottama affectionately and would not release his hands.415 | 
+- **БР 4.462** · `k1-books-app` — Narottama humbly paid his respects at the feet of Srinivasa.417 | 
+- **БР 4.465** · `k1-books-app` — Narottama was overwhelmed by unfathomable joy and he dedicated himself to the feetof Prabhu Lokenatha.419 | 
+- **БР 4.466** · `k1-books-app` — Prabhu Lokenatha was extremely pleased with the sincereity of Sri Narottama and gladly gave him diksha.420 | 
+- **БР 4.469** · `k1-books-app` — Within a short time Narottama completed his eduaction in the different scriptures.  The devotees were astonished by his capacity to comprehend the scriptures and they beg
+- **БР 4.472** · `k1-books-app` — Everyone in Vrndavana happily observed the great affection Sri Jiva showed for Srinivasa and Narottama.425 | 
+- **БР 4.473** · `k1-books-app` — Srinivasa and Narottama lived so intimately with Sri Jiva that it seemed they had become the two hands of Sri Jiva.  With the memory of Sri Rupa and Sanatana always fresh
+- **БР 5.5** · `k1-books-app` — Srinivasa and Narottama tour Vrndavana with Sri Raghava | 
+- **БР 5.6** · `k1-books-app` — Sri Raghava travelled happily to Mathura with Srinivasa and Narottama.  They first reached the temple of Sri Kesava Deva where Subhuddhi Roy had once stayed.  They all sa
+- **БР 5.10** · `k1-books-app` — From time to time Raghava Pandita would visit the holy places in Vrndavana and at other times he stayed with Sri Dasa Gosvami.  Sometimes both of them would come to Vrnda
+- **БР 5.52** · `k1-books-app` — Sri Raghava Pandita said to Srinivasa, "Gaura Candra used to dance here in ecstasy.  Numerous people came to observe his dancing, and they all became absorbed in nama san
+- **БР 5.103** · `k1-books-app` — O Srinivasa just see Mathua where Krsna enacted many pastimes.  This is the house of the gardener Sudama who was a favorite friend of Krsna.  Here Krsna killed the Kansa'
+- **БР 5.119** · `k1-books-app` — Sri Raghava happily travelled all round Mathura showing the holy places where Krsna had performed his lilas to Srinivasa and Narottama.  Then Sri raghava changed the dire
+- **БР 5.151** · `k1-books-app` — A kunja called Saval was on the North side of Shyama Kunda near Manas Pavana ghat.  This place, where the five Pandavas stood as trees, is very dear to Radhika.  Srinivas
+- **БР 5.153** · `k1-books-app` — Sri Raghava took Srinivasa and Narottama to see the places near Govardhan where Krsna had performed his lilas and one by one he described them all.  The place known as Ku
+- **БР 5.158** · `k1-books-app` — After showing all the holy places Sri Raghava returned to Gouai Tirtha with Srinivasa and Narottama.  This place is called Neepa Kunda because it is surrounded by beautif
+- **БР 5.205** · `k1-books-app` — Then Raghava took Narottama and Srinivasa up a small hill called Krsna Kundatala and showed them the Maghera village and the Tanar forest where Radha and Krsna used to me
+- **БР 5.206** · `k1-books-app` — In Atasa village the saint Astavakra performed tapasya.  Shakrasthana was later named Sakasoya.  This place is famous because it was here that Shakra (Indra) became repen
+
+## Омонимы (нарицательное, в книгу не идут): 17
+
+- МЦК 10.22 · `k1-books-app`
+- БР 1.349 · `k1-books-app`
+- БР 6.809 · `k1-books-app`
+- БР 12.202 · `k1-books-app`
+- ЧБ Мадхья 20.139 · `k1-books-app`
+- Смирение · 69-12 · 17 · `k1-books-app`
+- Bhakti-Ratnakara.EN.txt, offset 740078 · `k2-archive`
+- KaviKarnapura_Chaitanya-Charita-Maha-Kavya.EN.txt, offset 185452 · `k2-archive`
+- KaviKarnapura_Chaitanya-Charita-Maha-Kavya.EN.txt, offset 695593 · `k2-archive`
+- Prabhupada-Shikshamrita.RU.txt, offset 2741594 · `k2-archive`
+- Бхактисиддханта Сарасвати · `k6-wikipedia`
+- Локанатха Госвами · `k6-wikipedia`
+- Вишванатха Чакраварти · `k6-wikipedia`
+- Чайтанья · `k6-wikipedia`
+- Chaitanya Bhagavata · `k6-wikipedia`
+- Chaitanya Mahaprabhu · `k6-wikipedia`
+- Jahnava Devi · `k6-wikipedia`
