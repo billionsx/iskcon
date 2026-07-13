@@ -124,6 +124,13 @@ export function trackCoversRef(t: Track, ref: string): boolean {
   return t.ref === ref || !!t.covers?.includes(ref);
 }
 
+/** Номер стиха из ключа: «ШБ 9.8.9-10» → 9. Нужен, чтобы найти БЛИЖАЙШИЙ озвученный стих. */
+function verseNum(ref?: string | null): number {
+  if (!ref) return -1;
+  const n = parseInt(String(ref).split(".").pop() ?? "", 10);
+  return Number.isNaN(n) ? -1 : n;
+}
+
 /**
  * Подпись дорожки книги — ОДНА на все поверхности плеера (мини-плеер, Now Playing,
  * экран блокировки, «продолжить слушать»). Раньше каждая поверхность собирала строку
@@ -362,6 +369,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       i = p.index >= 0 && p.index < list.length ? p.index : 0;
     } else if (p.ref && list.some((t) => trackCoversRef(t, p.ref!))) {
       i = list.findIndex((t) => trackCoversRef(t, p.ref!));   // точное попадание в стих (ШБ)
+    } else if (p.ref && p.chapter != null) {
+      // Стих НЕ озвучен: в канале просто нет файла (так пропал «ШБ 9.8.11» — аудио идёт
+      // «Тексты 9-10» → сразу «Текст 12»). Бросать человека в НАЧАЛО главы нельзя: там
+      // «Введение» на два часа, и он не поймёт, почему слышит не то. Начинаем со
+      // СЛЕДУЮЩЕГО озвученного стиха той же главы — и читалка сама туда переедет,
+      // так что сдвиг ВИДЕН, а не молчалив (ЗКН-Б007, ЗКН-Б011).
+      const want = verseNum(p.ref);
+      const inCh = (t: Track) => t.chapter === p.chapter && (p.lila == null || t.lila === p.lila);
+      const near = list.findIndex((t) => inCh(t) && verseNum(t.ref) >= want);
+      const head = list.findIndex(inCh);
+      i = near >= 0 ? near : (head >= 0 ? head : 0);
     } else if (p.chapter != null) {
       const f = list.findIndex((t) => t.chapter === p.chapter && (p.lila == null || t.lila === p.lila));
       i = f >= 0 ? f : 0;
