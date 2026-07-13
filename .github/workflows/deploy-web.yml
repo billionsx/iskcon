@@ -176,8 +176,14 @@ jobs:
           if [ -z "$LATEST" ] || [ "$LATEST" = "null" ]; then
             echo "::error::не удалось прочитать id залитой версии — промоушен невозможен"; exit 1
           fi
+          # ⚠️ ЗДЕСЬ БЫЛА ПРИЧИНА. В теле стояла аннотация `workers/triggered_by`,
+          #    которую Cloudflare НЕ ПРИНИМАЕТ: ответ 10210 «Invalid annotations».
+          #    Промоушен ОТКЛОНЯЛСЯ каждый раз — а шаг ответ не читал (`set +e`,
+          #    результат только в echo). Итог: `wrangler deploy` заливал новую
+          #    версию, трафик оставался на СТАРОЙ, деплой рапортовал успех, и люди
+          #    неделю смотрели вчерашний код. Аннотации не нужны — убраны.
           RESP=$(curl -s -X POST "$API/accounts/$ACCT/workers/scripts/iskcon-web/deployments?force=true" "${auth[@]}" \
-            --data "{\"strategy\":\"percentage\",\"annotations\":{\"workers/triggered_by\":\"ci-promote\"},\"versions\":[{\"version_id\":\"$LATEST\",\"percentage\":100}]}")
+            --data "{\"strategy\":\"percentage\",\"versions\":[{\"version_id\":\"$LATEST\",\"percentage\":100}]}")
           OK=$(printf '%s' "$RESP" | jq -r '.success')
           echo "::notice::промоушен ответил success=$OK"
           if [ "$OK" != "true" ]; then
