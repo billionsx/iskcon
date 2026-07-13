@@ -115,7 +115,14 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.track?.group, playingHere, browseCanto, chapTabs.length]);
 
-  if (!p.active) return null;
+  /* ⚠️ ЗДЕСЬ ПЛЕЕР ИСЧЕЗАЛ.
+   *
+   * `active` = «дорожка загружена». Для ЛИСТА-ОВЕРЛЕЯ это верно: пока ничего не
+   * играет, показывать поверх страницы нечего. Но ВСТРОЕННЫЙ плеер — это САМА
+   * витрина: он обязан стоять на месте и до первого нажатия, со списком дорожек
+   * и транспортом. Иначе человек заходит на /kirtans и видит пустоту — ровно то,
+   * что и произошло. */
+  if (!embedded && !p.active) return null;
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
   const isKirtan = p.kind === "kirtan";
