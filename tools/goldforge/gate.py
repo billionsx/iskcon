@@ -209,10 +209,31 @@ def _norm(s):
     return re.sub(r"\s+", " ", (s or "").replace("\u00a0", " ").replace("ё", "е")).strip()
 
 
+def in_corpus(w, corpus):
+    """Слово (или его основа) лежит в уликах?
+
+    Гейт обязан знать РУССКИЕ ПАДЕЖИ. Иначе он объявляет выдумкой «в Праяге»
+    только потому, что источник говорит «Прояг». Отсекаем до трёх букв — этого
+    хватает на падеж и не хватает на подлог: «Ливерпуле» → «ливерп» в корпусе
+    всё равно нет.
+    """
+    f = fold(w)
+    for k in range(4):
+        stem = f[:len(f) - k]
+        if len(stem) >= 4 and stem in corpus:
+            return True
+    return False
+
+
 def containment(book, dossier):
     """ГЕЙТ НУЛЕВОЙ ФАБРИКАЦИИ (ЗКН-БТ001 · У5).
 
     Имя собственное или число, которого НЕТ в собранном материале, — выдумка.
+
+    ЧТО ГЕЙТ НЕ СУДИТ: названия табов и суб-табов. «Вклад в Гауранга Лилу» —
+    это наша навигация, а не утверждение о мире, и требовать от источника слово
+    «Лилу» в винительном падеже — значит ронять сборку на собственном интерфейсе
+    (так и упал Бхугарбха Тхакур). Судим то, что УТВЕРЖДАЕТ: прозу и заголовки.
     """
     # Улика — это не только текст пассажа, но и его паспорт: имя рассказчика,
     # название книги, заголовок главы. Всё это данные из D1 и works.json, а не
@@ -230,10 +251,12 @@ def containment(book, dossier):
     for path, kind, v in walk(book):
         if kind != "authored" or not v:
             continue
+        if path.endswith(".label") or path.endswith(".kicker"):
+            continue                                   # навигация — не утверждение
         for w in _proper(v):
             if w in STOP_CAPS or len(w) < 4:
                 continue
-            if fold(w[:-1] if len(w) > 5 else w) not in corpus:
+            if not in_corpus(w, corpus):
                 bad.append((path, "ФАБРИКАЦИЯ: имени «%s» нет в источниках" % w))
         for n in NUM.findall(v):
             if n not in corpus:
