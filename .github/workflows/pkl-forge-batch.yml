@@ -43,6 +43,10 @@ jobs:
           D1_DATABASE_ID: 6226aded-dd03-4e74-977f-9cd0b509e73d
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
+          # ЗАКОН: `cmd | tee log` отдаёт код возврата TEE, а не cmd. Без этого
+          # пакет ставит галочку личности, которая провалила гейт (так и вышло с
+          # Бхугарбхой в первом прогоне). Ошибка обязана быть видимой.
+          set -o pipefail
           IDS="${{ inputs.ids }}"
           N="${{ inputs.batch }}"
           KEEP=""
