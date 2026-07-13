@@ -40,6 +40,9 @@ NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
 MAX_PER_SECTION = 14        # глава редко даёт больше — а если даёт, это уже не глава
 MAX_PER_WORK = 180          # книга-о-герое не переписывается в карточку, а линкуется
 MAX_CARD = 600_000          # воркер отдаёт longform ЦЕЛИКОМ: карточка обязана влезать
+# Табы, которые СТРОИТ конвейер. Всё остальное в карточке — работа куратора.
+FORGE_TABS = {"vklad-gauranga-lila", "zhitie", "trudy", "uchenie", "proslavlenie",
+              "prabhupada", "kniga-o-nem", "istochniki", "upominaniya", "bhajany"}
 TRANSLIT_MAP = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh",
     "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
@@ -283,7 +286,13 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     ids_ok = verified_ids([f.get("byId") for f in F] + [hero])
     used = set()
     if keep:
-        used |= {q["ref"] for _p, k, q in _walk_quotes(keep) if q.get("ref")}
+        # Реестр бережёт цитаты КУРАТОРА — чтобы машина не повторила их вторым
+        # экраном. Но свои собственные прошлые цитаты машина обязана пересобрать
+        # заново: подмешав их сюда, перековка выбрасывала всё, что нашла, как
+        # «дубли» — и карточка молча худела с 233 цитат до 59.
+        curated = {"tabs": [t for t in keep.get("tabs", [])
+                            if t.get("id") not in FORGE_TABS]}
+        used |= {q["ref"] for _p, k, q in _walk_quotes(curated) if q.get("ref")}
     see = graph_see(hero, ids_ok)
     slugmap = work_slugs()
 
