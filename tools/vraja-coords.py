@@ -66,6 +66,32 @@ def in_vraja(lat: float, lng: float) -> bool:
     return in_box(lat, lng, "vrindavan")
 
 
+def source_alive(url: str) -> tuple:
+    """ЗКН-Пл015 — ИСТОЧНИК СМЕРТЕН. ПРОВЕРЬ ЕГО, ПРЕЖДЕ ЧЕМ ВИНИТЬ СКРИПТ.
+
+    vrajapedia.com УМЕР: отвечает 302 НА САМОГО СЕБЯ — бесконечная петля. Снимка
+    в архиве нет. Инструмент цел; источника больше нет.
+
+    Мы этого не видели МЕСЯЦАМИ: скрипт падал, воркфлоу отменяли, и все думали,
+    что дело в скрипте. Никто не спросил, ЖИВ ЛИ ИСТОЧНИК.
+
+    Теперь спрашиваем ПЕРВЫМ делом — и говорим прямо, а не «15 отказов подряд».
+    """
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+            if newurl.rstrip("/") == url.rstrip("/"):
+                raise RuntimeError("редирект САМ НА СЕБЯ — источник сломан")
+            return super().redirect_request(req, fp, code, msg, hdrs, newurl)
+
+    op = urllib.request.build_opener(NoRedirect)
+    try:
+        with op.open(urllib.request.Request(url, headers={"User-Agent": UA}),
+                     timeout=20) as r:
+            return True, "код %d" % r.status
+    except Exception as e:
+        return False, str(e)[:100]
+
+
 def get(url: str, timeout: int = 25) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=timeout) as r:

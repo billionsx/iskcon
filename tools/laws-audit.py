@@ -76,6 +76,11 @@ def actual_level(lid: str) -> tuple[int, str]:
     # Д009 — токен SECTION_GAP в общем компоненте шапки.
     # Ц005 — линтер исключает сам себя из обхода.
     # Пл011 — привязка озвучки по ключу: гейт в data-audit + инструмент.
+    if lid == "ЗКН-Пл015":
+        t = (ROOT / "tools" / "infra-audit.py").read_text(encoding="utf-8")
+        if "check_pl015" in t:
+            return 5, "гейт инфраструктуры (infra-audit.py)"
+
     if lid == "ЗКН-Пл014":            # озвучка по ключу (переехал Пл011 → Пл014)
         t = (ROOT / "tools" / "data-audit.py").read_text(encoding="utf-8")
         if "ЗКН-Пл014" in t:
@@ -103,6 +108,11 @@ def actual_level(lid: str) -> tuple[int, str]:
             return 5, "правило уникальности номеров (laws-lint.py)"
 
     # ЗКН-Пл014 — сверка озвучки ШБ.
+    if lid == "ЗКН-Пл015":
+        t = (ROOT / "tools" / "infra-audit.py").read_text(encoding="utf-8")
+        if "check_pl015" in t:
+            return 5, "гейт инфраструктуры (infra-audit.py)"
+
     if lid == "ЗКН-Пл014":
         if (ROOT / "tools" / "tg-archive" / "sb_verify.py").exists():
             return 5, "sb_verify.py · воркфлоу sb-verify"
