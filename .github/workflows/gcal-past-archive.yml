@@ -28,6 +28,7 @@ on:
 
 permissions:
   contents: write
+  actions: write        # ЗКН-Ф022: воркфлоу обязан САМ довезти данные до прода
 
 concurrency:
   group: gcal-past
@@ -160,4 +161,20 @@ jobs:
               sleep 8
             done
             git log --oneline -1
+            echo "pushed=1" >> "$GITHUB_ENV"
           fi
+
+      # ЗКН-Ф022 — ПУШ ИЗ ВОРКФЛОУ НЕ ЗАПУСКАЕТ ДЕПЛОЙ. GitHub НАМЕРЕННО не поднимает
+      # воркфлоу на коммиты, сделанные `GITHUB_TOKEN` (защита от рекурсии). Значит
+      # 4403 файла архива легли бы в репозиторий — и НИКОГДА не доехали до людей, а
+      # все гейты были бы зелёными. Данные без деплоя = данных нет (ср. ЗКН-Ф021).
+      - name: Довезти до прода (пуш из воркфлоу деплой НЕ триггерит)
+        if: env.pushed == '1'
+        run: |
+          set -e
+          curl -sS -X POST \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-web.yml/dispatches" \
+            -d '{"ref":"main"}'
+          echo "::notice title=Деплой::запущен вручную — иначе архив остался бы в репозитории"

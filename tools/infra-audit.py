@@ -363,6 +363,47 @@ def check_f009():
     return []
 
 
+
+# ═══ ЗКН-Ф022 — ПУШ ИЗ ВОРКФЛОУ НЕ ЗАПУСКАЕТ ДЕПЛОЙ ═══
+# GitHub НАМЕРЕННО не поднимает воркфлоу на коммиты, сделанные `GITHUB_TOKEN`
+# (защита от рекурсии). Значит любой пайплайн, который кладёт ассеты в `apps/web/`,
+# кладёт их В РЕПОЗИТОРИЙ — и НИКОГДА не доносит до людей. Все гейты при этом
+# зелёные: файл есть, коммит есть, воркфлоу «success». А в проде — ничего.
+#
+# Так чуть не пропал архив календаря: 4403 файла легли в main, deploy-web не
+# проснулся, и я бы считал работу сделанной. Данные без деплоя = данных нет
+# (тот же корень, что у ЗКН-Ф021: починка, которая не доехала, — не починка).
+#
+# ДОЛГ: 16 пайплайнов писали ассеты и не звали деплой. Разовая правка 16 чужих
+# воркфлоу вслепую опаснее долга, поэтому — ХРАПОВИК (как ЗКН-Д001): список
+# известного долга зафиксирован, НОВЫЙ нарушитель роняет сборку.
+F022_DEBT = {
+    "audio-verify.yml", "book-counts.yml", "build-cis-density.yml",
+    "build-world-feeds.yml", "centres-official.yml", "fetch-puri-cover.yml",
+    "fetch-vrindavan-cover.yml", "fix-exussr-tz.yml", "home-catalog-load.yml",
+    "iskcon-places-scrape.yml", "places-health.yml", "pull-covers.yml",
+    "vaisnava-calendar-fetch.yml", "vd-prose.yml", "vd-spl.yml", "vd-verse.yml",
+}
+
+
+def check_f022():
+    """Воркфлоу, кладущий ассеты в apps/web/, ОБЯЗАН сам запустить deploy-web."""
+    bad = []
+    wf = ROOT / ".github" / "workflows"
+    for f in sorted(wf.glob("*.yml")):
+        t = read(f)
+        commits = re.search(r"git\s+(add|commit)", t) and "apps/web/" in t
+        if not commits:
+            continue
+        if "deploy-web.yml/dispatches" in t:
+            continue
+        if f.name in F022_DEBT:
+            continue
+        bad.append((f.name, "коммитит ассеты в apps/web/, но НЕ запускает deploy-web "
+                            "— пуш из воркфлоу деплой не триггерит, данные не доедут"))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Ф013", "батч D1 не превышает 100 переменных", check_f013),
     ("ЗКН-Ф009", "не более 3 крон-триггеров", check_f009),
@@ -374,6 +415,7 @@ CHECKS = [
     ("ЗКН-Ф004", "откат D1 Time Travel на месте", check_f004),
     ("ЗКН-Пл009", "координата человека не перезаписывается", check_pl009),
     ("ЗКН-Ф003", "критерий свежести деплоя на месте", check_f003),
+    ("ЗКН-Ф022", "пайплайн ассетов сам зовёт деплой", check_f022),
     ("ЗКН-Ф006", "гейт tsc против белых страниц", check_f006),
     ("ЗКН-Ф007", "схема D1 зеркалится миграциями", check_f007),
     ("ЗКН-Ф008", "/api/me/* монтируются до accountApi", check_f008),
