@@ -83,6 +83,19 @@ def actual_level(lid: str) -> tuple[int, str]:
 
     # Ц007 — храповик долга в данных: поле `baseline` в проверках.
     # Пл013 — автоматизм это механизм: шаг «Самодокат жив?» в sb-verify.
+    # ДОМЕН ПР — ПРАВА НА ТЕКСТЫ.
+    #
+    # Гейты живут в `scripts/library/gate.py` (и `rights.py`). Аудитор искал их в
+    # `tools/` и не находил — а домен целиком там, в другой папке.
+    #
+    # Механизм есть. Аудитор просто не знал, где смотреть.
+    if lid.startswith("ЗКН-ПР"):
+        g = ROOT / "scripts" / "library" / "gate.py"
+        if g.exists():
+            num = lid.replace("ЗКН-", "")
+            if num in g.read_text(encoding="utf-8"):
+                return 5, "gate.py::%s (scripts/library)" % num
+
     # ЗКН-Ц010 — номер закона уникален: правило в линтере.
     if lid == "ЗКН-Ц010":
         t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
