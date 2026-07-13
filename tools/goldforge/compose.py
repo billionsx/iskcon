@@ -314,6 +314,12 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     see = graph_see(hero, ids_ok)
     slugmap = work_slugs()
 
+    # Книга, чей ГЕРОЙ — он сам: там пустых упоминаний не бывает, там житие.
+    for f in F:
+        if (f["ch"] == "k1-books-app" and f.get("role") == "упоминание"
+                and WORKS.get(f["src"], {}).get("about") == hero):
+            f["role"] = "актор"
+
     def pick(ch, kind=None, role=None):
         out = [f for f in F if f["ch"] == ch]
         if kind:

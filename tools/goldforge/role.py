@@ -110,7 +110,9 @@ def classify(text, name_pat, works=()):
         # 5. имя в ряду других имён — это связь, не эпизод
         if best == "упоминание":
             sent = _sentence(text, start)
-            others = [n for n in CAPNAME.findall(sent)]
+            # Заглавная в НАЧАЛЕ фразы — не имя («Между…», «Но…»). Считать её
+            # именем значит объявить перечислением обычное повествование.
+            others = [m.group(0) for m in CAPNAME.finditer(sent) if m.start() > 0]
             if len(others) >= 3 and not ACTION.search(fold(sent)):
                 best = "перечисление"
     return best
