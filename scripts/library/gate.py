@@ -116,6 +116,48 @@ def check() -> None:
     """):
         fail("ПР004", f"дубль стиха {r['work_id']} {r['ref']} ×{r['c']}")
 
+    # ── ПР007: НЕПРОЯСНЁННЫЕ ПРАВА — НЕ ПУБЛИКУЕМ ─────────────────────────────
+    # Закон стоял 🟢 в LAWS.md и был объявлен в докстринге ЭТОГО файла — но КОДА
+    # НЕ БЫЛО НИКОГДА. Ровно поэтому Бхакти-ратнакара (rights=PENDING) стояла
+    # readable=1 и отдавалась людям. Документ без механизма — незакрытый закон.
+    # Мы не удаляем (Р002) — мы не пускаем.
+    for r in d1.query("""
+        SELECT b.id, b.title, e.id AS edition_id, COALESCE(e.license,'') AS lic
+        FROM book_catalog b
+        JOIN editions e ON e.work_id = b.id
+        WHERE b.readable = 1
+    """):
+        if r["lic"] not in PUBLISHABLE:
+            fail("ПР007",
+                 f"«{r['title']}» публикуется (readable=1) с правами "
+                 f"`{r['lic'] or 'нет'}` — издание {r['edition_id']}")
+
+    # ── ПР008: РЕФ РОЖДАЕТСЯ В ИСТОЧНИКЕ, А НЕ В ЗАГРУЗЧИКЕ ───────────────────
+    # Загрузчик Бхакти-ратнакары проигнорировал родную нумерацию и пронумеровал
+    # блоки подряд 1..N. «БР 1.795» не существует ни в одном издании книги:
+    # в источнике нумерация идёт диапазонами до 890, а 8 из 15 таранг — СПЛОШНАЯ
+    # ПРОЗА, без единого номера. Проза выдана за стихи: 1 590 ссылок досочинено.
+    # Синтетический реф = фабрикация ссылки (БТ001). Ловится СЧЁТОМ, как ПР004.
+    # Манифест ОБЯЗАН быть коммитируемым: в build/ его в CI нет, и гейт слеп.
+    parity_path = pathlib.Path("docs/library/PARITY.json")
+    parity = json.loads(parity_path.read_text(encoding="utf-8")) if parity_path.exists() else {}
+    unproven = []
+    for r in d1.query("SELECT work_id, COUNT(*) n FROM verses GROUP BY work_id"):
+        w, n = r["work_id"], r["n"]
+        if w not in parity:
+            # Манифеста нет — фабрикацию НЕ ДОКАЗАТЬ. Молча не обвиняем: печатаем.
+            # Долг закрывается прогоном parse.py, который и рождает манифест.
+            unproven.append(f"{w}({n})")
+            continue
+        native = int(parity[w])
+        if n > native:
+            fail("ПР008",
+                 f"{w}: в D1 {n} стихов, в источнике {native} родных номеров — "
+                 f"загрузчик досочинил {n - native}", n - native)
+    if unproven:
+        print("  ПР008 · без манифеста паритета (фабрикация недоказуема): "
+              + ", ".join(unproven))
+
     # ── Б005: книга без автора-личности (СУЩЕСТВУЮЩИЙ закон, был не механизован)
     for r in d1.query("""
         SELECT w.id FROM works w
