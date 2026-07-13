@@ -388,7 +388,9 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         if own_bhajans:
             lines.append("Молитвы и песни его авторства: %s."
                          % ", ".join("«%s»" % b for b in own_bhajans[:8]))
-        vk.append(section("Наследие, оставленное лиле", lines, hero=HN))
+        vk.append(section("Наследие, оставленное лиле",
+                          ["Что даёт этот раздел: чем он обогатил лилу — труды, "
+                           "оставшиеся после него."] + lines, hero=HN))
     if top:
         me = hero == "prabhupada"
         vk.append(section(
@@ -401,8 +403,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see:
         vk.append(section("Связи в лиле",
-                          ["Личности, с которыми %s связан в источниках." % full],
-                          see=see, hero=HN))
+                          ["Что даёт этот раздел: личности, с которыми %s связан "
+                           "в источниках." % full], see=see, hero=HN))
     if not vk:
         note = d1.query("SELECT note FROM entities WHERE id=?1", [hero]) if d1.available() else None
         txt = (note or [{}])[0].get("note") if note else None
@@ -503,9 +505,14 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
                                   ("Молитвы к нему", other, "molitvy")):
             if not group:
                 continue
-            secs = [section(name, [], quotes=[quote_of(f, forms, ids_ok, used)
-                                              for f in sorted(fs, key=lambda x: x["ordinal"])],
-                            hero=HN) for name, fs in group.items()]
+            secs = [section(
+                name,
+                ["Что даёт этот раздел: %s" % ("молитва его авторства — его слово в песне."
+                                               if sid == "sochineniya"
+                                               else "молитва, обращённая к нему, — как его славят в киртане.")],
+                quotes=[quote_of(f, forms, ids_ok, used)
+                        for f in sorted(fs, key=lambda x: x["ordinal"])],
+                hero=HN) for name, fs in group.items()]
             subs.append({"id": sid, "label": label, "sections": secs})
     if subs:
         tabs.append({"id": "proslavlenie", "label": "Прославление",

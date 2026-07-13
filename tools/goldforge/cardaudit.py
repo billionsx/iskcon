@@ -170,6 +170,9 @@ def report(eid, res):
         print("  %s %-14s %d" % (mark, name, len(items)))
         for where, why in items[:4]:
             print("      %-42s %s" % (where[:42], why[:60]))
+            # Логи GitHub лежат на неразрешённом хосте. Нарушение, которого не
+            # видно в аннотациях, — не найденное нарушение.
+            print("::warning title=%s · %s::%s — %s" % (eid, name, where[:60], why[:100]))
     print("  " + "─" * 68)
     print("  ИТОГО НАРУШЕНИЙ: %d" % res["total"])
     return res["total"]
