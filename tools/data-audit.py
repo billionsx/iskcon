@@ -28,6 +28,36 @@ CHECKS = [
         "hint": "→ «Гауранга Махапрабху» или «Шри Кришна Чайтанья Махапрабху» (санньяса-лила)",
     },
     {
+        "law": "ЗКН-Р013",
+        "name": "СВЯЗЬ ОБЪЯВЛЕНА В ДОСЬЕ → ОНА ЕСТЬ В ГРАФЕ",
+        # Досье личности содержит поле `see` — «смотри также». Это ОБЪЯВЛЕННАЯ
+        # связь: автор карточки уже сказал, с кем эта личность связана.
+        #
+        # Но в графе её не было. 1807 связей лежали в досье и НЕ БЫЛИ рёбрами:
+        # 62 личности висели СИРОТАМИ — с богатыми досье, но без родства. Открыв
+        # такую карточку, человек не видел, чей это ученик и чей спутник.
+        #
+        # Материализация закрыла 59 из 62. Тип связи — `see-also`: досье говорит
+        # «смотри также», но НЕ говорит, КЕМ приходится. Достроить до `disciple-of`
+        # без источника — соврать.
+        "sql": """SELECT COUNT(*) AS n FROM (
+                    SELECT DISTINCT p.entity_id AS ot,
+                           json_extract(el.value, '$.id') AS k
+                    FROM entity_profiles p,
+                         json_tree(p.longform) j,
+                         json_each(j.value) el
+                    WHERE j.key = 'see' AND j.type = 'array'
+                      AND json_extract(el.value, '$.id') IS NOT NULL) x
+                  WHERE x.ot <> x.k
+                    AND EXISTS (SELECT 1 FROM entities e
+                                WHERE e.id = x.k AND e.type = 'personality')
+                    AND NOT EXISTS (SELECT 1 FROM entity_relations r
+                                    WHERE (r.from_id = x.ot AND r.to_id = x.k)
+                                       OR (r.from_id = x.k AND r.to_id = x.ot))""",
+        "hint": "→ связь объявлена в досье (`see`), но не стала ребром графа: "
+                "личность висит без родства (ЗКН-Р013)",
+    },
+    {
         "law": "ЗКН-Б009",
         "name": "ТЕКСТ БЕЗ СКЕЛЕТА — МОЛЧАЛИВАЯ ПОЛОВИНЧАТОСТЬ",
         # Книга живёт в ДВУХ таблицах: `verses` — скелет (id, раздел, порядок),
@@ -424,6 +454,36 @@ CHECKS = [
                          OR t.atom GLOB 'ЧБ [0-9]*')""",
         "hint": "→ ссылка пишется ПОЛНОСТЬЮ: «Нектар преданности», глава 41 — "
                 "а не «НП 41» (ЗКН-БТ006)",
+    },
+    {
+        "law": "ЗКН-Р013",
+        "name": "СВЯЗЬ ОБЪЯВЛЕНА В ДОСЬЕ → ОНА ЕСТЬ В ГРАФЕ",
+        # Досье личности содержит поле `see` — «смотри также». Это ОБЪЯВЛЕННАЯ
+        # связь: автор карточки уже сказал, с кем эта личность связана.
+        #
+        # Но в графе её не было. 1807 связей лежали в досье и НЕ БЫЛИ рёбрами:
+        # 62 личности висели СИРОТАМИ — с богатыми досье, но без родства. Открыв
+        # такую карточку, человек не видел, чей это ученик и чей спутник.
+        #
+        # Материализация закрыла 59 из 62. Тип связи — `see-also`: досье говорит
+        # «смотри также», но НЕ говорит, КЕМ приходится. Достроить до `disciple-of`
+        # без источника — соврать.
+        "sql": """SELECT COUNT(*) AS n FROM (
+                    SELECT DISTINCT p.entity_id AS ot,
+                           json_extract(el.value, '$.id') AS k
+                    FROM entity_profiles p,
+                         json_tree(p.longform) j,
+                         json_each(j.value) el
+                    WHERE j.key = 'see' AND j.type = 'array'
+                      AND json_extract(el.value, '$.id') IS NOT NULL) x
+                  WHERE x.ot <> x.k
+                    AND EXISTS (SELECT 1 FROM entities e
+                                WHERE e.id = x.k AND e.type = 'personality')
+                    AND NOT EXISTS (SELECT 1 FROM entity_relations r
+                                    WHERE (r.from_id = x.ot AND r.to_id = x.k)
+                                       OR (r.from_id = x.k AND r.to_id = x.ot))""",
+        "hint": "→ связь объявлена в досье (`see`), но не стала ребром графа: "
+                "личность висит без родства (ЗКН-Р013)",
     },
     {
         "law": "ЗКН-Б009",
