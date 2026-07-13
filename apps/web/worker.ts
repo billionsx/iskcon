@@ -894,9 +894,17 @@ const SB_CANTO_NAMES: Record<number, string> = {
   10: "Summum Bonum", 11: "Всеобщая история", 12: "Век деградации",
 };
 
+function sbCantoList(avail: { canto: number; n: number }[]) {
+  return avail.map((a) => ({
+    canto: a.canto,
+    label: `Песнь ${a.canto}${SB_CANTO_NAMES[a.canto] ? ` «${SB_CANTO_NAMES[a.canto]}»` : ""}`,
+    tracks: a.n,
+  }));
+}
+
 async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null): Promise<Response> {
-  const empty = (c: number) => json({
-    book: "sb", scope: String(c), cantos: [],
+  const empty = (c: number, avail: { canto: number; n: number }[] = []) => json({
+    book: "sb", scope: String(c), cantos: sbCantoList(avail),
     modes: { plain: { identifier: `iskcone-sb-${c}`, tracks: [] } },
   });
 
@@ -910,8 +918,12 @@ async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null
   } catch { return empty(Number(cantoRaw) || 1); }        // таблицы ещё нет — тишина, а не ошибка
   if (!avail.length) return empty(Number(cantoRaw) || 1);
 
+  // Попросили песнь, которой ещё нет → ПУСТОЙ плейлист. Подставить вместо неё другую
+  // песнь — молчаливая подмена: человек открыл «Песнь 7», а услышал бы «Песнь 1» и не
+  // понял бы, почему (ЗКН-Б007). Без песни в запросе — берём первую озвученную.
   const asked = Number(cantoRaw);
-  const canto = avail.some((a) => a.canto === asked) ? asked : avail[0].canto;
+  if (cantoRaw && !avail.some((a) => a.canto === asked)) return empty(asked || 1, avail);
+  const canto = asked || avail[0].canto;
   const identifier = `iskcone-sb-${canto}`;
 
   // Названия глав — из D1 (единый источник структуры книги; 'sb.1.%' не цепляет 'sb.11.…').
@@ -947,11 +959,7 @@ async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null
   return json({
     book: "sb",
     scope: String(canto),
-    cantos: avail.map((a) => ({
-      canto: a.canto,
-      label: `Песнь ${a.canto}${SB_CANTO_NAMES[a.canto] ? ` «${SB_CANTO_NAMES[a.canto]}»` : ""}`,
-      tracks: a.n,
-    })),
+    cantos: sbCantoList(avail),
     modes: { plain: { identifier, tracks } },
   });
 }
@@ -1928,6 +1936,18 @@ export default {
     // ШБ: озвучка стих за стихом; манифест по ОДНОЙ песни (?canto=N) — иначе очередь на 13 тыс. дорожек
     if (url.pathname === "/api/books/sb/audio") {
       return sbAudioManifest(env, url.origin, url.searchParams.get("canto"));
+    }
+    // Карта озвученного: {песнь: [главы]}. Читалка гейтит по ней кнопку «Слушать», чтобы на
+    // неозвученной главе честно сказать «скоро», а не подсунуть чужую дорожку (ЗКН-Б007).
+    if (url.pathname === "/api/books/sb/audio/available") {
+      try {
+        const r = await env.DB.prepare(
+          `SELECT canto, chapter FROM sb_audio WHERE chapter > 0 GROUP BY canto, chapter ORDER BY canto, chapter`
+        ).all<{ canto: number; chapter: number }>();
+        const map: Record<string, number[]> = {};
+        for (const x of r.results ?? []) (map[String(x.canto)] ||= []).push(x.chapter);
+        return json({ cantos: map });
+      } catch { return json({ cantos: {} }); }
     }
     // Любая другая работа со своей аудиокнигой → общий хэндлер (треки из iskcone-<work>,
     // заголовки из playlist.json). Спец-хэндлеры bg/cc/brs/spl обработаны выше; работы без
