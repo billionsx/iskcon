@@ -228,21 +228,23 @@ async def main_run() -> int:
             doc = msg.audio or msg.document
             if not doc:
                 continue
-            fname = None
+            fname, dur = None, 0
             for attr in doc.attributes:
                 if hasattr(attr, "file_name"):
                     fname = attr.file_name
+                if hasattr(attr, "duration") and getattr(attr, "duration", None):
+                    dur = int(attr.duration)          # плеер без длительности слеп
             fname = re.sub(r"[^\w\s.\-()+]", "_", fname or "%s-%d.mp3" % (r["slug"], msg.id))
             if not fname.lower().endswith(".mp3"):
                 fname += ".mp3"
             if fname in have[r["identifier"]]:
                 continue
-            q.put_nowait((msg, fname, r, getattr(doc, "size", 0) or 0))
+            q.put_nowait((msg, fname, r, getattr(doc, "size", 0) or 0, dur))
         total = q.qsize()
         print("::notice::к заливке в этом прогоне: %d записей" % total)
         beat("к заливке: %d записей" % total)
 
-        async def one(msg, fname, r, size):
+        async def one(msg, fname, r, size, dur):
             nonlocal done, fail, bytes_done
             dest = WORK / ("%d-%s" % (msg.id, fname))
             try:
@@ -259,10 +261,10 @@ async def main_run() -> int:
             finally:
                 dest.unlink(missing_ok=True)
 
-            d1("""INSERT INTO kirtan_tracks (id, artist_slug, identifier, file, title, msg_id)
-                  VALUES (?1,?2,?3,?4,?5,?6) ON CONFLICT(id) DO NOTHING""",
+            d1("""INSERT INTO kirtan_tracks (id, artist_slug, identifier, file, title, duration, msg_id)
+                  VALUES (?1,?2,?3,?4,?5,?6,?7) ON CONFLICT(id) DO NOTHING""",
                ["%s/%s" % (r["identifier"], fname), r["slug"], r["identifier"], fname,
-                clean_title(fname, r["name"]), msg.id])
+                clean_title(fname, r["name"]), dur, msg.id])
             if r["slug"] not in seen_album:       # альбом — СРАЗУ, с первой записи
                 d1("""INSERT INTO kirtan_albums (id, artist_slug, title, archive, type, sort)
                       VALUES (?1,?2,?3,?4,'kirtan',0)
@@ -276,14 +278,14 @@ async def main_run() -> int:
             nonlocal fail, stop
             while not stop:
                 try:
-                    msg, fname, r, size = q.get_nowait()
+                    msg, fname, r, size, dur = q.get_nowait()
                 except asyncio.QueueEmpty:
                     return
                 if time.time() - START > BUDGET:
                     stop = True
                     return
                 try:
-                    await one(msg, fname, r, size)
+                    await one(msg, fname, r, size, dur)
                 except Exception as e:
                     fail += 1
                     print("::warning::%s: %s" % (fname[:40], str(e)[:90]))

@@ -370,6 +370,7 @@ export interface KirtanTrack {
   identifier: string;  // элемент archive.org
   file: string;        // имя файла в элементе
   title: string;       // название записи (без имени исполнителя)
+  duration: number;    // секунды (из метаданных Telegram)
 }
 let _tracks: KirtanTrack[] = [];
 
@@ -378,18 +379,15 @@ export function kirtanArtists(): KirtanArtist[] { return _artists; }
 export function kirtanAlbums(): KirtanAlbum[] { return _albums; }
 export function kirtanTracks(): KirtanTrack[] { return _tracks; }
 
-/** Порядок дорожек ВНУТРИ альбома — тот же, что у воркера (`cleanKirtanTitle`):
- *  ведущее число, потом имя файла. Иначе индекс, который мы шлём плееру, не сойдётся
- *  с его списком, и человек нажмёт одно, а заиграет другое. */
-export function albumTrackIndex(t: KirtanTrack): number {
-  const lead = (f: string) => {
-    const m = f.replace(/\.mp3$/i, "").match(/^(\d{1,4})\b/);
-    return m ? parseInt(m[1], 10) : Number.MAX_SAFE_INTEGER;
-  };
-  const list = _tracks
-    .filter((x) => x.identifier === t.identifier)
-    .sort((a, b) => (lead(a.file) - lead(b.file)) || a.file.localeCompare(b.file));
-  return Math.max(0, list.findIndex((x) => x.id === t.id));
+/** ОДНА ОЧЕРЕДЬ НА ВСЕ КИРТАНЫ (альбом `all`).
+ *
+ * Индекс дорожки = её место в ОБЩЕМ списке. Список приходит с сервера уже в
+ * нужном порядке (ORDER BY artist_slug, file) — ровно в том же, в каком воркер
+ * собирает манифест. Сортировать здесь заново НЕЛЬЗЯ: разойдётся с манифестом,
+ * и человек нажмёт одно, а заиграет другое. */
+export const KIRTANS_ALL = "all";
+export function trackIndex(id: string): number {
+  return Math.max(0, _tracks.findIndex((x) => x.id === id));
 }
 
 /** Подменить каталог данными из D1 (вызывает kirtansHydrate). */

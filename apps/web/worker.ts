@@ -1061,7 +1061,37 @@ async function kirtanTracks(identifier: string, origin: string, artist: string, 
   return tracks;
 }
 
-async function kirtanManifest(origin: string, albumId: string): Promise<Response> {
+/**
+ * ЗКН-Б011 — ОДИН ПЛЕЙЛИСТ, ПОКА КАТАЛОГА НЕТ.
+ *
+ * Альбом `all` — ВСЕ киртаны канала одной очередью. Пока записи заливаются,
+ * дробить их по исполнителям бессмысленно: человек пришёл слушать, а не искать
+ * по фамилиям. Список берётся из `kirtan_tracks` (его пишет конвейер заливки на
+ * КАЖДУЮ залитую запись), а не из одного элемента archive.org.
+ *
+ * Порядок ДОЛЖЕН совпадать с тем, что отдаёт `/api/kirtans` (ORDER BY artist_slug,
+ * file) — иначе индекс, который шлёт витрина, укажет НЕ НА ТУ дорожку: человек
+ * нажмёт одно, а заиграет другое.
+ */
+async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
+  const res = await env.DB.prepare(
+    `SELECT t.identifier, t.file, t.title, t.duration, a.name AS artist
+       FROM kirtan_tracks t LEFT JOIN kirtan_artists a ON a.slug = t.artist_slug
+      ORDER BY t.artist_slug, t.file`
+  ).all<{ identifier: string; file: string; title: string; duration: number | null; artist: string | null }>();
+
+  const tracks: AudioTrack[] = (res.results || []).map((r, i) => ({
+    kind: "song" as const, pos: i, chapter: null,
+    title: r.title, file: r.file,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+    durationSec: r.duration || 0,
+    artist: r.artist ?? "", album: "Киртаны",
+  }));
+  return json({ book: "all", kind: "kirtan", modes: { plain: { identifier: "kirtans-all", tracks } } });
+}
+
+async function kirtanManifest(env: Env, origin: string, albumId: string): Promise<Response> {
+  if (albumId === "all") return kirtanAllManifest(env, origin);
   const album = kirtanAlbumById(albumId);
   if (!album || !album.archive) {
     return json({ book: albumId, kind: "kirtan", modes: { plain: { identifier: "", tracks: [] } } });
@@ -1878,11 +1908,14 @@ export default {
       }));
       // ДОРОЖКИ — записи, залитые из канала. Из них витрина строит СПИСОК КИРТАНОВ.
       // Он растёт по мере заливки: конвейер пишет строку на каждую залитую запись.
+      // ПОРЯДОК ЗДЕСЬ И В МАНИФЕСТЕ `/api/kirtans/all/audio` — ОДИН И ТОТ ЖЕ
+      // (artist_slug, file). Разойдутся — витрина пошлёт индекс, а заиграет не то.
       const tRes = await env.DB.prepare(
-        `SELECT id, artist_slug, identifier, file, title FROM kirtan_tracks ORDER BY artist_slug, file`
-      ).all<{ id: string; artist_slug: string; identifier: string; file: string; title: string }>();
+        `SELECT id, artist_slug, identifier, file, title, duration FROM kirtan_tracks ORDER BY artist_slug, file`
+      ).all<{ id: string; artist_slug: string; identifier: string; file: string; title: string; duration: number | null }>();
       const tracks = (tRes.results || []).map((r) => ({
-        id: r.id, artist: r.artist_slug, identifier: r.identifier, file: r.file, title: r.title,
+        id: r.id, artist: r.artist_slug, identifier: r.identifier, file: r.file,
+        title: r.title, duration: r.duration ?? 0,
       }));
       return json({ artists, albums, tracks });
     }
@@ -2036,7 +2069,7 @@ export default {
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)
     const kirtanM = url.pathname.match(/^\/api\/kirtans\/([a-z0-9][a-z0-9._-]*)\/audio$/i);
     if (kirtanM) {
-      return kirtanManifest(url.origin, kirtanM[1]);
+      return kirtanManifest(env, url.origin, kirtanM[1]);
     }
 
     // Центры (Ятра): публичный локатор/карточка + управление на той же
