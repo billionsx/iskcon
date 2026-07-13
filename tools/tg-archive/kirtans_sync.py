@@ -105,25 +105,23 @@ def slugify(name: str) -> str:
 #    «Indradumna»/«Indradyumna», «Bringa»/«Bhrnga». Пишем руками — это канон,
 #    а не догадка. Ключ слева (как выходит из key_of) → ключ справа.
 ALIAS = {
-    # Индрадьюмна разъехался на ТРИ строки: indradumna / indradi-umna / indradyumna.
-    "indraduna": "indradiuna",
-    "indradiuna": "indradiuna",
-    "indradiumna": "indradiuna",
-    # Бхакти Вигьяна: Vijiana / Vijnana
-    "bakti viiana": "bakti vinana",
-    # Бхакти Бхринга Говинда = Б.Б. Говинда Свами — ОДИН человек, три написания
-    "bakti bringa govinda": "bakti brnga govinda",
-    "bakti bringa govind": "bakti brnga govinda",
-    "b b govinda": "bakti brnga govinda",
-    "bb govinda": "bakti brnga govinda",
-    # Девамрита / Девамрта
-    "devamrt": "devamrit",
-    "devamrita": "devamrit",
+    # ⚠️ Ключи ВЫЧИСЛЕНЫ (key_of), а не написаны на глаз. Первая попытка была на
+    #    глаз — и ни один синоним не сошёлся: Индрадьюмна остался тремя строками.
+    "indradumn": "indradiumn",              # Indradumna → Indradyumna
+    # Б.Б. Говинда Свами = Бхакти Бхринга Говинда Свами. ОДИН человек, три написания.
+    "bhakti bring govind": "bhakti bhrng govind",
+    "b govind": "bhakti bhrng govind",
+    "b b govind": "bhakti bhrng govind",
+    # Бхакти Вигьяна Госвами: Vijiana → Vijnana
+    "bhakti vian": "bhakti vinan",
 }
 
 # ── НЕ ИСПОЛНИТЕЛИ. Это названия песен и рубрик, просочившиеся в имя файла.
 NOT_ARTIST_KEYS = {
-    "ie anilo prema dhana", "gaurang", "x iagi", "sounds",
+    # «Дже Анило Према Дхана» — это БХАДЖАН Нароттамы даса Тхакура, а не киртания.
+    # Имя песни просочилось в поле имени файла и стало «исполнителем».
+    "ie anilo prem dhan",
+    "gaurang", "x iagi", "sounds",
 }
 
 # ── «ЭТО ВООБЩЕ ЧЕЛОВЕК?»
