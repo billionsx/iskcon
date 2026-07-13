@@ -82,23 +82,32 @@ def div_label(f):
     return "%s-лила" % LILA_LABEL.get(t, t.capitalize())
 
 
-def chapter_label(f):
-    """«Мадхья 19 · Шри Чайтанья Махапрабху наставляет…»"""
+ABBR = re.compile(r"^[А-ЯЁA-Z]{1,6}(?=[\s\d])")
+
+
+def locator(f):
+    """«ЧЧ Мадхья 19.117» → «Мадхья 19.117». Аббревиатура книги снимается только
+    если за ней ПРОБЕЛ или ЦИФРА — иначе срез съедает букву названия («ечать»)."""
     ref = (f.get("ref") or "").split(",")[0]
-    loc = re.sub(r"^[А-ЯЁA-Z]+\s*", "", ref)
-    loc = re.sub(r"\.\d+([-–]\d+)?$", "", loc).strip()
+    return ABBR.sub("", ref).strip() or ref
+
+
+def chapter_label(f):
+    """Заголовок = НАЗВАНИЕ ГЛАВЫ из базы. Оно чистое; обрубок ссылки — нет."""
+    book = f.get("book") or f["src"]
     title = (f.get("div_title") or "").strip()
-    head = "%s %s" % (f.get("book") or f["src"], loc) if loc else (f.get("book") or f["src"])
-    return "%s · %s" % (head, title) if title else head
+    if title:
+        return "%s · %s" % (book, title)
+    loc = re.sub(r"\.\d+([-–]\d+)?$", "", locator(f)).strip()
+    return "%s · %s" % (book, loc) if loc else book
 
 
 def ref_of(f):
     """Как в эталоне `rupa-goswami`: «Книга, локатор, перевод|комментарий»."""
     base = f.get("ref") or ""
     book = f.get("book") or ""
-    loc = re.sub(r"^[А-ЯЁA-Z]+\s*", "", base).strip()
     kind = {"translation": "перевод", "purport": "комментарий"}.get(f.get("kind"), "")
-    parts = [p for p in (book, loc, kind) if p]
+    parts = [x for x in (book, locator(f), kind) if x]
     return ", ".join(parts) if parts else base
 
 
@@ -287,7 +296,9 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         return out
 
     # ЗАКОН НЕОБХОДИМОСТИ: в карточку идут ТОЛЬКО роли, которые что-то дают
-    actor = pick("k1-books-app", "translation", ("актор",))
+    actor_all = pick("k1-books-app", "translation", ("актор",))
+    actor = [f for f in actor_all if f["src"] in NARRATIVE]
+    speech = [f for f in actor_all if f["src"] not in NARRATIVE]   # его слово, не житие
     labour = pick("k1-books-app", "translation", ("труд",))
     author = pick("k1-books-app", "translation", ("авторитет",))
     glory = pick("k1-books-app", "translation", ("качество",))
@@ -379,12 +390,12 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
 
     # ── ТАБ · УЧЕНИЕ И АВТОРИТЕТ — где на него ССЫЛАЮТСЯ ─────────────────
     uch = {}
-    for f in author:
+    for f in author + speech:
         uch.setdefault(f["book"], []).append(f)
     subs = [{"id": slugify(book), "label": book, "sections": [section(
         "%s · %s" % (book, div_label(fs[0])),
-        ["Что даёт этот раздел: здесь на %s ссылаются как на авторитет — его слово "
-         "приводится как доказательство." % full],
+        ["Что даёт этот раздел: его слово — как учение и как авторитет, на который "
+         "ссылаются источники."],
         quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION * 2]],
         hero=HN)]} for book, fs in uch.items()]
     if subs:
