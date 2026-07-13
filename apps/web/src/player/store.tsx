@@ -89,7 +89,7 @@ export interface PlayerApi {
   playTrack(canto: string, file: string): void;        // включить дорожку (можно из другой песни)
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string, ref?: string | null): void;
-  playKirtan(albumId: string, startIndex?: number): void;
+  playKirtan(albumId: string, startIndex?: number, expand?: boolean): void;
   playBhajan(slug: string, startIndex?: number, set?: "lectures"): void;
   // транспорт
   togglePlay(): void;
@@ -445,9 +445,14 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     ensureManifest().then((m) => applyPending(m, true));
   }
 
-  function playKirtan(albumId: string, startIndex?: number) {
+  /* `expand` — раскрывать ли тёмный Now Playing.
+   *
+   * На витрине Киртанов плеер ВСТРОЕН в страницу (белая доска). Открывать поверх
+   * неё тёмный оверлей — значит закрыть собой то, чем человек только что управлял.
+   * Витрина зовёт playKirtan(..., false) и играет НА МЕСТЕ. */
+  function playKirtan(albumId: string, startIndex?: number, expand = true) {
     switchBook(albumId, "kirtan");
-    pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand: true };
+    pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
