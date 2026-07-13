@@ -43,16 +43,62 @@ ACCOUNT = "d5cbe19470dc38599873eabfe148e6d1"
 DB = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 TOKEN = os.getenv("CLOUDFLARE_API_TOKEN") or ""
 
-TR = [
-    ("shh", "щ"), ("sch", "щ"), ("kh", "кх"), ("gh", "гх"), ("ch", "ч"), ("sh", "ш"),
-    ("th", "тх"), ("ph", "пх"), ("bh", "бх"), ("dh", "дх"), ("jh", "джх"), ("zh", "ж"),
-    ("ya", "я"), ("yu", "ю"), ("yo", "ё"), ("ye", "е"), ("ai", "ай"), ("au", "ау"),
-    ("ee", "и"), ("oo", "у"), ("a", "а"), ("b", "б"), ("c", "ч"), ("d", "д"),
-    ("e", "е"), ("f", "ф"), ("g", "г"), ("h", "х"), ("i", "и"), ("j", "дж"),
-    ("k", "к"), ("l", "л"), ("m", "м"), ("n", "н"), ("o", "о"), ("p", "п"),
-    ("q", "к"), ("r", "р"), ("s", "с"), ("t", "т"), ("u", "у"), ("v", "в"),
-    ("w", "в"), ("x", "кс"), ("y", "й"), ("z", "з"),
+# ═══ ТРАНСЛИТЕРАЦИЯ ПО ОБРАЗЦАМ ОСНОВАТЕЛЯ ═══
+#
+#   Acyuta → Ачьюта      Priya → Прийа      Jaya → Джайа
+#
+# Правило видно из этих трёх: «y» между СОГЛАСНОЙ и гласной даёт мягкий знак и
+# йотированную гласную (c-y-u → чь-ю), а после ГЛАСНОЙ — «й» и обычную гласную
+# (a-y-a → а-й-а). Машинная побуквенная замена этого не даёт и выдаёт «Ачюта»,
+# «Прия», «Джая» — не тот стандарт.
+VOWELS = set("aeiouāīūṛ")
+
+DIG = [
+    ("kṣ", "кш"), ("jñ", "гь"), ("ṭh", "тх"), ("ḍh", "дх"), ("ṇ", "н"), ("ṭ", "т"), ("ḍ", "д"),
+    ("chh", "чх"), ("kh", "кх"), ("gh", "гх"), ("jh", "джх"), ("ph", "пх"), ("bh", "бх"),
+    ("dh", "дх"), ("th", "тх"), ("ch", "ч"), ("sh", "ш"), ("ś", "ш"), ("ṣ", "ш"), ("ṅ", "н"),
+    ("ñ", "н"), ("ṁ", "м"), ("ḥ", "х"), ("ṛ", "ри"), ("ā", "а"), ("ī", "и"), ("ū", "у"),
 ]
+SOFT = {"a": "я", "u": "ю", "e": "е", "o": "ё", "i": "и"}
+HARD = {"a": "а", "u": "у", "e": "е", "o": "о", "i": "и"}
+SIMPLE = {
+    "a": "а", "b": "б", "c": "ч", "d": "д", "e": "е", "f": "ф", "g": "г", "h": "х",
+    "i": "и", "j": "дж", "k": "к", "l": "л", "m": "м", "n": "н", "o": "о", "p": "п",
+    "q": "к", "r": "р", "s": "с", "t": "т", "u": "у", "v": "в", "w": "в", "x": "кс",
+    "z": "з",
+}
+
+
+def translit_word(w: str) -> str:
+    s = w.lower()
+    for a, b in DIG:
+        s = s.replace(a, b)
+    out, i = [], 0
+    while i < len(s):
+        c = s[i]
+        if c == "y":
+            nxt = s[i + 1] if i + 1 < len(s) else ""
+            # ⚠️ `prev` берём из ЛАТИНСКОЙ строки. Первая версия проверяла его на
+            #    вхождение в кириллицу — и любая латинская согласная считалась
+            #    «началом слова». Отсюда «Ачюта» вместо «Ачьюта».
+            if i == 0:
+                out.append(SOFT.get(nxt, "й"))          # Yamuna → Ямуна
+                i += 2 if nxt in SOFT else 1
+            elif s[i - 1] in VOWELS:
+                out.append("й")                          # Jaya → Джайа
+                i += 1
+            else:
+                out.append("ь" + SOFT.get(nxt, ""))      # Acyuta → Ачьюта
+                i += 2 if nxt in SOFT else 1
+            continue
+        out.append(SIMPLE.get(c, c))
+        i += 1
+    r = "".join(out)
+    r = re.sub(r"йй+", "й", r)
+    r = re.sub(r"ьь+", "ь", r)
+    return r[:1].upper() + r[1:] if r else r
+
+
 LAT = re.compile(r"[A-Za-z]")
 
 DATE = re.compile(r"\b(\d{1,2})[\s._-](\d{1,2})[\s._-](\d{2,4})\b")
@@ -67,8 +113,8 @@ NOISE = re.compile(
 # ЗВУЧАНИЕ САНСКРИТА, а не заменяет перевод. Их два десятка — переведены поимённо.
 EN_WORDS = re.compile(r"\b(of|the|and|in|at|to|for|with|from|by|an|his|all|like)\b", re.I)
 EN_TITLES = {
-    "prayers to the six gosvamis": "Молитвы шести Госвами",
-    "prayers to the six goswamis": "Молитвы шести Госвами",
+    "prayers to the six gosvamis": "Молитвы Шести Госвами",
+    "prayers to the six goswamis": "Молитвы Шести Госвами",
     "prayers to the dust of vraja": "Молитвы праху Враджа",
     "prayer to tulasi devi": "Молитва Туласи-деви",
     "the golden avatar and the hare krsna mantra": "Золотая аватара и маха-мантра",
@@ -82,7 +128,7 @@ EN_TITLES = {
     "vrindavan mellows": "Вриндаванские расы",
     "gauradesh mellows": "Расы Гаурадеша",
     "raga of separation": "Рага разлуки",
-    "beyond cry vrajavasi": "Плач враджаваси",
+    "beyond cry vrajavasi": "Бесконечные слёзы Враджаваси",
     "late evening": "Поздний вечер",
     "solar eclipse": "Солнечное затмение",
     "unalloyed happiness": "Беспримесное счастье",
@@ -112,16 +158,7 @@ def d1(sql, params=None):
 
 
 def translit_ru(s: str) -> str:
-    out = []
-    for w in s.split():
-        if not LAT.search(w):
-            out.append(w)
-            continue
-        x = w.lower()
-        for a, b in TR:
-            x = x.replace(a, b)
-        out.append(x.capitalize())
-    return " ".join(out)
+    return " ".join(w if not LAT.search(w) else translit_word(w) for w in s.split())
 
 
 def key(s: str) -> str:
@@ -134,10 +171,25 @@ def key(s: str) -> str:
 
 
 def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
+    """СТАНДАРТ (утв. основателем 13.07.2026):
+
+        <Исполнитель>. <Название>
+
+        Acyuta Gopi Devi Dasi Kirtan 01   →  Ачьюта Гопи Деви Даси. Киртан 01
+        Aindra Das - Jaya Radha-Madhava   →  Аиндра Дас. Джайа Радха Мадхава
+        Gour Govinda Swami - Parama Karuna → Гоур Говинда Свами Махарадж. Парама Каруна
+
+    Имя исполнителя НЕ вырезается, а СТАВИТСЯ ВПЕРЕДИ — и берётся из реестра
+    (там, где есть карточка героя, — её каноническое имя). Из имени файла оно
+    убирается, чтобы не задвоиться.
+
+    Названия нет вовсе (569 файлов из 1110 — это «Исполнитель Kirtan 01») —
+    так и пишем: «Киртан 01». Номер как в файле, без «№».
+    """
     s = EXT.sub("", fname or "").replace("_", " ")
     s = re.sub(r"\s+", " ", s).strip()
 
-    # 1. ДАТА — вынимаем ДО всякой резки, иначе её съест фильтр номеров.
+    # ДАТА — вынимаем до всякой резки, иначе её съест фильтр номеров.
     date = ""
     m = DATE.search(s)
     if m:
@@ -145,10 +197,9 @@ def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
         date = "%02d.%02d.%s" % (int(dd), int(mm), yy[-2:])
         s = s[: m.start()] + " " + s[m.end():]
 
-    # 2. ИМЯ ИСПОЛНИТЕЛЯ — вон: оно уже стоит второй строкой.
-    #    ⚠️ Резать надо ЛАТИНСКИМ вариантом ИЗ ФАЙЛА. Русское имя из базы
-    #    («Ачюта Гопи Деви Даси») не совпадает с латиницей в файле («Acyuta Gopi
-    #    Devi Dasi») — и имя оставалось в названии, дублируя вторую строку.
+    # ИМЯ ИСПОЛНИТЕЛЯ ИЗ ФАЙЛА — вон (оно встанет впереди из реестра).
+    # Резать надо ЛАТИНСКИМ вариантом: русское имя из базы («Ачьюта Гопи Деви
+    # Даси») с латиницей в файле («Acyuta Gopi Devi Dasi») не совпадает.
     for nm in (artist_lat, artist_ru):
         if not nm:
             continue
@@ -157,40 +208,50 @@ def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
             if len(w) >= 4:
                 s = re.sub(r"\b" + re.escape(w) + r"\w*", " ", s, flags=re.I)
 
-    # 3. НОМЕР
+    # НОМЕР — как в файле («01»), без «№».
     num = ""
     mn = NUM.search(s)
     if mn:
-        num = mn.group(1).lstrip("0") or mn.group(1)
+        num = mn.group(1)
         s = s[: mn.start()] + " " + s[mn.end():]
 
+    had_kirtan = bool(re.search(r"\b(kirtan|kirtana|киртан)\b", s, re.I))
     s = NOISE.sub(" ", s)
     s = re.sub(r"[\s.,\-–—_|()+&:]+", " ", s).strip()
 
-    # 4. РУССКОЕ ИМЯ — ИЗ МОЛИТВЕННИКА, а не из головы.
     core = ""
     if s:
         k = key(s)
         if k in PRAYERS:
-            core = PRAYERS[k]                 # канон приложения
+            core = PRAYERS[k]                 # канон молитвенника приложения
         elif k in EN_TITLES:
             core = EN_TITLES[k]               # английское — переведено поимённо
         elif EN_WORDS.search(s):
-            core = s                          # незнакомый английский оборот — ОСТАВЛЯЕМ
-                                              # латиницей: мусорная транслитерация хуже
+            core = s                          # незнакомый английский оборот — как есть:
+                                              # мусорная транслитерация хуже латиницы
         elif LAT.search(s):
             core = translit_ru(s)             # санскрит — передаём звучание
         else:
             core = s[0].upper() + s[1:]
     if not core or len(core) < 2:
-        core = "Киртан"                       # названия не было вовсе — так и говорим
+        core = "Киртан"                       # названия не было — так и говорим
 
-    tail = []
-    if date:
-        tail.append(date)
+    tail = core
     if num:
-        tail.append("№" + num)
-    return core + (" · " + " · ".join(tail) if tail else "")
+        tail += " " + num
+    if date:
+        tail += " " + date
+    return ((artist_ru + ". ") if artist_ru else "") + tail
+
+
+# ── Имена исполнителей — по ТОМУ ЖЕ стандарту, что и названия. Иначе в одной
+#    строке «Ачьюта Прийа Дас», а в реестре «Ачюта Прия» — один человек, два лица.
+ARTIST_FIX = {
+    "aindra": "Аиндра Дас",
+    "acyuta-gopi-devi-dasi": "Ачьюта Гопи Деви Даси",
+    "hg-acyuta-priya-prabhu": "Ачьюта Прийа Дас",
+    "achuta-priya-prabhu": "Ачьюта Прийа Дас",
+}
 
 
 def main() -> int:
@@ -201,6 +262,8 @@ def main() -> int:
                 PRAYERS.setdefault(key(k), r["name"])
     print("::notice::молитвенник для сверки: %d имён" % len(PRAYERS))
 
+    for slug, name in ARTIST_FIX.items():
+        d1("UPDATE kirtan_artists SET name=?2 WHERE slug=?1 AND name<>?2", [slug, name])
     artists = {a["slug"]: a["name"] for a in d1("SELECT slug, name FROM kirtan_artists")}
     lat = {}
     mp = Path(__file__).parent / "kirtans_map.json"

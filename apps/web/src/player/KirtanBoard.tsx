@@ -21,7 +21,7 @@ import {
   PlayIcon, PauseIcon, PrevIcon, NextIcon, Back15Icon, Fwd15Icon,
   ShuffleIcon, OrderForwardIcon, RepeatIcon, RepeatOneIcon,
 } from "./icons";
-import { kirtanTracks, trackIndex, KIRTANS_ALL, artistBySlug, type KirtanTrack } from "../kirtans";
+import { kirtanTracks, trackIndex, KIRTANS_ALL, type KirtanTrack } from "../kirtans";
 
 const GOLD = "var(--color-gold)";
 
@@ -38,7 +38,6 @@ export function KirtanBoard({ tracks }: { tracks: KirtanTrack[] }) {
   const onAll = p.kind === "kirtan" && p.book === KIRTANS_ALL;
   const curId = onAll && p.track ? p.track.file : null;
   const isCur = (t: KirtanTrack) => onAll && p.index === trackIndex(t.id);
-  const artistOf = (slug: string) => artistBySlug(slug)?.name ?? "";
 
   const tap = (t: KirtanTrack) => {
     if (isCur(t)) { p.togglePlay(); return; }
@@ -82,7 +81,7 @@ export function KirtanBoard({ tracks }: { tracks: KirtanTrack[] }) {
             </div>
             <div style={{ marginTop: 3, fontSize: "var(--text-footnote)", color: "var(--color-label-2)",
               overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {now ? (nowTrack ? artistOf(nowTrack.artist) : p.artist) : `${tracks.length} записей — нажмите любую`}
+              {now ? "Киртан" : `${tracks.length} записей — нажмите любую`}
             </div>
           </div>
         </div>
@@ -167,10 +166,12 @@ export function KirtanBoard({ tracks }: { tracks: KirtanTrack[] }) {
                   <span style={{ display: "block", fontSize: "var(--text-callout)", fontWeight: 600, lineHeight: 1.3,
                     color: cur ? "var(--color-gold-deep)" : "var(--color-label)",
                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
-                  <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)",
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {artistOf(t.artist)}{t.duration ? ` · ${mmss(t.duration)}` : ""}
-                  </span>
+                  {/* Исполнитель стоит В НАЗВАНИИ (стандарт основателя:
+                      «Ачьюта Гопи Деви Даси. Киртан 01») — второй раз его не пишем. */}
+                  {t.duration ? (
+                    <span style={{ display: "block", marginTop: 2, fontSize: 12.5, color: "var(--color-label-2)",
+                      fontVariantNumeric: "tabular-nums" }}>{mmss(t.duration)}</span>
+                  ) : null}
                 </span>
               </button>
             </li>
