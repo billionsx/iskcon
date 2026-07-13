@@ -2426,7 +2426,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
           })()}</div>
         </div>
         <NavBtn ariaLabel="В избранное" onClick={() => toggleFav(flash)} size={36}><span style={{ display: "inline-flex", color: fav ? "#FF3B30" : INK }}><HeartIcon size={18} filled={fav} /></span></NavBtn>
-        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
+        <NavBtn ariaLabel="Слушать" onClick={() => { if (!AUDIO_WORKS[work]) { flash("Аудиокнига — скоро"); return; } work === "bg" ? player.playChapter(work, Number(chapterNo) || 1, "commentary") : player.playChapter(work, ccChapterNum, "plain", ccLila, data?.ref ?? null); }} size={36}><HeadphonesIcon size={18} /></NavBtn>
         <span ref={vMoreRef} style={{ display: "inline-flex" }}><NavBtn ariaLabel="Ещё" onClick={() => setVMenu(true)} size={36}><MoreIcon size={16} /></NavBtn></span>
       </header>
 

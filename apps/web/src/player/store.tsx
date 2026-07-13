@@ -79,7 +79,7 @@ export interface PlayerApi {
   hasCommentary: boolean; // прятать тумблер «комментарии», когда их нет (ЧЧ/киртаны)
   // точки входа
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
-  playChapter(book: string, chapter: number, mode: AudioMode, lila?: string): void;
+  playChapter(book: string, chapter: number, mode: AudioMode, lila?: string, ref?: string | null): void;
   playKirtan(albumId: string, startIndex?: number): void;
   playBhajan(slug: string, startIndex?: number, set?: "lectures"): void;
   // транспорт
@@ -188,7 +188,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   repeatRef.current = repeat;
 
   const engineRef = useRef<AudioEngine | null>(null);
-  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; expand?: boolean; index?: number } | null>(null);
+  const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; ref?: string | null; expand?: boolean; index?: number } | null>(null);
   const restoreRef = useRef<{ time: number } | null>(null);
 
   const tracks = manifest ? (manifest.modes[mode] ?? manifest.modes.plain).tracks : [];
@@ -318,6 +318,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     let i = 0;
     if (p.index != null) {
       i = p.index >= 0 && p.index < list.length ? p.index : 0;
+    } else if (p.ref && list.some((t) => t.ref === p.ref)) {
+      i = list.findIndex((t) => t.ref === p.ref);   // точное попадание в стих (ШБ)
     } else if (p.chapter != null) {
       const f = list.findIndex((t) => t.chapter === p.chapter && (p.lila == null || t.lila === p.lila));
       i = f >= 0 ? f : 0;
@@ -349,10 +351,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
-  function playChapter(book: string, chapter: number, md: AudioMode, lila?: string) {
+  function playChapter(book: string, chapter: number, md: AudioMode, lila?: string, ref?: string | null) {
     // ШБ: lila из читалки — это НОМЕР ПЕСНИ, он же раздел манифеста.
+    // ref («ШБ 1.9.40») — из читалки СТИХА: озвучка ШБ по-стиховая, и «слушать» с открытого
+    // стиха обязано начинать с НЕГО, а не отматывать человека к началу главы.
     switchBook(book, "book", SCOPED_BOOKS.has(book) ? (lila || scopeRef.current || "1") : "");
-    pendingRef.current = { mode: md, chapter, lila, expand: true };
+    pendingRef.current = { mode: md, chapter, lila, ref, expand: true };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
   }
