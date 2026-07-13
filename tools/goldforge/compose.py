@@ -106,9 +106,14 @@ def extract(text, forms, limit=MAX_PURPORT):
     return ("…" if lo > 0 else "") + t[lo:hi].strip() + ("…" if hi < len(t) else "")
 
 
-def quote_of(f, forms, ids_ok):
+def quote_of(f, forms, ids_ok, used=None):
+    ref = ref_of(f)
+    if used is not None:
+        if ref in used:
+            return None                    # ЗКН-П003: 0 дублей ссылок
+        used.add(ref)
     q = {"t": extract(f["text"], forms) if f["kind"] == "purport" else f["text"].strip(),
-         "ref": ref_of(f)}
+         "ref": ref}
     if f.get("translit"):
         q["translit"] = f["translit"]
     if f.get("to"):
@@ -121,6 +126,7 @@ def quote_of(f, forms, ids_ok):
 
 
 def section(h, p, quotes=None, cite=None, see=None, hero=None):
+    quotes = [q for q in (quotes or []) if q]          # снятые дубли отсеиваются
     s = {"h": canon.clean_card_text(canon.enforce_hero(h, *hero) if hero else h)}
     if p:
         s["p"] = [canon.clean_card_text(canon.enforce_hero(x, *hero) if hero else x) for x in p]
@@ -180,6 +186,7 @@ def build(dossier, hero_names, keep=None):
     F = [f for f in dossier["findings"] if f.get("tier") != "homonym"]
     forms = dossier["passport"]["forms"]
     ids_ok = verified_ids([f.get("byId") for f in F] + [hero])
+    used = set()
     see = graph_see(hero, ids_ok)
 
     def by_ch(*chs):
@@ -213,7 +220,7 @@ def build(dossier, hero_names, keep=None):
             "Шрила Прабхупада о его вкладе",
             ["Оценка вклада %s в миссию Шри Кришны Чайтаньи Махапрабху — словами "
              "Шрилы Прабхупады, дословно из комментариев." % full],
-            quotes=[quote_of(f, forms, ids_ok) for f in top], hero=HN))
+            quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see:
         vk.append(section("Связи в лиле",
                           ["Личности, с которыми %s связан в источниках." % full],
@@ -245,7 +252,7 @@ def build(dossier, hero_names, keep=None):
             if nar:
                 line += " Повествует %s." % nar
             secs.append(section(h, [line],
-                                quotes=[quote_of(f, forms, ids_ok) for f in fs], hero=HN))
+                                quotes=[quote_of(f, forms, ids_ok, used) for f in fs], hero=HN))
         subs.append({"id": sid, "label": "%s · %s" % (sample.get("book", src), div_label(sample)),
                      "sections": secs})
     if subs:
@@ -263,7 +270,7 @@ def build(dossier, hero_names, keep=None):
             "%s · %s" % (book, g),
             ["Дословные выдержки из комментариев Шрилы Прабхупады к стихам этого "
              "раздела: %d." % len(fs)],
-            quotes=[quote_of(f, forms, ids_ok) for f in fs], hero=HN)
+            quotes=[quote_of(f, forms, ids_ok, used) for f in fs], hero=HN)
             for g, fs in groups.items()]
         subs.append({"id": slugify(book), "label": book, "sections": secs})
     if subs:
@@ -283,7 +290,7 @@ def build(dossier, hero_names, keep=None):
                                   ("Прославления", other, "proslavleniya")):
             if not group:
                 continue
-            secs = [section(name, [], quotes=[quote_of(f, forms, ids_ok)
+            secs = [section(name, [], quotes=[quote_of(f, forms, ids_ok, used)
                                               for f in sorted(fs, key=lambda x: x["ordinal"])],
                             hero=HN)
                     for name, fs in group.items()]
@@ -334,6 +341,13 @@ def build(dossier, hero_names, keep=None):
         for t in keep.get("tabs", []):
             if t.get("id") not in have:
                 tabs.append(heal(t, HN, slugmap))
+
+    for t in tabs:
+        for sub in t.get("subtabs", []):
+            sub["sections"] = [x for x in sub["sections"]
+                               if x.get("quotes") or x.get("cite") or x.get("see") or x.get("p")]
+        t["subtabs"] = [x for x in t.get("subtabs", []) if x["sections"]]
+    tabs = [t for t in tabs if t.get("subtabs") or t.get("sections")]
 
     dedupe_headings({"tabs": tabs})
     return {"tabs": tabs}
