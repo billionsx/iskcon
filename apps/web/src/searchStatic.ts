@@ -40,12 +40,12 @@ export interface StaticHit {
 /* ─────────────────────────── нормализация и матч ─────────────────────────── */
 
 const fold = (s: string): string => (s || "").toLowerCase().replace(/ё/g, "е");
-const tokensOf = (q: string): string[] => (fold(q).match(/[\p{L}\p{N}]+/gu) || []).filter((t) => t.length >= 2);
+const tokensOf = (q: string): string[] => (fold(q).match(/[\p{L}\p{N}]+/gu) ?? ([] as string[])).filter((t) => t.length >= 2);
 const WORD = /[\p{L}\p{N}]+/gu;
 
 /** Все токены — на границе слова в строке (а не просто подстрокой). */
 function allAtWordStart(hay: string, toks: string[]): boolean {
-  const words = hay.match(WORD) || [];
+  const words = hay.match(WORD) ?? ([] as string[]);
   return toks.every((t) => words.some((w) => w.startsWith(t)));
 }
 

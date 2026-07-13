@@ -12,6 +12,7 @@
  * RecipeCover заполняет родителя (width/height 100%); чип и кнопки действий
  * накладываются поверх в самой карточке.
  */
+import type { ReactElement } from "react";
 
 type GlyphProps = { size?: number };
 const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
@@ -71,7 +72,7 @@ const FestivalGlyph = ({ size = 44 }: GlyphProps) => (
   </g></svg>
 );
 
-type CoverDef = { accent: string; Glyph: (p: GlyphProps) => JSX.Element };
+type CoverDef = { accent: string; Glyph: (p: GlyphProps) => ReactElement };
 const COVERS: Record<string, CoverDef> = {
   sweets: { accent: "#E3B23C", Glyph: SweetsGlyph },
   mains: { accent: "#D9824F", Glyph: MainsGlyph },
