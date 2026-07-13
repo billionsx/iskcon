@@ -1,0 +1,42 @@
+{
+  "entity_id": "madri",
+  "names": [
+    "Madri",
+    "Mādrī",
+    "Мадри"
+  ],
+  "short": "Мадри",
+  "full": "Мадри",
+  "gen": "Мадри",
+  "strict": [
+    "Мадри"
+  ],
+  "forms": [
+    "madr",
+    "мадр"
+  ],
+  "qualifiers": [
+    "acarya",
+    "das",
+    "dasa",
+    "gosvami",
+    "goswami",
+    "pandit",
+    "prabhu",
+    "swami",
+    "thakur",
+    "thakura",
+    "ачарья",
+    "госвами",
+    "дас",
+    "деви",
+    "кавирадж",
+    "махарадж",
+    "пандит",
+    "прабху",
+    "свами",
+    "тхакур"
+  ],
+  "homonyms": [],
+  "excludes": []
+}

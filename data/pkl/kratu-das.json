@@ -1,0 +1,80 @@
+{
+ "tabs": [
+  {
+   "id": "vklad-gauranga-lila",
+   "label": "Вклад в Гауранга Лилу",
+   "kicker": "МИССИЯ",
+   "subtabs": [
+    {
+     "id": "missiya",
+     "label": "Миссия",
+     "sections": [
+      {
+       "h": "Связи в лиле",
+       "p": [
+        "Личности, с которыми Крату Дас связан в источниках."
+       ],
+       "see": [
+        {
+         "id": "prabhupada",
+         "t": "Абхай Чаранаравинда Бхактиведанта Свами"
+        },
+        {
+         "id": "chaitanya",
+         "t": "Шри Кришна Чайтанья Махапрабху"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "istochniki",
+   "label": "Источники",
+   "kicker": "ПРОВЕНАНС",
+   "subtabs": [
+    {
+     "id": "biblioteka",
+     "label": "Библиотека",
+     "sections": [
+      {
+       "h": "Bhaktivinoda · Navadvipa Dhama Mahatmya",
+       "p": [
+        "Пассажей с именем героя: 2, упоминаний: 3. Первоисточник даёт факты в прозу жития. Дословная цитата отсюда появится, когда книга будет внесена в приложение (ЗКН-П004)."
+       ],
+       "cite": [
+        {
+         "ref": "docs/sources/dhama-lila/Bhaktivinoda_Navadvipa-Dhama-Mahatmya.txt"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "onlayn",
+     "label": "Онлайн",
+     "sections": [
+      {
+       "h": "ISKCON News",
+       "p": [
+        "Прочитано страниц: 3. Внешний источник даёт ФАКТ и дату — в прозу жития. Дословной шастра-цитатой он не становится: цитата живёт только там, где книга внесена в приложение (ЗКН-П004)."
+       ],
+       "cite": [
+        {
+         "ref": "ISKCON News | Remembering His Grace Kratu Das Adhikari | ISKCON News — https://iskconnews.org/remembering-his-grace-kratu-das-adhikari/"
+        },
+        {
+         "ref": "ISKCON News | GBC Releases Statement on Kratu Das&#039;s Health | ISKCON News — https://iskconnews.org/gbc-releases-statement-on-kratu-dass-health/"
+        },
+        {
+         "ref": "ISKCON News | Medical Care Team Releases Health Update on Kratu Das | ISKCON New — https://iskconnews.org/medical-care-team-releases-health-update-on-kratu-das/"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
