@@ -30,7 +30,11 @@ from pathlib import Path
 from . import canon, d1
 from .channels import WORKS, fold, pattern
 
-MAX_PURPORT = 1100          # выдержка из комментария (дословная, не пересказ)
+MAX_PURPORT = 1000          # выдержка из комментария (дословная, не пересказ)
+MAX_QUOTE = 1500            # «Прабхупада-шикшамрита» держит письма целиком — стена текста
+# Повествовательные источники (там ЖИТИЕ) против доктринальных (там УПОМИНАНИЯ).
+# Смешивать нельзя: «Нектар преданности, глава 19» — не эпизод биографии.
+NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
 TRANSLIT_MAP = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh",
     "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
@@ -59,7 +63,7 @@ def div_label(f):
     if not t:
         return f.get("book") or f["src"]
     if t.isdigit():
-        return "Песнь %s" % t
+        return ("Песнь %s" if f["src"] == "sb" else "Глава %s") % t
     return "%s-лила" % LILA_LABEL.get(t, t.capitalize())
 
 
@@ -112,8 +116,8 @@ def quote_of(f, forms, ids_ok, used=None):
         if ref in used:
             return None                    # ЗКН-П003: 0 дублей ссылок
         used.add(ref)
-    q = {"t": extract(f["text"], forms) if f["kind"] == "purport" else f["text"].strip(),
-         "ref": ref}
+    lim = MAX_PURPORT if f["kind"] == "purport" else MAX_QUOTE
+    q = {"t": extract(f["text"], forms, lim), "ref": ref}
     if f.get("translit"):
         q["translit"] = f["translit"]
     if f.get("to"):
@@ -182,6 +186,7 @@ def build(dossier, hero_names, keep=None):
     hero = dossier["entity_id"]
     full = hero_names["full"]
     short = hero_names["short"]
+    gen = hero_names.get("gen") or full
     HN = (short, full)
     F = [f for f in dossier["findings"] if f.get("tier") != "homonym"]
     forms = dossier["passport"]["forms"]
@@ -211,7 +216,7 @@ def build(dossier, hero_names, keep=None):
         lines = []
         if books:
             lines.append("Труды %s, вошедшие в библиотеку приложения: %s."
-                         % (full, ", ".join("«%s»" % b["title"] for b in books)))
+                         % (gen, ", ".join("«%s»" % b["title"] for b in books)))
         if own_bhajans:
             lines.append("Молитвы и песни его авторства: %s."
                          % ", ".join("«%s»" % b for b in own_bhajans[:8]))
@@ -220,7 +225,7 @@ def build(dossier, hero_names, keep=None):
         vk.append(section(
             "Шрила Прабхупада о его вкладе",
             ["Оценка вклада %s в миссию Шри Кришны Чайтаньи Махапрабху — словами "
-             "Шрилы Прабхупады, дословно из комментариев." % full],
+             "Шрилы Прабхупады, дословно из комментариев." % gen],
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see:
         vk.append(section("Связи в лиле",
@@ -237,8 +242,35 @@ def build(dossier, hero_names, keep=None):
                          {"id": "missiya", "label": "Миссия", "sections": vk}]})
 
     # ── ТАБ · ЖИТИЕ (повествование первоисточников; секция = глава) ───────
+    def verse_tab(pool, tab_id, label, kicker):
+        zh = {}
+        for f in sorted(pool, key=lambda x: (x["src"], x.get("div", ""), x.get("ordinal", 0))):
+            zh.setdefault((f["src"], top_div(f)), {}).setdefault(chapter_label(f), []).append(f)
+        subs2 = []
+        for (src, _t), chapters in zh.items():
+            sample = next(iter(next(iter(chapters.values()))))
+            secs2 = []
+            for h, fs in chapters.items():
+                wk = WORKS.get(src, {})
+                nar = (wk.get("narrator") or [None])[0]
+                line = "Стихов в этой главе: %d." % len(fs)
+                if nar:
+                    line += " Повествует %s." % nar
+                secs2.append(section(h, [line],
+                                     quotes=[quote_of(f, forms, ids_ok, used) for f in fs],
+                                     hero=HN))
+            subs2.append({"id": slugify("%s %s" % (sample.get("book", src), div_label(sample))),
+                          "label": "%s · %s" % (sample.get("book", src), div_label(sample)),
+                          "sections": secs2})
+        if subs2:
+            tabs.append({"id": tab_id, "label": label, "kicker": kicker, "subtabs": subs2})
+
+    verse_tab([f for f in verses if f["src"] in NARRATIVE], "zhitie", "Житие", "ИСТОЧНИКИ ЛИЛЫ")
+    verse_tab([f for f in verses if f["src"] not in NARRATIVE], "upominaniya",
+              "Упоминания в книгах", "ШАСТРЫ")
+
     zh = {}
-    for f in sorted(verses, key=lambda x: (x["src"], x.get("div", ""), x.get("ordinal", 0))):
+    for f in []:
         key = (f["src"], top_div(f))
         zh.setdefault(key, {}).setdefault(chapter_label(f), []).append(f)
     subs = []
@@ -249,7 +281,7 @@ def build(dossier, hero_names, keep=None):
         for h, fs in chapters.items():
             wk = WORKS.get(src, {})
             nar = (wk.get("narrator") or [None])[0]
-            line = "Стихов о %s в этой главе: %d." % (full, len(fs))
+            line = "Стихов о %s в этой главе: %d." % (gen.replace("Дживы", "Дживе"), len(fs))
             if nar:
                 line += " Повествует %s." % nar
             secs.append(section(h, [line],

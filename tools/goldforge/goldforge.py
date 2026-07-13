@@ -95,6 +95,21 @@ def names_from_d1(eid):
     return [r["value"] for r in rows]
 
 
+def genitive(full):
+    """«Джива Госвами» → «Дживы Госвами». Титул не склоняем — он и так несклоняем."""
+    toks = full.split()
+    if not toks:
+        return full
+    f = toks[0]
+    if f[-1] in "ая":
+        g = f[:-1] + ("и" if f[-1] == "я" else "ы")
+    elif f[-1] in "оеиуыэюй":
+        g = f
+    else:
+        g = f + "а"
+    return " ".join([g] + toks[1:])
+
+
 def full_name(eid, names):
     ru = [n for n in names if re.search(r"[А-Яа-я]", n)]
     ru.sort(key=len, reverse=True)
@@ -115,7 +130,7 @@ def cmd_passport(a):
                      for s in declensions(n)})
     doc = {
         "entity_id": a.entity_id, "names": sorted(set(names)),
-        "short": short, "full": full,
+        "short": short, "full": full, "gen": genitive(full),
         "strict": sorted(set(strict + (old.get("strict") or []))) or [full],
         "forms": build_forms(names, a.form or []),
         "qualifiers": sorted(set((a.qualifier or []) + old.get("qualifiers", []) + QUALIFIERS)),
@@ -201,7 +216,8 @@ def prev_card(eid):
 def cmd_compose(a):
     dos = load_dossier(a.entity_id)
     pp = dos["passport"]
-    hero = {"short": pp.get("short") or a.entity_id, "full": pp.get("full") or a.entity_id}
+    hero = {"short": pp.get("short") or a.entity_id, "full": pp.get("full") or a.entity_id,
+            "gen": pp.get("gen") or pp.get("full") or a.entity_id}
     keep = prev_card(a.entity_id) if a.keep_old else None
     tiers = ("strong",) if not a.candidates else ("strong", "candidate")
     sel = dict(dos, findings=[f for f in dos["findings"] if f["tier"] in tiers])

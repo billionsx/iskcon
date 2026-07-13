@@ -64,7 +64,8 @@ def _proper(text):
     return out
 
 
-FORGE_TABS = {"vklad-gauranga-lila", "zhitie", "prabhupada", "bhajany", "istochniki"}
+FORGE_TABS = {"vklad-gauranga-lila", "zhitie", "upominaniya", "prabhupada",
+              "bhajany", "istochniki"}
 
 
 def machine_only(book):
