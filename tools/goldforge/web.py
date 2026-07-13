@@ -23,8 +23,17 @@ from pathlib import Path
 UA = "ISKCON-ONE-LOVE/goldforge (+https://gaurangers.com; BBT-grade research)"
 PAUSE = 0.6           # вежливость к чужим серверам
 TIMEOUT = 45
-MAX_PAGES = 8         # страниц с одного источника на одного героя
-MIN_PASSAGE = 180     # короче — не пассаж, а обрывок меню
+MAX_PAGES = 5         # страниц с одного источника на одного героя
+MIN_PASSAGE = 400     # короче — не пассаж, а обрывок меню
+MIN_HITS = 2          # имя героя должно стоять в тексте, а не в шапке сайта
+
+# Страница результатов поиска, рубрикатор, тег, архив — это НАВИГАЦИЯ сайта,
+# а не источник. Первый прогон занёс в карточку «Search results for…» и
+# «Audio | Gaudiya History» как свидетельства. Свидетельство — это текст о герое.
+JUNK_URL = re.compile(r"[?&]s=|/search|/category/|/tag/|/author/|/page/\d|/feed|/wp-|"
+                      r"/comment|/login|/register|/cart|\.xml$", re.I)
+JUNK_TITLE = re.compile(r"search results|you searched|результаты поиска|"
+                        r"^(audio|bhajans|biographies|videos|books|home)\s*[|·-]", re.I)
 
 SOURCES = Path(__file__).resolve().parent / "sources.json"
 
@@ -127,13 +136,28 @@ def from_mediawiki(src, names):
                 continue
             seen.add(title)
             body = mw_extract(base, title)
-            if body and len(body) >= MIN_PASSAGE:
+            if body and len(body) >= MIN_PASSAGE and _relevant(title, body, names):
                 out.append({
                     "title": title,
                     "url": base.rstrip("/") + "/wiki/" + urllib.parse.quote(title.replace(" ", "_")),
                     "text": body,
                 })
     return out
+
+
+def _relevant(title, body, names):
+    """Страница о герое — или просто содержит его имя в подвале?"""
+    t, b = (title or "").lower(), (body or "").lower()
+    for n in names:
+        n = n.lower()
+        if n in t:
+            return True
+        if b.count(n) >= MIN_HITS:
+            return True
+        first = n.split()[0]
+        if len(first) > 4 and b.count(first) >= MIN_HITS + 1:
+            return True
+    return False
 
 
 def from_html(src, names):
@@ -155,6 +179,8 @@ def from_html(src, names):
                 continue
             if re.search(r"\.(png|jpg|jpeg|gif|svg|css|js|pdf|zip)$", href, re.I):
                 continue
+            if JUNK_URL.search(href):
+                continue
             links.append(href)
         for href in links[:MAX_PAGES]:
             if href in seen or len(out) >= MAX_PAGES:
@@ -167,8 +193,10 @@ def from_html(src, names):
             if len(body) < MIN_PASSAGE:
                 continue
             t = re.search(r"<title[^>]*>(.*?)</title>", page, re.S | re.I)
-            out.append({"title": untag(t.group(1)) if t else href,
-                        "url": href, "text": body})
+            title = untag(t.group(1)) if t else href
+            if JUNK_TITLE.search(title) or not _relevant(title, body, names):
+                continue
+            out.append({"title": title, "url": href, "text": body})
     return out
 
 

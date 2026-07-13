@@ -46,6 +46,16 @@ TRANSLIT_MAP = {
 }
 LILA_LABEL = {"adi": "Ади", "madhya": "Мадхья", "antya": "Антья", "sutra": "Сутра",
               "shesha": "Шеша", "khanda": "Кханда"}
+SITE_NAMES = {
+    "wikipedia-ru": "Википедия (русская)", "wikipedia-en": "Википедия (английская)",
+    "vaniquotes": "Vaniquotes — цитаты Шрилы Прабхупады",
+    "vanisource": "Vanisource — исходные тексты BBT",
+    "vanipedia": "Vanipedia", "vedabase": "Vedabase (BBT)",
+    "iskcon-org": "iskcon.org — официальный сайт", "iskcon-news": "ISKCON News",
+    "iskcon-desire-tree": "ISKCON Desire Tree", "gaudiya-history": "Gaudiya History",
+    "harekrishna-ru": "harekrishna.ru", "kksongs": "Vaishnava Songbook (kksongs)",
+    "vaishnavasongs": "Vaishnava Songs", "gaudiya-granthamandira": "Granthamandira",
+}
 
 
 def slugify(s):
@@ -387,17 +397,24 @@ def build(dossier, hero_names, keep=None):
                 cite=[{"ref": src}], hero=HN))
         subs.append({"id": "biblioteka", "label": "Библиотека", "sections": secs})
     if online:
-        secs, seen_h = [], set()
+        by_site = {}
         for f in online:
-            key = (f["src"], f["ref"][:90])
-            if key in seen_h:
-                continue
-            seen_h.add(key)
+            by_site.setdefault(f["src"], []).append(f)
+        secs = []
+        for site, fs in sorted(by_site.items(), key=lambda kv: -len(kv[1])):
+            pages, seen_u = [], set()
+            for f in fs:
+                u = f.get("url") or f["ref"]
+                if u in seen_u:
+                    continue
+                seen_u.add(u)
+                pages.append({"ref": "%s — %s" % (f["ref"][:80], u)})
             secs.append(section(
-                "%s · %s" % (f["src"], f["ref"][:70]),
-                ["Внешний источник. Использован для фактов и дат, не для дословных "
-                 "шастра-цитат (ЗКН-П004)."],
-                cite=[{"ref": "%s · %s" % (f["src"], f.get("url") or f["ref"])}], hero=HN))
+                SITE_NAMES.get(site, site),
+                ["Прочитано страниц: %d. Внешний источник даёт ФАКТ и дату — в прозу "
+                 "жития. Дословной шастра-цитатой он не становится: цитата живёт только "
+                 "там, где книга внесена в приложение (ЗКН-П004)." % len(pages)],
+                cite=pages[:12], hero=HN))
         subs.append({"id": "onlayn", "label": "Онлайн", "sections": secs})
     if subs:
         tabs.append({"id": "istochniki", "label": "Источники",
