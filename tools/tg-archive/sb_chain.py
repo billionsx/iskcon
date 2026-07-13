@@ -17,6 +17,7 @@ import collections
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -56,8 +57,20 @@ def dispatch(workflow: str, inputs: dict) -> int:
         data=json.dumps({"ref": "main", "inputs": inputs}).encode(),
         method="POST",
         headers={"Authorization": f"token {GH}", "Accept": "application/vnd.github+json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.status
+    # ЗКН-Ф014 — urlopen БЕЗ перехвата HTTPError падает МОЛЧА.
+    #
+    # Здесь запускается воркфлоу. Откажет GitHub (нет прав, воркфлоу отключён,
+    # лимит) — исключение улетит наверх без тела ответа, и в логе будет голое
+    # «HTTP Error 403». ПОЧЕМУ 403 — не узнать.
+    #
+    # Хуже: цепочка sb_chain дёргает следующий шаг. Молчаливый отказ выглядит как
+    # «всё запустилось», а на деле не запустилось ничего.
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return r.status
+    except urllib.error.HTTPError as e:
+        print("dispatch %s → HTTP %d: %s" % (workflow, e.code, e.read().decode()[:300]))
+        raise
 
 
 def main():
