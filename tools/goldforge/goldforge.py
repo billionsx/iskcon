@@ -271,12 +271,24 @@ def cmd_gate(a):
     st = compose.stats(book)
     used = set(dos["stats"]["per_channel"])
     strong = dos["stats"]["per_tier"].get("strong", 0)
-    coverage = (st["quotes"] / strong * 100) if strong else 0.0
-    verdict = "gold" if (not bad and not (REQUIRED - used) and coverage >= 60) else \
-              ("silver" if not bad else "bronze")
+    # ЗОЛОТО = ИСТОЧНИКИ ИСЧЕРПАНЫ (ЗКН-Р003), а не «много букв».
+    # Мерить покрытие долей ВСЕХ улик — ошибка: пассаж из Википедии или из
+    # архива библиотеки цитатой стать НЕ МОЖЕТ (ЗКН-П004 — он идёт в прозу).
+    # Считать его «непокрытым» — значит наказывать карточку за богатство
+    # внешних источников. Мерим то, что ОБЯЗАНО было стать цитатой: стих,
+    # комментарий и куплет из самого приложения.
+    quotable = sum(1 for f in dos["findings"]
+                   if f.get("tier") == "strong"
+                   and f.get("ch") in ("k1-books-app", "k4-bhajans-app")
+                   and f.get("kind") in ("translation", "purport", "bhajan"))
+    external = len(used & {"k2-archive", "k3-books-web", "k5-bhajans-web",
+                           "k6-wikipedia", "k7-iskcon-web"})
+    coverage = min(100.0, st["quotes"] / quotable * 100) if quotable else 0.0
+    verdict = ("gold" if (not bad and not (REQUIRED - used) and coverage >= 85 and external >= 2)
+               else ("silver" if not bad else "bronze"))
     print("  " + "─" * 62)
-    print("  каналов %d/%d · strong %d · цитат %d · ПОКРЫТИЕ %.0f%%"
-          % (len(used), len(CHANNELS), strong, st["quotes"], coverage))
+    print("  каналов %d/%d (внешних %d) · цитируемых улик %d · цитат %d · ПОКРЫТИЕ %.0f%%"
+          % (len(used), len(CHANNELS), external, quotable, st["quotes"], coverage))
     print("  ВЕРДИКТ: %s" % verdict)
     if bad:
         print("\n  НАРУШЕНИЙ: %d" % len(bad))
