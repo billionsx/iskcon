@@ -1,0 +1,71 @@
+name: library
+
+# Конвейер «Библиотека»: права → открытие → парсинг → перевод → загрузка → ворота.
+# Сеть здесь открыта (в отличие от локального контейнера), поэтому discover/fetch
+# живут именно тут.
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "audit | authors | discover | book | gate"
+        required: true
+        default: audit
+      work:
+        description: "id книги (для discover/book), напр. ggd"
+        required: false
+        default: ggd
+  push:
+    paths:
+      - "scripts/library/**"
+      - "docs/library/**"
+      - ".github/workflows/library.yml"
+
+concurrency:
+  group: library
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      PYTHONPATH: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      # 1. Ворота прав — идут ПЕРВЫМИ и всегда. Никакой стадии до них.
+      - name: "Ворота №1 — права"
+        run: |
+          python3 -m scripts.library.rights audit | tee rights.txt
+          echo "::notice title=Права::$(grep 'ПРАВОВОЙ ДОЛГ' rights.txt | head -1)"
+        continue-on-error: true
+
+      - name: "Связь книга → личность автора (Б005)"
+        if: github.event.inputs.stage == 'authors'
+        run: python3 -m scripts.library.load authors
+
+      - name: "Открытие источников"
+        if: github.event.inputs.stage == 'discover' || github.event.inputs.stage == 'book'
+        run: python3 -m scripts.library.discover ${{ github.event.inputs.work }}
+
+      - name: "Полный цикл по книге"
+        if: github.event.inputs.stage == 'book'
+        run: python3 -m scripts.library.run book ${{ github.event.inputs.work }}
+
+      # 2. Ворота У5 — идут ПОСЛЕДНИМИ и всегда. Роняют сборку.
+      - name: "Ворота №2 (У5) — законы ПР001–ПР007, Б005"
+        run: python3 -m scripts.library.gate
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: library-report
+          path: |
+            rights.txt
+            build/library/manifest/
