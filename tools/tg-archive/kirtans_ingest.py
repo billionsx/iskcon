@@ -70,6 +70,18 @@ def d1(sql: str, params=None):
     return body["result"][0]["results"]
 
 
+def beat(msg: str):
+    """Пульс конвейера в базу. Логи Actions мне недоступны — а знать, жив ли он,
+    надо СЕЙЧАС, а не через час."""
+    try:
+        d1("""INSERT INTO kirtans_ingest (slug, identifier, n_files, msg_ids, state, note, updated_at)
+              VALUES ('_heartbeat', '-', 0, '[]', 'beat', ?1, datetime('now'))
+              ON CONFLICT(slug) DO UPDATE SET note=excluded.note, updated_at=datetime('now')""",
+           [msg[:180]])
+    except Exception:
+        pass
+
+
 def ensure_state_table():
     d1("""CREATE TABLE IF NOT EXISTS kirtans_ingest (
             slug       TEXT PRIMARY KEY,
@@ -149,7 +161,7 @@ def cmd_plan() -> int:
 # ПАЧКАМИ по 12 файлов, и альбом подключается к приложению СРАЗУ после первой
 # пачки. Музыка появляется в приложении через минуты, а не через часы, и растёт
 # на глазах.
-BATCH = int(os.getenv("BATCH") or "12")
+BATCH = int(os.getenv("BATCH") or "3")
 
 
 def flush(row: dict, paths: list, name: str) -> int:
@@ -198,7 +210,8 @@ def cmd_run() -> int:
 
     rows = d1("""SELECT i.slug, i.identifier, i.n_files, i.msg_ids, a.name
                  FROM kirtans_ingest i JOIN kirtan_artists a ON a.slug = i.slug
-                 WHERE i.state <> 'done' ORDER BY i.n_files DESC""")
+                 WHERE i.state <> 'done' AND i.slug <> '_heartbeat'
+                 ORDER BY i.n_files DESC""")
     if not rows:
         print("::notice::очередь пуста — залито всё")
         Path(os.getenv("GITHUB_OUTPUT") or "/dev/null").open("a").write("left=0\n")
@@ -213,6 +226,8 @@ def cmd_run() -> int:
         buf[r["slug"]] = []
     print("::notice::в работе: %d элементов · %d записей · уже в архиве: %d"
           % (len(rows), len(idx), sum(len(v) for v in have.values())))
+    beat("старт: %d элементов, %d записей, в архиве уже %d"
+         % (len(rows), len(idx), sum(len(v) for v in have.values())))
 
     work = Path("/tmp/k")
     work.mkdir(parents=True, exist_ok=True)
@@ -252,6 +267,9 @@ def cmd_run() -> int:
                 continue
             buf[r["slug"]].append(dst)
             got += 1
+            if got % 2 == 0:
+                mb = sum(x.stat().st_size for x in buf[r["slug"]] if x.exists()) / 1e6
+                beat("качаю: %d файлов · сейчас %s (%.0f МБ в пачке)" % (got, r["slug"], mb))
 
             if len(buf[r["slug"]]) >= BATCH:
                 try:
@@ -267,7 +285,7 @@ def cmd_run() -> int:
             except Exception as e:
                 print("::warning::заливка %s: %s" % (r["slug"], str(e)[:120]))
 
-    left = d1("SELECT COUNT(*) c FROM kirtans_ingest WHERE state <> 'done'")[0]["c"]
+    left = d1("SELECT COUNT(*) c FROM kirtans_ingest WHERE state <> 'done' AND slug <> '_heartbeat'")[0]["c"]
     tot = d1("SELECT SUM(uploaded) u FROM kirtans_ingest")[0]["u"] or 0
     print("::notice::за прогон скачано %d · ВСЕГО В АРХИВЕ: %d записей · элементов осталось: %d"
           % (got, tot, left))
