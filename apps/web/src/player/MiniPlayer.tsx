@@ -3,7 +3,7 @@
  * Сидит над таб-баром (если он показан) или над домашним индикатором.
  * Тап по панели (не по кнопкам) открывает Now Playing.
  */
-import { usePlayer } from "./store";
+import { trackSubtitle, usePlayer } from "./store";
 import { PlayIcon, PauseIcon, NextIcon } from "./icons";
 import { useEffect, type CSSProperties } from "react";
 import { BOOKS, bookFullTitle } from "../books";
@@ -23,15 +23,13 @@ export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
   const t = p.track;
   const abBook = p.kind === "book" ? BOOKS[p.book] : undefined;
   const isAudiobook = !!abBook?.noText;
+  // Подпись — общая для всех поверхностей плеера (store.trackSubtitle): у ШБ дорожка это
+  // СТИХ, и без «Песнь · Глава · Название» человек не понимает, где он в книге.
   const subtitle = p.kind !== "book"
     ? (p.artist || (p.kind === "kirtan" ? "Киртан" : "Бхаджан"))
-    : t?.kind === "intro"
-      ? (p.mode === "commentary" ? "С комментариями · вступление" : "Вступление")
-      : t?.lilaLabel
-        ? `${t.lilaLabel} · Глава ${t.chapter ?? ""}`
-        : isAudiobook && abBook
-          ? bookFullTitle(abBook)
-          : `Глава ${t?.chapter ?? ""}${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`;
+    : isAudiobook && abBook && !t?.lilaLabel && t?.chapter == null
+      ? bookFullTitle(abBook)
+      : trackSubtitle(t, p.mode, p.hasCommentary);
 
   const bottom = tabBarVisible
     ? "calc(90px + env(safe-area-inset-bottom))"

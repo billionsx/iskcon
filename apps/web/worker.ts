@@ -522,6 +522,7 @@ interface AudioTrack {
   part?: number | null;   // CC only: part index when a chapter is split (else null)
   group?: string;         // суб-таб очереди; по умолчанию = lila. ШБ: глава внутри песни
   groupLabel?: string;    // ШБ: «Глава 14»
+  chapterTitle?: string;  // ШБ: «Молитвы Господа Брахмы» — название главы для подписи плеера
   ref?: string | null;    // ШБ: стих дорожки («ШБ 10.14.21-22»)
   artist?: string;        // kirtan only: исполнитель (отображаемое имя)
   album?: string;         // kirtan only: название альбома
@@ -908,6 +909,14 @@ function sbCantoList(avail: { canto: number; n: number }[]) {
   }));
 }
 
+/** Подпись стиха — ТОТ ЖЕ стандарт, что в читалке: «Текст 5» / «Тексты 21-22» (мн. ч.).
+ *  Считаем из `ref` прямо здесь, а не берём то, что записал ингест: подпись обязана быть
+ *  одна и та же в книге и в плеере, а единственный её источник — сам стих. */
+function sbVerseLabel(ref: string): string {
+  const tail = String(ref).split(".").pop() ?? "";
+  return /[-–]/.test(tail) ? `Тексты ${tail.replace(/[–—]/g, "-")}` : `Текст ${tail}`;
+}
+
 async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null): Promise<Response> {
   const empty = (c: number, avail: { canto: number; n: number }[] = []) => json({
     book: "sb", scope: String(c), cantos: sbCantoList(avail),
@@ -950,7 +959,7 @@ async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null
     kind: r.chapter ? "chapter" : "intro",
     pos: i,
     chapter: r.chapter || null,
-    title: r.title,
+    title: r.kind === "verse" && r.ref ? sbVerseLabel(r.ref) : r.title,
     file: r.src.slice(r.src.lastIndexOf("/") + 1),
     url: `${origin}${r.src}`,
     durationSec: r.duration ?? null,
@@ -959,6 +968,7 @@ async function sbAudioManifest(env: Env, origin: string, cantoRaw: string | null
     part: r.seq,
     group: `${canto}.${r.chapter}`,         // суб-табы очереди = главы песни
     groupLabel: r.chapter ? `Глава ${r.chapter}` : "Вступление",
+    chapterTitle: titles.get(r.chapter) || undefined,  // «Вопросы мудрецов» — в подпись плеера
     ref: r.ref,
   }));
 

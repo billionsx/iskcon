@@ -35,6 +35,7 @@ export interface Track {
   part?: number | null; // ЧЧ: часть составной главы · ШБ: позиция стиха в главе
   group?: string;       // суб-таб очереди; по умолчанию = lila. ШБ: глава внутри песни
   groupLabel?: string;  // ШБ: «Глава 14»
+  chapterTitle?: string; // ШБ: «Молитвы Господа Брахмы»
   ref?: string | null;  // ШБ: стих дорожки («ШБ 10.14.21-22»)
   artist?: string;      // киртан: исполнитель
   album?: string;       // киртан: альбом
@@ -107,6 +108,27 @@ export function usePlayer(): PlayerApi {
 }
 
 export const PLAYER_RATES = [1, 1.25, 1.5, 2];
+
+/**
+ * Подпись дорожки книги — ОДНА на все поверхности плеера (мини-плеер, Now Playing,
+ * экран блокировки, «продолжить слушать»). Раньше каждая поверхность собирала строку
+ * сама, и название главы не показывалось нигде: у ШБ дорожка — это СТИХ («Текст 5»),
+ * и без главы человек не понимает, где он в книге.
+ *
+ *   ШБ:  «Песнь 1 · Глава 1. Вопросы мудрецов»
+ *   ЧЧ:  «Ади-лила · Глава 7»
+ *   БГ:  «Глава 7 · с комментариями»
+ */
+export function trackSubtitle(t: Track | null, mode: AudioMode, hasCommentary: boolean): string {
+  if (!t) return "";
+  if (t.kind === "intro" && !t.chapter) return mode === "commentary" ? "С комментариями · вступление" : "Вступление";
+  const ch = t.chapter != null
+    ? `Глава ${t.chapter}${t.chapterTitle ? `. ${t.chapterTitle}` : ""}`
+    : "";
+  if (t.lilaLabel) return [t.lilaLabel, ch].filter(Boolean).join(" · ");
+  const cm = hasCommentary ? ` · ${mode === "commentary" ? "с комментариями" : "стих за стихом"}` : "";
+  return ch ? `${ch}${cm}` : "";
+}
 /** Единая запасная обложка плеера (фирменный знак ISKCON ONE LOVE) — для любого
  *  аудио без собственной обложки. ЗКН-Д005: единая заглушка cover-fallback.svg. */
 export const AUDIO_FALLBACK_COVER = "/cover-fallback.svg";        // ЗКН-Д005
@@ -299,7 +321,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         title: t.title,
         subtitle: isK
           ? (t.artist || cfg.artist || cfg.title)
-          : (t.lilaLabel ?? (useMode === "commentary" ? "С комментариями" : "Стих за стихом")),
+          : (trackSubtitle(t, useMode, !!manifestRef.current?.modes.commentary?.tracks.length)
+             || (useMode === "commentary" ? "С комментариями" : "Стих за стихом")),
         cover: cfg.cover,
         album: bookRef.current, // машинный id книги/альбома — для «продолжить слушать»
         artist: isK ? (t.artist || cfg.artist || null) : null,
@@ -498,7 +521,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const cfg = cfgFor(bookRef.current, sourceRef.current);
     const album = isK
       ? cfg.title
-      : (md === "commentary" ? "С комментариями" : (t.lilaLabel ?? "Стих за стихом"));
+      : (trackSubtitle(t, md, !!manifestRef.current?.modes.commentary?.tracks.length)
+         || (md === "commentary" ? "С комментариями" : "Стих за стихом"));
     try {
       ms.metadata = new MediaMetadata({
         title: t.title,

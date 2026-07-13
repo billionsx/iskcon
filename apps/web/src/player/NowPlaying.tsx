@@ -6,7 +6,7 @@
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { usePlayer, fmtTime, type Track } from "./store";
+import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
@@ -79,12 +79,12 @@ export function NowPlaying({ onOpenBook, onOpenBhajan, onDonate }: { onOpenBook?
   const isAdHoc = p.kind !== "book";
   const BOOK = BOOKS[p.book] ?? BOOKS.bg;
   const isAudiobook = !isAdHoc && !!BOOK.noText; // аудиокнига без текста: «глав» нет — показываем название книги
+  // Подпись — общая для всех поверхностей плеера (store.trackSubtitle).
   const sub = isAdHoc
     ? (p.artist || (isKirtan ? "Киртан" : "Бхаджан"))
-    : p.track?.kind === "intro" ? "Вступление"
-      : p.track?.lilaLabel ? `${p.track.lilaLabel} · Глава ${p.track?.chapter ?? ""}`
-        : isAudiobook ? bookFullTitle(BOOK)
-          : `Глава ${p.track?.chapter ?? ""}`;
+    : isAudiobook && !p.track?.lilaLabel && p.track?.chapter == null
+      ? bookFullTitle(BOOK)
+      : trackSubtitle(p.track, p.mode, p.hasCommentary);
 
   function onDown(e: React.PointerEvent) { startY.current = e.clientY; setDragging(true); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); }
   function onMove(e: React.PointerEvent) { if (startY.current == null) return; const dy = e.clientY - startY.current; if (dy > 0) setDrag(dy); }

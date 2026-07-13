@@ -23,6 +23,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      # «Заливка идёт сама» — это ОБЕЩАНИЕ. Оно держится ровно на одном: GH_TOKEN обязан
+      # уметь запускать воркфлоу (actions:write). Если не умеет — самодокат встанет молча,
+      # и половина Бхагаватам никогда не доедет. Проверяем это механически, а не на веру.
+      - name: "Самодокат жив? (GH_TOKEN умеет запускать воркфлоу)"
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/billionsx/iskcon/actions/workflows/probe-url.yml/dispatches" \
+            -d '{"ref":"main","inputs":{"url":"https://gaurangers.com/api/books/sb/audio/available"}}')
+          echo "dispatch → HTTP $CODE"
+          if [ "$CODE" != "204" ]; then
+            echo "::error title=samodokat::GH_TOKEN НЕ может запускать воркфлоу (HTTP $CODE) — самодокат мёртв, заливка встанет"
+            exit 1
+          fi
+          echo "::notice::Самодокат жив: GH_TOKEN запускает воркфлоу (204)"
+
       - name: "Сверка"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

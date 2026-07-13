@@ -104,8 +104,10 @@ def parse_name(orig: str):
 
 
 def track_title(kind: str, spec, orig: str) -> str:
+    # Стандарт подписи стиха — ТОТ ЖЕ, что в читалке (worker.ts): «Текст 5» / «Тексты 21-22».
+    # Множественное число у слитых стихов — не косметика: так подписана книга.
     if kind == "verse":
-        return f"Текст {spec.replace('-', '–')}"
+        return f"Тексты {spec}" if "-" in spec else f"Текст {spec}"
     if kind == "intro":
         return "Введение"
     t = re.sub(r'\.[A-Za-z0-9]{2,4}$', '', (orig or "").strip()).replace("_", " ").strip()
