@@ -794,6 +794,9 @@ export const BOOKS: Record<string, BookData> = {
  */
 export const AUDIO_WORKS: Record<string, boolean> = {
   bg: true, cc: true, brs: true, spl: true, noi: true, iso: true, bs: true,
+  // ШБ: озвучка СТИХ ЗА СТИХОМ с комментариями, объект archive.org на каждую песнь.
+  // Плейлист приходит одной песнью (ЗКН-Пл011); песни без заливки в манифест не попадают.
+  sb: true,
   // продвинутая библиотека — включаются по мере заливки на archive.org (iskcone-<slug>)
   "manah-siksa": true, "siksastaka": true, "bhakti-tattva-viveka": true,
   "mukunda-mala-stotra": true, "sanmodana-bhashya": true, "bhaktyaloka": true,
