@@ -244,14 +244,53 @@ def make_title(fname: str, artist_ru: str, artist_lat: str = "") -> str:
     return ((artist_ru + ". ") if artist_ru else "") + tail
 
 
-# ── Имена исполнителей — по ТОМУ ЖЕ стандарту, что и названия. Иначе в одной
-#    строке «Ачьюта Прийа Дас», а в реестре «Ачюта Прия» — один человек, два лица.
-ARTIST_FIX = {
-    "aindra": "Аиндра Дас",
-    "acyuta-gopi-devi-dasi": "Ачьюта Гопи Деви Даси",
-    "hg-acyuta-priya-prabhu": "Ачьюта Прийа Дас",
+# ═══ ПРАВИЛА ИМЁН (утв. основателем 13.07.2026) ═══
+#
+#   • «Прабху» → «Дас».
+#   • «Свами» и «Госвами» пишутся ВСЕГДА с «Махарадж».
+#   • «Киртания ИСККОН» в названиях НЕ ПИШЕТСЯ (сборник — не исполнитель).
+#
+# Список ниже — имена, названные основателем ПОИМЁННО. Он старше правил:
+# «Пурначандра Дас Госвами» стоит без «Махарадж», и так и остаётся.
+ARTIST_CANON = {
+    "sarvatma": "Сарватма Дас",
     "achuta-priya-prabhu": "Ачьюта Прийа Дас",
+    "gour-govinda-swami": "Гоур Говинда Свами Махарадж",
+    "niranjana-swami": "Ниранджана Свами Махарадж",
+    "bhakti-vijiana-goswami": "Бхакти Вигьяна Госвами Махарадж",
+    "shivarama-swami": "Шиварама Свами Махарадж",
+    "acyuta-gopi-devi-dasi": "Ачьюта Гопи Деви Даси",
+    "yamuna-devi-dasi": "Ямуна Деви Даси",
+    "sundarangi-devi-dasi": "Сундаранги Деви Даси",
+    "mukunda-prabhu": "Мукунда Дас",
+    "ananda-vardhana-swami": "Ананда Вардхана Свами Махарадж",
+    "purnachandra-das-goswami": "Пурначандра Дас Госвами",   # без «Махарадж» — слово основателя
+    "saci-suta-prabhu": "Шачи Сута Дас",
+    "sulochana-prabhu": "Сулочана Дас",
+    "bhakti-bringa-govinda-swami": "Бхакти Бринга Говинда Свами Махарадж",
+    "thakur-haridas-prabhu": "Тхакур Харидас Дас",
+    "radha-govinda-prabhu": "Радха Говинда Дас",
+    "aindra": "Аиндра Дас",
+    "srila-prabhupada": "Шрила Прабхупада",
 }
+
+# Сборник — не исполнитель. Его имя в названии дорожки не появляется.
+NO_PREFIX = {"various"}
+
+TITLES_SW = re.compile(r"\b(Свами|Госвами)\b")
+
+
+def canon_name(slug: str, name: str) -> str:
+    """Правила основателя. Поимённый список старше правил."""
+    if slug in ARTIST_CANON:
+        return ARTIST_CANON[slug]
+    n = (name or "").strip()
+    if not n:
+        return n
+    n = re.sub(r"\bПрабху\b", "Дас", n)                    # Прабху → Дас
+    if TITLES_SW.search(n) and "Махарадж" not in n:          # Свами/Госвами → с Махарадж
+        n = n.rstrip(" .") + " Махарадж"
+    return re.sub(r"\s+", " ", n).strip()
 
 
 def main() -> int:
@@ -262,8 +301,14 @@ def main() -> int:
                 PRAYERS.setdefault(key(k), r["name"])
     print("::notice::молитвенник для сверки: %d имён" % len(PRAYERS))
 
-    for slug, name in ARTIST_FIX.items():
-        d1("UPDATE kirtan_artists SET name=?2 WHERE slug=?1 AND name<>?2", [slug, name])
+    # имена исполнителей — по правилам основателя
+    fixed = 0
+    for a in d1("SELECT slug, name FROM kirtan_artists"):
+        c = canon_name(a["slug"], a["name"])
+        if c and c != a["name"]:
+            d1("UPDATE kirtan_artists SET name=?2 WHERE slug=?1", [a["slug"], c])
+            fixed += 1
+    print("::notice::имён исправлено: %d" % fixed)
     artists = {a["slug"]: a["name"] for a in d1("SELECT slug, name FROM kirtan_artists")}
     lat = {}
     mp = Path(__file__).parent / "kirtans_map.json"
@@ -271,12 +316,32 @@ def main() -> int:
         for a in json.loads(mp.read_text(encoding="utf-8"))["artists"]:
             lat[a["slug"]] = a.get("name_channel") or ""
 
+    # ── ПЕРЕСТАНОВКА ДОРОЖЕК К ПРАВИЛЬНЫМ ИСПОЛНИТЕЛЯМ ──
+    #
+    # Порог «от 3 записей» сбросил в сборник тех, кого основатель назвал поимённо
+    # (Хави Дас, Киртан Преми Дас, Мадхурика Деви Даси…). Переливать 42 ГБ ради
+    # этого НЕ НАДО: элемент archive.org может остаться общим, а исполнитель у
+    # дорожки — это поле в базе. Ставим правильного по msg_id из карты.
+    by_msg = {}
+    if mp.exists():
+        for a in json.loads(mp.read_text(encoding="utf-8"))["artists"]:
+            for mid in a.get("msg_ids", []):
+                by_msg[mid] = a["slug"]
+    moved = 0
+    for t in d1("SELECT id, msg_id, artist_slug FROM kirtan_tracks WHERE msg_id IS NOT NULL"):
+        want = by_msg.get(t["msg_id"])
+        if want and want != t["artist_slug"] and want in artists:
+            d1("UPDATE kirtan_tracks SET artist_slug=?2 WHERE id=?1", [t["id"], want])
+            moved += 1
+    print("::notice::дорожек переставлено к своему исполнителю: %d" % moved)
+
     tracks = d1("SELECT id, file, artist_slug, title FROM kirtan_tracks")
     print("::notice::дорожек: %d" % len(tracks))
 
     changed = 0
     for t in tracks:
-        new = make_title(t["file"], artists.get(t["artist_slug"], ""), lat.get(t["artist_slug"], ""))
+        pref = "" if t["artist_slug"] in NO_PREFIX else artists.get(t["artist_slug"], "")
+        new = make_title(t["file"], pref, lat.get(t["artist_slug"], "") or artists.get(t["artist_slug"], ""))
         if new and new != t["title"]:
             d1("UPDATE kirtan_tracks SET title=?2 WHERE id=?1", [t["id"], new])
             changed += 1
