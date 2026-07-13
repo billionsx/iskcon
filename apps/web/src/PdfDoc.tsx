@@ -4,6 +4,7 @@ import { api } from "./api";
 import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, ProseChapterPrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
 import { tattvaRu, categoriesRu } from "./entityLabels";
 import { getDhama, getTirthaById, KIND_RU } from "./dhama/dhamas";
+import { cleanCardText } from "./cardText";
 
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
@@ -225,7 +226,16 @@ function flattenDossierTopic(dos: PdfDossier | null, ptab: string, psub: string)
   if (tabObj.lead) out.push({ h: tabObj.title || tabObj.label || "", sub: tabObj.lead, lines: [] });
   for (const sec of secs) {
     const lines: string[] = [];
-    for (const para of (sec.p ?? [])) if (para && para.trim()) lines.push(para.trim());
+    /* ЗКН-Т002 — ЛЮБОЙ ТЕКСТ ЛИЧНОСТИ ПРОХОДИТ ЧЕРЕЗ `cleanCardText`.
+     *
+     * PDF печатал абзацы НАПРЯМУЮ, минуя очистку. А очистка — это не косметика:
+     * она правит канонические имена («Шри Чайтанья Махапрабху» → «Гауранга
+     * Махапрабху») и разбивает нанизанные через точку с запятой предложения.
+     *
+     * Экран можно исправить и перевыкатить. **PDF — это БУМАГА.** Человек унесёт
+     * её с собой, и ошибка переживёт все правки. Из всех поверхностей эта —
+     * самая неисправимая, и именно её пропустили. */
+    for (const para of (sec.p ?? [])) if (para && para.trim()) lines.push(cleanCardText(para.trim()));
     const qs = [...(sec.quote ? [sec.quote] : []), ...(sec.quotes ?? [])];
     for (const q of qs) {
       if (!q?.t) continue;
