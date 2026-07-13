@@ -16,10 +16,10 @@ import { api } from "./api";
 import { usePlayer } from "./player/store";
 import { BhajanCard } from "./BhajanCard";
 import {
-  kirtanArtists, kirtanAlbums, playableAlbums, albumCover, artistPlayableCount,
-  artistBySlug, filterAlbums, moodsInCatalog, typesInCatalog,
-  TYPE_LABEL, MOOD_LABEL,
-  type KirtanArtist, type KirtanAlbum, type KirtanType, type KirtanMood,
+  kirtanArtists, kirtanAlbums, albumCover, artistPlayableCount,
+  artistBySlug,
+  TYPE_LABEL,
+  type KirtanArtist, type KirtanAlbum,
 } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
@@ -40,26 +40,6 @@ export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number 
   );
 }
 
-/** Карточка проигрываемого альбома. */
-function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }) {
-  const artist = artistBySlug(album.artist);
-  return (
-    <button onClick={onPlay} style={{ flexShrink: 0, width: 168, textAlign: "left", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "var(--font-text)" }}>
-      <div style={{ position: "relative", width: 168, height: 168, borderRadius: 16, overflow: "hidden", background: "var(--color-bg-3, #e9e9ee)", boxShadow: "0 8px 26px rgba(0,0,0,0.16)", border: "0.5px solid var(--color-hairline)" }}>
-        <img src={albumCover(album)} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        <span aria-hidden style={{ position: "absolute", right: 10, bottom: 10, width: 38, height: 38, borderRadius: "50%", display: "grid", placeItems: "center", background: "rgba(255,255,255,0.92)", color: "#1d1d1f", boxShadow: "0 3px 12px rgba(0,0,0,0.3)" }}>
-          <svg width="18" height="18" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
-        </span>
-        {/* ЗКН-Н036 · решение основателя 13.07.2026 — плашка типа с обложки УБРАНА.
-            Тип альбома («Киртан» / «Бхаджан») уже назван чипами-фильтром ниже.
-            Надпись поверх обложки повторяла его и загораживала образ. */}
-      </div>
-      <div style={{ marginTop: 9, fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{album.title}</div>
-      <div style={{  fontSize: "var(--text-footnote)", color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist?.name}</div>
-    </button>
-  );
-}
-
 export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenArtist: (slug: string) => void;
   onOpenBhajan: (slug: string) => void;
@@ -67,17 +47,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 }) {
   const player = usePlayer();
   const kv = useKirtans();   // реактивная гидрация каталога из БД (сид → БД)
-  const playable = useMemo(() => playableAlbums(), [kv]);
-  const types = useMemo(() => typesInCatalog(), [kv]);
-  const moods = useMemo(() => moodsInCatalog(), [kv]);
-
-  // Классификации — выбранный фильтр (один тип ИЛИ одно настроение за раз).
-  const [fType, setFType] = useState<KirtanType | null>(null);
-  const [fMood, setFMood] = useState<KirtanMood | null>(null);
-  const filtered = useMemo(
-    () => (fType || fMood ? filterAlbums({ type: fType, mood: fMood }) : []),
-    [fType, fMood]
-  );
 
   // Тексты бхаджанов — короткий список из D1 (как было), полный — в каталоге.
   const [bhajans, setBhajans] = useState<BhajanListItem[] | null>(null);
@@ -155,15 +124,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     );
   };
 
-  const chip = (on: boolean): React.CSSProperties => ({
-    flexShrink: 0, padding: "8px 15px", borderRadius: 999, cursor: "pointer", fontFamily: "var(--font-text)",
-    border: `0.5px solid ${on ? "transparent" : "var(--color-hairline)"}`,
-    background: on ? "var(--color-label)" : "var(--color-bg-2)",
-    color: on ? "var(--color-bg)" : "var(--color-label)",
-    fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
-    transition: "background .15s, color .15s, border-color .15s", WebkitTapHighlightColor: "transparent",
-  });
-
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
       <HubHeader
@@ -194,53 +154,16 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         </div>
       ) : (
       <>
-      {playable.length > 0 && (
-        <section style={{ marginTop: SECTION_GAP }}>
-          <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", margin: "0 -16px", padding: "2px 16px 4px" }}>
-            {playable.map((al) => (
-              <AlbumCard key={al.id} album={al} onPlay={() => player.playKirtan(al.id)} />
-            ))}
-          </div>
-        </section>
-      )}
-
+      {/* ЗКН-Н036 · решение основателя 13.07.2026 — В КИРТАНАХ ОСТАЁТСЯ ОДИН СПИСОК.
+          Удалены ЦЕЛИКОМ два блока: карусель альбомов («Слушать сейчас») и чипы
+          жанров/настроений с их выдачей. Не надписи над ними — сами блоки.
+          Витрина = шапка · поиск · исполнители. Всё остальное — за поиском. */}
       <section style={{ marginTop: SECTION_GAP }}>
         <ul style={LIST_UL}>
           {kirtanArtists().map((a, i) => artistRow(a, i === kirtanArtists().length - 1))}
         </ul>
       </section>
 
-      <section style={{ marginTop: SECTION_GAP }}>
-        {/* ЗКН-Н036 · решение основателя 13.07.2026 — НАДПИСИ УБРАНЫ.
-            Здесь стояли три вторые шапки: «ЗВУЧИТ · Слушать сейчас»,
-            «ГОЛОСА СВЯТОГО ИМЕНИ · Исполнители», «КЛАССИФИКАЦИИ · Жанры и
-            настроения». Каждая — надпись золотом над заголовком, то есть ВТОРАЯ
-            шапка витрины поверх единственной законной (ЗКН-Н024). Содержимое
-            говорит само за себя: альбомы — альбомы, список имён — исполнители,
-            чипы — фильтр. «Сбросить» — не надпись, он остаётся: последним чипом. */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-          {types.map((t) => (
-            <button key={t} onClick={() => { setFType(fType === t ? null : t); setFMood(null); }} style={chip(fType === t)}>{TYPE_LABEL[t]}</button>
-          ))}
-          <span aria-hidden style={{ width: 1, alignSelf: "stretch", margin: "2px 2px", background: "var(--color-hairline)" }} />
-          {moods.map((m) => (
-            <button key={m} onClick={() => { setFMood(fMood === m ? null : m); setFType(null); }} style={chip(fMood === m)}>{MOOD_LABEL[m]}</button>
-          ))}
-          {(fType || fMood) && (
-            <button onClick={() => { setFType(null); setFMood(null); }}
-              style={{ flexShrink: 0, padding: "8px 15px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "transparent", cursor: "pointer", color: "var(--color-gold-deep)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>
-              Сбросить
-            </button>
-          )}
-        </div>
-
-        {(fType || fMood) && (
-          <ul style={{ ...LIST_UL, marginTop: 14 }}>
-            {filtered.length === 0 && <li style={{ padding: "16px", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Пока нет записей по этому фильтру.</li>}
-            {filtered.map((al, i) => albumRow(al, i === filtered.length - 1))}
-          </ul>
-        )}
-      </section>
 
       </>
       )}
