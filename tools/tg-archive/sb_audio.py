@@ -47,7 +47,9 @@ from tg_archive import build_client, load_dotenv_if_present, slug  # noqa: E402
 WORK = Path(__file__).parent / "sb_work"
 START = time.time()
 BUDGET = float(os.getenv("TIME_BUDGET_MIN") or 320) * 60
-PARALLEL = int(os.getenv("IA_PARALLEL") or 3)
+PARALLEL = int(os.getenv("IA_PARALLEL") or 4)      # параллельных заливок на archive.org
+DL_PARALLEL = int(os.getenv("DL_PARALLEL") or 6)   # параллельных скачиваний из Telegram
+CHUNK = 120                                        # размер порции: сверка бюджета и запись в D1
 
 ACCOUNT = os.getenv("CF_ACCOUNT_ID", "d5cbe19470dc38599873eabfe148e6d1")
 DB = os.getenv("D1_DATABASE_ID", "6226aded-dd03-4e74-977f-9cd0b509e73d")
@@ -171,7 +173,13 @@ def canto_metadata(canto: int) -> dict:
 
 
 async def run_canto(client, canto: int, pool, loop) -> bool:
-    """True — песнь докатана до конца; False — вышли по бюджету времени."""
+    """True — песнь докатана до конца; False — вышли по бюджету времени.
+
+    Конвейер: сначала СКАНИРУЕМ канал (метаданные, дёшево) и строим план; уже лежащее на
+    archive.org отсеиваем сразу. Затем гоняем план порциями: DL_PARALLEL скачиваний и
+    IA_PARALLEL заливок работают внахлёст. Последовательная качалка давала 0.23 МБ/с —
+    это 40 часов на 33.5 GB; узким местом была именно она, а не Telegram как таковой.
+    """
     from telethon.tl.types import DocumentAttributeAudio, DocumentAttributeFilename
     from telethon.errors import FloodWaitError
     from internetarchive import get_item, upload as ia_upload
@@ -188,42 +196,20 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
             nm = f.get("name") if isinstance(f, dict) else getattr(f, "name", None)
             if nm:
                 have.add(nm)
-    print(f"::notice::Песнь {canto} → {ident}: в объекте уже {len(have)} файлов "
-          f"({'существует' if existed else 'будет создан'})")
-
     WORK.mkdir(exist_ok=True)
-    md_done = existed
-    seq_by_ch: dict[int, int] = {}
-    rows_ok: list[dict] = []      # подтверждённо залитое (или уже лежавшее) → в D1
+
+    # ── 1. План: чего ещё нет в объекте ──
+    plan: list = []
+    rows_ok: list[dict] = []
     playlist: list[dict] = []
-    inflight: list = []
-    n_up = n_skip = n_fail = 0
-    reg_from = 0
-    exhausted = True
-
-    def flush(force: bool = False) -> None:
-        # Пишем в D1 ПОРЦИЯМИ, а не одним пакетом в конце: у песни 10 это 3662 файла —
-        # обрыв раннера обнулял бы весь учёт, и не было бы видно живого прогресса.
-        nonlocal reg_from
-        if len(rows_ok) - reg_from >= (1 if force else 200):
-            register(rows_ok[reg_from:])
-            reg_from = len(rows_ok)
-            print(f"::notice::Песнь {canto}: в D1 {reg_from} дорожек…")
-
-    def do_upload(remote: str, path: str, md: dict):
-        resps = ia_upload(ident, files={remote: path}, metadata=md, access_key=ak, secret_key=sk,
-                          retries=3, queue_derive=False, verbose=False)
-        bad = [r for r in resps if getattr(r, "status_code", 200) not in (200, None)]
-        if bad:
-            raise RuntimeError(f"HTTP {[getattr(r, 'status_code', None) for r in bad]}")
-
+    seq_by_ch: dict[int, int] = {}
+    n_skip = 0
     entity = await client.get_entity(channel)
     async for msg in client.iter_messages(entity, reverse=True):
         doc = msg.audio or (msg.document if msg.document and
                             (msg.document.mime_type or "").startswith("audio/") else None)
         if not doc:
             continue
-
         orig = None
         dur = None
         for a in doc.attributes:
@@ -237,74 +223,101 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
         seq = seq_by_ch.get(ch, 0)
         seq_by_ch[ch] = seq + 1
         remote = f"{ch:03d}.{seq:03d}.{label}.mp3"
-        ref = f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None
         row = {"file": f"{ident}/{remote}", "canto": canto, "chapter": ch, "seq": seq,
-               "kind": kind, "ref": ref, "title": track_title(kind, spec, orig),
-               "duration": dur, "src": f"/audio/{ident}/{remote}"}
-        playlist.append({"file": remote, "title": row["title"], "ref": ref, "orig": orig})
-
+               "kind": kind, "ref": (f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None),
+               "title": track_title(kind, spec, orig), "duration": dur,
+               "src": f"/audio/{ident}/{remote}"}
+        playlist.append({"file": remote, "title": row["title"], "ref": row["ref"], "orig": orig})
         if remote in have:
             n_skip += 1
             rows_ok.append(row)
-            continue
+        else:
+            plan.append((msg, remote, row, getattr(doc, "size", 0) or 0))
 
+    todo_gb = sum(p[3] for p in plan) / 1e9
+    print(f"::notice::Песнь {canto} → {ident}: уже залито {n_skip}, осталось {len(plan)} "
+          f"({todo_gb:.2f} GB)")
+
+    md_done = existed
+    n_up = n_fail = 0
+    reg_from = 0
+
+    def flush(force: bool = False) -> None:
+        # Пишем в D1 ПОРЦИЯМИ: у песни 10 это 3662 файла — обрыв раннера не должен обнулять учёт.
+        nonlocal reg_from
+        if len(rows_ok) - reg_from >= (1 if force else 200):
+            register(rows_ok[reg_from:])
+            reg_from = len(rows_ok)
+
+    def do_upload(remote: str, path: str, md: dict):
+        resps = ia_upload(ident, files={remote: path}, metadata=md, access_key=ak, secret_key=sk,
+                          retries=3, queue_derive=False, verbose=False)
+        bad = [r for r in resps if getattr(r, "status_code", 200) not in (200, None)]
+        if bad:
+            raise RuntimeError(f"HTTP {[getattr(r, 'status_code', None) for r in bad]}")
+
+    async def fetch(msg, dest: Path):
+        while True:
+            try:
+                await client.download_media(msg, file=str(dest))
+                return
+            except FloodWaitError as e:
+                print(f"FloodWait {e.seconds}s")
+                await asyncio.sleep(e.seconds + 1)
+
+    sem_dl = asyncio.Semaphore(DL_PARALLEL)
+    sem_up = asyncio.Semaphore(PARALLEL)
+
+    async def one(msg, remote: str, row: dict):
+        dest = WORK / remote
+        try:
+            async with sem_dl:
+                await fetch(msg, dest)
+            async with sem_up:
+                await loop.run_in_executor(pool, do_upload, remote, str(dest), {})
+            return row
+        finally:
+            dest.unlink(missing_ok=True)
+
+    # ── 2. Первый файл — отдельно и синхронно: он создаёт объект и несёт метаданные ──
+    if plan and not md_done:
+        msg, remote, row, _ = plan.pop(0)
+        dest = WORK / remote
+        try:
+            await fetch(msg, dest)
+            await loop.run_in_executor(pool, do_upload, remote, str(dest), canto_metadata(canto))
+            n_up += 1
+            rows_ok.append(row)
+            md_done = True
+        except Exception as e:
+            print(f"::error::Песнь {canto}: не создан объект ({remote}): {e}")
+            return False
+        finally:
+            dest.unlink(missing_ok=True)
+
+    # ── 3. Остальное — порциями внахлёст ──
+    exhausted = True
+    t0, b0 = time.time(), 0.0
+    for i in range(0, len(plan), CHUNK):
         if time.time() - START > BUDGET:
             exhausted = False
             print(f"::notice::Песнь {canto}: бюджет времени исчерпан — сворачиваюсь штатно")
             break
-
-        dest = WORK / remote
-        while True:
-            try:
-                await client.download_media(msg, file=str(dest))
-                break
-            except FloodWaitError as e:
-                print(f"FloodWait {e.seconds}s")
-                time.sleep(e.seconds + 1)
-
-        md = {} if md_done else canto_metadata(canto)
-        md_done = True  # метаданные несёт только первая заливка (она же создаёт объект)
-        if md:
-            try:  # первую заливку ждём: она создаёт объект, гонка тут недопустима
-                await loop.run_in_executor(pool, do_upload, remote, str(dest), md)
-                n_up += 1
-                rows_ok.append(row)
-            except Exception as e:
+        part = plan[i:i + CHUNK]
+        res = await asyncio.gather(*[one(m, rn, rw) for m, rn, rw, _ in part],
+                                   return_exceptions=True)
+        for (m, rn, rw, sz), r in zip(part, res):
+            if isinstance(r, BaseException):
                 n_fail += 1
-                print(f"✗ {remote}: {e}")
-            dest.unlink(missing_ok=True)
-            continue
-
-        while len(inflight) >= PARALLEL:  # конвейер: качаем следующий, пока льются предыдущие
-            done_t, pend = await asyncio.wait([t for t, _, _ in inflight],
-                                              return_when=asyncio.FIRST_COMPLETED)
-            keep = []
-            for t, rw, p in inflight:
-                if t in done_t:
-                    if t.exception():
-                        n_fail += 1
-                        print(f"✗ {rw['file']}: {t.exception()}")
-                    else:
-                        n_up += 1
-                        rows_ok.append(rw)
-                    Path(p).unlink(missing_ok=True)
-                else:
-                    keep.append((t, rw, p))
-            inflight = keep
-            flush()
-
-        task = asyncio.ensure_future(loop.run_in_executor(pool, do_upload, remote, str(dest), {}))
-        inflight.append((task, row, str(dest)))
-
-    for t, rw, p in inflight:  # дожидаем хвост заливок
-        try:
-            await t
-            n_up += 1
-            rows_ok.append(rw)
-        except Exception as e:
-            n_fail += 1
-            print(f"✗ {rw['file']}: {e}")
-        Path(p).unlink(missing_ok=True)
+                print(f"✗ {rn}: {r}")
+            else:
+                n_up += 1
+                rows_ok.append(rw)
+        flush()
+        b0 += sum(sz for _, _, _, sz in part)
+        el = max(1.0, time.time() - t0)
+        print(f"::notice::Песнь {canto}: {n_up}/{len(plan) + 1} · {b0/1e9:.2f} GB · "
+              f"{b0/1e6/el:.2f} МБ/с · ошибок {n_fail}")
 
     if playlist and exhausted:  # сайдкар пишем только при ПОЛНОМ проходе — иначе он обрезан
         pl = WORK / "playlist.json"
@@ -331,7 +344,7 @@ async def main():
 
     ensure_schema()
     loop = asyncio.get_running_loop()
-    pool = ThreadPoolExecutor(max_workers=PARALLEL)
+    pool = ThreadPoolExecutor(max_workers=PARALLEL + 1)
     done, left = [], []
     client = build_client()
     async with client:
