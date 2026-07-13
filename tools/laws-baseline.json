@@ -3,5 +3,6 @@
   "long_union": 0,
   "type_errors": 16,
   "bare_urlopen": 16,
-  "hardcoded_hex": 445
+  "hardcoded_hex": 445,
+  "gates_removed": -51
 }

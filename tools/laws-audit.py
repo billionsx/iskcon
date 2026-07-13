@@ -83,10 +83,30 @@ def actual_level(lid: str) -> tuple[int, str]:
 
     # Ц007 — храповик долга в данных: поле `baseline` в проверках.
     # Пл013 — автоматизм это механизм: шаг «Самодокат жив?» в sb-verify.
+    # ЗКН-Ц010 — номер закона уникален: правило в линтере.
+    if lid == "ЗКН-Ц010":
+        t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
+        if "check_unique_ids" in t or "номер закона уникален" in t:
+            return 5, "правило уникальности номеров (laws-lint.py)"
+
+    # ЗКН-Пл014 — сверка озвучки ШБ.
+    if lid == "ЗКН-Пл014":
+        if (ROOT / "tools" / "tg-archive" / "sb_verify.py").exists():
+            return 5, "sb_verify.py · воркфлоу sb-verify"
+
+    # ЗКН-Б010 — подпись стиха одна на все поверхности.
+    #
+    # ⚠️ Здесь стоял поиск в `data-audit.py`. Это была МОЯ проверка, привязанная к
+    # МОЕМУ закону Б010 («немой стих»). Параллельная сессия заняла тот же номер
+    # своим законом («подпись стиха»), мой уехал в Б012 — а проверка осталась
+    # искать в data-audit и не находила ничего.
+    #
+    # Ровно то, о чём говорит ЗКН-Ц010: два закона под одним номером — не свод,
+    # а каша. Механизм Б010 живёт в `worker.ts`.
     if lid == "ЗКН-Б010":
-        t = (ROOT / "tools" / "data-audit.py").read_text(encoding="utf-8")
-        if "ЗКН-Б010" in t:
-            return 5, "гейт данных (data-audit.py)"
+        w = (ROOT / "apps" / "web" / "worker.ts").read_text(encoding="utf-8")
+        if "sbVerseLabel" in w:
+            return 5, "sbVerseLabel (worker.ts)"
 
     if lid == "ЗКН-Пл013":
         w = ROOT / ".github" / "workflows" / "sb-verify.yml"

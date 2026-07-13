@@ -327,6 +327,14 @@ DEBT = {
         "pattern": re.compile(r"fontSize:\s*[0-9]"),
         "hint": "→ tk.text.* или var(--…); см. docs/STANDARD_design.md",
     },
+    "gates_removed": {
+        "law": "ЗКН-Ц011",
+        "name": "гейт исчез (удаление не проходит молча)",
+        "scope": "tools",
+        "hint": "→ гейтов стало МЕНЬШЕ. Гейт можно срезать нечаянно — вырезая "
+                "соседний блок, или заняв чужой номер. Пропал МОЛЧА: ни ошибки, "
+                "ни падения, просто одной проверкой меньше (ЗКН-Ц011)",
+    },
     "long_union": {
         "law": "ЗКН-Ф015",
         "name": "цепочка UNION ALL (падает в D1)",
@@ -403,6 +411,35 @@ def count_type_errors():
     return sum(1 for l in (r.stdout + r.stderr).split("\n") if "error TS" in l)
 
 
+def count_gates():
+    """ЗКН-Ц011 — УДАЛЕНИЕ ГЕЙТА НЕ ПРОХОДИТ МОЛЧА.
+
+    Гейт можно срезать НЕЧАЯННО. Вырезая один блок из `data-audit.py`, автор
+    закона срезал вместе с ним ТРИ СОСЕДНИХ — и обнаружил это случайно.
+
+    Со мной случилось иначе, но с тем же исходом: параллельная сессия завела свой
+    закон под НОМЕРОМ МОЕГО, её гейт занял место моего — и мой ПРОСТО ИСЧЕЗ. Свод
+    продолжал обещать то, чего в коде уже не было.
+
+    Оба раза гейт пропал МОЛЧА. Ни ошибки, ни падения — просто одной проверкой
+    меньше, и никто не знает какой.
+
+    Механизм: гейты СЧИТАЮТСЯ. Число может РАСТИ, но не падать. Убыло — храповик
+    ловит, и надо объяснить, какой гейт ушёл и почему.
+
+    Возвращаем ОТРИЦАТЕЛЬНОЕ число: храповик стережёт рост долга, а здесь беречь
+    надо УБЫЛЬ. Минус превращает одно в другое.
+    """
+    n = 0
+    for f in ("data-audit.py", "nav-audit.py", "cards-audit.py",
+              "infra-audit.py", "product-audit.py", "pkl-audit.py",
+              "url-audit.py"):
+        p = ROOT / "tools" / f
+        if p.exists():
+            n += p.read_text(encoding="utf-8").count('"law":')
+    return -n
+
+
 def count_bare_urlopen():
     # ЗКН-Ц004 — ЛИНТЕР НЕ СЧИТАЕТ САМ СЕБЯ.
     #
@@ -439,6 +476,7 @@ def count_debt():
     counts["bare_urlopen"] = count_bare_urlopen()
     counts["type_errors"] = count_type_errors()
     counts["long_union"] = count_long_union()
+    counts["gates_removed"] = count_gates()
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
             continue
