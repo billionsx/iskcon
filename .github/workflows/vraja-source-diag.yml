@@ -1,0 +1,8 @@
+name: "Диагностика источника Враджа"
+on: { workflow_dispatch: {} }
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/vraja-source-diag.py
