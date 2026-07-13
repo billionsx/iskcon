@@ -78,6 +78,10 @@ def ors(col, forms):
     """
     out = []
     for f in forms:
+        if not f:
+            continue
         for v in {f, f[:1].upper() + f[1:]}:
             out.append("instr(coalesce(%s,''),'%s')>0" % (col, v.replace("'", "''")))
-    return " OR ".join(out)
+    # Пустое условие ломает SQL молча: «WHERE () OR ()» → syntax error near ")».
+    # Возвращаем ЗАВЕДОМО ЛОЖНОЕ условие — запрос жив, находок ноль, ошибка видна.
+    return " OR ".join(out) if out else "0"

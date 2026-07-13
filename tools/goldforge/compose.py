@@ -376,8 +376,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
                 ["Эта книга говорит о герое на протяжении всего текста: в карточку взято "
                  "самое плотное, ещё %d мест ждут в самой книге. Карточка — свод, а не "
                  "копия библиотеки." % n],
-                quotes=[{"t": "Открыть книгу целиком.", "ref": title,
-                         "to": "/" + slugmap.get(w, w)}], hero=HN))
+                cite=[{"ref": title, "to": "/" + slugmap.get(w, w)}], hero=HN))
         tabs.append({"id": "kniga-o-nem", "label": "Книги о нём", "kicker": "ЦЕЛИКОМ",
                      "subtabs": [{"id": "polnye-knigi", "label": "Полные книги",
                                   "sections": secs}]})

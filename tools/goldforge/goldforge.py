@@ -37,7 +37,7 @@ DOSSIERS = ROOT / "docs" / "dossiers"
 PASSPORTS = DOSSIERS / "passports"
 CARDS = ROOT / "data" / "pkl"
 
-MIN_STEM = 5
+MIN_STEM = 4      # «Рупа», «Сита», «Джива» — четыре буквы. Пять их убивало
 STOP = {"дас", "даса", "das", "dasa", "деви", "devi", "шри", "sri", "шрила", "srila",
         "госвами", "gosvami", "goswami", "тхакур", "thakura", "thakur", "прабху",
         "prabhu", "махарадж", "maharaja", "пандит", "pandita", "ачарья", "acarya",

@@ -64,6 +64,27 @@ HALF_TITLE = re.compile(r"А\.\s?Ч\.\s+Бхактиведанта")
 COMPOUND = re.compile(r"[А-Яа-я]+-[а-я]+")
 
 
+CASE_END = {"а": "а", "и": "и", "е": "е", "у": "у", "ю": "ой", "ы": "ы", "ей": "ой"}
+
+
+def fix_lord(s):
+    """Голая форма Господа → канон, в ЛЮБОМ падеже и БЕЗ «Шри».
+
+    Названия глав приходят из D1 как «Чайтанья Махапрабху наставляет…» — без
+    «Шри». Прежний санитайзер требовал «Шри» и такую форму пропускал, а гейт
+    её ловил: карточка падала на данных, которые сама же и взяла из базы.
+    """
+    def sub(m):
+        pre, word = m.group(1), m.group(2)
+        if pre and pre.lower().startswith("кришн"):
+            return m.group(0)                      # полная санньяса-форма — законна
+        tail = word[len("Чайтань"):]               # а / и / е / ю / ей
+        end = {"а": "а", "и": "и", "е": "е", "ю": "у", "ей": "ой", "ею": "ою"}.get(tail, "а")
+        head = (pre + " ") if pre and pre != "Шри" else ""
+        return "%sГауранг%s Махапрабху" % (head, end)
+    return re.sub(r"(?:([А-Яа-я]+)\s+)?(Чайтань[а-я]{1,2})\s+Махапрабху", sub, s or "")
+
+
 def clean_card_text(s):
     """ЗКН-Т002 · У4: единственная точка прогона авторской прозы."""
     s = re.sub(r"[ \t]+", " ", (s or "")).strip()
@@ -74,8 +95,7 @@ def clean_card_text(s):
         s = ". ".join(p if i == 0 else p[0].upper() + p[1:] for i, p in enumerate(parts))
         s = re.sub(r"\.\s*\.", ".", s)
         s = re.sub(r"\s{2,}", " ", s).strip()
-    for rx, rep in LORD:                            # ЗКН-И001
-        s = rx.sub(rep, s)
+    s = fix_lord(s)                                 # ЗКН-И001 (любой падеж, с «Шри» и без)
     for rx, rep in LILA:                            # ЗКН-И003
         s = rx.sub(rep, s)
     s = ABHAY[0].sub(ABHAY[1], s)                   # ЗКН-И004

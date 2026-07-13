@@ -182,8 +182,8 @@ def verbatim(book):
         if seg[0] == "bhajans":
             continue
         w = slug2work.get(seg[0])
-        if not w:
-            continue
+        if not w or len(seg) < 2:
+            continue          # ссылка на КНИГУ целиком, а не на стих — сверять нечего
         want[".".join([w] + seg[1:])] = (path, q["t"])
     bad = []
     ids = list(want)
