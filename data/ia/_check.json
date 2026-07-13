@@ -1,0 +1,19 @@
+{
+  "at": "2026-07-13T10:48:42.791049Z",
+  "objects": {
+    "iskcone-sb-1": {
+      "exists": true,
+      "mp3": 784,
+      "playlist": true,
+      "cover": false,
+      "total_files": 789
+    },
+    "iskcone-sb-2": {
+      "exists": true,
+      "mp3": 347,
+      "playlist": false,
+      "cover": false,
+      "total_files": 351
+    }
+  }
+}
