@@ -45,14 +45,14 @@ jobs:
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
           TG_CHANNELS: ${{ inputs.channel || '@iskconecom' }}
           TG_LIMIT: ${{ inputs.limit }}
-          PROBE_OUT: /tmp/probe.json
+          PROBE_OUT: tools/tg-archive/kirtans_probe.json
         run: python tg_probe.py
 
       - name: Отчёт (логи недоступны — печатаем аннотациями)
         run: |
           python3 - <<'PY'
           import json, collections
-          d = json.load(open("/tmp/probe.json"))
+          d = json.load(open("tools/tg-archive/kirtans_probe.json"))
           for ch in d["channels"]:
               if ch.get("error"):
                   print("::error::%s: %s" % (ch["channel"], ch["error"])); continue
@@ -89,7 +89,7 @@ jobs:
       - name: Разбор в реестр исполнителей
         working-directory: tools/tg-archive
         env:
-          PROBE_IN: /tmp/probe.json
+          PROBE_IN: kirtans_probe.json
           ROSTER_OUT: kirtans_roster.json
         run: python kirtans_plan.py
 
@@ -98,7 +98,7 @@ jobs:
         run: |
           git config user.name "Billions X"
           git config user.email "ceo@billionsx.com"
-          git add tools/tg-archive/kirtans_roster.json
+          git add tools/tg-archive/kirtans_probe.json tools/tg-archive/kirtans_roster.json
           git diff --cached --quiet && { echo "реестр не изменился"; exit 0; }
           git commit -m "Киртаны: реестр исполнителей канала [skip ci]"
           for i in 1 2 3 4 5 6; do
@@ -110,5 +110,5 @@ jobs:
         with:
           name: kirtans-probe
           path: |
-            /tmp/probe.json
+            tools/tg-archive/kirtans_probe.json
             tools/tg-archive/kirtans_roster.json
