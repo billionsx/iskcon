@@ -64,6 +64,9 @@ def main():
                     WHERE a.kind='verse' AND v.ref IS NULL ORDER BY a.canto LIMIT 50""")
     dupes = d1("""SELECT canto, chapter, seq, COUNT(*) AS n FROM sb_audio
                   GROUP BY canto, chapter, seq HAVING n > 1 LIMIT 50""")
+    # Дубль-ref: два файла на один стих — человек услышал бы его дважды подряд.
+    dupref = d1("""SELECT ref, COUNT(*) AS n FROM sb_audio
+                   WHERE kind='verse' GROUP BY ref HAVING n > 1 LIMIT 50""")
     cantos = [r["canto"] for r in per]
     lst = ",".join(str(c) for c in cantos)
     mute = d1(f"""SELECT SUBSTR(v.division_id, 4, INSTR(SUBSTR(v.division_id,4),'.')-1) AS canto,
@@ -96,17 +99,21 @@ def main():
     lines += ["", f"**Дублей позиции (две дорожки на одном месте): {len(dupes)}**"]
     for dp in dupes[:20]:
         lines.append(f"- песнь {dp['canto']}, глава {dp['chapter']}, позиция {dp['seq']} — {dp['n']}")
+    lines += ["", f"**Дублей стиха (две дорожки на один ref): {len(dupref)}**"]
+    for dr in dupref[:20]:
+        lines.append(f"- `{dr['ref']}` — {dr['n']}")
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
     print("\n".join(lines))
 
-    bad = len(orphans) + len(dupes)
-    print(f"::notice::Сверка ШБ: сирот {len(orphans)}, дублей {len(dupes)}, "
-          f"песней с озвучкой {len(per)}")
+    bad = len(orphans) + len(dupes) + len(dupref)
+    print(f"::notice::Сверка ШБ: сирот {len(orphans)}, дублей позиции {len(dupes)}, "
+          f"дублей стиха {len(dupref)}, песней с озвучкой {len(per)}")
     if bad:
-        raise SystemExit(f"::error::Сверка ШБ не пройдена: сирот {len(orphans)}, дублей {len(dupes)}")
+        raise SystemExit(f"::error::Сверка ШБ не пройдена: сирот {len(orphans)}, "
+                         f"дублей позиции {len(dupes)}, дублей стиха {len(dupref)}")
 
 
 if __name__ == "__main__":
