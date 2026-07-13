@@ -225,8 +225,50 @@ def check_f017():
     return bad
 
 
+def check_r002():
+    """ЗКН-Р002 — МАССОВОЕ УДАЛЕНИЕ ЗАПРЕЩЕНО. ЗАЛИВКА НЕДЕСТРУКТИВНА.
+
+    ПОЧЕМУ ЭТОТ ГЕЙТ СУЩЕСТВУЕТ.
+
+    Один воркфлоу уже убил базу: `registry-load` делал DROP+CREATE четырёх таблиц
+    и молча падал ПОСЛЕ дропа. Восстанавливались через D1 Time Travel.
+
+    Но тот же почерк остался ещё в ПЯТИ воркфлоу:
+        DELETE FROM prayers          — все 339 бхаджанов
+        DELETE FROM content_items    — 170 записей
+        DELETE FROM content_blocks
+        DELETE FROM prayer_verses
+        DELETE FROM tilda_pages / tilda_assets
+
+    «Снести и залить заново» кажется чистым. Но если разбор дал МЕНЬШЕ — разница
+    ПРОПАЛА навсегда. А у молитв и записей теперь ВЫЧИЩЕННЫЕ слаги (были чужие
+    пути `/ru/gaura-arati` с исходного сайта) — прогон вернул бы мусор.
+
+    ПРАВИЛО: `DELETE FROM <таблица>` БЕЗ `WHERE` — запрещён. Заливка обновляет
+    своё (`INSERT OR REPLACE`) и НЕ ТРОГАЕТ чужое. Точечное удаление по ключу
+    (`DELETE ... WHERE work_id=?`) законно — оно осознанное.
+    """
+    import re as _re
+    bad = []
+    for p in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
+        for i, line in enumerate(read(p).split("\n"), 1):
+            st = line.strip()
+            if st.startswith("#"):
+                continue
+            for m in _re.finditer(r'DELETE FROM ([a-z_]+)', st):
+                # точечное удаление по ключу — законно
+                tail = st[m.end():m.end() + 40]
+                if "WHERE" in tail.upper():
+                    continue
+                bad.append((p.name + ":%d" % i,
+                            "МАССОВОЕ `DELETE FROM %s` — снесёт таблицу целиком. "
+                            "Заливка обязана быть недеструктивной (ЗКН-Р002)" % m.group(1)))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Ф001", "registry-load выключен (он DROP+CREATE)", check_f001),
+    ("ЗКН-Р002", "массовое удаление запрещено", check_r002),
     ("ЗКН-Ф017", "service worker всегда отдаёт Response", check_f017),
     ("ЗКН-Ф004", "откат D1 Time Travel на месте", check_f004),
     ("ЗКН-Пл009", "координата человека не перезаписывается", check_pl009),

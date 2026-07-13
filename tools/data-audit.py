@@ -321,6 +321,30 @@ CHECKS = [
                 "а не «НП 41» (ЗКН-БТ006)",
     },
     {
+        "law": "ЗКН-Д008",
+        "name": "СУРРОГАТ-ЗАГЛУШКА НЕ ЛЕЖИТ В ДАННЫХ",
+        # Заглушка — это то, что рисуют ВМЕСТО картинки, когда её НЕТ. Она живёт
+        # в КОДЕ. Записать её в БАЗУ — значит соврать: поле «есть картинка»
+        # заполнено, а картинки нет.
+        #
+        # Так уже было: 339 бхаджанов хранили hero_image='/audio-cover.png'.
+        # Файл удалили — и вместо заглушки показывались БИТЫЕ картинки, потому что
+        # код думал «картинка есть, рисовать заглушку не надо».
+        #
+        # Пустое поле — честно. Суррогат в поле — ложь, которая ломается молча.
+        "sql": """SELECT (SELECT COUNT(*) FROM tirthas
+                          WHERE COALESCE(hero_image,'') <> ''
+                            AND (hero_image LIKE '%fallback%' OR hero_image LIKE '%audio-cover%'
+                                 OR hero_image LIKE '%placeholder%' OR hero_image LIKE '%no-image%'))
+                       + (SELECT COUNT(*) FROM content_items
+                          WHERE COALESCE(hero_image,'') <> ''
+                            AND (hero_image LIKE '%fallback%' OR hero_image LIKE '%audio-cover%'
+                                 OR hero_image LIKE '%placeholder%' OR hero_image LIKE '%no-image%'))
+                       AS n""",
+        "hint": "→ заглушка живёт в КОДЕ, не в базе. Пустое поле честно; "
+                "суррогат в поле — ложь, которая ломается молча (ЗКН-Д008)",
+    },
+    {
         "law": "ЗКН-Р011",
         "name": "значение фильтра в КОДЕ должно существовать в БАЗЕ",
         # Фильтр книг искал `lineage === "iskcon"`, а в базе значение —

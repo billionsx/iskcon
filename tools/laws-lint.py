@@ -30,6 +30,24 @@ ALLOW = {"cardText.ts", "nav.ts", "routes.ts", "SectionSubTabs.tsx"}
 
 RULES = [
     {
+        "id": "scripture_font",
+        "law": "ЗКН-С002",
+        "name": "чужой голос набран СВОИМ шрифтом (в обход Skt)",
+        # Georgia + курсив = «говорит НЕ автор карточки»: стих, цитата, пословный
+        # перевод, IAST. Для этого есть общий компонент `ui/Skt.tsx`.
+        #
+        # Кто рисует цитату САМ — рано или поздно наберёт её не тем шрифтом, и
+        # чужой голос сольётся с нашим. Читатель перестанет различать, где
+        # священный текст, а где пересказ. Это уже не типографика — это
+        # достоверность (ср. ЗКН-БТ004).
+        # Курсив и сериф рядом — в любом порядке.
+        "pattern": re.compile(
+            r'(?:fontStyle:\s*"italic"[^;}]{0,160}?(?:Georgia|serif)'
+            r'|(?:Georgia|"[^"]*serif)[^;}]{0,160}?fontStyle:\s*"italic")'),
+        "hint": "→ чужой голос — через <Skt> (Georgia + курсив, --font-scripture). "
+                "Свой шрифт для цитаты стирает границу между голосами (ЗКН-С002)",
+    },
+    {
         "id": "ЗКН-Д007c",
         "name": "БЕЛАЯ заглушка в массиве обложек ГЕРОЯ",
         # ВБК сам рисует ТЁМНУЮ заглушку, когда обложек НЕТ (`n === 0`).
@@ -256,6 +274,13 @@ DEBT = {
         "pattern": re.compile(r"fontSize:\s*[0-9]"),
         "hint": "→ tk.text.* или var(--…); см. docs/STANDARD_design.md",
     },
+    "long_union": {
+        "law": "ЗКН-Ф015",
+        "name": "цепочка UNION ALL (падает в D1)",
+        "scope": "tools",
+        "hint": "→ D1: «too many terms in compound SELECT» при ~8 звеньях. "
+                "Брать `WITH t(a,b) AS (VALUES …)` — у него предела нет (ЗКН-Ф015)",
+    },
     "type_errors": {
         "law": "ЗКН-Ф016",
         "name": "ошибка типа (= КРАШ в браузере)",
@@ -280,6 +305,26 @@ DEBT = {
         "hint": "→ var(--color-gold) / var(--color-gold-deep); см. docs/STANDARD_design.md",
     },
 }
+
+
+def count_long_union():
+    """ЗКН-Ф015 — ЦЕПОЧКА `UNION ALL` ПАДАЕТ В D1.
+
+    D1 не переваривает длинный compound SELECT: «too many terms in compound
+    SELECT». Порог — примерно 8 звеньев. Запрос ПРОСТО НЕ ВЫПОЛНЯЕТСЯ, и это
+    выглядит как «база не отвечает», а не как «запрос слишком длинный».
+
+    Брать `WITH t(a,b) AS (VALUES ('x','y'), …) SELECT …` — он не имеет предела.
+    """
+    n = 0
+    for p in sorted((ROOT / "tools").glob("*.py")):
+        t = p.read_text(encoding="utf-8")
+        # SQL-строки в тройных кавычках
+        for m in re.finditer(r'"""([\s\S]*?)"""', t):
+            cnt = len(re.findall(r"\bUNION ALL\b", m.group(1), re.I))
+            if cnt >= 8:
+                n += 1
+    return n
 
 
 def count_type_errors():
@@ -325,6 +370,7 @@ def count_debt():
     counts = {k: 0 for k in DEBT}
     counts["bare_urlopen"] = count_bare_urlopen()
     counts["type_errors"] = count_type_errors()
+    counts["long_union"] = count_long_union()
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
             continue

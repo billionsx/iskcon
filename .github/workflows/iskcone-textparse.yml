@@ -68,7 +68,20 @@ jobs:
               return b.strip().strip('"').strip().strip(',').strip()
 
           pt=qn=pr=0
-          q("DELETE FROM page_text",[]); q("DELETE FROM quotes",[]); q("DELETE FROM prayers",[])
+          # ⚠️ ЗКН-Р002 — ЗДЕСЬ БЫЛО РАЗРУШЕНИЕ ДАННЫХ.
+          #
+          # Стояло: DELETE FROM page_text; DELETE FROM quotes; DELETE FROM prayers
+          #
+          # `DELETE FROM prayers` сносил ВСЕ 339 бхаджанов и заливал заново из
+          # разбора. Тот же почерк, что убил базу через `registry-load`: снести и
+          # пересобрать. Если разбор дал меньше — курируемое ПРОПАЛО навсегда.
+          #
+          # И ещё: у молитв теперь ВЫЧИЩЕННЫЕ слаги (были `/ru/gaura-arati` — чужие
+          # пути с исходного сайта). Прогон вернул бы мусор.
+          #
+          # Заливка недеструктивна: INSERT OR REPLACE обновляет своё и НЕ ТРОГАЕТ
+          # чужое. Курируемая проза переживает перезагрузку реестра.
+          pass
           for slug, blks in pages.items():
               m=meta.get(slug,{}); lang=(m.get("lang") or "ru"); typ=m.get("type"); sub=m.get("subtype")
               body=[b for b in blks if b not in boiler]
