@@ -190,6 +190,26 @@ def cmd_match() -> int:
     existing = {r["slug"]: r for r in d1("SELECT slug, name, role, entity_id FROM kirtan_artists")}
     by_ekey = {key_of(r["name"]): s for s, r in existing.items()}
 
+    # ⚠️ СИНОНИМ ДОЛЖЕН СКЛЕИВАТЬ ГРУППЫ, А НЕ ТОЛЬКО ИСКАТЬ ГЕРОЯ.
+    #    Я применял ALIAS только при поиске героя — и Б.Б. Говинда Свами остался
+    #    ДВУМЯ строками («bhakti-bringa…» и «bhakti-bhrnga…»): в приложении один
+    #    человек стоял бы дважды. Сперва склеиваем группы по итоговому ключу.
+    merged: dict = {}
+    for a in roster["artists"]:
+        k = ALIAS.get(a["key"], a["key"])
+        g = merged.setdefault(k, {"key": k, "display": a["display"], "n": 0,
+                                  "bytes": 0, "msg_ids": [], "variants": {}})
+        g["n"] += a["n"]
+        g["bytes"] += a["bytes"]
+        g["msg_ids"] += a["msg_ids"]
+        for v, c in a.get("variants", {}).items():
+            g["variants"][v] = g["variants"].get(v, 0) + c
+    for g in merged.values():
+        if g["variants"]:
+            g["display"] = max(g["variants"].items(), key=lambda kv: (kv[1], len(kv[0])))[0]
+    roster = {"artists": sorted(merged.values(), key=lambda x: -x["n"]),
+              "unresolved": roster["unresolved"]}
+
     out, linked, reviewed, dropped = [], 0, 0, 0
     for a in roster["artists"]:
         if a["n"] < 1 or a["key"] in NOT_ARTIST_KEYS:
