@@ -1,0 +1,84 @@
+# КИРТАНЫ · СВЕДЕНИЕ КАНАЛА С РЕЕСТРОМ
+#
+# Разбирает канал «ISKCON Kirtans» (@iskconecom), сводит исполнителей с личностями
+# (герои) и записывает их в D1. Заливка аудио на archive.org — отдельный конвейер
+# (kirtans-ingest.yml): он длинный, а этот — быстрый и его можно гонять сколько угодно.
+#
+# ЗКН-Р002: карта коммитится в репозиторий ПЕРЕД записью в базу. Заливать 42 ГБ
+# в неверные корзины — значит переливать 42 ГБ. Сначала смотрим, потом пишем.
+name: "Киртаны · сведение с героями"
+run-name: "kirtans-sync · ${{ github.event_name }}"
+
+concurrency:
+  group: tg-archive-session      # ЗКН-Пл003: одна сессия Telegram — одна очередь
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      rescan:
+        description: "Пересканировать канал (иначе берём сохранённые метаданные)"
+        type: boolean
+        default: false
+      register:
+        description: "Записать исполнителей в D1"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Зависимости
+        run: pip install -r tools/tg-archive/requirements.txt
+
+      - name: Пересканировать канал
+        if: ${{ inputs.rescan }}
+        working-directory: tools/tg-archive
+        env:
+          TG_API_ID: ${{ secrets.TG_API_ID }}
+          TG_API_HASH: ${{ secrets.TG_API_HASH }}
+          TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+          TG_CHANNELS: "@iskconecom"
+          PROBE_OUT: kirtans_probe.json
+        run: python tg_probe.py
+
+      - name: Разбор → реестр исполнителей
+        working-directory: tools/tg-archive
+        env:
+          PROBE_IN: kirtans_probe.json
+          ROSTER_OUT: kirtans_roster.json
+        run: python kirtans_plan.py
+
+      - name: Сведение с героями → карта
+        working-directory: tools/tg-archive
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python kirtans_sync.py match
+
+      - name: Карта — в репозиторий (логи мне недоступны)
+        run: |
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+          git add tools/tg-archive/kirtans_probe.json tools/tg-archive/kirtans_roster.json tools/tg-archive/kirtans_map.json
+          git diff --cached --quiet && { echo "карта не изменилась"; exit 0; }
+          git commit -m "Киртаны: карта исполнителей канала [skip ci]"
+          for i in 1 2 3 4 5 6; do
+            git pull --rebase -q origin main && git push -q origin HEAD:main && break
+            sleep 5
+          done
+
+      - name: Записать исполнителей в D1
+        if: ${{ inputs.register }}
+        working-directory: tools/tg-archive
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python kirtans_sync.py register
