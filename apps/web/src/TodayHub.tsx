@@ -198,7 +198,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
       <div style={label}>Куда дальше</div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {(level === "guest"
-          ? [["Даршаны", () => onSub("feed")], ["Календарь", () => onSub("calendar")], ["Читать «Гиту»", () => onOpenPath("/books/bg")]]
+          ? [["Даршаны", () => onSub("darshan")], ["Календарь", () => onSub("calendar")], ["Читать «Гиту»", () => onOpenPath("/books/bg")]]
           : [["Джапа", () => onOpenPath("/japa")], ["Дневник", () => onOpenPath("/story")], ["Практика", () => onSub("practice")], ["Календарь", () => onSub("calendar")]]
         ).map(([t, go]) => (
           <button key={t as string} onClick={go as () => void} style={{ padding: "10px 16px", borderRadius: 999, border: `1px solid ${HAIR}`, background: SURF, color: INK, fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 500, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{t as string}</button>

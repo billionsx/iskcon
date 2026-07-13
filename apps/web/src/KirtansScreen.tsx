@@ -37,18 +37,6 @@ export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number 
   );
 }
 
-function SectionHead({ eyebrow, title, action }: { eyebrow: string; title: string; action?: React.ReactNode }) {
-  return (
-    <div style={{ marginBottom: 12, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 8 }}>
-      <div>
-        <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
-        <h2 style={{ margin: "2px 0 0", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.3px", color: "var(--color-label)", fontFamily: "var(--font-text)" }}>{title}</h2>
-      </div>
-      {action}
-    </div>
-  );
-}
-
 /** Карточка проигрываемого альбома в «Слушать сейчас». */
 function AlbumCard({ album, onPlay }: { album: KirtanAlbum; onPlay: () => void }) {
   const artist = artistBySlug(album.artist);
@@ -204,7 +192,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       {/* Слушать сейчас */}
       {playable.length > 0 && (
         <section style={{ marginTop: SECTION_GAP }}>
-          <SectionHead eyebrow="Звучит" title="Слушать сейчас" />
           <div style={{ display: "flex", gap: 14, overflowX: "auto", scrollbarWidth: "none", WebkitOverflowScrolling: "touch", margin: "0 -16px", padding: "2px 16px 4px" }}>
             {playable.map((al) => (
               <AlbumCard key={al.id} album={al} onPlay={() => player.playKirtan(al.id)} />
@@ -215,7 +202,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
       {/* Исполнители */}
       <section style={{ marginTop: SECTION_GAP }}>
-        <SectionHead eyebrow="Голоса святого имени" title="Исполнители" />
         <ul style={LIST_UL}>
           {kirtanArtists().map((a, i) => artistRow(a, i === kirtanArtists().length - 1))}
         </ul>
@@ -223,9 +209,13 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
       {/* Жанры и настроения */}
       <section style={{ marginTop: SECTION_GAP }}>
-        <SectionHead eyebrow="Классификации" title="Жанры и настроения" action={
-          (fType || fMood) ? <button onClick={() => { setFType(null); setFMood(null); }} style={{ flexShrink: 0, padding: "6px 10px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", color: "var(--color-gold-deep)", fontSize: "var(--text-footnote)", fontWeight: 600, fontFamily: "var(--font-text)" }}>Сбросить</button> : undefined
-        } />
+        {/* ЗКН-Н036 · решение основателя 13.07.2026 — НАДПИСИ УБРАНЫ.
+            Здесь стояли три вторые шапки: «ЗВУЧИТ · Слушать сейчас»,
+            «ГОЛОСА СВЯТОГО ИМЕНИ · Исполнители», «КЛАССИФИКАЦИИ · Жанры и
+            настроения». Каждая — надпись золотом над заголовком, то есть ВТОРАЯ
+            шапка витрины поверх единственной законной (ЗКН-Н024). Содержимое
+            говорит само за себя: альбомы — альбомы, список имён — исполнители,
+            чипы — фильтр. «Сбросить» — не надпись, он остаётся: последним чипом. */}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {types.map((t) => (
             <button key={t} onClick={() => { setFType(fType === t ? null : t); setFMood(null); }} style={chip(fType === t)}>{TYPE_LABEL[t]}</button>
@@ -234,6 +224,12 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
           {moods.map((m) => (
             <button key={m} onClick={() => { setFMood(fMood === m ? null : m); setFType(null); }} style={chip(fMood === m)}>{MOOD_LABEL[m]}</button>
           ))}
+          {(fType || fMood) && (
+            <button onClick={() => { setFType(null); setFMood(null); }}
+              style={{ flexShrink: 0, padding: "8px 15px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "transparent", cursor: "pointer", color: "var(--color-gold-deep)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, lineHeight: 1, WebkitTapHighlightColor: "transparent" }}>
+              Сбросить
+            </button>
+          )}
         </div>
 
         {(fType || fMood) && (

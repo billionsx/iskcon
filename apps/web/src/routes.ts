@@ -49,6 +49,7 @@ export const ROUTES = {
   promise: () => "/promise",       // обеты
   progress: () => "/progress",
   darshan: () => "/darshan",
+  darshanArchive: () => "/darshan/all",
   calendar: () => "/calendar",
   ekadashi: () => "/ekadashi",
   id: () => "/id",                 // кабинет
@@ -126,7 +127,8 @@ export const LEGACY: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
   [/^\/practice\/verse$/, () => "/verse"],
   [/^\/practice\/vow$/, () => "/promise"],
   [/^\/practice\/progress$/, () => "/progress"],
-  [/^\/practice\/darshan$/, () => "/darshan"],
+  [/^\/practice\/darshan$/, () => "/darshan/all"],   // архив даршанов уехал вглубь
+  [/^\/feed$/, () => "/darshan"],                    // «Лента» → «Даршан» (13.07.2026)
   [/^\/practice(\/.*)?$/, (m) => "/sadhana" + (m[1] || "")],
   [/^\/account(\/.*)?$/, (m) => "/id" + (m[1] || "")],
 

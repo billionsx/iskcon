@@ -596,8 +596,22 @@ const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "bhagavatam-lila",
 
 /* ЗКН-Н007 — ПОРЯДОК ВИТРИН ОДИН, И ОН ЗДЕСЬ.
  * Книги · Личности · Бхаджаны · Киртаны · Дхама · Прасад (утв. основателем 13.07.2026).
- * Список и рейка HallTabs идут ОДНИМ порядком: два порядка = два разных приложения. */
+ *
+ * ЗКН-Н045 — ПОРЯДОК, РЕЙКА И УМОЛЧАНИЕ — ИЗ ОДНОГО СПИСКА.
+ * Рейка больше не пишется руками, и умолчание зала не записывается отдельно:
+ * оба ВЫВОДЯТСЯ отсюда. Переставил список — переставилось всё. */
 const BOG_SUBS = ["books", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"] as const;
+const BOG_LABEL: Record<string, string> = {
+  books: "Книги", lichnosti: "Личности", bhajans: "Бхаджаны",
+  kirtans: "Киртаны", dhama: "Дхама", prasad: "Прасад",
+};
+/* ЗКН-Н041: писатель и читатель адреса — ОДИН словарь. Личности живут на /hero
+ * (историческое имя витрины), остальные витрины — в корне под своим id. */
+const BOG_PATH: Record<string, string> = {
+  books: "/books", lichnosti: "/hero", bhajans: "/bhajans",
+  kirtans: "/kirtans", dhama: "/dhama", prasad: "/prasad",
+};
+const BOG_TABS = BOG_SUBS.map((id) => ({ id, label: BOG_LABEL[id] }));
 /* ЗКН-Н025 — ВИТРИНА ЧИТАЕТСЯ ИЗ ПЕРВОГО СЕГМЕНТА.
  *
  * Было `seg[1]` — под старый адрес `/dhana/books`. После переезда витрина живёт
@@ -610,12 +624,20 @@ export function bogSubFromPath(path: string): string {
   const s0 = seg[0] || "";
   if ((BOG_SUBS as readonly string[]).includes(s0)) return s0;
   if (s0 === "hero" || LILA_ROOTS.includes(s0)) return "lichnosti";
-  return "lichnosti";
+  return BOG_SUBS[0];   // ЗКН-Н045: умолчание — ПЕРВАЯ витрина, а не вписанная руками
 }
 /* ЗКН-Н005: суб-таб Садханы — сегмент URL, не переменная модуля.
  * / → Лента (умолчание) · /practice · /calendar · /account */
-export const SAD_SUBS = ["feed", "practice", "calendar", "cabinet"] as const;
-const SAD_PATH: Record<string, string> = { feed: "/", practice: "/sadhana", calendar: "/calendar", cabinet: "/id" };
+export const SAD_SUBS = ["darshan", "practice", "calendar", "cabinet"] as const;
+const SAD_LABEL: Record<string, string> = {
+  darshan: "Даршан", practice: "Практика", calendar: "Календарь", cabinet: "Кабинет",
+};
+/* Раздел «Лента» переименован в «Даршан» и получил СВОЙ адрес (решение основателя
+ * 13.07.2026). Раньше он жил на голом «/» — то есть у первого раздела Садханы
+ * адреса не было вовсе, а «/sadhana» уводил в Практику: нажимаешь вкладку —
+ * попадаешь не туда, куда показывает первая надпись рейки. */
+const SAD_PATH: Record<string, string> = { darshan: "/darshan", practice: "/sadhana", calendar: "/calendar", cabinet: "/id" };
+const SAD_TABS = SAD_SUBS.map((id) => ({ id, label: SAD_LABEL[id] }));
 /* ЗКН-Н041 — ПИСАТЕЛЬ И ЧИТАТЕЛЬ АДРЕСА — ОДИН СЛОВАРЬ.
  *
  * Писатель слал «Практику» на `/sadhana`, а читатель искал сегмент `practice`.
@@ -627,7 +649,8 @@ export function sadSubFromPath(path: string): string {
   if (s0 === "sadhana" || s0 === "practice") return "practice";   // practice — старый адрес
   if (s0 === "calendar") return "calendar";
   if (s0 === "id" || s0 === "account") return "cabinet";          // account — старый адрес
-  return "feed";
+  if (s0 === "darshan" || s0 === "feed") return "darshan";        // feed — старый адрес
+  return SAD_SUBS[0];   // ЗКН-Н045: корень «/» — ПЕРВЫЙ раздел, а не вписанный руками
 }
 function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection, onOpenPath, flash, onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenBook: (work: string) => void; onBookMenu: (work: string) => void; onOpenEntity: (id: string, type: string | null) => void;
@@ -645,7 +668,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
    *
    * Адрес — источник истины. Зал его читает, а не помнит. */
   const [sub, setSub] = useState(() =>
-    typeof window === "undefined" ? "lichnosti" : bogSubFromPath(window.location.pathname));
+    typeof window === "undefined" ? BOG_SUBS[0] : bogSubFromPath(window.location.pathname));
   useEffect(() => subscribeNav(() => setSub(bogSubFromPath(window.location.pathname))), []);
 
   /* Раздел Прасада — ИЗ АДРЕСА: /prasad → книга, /prasad/recipes → рецепты и т.д. */
@@ -688,13 +711,14 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   const pickSub = (v: string) => {
     setSub(v);
     setDeep(false);
-    pushUrl(v === "lichnosti" ? "/hero" : "/" + v);
+    pushUrl(BOG_PATH[v] || "/" + v);   // ЗКН-Н041: писатель берёт адрес из ТОГО ЖЕ словаря
   };
   return (
     <div>
       {/* ЗКН-Н006: Tier-1 — золотая рейка (не капсулы). Капсулы остаются за Tier-2. */}
-      <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств"
-        items={[{ id: "books", label: "Книги" }, { id: "lichnosti", label: "Личности" }, { id: "bhajans", label: "Бхаджаны" }, { id: "kirtans", label: "Киртаны" }, { id: "dhama", label: "Дхама" }, { id: "prasad", label: "Прасад" }]} />
+      {/* ЗКН-Н045: рейка ВЫВОДИТСЯ из BOG_SUBS. Руками её больше не пишут —
+          иначе список и рейка разъедутся, как разъехались список и умолчание. */}
+      <HallTabs active={sub} onChange={pickSub} ariaLabel="Витрины Богатств" items={BOG_TABS} />
 
       {/* ЗКН-Н024 — РАССТОЯНИЕ ОТ МЕНЮ ДО НАДПИСИ: ЕДИНОЕ, ОДИН РАЗ, В ЗАЛЕ.
        *
@@ -749,7 +773,7 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   flash?: (m: string) => void;
 }) {
   const [sub, setSub] = useState(() =>
-    typeof window === "undefined" ? "feed" : sadSubFromPath(window.location.pathname));
+    typeof window === "undefined" ? SAD_SUBS[0] : sadSubFromPath(window.location.pathname));
   /* ЗКН-Н031 — РАЗДЕЛ ВЫВОДИТСЯ ИЗ АДРЕСА, А НЕ ПОМНИТСЯ.
    * Зал Садханы НЕ был подписан на адрес вовсе: «назад» из Практики в Ленту
    * менял адрес, а зал продолжал рисовать Практику. Богатства подписаны — Садхана нет. */
@@ -758,9 +782,8 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   const pickSub = (v: string) => { setSub(v); pushUrl(SAD_PATH[v] || "/"); };
   return (
     <div>
-      <HallTabs active={sub} onChange={pickSub} ariaLabel="Разделы Садханы"
-        items={[{ id: "feed", label: "Лента" }, { id: "practice", label: "Практика" }, { id: "calendar", label: "Календарь" }, { id: "cabinet", label: "Кабинет" }]} />
-      {sub === "feed" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
+      <HallTabs active={sub} onChange={pickSub} ariaLabel="Разделы Садханы" items={SAD_TABS} />
+      {sub === "darshan" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={46} onOpenEntity={onOpenEntity} />}
       {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
@@ -974,7 +997,7 @@ const RESERVED: readonly string[] = [
     if (openJapa) return "/japa";
     if (openDiary) return "/story";
     if (openVow) return "/promise";
-    if (openDarshan) return "/darshan";
+    if (openDarshan) return "/darshan/all";   // ЗКН-Н036: /darshan — это РАЗДЕЛ, а архив — его глубина
     if (openDailyVerse) return "/verse";
     if (openEkadashi) return "/ekadashi";
     if (openProgress) return "/progress";
@@ -1053,7 +1076,7 @@ const RESERVED: readonly string[] = [
    *                       Закрыл — вернулся туда, где стоял.
    */
   const BASE_OF: Record<string, string> = {
-    // Садхана (корень «/» — это Лента Садханы; «feed» — её же адрес)
+    // Садхана (корень «/» — первый её раздел, Даршан; «feed» — старый адрес)
     "": "sadhana", feed: "sadhana",
     japa: "sadhana", story: "sadhana", verse: "sadhana", promise: "sadhana",
     darshan: "sadhana", progress: "sadhana", ekadashi: "sadhana",
@@ -1126,8 +1149,10 @@ const RESERVED: readonly string[] = [
      * Теперь вкладка ставится ТОЛЬКО законная. Остальные адреса идут дальше —
      * к своим витринам. */
     if (isTabId(seg0) && clean === "/" + seg0) { setTab(seg0); return; }
-    /* ЗКН-Н040 — /feed это Лента Садханы, а не вкладка. */
-    if (clean === "/feed") { setTab("sadhana"); return; }
+    /* ЗКН-Н023 §6 — старый адрес не ломается: /feed молча → /darshan.
+     * Ветку-двойника здесь НЕ держим: приведение старых адресов делает ОДИН
+     * механизм — canonicalPath ниже (LEGACY в routes.ts). Две записи об одном
+     * адресе всегда расходятся, и побеждает та, что выше. */
     /* ЗКН-Н023 §6 — СТАРЫЙ АДРЕС НЕ ЛОМАЕТСЯ.
      *
      * Ссылки уже разошлись: в закладках, в QR-кодах на печатных материалах,
@@ -1190,7 +1215,13 @@ const RESERVED: readonly string[] = [
     if (clean === "/japa") { setOpenJapa(true); return; }
     if (clean === "/story") { setOpenDiary(true); return; }
     if (clean === "/promise") { setOpenVow(true); return; }
-    if (clean === "/darshan") { setOpenDarshan(true); return; }
+    /* ЗКН-Н036 — ОДНО СОДЕРЖИМОЕ, ОДНО МЕСТО.
+     *   /darshan      → РАЗДЕЛ Садханы «Даршан» (кольца + лента) — первый экран
+     *   /darshan/all  → «Даршан дня»: сетка архива, куда ведут те же кольца
+     * Раньше `/darshan` открывал СЕТКУ поверх Ленты, в которой те же даршаны
+     * уже показывались кольцами: два «Даршана» по одному адресу. */
+    if (clean === "/darshan/all") { setOpenDarshan(true); return; }
+    if (clean === "/darshan") { setTab("sadhana"); setOpenDarshan(false); return; }
     if (clean === "/verse") { setOpenDailyVerse(true); return; }
     if (clean === "/ekadashi") { setOpenEkadashi(true); return; }
     if (clean === "/progress") { setOpenProgress(true); return; }
@@ -1404,7 +1435,7 @@ const RESERVED: readonly string[] = [
 
   // Открытие даршана дня из хаба «Садхана» — через событие.
   useEffect(() => {
-    const onDarshan = () => navigate("/darshan");
+    const onDarshan = () => navigate("/darshan/all");   // кольца → сетка архива
     window.addEventListener("iol:open-darshan", onDarshan);
     return () => window.removeEventListener("iol:open-darshan", onDarshan);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1472,8 +1503,22 @@ const RESERVED: readonly string[] = [
    *   /japa               → закрыть → /sadhana
    *   /iskcon/centers     → закрыть → /iskcon
    */
+  /* ЗКН-Н045 — УМОЛЧАНИЕ ВКЛАДКИ = ЕЁ ПЕРВЫЙ ПОДТАБ. НЕ ОТДЕЛЬНЫЙ АДРЕС.
+   *
+   * Здесь стояли вписанные РУКАМИ адреса: `sadhana: "/sadhana"`, `bogatstva: "/hero"`.
+   * И оба врали:
+   *   · нажимаешь «Садхану»   → уходишь на /sadhana → это ПРАКТИКА,
+   *     хотя первый раздел рейки — Даршан;
+   *   · нажимаешь «Богатства» → уходишь на /hero → это ЛИЧНОСТИ,
+   *     хотя первая витрина рейки — Книги.
+   *
+   * Причина одна: умолчание жило ОТДЕЛЬНО от порядка. Переставили порядок —
+   * умолчание осталось на прежнем месте и промолчало. Такое расхождение не
+   * лечится внимательностью: оно лечится тем, что второго списка НЕТ.
+   *
+   * Теперь умолчание ВЫЧИСЛЯЕТСЯ: первый подтаб → его адрес. */
   const HOME_OF: Record<string, string> = {
-    sadhana: "/sadhana", bogatstva: "/hero", iskcon: "/iskcon",
+    sadhana: SAD_PATH[SAD_SUBS[0]], bogatstva: BOG_PATH[BOG_SUBS[0]], iskcon: "/iskcon",
     krishna: "/krishna", gauranga: "/gauranga",
   };
 
