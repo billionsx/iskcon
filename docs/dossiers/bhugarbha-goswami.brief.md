@@ -15,4 +15,7 @@
 - **Narottama-Vilasa.EN.txt, offset 229536** · `k2-archive` — e the Prabhus all the time. Sometimes he used to roll in the dust of the courtyard of Gauranga and used to pray to the Prabhu in this way, "Oh Lord Gauranga, Vallabhi Kan
 - **Prabhupada-Shikshamrita.RU.txt, offset 3948640** · `k2-archive` — влечет людей, мы будем приглашать всех и каждого. Мы очень нарядно украсим парк, и он будет открыт для всех наций и всех сект. Зайди со стороны красоты. Какой в этом вред
 
-## Омонимы (нарицательное, в книгу не идут): 0
+## Омонимы (нарицательное, в книгу не идут): 2
+
+- Шри Чайтанья-чаритамрита А̄дӣ-лӣла̄ 8.68 · `k3-books-web`
+- Шри Чайтанья-чаритамрита А̄дӣ-лӣла̄ 12.82 · `k3-books-web`
