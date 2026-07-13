@@ -29,7 +29,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from goldforge import canon, channels, compose, d1, gate, prose   # noqa: E402,F401
+from goldforge import canon, cardaudit, channels, compose, d1, gate, prose  # noqa: E402,F401
 from goldforge.channels import CHANNELS, REQUIRED                 # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -379,6 +379,37 @@ def cmd_forge(a):
     return cmd_publish(a)
 
 
+def cmd_check(a):
+    """ЗКН-П017 · проверить карточку, которая УЖЕ стоит в проде.
+
+    Гейт судит сборку. Люди читают базу. Проверять надо базу.
+    """
+    ids = [x.strip() for x in a.entity_id.split(",") if x.strip()]
+    worst = 0
+    rows = []
+    for eid in ids:
+        pp = PASSPORTS / ("%s.json" % eid)
+        if not pp.exists():
+            print("  %-28s паспорта нет — пропускаю" % eid)
+            continue
+        res = cardaudit.audit(eid, json.loads(pp.read_text(encoding="utf-8")))
+        if not res:
+            print("  %-28s карточки в базе нет" % eid)
+            continue
+        cardaudit.report(eid, res)
+        worst = max(worst, res["total"])
+        rows.append((eid, res))
+    if len(rows) > 1:
+        print("\n" + "=" * 72)
+        print("СВОДКА")
+        print("=" * 72)
+        print("  %-28s %6s %6s  %s" % ("личность", "цитат", "брак", "по статьям"))
+        for eid, r in sorted(rows, key=lambda x: -x[1]["total"]):
+            arts = ", ".join("%s:%d" % (k[:4], len(v)) for k, v in r["bad"].items() if v)
+            print("  %-28s %6d %6d  %s" % (eid, r["quotes"], r["total"], arts or "чисто"))
+    return 1 if worst else 0
+
+
 def cmd_queue(a):
     """Очередь ковки: самые бедные карточки — первыми, уже выкованные — вон.
 
@@ -436,6 +467,7 @@ def main():
                      ("audit", lambda a: cmd_gate(a)[0]),
                      ("publish", cmd_publish),
                      ("forge", cmd_forge),
+                     ("check", cmd_check),
                      ("queue", lambda a: cmd_queue(a) and 0),
                      ("sql", lambda a: cmd_sql(a) and 0)):
         common(sub.add_parser(name)).set_defaults(func=fn)

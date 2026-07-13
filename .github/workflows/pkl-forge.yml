@@ -14,7 +14,7 @@ on:
         description: "стадия"
         type: choice
         default: forge
-        options: [forge, passport, harvest, compose, gate, publish]
+        options: [forge, check, passport, harvest, compose, gate, publish]
       dry:
         description: "не писать в D1"
         type: boolean
