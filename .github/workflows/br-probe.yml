@@ -1,0 +1,98 @@
+name: br-probe
+
+# Ищем ГОДНЫЙ бенгальский текст Бхакти-ратнакары.
+#
+# Известно: издание 1888 (in.ernet.dli.2015.356261) — OCR развален (ПР010: канон
+# 0 из 492) и покрывает только таранги 1-9. Прежде чем строить переOCR, дёшево
+# проверяем ВСЕ прочие копии на архиве: вдруг какая-то распознана нормально.
+#
+# Судья — ЗКН-ПР010, лексический якорь. Не «на глаз», а числом.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: pip install --quiet internetarchive
+
+      - name: Probe every IA copy, judge by ПР010
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          from internetarchive import search_items, get_item, download
+          sys.path.insert(0, ".")
+          from scripts.library.integrity import variants
+
+          ANCHOR = "ভক্তিরত্নাকর"          # каноническое название книги
+          AUTHOR = "নরহরি"                  # имя автора — второй якорь
+          def note(m): print(f"::notice::{m}", flush=True)
+
+          # 1. Кандидаты: известные + всё, что архив отдаст по запросу
+          seen, cands = set(), []
+          for ident in ("BhaktiRatnakar", "in.ernet.dli.2015.356261",
+                        "bhaktiratnakara1naraharichakravarti_201911",
+                        "bhaktiratnakara3naraharichakravarti"):
+              if ident not in seen:
+                  seen.add(ident); cands.append(ident)
+          try:
+              for r in search_items('title:(bhakti ratnakara) AND language:(Bengali OR ben)'):
+                  i = r["identifier"]
+                  if i not in seen:
+                      seen.add(i); cands.append(i)
+          except Exception as e:
+              note(f"поиск по архиву не отработал: {e}")
+
+          note(f"кандидатов: {len(cands)} → {', '.join(cands)}")
+
+          rows = []
+          for ident in cands:
+              try:
+                  it = get_item(ident)
+                  md = it.metadata
+                  lang = str(md.get("language", "?"))
+                  txts = [f["name"] for f in it.files
+                          if f["name"].endswith("_djvu.txt") or f["name"].endswith(".txt")]
+                  if not txts:
+                      rows.append((ident, lang, "—", "нет текстового слоя", 0)); continue
+                  fn = txts[0]
+                  download(ident, files=[fn], destdir="_p", verbose=False)
+                  path = pathlib.Path("_p") / ident / fn
+                  raw = path.read_text(encoding="utf-8", errors="replace")
+
+                  nb = sum(1 for c in raw if "\u0980" <= c <= "\u09FF")
+                  if nb < 5000:
+                      rows.append((ident, lang, fn, f"не бенгальский ({nb} букв)", 0)); continue
+
+                  v = variants(raw, ANCHOR)
+                  exact, tot = v.get(ANCHOR, 0), sum(v.values())
+                  share = (exact / tot * 100) if tot else 0.0
+                  va = variants(raw, AUTHOR)
+                  sa = (va.get(AUTHOR, 0) / sum(va.values()) * 100) if sum(va.values()) else 0.0
+                  # покрытие: колофон 15-й таранги
+                  full = "পঞ্চদশ" in raw or "১৫" in raw[-4000:]
+                  verdict = "ГОДЕН" if share >= 80 else "негоден"
+                  rows.append((ident, lang, fn,
+                               f"канон {share:.1f}% / автор {sa:.1f}% · {'полн.' if full else 'частичн.'}",
+                               share))
+                  note(f"{ident}: канон {exact}/{tot} = {share:.1f}%  автор {sa:.1f}%  → {verdict}")
+              except Exception as e:
+                  rows.append((ident, "?", "—", f"ошибка: {type(e).__name__}", 0))
+                  note(f"{ident}: ошибка {type(e).__name__}: {e}")
+
+          rows.sort(key=lambda r: -r[4])
+          best = rows[0] if rows else None
+          note("=" * 60)
+          for ident, lang, fn, res, sh in rows:
+              note(f"  {sh:5.1f}%  {ident:<45} {res}")
+          if best and best[4] >= 80:
+              note(f"НАЙДЕН ГОДНЫЙ ИСТОЧНИК: {best[0]} ({best[4]:.1f}%)")
+          else:
+              note("ГОДНОГО OCR НЕТ НИ В ОДНОЙ КОПИИ — нужен переOCR со сканов")
+          PY
