@@ -1,0 +1,60 @@
+name: Ингест — Прабхупада-шикшамрита
+
+# ЗАЛИВКА НАСТАВЛЕНИЙ ШРИЛЫ ПРАБХУПАДЫ.
+#
+# 5328 наставлений, 246 тем. Каждое несёт АДРЕСАТА и ДАТУ: «ПШП Джадурани,
+# 12 декабря 1967» — это письмо конкретному человеку в конкретный день.
+# Наставление, данное одному преданному по одному поводу, читается иначе, чем
+# общее правило. Потерять атрибуцию — превратить живое письмо в лозунг.
+#
+# ЗКН-Р002: заливка НЕДЕСТРУКТИВНА (INSERT OR REPLACE, без сноса таблицы).
+# ЗКН-Ф013: батч ≤ 100 переменных на запрос.
+# ЗКН-Ф014: HTTPError перехватывается — иначе падает молча.
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: d1-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Разбор и заливка
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python3 tools/ingest-shikshamrita.py
+
+      - name: Проверка — книга наполнилась
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.error, urllib.request
+          ACC = "d5cbe19470dc38599873eabfe148e6d1"
+          DB  = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+          rq = urllib.request.Request(
+              "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (ACC, DB),
+              data=json.dumps({"sql":
+                  "SELECT COUNT(*) AS n, COUNT(DISTINCT purport) AS tem "
+                  "FROM verses WHERE work_id = 'prabhupada-shikshamrita'"}).encode(),
+              headers={"Authorization": "Bearer " + os.environ["CF_TOKEN"],
+                       "Content-Type": "application/json"})
+          try:
+              with urllib.request.urlopen(rq, timeout=60) as r:
+                  d = json.loads(r.read())
+          except urllib.error.HTTPError as e:      # ЗКН-Ф014
+              print("HTTP %d: %s" % (e.code, e.read().decode()[:300])); raise
+          row = d["result"][0]["results"][0]
+          print("наставлений в базе: %d" % row["n"])
+          if row["n"] < 5000:
+              raise SystemExit("залилось меньше 5000 — заливка неполна")
+          PY
