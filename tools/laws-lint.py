@@ -583,12 +583,38 @@ def check_d002_primitives():
     return bad
 
 
+def check_f022_glob():
+    """ЗКН-Ф023 — КЛАССЫ РЕГИСТРА В GLOB ЗАПРЕЩЕНЫ.
+
+    D1 ограничивает GLOB-шаблон 50 БАЙТАМИ (измерено: 7 классов проходят, 8 — нет).
+    Класс `[аА]` стоит 6 байт → потолок 8 кириллических букв. «прабхупада» — 10.
+    Поиск личностей отдавал 500 на любое настоящее имя, а человек читал «Ничего
+    не найдено» и верил, что Прабхупады в приложении НЕТ.
+
+    Регистр складывается НОРМАЛИЗАЦИЕЙ обеих сторон (`normSql` + `normNeedle`),
+    а не шаблоном. Кто снова начнёт клеить `[" + lo + up + "]` — упрётся в этот гейт.
+    """
+    rule = {"id": "ЗКН-Ф023", "name": "кириллица ищется нормализацией, не классами GLOB",
+            "hint": "D1 рубит GLOB-шаблон на 50 байтах; классы [аА] = 6 байт/букву → звать normSql/normNeedle"}
+    bad = []
+    for fp in sorted(ROOT.glob("apps/web/*.ts")) + sorted(SRC.rglob("*.ts")):
+        for i, line in enumerate(fp.read_text(encoding="utf-8").split("\n"), 1):
+            s = line.strip()
+            if s.startswith("*") or s.startswith("//"):
+                continue                      # объяснение закона — не нарушение
+            if 'toUpperCase()' in line and ('GLOB' in line or '"[" +' in line or "'[' +" in line):
+                bad.append((rule, str(fp.relative_to(ROOT)), i, s[:80]))
+            elif "ciClasses" in line or "ciGlob" in line:
+                bad.append((rule, str(fp.relative_to(ROOT)), i, s[:80]))
+    return bad
+
+
 def main():
     if "--update-baseline" in sys.argv:
         check_ratchet(update=True)
         return 0
     bad = (check_rules() + check_prose_law() + check_floor_law() + check_missing_imports()
-           + check_unique_ids() + check_d002_primitives() + check_ratchet())
+           + check_unique_ids() + check_d002_primitives() + check_f022_glob() + check_ratchet())
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
         print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))

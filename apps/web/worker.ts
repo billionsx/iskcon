@@ -124,28 +124,56 @@ function resolveRef(query: string): { work: string; id: string } | null {
   return { work, id: [work, ...(div ? [div] : []), ...nums].join(".") };
 }
 
-// Классы регистра для кириллицы: SQLite LIKE не складывает регистр для не-ASCII,
-// поэтому по каждой букве строим класс [строчн.ЗАГЛ.]. SQLite отвергает паттерн как
-// «too complex» примерно с 7 классов подряд, поэтому их число ограничено: первые
-// символы матчатся без учёта регистра (покрывает заглавную в начале), остаток —
-// литералом в нижнем регистре.
-function ciClasses(q: string): string {
-  const MAX_CLASSES = 6;
-  let g = "";
-  let cls = 0;
-  for (const ch of q) {
-    if (ch === "*" || ch === "?" || ch === "[") { g += "[" + ch + "]"; continue; }
-    const lo = ch.toLowerCase(), up = ch.toUpperCase();
-    if (lo !== up && cls < MAX_CLASSES) { g += "[" + lo + up + "]"; cls++; }
-    else g += lo;
-  }
-  return g;
+/* ЗКН-Ф023 — КИРИЛЛИЦА ИЩЕТСЯ НОРМАЛИЗАЦИЕЙ, А НЕ КЛАССАМИ РЕГИСТРА.
+ *
+ * SQLite не складывает регистр для не-ASCII. Обходили это классом `[аА]` на КАЖДУЮ
+ * букву — и упёрлись в стену: **D1 ограничивает GLOB-шаблон 50 БАЙТАМИ** (измерено:
+ * 7 классов проходят, 8 — «LIKE or GLOB pattern too complex»). Класс `[аА]` стоит
+ * 6 байт. Значит потолок — **8 кириллических букв**.
+ *
+ *   «прабхупада»    — 10 букв
+ *   «бхактиведанта» — 13 букв
+ *   «нитьянанда»    — 10 букв
+ *
+ * Поиск по личностям ОТДАВАЛ 500 на любое настоящее имя, а клиент показывал
+ * «Ничего не найдено». Найти Шрилу Прабхупаду в приложении было НЕЛЬЗЯ.
+ *
+ * Костыль в `/api/search` (обрезать число классов шестью) лечил падение, но не
+ * поиск: с 7-й буквы регистр переставал складываться. А `/api/entities` жил СВОЕЙ
+ * копией этой же логики — без обрезки — и падал. Копия разъехалась (ЗКН-Д002).
+ *
+ * ЛЕЧЕНИЕ. Складываем ОБЕ стороны к одному виду — нижний регистр, без диакритики —
+ * и ищем подстроку через `instr`. Длина запроса больше не упирается ни во что:
+ *
+ *   колонка:  normSql("n.value")   → SQL-цепочка replace() (SQLite lower() — только ASCII)
+ *   запрос:   normNeedle(q)        → тот же свод в JS (NFKD снимает диакритику разом)
+ *
+ * Побочная выгода: «prabhupada» теперь находит «Prabhupāda», «шри» — «Śrī».
+ */
+const FOLD: readonly (readonly [string, string])[] = [
+  ...[..."АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"].map((c) => [c, c.toLowerCase()] as const),
+  ["Ё", "е"], ["ё", "е"],
+  ["Ā","a"],["ā","a"],["Ī","i"],["ī","i"],["Ū","u"],["ū","u"],
+  ["Ṛ","r"],["ṛ","r"],["Ṝ","r"],["ṝ","r"],["Ḷ","l"],["ḷ","l"],["Ḹ","l"],["ḹ","l"],
+  ["Ṅ","n"],["ṅ","n"],["Ñ","n"],["ñ","n"],["Ṭ","t"],["ṭ","t"],["Ḍ","d"],["ḍ","d"],
+  ["Ṇ","n"],["ṇ","n"],["Ś","s"],["ś","s"],["Ṣ","s"],["ṣ","s"],["Ḥ","h"],["ḥ","h"],
+  ["Ṁ","m"],["ṁ","m"],["Ṃ","m"],["ṃ","m"],
+] as const;
+
+/** Колонка → нормализованный вид, прямо в SQL. */
+function normSql(col: string): string {
+  let s = `lower(${col})`;
+  for (const [from, to] of FOLD) s = `replace(${s},'${from}','${to}')`;
+  return s;
 }
-// Подстрока (по умолчанию), префикс (имя начинается с запроса), точное совпадение.
-// Префикс/точное используются для ранжирования личностей по релевантности.
-function ciGlob(q: string): string { return "*" + ciClasses(q) + "*"; }
-const ciGlobPrefix = (q: string) => ciClasses(q) + "*";
-const ciGlobExact = (q: string) => ciClasses(q);
+
+/** Запрос → тот же нормализованный вид. Обе стороны обязаны совпасть. */
+function normNeedle(q: string): string {
+  return q.toLowerCase()
+    .normalize("NFKD").replace(/[\u0300-\u036f]/g, "")   // снимает диакритику IAST разом
+    .replace(/ё/g, "е")
+    .trim();
+}
 
 // FTS5 MATCH из пользовательского ввода: буквенно-цифровые токены, неявный AND,
 // префиксная «звёздочка» на последнем токене для поиска на лету. Операторы FTS
@@ -2123,17 +2151,12 @@ export default {
       if (idsRaw) { const arr = idsRaw.split(",").map((s) => s.trim()).filter(Boolean).slice(0, 100); if (arr.length) { where.push(`e.id IN (${arr.map(() => "?").join(",")})`); binds.push(...arr); } }
       const q = (qp.get("q") || "").trim();
       if (q) {
-        // Регистронезависимый поиск для кириллицы: SQLite LIKE чувствителен к регистру
-        // для не-ASCII, поэтому строим GLOB-шаблон с классом [строчн.ЗАГЛ.] по каждой букве.
-        let g = "*";
-        for (const ch of q) {
-          if (ch === "*" || ch === "?" || ch === "[") { g += "[" + ch + "]"; continue; }
-          const lo = ch.toLowerCase(), up = ch.toUpperCase();
-          g += lo !== up ? "[" + lo + up + "]" : ch;
-        }
-        g += "*";
-        where.push("EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?)");
-        binds.push(g);
+        /* ЗКН-Ф023: здесь строился GLOB с классом [аА] на КАЖДУЮ букву — и БЕЗ
+         * ограничителя, в отличие от `/api/search`. Копия разъехалась с оригиналом
+         * (ЗКН-Д002), и на запросе длиннее 8 букв D1 отвечал «pattern too complex»,
+         * воркер — 500, а человек видел «Ничего не найдено». Ищем нормализацией. */
+        where.push(`EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND instr(${normSql("n.value")}, ?) > 0)`);
+        binds.push(normNeedle(q));
       }
       const limit = Math.min(Math.max(parseInt(qp.get("limit") || "60", 10) || 60, 1), 200);
       const offset = Math.max(parseInt(qp.get("offset") || "0", 10) || 0, 0);
@@ -2292,9 +2315,9 @@ export default {
       const q = (url.searchParams.get("q") || "").trim();
       const empty = { q, exact: null, personalities: [], places: [], verses: [], chapters: [], prayers: [], pages: [], centers: [] };
       if (q.length < 2) return noStore(json(empty));
-      const g = ciGlob(q);
-      const gPrefix = ciGlobPrefix(q);
-      const gExact = ciGlobExact(q);
+      /* ЗКН-Ф023: игла одна на все запросы — нормализованный вид. Ранги считаются
+       * не тремя разными шаблонами, а положением иглы: точно = / начало = 1 / внутри > 0. */
+      const needle = normNeedle(q);
       const m = ftsMatch(q);
 
       // 0) Прямая ссылка («БГ 2.13» → стих, «БГ 2» / «ЧЧ Ади 1» → глава) — карточка сверху.
@@ -2336,11 +2359,14 @@ export default {
                  (SELECT value FROM entity_names n WHERE n.entity_id=e.id AND n.lang='ru' AND n.kind='canonical' LIMIT 1),
                  'Шри Шримати ',''),'Шри Шри ',''),'Шримати ',''),'Шрила ',''),'Господь ',''),'Шри ','')) AS core
              FROM entities e
-             WHERE e.type=?4 AND EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND n.value GLOB ?1)
+             WHERE e.type=?2 AND EXISTS (SELECT 1 FROM entity_names n WHERE n.entity_id=e.id AND instr(${normSql("n.value")}, ?1) > 0)
            )
-           ORDER BY (core GLOB ?3) DESC, (core GLOB ?2) DESC, (name_ru GLOB ?1) DESC, length(core), (name_ru IS NULL), name_ru
+           ORDER BY (${normSql("core")} = ?1) DESC,
+                    (instr(${normSql("core")}, ?1) = 1) DESC,
+                    (instr(${normSql("name_ru")}, ?1) > 0) DESC,
+                    length(core), (name_ru IS NULL), name_ru
            LIMIT ${lim}`,
-        ).bind(g, gPrefix, gExact, etype).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
+        ).bind(needle, etype).all<{ id: string; type: string | null; name_ru: string | null; name_iast: string | null }>();
       const people = await runEntities("personality", 30);
       const places = await runEntities("place", 20);
 
@@ -2361,6 +2387,12 @@ export default {
       // регистре (классы регистра не нужны → нет лимита сложности GLOB); «?» между словами
       // терпит пробел/дефис («джанма карма» ловит и «джанма-карма̄ни»).
       const tWords = q.toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
+      /* ЗКН-Ф023: тут классов регистра нет (translit хранится в нижнем), но потолок
+       * D1 в 50 БАЙТ на шаблон никуда не делся: кириллица — 2 байта на букву, значит
+       * фраза длиннее ~24 символов снова роняет запрос в «pattern too complex».
+       * Длинную фразу этим проходом не ищем — её и так найдёт FTS по телу стиха. */
+      const tGlob = "*" + tWords.join("?") + "*";
+      const tGlobFits = new TextEncoder().encode(tGlob).length <= 48;
       const textSql = `SELECT v.id, v.work_id, v.ref, substr(vt.translation,1,160) AS trans, NULL AS hl, v.translit AS vtext
              FROM verses v LEFT JOIN verse_texts vt ON vt.verse_id=v.id
              WHERE v.translit GLOB ?1
@@ -2375,8 +2407,8 @@ export default {
              ORDER BY (CASE WHEN v.work_id IN ${PROSE} THEN 1 ELSE 0 END), rank LIMIT 60`;
       const emptyRes = { results: [] as VRow[] };
       const [textRes, strictRes] = await Promise.all([
-        tWords.length >= 2
-          ? env.DB.prepare(textSql).bind("*" + tWords.join("?") + "*", tWords.join("?") + "*").all<VRow>()
+        tWords.length >= 2 && tGlobFits
+          ? env.DB.prepare(textSql).bind(tGlob, tWords.join("?") + "*").all<VRow>()
           : Promise.resolve(emptyRes),
         m ? env.DB.prepare(verseSql).bind(m).all<VRow>() : Promise.resolve(emptyRes),
       ]);
@@ -2414,9 +2446,9 @@ export default {
       const chapters = await env.DB.prepare(
         `SELECT d.id, d.work_id, d.level, json_extract(d.title,'$.ru') AS title
          FROM divisions d
-         WHERE json_extract(d.title,'$.ru') GLOB ?1
+         WHERE instr(${normSql("json_extract(d.title,'$.ru')")}, ?1) > 0
          ORDER BY d.work_id, d.ordinal LIMIT 30`,
-      ).bind(g).all<{ id: string; work_id: string; level: string | null; title: string | null }>();
+      ).bind(needle).all<{ id: string; work_id: string; level: string | null; title: string | null }>();
 
       // 4) Молитвы и киртаны — content_items типа prayer (+ тело страницы page_text).
       const prayers = await env.DB.prepare(
@@ -2424,10 +2456,14 @@ export default {
                 (SELECT substr(pt.text,1,4000) FROM page_text pt WHERE pt.slug=ci.slug) AS body
          FROM content_items ci
          WHERE ci.lang='ru' AND ci.type='prayer'
-           AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
-                OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
-         ORDER BY (ci.name GLOB ?3) DESC, (ci.name GLOB ?2) DESC, (ci.name GLOB ?1) DESC, (ci.subtitle GLOB ?1) DESC, length(ci.name), ci.name LIMIT 20`,
-      ).bind(g, gPrefix, gExact).all<{ slug: string; name: string | null; subtitle: string | null; body: string | null }>();
+           AND (instr(${normSql("ci.name")}, ?1) > 0 OR instr(${normSql("ci.subtitle")}, ?1) > 0
+                OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND instr(${normSql("pt.text")}, ?1) > 0))
+         ORDER BY (${normSql("ci.name")} = ?1) DESC,
+                  (instr(${normSql("ci.name")}, ?1) = 1) DESC,
+                  (instr(${normSql("ci.name")}, ?1) > 0) DESC,
+                  (instr(${normSql("ci.subtitle")}, ?1) > 0) DESC,
+                  length(ci.name), ci.name LIMIT 20`,
+      ).bind(needle).all<{ slug: string; name: string | null; subtitle: string | null; body: string | null }>();
 
       // 5) Страницы и разделы — прочий контент (хабы, статьи).
       const pages = await env.DB.prepare(
@@ -2435,17 +2471,22 @@ export default {
                 (SELECT substr(pt.text,1,4000) FROM page_text pt WHERE pt.slug=ci.slug) AS body
          FROM content_items ci
          WHERE ci.lang='ru' AND ci.type IN ('hub','article')
-           AND (ci.name GLOB ?1 OR ci.subtitle GLOB ?1
-                OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND pt.text GLOB ?1))
-         ORDER BY (ci.name GLOB ?3) DESC, (ci.name GLOB ?2) DESC, (ci.name GLOB ?1) DESC, (ci.subtitle GLOB ?1) DESC, length(ci.name), ci.name LIMIT 20`,
-      ).bind(g, gPrefix, gExact).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null; body: string | null }>();
+           AND (instr(${normSql("ci.name")}, ?1) > 0 OR instr(${normSql("ci.subtitle")}, ?1) > 0
+                OR EXISTS (SELECT 1 FROM page_text pt WHERE pt.slug=ci.slug AND instr(${normSql("pt.text")}, ?1) > 0))
+         ORDER BY (${normSql("ci.name")} = ?1) DESC,
+                  (instr(${normSql("ci.name")}, ?1) = 1) DESC,
+                  (instr(${normSql("ci.name")}, ?1) > 0) DESC,
+                  (instr(${normSql("ci.subtitle")}, ?1) > 0) DESC,
+                  length(ci.name), ci.name LIMIT 20`,
+      ).bind(needle).all<{ slug: string; name: string | null; subtitle: string | null; type: string | null; body: string | null }>();
 
       // 6) Центры — опубликованные храмы/ятры.
       const centers = await env.DB.prepare(
         `SELECT slug, name, city FROM centers
-         WHERE status='live' AND (name GLOB ?1 OR city GLOB ?1 OR country GLOB ?1 OR region GLOB ?1)
+         WHERE status='live' AND (instr(${normSql("name")}, ?1) > 0 OR instr(${normSql("city")}, ?1) > 0
+              OR instr(${normSql("country")}, ?1) > 0 OR instr(${normSql("region")}, ?1) > 0)
          LIMIT 20`,
-      ).bind(g).all<{ slug: string; name: string; city: string | null }>();
+      ).bind(needle).all<{ slug: string; name: string; city: string | null }>();
 
       // стих/глава → URL: id без префикса работы, точки → слэши (bg.4.9 → /book/bg/4/9).
       const tail = (id: string, work: string) =>

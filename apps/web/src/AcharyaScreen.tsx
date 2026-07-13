@@ -420,17 +420,22 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
    * регистронезависимо для кириллицы. Санскрит ищется наравне с русским. */
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Item[] | null>(null);
+  const [failed, setFailed] = useState(false);
   const trimmed = q.trim();
   const searching = trimmed.length >= 2;
 
   useEffect(() => {
-    if (!searching) { setHits(null); return; }
+    if (!searching) { setHits(null); setFailed(false); return; }
     let alive = true;
     const t = setTimeout(() => {
       fetch(api(`/entities?q=${encodeURIComponent(trimmed)}&limit=60`))
-        .then((r) => r.json())
-        .then((d) => { if (alive) setHits((d.items as Item[]) ?? []); })
-        .catch(() => { if (alive) setHits([]); });
+        /* ЗКН-Ф014 — СБОЙ НЕ ВЫДАЁТСЯ ЗА ПУСТОТУ.
+         * Здесь стоял `.catch(() => setHits([]))`: сервер отвечал 500 (D1 отвергал
+         * шаблон поиска, ЗКН-Ф023), а человек читал «Ничего не найдено» — и верил,
+         * что Прабхупады в приложении нет. Сбой обязан выглядеть как сбой. */
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then((d) => { if (alive) { setHits((d.items as Item[]) ?? []); setFailed(false); } })
+        .catch(() => { if (alive) { setHits([]); setFailed(true); } });
     }, 180);   // пауза набора: не бомбим сервер на каждой букве
     return () => { alive = false; clearTimeout(t); };
   }, [trimmed, searching]);
@@ -452,6 +457,10 @@ function AcharyaLanding({ realm, onOpen, onOpenCollection, onOpenPath }: { realm
         <div style={{ marginTop: 16 }} aria-live="polite">
           {hits === null ? (
             <>{Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}</>
+          ) : failed ? (
+            <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
+              Поиск сейчас недоступен.<br />Это сбой на нашей стороне, а не пустой ответ.
+            </div>
           ) : hits.length === 0 ? (
             <HubEmpty query={trimmed} hint="Попробуйте имя, титул или санскрит (IAST)." />
           ) : (
