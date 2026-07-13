@@ -395,23 +395,17 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         if own_bhajans:
             lines.append("Молитвы и песни его авторства: %s."
                          % ", ".join("«%s»" % b for b in own_bhajans[:8]))
-        vk.append(section("Наследие, оставленное лиле",
-                          ["Что даёт этот раздел: чем он обогатил лилу — труды, "
-                           "оставшиеся после него."] + lines, hero=HN))
+        vk.append(section("Наследие, оставленное лиле", lines, hero=HN))
     if top:
         me = hero == "prabhupada"
         vk.append(section(
             "Его миссия — своими словами" if me else "Шрила Прабхупада о его вкладе",
-            ["Что даёт этот раздел: %s"
-             % ("как Шрила Прабхупада сам говорит о своей миссии — дословно."
-                if me else
-                "оценка вклада %s в миссию Шри Кришны Чайтаньи Махапрабху — словами "
-                "Шрилы Прабхупады, дословно из комментариев." % gen)],
+            [],
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see:
         vk.append(section("Связи в лиле",
-                          ["Что даёт этот раздел: личности, с которыми %s связан "
-                           "в источниках." % full], see=see, hero=HN))
+                          ["Личности, с которыми %s связан в источниках." % full],
+                          see=see, hero=HN))
     if not vk:
         note = d1.query("SELECT note FROM entities WHERE id=?1", [hero]) if d1.available() else None
         txt = (note or [{}])[0].get("note") if note else None
@@ -431,7 +425,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         secs = []
         for h, fs in chapters.items():
             fs = sorted(fs, key=lambda x: x.get("ordinal", 0))[:MAX_PER_SECTION]
-            secs.append(section(h, ["Эпизод: здесь %s действует." % full],
+            secs.append(section(h, [],
                                 quotes=[quote_of(f, forms, ids_ok, used) for f in fs],
                                 hero=HN))
         subs.append({"id": slugify("%s %s" % (sample.get("book", src), div_label(sample))),
@@ -446,7 +440,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     if books:
         tr.append(section(
             "Книги в библиотеке приложения",
-            ["Что даёт этот раздел: его труды, которые можно открыть и читать целиком."],
+            [],
             cite=[({"ref": b["title"], "to": "/" + b["slug"]} if b.get("slug")
                    else {"ref": b["title"]}) for b in books], hero=HN))
     by_work = {}
@@ -455,7 +449,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     for book, fs in by_work.items():
         tr.append(section(
             "О его трудах · %s" % book,
-            ["Что даёт этот раздел: свидетельства источников о трудах %s." % gen],
+            [],
             quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION]],
             hero=HN))
     if tr:
@@ -465,12 +459,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
 
     # ── ТАБ · УЧЕНИЕ И АВТОРИТЕТ — где на него ССЫЛАЮТСЯ ─────────────────
     subs = []
-    for pool, sid, label, what in (
-            (speech, "ego-slovo", "Его слово",
-             "Что даёт этот раздел: его собственные наставления, письма и беседы."),
-            (author, "avtoritet", "На него ссылаются",
-             "Что даёт этот раздел: места, где источники приводят его слово КАК "
-             "ДОКАЗАТЕЛЬСТВО — прамана.")):
+    for pool, sid, label in ((speech, "ego-slovo", "Его слово"),
+                             (author, "avtoritet", "На него ссылаются")):
         by_book = {}
         for f in pool:
             by_book.setdefault(f["book"], []).append(f)
@@ -478,7 +468,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             subs.append({"id": slugify("%s %s" % (sid, book)),
                          "label": "%s · %s" % (label, book),
                          "sections": [section(
-                             "%s · %s" % (book, div_label(fs[0])), [what],
+                             "%s · %s" % (book, div_label(fs[0])), [],
                              quotes=[quote_of(f, forms, ids_ok, used)
                                      for f in fs[:MAX_PER_SECTION * 2]], hero=HN)]})
     if subs:
@@ -496,7 +486,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         gl = {}
         for f in pool:
             gl.setdefault(f["book"], []).append(f)
-        secs = [section(book, ["Что даёт этот раздел: как источники славят %s." % gen],
+        secs = [section(book, [],
                         quotes=[quote_of(f, forms, ids_ok, used)
                                 for f in fs[:MAX_PER_SECTION]], hero=HN)
                 for book, fs in gl.items()]
@@ -514,9 +504,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
                 continue
             secs = [section(
                 name,
-                ["Что даёт этот раздел: %s" % ("молитва его авторства — его слово в песне."
-                                               if sid == "sochineniya"
-                                               else "молитва, обращённая к нему, — как его славят в киртане.")],
+                [],
                 quotes=[quote_of(f, forms, ids_ok, used)
                         for f in sorted(fs, key=lambda x: x["ordinal"])],
                 hero=HN) for name, fs in group.items()]
@@ -535,8 +523,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         book = next(iter(next(iter(groups.values()))))["book"]
         secs = [section(
             "%s · %s" % (book, g),
-            ["Что даёт этот раздел: то, что Шрила Прабхупада говорит о %s по существу — "
-             "не мимоходом." % ("нём" if hero != "prabhupada" else "себе")],
+            [],
             quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION]],
             hero=HN) for g, fs in groups.items()]
         subs.append({"id": slugify(book), "label": book, "sections": secs})
@@ -547,59 +534,12 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         tabs.append({"id": "prabhupada", "label": "Его комментарии",
                      "kicker": "СЛОВО", "subtabs": subs})
 
-    # ── ТАБ · ИСТОЧНИКИ (провенанс) ──────────────────────────────────────
-    over = {**cut_a, **cut_p}
-    # «Книги о нём» — тоже провенанс, а не глава. Отдельная вкладка под одну
-    # ссылку — это шум в оглавлении.
-    subs = []
-    if over:
-        secs = []
-        for w, (n, title) in sorted(over.items(), key=lambda kv: -kv[1][0]):
-            secs.append(section(
-                title,
-                ["Что даёт этот раздел: эта книга говорит о герое на протяжении всего "
-                 "текста. В карточку взято самое плотное, ещё %d мест ждут в самой "
-                 "книге. Карточка — свод, а не копия библиотеки." % n],
-                cite=[{"ref": title, "to": "/" + slugmap.get(w, w)}], hero=HN))
-        subs.append({"id": "polnye-knigi", "label": "Книги о нём", "sections": secs})
-    if archive:
-        by_file = {}
-        for f in archive:
-            by_file.setdefault(f["src"], []).append(f)
-        secs = []
-        for src, fs in sorted(by_file.items(), key=lambda kv: -sum(x["ordinal"] for x in kv[1])):
-            hits = sum(x["ordinal"] for x in fs)
-            secs.append(section(
-                Path(src).stem.replace("-", " ").replace("_", " · "),
-                ["Пассажей с именем героя: %d, упоминаний: %d. Первоисточник даёт факты "
-                 "в прозу жития. Дословная цитата отсюда появится, когда книга будет "
-                 "внесена в приложение (ЗКН-П004)." % (len(fs), hits)],
-                cite=[{"ref": src}], hero=HN))
-        subs.append({"id": "biblioteka", "label": "Библиотека", "sections": secs})
-    if online:
-        by_site = {}
-        for f in online:
-            by_site.setdefault(f["src"], []).append(f)
-        secs = []
-        for site, fs in sorted(by_site.items(), key=lambda kv: -len(kv[1])):
-            pages, seen_u = [], set()
-            for f in fs:
-                u = f.get("url") or f["ref"]
-                if u in seen_u:
-                    continue
-                seen_u.add(u)
-                pages.append({"ref": "%s — %s" % (f["ref"][:80], u)})
-            secs.append(section(
-                SITE_NAMES.get(site, site),
-                ["Прочитано страниц: %d. Внешний источник даёт ФАКТ и дату — в прозу "
-                 "жития. Дословной шастра-цитатой он не становится (ЗКН-П004)." % len(pages)],
-                cite=pages[:12], hero=HN))
-        subs.append({"id": "onlayn", "label": "Онлайн", "sections": secs})
-    if subs:
-        tabs.append({"id": "istochniki", "label": "Источники",
-                     "kicker": "ПРОВЕНАНС", "subtabs": subs})
+    # ═══ ЗКН-П019 · КАРТОЧКА — НЕ ПРОВЕНАНС ══════════════════════════════
+    # Раздела «Источники» в карточке НЕТ. Человек читает биографию, а не путь
+    # к txt-файлу: «docs/sources/hagiography/Rosen_Six-Goswamis.RU.txt» — это
+    # моя бухгалтерия, а не житие. Провенанс живёт в досье и брифе куратора,
+    # где ему и место. У каждой цитаты и так стоит ссылка на стих.
 
-    # ── СОХРАННОСТЬ рукописных табов (ЗКН-Р002), с лечением ──────────────
     # ═══ ЗКН-П018 · ПОРЯДОК: СМЫСЛ ВПЕРЁД, АППАРАТ НАЗАД ═════════════════
     #
     # У Шрилы Прабхупады было 14 вкладок: восемь машинных, потом шесть

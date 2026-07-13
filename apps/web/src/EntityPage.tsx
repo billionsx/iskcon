@@ -396,11 +396,11 @@ function QuoteBlock({ q, onOpen, onNavigate }: { q: LfQuote; onOpen: (id: string
   return (
     <blockquote style={{ margin: "20px 0 0", padding: q.gold ? "14px 18px 14px 18px" : "2px 0 2px 18px", borderLeft: `3px solid ${GOLD}`, borderRadius: q.gold ? 12 : 0, background: q.gold ? "rgba(210,170,27,0.07)" : "transparent", whiteSpace: "pre-line" }}>
       {q.translit && (
-        <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-body)", lineHeight: 1.5, letterSpacing: "0.01em", color: "var(--color-label-2)", marginBottom: 10 }}>
+        <div style={{ fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "calc(var(--text-body) * 0.94)", lineHeight: 1.5, letterSpacing: "0.01em", color: "var(--color-label-2)", marginBottom: 10, overflowWrap: "anywhere", wordBreak: "break-word", hyphens: "auto" }}>
           {stripWrap(q.translit)}
         </div>
       )}
-      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)" }}>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: 1.6, fontStyle: "normal", color: "var(--color-label)", overflowWrap: "anywhere", wordBreak: "break-word" }}>
         {renderSanskrit(stripWrap(q.t))}
       </div>
       <Attribution src={q} onOpen={onOpen} onNavigate={onNavigate} marginTop={12} />
@@ -1478,8 +1478,8 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                   </div>
                   {hasRealmSplit && <div ref={realmAnchorRef} aria-hidden style={{ height: 0 }} />}
                   {hasRealmSplit && <RealmSegment realm={realm} onChange={handleRealmChange} stickyTop={embedded ? 46 : 96} />}
-                  {subItems.length > 0 && <div ref={subAnchorRef} aria-hidden style={{ height: 0 }} />}
-                  {subItems.length > 0 && (
+                  {subItems.length > 1 && <div ref={subAnchorRef} aria-hidden style={{ height: 0 }} />}
+                  {subItems.length > 1 && (
                     <PersonSubTabs
                       items={subItems}
                       active={sub}

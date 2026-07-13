@@ -100,14 +100,15 @@ def audit(eid, passport):
         where = "%s › %s › %s" % (tab, sub.get("label", "")[:22], (sec.get("h") or "")[:28])
         text, ref, to = q.get("t", ""), q.get("ref", ""), q.get("to") or ""
 
-        # 5. секция обязана объявить, ЧТО она даёт
+        # ЗКН-П020: служебной прозы в биографии быть не должно. Проверка
+        # «объявила ли секция, что даёт» ОТМЕНЕНА — она требовала ровно того,
+        # что теперь запрещено: бухгалтерии конвейера на глазах у читателя.
         key = (tab, sub.get("id"), si)
         if key not in seen_sec:
             seen_sec.add(key)
             p = " ".join(sec.get("p") or [])
-            if tab in ("zhitie", "uchenie", "proslavlenie", "trudy", "prabhupada") and \
-               not re.search(r"Что даёт|Эпизод", p):
-                bad["секция"].append((where, "секция не объявляет, что даёт"))
+            if re.search(r"Что даёт этот раздел", p):
+                bad["секция"].append((where, "СЛУЖЕБНАЯ ПРОЗА в биографии (ЗКН-П020)"))
 
         # 1. ЛОГИКА — мог ли подписанный это сказать
         why = canon.anachronism(text, q.get("byId"))
