@@ -1876,7 +1876,15 @@ export default {
         moods: parse(r.moods), langs: parse(r.langs), composers: parse(r.composers),
         note: r.note ?? undefined,
       }));
-      return json({ artists, albums });
+      // ДОРОЖКИ — записи, залитые из канала. Из них витрина строит СПИСОК КИРТАНОВ.
+      // Он растёт по мере заливки: конвейер пишет строку на каждую залитую запись.
+      const tRes = await env.DB.prepare(
+        `SELECT id, artist_slug, identifier, file, title FROM kirtan_tracks ORDER BY artist_slug, file`
+      ).all<{ id: string; artist_slug: string; identifier: string; file: string; title: string }>();
+      const tracks = (tRes.results || []).map((r) => ({
+        id: r.id, artist: r.artist_slug, identifier: r.identifier, file: r.file, title: r.title,
+      }));
+      return json({ artists, albums, tracks });
     }
 
     // GET /api/dhamas → дхамы с вложенными кластерами и тиртхами из D1. Источник истины —

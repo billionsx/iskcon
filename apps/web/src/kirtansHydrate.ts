@@ -8,7 +8,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { api } from "./api";
 import {
   setKirtanData, subscribeKirtans, kirtanDataVersion,
-  type KirtanArtist, type KirtanAlbum,
+  type KirtanArtist, type KirtanAlbum, type KirtanTrack,
 } from "./kirtans";
 
 let started = false;
@@ -19,9 +19,9 @@ async function load(): Promise<void> {
   try {
     const r = await fetch(api("/kirtans"), { credentials: "same-origin" });
     if (!r.ok) return;
-    const j = (await r.json()) as { artists?: KirtanArtist[]; albums?: KirtanAlbum[] };
+    const j = (await r.json()) as { artists?: KirtanArtist[]; albums?: KirtanAlbum[]; tracks?: KirtanTrack[] };
     if (j && Array.isArray(j.artists) && Array.isArray(j.albums)) {
-      setKirtanData(j.artists, j.albums);
+      setKirtanData(j.artists, j.albums, j.tracks);
     }
   } catch {
     /* сеть недоступна — остаёмся на встроенном сиде */

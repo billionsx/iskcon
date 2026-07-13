@@ -363,14 +363,40 @@ export function filterAlbums(opts: { type?: KirtanType | null; mood?: KirtanMood
 let _version = 0;
 const _subs = new Set<() => void>();
 
+/** ДОРОЖКА — одна залитая запись из канала. Из них витрина строит список киртанов. */
+export interface KirtanTrack {
+  id: string;          // <identifier>/<file>
+  artist: string;      // slug исполнителя
+  identifier: string;  // элемент archive.org
+  file: string;        // имя файла в элементе
+  title: string;       // название записи (без имени исполнителя)
+}
+let _tracks: KirtanTrack[] = [];
+
 /** Текущие (гидрированные или сид) данные — для прямого рендера в хабе. */
 export function kirtanArtists(): KirtanArtist[] { return _artists; }
 export function kirtanAlbums(): KirtanAlbum[] { return _albums; }
+export function kirtanTracks(): KirtanTrack[] { return _tracks; }
+
+/** Порядок дорожек ВНУТРИ альбома — тот же, что у воркера (`cleanKirtanTitle`):
+ *  ведущее число, потом имя файла. Иначе индекс, который мы шлём плееру, не сойдётся
+ *  с его списком, и человек нажмёт одно, а заиграет другое. */
+export function albumTrackIndex(t: KirtanTrack): number {
+  const lead = (f: string) => {
+    const m = f.replace(/\.mp3$/i, "").match(/^(\d{1,4})\b/);
+    return m ? parseInt(m[1], 10) : Number.MAX_SAFE_INTEGER;
+  };
+  const list = _tracks
+    .filter((x) => x.identifier === t.identifier)
+    .sort((a, b) => (lead(a.file) - lead(b.file)) || a.file.localeCompare(b.file));
+  return Math.max(0, list.findIndex((x) => x.id === t.id));
+}
 
 /** Подменить каталог данными из D1 (вызывает kirtansHydrate). */
-export function setKirtanData(artists: KirtanArtist[], albums: KirtanAlbum[]): void {
+export function setKirtanData(artists: KirtanArtist[], albums: KirtanAlbum[], tracks?: KirtanTrack[]): void {
   if (Array.isArray(artists) && artists.length) _artists = artists;
   if (Array.isArray(albums) && albums.length) _albums = albums;
+  if (Array.isArray(tracks)) _tracks = tracks;
   _version++;
   _subs.forEach((f) => f());
 }
