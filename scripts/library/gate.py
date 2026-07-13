@@ -36,9 +36,12 @@ BASELINE = pathlib.Path("docs/library/BASELINE.json")
 
 
 def _baseline() -> dict:
-    if BASELINE.exists():
-        return json.loads(BASELINE.read_text(encoding="utf-8"))
-    return {}
+    """Ключи с `_` — комментарии для человека. В сравнение не идут:
+    иначе `0 > "строка"` роняет гейт на TypeError вместо честного отчёта."""
+    if not BASELINE.exists():
+        return {}
+    raw = json.loads(BASELINE.read_text(encoding="utf-8"))
+    return {k: int(v) for k, v in raw.items() if not k.startswith("_")}
 
 
 def _save(counts: dict) -> None:
