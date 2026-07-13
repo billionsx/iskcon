@@ -35,6 +35,8 @@ MAX_QUOTE = 1500            # «Прабхупада-шикшамрита» де
 # Повествовательные источники (там ЖИТИЕ) против доктринальных (там УПОМИНАНИЯ).
 # Смешивать нельзя: «Нектар преданности, глава 19» — не эпизод биографии.
 NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
+MAX_PER_SECTION = 14        # глава редко даёт больше — а если даёт, это уже не глава
+MAX_PER_WORK = 180          # книга-о-герое не переписывается в карточку, а линкуется
 TRANSLIT_MAP = {
     "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e", "ж": "zh",
     "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m", "н": "n", "о": "o",
@@ -181,6 +183,19 @@ def own_works(hero):
                     [hero]) or []
 
 
+def cap(pool, per_work=MAX_PER_WORK):
+    """Отобрать самое плотное по книге. Остальное — в бриф, не в мусор."""
+    by_work, out, cut = {}, [], {}
+    for f in sorted(pool, key=lambda x: (-len(x.get("text", "")), x.get("ordinal", 0))):
+        w = f["src"]
+        by_work.setdefault(w, []).append(f)
+    for w, fs in by_work.items():
+        out += fs[:per_work]
+        if len(fs) > per_work:
+            cut[w] = (len(fs) - per_work, fs[0].get("book") or w)
+    return out, cut
+
+
 def build(dossier, hero_names, keep=None):
     """Досье → книга. Ничего не выдумывает: всё, что попадает в текст, лежит в досье."""
     hero = dossier["entity_id"]
@@ -192,6 +207,10 @@ def build(dossier, hero_names, keep=None):
     forms = dossier["passport"]["forms"]
     ids_ok = verified_ids([f.get("byId") for f in F] + [hero])
     used = set()
+    # Куратор уже что-то процитировал в старой карточке. Машина не станет
+    # цитировать то же второй раз — иначе слияние даёт двойников на экране.
+    if keep:
+        used |= {q["ref"] for _p, k, q in _walk_quotes(keep) if q.get("ref")}
     see = graph_see(hero, ids_ok)
 
     def by_ch(*chs):
@@ -205,6 +224,8 @@ def build(dossier, hero_names, keep=None):
     archive = by_ch("k2-archive")
     online = by_ch("k3-books-web", "k5-bhajans-web", "k6-wikipedia", "k7-iskcon-web")
 
+    verses, cut_v = cap(verses)
+    purports, cut_p = cap(purports)
     tabs = []
 
     # ── ТАБ 0 · ВКЛАД В ГАУРАНГА ЛИЛУ (крит. 10 — ВСЕГДА первый) ──────────
@@ -253,6 +274,7 @@ def build(dossier, hero_names, keep=None):
             for h, fs in chapters.items():
                 wk = WORKS.get(src, {})
                 nar = (wk.get("narrator") or [None])[0]
+                fs = sorted(fs, key=lambda x: x.get("ordinal", 0))[:MAX_PER_SECTION]
                 line = "Стихов в этой главе: %d." % len(fs)
                 if nar:
                     line += " Повествует %s." % nar
@@ -309,6 +331,23 @@ def build(dossier, hero_names, keep=None):
     if subs:
         tabs.append({"id": "prabhupada", "label": "Шрила Прабхупада о нём",
                      "kicker": "КОММЕНТАРИИ", "subtabs": subs})
+
+    # ── КНИГА, КОТОРАЯ ВСЯ О НЁМ: ссылка, а не переписывание ─────────────
+    slugmap = work_slugs()
+    over = {**cut_v, **cut_p}
+    if over:
+        secs = []
+        for w, (n, title) in sorted(over.items(), key=lambda kv: -kv[1][0]):
+            secs.append(section(
+                title,
+                ["Эта книга говорит о герое на протяжении всего текста: в карточку взято "
+                 "самое плотное, ещё %d мест ждут в самой книге. Карточка — свод, а не "
+                 "копия библиотеки." % n],
+                quotes=[{"t": "Открыть книгу целиком.", "ref": title,
+                         "to": "/" + slugmap.get(w, w)}], hero=HN))
+        tabs.append({"id": "kniga-o-nem", "label": "Книги о нём", "kicker": "ЦЕЛИКОМ",
+                     "subtabs": [{"id": "polnye-knigi", "label": "Полные книги",
+                                  "sections": secs}]})
 
     # ── ТАБ · БХАДЖАНЫ И МОЛИТВЫ ─────────────────────────────────────────
     by_song = {}
@@ -384,6 +423,14 @@ def build(dossier, hero_names, keep=None):
 
     dedupe_headings({"tabs": tabs})
     return {"tabs": tabs}
+
+
+def _walk_quotes(book):
+    for t in book.get("tabs", []):
+        for sub in (t.get("subtabs") or [{"sections": t.get("sections") or []}]):
+            for sec in sub.get("sections", []):
+                for q in ([sec["quote"]] if sec.get("quote") else []) + sec.get("quotes", []):
+                    yield (None, "quote", q)
 
 
 def work_slugs():
