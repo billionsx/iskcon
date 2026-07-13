@@ -445,16 +445,20 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
 
     # ── ТАБ · ПРОСЛАВЛЕНИЕ ───────────────────────────────────────────────
     subs = []
-    if glory:
-        secs = []
+    for pool, sid, label in (
+            ([f for f in glory if f["src"] in SHASTRA], "v-shastrah", "В шастрах"),
+            ([f for f in glory if f["src"] in NARRATIVE], "v-zhizneopisaniyah",
+             "В жизнеописаниях")):
+        if not pool:
+            continue
         gl = {}
-        for f in glory:
+        for f in pool:
             gl.setdefault(f["book"], []).append(f)
-        for book, fs in gl.items():
-            secs.append(section(book, ["Что даёт этот раздел: как источники славят %s." % gen],
-                                quotes=[quote_of(f, forms, ids_ok, used)
-                                        for f in fs[:MAX_PER_SECTION]], hero=HN))
-        subs.append({"id": "v-shastrah", "label": "В шастрах", "sections": secs})
+        secs = [section(book, ["Что даёт этот раздел: как источники славят %s." % gen],
+                        quotes=[quote_of(f, forms, ids_ok, used)
+                                for f in fs[:MAX_PER_SECTION]], hero=HN)
+                for book, fs in gl.items()]
+        subs.append({"id": sid, "label": label, "sections": secs})
     by_song = {}
     for f in bhajans:
         if f["kind"] == "bhajan":
