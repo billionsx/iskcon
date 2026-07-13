@@ -18,6 +18,7 @@
 """
 import json
 import os
+import urllib.error
 import urllib.request
 
 MODEL = os.environ.get("GOLDFORGE_MODEL", "claude-sonnet-5")
@@ -51,8 +52,15 @@ def _call(prompt):
         "x-api-key": os.environ["ANTHROPIC_API_KEY"],
         "anthropic-version": "2023-06-01",
     })
-    with urllib.request.urlopen(req, timeout=90) as r:
-        d = json.load(r)
+    # ЗКН-Ф014: СКРИПТ ГОВОРИТ, ЧТО ИМЕННО СЛОМАЛОСЬ. `urlopen` кидает HTTPError
+    # на 4xx, и без перехвата CI показывает только «exit code 1» — ни кода, ни тела.
+    # Прогоны уходят впустую, пока кто-нибудь не догадается, что виноват ключ/лимит.
+    try:
+        with urllib.request.urlopen(req, timeout=90) as r:
+            d = json.load(r)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")[:300]
+        raise RuntimeError("Anthropic API HTTP %s — %s" % (e.code, body)) from e
     txt = "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text")
     txt = txt.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     return json.loads(txt).get("p", "").strip()
