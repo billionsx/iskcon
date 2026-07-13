@@ -785,8 +785,8 @@
    "key": "indradiumn",
    "entity_id": "indradyumna-swami",
    "hero_ru": null,
-   "n_files": 25,
-   "gb": 1.65,
+   "n_files": 27,
+   "gb": 1.84,
    "msg_ids": [
     364,
     365,
@@ -812,7 +812,9 @@
     385,
     386,
     387,
-    388
+    388,
+    1014,
+    1058
    ],
    "existing": true,
    "needs_review": false
@@ -1186,6 +1188,29 @@
    "needs_review": false
   },
   {
+   "slug": "bhakti-bringa-govinda-swami",
+   "name_ru": "Бхакти Бринга Говинда Свами",
+   "name_channel": "Bhakti Bringa Govinda Swami",
+   "key": "bhakti bhrng govind",
+   "entity_id": "bhakti-bhrnga-govinda-swami",
+   "hero_ru": "Бхакти Бхрнга Говинда Свами Махарадж",
+   "n_files": 9,
+   "gb": 0.86,
+   "msg_ids": [
+    173,
+    174,
+    175,
+    176,
+    177,
+    941,
+    1023,
+    1028,
+    1034
+   ],
+   "existing": true,
+   "needs_review": false
+  },
+  {
    "slug": "purnachandra-das-goswami",
    "name_ru": "Пурначандра Дас Госвами",
    "name_channel": "Purnachandra das Goswami",
@@ -1288,26 +1313,6 @@
     890,
     891,
     892
-   ],
-   "existing": true,
-   "needs_review": false
-  },
-  {
-   "slug": "bhakti-bringa-govinda-swami",
-   "name_ru": "Бхакти Бринга Говинда Свами",
-   "name_channel": "Bhakti Bringa Govinda Swami",
-   "key": "bhakti bhrng govind",
-   "entity_id": "bhakti-bhrnga-govinda-swami",
-   "hero_ru": "Бхакти Бхрнга Говинда Свами Махарадж",
-   "n_files": 6,
-   "gb": 0.57,
-   "msg_ids": [
-    173,
-    174,
-    175,
-    176,
-    177,
-    941
    ],
    "existing": true,
    "needs_review": false
@@ -1579,23 +1584,6 @@
    "needs_review": false
   },
   {
-   "slug": "bhakti-bhrnga-govinda-swami",
-   "name_ru": "Бхакти Бхрнга Говинда Свами Махарадж",
-   "name_channel": "HH Bhakti Bhrnga Govinda Swami",
-   "key": "bhakti bhrng govind",
-   "entity_id": "bhakti-bhrnga-govinda-swami",
-   "hero_ru": "Бхакти Бхрнга Говинда Свами Махарадж",
-   "n_files": 3,
-   "gb": 0.28,
-   "msg_ids": [
-    1023,
-    1028,
-    1034
-   ],
-   "existing": true,
-   "needs_review": false
-  },
-  {
    "slug": "gadai-giri",
    "name_ru": "Гадай-гири",
    "name_channel": "Gadai-Giri",
@@ -1735,22 +1723,6 @@
    "msg_ids": [
     974,
     1731
-   ],
-   "existing": true,
-   "needs_review": false
-  },
-  {
-   "slug": "indradyumna-swami",
-   "name_ru": "Индрадьюмна Свами",
-   "name_channel": "HH Indradyumna Swami",
-   "key": "indradiumn",
-   "entity_id": "indradyumna-swami",
-   "hero_ru": null,
-   "n_files": 2,
-   "gb": 0.2,
-   "msg_ids": [
-    1014,
-    1058
    ],
    "existing": true,
    "needs_review": false
