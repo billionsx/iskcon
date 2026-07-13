@@ -1,0 +1,41 @@
+{
+  "entity_id": "nakula",
+  "names": [
+    "Nakula",
+    "Накула"
+  ],
+  "short": "Накула",
+  "full": "Накула",
+  "gen": "Накулы",
+  "strict": [
+    "Накула"
+  ],
+  "forms": [
+    "nakul",
+    "накул"
+  ],
+  "qualifiers": [
+    "acarya",
+    "das",
+    "dasa",
+    "gosvami",
+    "goswami",
+    "pandit",
+    "prabhu",
+    "swami",
+    "thakur",
+    "thakura",
+    "ачарья",
+    "госвами",
+    "дас",
+    "деви",
+    "кавирадж",
+    "махарадж",
+    "пандит",
+    "прабху",
+    "свами",
+    "тхакур"
+  ],
+  "homonyms": [],
+  "excludes": []
+}

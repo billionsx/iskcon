@@ -1,0 +1,42 @@
+{
+  "entity_id": "iravan",
+  "names": [
+    "Iravan",
+    "Irāvān",
+    "Ираван"
+  ],
+  "short": "Ираван",
+  "full": "Ираван",
+  "gen": "Иравана",
+  "strict": [
+    "Ираван"
+  ],
+  "forms": [
+    "iravan",
+    "ираван"
+  ],
+  "qualifiers": [
+    "acarya",
+    "das",
+    "dasa",
+    "gosvami",
+    "goswami",
+    "pandit",
+    "prabhu",
+    "swami",
+    "thakur",
+    "thakura",
+    "ачарья",
+    "госвами",
+    "дас",
+    "деви",
+    "кавирадж",
+    "махарадж",
+    "пандит",
+    "прабху",
+    "свами",
+    "тхакур"
+  ],
+  "homonyms": [],
+  "excludes": []
+}

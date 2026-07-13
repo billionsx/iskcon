@@ -1,0 +1,42 @@
+{
+  "entity_id": "subhadra",
+  "names": [
+    "Subhadra",
+    "Subhadrā",
+    "Субхадра"
+  ],
+  "short": "Субхадра",
+  "full": "Субхадра",
+  "gen": "Субхадры",
+  "strict": [
+    "Субхадра"
+  ],
+  "forms": [
+    "subhadr",
+    "субхадр"
+  ],
+  "qualifiers": [
+    "acarya",
+    "das",
+    "dasa",
+    "gosvami",
+    "goswami",
+    "pandit",
+    "prabhu",
+    "swami",
+    "thakur",
+    "thakura",
+    "ачарья",
+    "госвами",
+    "дас",
+    "деви",
+    "кавирадж",
+    "махарадж",
+    "пандит",
+    "прабху",
+    "свами",
+    "тхакур"
+  ],
+  "homonyms": [],
+  "excludes": []
+}
