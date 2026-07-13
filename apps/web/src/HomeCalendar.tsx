@@ -10,17 +10,37 @@
  *  · Hero: ближайший экадаши + парана следующего дня.
  *  · Нативный поиск по событиям (русский и оригинал) + фильтр-сабтабы.
  *  · Личности связаны с Героями: явления/уходы с entityId открывают EntityPage.
+ *
+ * ПРОШЛОЕ. Раньше экран показывал ТОЛЬКО будущее: `filter(e => e.date >= today)`
+ * срезал всё, что позади, — даже те месяцы текущего года, что уже лежали в фиде.
+ * Календарь без прошлого не отвечает на простое «а когда была Гаура-пурнима в
+ * 2020-м» и не даёт свериться с собственной практикой. Теперь два режима:
+ *   · «Предстоящие» (умолчание) — как было: что впереди, с hero-экадаши;
+ *   · месяц — любой месяц с 2016-01 по 2028-02, выбирается стрелками или
+ *     календарём-шитом (год → месяц → день; день с событиями помечен точкой).
+ * Архив прошлого (/data/gcal-past, 2016-01-01 … 2025-12-31, тот же движок и те же
+ * координаты) грузится ЛЕНИВО — только когда человек уходит в месяц до 2026-го.
+ *
+ * ЗКН-Н005 / ЗКН-Н035 — месяц живёт В АДРЕСЕ, а не в переменной: `/calendar` ·
+ * `/calendar/2020-03` · `/calendar/2020-03-09`. Ссылку на день можно отправить,
+ * «назад» работает, обновление страницы не выкидывает в «Предстоящие».
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SectionSubTabs } from "./SectionSubTabs";
 import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
+import { pushUrl, subscribeNav } from "./nav";
 import { CalendarEventCard, type EventBrief } from "./CalendarEventCard";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
-const CAL_CLIENT_VER = "3";
+const CAL_CLIENT_VER = "4";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
+
+/** Границы данных: архив начинается с 2016-01 (scripts/gcal/generate_past_archive.py),
+ *  живой фид кончается в 2028-02 (generate_all_cities.py). Стык без дыры. */
+const MIN_YM = "2016-01";
+const FALLBACK_MAX_YM = "2028-02";
+const LIVE_FROM_YM = "2026-01";
 
 interface CalEvent { date: string; title: string; orig: string; type: "ekadasi" | "parana" | "festival" | "appearance" | "disappearance" | "other"; entityId?: string }
 interface LocCity { ru: string; key: string; lat?: number | null; lng?: number | null; tz?: string | null }
@@ -38,30 +58,54 @@ function loadStoredLoc(): LocCity {
   return DEFAULT_LOC;
 }
 
-const calCache = new Map<string, CalEvent[]>();
-async function loadCal(loc: LocCity): Promise<CalEvent[]> {
+function calParams(loc: LocCity): URLSearchParams {
+  const params = new URLSearchParams();
+  const latin = /^[A-Za-z .()'-]+ \[[A-Za-z .]+\]$/.test(loc.key);
+  if (latin) params.set("loc", loc.key);
+  if (typeof loc.lat === "number" && typeof loc.lng === "number") {
+    params.set("lat", String(loc.lat)); params.set("lng", String(loc.lng));
+  }
+  if (![...params.keys()].length) params.set("loc", loc.key);
+  return params;
+}
+
+const calCache = new Map<string, { events: CalEvent[]; maxYm: string }>();
+async function loadCal(loc: LocCity): Promise<{ events: CalEvent[]; maxYm: string }> {
   const hit = calCache.get(loc.key);
   if (hit) return hit;
   try {
-    const params = new URLSearchParams();
-    const latin = /^[A-Za-z .()'-]+ \[[A-Za-z .]+\]$/.test(loc.key);
-    if (latin) params.set("loc", loc.key);
-    if (typeof loc.lat === "number" && typeof loc.lng === "number") {
-      params.set("lat", String(loc.lat)); params.set("lng", String(loc.lng));
-    }
-    if (![...params.keys()].length) params.set("loc", loc.key);
     // cv — версия клиента: меняется при правках маппинга календаря, чтобы браузер/CDN
-    // не отдавали старый закэшированный ответ. no-store — всегда берём свежий из сети
-    // (серверный кэш воркера всё равно держит вычисление, так что нагрузка мала).
-    const r = await fetch("/api/calendar?cv=" + CAL_CLIENT_VER + "&" + params.toString(), { cache: "no-store" });
+    // не отдавали старый закэшированный ответ. no-store — всегда берём свежий из сети.
+    const r = await fetch("/api/calendar?cv=" + CAL_CLIENT_VER + "&" + calParams(loc).toString(), { cache: "no-store" });
     if (r.ok) {
       const j = await r.json();
       const evs = (j.events || []) as CalEvent[];
-      if (evs.length > 50) { calCache.set(loc.key, evs); return evs; }
+      if (evs.length > 50) {
+        const out = { events: evs, maxYm: (j.span?.to || "").slice(0, 7) || FALLBACK_MAX_YM };
+        calCache.set(loc.key, out);
+        return out;
+      }
     }
   } catch { /* сеть */ }
   throw new Error("calendar unavailable");
 }
+
+/* Архив прошлого — отдельный ленивый запрос: 10 лет это ~2300 событий, и платить
+ * за них на КАЖДОМ открытии календаря (где нужен всего лишь ближайший экадаши)
+ * незачем. Тянем ровно тогда, когда человек ушёл в месяц до 2026-го. */
+const pastCache = new Map<string, CalEvent[]>();
+async function loadPast(loc: LocCity): Promise<CalEvent[]> {
+  const hit = pastCache.get(loc.key);
+  if (hit) return hit;
+  const r = await fetch("/api/calendar?past=1&cv=" + CAL_CLIENT_VER + "&" + calParams(loc).toString(), { cache: "no-store" });
+  if (!r.ok) throw new Error("archive unavailable");
+  const j = await r.json();
+  const evs = (j.events || []) as CalEvent[];
+  if (evs.length < 50) throw new Error("archive empty");
+  pastCache.set(loc.key, evs);
+  return evs;
+}
+
 
 let locsCache: LocCountry[] | null = null;
 async function loadLocs(): Promise<LocCountry[]> {
@@ -93,6 +137,141 @@ const TYPE_META: Record<CalEvent["type"], { label: string; color: string }> = {
   disappearance: { label: "Уход", color: "var(--color-label-2)" },
   other: { label: "Событие", color: "var(--color-label-3)" },
 };
+
+/* ── месяц как адрес ──────────────────────────────────────────────────────
+ * ЗКН-Н005/Н035: `/calendar` = «Предстоящие» · `/calendar/2020-03` = месяц ·
+ * `/calendar/2020-03-09` = месяц с подсвеченным днём. Месяц в состоянии
+ * компонента (а не в адресе) означал бы: ссылкой не поделиться, «назад» не
+ * работает, обновление страницы выкидывает обратно в «Предстоящие».
+ */
+const MONTH_SHORT = ["Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"];
+const WD_HEAD = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+const p2 = (n: number) => String(n).padStart(2, "0");
+
+interface CalRoute { ym: string | null; day: string | null }
+function routeFromPath(path: string): CalRoute {
+  const s = path.split("/").filter(Boolean)[1] || "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return { ym: s.slice(0, 7), day: s };
+  if (/^\d{4}-\d{2}$/.test(s)) return { ym: s, day: null };
+  return { ym: null, day: null };
+}
+function ymOfToday(): string { const d = new Date(); return `${d.getFullYear()}-${p2(d.getMonth() + 1)}`; }
+function ymAdd(ym: string, delta: number): string {
+  const [y, m] = ym.split("-").map(Number);
+  const t = y * 12 + (m - 1) + delta;
+  return `${Math.floor(t / 12)}-${p2((t % 12) + 1)}`;
+}
+/** Понедельник-первый: getDay() отдаёт вс=0, а русская неделя начинается с пн. */
+function gridStart(y: number, m: number): number { return (new Date(y, m - 1, 1).getDay() + 6) % 7; }
+function daysIn(y: number, m: number): number { return new Date(y, m, 0).getDate(); }
+
+/* ── ВЫБОР ДАТЫ: год → месяц → день ──────────────────────────────────────
+ * День с событиями помечен золотой точкой — человек видит, где искать, ещё до
+ * перехода. Сетка месяца сама по себе — обещание («тут что-то есть»), и пустой
+ * день без точки честнее, чем открытый пустой экран (ср. ЗКН-Пр007).
+ */
+function DateSheet({ open, ym, day, maxYm, dots, loading, onPreview, onPick, onUpcoming, onClose }: {
+  open: boolean; ym: string | null; day: string | null; maxYm: string;
+  dots: Set<string>; loading: boolean;
+  onPreview: (ym: string) => void; onPick: (path: string) => void; onUpcoming: () => void; onClose: () => void;
+}) {
+  const today = todayISO();
+  const start = ym || ymOfToday();
+  const [py, setPy] = useState(() => Number(start.slice(0, 4)));
+  const [pm, setPm] = useState(() => Number(start.slice(5, 7)));
+  useEffect(() => {
+    if (!open) return;
+    const s = ym || ymOfToday();
+    setPy(Number(s.slice(0, 4))); setPm(Number(s.slice(5, 7)));
+  }, [open, ym]);
+  const pym = `${py}-${p2(pm)}`;
+  useEffect(() => { if (open) onPreview(pym); }, [open, pym, onPreview]);
+
+  const minY = Number(MIN_YM.slice(0, 4)), maxY = Number(maxYm.slice(0, 4));
+  const years = useMemo(() => Array.from({ length: maxY - minY + 1 }, (_, i) => minY + i), [minY, maxY]);
+  const monthOff = (m: number) => `${py}-${p2(m)}` < MIN_YM || `${py}-${p2(m)}` > maxYm;
+
+  const cells = useMemo(() => {
+    const lead = gridStart(py, pm), n = daysIn(py, pm);
+    const out: (string | null)[] = Array(lead).fill(null);
+    for (let d = 1; d <= n; d++) out.push(`${py}-${p2(pm)}-${p2(d)}`);
+    return out;
+  }, [py, pm]);
+
+  const chip = (on: boolean, off = false): React.CSSProperties => ({
+    padding: "8px 0", borderRadius: 12, textAlign: "center", cursor: off ? "default" : "pointer",
+    border: `1px solid ${on ? GOLD : "var(--color-hairline)"}`,
+    background: on ? `color-mix(in srgb, ${GOLD} 12%, transparent)` : "none",
+    fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: on ? 700 : 600,
+    color: off ? "var(--color-label-4)" : on ? GOLD : "var(--color-label)",
+    opacity: off ? 0.45 : 1, WebkitTapHighlightColor: "transparent",
+  });
+
+  return (
+    <HomeSheet open={open} label="Выбор даты" onClose={onClose}>
+      <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Календарь ИСККОН</div>
+      <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.12, color: "var(--color-label)" }}>Выберите дату</h2>
+      <p style={{ margin: "7px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
+        Доступны {MIN_YM.slice(0, 4)}–{maxYm.slice(0, 4)} годы. Дни с событиями отмечены точкой.
+      </p>
+
+      <div style={{ display: "flex", gap: 8, marginTop: 14 }}>
+        <button type="button" onClick={() => { onUpcoming(); onClose(); }} style={{ ...chip(!ym), flex: 1 }}>Предстоящие</button>
+        <button type="button" onClick={() => { onPick("/calendar/" + today); onClose(); }} style={{ ...chip(day === today), flex: 1 }}>Сегодня</button>
+      </div>
+
+      <div style={{ margin: "18px 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Год</div>
+      <div style={{ display: "flex", gap: 7, overflowX: "auto", scrollbarWidth: "none", paddingBottom: 2 }}>
+        {years.map((y) => (
+          <button key={y} type="button" onClick={() => setPy(y)} style={{ ...chip(y === py), flex: "0 0 auto", padding: "8px 14px" }}>{y}</button>
+        ))}
+      </div>
+
+      <div style={{ margin: "18px 2px 8px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Месяц</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 7 }}>
+        {MONTH_SHORT.map((mn, i) => {
+          const off = monthOff(i + 1);
+          return (
+            <button key={mn} type="button" disabled={off} onClick={() => setPm(i + 1)} style={chip(i + 1 === pm && !off, off)}>{mn}</button>
+          );
+        })}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: "18px 2px 8px" }}>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: "var(--color-label-3)" }}>День</div>
+        {loading && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>Загружаем архив…</div>}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+        {WD_HEAD.map((w) => (
+          <div key={w} style={{ padding: "2px 0 6px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--color-label-4)" }}>{w}</div>
+        ))}
+        {cells.map((iso, i) => {
+          if (!iso) return <div key={"e" + i} />;
+          const has = dots.has(iso), isToday = iso === today, on = iso === day;
+          return (
+            <button key={iso} type="button" onClick={() => { onPick("/calendar/" + iso); onClose(); }} aria-label={iso}
+              style={{
+                position: "relative", padding: "9px 0 11px", borderRadius: 11, cursor: "pointer",
+                border: `1px solid ${on ? GOLD : isToday ? "var(--color-hairline-strong)" : "transparent"}`,
+                background: on ? `color-mix(in srgb, ${GOLD} 12%, transparent)` : "var(--color-glass-thin)",
+                fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: has ? 700 : 500,
+                color: on ? GOLD : has ? "var(--color-label)" : "var(--color-label-3)",
+                WebkitTapHighlightColor: "transparent",
+              }}>
+              {Number(iso.slice(8))}
+              <span aria-hidden style={{
+                position: "absolute", left: "50%", bottom: 4, transform: "translateX(-50%)",
+                width: 4, height: 4, borderRadius: 999,
+                background: has ? (on ? GOLD : "var(--color-gold-deep)") : "transparent",
+              }} />
+            </button>
+          );
+        })}
+      </div>
+      <div style={{ height: 8 }} />
+    </HomeSheet>
+  );
+}
 
 function LocationSheet({ open, current, onPick, onClose }: { open: boolean; current: LocCity; onPick: (c: LocCity) => void; onClose: () => void }) {
   const [locs, setLocs] = useState<LocCountry[] | null>(null);
@@ -220,31 +399,46 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
 
 export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; onOpenEntity?: (id: string, type: string | null) => void }) {
   const [loc, setLoc] = useState<LocCity>(loadStoredLoc);
-  const [all, setAll] = useState<CalEvent[] | null>(null);
+  const [live, setLive] = useState<CalEvent[] | null>(null);
+  const [maxYm, setMaxYm] = useState<string>(FALLBACK_MAX_YM);
   const [err, setErr] = useState(false);
+  const [past, setPast] = useState<CalEvent[] | null>(null);
+  const [pastState, setPastState] = useState<"idle" | "busy" | "err">("idle");
   const [filt, setFilt] = useState<"all" | "ekadasi" | "festival" | "vaisnava">("all");
   const [q, setQ] = useState("");
   const [pickOpen, setPickOpen] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
   const [cardEvent, setCardEvent] = useState<CalEvent | null>(null);
   const [briefMap, setBriefMap] = useState<Map<string, EventBrief> | null>(null);
   const gen = useRef(0);
 
+  /* ЗКН-Н033 — АДРЕС ЕДИНСТВЕННЫЙ ИСТОЧНИК ИСТИНЫ. Месяц ЧИТАЕТСЯ из пути на
+   * каждое его изменение, а не снимается один раз при монтировании: иначе «назад»
+   * менял бы адрес, а экран продолжал показывать прежний месяц. */
+  const [route, setRoute] = useState<CalRoute>(() =>
+    typeof window === "undefined" ? { ym: null, day: null } : routeFromPath(window.location.pathname));
+  useEffect(() => subscribeNav(() => setRoute(routeFromPath(window.location.pathname))), []);
+  // ЗКН-Н001: история — только через nav.ts.
+  const goto = (path: string) => { setRoute(routeFromPath(path)); pushUrl(path); };
+
   // Ленивая карта личностей (лила/волна/описание) для МКСК — грузим один раз.
   useEffect(() => {
-    let live = true;
+    let alive = true;
     fetch(api("/content/pkl"), { cache: "no-store" }).then((r) => r.json()).then((d) => {
-      if (!live) return;
+      if (!alive) return;
       const m = new Map<string, EventBrief>();
       for (const p of (d.items ?? [])) m.set(p.slug, { name: p.name, note: p.note, summary: p.summary, lila: p.lila, sub: p.sub, grp: p.grp });
       setBriefMap(m);
     }).catch(() => { /* карточка покажет только событие */ });
-    return () => { live = false; };
+    return () => { alive = false; };
   }, []);
 
+  // Смена города обнуляет ОБА среза: и живой фид, и архив — они оба считаны по
+  // координатам прежнего города (титхи определяется на восходе В ТОЧКЕ).
   useEffect(() => {
     const g = ++gen.current;
-    setAll(null); setErr(false);
-    loadCal(loc).then((evs) => { if (gen.current === g) setAll(evs); })
+    setLive(null); setErr(false); setPast(null); setPastState("idle");
+    loadCal(loc).then((d) => { if (gen.current === g) { setLive(d.events); setMaxYm(d.maxYm); } })
       .catch(() => { if (gen.current === g) setErr(true); });
     try { localStorage.setItem(LS_KEY, JSON.stringify(loc)); } catch { /* noop */ }
   }, [loc]);
@@ -261,9 +455,24 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
     return () => window.removeEventListener("cal:set-loc", h as EventListener);
   }, []);
 
-  const today = todayISO();
-  const upcoming = useMemo(() => (all || []).filter((e) => e.date >= today), [all, today]);
+  /* Архив тянем ЛЕНИВО — ровно когда нужен месяц до 2026-го (сам просмотр, либо
+   * предпросмотр в шите выбора даты). 10 лет это ~2300 событий: платить за них
+   * при каждом открытии календаря, где нужен «ближайший экадаши», незачем. */
+  const [previewYm, setPreviewYm] = useState<string | null>(null);
+  const needPast = (route.ym && route.ym < LIVE_FROM_YM) || (previewYm && previewYm < LIVE_FROM_YM);
+  useEffect(() => {
+    if (!needPast || past || pastState !== "idle") return;
+    const g = gen.current;
+    setPastState("busy");
+    loadPast(loc)
+      .then((evs) => { if (gen.current === g) { setPast(evs); setPastState("idle"); } })
+      .catch(() => { if (gen.current === g) setPastState("err"); });
+  }, [needPast, past, pastState, loc]);
 
+  const today = todayISO();
+  const all = useMemo(() => [...(past || []), ...(live || [])], [past, live]);
+
+  const upcoming = useMemo(() => (live || []).filter((e) => e.date >= today), [live, today]);
   const nextEka = useMemo(() => upcoming.find((e) => e.type === "ekadasi") || null, [upcoming]);
   const nextParana = useMemo(() => {
     if (!nextEka) return null;
@@ -276,21 +485,50 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
     return m ? `Выход из поста ${m[1]}–${m[2]}` : nextParana.title;
   }, [nextParana]);
 
+  // Точки в сетке шита — по ВСЕМ событиям месяца, включая парану: пустой день без
+  // точки честнее, чем открытый пустой экран (ЗКН-Пр007).
+  const dots = useMemo(() => {
+    const s = new Set<string>();
+    for (const e of all) s.add(e.date);
+    return s;
+  }, [all]);
+
+  // Парана — спутник экадаши, а не самостоятельное событие: она живёт в hero и в
+  // карточке экадаши. Отдельной строкой в списке она дублировала бы день.
+  const source = route.ym ? all.filter((e) => e.date.slice(0, 7) === route.ym) : upcoming;
   const filtered = useMemo(() => {
-    let r = upcoming.filter((e) => e.type !== "parana");
+    let r = source.filter((e) => e.type !== "parana");
     if (filt === "ekadasi") r = r.filter((e) => e.type === "ekadasi");
     else if (filt === "festival") r = r.filter((e) => e.type === "festival" || e.type === "other");
     else if (filt === "vaisnava") r = r.filter((e) => e.type === "appearance" || e.type === "disappearance");
     const t = q.trim().toLowerCase();
     if (t) r = r.filter((e) => e.title.toLowerCase().includes(t) || e.orig.toLowerCase().includes(t));
-    return r;
-  }, [upcoming, filt, q]);
+    return r.slice().sort((a, b) => a.date.localeCompare(b.date));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source, filt, q]);
 
   const months = useMemo(() => {
     const m = new Map<string, CalEvent[]>();
     filtered.forEach((e) => { const k = e.date.slice(0, 7); (m.get(k) || m.set(k, []).get(k)!).push(e); });
     return [...m.entries()];
   }, [filtered]);
+
+  const busy = !live && !err;
+  const monthBusy = !!route.ym && route.ym < LIVE_FROM_YM && !past && pastState === "busy";
+  const monthErr = !!route.ym && route.ym < LIVE_FROM_YM && pastState === "err";
+  const canPrev = !route.ym || route.ym > MIN_YM;
+  const canNext = !!route.ym && route.ym < maxYm;
+  const navLabel = route.ym
+    ? `${MONTH_H[Number(route.ym.slice(5, 7)) - 1]} ${route.ym.slice(0, 4)}`
+    : "Предстоящие";
+
+  const arrow = (on: boolean): React.CSSProperties => ({
+    display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34,
+    flexShrink: 0, borderRadius: 999, border: "0.5px solid var(--color-hairline)",
+    background: "var(--color-glass-thin)", cursor: on ? "pointer" : "default",
+    color: on ? "var(--color-label)" : "var(--color-label-4)", opacity: on ? 1 : 0.5,
+    WebkitTapHighlightColor: "transparent",
+  });
 
   return (
     <div>
@@ -310,8 +548,37 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         </p>
       </div>
 
-      {/* hero — ближайший экадаши */}
-      {nextEka && (
+      {/* Навигатор месяца: ‹ · пилюля-дата · › · возврат в «Предстоящие».
+          Не липкий — иначе он встал бы вторым sticky-слоем поверх фильтра (ЗКН-Н010). */}
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>
+        <button type="button" aria-label="Предыдущий месяц" disabled={!canPrev} style={arrow(canPrev)}
+          onClick={() => canPrev && goto("/calendar/" + (route.ym ? ymAdd(route.ym, -1) : ymOfToday()))}>
+          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <button type="button" onClick={() => setDateOpen(true)} aria-label="Выбрать дату"
+          style={{ display: "inline-flex", flex: 1, minWidth: 0, alignItems: "center", justifyContent: "center", gap: 7, padding: "9px 12px", borderRadius: 999, border: `1px solid ${route.ym ? `color-mix(in srgb, ${GOLD} 45%, transparent)` : "var(--color-hairline)"}`, background: route.ym ? `color-mix(in srgb, ${GOLD} 10%, transparent)` : "var(--color-glass-thin)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}>
+            <rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke={GOLD} strokeWidth="1.7" />
+            <path d="M3.5 9.6h17M8 3.5V6m8-2.5V6" stroke={GOLD} strokeWidth="1.7" strokeLinecap="round" />
+          </svg>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{navLabel}</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <button type="button" aria-label="Следующий месяц" disabled={!canNext} style={arrow(canNext)}
+          onClick={() => canNext && route.ym && goto("/calendar/" + ymAdd(route.ym, 1))}>
+          <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        {route.ym && (
+          <button type="button" onClick={() => goto("/calendar")} aria-label="Вернуться к предстоящим"
+            style={{ flexShrink: 0, padding: "9px 12px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold-deep)" }}>
+            Вперёд
+          </button>
+        )}
+      </div>
+
+      {/* hero — только в «Предстоящих»: в прошлом месяце «ближайший экадаши» уже
+          не ближайший, и подпись врала бы (ЗКН-БТ002). */}
+      {!route.ym && nextEka && (
         <div style={{ marginTop: 16, padding: "20px 18px", borderRadius: 22, background: `linear-gradient(135deg, color-mix(in srgb, ${GOLD} 16%, var(--color-glass-thin)), var(--color-glass-thin))` }}>
           <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ближайший экадаши · {loc.ru}</div>
           <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{nextEka.title.replace(" — пост", "")}</div>
@@ -344,15 +611,22 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
             )}
           </div>
         )}
-        {!err && !all && (
+        {(busy || monthBusy) && !err && (
           <div style={{ display: "grid", gap: 12, marginTop: 10 }}>
             {[0, 1, 2].map((i) => <div key={i} style={{ height: 76, ...fill, opacity: 0.6 }} />)}
           </div>
         )}
-        {all && q.trim() && filtered.length === 0 && (
-          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>Ничего не найдено.</div>
+        {monthErr && (
+          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
+            Архив за {navLabel.toLowerCase()} для города «{loc.ru}» сейчас недоступен.
+          </div>
         )}
-        {all && months.map(([key, evs]) => {
+        {!busy && !monthBusy && !monthErr && !err && filtered.length === 0 && (
+          <div style={{ padding: "26px 8px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>
+            {q.trim() ? "Ничего не найдено." : "В этом месяце событий нет."}
+          </div>
+        )}
+        {!busy && !monthBusy && months.map(([key, evs]) => {
           const [y, mo] = key.split("-").map(Number);
           return (
             <section key={key} style={{ marginTop: 20 }}>
@@ -363,13 +637,15 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                 {evs.map((e, i) => {
                   const f = fmtDay(e.date); const meta = TYPE_META[e.type];
                   const isToday = e.date === today;
+                  const isPicked = e.date === route.day;
                   const linked = !!e.entityId && !!onOpenEntity;
                   const tappable = linked || e.type === "festival" || e.type === "appearance" || e.type === "disappearance" || e.type === "ekadasi";
+                  const accent = isToday || isPicked;
                   const inner = (
                     <>
                       <div style={{ flexShrink: 0, width: 44, textAlign: "center" }}>
-                        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, lineHeight: 1, color: isToday ? GOLD : "var(--color-label)" }}>{f.d}</div>
-                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: isToday ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, lineHeight: 1, color: accent ? GOLD : "var(--color-label)" }}>{f.d}</div>
+                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
                       </div>
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.35, color: "var(--color-label)" }}>{e.title}</div>
@@ -382,10 +658,14 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                       )}
                     </>
                   );
-                  const rowStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: 13, padding: "12px 14px", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" };
+                  const rowStyle: React.CSSProperties = {
+                    display: "flex", alignItems: "center", gap: 13, padding: "12px 14px",
+                    borderTop: i ? "0.5px solid var(--color-hairline)" : "none",
+                    background: isPicked ? `color-mix(in srgb, ${GOLD} 8%, transparent)` : "none",
+                  };
                   return tappable ? (
                     <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
-                      style={{ ...rowStyle, width: "100%", textAlign: "left", background: "none", border: "none", borderTop: rowStyle.borderTop, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                      style={{ ...rowStyle, width: "100%", textAlign: "left", border: "none", borderTop: rowStyle.borderTop, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                       {inner}
                     </button>
                   ) : (
@@ -396,14 +676,21 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
             </section>
           );
         })}
-        {all && (
+        {live && (
           <p style={{ margin: "18px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
-            Время параны указано по местному времени города «{loc.ru}». Расчёты — GCal (Гаурабда), официальный движок Календарного комитета GBC.
+            Время параны указано по местному времени города «{loc.ru}». Расчёты — GCal (Гаурабда), официальный движок Календарного комитета GBC. Доступны {MIN_YM.slice(0, 4)}–{maxYm.slice(0, 4)} годы.
           </p>
         )}
       </div>
 
       <LocationSheet open={pickOpen} current={loc} onPick={setLoc} onClose={() => setPickOpen(false)} />
+      <DateSheet
+        open={dateOpen} ym={route.ym} day={route.day} maxYm={maxYm} dots={dots}
+        loading={pastState === "busy"}
+        onPreview={setPreviewYm}
+        onPick={goto}
+        onUpcoming={() => goto("/calendar")}
+        onClose={() => { setDateOpen(false); setPreviewYm(null); }} />
       <CalendarEventCard
         open={!!cardEvent}
         title={cardEvent?.title || ""}
