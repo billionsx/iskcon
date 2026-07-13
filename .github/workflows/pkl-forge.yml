@@ -80,6 +80,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           grep -E "ВЕРДИКТ|ЗАПИСАНО" forge.log | while read -r l; do echo "::notice::$l"; done
           grep -E "✗" forge.log | head -10 | while read -r l; do echo "::error::$l"; done
+          # Питон-исключение не содержит «✗» — и падение оставалось немым.
+          # Ошибка обязана быть ВИДНОЙ, иначе отладка идёт вслепую.
+          grep -E "Traceback|Error|error:" forge.log | tail -6 \
+            | while read -r l; do echo "::error::$l"; done
 
       - name: Улики в репозиторий (паспорт · бриф · книга)
         if: success() && inputs.dry != true

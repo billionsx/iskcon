@@ -216,10 +216,11 @@ def graph_see(hero, ids_ok, limit=12):
 
 
 def own_works(hero):
+    """Его книги в библиотеке. slug бывает пуст — тогда ссылки нет, но труд назван."""
     if not d1.available():
         return []
-    return d1.query("SELECT title, slug FROM book_catalog WHERE author_entity_id=?1 ORDER BY sort",
-                    [hero]) or []
+    return d1.query("SELECT title, slug FROM book_catalog WHERE author_entity_id=?1 "
+                    "AND title IS NOT NULL ORDER BY sort", [hero]) or []
 
 
 _CACHE = {}
@@ -360,7 +361,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
         tr.append(section(
             "Книги в библиотеке приложения",
             ["Что даёт этот раздел: его труды, которые можно открыть и читать целиком."],
-            cite=[{"ref": b["title"], "to": "/" + b["slug"]} for b in books], hero=HN))
+            cite=[({"ref": b["title"], "to": "/" + b["slug"]} if b.get("slug")
+                   else {"ref": b["title"]}) for b in books], hero=HN))
     by_work = {}
     for f in labour:
         by_work.setdefault(f["book"], []).append(f)

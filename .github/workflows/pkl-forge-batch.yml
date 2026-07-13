@@ -79,7 +79,8 @@ jobs:
               OK=$((OK+1)); DONE="$DONE $id"
             else
               echo "::error::✗ $id — гейт не пропустил (см. лог)"
-              grep -E "✗" "f-$id.log" | head -5 | while read -r l; do echo "::warning::$id: $l"; done
+              grep -E "✗|Traceback|Error" "f-$id.log" | tail -6 \
+                | while read -r l; do echo "::warning::$id: $l"; done
               FAIL=$((FAIL+1))
             fi
             echo "::endgroup::"
