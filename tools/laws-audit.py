@@ -74,6 +74,12 @@ def actual_level(lid: str) -> tuple[int, str]:
 
     # Д009 — токен SECTION_GAP в общем компоненте шапки.
     # Ц005 — линтер исключает сам себя из обхода.
+    # Пл011 — привязка озвучки по ключу: гейт в data-audit + инструмент.
+    if lid == "ЗКН-Пл011":
+        t = (ROOT / "tools" / "data-audit.py").read_text(encoding="utf-8")
+        if "ЗКН-Пл011" in t:
+            return 5, "гейт данных (data-audit.py)"
+
     if lid == "ЗКН-Ц006":
         t = (ROOT / "tools" / "laws-lint.py").read_text(encoding="utf-8")
         if "is_comment" in t:
