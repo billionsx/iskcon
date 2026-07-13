@@ -40,7 +40,19 @@ ABHAY = (re.compile(r"Е[её]\s+Божественная\s+Милость\s+А\
          "Его Божественная Милость Абхай Чаранаравинда ")
 
 # ── Гейты (что ловим в авторской прозе) ───────────────────────────────────
-BARE_LORD = re.compile(r"(?<!Кришна )Чайтань[а-я]*\s+Махапрабху")
+LORD_ANY = re.compile(r"(?:([А-Яа-я]+)\s+)?Чайтань[а-я]*\s+Махапрабху")
+
+
+def bare_lord(s):
+    """Голая форма Господа. Полная («Шри Кришн-Ы- Чайтаньи Махапрабху») — законна.
+
+    Lookbehind фиксированной ширины тут не работает: перед «Чайтаньи» стоит
+    склонённое «Кришны/Кришной/Кришну». Поэтому смотрим предыдущее СЛОВО.
+    """
+    for m in LORD_ANY.finditer(s or ""):
+        if not (m.group(1) or "").lower().startswith("кришн"):
+            return True
+    return False
 BARE_RADHA = re.compile(r"(?<!Шримати )(?<!Шримати\s)Радхаран[иию]")
 SEMICOLON = re.compile(r";")
 APOSTROPHE = re.compile(r"'")          # ЗКН-П003: прямой апостроф — только в стихе
@@ -105,7 +117,7 @@ def prose_violations(s, hero_short=None, hero_full=None):
         return bad
     if SEMICOLON.search(s):
         bad.append("ЗКН-Т001 «;»")
-    if BARE_LORD.search(s):
+    if bare_lord(s):
         bad.append("ЗКН-И001 голая «Чайтанья Махапрабху»")
     if BARE_RADHA.search(s):
         bad.append("ЗКН-И002 голая «Радхарани»")

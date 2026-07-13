@@ -324,14 +324,83 @@ def build(dossier, hero_names, keep=None):
         tabs.append({"id": "istochniki", "label": "Источники",
                      "kicker": "ПРОВЕНАНС", "subtabs": subs})
 
-    # ── СОХРАННОСТЬ: старые табы, которых конвейер не пересобирает (ЗКН-Р002)
+    # ── СОХРАННОСТЬ: старые табы, которых конвейер не пересобирает (ЗКН-Р002).
+    # Мы их не выбрасываем — но и не принимаем как есть: прогоняем через те же
+    # законы. Конвейер ЛЕЧИТ то, что переносит: канон имён, «;», апостроф,
+    # легаси-адрес `/book/cc/…` → канонический `/chaitanya-charitamrita/…`.
     if keep:
         have = {t["id"] for t in tabs}
+        slugmap = work_slugs()
         for t in keep.get("tabs", []):
             if t.get("id") not in have:
-                tabs.append(t)
+                tabs.append(heal(t, HN, slugmap))
 
+    dedupe_headings({"tabs": tabs})
     return {"tabs": tabs}
+
+
+def work_slugs():
+    if not d1.available():
+        return {}
+    return {r["id"]: r["slug"] for r in (d1.query(
+        "SELECT id, slug FROM book_catalog WHERE readable=1 AND slug IS NOT NULL") or [])}
+
+
+def fix_to(to, slugmap):
+    """`/book/cc/madhya/19/117` → `/chaitanya-charitamrita/madhya/19/117` (ЗКН-Н008)."""
+    if not to or not to.startswith("/book/"):
+        return to
+    seg = to.strip("/").split("/")[1:]
+    if not seg:
+        return to
+    slug = slugmap.get(seg[0], seg[0])
+    return "/" + "/".join([slug] + seg[1:])
+
+
+def heal(node, hero, slugmap):
+    """Прогнать чужой (рукописный) узел через законы текста и адресов."""
+    if isinstance(node, dict):
+        out = {}
+        for k, v in node.items():
+            if k in ("h", "label", "kicker", "title", "lead") and isinstance(v, str):
+                out[k] = canon.clean_card_text(canon.enforce_hero(v, *hero))
+            elif k == "p" and isinstance(v, list):
+                out[k] = [canon.clean_card_text(canon.enforce_hero(x, *hero))
+                          if isinstance(x, str) else x for x in v]
+            elif k == "to" and isinstance(v, str):
+                out[k] = fix_to(v, slugmap)
+            elif k in ("t", "translit"):        # ЗКН-БТ004: чужой голос не правим
+                out[k] = v
+            else:
+                out[k] = heal(v, hero, slugmap)
+        return out
+    if isinstance(node, list):
+        return [heal(x, hero, slugmap) for x in node]
+    return node
+
+
+def dedupe_headings(book):
+    """total_h = distinct_h — по построению, а не по молитве.
+
+    Дубль заголовка — не косметика: в оглавлении две одинаковые строки, и человек
+    не знает, куда он уже заходил.
+    """
+    seen = {}
+    for t in book.get("tabs", []):
+        for sub in t.get("subtabs", []) or [{"label": "", "sections": t.get("sections") or []}]:
+            for sec in sub.get("sections", []):
+                h = sec.get("h")
+                if not h:
+                    continue
+                if h not in seen:
+                    seen[h] = 1
+                    continue
+                seen[h] += 1
+                alt = "%s · %s" % (h, sub.get("label") or t.get("label") or "")
+                if alt in seen:
+                    alt = "%s (%d)" % (h, seen[h])
+                sec["h"] = alt.strip(" ·")
+                seen[sec["h"]] = 1
 
 
 def stats(book):

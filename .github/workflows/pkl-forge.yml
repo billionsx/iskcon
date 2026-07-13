@@ -20,9 +20,9 @@ on:
         type: boolean
         default: false
       keep_old:
-        description: "сохранить чужие табы старой карточки"
+        description: "приклеить рукописные табы старой карточки (она и так сохраняется в <id>.prev.json)"
         type: boolean
-        default: true
+        default: false
       candidates:
         description: "включить кандидатов (голое имя) в книгу"
         type: boolean
@@ -86,7 +86,8 @@ jobs:
         run: |
           git config user.email "ceo@billionsx.com"
           git config user.name "Billions X"
-          git add docs/dossiers/passports/ docs/dossiers/*.brief.md data/pkl/ 2>/dev/null || true
+          git add docs/dossiers/passports/ docs/dossiers/*.brief.md \
+            docs/dossiers/*.prev.json data/pkl/ 2>/dev/null || true
           git commit -m "forge: ${{ inputs.entity_id }} — книга, паспорт, бриф [skip ci]" \
             || echo "нечего коммитить"
           for i in 1 2 3 4 5 6; do

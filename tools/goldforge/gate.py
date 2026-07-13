@@ -64,6 +64,20 @@ def _proper(text):
     return out
 
 
+FORGE_TABS = {"vklad-gauranga-lila", "zhitie", "prabhupada", "bhajany", "istochniki"}
+
+
+def machine_only(book):
+    """Конвейер отвечает за то, что написал САМ.
+
+    Старые табы курировал человек: его прозу нельзя мерить гейтом содержания —
+    он писал по книгам, которых может не быть в этой жатве. Молча удалить её
+    (ЗКН-Р002) нельзя, объявить фабрикацией — нечестно. Значит: машинные табы
+    судим строго, рукописные — чиним (`compose.heal`) и считаем долгом.
+    """
+    return {"tabs": [t for t in book.get("tabs", []) if t.get("id") in FORGE_TABS]}
+
+
 def walk(book):
     """Обойти книгу, вернуть (путь, поле, значение) для авторских полей и цитат."""
     for ti, t in enumerate(book.get("tabs", [])):
@@ -110,16 +124,25 @@ def structure(book, hero_short, hero_full):
     dup_h = {h for h in hs if hs.count(h) > 1}
     if dup_h:
         bad.append(("ЗКН-П003", "дубли заголовков: %s" % ", ".join(list(dup_h)[:3])))
-    dup_r = {r for r in refs if refs.count(r) > 1}
+    mrefs = [q["ref"] for _p, k, q in walk(machine_only(book))
+             if k == "quote" and q.get("ref")]
+    dup_r = {r for r in mrefs if mrefs.count(r) > 1}
     if dup_r:
         bad.append(("ЗКН-П003", "дубли ссылок (%d): %s" % (len(dup_r), ", ".join(list(dup_r)[:3]))))
     return bad
 
 
 def links(book):
-    """0 битых `to`. Внешний URL в `to` запрещён — он не маршрут приложения."""
+    """0 битых `to`. Внешний URL в `to` запрещён — он не маршрут приложения.
+
+    Рукописные табы уже вылечены (`compose.heal` переводит легаси-адрес в
+    канонический). Если ссылка всё же битая — она ведёт в книгу, которой в
+    приложении НЕТ (признанный долг ЗКН-П004). Это долг, а не повод не пускать
+    новую книгу к людям.
+    """
     if not d1.available():
         return []
+    book = machine_only(book)
     slugs = {r["slug"] for r in (d1.query(
         "SELECT slug FROM book_catalog WHERE readable=1 AND slug IS NOT NULL") or [])}
     bad = []
@@ -139,9 +162,15 @@ def links(book):
 
 
 def verbatim(book):
-    """Дословность цитат — сверка с D1. Не совпало → это уже не шастра."""
+    """Дословность цитат — сверка с D1. Не совпало → это уже не шастра.
+
+    Судим цитаты, которые поставил конвейер. Рукописные цитаты старой карточки
+    могут расходиться невидимо (прекомпозиция «ё», nbsp) — это долг, он уходит
+    в бриф куратору, но не блокирует новую книгу.
+    """
     if not d1.available():
         return []
+    book = machine_only(book)
     slug2work = {r["slug"]: r["id"] for r in (d1.query(
         "SELECT id, slug FROM book_catalog WHERE readable=1 AND slug IS NOT NULL") or [])}
     want = {}
@@ -195,6 +224,7 @@ def containment(book, dossier):
     parts += dossier["passport"].get("names", [])
     parts += dossier["passport"].get("strict", [])
     corpus = fold(" ".join(parts))
+    book = machine_only(book)
     bad = []
     for path, kind, v in walk(book):
         if kind != "authored" or not v:
@@ -227,6 +257,25 @@ def ratchet(book, prev):
     return bad
 
 
+def legacy_debt(book, dossier, hero_short, hero_full):
+    """Долг рукописных табов. Не блокирует — но и не молчит (ЗКН-Ц007, храповик).
+
+    Молча закрыть глаза — ложь живёт. Удалить наугад — правда теряется.
+    Значит: назвать числом и показать куратору.
+    """
+    ids = {t.get("id") for t in book.get("tabs", [])} - FORGE_TABS
+    if not ids:
+        return []
+    legacy = {"tabs": [t for t in book.get("tabs", []) if t.get("id") in ids]}
+    out = []
+    for path, kind, v in walk(legacy):
+        if kind == "authored":
+            out += [(path, w) for w in canon.prose_violations(v, hero_short, hero_full)]
+        elif kind == "quote" and (v.get("to") or "").startswith("/book/"):
+            out.append((path, "легаси-адрес не вылечен: %s" % v["to"]))
+    return out
+
+
 CHECKS = [
     ("структура · канон · дубли", structure),
     ("ссылки (bad_links=0)", links),
@@ -238,6 +287,11 @@ CHECKS = [
 
 def run(book, dossier, prev, hero_short, hero_full):
     out = []
+    debt = legacy_debt(book, dossier, hero_short, hero_full)
+    if debt:
+        print("  ⚠ долг рукописных табов (не блокирует): %d" % len(debt))
+        for p_, w in debt[:5]:
+            print("      %s — %s" % (str(p_)[:44], w[:56]))
     for name, fn in CHECKS:
         if fn is structure:
             bad = fn(book, hero_short, hero_full)
