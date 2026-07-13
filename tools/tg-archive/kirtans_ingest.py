@@ -101,138 +101,176 @@ def ia_files(identifier: str) -> set:
 def cmd_plan() -> int:
     ensure_state_table()
     m = json.loads((HERE / "kirtans_map.json").read_text(encoding="utf-8"))
-    n = 0
+    probe = json.loads((HERE / "kirtans_probe.json").read_text(encoding="utf-8"))
+    all_ids = {f["msg_id"] for ch in probe["channels"] for f in ch["files"]}
+
+    named, n = set(), 0
     for a in sorted(m["artists"], key=lambda x: -x["n_files"]):
         if a["n_files"] < MIN_FILES:
             continue
-        ident = "iskcon-kirtans-" + a["slug"]
+        named.update(a["msg_ids"])
         d1("""INSERT INTO kirtans_ingest (slug, identifier, n_files, msg_ids, state)
               VALUES (?1, ?2, ?3, ?4, 'pending')
               ON CONFLICT(slug) DO UPDATE SET
-                n_files = excluded.n_files,
-                msg_ids = excluded.msg_ids""",
-           [a["slug"], ident, a["n_files"], json.dumps(a["msg_ids"])])
+                n_files = excluded.n_files, msg_ids = excluded.msg_ids""",
+           [a["slug"], "iskcon-kirtans-" + a["slug"], a["n_files"], json.dumps(a["msg_ids"])])
         n += 1
+
+    # ── СБОРНИК. Всё, что не набрало на именного исполнителя (обрывки, одиночки,
+    #    неопознанные), НЕ выбрасывается: оно едет в один общий элемент архива и
+    #    в «Киртания ИСККОН · Сборник». Из канала заливается ВСЁ до последнего файла.
+    rest = sorted(all_ids - named)
+    if rest:
+        d1("""INSERT INTO kirtans_ingest (slug, identifier, n_files, msg_ids, state)
+              VALUES ('various', 'iskcon-kirtans-sbornik', ?1, ?2, 'pending')
+              ON CONFLICT(slug) DO UPDATE SET
+                n_files = excluded.n_files, msg_ids = excluded.msg_ids""",
+           [len(rest), json.dumps(rest)])
+        n += 1
+
     rows = d1("SELECT state, COUNT(*) c, SUM(n_files) f FROM kirtans_ingest GROUP BY state")
-    print("::notice::очередь заливки: %d исполнителей (порог ≥%d записей)" % (n, MIN_FILES))
+    print("::notice::очередь: %d элементов · именных исполнителей %d · в сборнике %d записей"
+          % (n, n - 1, len(rest)))
     for r in rows:
-        print("::notice::  %-8s %3d исполнителей · %4d записей" % (r["state"], r["c"], r["f"] or 0))
+        print("::notice::  %-8s %3d элементов · %4d записей" % (r["state"], r["c"], r["f"] or 0))
     return 0
 
 
 # ─────────────────────────── run ────────────────────────────
-def upload_artist(row: dict) -> bool:
-    """Скачать записи исполнителя из Telegram и положить в его элемент archive.org."""
+#
+# ⚠️ ПОЧЕМУ ПЕРЕПИСАНО.
+#
+# Первая версия качала ВСЕГО исполнителя, потом заливала, потом помечала готовым.
+# У Гоур Говинды 140 записей — значит первые полчаса счётчик показывал НОЛЬ, хотя
+# работа шла. Основатель смотрел на ноль и был прав, что злился: конвейер, который
+# час не показывает ничего, неотличим от сломанного.
+#
+# Теперь: ОДИН проход по каналу (а не 981 отдельный запрос сообщения), выгрузка
+# ПАЧКАМИ по 12 файлов, и альбом подключается к приложению СРАЗУ после первой
+# пачки. Музыка появляется в приложении через минуты, а не через часы, и растёт
+# на глазах.
+BATCH = int(os.getenv("BATCH") or "12")
+
+
+def flush(row: dict, paths: list, name: str) -> int:
+    """Пачку — в архив, альбом — в приложение. Немедленно."""
     import internetarchive as ia
+    if not paths:
+        return 0
+    ident = row["identifier"]
+    files = {p.name: str(p) for p in paths}
+    ia.upload(
+        ident, files=files,
+        metadata={
+            "title": "ISKCON Kirtans — %s" % name,
+            "collection": "opensource_audio", "mediatype": "audio", "creator": name,
+            "subject": ["kirtan", "iskcon", "bhakti", "hare krishna"],
+            "language": ["san", "ben", "eng", "rus"],
+        },
+        access_key=os.environ["IA_ACCESS_KEY"], secret_key=os.environ["IA_SECRET_KEY"],
+        queue_derive=False, verbose=False, retries=3,
+    )
+    for p in paths:
+        try:
+            p.unlink()
+        except OSError:
+            pass
+
+    have = len(ia_files(ident))
+    d1("UPDATE kirtans_ingest SET uploaded=?2, updated_at=datetime('now') WHERE slug=?1",
+       [row["slug"], have])
+    # АЛЬБОМ — СРАЗУ. Воркер сам развернёт элемент архива в дорожки, и исполнитель
+    # появится в витрине. Ждать конца заливки, чтобы что-то показать, — незачем.
+    d1("""INSERT INTO kirtan_albums (id, artist_slug, title, archive, type, sort)
+          VALUES (?1, ?2, ?3, ?4, 'kirtan', 0)
+          ON CONFLICT(id) DO UPDATE SET archive=excluded.archive""",
+       ["k-" + row["slug"], row["slug"], "Киртаны · " + name, ident])
+    if have >= row["n_files"]:
+        d1("UPDATE kirtans_ingest SET state='done' WHERE slug=?1", [row["slug"]])
+    print("::notice::%s: в архиве %d из %d" % (row["slug"], have, row["n_files"]))
+    return len(paths)
+
+
+def cmd_run() -> int:
+    ensure_state_table()
     from telethon.sync import TelegramClient
     from telethon.sessions import StringSession
 
-    slug, ident = row["slug"], row["identifier"]
-    want = json.loads(row["msg_ids"])
-    have = ia_files(ident)
-    print("  %s → %s (в архиве уже %d)" % (slug, ident, len(have)))
+    rows = d1("""SELECT i.slug, i.identifier, i.n_files, i.msg_ids, a.name
+                 FROM kirtans_ingest i JOIN kirtan_artists a ON a.slug = i.slug
+                 WHERE i.state <> 'done' ORDER BY i.n_files DESC""")
+    if not rows:
+        print("::notice::очередь пуста — залито всё")
+        Path(os.getenv("GITHUB_OUTPUT") or "/dev/null").open("a").write("left=0\n")
+        return 0
 
-    work = Path("/tmp/k") / slug
+    # msg_id → строка очереди. Один проход по каналу вместо 981 запроса.
+    idx, have, buf = {}, {}, {}
+    for r in rows:
+        for mid in json.loads(r["msg_ids"]):
+            idx[mid] = r
+        have[r["identifier"]] = ia_files(r["identifier"])
+        buf[r["slug"]] = []
+    print("::notice::в работе: %d элементов · %d записей · уже в архиве: %d"
+          % (len(rows), len(idx), sum(len(v) for v in have.values())))
+
+    work = Path("/tmp/k")
     work.mkdir(parents=True, exist_ok=True)
+    got = 0
 
     client = TelegramClient(
         StringSession(os.environ["TG_SESSION_STRING"]),
         int(os.environ["TG_API_ID"]), os.environ["TG_API_HASH"],
     )
-    got = []
     with client:
         entity = client.get_entity(os.getenv("TG_CHANNEL") or "@iskconecom")
-        for mid in want:
+        for msg in client.iter_messages(entity):
             if time.time() - STARTED > BUDGET:
-                print("  бюджет времени вышел — остальное доберёт следующий прогон")
+                print("::notice::бюджет времени вышел — остальное доберёт следующий прогон")
                 break
-            msg = client.get_messages(entity, ids=mid)
-            if not msg or not (msg.audio or msg.document):
+            r = idx.get(msg.id)
+            if not r:
+                continue
+            doc = msg.audio or msg.document
+            if not doc:
                 continue
             fname = None
-            for attr in (msg.audio or msg.document).attributes:
+            for attr in doc.attributes:
                 if hasattr(attr, "file_name"):
                     fname = attr.file_name
-            fname = re.sub(r"[^\w\s.\-()+]", "_", fname or f"{slug}-{mid}.mp3")
+            fname = re.sub(r"[^\w\s.\-()+]", "_", fname or "%s-%d.mp3" % (r["slug"], msg.id))
             if not fname.lower().endswith(".mp3"):
                 fname += ".mp3"
-            if fname in have:                       # уже в архиве — не качаем
-                continue
+            if fname in have[r["identifier"]]:
+                continue                       # уже в архиве — не качаем повторно
+
             dst = work / fname
-            if not dst.exists():
+            try:
                 client.download_media(msg, file=str(dst))
-            got.append(dst)
+            except Exception as e:
+                print("::warning::%d: %s" % (msg.id, str(e)[:90]))
+                continue
+            buf[r["slug"]].append(dst)
+            got += 1
 
-    if not got:
-        print("  качать нечего (всё уже в архиве)")
-        return len(have) > 0
+            if len(buf[r["slug"]]) >= BATCH:
+                try:
+                    flush(r, buf[r["slug"]], r["name"])
+                except Exception as e:
+                    print("::warning::заливка %s: %s" % (r["slug"], str(e)[:120]))
+                buf[r["slug"]] = []
 
-    files = {f.name: str(f) for f in got}
-    md = {
-        "title": "ISKCON Kirtans — %s" % row.get("name", slug),
-        "collection": "opensource_audio",
-        "mediatype": "audio",
-        "creator": row.get("name", slug),
-        "subject": ["kirtan", "iskcon", "bhakti", "hare krishna"],
-        "language": ["san", "ben", "eng", "rus"],
-    }
-    print("  → archive.org: %d файлов" % len(files))
-    ia.upload(
-        ident, files=files, metadata=md,
-        access_key=os.environ["IA_ACCESS_KEY"], secret_key=os.environ["IA_SECRET_KEY"],
-        queue_derive=False, verbose=False, retries=3,
-    )
-    for f in got:
-        try:
-            f.unlink()
-        except OSError:
-            pass
-    return True
-
-
-def cmd_run() -> int:
-    ensure_state_table()
-    todo = d1("""SELECT i.slug, i.identifier, i.n_files, i.msg_ids, a.name
-                 FROM kirtans_ingest i JOIN kirtan_artists a ON a.slug = i.slug
-                 WHERE i.state <> 'done' ORDER BY i.n_files DESC""")
-    if not todo:
-        print("::notice::очередь пуста — всё залито")
-        return 0
-    print("::notice::в очереди: %d исполнителей" % len(todo))
-
-    done_now = 0
-    for row in todo:
-        if time.time() - STARTED > BUDGET:
-            break
-        try:
-            upload_artist(row)
-        except Exception as e:                       # один исполнитель не валит прогон
-            print("::warning::%s: %s" % (row["slug"], str(e)[:160]))
-            d1("UPDATE kirtans_ingest SET state='failed', note=?2, updated_at=datetime('now') WHERE slug=?1",
-               [row["slug"], str(e)[:180]])
-            continue
-
-        # ЗКН-Ф021: «сделано» = ФАЙЛЫ ВИДНЫ В АРХИВЕ, а не «команда отправлена».
-        time.sleep(4)
-        have = ia_files(row["identifier"])
-        if len(have) >= row["n_files"]:
-            d1("""UPDATE kirtans_ingest SET state='done', uploaded=?2, note=NULL,
-                  updated_at=datetime('now') WHERE slug=?1""", [row["slug"], len(have)])
-            # альбом → плеер: воркер сам развернёт элемент в дорожки
-            d1("""INSERT INTO kirtan_albums (id, artist_slug, title, archive, type, sort)
-                  VALUES (?1, ?2, ?3, ?4, 'kirtan', 0)
-                  ON CONFLICT(id) DO UPDATE SET archive=excluded.archive, title=excluded.title""",
-               ["k-" + row["slug"], row["slug"], "Киртаны · " + row["name"], row["identifier"]])
-            done_now += 1
-            print("::notice::готов %s — %d записей в архиве" % (row["slug"], len(have)))
-        else:
-            d1("UPDATE kirtans_ingest SET uploaded=?2, updated_at=datetime('now') WHERE slug=?1",
-               [row["slug"], len(have)])
-            print("  %s: в архиве %d из %d — доберём в следующий прогон"
-                  % (row["slug"], len(have), row["n_files"]))
+    for r in rows:                             # остатки пачек
+        if buf[r["slug"]]:
+            try:
+                flush(r, buf[r["slug"]], r["name"])
+            except Exception as e:
+                print("::warning::заливка %s: %s" % (r["slug"], str(e)[:120]))
 
     left = d1("SELECT COUNT(*) c FROM kirtans_ingest WHERE state <> 'done'")[0]["c"]
-    print("::notice::за прогон готово: %d · осталось: %d" % (done_now, left))
+    tot = d1("SELECT SUM(uploaded) u FROM kirtans_ingest")[0]["u"] or 0
+    print("::notice::за прогон скачано %d · ВСЕГО В АРХИВЕ: %d записей · элементов осталось: %d"
+          % (got, tot, left))
     Path(os.getenv("GITHUB_OUTPUT") or "/dev/null").open("a").write("left=%d\n" % left)
     return 0
 
