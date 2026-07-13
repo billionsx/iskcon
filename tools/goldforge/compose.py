@@ -515,6 +515,15 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     return {"tabs": tabs}
 
 
+def _walk_quotes(book):
+    """Все цитаты книги — нужно, чтобы машина не повторяла процитированное куратором."""
+    for t in book.get("tabs", []):
+        for sub in (t.get("subtabs") or [{"sections": t.get("sections") or []}]):
+            for sec in sub.get("sections", []):
+                for q in ([sec["quote"]] if sec.get("quote") else []) + sec.get("quotes", []):
+                    yield (None, "quote", q)
+
+
 def work_slugs():
     if not d1.available():
         return {}
