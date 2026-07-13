@@ -98,7 +98,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
   const bookUrl = url(ROUTES.book(p.book)) + "?listen";
   const lila = p.track?.lila;   // ЧЧ: лила · ШБ: песнь
 
-  /** ЗКН-Б009: АУДИО И ТЕКСТ — ОДНА КНИГА. Кнопка ведёт в ТО ЖЕ место, где играет звук.
+  /** ЗКН-Б011: АУДИО И ТЕКСТ — ОДНА КНИГА. Кнопка ведёт в ТО ЖЕ место, где играет звук.
    *  У ШБ дорожка — это СТИХ, значит открывать надо СТИХ. Раньше для иерархических книг
    *  (ШБ/ЧЧ) глава просто ОТБРАСЫВАЛАСЬ, и человек падал на обложку книги. */
   const verseSeg = p.track?.ref ? (String(p.track.ref).split(".").pop() ?? "") : "";

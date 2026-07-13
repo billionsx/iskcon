@@ -500,11 +500,33 @@ def check_missing_imports():
     return bad
 
 
+def check_unique_ids():
+    """НОМЕР ЗАКОНА УНИКАЛЕН. Два закона под одним номером — это не свод, а каша:
+    ссылка «см. ЗКН-Б008» ведёт в два разных места, и гейт нельзя привязать к закону.
+    Поймано на живом: я сам налетел на занятый ЗКН-Б008 («у каждого бхаджана есть стихи»),
+    а заодно нашлись три давних дубля. Раньше это не проверял никто."""
+    import collections
+    laws = ROOT / "docs" / "LAWS.md"
+    if not laws.exists():
+        return []
+    text = laws.read_text(encoding="utf-8")
+    ids = re.findall(r"^\|\s*(ЗКН-[А-Яа-яA-Za-z]{1,3}\d{3}(?:-бис)?)\s*\|", text, re.M)
+    # Храповик: эти три дубля давние, их гейты переплетены (laws-audit ↔ data-audit ссылаются
+    # на РАЗНЫЕ строки одного номера). Разводить наспех — сломать гейты, которых не понимаешь.
+    # Долг зафиксирован и расти не может: любой НОВЫЙ дубль валит линтер.
+    LEGACY = {"ЗКН-Сд005", "ЗКН-Ц004", "ЗКН-Ц006"}
+    dupes = [(i, n) for i, n in collections.Counter(ids).items() if n > 1 and i not in LEGACY]
+    rule = {"id": "ЗКН-Ц-ID", "name": "номер закона уникален",
+            "hint": "два закона под одним номером — ссылка ведёт в два места, гейт не привязать"}
+    return [(rule, "docs/LAWS.md", 0, "%s — занят %d раза" % (i, n)) for i, n in sorted(dupes)]
+
+
 def main():
     if "--update-baseline" in sys.argv:
         check_ratchet(update=True)
         return 0
-    bad = check_rules() + check_prose_law() + check_floor_law() + check_missing_imports() + check_ratchet()
+    bad = (check_rules() + check_prose_law() + check_floor_law() + check_missing_imports()
+           + check_unique_ids() + check_ratchet())
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
         print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))

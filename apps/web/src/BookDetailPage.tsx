@@ -1633,7 +1633,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
     return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
   }, [scrollToVerse, verses]);
 
-  // ЗКН-Б009: ТЕКСТ ИДЁТ ЗА ЗВУКОМ ДО СТИХА.
+  // ЗКН-Б011: ТЕКСТ ИДЁТ ЗА ЗВУКОМ ДО СТИХА.
   //
   // Два случая, оба ведут к одному стиху:
   //  • Дорожка несёт `ref` (ШБ: озвучка по-стиховая) — берём стих ПО КЛЮЧУ. Это точно:
