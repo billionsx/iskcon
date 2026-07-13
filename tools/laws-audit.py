@@ -82,6 +82,11 @@ def actual_level(lid: str) -> tuple[int, str]:
 
     # Ц007 — храповик долга в данных: поле `baseline` в проверках.
     # Пл013 — автоматизм это механизм: шаг «Самодокат жив?» в sb-verify.
+    if lid == "ЗКН-Б010":
+        t = (ROOT / "tools" / "data-audit.py").read_text(encoding="utf-8")
+        if "ЗКН-Б010" in t:
+            return 5, "гейт данных (data-audit.py)"
+
     if lid == "ЗКН-Пл013":
         w = ROOT / ".github" / "workflows" / "sb-verify.yml"
         if w.exists() and "Самодокат жив" in w.read_text(encoding="utf-8"):
