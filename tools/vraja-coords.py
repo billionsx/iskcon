@@ -85,9 +85,12 @@ def source_alive(url: str) -> tuple:
 
     op = urllib.request.build_opener(NoRedirect)
     try:
+        # ЗКН-Ф014: HTTPError перехватывается ЯВНО — иначе падает молча.
         with op.open(urllib.request.Request(url, headers={"User-Agent": UA}),
                      timeout=20) as r:
             return True, "код %d" % r.status
+    except urllib.error.HTTPError as e:
+        return False, "HTTP %d" % e.code
     except Exception as e:
         return False, str(e)[:100]
 
