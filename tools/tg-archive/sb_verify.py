@@ -67,6 +67,12 @@ def main():
     # Дубль-ref: два файла на один стих — человек услышал бы его дважды подряд.
     dupref = d1("""SELECT ref, COUNT(*) AS n FROM sb_audio
                    WHERE kind='verse' GROUP BY ref HAVING n > 1 LIMIT 50""")
+    # Дорожки ВНЕ ИЗДАНИЯ: чтец записал то, чего в книге нет (ШБ 4.29 кончается стихом 85,
+    # а в канале есть 86-88; ШБ 5.15 слит в «14-15», но лежит и лишний «текст 15»).
+    # Это НЕ ошибка связи — это расхождение канала с изданием. Замолчать его нельзя:
+    # либо чтец записал лишнее, либо в нашем издании не хватает стихов. Решает человек.
+    extra = d1("""SELECT canto, chapter, title, src FROM sb_audio
+                  WHERE kind='extra' ORDER BY canto, chapter, seq""")
     cantos = [r["canto"] for r in per]
     lst = ",".join(str(c) for c in cantos)
     mute = d1(f"""SELECT SUBSTR(v.division_id, 4, INSTR(SUBSTR(v.division_id,4),'.')-1) AS canto,
@@ -102,6 +108,12 @@ def main():
     lines += ["", f"**Дублей стиха (две дорожки на один ref): {len(dupref)}**"]
     for dr in dupref[:20]:
         lines.append(f"- `{dr['ref']}` — {dr['n']}")
+    lines += ["", f"**Вне издания — дорожка есть, стиха в книге НЕТ: {len(extra)}**",
+              "", "Не ошибка связи, а расхождение канала с изданием. Требует решения человека:",
+              "чтец записал лишнее — или в нашем издании не хватает стихов. Файлы на archive.org",
+              "лежат, в плеере играют, но за стих не выдаются.", ""]
+    for e in extra[:30]:
+        lines.append(f"- ШБ {e['canto']}.{e['chapter']} · «{e['title']}» — `{e['src']}`")
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", encoding="utf-8") as f:

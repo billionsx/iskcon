@@ -74,8 +74,8 @@ ABOUT = ("«Бхагавата-пурана» — сливки всех Вед: 
          "Его воплощениях и преданных, ведущие к высшей цели жизни — чистой любви к Богу.")
 
 # ── Разбор имён из канала (ЗКН-Пл010: перебраны ВСЕ формы разметки, см. sb-audio-probe.json) ──
-RX_TEXT = re.compile(r'^шб[\s_]*(\d{1,2})[.\s_]+(\d{1,3})[\s_]*текст[\s_]*(\d{1,3}(?:\s*[-–—]\s*\d{1,3})?)',
-                     re.I)
+RX_TEXT = re.compile(r'^шб[\s_]*(\d{1,2})[.\s_]+(\d{1,3})[\s_]*текст[\s_]*'
+                     r'(\d{1,3}(?:\s*[-–—]\s*\d{1,3})?)(.*)$', re.I)
 RX_INTRO = re.compile(r'^шб[\s_]*(\d{1,2})[.\s_]+(\d{1,3})[\s_]*(введение|обращение|вступительное)', re.I)
 RX_CANTO_FRONT = re.compile(r'^шб[\s_]*(\d{1,2})[\s_]+(?!\d)', re.I)  # «шб_10_Краткое описание…»
 
@@ -95,19 +95,22 @@ def parse_name(orig: str):
         ch = int(m.group(2))
         raw = re.sub(r'\s*[-–—]\s*', '-', m.group(3).strip())          # «01» | «09-10»
         spec = "-".join(str(int(x)) for x in raw.split("-") if x.isdigit())  # «1» | «9-10»
-        return ch, "verse", (spec or raw), f"t{raw}"
+        note = (m.group(4) or "").strip()                                # « (1а-2а)» — пометка чтеца
+        return ch, "verse", (spec or raw), f"t{raw}", note
     m = RX_INTRO.match(stem)
     if m:
         ch = int(m.group(2))
-        return ch, "intro", None, "vvedenie"
-    return 0, "front", None, slug(stem, "chast")
+        return ch, "intro", None, "vvedenie", ""
+    return 0, "front", None, slug(stem, "chast"), ""
 
 
-def track_title(kind: str, spec, orig: str) -> str:
+def track_title(kind: str, spec, orig: str, note: str = "") -> str:
     # Стандарт подписи стиха — ТОТ ЖЕ, что в читалке (worker.ts): «Текст 5» / «Тексты 21-22».
     # Множественное число у слитых стихов — не косметика: так подписана книга.
-    if kind == "verse":
-        return f"Тексты {spec}" if "-" in spec else f"Текст {spec}"
+    # Пометка чтеца («(1а-2а)») сохраняется — она единственное, что мы о такой дорожке знаем.
+    if kind in ("verse", "extra"):
+        base = f"Тексты {spec}" if "-" in str(spec) else f"Текст {spec}"
+        return f"{base} {note}".strip() if note else base
     if kind == "intro":
         return "Введение"
     t = re.sub(r'\.[A-Za-z0-9]{2,4}$', '', (orig or "").strip()).replace("_", " ").strip()
@@ -158,6 +161,16 @@ def register(rows):
            "VALUES " + ",".join(vals), params)
         n += len(chunk)
     return n
+
+
+def book_refs(canto: int) -> set[str]:
+    """Стихи ПЕСНИ так, как они есть В КНИГЕ. Ключ дорожки сверяется с ними, а не
+    принимается на веру (ЗКН-Пл014). Канал и издание расходятся: в ШБ 5.15 книга слила
+    стих в «14-15», а в канале лежат ОБА файла («текст 14-15» и лишний «текст 15»);
+    у ШБ 4.29 книга кончается стихом 85, а в канале есть ещё 86, 87, 88."""
+    rows = d1("SELECT ref FROM verses WHERE work_id='sb' AND division_id LIKE ?1",
+              [f"sb.{canto}.%"])
+    return {r["ref"] for r in rows}
 
 
 def canto_metadata(canto: int) -> dict:
@@ -214,7 +227,8 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     playlist: list[dict] = []
     seq_by_ch: dict[int, int] = {}
     seen_ref: set[str] = set()   # в каналах есть дубли поста («текст 032» и «текст 32» — один стих)
-    n_skip = n_dup = 0
+    refs = book_refs(canto)      # стихи ПЕСНИ так, как они есть в книге
+    n_skip = n_dup = n_extra = 0
     entity = await client.get_entity(channel)
     async for msg in client.iter_messages(entity, reverse=True):
         doc = msg.audio or (msg.document if msg.document and
@@ -230,13 +244,20 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
                 orig = a.file_name
         orig = orig or f"audio-{msg.id}.mp3"
 
-        ch, kind, spec, label = parse_name(orig)
+        ch, kind, spec, label, note = parse_name(orig)
         seq = seq_by_ch.get(ch, 0)
         seq_by_ch[ch] = seq + 1
         remote = f"{ch:03d}.{seq:03d}.{label}.mp3"
         ref = f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None
+        if ref and ref not in refs:
+            # Такого стиха в книге НЕТ. Файл льём (архив полон), но связь не выдумываем:
+            # ref гасим, вид — «вне издания». Ложная ссылка на несуществующий стих —
+            # это фабрикация (ЗКН-БТ001), и человек бы её не заметил.
+            n_extra += 1
+            print(f"дорожка вне издания: {orig} → {ref} (в книге такого стиха нет)")
+            kind, ref = "extra", None
         row = {"file": f"{ident}/{remote}", "canto": canto, "chapter": ch, "seq": seq,
-               "kind": kind, "ref": ref, "title": track_title(kind, spec, orig),
+               "kind": kind, "ref": ref, "title": track_title(kind, spec, orig, note),
                "duration": dur, "src": f"/audio/{ident}/{remote}"}
         playlist.append({"file": remote, "title": row["title"], "ref": ref, "orig": orig})
 
@@ -258,7 +279,7 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
 
     todo_gb = sum(p[3] for p in plan) / 1e9
     print(f"::notice::Песнь {canto} → {ident}: уже залито {n_skip}, осталось {len(plan)} "
-          f"({todo_gb:.2f} GB), дублей поста {n_dup}")
+          f"({todo_gb:.2f} GB), дублей поста {n_dup}, вне издания {n_extra}")
 
     md_done = existed
     n_up = n_fail = 0

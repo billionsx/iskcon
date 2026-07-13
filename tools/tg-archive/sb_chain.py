@@ -40,7 +40,7 @@ def expected() -> dict[int, int]:
         canto = int(c["channel"].rstrip("/").split("_")[-1])
         seen, n = set(), 0
         for f in c["files"]:
-            ch, kind, spec, _ = parse_name(f.get("file_name") or "")
+            ch, kind, spec, _, _ = parse_name(f.get("file_name") or "")
             ref = f"ШБ {canto}.{ch}.{spec}" if kind == "verse" else None
             if ref and ref in seen:
                 continue
