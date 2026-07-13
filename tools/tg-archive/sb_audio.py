@@ -264,15 +264,17 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
     errs: collections.Counter = collections.Counter()
 
     def flush(force: bool = False) -> None:
-        # Пишем в D1 ПОРЦИЯМИ: у песни 10 это 3662 файла — обрыв раннера не должен обнулять учёт.
+        # Пишем в D1 частыми порциями: это ЕДИНСТВЕННАЯ телеметрия прогона (логи раннера из
+        # песочницы не читаются). Порог 50 — видно, что конвейер жив, и обрыв не обнуляет учёт.
         nonlocal reg_from
-        if len(rows_ok) - reg_from >= (1 if force else 200):
+        if len(rows_ok) - reg_from >= (1 if force else 50):
             register(rows_ok[reg_from:])
             reg_from = len(rows_ok)
 
     def do_upload(remote: str, path: str, md: dict):
         resps = ia_upload(ident, files={remote: path}, metadata=md, access_key=ak, secret_key=sk,
-                          retries=3, queue_derive=False, verbose=False)
+                          retries=2, retries_sleep=20, queue_derive=False, verbose=False,
+                          request_kwargs={"timeout": 300})   # без таймаута заливка висла ЧАСАМИ
         bad = [r for r in resps if getattr(r, "status_code", 200) not in (200, None)]
         if bad:
             raise RuntimeError(f"HTTP {[getattr(r, 'status_code', None) for r in bad]}")
@@ -286,19 +288,17 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
                 print(f"FloodWait {e.seconds}s")
                 await asyncio.sleep(e.seconds + 1)
 
-    sem_dl = asyncio.Semaphore(DL_PARALLEL)
     sem_up = asyncio.Semaphore(PARALLEL)
 
     async def one(msg, remote: str, row: dict):
-        # Три попытки на файл: прогон идёт часами без присмотра, и разовый 503 от archive.org
-        # или обрыв соединения не должен стоить файла. Что не взялось и после трёх — уедет
-        # в остаток и будет повторено самодокатом.
+        # Три попытки с РАСТУЩЕЙ паузой. archive.org падал прямо посреди прогона (10:44) —
+        # заливки повисли на таймаутах. Короткий бэкофф в такую яму просто долбится; длинный
+        # даёт сервису встать. Что не взялось и после трёх — уедет в остаток, его добьёт самодокат.
         dest = WORK / remote
         last = None
         for attempt in range(3):
             try:
-                async with sem_dl:
-                    await fetch(msg, dest)
+                await fetch(msg, dest)
                 async with sem_up:
                     await loop.run_in_executor(pool, do_upload, remote, str(dest), {})
                 dest.unlink(missing_ok=True)
@@ -307,7 +307,7 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
                 last = e
                 dest.unlink(missing_ok=True)
                 if attempt < 2:
-                    await asyncio.sleep(5 * (attempt + 1))
+                    await asyncio.sleep((30, 90)[attempt])
         raise RuntimeError(f"{type(last).__name__}: {last}")
 
     # ── 2. Первый файл — отдельно и синхронно: он создаёт объект и несёт метаданные ──
@@ -327,31 +327,50 @@ async def run_canto(client, canto: int, pool, loop) -> bool:
         finally:
             dest.unlink(missing_ok=True)
 
-    # ── 3. Остальное — порциями внахлёст ──
+    # ── 3. Пул воркеров БЕЗ барьера. Раньше файлы шли порциями по 120 через asyncio.gather:
+    #      один залипший файл (а archive.org залипал) держал всю порцию, и конвейер стоял.
+    #      Теперь воркер, освободившись, сразу берёт следующий из очереди. ──
     exhausted = True
-    t0, b0 = time.time(), 0.0
-    for i in range(0, len(plan), CHUNK):
-        if time.time() - START > BUDGET:
-            exhausted = False
-            print(f"::notice::Песнь {canto}: бюджет времени исчерпан — сворачиваюсь штатно")
-            break
-        part = plan[i:i + CHUNK]
-        res = await asyncio.gather(*[one(m, rn, rw) for m, rn, rw, _, _ in part],
-                                   return_exceptions=True)
-        for (m, rn, rw, sz, dp), r in zip(part, res):
-            if isinstance(r, BaseException):
-                n_fail += 1
-                errs[str(r)[:80]] += 1
-                print(f"✗ {rn}: {r}")
-            else:
+    q: asyncio.Queue = asyncio.Queue()
+    for it in plan:
+        q.put_nowait(it)
+    total = len(plan) + n_up
+    t0 = time.time()
+    done_bytes = 0.0
+    stop = False
+
+    async def worker():
+        nonlocal n_up, n_fail, done_bytes, stop, exhausted
+        while True:
+            if stop:
+                return
+            try:
+                msg, remote, row, sz, dup = q.get_nowait()
+            except asyncio.QueueEmpty:
+                return
+            if time.time() - START > BUDGET:
+                stop = True
+                exhausted = False
+                return
+            try:
+                await one(msg, remote, row)
                 n_up += 1
-                if not dp:
-                    rows_ok.append(rw)
-        flush()
-        b0 += sum(sz for _, _, _, sz, _ in part)
-        el = max(1.0, time.time() - t0)
-        print(f"::notice::Песнь {canto}: {n_up}/{len(plan) + 1} · {b0/1e9:.2f} GB · "
-              f"{b0/1e6/el:.2f} МБ/с · ошибок {n_fail}")
+                if not dup:
+                    rows_ok.append(row)
+            except Exception as e:
+                n_fail += 1
+                errs[str(e)[:80]] += 1
+                print(f"✗ {remote}: {e}")
+            done_bytes += sz
+            if n_up % 50 == 0:
+                el = max(1.0, time.time() - t0)
+                print(f"::notice::Песнь {canto}: {n_up}/{total} · {done_bytes/1e9:.2f} GB · "
+                      f"{done_bytes/1e6/el:.2f} МБ/с · ошибок {n_fail}")
+                flush()
+
+    await asyncio.gather(*[worker() for _ in range(DL_PARALLEL)])
+    if not exhausted:
+        print(f"::notice::Песнь {canto}: бюджет времени исчерпан — сворачиваюсь штатно")
 
     if playlist and exhausted:  # сайдкар пишем только при ПОЛНОМ проходе — иначе он обрезан
         pl = WORK / "playlist.json"
