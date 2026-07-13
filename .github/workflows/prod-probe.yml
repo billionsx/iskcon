@@ -6,27 +6,12 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Поиск личностей на живом API
+      - name: Тело ошибки
         run: |
-          for Q in "прабхупада" "бхактиведанта" "нитьянанда" "prabhupada" "Шрила Прабхупада" "рупа госвами"; do
-            R=$(curl -s -G --max-time 25 "https://gaurangers.com/api/entities" \
-                  --data-urlencode "q=$Q" --data-urlencode "limit=5" -w "|%{http_code}")
-            CODE=${R##*|}; BODY=${R%|*}
-            N=$(printf '%s' "$BODY" | python3 -c "import sys,json;d=json.load(sys.stdin);print(len(d.get('items',[])))" 2>/dev/null || echo "ERR")
-            FIRST=$(printf '%s' "$BODY" | python3 -c "import sys,json;d=json.load(sys.stdin);i=d.get('items') or [{}];print((i[0].get('name_ru') or '—'))" 2>/dev/null || echo "—")
-            if [ "$CODE" = "200" ] && [ "$N" != "0" ] && [ "$N" != "ERR" ]; then
-              echo "::notice::«$Q» → HTTP $CODE · найдено $N · первый: $FIRST"
-            else
-              echo "::error::«$Q» → HTTP $CODE · найдено $N"
-            fi
-          done
-
-          echo "::notice::--- глобальный поиск ---"
-          R=$(curl -s -G --max-time 25 "https://gaurangers.com/api/search" --data-urlencode "q=прабхупада" -w "|%{http_code}")
-          CODE=${R##*|}; BODY=${R%|*}
-          P=$(printf '%s' "$BODY" | python3 -c "import sys,json;d=json.load(sys.stdin);print(len(d.get('personalities',[])))" 2>/dev/null || echo ERR)
-          if [ "$CODE" = "200" ] && [ "$P" != "0" ] && [ "$P" != "ERR" ]; then
-            echo "::notice::/api/search «прабхупада» → HTTP $CODE · личностей $P"
-          else
-            echo "::error::/api/search «прабхупада» → HTTP $CODE · личностей $P"
-          fi
+          echo "::notice::--- /api/entities?q=прабхупада ---"
+          curl -s -G --max-time 25 "https://gaurangers.com/api/entities" --data-urlencode "q=прабхупада" -o /tmp/b.txt -w "%{http_code}" > /tmp/c.txt
+          echo "::notice::HTTP $(cat /tmp/c.txt)"
+          head -c 900 /tmp/b.txt | tr '\n' ' ' | fold -w 150 | while read -r L; do echo "::error::$L"; done
+          echo "::notice::--- контрольный: без q ---"
+          curl -s --max-time 25 "https://gaurangers.com/api/entities?limit=2" -o /tmp/b2.txt -w "%{http_code}" > /tmp/c2.txt
+          echo "::notice::HTTP $(cat /tmp/c2.txt) · $(head -c 120 /tmp/b2.txt | tr '\n' ' ')"
