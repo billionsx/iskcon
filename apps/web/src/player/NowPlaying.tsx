@@ -27,7 +27,19 @@ const glass = (radius: number): CSSProperties => ({
 });
 const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0, background: "none", border: "none", padding: 0 });
 
-export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void } = {}) {
+/**
+ * ЗКН-Б011 · решение основателя 13.07.2026 — ПЛЕЕР ВСТРАИВАЕТСЯ, А НЕ КОПИРУЕТСЯ.
+ *
+ * `embedded` — тот же самый плеер, но НЕ листом поверх страницы, а самой страницей:
+ * на витрине Киртанов он и есть содержимое. Убираются только шторка, «свернуть»
+ * и «закрыть» — они там бессмысленны (сворачивать некуда, закрывать нечего).
+ * Всё остальное — обложка, дорожки, перемотка, транспорт, порядок/повтор/скорость —
+ * работает ровно как было.
+ *
+ * Я сперва написал ВТОРОЙ плеер (белую доску) — это была ошибка: два плеера рядом
+ * это две правды о том, что играет, и они разъедутся. Плеер один.
+ */
+export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = false }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void; embedded?: boolean } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -44,7 +56,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
 
   // открытие: всегда сверху, заголовок-шапка скрыт (без скачка скролла)
   useEffect(() => {
-    if (!p.expanded) return;
+    if (embedded || !p.expanded) return;
     if (bodyRef.current) bodyRef.current.scrollTop = 0;
     setCollapsed(false);
     const prev = document.body.style.overflow;
@@ -199,8 +211,13 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
 
   return (
     <div
-      aria-hidden={!p.expanded}
-      style={{
+      aria-hidden={embedded ? undefined : !p.expanded}
+      style={embedded ? {
+        position: "relative", width: "100%", height: "min(76vh, 720px)",
+        borderRadius: 22, overflow: "hidden",
+        background: "#0e0e10", color: "#fff", fontFamily: "var(--font-text)",
+        boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
+      } : {
         position: "fixed", top: 0, bottom: 0, left: "50%", width: "100%", maxWidth: 480, zIndex: 95,
         transform: `translateX(-50%) translateY(${p.expanded ? `${drag}px` : "100%"})`,
         transition: dragging ? "none" : "transform .44s cubic-bezier(.32,.72,0,1)",
@@ -216,16 +233,21 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
       {/* content (absolute inset 0 → fills the sheet exactly; no gaps/strips) */}
       <div style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column" }}>
         {/* pinned header: grabber + minimize / (book title on scroll) / close */}
-        <div onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
+        <div onPointerDown={embedded ? undefined : onDown} onPointerMove={embedded ? undefined : onMove}
+          onPointerUp={embedded ? undefined : onUp} onPointerCancel={embedded ? undefined : onUp}
           style={{
-            flexShrink: 0, paddingTop: "calc(env(safe-area-inset-top) + 8px)", paddingBottom: 6, paddingInline: 14, touchAction: "none", cursor: "grab",
+            flexShrink: 0, paddingTop: embedded ? 10 : "calc(env(safe-area-inset-top) + 8px)",
+            paddingBottom: 6, paddingInline: 14,
+            touchAction: embedded ? "auto" : "none", cursor: embedded ? "default" : "grab",
             background: collapsed ? "rgba(14,14,16,0.72)" : "transparent",
             backdropFilter: collapsed ? "blur(24px) saturate(160%)" : "none", WebkitBackdropFilter: collapsed ? "blur(24px) saturate(160%)" : "none",
             borderBottom: `0.5px solid ${collapsed ? "rgba(255,255,255,0.10)" : "transparent"}`, transition: "background .25s, border-color .25s",
           }}>
-          <div style={{ width: 38, height: 5, borderRadius: 999, background: "rgba(255,255,255,0.5)", margin: "0 auto 8px" }} />
+          {!embedded && <div style={{ width: 38, height: 5, borderRadius: 999, background: "rgba(255,255,255,0.5)", margin: "0 auto 8px" }} />}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>
+            {embedded
+              ? <span aria-hidden style={{ width: 38, height: 38 }} />
+              : <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>}
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
               <div style={{ fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
               <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isAdHoc ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : isAudiobook ? bookFullTitle(BOOK) : `${sub} · ${bookFullTitle(BOOK)}`}</div>
@@ -237,9 +259,11 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate }: { onOpenPath?
                 {(!isAdHoc || p.kind === "bhajan") && <button type="button" aria-label={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
-              <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
-              </button>
+              {embedded
+                ? <span aria-hidden style={{ width: 38, height: 38 }} />
+                : <button type="button" aria-label="Закрыть плеер" onClick={() => p.dismiss()} style={{ ...glass(999), ...iconBtn(38) }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
+                  </button>}
             </div>
           </div>
         </div>

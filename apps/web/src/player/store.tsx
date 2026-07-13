@@ -90,6 +90,7 @@ export interface PlayerApi {
   playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }): void;
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string, ref?: string | null): void;
   playKirtan(albumId: string, startIndex?: number, expand?: boolean): void;
+  loadKirtan(albumId: string): void;
   playBhajan(slug: string, startIndex?: number, set?: "lectures"): void;
   // транспорт
   togglePlay(): void;
@@ -170,6 +171,9 @@ const bhajanMeta: Record<string, { title: string; cover: string; artist: string 
 /** Заголовок/обложка/исполнитель плеера по активному элементу (книга или альбом киртанов). */
 function cfgFor(id: string, src: Source): { title: string; cover: string; artist: string } {
   if (src === "kirtan") {
+    // `all` — ОДНА ОЧЕРЕДЬ на все киртаны канала. Альбома с таким id в реестре
+    // нет и быть не должно: это не альбом, а вся аудиотека.
+    if (id === "all") return { title: "Киртаны", cover: AUDIO_FALLBACK_COVER, artist: "" };
     const al = albumById(id);
     return {
       title: al?.title ?? "Киртан",
@@ -450,6 +454,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
    * На витрине Киртанов плеер ВСТРОЕН в страницу (белая доска). Открывать поверх
    * неё тёмный оверлей — значит закрыть собой то, чем человек только что управлял.
    * Витрина зовёт playKirtan(..., false) и играет НА МЕСТЕ. */
+  /** Загрузить очередь киртанов, НЕ начиная играть.
+   *
+   * Встроенный плеер на витрине показывает список дорожек СРАЗУ — до того, как
+   * человек что-то нажал. Без этого он висел бы пустым: список берётся из
+   * манифеста, а манифест грузился только вместе с воспроизведением. */
+  function loadKirtan(albumId: string) {
+    if (bookRef.current === albumId && manifestRef.current) return;
+    switchBook(albumId, "kirtan");
+    void ensureManifest();
+  }
+
   function playKirtan(albumId: string, startIndex?: number, expand = true) {
     switchBook(albumId, "kirtan");
     pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand };
@@ -639,7 +654,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
-    playBook, playChapter, playKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
+    playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
     open: () => { if (active) setExpanded(true); },
     close: () => setExpanded(false),
     dismiss,
