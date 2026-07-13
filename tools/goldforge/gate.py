@@ -312,8 +312,25 @@ def legacy_debt(book, dossier, hero_short, hero_full):
     return out
 
 
+def false_witness(book):
+    """ЗКН-П014 · ЛОЖНОЕ СВИДЕТЕЛЬСТВО.
+
+    Второй рубеж. Сборка уже снимает такие цитаты — гейт проверяет, что ни одна
+    не просочилась. Подпись под чужими словами страшнее пустой карточки.
+    """
+    bad = []
+    for path, kind, q in walk(book):        # и машинные, и рукописные табы
+        if kind != "quote":
+            continue
+        why = canon.anachronism(q.get("t", ""), q.get("byId"))
+        if why:
+            bad.append((path, "ЛОЖНОЕ СВИДЕТЕЛЬСТВО: %s" % why))
+    return bad
+
+
 CHECKS = [
     ("структура · канон · дубли", structure),
+    ("ЛОЖНОЕ СВИДЕТЕЛЬСТВО", false_witness),
     ("ссылки (bad_links=0)", links),
     ("дословность цитат", verbatim),
     ("НУЛЕВАЯ ФАБРИКАЦИЯ", containment),

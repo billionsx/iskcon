@@ -46,6 +46,25 @@ REQUIRED = {"k1-books-app", "k2-archive", "k4-bhajans-app"}
 WINDOW = 1200
 NEAR = 60
 PER_WORK_FETCH = 420   # больше из одной книги в карточку всё равно не войдёт
+
+# ЗКН-П015 · СТРОКА, КОТОРАЯ НЕ СТИХ, — НЕ ЦИТАТА.
+# `cb.adi.17.164` держит в поле «перевод» 26 312 знаков: туда при импорте
+# склеили ВСЁ приложение книги — жизнеописание автора и современную биографию
+# с Шридхаром Махараджем. Конвейер вырезал оттуда кусок про Шрилу Прабхупаду и
+# подписал его Вриндаваном дасом Тхакуром (ум. 1589). Строка такой длины — не
+# перевод стиха, а мусор импорта. Таких строк в стиховых книгах 102.
+VERSE_WORKS = {"cc", "cb", "cm", "br", "ndm", "sb", "bg", "bs", "iso", "noi",
+               "gl", "ks", "vp", "rkgd", "siksastaka", "manah-siksa",
+               "mukunda-mala-stotra"}
+MAX_VERSE_LEN = 2500
+
+# ЗКН-П013 · ПРЕДИСЛОВИЕ — НЕ ШАСТРА.
+# «От издателей», «Введение», «Предисловие», «Приложение» лежат в таблице стихов
+# как стихи (198 строк). Их автор — НЕ автор книги: издатель кланяется Шриле
+# Прабхупаде, а конвейер подписал этот поклон самим Шрилой Прабхупадой.
+FRONT_MATTER = re.compile(
+    r"preface|introduc|foreword|append|dedicat|epilog|afterword|colophon|"
+    r"вступ|предислов|введение|от\s*издател|приложени|послеслов", re.I)
 MAX_SUFFIX = 4
 
 
@@ -131,6 +150,9 @@ def k1_books_app(strict, forms, quals, homs):
             "WHERE v.id IN (%s)" % inlist) or []
         for r in rows:
             w = r["work_id"]
+            if FRONT_MATTER.search(r.get("division_id") or "") or \
+               FRONT_MATTER.search(r.get("ref") or ""):
+                continue                       # ЗКН-П013: предисловие не цитируется
             slug, book = slugs.get(w, (w, w))
             wk = WORKS.get(w, {})
             dt = r.get("div_title") or ""
@@ -145,6 +167,8 @@ def k1_books_app(strict, forms, quals, homs):
                 txt = (r.get(col) or "").strip()
                 if not txt or not pattern(forms).search(fold(txt)):
                     continue
+                if kind == "translation" and w in VERSE_WORKS and len(txt) > MAX_VERSE_LEN:
+                    continue                   # ЗКН-П015: это не стих, это мусор импорта
                 out.append({
                     "ch": "k1-books-app", "src": w, "id": r["id"], "ref": r["ref"],
                     "kind": kind, "to": to, "text": txt,

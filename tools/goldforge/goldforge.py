@@ -328,9 +328,11 @@ def cmd_publish(a):
     card = CARDS / ("%s.json" % a.entity_id)
     longform = card.read_text(encoding="utf-8")
     old = prev_card(a.entity_id)
-    if old:
-        (DOSSIERS / ("%s.prev.json" % a.entity_id)).write_text(
-            json.dumps(old, ensure_ascii=False, indent=1), encoding="utf-8")
+    prevp = DOSSIERS / ("%s.prev.json" % a.entity_id)
+    # Резерв пишется ОДИН раз — это карточка ДО кузницы, работа человека.
+    # Перековка не имеет права затереть её своей же прошлой сборкой.
+    if old and not prevp.exists():
+        prevp.write_text(json.dumps(old, ensure_ascii=False, indent=1), encoding="utf-8")
     if d1.query("UPDATE entity_profiles SET longform=json(?1), level=?2, "
                 "updated_at=datetime('now') WHERE entity_id=?3",
                 [longform, verdict, a.entity_id]) is None:

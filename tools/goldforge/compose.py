@@ -32,6 +32,7 @@ from .channels import WORKS, fold, pattern
 
 MAX_PURPORT = 1000          # выдержка из комментария (дословная, не пересказ)
 MAX_QUOTE = 1500            # «Прабхупада-шикшамрита» держит письма целиком — стена текста
+MIN_QUOTE = 60              # «А.Ч. Бхактиведанта Свами» — это подпись, а не цитата
 # Повествовательные источники (там ЖИТИЕ) против доктринальных (там УПОМИНАНИЯ).
 # Смешивать нельзя: «Нектар преданности, глава 19» — не эпизод биографии.
 NARRATIVE = {"cc", "cb", "cm", "br", "ndm", "spl", "gl"}
@@ -124,13 +125,26 @@ def extract(text, forms, limit=MAX_PURPORT):
 
 
 def quote_of(f, forms, ids_ok, used=None):
+    """Цитата рождается в БД. Подпись — ЗАРАБАТЫВАЕТСЯ (ЗКН-П013 · П014).
+
+    Раньше сюда безоговорочно ставился «повествователь книги». Это и породило
+    Вриндавана даса Тхакура, рассказывающего о Шриле Прабхупаде. Теперь подпись
+    проходит проверку анахронизмом, а не проходит — снимается вместе с цитатой:
+    ссылка на источник остаётся правдой, ложное свидетельство — нет.
+    """
     ref = ref_of(f)
     if used is not None:
         if ref in used:
             return None                    # ЗКН-П003: 0 дублей ссылок
         used.add(ref)
     lim = MAX_PURPORT if f["kind"] == "purport" else MAX_QUOTE
-    q = {"t": extract(f["text"], forms, lim), "ref": ref}
+    t = extract(f["text"], forms, lim)
+    if len(t.strip()) < MIN_QUOTE:
+        return None                        # подпись, колонтитул, обрывок — не цитата
+    why = canon.anachronism(t, f.get("byId"))
+    if why:
+        return None                        # ЗКН-П014: ложное свидетельство — вон
+    q = {"t": t, "ref": ref}
     if f.get("translit"):
         q["translit"] = f["translit"]
     if f.get("to"):
@@ -311,11 +325,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             secs2 = []
             for h, fs in chapters.items():
                 wk = WORKS.get(src, {})
-                nar = (wk.get("narrator") or [None])[0]
                 fs = sorted(fs, key=lambda x: x.get("ordinal", 0))[:MAX_PER_SECTION]
                 line = "Стихов в этой главе: %d." % len(fs)
-                if nar:
-                    line += " Повествует %s." % nar
                 secs2.append(section(h, [line],
                                      quotes=[quote_of(f, forms, ids_ok, used) for f in fs],
                                      hero=HN))

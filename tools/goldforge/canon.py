@@ -187,3 +187,40 @@ def prose_violations(s, hero_short=None, hero_full=None):
                     bad.append("ЗКН-П003/11 голое имя героя «%s»" % word)
                     break
     return bad
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ЗКН-П014 · ГЕЙТ АНАХРОНИЗМА
+#
+# Подпись «— Вриндаван дас Тхакур» под текстом о Шриле Прабхупаде — это не
+# опечатка и не мелочь. Это ЛОЖНОЕ СВИДЕТЕЛЬСТВО: слова вложены в уста того,
+# кто умер за триста лет до описанных событий. Для библиотеки, которая обещает
+# BBT-точность, это худший вид брака — хуже пустоты.
+#
+# Прежний гейт проверял ИМЕНА и ЧИСЛА, но ни разу не спросил главного:
+# МОГ ЛИ ПОДПИСАННЫЙ ЭТО СКАЗАТЬ. Теперь спрашивает.
+# ═══════════════════════════════════════════════════════════════════════════
+import json as _json
+from pathlib import Path as _Path
+
+_PEOPLE = _json.loads((_Path(__file__).resolve().parent / "people.json")
+                      .read_text(encoding="utf-8"))
+DIED = _PEOPLE["died"]
+MARKERS = _PEOPLE["markers"]
+YEAR = re.compile(r"\b(1[5-9]\d\d|20\d\d)\b")
+
+
+def anachronism(text, by_id):
+    """Мог ли подписанный это сказать? Вернёт причину, если НЕ мог."""
+    if not by_id or by_id not in DIED or not text:
+        return None
+    died = DIED[by_id]
+    low = text.lower().replace("ё", "е")
+    for marker, since in MARKERS.items():
+        if died < since and marker in low:
+            return "подписан %s (ум. %s), а в тексте — «%s» (не ранее %s)" % (
+                by_id, died, marker, since)
+    for y in YEAR.findall(text):
+        if int(y) > died + 5:
+            return "подписан %s (ум. %s), а в тексте год %s" % (by_id, died, y)
+    return None
