@@ -307,10 +307,16 @@ def cmd_gate(a):
     # Считать его «непокрытым» — значит наказывать карточку за богатство
     # внешних источников. Мерим то, что ОБЯЗАНО было стать цитатой: стих,
     # комментарий и куплет из самого приложения.
+    # ЗОЛОТО = исчерпаны факты, КОТОРЫЕ ЧТО-ТО ДАЮТ (ЗКН-П016 · Р003).
+    # Считать покрытие по всем найденным пассажам — значит требовать, чтобы в
+    # карточку попало и то, что закон намеренно отсеял: пустые упоминания.
+    # Такой метрикой золото недостижимо, а карточка наказана за чистоту.
+    from goldforge import role as _roles
     quotable = sum(1 for f in dos["findings"]
                    if f.get("tier") == "strong"
                    and f.get("ch") in ("k1-books-app", "k4-bhajans-app")
-                   and f.get("kind") in ("translation", "purport", "bhajan"))
+                   and f.get("kind") in ("translation", "purport", "bhajan")
+                   and f.get("role", "качество") in _roles.IN_CARD)
     external = len(used & {"k2-archive", "k3-books-web", "k5-bhajans-web",
                            "k6-wikipedia", "k7-iskcon-web"})
     coverage = min(100.0, st["quotes"] / quotable * 100) if quotable else 0.0
