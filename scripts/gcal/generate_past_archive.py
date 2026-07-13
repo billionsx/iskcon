@@ -62,6 +62,7 @@ from multiprocessing import Pool
 from zoneinfo import ZoneInfo
 
 import gaurabda as gcal
+from timezonefinder import TimezoneFinder
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FEEDS = os.path.join(ROOT, "apps/web/public/data/gcal")
@@ -161,27 +162,58 @@ def load_maps(geonames_tsv):
 
 
 CUR, WORLD, GEO = {}, {}, {}
+TF = TimezoneFinder()
 
 
-def locate(sl, feed):
-    """Восстановить РОВНО ту локацию, по которой считан живой фид этого слага."""
+def candidates(sl, feed):
+    """Все локации, которыми МОГ быть посчитан этот фид, — от самой вероятной.
+
+    ═══ ПОЧЕМУ НЕЛЬЗЯ ПРОСТО «ВОССТАНОВИТЬ» ЛОКАЦИЮ ═══
+    Первая версия угадывала пояс по источнику фида (curated / БД движка / GeoNames)
+    и падала на 9 % городов. Причина: воркфлоу `fix-exussr-tz` ПЕРЕСЧИТАЛ фиды СНГ
+    с ИСПРАВЛЕННЫМ поясом — движок везёт tz-базу 2011–2014 годов и всё ещё переводит
+    часы там, где перевод отменён, а базовые офсеты у него стухли (Минск в БД движка
+    = UTC+2, а Беларусь с 2011-го на UTC+3 без перехода). После той починки пояс фида
+    УЖЕ НЕ ТОТ, которым его строил родной генератор.
+
+    Вывод: не угадывать. ЖИВОЙ ФИД — ЭТАЛОН (он прошёл `verify_gbc`). Перебираем
+    кандидатов и берём того, кто воспроизводит его ДО МИНУТЫ. Гейт паритета из
+    проверки становится СЕЛЕКТОРОМ: какой бы кандидат ни победил, он доказан.
+    """
     loc = feed.get("location") or {}
-    # 1. curated — зона лежит в самом фиде
-    if feed.get("key") and loc.get("tz"):
-        tz = curated_tz(loc["tz"])
-        if tz:
-            return {"latitude": loc["lat"], "longitude": loc["lng"], "tzname": tz, "name": loc.get("name") or sl}
-        return None
-    # 2. БД движка — родная запись (tzid/offset), как в gen_world_feeds.py
-    if sl in WORLD:
-        return dict(WORLD[sl])
-    # 3. GeoNames — зона из колонки 17, приведённая resolve(), как в gen_geonames_feeds.py
+    lat, lng = loc.get("lat"), loc.get("lng")
+    if lat is None or lng is None:
+        return []
+    name = loc.get("name") or sl
+    out, seen = [], set()
+
+    def add(tzname):
+        if tzname and tzname not in seen:
+            seen.add(tzname)
+            out.append({"latitude": lat, "longitude": lng, "tzname": tzname, "name": name})
+
+    ianas = []
+    if loc.get("tz"):
+        ianas.append(loc["tz"])                       # curated — зона лежит в фиде
     if sl in GEO:
-        g = GEO[sl]
-        tz = resolve_tz(g["iana"])
-        if tz:
-            return {"latitude": g["lat"], "longitude": g["lng"], "tzname": tz, "name": g["name"]}
-    return None
+        ianas.append(GEO[sl]["iana"])                 # GeoNames — колонка 17 TSV
+    try:
+        z = TF.timezone_at(lat=lat, lng=lng)          # СНГ-починка брала зону из КООРДИНАТ
+        if z:
+            ianas.append(z)
+    except Exception:                                  # noqa: BLE001
+        pass
+
+    # curated: generate_all_cities.py брал зону через full_tz() — с алиасом
+    # (Asia/Kolkata → Asia/Calcutta): без него самый вероятный кандидат терялся.
+    add(curated_tz(loc["tz"]) if loc.get("tz") else None)
+    if sl in WORLD:
+        out.append(dict(WORLD[sl]))                   # gen_world_feeds — родная запись
+    for z in ianas:
+        add(resolve_tz(z))                            # gen_geonames / fix_exussr — resolve()
+    for z in ianas:
+        add(NATIVE.get(z) or NATIVE.get(DST_ALIAS.get(z, "")))
+    return out
 
 
 def events(loc_data, start, days):
@@ -212,27 +244,35 @@ signal.signal(signal.SIGALRM, _alarm)
 
 
 def build(sl):
-    """slug → (slug, архив | None, причина). Пишем только то, что прошло гейт паритета."""
+    """slug → (slug, архив | None, причина). Пишем только то, что доказано паритетом."""
     try:
         feed = json.load(open(os.path.join(FEEDS, sl + ".json"), encoding="utf-8"))
     except Exception as ex:                                    # noqa: BLE001
         return (sl, None, "feed unreadable: %s" % type(ex).__name__)
 
-    loc_data = locate(sl, feed)
-    if not loc_data:
-        return (sl, None, "локация не восстановлена (нет в curated/движке/GeoNames)")
+    cands = candidates(sl, feed)
+    if not cands:
+        return (sl, None, "нет координат в фиде")
+    # ОБЕ стороны режутся ОДНОЙ границей. Движок за 60 дней от 1 января доходит до
+    # 1 марта ВКЛЮЧИТЕЛЬНО, а эталон я обрезал строго `< 2026-03-01` — у городов, где
+    # 1 марта есть событие, длины расходились, и ЧЕСТНЫЙ город объявлялся мимо.
+    # Гейт давал ЛОЖНЫЕ провалы. Расхождение в границе окна — не расхождение календарей.
+    want = [(e["date"], e["summary"]) for e in feed.get("events", []) if e["date"] < PROBE_TO]
 
     signal.alarm(CITY_TIMEOUT)
     try:
-        # ГЕЙТ ПАРИТЕТА: восстановленная локация обязана воспроизвести живой фид
-        # ДО МИНУТЫ. Ошибка в поясе сдвинула бы прошлое на день — молча.
-        probe = events(loc_data, PROBE_START, PROBE_DAYS)
-        want = [(e["date"], e["summary"]) for e in feed.get("events", []) if e["date"] < PROBE_TO]
-        if probe != want:
+        # СЕЛЕКТОР: берём первого кандидата, который воспроизводит живой фид ДО МИНУТЫ.
+        good = None
+        for c in cands:
+            probe = [x for x in events(c, PROBE_START, PROBE_DAYS) if x[0] < PROBE_TO]
+            if probe == want:
+                good = c
+                break
+        if good is None:
             signal.alarm(0)
-            return (sl, None, "паритет не сошёлся: свой=%d фид=%d" % (len(probe), len(want)))
+            return (sl, None, "паритет не сошёлся ни на одном из %d кандидатов" % len(cands))
 
-        past = events(loc_data, PAST_START, PAST_DAYS)
+        past = events(good, PAST_START, PAST_DAYS)
         signal.alarm(0)
     except _Timeout:
         return (sl, None, "таймаут %ds (полярные координаты?)" % CITY_TIMEOUT)
