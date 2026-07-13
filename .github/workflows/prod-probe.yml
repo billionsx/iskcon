@@ -6,31 +6,27 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Воркер против домена
+      - name: Поиск личностей на живом API
         run: |
-          WD=https://iskcon-web.ceo-5cb.workers.dev
-          AP=https://gaurangers.com
-
-          hash() { curl -s --max-time 25 "$1" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1; }
-
-          HW=$(hash "$WD/")
-          HA=$(hash "$AP/")
-          HB=$(hash "$AP/?cb=$RANDOM$RANDOM")
-          echo "::notice::workers.dev  → ${HW:-<пусто>}"
-          echo "::notice::gaurangers   → ${HA:-<пусто>}"
-          echo "::notice::gaurangers?cb→ ${HB:-<пусто>}"
-
-          for pair in "workers.dev|$WD|$HW" "apex|$AP|$HA"; do
-            NAME=${pair%%|*}; rest=${pair#*|}; BASE=${rest%%|*}; H=${rest##*|}
-            [ -z "$H" ] && continue
-            curl -s --max-time 60 "$BASE$H" -o /tmp/e.js
-            if grep -q "darshan/all" /tmp/e.js; then
-              echo "::notice::$NAME: ВТОРАЯ ПАРТИЯ ЕСТЬ (darshan/all найден)"
+          for Q in "прабхупада" "бхактиведанта" "нитьянанда" "prabhupada" "Шрила Прабхупада" "рупа госвами"; do
+            R=$(curl -s -G --max-time 25 "https://gaurangers.com/api/entities" \
+                  --data-urlencode "q=$Q" --data-urlencode "limit=5" -w "|%{http_code}")
+            CODE=${R##*|}; BODY=${R%|*}
+            N=$(printf '%s' "$BODY" | python3 -c "import sys,json;d=json.load(sys.stdin);print(len(d.get('items',[])))" 2>/dev/null || echo "ERR")
+            FIRST=$(printf '%s' "$BODY" | python3 -c "import sys,json;d=json.load(sys.stdin);i=d.get('items') or [{}];print((i[0].get('name_ru') or '—'))" 2>/dev/null || echo "—")
+            if [ "$CODE" = "200" ] && [ "$N" != "0" ] && [ "$N" != "ERR" ]; then
+              echo "::notice::«$Q» → HTTP $CODE · найдено $N · первый: $FIRST"
             else
-              echo "::error::$NAME: второй партии НЕТ (darshan/all отсутствует)"
+              echo "::error::«$Q» → HTTP $CODE · найдено $N"
             fi
           done
 
-          echo "::notice::--- заголовки apex / ---"
-          curl -sI --max-time 25 "$AP/" | tr -d '\r' | grep -iE '^(cache-control|cf-cache-status|age|server|etag|x-robots)' \
-            | while read -r L; do echo "::notice::$L"; done
+          echo "::notice::--- глобальный поиск ---"
+          R=$(curl -s -G --max-time 25 "https://gaurangers.com/api/search" --data-urlencode "q=прабхупада" -w "|%{http_code}")
+          CODE=${R##*|}; BODY=${R%|*}
+          P=$(printf '%s' "$BODY" | python3 -c "import sys,json;d=json.load(sys.stdin);print(len(d.get('personalities',[])))" 2>/dev/null || echo ERR)
+          if [ "$CODE" = "200" ] && [ "$P" != "0" ] && [ "$P" != "ERR" ]; then
+            echo "::notice::/api/search «прабхупада» → HTTP $CODE · личностей $P"
+          else
+            echo "::error::/api/search «прабхупада» → HTTP $CODE · личностей $P"
+          fi
