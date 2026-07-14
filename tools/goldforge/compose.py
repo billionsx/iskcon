@@ -27,7 +27,7 @@ import json
 import re
 from pathlib import Path
 
-from . import canon, d1, role as roles
+from . import canon, d1, quality, role as roles
 from .channels import WORKS, fold, pattern
 
 MAX_PURPORT = 1000          # выдержка из комментария (дословная, не пересказ)
@@ -136,26 +136,9 @@ def ref_of(f):
 
 
 def extract(text, forms, limit=MAX_PURPORT):
-    """Дословная ВЫДЕРЖКА вокруг имени: абзац(ы), а не пересказ и не обрывок."""
-    t = (text or "").strip()
-    if len(t) <= limit:
-        return t
-    pat = pattern(forms)
-    m = pat.search(fold(t))
-    if not m:
-        return t[:limit].rsplit(" ", 1)[0] + "…"
-    paras, pos = t.split("\n"), 0
-    for p in paras:
-        if pos <= m.start() < pos + len(p) + 1 and p.strip():
-            if len(p) <= limit:
-                return p.strip()
-            break
-        pos += len(p) + 1
-    lo = max(0, m.start() - limit // 2)
-    hi = min(len(t), m.end() + limit // 2)
-    lo = t.rfind(". ", 0, lo + 1) + 2 if t.rfind(". ", 0, lo + 1) > 0 else lo
-    hi = t.find(". ", hi) + 1 if t.find(". ", hi) > 0 else hi
-    return ("…" if lo > 0 else "") + t[lo:hi].strip() + ("…" if hi < len(t) else "")
+    """Выдержка ЦЕЛЫМИ предложениями (ЗКН-П021). Слово не режем никогда."""
+    return quality.excerpt(text, pattern(forms), limit)
+
 
 
 def quote_of(f, forms, ids_ok, used=None):
@@ -175,10 +158,11 @@ def quote_of(f, forms, ids_ok, used=None):
         if ref in used:
             return None                    # ЗКН-П003: 0 дублей ссылок
         used.add(ref)
-    lim = MAX_PURPORT if f["kind"] == "purport" else MAX_QUOTE
+    lim = quality.MAX_PURPORT if f["kind"] == "purport" else quality.MAX_VERSE
     t = extract(f["text"], forms, lim)
-    if len(t.strip()) < MIN_QUOTE or len(t.split()) < MIN_WORDS:
-        return None                        # подпись, колонтитул, обрывок — не цитата
+    # ЗКН-П021: цитата — ВЫСКАЗЫВАНИЕ. Не стена, не обрывок списка, не шапка письма.
+    if quality.worthy(t):
+        return None
     # ЦИТАТА ОБЯЗАНА НЕСТИ ФАКТ. Роль присвоена ПАССАЖУ, а в карточку идёт
     # ВЫРЕЗКА из него. Бывает, что факт остался за краем окна — и на экран
     # выходит абзац, где имя есть, а смысла нет. Проверяем то, что УВИДИТ ЧЕЛОВЕК.
@@ -189,13 +173,18 @@ def quote_of(f, forms, ids_ok, used=None):
     why = canon.anachronism(t, f.get("byId"))
     if why:
         return None                        # ЗКН-П014: ложное свидетельство — вон
+    if used is not None:
+        key = "t:" + re.sub(r"\W+", "", t)[:80]
+        if key in used:
+            return None                    # тот же текст под другой ссылкой — дубль
+        used.add(key)
     q = {"t": t, "ref": ref}
     if f.get("translit"):
         q["translit"] = f["translit"]
     if f.get("to"):
         q["to"] = f["to"]
     if f.get("by"):
-        q["by"] = f["by"]
+        q["by"] = canon.clean_card_text(f["by"])     # ЗКН-И004: никаких «А.Ч.»
         if f.get("byId") and f["byId"] in ids_ok:
             q["byId"] = f["byId"]
     return q
@@ -384,8 +373,10 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     # ── ТАБ 0 · ВКЛАД В ГАУРАНГА ЛИЛУ (крит. 10 — ВСЕГДА первый) ──────────
     books = own_works(hero)
     own_bhajans = sorted({f["book"] for f in bhajans if f.get("byId") == hero})
+    # Раньше здесь стояло `-len(text)`: выбери самое длинное. Так стена пурпорта
+    # в 1 500 знаков попала в раздел «Его миссия — своими словами» (ЗКН-П021).
     top = sorted([f for f in purports if f.get("role") in ("качество", "авторитет")],
-                 key=lambda f: -len(f["text"]))[:6]
+                 key=quality.rank)[:4]
     vk = []
     if books or own_bhajans:
         lines = []
@@ -402,7 +393,7 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             "Его миссия — своими словами" if me else "Шрила Прабхупада о его вкладе",
             [],
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
-    if see:
+    if see and len(see) >= 2:
         vk.append(section("Связи в лиле",
                           ["Личности, с которыми %s связан в источниках." % full],
                           see=see, hero=HN))
@@ -517,15 +508,13 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     pr = {}
     for f in sorted(purports + told,
                     key=lambda x: (x["src"], x.get("div", ""), x.get("ordinal", 0))):
-        pr.setdefault(f["src"], {}).setdefault(div_label(f), []).append(f)
+        pr.setdefault(f["src"], {}).setdefault(chapter_label(f), []).append(f)
     subs = []
     for src, groups in pr.items():
         book = next(iter(next(iter(groups.values()))))["book"]
-        secs = [section(
-            "%s · %s" % (book, g),
-            [],
-            quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION]],
-            hero=HN) for g, fs in groups.items()]
+        secs = [section(g, [],
+                        quotes=[quote_of(f, forms, ids_ok, used) for f in fs[:MAX_PER_SECTION]],
+                        hero=HN) for g, fs in groups.items()]
         subs.append({"id": slugify(book), "label": book, "sections": secs})
     if subs and hero != "prabhupada":
         tabs.append({"id": "prabhupada", "label": "Шрила Прабхупада о нём",
@@ -604,8 +593,23 @@ def work_slugs():
     return _CACHE["slugs"]
 
 
+def prayer_slugs():
+    if not d1.available():
+        return set()
+    if "prayers" not in _CACHE:
+        _CACHE["prayers"] = {r["slug"] for r in (d1.query(
+            "SELECT slug FROM prayers") or [])}
+    return _CACHE["prayers"]
+
+
 def fix_to(to, slugmap):
-    """`/book/cc/madhya/19/117` → `/chaitanya-charitamrita/madhya/19/117` (ЗКН-Н008)."""
+    """`/book/cc/madhya/19/117` → `/chaitanya-charitamrita/madhya/19/117` (ЗКН-Н008).
+    И `/ru/srila-prabhupada-pranama-mantra` → `/bhajans/…`: молитва живёт по
+    адресу бхаджана, а не в несуществующей языковой папке (ссылка была битой)."""
+    if to and to.startswith("/ru/"):
+        slug = to[4:].strip("/")
+        if slug in prayer_slugs():
+            return "/bhajans/" + slug
     if not to or not to.startswith("/book/"):
         return to
     seg = to.strip("/").split("/")[1:]
