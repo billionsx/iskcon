@@ -14,6 +14,11 @@
   `--color-fill-2`. Поверхность карточки = цвет страницы + волосяная линия.
   Кнопки (<button>) исключены: серая заливка — законная форма контрола.
 
+ПРАВИЛО 3 — один плеер (ЗКН-Д015). Тег <audio> живёт ТОЛЬКО в ВКЗ
+  (`AudioShowcaseCard.tsx`) и в глобальном плеере (`player/store.tsx`). Любой
+  второй <audio> — это вторая реализация звука: она разъезжается со стандартом
+  и остаётся серой, когда стандарт уже вычищен (так и вышло с голосовыми).
+
 ПРАВИЛО 2 — скрим гасит золото (ЗКН-Д005). Там, где рисуется фирменная
   заглушка обложки, запрещён сплошной скрим `rgba(0,0,0,…)` во всю площадь
   (`inset: 0`): белая заглушка с золотым логотипом под скримом превращается в
@@ -37,6 +42,8 @@ FALLBACK_COVER = re.compile(r"COVER_FALLBACK|AUDIO_FALLBACK_COVER")
 INSET0 = re.compile(r"inset:\s*0\b")
 ABSOLUTE = re.compile(r"position:\s*[\"'`]absolute")
 FLAT_SCRIM = re.compile(r"background:\s*[\"'`]rgba\(0,\s*0,\s*0,")
+AUDIO_TAG = re.compile(r"<audio[\s>]")
+AUDIO_OK = {"AudioShowcaseCard.tsx", "store.tsx"}
 
 
 def style_objects(text: str):
@@ -70,6 +77,15 @@ def main() -> int:
         text = f.read_text(encoding="utf-8")
         rel = f.relative_to(SRC.parents[2])
         has_fallback = bool(FALLBACK_COVER.search(text))
+
+        # ПРАВИЛО 3 — второй плеер
+        if AUDIO_TAG.search(text) and f.name not in AUDIO_OK:
+            line = text.count("\n", 0, AUDIO_TAG.search(text).start()) + 1
+            bad.append(
+                f"{rel}:{line} — ЗКН-Д015: второй плеер. Тег <audio> вне ВКЗ "
+                f"(AudioShowcaseCard.tsx) и глобального плеера (player/store.tsx). "
+                f"Звук рисует ОДИН компонент")
+
         for tag, attrs, body, line in style_objects(text):
             # ПРАВИЛО 1 — серая плашка вместо поверхности
             if tag in CONTAINER_TAGS and GREY_FILL.search(body) and PADDING.search(body):
@@ -94,7 +110,7 @@ def main() -> int:
             print("  ✗ " + b)
         print(f"\nВсего: {len(bad)}")
         return 1
-    print("Гейт поверхности (ЗКН-Д014 · Д005): чисто.")
+    print("Гейт поверхности (ЗКН-Д014 · Д005 · Д015): чисто.")
     return 0
 
 

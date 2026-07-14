@@ -52,7 +52,7 @@ jobs:
       - name: Гейт чужого голоса (ЗКН-Д013)
         run: python3 tools/voice-lint.py
 
-      - name: Гейт поверхности (ЗКН-Д014 · Д005)
+      - name: Гейт поверхности (ЗКН-Д014 · Д005 · Д015)
         run: python3 tools/surface-lint.py
 
 

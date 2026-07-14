@@ -14,7 +14,9 @@ concurrency:
 
 on:
   schedule:
-    - cron: "17 */6 * * *"
+    # ЗКН-Ф024: НЕ на минуте tg-video (чётные часы :17) — иначе аудио вечно
+    # стоит pending в общей TG-сессии и его отменяет ближайший тик историй.
+    - cron: "5 1,7,13,19 * * *"
   workflow_dispatch:
     inputs:
       limit:

@@ -274,42 +274,19 @@ function VideoBox({ v, id }: { v: TgVideo; id: string }) {
   );
 }
 
-/* ── голосовое с прямым src: мини-плеер в приложении ── */
-function VoicePlayer({ a }: { a: TgAudio }) {
-  const ref = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false);
-  const [pct, setPct] = useState(0);
-  const toggle = () => { const el = ref.current; if (!el) return; if (playing) el.pause(); else void el.play(); };
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
-      <audio ref={ref} src={a.src || undefined} preload="none"
-        onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setPct(0); }}
-        onTimeUpdate={(e) => { const el = e.currentTarget; if (el.duration) setPct(el.currentTime / el.duration); }} />
-      <button type="button" aria-label={playing ? "Пауза" : "Слушать"} onClick={toggle}
-        style={{ width: 40, height: 40, flexShrink: 0, borderRadius: "50%", border: "none", background: GOLD, color: "var(--color-on-gold)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
-        {playing
-          ? <svg width="15" height="15" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg>
-          : <svg width="15" height="15" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" fill="currentColor" /></svg>}
-      </button>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>{a.title}</div>
-        <div style={{ position: "relative", height: 4, marginTop: 7, borderRadius: 999, background: "var(--color-glass-thin)" }}>
-          <span style={{ position: "absolute", inset: 0, width: `${pct * 100}%`, borderRadius: 999, background: GOLD, transition: "width .2s linear" }} />
-        </div>
-      </div>
-      {a.meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{a.meta}</span>}
-    </div>
-  );
-}
-
 /* ── аудио и файлы: карточка как в Telegram, открывается в Telegram ── */
 function TgAudioCard({ a, id, flash, onMore }: { a: TgAudio; id: string; flash?: (m: string) => void; onMore?: () => void }) {
-  if (a.kind === "voice" && a.src) return <VoicePlayer a={a} />;
+  // ЗКН-Д015: звук рисует ОДИН компонент — ВКЗ. Голосовое — тоже звук: у него нет
+  // автора и метки вида (заголовок сам всё говорит), но есть длительность —
+  // Telegram отдаёт её в meta, показываем ДО нажатия.
   if (a.src) {
+    const voice = a.kind === "voice";
     const ttl = decodeEntities(a.title) || "Аудио";
-    const who = decodeEntities(a.meta) || undefined;
+    const who = voice ? undefined : (decodeEntities(a.meta) || undefined);
     return (
-      <AudioShowcaseCard src={a.src} title={ttl} presenter={who} kindLabel={a.kindLabel || "Аудио"}
+      <AudioShowcaseCard src={a.src} title={ttl} presenter={who}
+        kindLabel={voice ? undefined : (a.kindLabel || "Аудио")}
+        durationHint={voice ? (a.meta || undefined) : undefined}
         favKey={`audio:${id}`} favMeta={{ t: ttl.slice(0, 140), s: who, h: `/post/${id}` }}
         onMore={onMore} flash={flash} />
     );
