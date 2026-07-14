@@ -46,6 +46,24 @@ SCRIPT_FONT = re.compile(r'fontFamily:\s*(?:"var\(--font-scripture\)"|FS|SERIF)\
 ITALIC = re.compile(r'fontStyle:\s*"italic"|SCRIPTURE_VOICE')
 SKIP_FILES = {"voice.ts", "scripture.ts", "Skt.tsx"}
 
+# ═══ СТАТЬЯ E · НЕМОЙ ЭКРАН ══════════════════════════════════════════════
+# Экран может ТРОГАТЬ поля писания и не нести ни одной пометки голоса. Гейт по
+# строкам его не увидит: он ищет нарушение, а тут — ПУСТОТА. Такой экран либо
+# рисует шастру немой, либо просто передаёт данные дальше. Второе разрешено
+# ТОЛЬКО с явной записью здесь: молчание должно быть заявлено, а не случиться.
+SCRIPTURE_FIELD = re.compile(
+    r"\.(translation|translit|purport|verse_text|verse_translit|devanagari|uvaca|"
+    r"word_by_word|snippet|sanskrit|iast|lyrics)\b")
+ANY_VOICE = re.compile(
+    r"SCRIPTURE_VOICE|skt-voice|font-scripture|font-deva|\bvoice\b|renderTerms|"
+    r"VerseBody|LayerCard|RecipeCover")
+# Разрешено молчать — эти НЕ РИСУЮТ, а передают дальше (проверено вручную):
+PASS_THROUGH = {
+    "bookPdf.tsx":                 "отдаёт данные печатным компонентам читалки",
+    "dhama/DhamaScreen.tsx":       "нормализует iast для поиска, не рисует",
+    "dhama/TirthaDetailPage.tsx":  "iast — ключ избранного, не рисует",
+}
+
 
 def main():
     bad = []
@@ -76,12 +94,35 @@ def main():
                and not DEVA_CHARS.search(code) and "const " not in code:
                 bad.append(("КУРСИВ", f, i, "Georgia без курсива — ни голос, ни проза"))
 
+    # КАРТА ПОКРЫТИЯ: где в приложении вообще звучит чужой голос.
+    # Без неё «я всё проверил» — слова. С ней — предъявляемый факт.
+    voiced = {}
+    for f in sorted(SRC.rglob("*.tsx")):
+        t = f.read_text(encoding="utf-8")
+        n = t.count("SCRIPTURE_VOICE") + t.count("skt-voice") + t.count("font-scripture")
+        if n:
+            voiced[f.relative_to(SRC)] = n
+
+    # E · НЕМОЙ ЭКРАН
+    for f in sorted(SRC.rglob("*.tsx")):
+        rel = str(f.relative_to(SRC))
+        if rel in PASS_THROUGH or f.name in SKIP_FILES:
+            continue
+        t = f.read_text(encoding="utf-8")
+        if SCRIPTURE_FIELD.search(t) and not ANY_VOICE.search(t):
+            bad.append(("НЕМОЙ", f, 0, "экран трогает писание и не несёт голоса"))
+
     print("ГЕЙТ ЧУЖОГО ГОЛОСА (ЗКН-Д013)")
+    print("─" * 70)
+    print("  КАРТА ПОКРЫТИЯ · экранов с чужим голосом: %d" % len(voiced))
+    for f, n in sorted(voiced.items(), key=lambda kv: -kv[1]):
+        print("     %-34s %2d" % (f, n))
     print("─" * 70)
     if not bad:
         print("  ✓ ГОЛОС   стих · бхаджан · цитата · святое имя — Georgia курсивом")
         print("  ✓ КУРСИВ  шрифт писания нигде не стоит без наклона")
         print("  ✓ ПИСЬМО  деванагари везде набран своим шрифтом")
+        print("  ✓ НЕМОЙ   ни один экран не трогает писание молча")
         return 0
     for art, f, i, why in bad:
         print("  ✗ %-7s %s:%d  %s" % (art, f.relative_to(SRC), i, why))
