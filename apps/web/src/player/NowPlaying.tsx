@@ -18,6 +18,9 @@ import { HeartIcon, MoreIcon, BookOpenIcon } from "../ui/icons";
 import { BOOKS, bookFullTitle, bookSlug } from "../books";
 import { albumById } from "../kirtans";
 import { type SubTabDef } from "../SectionSubTabs";
+
+/** Раздел очереди. Счёт нужен в листе выбора: «сколько там записей» — половина решения. */
+type DivDef = SubTabDef & { count?: number };
 import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
@@ -72,7 +75,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   // задать свою группу: у ШБ манифест приходит одной песнью, а очередь режется по ГЛАВАМ
   // (784…3662 стиха в песни — плоским списком это не очередь, а стена).
   const gid = (t: { group?: string; lila?: string }) => t.group ?? t.lila;
-  const divisions: SubTabDef[] = [];
+  const divisions: DivDef[] = [];
   const seenDiv = new Set<string>();
 
   /* ЗКН-Б011 · решение основателя — «ВСЕ» ИДЁТ ПЕРВЫМ РАЗДЕЛОМ.
@@ -84,12 +87,16 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * Отдельной сетки папок для этого НЕ НУЖНО: пилюли разделов в плеере уже есть —
    * ими сделаны песни, главы и стихи у книг. */
   const isKirtanQueue = p.kind === "kirtan";
-  if (isKirtanQueue && p.tracks.length > 1) divisions.push({ id: ALL_DIV, label: "Все" });
+  if (isKirtanQueue && p.tracks.length > 1) divisions.push({ id: ALL_DIV, label: "Все", count: p.tracks.length });
 
+  const divCount: Record<string, number> = {};
   for (const t of p.tracks) {
     const g = gid(t);
-    if (g && !seenDiv.has(g)) { seenDiv.add(g); divisions.push({ id: g, label: t.groupLabel ?? t.lilaLabel ?? g }); }
+    if (!g) continue;
+    divCount[g] = (divCount[g] ?? 0) + 1;
+    if (!seenDiv.has(g)) { seenDiv.add(g); divisions.push({ id: g, label: t.groupLabel ?? t.lilaLabel ?? g }); }
   }
+  for (const d of divisions) if (d.id !== ALL_DIV) d.count = divCount[d.id] ?? 0;
   const hierQueue = divisions.length > 1;
   const [activeDiv, setActiveDiv] = useState("");
   /* Вид очереди: список или плитка. Пилюли папок — это ФИЛЬТР; вид — это про то,
@@ -167,6 +174,31 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     const el = bodyRef.current?.querySelector<HTMLElement>('[data-active="1"]');
     el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [p.index]);
+
+  /* ЗКН-Н049 — ИГРАЮЩУЮ ЗАПИСЬ ВСЕГДА МОЖНО НАЙТИ.
+   *
+   * В папке на 140 записей достаточно пролистать — и то, что звучит, потеряно:
+   * человек не знает даже, в какую сторону крутить. Кнопка появляется РОВНО тогда,
+   * когда играющая строка ушла из поля зрения, и исчезает, когда она видна. Кнопка,
+   * которая висит всегда, — это шум; кнопка, которой нет, когда нужна, — это провал.
+   */
+  const [lostTrack, setLostTrack] = useState(false);
+  useEffect(() => {
+    const root = bodyRef.current;
+    const el = root?.querySelector<HTMLElement>('[data-active="1"]');
+    if (!root || !el) { setLostTrack(false); return; }
+    const io = new IntersectionObserver(
+      ([e]) => setLostTrack(!e.isIntersecting),
+      { root, threshold: 0.01 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [p.index, p.book, activeDiv, qView, p.tracks.length]);
+
+  const backToPlaying = () => {
+    bodyRef.current?.querySelector<HTMLElement>('[data-active="1"]')
+      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+  };
 
   if (!embedded && !p.active) return null;
 
@@ -386,11 +418,12 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   <DivisionPills items={cantoTabs} active={browseCanto} onChange={setBrowseCanto} />
                   {chapTabs.length > 1 && (
                     <div style={{ marginTop: 8 }}>
-                      <DivisionPills items={chapTabs} active={activeCh} onChange={setActiveCh} />
+                      <DivisionPicker items={chapTabs} active={activeCh} onChange={setActiveCh} label="Главы" />
                     </div>
                   )}
                 </>
-              : hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
+              : hierQueue && <DivisionPicker items={divisions} active={activeDiv} onChange={setActiveDiv}
+                  label={isAdHoc ? "Папки" : "Разделы"} />}
             <div style={{ paddingTop: (multiCanto || hierQueue) ? 10 : 0,
               ...(isAdHoc && qView === "grid"
                 ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: 8 }
@@ -404,28 +437,84 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                       })
                     : <div style={{ padding: "18px 4px", color: "rgba(255,255,255,0.45)", fontSize: "var(--text-footnote)" }}>Загрузка…</div>)
                 : (() => {
-                    /* ⚠️ НУМЕРАЦИЯ БЫЛА СКВОЗНОЙ ПО ВСЕЙ ОЧЕРЕДИ.
-                     * Открываешь папку Бхакти Вайбхавы — а она начинается с «24».
-                     * Номер должен считать ВНУТРИ папки: первая запись — первая.
+                    /* ⚠️ НУМЕРАЦИЯ ВНУТРИ ПАПКИ, А НЕ СКВОЗНАЯ.
+                     * Открываешь папку Бхакти Вайбхавы — а она начиналась с «24».
                      * (У книги сквозной номер верен: там это номер главы.) */
+                    const flat = isAdHoc && activeDiv === ALL_DIV && qView === "list";
                     let seq = 0;
-                    return p.tracks.map((t, i) => {
+                    let lastG = "";
+                    const out: React.ReactNode[] = [];
+
+                    p.tracks.forEach((t, i) => {
                       if (hierQueue && activeDiv !== ALL_DIV) {
                         const g = gid(t);
                         const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
-                        if (!show) return null;
+                        if (!show) return;
                       }
+
+                      /* ЗКН-Н048 — У ДЛИННОГО СПИСКА ЕСТЬ ЯКОРЯ.
+                       * «Все» — это 1062 строки подряд. Без разделителей человек не
+                       * знает, ГДЕ он, и не может выйти к исполнителю той записи, что
+                       * видит. Липкий заголовок отвечает на оба вопроса: он говорит
+                       * «ты здесь» и по тапу открывает папку этого исполнителя. */
+                      if (flat) {
+                        const g = gid(t) ?? "";
+                        if (g && g !== lastG) {
+                          lastG = g;
+                          const lbl = t.groupLabel ?? g;
+                          const n = p.tracks.filter((x) => (gid(x) ?? "") === g).length;
+                          out.push(
+                            <button key={`h-${g}`} type="button" onClick={() => setActiveDiv(g)}
+                              style={{ position: "sticky", top: 0, zIndex: 2, display: "flex", alignItems: "center",
+                                gap: 8, width: "100%", padding: "7px 8px", marginTop: out.length ? 10 : 0,
+                                border: "none", cursor: "pointer", textAlign: "left",
+                                background: "rgba(14,14,16,0.92)", backdropFilter: "blur(14px)",
+                                WebkitBackdropFilter: "blur(14px)", fontFamily: "var(--font-text)" }}>
+                              <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-caption2)", fontWeight: 700,
+                                letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD,
+                                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{lbl}</span>
+                              <span style={{ flexShrink: 0, fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.35)",
+                                fontVariantNumeric: "tabular-nums" }}>{n}</span>
+                              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: "rgba(255,255,255,0.35)" }}>
+                                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </button>,
+                          );
+                          seq = 0;
+                        }
+                      }
+
                       seq += 1;
-                      return <QueueRow key={t.file} t={t} active={i === p.index}
-                        num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
-                        onClick={() => p.jumpTo(i)} />;
+                      out.push(
+                        <QueueRow key={t.file} t={t} active={i === p.index}
+                          num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
+                          onClick={() => p.jumpTo(i)} />,
+                      );
                     });
+                    return out;
                   })()}
             </div>
           </div>
         </div>
 
         {/* pinned controls (Liquid Glass) */}
+        {/* «К текущей» — плавает над панелью, пока играющая строка не видна. */}
+        {p.active && lostTrack && (
+          <button type="button" onClick={backToPlaying}
+            style={{ position: "absolute", left: "50%", transform: "translateX(-50%)",
+              bottom: embedded ? 148 : "calc(env(safe-area-inset-bottom) + 168px)", zIndex: 10,
+              display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999,
+              border: "none", cursor: "pointer", whiteSpace: "nowrap",
+              background: GOLD, color: "#141416", fontFamily: "var(--font-text)",
+              fontSize: "var(--text-footnote)", fontWeight: 700,
+              boxShadow: "0 8px 24px -6px rgba(210,170,27,0.5)" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden>
+              <path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            К текущей
+          </button>
+        )}
+
         {/* ═══ ШОВ УБРАН ═══
          * Панель имела СВОЙ фон (`rgba(16,16,18,.62)` + сильное размытие) и стояла
          * всегда — экран визуально разрезало пополам: «обложка» и «отдельная
@@ -510,6 +599,125 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
  * закреплено за действием/прогрессом, не за положением в навигации).
  * Прокрутка покрывает и 3 лилы ЧЧ, и 12 песней ШБ; активная сама центрируется.
  */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ЗКН-Н047 · ОРГАН ВЫБОРА СЛЕДУЕТ ЗА ЧИСЛОМ РАЗДЕЛОВ.
+ *
+ * Лента пилюль верна, пока разделов мало: три лилы Чайтанья-чаритамриты, двенадцать
+ * песней Бхагаватам — глазом охватываешь целиком. На 82 исполнителях она перестаёт
+ * быть навигацией: чтобы от «Шрила Прабхупада» доехать до «Ямуна Деви Даси», нужно
+ * восемьдесят свайпов вслепую. То же и у Бхагаватам: в песни до 90 глав.
+ *
+ * Механизм разделов при этом ПРАВИЛЬНЫЙ — меняется только орган выбора:
+ *
+ *   ≤ 14 разделов  →  пилюли (видно всё сразу)
+ *   > 14 разделов  →  кнопка текущего раздела + ЛИСТ: поиск, азбука, список
+ *
+ * Порог не выдуман: 14 пилюль — это примерно два экрана прокрутки, дальше человек
+ * уже не помнит, что было слева.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+const PILL_LIMIT = 14;
+
+function DivisionPicker({ items, active, onChange, label }: {
+  items: DivDef[]; active: string; onChange: (id: string) => void; label: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+
+  if (items.length <= PILL_LIMIT) {
+    return <DivisionPills items={items} active={active} onChange={onChange} />;
+  }
+
+  const cur = items.find((i) => i.id === active) ?? items[0];
+  const nq = q.trim().toLowerCase();
+  const shown = nq ? items.filter((i) => i.label.toLowerCase().includes(nq)) : items;
+
+  // Азбука — по первой букве. Пустых букв не показываем: буква, за которой ничего
+  // нет, это ложное обещание.
+  const letters: string[] = [];
+  const firstOf: Record<string, string> = {};
+  for (const i of shown) {
+    const L = (i.label[0] || "").toUpperCase();
+    if (!L || firstOf[L]) continue;
+    firstOf[L] = i.id;
+    letters.push(L);
+  }
+
+  return (
+    <>
+      <button type="button" onClick={() => { setOpen(true); setQ(""); }}
+        style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "9px 12px",
+          borderRadius: 12, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
+          background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.12)", color: "#fff" }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: 600,
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{cur?.label ?? label}</span>
+        <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.45)" }}>
+          {items.length}
+        </span>
+        <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
+          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {open && (
+        <div role="dialog" aria-label={label}
+          style={{ position: "absolute", inset: 0, zIndex: 20, display: "flex", flexDirection: "column",
+            background: "rgba(12,12,14,0.94)", backdropFilter: "blur(28px) saturate(160%)",
+            WebkitBackdropFilter: "blur(28px) saturate(160%)" }}>
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "12px 14px 8px" }}>
+            <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus
+              placeholder={`Найти в ${label.toLowerCase()}`} aria-label={`Поиск: ${label}`}
+              style={{ flex: 1, minWidth: 0, height: 38, padding: "0 12px", borderRadius: 11,
+                border: "0.5px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.07)",
+                color: "#fff", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", outline: "none" }} />
+            <button type="button" aria-label="Закрыть" onClick={() => setOpen(false)}
+              style={{ ...glass(999), ...iconBtn(38), flexShrink: 0 }}>
+              <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
+            </button>
+          </div>
+
+          {letters.length > 1 && (
+            <div style={{ flexShrink: 0, display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none",
+              padding: "0 14px 8px" }}>
+              {letters.map((L) => (
+                <button key={L} type="button"
+                  onClick={() => document.getElementById(`div-${firstOf[L]}`)?.scrollIntoView({ block: "start", behavior: "smooth" })}
+                  style={{ flexShrink: 0, minWidth: 26, height: 26, borderRadius: 7, border: "none", cursor: "pointer",
+                    background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.7)",
+                    fontSize: "var(--text-caption)", fontWeight: 700, fontFamily: "var(--font-text)" }}>{L}</button>
+              ))}
+            </div>
+          )}
+
+          <div style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", padding: "0 10px 14px" }}>
+            {shown.length === 0 ? (
+              <div style={{ padding: "28px 8px", textAlign: "center", color: "rgba(255,255,255,0.45)",
+                fontSize: "var(--text-subhead)" }}>Ничего не найдено</div>
+            ) : shown.map((it) => {
+              const on = it.id === active;
+              return (
+                <button key={it.id} id={`div-${it.id}`} type="button"
+                  onClick={() => { onChange(it.id); setOpen(false); }}
+                  style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "11px 10px",
+                    borderRadius: 11, border: "none", cursor: "pointer", textAlign: "left",
+                    background: on ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff",
+                    fontFamily: "var(--font-text)" }}>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: on ? 700 : 400,
+                    color: on ? GOLD : "rgba(255,255,255,0.9)",
+                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
+                  {it.count != null && (
+                    <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)",
+                      fontVariantNumeric: "tabular-nums" }}>{it.count}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active: string; onChange: (id: string) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
