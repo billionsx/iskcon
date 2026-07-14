@@ -39,7 +39,7 @@ const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, d
  * Я сперва написал ВТОРОЙ плеер (белую доску) — это была ошибка: два плеера рядом
  * это две правды о том, что играет, и они разъедутся. Плеер один.
  */
-export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = false, embeddedHeight }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void; embedded?: boolean; embeddedHeight?: number } = {}) {
+export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = false, embeddedHeight, belowHero }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void; embedded?: boolean; embeddedHeight?: number; belowHero?: React.ReactNode } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -311,6 +311,14 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   ? Math.max(120, Math.min(260, Math.round(embeddedHeight * 0.30)))
                   : undefined} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
+
+          {/* ПАПКИ ЖИВУТ ВНУТРИ ПЛЕЕРА (решение основателя).
+              Я вынес их отдельным блоком НАД плеером — это была не та задача:
+              просили «систематизировать В ПЛЕЕРЕ по папкам». Папка меняет очередь
+              плеера; орган управления очередью должен быть в самом плеере, а не
+              рядом с ним. */}
+          {belowHero}
+
           <div style={{ marginTop: 22 }}>
             {/* Надзаголовок раздела — ЗОЛОТОЙ, как во всех витринах (ЗКН-Н024).
                 Серый он выпадал из системы: тот же смысл, другой голос. */}

@@ -69,8 +69,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
   const tracks = useMemo(() => kirtanTracks(), [kv]);
 
-  /* Папки: только те исполнители, у кого есть записи. Пустых в витрине нет
-     (ЗКН-Н018 — показываем то, что можно открыть). */
   const folders = useMemo(() => {
     const byArtist = new Map<string, number>();
     tracks.forEach((t) => byArtist.set(t.artist, (byArtist.get(t.artist) ?? 0) + 1));
@@ -79,7 +77,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       .map((a) => ({ slug: a.slug, name: a.name, n: byArtist.get(a.slug) ?? 0 }));
   }, [tracks, kv]);
 
-  /* Избранное — очередь по `msg_id` (короткое число влезает в адрес). */
   const favIds = useMemo(
     () => favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key.slice(7)).filter(Boolean),
     [favs],
@@ -89,10 +86,17 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   const [q, setQ] = useState("");
   const [found, setFound] = useState<{ q: string; n: number } | null>(null);
 
+  /* ⚠️ ЗДЕСЬ ПЛЕЕР ПОКАЗЫВАЛ БХАГАВАД-ГИТУ.
+   *
+   * Условие было `!p.book`. А `p.book` по умолчанию — «bg», Бхагавад-гита:
+   * значит условие НЕ СРАБАТЫВАЛО НИКОГДА, очередь киртанов не грузилась, и
+   * плеер оставался на книге — с её обложкой и «1 / 7».
+   *
+   * Правильный признак — не «книга не выбрана», а «мы НЕ на киртанах». */
   useEffect(() => {
-    if (tracks.length > 0 && !p.book) p.loadKirtan(ALL);
+    if (tracks.length > 0 && p.kind !== "kirtan") p.loadKirtan(ALL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tracks.length]);
+  }, [tracks.length, p.kind]);
 
   const cur = p.kind === "kirtan" ? p.book : ALL;
   const open = (id: string) => { setFound(null); setQ(""); p.playKirtan(id, 0, false); };
@@ -106,33 +110,74 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     if (n) p.playKirtan(FIND + s, 0, false);
   };
 
-  /* ── карточка папки ── */
+  /* ── Папка внутри плеера: тёмная тема, золото на активной ── */
   const Folder = ({ id, title, sub, active }: { id: string; title: string; sub: string; active: boolean }) => (
     <button type="button" onClick={() => open(id)} aria-pressed={active}
       style={view === "grid" ? {
-        display: "flex", flexDirection: "column", gap: 8, padding: 10, borderRadius: 16, cursor: "pointer",
+        display: "flex", flexDirection: "column", gap: 7, padding: 8, borderRadius: 13, cursor: "pointer",
         textAlign: "left", fontFamily: "var(--font-text)",
-        background: active ? "color-mix(in srgb, var(--color-gold) 12%, var(--color-bg-2))" : "var(--color-bg-2)",
-        border: active ? "1px solid var(--color-gold)" : "0.5px solid var(--color-hairline)",
-        color: "var(--color-label)",
+        background: active ? "rgba(210,170,27,0.16)" : "rgba(255,255,255,0.06)",
+        border: active ? "1px solid var(--color-gold)" : "0.5px solid rgba(255,255,255,0.10)",
+        color: "#fff",
       } : {
-        display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "10px 12px",
-        borderRadius: 14, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
-        background: active ? "color-mix(in srgb, var(--color-gold) 12%, var(--color-bg-2))" : "var(--color-bg-2)",
-        border: active ? "1px solid var(--color-gold)" : "0.5px solid var(--color-hairline)",
-        color: "var(--color-label)",
+        display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "8px 10px",
+        borderRadius: 12, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
+        background: active ? "rgba(210,170,27,0.16)" : "rgba(255,255,255,0.06)",
+        border: active ? "1px solid var(--color-gold)" : "0.5px solid rgba(255,255,255,0.10)",
+        color: "#fff",
       }}>
       <img src={COVER_FALLBACK} alt="" loading="lazy"
         style={view === "grid"
-          ? { width: "100%", aspectRatio: "1 / 1", borderRadius: 11, objectFit: "cover", background: "#fff" }
-          : { width: 40, height: 40, flexShrink: 0, borderRadius: 10, objectFit: "cover", background: "#fff" }} />
+          ? { width: "100%", aspectRatio: "1 / 1", borderRadius: 9, objectFit: "cover", background: "#fff" }
+          : { width: 34, height: 34, flexShrink: 0, borderRadius: 8, objectFit: "cover", background: "#fff" }} />
       <span style={{ minWidth: 0, flex: view === "grid" ? undefined : 1 }}>
-        <span style={{ display: "block", fontSize: "var(--text-footnote)", fontWeight: 700, lineHeight: 1.25,
-          color: active ? "var(--color-gold-deep)" : "var(--color-label)",
+        <span style={{ display: "block", fontSize: "var(--text-caption)", fontWeight: 700, lineHeight: 1.25,
+          color: active ? "var(--color-gold)" : "#fff",
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
-        <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-caption)", color: "var(--color-label-2)" }}>{sub}</span>
+        <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.45)" }}>{sub}</span>
       </span>
     </button>
+  );
+
+  const viewBtn = (v: View, label: string, icon: React.ReactNode) => (
+    <button type="button" onClick={() => setView(v)} aria-label={label} aria-pressed={view === v}
+      style={{ display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: 8, cursor: "pointer",
+        border: "none", background: view === v ? "rgba(255,255,255,0.12)" : "transparent",
+        color: view === v ? "var(--color-gold)" : "rgba(255,255,255,0.45)" }}>{icon}</button>
+  );
+
+  /* ПАПКИ — ВНУТРИ ПЛЕЕРА. Папка меняет ОЧЕРЕДЬ плеера; орган управления очередью
+     должен стоять в самом плеере, а не отдельным блоком рядом с ним. */
+  const foldersUI = (
+    <div style={{ marginTop: 20 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "0 4px" }}>
+        <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
+          textTransform: "uppercase", color: "var(--color-gold)" }}>
+          Папки · {folders.length + 2}
+        </span>
+        <div style={{ display: "flex", gap: 2 }}>
+          {viewBtn("grid", "Плитка",
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" /></svg>)}
+          {viewBtn("list", "Список",
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><rect x="3" y="5" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="10.8" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="16.6" width="18" height="2.4" rx="1.2" fill="currentColor" /></svg>)}
+        </div>
+      </div>
+      <div style={{ marginTop: 8, maxHeight: 200, overflowY: "auto", overscrollBehavior: "contain", padding: "0 2px 2px",
+        ...(view === "grid"
+          ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 8 }
+          : { display: "flex", flexDirection: "column", gap: 6 }) }}>
+        <Folder id={ALL} title="Все" sub={`${tracks.length} ${plural(tracks.length, "запись", "записи", "записей")}`}
+          active={cur === ALL} />
+        <Folder id={favIds.length ? "fav:" + favIds.join(",") : "fav:"} title="Избранное"
+          sub={favIds.length ? `${favIds.length} ${plural(favIds.length, "запись", "записи", "записей")}` : "пусто"}
+          active={cur.startsWith("fav")} />
+        {folders.map((f) => (
+          <Folder key={f.slug} id={FOLDER + f.slug} title={f.name}
+            sub={`${f.n} ${plural(f.n, "запись", "записи", "записей")}`}
+            active={cur === FOLDER + f.slug} />
+        ))}
+      </div>
+    </div>
   );
 
   const boxRef = useRef<HTMLDivElement>(null);
@@ -140,20 +185,13 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   useEffect(() => {
     const calc = () => {
       const top = boxRef.current?.getBoundingClientRect().top ?? 0;
-      setBoxH(Math.max(340, Math.round(window.innerHeight - top - 104)));
+      setBoxH(Math.max(360, Math.round(window.innerHeight - top - 104)));
     };
     calc();
     window.addEventListener("resize", calc);
     window.addEventListener("orientationchange", calc);
     return () => { window.removeEventListener("resize", calc); window.removeEventListener("orientationchange", calc); };
-  }, [tracks.length, view, found]);
-
-  const viewBtn = (v: View, label: string, icon: React.ReactNode) => (
-    <button type="button" onClick={() => setView(v)} aria-label={label} aria-pressed={view === v}
-      style={{ display: "grid", placeItems: "center", width: 32, height: 32, borderRadius: 9, cursor: "pointer",
-        border: "none", background: view === v ? "var(--color-fill-1)" : "transparent",
-        color: view === v ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>{icon}</button>
-  );
+  }, [tracks.length]);
 
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
@@ -162,40 +200,6 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
       <HubSearch value={q} onChange={setQ}
         placeholder="Найти киртан и включить" ariaLabel="Поиск по аудиотеке" onSubmit={submit} />
-
-      {tracks.length > 0 && (
-        <>
-          {/* ── ПАПКИ ── */}
-          <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
-              textTransform: "uppercase", color: "var(--color-gold-deep)" }}>
-              Папки · {folders.length + 2}
-            </span>
-            <div style={{ display: "flex", gap: 2 }}>
-              {viewBtn("grid", "Плитка",
-                <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" /></svg>)}
-              {viewBtn("list", "Список",
-                <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><rect x="3" y="5" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="10.8" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="16.6" width="18" height="2.4" rx="1.2" fill="currentColor" /></svg>)}
-            </div>
-          </div>
-
-          <div style={{ marginTop: 8, maxHeight: 232, overflowY: "auto", overscrollBehavior: "contain",
-            ...(view === "grid"
-              ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(112px, 1fr))", gap: 10 }
-              : { display: "flex", flexDirection: "column", gap: 8 }) }}>
-            <Folder id={ALL} title="Все" sub={`${tracks.length} ${plural(tracks.length, "запись", "записи", "записей")}`}
-              active={cur === ALL} />
-            <Folder id={favIds.length ? "fav:" + favIds.join(",") : "fav:"} title="Избранное"
-              sub={favIds.length ? `${favIds.length} ${plural(favIds.length, "запись", "записи", "записей")}` : "пусто"}
-              active={cur.startsWith("fav")} />
-            {folders.map((f) => (
-              <Folder key={f.slug} id={FOLDER + f.slug} title={f.name}
-                sub={`${f.n} ${plural(f.n, "запись", "записи", "записей")}`}
-                active={cur === FOLDER + f.slug} />
-            ))}
-          </div>
-        </>
-      )}
 
       <div ref={boxRef} style={{ marginTop: 16 }}>
         {tracks.length === 0 ? (
@@ -206,7 +210,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         ) : found && found.n === 0 ? (
           <HubEmpty query={found.q} hint="Попробуйте название киртана или имя исполнителя." />
         ) : (
-          <NowPlaying embedded embeddedHeight={boxH || undefined} />
+          <NowPlaying embedded embeddedHeight={boxH || undefined} belowHero={foldersUI} />
         )}
       </div>
     </div>
