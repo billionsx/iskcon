@@ -27,5 +27,10 @@ jobs:
             cat lint.log
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          grep -E "✓|✗|ВСЕГО|НЕМОЙ|озвучено" lint.log | head -25 \
-            | while read -r l; do echo "::notice::$l"; done
+          # Логи GitHub на неразрешённом хосте — отчёт обязан быть в аннотациях
+          while IFS= read -r l; do
+            case "$l" in
+              *озвучено*|*ВСЕГО*|*НЕМОЙ*|*ПРОЗА*|*ПОЛЕВЫЕ*) echo "::notice::$l" ;;
+              *"✗"*) echo "::error::$l" ;;
+            esac
+          done < lint.log
