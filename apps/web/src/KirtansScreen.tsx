@@ -11,7 +11,7 @@
  *
  * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePlayer } from "./player/store";
 import { NowPlaying } from "./player/NowPlaying";
 import { kirtanTracks, KIRTANS_ALL, artistBySlug, type KirtanArtist } from "./kirtans";
@@ -72,6 +72,28 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     if (i >= 0) p.playKirtan(KIRTANS_ALL, i, false);
   };
 
+  /* ЗКН-Н012 — ПЛЕЕР ВЛЕЗАЕТ В ЭКРАН.
+   *
+   * Высота была задана в `vh` — и на телефоне плеер свисал за край: чтобы дотянуться
+   * до транспорта, приходилось прокручивать страницу. Считаем ОСТАТОК: от низа
+   * поиска до нижнего меню. Пересчитываем при повороте и смене размера. */
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [boxH, setBoxH] = useState(0);
+  useEffect(() => {
+    const calc = () => {
+      const top = boxRef.current?.getBoundingClientRect().top ?? 0;
+      const NAV = 104;                       // нижнее меню + воздух под ним
+      setBoxH(Math.max(340, Math.round(window.innerHeight - top - NAV)));
+    };
+    calc();
+    window.addEventListener("resize", calc);
+    window.addEventListener("orientationchange", calc);
+    return () => {
+      window.removeEventListener("resize", calc);
+      window.removeEventListener("orientationchange", calc);
+    };
+  }, [tracks.length]);
+
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
       <HubHeader
@@ -86,14 +108,14 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         placeholder="Найти киртан и включить" ariaLabel="Поиск по аудиотеке"
         onSubmit={findAndPlay} />
 
-      <div style={{ marginTop: 16 }}>
+      <div ref={boxRef} style={{ marginTop: 16 }}>
         {tracks.length === 0 ? (
           <div style={{ padding: "34px 8px", textAlign: "center", color: "var(--color-label-3)",
             fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
             Записи загружаются из канала.<br />Они появятся здесь по мере готовности.
           </div>
         ) : (
-          <NowPlaying embedded />
+          <NowPlaying embedded embeddedHeight={boxH || undefined} />
         )}
       </div>
     </div>

@@ -655,7 +655,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
     playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
-    open: () => { if (active) setExpanded(true); },
+    open: () => setExpanded(true),   // встроенный плеер раскрывается и до первого нажатия
     close: () => setExpanded(false),
     dismiss,
   };

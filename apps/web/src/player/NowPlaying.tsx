@@ -39,7 +39,7 @@ const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, d
  * Я сперва написал ВТОРОЙ плеер (белую доску) — это была ошибка: два плеера рядом
  * это две правды о том, что играет, и они разъедутся. Плеер один.
  */
-export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = false }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void; embedded?: boolean } = {}) {
+export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = false, embeddedHeight }: { onOpenPath?: (path: string) => void; onOpenBhajan?: (slug: string) => void; onDonate?: () => void; embedded?: boolean; embeddedHeight?: number } = {}) {
   const p = usePlayer();
   const bodyRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLSpanElement>(null);
@@ -219,9 +219,22 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   return (
     <div
       aria-hidden={embedded ? undefined : !p.expanded}
+      /* ЗКН-Н012 · решение основателя 13.07.2026 — ПЛЕЕР ВЛЕЗАЕТ В ЭКРАН.
+       *
+       * Высота была `min(76vh, 720px)` — и на телефоне плеер вылезал за экран:
+       * приходилось прокручивать страницу, чтобы дотянуться до транспорта.
+       * Теперь высота СЧИТАЕТСЯ витриной: сколько осталось от низа шапки до
+       * нижнего меню — столько и берём. Ничего не свисает. */
+      onClick={embedded ? (e) => {
+        // тап по ЛЮБОЙ области (кроме самих кнопок) — раскрыть на полный экран
+        if ((e.target as HTMLElement).closest("button,input,a,[role='slider']")) return;
+        if (!p.active && p.tracks.length > 0) p.jumpTo(0);
+        p.open();
+      } : undefined}
       style={embedded ? {
-        position: "relative", width: "100%", height: "min(76vh, 720px)",
-        borderRadius: 22, overflow: "hidden",
+        position: "relative", width: "100%",
+        height: embeddedHeight ? `${embeddedHeight}px` : "min(70svh, 640px)",
+        borderRadius: 22, overflow: "hidden", cursor: "pointer",
         background: "#0e0e10", color: "#fff", fontFamily: "var(--font-text)",
         boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
       } : {
