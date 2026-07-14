@@ -97,7 +97,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * Отдельной сетки папок для этого НЕ НУЖНО: пилюли разделов в плеере уже есть —
    * ими сделаны песни, главы и стихи у книг. */
   const isKirtanQueue = p.kind === "kirtan";
-  if (isKirtanQueue && p.tracks.length > 1) divisions.push({ id: ALL_DIV, label: "Все", count: p.tracks.length });
+  if (isKirtanQueue && p.tracks.length > 1) divisions.push({ id: ALL_DIV, label: "Все голоса", count: p.tracks.length });
 
   const divCount: Record<string, number> = {};
   for (const t of p.tracks) {
@@ -938,18 +938,18 @@ function DivisionPicker({ items, active, onChange, label }: {
           background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.12)", color: ON_DARK }}>
         <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: 600,
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{cur?.label ?? label}</span>
-        {/* ⚠️ ЗДЕСЬ СТОЯЛО ЧИСЛО ГОЛОСОВ — рядом с ИМЕНЕМ голоса.
-            «Шрила Прабхупада · 83» читалось как «у него 83 записи», хотя 83 — это
-            сколько всего голосов в коллекции. Число, поставленное не туда, хуже
-            отсутствующего: оно не молчит, оно ВРЁТ.
-            Здесь стоит число записей ЭТОГО голоса. Сколько всего голосов — написано
-            в самом листе выбора, там это и уместно. */}
-        {cur?.count != null && (
-          <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.45)",
-            fontVariantNumeric: "tabular-nums" }}>
-            {cur.count}
-          </span>
-        )}
+        {/* ⚠️ ЧИСЛА ЗДЕСЬ НЕТ — И НЕ ДОЛЖНО БЫТЬ.
+         *
+         * Сперва тут стояло `items.length` — число ГОЛОСОВ. Выходило «Все · 83»:
+         * человек читает «83 записи», а 83 — это сколько всего голосов. Число,
+         * поставленное не туда, хуже отсутствующего: оно не молчит, оно ВРЁТ.
+         *
+         * Потом я поставил число записей выбранного голоса — но тогда на экране
+         * стало ДВА ОДИНАКОВЫХ числа: «Записи · 1062» в сегменте и «Все · 1062»
+         * здесь. Повтор — это шум, а шум в цифрах читается как ошибка.
+         *
+         * ОДНО ЧИСЛО НА ЭКРАН, И ОНО ЗНАЧИТ ОДНО. Сколько записей — говорит сегмент.
+         * Кнопка говорит ЧЕЙ голос. Сколько всего голосов — говорит лист выбора. */}
         <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -960,7 +960,11 @@ function DivisionPicker({ items, active, onChange, label }: {
           style={{ position: "absolute", inset: 0, zIndex: 20, display: "flex", flexDirection: "column",
             background: "rgba(12,12,14,0.94)", backdropFilter: "blur(28px) saturate(160%)",
             WebkitBackdropFilter: "blur(28px) saturate(160%)" }}>
-          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "12px 14px 8px" }}>
+          <div style={{ flexShrink: 0, padding: "14px 16px 0", fontSize: "var(--text-caption2)",
+            fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
+            {label} · {Math.max(0, items.length - 1)}
+          </div>
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "10px 14px 8px" }}>
             <input value={q} onChange={(e) => setQ(e.target.value)} autoFocus
               placeholder={`Найти в ${label.toLowerCase()}`} aria-label={`Поиск: ${label}`}
               style={{ flex: 1, minWidth: 0, height: 38, padding: "0 12px", borderRadius: 11,
