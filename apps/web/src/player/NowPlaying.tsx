@@ -24,6 +24,8 @@ type DivDef = SubTabDef & { count?: number };
 import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
+const INK_ON_GOLD = "var(--color-on-gold)";   // ЗКН-Д001: чернила НА золоте
+const ON_DARK = "var(--color-on-dark)";      // ЗКН-Д001: текст на тёмной доске
 
 /** Псевдо-раздел «Все» — плоский список всей коллекции (решение основателя). */
 const ALL_DIV = "__all__";
@@ -313,13 +315,13 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         position: "relative", width: "100%",
         height: embeddedHeight ? `${embeddedHeight}px` : "min(70svh, 640px)",
         borderRadius: 22, overflow: "hidden", cursor: "pointer",
-        background: "#0e0e10", color: "#fff", fontFamily: "var(--font-text)",
+        background: "#0e0e10", color: ON_DARK, fontFamily: "var(--font-text)",
         boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
       } : {
         position: "fixed", top: 0, bottom: 0, left: "50%", width: "100%", maxWidth: 480, zIndex: 95,
         transform: `translateX(-50%) translateY(${p.expanded ? `${drag}px` : "100%"})`,
         transition: dragging ? "none" : "transform .44s cubic-bezier(.32,.72,0,1)",
-        background: "#0e0e10", color: "#fff", fontFamily: "var(--font-text)", overflow: "hidden",
+        background: "#0e0e10", color: ON_DARK, fontFamily: "var(--font-text)", overflow: "hidden",
       }}
     >
       {/* ambient artwork background */}
@@ -347,13 +349,13 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               ? <span aria-hidden style={{ width: 38, height: 38 }} />
               : <button type="button" aria-label="Свернуть" onClick={() => p.close()} style={{ ...glass(999), ...iconBtn(38) }}><ChevDownIcon size={22} /></button>}
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: "none" }}>
-              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
+              <div style={{ fontSize: "var(--text-footnote)", fontWeight: 700, letterSpacing: "-0.01em", color: ON_DARK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{p.track?.title}</div>
               <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.25 }}>{isAdHoc ? `${p.bookTitle}${p.artist ? ` · ${p.artist}` : ""}` : isAudiobook ? bookFullTitle(BOOK) : `${sub} · ${bookFullTitle(BOOK)}`}</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
                 style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
-                <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : "#fff" }}><HeartIcon size={17} filled={favorited} /></button>
+                <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : ON_DARK }}><HeartIcon size={17} filled={favorited} /></button>
                 {(!isAdHoc || p.kind === "bhajan") && <button type="button" aria-label={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
@@ -505,7 +507,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               bottom: embedded ? 148 : "calc(env(safe-area-inset-bottom) + 168px)", zIndex: 10,
               display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999,
               border: "none", cursor: "pointer", whiteSpace: "nowrap",
-              background: GOLD, color: "#141416", fontFamily: "var(--font-text)",
+              background: GOLD, color: INK_ON_GOLD, fontFamily: "var(--font-text)",
               fontSize: "var(--text-footnote)", fontWeight: 700,
               boxShadow: "0 8px 24px -6px rgba(210,170,27,0.5)" }}>
             <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden>
@@ -535,7 +537,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               Теперь наоборот: пока шапка видна, панель молчит; уехала — панель
               подхватывает. Одно имя на экране, всегда. */}
           <div style={{ minWidth: 0, maxHeight: collapsed ? 56 : 0, opacity: collapsed ? 1 : 0, overflow: "hidden", transition: "max-height .28s ease, opacity .18s ease" }}>
-            <div style={{ fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
+            <div style={{ fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.01em", color: ON_DARK, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
             <div style={{ fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{sub}{p.loading ? " · загрузка…" : ""}</div>
           </div>
           <div style={{ marginTop: 8 }}>
@@ -551,7 +553,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             <button type="button" aria-label="Назад 15 секунд" onClick={() => p.skip(-15)} style={iconBtn(44)}><Back15Icon size={30} /></button>
             <button type="button" aria-label={p.isPlaying ? "Пауза" : "Играть"} onClick={() => p.togglePlay()}
               style={{ display: "grid", placeItems: "center", height: 64, width: 64, borderRadius: 999, border: "none",
-                background: GOLD, color: "#141416", cursor: "pointer",
+                background: GOLD, color: INK_ON_GOLD, cursor: "pointer",
                 boxShadow: "0 10px 26px -6px rgba(210,170,27,0.45)" }}>
               {p.isPlaying ? <PauseIcon size={30} /> : <PlayIcon size={30} />}
             </button>
@@ -582,7 +584,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
       </div>
 
       {toast && (
-        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: "#fff", fontSize: "var(--text-subhead)", fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
+        <div style={{ position: "absolute", left: "50%", transform: "translateX(-50%)", bottom: "calc(env(safe-area-inset-bottom) + 234px)", zIndex: 6, ...glass(999), padding: "10px 18px", color: ON_DARK, fontSize: "var(--text-subhead)", fontWeight: 500, whiteSpace: "nowrap", boxShadow: "0 10px 36px rgba(0,0,0,0.45)" }}>{toast}</div>
       )}
       {qr && <QrSheet url={qr.url} data={qr.data} onClose={() => setQr(null)} />}
       <ReportSheet open={reportOpen} onClose={() => setReportOpen(false)} context={`Аудио · ${sub}${p.track?.title ? ` · «${p.track.title}»` : ""}`} />
@@ -647,7 +649,7 @@ function DivisionPicker({ items, active, onChange, label }: {
       <button type="button" onClick={() => { setOpen(true); setQ(""); }}
         style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "9px 12px",
           borderRadius: 12, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
-          background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.12)", color: "#fff" }}>
+          background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.12)", color: ON_DARK }}>
         <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: 600,
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{cur?.label ?? label}</span>
         <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.45)" }}>
@@ -668,7 +670,7 @@ function DivisionPicker({ items, active, onChange, label }: {
               placeholder={`Найти в ${label.toLowerCase()}`} aria-label={`Поиск: ${label}`}
               style={{ flex: 1, minWidth: 0, height: 38, padding: "0 12px", borderRadius: 11,
                 border: "0.5px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.07)",
-                color: "#fff", fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", outline: "none" }} />
+                color: ON_DARK, fontSize: "var(--text-subhead)", fontFamily: "var(--font-text)", outline: "none" }} />
             <button type="button" aria-label="Закрыть" onClick={() => setOpen(false)}
               style={{ ...glass(999), ...iconBtn(38), flexShrink: 0 }}>
               <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
@@ -699,7 +701,7 @@ function DivisionPicker({ items, active, onChange, label }: {
                   onClick={() => { onChange(it.id); setOpen(false); }}
                   style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "11px 10px",
                     borderRadius: 11, border: "none", cursor: "pointer", textAlign: "left",
-                    background: on ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff",
+                    background: on ? "rgba(210,170,27,0.16)" : "transparent", color: ON_DARK,
                     fontFamily: "var(--font-text)" }}>
                   <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: on ? 700 : 400,
                     color: on ? GOLD : "rgba(255,255,255,0.9)",
@@ -737,7 +739,7 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
             style={{ flexShrink: 0, padding: "7px 15px", borderRadius: 999,
               border: `0.5px solid ${on ? "rgba(255,255,255,0.18)" : "transparent"}`,
               background: on ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.06)",
-              color: on ? "#fff" : "rgba(255,255,255,0.6)",
+              color: on ? ON_DARK : "rgba(255,255,255,0.6)",
               fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1, whiteSpace: "nowrap",
               cursor: "pointer", fontFamily: "var(--font-text)", transition: "background .18s, color .18s, border-color .18s", WebkitTapHighlightColor: "transparent" }}>
             {it.label}
@@ -777,7 +779,7 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }
         }} />
         <div style={{
           position: "relative", width: "100%", maxWidth: size, aspectRatio: "1 / 1",
-          borderRadius: 22, overflow: "hidden", background: "#fff",
+          borderRadius: 22, overflow: "hidden", background: ON_DARK,
           boxShadow: "0 28px 56px -18px rgba(0,0,0,0.78), 0 2px 10px rgba(0,0,0,0.35)",
         }}>
           <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -795,7 +797,7 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{
             fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800,
-            letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.22,
+            letterSpacing: "-0.02em", color: ON_DARK, lineHeight: 1.22,
             display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
           }}>{title}</div>
           {artist ? (
@@ -823,14 +825,14 @@ function QueueRow({ t, active, num, tile, onClick }: { t: Track; active: boolean
         style={{ display: "flex", flexDirection: "column", gap: 6, padding: 8, borderRadius: 13, border: "none",
           cursor: "pointer", textAlign: "left",
           background: active ? "rgba(210,170,27,0.16)" : "rgba(255,255,255,0.06)",
-          color: "#fff", fontFamily: "var(--font-text)" }}>
+          color: ON_DARK, fontFamily: "var(--font-text)" }}>
         <span style={{ position: "relative", display: "block" }}>
           <img src={COVER_FALLBACK} alt="" loading="lazy"
-            style={{ width: "100%", aspectRatio: "1 / 1", borderRadius: 9, objectFit: "cover", background: "#fff" }} />
+            style={{ width: "100%", aspectRatio: "1 / 1", borderRadius: 9, objectFit: "cover", background: ON_DARK }} />
           <span aria-hidden style={{ position: "absolute", left: 5, top: 5, minWidth: 18, height: 18, padding: "0 5px",
             borderRadius: 999, display: "grid", placeItems: "center", background: "rgba(0,0,0,0.55)",
             backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
-            fontSize: "var(--text-caption2)", fontWeight: 700, color: active ? GOLD : "#fff",
+            fontSize: "var(--text-caption2)", fontWeight: 700, color: active ? GOLD : ON_DARK,
             fontVariantNumeric: "tabular-nums" }}>{label}</span>
         </span>
         <span style={{ fontSize: "var(--text-caption)", fontWeight: active ? 700 : 500, lineHeight: 1.25,
@@ -844,14 +846,14 @@ function QueueRow({ t, active, num, tile, onClick }: { t: Track; active: boolean
   return (
     <button type="button" onClick={onClick} data-active={active ? "1" : undefined}
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
-        background: active ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff" }}>
+        background: active ? "rgba(210,170,27,0.16)" : "transparent", color: ON_DARK }}>
       <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
-      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? "#fff" : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
     </button>
   );
 }
 
 function iconBtn(size: number): CSSProperties {
-  return { display: "grid", placeItems: "center", height: size, width: size, flexShrink: 0, borderRadius: "50%", border: "none", background: "transparent", color: "#fff", cursor: "pointer" };
+  return { display: "grid", placeItems: "center", height: size, width: size, flexShrink: 0, borderRadius: "50%", border: "none", background: "transparent", color: ON_DARK, cursor: "pointer" };
 }

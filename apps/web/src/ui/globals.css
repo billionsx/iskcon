@@ -100,6 +100,11 @@
   --color-hairline-strong: #e3e3e8;
 
   --color-gold: #D2AA1B;
+  /* ЗКН-Д001: текст и знаки НА золоте (кнопка «играть», «К текущей»).
+     Токена не было — оттого он и писался голым числом в трёх местах. */
+  --color-on-gold: #141416;
+  /* Текст на тёмной поверхности плеера. */
+  --color-on-dark: #ffffff;
   --color-gold-deep: #9c7c15;
   --color-gold-50: #fbf6e4;
   --color-gold-100: #f5e9bc;
