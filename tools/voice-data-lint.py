@@ -68,6 +68,18 @@ def classify(w):
     return "unknown"
 
 
+# Святое имя: два слова, ни диакритики, ни слога-улики. Список ИМЕННОЙ —
+# угадывать святое имя нельзя, его надо знать.
+MANTRA_RE = re.compile(
+    "(харе кришна харе кришна кришна кришна харе харе|"
+    "харе рама харе рама рама рама харе харе|харе кришна|харе рама|"
+    "нитай-гаура харибол|нитай гаура харибол|гаура-нитай|харибол|"
+    "шри кришна чайтанья прабху нитьянанда|"
+    "гаурадвайта гададхара шривасади гаура-бхакта-вринда|"
+    "джайа радхе|джайа шри радхе|джайа гуру|джайа гауранга|"
+    "ом намо бхагавате васудевайа|нама ом вишну-падайа|"
+    "джайа джайа гаурачандра)", re.I)
+
 OPENS = re.compile(r'^[«("\u201e]')
 CLOSES = re.compile(r'[»)"\u201c]')
 
@@ -121,6 +133,8 @@ def has_scripture(t):
 
 
 def voiced(t):
+    if MANTRA_RE.search(t):
+        return True
     words = t.split()
     if not words:
         return False
@@ -136,6 +150,8 @@ def real_scripture(t):
       · ограниченная кавычками фраза без нашей речи («айи дина-дайардра натха хе»)
     Вторая критична: линт, знающий только первую, МЕРИЛ БЫ СЕБЯ СВОЕЙ МЕРКОЙ
     и рапортовал 100% — не видя ровно того, что пропускает фронт."""
+    if MANTRA_RE.search(t):
+        return True
     words = t.split()
     if any(classify(w) == "strong" for w in words):
         return True
@@ -220,6 +236,29 @@ def prose_rows():
     return out
 
 
+# ═══ СТАТИЧЕСКИЕ ТЕКСТЫ КОДА ══════════════════════════════════════════════
+# Проза о книгах (BOOK_ABOUT), дхамы, прасад — лежат НЕ в базе, а в исходниках.
+# Их не видит ни SQL-линт, ни построчный гейт. А стих там есть: «кришнас ту
+# бхагаван свайам» — прямо в описании «Шат-сандарбхи».
+STATIC = ["apps/web/src/books.ts", "apps/web/src/dhama/dhamas.ts",
+          "apps/web/src/prasad/prasad.ts", "apps/web/src/prasad/cookbook.ts"]
+STR_RE = re.compile(r'"((?:[^"\\]|\\.){40,})"')
+
+
+def static_rows():
+    out = []
+    root = Path(__file__).resolve().parents[1]
+    for rel in STATIC:
+        f = root / rel
+        if not f.exists():
+            continue
+        for m in STR_RE.finditer(f.read_text(encoding="utf-8")):
+            t = m.group(1).replace('\\"', '"')
+            if real_scripture(t):
+                out.append(("код:" + Path(rel).name, rel, t))
+    return out
+
+
 def main():
     print("ЛИНТ ДАННЫХ · ЧУЖОЙ ГОЛОС (ЗКН-Д013)")
     print("=" * 76)
@@ -233,7 +272,7 @@ def main():
 
     print("\nПРОЗА — стих распознаётся ПОЛОСОЙ (тут возможен промах):")
     stat, missed = {}, []
-    for kind, key, txt in prose_rows():
+    for kind, key, txt in prose_rows() + static_rows():
         s = stat.setdefault(kind, [0, 0, 0])
         s[0] += 1
         if not real_scripture(txt):

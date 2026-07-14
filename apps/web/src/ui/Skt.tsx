@@ -20,7 +20,7 @@
  * (./scripture.ts) и оборачивает только технические термины — имена собственные
  * и лоанворды остаются прямым шрифтом. См. scripture.ts про конвенцию и охват.
  */
-import type { ReactNode } from "react";
+import { Fragment, type ReactNode } from "react";
 import { SCRIPTURE_TERM_REGEX, SCRIPTURE_COMPOUND_REGEX, SCRIPTURE_STOP_SET, IS_LETTER } from "./scripture";
 
 export function Skt({
@@ -277,6 +277,26 @@ function wrapGlossaryInner(text: string, keyBase: number, out: ReactNode[]): voi
 export function renderTerms(text: string | null | undefined): ReactNode {
   if (!text) return text ?? null;
   if (scriptFraction(text) >= 0.45) return <Skt voice>{text}</Skt>;
+
+  // СВЯТОЕ ИМЯ звучит всегда — даже посреди нашей прозы, даже без диакритики.
+  MANTRA_RE.lastIndex = 0;
+  if (MANTRA_RE.test(text)) {
+    MANTRA_RE.lastIndex = 0;
+    const out: ReactNode[] = [];
+    let last = 0, m: RegExpExecArray | null;
+    while ((m = MANTRA_RE.exec(text))) {
+      if (m.index > last) out.push(<Fragment key={"p" + last}>{renderRuns(text.slice(last, m.index))}</Fragment>);
+      out.push(<Skt voice key={"m" + m.index}>{m[0]}</Skt>);
+      last = m.index + m[0].length;
+    }
+    if (last < text.length) out.push(<Fragment key={"p" + last}>{renderRuns(text.slice(last))}</Fragment>);
+    return out;
+  }
+  return renderRuns(text);
+}
+
+function renderRuns(text: string): ReactNode {
+  if (!text) return text;
 
   // ЗКН-Д013: стих — ФРАЗА. Диакритика в комментариях BBT стоит не на каждом
   // слове («Ведаиш́ ча сарваир ахам эва ведйах̣»), и пословный матчер выдавал
