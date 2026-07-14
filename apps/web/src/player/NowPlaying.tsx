@@ -27,7 +27,13 @@ import { ROUTES, url } from "../routes";
 const GOLD = "var(--color-gold)";
 const INK_ON_GOLD = "var(--color-on-gold)";   // ЗКН-Д001: чернила НА золоте
 const ON_DARK = "var(--color-on-dark)";
-const HEART = "var(--color-heart)";          // ЗКН-Д001: сердце избранного      // ЗКН-Д001: текст на тёмной доске
+const HEART = "var(--color-heart)";          // ЗКН-Д001: сердце избранного
+
+/** Убрать имя голоса из начала названия: оно и так стоит строкой ниже. */
+function stripVoice(title: string, voice: string): string {
+  if (!voice) return title;
+  return title.startsWith(voice + ". ") ? title.slice(voice.length + 2) : title;
+}      // ЗКН-Д001: текст на тёмной доске
 
 /** Псевдо-раздел «Все» — плоский список всей коллекции (решение основателя). */
 const ALL_DIV = "__all__";
@@ -151,7 +157,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   };
   const favs = useFavorites();
   const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key)), [favs]);
-  /* ═══ ЗКН-Н056 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
+  /* ═══ ЗКН-Н059 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
    *
    * Порядок был очередной — по голосам. Это неверно, и вот почему: человек отметил
    * запись ТОЛЬКО ЧТО. Если она утонет где-то в середине, он решит, что кнопка не
@@ -566,7 +572,18 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {isAdHoc
             ? <KirtanHero cover={p.cover}
-                title={p.track?.title || p.bookTitle}
+                /* ⚠️ ИМЯ ГОЛОСА ПЕЧАТАЛОСЬ ДВАЖДЫ.
+                 *
+                 * Заголовок: «Шрила Прабхупада. Анади Карама Пхале»
+                 * Строка ниже: «Шрила Прабхупада · 1 из 132»
+                 *
+                 * Одно и то же имя, вплотную, два раза. Оно съедало заголовок (тот
+                 * ломался на две строки и обрубался), а после точки схлопывался
+                 * пробел — из-за отрицательного трекинга крупного начертания.
+                 *
+                 * Ту же ошибку я уже чинил в строках папки — и снова не довёл до
+                 * шапки. Заголовок говорит, ЧТО звучит. Чей голос — сказано ниже. */
+                title={stripVoice(p.track?.title || p.bookTitle, curGroupLabel)}
                 artist={p.artist}
                 meta={curGroupLabel
                   ? `${curGroupLabel} · ${curGroupPos} из ${curGroupTotal}`
@@ -686,7 +703,12 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                       out.push(
                         <QueueRow key={t.file} t={t} active={i === p.index}
                           num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
-                          strip={isAdHoc && activeDiv !== ALL_DIV ? (t.groupLabel ?? "") : undefined}
+                          /* Имя голоса срезаем ВЕЗДЕ, где оно уже сказано рядом:
+                             в папке — на кнопке голоса, в «Все» — в липком заголовке
+                             над строками. Не срезаем только там, где сказать больше
+                             негде: в «Моё» и в найденном — там записи из разных
+                             голосов вперемешку, и без имени строка немая. */
+                          strip={isAdHoc && (activeDiv !== ALL_DIV || flat) ? (t.groupLabel ?? "") : undefined}
                           fav={isAdHoc ? favSet.has(trackKey(t)) : undefined}
                           seal={isAdHoc && qView === "list"}
                           onFav={isAdHoc && qView === "list" ? () => toggleTrackFav(t) : undefined}
