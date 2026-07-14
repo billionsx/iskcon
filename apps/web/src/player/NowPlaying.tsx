@@ -206,6 +206,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
 
   /* Таймер сна: сколько осталось. Показываем минуты — секунды тут только тревожат. */
   const [sleepOpen, setSleepOpen] = useState(false);
+  const [showTotal, setShowTotal] = useState(false);   // время: «осталось» ↔ «всего»
   const [, tickSleep] = useState(0);
   useEffect(() => {
     if (p.sleepAt == null) return;
@@ -629,6 +630,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                 /* Свайп по обложке — назад и вперёд. В полноэкранном плеере это
                    самый естественный жест: палец уже там, куда смотрят глаза. */
                 onSwipe={(d) => (d === 1 ? p.next() : p.prev())}
+                onDismiss={!embedded ? () => p.close() : undefined}
                 maxCover={embedded && embeddedHeight
                   ? Math.max(120, Math.min(240, Math.round(embeddedHeight * 0.28)))
                   : undefined} />
@@ -859,8 +861,19 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                  тонкой (её рисует сам браузер), а ЗОНА ЗАХВАТА растёт до 44. */
               style={{ width: "100%", accentColor: GOLD, height: TAP, cursor: "pointer",
                 touchAction: "none", margin: 0, display: "block" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.5)", marginTop: -1, fontVariantNumeric: "tabular-nums" }}>
-              <span>{fmtTime(p.currentTime)}</span><span>−{fmtTime(remaining)}</span>
+            {/* Тап по времени — «сколько осталось» ↔ «сколько всего».
+                На записи в 116 минут это разные вопросы, и оба нужны. Один и тот же
+                уголок отвечает на оба — лишней кнопки не заводим. */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center",
+              fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.6)",
+              fontVariantNumeric: "tabular-nums", marginTop: -2 }}>
+              <span>{fmtTime(p.currentTime)}</span>
+              <button type="button" onClick={(e) => { e.stopPropagation(); setShowTotal((v) => !v); }}
+                aria-label={showTotal ? "Показать, сколько осталось" : "Показать полную длительность"}
+                style={{ border: "none", background: "none", cursor: "pointer", padding: "8px 0 8px 14px",
+                  color: "inherit", font: "inherit", fontVariantNumeric: "tabular-nums" }}>
+                {showTotal ? fmtTime(p.duration) : `−${fmtTime(remaining)}`}
+              </button>
             </div>
           </div>
           <div style={{ marginTop: 6, display: "flex", alignItems: "center", justifyContent: "center", gap: 14 }}>
@@ -1140,7 +1153,7 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
  * и ряд действий (избранное · ещё). Зеркалит презентационный BookHeroCard, но
  * квадратное под аудио-альбом, а не книжная обложка.
  */
-function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, big, onMeta, onSwipe }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number; big?: boolean; onMeta?: () => void; onSwipe?: (dir: 1 | -1) => void }) {
+function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, big, onMeta, onSwipe, onDismiss }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number; big?: boolean; onMeta?: () => void; onSwipe?: (dir: 1 | -1) => void; onDismiss?: () => void }) {
   /* ⚠️ ОБЛОЖКА СХЛОПЫВАЛАСЬ В НОГОТЬ НА ПОЛНОМ ЭКРАНЕ.
    *
    * Контейнер был `grid` + `placeItems:center`, а у обложки `width:100%`. В
@@ -1153,15 +1166,29 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, 
    * она берёт всё, что можно, и остаётся квадратом. */
   const w = big ? "min(78vw, 42vh, 400px)" : `${Math.max(112, maxCover ?? 240)}px`;
 
-  /* Свайп по обложке — назад и вперёд. В полноэкранном плеере это самый
-     естественный жест: палец уже там, где смотрят глаза. */
-  const sx = useRef<number | null>(null);
-  const onDown = (e: React.PointerEvent) => { if (onSwipe) sx.current = e.clientX; };
+  /* ═══ ЖЕСТЫ ПО ОБЛОЖКЕ ═══
+   *
+   * Вбок — предыдущая и следующая запись. Вниз — свернуть.
+   *
+   * Это не украшение: в полноэкранном плеере палец УЖЕ на обложке — там, куда
+   * смотрят глаза. Рука ждёт этих движений и без подсказки. Плеер, где закрывать
+   * надо крестиком в углу, а листать — кнопками внизу, заставляет палец ездить по
+   * экрану вместо того, чтобы слушать.
+   *
+   * Направление решается по БОЛЬШЕЙ составляющей: жест редко бывает чистым, и
+   * гадать по одной оси — значит срабатывать не на то. */
+  const sp = useRef<{ x: number; y: number } | null>(null);
+  const onDown = (e: React.PointerEvent) => { if (onSwipe || onDismiss) sp.current = { x: e.clientX, y: e.clientY }; };
   const onUp = (e: React.PointerEvent) => {
-    if (!onSwipe || sx.current == null) return;
-    const dx = e.clientX - sx.current;
-    sx.current = null;
-    if (Math.abs(dx) > 56) onSwipe(dx < 0 ? 1 : -1);
+    if (!sp.current) return;
+    const dx = e.clientX - sp.current.x;
+    const dy = e.clientY - sp.current.y;
+    sp.current = null;
+    if (Math.abs(dy) > Math.abs(dx)) {
+      if (onDismiss && dy > 70) onDismiss();          // вниз — свернуть
+    } else if (onSwipe && Math.abs(dx) > 56) {
+      onSwipe(dx < 0 ? 1 : -1);                        // вбок — записи
+    }
   };
 
   return (
@@ -1177,11 +1204,12 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, 
           background: "radial-gradient(closest-side, rgba(210,170,27,0.26), rgba(210,170,27,0.07) 56%, rgba(210,170,27,0) 78%)",
           filter: "blur(16px)",
         }} />
-        <div onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={() => { sx.current = null; }}
+        <div onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={() => { sp.current = null; }}
           style={{
             position: "relative", width: "100%", aspectRatio: "1 / 1",
             borderRadius: big ? 26 : 22, overflow: "hidden", background: ON_DARK,
-            touchAction: onSwipe ? "pan-y" : undefined, cursor: onSwipe ? "grab" : undefined,
+            touchAction: (onSwipe || onDismiss) ? "none" : undefined,
+            cursor: (onSwipe || onDismiss) ? "grab" : undefined,
             boxShadow: "0 30px 60px -18px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.4)",
           }}>
           <img src={cover} alt="" draggable={false}

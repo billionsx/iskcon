@@ -109,9 +109,25 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       setBoxH(Math.max(600, Math.round(window.innerHeight - top - 104)));
     };
     calc();
-    window.addEventListener("resize", calc);
+
+    /* ⚠️ ПЛЕЕР ПРЫГАЛ ПОД ПАЛЬЦЕМ.
+     *
+     * Safari прячет адресную строку при прокрутке — `innerHeight` меняется на ~100
+     * точек, слушатель `resize` срабатывает, и плеер пересчитывает высоту ПРЯМО ВО
+     * ВРЕМЯ ЖЕСТА. Экран дёргается, палец промахивается.
+     *
+     * Ширина при этом не меняется — а меняется она только при НАСТОЯЩЕЙ перестройке:
+     * поворот, разделение экрана, смена окна. По ней и судим. Дрожание высоты от
+     * адресной строки — не перестройка, а дыхание браузера, и отвечать на него нельзя. */
+    let lastW = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === lastW) return;   // только высота дрогнула — молчим
+      lastW = window.innerWidth;
+      calc();
+    };
+    window.addEventListener("resize", onResize);
     window.addEventListener("orientationchange", calc);
-    return () => { window.removeEventListener("resize", calc); window.removeEventListener("orientationchange", calc); };
+    return () => { window.removeEventListener("resize", onResize); window.removeEventListener("orientationchange", calc); };
   }, [tracks.length]);
 
   /* ⚠️ НИЗ ПЛЕЕРА УХОДИЛ ПОД НИЖНЕЕ МЕНЮ.
