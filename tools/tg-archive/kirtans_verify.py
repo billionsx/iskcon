@@ -121,13 +121,18 @@ def main():
                     dur_sql.append((t["id"], sec))
                     dur_set += 1
 
-        print("::notice::%-42s архив: %-4d  база: %d" % (ident, len(audio), len(rows)))
+        if len(audio) != len(rows):
+            print("::warning::%s — архив %d, база %d" % (ident, len(audio), len(rows)))
 
-    print("::notice::══════ ИТОГ ══════")
-    print("::notice::играется как есть: %d" % ok)
-    print("::notice::имя ПОЧИНЕНО:      %d" % fixed)
-    print("::notice::ФАЙЛА НЕТ:         %d" % broken)
-    print("::notice::длительность:      %d" % dur_set)
+    print("::notice::ИТОГ — играется: %d · имя чинится: %d · файла нет: %d · длительность: %d"
+          % (ok, fixed, broken, dur_set))
+
+    # Отчёт — В БАЗУ: аннотаций GitHub даёт десяток, и итог в них не влезает.
+    d1("CREATE TABLE IF NOT EXISTS kirtans_verify ("
+       "  at TEXT PRIMARY KEY, ok INTEGER, fixed INTEGER, broken INTEGER, durs INTEGER, sample TEXT)")
+    sample = " | ".join(b.split("/")[-1][:44] for b in broken_ids[:12])
+    d1("INSERT OR REPLACE INTO kirtans_verify (at, ok, fixed, broken, durs, sample) VALUES (?1,?2,?3,?4,?5,?6)",
+       [time.strftime("%Y-%m-%d %H:%M"), ok, fixed, broken, dur_set, sample])
 
     if os.environ.get("APPLY") != "1":
         print("::notice::пробный прогон — база не тронута")
