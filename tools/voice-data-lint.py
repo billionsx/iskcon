@@ -110,27 +110,66 @@ FIELDS = [
 ]
 
 
+# Признаки шастры — прямо в SQL: тянуть все 18 723 комментария по REST нельзя,
+# ответ не пролезает, `query` возвращает None — и линт отчитывается ЗЕЛЁНЫМ,
+# НЕ ПОСМОТРЕВ НИЧЕГО. Ложный зелёный хуже красного.
+MARK_SQL = ("(instr({c},'а̄')>0 OR instr({c},'н̣')>0 OR instr({c},'ш́')>0 OR "
+            "instr({c},'х̣')>0 OR instr({c},'м̇')>0 OR instr({c},'т̣')>0 OR "
+            "instr({c},'р̣')>0 OR instr({c},'ā')>0 OR instr({c},'ṛ')>0 OR "
+            "instr({c},'йа')>0 OR instr({c},'йо')>0 OR instr({c},'кша')>0)")
+PAGE = 150
+
+
+def paged(sql_count, sql_page, kind):
+    """Постранично: REST не отдаёт мегабайты одним ответом."""
+    total = (d1.query(sql_count) or [{"n": 0}])[0]["n"]
+    got, off = [], 0
+    while off < total:
+        rows = d1.query(sql_page + " LIMIT %d OFFSET %d" % (PAGE, off))
+        if not rows:
+            break
+        for r in rows:
+            v = list(r.values())
+            got.append((kind, str(v[0]), str(v[1] or "")))
+        off += PAGE
+    return total, got
+
+
 def prose_rows():
-    """Всё, что идёт через renderTerms: комментарии · карточки · статьи · книги-проза."""
-    out = []
-    for r in d1.query("SELECT verse_id, purport FROM verse_texts "
-                      "WHERE coalesce(purport,'')<>''") or []:
-        out.append(("комментарий", r["verse_id"], r["purport"]))
-    for r in d1.query("SELECT entity_id, longform FROM entity_profiles "
-                      "WHERE coalesce(longform,'')<>''") or []:
-        try:
-            book = json.loads(r["longform"])
-        except Exception:
-            continue
-        for t in book.get("tabs", []):
-            for sub in (t.get("subtabs") or [{"sections": t.get("sections") or []}]):
-                for sec in sub.get("sections", []):
-                    for para in (sec.get("p") or []):
-                        if para and len(para) > 25:
-                            out.append(("карточка", r["entity_id"], para))
-    for r in d1.query("SELECT slug, text FROM content_blocks "
-                      "WHERE kind IN ('para','lead','accent') AND coalesce(text,'')<>''") or []:
-        out.append(("статья", r["slug"], r["text"]))
+    """Всё, что идёт через renderTerms: комментарии · карточки · статьи."""
+    out, expected = [], 0
+
+    n, rows = paged(
+        "SELECT COUNT(*) n FROM verse_texts WHERE coalesce(purport,'')<>'' AND " + MARK_SQL.format(c="purport"),
+        "SELECT verse_id, purport FROM verse_texts WHERE coalesce(purport,'')<>'' AND "
+        + MARK_SQL.format(c="purport") + " ORDER BY verse_id", "комментарий")
+    expected += n
+    out += rows
+
+    n, rows = paged(
+        "SELECT COUNT(*) n FROM entity_profiles p, json_tree(p.longform) j WHERE j.key='p' AND "
+        + MARK_SQL.format(c="j.value"),
+        "SELECT p.entity_id, j.value FROM entity_profiles p, json_tree(p.longform) j "
+        "WHERE j.key='p' AND " + MARK_SQL.format(c="j.value") + " ORDER BY p.entity_id", "карточка")
+    expected += n
+    out += rows
+
+    n, rows = paged(
+        "SELECT COUNT(*) n FROM content_blocks WHERE kind IN ('para','lead','accent') AND "
+        + MARK_SQL.format(c="text"),
+        "SELECT slug, text FROM content_blocks WHERE kind IN ('para','lead','accent') AND "
+        + MARK_SQL.format(c="text") + " ORDER BY slug", "статья")
+    expected += n
+    out += rows
+
+    # ЛИНТ, КОТОРОМУ НЕЧЕГО БЫЛО ПРОВЕРЯТЬ, ОБЯЗАН УПАСТЬ.
+    if expected and len(out) < expected * 0.9:
+        print("\n✗ ЛИНТ НЕ ПРОЧИТАЛ ДАННЫЕ: ждал %d строк, получил %d." % (expected, len(out)))
+        print("  Зелёный отчёт на пустой выборке — ложь. Падаю.")
+        sys.exit(2)
+    if not out:
+        print("\n✗ ЛИНТ НЕ ПОЛУЧИЛ НИ ОДНОЙ СТРОКИ. Падаю.")
+        sys.exit(2)
     return out
 
 
