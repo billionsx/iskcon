@@ -72,4 +72,38 @@ with open("kirtans_dead.json", "w", encoding="utf-8") as f:
     json.dump([{"id": t["id"], "identifier": t["identifier"], "file": t["file"], "title": t["title"]} for t in dead],
               f, ensure_ascii=False, indent=1)
 print("::notice::список мёртвых записан в kirtans_dead.json")
+
+# ═══ ВТОРАЯ ПРОВЕРКА: ОТДАЁТ ЛИ АРХИВ ФАЙЛ ПО ССЫЛКЕ ═══
+#
+# Метаданные могут ЗНАТЬ о файле, а `/download/` — не отдавать его: имена с
+# необычными знаками (точка после дефиса, скобки, кавычки) ломают путь. Запись,
+# которая числится, но не звучит, — хуже отсутствующей: человек нажимает и ничего
+# не происходит. Проверяем КАЖДУЮ ссылку, а не выборку.
+import urllib.parse
+
+def probe(t):
+    u = "https://archive.org/download/%s/%s" % (t["identifier"], urllib.parse.quote(t["file"]))
+    req = urllib.request.Request(u, method="HEAD")
+    req.add_header("User-Agent", "iskcon-verify/1")
+    try:
+        with urllib.request.urlopen(req, timeout=45) as r:
+            return (t, r.status)
+    except urllib.error.HTTPError as e:                       # ЗКН-Ф014
+        return (t, e.code)
+    except Exception:
+        return (t, 0)
+
+bad = []
+with ThreadPoolExecutor(max_workers=12) as ex:
+    for t, code in ex.map(probe, tracks):
+        if code not in (200, 206, 302):
+            bad.append((t, code))
+
+print("::notice::ССЫЛКА ОТДАЁТ ЗВУК: %d · НЕ ОТДАЁТ: %d" % (len(tracks) - len(bad), len(bad)))
+for t, code in bad[:40]:
+    print("::warning::НЕ ИГРАЕТ [%s]: %s | %s" % (code, t["title"][:52], t["file"][:52]))
+
+with open("kirtans_broken.json", "w", encoding="utf-8") as f:
+    json.dump([{"id": t["id"], "identifier": t["identifier"], "file": t["file"],
+                "title": t["title"], "code": c} for t, c in bad], f, ensure_ascii=False, indent=1)
 sys.exit(0)

@@ -17,4 +17,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kirtans-dead
-          path: tools/tg-archive/kirtans_dead.json
+          path: |
+            tools/tg-archive/kirtans_dead.json
+            tools/tg-archive/kirtans_broken.json

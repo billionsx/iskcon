@@ -456,6 +456,15 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           Пустого места внизу быть НЕ МОЖЕТ по устройству. */}
       <div style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
         {/* pinned header: grabber + minimize / (book title on scroll) / close */}
+        {/* ⚠️ ПУСТОЕ МЕСТО СВЕРХУ.
+         *
+         * Во встроенном плеере шапка не нужна: сворачивать некуда, закрывать нечего,
+         * название стоит в самом плеере. Я её «спрятал» — но оставил РАСПОРКИ: две
+         * невидимые кнопки 38×38 и блок заголовка. Пустота осталась, а с ней съехало
+         * вниз всё остальное.
+         *
+         * Спрятать — не значит убрать. Во встроенном режиме шапки НЕТ вовсе. */}
+        {!embedded && (
         <div onPointerDown={embedded ? undefined : onDown} onPointerMove={embedded ? undefined : onMove}
           onPointerUp={embedded ? undefined : onUp} onPointerCancel={embedded ? undefined : onUp}
           style={{
@@ -490,6 +499,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             </div>
           </div>
         </div>
+        )}
 
         {/* ═══ СЕГМЕНТ: «Сейчас» / «Очередь» ═══
             Один экран — одна задача. Смешивать «что звучит» и «что ещё есть» в
@@ -499,7 +509,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             style={{ display: "flex", gap: 3, padding: 3, borderRadius: 12,
               background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
             {(isAdHoc
-              ? [["now", "Играет"], ["queue", "Записи"], ["mine", "Моё"]] as const
+              ? [["now", "Играет"], ["queue", "Коллекция"], ["mine", "Моё"]] as const
               : [["now", "Сейчас"], ["queue", "Содержание"]] as const
             ).map(([id, label]) => {
               const on = pane === id;
@@ -578,7 +588,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                 title={p.track?.title || p.bookTitle}
                 artist={p.artist}
                 meta={curGroupLabel
-                  ? `Записи голоса · ${curGroupPos} из ${curGroupTotal}`
+                  ? `Записи исполнителя · ${curGroupPos} из ${curGroupTotal}`
                   : (p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle)}
                 onMeta={curGroupId ? () => { setActiveDiv(curGroupId); setPane("queue"); } : undefined}
                 note={albumById(p.book)?.note} coverActions={coverActions}
@@ -613,10 +623,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   ? <DivisionPicker items={cantoTabs} active={browseCanto} onChange={setBrowseCanto} label="Песни" />
                   : hierQueue
                   ? <DivisionPicker items={divisions} active={activeDiv} onChange={setActiveDiv}
-                      label={isAdHoc ? "Голоса" : "Разделы"} />
+                      label={isAdHoc ? "Исполнители" : "Разделы"} />
                   : <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
                       textTransform: "uppercase", color: GOLD }}>
-                      {isAdHoc ? "Записи" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+                      {isAdHoc ? "Коллекция" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
                     </span>}
               </span>
               {isAdHoc && (
