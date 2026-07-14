@@ -28,12 +28,7 @@ const GOLD = "var(--color-gold)";
 const INK_ON_GOLD = "var(--color-on-gold)";   // ЗКН-Д001: чернила НА золоте
 const ON_DARK = "var(--color-on-dark)";
 const HEART = "var(--color-heart)";          // ЗКН-Д001: сердце избранного
-
-/** Убрать имя голоса из начала названия: оно и так стоит строкой ниже. */
-function stripVoice(title: string, voice: string): string {
-  if (!voice) return title;
-  return title.startsWith(voice + ". ") ? title.slice(voice.length + 2) : title;
-}      // ЗКН-Д001: текст на тёмной доске
+      // ЗКН-Д001: текст на тёмной доске
 
 /** Псевдо-раздел «Все» — плоский список всей коллекции (решение основателя). */
 const ALL_DIV = "__all__";
@@ -583,10 +578,18 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                  *
                  * Ту же ошибку я уже чинил в строках папки — и снова не довёл до
                  * шапки. Заголовок говорит, ЧТО звучит. Чей голос — сказано ниже. */
-                title={stripVoice(p.track?.title || p.bookTitle, curGroupLabel)}
+                /* ⚠️ Я СРЕЗАЛ ИМЯ ИЗ НАЗВАНИЯ — И ЭТО БЫЛО НЕ МОЁ ДЕЛО.
+                 *
+                 * Названия писал основатель: своей рукой, в документе, с именем.
+                 * Данные — его. Показ — мой. Срезая имя «чтобы не повторялось», я
+                 * подменил его работу своим вкусом.
+                 *
+                 * Повтор снимается ИНАЧЕ: имя убрано из СЛУЖЕБНОЙ строки под
+                 * заголовком, а не из названия. Служебная строка — моя, название — нет. */
+                title={p.track?.title || p.bookTitle}
                 artist={p.artist}
                 meta={curGroupLabel
-                  ? `${curGroupLabel} · ${curGroupPos} из ${curGroupTotal}`
+                  ? `Записи голоса · ${curGroupPos} из ${curGroupTotal}`
                   : (p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle)}
                 onMeta={curGroupId ? () => { setActiveDiv(curGroupId); setPane("queue"); } : undefined}
                 note={albumById(p.book)?.note} coverActions={coverActions} />
@@ -708,7 +711,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                              над строками. Не срезаем только там, где сказать больше
                              негде: в «Моё» и в найденном — там записи из разных
                              голосов вперемешку, и без имени строка немая. */
-                          strip={isAdHoc && (activeDiv !== ALL_DIV || flat) ? (t.groupLabel ?? "") : undefined}
+                          /* Название показываем ЦЕЛИКОМ — так, как его написал основатель. */
                           fav={isAdHoc ? favSet.has(trackKey(t)) : undefined}
                           seal={isAdHoc && qView === "list"}
                           onFav={isAdHoc && qView === "list" ? () => toggleTrackFav(t) : undefined}
@@ -905,6 +908,9 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
  * ═══════════════════════════════════════════════════════════════════════════ */
 const PILL_LIMIT = 14;
 
+/** Закреплены сверху по решению основателя — вне алфавита. */
+const PINNED = new Set(["Шрила Прабхупада"]);
+
 function DivisionPicker({ items, active, onChange, label }: {
   items: DivDef[]; active: string; onChange: (id: string) => void; label: string;
 }) {
@@ -919,16 +925,24 @@ function DivisionPicker({ items, active, onChange, label }: {
   const nq = q.trim().toLowerCase();
   const shown = nq ? items.filter((i) => i.label.toLowerCase().includes(nq)) : items;
 
-  // Азбука — по первой букве. Пустых букв не показываем: буква, за которой ничего
-  // нет, это ложное обещание.
+  /* ⚠️ АЗБУКА ШЛА В ПОРЯДКЕ СПИСКА, А НЕ ПО АЛФАВИТУ.
+   *
+   * Получалось «В Ш А Б Г Д…»: «Все» дало В, «Шрила Прабхупада» — Ш, и они встали
+   * ВПЕРЕДИ алфавита. Азбука, идущая не по алфавиту, — не указатель, а насмешка.
+   *
+   * Закреплённые сверху («Все», Шрила Прабхупада — решение основателя) в азбуку не
+   * входят: они и так всегда на виду, а в указателе только путали бы. Азбука ведёт
+   * по АЛФАВИТНОЙ части списка. */
   const letters: string[] = [];
   const firstOf: Record<string, string> = {};
-  for (const i of shown) {
+  const alphaOnly = shown.filter((i) => i.id !== ALL_DIV && !PINNED.has(i.label));
+  for (const i of alphaOnly) {
     const L = (i.label[0] || "").toUpperCase();
     if (!L || firstOf[L]) continue;
     firstOf[L] = i.id;
     letters.push(L);
   }
+  letters.sort((a, b) => a.localeCompare(b, "ru"));
 
   return (
     <>
@@ -998,10 +1012,16 @@ function DivisionPicker({ items, active, onChange, label }: {
             {shown.length === 0 ? (
               <div style={{ padding: "28px 8px", textAlign: "center", color: "rgba(255,255,255,0.45)",
                 fontSize: "var(--text-subhead)" }}>Ничего не найдено</div>
-            ) : shown.map((it) => {
+            ) : shown.map((it, k) => {
               const on = it.id === active;
+              const pinned = it.id === ALL_DIV || PINNED.has(it.label);
+              const nextIsAlpha = !pinned ? false
+                : !(shown[k + 1] && (shown[k + 1].id === ALL_DIV || PINNED.has(shown[k + 1].label)));
               return (
-                <button key={it.id} id={`div-${it.id}`} type="button"
+                <div key={it.id} style={nextIsAlpha
+                  ? { borderBottom: "0.5px solid rgba(255,255,255,0.10)", marginBottom: 6, paddingBottom: 6 }
+                  : undefined}>
+                <button id={`div-${it.id}`} type="button"
                   onClick={() => { onChange(it.id); setOpen(false); }}
                   style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "11px 10px",
                     borderRadius: 11, border: "none", cursor: "pointer", textAlign: "left",
@@ -1015,6 +1035,7 @@ function DivisionPicker({ items, active, onChange, label }: {
                       fontVariantNumeric: "tabular-nums" }}>{it.count}</span>
                   )}
                 </button>
+                </div>
               );
             })}
           </div>
@@ -1157,11 +1178,6 @@ function Seal({ size, playing }: { size: number; playing?: boolean }) {
 function QueueRow({ t, active, num, tile, strip, fav, seal, onFav, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; strip?: string; fav?: boolean; seal?: boolean; onFav?: () => void; onClick: () => void }) {
   const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
 
-  /* ⚠️ В ПАПКЕ ИМЯ ИСПОЛНИТЕЛЯ В КАЖДОЙ СТРОКЕ — ШУМ.
-   * Открыл папку Ананды Вардханы — и все двенадцать строк начинаются с «Ананда
-   * Вардхана Свами Махарадж…». Настоящее название при этом не влезает и обрубается.
-   * Имя уже стоит в шапке папки; в строке оно лишнее. */
-  const title = strip && t.title.startsWith(strip + ". ") ? t.title.slice(strip.length + 2) : t.title;
 
   if (tile) {
     return (
@@ -1181,7 +1197,7 @@ function QueueRow({ t, active, num, tile, strip, fav, seal, onFav, onClick }: { 
         </span>
         <span style={{ fontSize: "var(--text-caption)", fontWeight: active ? 700 : 500, lineHeight: 1.25,
           color: active ? GOLD : "rgba(255,255,255,0.9)",
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</span>
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.title}</span>
         {t.durationSec ? <span style={{ fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
       </button>
     );
@@ -1194,7 +1210,7 @@ function QueueRow({ t, active, num, tile, strip, fav, seal, onFav, onClick }: { 
       {seal ? <Seal size={38} playing={active} /> : (
         <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
       )}
-      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
       {onFav && (
         <span role="button" tabIndex={0} aria-label={fav ? "Убрать из «Моё»" : "В «Моё»"} aria-pressed={fav}
