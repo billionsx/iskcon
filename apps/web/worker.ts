@@ -1090,6 +1090,37 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
   return json({ book: "all", kind: "kirtan", modes: { plain: { identifier: "kirtans-all", tracks } } });
 }
 
+/**
+ * ПОИСК — ЭТО СВОЙ АЛЬБОМ, А НЕ ФИЛЬТР СПИСКА.
+ *
+ * Человек ввёл имя и нажал ввод — очередь плеера СТАНОВИТСЯ найденным: первое
+ * играет, остальные идут следом. Библиотека при этом никуда не девается: она
+ * остаётся отдельным альбомом-папкой («Все киртаны»), и вернуться в неё — один тап.
+ *
+ * ⚠️ Фильтруем В JS, а не в SQL. SQLite `lower()` кириллицу НЕ ПОНИМАЕТ: «Джайа»
+ * и «джайа» для него разные слова, и поиск бы молча не находил половину.
+ */
+async function kirtanFindManifest(env: Env, origin: string, q: string): Promise<Response> {
+  const res = await env.DB.prepare(
+    `SELECT t.identifier, t.file, t.title, t.duration, a.name AS artist
+       FROM kirtan_tracks t LEFT JOIN kirtan_artists a ON a.slug = t.artist_slug
+      ORDER BY t.artist_slug, t.file`
+  ).all<{ identifier: string; file: string; title: string; duration: number | null; artist: string | null }>();
+
+  const nq = q.trim().toLowerCase();
+  const hits = (res.results || []).filter(
+    (r) => (r.title || "").toLowerCase().includes(nq) || (r.artist || "").toLowerCase().includes(nq),
+  );
+  const tracks: AudioTrack[] = hits.map((r, i) => ({
+    kind: "song" as const, pos: i, chapter: null,
+    title: r.title, file: r.file,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+    durationSec: r.duration || 0,
+    artist: r.artist ?? "", album: `Найдено: ${q}`,
+  }));
+  return json({ book: `q:${q}`, kind: "kirtan", modes: { plain: { identifier: "kirtans-find", tracks } } });
+}
+
 async function kirtanManifest(env: Env, origin: string, albumId: string): Promise<Response> {
   if (albumId === "all") return kirtanAllManifest(env, origin);
   const album = kirtanAlbumById(albumId);
@@ -2067,6 +2098,11 @@ export default {
     }
 
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)
+    if (url.pathname === "/api/kirtans/find/audio") {
+      const q = url.searchParams.get("q") || "";
+      if (!q.trim()) return json({ book: "q:", kind: "kirtan", modes: { plain: { identifier: "", tracks: [] } } });
+      return kirtanFindManifest(env, url.origin, q);
+    }
     const kirtanM = url.pathname.match(/^\/api\/kirtans\/([a-z0-9][a-z0-9._-]*)\/audio$/i);
     if (kirtanM) {
       return kirtanManifest(env, url.origin, kirtanM[1]);

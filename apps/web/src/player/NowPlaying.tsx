@@ -122,6 +122,16 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * витрина: он обязан стоять на месте и до первого нажатия, со списком дорожек
    * и транспортом. Иначе человек заходит на /kirtans и видит пустоту — ровно то,
    * что и произошло. */
+  /* КУРСОР ЕДЕТ ЗА ЗВУКОМ.
+   *
+   * В очереди на 1062 записи играющая строка легко уезжает за край: человек ищет
+   * киртан, тот включается — а он его не видит. Подвозим строку в поле зрения на
+   * каждую смену дорожки и на смену очереди (поиск ↔ библиотека). */
+  useEffect(() => {
+    const el = bodyRef.current?.querySelector<HTMLElement>('[data-active="1"]');
+    el?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [p.index, p.book]);
+
   if (!embedded && !p.active) return null;
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
@@ -454,7 +464,7 @@ function KirtanHero({ cover, title, artist, note, coverActions }: { cover: strin
 function QueueRow({ t, active, num, onClick }: { t: Track; active: boolean; num?: number; onClick: () => void }) {
   const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
   return (
-    <button type="button" onClick={onClick}
+    <button type="button" onClick={onClick} data-active={active ? "1" : undefined}
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
         background: active ? "rgba(210,170,27,0.16)" : "transparent", color: "#fff" }}>
       <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>

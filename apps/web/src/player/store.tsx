@@ -296,7 +296,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     if (cur && cur.book === want && (cur.scope ?? "") === scope) return Promise.resolve(cur);
     const bhajIsLec = src === "bhajan" && want.endsWith("::lec");
     const bhajBase = bhajIsLec ? want.slice(0, -5) : want;
-    const path = src === "kirtan" ? `/kirtans/${want}/audio`
+    // ПОИСК — свой альбом (`q:<запрос>`). В путь его класть нельзя: регулярка
+    // воркера пускает только [a-z0-9._-], а запрос может быть любым.
+    const path = src === "kirtan"
+      ? (want.startsWith("q:")
+          ? `/kirtans/find/audio?q=${encodeURIComponent(want.slice(2))}`
+          : `/kirtans/${want}/audio`)
       : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
       : `/books/${want}/audio${scope ? `?canto=${encodeURIComponent(scope)}` : ""}`;
     return fetch(api(path))

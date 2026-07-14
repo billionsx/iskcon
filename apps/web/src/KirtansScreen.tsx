@@ -16,8 +16,12 @@ import { usePlayer } from "./player/store";
 import { NowPlaying } from "./player/NowPlaying";
 import { kirtanTracks, KIRTANS_ALL, artistBySlug, type KirtanArtist } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
-import { COVER_FALLBACK } from "./ui/CoverFallback";   // нужен ArtistMono (его зовёт страница исполнителя)
-import { HubHeader, HubSearch } from "./ui/HubHeader";
+import { COVER_FALLBACK } from "./ui/CoverFallback";
+import { HubHeader, HubSearch, HubEmpty } from "./ui/HubHeader";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
+
+/** Поиск — свой альбом плеера: `q:<запрос>`. Библиотека остаётся альбомом-папкой. */
+const FIND = "q:";
 
 /** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
 export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number }) {
@@ -39,51 +43,65 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 
   /* ЗКН-Б011 · решение основателя 13.07.2026 — ВИТРИНА = САМ ПЛЕЕР.
    *
-   * Здесь стоял СПИСОК, который по нажатию открывал плеер поверх себя. Потом я
-   * написал ВТОРОЙ плеер — белую доску — и оставил список под ней. Оба раза мимо:
-   * основатель просил встроить НА МЕСТО списка ТОТ САМЫЙ плеер, целиком, со всем,
-   * что в нём есть.
-   *
-   * Теперь витрина = `NowPlaying` в режиме `embedded`. Тот же самый компонент, тот
-   * же движок. Никакого второго плеера и никакого списка под ним: список дорожек
-   * живёт ВНУТРИ плеера — он там и был.
-   *
-   * Очередь — `all`: все киртаны канала. Грузим её СРАЗУ (`loadKirtan`), не дожидаясь
-   * нажатия, иначе плеер стоял бы пустым. */
+   * Не список, открывающий плеер, и не второй плеер рядом. `NowPlaying` в режиме
+   * `embedded`: тот же компонент, тот же движок, список дорожек живёт ВНУТРИ него. */
   const tracks = useMemo(() => kirtanTracks(), [kv]);
 
   useEffect(() => {
-    if (tracks.length > 0) p.loadKirtan(KIRTANS_ALL);
+    if (tracks.length > 0 && !p.book.startsWith(FIND)) p.loadKirtan(KIRTANS_ALL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tracks.length]);
 
-  /* ЗКН-Н044 — У ВИТРИНЫ ЕСТЬ ПОИСК.
+  /* ЗКН-Н044 — ПОИСК ДЕЛАЕТ СВОЙ АЛЬБОМ, А НЕ ФИЛЬТРУЕТ СПИСОК.
    *
-   * Второго списка под плеером НЕТ (решение основателя). Но и без поиска витрину
-   * оставить нельзя: 1110 записей руками не пролистать. Поэтому поиск не РИСУЕТ
-   * список, а НАХОДИТ запись и включает её прямо в плеере — очередь та же, индекс
-   * тот же, ничего не раздваивается. */
+   * Ввёл имя, нажал ввод — очередь плеера СТАНОВИТСЯ найденным: первое играет,
+   * остальные идут следом, курсор подъезжает к играющей строке.
+   *
+   * А если совпадений несколько (их почти всегда несколько: «Киртан 01» есть у
+   * двадцати исполнителей)? Тогда найденное — это ОТДЕЛЬНЫЙ АЛЬБОМ. Рядом с ним
+   * остаётся альбом-папка «Все киртаны» со всей библиотекой: один тап — и человек
+   * вернулся, ничего не потеряв. Фильтровать общий список вместо этого нельзя:
+   * очередь плеера разъедется с тем, что видно на экране. */
   const [q, setQ] = useState("");
-  const norm = (s: string) => (s || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
-  const findAndPlay = () => {
-    const nq = norm(q.trim());
-    if (nq.length < 2) return;
-    const i = tracks.findIndex((t) => norm(t.title).includes(nq));
-    if (i >= 0) p.playKirtan(KIRTANS_ALL, i, false);
+  const [found, setFound] = useState<{ q: string; n: number } | null>(null);
+
+  const norm = (s: string) => (s || "").toLowerCase();
+  const submit = () => {
+    const s = q.trim();
+    if (s.length < 2) return;
+    const n = tracks.filter((t) => norm(t.title).includes(norm(s))).length;
+    if (n === 0) { setFound({ q: s, n: 0 }); return; }
+    setFound({ q: s, n });
+    p.playKirtan(FIND + s, 0, false);      // очередь = найденное, первое играет
   };
 
-  /* ЗКН-Н012 — ПЛЕЕР ВЛЕЗАЕТ В ЭКРАН.
-   *
-   * Высота была задана в `vh` — и на телефоне плеер свисал за край: чтобы дотянуться
-   * до транспорта, приходилось прокручивать страницу. Считаем ОСТАТОК: от низа
-   * поиска до нижнего меню. Пересчитываем при повороте и смене размера. */
+  const onFind = p.kind === "kirtan" && p.book.startsWith(FIND);
+  const toAll = () => { setFound(null); setQ(""); p.playKirtan(KIRTANS_ALL, 0, false); };
+
+  const card = (active: boolean, title: string, sub: string, onClick: () => void) => (
+    <button type="button" onClick={onClick}
+      style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 10, padding: "10px 12px",
+        borderRadius: 14, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
+        background: active ? "color-mix(in srgb, var(--color-gold) 12%, var(--color-bg-2))" : "var(--color-bg-2)",
+        border: active ? "1px solid var(--color-gold)" : "0.5px solid var(--color-hairline)",
+        color: "var(--color-label)" }}>
+      <img src={COVER_FALLBACK} alt="" style={{ width: 34, height: 34, borderRadius: 9, flexShrink: 0, background: "#fff" }} />
+      <span style={{ minWidth: 0 }}>
+        <span style={{ display: "block", fontSize: "var(--text-footnote)", fontWeight: 700, lineHeight: 1.25,
+          color: active ? "var(--color-gold-deep)" : "var(--color-label)",
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
+        <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-caption)", color: "var(--color-label-2)" }}>{sub}</span>
+      </span>
+    </button>
+  );
+
+  /* ЗКН-Н012 — ПЛЕЕР ВЛЕЗАЕТ В ЭКРАН: высоту считает витрина, а не `vh`. */
   const boxRef = useRef<HTMLDivElement>(null);
   const [boxH, setBoxH] = useState(0);
   useEffect(() => {
     const calc = () => {
       const top = boxRef.current?.getBoundingClientRect().top ?? 0;
-      const NAV = 104;                       // нижнее меню + воздух под ним
-      setBoxH(Math.max(340, Math.round(window.innerHeight - top - NAV)));
+      setBoxH(Math.max(340, Math.round(window.innerHeight - top - 104)));   // 104 — нижнее меню + воздух
     };
     calc();
     window.addEventListener("resize", calc);
@@ -92,7 +110,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       window.removeEventListener("resize", calc);
       window.removeEventListener("orientationchange", calc);
     };
-  }, [tracks.length]);
+  }, [tracks.length, found]);
 
   return (
     <div style={{ fontFamily: "var(--font-text)" }}>
@@ -102,11 +120,20 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         subtitle="Святое имя в голосах ачарьев и киртания — записи канала ISKCON Kirtans"
       />
 
-      {/* ЗКН-Н044: поиск витрины — общий HubSearch. Он не даёт второго списка:
-          найденная запись включается в том же встроенном плеере. */}
       <HubSearch value={q} onChange={setQ}
         placeholder="Найти киртан и включить" ariaLabel="Поиск по аудиотеке"
-        onSubmit={findAndPlay} />
+        onSubmit={submit} />
+
+      {/* ДВА АЛЬБОМА. Найденное — слева, вся библиотека — справа. Один тап между ними. */}
+      {found && (
+        <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
+          {card(onFind, `Найдено: ${found.q}`,
+            found.n ? `${found.n} ${plural(found.n, "запись", "записи", "записей")}` : "ничего не найдено",
+            () => { if (found.n) p.playKirtan(FIND + found.q, 0, false); })}
+          {card(!onFind, "Все киртаны",
+            `${tracks.length} ${plural(tracks.length, "запись", "записи", "записей")}`, toAll)}
+        </div>
+      )}
 
       <div ref={boxRef} style={{ marginTop: 16 }}>
         {tracks.length === 0 ? (
@@ -114,6 +141,8 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
             fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
             Записи загружаются из канала.<br />Они появятся здесь по мере готовности.
           </div>
+        ) : found && found.n === 0 ? (
+          <HubEmpty query={found.q} hint="Попробуйте название киртана или имя исполнителя." />
         ) : (
           <NowPlaying embedded embeddedHeight={boxH || undefined} />
         )}
