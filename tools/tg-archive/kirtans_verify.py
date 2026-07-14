@@ -14,7 +14,7 @@
     файл узнаётся         → ЧИНИМ имя в базе
   • файла нет вовсе       → помечаем `broken=1`, плеер такие не показывает
 """
-import json, os, re, sys, time, urllib.error, urllib.request
+import json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 from collections import defaultdict
 
 ACCOUNT = "d5cbe19470dc38599873eabfe148e6d1"
@@ -76,7 +76,60 @@ def key(name):
     return s
 
 
+def probe(url):
+    """Дёргаем ПЕРВЫЕ БАЙТЫ по тому же пути, которым идёт плеер.
+    Файл может лежать в архиве — и всё равно не играться: сломаться может воркер,
+    кодировка имени, редирект. Проверять надо ЖИВОЙ ПУТЬ, а не наличие файла."""
+    req = urllib.request.Request(url, headers={"Range": "bytes=0-1", "User-Agent": "iol-verify"})
+    try:
+        with urllib.request.urlopen(req, timeout=45) as r:
+            return r.status, (r.headers.get("Content-Type") or "")
+    except urllib.error.HTTPError as e:
+        return e.code, ""
+    except Exception as e:
+        return 0, str(e)[:40]
+
+
+def cmd_play():
+    """ЖИВАЯ проверка: играется ли каждая запись через прод."""
+    import concurrent.futures as cf
+    base = os.environ.get("BASE", "https://gaurangers.com")
+    tracks = d1("SELECT id, identifier, file FROM kirtan_tracks ORDER BY identifier, file")
+    print("::notice::проверяю живым путём: %d записей через %s" % (len(tracks), base))
+
+    def one(t):
+        u = "%s/audio/%s/%s" % (base, t["identifier"], urllib.parse.quote(t["file"]))
+        code, ct = probe(u)
+        return t, code, ct
+
+    bad = []
+    okn = 0
+    with cf.ThreadPoolExecutor(max_workers=6) as ex:
+        for t, code, ct in ex.map(one, tracks):
+            if code in (200, 206) and "audio" in ct.lower():
+                okn += 1
+            else:
+                bad.append((t["id"], code, ct))
+
+    print("::notice::ИГРАЕТСЯ: %d · НЕ ИГРАЕТСЯ: %d" % (okn, len(bad)))
+    d1("CREATE TABLE IF NOT EXISTS kirtans_verify ("
+       "  at TEXT PRIMARY KEY, ok INTEGER, fixed INTEGER, broken INTEGER, durs INTEGER, sample TEXT)")
+    sample = " | ".join("%s→%s" % (b[0].split("/")[-1][:34], b[1]) for b in bad[:10])
+    d1("INSERT OR REPLACE INTO kirtans_verify (at, ok, fixed, broken, durs, sample) VALUES (?1,?2,?3,?4,?5,?6)",
+       [time.strftime("%Y-%m-%d %H:%M") + " play", okn, 0, len(bad), 0, sample])
+
+    if os.environ.get("APPLY") == "1" and bad:
+        q = lambda s: "'" + str(s).replace("'", "''") + "'"
+        ids = [b[0] for b in bad]
+        for i in range(0, len(ids), 60):
+            d1("UPDATE kirtan_tracks SET broken=1 WHERE id IN (%s);" % ",".join(q(x) for x in ids[i:i+60]))
+        print("::notice::помечено broken=1: %d" % len(ids))
+    return 0
+
+
 def main():
+    if os.environ.get("MODE") == "play":
+        return cmd_play()
     tracks = d1("SELECT id, identifier, file, duration FROM kirtan_tracks")
     print("::notice::дорожек в базе: %d" % len(tracks))
 

@@ -5,6 +5,9 @@ on:
       apply:
         description: "1 — чинить базу; пусто — только проверить"
         default: ""
+      mode:
+        description: "files — сверить с архивом; play — проверить ЖИВОЙ путь"
+        default: "files"
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -18,4 +21,5 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           APPLY: ${{ inputs.apply }}
+          MODE: ${{ inputs.mode }}
         run: python kirtans_verify.py
