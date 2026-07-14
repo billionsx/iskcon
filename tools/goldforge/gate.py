@@ -113,8 +113,13 @@ def structure(book, hero_short, hero_full):
     tabs = book.get("tabs", [])
     if not tabs:
         return [("СТРУКТУРА", "книга пуста")]
-    if tabs[0].get("id") != "vklad-gauranga-lila":
-        bad.append(("ЗКН-П003/10", "первый таб не «Вклад в Гауранга Лилу» (%s)" % tabs[0].get("id")))
+    # Крит.10 по СУТИ, а не по букве: карточка обязана ОТКРЫВАТЬСЯ СМЫСЛОМ —
+    # «что он дал лиле». Это либо машинный «Вклад», либо ПЕРВАЯ ГЛАВА КУРАТОРА.
+    # Открыться аппаратом (Житие, Труды, Учение, Прославление) она не имеет права.
+    APPARATUS = FORGE_TABS - {"vklad-gauranga-lila"}
+    if tabs[0].get("id") in APPARATUS:
+        bad.append(("ЗКН-П018", "карточка открывается АППАРАТОМ (%s), а не смыслом"
+                    % tabs[0].get("id")))
     hs, refs = [], []
     for path, kind, v in walk(book):
         if kind == "authored":

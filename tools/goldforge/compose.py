@@ -370,41 +370,43 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
     purports, cut_p = cap(purports, per_work)
     tabs = []
 
-    # ── ТАБ 0 · ВКЛАД В ГАУРАНГА ЛИЛУ (крит. 10 — ВСЕГДА первый) ──────────
+    # ── ТАБ 0 · ВКЛАД В ГАУРАНГА ЛИЛУ ────────────────────────────────────
+    #
+    # ЗКН-П022. Этот раздел отвечает на ОДИН вопрос: ЧТО ЧЕЛОВЕК ДАЛ ЛИЛЕ.
+    # Список его книг и заглушка «Личности, с которыми он связан в источниках»
+    # — не ответ. Это метаданные, выставленные на место смысла.
+    #
+    # Если куратор УЖЕ написал ответ (главы «Ачарья», «Наследие», «Пророчества»),
+    # машина НЕ строит свой таб: она не соревнуется с человеком и не ставит
+    # пустышку перед его текстом. Карточка открывается его главой.
+    #
+    # Если куратор не писал — машина даёт то, что может предъявить честно:
+    # кто он в лиле (из графа), его труды (кликабельно) и слово шастры о нём.
+    has_chapters = bool(keep and [t for t in keep.get("tabs", [])
+                                  if t.get("id") not in FORGE_TABS])
     books = own_works(hero)
     own_bhajans = sorted({f["book"] for f in bhajans if f.get("byId") == hero})
-    # Раньше здесь стояло `-len(text)`: выбери самое длинное. Так стена пурпорта
-    # в 1 500 знаков попала в раздел «Его миссия — своими словами» (ЗКН-П021).
     top = sorted([f for f in purports if f.get("role") in ("качество", "авторитет")],
                  key=quality.rank)[:4]
-    vk = []
-    if books or own_bhajans:
-        lines = []
-        if books:
-            lines.append("Труды %s, вошедшие в библиотеку приложения: %s."
-                         % (gen, ", ".join("«%s»" % b["title"] for b in books)))
-        if own_bhajans:
-            lines.append("Молитвы и песни его авторства: %s."
-                         % ", ".join("«%s»" % b for b in own_bhajans[:8]))
-        vk.append(section("Наследие, оставленное лиле", lines, hero=HN))
-    me = hero == "prabhupada"
-    if top and not me:
-        vk.append(section(
-            "Шрила Прабхупада о его вкладе",
-            [],
-            quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
-    if see and len(see) >= 2:
-        vk.append(section("Связи в лиле",
-                          ["Личности, с которыми %s связан в источниках." % full],
-                          see=see, hero=HN))
-    if not vk:
-        note = d1.query("SELECT note FROM entities WHERE id=?1", [hero]) if d1.available() else None
+    if not has_chapters:
+        vk = []
+        note = (d1.query("SELECT note FROM entities WHERE id=?1", [hero])
+                if d1.available() else None)
         txt = (note or [{}])[0].get("note") if note else None
-        vk.append(section("Место в Гауранга Лиле",
-                          [txt] if txt else ["Материал собран в разделах ниже."], hero=HN))
-    tabs.append({"id": "vklad-gauranga-lila", "label": "Вклад в Гауранга Лилу",
-                 "kicker": "МИССИЯ", "subtabs": [
-                     {"id": "missiya", "label": "Миссия", "sections": vk}]})
+        if txt:
+            vk.append(section("Кто он в Гауранга Лиле", [txt], hero=HN))
+        if books or own_bhajans:
+            cite = [({"ref": b["title"], "to": "/" + b["slug"]} if b.get("slug")
+                     else {"ref": b["title"]}) for b in books]
+            vk.append(section("Что он оставил", [], cite=cite or None, hero=HN))
+        if top and hero != "prabhupada":
+            vk.append(section(
+                "Слово шастры о нём", [],
+                quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
+        if vk:
+            tabs.append({"id": "vklad-gauranga-lila", "label": "Вклад в Гауранга Лилу",
+                         "kicker": "МИССИЯ", "subtabs": [
+                             {"id": "missiya", "label": "Миссия", "sections": vk}]})
 
     # ── ТАБ · ЖИТИЕ — только там, где герой ДЕЙСТВУЕТ ─────────────────────
     zh = {}
