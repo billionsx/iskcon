@@ -1095,7 +1095,7 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
     durationSec: r.duration || 0,
     artist: r.artist ?? "", album: "Коллекция Гауранга Лилы",
     group: r.artist_slug || "various",
-    groupLabel: r.artist ?? "Киртания ИСККОН",
+    groupLabel: r.artist ?? "Без исполнителя",
   }));
   return json({ book: "all", kind: "kirtan", modes: { plain: { identifier: "kirtans-all", tracks } } });
 }

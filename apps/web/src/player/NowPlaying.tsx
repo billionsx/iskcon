@@ -6,6 +6,7 @@
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { COVER_FALLBACK } from "../ui/CoverFallback";
 import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
@@ -91,6 +92,14 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   }
   const hierQueue = divisions.length > 1;
   const [activeDiv, setActiveDiv] = useState("");
+  /* Вид очереди: список или плитка. Пилюли папок — это ФИЛЬТР; вид — это про то,
+     КАК показаны отфильтрованные записи. Два разных органа, не смешиваем. */
+  const [qView, setQView] = useState<"list" | "grid">("list");
+  /* Счёт — по АКТИВНОЙ папке. «Дорожки · 1062» при открытой папке на 7 записей
+     это ложь: человек видит семь строк и цифру 1062. */
+  const shownCount = (!hierQueue || activeDiv === ALL_DIV)
+    ? p.tracks.length
+    : p.tracks.filter((t) => (gid(t) ?? divisions[0]?.id) === activeDiv).length;
   const curDiv = p.track ? gid(p.track) : undefined;
   // Активный подраздел следует за играющим треком; тап пользователя сохраняется,
   // пока воспроизведение не пересечёт границу главы/песни/лилы.
@@ -349,10 +358,28 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           <div style={{ marginTop: 22 }}>
             {/* Надзаголовок раздела — ЗОЛОТОЙ, как во всех витринах (ЗКН-Н024).
                 Серый он выпадал из системы: тот же смысл, другой голос. */}
-            <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD, marginBottom: hierQueue ? 11 : 8, padding: "0 4px" }}>
-              {isAdHoc
-                ? `Дорожки${p.tracks.length ? ` · ${p.tracks.length}` : ""}`
-                : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: hierQueue ? 11 : 8, padding: "0 4px" }}>
+              <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
+                {isAdHoc
+                  ? `Дорожки${shownCount ? ` · ${shownCount}` : ""}`
+                  : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+              </span>
+              {isAdHoc && (
+                <span style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+                  {(["list", "grid"] as const).map((v) => (
+                    <button key={v} type="button" onClick={() => setQView(v)}
+                      aria-label={v === "list" ? "Списком" : "Плиткой"} aria-pressed={qView === v}
+                      style={{ display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: 8,
+                        border: "none", cursor: "pointer",
+                        background: qView === v ? "rgba(255,255,255,0.12)" : "transparent",
+                        color: qView === v ? GOLD : "rgba(255,255,255,0.45)" }}>
+                      {v === "list"
+                        ? <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><rect x="3" y="5" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="10.8" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="16.6" width="18" height="2.4" rx="1.2" fill="currentColor" /></svg>
+                        : <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" /></svg>}
+                    </button>
+                  ))}
+                </span>
+              )}
             </div>
             {multiCanto
               ? <>
@@ -364,7 +391,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   )}
                 </>
               : hierQueue && <DivisionPills items={divisions} active={activeDiv} onChange={setActiveDiv} />}
-            <div style={{ paddingTop: (multiCanto || hierQueue) ? 10 : 0 }}>
+            <div style={{ paddingTop: (multiCanto || hierQueue) ? 10 : 0,
+              ...(isAdHoc && qView === "grid"
+                ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: 8 }
+                : null) }}>
               {multiCanto
                 ? (browseTracks.length
                     ? browseTracks.map((t) => {
@@ -373,16 +403,24 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                           onClick={() => p.playTrack(browseCanto, t.file)} />;
                       })
                     : <div style={{ padding: "18px 4px", color: "rgba(255,255,255,0.45)", fontSize: "var(--text-footnote)" }}>Загрузка…</div>)
-                : p.tracks.map((t, i) => {
-                    // иерархическая книга: показываем только активную лилу
-                    // (вступление без лилы — при активной первой лиле).
-                    if (hierQueue && activeDiv !== ALL_DIV) {
-                      const g = gid(t);
-                      const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
-                      if (!show) return null;
-                    }
-                    return <QueueRow key={t.file} t={t} active={i === p.index} num={isAdHoc ? i + 1 : undefined} onClick={() => p.jumpTo(i)} />;
-                  })}
+                : (() => {
+                    /* ⚠️ НУМЕРАЦИЯ БЫЛА СКВОЗНОЙ ПО ВСЕЙ ОЧЕРЕДИ.
+                     * Открываешь папку Бхакти Вайбхавы — а она начинается с «24».
+                     * Номер должен считать ВНУТРИ папки: первая запись — первая.
+                     * (У книги сквозной номер верен: там это номер главы.) */
+                    let seq = 0;
+                    return p.tracks.map((t, i) => {
+                      if (hierQueue && activeDiv !== ALL_DIV) {
+                        const g = gid(t);
+                        const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
+                        if (!show) return null;
+                      }
+                      seq += 1;
+                      return <QueueRow key={t.file} t={t} active={i === p.index}
+                        num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
+                        onClick={() => p.jumpTo(i)} />;
+                    });
+                  })()}
             </div>
           </div>
         </div>
@@ -568,8 +606,33 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }
   );
 }
 
-function QueueRow({ t, active, num, onClick }: { t: Track; active: boolean; num?: number; onClick: () => void }) {
+function QueueRow({ t, active, num, tile, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; onClick: () => void }) {
   const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
+
+  if (tile) {
+    return (
+      <button type="button" onClick={onClick} data-active={active ? "1" : undefined}
+        style={{ display: "flex", flexDirection: "column", gap: 6, padding: 8, borderRadius: 13, border: "none",
+          cursor: "pointer", textAlign: "left",
+          background: active ? "rgba(210,170,27,0.16)" : "rgba(255,255,255,0.06)",
+          color: "#fff", fontFamily: "var(--font-text)" }}>
+        <span style={{ position: "relative", display: "block" }}>
+          <img src={COVER_FALLBACK} alt="" loading="lazy"
+            style={{ width: "100%", aspectRatio: "1 / 1", borderRadius: 9, objectFit: "cover", background: "#fff" }} />
+          <span aria-hidden style={{ position: "absolute", left: 5, top: 5, minWidth: 18, height: 18, padding: "0 5px",
+            borderRadius: 999, display: "grid", placeItems: "center", background: "rgba(0,0,0,0.55)",
+            backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+            fontSize: "var(--text-caption2)", fontWeight: 700, color: active ? GOLD : "#fff",
+            fontVariantNumeric: "tabular-nums" }}>{label}</span>
+        </span>
+        <span style={{ fontSize: "var(--text-caption)", fontWeight: active ? 700 : 500, lineHeight: 1.25,
+          color: active ? GOLD : "rgba(255,255,255,0.9)",
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.title}</span>
+        {t.durationSec ? <span style={{ fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
+      </button>
+    );
+  }
+
   return (
     <button type="button" onClick={onClick} data-active={active ? "1" : undefined}
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
