@@ -18,6 +18,7 @@
  * пользователя — кросс-устройство и сводка кабинета. Никогда не блокирует UX.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import { recordJapa, type JapaRoundDTO } from "./account/track";
 
 /* ───────────────────────── палитра / токены ───────────────────────── */
@@ -497,13 +498,13 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
                   </button>
                 </div>
 
-                <div lang="sa" style={{ marginTop: 11, fontFamily: FS, fontStyle: "italic", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2, textAlign: "center" }}>{MANTRA_DEV}</div>
+                <div lang="sa" style={{ marginTop: 11, fontFamily: "var(--font-deva)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2, textAlign: "center" }}>{MANTRA_DEV}</div>
 
                 <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: "5px 7px", justifyContent: "center" }}>
                   {MANTRA.map((w, i) => {
                     const on = playing && i === tok;
                     return (
-                      <span key={i} style={{ fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: on ? 800 : 500, letterSpacing: "-0.01em", color: on ? "#fff" : L1, background: on ? GOLD : "transparent", borderRadius: 8, padding: on ? "1px 8px" : "1px 2px", transition: "background .08s, color .08s" }}>{w}</span>
+                      <span key={i} style={{ ...SCRIPTURE_VOICE, fontSize: "var(--text-callout)", fontWeight: on ? 700 : 500, letterSpacing: "-0.01em", color: on ? "#fff" : L1, background: on ? GOLD : "transparent", borderRadius: 8, padding: on ? "1px 8px" : "1px 2px", transition: "background .08s, color .08s" }}>{w}</span>
                     );
                   })}
                 </div>

@@ -136,6 +136,11 @@
      современных браузерах (кр̣па̄, кр̣шн̣а — как на iskcone.com). Gentium Book Plus —
      запасной для редких глифов, которых нет в Georgia; Times — крайний случай. */
   --font-scripture: Georgia, 'Gentium Book Plus', 'Times New Roman', serif;
+  /* ЗКН-Д013 (исключение по ПИСЬМУ): деванагари — своё письмо со своим шрифтом.
+   * Курсивной Georgia санскрит не набирают: у неё нет деванагарских глифов,
+   * браузер подставляет случайный фолбэк и синтезирует наклон. Прямой, свой. */
+  --font-deva: 'Noto Serif Devanagari', 'Noto Sans Devanagari', 'Sanskrit Text',
+               'Nirmala UI', serif;
   /* ЗАКОН курсива: курсив (Georgia) визуально РАВЕН основному тексту (SF) — не
      больше и не меньше. Достигается через font-size-adjust = x-height SF Pro Text
      (≈0.52 em): x-height курсива подгоняется под x-height основного шрифта, и

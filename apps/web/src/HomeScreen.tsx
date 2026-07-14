@@ -10,6 +10,7 @@
  * биография — за кнопкой «Жизнь и наследие» (страница героя).
  */
 import { useEffect, useRef, useState } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import { api } from "./api";
 import { BOOKS, AUDIO_WORKS } from "./books";
 import { catalogNow } from "./bookCatalog";
@@ -495,10 +496,10 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         <div style={{ padding: 22, ...fill }}>
           <div style={{ textAlign: "center" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Маха-мантра</div>
-            <div style={{ marginTop: 12, fontFamily: "var(--font-scripture)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-3)" }}>
+            <div lang="sa" style={{ marginTop: 12, fontFamily: "var(--font-deva)", fontSize: "var(--text-subhead)", lineHeight: 1.8, color: "var(--color-label-3)" }}>
               हरे कृष्ण हरे कृष्ण<br />कृष्ण कृष्ण हरे हरे<br />हरे राम हरे राम<br />राम राम हरे हरे
             </div>
-            <div style={{ marginTop: 14, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: TR_TITLE, lineHeight: 1.55, color: "var(--color-label)" }}>
+            <div style={{ ...SCRIPTURE_VOICE, marginTop: 14, fontSize: "var(--text-title3)", fontWeight: 600, letterSpacing: TR_TITLE, lineHeight: 1.55, color: "var(--color-label)" }}>
               Харе Кришна Харе Кришна<br />Кришна Кришна Харе Харе<br />Харе Рама Харе Рама<br />Рама Рама Харе Харе
             </div>
             <p style={{ margin: "14px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.55, letterSpacing: TR_BODY, color: "var(--color-label-2)" }}>

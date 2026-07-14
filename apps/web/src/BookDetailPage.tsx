@@ -1863,7 +1863,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
       <div data-pdf-block>
       <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, textAlign: "center", marginBottom: 12 }}>{r.label}</div>
       {r.deva && (
-        <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{scriptLines(r.deva)}</div>
+        <div style={{ fontFamily: "var(--font-deva)", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: r.translit ? 16 : 22 }}>{scriptLines(r.deva)}</div>
       )}
       {r.translit && (
         <div style={{ marginBottom: 16 }}>
@@ -2463,7 +2463,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
           {data && (
             <>
               {hasDeva && (
-                <div style={{ fontFamily: "var(--font-deva, 'Noto Serif Devanagari', var(--font-text))", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{scriptLines(evDeva)}</div>
+                <div style={{ fontFamily: "var(--font-deva)", fontSize: "var(--text-title3)", lineHeight: 1.6, textAlign: "center", color: INK, whiteSpace: "pre-line", marginBottom: hasTranslit ? 16 : 22 }}>{scriptLines(evDeva)}</div>
               )}
               {hasTranslit && (
                 <div style={{ marginBottom: 16 }}>
