@@ -12,6 +12,7 @@
  */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import { SCRIPTURE_VOICE } from "./ui/voice";
+import { renderTerms } from "./ui/Skt";   // ЗКН-Ф006: вызывалась без импорта — ReferenceError в браузере
 import type { SVGProps } from "react";
 import { api } from "./api";
 import { useFavorite, useCardActions } from "./cardActions";
