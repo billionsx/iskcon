@@ -52,6 +52,12 @@ interface Env {
   TELEGRAM_CHAT_ID?: string;
 }
 
+/** ЗКН-Ф022 — ВЫБИТЬ ОТРАВЛЕННЫЙ КЭШ.
+ *  Cloudflare запомнил 404 на год и переживает деплой. Единственный способ обойти
+ *  сохранённый отказ — СМЕНИТЬ КЛЮЧ: другая ссылка — другая запись в кэше.
+ *  Поднимать при каждом случае отравления. */
+const AUDIO_CACHE_BUST = "?v=2";
+
 const NOINDEX = "noindex, nofollow, noarchive, nosnippet, noimageindex";
 
 function json(data: unknown, status = 200): Response {
@@ -582,7 +588,7 @@ async function audioTracks(identifier: string, origin: string, titles: Map<numbe
   const chapters: AudioTrack[] = [];
   for (const f of originals) {
     const stem = f.name.replace(/\.mp3$/i, "");
-    const url = `${origin}/audio/${identifier}/${f.name}`;
+    const url = `${origin}/audio/${identifier}/${f.name}${AUDIO_CACHE_BUST}`;
     const durationSec = audioDuration(f.length);
     const introM = stem.match(/^00\.(\d+)\./);
     if (introM) {
@@ -655,7 +661,7 @@ async function brsAudioTracks(identifier: string, origin: string, titles: Map<nu
   const chapters: AudioTrack[] = [];
   for (const f of originals) {
     const stem = f.name.replace(/\.mp3$/i, "");
-    const url = `${origin}/audio/${identifier}/${f.name}`;
+    const url = `${origin}/audio/${identifier}/${f.name}${AUDIO_CACHE_BUST}`;
     const durationSec = audioDuration(f.length);
     // Глава: якорь на римскую часть издания (I/II/III/IV…) + номер главы.
     const chM = stem.match(/[_\s]([IVX]+)[_\s](\d{1,2})(?=[_\s])/);
@@ -707,7 +713,7 @@ async function splAudioTracks(identifier: string, origin: string, titles: Map<nu
   const chapters: AudioTrack[] = [];
   for (const f of originals) {
     const stem = f.name.replace(/\.mp3$/i, "");
-    const url = `${origin}/audio/${identifier}/${f.name}`;
+    const url = `${origin}/audio/${identifier}/${f.name}${AUDIO_CACHE_BUST}`;
     const durationSec = audioDuration(f.length);
     const chM = stem.match(/^(\d{1,3})[._-]/); // ведущий номер дорожки
     const chapter = chM ? parseInt(chM[1], 10) : 0;
@@ -845,7 +851,7 @@ async function bookAudioGeneric(work: string, identifier: string, origin: string
       return {
         kind: "chapter" as const, pos: num, chapter: num,
         title: AUDIO_CLEAN.has(work) ? cleanAudioTitle(work, raw, num) : (raw || `Часть ${num}`),
-        file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
+        file: f.name, url: `${origin}/audio/${identifier}/${f.name}${AUDIO_CACHE_BUST}`,
         durationSec: audioDuration(f.length),
       };
     });
@@ -885,7 +891,7 @@ async function ccLilaTracks(
       t: {
         kind: "chapter", pos: 0, chapter,
         title: part ? `${base} — часть ${part}` : base,
-        file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
+        file: f.name, url: `${origin}/audio/${identifier}/${f.name}${AUDIO_CACHE_BUST}`,
         durationSec: audioDuration(f.length), lila, lilaLabel, part,
       },
     });
@@ -1050,7 +1056,7 @@ async function kirtanTracks(identifier: string, origin: string, artist: string, 
       sort, name: f.name,
       t: {
         kind: "song" as const, pos: 0, chapter: null,
-        title, file: f.name, url: `${origin}/audio/${identifier}/${f.name}`,
+        title, file: f.name, url: `${origin}/audio/${identifier}/${f.name}${AUDIO_CACHE_BUST}`,
         durationSec: audioDuration(f.length), artist, album,
       } as AudioTrack,
     };
@@ -1091,7 +1097,7 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
   const tracks: AudioTrack[] = (res.results || []).map((r, i) => ({
     kind: "song" as const, pos: i, chapter: null,
     title: r.title, file: r.file,
-    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
     artist: r.artist ?? "", album: "Коллекция Гауранга Лилы",
     group: r.artist_slug || "various",
@@ -1124,7 +1130,7 @@ async function kirtanFindManifest(env: Env, origin: string, q: string): Promise<
   const tracks: AudioTrack[] = hits.map((r, i) => ({
     kind: "song" as const, pos: i, chapter: null,
     title: r.title, file: r.file,
-    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
     artist: r.artist ?? "", album: `Найдено: ${q}`,
   }));
@@ -1149,7 +1155,7 @@ async function kirtanFolderManifest(env: Env, origin: string, slug: string): Pro
   const tracks: AudioTrack[] = rows.map((r, i) => ({
     kind: "song" as const, pos: i, chapter: null,
     title: r.title, file: r.file,
-    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
     artist: r.artist ?? "", album: r.artist ?? "Киртаны",
   }));
@@ -1175,7 +1181,7 @@ async function kirtanFavManifest(env: Env, origin: string, ids: string): Promise
     tracks.push({
       kind: "song", pos: tracks.length, chapter: null,
       title: r.title, file: r.file,
-      url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+      url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
       durationSec: r.duration || 0, artist: r.artist ?? "", album: "Избранное",
     });
   });
@@ -1200,13 +1206,37 @@ async function serveAudio(request: Request, identifier: string, filename: string
   // раскодируем, затем закодируем один раз — для имён без пробелов поведение прежнее.
   let name = filename;
   try { name = decodeURIComponent(filename); } catch { /* keep as-is */ }
-  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(name)}`;
+  /* ⚠️ МЕТКА СТАВИТСЯ НА АДРЕС АРХИВА, А НЕ НА НАШ.
+   *
+   * Кэшируется ПОДЗАПРОС к archive.org, и ключ у него — адрес архива. Поменяв
+   * только наш `/audio/...?v=2`, я бы сменил ключ ВНЕШНЕГО кэша и снова попал в тот
+   * же отравленный подзапрос. Отравлены могут быть оба слоя — метим оба. */
+  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(name)}${AUDIO_CACHE_BUST}`;
   const range = request.headers.get("Range");
+
+  /* ⚠️ ЗДЕСЬ ЗАПИСИ И «ЛОМАЛИСЬ». ОТКАЗ КЭШИРОВАЛСЯ НА ГОД.
+   *
+   * Было `cacheTtl: 31536000` — год на ЛЮБОЙ ответ, включая 404. Пока шла заливка,
+   * плеер запрашивал файл, которого ещё не было; приходил 404 — и Cloudflare
+   * запоминал ЕГО на год. Файл давно в архиве, архив его отдаёт, а наш край
+   * продолжает отдавать сохранённый отказ. И кэш переживает деплой: новой сборкой
+   * это не лечится.
+   *
+   * Правило: КЭШИРУЕТСЯ ТОЛЬКО УСПЕХ. Отказ — это состояние минуты, а не года;
+   * запоминать его надолго — значит закрепить временную беду навсегда. */
   const upstream = await fetch(iaUrl, {
     method: "GET",
     headers: range ? { Range: range } : {},
     redirect: "follow",
-    cf: { cacheEverything: true, cacheTtl: 31536000 },
+    cf: {
+      cacheEverything: true,
+      cacheTtlByStatus: {
+        "200-299": 31536000,   // успех — на год, файлы в архиве неизменны
+        "301-399": 0,          // перенаправление не запоминаем
+        "400-499": 0,          // ОТКАЗ НЕ ЗАПОМИНАЕМ — он временный
+        "500-599": 0,
+      },
+    },
   });
   const h = new Headers(upstream.headers);
   h.set("Accept-Ranges", "bytes");
@@ -1231,13 +1261,17 @@ async function serveAudio(request: Request, identifier: string, filename: string
 async function serveVideo(request: Request, identifier: string, filename: string): Promise<Response> {
   let name = filename;
   try { name = decodeURIComponent(filename); } catch { /* keep as-is */ }
-  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(name)}`;
+  // ЗКН-Ф024 — та же ловушка, что у звука: отказ не кэшируем.
+  const iaUrl = `https://archive.org/download/${identifier}/${encodeURI(name)}${AUDIO_CACHE_BUST}`;
   const range = request.headers.get("Range");
   const upstream = await fetch(iaUrl, {
     method: "GET",
     headers: range ? { Range: range } : {},
     redirect: "follow",
-    cf: { cacheEverything: true, cacheTtl: 31536000 },
+    cf: {
+      cacheEverything: true,
+      cacheTtlByStatus: { "200-299": 31536000, "301-399": 0, "400-499": 0, "500-599": 0 },
+    },
   });
   const h = new Headers(upstream.headers);
   h.set("Accept-Ranges", "bytes");
