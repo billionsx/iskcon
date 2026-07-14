@@ -53,13 +53,14 @@ def style_objects(text: str):
             i += 1
         body = text[m.end():i - 2]
         head = text[max(0, m.start() - 400):m.start()]
-        tag = ""
+        tag, attrs = "", ""
         lt = head.rfind("<")
         if lt >= 0:
             tm = re.match(r"<([A-Za-z][\w.]*)", head[lt:])
             if tm:
                 tag = tm.group(1)
-        out.append((tag, body, text.count("\n", 0, m.start()) + 1))
+                attrs = head[lt:]
+        out.append((tag, attrs, body, text.count("\n", 0, m.start()) + 1))
     return out
 
 
@@ -69,7 +70,7 @@ def main() -> int:
         text = f.read_text(encoding="utf-8")
         rel = f.relative_to(SRC.parents[2])
         has_fallback = bool(FALLBACK_COVER.search(text))
-        for tag, body, line in style_objects(text):
+        for tag, attrs, body, line in style_objects(text):
             # ПРАВИЛО 1 — серая плашка вместо поверхности
             if tag in CONTAINER_TAGS and GREY_FILL.search(body) and PADDING.search(body):
                 r = RADIUS.search(body)
@@ -78,9 +79,11 @@ def main() -> int:
                         f"{rel}:{line} — ЗКН-Д014: серая плашка. Контейнер <{tag}> "
                         f"(padding, radius {r.group(1)}) залит --color-glass-*. "
                         f"Поверхность = var(--color-bg-2) + 0.5px var(--color-hairline)")
-            # ПРАВИЛО 2 — скрим поверх фирменной заглушки (подложка модалки —
-            # position: fixed — это не обложка, её не трогаем)
-            if has_fallback and ABSOLUTE.search(body) and INSET0.search(body) and FLAT_SCRIM.search(body):
+            # ПРАВИЛО 2 — скрим поверх фирменной заглушки. Подложка модалки/листа
+            # (у неё есть role="dialog", а у position:fixed — вся страница) — не
+            # обложка: её затемнение законно, это глубина, а не грязь.
+            decor = "role=" not in attrs
+            if has_fallback and decor and ABSOLUTE.search(body) and INSET0.search(body) and FLAT_SCRIM.search(body):
                 bad.append(
                     f"{rel}:{line} — ЗКН-Д005: скрим rgba(0,0,0,…) во всю обложку. "
                     f"Он гасит золото заглушки и делает её серым квадратом")
