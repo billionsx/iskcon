@@ -30,8 +30,13 @@ VOICE = re.compile(
     r"(?<!\$)\{(?:r|v|q|verse|quote|item)\.(?:translation|translit|text|t)\}"
     r"|\{stripWrap\(q\.t\)\}"
     r"|\{MANTRA(?:_DEV|_RU)?\}"
-    r"|MANTRA\.map")
-HAS_VOICE = re.compile(r"SCRIPTURE_VOICE|font-scripture|font-deva")
+    r"|MANTRA\.map"
+    # Косвенный рендер: сниппет стиха в поиске, подпись сохранённого стиха в
+    # избранном. Текст писания приходит сюда пропсом и легко теряет голос.
+    r"|\{hl\(sub, toks\)\}|\{second\}|\{it\.subtitle\}|\{v\.snippet\}")
+# Голос может передаваться ПРОПОМ: <Row sub={v.snippet} voice />. Сам компонент
+# уже несёт SCRIPTURE_VOICE — метка `voice` и есть доказательство.
+HAS_VOICE = re.compile(r"SCRIPTURE_VOICE|font-scripture|font-deva|\bvoice\b|VOICE_TYPES")
 DEVA_CHARS = re.compile(r"[\u0900-\u097F]")
 # Деванагари приходит и переменной: {MANTRA_DEV}, scriptLines(r.deva). Такой
 # рендер обязан ссылаться на --font-deva, иначе Georgia подменит письмо.

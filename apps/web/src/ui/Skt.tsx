@@ -28,15 +28,17 @@ export function Skt({
   lang,
   title,
   className,
+  voice,
 }: {
   children: ReactNode;
   /** BCP-47, напр. "sa" (санскрит) или "bn" (бенгальский). По умолчанию не задаётся. */
   lang?: string;
   title?: string;
   className?: string;
+  voice?: boolean;
 }) {
   return (
-    <i className={className ? `skt ${className}` : "skt"} lang={lang} title={title}>
+    <i className={[voice ? "skt skt-voice" : "skt", className].filter(Boolean).join(" ")} lang={lang} title={title}>
       {children}
     </i>
   );
@@ -145,7 +147,9 @@ function wrapGlossaryInner(text: string, keyBase: number, out: ReactNode[]): voi
  */
 export function renderTerms(text: string | null | undefined): ReactNode {
   if (!text) return text ?? null;
-  if (scriptFraction(text) >= 0.45) return <Skt>{text}</Skt>;
+  // ЗКН-Д013/D: абзац, который наполовину состоит из транслитерации, — это
+  // САМ СТИХ, а не наша проза с вкраплениями. Он звучит голосом шастры.
+  if (scriptFraction(text) >= 0.45) return <Skt voice>{text}</Skt>;
   const parts = text.split(/(\s+)/);
   const out: ReactNode[] = [];
   let plain = "";
@@ -157,7 +161,9 @@ export function renderTerms(text: string | null | undefined): ReactNode {
   for (const tok of parts) {
     if (tok && /\S/.test(tok) && SCRIPT_MARK.test(tok)) {
       flush();
-      out.push(<Skt key={`s${out.length}`}>{tok}</Skt>);
+      // ЗКН-Д013: слово с диакритикой BBT («кр̣шн̣а-да̄с») — это ТРАНСЛИТЕРАЦИЯ
+      // ПИСАНИЯ внутри нашей прозы, а не наш термин. Оно звучит чужим голосом.
+      out.push(<Skt voice key={`s${out.length}`}>{tok}</Skt>);
     } else {
       plain += tok;
     }

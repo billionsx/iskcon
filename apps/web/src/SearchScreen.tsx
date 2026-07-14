@@ -11,6 +11,7 @@
  * Совпадения подсвечиваются; стрелками ↑↓/Enter — навигация по результатам.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import { api } from "./api";
 import { BOOKS, type CatalogBook } from "./books";
 import { useCatalog, catalogNow } from "./bookCatalog";
@@ -95,7 +96,7 @@ function Monogram({ ch, size = 40 }: { ch: string; size?: number }) {
   );
 }
 
-function Row({ ch, title, meta, sub, iast, toks, active, onTap }: { ch: string; title: string; meta?: string | null; sub?: string | null; iast?: string | null; toks: string[]; active?: boolean; onTap: () => void }) {
+function Row({ ch, title, meta, sub, iast, toks, active, voice, onTap }: { ch: string; title: string; meta?: string | null; sub?: string | null; iast?: string | null; toks: string[]; active?: boolean; voice?: boolean; onTap: () => void }) {
   const ref = useRef<HTMLDivElement | null>(null);
   useEffect(() => { if (active) ref.current?.scrollIntoView({ block: "nearest" }); }, [active]);
   return (
@@ -109,7 +110,7 @@ function Row({ ch, title, meta, sub, iast, toks, active, onTap }: { ch: string; 
           {meta && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{meta}</span>}
         </span>
         {iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{iast}</span>}
-        {sub && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 1.35, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } as React.CSSProperties}>{hl(sub, toks)}</span>}
+        {sub && <span style={{ ...(voice ? SCRIPTURE_VOICE : { fontFamily: "var(--font-text)" }), fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 1.35, overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" } as React.CSSProperties}>{hl(sub, toks)}</span>}
       </span>
       <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </div>
@@ -136,7 +137,7 @@ function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
           {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
         </span>
-        {second && <span style={{ display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
+        {second && <span style={{ ...(ex.kind === "verse" ? SCRIPTURE_VOICE : { fontFamily: "var(--font-text)" }), display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontSize: "var(--text-footnote)", color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
       </span>
       <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </button>
@@ -445,7 +446,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("verses") && (
           <Section title="Стихи" count={counts.verses}>
             {r.verses.slice(0, vis("verses")).map((v, i) => (
-              <Row key={"v" + i + v.href} active={activeId === "v:" + i} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => goNav(v.href)} />
+              <Row key={"v" + i + v.href} active={activeId === "v:" + i} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} voice toks={toks} onTap={() => goNav(v.href)} />
             ))}
             {activeFilter === "all" && counts.verses > PREVIEW && <MoreLink n={counts.verses} active={activeId === "more:verses"} onTap={() => setFilter("verses")} />}
           </Section>

@@ -1880,7 +1880,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
           <p style={{ margin: 0, fontSize: "var(--text-subhead)", lineHeight: 1.95, color: INK2 }}>
             {r.tokens.map((t, i) => (
               <span key={i}>
-                <span style={{ fontStyle: "italic", color: INK }}>{t.term}</span>
+                <span style={{ ...SCRIPTURE_VOICE, color: INK }}>{t.term}</span>
                 {t.gloss ? ` — ${t.gloss}` : ""}{i < r.tokens.length - 1 ? "; " : "."}
               </span>
             ))}
@@ -2480,7 +2480,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
                   <p style={{ margin: 0, fontSize: "var(--text-subhead)", lineHeight: 1.95, color: INK2 }}>
                     {evTokens.map((t, i) => (
                       <span key={i}>
-                        <span style={{ fontStyle: "italic", color: INK }}>{t.term}</span>
+                        <span style={{ ...SCRIPTURE_VOICE, color: INK }}>{t.term}</span>
                         {t.gloss ? ` — ${t.gloss}` : ""}{i < evTokens.length - 1 ? "; " : "."}
                       </span>
                     ))}

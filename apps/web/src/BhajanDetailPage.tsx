@@ -487,7 +487,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
               ) : hasLayers ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                   {data.translit && <LayerCard label="Транслитерация" text={data.translit} scripture />}
-                  {data.translation && <LayerCard label="Перевод" text={data.translation} />}
+                  {data.translation && <LayerCard label="Перевод" text={data.translation} scripture />}
                 </div>
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>
