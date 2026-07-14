@@ -53,6 +53,14 @@ export function favMetaFromCtx(ctx: { title?: string; subtitle?: string; url?: s
 /** Снять из избранного по ключу (для свайпа на экране «Избранное»). */
 export function removeFavorite(key: string) { favDelete(key); }
 
+/** Добавить в избранное ВНЕ хука — например, из строки списка, где хук вызвать нельзя.
+ *  API имел только `useFavorite` (хук) и `removeFavorite`; парного «добавить» не было,
+ *  и это заставляло обходить систему. Теперь пара полная. */
+export function addFavorite(key: string, meta?: FavMeta) { favWrite(key, meta); }
+
+/** Стоит ли сердце — без подписки. Для списков, где строк сотни. */
+export function isFavorite(key: string): boolean { return favOn(key); }
+
 export function useFavorite(key: string, meta?: FavMeta): { on: boolean; toggle: (flash?: (m: string) => void) => void } {
   const on = useSyncExternalStore(
     useCallback((cb) => { favListeners.add(cb); return () => favListeners.delete(cb); }, []),

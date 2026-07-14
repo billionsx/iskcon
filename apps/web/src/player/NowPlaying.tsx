@@ -5,8 +5,9 @@
  * Открывается всегда сверху (без скачка). Контролы закреплены снизу «стеклом».
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, useMemo } from "react";
 import { COVER_FALLBACK } from "../ui/CoverFallback";
+import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
 import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
@@ -25,7 +26,8 @@ import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
 const INK_ON_GOLD = "var(--color-on-gold)";   // ЗКН-Д001: чернила НА золоте
-const ON_DARK = "var(--color-on-dark)";      // ЗКН-Д001: текст на тёмной доске
+const ON_DARK = "var(--color-on-dark)";
+const HEART = "var(--color-heart)";          // ЗКН-Д001: сердце избранного      // ЗКН-Д001: текст на тёмной доске
 
 /** Псевдо-раздел «Все» — плоский список всей коллекции (решение основателя). */
 const ALL_DIV = "__all__";
@@ -120,9 +122,51 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * Поэтому: ДВЕ ПАНЕЛИ + ЗАКРЕПЛЁННЫЙ ТРАНСПОРТ. Панель занимает весь остаток
    * высоты (пустая плешь становится невозможной), транспорт прибит ко дну и
    * прокруткой не сдувается. */
-  const [pane, setPane] = useState<"now" | "queue">("now");
-  /* Счёт — по АКТИВНОЙ папке. «Дорожки · 1062» при открытой папке на 7 записей
-     это ложь: человек видит семь строк и цифру 1062. */
+  /* ═══ ЗКН-Н051 · НАЗЫВАЕМ ТЕМ, ЧЕМ ЧЕЛОВЕК УПРАВЛЯЕТ, А НЕ ТЕМ, КАК УСТРОЕНО ═══
+   *
+   * «Очередь» — слово ДВИЖКА: так называется структура воспроизведения внутри.
+   * Человек, пришедший слушать святое имя, не думает «очередь». Он думает:
+   * что играет · что ещё есть · чей это голос.
+   *
+   * Правильное слово уже написано в шапке витрины: «Святое имя В ГОЛОСАХ ачарьев
+   * и киртания». ГОЛОСА. Не «папки», не «исполнители», не «очередь».
+   *
+   *   Очередь  →  Записи
+   *   Папки    →  Голоса
+   *   Дорожки  →  Записи
+   */
+  const [pane, setPane] = useState<"now" | "queue" | "mine">("now");
+  const isAdHoc = p.kind !== "book";
+  /* ЗКН-Н052 — СЕРДЦЕ СТАВИТСЯ НА ЗАПИСЬ, А НЕ НА АЛЬБОМ.
+   *
+   * Сердце висело на всей коллекции: нажал — «добавлено в избранное», а что
+   * именно добавлено, непонятно. Человек хочет отметить КОНКРЕТНЫЙ киртан —
+   * тот, что сейчас звучит и лёг на сердце. Без этого «Моё» — пустое обещание.
+   *
+   * Ключ — путь дорожки в архиве: он уникален и переживает переименования. */
+  const trackKey = (tr: Track | null) => {
+    if (!tr) return "";
+    const m = (tr.url || "").split("/audio/")[1];
+    return m ? `kirtan:${decodeURIComponent(m)}` : "";
+  };
+  const favs = useFavorites();
+  const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key)), [favs]);
+  const favTracks = useMemo(
+    () => (isAdHoc ? p.tracks.filter((tr) => favSet.has(trackKey(tr))) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [p.tracks, favSet, isAdHoc],
+  );
+  const toggleTrackFav = (tr: Track) => {
+    const k = trackKey(tr);
+    if (!k) return;
+    const on = favSet.has(k);
+    if (on) removeFavorite(k); else addFavorite(k, { t: tr.title, s: tr.artist ?? "" });
+    flash(on ? "Убрано из «Моё»" : "Добавлено в «Моё»");
+  };
+
+  /** Что зазвучит следующим. */
+  const nextTrack = p.tracks[p.index + 1] ?? null;
+
   /* Где играющая запись живёт: чей голос, какая по счёту у него. */
   const curGroupId = p.track ? (gid(p.track) ?? "") : "";
   const curGroupLabel = p.track?.groupLabel ?? "";
@@ -131,6 +175,8 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     ? p.tracks.slice(0, p.index + 1).filter((x) => (gid(x) ?? "") === curGroupId).length
     : 0;
 
+  /* Счёт — по АКТИВНОЙ папке. «Записи · 1062» при открытой папке на 7 записей —
+     это ложь: человек видит семь строк и цифру 1062. */
   const shownCount = (!hierQueue || activeDiv === ALL_DIV)
     ? p.tracks.length
     : p.tracks.filter((t) => (gid(t) ?? divisions[0]?.id) === activeDiv).length;
@@ -231,7 +277,6 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
 
   const remaining = p.duration > 0 ? p.duration - p.currentTime : 0;
   const isKirtan = p.kind === "kirtan";
-  const isAdHoc = p.kind !== "book";
   const BOOK = BOOKS[p.book] ?? BOOKS.bg;
   const isAudiobook = !isAdHoc && !!BOOK.noText; // аудиокнига без текста: «глав» нет — показываем название книги
   // Подпись — общая для всех поверхностей плеера (store.trackSubtitle).
@@ -315,7 +360,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   }
   const coverActions = (
     <>
-      <ActionBtn active={favorited} activeColor="#FF453A" ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+      <ActionBtn active={favorited} activeColor={HEART} ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
       {(!isAdHoc || p.kind === "bhajan") && <ActionBtn ariaLabel={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText}><BookOpenIcon size={18} /></ActionBtn>}
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
@@ -386,7 +431,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
                 style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
-                <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? "#FF453A" : ON_DARK }}><HeartIcon size={17} filled={favorited} /></button>
+                <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? HEART : ON_DARK }}><HeartIcon size={17} filled={favorited} /></button>
                 {(!isAdHoc || p.kind === "bhajan") && <button type="button" aria-label={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
@@ -406,11 +451,15 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           <div role="tablist" aria-label="Плеер"
             style={{ display: "flex", gap: 3, padding: 3, borderRadius: 12,
               background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
-            {([["now", "Сейчас"], ["queue", isAdHoc ? "Очередь" : "Содержание"]] as const).map(([id, label]) => {
+            {(isAdHoc
+              ? [["now", "Играет"], ["queue", "Записи"], ["mine", "Моё"]] as const
+              : [["now", "Сейчас"], ["queue", "Содержание"]] as const
+            ).map(([id, label]) => {
               const on = pane === id;
+              const n = id === "queue" ? shownCount : id === "mine" ? favTracks.length : 0;
               return (
                 <button key={id} type="button" role="tab" aria-selected={on}
-                  onClick={() => setPane(id as "now" | "queue")}
+                  onClick={() => setPane(id as "now" | "queue" | "mine")}
                   style={{ flex: 1, minWidth: 0, height: 32, borderRadius: 9, border: "none", cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                     background: on ? "rgba(255,255,255,0.14)" : "transparent",
@@ -419,10 +468,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                     boxShadow: on ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
                     transition: "background .18s, color .18s" }}>
                   {label}
-                  {id === "queue" && shownCount ? (
+                  {n ? (
                     <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600,
                       color: on ? GOLD : "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>
-                      {shownCount}
+                      {n}
                     </span>
                   ) : null}
                 </button>
@@ -435,7 +484,32 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 40)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain",
             WebkitOverflowScrolling: "touch", padding: "0 16px 12px" }}>
-          {pane === "now" ? (
+          {pane === "mine" ? (
+            /* ═══ МОЁ — то, что человек отложил себе. ═══
+               Пустой экран — не тупик, а приглашение: он говорит, ЧТО сделать. */
+            favTracks.length === 0 ? (
+              <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", alignItems: "center",
+                justifyContent: "center", gap: 10, padding: "0 24px", textAlign: "center" }}>
+                <span style={{ color: "rgba(255,255,255,0.22)" }}><HeartIcon size={34} /></span>
+                <span style={{ fontSize: "var(--text-subhead)", fontWeight: 600, color: "rgba(255,255,255,0.75)" }}>
+                  Здесь пока пусто
+                </span>
+                <span style={{ fontSize: "var(--text-footnote)", lineHeight: 1.5, color: "rgba(255,255,255,0.45)" }}>
+                  Отметьте запись сердцем — она ляжет сюда, и вы вернётесь к ней одним касанием.
+                </span>
+              </div>
+            ) : (
+              <div style={{ paddingTop: 4 }}>
+                {favTracks.map((tr) => {
+                  const i = p.tracks.indexOf(tr);
+                  return (
+                    <QueueRow key={tr.file} t={tr} active={i === p.index}
+                      fav onFav={() => toggleTrackFav(tr)} onClick={() => p.jumpTo(i)} />
+                  );
+                })}
+              </div>
+            )
+          ) : pane === "now" ? (
             <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {isAdHoc
             ? <KirtanHero cover={p.cover}
@@ -470,10 +544,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   ? <DivisionPicker items={cantoTabs} active={browseCanto} onChange={setBrowseCanto} label="Песни" />
                   : hierQueue
                   ? <DivisionPicker items={divisions} active={activeDiv} onChange={setActiveDiv}
-                      label={isAdHoc ? "Папки" : "Разделы"} />
+                      label={isAdHoc ? "Голоса" : "Разделы"} />
                   : <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
                       textTransform: "uppercase", color: GOLD }}>
-                      {isAdHoc ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+                      {isAdHoc ? "Записи" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
                     </span>}
               </span>
               {isAdHoc && (
@@ -563,6 +637,8 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                         <QueueRow key={t.file} t={t} active={i === p.index}
                           num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
                           strip={isAdHoc && activeDiv !== ALL_DIV ? (t.groupLabel ?? "") : undefined}
+                          fav={isAdHoc ? favSet.has(trackKey(t)) : undefined}
+                          onFav={isAdHoc && qView === "list" ? () => toggleTrackFav(t) : undefined}
                           onClick={() => p.jumpTo(i)} />,
                       );
                     });
@@ -901,7 +977,7 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, 
   );
 }
 
-function QueueRow({ t, active, num, tile, strip, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; strip?: string; onClick: () => void }) {
+function QueueRow({ t, active, num, tile, strip, fav, onFav, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; strip?: string; fav?: boolean; onFav?: () => void; onClick: () => void }) {
   const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
 
   /* ⚠️ В ПАПКЕ ИМЯ ИСПОЛНИТЕЛЯ В КАЖДОЙ СТРОКЕ — ШУМ.
@@ -941,6 +1017,15 @@ function QueueRow({ t, active, num, tile, strip, onClick }: { t: Track; active: 
       <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
       <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
+      {onFav && (
+        <span role="button" tabIndex={0} aria-label={fav ? "Убрать из «Моё»" : "В «Моё»"} aria-pressed={fav}
+          onClick={(e) => { e.stopPropagation(); onFav(); }}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onFav(); } }}
+          style={{ display: "grid", placeItems: "center", width: 30, height: 30, flexShrink: 0, borderRadius: 999,
+            cursor: "pointer", color: fav ? HEART : "rgba(255,255,255,0.28)" }}>
+          <HeartIcon size={15} filled={!!fav} />
+        </span>
+      )}
     </button>
   );
 }
