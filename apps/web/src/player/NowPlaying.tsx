@@ -104,8 +104,33 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   /* Вид очереди: список или плитка. Пилюли папок — это ФИЛЬТР; вид — это про то,
      КАК показаны отфильтрованные записи. Два разных органа, не смешиваем. */
   const [qView, setQView] = useState<"list" | "grid">("list");
+
+  /* ═══════════════════════════════════════════════════════════════════════
+   * ЗКН-Н050 · ОДИН ЭКРАН — ОДНА ЗАДАЧА. ТРАНСПОРТ — ВСЕГДА.
+   *
+   * Я сложил в ОДИН прокручиваемый столбец три разные вещи: обложку, список из
+   * 1062 строк и транспорт. Оттого всё и разъезжалось: обложка сдувалась при
+   * прокрутке, транспорт уезжал, внизу оставалась пустая плешь.
+   *
+   * Но это ТРИ РАЗНЫХ МОМЕНТА, и смешивать их нельзя:
+   *   слушаю   → что звучит, обложка, имя
+   *   выбираю  → что ещё есть, папки, список
+   *   управляю → пауза, перемотка — НУЖНО ВСЕГДА, в обоих случаях
+   *
+   * Поэтому: ДВЕ ПАНЕЛИ + ЗАКРЕПЛЁННЫЙ ТРАНСПОРТ. Панель занимает весь остаток
+   * высоты (пустая плешь становится невозможной), транспорт прибит ко дну и
+   * прокруткой не сдувается. */
+  const [pane, setPane] = useState<"now" | "queue">("now");
   /* Счёт — по АКТИВНОЙ папке. «Дорожки · 1062» при открытой папке на 7 записей
      это ложь: человек видит семь строк и цифру 1062. */
+  /* Где играющая запись живёт: чей голос, какая по счёту у него. */
+  const curGroupId = p.track ? (gid(p.track) ?? "") : "";
+  const curGroupLabel = p.track?.groupLabel ?? "";
+  const curGroupTotal = curGroupId ? p.tracks.filter((x) => (gid(x) ?? "") === curGroupId).length : 0;
+  const curGroupPos = curGroupId
+    ? p.tracks.slice(0, p.index + 1).filter((x) => (gid(x) ?? "") === curGroupId).length
+    : 0;
+
   const shownCount = (!hierQueue || activeDiv === ALL_DIV)
     ? p.tracks.length
     : p.tracks.filter((t) => (gid(t) ?? divisions[0]?.id) === activeDiv).length;
@@ -326,12 +351,18 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     >
       {/* ambient artwork background */}
       <div aria-hidden style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-        <img src={p.cover} alt="" style={{ position: "absolute", inset: "-20%", width: "140%", height: "140%", objectFit: "cover", filter: "blur(72px) saturate(180%) brightness(0.5)", transform: "scale(1.1)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(14,14,16,0.55) 0%, rgba(14,14,16,0.5) 40%, rgba(10,10,12,0.92) 100%)" }} />
+        {/* ⚠️ ОБЛОЖКА ЗДЕСЬ — БЕЛАЯ (фирменный знак), а не фотография.
+            Размытая, она давала СЕРУЮ ПЛЕШЬ на всю доску. Гасим её почти в ноль и
+            даём собственное свечение: тёплое золото сверху, темнота ко дну. */}
+        <img src={p.cover} alt="" style={{ position: "absolute", inset: "-20%", width: "140%", height: "140%", objectFit: "cover", filter: "blur(90px) saturate(200%) brightness(0.22)", transform: "scale(1.1)", opacity: 0.5 }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 70% at 50% 0%, rgba(210,170,27,0.16) 0%, rgba(210,170,27,0.04) 38%, rgba(0,0,0,0) 68%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(14,14,16,0.62) 0%, rgba(13,13,15,0.86) 55%, rgba(10,10,12,0.97) 100%)" }} />
       </div>
 
-      {/* content (absolute inset 0 → fills the sheet exactly; no gaps/strips) */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column" }}>
+      {/* Содержимое — flex-столбец на ВСЮ высоту коробки.
+          Панель растягивается (`flex:1`), транспорт прибит ко дну (`flexShrink:0`).
+          Пустого места внизу быть НЕ МОЖЕТ по устройству. */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
         {/* pinned header: grabber + minimize / (book title on scroll) / close */}
         <div onPointerDown={embedded ? undefined : onDown} onPointerMove={embedded ? undefined : onMove}
           onPointerUp={embedded ? undefined : onUp} onPointerCancel={embedded ? undefined : onUp}
@@ -368,14 +399,52 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           </div>
         </div>
 
-        {/* scroll body: ВКП cover + queue */}
-        <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
-          style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
+        {/* ═══ СЕГМЕНТ: «Сейчас» / «Очередь» ═══
+            Один экран — одна задача. Смешивать «что звучит» и «что ещё есть» в
+            одном прокручиваемом столбце нельзя: они мешают друг другу. */}
+        <div style={{ flexShrink: 0, padding: "2px 16px 10px" }}>
+          <div role="tablist" aria-label="Плеер"
+            style={{ display: "flex", gap: 3, padding: 3, borderRadius: 12,
+              background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.08)" }}>
+            {([["now", "Сейчас"], ["queue", isAdHoc ? "Очередь" : "Содержание"]] as const).map(([id, label]) => {
+              const on = pane === id;
+              return (
+                <button key={id} type="button" role="tab" aria-selected={on}
+                  onClick={() => setPane(id as "now" | "queue")}
+                  style={{ flex: 1, minWidth: 0, height: 32, borderRadius: 9, border: "none", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                    background: on ? "rgba(255,255,255,0.14)" : "transparent",
+                    color: on ? GOLD : "rgba(255,255,255,0.55)",
+                    fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: on ? 700 : 500,
+                    boxShadow: on ? "0 1px 4px rgba(0,0,0,0.3)" : "none",
+                    transition: "background .18s, color .18s" }}>
+                  {label}
+                  {id === "queue" && shownCount ? (
+                    <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600,
+                      color: on ? GOLD : "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>
+                      {shownCount}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ═══ ПАНЕЛЬ — весь остаток высоты. Пустой плеши быть не может. ═══ */}
+        <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 40)}
+          style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain",
+            WebkitOverflowScrolling: "touch", padding: "0 16px 12px" }}>
+          {pane === "now" ? (
+            <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {isAdHoc
             ? <KirtanHero cover={p.cover}
                 title={p.track?.title || p.bookTitle}
                 artist={p.artist}
-                meta={p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle}
+                meta={curGroupLabel
+                  ? `${curGroupLabel} · ${curGroupPos} из ${curGroupTotal}`
+                  : (p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle)}
+                onMeta={curGroupId ? () => { setActiveDiv(curGroupId); setPane("queue"); } : undefined}
                 note={albumById(p.book)?.note} coverActions={coverActions}
                 maxCover={embedded && embeddedHeight
                   ? Math.max(120, Math.min(260, Math.round(embeddedHeight * 0.30)))
@@ -388,15 +457,24 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               плеера; орган управления очередью должен быть в самом плеере, а не
               рядом с ним. */}
           {belowHero}
-
-          <div style={{ marginTop: 22 }}>
+            </div>
+          ) : (
+            <div>
             {/* Надзаголовок раздела — ЗОЛОТОЙ, как во всех витринах (ЗКН-Н024).
                 Серый он выпадал из системы: тот же смысл, другой голос. */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: hierQueue ? 11 : 8, padding: "0 4px" }}>
-              <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
-                {isAdHoc
-                  ? `Дорожки${shownCount ? ` · ${shownCount}` : ""}`
-                  : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+            {/* Счёт уже стоит в сегменте — второй раз его писать не нужно.
+                Здесь живёт то, чего в сегменте нет: выбор папки и вид. */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10, paddingTop: 4 }}>
+              <span style={{ flex: 1, minWidth: 0 }}>
+                {multiCanto
+                  ? <DivisionPicker items={cantoTabs} active={browseCanto} onChange={setBrowseCanto} label="Песни" />
+                  : hierQueue
+                  ? <DivisionPicker items={divisions} active={activeDiv} onChange={setActiveDiv}
+                      label={isAdHoc ? "Папки" : "Разделы"} />
+                  : <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
+                      textTransform: "uppercase", color: GOLD }}>
+                      {isAdHoc ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+                    </span>}
               </span>
               {isAdHoc && (
                 <span style={{ display: "flex", gap: 2, flexShrink: 0 }}>
@@ -415,17 +493,11 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                 </span>
               )}
             </div>
-            {multiCanto
-              ? <>
-                  <DivisionPills items={cantoTabs} active={browseCanto} onChange={setBrowseCanto} />
-                  {chapTabs.length > 1 && (
-                    <div style={{ marginTop: 8 }}>
-                      <DivisionPicker items={chapTabs} active={activeCh} onChange={setActiveCh} label="Главы" />
-                    </div>
-                  )}
-                </>
-              : hierQueue && <DivisionPicker items={divisions} active={activeDiv} onChange={setActiveDiv}
-                  label={isAdHoc ? "Папки" : "Разделы"} />}
+            {multiCanto && chapTabs.length > 1 && (
+              <div style={{ marginBottom: 10 }}>
+                <DivisionPicker items={chapTabs} active={activeCh} onChange={setActiveCh} label="Главы" />
+              </div>
+            )}
             <div style={{ paddingTop: (multiCanto || hierQueue) ? 10 : 0,
               ...(isAdHoc && qView === "grid"
                 ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(104px, 1fr))", gap: 8 }
@@ -490,18 +562,21 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                       out.push(
                         <QueueRow key={t.file} t={t} active={i === p.index}
                           num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
+                          strip={isAdHoc && activeDiv !== ALL_DIV ? (t.groupLabel ?? "") : undefined}
                           onClick={() => p.jumpTo(i)} />,
                       );
                     });
                     return out;
                   })()}
             </div>
-          </div>
+            </div>
+          )}
         </div>
+
 
         {/* pinned controls (Liquid Glass) */}
         {/* «К текущей» — плавает над панелью, пока играющая строка не видна. */}
-        {p.active && lostTrack && (
+        {p.active && lostTrack && pane === "queue" && (
           <button type="button" onClick={backToPlaying}
             style={{ position: "absolute", left: "50%", transform: "translateX(-50%)",
               bottom: embedded ? 148 : "calc(env(safe-area-inset-bottom) + 168px)", zIndex: 10,
@@ -756,7 +831,7 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
  * и ряд действий (избранное · ещё). Зеркалит презентационный BookHeroCard, но
  * квадратное под аудио-альбом, а не книжная обложка.
  */
-function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number }) {
+function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, onMeta }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number; onMeta?: () => void }) {
   const size = maxCover ?? 320;
   return (
     <div style={{ paddingTop: 2 }}>
@@ -800,12 +875,22 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }
             letterSpacing: "-0.02em", color: ON_DARK, lineHeight: 1.22,
             display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
           }}>{title}</div>
-          {artist ? (
+          {/* ИМЯ ВЕДЁТ К ИСПОЛНИТЕЛЮ. Слышишь голос — одним тапом попадаешь во всё,
+              что им спето. Без этого человек в тупике: голос нравится, а как найти
+              остальное — непонятно. */}
+          {meta && onMeta ? (
+            <button type="button" onClick={onMeta}
+              style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 4, padding: 0, border: "none",
+                background: "none", cursor: "pointer", maxWidth: "100%", fontFamily: "var(--font-text)" }}>
+              <span style={{ minWidth: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
+                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          ) : artist ? (
             <div style={{ marginTop: 3, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLD,
               whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist}</div>
-          ) : meta ? (
-            <div style={{ marginTop: 3, fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.48)",
-              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</div>
           ) : null}
         </div>
         {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>{coverActions}</div>}
@@ -816,8 +901,14 @@ function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }
   );
 }
 
-function QueueRow({ t, active, num, tile, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; onClick: () => void }) {
+function QueueRow({ t, active, num, tile, strip, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; strip?: string; onClick: () => void }) {
   const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
+
+  /* ⚠️ В ПАПКЕ ИМЯ ИСПОЛНИТЕЛЯ В КАЖДОЙ СТРОКЕ — ШУМ.
+   * Открыл папку Ананды Вардханы — и все двенадцать строк начинаются с «Ананда
+   * Вардхана Свами Махарадж…». Настоящее название при этом не влезает и обрубается.
+   * Имя уже стоит в шапке папки; в строке оно лишнее. */
+  const title = strip && t.title.startsWith(strip + ". ") ? t.title.slice(strip.length + 2) : t.title;
 
   if (tile) {
     return (
@@ -837,7 +928,7 @@ function QueueRow({ t, active, num, tile, onClick }: { t: Track; active: boolean
         </span>
         <span style={{ fontSize: "var(--text-caption)", fontWeight: active ? 700 : 500, lineHeight: 1.25,
           color: active ? GOLD : "rgba(255,255,255,0.9)",
-          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.title}</span>
+          display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</span>
         {t.durationSec ? <span style={{ fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
       </button>
     );
@@ -848,7 +939,7 @@ function QueueRow({ t, active, num, tile, onClick }: { t: Track; active: boolean
       style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
         background: active ? "rgba(210,170,27,0.16)" : "transparent", color: ON_DARK }}>
       <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
-      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
+      <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
     </button>
   );
