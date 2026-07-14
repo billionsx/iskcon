@@ -567,17 +567,6 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
           {isAdHoc
             ? <KirtanHero cover={p.cover}
-                /* ⚠️ ИМЯ ГОЛОСА ПЕЧАТАЛОСЬ ДВАЖДЫ.
-                 *
-                 * Заголовок: «Шрила Прабхупада. Анади Карама Пхале»
-                 * Строка ниже: «Шрила Прабхупада · 1 из 132»
-                 *
-                 * Одно и то же имя, вплотную, два раза. Оно съедало заголовок (тот
-                 * ломался на две строки и обрубался), а после точки схлопывался
-                 * пробел — из-за отрицательного трекинга крупного начертания.
-                 *
-                 * Ту же ошибку я уже чинил в строках папки — и снова не довёл до
-                 * шапки. Заголовок говорит, ЧТО звучит. Чей голос — сказано ниже. */
                 /* ⚠️ Я СРЕЗАЛ ИМЯ ИЗ НАЗВАНИЯ — И ЭТО БЫЛО НЕ МОЁ ДЕЛО.
                  *
                  * Названия писал основатель: своей рукой, в документе, с именем.
@@ -592,7 +581,17 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   ? `Записи голоса · ${curGroupPos} из ${curGroupTotal}`
                   : (p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle)}
                 onMeta={curGroupId ? () => { setActiveDiv(curGroupId); setPane("queue"); } : undefined}
-                note={albumById(p.book)?.note} coverActions={coverActions} />
+                note={albumById(p.book)?.note} coverActions={coverActions}
+                /* ЗКН-Н062 — ПОЛНЫЙ ЭКРАН СУЩЕСТВУЕТ РАДИ ОБЛОЖКИ.
+                   Во встроенной коробке она делит место с очередью; во весь экран
+                   она — главное, и берёт всё, что можно. */
+                big={!embedded}
+                /* Свайп по обложке — назад и вперёд. В полноэкранном плеере это
+                   самый естественный жест: палец уже там, куда смотрят глаза. */
+                onSwipe={(d) => (d === 1 ? p.next() : p.prev())}
+                maxCover={embedded && embeddedHeight
+                  ? Math.max(120, Math.min(240, Math.round(embeddedHeight * 0.28)))
+                  : undefined} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
 
           {/* ПАПКИ ЖИВУТ ВНУТРИ ПЛЕЕРА (решение основателя).
@@ -1081,75 +1080,91 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
  * и ряд действий (избранное · ещё). Зеркалит презентационный BookHeroCard, но
  * квадратное под аудио-альбом, а не книжная обложка.
  */
-function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, onMeta }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number; onMeta?: () => void }) {
+function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, big, onMeta, onSwipe }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number; big?: boolean; onMeta?: () => void; onSwipe?: (dir: 1 | -1) => void }) {
+  /* ⚠️ ОБЛОЖКА СХЛОПЫВАЛАСЬ В НОГОТЬ НА ПОЛНОМ ЭКРАНЕ.
+   *
+   * Контейнер был `grid` + `placeItems:center`, а у обложки `width:100%`. В
+   * центрированной сетке столбец меряется ПО СОДЕРЖИМОМУ — и `100%` разрешается в
+   * натуральный размер картинки, то есть в ничто. Во встроенной коробке это было
+   * незаметно, во весь экран — вылезло.
+   *
+   * И главное: ПОЛНЫЙ ЭКРАН СУЩЕСТВУЕТ РАДИ ОБЛОЖКИ. Раздувать компоновку тесной
+   * коробки на весь экран — значит не дать ему смысла. Здесь у обложки СВОЙ размер:
+   * она берёт всё, что можно, и остаётся квадратом. */
+  const w = big ? "min(78vw, 42vh, 400px)" : `${Math.max(112, maxCover ?? 240)}px`;
+
+  /* Свайп по обложке — назад и вперёд. В полноэкранном плеере это самый
+     естественный жест: палец уже там, где смотрят глаза. */
+  const sx = useRef<number | null>(null);
+  const onDown = (e: React.PointerEvent) => { if (onSwipe) sx.current = e.clientX; };
+  const onUp = (e: React.PointerEvent) => {
+    if (!onSwipe || sx.current == null) return;
+    const dx = e.clientX - sx.current;
+    sx.current = null;
+    if (Math.abs(dx) > 56) onSwipe(dx < 0 ? 1 : -1);
+  };
+
   return (
-    <div style={{ paddingTop: 6 }}>
-      {/* ═══ ЗКН-Н056 · ГЕРОЙ — ИМЯ, А НЕ КАРТИНКА ═══
-       *
-       * Обложка одна и та же на всех 1062 записях — она не сообщает НИЧЕГО, и при
-       * этом занимала 40% экрана. Смысл здесь несёт САМО ИМЯ: это святое имя, а не
-       * обложка альбома. Слово — главное, и оно становится героем.
-       *
-       * Знак остаётся ПЕЧАТЬЮ: маленький, золотой, над именем — подпись, а не
-       * витрина. Свечение под ним сохраняем: оно даёт экрану тепло арати. */}
-      <div style={{ position: "relative", display: "grid", placeItems: "center", paddingBottom: 14 }}>
+    <div style={{ paddingTop: 2 }}>
+      {/* ═══ СИГНАТУРА: ЗНАК ОСВЕЩАЕТ ПОВЕРХНОСТЬ ═══
+       * Обложка здесь — фирменный знак, золото на белом, а не альбомная фотография.
+       * Кадрировать и затемнять её нельзя. Поэтому обратный ход: она ОСВЕЩАЕТ фон.
+       * Правдиво для предмета: арати — свет, поднесённый Божеству. */}
+      <div style={{ position: "relative", width: w, maxWidth: "100%", margin: "0 auto",
+        paddingBottom: big ? 22 : 14 }}>
         <div aria-hidden style={{
-          position: "absolute", width: 220, height: 150, borderRadius: "50%", pointerEvents: "none",
-          background: "radial-gradient(closest-side, rgba(210,170,27,0.22), rgba(210,170,27,0.05) 58%, rgba(210,170,27,0) 80%)",
-          filter: "blur(12px)",
+          position: "absolute", inset: "-28% -32% -14%", borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(closest-side, rgba(210,170,27,0.26), rgba(210,170,27,0.07) 56%, rgba(210,170,27,0) 78%)",
+          filter: "blur(16px)",
         }} />
-        <img src={cover} alt="" draggable={false}
-          style={{ position: "relative", width: 56, height: 56, borderRadius: 16, objectFit: "cover",
-            background: "var(--color-on-dark)",
-            boxShadow: "0 10px 26px -8px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.10)" }} />
+        <div onPointerDown={onDown} onPointerUp={onUp} onPointerCancel={() => { sx.current = null; }}
+          style={{
+            position: "relative", width: "100%", aspectRatio: "1 / 1",
+            borderRadius: big ? 26 : 22, overflow: "hidden", background: ON_DARK,
+            touchAction: onSwipe ? "pan-y" : undefined, cursor: onSwipe ? "grab" : undefined,
+            boxShadow: "0 30px 60px -18px rgba(0,0,0,0.8), 0 2px 12px rgba(0,0,0,0.4)",
+          }}>
+          <img src={cover} alt="" draggable={false}
+            style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
+        </div>
       </div>
 
-      {/* ИМЯ — крупно. Оно и есть предмет. */}
-      <div style={{
-        fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800,
-        letterSpacing: "-0.02em", color: "var(--color-on-dark)", lineHeight: 1.18, textAlign: "center",
-        display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
-      }}>{title}</div>
+      {/* ГЕРОЙ СТРОКИ — ЗАПИСЬ. Название — то, что написал основатель, целиком.
+          Действия ведут строку справа: они привязаны к заголовку, а не висят под ним. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: big ? 6 : 2 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{
+            fontFamily: "var(--font-display)",
+            fontSize: big ? "var(--text-title2)" : "var(--text-title3)", fontWeight: 800,
+            letterSpacing: "-0.01em", color: ON_DARK, lineHeight: 1.25,
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+          }}>{title}</div>
 
-      {/* ГОЛОС — ведёт к нему. */}
-      {meta && onMeta ? (
-        <button type="button" onClick={onMeta}
-          style={{ margin: "8px auto 0", display: "flex", alignItems: "center", gap: 4, padding: "4px 10px",
-            borderRadius: 999, border: "0.5px solid rgba(210,170,27,0.28)", background: "rgba(210,170,27,0.10)",
-            cursor: "pointer", maxWidth: "100%", fontFamily: "var(--font-text)" }}>
-          <span style={{ minWidth: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD,
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</span>
-          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
-            <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-      ) : artist ? (
-        <div style={{ marginTop: 6, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLD,
-          textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist}</div>
-      ) : null}
-
-      {coverActions && (
-        <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          {coverActions}
+          {/* Служебная строка — МОЯ, не основателя: имя голоса здесь не повторяем
+              (ЗКН-Н060). Она ведёт к записям этого голоса. */}
+          {meta && onMeta ? (
+            <button type="button" onClick={onMeta}
+              style={{ marginTop: 5, display: "flex", alignItems: "center", gap: 4, padding: 0, border: "none",
+                background: "none", cursor: "pointer", maxWidth: "100%", fontFamily: "var(--font-text)" }}>
+              <span style={{ minWidth: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD,
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
+                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          ) : artist ? (
+            <div style={{ marginTop: 3, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLD,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist}</div>
+          ) : null}
         </div>
-      )}
+        {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>{coverActions}</div>}
+      </div>
 
-      {note && <div style={{ marginTop: 12, fontSize: "var(--text-footnote)", lineHeight: 1.45,
-        color: "rgba(255,255,255,0.5)", textAlign: "center" }}>{note}</div>}
+      {note && <div style={{ marginTop: 10, fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "rgba(255,255,255,0.5)" }}>{note}</div>}
     </div>
   );
 }
 
-/* ═══ ЗКН-Н056 · ЗНАК — ПЕЧАТЬ, А НЕ ВИТРИНА ═══
- *
- * Обложка у всех 1062 записей ОДНА И ТА ЖЕ — она не несёт НИ БИТА информации.
- * У Apple большая обложка оправдана тем, что она у каждого альбома своя: по ней
- * узнают пластинку. У нас узнавать нечего — а места она занимала 40% экрана.
- *
- * Элемент, который ничего не сообщает, не может быть самым крупным на экране.
- *
- * Знак становится ПЕЧАТЬЮ — подписью, а не витриной. И слот получает РАБОТУ:
- * у играющей записи печать оживает эквалайзером и отвечает «вот что звучит». */
 function Seal({ size, playing }: { size: number; playing?: boolean }) {
   if (playing) {
     return (
