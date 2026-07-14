@@ -118,32 +118,37 @@ if (typeof window !== "undefined") {
 }
 
 /* ── Круглая стеклянная кнопка — копия книжного ActionBtn (34px на карточках) ── */
-export function RoundBtn({ ariaLabel, onClick, active, activeColor, dark, size = 34, children }: {
-  ariaLabel: string; onClick: () => void; active?: boolean; activeColor?: string; dark?: boolean; size?: number; children: ReactNode;
+export function RoundBtn({ ariaLabel, onClick, active, activeColor, dark, plain, size = 34, children }: {
+  ariaLabel: string; onClick: () => void; active?: boolean; activeColor?: string; dark?: boolean; plain?: boolean; size?: number; children: ReactNode;
 }) {
+  // plain (ЗКН-Д014) — на ЧИСТОЙ поверхности (белая карточка) серый кружок под
+  // глифом лишний: он добавляет вторую плашку туда, где хватает самого глифа.
+  // Стеклянный кружок нужен только поверх МЕДИА (фото, видео), где без подложки
+  // глиф теряется.
   return (
     <button type="button" aria-label={ariaLabel} aria-pressed={active}
       onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick(); }}
       style={{ display: "grid", height: size, width: size, placeItems: "center", borderRadius: "50%", border: "none", cursor: "pointer", flexShrink: 0,
-        background: dark ? "rgba(255,255,255,.14)" : "rgba(120,120,128,.14)",
-        color: active && activeColor ? activeColor : dark ? "#fff" : "var(--color-label)",
-        backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", transition: "background .2s, color .2s", WebkitTapHighlightColor: "transparent" }}>
+        background: plain ? "transparent" : dark ? "rgba(255,255,255,.14)" : "rgba(120,120,128,.14)",
+        color: active && activeColor ? activeColor : plain ? "var(--color-label-3)" : dark ? "#fff" : "var(--color-label)",
+        ...(plain ? {} : { backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }),
+        transition: "background .2s, color .2s", WebkitTapHighlightColor: "transparent" }}>
       {children}
     </button>
   );
 }
 
 /* ── Пара ♥ + ⋯ — стандартный блок действий карточки ─────────────────────── */
-export function CardActionBtns({ favKey, onMore, meta, flash, dark, size = 34 }: {
-  favKey: string; onMore: () => void; meta?: FavMeta; flash?: (m: string) => void; dark?: boolean; size?: number;
+export function CardActionBtns({ favKey, onMore, meta, flash, dark, plain, size = 34 }: {
+  favKey: string; onMore: () => void; meta?: FavMeta; flash?: (m: string) => void; dark?: boolean; plain?: boolean; size?: number;
 }) {
   const fav = useFavorite(favKey, meta);
   return (
     <span style={{ display: "inline-flex", gap: 8 }} onClick={(e) => e.stopPropagation()}>
-      <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" dark={dark} size={size} onClick={() => fav.toggle(flash)}>
+      <RoundBtn ariaLabel="В избранное" active={fav.on} activeColor="#FF453A" dark={dark} plain={plain} size={size} onClick={() => fav.toggle(flash)}>
         <HeartIcon size={Math.round(size * 0.53)} filled={fav.on} />
       </RoundBtn>
-      <RoundBtn ariaLabel="Ещё" dark={dark} size={size} onClick={onMore}>
+      <RoundBtn ariaLabel="Ещё" dark={dark} plain={plain} size={size} onClick={onMore}>
         <MoreIcon size={Math.round(size * 0.47)} />
       </RoundBtn>
     </span>

@@ -281,12 +281,12 @@ function VoicePlayer({ a }: { a: TgAudio }) {
   const [pct, setPct] = useState(0);
   const toggle = () => { const el = ref.current; if (!el) return; if (playing) el.pause(); else void el.play(); };
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-glass-regular)" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)" }}>
       <audio ref={ref} src={a.src || undefined} preload="none"
         onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => { setPlaying(false); setPct(0); }}
         onTimeUpdate={(e) => { const el = e.currentTarget; if (el.duration) setPct(el.currentTime / el.duration); }} />
       <button type="button" aria-label={playing ? "Пауза" : "Слушать"} onClick={toggle}
-        style={{ width: 40, height: 40, flexShrink: 0, borderRadius: "50%", border: "none", background: GOLD, color: "#fff", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+        style={{ width: 40, height: 40, flexShrink: 0, borderRadius: "50%", border: "none", background: GOLD, color: "var(--color-on-gold)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
         {playing
           ? <svg width="15" height="15" viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor" /></svg>
           : <svg width="15" height="15" viewBox="0 0 24 24" style={{ marginLeft: 2 }}><path d="M8 5v14l11-7z" fill="currentColor" /></svg>}
@@ -316,7 +316,7 @@ function TgAudioCard({ a, id, flash, onMore }: { a: TgAudio; id: string; flash?:
   }
   return (
     <a href={postUrl(id)} target="_blank" rel="noopener noreferrer"
-      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-glass-regular)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", margin: "10px 0 0", borderRadius: 16, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
       <span aria-hidden style={{ width: 40, height: 40, flexShrink: 0, borderRadius: "50%", background: GOLD, display: "grid", placeItems: "center" }}>
         {a.kind === "file"
           ? <svg width="17" height="17" viewBox="0 0 24 24"><path d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7z" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinejoin="round" /><path d="M14 2v5h5" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinejoin="round" /></svg>
