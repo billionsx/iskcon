@@ -365,28 +365,17 @@ def main() -> int:
             if slug:
                 variants.setdefault(slug, set()).update(a.get("variants", {}).keys())
 
-    # ── ПЕРЕСТАНОВКА ДОРОЖЕК К ПРАВИЛЬНЫМ ИСПОЛНИТЕЛЯМ ──
+    # ⚠️ ЗДЕСЬ БЫЛА ПЕРЕСТАНОВКА ДОРОЖЕК ПО СТАРОЙ КАРТЕ — И ОНА ЗАТИРАЛА ПРАВКУ.
     #
-    # Порог «от 3 записей» сбросил в сборник тех, кого основатель назвал поимённо
-    # (Хави Дас, Киртан Преми Дас, Мадхурика Деви Даси…). Переливать 42 ГБ ради
-    # этого НЕ НАДО: элемент archive.org может остаться общим, а исполнитель у
-    # дорожки — это поле в базе. Ставим правильного по msg_id из карты.
-    by_msg = {}
-    if mp.exists():
-        for a in json.loads(mp.read_text(encoding="utf-8"))["artists"]:
-            for mid in a.get("msg_ids", []):
-                by_msg[mid] = a["slug"]
-    moved = 0
-    for t in d1("SELECT id, msg_id, artist_slug FROM kirtan_tracks WHERE msg_id IS NOT NULL"):
-        want = by_msg.get(t["msg_id"])
-        if want and want != t["artist_slug"] and want in artists:
-            d1("UPDATE kirtan_tracks SET artist_slug=?2 WHERE id=?1", [t["id"], want])
-            moved += 1
-    print("::notice::дорожек переставлено к своему исполнителю: %d" % moved)
+    # Конвейер заливки идёт самоцепочкой и на КАЖДОМ круге звал этот шаг. Он
+    # переставлял дорожки к исполнителям по `kirtans_map.json` — карте, собранной
+    # ДО правки основателя. Через несколько минут после того, как я разложил 1062
+    # записи верно, конвейер сносил раскладку обратно: у Прабхупады оставалась
+    # ОДНА запись вместо 132.
+    #
+    # Исполнитель теперь выводится ИЗ НАЗВАНИЯ (оно выверено и заперто), отдельным
+    # прогоном `sql/kirtans_folders.sql`. Второго источника правды быть не должно.
 
-    # ⚠️ ЗАМОК. Генератор пересобирает название из имени файла КАЖДЫЙ прогон —
-    #    и затёр бы 481 правку основателя за одну секунду. Вручную исправленное
-    #    (`title_manual = 1`) он не трогает НИКОГДА.
     tracks = d1("SELECT id, file, artist_slug, title FROM kirtan_tracks WHERE COALESCE(title_manual,0) = 0")
     locked = d1("SELECT COUNT(*) c FROM kirtan_tracks WHERE COALESCE(title_manual,0) = 1")[0]["c"]
     print("::notice::дорожек к сборке: %d · под замком (правка основателя): %d" % (len(tracks), locked))
