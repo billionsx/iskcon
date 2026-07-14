@@ -49,6 +49,9 @@ jobs:
           sed -i "s|export const BUILD_SHA = \".*\";|export const BUILD_SHA = \"$SHA\";|" apps/web/src/buildStamp.ts
           echo "BUILD_SHA = $SHA"
           grep BUILD_SHA apps/web/src/buildStamp.ts | tail -1
+      - name: Гейт чужого голоса (ЗКН-Д013)
+        run: python3 tools/voice-lint.py
+
 
       - name: Build site
         working-directory: apps/web
