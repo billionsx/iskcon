@@ -62,6 +62,72 @@ function fold(w: string): string {
   return w.normalize("NFD").replace(/[\u0300-\u036F]/g, "").toLowerCase().replace(/[^a-zа-я-]/g, "");
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ЗКН-Д013 · СТИХ — ЭТО ФРАЗА, А НЕ НАБОР ПОМЕЧЕННЫХ СЛОВ.
+ *
+ * В комментариях BBT диакритика стоит НЕ НА КАЖДОМ слове стиха:
+ *     «Ведаиш́ ча сарваир ахам эва ведйах̣ — вот высшее предназначение…»
+ *      ▲ помечено                  ▲ помечено   ← а середина голая
+ *
+ * Пословный матчер выделял только помеченные слова, и стих выходил ШАХМАТНОЙ
+ * ДОСКОЙ: «Ведаиш́» курсивом, «ча сарваир ахам эва» прямым, «ведйах̣» курсивом.
+ * Закон был применён к СЛОВАМ, а не к СТИХАМ.
+ *
+ * Теперь стих распознаётся как ФРАЗА: от помеченного слова полоса растёт в обе
+ * стороны через слова, которые НЕ являются нашей речью, и обрывается только на
+ * русском служебном слове или на знаке препинания. Так «Ахам̇ сарвасйа
+ * прабхавах̣» звучит целиком, а «Господь Кришна говорит» — не звучит вовсе.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Наша речь: на этих словах полоса стиха обрывается. */
+const RU_STOP = new Set([
+  "и","в","на","с","не","что","как","это","но","а","или","то","же","бы","ли","из","за",
+  "по","для","о","об","от","до","при","над","под","без","у","к","во","со","он","она","они",
+  "мы","вы","я","его","ее","её","их","этот","эта","этом","этой","этого","эти","все","всё",
+  "так","там","тут","где","когда","чтобы","если","есть","был","была","было","были","быть",
+  "может","можно","должен","слово","слова","словами","стих","стихе","стиха","стихом",
+  "только","даже","уже","ещё","еще","очень","более","менее","также","тоже","здесь","том",
+  "говорит","сказано","пишет","значит","например","однако","поэтому","таким","образом",
+  "господь","господа","бог","бога","один","одна","два","три","цитирует","приводит",
+]);
+
+/** Слог, который русский не пишет: русский — «я», шастра — «йа». */
+const TRANSLIT_CYR = /(йа|йо|йу|йе|кша|джн|шча|сйа|нйа|тйа|рйа|хйа|дхй|бхй|тва̄|ттв)/;
+
+type Cls = "strong" | "weak" | "stop" | "unknown";
+
+function classify(w: string): Cls {
+  const bare = w.replace(/[^\wа-яёА-ЯЁāīūṛṝḷṭḍṇśṣḥṁñṅ\u0300-\u036F'’-]/g, "");
+  if (!bare) return "stop";
+  const f = fold(bare);
+  if (SCRIPT_MARK.test(bare)) return SCRIPTURE_STOP_SET.has(f) ? "stop" : "strong";
+  if (RU_STOP.has(f) || SCRIPTURE_STOP_SET.has(f)) return "stop";
+  if (TRANSLIT_CYR.test(f)) return "weak";
+  return "unknown";
+}
+
+/** Знак, на котором фраза стиха кончается. */
+const PUNCT_EDGE = /[.,;:!?\u00bb)]$|^[\u00ab(]/;
+
+/** Полосы стиха внутри абзаца: от помеченного слова наружу — до нашей речи. */
+function verseRuns(words: string[]): Array<[number, number]> {
+  const cls = words.map(classify);
+  const runs: Array<[number, number]> = [];
+  let i = 0;
+  while (i < words.length) {
+    if (cls[i] !== "strong" && cls[i] !== "weak") { i++; continue; }
+    let a = i, b = i;
+    while (a > 0 && cls[a - 1] !== "stop" && !PUNCT_EDGE.test(words[a - 1])) a--;
+    while (b + 1 < words.length && cls[b + 1] !== "stop") {
+      b++;
+      if (PUNCT_EDGE.test(words[b])) break;
+    }
+    runs.push([a, b]);
+    i = b + 1;
+  }
+  return runs;
+}
+
 function scriptFraction(text: string): number {
   const words = text.split(/\s+/).filter(Boolean);
   if (!words.length) return 0;
@@ -157,10 +223,16 @@ function wrapGlossaryInner(text: string, keyBase: number, out: ReactNode[]): voi
  */
 export function renderTerms(text: string | null | undefined): ReactNode {
   if (!text) return text ?? null;
-  // ЗКН-Д013/D: абзац, который наполовину состоит из транслитерации, — это
-  // САМ СТИХ, а не наша проза с вкраплениями. Он звучит голосом шастры.
   if (scriptFraction(text) >= 0.45) return <Skt voice>{text}</Skt>;
+
+  // ЗКН-Д013: стих — ФРАЗА. Диакритика в комментариях BBT стоит не на каждом
+  // слове («Ведаиш́ ча сарваир ахам эва ведйах̣»), и пословный матчер выдавал
+  // ШАХМАТНУЮ ДОСКУ. Полоса растёт от помеченного слова до нашей речи.
   const parts = text.split(/(\s+)/);
+  const wi: number[] = [];
+  const words: string[] = [];
+  parts.forEach((t, k) => { if (t && /\S/.test(t)) { wi.push(k); words.push(t); } });
+  const runs = verseRuns(words);
   const out: ReactNode[] = [];
   let plain = "";
   const flush = () => {
@@ -168,20 +240,26 @@ export function renderTerms(text: string | null | undefined): ReactNode {
     for (const node of wrapGlossary(plain, out.length)) out.push(node);
     plain = "";
   };
-  for (const tok of parts) {
-    if (tok && /\S/.test(tok) && SCRIPT_MARK.test(tok)) {
+  if (!runs.length) {
+    flush();
+    for (const node of wrapGlossary(text, 0)) out.push(node);
+    return out.length ? out : text;
+  }
+  const ends = new Map<number, number>();
+  const inside = new Array(parts.length).fill(false);
+  for (const [a, b] of runs) {
+    ends.set(wi[a], wi[b]);
+    for (let k = wi[a]; k <= wi[b]; k++) inside[k] = true;
+  }
+  for (let k = 0; k < parts.length; k++) {
+    if (ends.has(k)) {
       flush();
-      // ЗКН-Д013 × ЗКН-С001: слово с диакритикой — транслитерация ПИСАНИЯ, оно
-      // звучит чужим голосом. НО имя собственное («Kṛṣṇa», «Rādhā») по стандарту
-      // BBT остаётся ПРЯМЫМ и в латинице тоже: имя — не стих.
-      if (SCRIPTURE_STOP_SET.has(fold(tok))) {
-        plain += tok;
-      } else {
-        out.push(<Skt voice key={`s${out.length}`}>{tok}</Skt>);
-      }
-    } else {
-      plain += tok;
+      const e = ends.get(k) as number;
+      out.push(<Skt voice key={"v" + k}>{parts.slice(k, e + 1).join("")}</Skt>);
+      k = e;
+      continue;
     }
+    if (!inside[k]) plain += parts[k];
   }
   flush();
   return out.length ? out : text;
