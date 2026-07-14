@@ -555,6 +555,55 @@ def check_missing_imports():
     return bad
 
 
+
+def check_cyrillic_b():
+    """ЗКН-С004 — `\\b` В РЕГУЛЯРКЕ НА КИРИЛЛИЦЕ НЕ РАБОТАЕТ.
+
+    `\\b` определена через `\\w` = [A-Za-z0-9_]. Между «Харе» и пробелом движок
+    границы НЕ ВИДИТ — регулярка молчит. Она ничего не ломает: она просто не
+    срабатывает, и это худший род поломки — беззвучный.
+
+    Ловим литералы регулярок, где `\\b` стоит вплотную к кириллице.
+    """
+    rule = {"id": "ЗКН-С004", "name": "`\\b` в регулярке на кириллице не работает",
+            "hint": "`\\b` определена через `\\w` = [A-Za-z0-9_] — между кириллицей и пробелом "
+                    "границы НЕТ. Регулярка не падает, она МОЛЧИТ. Границу даёт `\\p{L}` + флаг `u`."}
+    bad = []
+    # литерал регулярки, где рядом стоят \b и кириллица (в любом порядке)
+    pat = re.compile(r"=\s*/.*?/[gimsuy]*\s*;")
+    for fp in sorted(SRC.rglob("*.ts")) + sorted(SRC.rglob("*.tsx")) + WORKERS:
+        for i, line in enumerate(fp.read_text(encoding="utf-8").split("\n"), 1):
+            st = line.strip()
+            if st.startswith(("*", "//", "/*")):
+                continue
+            m = pat.search(line)
+            if not m:
+                continue
+            lit = m.group(0)
+            if not re.search(r"[А-Яа-яЁё]", lit):
+                continue
+            # ⚠️ ПРЕДМЕТ ИСКАЛСЯ ДВАЖДЫ, И ОБА РАЗА МИМО.
+            #
+            # (1) «есть `\b` и есть кириллица» → обвинил фильтр даршанов, где `\b`
+            #     стоит у ЛАТИНСКИХ слов (`\brsvp\b`), а кириллица живёт в соседней
+            #     ветке альтернации. Ложная тревога подрывает доверие ко всем гейтам.
+            # (2) «`\b` ВПЛОТНУЮ к кириллице» → не поймал живое нарушение: в коде
+            #     между ними стоят скобки группировки — `\b(?:(?:Харе|Кришна|Рама)`.
+            #
+            # НАСТОЯЩИЙ класс: в регулярке есть кириллица, и хотя бы одно `\b`
+            # НЕ ПРИМЫКАЕТ К ЛАТИНСКОЙ БУКВЕ. Такое `\b` не может стеречь латинское
+            # слово — значит, оно поставлено для кириллицы и молчит.
+            for b in re.finditer(r"\\b", lit):
+                prev = lit[b.start() - 1] if b.start() else ""
+                nxt = lit[b.end()] if b.end() < len(lit) else ""
+                if re.match(r"[A-Za-z]", prev) or re.match(r"[A-Za-z]", nxt):
+                    continue          # `\b` стережёт латинское слово — законно
+                bad.append((rule, str(fp.relative_to(ROOT)), i,
+                            "`\\b` в регулярке с кириллицей — она НЕ СРАБОТАЕТ"))
+                break
+    return bad
+
+
 def check_unique_ids():
     """НОМЕР ЗАКОНА УНИКАЛЕН. Два закона под одним номером — это не свод, а каша:
     ссылка «см. ЗКН-Б008» ведёт в два разных места, и гейт нельзя привязать к закону.
@@ -631,7 +680,7 @@ def main():
         check_ratchet(update=True)
         return 0
     bad = (check_rules() + check_prose_law() + check_floor_law() + check_missing_imports()
-           + check_unique_ids() + check_d002_primitives() + check_f022_glob() + check_ratchet())
+           + check_unique_ids() + check_cyrillic_b() + check_d002_primitives() + check_f022_glob() + check_ratchet())
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
         print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))
