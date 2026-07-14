@@ -300,6 +300,18 @@ ARTIST_CANON = {
     "radha-govinda-prabhu": "Радха Говинда Дас",
     "aindra": "Аиндра Дас",
     "srila-prabhupada": "Шрила Прабхупада",
+    # ── правки основателя из документа 14.07.2026 ──
+    "aditi-dukha": "Ади Раса Дас",
+    "bada-haridas-prabhu": "Бада Харидас Дас",
+    "bhaktivaibhava-swami": "Бхакти Вайбхава Свами Махарадж",
+    "bhaktisvarupa-damodara-goswami": "Бхакти Сварупа Дамодара Госвами Махарадж",
+    "bhakti-charu-swami": "Бхакти Чару Свами Махарадж",
+    "govinda-maharadzh": "Бхакти Бринга Говинда Свами Махарадж",
+    "prabhavisnu-swami": "Прабхавишну Свами Махарадж",
+    "sacinandana-swami": "Шачинандана Свами Махарадж",
+    "chaitania-chandra-charan-prabhu": "Чайтанья Чандра Чаран Дас",
+    "shishtakrit": "Шиштакрит Дас",
+    "vishnujana": "Вишнуджана Свами Махарадж",
 }
 
 # Сборник — не исполнитель. Его имя в названии дорожки не появляется.
@@ -372,8 +384,12 @@ def main() -> int:
             moved += 1
     print("::notice::дорожек переставлено к своему исполнителю: %d" % moved)
 
-    tracks = d1("SELECT id, file, artist_slug, title FROM kirtan_tracks")
-    print("::notice::дорожек: %d" % len(tracks))
+    # ⚠️ ЗАМОК. Генератор пересобирает название из имени файла КАЖДЫЙ прогон —
+    #    и затёр бы 481 правку основателя за одну секунду. Вручную исправленное
+    #    (`title_manual = 1`) он не трогает НИКОГДА.
+    tracks = d1("SELECT id, file, artist_slug, title FROM kirtan_tracks WHERE COALESCE(title_manual,0) = 0")
+    locked = d1("SELECT COUNT(*) c FROM kirtan_tracks WHERE COALESCE(title_manual,0) = 1")[0]["c"]
+    print("::notice::дорожек к сборке: %d · под замком (правка основателя): %d" % (len(tracks), locked))
 
     changed = 0
     for t in tracks:

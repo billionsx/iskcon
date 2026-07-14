@@ -1,0 +1,19 @@
+name: kirtans-apply
+on:
+  workflow_dispatch:
+    inputs:
+      file:
+        description: "SQL-файл"
+        default: "sql/kirtans_titles_founder.sql"
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Применить SQL
+        working-directory: tools/tg-archive
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python apply_sql.py "${{ inputs.file }}"
