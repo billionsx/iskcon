@@ -745,3 +745,15 @@ body.gtab-off .gtab-wrap { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .tap-press:active, .tap-press-soft:active { transform: none; }
 }
+
+
+/* ЗКН-Н056 — СЛОТ ЗНАКА ДЕЛАЕТ РАБОТУ, А НЕ УКРАШАЕТ.
+   У играющей записи печать оживает эквалайзером: слот отвечает на вопрос
+   «что звучит?», а не просто повторяет логотип 1062 раза. */
+@keyframes iol-eq {
+  0%, 100% { transform: scaleY(0.28); }
+  50%      { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .iol-eq-bar { animation: none !important; transform: scaleY(0.62); }
+}

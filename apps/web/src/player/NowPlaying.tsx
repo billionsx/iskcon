@@ -6,7 +6,7 @@
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
 import { useEffect, useRef, useState, type CSSProperties, useMemo } from "react";
-import { COVER_FALLBACK } from "../ui/CoverFallback";
+import { COVER_FALLBACK, COVER_FALLBACK_DARK } from "../ui/CoverFallback";
 import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
 import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, RepeatVoiceIcon, MoonIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
@@ -557,7 +557,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   const i = p.tracks.indexOf(tr);
                   return (
                     <QueueRow key={tr.file} t={tr} active={i === p.index}
-                      fav onFav={() => toggleTrackFav(tr)} onClick={() => p.jumpTo(i)} />
+                      fav seal onFav={() => toggleTrackFav(tr)} onClick={() => p.jumpTo(i)} />
                   );
                 })}
               </div>
@@ -572,10 +572,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   ? `${curGroupLabel} · ${curGroupPos} из ${curGroupTotal}`
                   : (p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle)}
                 onMeta={curGroupId ? () => { setActiveDiv(curGroupId); setPane("queue"); } : undefined}
-                note={albumById(p.book)?.note} coverActions={coverActions}
-                maxCover={embedded && embeddedHeight
-                  ? Math.max(120, Math.min(260, Math.round(embeddedHeight * 0.30)))
-                  : undefined} />
+                note={albumById(p.book)?.note} coverActions={coverActions} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
 
           {/* ПАПКИ ЖИВУТ ВНУТРИ ПЛЕЕРА (решение основателя).
@@ -691,6 +688,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                           num={isAdHoc ? seq : undefined} tile={isAdHoc && qView === "grid"}
                           strip={isAdHoc && activeDiv !== ALL_DIV ? (t.groupLabel ?? "") : undefined}
                           fav={isAdHoc ? favSet.has(trackKey(t)) : undefined}
+                          seal={isAdHoc && qView === "list"}
                           onFav={isAdHoc && qView === "list" ? () => toggleTrackFav(t) : undefined}
                           onClick={() => p.jumpTo(i)} />,
                       );
@@ -1037,76 +1035,100 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
  * квадратное под аудио-альбом, а не книжная обложка.
  */
 function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover, onMeta }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number; onMeta?: () => void }) {
-  const size = maxCover ?? 320;
   return (
-    <div style={{ paddingTop: 2 }}>
-      {/* ═══ СИГНАТУРА ЭКРАНА: ЗНАК ОСВЕЩАЕТ ПОВЕРХНОСТЬ ═══
+    <div style={{ paddingTop: 6 }}>
+      {/* ═══ ЗКН-Н056 · ГЕРОЙ — ИМЯ, А НЕ КАРТИНКА ═══
        *
-       * Обложка здесь — не альбомная фотография, а фирменный знак: золото на белом.
-       * Обращаться с ней как с фото (полное поле, тёмная вуаль поверх — как в
-       * BookHeroCard) нельзя: знак нельзя ни кадрировать, ни затемнять.
+       * Обложка одна и та же на всех 1062 записях — она не сообщает НИЧЕГО, и при
+       * этом занимала 40% экрана. Смысл здесь несёт САМО ИМЯ: это святое имя, а не
+       * обложка альбома. Слово — главное, и оно становится героем.
        *
-       * Поэтому обратный ход: обложка ОСВЕЩАЕТ фон. Золотое сияние уходит в
-       * поверхность, и знак с плеером становятся ОДНИМ предметом, а не квадратом,
-       * налепленным на серое. Это правдиво для предмета: арати — свет, поднесённый
-       * Божеству. Единственная смелость на экране; всё вокруг — тихо. */}
-      <div style={{ position: "relative", display: "grid", placeItems: "center", paddingBlock: 4 }}>
+       * Знак остаётся ПЕЧАТЬЮ: маленький, золотой, над именем — подпись, а не
+       * витрина. Свечение под ним сохраняем: оно даёт экрану тепло арати. */}
+      <div style={{ position: "relative", display: "grid", placeItems: "center", paddingBottom: 14 }}>
         <div aria-hidden style={{
-          position: "absolute", width: Math.round(size * 1.75), height: Math.round(size * 1.6),
-          borderRadius: "50%", pointerEvents: "none",
-          background: "radial-gradient(closest-side, rgba(210,170,27,0.24), rgba(210,170,27,0.06) 56%, rgba(210,170,27,0) 78%)",
-          filter: "blur(14px)",
+          position: "absolute", width: 220, height: 150, borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(closest-side, rgba(210,170,27,0.22), rgba(210,170,27,0.05) 58%, rgba(210,170,27,0) 80%)",
+          filter: "blur(12px)",
         }} />
-        <div style={{
-          position: "relative", width: "100%", maxWidth: size, aspectRatio: "1 / 1",
-          borderRadius: 22, overflow: "hidden", background: ON_DARK,
-          boxShadow: "0 28px 56px -18px rgba(0,0,0,0.78), 0 2px 10px rgba(0,0,0,0.35)",
-        }}>
-          <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        </div>
+        <img src={cover} alt="" draggable={false}
+          style={{ position: "relative", width: 56, height: 56, borderRadius: 16, objectFit: "cover",
+            background: "var(--color-on-dark)",
+            boxShadow: "0 10px 26px -8px rgba(0,0,0,0.7), 0 0 0 0.5px rgba(255,255,255,0.10)" }} />
       </div>
 
-      {/* ГЕРОЙ СТРОКИ — ДОРОЖКА, А НЕ АЛЬБОМ.
-       * Раньше крупно стояло «Киртаны» (имя альбома), а что именно играет — мелко
-       * внизу, в другом блоке. Человек смотрит на плеер, чтобы узнать, ЧТО ЗВУЧИТ.
-       *
-       * Действия (избранное · ещё) ВЕДУТ строку справа — так они привязаны к
-       * заголовку, а не висят под ним враскоряку. Набор и вид кнопок — проектный
-       * стандарт `ActionBtn` из BookHeroCard: стекло, 36px, круг. */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{
-            fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800,
-            letterSpacing: "-0.02em", color: ON_DARK, lineHeight: 1.22,
-            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
-          }}>{title}</div>
-          {/* ИМЯ ВЕДЁТ К ИСПОЛНИТЕЛЮ. Слышишь голос — одним тапом попадаешь во всё,
-              что им спето. Без этого человек в тупике: голос нравится, а как найти
-              остальное — непонятно. */}
-          {meta && onMeta ? (
-            <button type="button" onClick={onMeta}
-              style={{ marginTop: 4, display: "flex", alignItems: "center", gap: 4, padding: 0, border: "none",
-                background: "none", cursor: "pointer", maxWidth: "100%", fontFamily: "var(--font-text)" }}>
-              <span style={{ minWidth: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD,
-                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
-                <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          ) : artist ? (
-            <div style={{ marginTop: 3, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLD,
-              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist}</div>
-          ) : null}
-        </div>
-        {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>{coverActions}</div>}
-      </div>
+      {/* ИМЯ — крупно. Оно и есть предмет. */}
+      <div style={{
+        fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800,
+        letterSpacing: "-0.02em", color: "var(--color-on-dark)", lineHeight: 1.18, textAlign: "center",
+        display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
+      }}>{title}</div>
 
-      {note && <div style={{ marginTop: 10, fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "rgba(255,255,255,0.5)" }}>{note}</div>}
+      {/* ГОЛОС — ведёт к нему. */}
+      {meta && onMeta ? (
+        <button type="button" onClick={onMeta}
+          style={{ margin: "8px auto 0", display: "flex", alignItems: "center", gap: 4, padding: "4px 10px",
+            borderRadius: 999, border: "0.5px solid rgba(210,170,27,0.28)", background: "rgba(210,170,27,0.10)",
+            cursor: "pointer", maxWidth: "100%", fontFamily: "var(--font-text)" }}>
+          <span style={{ minWidth: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD,
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
+            <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      ) : artist ? (
+        <div style={{ marginTop: 6, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLD,
+          textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist}</div>
+      ) : null}
+
+      {coverActions && (
+        <div style={{ marginTop: 14, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          {coverActions}
+        </div>
+      )}
+
+      {note && <div style={{ marginTop: 12, fontSize: "var(--text-footnote)", lineHeight: 1.45,
+        color: "rgba(255,255,255,0.5)", textAlign: "center" }}>{note}</div>}
     </div>
   );
 }
 
-function QueueRow({ t, active, num, tile, strip, fav, onFav, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; strip?: string; fav?: boolean; onFav?: () => void; onClick: () => void }) {
+/* ═══ ЗКН-Н056 · ЗНАК — ПЕЧАТЬ, А НЕ ВИТРИНА ═══
+ *
+ * Обложка у всех 1062 записей ОДНА И ТА ЖЕ — она не несёт НИ БИТА информации.
+ * У Apple большая обложка оправдана тем, что она у каждого альбома своя: по ней
+ * узнают пластинку. У нас узнавать нечего — а места она занимала 40% экрана.
+ *
+ * Элемент, который ничего не сообщает, не может быть самым крупным на экране.
+ *
+ * Знак становится ПЕЧАТЬЮ — подписью, а не витриной. И слот получает РАБОТУ:
+ * у играющей записи печать оживает эквалайзером и отвечает «вот что звучит». */
+function Seal({ size, playing }: { size: number; playing?: boolean }) {
+  if (playing) {
+    return (
+      <span aria-hidden style={{ display: "grid", placeItems: "center", width: size, height: size,
+        flexShrink: 0, borderRadius: Math.round(size * 0.27), background: "rgba(210,170,27,0.16)",
+        border: "0.5px solid rgba(210,170,27,0.35)" }}>
+        <span style={{ display: "flex", alignItems: "flex-end", gap: 2, height: Math.round(size * 0.42) }}>
+          {[0, 1, 2].map((i) => (
+            <span key={i} className="iol-eq-bar"
+              style={{ width: 2.5, height: "100%", borderRadius: 2, background: GOLD,
+                transformOrigin: "bottom",
+                animation: `iol-eq ${0.72 + i * 0.16}s ease-in-out ${i * 0.11}s infinite` }} />
+          ))}
+        </span>
+      </span>
+    );
+  }
+  return (
+    <img src={COVER_FALLBACK_DARK} alt="" loading="lazy" aria-hidden
+      style={{ width: size, height: size, flexShrink: 0, borderRadius: Math.round(size * 0.27),
+        objectFit: "cover", background: "rgba(255,255,255,0.05)",
+        border: "0.5px solid rgba(255,255,255,0.08)" }} />
+  );
+}
+
+function QueueRow({ t, active, num, tile, strip, fav, seal, onFav, onClick }: { t: Track; active: boolean; num?: number; tile?: boolean; strip?: string; fav?: boolean; seal?: boolean; onFav?: () => void; onClick: () => void }) {
   const label = t.kind === "intro" ? "•" : t.chapter != null ? String(t.chapter) : (num != null ? String(num) : "•");
 
   /* ⚠️ В ПАПКЕ ИМЯ ИСПОЛНИТЕЛЯ В КАЖДОЙ СТРОКЕ — ШУМ.
@@ -1141,9 +1163,11 @@ function QueueRow({ t, active, num, tile, strip, fav, onFav, onClick }: { t: Tra
 
   return (
     <button type="button" onClick={onClick} data-active={active ? "1" : undefined}
-      style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", textAlign: "left", padding: "10px 8px", borderRadius: 12, border: "none", cursor: "pointer",
-        background: active ? "rgba(210,170,27,0.16)" : "transparent", color: ON_DARK }}>
-      <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
+      style={{ display: "flex", alignItems: "center", gap: 11, width: "100%", textAlign: "left", padding: "8px 8px", borderRadius: 12, border: "none", cursor: "pointer",
+        background: active ? "rgba(210,170,27,0.10)" : "transparent", color: ON_DARK }}>
+      {seal ? <Seal size={38} playing={active} /> : (
+        <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "rgba(255,255,255,0.45)", fontVariantNumeric: "tabular-nums" }}>{label}</span>
+      )}
       <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: active ? ON_DARK : "rgba(255,255,255,0.85)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
       {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.4)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
       {onFav && (
