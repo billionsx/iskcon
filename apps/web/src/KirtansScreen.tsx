@@ -114,8 +114,14 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     return () => { window.removeEventListener("resize", calc); window.removeEventListener("orientationchange", calc); };
   }, [tracks.length]);
 
+  /* ⚠️ НИЗ ПЛЕЕРА УХОДИЛ ПОД НИЖНЕЕ МЕНЮ.
+   * Я дал плееру пол в 600 точек — а страница снизу не расступилась. Транспорт со
+   * скоростью, повтором и таймером спрятался под белой плашкой, и до него нельзя
+   * было доскроллить: меню висит НАД страницей.
+   * Страница обязана оставить под меню место — иначе последний экран недостижим. */
   return (
-    <div style={{ fontFamily: "var(--font-text)" }}>
+    <div style={{ fontFamily: "var(--font-text)",
+      paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
       <HubHeader eyebrow="Аудиотека" title="Киртаны"
         subtitle="Святое имя в голосах ачарьев и киртания — записи канала ISKCON Kirtans" />
 

@@ -6,6 +6,7 @@
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
 import { useEffect, useRef, useState, type CSSProperties, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { COVER_FALLBACK, COVER_FALLBACK_DARK } from "../ui/CoverFallback";
 import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
 import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
@@ -1015,12 +1016,17 @@ function DivisionPicker({ items, active, onChange, label }: {
         </svg>
       </button>
 
-      {open && (
-        /* ⚠️ ЛИСТ ОТКРЫВАЛСЯ ВНУТРИ КОРОБКИ ПЛЕЕРА.
-         * На телефоне коробка — четыреста точек. В неё втискивались поиск, азбука и
-         * 83 строки: влезала азбука и ОДНА строка. Выбрать было нечего.
-         * Список на 83 позиции — ОТДЕЛЬНАЯ ЗАДАЧА, и ей нужен ВЕСЬ ЭКРАН.
-         * `fixed`, а не `absolute`: лист принадлежит ОКНУ, а не коробке. */
+      {open && createPortal(
+        /* ⚠️ `position: fixed` ЗДЕСЬ НЕ РАБОТАЕТ — И ЭТО НЕ ОШИБКА CSS.
+         *
+         * Лист живёт внутри панели прокрутки с `-webkit-overflow-scrolling: touch`.
+         * В Safari на iOS `fixed` внутри такого контейнера ведёт себя как `absolute`:
+         * его прижимает к СКРОЛЛЕРУ, а не к окну. Лист оказывался заперт в коробке
+         * плеера — ровно то, что и было на снимке.
+         *
+         * Со Safari спорить нечем. Единственный надёжный ход — ПОРТАЛ: рисуем лист
+         * прямо в `body`, вне этой ветки дерева. Тогда он принадлежит окну по факту,
+         * а не по объявлению. */
         <div role="dialog" aria-label={label}
           style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", flexDirection: "column",
             background: "rgba(10,10,12,0.97)", backdropFilter: "blur(30px) saturate(160%)",
@@ -1091,7 +1097,8 @@ function DivisionPicker({ items, active, onChange, label }: {
               );
             })}
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
