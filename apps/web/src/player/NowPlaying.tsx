@@ -151,10 +151,28 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   };
   const favs = useFavorites();
   const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key)), [favs]);
+  /* ═══ ЗКН-Н056 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
+   *
+   * Порядок был очередной — по голосам. Это неверно, и вот почему: человек отметил
+   * запись ТОЛЬКО ЧТО. Если она утонет где-то в середине, он решит, что кнопка не
+   * сработала. Последнее действие человека должно быть у него перед глазами —
+   * иначе интерфейс не подтверждает то, что человек сделал.
+   *
+   * Сортировка по голосам была бы верна для КАТАЛОГА. «Моё» — не каталог, это
+   * дневник: что я отложил и когда. */
+  const favAt = useMemo(() => {
+    const m = new Map<string, number>();
+    favs.forEach((f) => { if (f.key.startsWith("kirtan:")) m.set(f.key, f.addedAt || 0); });
+    return m;
+  }, [favs]);
   const favTracks = useMemo(
-    () => (isAdHoc ? p.tracks.filter((tr) => favSet.has(trackKey(tr))) : []),
+    () => (isAdHoc
+      ? p.tracks
+          .filter((tr) => favSet.has(trackKey(tr)))
+          .sort((a, b) => (favAt.get(trackKey(b)) ?? 0) - (favAt.get(trackKey(a)) ?? 0))
+      : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [p.tracks, favSet, isAdHoc],
+    [p.tracks, favSet, favAt, isAdHoc],
   );
   const toggleTrackFav = (tr: Track) => {
     const k = trackKey(tr);
@@ -371,9 +389,24 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     if (id === "donate") { onDonate?.(); return; }
     if (id === "report") { setReportOpen(true); return; }
   }
+  /* ⚠️ СЕРДЦЕ В ШАПКЕ СТАВИЛОСЬ НА АЛЬБОМ, А НЕ НА ЗАПИСЬ.
+   *
+   * Человек нажимал сердце над играющим киртаном — и в «Моё» ничего не появлялось:
+   * отмечался ВЕСЬ альбом, ключом `book:…`, а «Моё» читает ключи записей `kirtan:…`.
+   * Кнопка врала: говорила «добавлено», а добавляла не то.
+   *
+   * ЗКН-Н052 я записал, но до шапки не довёл. Теперь у аудиотеки сердце везде
+   * означает ОДНО: эта запись. */
+  const heroFav = isAdHoc && p.track ? favSet.has(trackKey(p.track)) : favorited;
+  const heroFavToggle = () => {
+    if (isAdHoc && p.track) { toggleTrackFav(p.track); return; }
+    const v = !favorited; setFavorited(v);
+    flash(v ? "Добавлено в избранное" : "Убрано из избранного");
+  };
+
   const coverActions = (
     <>
-      <ActionBtn active={favorited} activeColor={HEART} ariaLabel="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }}><HeartIcon size={18} filled={favorited} /></ActionBtn>
+      <ActionBtn active={heroFav} activeColor={HEART} ariaLabel={heroFav ? "Убрать из «Моё»" : "В «Моё»"} onClick={heroFavToggle}><HeartIcon size={18} filled={heroFav} /></ActionBtn>
       {(!isAdHoc || p.kind === "bhajan") && <ActionBtn ariaLabel={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText}><BookOpenIcon size={18} /></ActionBtn>}
       <span ref={moreRef} style={{ display: "inline-flex" }}><ActionBtn ariaLabel="Ещё" onClick={() => setMenuOpen(true)}><MoreIcon size={16} /></ActionBtn></span>
     </>
@@ -444,7 +477,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <div aria-hidden={!collapsed}
                 style={{ display: "flex", alignItems: "center", gap: 6, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(2px)", transition: "opacity .25s, transform .25s", pointerEvents: collapsed ? "auto" : "none" }}>
-                <button type="button" aria-label="В избранное" onClick={() => { const v = !favorited; setFavorited(v); flash(v ? "Добавлено в избранное" : "Убрано из избранного"); }} style={{ ...glass(999), ...iconBtn(34), color: favorited ? HEART : ON_DARK }}><HeartIcon size={17} filled={favorited} /></button>
+                <button type="button" aria-label={heroFav ? "Убрать из «Моё»" : "В «Моё»"} onClick={heroFavToggle} style={{ ...glass(999), ...iconBtn(34), color: heroFav ? HEART : ON_DARK }}><HeartIcon size={17} filled={heroFav} /></button>
                 {(!isAdHoc || p.kind === "bhajan") && <button type="button" aria-label={p.kind === "bhajan" ? "К тексту" : "Читать"} onClick={openText} style={{ ...glass(999), ...iconBtn(34) }}><BookOpenIcon size={17} /></button>}
                 <button type="button" aria-label="Ещё" onClick={() => setMenuOpen(true)} style={{ ...glass(999), ...iconBtn(34) }}><MoreIcon size={15} /></button>
               </div>
@@ -469,7 +502,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               : [["now", "Сейчас"], ["queue", "Содержание"]] as const
             ).map(([id, label]) => {
               const on = pane === id;
-              const n = id === "queue" ? shownCount : id === "mine" ? favTracks.length : 0;
+              /* На вкладке «Записи» числа НЕТ: оно повторяло бы то, что уже стоит на
+                 кнопке голоса, и два одинаковых числа рядом сбивают. На «Моё» число
+                 нужно — оно нигде больше не написано. */
+              const n = id === "mine" ? favTracks.length : 0;
               return (
                 <button key={id} type="button" role="tab" aria-selected={on}
                   onClick={() => setPane(id as "now" | "queue" | "mine")}
@@ -513,6 +549,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               </div>
             ) : (
               <div style={{ paddingTop: 4 }}>
+                <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
+                  textTransform: "uppercase", color: GOLD, padding: "0 4px 8px" }}>
+                  Новые сверху
+                </div>
                 {favTracks.map((tr) => {
                   const i = p.tracks.indexOf(tr);
                   return (
@@ -878,9 +918,18 @@ function DivisionPicker({ items, active, onChange, label }: {
           background: "rgba(255,255,255,0.07)", border: "0.5px solid rgba(255,255,255,0.12)", color: ON_DARK }}>
         <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: 600,
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{cur?.label ?? label}</span>
-        <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.45)" }}>
-          {items.length}
-        </span>
+        {/* ⚠️ ЗДЕСЬ СТОЯЛО ЧИСЛО ГОЛОСОВ — рядом с ИМЕНЕМ голоса.
+            «Шрила Прабхупада · 83» читалось как «у него 83 записи», хотя 83 — это
+            сколько всего голосов в коллекции. Число, поставленное не туда, хуже
+            отсутствующего: оно не молчит, оно ВРЁТ.
+            Здесь стоит число записей ЭТОГО голоса. Сколько всего голосов — написано
+            в самом листе выбора, там это и уместно. */}
+        {cur?.count != null && (
+          <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.45)",
+            fontVariantNumeric: "tabular-nums" }}>
+            {cur.count}
+          </span>
+        )}
         <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0, color: GOLD }}>
           <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -901,6 +950,11 @@ function DivisionPicker({ items, active, onChange, label }: {
               style={{ ...glass(999), ...iconBtn(38), flexShrink: 0 }}>
               <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" /></svg>
             </button>
+          </div>
+
+          <div style={{ flexShrink: 0, padding: "0 16px 8px", fontSize: "var(--text-caption2)", fontWeight: 600,
+            letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
+            {label} · {items.length}
           </div>
 
           {letters.length > 1 && (
