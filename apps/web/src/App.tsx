@@ -1029,13 +1029,21 @@ const RESERVED: readonly string[] = [
     if (openDownloader) return "/downloader";
     if (openStoriesTool) return "/stories-tool";
     if (openBook) { const base = `/${bookSlug(openBook)}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
-    if (openBhajan) return openBhajan;     // slug сам по себе путь
+    /* ЗКН-Н060 — СОСТОЯНИЕ ХРАНИТ СЛАГ, АДРЕС СТРОИТ ROUTES.
+     * Здесь стояло `return openBhajan` с подписью «slug сам по себе путь» — ЛОЖЬ:
+     * в состоянии лежит ГОЛЫЙ слаг («gaurakisor-das-babaji-pranama»), а адрес
+     * молитвы — `/bhajans/<слаг>`. Эффект «состояние → адрес» писал в историю
+     * ОТНОСИТЕЛЬНЫЙ путь: браузер резолвил его от папки (адрес выходил верным),
+     * а роутер — от корня (искал личность и не находил). Экран пуст, «назад» —
+     * и молитва открывалась. Адрес состояния строит ТОТ ЖЕ словарь, что читает
+     * роутер (ЗКН-Н041), и он всегда абсолютный. */
+    if (openBhajan) return ROUTES.bhajan(openBhajan);
     if (openKirtanArtist) return "/kirtans/" + openKirtanArtist;
     if (openFavorites) return "/favorites";
     if (openNoteId) return "/note/" + openNoteId;
     if (openNotes) return "/notes";
     if (openCatalog) return "/bhajans";
-    if (openContent) return openContent;   // slug сам по себе путь
+    if (openContent) return "/" + openContent.replace(/^\/+/, "");   // ЗКН-Н060: адрес состояния — абсолютный
     if (openEntity) return "/" + openEntity;
     if (openPost) return "/post/" + openPost;
     if (openCollection) return "/hero/" + openCollection;
@@ -1061,7 +1069,7 @@ const RESERVED: readonly string[] = [
       .then((d) => {
         fromPop.current = true;
         if (d?.kind === "entity") setOpenEntity((d.id as string) || slug.replace(/^\//, ""));
-        else if (d?.kind === "bhajan") setOpenBhajan(slug);
+        else if (d?.kind === "bhajan") setOpenBhajan(slug.replace(/^\/+/, ""));   // ЗКН-Н060: в состоянии — ГОЛЫЙ слаг
         else setOpenContent(slug); // content или неизвестно → пробуем как контент
       })
       .catch(() => { fromPop.current = true; setOpenContent(slug); });
@@ -1308,7 +1316,9 @@ const RESERVED: readonly string[] = [
     }
     if (seg0 === "person" || seg0 === "entity") { const eid = clean.split("/")[2] ?? ""; if (eid) setOpenEntity(eid); return; }
     if (seg0 === "post") { const pid = clean.split("/")[2] ?? ""; if (pid) { setOpenPost(pid); return; } }
-    if (clean.startsWith("bhajans-")) { setOpenBhajan(clean); return; }
+    /* ЗКН-Н060: здесь стояла мёртвая ветка `clean.startsWith("bhajans-")` — `clean`
+     * ВСЕГДА начинается со слэша, условие не срабатывало никогда. Но она клала в
+     * состояние ПУТЬ, а соседняя ветка — СЛАГ: два формата в одном поле. Формат один. */
     /* ЗКН-Н025: без слага — В ЗАЛ Богатств, а не в старую вкладку «home». */
     if (seg0 === "bhajans") {
       const bslug = clean.split("/")[2] ?? "";
@@ -1492,6 +1502,11 @@ const RESERVED: readonly string[] = [
   useEffect(() => {
     if (fromPop.current) { fromPop.current = false; return; }
     const next = pathFromState();
+    /* ЗКН-Н060 — В ИСТОРИЮ НЕ ПИШЕТСЯ ОТНОСИТЕЛЬНЫЙ АДРЕС.
+     * Страховка на случай, если кто-то снова вернёт в `pathFromState` голый слаг:
+     * лучше не записать адрес вовсе, чем записать тот, который браузер и роутер
+     * прочитают ПО-РАЗНОМУ. Молчаливое расхождение дороже пропущенной записи. */
+    if (!next.startsWith("/")) return;
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeGen, tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openEkadashi, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader, openStoriesTool]);
@@ -1660,7 +1675,7 @@ const RESERVED: readonly string[] = [
           </main>
         ) : openBhajan ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-            <BhajanDetailPage slug={openBhajan} onBack={goBack} onOpenEntity={openEntityTarget} onOpenBhajan={(s) => navigate(s)} onOpenCatalog={() => navigate("/bhajans")} />
+            <BhajanDetailPage slug={openBhajan} onBack={goBack} onOpenEntity={openEntityTarget} onOpenBhajan={(s) => navigate(ROUTES.bhajan(s))} onOpenCatalog={() => navigate("/bhajans")} />
           </main>
         ) : openKirtanArtist ? (
           <main key={openKirtanArtist} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -1668,7 +1683,7 @@ const RESERVED: readonly string[] = [
           </main>
         ) : openCatalog ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-            <BhajanCatalog onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }} onBack={goBack} />
+            <BhajanCatalog onOpen={(slug) => navigate(ROUTES.bhajan(slug))} onBack={goBack} />
           </main>
         ) : openCollection ? (
           <main key={openCollection} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
@@ -1680,7 +1695,7 @@ const RESERVED: readonly string[] = [
           </main>
         ) : openEntity ? (
           <main key={openEntity} style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-            <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} onNavigate={navigate} onOpenCollection={setOpenCollection} />
+            <EntityPage id={openEntity} onBack={goBack} onOpen={openEntityTarget} onNavigate={navigate} onOpenCollection={(k) => navigate("/hero/" + k)} />
           </main>
         ) : openTirtha && getDhama(openTirtha.dhama) ? (
           <main key={openTirtha.dhama + "/" + openTirtha.id} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -1688,14 +1703,14 @@ const RESERVED: readonly string[] = [
           </main>
         ) : openDhama && getDhama(openDhama) ? (
           <main key={openDhama} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <DhamaDetailPage dhama={getDhama(openDhama)!} onBack={goBack} onOpenTirtha={(tid) => setOpenTirtha({ dhama: openDhama!, id: tid })} />
+            <DhamaDetailPage dhama={getDhama(openDhama)!} onBack={goBack} onOpenTirtha={(tid) => navigate(ROUTES.tirtha(openDhama!, tid))} />
           </main>
         ) : openContent ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <ContentDetailPage
               slug={openContent}
               onBack={goBack}
-              onOpenContent={(s) => setOpenContent(s)}
+              onOpenContent={(s) => navigate("/" + String(s).replace(/^\/+/, ""))}
               onOpenBook={(workId) => openRef(`book:${workId}`)}
               onOpenRef={(href) => openRef(href)}
             />
@@ -1730,7 +1745,7 @@ const RESERVED: readonly string[] = [
           </main>
         ) : openSearch ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-            <SearchScreen onBack={goBack} onOpenEntity={openEntityTarget} onOpenBook={(work) => { setBookTarget(null); setOpenBook(work); }} onNavigate={navigate} />
+            <SearchScreen onBack={goBack} onOpenEntity={openEntityTarget} onOpenBook={(work) => navigate("/" + bookSlug(work))} onNavigate={navigate} />
           </main>
         ) : openCart ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
@@ -1812,7 +1827,7 @@ const RESERVED: readonly string[] = [
             onOpenCatalog={() => navigate("/bhajans")}
             onOpenContent={(slug) => navigate("/" + String(slug).replace(/^\//, ""))}
             onOpenEntity={openEntityTarget}
-            onOpenCollection={setOpenCollection}
+            onOpenCollection={(k) => navigate("/hero/" + k)}
             onFavorites={() => navigate("/favorites")}
             onDonate={openDonate}
             onOpenPath={navigate}

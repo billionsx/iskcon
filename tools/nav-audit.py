@@ -20,6 +20,8 @@
   Н019  Tier-2 липнет (навигация не уезжает)
   Н021  обёртка <div> вокруг липкого меню запрещена (ломает sticky)
   Н022  один Tier-1 на приложение (единая высота)
+  Н060  адрес ВСЕГДА абсолютный (относительный читают по-разному)
+  Н061  экран открывает ТОЛЬКО адрес (гейт ловит класс, не строку)
 
 Запуск: python3 tools/nav-audit.py
 """
@@ -607,6 +609,123 @@ def check_n035():
 
 
 
+def _code_only(t: str) -> str:
+    """Комментарии не проверяем: в них закон ОБЪЯСНЯЕТСЯ, а не нарушается."""
+    return "\n".join(l for l in t.split("\n")
+                      if not l.strip().startswith(("*", "//", "/*")))
+
+
+def check_n060():
+    """ЗКН-Н060 — АДРЕС ПРИЛОЖЕНИЯ ВСЕГДА АБСОЛЮТНЫЙ.
+
+    Молитва из списка бхаджанов открывалась ПУСТОЙ, а «назад» её ПОКАЗЫВАЛ.
+
+    `pushUrl(url)` писал в историю СЫРУЮ строку, а роутеру отдавал `pathOf(url)`.
+    Для абсолютного пути это одно и то же. Для ОТНОСИТЕЛЬНОГО — два разных пути:
+
+        стоим на  /bhajans/gaura-arati
+        зовём     pushUrl("gaurakisor-das-babaji-pranama")
+        браузер → /bhajans/gaurakisor-das-babaji-pranama   (от ПАПКИ — адрес верный)
+        роутер  → /gaurakisor-das-babaji-pranama           (от КОРНЯ — ищет личность)
+
+    Адрес показывал молитву, роутер искал статью: «Не удалось загрузить». «Назад»
+    снимал запись, popstate читал адрес ИЗ СТРОКИ — и молитва открывалась.
+
+    Относительный адрес рождался в трёх местах, и все три сторожим:
+      (а) nav.ts не нормализует путь ДО записи в историю;
+      (б) вызов navigate/pushUrl со строкой без ведущего «/» либо с ГОЛЫМ слагом;
+      (в) `pathFromState` возвращает не адрес, а слаг («slug сам по себе путь»).
+    """
+    nav = read(SRC / "nav.ts")
+    app = read(SRC / "App.tsx")
+    bad = []
+
+    # (а) nav.ts: одна нормализация, и она ДО записи
+    if "function absUrl" not in nav:
+        bad.append(("nav.ts", "нет absUrl — путь пишется в историю сырым (ЗКН-Н060)"))
+    for fn, api in (("pushUrl", "pushState"), ("replaceUrl", "replaceState")):
+        m = re.search(r"export function %s\([\s\S]{0,400}?\n\}" % fn, nav)
+        if not m:
+            bad.append(("nav.ts", "нет %s (ЗКН-Н060)" % fn))
+            continue
+        body = m.group(0)
+        if re.search(r"history\.%s\([^)]*,\s*url\s*\)" % api, body):
+            bad.append(("nav.ts", "%s пишет в историю СЫРОЙ url — браузер и роутер "
+                                  "прочитают его по-разному (ЗКН-Н060)" % fn))
+
+    # (б) вызов навигации относительным путём
+    for fp in files():
+        for i, line in enumerate(_code_only(read(fp)).split("\n"), 1):
+            if re.search(r"\b(navigate|pushUrl|replaceUrl|onNavigate|onOpenPath)\(\s*[\"']"
+                         r"[^/\"']", line):
+                bad.append((fp.name, "строка %d: адрес без ведущего «/» — "
+                                     "относительный путь (ЗКН-Н060)" % i))
+            if re.search(r"\b(navigate|onNavigate|onOpenPath)\("
+                         r"\s*(s|sl|slug|id|key|k|work|w)\s*\)", line):
+                bad.append((fp.name, "строка %d: в navigate передан СЛАГ, а не адрес — "
+                                     "путь строит ROUTES (ЗКН-Н060)" % i))
+
+    # (в) адрес состояния абсолютен: каждый return в pathFromState
+    m = re.search(r"function pathFromState\(\)[\s\S]*?\n  \}", app)
+    if not m:
+        bad.append(("App.tsx", "нет pathFromState (ЗКН-Н060)"))
+    else:
+        ok = ('"/', "`/", "ROUTES.", "window.location.pathname", "HOME_OF[")
+        for line in _code_only(m.group(0)).split("\n"):
+            r = re.search(r"\breturn\s+(.+?);", line)
+            if r and not any(t in r.group(1) for t in ok):
+                bad.append(("App.tsx", "pathFromState отдаёт не адрес: «%s» — "
+                                       "состояние хранит слаг, адрес строит ROUTES "
+                                       "(ЗКН-Н060)" % r.group(1)[:40]))
+
+    # страховка У4: относительный адрес не попадает в историю даже при регрессе
+    if 'if (!next.startsWith("/")) return;' not in app:
+        bad.append(("App.tsx", "эффект «состояние → адрес» пишет путь без проверки "
+                               "на абсолютность (ЗКН-Н060)"))
+    return bad
+
+
+def check_n061():
+    """ЗКН-Н061 — ЭКРАН ОТКРЫВАЕТ ТОЛЬКО АДРЕС. ГЕЙТ ЛОВИТ КЛАСС, А НЕ СТРОКУ.
+
+    Закон Н035 («экран сменился → адрес сменился») существовал, и гейт у него был.
+    Но гейт искал ДВЕ БУКВАЛЬНЫЕ СТРОКИ: `onOpenBhajan={setOpenBhajan}` и
+    `onOpenContent={setOpenContent}`. Стоило записать то же самое иначе —
+
+        onOpen={(slug) => { setOpenCatalog(false); setOpenBhajan(slug); }}
+
+    — и нарушение проходило мимо. Каталог молитв открывал экран ПРЯМЫМ сеттером;
+    адрес дописывал эффект-синхронизатор, и дописывал НЕВЕРНО (см. Н060).
+
+    Гейт, который ловит строку, а не класс, — это не гейт, а её отсутствие.
+
+    Список экранных сеттеров гейт берёт ИЗ САМОГО КОДА — из строки сброса в
+    `applyPath` (она обнуляет ровно то, что определяет адрес). Появится новый
+    экран — он попадёт под закон сам, без правки гейта.
+    """
+    app = (SRC / "App.tsx").read_text(encoding="utf-8")
+    m = re.search(r"setOpenBook\(null\);[^\n]*", app)
+    if not m:
+        return [("App.tsx", "не найден сброс состояний в applyPath (ЗКН-Н061)")]
+    setters = sorted(set(re.findall(r"\b(set[A-Z][A-Za-z]*)\(", m.group(0))))
+    if len(setters) < 20:
+        return [("App.tsx", "сброс в applyPath распознан частично (ЗКН-Н061)")]
+
+    names = "|".join(setters)
+    bad = []
+    for i, line in enumerate(_code_only(app).split("\n"), 1):
+        if not re.search(r"\bon[A-Z][A-Za-z]*=\{", line):
+            continue
+        if re.search(r"\bon[A-Z][A-Za-z]*=\{\s*(%s)\s*\}" % names, line):
+            bad.append(("App.tsx", "строка %d: экран открывается ПРЯМЫМ сеттером — "
+                                   "адрес не меняется, экран без адреса ЛЖЁТ "
+                                   "(ЗКН-Н061)" % i))
+        elif re.search(r"\bon[A-Z][A-Za-z]*=\{[^\n]*\b(%s)\(" % names, line):
+            bad.append(("App.tsx", "строка %d: обработчик зовёт (%s) в обход роутера — "
+                                   "открывать экран может только адрес (ЗКН-Н061)"
+                        % (i, re.search(r"\b(%s)\(" % names, line).group(1))))
+    return bad
+
 def func_body(src: str, name: str) -> str:
     """Тело компонента: от его объявления до следующего объявления верхнего уровня.
 
@@ -824,6 +943,8 @@ CHECKS = [
     ("ЗКН-Н041", "писатель и читатель адреса — один словарь", check_n041),
     ("ЗКН-Н043", "флаг «из роутера» не залипает", check_n043),
     ("ЗКН-Н027", "один экран — один путь рендера", check_n027),
+    ("ЗКН-Н060", "адрес приложения ВСЕГДА абсолютный", check_n060),
+    ("ЗКН-Н061", "экран открывает только адрес", check_n061),
     ("ЗКН-Н035", "экран сменился → адрес сменился", check_n035),
     ("ЗКН-Н033", "запасной не перебивает основу", check_n033),
     ("ЗКН-Н031", "витрина: без оверлея, из адреса", check_n031),

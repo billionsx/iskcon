@@ -74,6 +74,30 @@ function pathOf(url: string): string {
   return p.startsWith("/") ? p : "/" + p;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * ЗКН-Н060 — АДРЕС ПРИЛОЖЕНИЯ ВСЕГДА АБСОЛЮТНЫЙ.
+ *
+ * КОРЕНЬ «ОТКРЫВАЕТСЯ СО ВТОРОГО РАЗА» (молитва → пусто → «назад» → молитва).
+ *
+ * `history.pushState` получал СЫРУЮ строку, а роутер — `pathOf(url)`. Для
+ * абсолютного адреса это одно и то же. Для ОТНОСИТЕЛЬНОГО — ДВА РАЗНЫХ ПУТИ:
+ *
+ *   стоим на /bhajans/gaura-arati, зовём pushUrl("gaurakisor-das-babaji-pranama")
+ *     браузер: резолвит от ПАПКИ  → /bhajans/gaurakisor-das-babaji-pranama  (адрес верный!)
+ *     роутер:  pathOf добавит «/» → /gaurakisor-das-babaji-pranama          (личность/статья!)
+ *
+ * Адрес показывал молитву, роутер искал статью и не находил: «Не удалось
+ * загрузить». «Назад» снимал запись, popstate брал адрес ИЗ СТРОКИ — и молитва
+ * открывалась. Отсюда «через раз»: экран и адрес расходились МОЛЧА.
+ *
+ * Теперь нормализация ОДНА и ДО записи: в историю и в роутер уходит один и тот
+ * же путь. Расхождение невозможно ПО УСТРОЙСТВУ, а не по дисциплине вызывающих.
+ * ───────────────────────────────────────────────────────────────────────── */
+function absUrl(url: string): string {
+  const u = (url || "/").trim();
+  return u.startsWith("/") ? u : "/" + u.replace(/^(?:\.\/)+/, "");
+}
+
 /** Применить путь: роутер, затем подписчики. Единственная точка. */
 export function applyRoute(path: string): void {
   const clean = pathOf(path);
@@ -84,9 +108,10 @@ export function applyRoute(path: string): void {
 /** Новый уровень навигации (новая запись истории). Экран МЕНЯЕТСЯ → роутер применяет путь. */
 export function pushUrl(url: string): void {
   if (typeof window === "undefined") return;
+  const abs = absUrl(url);                       // ЗКН-Н060: одна нормализация — до записи
   idx += 1;
-  try { window.history.pushState({ appIdx: idx }, "", url); } catch { /* noop */ }
-  applyRoute(url);
+  try { window.history.pushState({ appIdx: idx }, "", abs); } catch { /* noop */ }
+  applyRoute(abs);
 }
 
 /* Замена текущей записи (тот же уровень: стих↔стих, подтаб, нормализация адреса).
@@ -95,8 +120,9 @@ export function pushUrl(url: string): void {
  * Но подписчиков будим: они обязаны видеть свежий адрес. */
 export function replaceUrl(url: string): void {
   if (typeof window === "undefined") return;
-  try { window.history.replaceState({ appIdx: idx }, "", url); } catch { /* noop */ }
-  notifyNav(pathOf(url));
+  const abs = absUrl(url);                       // ЗКН-Н060: одна нормализация — до записи
+  try { window.history.replaceState({ appIdx: idx }, "", abs); } catch { /* noop */ }
+  notifyNav(pathOf(abs));
 }
 
 /** Есть ли под нами запись приложения, на которую можно вернуться через history.back(). */
