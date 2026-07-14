@@ -1075,17 +1075,27 @@ async function kirtanTracks(identifier: string, origin: string, artist: string, 
  */
 async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
   const res = await env.DB.prepare(
-    `SELECT t.identifier, t.file, t.title, t.duration, a.name AS artist
+    `SELECT t.identifier, t.file, t.title, t.duration, t.artist_slug, a.name AS artist, a.sort
        FROM kirtan_tracks t LEFT JOIN kirtan_artists a ON a.slug = t.artist_slug
-      ORDER BY t.artist_slug, t.file`
-  ).all<{ identifier: string; file: string; title: string; duration: number | null; artist: string | null }>();
+      ORDER BY COALESCE(a.sort, 9999), a.name, t.file`
+  ).all<{ identifier: string; file: string; title: string; duration: number | null; artist_slug: string; artist: string | null; sort: number | null }>();
 
+  // ═══ РАЗДЕЛ ОЧЕРЕДИ = ИСПОЛНИТЕЛЬ ═══
+  //
+  // В плеере УЖЕ ЕСТЬ этот механизм — им сделаны песни/главы/стихи у книг:
+  // дорожка несёт `group`/`groupLabel`, из них строятся пилюли разделов, очередь
+  // показывает только активный раздел, а активная пилюля сама следует за звуком.
+  //
+  // Я сперва налепил поверх плеера СВОЮ сетку папок — это была работа впустую и
+  // второй способ делать то же самое. Достаточно проставить дорожке раздел.
   const tracks: AudioTrack[] = (res.results || []).map((r, i) => ({
     kind: "song" as const, pos: i, chapter: null,
     title: r.title, file: r.file,
     url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
     durationSec: r.duration || 0,
-    artist: r.artist ?? "", album: "Киртаны",
+    artist: r.artist ?? "", album: "Коллекция Гауранга Лилы",
+    group: r.artist_slug || "various",
+    groupLabel: r.artist ?? "Киртания ИСККОН",
   }));
   return json({ book: "all", kind: "kirtan", modes: { plain: { identifier: "kirtans-all", tracks } } });
 }

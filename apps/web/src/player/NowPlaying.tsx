@@ -20,6 +20,9 @@ import { type SubTabDef } from "../SectionSubTabs";
 import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
+
+/** Псевдо-раздел «Все» — плоский список всей коллекции (решение основателя). */
+const ALL_DIV = "__all__";
 const glass = (radius: number): CSSProperties => ({
   background: "rgba(255,255,255,0.10)",
   backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)",
@@ -70,6 +73,18 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   const gid = (t: { group?: string; lila?: string }) => t.group ?? t.lila;
   const divisions: SubTabDef[] = [];
   const seenDiv = new Set<string>();
+
+  /* ЗКН-Б011 · решение основателя — «ВСЕ» ИДЁТ ПЕРВЫМ РАЗДЕЛОМ.
+   *
+   * У книги разделы взаимоисключающи: читаешь главу — видишь главу. У аудиотеки
+   * иначе: «Все» — это плоский список всех 1062 записей, а дальше папки по
+   * исполнителям. Поэтому у киртанов впереди встаёт псевдо-раздел «Все».
+   *
+   * Отдельной сетки папок для этого НЕ НУЖНО: пилюли разделов в плеере уже есть —
+   * ими сделаны песни, главы и стихи у книг. */
+  const isKirtanQueue = p.kind === "kirtan";
+  if (isKirtanQueue && p.tracks.length > 1) divisions.push({ id: ALL_DIV, label: "Все" });
+
   for (const t of p.tracks) {
     const g = gid(t);
     if (g && !seenDiv.has(g)) { seenDiv.add(g); divisions.push({ id: g, label: t.groupLabel ?? t.lilaLabel ?? g }); }
@@ -81,8 +96,14 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   // пока воспроизведение не пересечёт границу главы/песни/лилы.
   useEffect(() => {
     if (!hierQueue) return;
-    setActiveDiv((prev) => curDiv ?? (prev || divisions[0]?.id || ""));
-  }, [curDiv, hierQueue]);
+    setActiveDiv((prev) => {
+      // ⚠️ У киртанов активный раздел за звуком НЕ БЕГАЕТ. Иначе человек выбрал
+      //    «Все», нажал первую дорожку — и его тут же перекинуло в папку её
+      //    исполнителя. Раздел меняет ЧЕЛОВЕК; звук идёт по общей очереди.
+      if (isKirtanQueue) return prev || divisions[0]?.id || "";
+      return curDiv ?? (prev || divisions[0]?.id || "");
+    });
+  }, [curDiv, hierQueue, isKirtanQueue]);
 
   // ── ШБ: ТРИ уровня очереди — ПЕСНЬ → ГЛАВА → СТИХ ──
   // У ЧЧ дорожка это ГЛАВА, поэтому одного ряда пилюль (лилы) хватает. У ШБ дорожка —
@@ -127,10 +148,16 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * В очереди на 1062 записи играющая строка легко уезжает за край: человек ищет
    * киртан, тот включается — а он его не видит. Подвозим строку в поле зрения на
    * каждую смену дорожки и на смену очереди (поиск ↔ библиотека). */
+  /* ⚠️ ПОДСКРОЛЛ СДУВАЛ ОБЛОЖКУ.
+   * `block: "center"` уводил тело вниз СРАЗУ на первом рендере — обложка и шапка
+   * уезжали за край, и человек видел обрубок. Теперь: «nearest» (не двигаем, если
+   * строка и так видна) и только при СМЕНЕ дорожки, а не при монтировании. */
+  const firstScroll = useRef(true);
   useEffect(() => {
+    if (firstScroll.current) { firstScroll.current = false; return; }
     const el = bodyRef.current?.querySelector<HTMLElement>('[data-active="1"]');
-    el?.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, [p.index, p.book]);
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [p.index]);
 
   if (!embedded && !p.active) return null;
 
@@ -349,7 +376,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                 : p.tracks.map((t, i) => {
                     // иерархическая книга: показываем только активную лилу
                     // (вступление без лилы — при активной первой лиле).
-                    if (hierQueue) {
+                    if (hierQueue && activeDiv !== ALL_DIV) {
                       const g = gid(t);
                       const show = g ? g === activeDiv : activeDiv === divisions[0]?.id;
                       if (!show) return null;

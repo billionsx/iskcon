@@ -14,15 +14,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePlayer } from "./player/store";
 import { NowPlaying } from "./player/NowPlaying";
-import { kirtanTracks, kirtanArtists, artistBySlug, type KirtanArtist } from "./kirtans";
+import { kirtanTracks, artistBySlug, type KirtanArtist } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
-import { useFavorites } from "./cardActions";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HubHeader, HubSearch, HubEmpty } from "./ui/HubHeader";
-import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
+
+const ALL = "all";
+const FIND = "q:";
 
 /** Поиск — свой альбом плеера: `q:<запрос>`. Библиотека остаётся альбомом-папкой. */
-const FIND = "q:";
 
 /** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
 export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number }) {
@@ -52,11 +52,9 @@ export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number 
  * вид — это про глаза, очередь — про звук. Смешаешь их — получишь плеер, который
  * играет не то, что видно.
  */
-const ALL = "all";
 const FOLDER = "f:";
 const FAV_KEY = (msgId: number) => `kirtan:${msgId}`;
 
-type View = "grid" | "list";
 
 export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenArtist: (slug: string) => void;
@@ -65,42 +63,26 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
 }) {
   const p = usePlayer();
   const kv = useKirtans();
-  const favs = useFavorites();
-
   const tracks = useMemo(() => kirtanTracks(), [kv]);
 
-  const folders = useMemo(() => {
-    const byArtist = new Map<string, number>();
-    tracks.forEach((t) => byArtist.set(t.artist, (byArtist.get(t.artist) ?? 0) + 1));
-    return kirtanArtists()
-      .filter((a) => (byArtist.get(a.slug) ?? 0) > 0)
-      .map((a) => ({ slug: a.slug, name: a.name, n: byArtist.get(a.slug) ?? 0 }));
-  }, [tracks, kv]);
-
-  const favIds = useMemo(
-    () => favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key.slice(7)).filter(Boolean),
-    [favs],
-  );
-
-  const [view, setView] = useState<View>("grid");
-  const [q, setQ] = useState("");
-  const [found, setFound] = useState<{ q: string; n: number } | null>(null);
-
-  /* ⚠️ ЗДЕСЬ ПЛЕЕР ПОКАЗЫВАЛ БХАГАВАД-ГИТУ.
+  /* ЗКН-Б011 · решение основателя 14.07.2026 — ПАПКИ ЖИВУТ В ПЛЕЕРЕ,
+   * И ЭТО НЕ НОВЫЙ МЕХАНИЗМ.
    *
-   * Условие было `!p.book`. А `p.book` по умолчанию — «bg», Бхагавад-гита:
-   * значит условие НЕ СРАБАТЫВАЛО НИКОГДА, очередь киртанов не грузилась, и
-   * плеер оставался на книге — с её обложкой и «1 / 7».
+   * Плеер УЖЕ умеет разделы очереди — ими сделаны песни, главы и стихи у книг:
+   * дорожка несёт `group`/`groupLabel`, из них строятся пилюли, очередь показывает
+   * только активный раздел. Киртанам достаточно проставить дорожке раздел =
+   * исполнитель, и всё работает само.
    *
-   * Правильный признак — не «книга не выбрана», а «мы НЕ на киртанах». */
+   * Я вместо этого построил СВОЮ сетку папок поверх плеера — второй способ делать
+   * то же самое. Снёс. Здесь остаётся только шапка и поиск; всё остальное — плеер.
+   */
   useEffect(() => {
     if (tracks.length > 0 && p.kind !== "kirtan") p.loadKirtan(ALL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tracks.length, p.kind]);
 
-  const cur = p.kind === "kirtan" ? p.book : ALL;
-  const open = (id: string) => { setFound(null); setQ(""); p.playKirtan(id, 0, false); };
-
+  const [q, setQ] = useState("");
+  const [found, setFound] = useState<{ q: string; n: number } | null>(null);
   const norm = (s: string) => (s || "").toLowerCase();
   const submit = () => {
     const s = q.trim();
@@ -110,82 +92,13 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     if (n) p.playKirtan(FIND + s, 0, false);
   };
 
-  /* ── Папка внутри плеера: тёмная тема, золото на активной ── */
-  const Folder = ({ id, title, sub, active }: { id: string; title: string; sub: string; active: boolean }) => (
-    <button type="button" onClick={() => open(id)} aria-pressed={active}
-      style={view === "grid" ? {
-        display: "flex", flexDirection: "column", gap: 7, padding: 8, borderRadius: 13, cursor: "pointer",
-        textAlign: "left", fontFamily: "var(--font-text)",
-        background: active ? "rgba(210,170,27,0.16)" : "rgba(255,255,255,0.06)",
-        border: active ? "1px solid var(--color-gold)" : "0.5px solid rgba(255,255,255,0.10)",
-        color: "#fff",
-      } : {
-        display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "8px 10px",
-        borderRadius: 12, cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
-        background: active ? "rgba(210,170,27,0.16)" : "rgba(255,255,255,0.06)",
-        border: active ? "1px solid var(--color-gold)" : "0.5px solid rgba(255,255,255,0.10)",
-        color: "#fff",
-      }}>
-      <img src={COVER_FALLBACK} alt="" loading="lazy"
-        style={view === "grid"
-          ? { width: "100%", aspectRatio: "1 / 1", borderRadius: 9, objectFit: "cover", background: "#fff" }
-          : { width: 34, height: 34, flexShrink: 0, borderRadius: 8, objectFit: "cover", background: "#fff" }} />
-      <span style={{ minWidth: 0, flex: view === "grid" ? undefined : 1 }}>
-        <span style={{ display: "block", fontSize: "var(--text-caption)", fontWeight: 700, lineHeight: 1.25,
-          color: active ? "var(--color-gold)" : "#fff",
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
-        <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-caption2)", color: "rgba(255,255,255,0.45)" }}>{sub}</span>
-      </span>
-    </button>
-  );
-
-  const viewBtn = (v: View, label: string, icon: React.ReactNode) => (
-    <button type="button" onClick={() => setView(v)} aria-label={label} aria-pressed={view === v}
-      style={{ display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: 8, cursor: "pointer",
-        border: "none", background: view === v ? "rgba(255,255,255,0.12)" : "transparent",
-        color: view === v ? "var(--color-gold)" : "rgba(255,255,255,0.45)" }}>{icon}</button>
-  );
-
-  /* ПАПКИ — ВНУТРИ ПЛЕЕРА. Папка меняет ОЧЕРЕДЬ плеера; орган управления очередью
-     должен стоять в самом плеере, а не отдельным блоком рядом с ним. */
-  const foldersUI = (
-    <div style={{ marginTop: 20 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "0 4px" }}>
-        <span style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
-          textTransform: "uppercase", color: "var(--color-gold)" }}>
-          Папки · {folders.length + 2}
-        </span>
-        <div style={{ display: "flex", gap: 2 }}>
-          {viewBtn("grid", "Плитка",
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><rect x="3" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="3" width="8" height="8" rx="2" fill="currentColor" /><rect x="3" y="13" width="8" height="8" rx="2" fill="currentColor" /><rect x="13" y="13" width="8" height="8" rx="2" fill="currentColor" /></svg>)}
-          {viewBtn("list", "Список",
-            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><rect x="3" y="5" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="10.8" width="18" height="2.4" rx="1.2" fill="currentColor" /><rect x="3" y="16.6" width="18" height="2.4" rx="1.2" fill="currentColor" /></svg>)}
-        </div>
-      </div>
-      <div style={{ marginTop: 8, maxHeight: 200, overflowY: "auto", overscrollBehavior: "contain", padding: "0 2px 2px",
-        ...(view === "grid"
-          ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 8 }
-          : { display: "flex", flexDirection: "column", gap: 6 }) }}>
-        <Folder id={ALL} title="Все" sub={`${tracks.length} ${plural(tracks.length, "запись", "записи", "записей")}`}
-          active={cur === ALL} />
-        <Folder id={favIds.length ? "fav:" + favIds.join(",") : "fav:"} title="Избранное"
-          sub={favIds.length ? `${favIds.length} ${plural(favIds.length, "запись", "записи", "записей")}` : "пусто"}
-          active={cur.startsWith("fav")} />
-        {folders.map((f) => (
-          <Folder key={f.slug} id={FOLDER + f.slug} title={f.name}
-            sub={`${f.n} ${plural(f.n, "запись", "записи", "записей")}`}
-            active={cur === FOLDER + f.slug} />
-        ))}
-      </div>
-    </div>
-  );
-
+  /* ЗКН-Н012 — плеер влезает в экран: высоту считает витрина, а не `vh`. */
   const boxRef = useRef<HTMLDivElement>(null);
   const [boxH, setBoxH] = useState(0);
   useEffect(() => {
     const calc = () => {
       const top = boxRef.current?.getBoundingClientRect().top ?? 0;
-      setBoxH(Math.max(360, Math.round(window.innerHeight - top - 104)));
+      setBoxH(Math.max(380, Math.round(window.innerHeight - top - 104)));
     };
     calc();
     window.addEventListener("resize", calc);
@@ -198,6 +111,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
       <HubHeader eyebrow="Аудиотека" title="Киртаны"
         subtitle="Святое имя в голосах ачарьев и киртания — записи канала ISKCON Kirtans" />
 
+      {/* ЗКН-Н044: поиск витрины. Найденное — своя очередь, а не второй список. */}
       <HubSearch value={q} onChange={setQ}
         placeholder="Найти киртан и включить" ariaLabel="Поиск по аудиотеке" onSubmit={submit} />
 
@@ -210,7 +124,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
         ) : found && found.n === 0 ? (
           <HubEmpty query={found.q} hint="Попробуйте название киртана или имя исполнителя." />
         ) : (
-          <NowPlaying embedded embeddedHeight={boxH || undefined} belowHero={foldersUI} />
+          <NowPlaying embedded embeddedHeight={boxH || undefined} />
         )}
       </div>
     </div>
