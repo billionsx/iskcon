@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Reac
 import { useAuth } from "./account/store";
 import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState, type DevoteeLevel, type Initiation } from "./account/api";
 import { usePlayer } from "./player/store";
-import { BOOKS, bookFullTitle } from "./books";
+import { BOOKS, bookFullTitle, bookSlug } from "./books";
 import { albumById } from "./kirtans";
 import { useNotes, requestNote, requestOpenNote, shareNote, togglePin, type Note } from "./notes";
 import { NoteHeroCard } from "./NoteHeroCard";
@@ -380,7 +380,9 @@ function HScroll({ children }: { children: ReactNode }) {
 
 function ContinueCard({ item, onOpen }: { item: ReadingItem; onOpen: (p: string) => void }) {
   const meta = bookMeta(item.work);
-  const href = item.href || `/books/${item.work}`;
+  // ЗКН-Н060: путь книги — только через bookSlug. `/books/<шифр>` — это
+    // эндпоинт сервера, а не маршрут человека.
+    const href = item.href || `/${bookSlug(item.work)}`;
   return (
     <button
       onClick={() => onOpen(href)}
@@ -946,7 +948,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
             {ov.library.map((it) => {
               const meta = bookMeta(it.work);
               return (
-                <button key={it.work} onClick={() => onOpenPath(`/books/${it.work}`)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+                <button key={it.work} onClick={() => onOpenPath(`/${bookSlug(it.work)}`)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
                   <CoverBox src={meta.cover} w={96} h={128} radius={10} label={meta.title} />
                   <div style={{ marginTop: 6, fontSize: "var(--text-caption)", fontWeight: 500, color: INK, lineHeight: 1.3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>{meta.title}</div>
                 </button>

@@ -51,6 +51,18 @@ jobs:
           grep BUILD_SHA apps/web/src/buildStamp.ts | tail -1
       - name: Гейт чужого голоса (ЗКН-Д013)
         run: python3 tools/voice-lint.py
+      - name: Гейт навигации (ЗКН-Н059 · Н060)
+        run: |
+          python3 - <<'PY'
+          import importlib.util, sys
+          spec = importlib.util.spec_from_file_location("na", "tools/nav-audit.py")
+          m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+          bad = m.check_second_path_builder() + m.check_once_only_restore()
+          for f, i, w in bad:
+              print("::error file=apps/web/src/%s,line=%d::%s" % (f, i, w))
+          print("ГЕЙТ НАВИГАЦИИ: %s" % ("ЧИСТО" if not bad else "НАРУШЕНИЙ %d" % len(bad)))
+          sys.exit(1 if bad else 0)
+          PY
 
       - name: Гейт поверхности (ЗКН-Д014 · Д005 · Д015)
         run: python3 tools/surface-lint.py

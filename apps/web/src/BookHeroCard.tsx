@@ -8,7 +8,7 @@ import { SCRIPTURE_VOICE } from "./ui/voice";
  * Standard action set: избранное · наушники · в корзину · ⋯.
  */
 import { useRef, useState, type ReactNode } from "react";
-import { bookFullTitle, type BookData } from "./books";
+import { bookSlug, bookFullTitle, type BookData } from "./books";
 import { HeartIcon, HeadphonesIcon, BagIcon, MoreIcon } from "./ui/icons";
 import { BookMenuSheet } from "./BookMenuSheet";
 import { useFavorite } from "./cardActions";
@@ -29,7 +29,7 @@ export function ActionBtn({ active, activeColor, ariaLabel, onClick, children }:
 }
 
 export function BookHeroCard({ book, topLeft, onOpen, flash, onMenuSelect, presentational, coverActions, onListen, canOrder }: { book: BookData; topLeft?: ReactNode; onOpen?: () => void; flash?: (m: string) => void; onMenuSelect?: (id: string) => void; presentational?: boolean; coverActions?: ReactNode; onListen?: () => void; canOrder?: boolean }) {
-  const { on: favorited, toggle: toggleFav } = useFavorite(`book:${book.work}`, { t: bookFullTitle(book), s: book.tagline, h: `/books/${book.work}` });
+  const { on: favorited, toggle: toggleFav } = useFavorite(`book:${book.work}`, { t: bookFullTitle(book), s: book.tagline, h: `/${bookSlug(book.work)}` });
   const [inCart, setInCart] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const moreRef = useRef<HTMLSpanElement>(null);

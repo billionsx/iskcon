@@ -22,7 +22,7 @@ import { SCRIPTURE_VOICE } from "./ui/voice";
 const VOICE_TYPES = new Set(["verse", "bhajan", "prayer", "quote"]);
 import { useFavorites, removeFavorite, type FavItem } from "./cardActions";
 import { useNotes, requestNote, requestOpenNote, type Note } from "./notes";
-import { BOOKS, bookFullTitle } from "./books";
+import { BOOKS, bookFullTitle, bookSlug } from "./books";
 
 /* ── палитра (зеркало книжного эталона) ── */
 const INK = "#1f2024";
@@ -104,15 +104,28 @@ function HeartOutline({ size = 30 }: { size?: number }) { return <svg width={siz
 function hrefFor(it: FavItem): string | null {
   if (it.href) return it.href;
   const { type, id } = it;
-  if (type === "book") return `/books/${id}`;
+  if (type === "book") return `/${bookSlug(id)}`;
   if (type === "entity") return `/${id}`;
   if (type === "doc") return `/doc/${id}`;
   if (type === "centre" || type === "restaurant") return `/place/${id}`;
   if (type === "bhajan") return id.charAt(0) === "/" ? id : `/bhajans/${id}`;
+  /* ЗКН-Н059 · ПУТЬ РОЖДАЕТСЯ В ОДНОМ МЕСТЕ.
+   *
+   * Здесь стояла своя строковая хирургия: `/books/{шифр}/{глава}/{стих}`.
+   * Это ВТОРОЙ построитель пути — и он разошёлся с настоящим маршрутом книги
+   * (`/{слаг}/{лила}/{глава}/{стих}`, ЗКН-Н023). Папки `/books/<шифр>/` в
+   * приложении нет: старое избранное вело в никуда, а новое спасал только
+   * сохранённый `href`. Второй построитель обязан был разойтись — и разошёлся.
+   *
+   * Теперь путь строит тот же bookSlug + иерархия книги, что и читалка.
+   */
   if (type === "chapter" || type === "verse") {
     const [w, ...rest] = id.split("/");
-    const tail = rest.join("/");
-    if (w && tail) return `/books/${w}/${tail.replace(/\./g, "/")}`;
+    const bk = BOOKS[w];
+    if (!bk || !rest.length) return null;
+    let segs = rest.join("/").split(/[./]/).filter(Boolean);
+    if (segs[0] === w) segs = segs.slice(1);          // «cc.madhya.19.117» → без шифра
+    return segs.length ? `/${bookSlug(w)}/${segs.join("/")}` : `/${bookSlug(w)}`;
   }
   if (type.indexOf("kirtan") === 0) return "/kirtans";
   return null;

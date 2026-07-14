@@ -394,7 +394,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           ref: `book:${p.book}`,
           title: bookFullTitle(BOOK),
           subtitle: p.track?.title || sub,
-          href: `/books/${p.book}`,
+          href: `/${bookSlug(p.book)}`,
         });
       }
       return;

@@ -9,6 +9,7 @@
  * grouped-iOS поверхности, золотая монограмма вместо фото).
  */
 import { CATEGORY_RU, RASA_RU } from "./entityLabels";
+import { bookSlug } from "./books";
 import { SCRIPTURE_VOICE } from "./ui/voice";
 import { CardActionBtns, useCardActions, favMetaFromCtx, type CardCtx } from "./cardActions";
 import { useEffect, useRef, useState, Fragment, type ReactNode } from "react";
@@ -747,7 +748,7 @@ function kindHref(kind: string, ref: string): string | null {
     case "tirtha": return "/dhama/" + ref;   // ref = "<dhamaId>/<tirthaId>"
     case "kirtan": return "/kirtans/" + ref;  // ref = слаг исполнителя
     case "bhajan": return ref;               // ref = полный слаг бхаджана (/ru/bhajans/...)
-    case "work":   return "/books/" + ref;    // ref = id произведения (bg, sb, cc…) → читалка
+    case "work":   return "/" + bookSlug(ref);    // ref = id произведения (bg, sb, cc…) → читалка
     default: return null; // остальные виды получат маршруты по мере ввода рефов
   }
 }

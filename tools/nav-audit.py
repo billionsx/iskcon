@@ -985,3 +985,66 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ЗКН-Н059 · АДРЕС ЕСТЬ ИСТИНА ЭКРАНА
+# ЗКН-Н060 · ПУТЬ РОЖДАЕТСЯ В ОДНОМ МЕСТЕ
+#
+# Баг, который founder ловил месяцами: ставишь стих в избранное, заходишь из
+# избранного — попадаешь на ГЛАВУ. Две причины, обе системные:
+#
+#   1. Восстановление цели из адреса стояло под флагом «ОДИН РАЗ за жизнь
+#      компонента». Книга уже открыта → адрес сменился на другой стих →
+#      эффект видит флаг и МОЛЧИТ. Экран не следует за адресом.
+#
+#   2. Избранное строило путь СВОЕЙ строковой хирургией `/books/{шифр}/…`,
+#      а книга живёт в корне `/{слаг}/…` (ЗКН-Н023). Второй построитель пути
+#      обязан разойтись с первым — и разошёлся.
+# ═══════════════════════════════════════════════════════════════════════════
+import re as _re
+from pathlib import Path as _P
+
+_SRC = _P(__file__).resolve().parents[1] / "apps" / "web" / "src"
+# Путь книги, собранный руками мимо ROUTES/bookSlug.
+_HAND_PATH = _re.compile(r"[\"`']/books?/\$\{|[\"`']/books?/[a-z]{2,4}/\$\{|\"/books?/\" \+")
+_ALLOWED = {"routes.ts", "books.ts", "nav.ts"}
+
+
+def check_second_path_builder():
+    """ЗКН-Н060: путь книги строит ТОЛЬКО routes.ts/books.ts."""
+    bad = []
+    for f in sorted(_SRC.rglob("*.tsx")) + sorted(_SRC.rglob("*.ts")):
+        if f.name in _ALLOWED:
+            continue
+        lines = f.read_text(encoding="utf-8").split("\n")
+        for i, ln in enumerate(lines, 1):
+            if ln.strip().startswith(("*", "//")):
+                continue
+            # `api("/books/…")` — это ЭНДПОИНТ сервера, а не маршрут экрана.
+            # У них общий префикс и разная природа: сервер живёт по /books/<шифр>,
+            # а человек — по /<слаг>. Путать их и есть корень бага.
+            # Вызов API часто разбит переносом — смотрим окно.
+            win = "\n".join(lines[max(0, i - 3):i + 1])
+            if "api(" in win or "fetch(" in win:
+                continue
+            if _HAND_PATH.search(ln):
+                bad.append((f.relative_to(_SRC), i, "путь книги собран руками (ЗКН-Н060)"))
+    return bad
+
+
+def check_once_only_restore():
+    """ЗКН-Н059: восстановление экрана из адреса не имеет права быть «один раз»."""
+    bad = []
+    for f in sorted(_SRC.rglob("*.tsx")):
+        t = f.read_text(encoding="utf-8")
+        for m in _re.finditer(r"useEffect\(\(\) => \{([\s\S]{0,700}?)\}, \[", t):
+            body = m.group(1)
+            restores = ("openTarget" in body or "initialTarget" in body
+                        or "applyPath" in body or "setBookTarget" in body)
+            once = _re.search(r"if \((?:did|inited|once)\w*\.current\) return", body)
+            if restores and once:
+                ln = t[:m.start()].count("\n") + 1
+                bad.append((f.relative_to(_SRC), ln,
+                            "цель из адреса восстанавливается ОДИН РАЗ (ЗКН-Н059)"))
+    return bad

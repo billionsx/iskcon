@@ -13,6 +13,7 @@ import {
   createContext, useContext, useEffect, useRef, useState, type ReactNode,
 } from "react";
 import { api } from "../api";
+import { bookSlug } from "../books";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById, artistBySlug, albumCover } from "../kirtans";
 import { recordListen } from "../account/track";
@@ -408,7 +409,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         cover: cfg.cover,
         album: bookRef.current, // машинный id книги/альбома — для «продолжить слушать»
         artist: isK ? (t.artist || cfg.artist || null) : null,
-        href: isK ? null : `/books/${bookRef.current}`,
+        href: isK ? null : `/${bookSlug(bookRef.current)}`,
         durationSec: t.durationSec ?? null,
         positionSec: 0,
       });

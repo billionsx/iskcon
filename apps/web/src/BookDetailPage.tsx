@@ -2773,16 +2773,31 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     }
   };
 
-  // Холодный вход /book/<work>/… (в т.ч. из QR) → открыть цель один раз.
-  // ПКП (bg) ждёт загрузки оглавления; иерархические тянут TOC внутри openTarget.
-  const didInitTarget = useRef(false);
+  /* ЗКН-Н059 · АДРЕС ЕСТЬ ИСТИНА ЭКРАНА.
+   *
+   * Здесь стоял флаг `didInitTarget` — «открыть цель ОДИН РАЗ за жизнь
+   * компонента». Он и был багом, который founder ловил месяцами:
+   *
+   *   1. открыл книгу, читаешь главу        → флаг поднят
+   *   2. пошёл в избранное, тапнул СТИХ     → адрес сменился на /кн/1/1
+   *   3. книга уже смонтирована             → эффект ВИДИТ ФЛАГ И МОЛЧИТ
+   *   4. остался на ГЛАВЕ                   ← «попадает на главу, а не на стих»
+   *
+   * Экран, который открывается тапом, но НЕ ОТКРЫВАЕТСЯ ПО СВОЕМУ ЖЕ АДРЕСУ, —
+   * не экран, а состояние. Ссылка на него — ложь: из избранного, из шаринга,
+   * из истории браузера человек попадёт не туда.
+   *
+   * Открываем цель на КАЖДОЕ ИЗМЕНЕНИЕ АДРЕСА. Подпись цели не даёт дёргать
+   * загрузку на повторных рендерах с тем же адресом.
+   */
+  const lastTarget = useRef<string>("");
   useEffect(() => {
-    if (didInitTarget.current) return;
-    if (!book.hierarchical && !chapters) return;
-    if (initialTarget?.chapter) {
-      didInitTarget.current = true;
-      openTarget.current(initialTarget.div ?? null, initialTarget.chapter, initialTarget.verse);
-    }
+    if (!initialTarget?.chapter) { lastTarget.current = ""; return; }
+    if (!book.hierarchical && !chapters) return;      // ждём оглавление
+    const sig = [initialTarget.div ?? "", initialTarget.chapter, initialTarget.verse ?? ""].join("|");
+    if (sig === lastTarget.current) return;           // тот же адрес — не перезапускаем
+    lastTarget.current = sig;
+    openTarget.current(initialTarget.div ?? null, initialTarget.chapter, initialTarget.verse);
   }, [chapters, initialTarget, book.hierarchical]);
 
   // Состояние → URL: уникальный адрес для каждой главы/стиха.
