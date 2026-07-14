@@ -50,7 +50,17 @@ export function Skt({
  * точные формы из глоссария, по границам слов (Unicode), стоп-лист имён/лоанвордов
  * исключён. Длинное совпадение — первым (составные термины не дробятся).
  */
-const SCRIPT_MARK = /[\u0300-\u036F\u0483-\u0489\u04E3\u04EF]/;
+// ЗКН-Д013: транслитерация приходит В ДВУХ ПИСЬМЕНАХ.
+//  · кириллица с диакритикой (BBT-RU): кр̣шн̣а, а̄тма̄ра̄ма — комбинируемые знаки
+//  · латиница IAST: kṛṣṇa, bhagavān, ātmārāma — ПРЕДСОСТАВЛЕННЫЕ символы
+// Прежний матчер знал только первое. Стих «kṛṣṇas tu bhagavān svayam» на экране
+// ачарьев набирался UI-шрифтом: механизм его просто не видел.
+const SCRIPT_MARK = /[\u0300-\u036F\u0483-\u0489\u04E3\u04EF\u0100-\u017F\u1E00-\u1EFF\u00F1\u00D1]/;
+
+/** Свернуть диакритику: «Kṛṣṇa» → «krsna». Нужно, чтобы сверяться со стоп-листом. */
+function fold(w: string): string {
+  return w.normalize("NFD").replace(/[\u0300-\u036F]/g, "").toLowerCase().replace(/[^a-zа-я-]/g, "");
+}
 
 function scriptFraction(text: string): number {
   const words = text.split(/\s+/).filter(Boolean);
@@ -161,9 +171,14 @@ export function renderTerms(text: string | null | undefined): ReactNode {
   for (const tok of parts) {
     if (tok && /\S/.test(tok) && SCRIPT_MARK.test(tok)) {
       flush();
-      // ЗКН-Д013: слово с диакритикой BBT («кр̣шн̣а-да̄с») — это ТРАНСЛИТЕРАЦИЯ
-      // ПИСАНИЯ внутри нашей прозы, а не наш термин. Оно звучит чужим голосом.
-      out.push(<Skt voice key={`s${out.length}`}>{tok}</Skt>);
+      // ЗКН-Д013 × ЗКН-С001: слово с диакритикой — транслитерация ПИСАНИЯ, оно
+      // звучит чужим голосом. НО имя собственное («Kṛṣṇa», «Rādhā») по стандарту
+      // BBT остаётся ПРЯМЫМ и в латинице тоже: имя — не стих.
+      if (SCRIPTURE_STOP_SET.has(fold(tok))) {
+        plain += tok;
+      } else {
+        out.push(<Skt voice key={`s${out.length}`}>{tok}</Skt>);
+      }
     } else {
       plain += tok;
     }

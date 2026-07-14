@@ -109,6 +109,15 @@ const STOP: string[] = [
   "ом", "om",
   // прочие неоднозначные (имя/нарицательное) — намеренно роман
   "гаудия", "вайшнав", "вайшнава", "вайшнавов", "ачарья", "брахман", "майя", "раса",
+
+  // ЗКН-Д013 × С001: ЛАТИНСКИЕ (IAST) формы имён — тоже роман. Матчер сверяется
+  // со свёрнутой формой («Kṛṣṇa» → «krsna»), поэтому пишем без диакритики.
+  "krsna", "krishna", "radha", "radharani", "caitanya", "chaitanya", "arjuna",
+  "nityananda", "gauranga", "gaura", "balarama", "govinda", "vrndavana", "vrindavana",
+  "mayapur", "navadvipa", "jagannatha", "prabhupada", "bhaktivedanta", "bhaktisiddhanta",
+  "rupa", "sanatana", "jiva", "narottama", "visnu", "vishnu", "rama", "sita", "hanuman",
+  "vyasa", "vyasadeva", "sukadeva", "narada", "brahma", "siva", "shiva", "laksmi",
+  "yamuna", "ganga", "govardhana", "kuruksetra", "dvaraka", "mathura", "puri",
 ];
 
 export const SCRIPTURE_STOP_SET: Set<string> = new Set(STOP.map((s) => s.toLowerCase()));

@@ -14,6 +14,7 @@
  * Каждая карточка героя открывает EntityPage; книги-читалки уходят в ридер.
  */
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
+import { renderTerms } from "./ui/Skt";
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
 import { BackIcon } from "./ui/icons";
@@ -283,7 +284,7 @@ function RealmHall({ realm, onOpen, onOpenCollection, onOpenPath }: {
         <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{K ? "Верховная Личность Бога" : "Беспрецедентная волна Гауранга Лилы"}</div>
         <h1 style={{ margin: "3px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 800, letterSpacing: "-0.5px", color: "var(--color-label)" }}>{K ? "Шри Кришна" : "Шри Гауранга"}</h1>
         <p style={{ margin: "5px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.5 }}>
-          {K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гауранга Лиле."}
+          {renderTerms(K ? "kṛṣṇas tu bhagavān svayam — Сам изначальный Господь, Его имена, формы, качества, игры и обители Враджа." : "Кришна в настроении и цвете Шримати Радхарани, низошедший раздать према-дхану Голоки в Гауранга Лиле.")}
         </p>
       </div>
 
