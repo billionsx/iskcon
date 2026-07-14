@@ -109,7 +109,12 @@ def ia_files(identifier: str) -> set:
     try:
         with urllib.request.urlopen(f"https://archive.org/metadata/{identifier}", timeout=45) as r:
             data = json.loads(r.read())
-    except Exception:
+    except urllib.error.HTTPError as e:          # ЗКН-Ф014: не глотать ответ молча
+        if e.code != 404:                        # 404 = элемента ещё нет, это норма
+            print("::warning::archive.org %s: %s — %s" % (e.code, identifier, e.read().decode()[:160]))
+        return set()
+    except Exception as e:
+        print("::warning::archive.org %s: %s" % (identifier, str(e)[:120]))
         return set()
     return {f["name"] for f in (data.get("files") or [])
             if f.get("source") == "original" and f["name"].lower().endswith(".mp3")}

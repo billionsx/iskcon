@@ -1,8 +1,8 @@
 {
-  "magic_font_size": 30,
+  "magic_font_size": 28,
+  "gates_removed": -42,
   "long_union": 0,
-  "type_errors": 16,
-  "bare_urlopen": 16,
-  "hardcoded_hex": 445,
-  "gates_removed": -42
+  "type_errors": 15,
+  "bare_urlopen": 24,
+  "hardcoded_hex": 445
 }

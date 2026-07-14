@@ -21,6 +21,7 @@
 Запуск: python3 tools/laws-lint.py
 """
 import json
+import ast
 import re
 import sys
 from pathlib import Path
@@ -441,35 +442,51 @@ def count_gates():
 
 
 def count_bare_urlopen():
-    # ЗКН-Ц004 — ЛИНТЕР НЕ СЧИТАЕТ САМ СЕБЯ.
-    #
-    # Он УПОМИНАЕТ `urlopen` в правиле — и посчитал это за нарушение. Долг вырос
-    # на 1, храповик упал, и я час искал несуществующий баг. Инструмент, который
-    # ловит нарушения, не должен ловить СВОЁ ОПИСАНИЕ нарушения.
-    """ЗКН-Ф014: `urlopen` без try/except HTTPError — падает молча."""
+    """ЗКН-Ф014: `urlopen` без перехвата HTTPError — падает молча.
+
+    ⚠️ ПРАВИЛО СЧИТАЛОСЬ ПО ОКНУ В ТРИ СТРОКИ: «есть ли `try:` выше?». И ловило
+    ИСПРАВНЫЙ код: в `goldforge/d1.py` `try:` стоит на ЧЕТЫРЕ строки выше, потому
+    что между ними — многострочный `Request(...)`. Перехват там есть, а линтер
+    кричал. Гейт, который кричит на исправный код, отключат через неделю — и
+    вместе с ним умрёт закон (тот же урок, что и с ЗКН-Н024).
+
+    Считаем по СИНТАКСИЧЕСКОМУ ДЕРЕВУ: нарушение — это `urlopen`, который НЕ
+    лежит внутри `try` с обработчиком `HTTPError`. Ни окон, ни угадайки.
+    """
     n = 0
     for fp in sorted((ROOT / "tools").rglob("*.py")):
-        # ЗКН-Ц004 — ЛИНТЕР НЕ СЧИТАЕТ САМ СЕБЯ.
-        #
-        # Он УПОМИНАЕТ `urllib.request.urlopen` в тексте правила — и посчитал это
-        # за нарушение. Долг вырос на 1, храповик упал в CI, и я пошёл искать
-        # несуществующий баг в чужом коде.
-        #
-        # Инструмент, который ловит нарушение, не должен ловить СВОЁ ОПИСАНИЕ
-        # нарушения. Иначе он врёт — и врёт убедительно.
+        # ЗКН-Ц004 — ЛИНТЕР НЕ СЧИТАЕТ САМ СЕБЯ (он упоминает `urlopen` в правиле).
         if fp.name == "laws-lint.py":
             continue
         try:
-            lines = fp.read_text(encoding="utf-8").split("\n")
+            tree = ast.parse(fp.read_text(encoding="utf-8"))
         except Exception:
             continue
-        for i, l in enumerate(lines):
-            if "urllib.request.urlopen" not in l:
+
+        def guards_http(node) -> bool:
+            for h in node.handlers:
+                src = ast.dump(h.type) if h.type else ""
+                if "HTTPError" in src:
+                    return True
+            return False
+
+        protected = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Try) and guards_http(node):
+                for inner in ast.walk(node):
+                    if isinstance(inner, ast.Call):
+                        protected.add(id(inner))
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
                 continue
-            if "try:" not in "\n".join(lines[max(0, i - 3):i + 1]):
+            f = node.func
+            name = f.attr if isinstance(f, ast.Attribute) else getattr(f, "id", "")
+            if name != "urlopen":
+                continue
+            if id(node) not in protected:
                 n += 1
     return n
-
 
 def count_debt():
     counts = {k: 0 for k in DEBT}

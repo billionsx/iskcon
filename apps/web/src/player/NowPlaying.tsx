@@ -302,14 +302,22 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
           {isAdHoc
-            ? <KirtanHero cover={p.cover} title={p.bookTitle} artist={p.artist} note={albumById(p.book)?.note} coverActions={coverActions}
+            ? <KirtanHero cover={p.cover}
+                title={p.track?.title || p.bookTitle}
+                artist={p.artist}
+                meta={p.tracks.length > 1 ? `${p.bookTitle} · ${p.index + 1} из ${p.tracks.length}` : p.bookTitle}
+                note={albumById(p.book)?.note} coverActions={coverActions}
                 maxCover={embedded && embeddedHeight
-                  ? Math.max(112, Math.min(260, Math.round(embeddedHeight * 0.30)))
+                  ? Math.max(120, Math.min(260, Math.round(embeddedHeight * 0.30)))
                   : undefined} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
           <div style={{ marginTop: 22 }}>
-            <div style={{ fontSize: "var(--text-caption)", letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
-              {isAdHoc ? "Дорожки" : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
+            {/* Надзаголовок раздела — ЗОЛОТОЙ, как во всех витринах (ЗКН-Н024).
+                Серый он выпадал из системы: тот же смысл, другой голос. */}
+            <div style={{ fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD, marginBottom: hierQueue ? 11 : 8, padding: "0 4px" }}>
+              {isAdHoc
+                ? `Дорожки${p.tracks.length ? ` · ${p.tracks.length}` : ""}`
+                : `Содержание${p.hasCommentary ? ` · ${p.mode === "commentary" ? "с комментариями" : "стих за стихом"}` : ""}`}
             </div>
             {multiCanto
               ? <>
@@ -345,8 +353,19 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         </div>
 
         {/* pinned controls (Liquid Glass) */}
-        <div style={{ flexShrink: 0, padding: "12px 20px calc(env(safe-area-inset-bottom) + 12px)", borderTop: "0.5px solid rgba(255,255,255,0.10)",
-          background: "rgba(16,16,18,0.62)", backdropFilter: "blur(30px) saturate(160%)", WebkitBackdropFilter: "blur(30px) saturate(160%)" }}>
+        {/* ═══ ШОВ УБРАН ═══
+         * Панель имела СВОЙ фон (`rgba(16,16,18,.62)` + сильное размытие) и стояла
+         * всегда — экран визуально разрезало пополам: «обложка» и «отдельная
+         * коробка с кнопками». Теперь поверхность ОДНА: стекло ПРОЯВЛЯЕТСЯ, только
+         * когда шапка ушла под прокрутку (обычай Apple — панель материализуется),
+         * и волосок-разделитель появляется вместе с ним. */}
+        <div style={{ flexShrink: 0,
+          padding: embedded ? "10px 18px 14px" : "12px 20px calc(env(safe-area-inset-bottom) + 12px)",
+          borderTop: collapsed ? "0.5px solid rgba(255,255,255,0.10)" : "0.5px solid transparent",
+          background: collapsed ? "rgba(16,16,18,0.62)" : "transparent",
+          backdropFilter: collapsed ? "blur(30px) saturate(160%)" : "none",
+          WebkitBackdropFilter: collapsed ? "blur(30px) saturate(160%)" : "none",
+          transition: "background .28s ease, border-color .28s ease" }}>
           <div style={{ minWidth: 0, maxHeight: collapsed ? 0 : 56, opacity: collapsed ? 0 : 1, overflow: "hidden", transition: "max-height .28s ease, opacity .18s ease" }}>
             <div style={{ fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
             <div style={{ fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{sub}{p.loading ? " · загрузка…" : ""}</div>
@@ -363,7 +382,9 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             <button type="button" aria-label="Предыдущая глава" onClick={() => p.prev()} style={iconBtn(44)}><PrevIcon size={27} /></button>
             <button type="button" aria-label="Назад 15 секунд" onClick={() => p.skip(-15)} style={iconBtn(44)}><Back15Icon size={30} /></button>
             <button type="button" aria-label={p.isPlaying ? "Пауза" : "Играть"} onClick={() => p.togglePlay()}
-              style={{ ...glass(999), display: "grid", placeItems: "center", height: 64, width: 64, color: "#fff", cursor: "pointer" }}>
+              style={{ display: "grid", placeItems: "center", height: 64, width: 64, borderRadius: 999, border: "none",
+                background: GOLD, color: "#141416", cursor: "pointer",
+                boxShadow: "0 10px 26px -6px rgba(210,170,27,0.45)" }}>
               {p.isPlaying ? <PauseIcon size={30} /> : <PlayIcon size={30} />}
             </button>
             <button type="button" aria-label="Вперёд 15 секунд" onClick={() => p.skip(15)} style={iconBtn(44)}><Fwd15Icon size={30} /></button>
@@ -446,25 +467,62 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
  * и ряд действий (избранное · ещё). Зеркалит презентационный BookHeroCard, но
  * квадратное под аудио-альбом, а не книжная обложка.
  */
-function KirtanHero({ cover, title, artist, note, coverActions, maxCover }: { cover: string; title: string; artist: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number }) {
+function KirtanHero({ cover, title, artist, meta, note, coverActions, maxCover }: { cover: string; title: string; artist: string; meta?: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number }) {
+  const size = maxCover ?? 320;
   return (
-    <div style={{ paddingTop: 6 }}>
-      {/* ЗКН-Н012 — ОБЛОЖКА ЗНАЕТ ПРО ВЫСОТУ.
-          `maxWidth: 340` + квадрат — это размер, который НЕ ЗНАЕТ, сколько места
-          осталось. Во встроенном плеере он съедал всю доску: логотип во весь
-          экран, а дорожки и транспорт — за краем. Предел приходит СВЕРХУ, от того,
-          кто знает доступную высоту. */}
-      <div style={{ position: "relative", width: "100%", maxWidth: maxCover ?? 340, margin: "0 auto", aspectRatio: "1 / 1", borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}>
-        <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-      </div>
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, marginTop: 18 }}>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.18 }}>{title}</div>
-          {artist && <div style={{ fontSize: "var(--text-subhead)", fontWeight: 500, color: GOLD, marginTop: 3 }}>{artist}</div>}
-          {note && <div style={{ fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "rgba(255,255,255,0.55)", marginTop: 7 }}>{note}</div>}
+    <div style={{ paddingTop: 2 }}>
+      {/* ═══ СИГНАТУРА ЭКРАНА: ЗНАК ОСВЕЩАЕТ ПОВЕРХНОСТЬ ═══
+       *
+       * Обложка здесь — не альбомная фотография, а фирменный знак: золото на белом.
+       * Обращаться с ней как с фото (полное поле, тёмная вуаль поверх — как в
+       * BookHeroCard) нельзя: знак нельзя ни кадрировать, ни затемнять.
+       *
+       * Поэтому обратный ход: обложка ОСВЕЩАЕТ фон. Золотое сияние уходит в
+       * поверхность, и знак с плеером становятся ОДНИМ предметом, а не квадратом,
+       * налепленным на серое. Это правдиво для предмета: арати — свет, поднесённый
+       * Божеству. Единственная смелость на экране; всё вокруг — тихо. */}
+      <div style={{ position: "relative", display: "grid", placeItems: "center", paddingBlock: 4 }}>
+        <div aria-hidden style={{
+          position: "absolute", width: Math.round(size * 1.75), height: Math.round(size * 1.6),
+          borderRadius: "50%", pointerEvents: "none",
+          background: "radial-gradient(closest-side, rgba(210,170,27,0.24), rgba(210,170,27,0.06) 56%, rgba(210,170,27,0) 78%)",
+          filter: "blur(14px)",
+        }} />
+        <div style={{
+          position: "relative", width: "100%", maxWidth: size, aspectRatio: "1 / 1",
+          borderRadius: 22, overflow: "hidden", background: "#fff",
+          boxShadow: "0 28px 56px -18px rgba(0,0,0,0.78), 0 2px 10px rgba(0,0,0,0.35)",
+        }}>
+          <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         </div>
       </div>
-      {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>{coverActions}</div>}
+
+      {/* ГЕРОЙ СТРОКИ — ДОРОЖКА, А НЕ АЛЬБОМ.
+       * Раньше крупно стояло «Киртаны» (имя альбома), а что именно играет — мелко
+       * внизу, в другом блоке. Человек смотрит на плеер, чтобы узнать, ЧТО ЗВУЧИТ.
+       *
+       * Действия (избранное · ещё) ВЕДУТ строку справа — так они привязаны к
+       * заголовку, а не висят под ним враскоряку. Набор и вид кнопок — проектный
+       * стандарт `ActionBtn` из BookHeroCard: стекло, 36px, круг. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div style={{
+            fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800,
+            letterSpacing: "-0.02em", color: "#fff", lineHeight: 1.22,
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+          }}>{title}</div>
+          {artist ? (
+            <div style={{ marginTop: 3, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLD,
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{artist}</div>
+          ) : meta ? (
+            <div style={{ marginTop: 3, fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.48)",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{meta}</div>
+          ) : null}
+        </div>
+        {coverActions && <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>{coverActions}</div>}
+      </div>
+
+      {note && <div style={{ marginTop: 10, fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "rgba(255,255,255,0.5)" }}>{note}</div>}
     </div>
   );
 }
