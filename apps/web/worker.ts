@@ -1121,6 +1121,57 @@ async function kirtanFindManifest(env: Env, origin: string, q: string): Promise<
   return json({ book: `q:${q}`, kind: "kirtan", modes: { plain: { identifier: "kirtans-find", tracks } } });
 }
 
+/**
+ * ПАПКА — ЭТО ОЧЕРЕДЬ, А НЕ ФИЛЬТР СПИСКА.
+ *
+ * Выбрал исполнителя — очередь плеера СТАЛА его записями. «Следующая» ведёт к
+ * следующей записи ТОГО ЖЕ исполнителя, а не куда-то в общую свалку. Если бы
+ * папка просто фильтровала показ, очередь разъехалась бы с тем, что на экране:
+ * видишь десять строк, а «дальше» уводит в одиннадцатую, которой не видно.
+ */
+async function kirtanFolderManifest(env: Env, origin: string, slug: string): Promise<Response> {
+  const res = await env.DB.prepare(
+    `SELECT t.identifier, t.file, t.title, t.duration, a.name AS artist
+       FROM kirtan_tracks t LEFT JOIN kirtan_artists a ON a.slug = t.artist_slug
+      WHERE t.artist_slug = ?1 ORDER BY t.file`
+  ).bind(slug).all<{ identifier: string; file: string; title: string; duration: number | null; artist: string | null }>();
+  const rows = res.results || [];
+  const tracks: AudioTrack[] = rows.map((r, i) => ({
+    kind: "song" as const, pos: i, chapter: null,
+    title: r.title, file: r.file,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+    durationSec: r.duration || 0,
+    artist: r.artist ?? "", album: r.artist ?? "Киртаны",
+  }));
+  return json({ book: `f:${slug}`, kind: "kirtan", modes: { plain: { identifier: "kirtans-" + slug, tracks } } });
+}
+
+/** ИЗБРАННОЕ — тоже очередь. Ключ — `msg_id` (короткое число): список из полусотни
+ *  влезает в адрес, в отличие от длинных идентификаторов дорожек. */
+async function kirtanFavManifest(env: Env, origin: string, ids: string): Promise<Response> {
+  const nums = ids.split(",").map((x) => parseInt(x, 10)).filter((n) => Number.isFinite(n)).slice(0, 300);
+  if (!nums.length) return json({ book: "fav", kind: "kirtan", modes: { plain: { identifier: "", tracks: [] } } });
+  const ph = nums.map((_, i) => `?${i + 1}`).join(",");
+  const res = await env.DB.prepare(
+    `SELECT t.identifier, t.file, t.title, t.duration, t.msg_id, a.name AS artist
+       FROM kirtan_tracks t LEFT JOIN kirtan_artists a ON a.slug = t.artist_slug
+      WHERE t.msg_id IN (${ph})`
+  ).bind(...nums).all<{ identifier: string; file: string; title: string; duration: number | null; msg_id: number; artist: string | null }>();
+  const by = new Map((res.results || []).map((r) => [r.msg_id, r]));
+  const tracks: AudioTrack[] = [];
+  nums.forEach((id) => {                       // порядок — как человек добавлял
+    const r = by.get(id);
+    if (!r) return;
+    tracks.push({
+      kind: "song", pos: tracks.length, chapter: null,
+      title: r.title, file: r.file,
+      url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}`,
+      durationSec: r.duration || 0, artist: r.artist ?? "", album: "Избранное",
+    });
+  });
+  return json({ book: "fav", kind: "kirtan", modes: { plain: { identifier: "kirtans-fav", tracks } } });
+}
+
 async function kirtanManifest(env: Env, origin: string, albumId: string): Promise<Response> {
   if (albumId === "all") return kirtanAllManifest(env, origin);
   const album = kirtanAlbumById(albumId);
@@ -1942,11 +1993,11 @@ export default {
       // ПОРЯДОК ЗДЕСЬ И В МАНИФЕСТЕ `/api/kirtans/all/audio` — ОДИН И ТОТ ЖЕ
       // (artist_slug, file). Разойдутся — витрина пошлёт индекс, а заиграет не то.
       const tRes = await env.DB.prepare(
-        `SELECT id, artist_slug, identifier, file, title, duration FROM kirtan_tracks ORDER BY artist_slug, file`
-      ).all<{ id: string; artist_slug: string; identifier: string; file: string; title: string; duration: number | null }>();
+        `SELECT id, artist_slug, identifier, file, title, duration, msg_id FROM kirtan_tracks ORDER BY artist_slug, file`
+      ).all<{ id: string; artist_slug: string; identifier: string; file: string; title: string; duration: number | null; msg_id: number | null }>();
       const tracks = (tRes.results || []).map((r) => ({
         id: r.id, artist: r.artist_slug, identifier: r.identifier, file: r.file,
-        title: r.title, duration: r.duration ?? 0,
+        title: r.title, duration: r.duration ?? 0, msgId: r.msg_id ?? 0,
       }));
       return json({ artists, albums, tracks });
     }
@@ -2098,6 +2149,13 @@ export default {
     }
 
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)
+    if (url.pathname === "/api/kirtans/folder/audio") {
+      const slug = url.searchParams.get("slug") || "";
+      return kirtanFolderManifest(env, url.origin, slug);
+    }
+    if (url.pathname === "/api/kirtans/fav/audio") {
+      return kirtanFavManifest(env, url.origin, url.searchParams.get("ids") || "");
+    }
     if (url.pathname === "/api/kirtans/find/audio") {
       const q = url.searchParams.get("q") || "";
       if (!q.trim()) return json({ book: "q:", kind: "kirtan", modes: { plain: { identifier: "", tracks: [] } } });

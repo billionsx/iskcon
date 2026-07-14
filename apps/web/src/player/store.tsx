@@ -173,7 +173,10 @@ function cfgFor(id: string, src: Source): { title: string; cover: string; artist
   if (src === "kirtan") {
     // `all` — ОДНА ОЧЕРЕДЬ на все киртаны канала. Альбома с таким id в реестре
     // нет и быть не должно: это не альбом, а вся аудиотека.
-    if (id === "all") return { title: "Киртаны", cover: AUDIO_FALLBACK_COVER, artist: "" };
+    if (id === "all") return { title: "Коллекция Гауранга Лилы", cover: AUDIO_FALLBACK_COVER, artist: "" };
+    if (id.startsWith("f:")) return { title: artistBySlug(id.slice(2))?.name ?? "Киртаны", cover: AUDIO_FALLBACK_COVER, artist: "" };
+    if (id.startsWith("fav")) return { title: "Избранное", cover: AUDIO_FALLBACK_COVER, artist: "" };
+    if (id.startsWith("q:")) return { title: `Найдено: ${id.slice(2)}`, cover: AUDIO_FALLBACK_COVER, artist: "" };
     const al = albumById(id);
     return {
       title: al?.title ?? "Киртан",
@@ -298,9 +301,16 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const bhajBase = bhajIsLec ? want.slice(0, -5) : want;
     // ПОИСК — свой альбом (`q:<запрос>`). В путь его класть нельзя: регулярка
     // воркера пускает только [a-z0-9._-], а запрос может быть любым.
+    // Очереди киртанов: `all` — вся коллекция, `f:<слаг>` — папка исполнителя,
+    // `fav:<msg_id,…>` — избранное, `q:<запрос>` — найденное. В путь адреса их
+    // класть нельзя: регулярка воркера пускает туда только латиницу и цифры.
     const path = src === "kirtan"
       ? (want.startsWith("q:")
           ? `/kirtans/find/audio?q=${encodeURIComponent(want.slice(2))}`
+          : want.startsWith("f:")
+          ? `/kirtans/folder/audio?slug=${encodeURIComponent(want.slice(2))}`
+          : want.startsWith("fav:")
+          ? `/kirtans/fav/audio?ids=${encodeURIComponent(want.slice(4))}`
           : `/kirtans/${want}/audio`)
       : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
       : `/books/${want}/audio${scope ? `?canto=${encodeURIComponent(scope)}` : ""}`;

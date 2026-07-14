@@ -366,7 +366,13 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           backdropFilter: collapsed ? "blur(30px) saturate(160%)" : "none",
           WebkitBackdropFilter: collapsed ? "blur(30px) saturate(160%)" : "none",
           transition: "background .28s ease, border-color .28s ease" }}>
-          <div style={{ minWidth: 0, maxHeight: collapsed ? 0 : 56, opacity: collapsed ? 0 : 1, overflow: "hidden", transition: "max-height .28s ease, opacity .18s ease" }}>
+          {/* ⚠️ НАЗВАНИЕ ПЕЧАТАЛОСЬ ДВАЖДЫ.
+              Шапка плеера показывает дорожку — и эта панель показывала ЕЁ ЖЕ,
+              прямо под ней. Условие было перевёрнуто: блок скрывался, когда шапка
+              УХОДИЛА под прокрутку, — то есть ровно тогда, когда он и нужен.
+              Теперь наоборот: пока шапка видна, панель молчит; уехала — панель
+              подхватывает. Одно имя на экране, всегда. */}
+          <div style={{ minWidth: 0, maxHeight: collapsed ? 56 : 0, opacity: collapsed ? 1 : 0, overflow: "hidden", transition: "max-height .28s ease, opacity .18s ease" }}>
             <div style={{ fontSize: "var(--text-body)", fontWeight: 700, letterSpacing: "-0.01em", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{p.track?.title}</div>
             <div style={{ fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.6)", marginTop: 1 }}>{sub}{p.loading ? " · загрузка…" : ""}</div>
           </div>
