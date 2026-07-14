@@ -55,7 +55,7 @@ interface Manifest {
  *  все 12 песней — 13 256 дорожек, такую очередь незачем ни грузить, ни рисовать). */
 const SCOPED_BOOKS = new Set(["sb"]);
 
-export type RepeatMode = "off" | "book" | "library" | "one";
+export type RepeatMode = "off" | "book" | "library" | "one" | "group";
 export type OrderMode = "forward" | "shuffle" | "reverse";
 
 export interface PlayerApi {
@@ -101,6 +101,10 @@ export interface PlayerApi {
   cycleRate(): void;
   cycleOrder(): void;
   cycleRepeat(): void;
+  /** Таймер сна: минуты, "track" — после этой записи, null — выключить. */
+  setSleep(v: number | "track" | null): void;
+  sleepAt: number | null;
+  sleepEnd: boolean;
   setMode(mode: AudioMode): void;
   jumpTo(index: number): void;
   // Now Playing
@@ -214,6 +218,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [orderMode, setOrderMode] = useState<OrderMode>("forward");
   const [repeat, setRepeat] = useState<RepeatMode>("off");
 
+  /* ═══ ЗКН-Н054 · ТАЙМЕР СНА ═══
+   *
+   * Киртан слушают, ЗАСЫПАЯ — это не догадка, это природа предмета: святое имя
+   * ставят на ночь. Плеер без таймера заставляет ПРОСЫПАТЬСЯ, чтобы его выключить.
+   * Это не мелкое удобство: без таймера человек либо не ставит киртан на ночь,
+   * либо утром находит разряженный телефон.
+   *
+   * Два вида: «через N минут» и «после этой записи» — второй важнее, потому что
+   * обрывать киртан на середине нельзя. */
+  const [sleepAt, setSleepAt] = useState<number | null>(null);      // метка времени, мс
+  const [sleepEnd, setSleepEnd] = useState(false);                  // «после этой записи»
+  const sleepEndRef = useRef(false);
+  sleepEndRef.current = sleepEnd;
+
   // Зеркала для долгоживущих обработчиков (избегаем устаревших замыканий).
   const manifestRef = useRef<Manifest | null>(null);
   const bookRef = useRef("bg");
@@ -239,6 +257,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   rateRef.current = rate;
   orderModeRef.current = orderMode;
   repeatRef.current = repeat;
+
+  useEffect(() => {
+    if (sleepAt == null) return;
+    const tick = () => {
+      if (Date.now() >= sleepAt) {
+        engineRef.current?.pause(); setPlaying(false);
+        setSleepAt(null);
+      }
+    };
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [sleepAt]);
 
   const engineRef = useRef<AudioEngine | null>(null);
   const pendingRef = useRef<{ mode: AudioMode; chapter: number | null; lila?: string; ref?: string | null; file?: string; expand?: boolean; index?: number } | null>(null);
@@ -514,6 +544,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const seq = seqRef.current.length === list.length ? seqRef.current : list.map((_, i) => i);
     const pos = seq.indexOf(indexRef.current);
     if (pos < 0) return -1;
+
+    /* ═══ ПОВТОР ГОЛОСА ═══
+     * Человек попросил крутиться внутри голоса — значит граница голоса и есть
+     * граница очереди: дошёл до конца его записей — вернулся к первой. Наружу
+     * не выходим ни автоматически, ни кнопкой «вперёд»: он ЯВНО попросил остаться.
+     * (Тот же принцип, что у ШБ: повтор границу раздела не переступает.) */
+    if (repeatRef.current === "group") {
+      const g = (list[indexRef.current] as { group?: string })?.group ?? "";
+      if (g) {
+        const inG = seq.filter((i) => ((list[i] as { group?: string })?.group ?? "") === g);
+        if (inG.length > 0) {
+          const gp = inG.indexOf(indexRef.current);
+          if (gp >= 0) return inG[(gp + step + inG.length) % inG.length];
+        }
+      }
+    }
+
     const wrap = repeatRef.current === "book" || repeatRef.current === "library";
     const np = pos + step;
     if (np >= seq.length) return wrap ? seq[0] : -1;
@@ -523,6 +570,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   // advance: auto=true — окончание трека (учитывает «повтор одного»); false — кнопка «вперёд»
   function advance(auto: boolean) {
     const m = manifestRef.current; if (!m) return;
+    // «Уснуть после этой записи»: киртан не обрывают на середине.
+    if (auto && sleepEndRef.current) {
+      engineRef.current?.pause(); setPlaying(false);
+      sleepEndRef.current = false; setSleepEnd(false);
+      return;
+    }
     if (auto && repeatRef.current === "one") {
       engineRef.current?.seek(0); timeRef.current = 0; setCurrentTime(0);
       engineRef.current?.play().catch(() => {});
@@ -562,8 +615,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const o = opts[(opts.indexOf(orderModeRef.current) + 1) % opts.length];
     orderModeRef.current = o; setOrderMode(o); rebuildOrder();
   }
+  function setSleep(v: number | "track" | null) {
+    if (v === null) { setSleepAt(null); setSleepEnd(false); sleepEndRef.current = false; return; }
+    if (v === "track") { setSleepAt(null); setSleepEnd(true); sleepEndRef.current = true; return; }
+    setSleepEnd(false); sleepEndRef.current = false;
+    setSleepAt(Date.now() + v * 60_000);
+  }
+
   function cycleRepeat() {
-    const opts: RepeatMode[] = ["off", "book", "library", "one"];
+    /* У книги: глава → книга → библиотека. У аудиотеки книги нет — есть ГОЛОС.
+       Круг разный, потому что предметы разные. */
+    const opts: RepeatMode[] = sourceRef.current === "kirtan"
+      ? ["off", "one", "group", "library"]
+      : ["off", "book", "library", "one"];
     const r = opts[(opts.indexOf(repeatRef.current) + 1) % opts.length];
     repeatRef.current = r; setRepeat(r);
   }
@@ -665,11 +729,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const cfg = cfgFor(bookId, source);
   const value: PlayerApi = {
     ready: !!manifest, active, expanded, loading, mode, tracks, index, track,
-    isPlaying, currentTime, duration, rate, order: orderMode, repeat,
+    isPlaying, currentTime, duration, rate, order: orderMode, repeat, sleepAt, sleepEnd,
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
-    playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setMode, jumpTo,
+    playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setSleep, setMode, jumpTo,
     open: () => setExpanded(true),   // встроенный плеер раскрывается и до первого нажатия
     close: () => setExpanded(false),
     dismiss,

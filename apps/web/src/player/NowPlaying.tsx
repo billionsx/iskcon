@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type CSSProperties, useMemo } from "react"
 import { COVER_FALLBACK } from "../ui/CoverFallback";
 import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
 import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
-import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
+import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, RepeatVoiceIcon, MoonIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
 import { requestNote } from "../notes";
@@ -166,6 +166,19 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
 
   /** Что зазвучит следующим. */
   const nextTrack = p.tracks[p.index + 1] ?? null;
+
+  /* Таймер сна: сколько осталось. Показываем минуты — секунды тут только тревожат. */
+  const [sleepOpen, setSleepOpen] = useState(false);
+  const [, tickSleep] = useState(0);
+  useEffect(() => {
+    if (p.sleepAt == null) return;
+    const id = window.setInterval(() => tickSleep((x) => x + 1), 15_000);
+    return () => window.clearInterval(id);
+  }, [p.sleepAt]);
+  const sleepOn = p.sleepAt != null || p.sleepEnd;
+  const sleepLeft = p.sleepAt != null
+    ? `${Math.max(1, Math.ceil((p.sleepAt - Date.now()) / 60_000))}м`
+    : p.sleepEnd ? "•" : "";
 
   /* Где играющая запись живёт: чей голос, какая по счёту у него. */
   const curGroupId = p.track ? (gid(p.track) ?? "") : "";
@@ -668,6 +681,47 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           </button>
         )}
 
+        {/* ═══ ТАЙМЕР СНА — лист выбора ═══ */}
+        {sleepOpen && (
+          <div role="dialog" aria-label="Таймер сна"
+            onClick={(e) => { e.stopPropagation(); setSleepOpen(false); }}
+            style={{ position: "absolute", inset: 0, zIndex: 30, display: "flex", alignItems: "flex-end",
+              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}>
+            <div onClick={(e) => e.stopPropagation()}
+              style={{ width: "100%", padding: "14px 14px 18px", borderTopLeftRadius: 20, borderTopRightRadius: 20,
+                background: "rgba(22,22,25,0.98)", border: "0.5px solid rgba(255,255,255,0.10)" }}>
+              <div style={{ fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px",
+                textTransform: "uppercase", color: GOLD, marginBottom: 4 }}>Таймер сна</div>
+              <div style={{ fontSize: "var(--text-footnote)", color: "rgba(255,255,255,0.5)", marginBottom: 12,
+                lineHeight: 1.45 }}>
+                Святое имя доиграет и стихнет само — просыпаться, чтобы выключить, не придётся.
+              </div>
+              {([["track", "После этой записи"], [15, "Через 15 минут"], [30, "Через 30 минут"],
+                 [60, "Через час"], [null, "Выключить таймер"]] as const).map(([v, label]) => {
+                const on = v === "track" ? p.sleepEnd
+                  : v === null ? !sleepOn
+                  : p.sleepAt != null && Math.abs((p.sleepAt - Date.now()) / 60_000 - (v as number)) < 1.2;
+                return (
+                  <button key={String(v)} type="button"
+                    onClick={() => { p.setSleep(v as number | "track" | null); setSleepOpen(false); }}
+                    style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 10px",
+                      borderRadius: 12, border: "none", cursor: "pointer", textAlign: "left",
+                      background: on ? "rgba(210,170,27,0.16)" : "transparent",
+                      color: on ? GOLD : "rgba(255,255,255,0.9)",
+                      fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: on ? 700 : 400 }}>
+                    <span style={{ flex: 1, minWidth: 0 }}>{label}</span>
+                    {on && (
+                      <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden>
+                        <path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ═══ ШОВ УБРАН ═══
          * Панель имела СВОЙ фон (`rgba(16,16,18,.62)` + сильное размытие) и стояла
          * всегда — экран визуально разрезало пополам: «обложка» и «отдельная
@@ -719,10 +773,31 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                 {p.order === "shuffle" ? <ShuffleIcon size={22} /> : p.order === "reverse" ? <OrderReverseIcon size={22} /> : <OrderForwardIcon size={22} />}
               </button>
               <button type="button" aria-pressed={p.repeat !== "off"}
-                aria-label={p.repeat === "one" ? "Повтор одного" : p.repeat === "library" ? "Повтор библиотеки" : p.repeat === "book" ? "Повтор книги" : "Повтор"}
-                onClick={() => p.cycleRepeat()} style={{ ...bareBtn(34), color: p.repeat === "off" ? "rgba(255,255,255,0.55)" : GOLD }}>
-                {p.repeat === "one" ? <RepeatOneIcon size={22} /> : p.repeat === "library" ? <RepeatLibraryIcon size={22} /> : <RepeatIcon size={22} />}
+                aria-label={
+                  p.repeat === "one" ? "Повтор записи"
+                  : p.repeat === "group" ? "Повтор голоса"
+                  : p.repeat === "library" ? (isAdHoc ? "Повтор всего" : "Повтор библиотеки")
+                  : p.repeat === "book" ? "Повтор книги" : "Повтор"}
+                onClick={() => { p.cycleRepeat(); }}
+                style={{ ...bareBtn(34), color: p.repeat === "off" ? "rgba(255,255,255,0.55)" : GOLD }}>
+                {p.repeat === "one" ? <RepeatOneIcon size={22} />
+                  : p.repeat === "group" ? <RepeatVoiceIcon size={22} />
+                  : p.repeat === "library" ? <RepeatLibraryIcon size={22} />
+                  : <RepeatIcon size={22} />}
               </button>
+
+              {/* ЗКН-Н054 — ТАЙМЕР СНА. Киртан слушают, засыпая; плеер без таймера
+                  заставляет ПРОСЫПАТЬСЯ, чтобы его выключить. */}
+              {isAdHoc && (
+                <button type="button" aria-label="Таймер сна" aria-pressed={sleepOn}
+                  onClick={(e) => { e.stopPropagation(); setSleepOpen(true); }}
+                  style={{ ...bareBtn(34), color: sleepOn ? GOLD : "rgba(255,255,255,0.55)",
+                    display: "flex", alignItems: "center", gap: 4, width: "auto", paddingInline: 2 }}>
+                  <MoonIcon size={19} />
+                  {sleepLeft && <span style={{ fontSize: "var(--text-caption2)", fontWeight: 700,
+                    fontVariantNumeric: "tabular-nums" }}>{sleepLeft}</span>}
+                </button>
+              )}
               <button type="button" aria-label="Скорость" aria-pressed={p.rate !== 1} onClick={() => p.cycleRate()}
                 style={{ background: "none", border: "none", padding: "0 4px", height: 34, cursor: "pointer", flexShrink: 0, fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", fontFamily: "var(--font-text)", color: p.rate !== 1 ? GOLD : "rgba(255,255,255,0.55)" }}>{p.rate}×</button>
             </div>

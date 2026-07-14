@@ -89,6 +89,31 @@ export function RepeatLibraryIcon(p: P) {
     </svg>
   );
 }
+/** Повтор ГОЛОСА — та же петля, в центре человек. У Apple такого знака нет:
+ *  «повтор артиста» там не существует. Рисуем в своей семье: петля + фигура. */
+export function RepeatVoiceIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...norm(0.675)}>
+        <polyline points="17 2 20.5 5.5 17 9" />
+        <path d="M3.5 11.5V9.5a4 4 0 0 1 4-4h13" />
+        <polyline points="7 22 3.5 18.5 7 15" />
+        <path d="M20.5 12.5v2a4 4 0 0 1-4 4h-13" />
+      </g>
+      <circle cx="12" cy="10.4" r="1.7" fill="currentColor" />
+      <path d="M9.1 15.4a2.9 2.9 0 0 1 5.8 0" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" />
+    </svg>
+  );
+}
+/** Таймер сна — месяц. Киртан слушают, засыпая; выключить его должно само. */
+export function MoonIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <path d="M20.5 14.9A8.6 8.6 0 0 1 9.1 3.5a8.6 8.6 0 1 0 11.4 11.4z"
+        fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinejoin="round" />
+    </svg>
+  );
+}
 /** Порядок по списку (1→N) — список + высокая стрелка вниз (натуральный размер). */
 export function OrderForwardIcon(p: P) {
   return (
