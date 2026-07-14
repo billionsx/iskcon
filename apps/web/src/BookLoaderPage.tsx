@@ -637,14 +637,14 @@ function VersePreview({ v }: { v: PreviewVerse }) {
             <div style={{ marginTop: 6, fontSize: "var(--text-caption)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
               {v.tokens.map((t, i) => (
                 <span key={i}>
-                  <b style={{ fontWeight: 600, color: "var(--color-label)" }}>{t.term}</b>
+                  <b style={{ ...SCRIPTURE_VOICE, fontWeight: 600, color: "var(--color-label)" }}>{t.term}</b>
                   {t.gloss ? ` — ${t.gloss}` : ""}
                   {i < v.tokens.length - 1 ? "; " : ""}
                 </span>
               ))}
             </div>
           )}
-          {v.translation && <div style={{ ...SCRIPTURE_VOICE, marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
+          {v.translation && <div style={{ marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
           {v.purport && (
             <div style={{ marginTop: 6, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
               {long && !more ? purp.slice(0, 280) + "…" : purp}

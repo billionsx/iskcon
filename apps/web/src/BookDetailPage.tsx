@@ -1726,7 +1726,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: "block", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
-                        <span style={{ ...SCRIPTURE_VOICE, display: "block", fontSize: "var(--text-body)", lineHeight: 1.5, color: tr ? INK : INK2 }}>
+                        <span style={{ display: "block", fontSize: "var(--text-body)", lineHeight: 1.5, color: tr ? INK : INK2, fontStyle: tr ? "normal" : "italic", fontFamily: tr ? undefined : "var(--font-scripture)" }}>
                           {tr ?? "перевод готовится"}
                         </span>
                       </span>
@@ -1891,7 +1891,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
         <LayerLabel>Перевод</LayerLabel>
         {r.translation ? (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
-            <p style={{ ...SCRIPTURE_VOICE, margin: 0, fontSize: "var(--text-title3)", lineHeight: 1.5, letterSpacing: "-0.01em", color: INK }}>{r.translation}</p>
+            <p style={{ margin: 0, fontSize: "var(--text-title3)", lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>{renderTerms(r.translation)}</p>
           </div>
         ) : (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${LINE}` }}>

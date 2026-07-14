@@ -105,7 +105,7 @@ function VerseCard({ v, onOpen }: { v: Verse; onOpen?: () => void }) {
         <FitText text={v.translit} max={18.5} min={12} style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", lineHeight: 1.5, color: "var(--color-label)" }} />
       )}
       {v.text && (
-        <div style={{ ...SCRIPTURE_VOICE, marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.text}</div>
+        <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{renderTerms(v.text)}</div>
       )}
     </section>
   );
@@ -487,7 +487,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
               ) : hasLayers ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>
                   {data.translit && <LayerCard label="Транслитерация" text={data.translit} scripture />}
-                  {data.translation && <LayerCard label="Перевод" text={data.translation} scripture />}
+                  {data.translation && <LayerCard label="Перевод" text={data.translation} />}
                 </div>
               ) : (
                 <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{data.body}</div>

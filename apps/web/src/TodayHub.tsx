@@ -139,7 +139,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
           <Card onClick={() => onOpenPath("/verse")}>
             <div style={{ padding: "15px 16px" }}>
               <Eyebrow>{verse.label}</Eyebrow>
-              <div style={{ ...SCRIPTURE_VOICE, fontSize: "var(--text-body)", lineHeight: 1.5, color: INK }}>
+              <div style={{ fontFamily: SERIF, fontSize: "var(--text-body)", lineHeight: 1.5, color: INK }}>
                 {verse.translation ? `«${verse.translation.length > 210 ? verse.translation.slice(0, 208).trimEnd() + "…" : verse.translation}»` : "Откройте стих дня"}
               </div>
               <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 10 }}>Читать со стихом и комментарием →</div>

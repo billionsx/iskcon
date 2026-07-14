@@ -210,7 +210,7 @@ function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: bo
           <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600,
             letterSpacing: "-0.014em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
           {it.subtitle && (
-            <span style={{ ...(VOICE_TYPES.has(it.type) ? SCRIPTURE_VOICE : { fontFamily: "var(--font-text)" }), display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.subtitle}</span>
+            <span style={{ fontFamily: "var(--font-text)", display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.subtitle}</span>
           )}
         </span>
         <button type="button" onClick={onNote}

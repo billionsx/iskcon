@@ -137,7 +137,7 @@ function ExactCard({ ex, active, onTap }: { ex: ExactHit; active: boolean; onTap
           <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ex.book}</span>
           {ex.kind === "verse" && ex.ref && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums" }}>{ex.ref}</span>}
         </span>
-        {second && <span style={{ ...(ex.kind === "verse" ? SCRIPTURE_VOICE : { fontFamily: "var(--font-text)" }), display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontSize: "var(--text-footnote)", color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
+        {second && <span style={{ fontFamily: "var(--font-text)", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden", marginTop: 1, fontSize: "var(--text-footnote)", color: "var(--color-label-3)" } as React.CSSProperties}>{second}</span>}
       </span>
       <span style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-title3)" }}>›</span>
     </button>
@@ -446,7 +446,7 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
         {show("verses") && (
           <Section title="Стихи" count={counts.verses}>
             {r.verses.slice(0, vis("verses")).map((v, i) => (
-              <Row key={"v" + i + v.href} active={activeId === "v:" + i} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} voice toks={toks} onTap={() => goNav(v.href)} />
+              <Row key={"v" + i + v.href} active={activeId === "v:" + i} ch={mono(v.book)} title={v.book} meta={v.ref || undefined} sub={v.snippet} toks={toks} onTap={() => goNav(v.href)} />
             ))}
             {activeFilter === "all" && counts.verses > PREVIEW && <MoreLink n={counts.verses} active={activeId === "more:verses"} onTap={() => setFilter("verses")} />}
           </Section>

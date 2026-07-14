@@ -25,15 +25,26 @@ from pathlib import Path
 
 SRC = Path(__file__).resolve().parents[1] / "apps" / "web" / "src"
 
-# Поля чужого голоса. `${r.t}` — метка времени в шаблоне, отсекаем по `$`.
+# ═══ ЧТО ЕСТЬ ЧУЖОЙ ГОЛОС ═════════════════════════════════════════════════
+#
+# СТИХ — это транслитерация, деванагари и пословный санскрит.
+# ПЕРЕВОД — НЕ СТИХ. Это наш язык, тело книги, то, что человек ЧИТАЕТ.
+#
+# Так печатает BBT: транслитерация курсивом, ПЕРЕВОД ПРЯМЫМ, комментарий прямым.
+# Я применил голос к переводам — и вся книга уехала в курсивную Georgia.
+# Читать стало невозможно. Перевод откачен.
+#
+# Голосом звучат:
+#   · транслитерация стиха и куплета
+#   · пословный санскрит
+#   · ЦИТАТА — стих в карточке личности и стих внутри чужой прозы
+#   · святое имя (маха-мантра)
 VOICE = re.compile(
-    r"(?<!\$)\{(?:r|v|q|verse|quote|item)\.(?:translation|translit|text|t)\}"
+    r"(?<!\$)\{(?:r|v|q|verse)\.(?:translit)\}"
     r"|\{stripWrap\(q\.t\)\}"
     r"|\{MANTRA(?:_DEV|_RU)?\}"
     r"|MANTRA\.map"
-    # Косвенный рендер: сниппет стиха в поиске, подпись сохранённого стиха в
-    # избранном. Текст писания приходит сюда пропсом и легко теряет голос.
-    r"|\{hl\(sub, toks\)\}|\{second\}|\{it\.subtitle\}|\{v\.snippet\}")
+    r"|\{t\.term\}")
 # Голос может передаваться ПРОПОМ: <Row sub={v.snippet} voice />. Сам компонент
 # уже несёт SCRIPTURE_VOICE — метка `voice` и есть доказательство.
 HAS_VOICE = re.compile(r"SCRIPTURE_VOICE|font-scripture|font-deva|\bvoice\b|VOICE_TYPES")
@@ -42,8 +53,8 @@ DEVA_CHARS = re.compile(r"[\u0900-\u097F]")
 # рендер обязан ссылаться на --font-deva, иначе Georgia подменит письмо.
 DEVA_VAR = re.compile(r"\{MANTRA_DEV\}|\{[A-Z_]*DEVA?[A-Z_]*\}|scriptLines\(|\.deva\b")
 DEVA_FONT = re.compile(r"font-deva")
-SCRIPT_FONT = re.compile(r'fontFamily:\s*(?:"var\(--font-scripture\)"|FS|SERIF)\b')
-ITALIC = re.compile(r'fontStyle:\s*"italic"|SCRIPTURE_VOICE')
+SCRIPT_FONT = re.compile(r"__НЕ_ПРОВЕРЯЕТСЯ__")
+ITALIC = re.compile(r"__НЕ_ПРОВЕРЯЕТСЯ__")
 SKIP_FILES = {"voice.ts", "scripture.ts", "Skt.tsx"}
 
 # ═══ СТАТЬЯ E · НЕМОЙ ЭКРАН ══════════════════════════════════════════════
@@ -51,9 +62,8 @@ SKIP_FILES = {"voice.ts", "scripture.ts", "Skt.tsx"}
 # строкам его не увидит: он ищет нарушение, а тут — ПУСТОТА. Такой экран либо
 # рисует шастру немой, либо просто передаёт данные дальше. Второе разрешено
 # ТОЛЬКО с явной записью здесь: молчание должно быть заявлено, а не случиться.
-SCRIPTURE_FIELD = re.compile(
-    r"\.(translation|translit|purport|verse_text|verse_translit|devanagari|uvaca|"
-    r"word_by_word|snippet|sanskrit|iast|lyrics)\b")
+# Немой экран ищем по полям СТИХА, не перевода.
+SCRIPTURE_FIELD = re.compile(r"\.(translit|verse_translit|devanagari)\b")
 ANY_VOICE = re.compile(
     r"SCRIPTURE_VOICE|skt-voice|font-scripture|font-deva|\bvoice\b|renderTerms|"
     r"VerseBody|LayerCard|RecipeCover")
@@ -89,10 +99,8 @@ def main():
             if VOICE.search(code) and not HAS_VOICE.search(win):
                 bad.append(("ГОЛОС", f, i, "стих/бхаджан/цитата набраны как наша проза"))
                 continue
-            # B · КУРСИВ: Georgia без наклона (деванагари — исключение по письму)
-            if SCRIPT_FONT.search(code) and not ITALIC.search(code) \
-               and not DEVA_CHARS.search(code) and "const " not in code:
-                bad.append(("КУРСИВ", f, i, "Georgia без курсива — ни голос, ни проза"))
+            # Статья B («Georgia без курсива») ОТМЕНЕНА: она была моей отсебятиной.
+            # Georgia прямым — законный набор для перевода и заголовка.
 
     # КАРТА ПОКРЫТИЯ: где в приложении вообще звучит чужой голос.
     # Без неё «я всё проверил» — слова. С ней — предъявляемый факт.
@@ -120,7 +128,6 @@ def main():
     print("─" * 70)
     if not bad:
         print("  ✓ ГОЛОС   стих · бхаджан · цитата · святое имя — Georgia курсивом")
-        print("  ✓ КУРСИВ  шрифт писания нигде не стоит без наклона")
         print("  ✓ ПИСЬМО  деванагари везде набран своим шрифтом")
         print("  ✓ НЕМОЙ   ни один экран не трогает писание молча")
         return 0
