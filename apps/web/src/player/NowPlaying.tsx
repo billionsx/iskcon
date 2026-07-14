@@ -302,7 +302,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 60)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", padding: "6px 16px 16px" }}>
           {isAdHoc
-            ? <KirtanHero cover={p.cover} title={p.bookTitle} artist={p.artist} note={albumById(p.book)?.note} coverActions={coverActions} />
+            ? <KirtanHero cover={p.cover} title={p.bookTitle} artist={p.artist} note={albumById(p.book)?.note} coverActions={coverActions}
+                maxCover={embedded && embeddedHeight
+                  ? Math.max(112, Math.min(260, Math.round(embeddedHeight * 0.30)))
+                  : undefined} />
             : <BookHeroCard book={BOOKS[p.book] ?? BOOKS.bg} presentational coverActions={coverActions} />}
           <div style={{ marginTop: 22 }}>
             <div style={{ fontSize: "var(--text-caption)", letterSpacing: "0.5px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", marginBottom: hierQueue ? 11 : 6, padding: "0 4px" }}>
@@ -443,10 +446,15 @@ function DivisionPills({ items, active, onChange }: { items: SubTabDef[]; active
  * и ряд действий (избранное · ещё). Зеркалит презентационный BookHeroCard, но
  * квадратное под аудио-альбом, а не книжная обложка.
  */
-function KirtanHero({ cover, title, artist, note, coverActions }: { cover: string; title: string; artist: string; note?: string | null; coverActions?: React.ReactNode }) {
+function KirtanHero({ cover, title, artist, note, coverActions, maxCover }: { cover: string; title: string; artist: string; note?: string | null; coverActions?: React.ReactNode; maxCover?: number }) {
   return (
     <div style={{ paddingTop: 6 }}>
-      <div style={{ position: "relative", width: "100%", maxWidth: 340, margin: "0 auto", aspectRatio: "1 / 1", borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}>
+      {/* ЗКН-Н012 — ОБЛОЖКА ЗНАЕТ ПРО ВЫСОТУ.
+          `maxWidth: 340` + квадрат — это размер, который НЕ ЗНАЕТ, сколько места
+          осталось. Во встроенном плеере он съедал всю доску: логотип во весь
+          экран, а дорожки и транспорт — за краем. Предел приходит СВЕРХУ, от того,
+          кто знает доступную высоту. */}
+      <div style={{ position: "relative", width: "100%", maxWidth: maxCover ?? 340, margin: "0 auto", aspectRatio: "1 / 1", borderRadius: 18, overflow: "hidden", boxShadow: "0 24px 60px rgba(0,0,0,0.5)", background: "rgba(255,255,255,0.06)", border: "0.5px solid rgba(255,255,255,0.12)" }}>
         <img src={cover} alt="" draggable={false} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, marginTop: 18 }}>
