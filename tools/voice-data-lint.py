@@ -68,9 +68,35 @@ def classify(w):
     return "unknown"
 
 
+OPENS = re.compile(r'^[«("\u201e]')
+CLOSES = re.compile(r'[»)"\u201c]')
+
+
+def quoted_runs(words, cls):
+    """Стих, ограниченный кавычками или скобками, — даже без единой диакритики.
+    «(кришнас ту бхагаван свайам)» — ШБ 1.3.28, ни одного помеченного слова."""
+    runs, i = [], 0
+    while i < len(words):
+        if not OPENS.search(words[i]):
+            i += 1
+            continue
+        j = i
+        while j < len(words) and not CLOSES.search(words[j]):
+            j += 1
+        if j >= len(words):
+            break
+        if j - i + 1 >= 3:
+            mark = sum(1 for k in range(i, j + 1) if cls[k] in ("strong", "weak"))
+            ours = sum(1 for k in range(i, j + 1) if cls[k] == "stop")
+            if mark >= 1 and ours == 0:
+                runs.append((i, j))
+        i = j + 1
+    return runs
+
+
 def verse_runs(words):
     cls = [classify(w) for w in words]
-    runs, i = [], 0
+    runs, i = quoted_runs(words, cls), 0
     while i < len(words):
         # Якорь — ТОЛЬКО сильное слово (с диакритикой). Слабое полосу не
         # открывает: имена в русском написании не должны уезжать в курсив.
@@ -84,9 +110,10 @@ def verse_runs(words):
             b += 1
             if PUNCT_EDGE.search(words[b]):
                 break
-        runs.append((a, b))
+        if not any(a <= y and b >= x for x, y in runs):
+            runs.append((a, b))
         i = b + 1
-    return runs
+    return sorted(runs)
 
 
 def has_scripture(t):
@@ -104,9 +131,15 @@ def voiced(t):
 
 
 def real_scripture(t):
-    """Есть ли в тексте НАСТОЯЩАЯ шастра — хоть одно слово с диакритикой.
-    Слабый слог сам по себе не улика: «Дурьйодхана» — имя, а не стих."""
-    return any(classify(w) == "strong" for w in t.split())
+    """Есть ли в тексте шастра. Две улики, а не одна:
+      · слово с диакритикой («ведйах̣») — прямая
+      · ограниченная кавычками фраза без нашей речи («айи дина-дайардра натха хе»)
+    Вторая критична: линт, знающий только первую, МЕРИЛ БЫ СЕБЯ СВОЕЙ МЕРКОЙ
+    и рапортовал 100% — не видя ровно того, что пропускает фронт."""
+    words = t.split()
+    if any(classify(w) == "strong" for w in words):
+        return True
+    return bool(quoted_runs(words, [classify(w) for w in words]))
 
 
 # ═══ ПОЛЕВЫЕ ИСТОЧНИКИ — голос по построению ══════════════════════════════

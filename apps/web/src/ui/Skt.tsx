@@ -116,13 +116,52 @@ function classify(w: string): Cls {
   return "unknown";
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ЗКН-Д013 · СТИХ В ПРОЗЕ БЫВАЕТ БЕЗ ЕДИНОЙ ДИАКРИТИКИ.
+ *
+ *   «…о Сам Бхагаван» (кришнас ту бхагаван свайам): все прочие аватары…»
+ *   «…Пури излил в стихе «айи дина-дайардра натха хе», обращённом к Господу…»
+ *
+ * Это ШБ 1.3.28 и стих Мадхавендры Пури — и в них НЕТ НИ ОДНОГО помеченного
+ * слова. Якоря нет, полоса не рождается, стих остаётся немым. В базе таких 534.
+ *
+ * Но у них есть другая улика: они ОГРАНИЧЕНЫ — стоят в кавычках или скобках,
+ * и внутри НЕТ НИ ОДНОГО русского служебного слова. Русская вставка в скобках
+ * («в отличие от других») всегда содержит нашу речь. Стих — не содержит.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+const OPENS = /^[«("„]/;
+const CLOSES = /[»)"“]/;
+
+/** Стих, ограниченный кавычками или скобками, — даже без единой диакритики. */
+function quotedRuns(words: string[], cls: Cls[]): Array<[number, number]> {
+  const runs: Array<[number, number]> = [];
+  for (let i = 0; i < words.length; i++) {
+    if (!OPENS.test(words[i])) continue;
+    let j = i;
+    while (j < words.length && !CLOSES.test(words[j])) j++;
+    if (j >= words.length) { i = words.length; break; }
+    const n = j - i + 1;
+    if (n >= 3) {
+      let mark = 0, ours = 0;
+      for (let k = i; k <= j; k++) {
+        if (cls[k] === "strong" || cls[k] === "weak") mark++;
+        if (cls[k] === "stop") ours++;
+      }
+      // Хоть один слог шастры и НИ ОДНОГО нашего слова — это стих.
+      if (mark >= 1 && ours === 0) runs.push([i, j]);
+    }
+    i = j;
+  }
+  return runs;
+}
+
 /** Знак, на котором фраза стиха кончается. */
 const PUNCT_EDGE = /[.,;:!?\u00bb)]$|^[\u00ab(]/;
 
 /** Полосы стиха внутри абзаца: от помеченного слова наружу — до нашей речи. */
 function verseRuns(words: string[]): Array<[number, number]> {
   const cls = words.map(classify);
-  const runs: Array<[number, number]> = [];
+  const runs: Array<[number, number]> = quotedRuns(words, cls);
   let i = 0;
   while (i < words.length) {
     // ЯКОРЬ — только СИЛЬНОЕ слово (с диакритикой). Слабое («йа»-слог) полосу
@@ -136,10 +175,10 @@ function verseRuns(words: string[]): Array<[number, number]> {
       b++;
       if (PUNCT_EDGE.test(words[b])) break;
     }
-    runs.push([a, b]);
+    if (!runs.some(([x, y]) => a <= y && b >= x)) runs.push([a, b]);
     i = b + 1;
   }
-  return runs;
+  return runs.sort((p, q) => p[0] - q[0]);
 }
 
 function scriptFraction(text: string): number {
