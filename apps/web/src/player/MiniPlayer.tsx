@@ -10,7 +10,9 @@ import { BOOKS, bookFullTitle } from "../books";
 
 export function MiniPlayer({ tabBarVisible }: { tabBarVisible: boolean }) {
   const p = usePlayer();
-  const visible = p.active && !p.expanded;
+  /* ЗКН-Н065: встроенный плеер уже на экране — мини-плеер уступает ему место.
+     Два плеера рядом — это не «удобно», это две правды о том, что играет. */
+  const visible = p.active && !p.expanded && !p.embeddedOn;
   // Виден мини-плеер → body.player-on, чтобы скролл-контейнеры зарезервировали его
   // высоту снизу (--player-extra) и плеер не закрывал низ страниц.
   useEffect(() => {

@@ -101,6 +101,9 @@ export interface PlayerApi {
   cycleRate(): void;
   cycleOrder(): void;
   cycleRepeat(): void;
+  /** Встроенный плеер на экране — мини-плеер не нужен. */
+  embeddedOn: boolean;
+  setEmbeddedVisible(v: boolean): void;
   /** Таймер сна: минуты, "track" — после этой записи, null — выключить. */
   setSleep(v: number | "track" | null): void;
   sleepAt: number | null;
@@ -210,6 +213,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [index, setIndex] = useState(0);
   const [active, setActive] = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  /* ЗКН-Н065 — ДВА ПЛЕЕРА НА ОДНОМ ЭКРАНЕ — ЭТО ОШИБКА.
+   * На витрине киртанов встроенный плеер уже на виду, а мини-плеер вылезал ПОВЕРХ
+   * него: то же название, те же кнопки, и он ЗАСЛОНЯЛ то, чем человек пользуется.
+   * Встроенный плеер объявляет о себе — мини-плеер уступает ему место. */
+  const [embeddedOn, setEmbeddedOn] = useState(false);
   const [isPlaying, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -729,11 +738,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const cfg = cfgFor(bookId, source);
   const value: PlayerApi = {
     ready: !!manifest, active, expanded, loading, mode, tracks, index, track,
-    isPlaying, currentTime, duration, rate, order: orderMode, repeat, sleepAt, sleepEnd,
+    isPlaying, currentTime, duration, rate, order: orderMode, repeat, sleepAt, sleepEnd, embeddedOn,
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
-    playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setSleep, setMode, jumpTo,
+    playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setSleep, setEmbeddedVisible: setEmbeddedOn, setMode, jumpTo,
     open: () => setExpanded(true),   // встроенный плеер раскрывается и до первого нажатия
     close: () => setExpanded(false),
     dismiss,

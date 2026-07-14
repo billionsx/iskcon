@@ -37,7 +37,16 @@ const glass = (radius: number): CSSProperties => ({
   backdropFilter: "blur(24px) saturate(160%)", WebkitBackdropFilter: "blur(24px) saturate(160%)",
   border: "0.5px solid rgba(255,255,255,0.16)", borderRadius: radius,
 });
-const bareBtn = (size: number): CSSProperties => ({ height: size, width: size, display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0, background: "none", border: "none", padding: 0 });
+/** ЗКН-Н066 — ЦЕЛЬ КАСАНИЯ НЕ МЕНЬШЕ 44 ТОЧЕК.
+ *  Палец — не курсор: он мягкий, широкий и не видит, куда бьёт. Apple меряет 44pt
+ *  не из вкусовщины, а потому что ниже начинаются ПРОМАХИ. Знак может быть мелким —
+ *  ЗОНА обязана быть крупной. */
+const TAP = 44;
+const bareBtn = (size: number): CSSProperties => ({
+  height: Math.max(size, TAP), width: Math.max(size, TAP),
+  display: "grid", placeItems: "center", cursor: "pointer", flexShrink: 0,
+  background: "none", border: "none", padding: 0,
+});
 
 /**
  * ЗКН-Б011 · решение основателя 13.07.2026 — ПЛЕЕР ВСТРАИВАЕТСЯ, А НЕ КОПИРУЕТСЯ.
@@ -137,6 +146,14 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    *   Дорожки  →  Записи
    */
   const [pane, setPane] = useState<"now" | "queue" | "mine">("now");
+
+  /* Встроенный плеер объявляет о себе — мини-плеер уступает ему место (ЗКН-Н065). */
+  useEffect(() => {
+    if (!embedded) return;
+    p.setEmbeddedVisible(true);
+    return () => p.setEmbeddedVisible(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [embedded]);
   const isAdHoc = p.kind !== "book";
   /* ЗКН-Н052 — СЕРДЦЕ СТАВИТСЯ НА ЗАПИСЬ, А НЕ НА АЛЬБОМ.
    *
@@ -422,8 +439,12 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
        * приходилось прокручивать страницу, чтобы дотянуться до транспорта.
        * Теперь высота СЧИТАЕТСЯ витриной: сколько осталось от низа шапки до
        * нижнего меню — столько и берём. Ничего не свисает. */
-      onClick={embedded ? (e) => {
-        // тап по ЛЮБОЙ области (кроме самих кнопок) — раскрыть на полный экран
+      /* ⚠️ ТАП ПО ПУСТОМУ МЕСТУ В СПИСКЕ РАСКРЫВАЛ ПЛЕЕР НА ВЕСЬ ЭКРАН.
+       * Человек листает записи, промахивается мимо строки — и его выбрасывает в
+       * полный экран. Раскрытие живёт только на панели «Играет»: там для этого и
+       * есть обложка, и там человек НЕ ЛИСТАЕТ. Жест, срабатывающий там, где его не
+       * ждут, — это не удобство, а ловушка. */
+      onClick={embedded && pane === "now" ? (e) => {
         if ((e.target as HTMLElement).closest("button,input,a,[role='slider']")) return;
         if (!p.active && p.tracks.length > 0) p.jumpTo(0);
         p.open();
@@ -527,7 +548,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
               return (
                 <button key={id} type="button" role="tab" aria-selected={on}
                   onClick={() => setPane(id as "now" | "queue" | "mine")}
-                  style={{ flex: 1, minWidth: 0, height: 32, borderRadius: 9, border: "none", cursor: "pointer",
+                  style={{ flex: 1, minWidth: 0, height: TAP, borderRadius: 11, border: "none", cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                     background: on ? "rgba(255,255,255,0.14)" : "transparent",
                     color: on ? GOLD : "rgba(255,255,255,0.55)",
@@ -642,7 +663,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
                   {(["list", "grid"] as const).map((v) => (
                     <button key={v} type="button" onClick={() => setQView(v)}
                       aria-label={v === "list" ? "Списком" : "Плиткой"} aria-pressed={qView === v}
-                      style={{ display: "grid", placeItems: "center", width: 28, height: 28, borderRadius: 8,
+                      style={{ display: "grid", placeItems: "center", width: TAP, height: TAP, borderRadius: 11,
                         border: "none", cursor: "pointer",
                         background: qView === v ? "rgba(255,255,255,0.12)" : "transparent",
                         color: qView === v ? GOLD : "rgba(255,255,255,0.45)" }}>
@@ -833,7 +854,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           <div style={{ marginTop: 8 }}>
             <input type="range" aria-label="Перемотка" min={0} max={Math.max(1, Math.floor(p.duration))} step={1}
               value={Math.floor(p.currentTime)} onChange={(e) => p.seek(Number(e.target.value))}
-              style={{ width: "100%", accentColor: GOLD, height: 16, cursor: "pointer" }} />
+              /* Полоса была 16 точек — пальцем в неё не попасть. Дорожка остаётся
+                 тонкой (её рисует сам браузер), а ЗОНА ЗАХВАТА растёт до 44. */
+              style={{ width: "100%", accentColor: GOLD, height: TAP, cursor: "pointer",
+                touchAction: "none", margin: 0, display: "block" }} />
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "var(--text-caption)", color: "rgba(255,255,255,0.5)", marginTop: -1, fontVariantNumeric: "tabular-nums" }}>
               <span>{fmtTime(p.currentTime)}</span><span>−{fmtTime(remaining)}</span>
             </div>
@@ -1029,7 +1053,7 @@ function DivisionPicker({ items, active, onChange, label }: {
               {letters.map((L) => (
                 <button key={L} type="button"
                   onClick={() => document.getElementById(`div-${firstOf[L]}`)?.scrollIntoView({ block: "start", behavior: "smooth" })}
-                  style={{ flexShrink: 0, minWidth: 26, height: 26, borderRadius: 7, border: "none", cursor: "pointer",
+                  style={{ flexShrink: 0, minWidth: TAP, height: TAP, borderRadius: 10, border: "none", cursor: "pointer",
                     background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.7)",
                     fontSize: "var(--text-caption)", fontWeight: 700, fontFamily: "var(--font-text)" }}>{L}</button>
               ))}
@@ -1260,7 +1284,7 @@ function QueueRow({ t, active, num, tile, strip, fav, seal, onFav, onClick }: { 
         <span role="button" tabIndex={0} aria-label={fav ? "Убрать из «Моё»" : "В «Моё»"} aria-pressed={fav}
           onClick={(e) => { e.stopPropagation(); onFav(); }}
           onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onFav(); } }}
-          style={{ display: "grid", placeItems: "center", width: 30, height: 30, flexShrink: 0, borderRadius: 999,
+          style={{ display: "grid", placeItems: "center", width: TAP, height: TAP, flexShrink: 0, borderRadius: 999,
             cursor: "pointer", color: fav ? HEART : "rgba(255,255,255,0.28)" }}>
           <HeartIcon size={15} filled={!!fav} />
         </span>
@@ -1270,5 +1294,5 @@ function QueueRow({ t, active, num, tile, strip, fav, seal, onFav, onClick }: { 
 }
 
 function iconBtn(size: number): CSSProperties {
-  return { display: "grid", placeItems: "center", height: size, width: size, flexShrink: 0, borderRadius: "50%", border: "none", background: "transparent", color: ON_DARK, cursor: "pointer" };
+  return { display: "grid", placeItems: "center", height: Math.max(size, TAP), width: Math.max(size, TAP), flexShrink: 0, borderRadius: "50%", border: "none", background: "transparent", color: ON_DARK, cursor: "pointer" };
 }
