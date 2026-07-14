@@ -429,8 +429,13 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         p.open();
       } : undefined}
       style={embedded ? {
+        /* ⚠️ ПЛЕЕР УЖИМАЛСЯ ПОД ОСТАТОК ЭКРАНА И СХЛОПЫВАЛСЯ НА ТЕЛЕФОНЕ.
+         * Внутри нечего было делать: обложка в ноготь, список в две строки.
+         * Плееру нужен ПОЛ. Не влезло — пусть прокручивается СТРАНИЦА: лучше
+         * дотянуться пальцем, чем не суметь пользоваться вовсе. */
         position: "relative", width: "100%",
         height: embeddedHeight ? `${embeddedHeight}px` : "min(70svh, 640px)",
+        display: "flex", flexDirection: "column",
         borderRadius: 22, overflow: "hidden", cursor: "pointer",
         background: "#0e0e10", color: ON_DARK, fontFamily: "var(--font-text)",
         boxShadow: "0 12px 40px rgba(0,0,0,0.18)",
@@ -454,7 +459,9 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
       {/* Содержимое — flex-столбец на ВСЮ высоту коробки.
           Панель растягивается (`flex:1`), транспорт прибит ко дну (`flexShrink:0`).
           Пустого места внизу быть НЕ МОЖЕТ по устройству. */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+      {/* Содержимое — flex-ребёнок обёртки, а не `inset:0`. Тянется флексом:
+          пустая плешь становится невозможной ПО УСТРОЙСТВУ, а не по расчёту. */}
+      <div style={{ position: "relative", zIndex: 1, flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
         {/* pinned header: grabber + minimize / (book title on scroll) / close */}
         {/* ⚠️ ПУСТОЕ МЕСТО СВЕРХУ.
          *
@@ -541,6 +548,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         </div>
 
         {/* ═══ ПАНЕЛЬ — весь остаток высоты. Пустой плеши быть не может. ═══ */}
+        <div style={{ position: "relative", flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
         <div ref={bodyRef} onScroll={(e) => setCollapsed((e.currentTarget as HTMLDivElement).scrollTop > 40)}
           style={{ flex: 1, minHeight: 0, overflowY: "auto", overscrollBehavior: "contain",
             WebkitOverflowScrolling: "touch", padding: "0 16px 12px" }}>
@@ -735,12 +743,15 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
         </div>
 
 
-        {/* pinned controls (Liquid Glass) */}
-        {/* «К текущей» — плавает над панелью, пока играющая строка не видна. */}
+        {/* ⚠️ «К ТЕКУЩЕЙ» ЛОЖИЛАСЬ НА ПЕРЕМОТКУ.
+         * Кнопка отсчитывалась от ДНА КОРОБКИ — а коробка на телефоне короткая, и
+         * 148 точек от дна приходились ровно на ползунок. Кнопка должна плавать над
+         * СПИСКОМ, а не над транспортом: она принадлежит панели, а не плееру.
+         * Отсчёт — от дна ПАНЕЛИ (`paneRef`), у которой своё дно. */}
         {p.active && lostTrack && pane === "queue" && (
           <button type="button" onClick={backToPlaying}
             style={{ position: "absolute", left: "50%", transform: "translateX(-50%)",
-              bottom: embedded ? 148 : "calc(env(safe-area-inset-bottom) + 168px)", zIndex: 10,
+              bottom: 10, zIndex: 10,
               display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 999,
               border: "none", cursor: "pointer", whiteSpace: "nowrap",
               background: GOLD, color: INK_ON_GOLD, fontFamily: "var(--font-text)",
@@ -752,15 +763,17 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
             К текущей
           </button>
         )}
+        </div>
 
         {/* ═══ ТАЙМЕР СНА — лист выбора ═══ */}
         {sleepOpen && (
           <div role="dialog" aria-label="Таймер сна"
             onClick={(e) => { e.stopPropagation(); setSleepOpen(false); }}
-            style={{ position: "absolute", inset: 0, zIndex: 30, display: "flex", alignItems: "flex-end",
-              background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }}>
+            style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-end",
+              background: "rgba(0,0,0,0.6)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}>
             <div onClick={(e) => e.stopPropagation()}
-              style={{ width: "100%", padding: "14px 14px 18px", borderTopLeftRadius: 20, borderTopRightRadius: 20,
+              style={{ width: "100%", padding: "14px 14px calc(env(safe-area-inset-bottom) + 18px)",
+                borderTopLeftRadius: 20, borderTopRightRadius: 20,
                 background: "rgba(22,22,25,0.98)", border: "0.5px solid rgba(255,255,255,0.10)" }}>
               <div style={{ fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px",
                 textTransform: "uppercase", color: GOLD, marginBottom: 4 }}>Таймер сна</div>
@@ -979,10 +992,16 @@ function DivisionPicker({ items, active, onChange, label }: {
       </button>
 
       {open && (
+        /* ⚠️ ЛИСТ ОТКРЫВАЛСЯ ВНУТРИ КОРОБКИ ПЛЕЕРА.
+         * На телефоне коробка — четыреста точек. В неё втискивались поиск, азбука и
+         * 83 строки: влезала азбука и ОДНА строка. Выбрать было нечего.
+         * Список на 83 позиции — ОТДЕЛЬНАЯ ЗАДАЧА, и ей нужен ВЕСЬ ЭКРАН.
+         * `fixed`, а не `absolute`: лист принадлежит ОКНУ, а не коробке. */
         <div role="dialog" aria-label={label}
-          style={{ position: "absolute", inset: 0, zIndex: 20, display: "flex", flexDirection: "column",
-            background: "rgba(12,12,14,0.94)", backdropFilter: "blur(28px) saturate(160%)",
-            WebkitBackdropFilter: "blur(28px) saturate(160%)" }}>
+          style={{ position: "fixed", inset: 0, zIndex: 200, display: "flex", flexDirection: "column",
+            background: "rgba(10,10,12,0.97)", backdropFilter: "blur(30px) saturate(160%)",
+            WebkitBackdropFilter: "blur(30px) saturate(160%)",
+            paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}>
           <div style={{ flexShrink: 0, padding: "14px 16px 0", fontSize: "var(--text-caption2)",
             fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLD }}>
             {label} · {Math.max(0, items.length - 1)}
@@ -1005,8 +1024,8 @@ function DivisionPicker({ items, active, onChange, label }: {
           </div>
 
           {letters.length > 1 && (
-            <div style={{ flexShrink: 0, display: "flex", gap: 4, overflowX: "auto", scrollbarWidth: "none",
-              padding: "0 14px 8px" }}>
+            /* Азбука ПЕРЕНОСИТСЯ, а не обрезается: буква, уехавшая за край, — не указатель. */
+            <div style={{ flexShrink: 0, display: "flex", flexWrap: "wrap", gap: 4, padding: "0 14px 10px" }}>
               {letters.map((L) => (
                 <button key={L} type="button"
                   onClick={() => document.getElementById(`div-${firstOf[L]}`)?.scrollIntoView({ block: "start", behavior: "smooth" })}

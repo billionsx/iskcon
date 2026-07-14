@@ -98,7 +98,15 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   useEffect(() => {
     const calc = () => {
       const top = boxRef.current?.getBoundingClientRect().top ?? 0;
-      setBoxH(Math.max(380, Math.round(window.innerHeight - top - 104)));
+      /* ⚠️ ПЛЕЕР УЖИМАЛСЯ ПОД ОСТАТОК ЭКРАНА.
+       * На телефоне над ним стоят шапка, вкладки, заголовок и поиск — остатка не
+       * хватало, и плеер схлопывался: обложка в ноготь, список в две строки, внутри
+       * ничего не сделать.
+       *
+       * У плеера ЕСТЬ ПОЛ — 600 точек. Меньше нельзя: там просто нечем пользоваться.
+       * Не влезло в экран — пусть прокрутится СТРАНИЦА. Лучше дотянуться пальцем,
+       * чем не суметь пользоваться вовсе. */
+      setBoxH(Math.max(600, Math.round(window.innerHeight - top - 104)));
     };
     calc();
     window.addEventListener("resize", calc);
