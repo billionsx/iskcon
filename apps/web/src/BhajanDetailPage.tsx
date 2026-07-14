@@ -11,6 +11,7 @@
  * варианте «bhajan» (Поделиться · QR · Задонатить · Сообщить — без книжного PDF).
  */
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import type { SVGProps } from "react";
 import { api } from "./api";
 import { useFavorite, useCardActions } from "./cardActions";
@@ -104,7 +105,7 @@ function VerseCard({ v, onOpen }: { v: Verse; onOpen?: () => void }) {
         <FitText text={v.translit} max={18.5} min={12} style={{ marginTop: "var(--space-3)", fontFamily: "var(--font-scripture)", fontStyle: "italic", lineHeight: 1.5, color: "var(--color-label)" }} />
       )}
       {v.text && (
-        <div style={{ marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line", overflowWrap: "break-word" }}>{v.text}</div>
+        <div style={{ ...SCRIPTURE_VOICE, marginTop: v.translit ? "var(--space-4)" : "var(--space-3)", paddingTop: v.translit ? "var(--space-4)" : 0, borderTop: v.translit ? "0.5px solid var(--color-hairline)" : "none", fontSize: "var(--text-body)", lineHeight: "var(--leading-normal)", color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.text}</div>
       )}
     </section>
   );

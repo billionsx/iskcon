@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SCRIPTURE_VOICE_PRINT } from "./ui/voice";
 import { BOOKS, bookFullTitle, type BookData } from "./books";
 import { api } from "./api";
 import { BookPrint, LilaPrint, ChapterPrint, ProsePrint, ProseChapterPrint, VerseBody, type ChapterRow, type ChapterVerse, type ProsePara } from "./BookDetailPage";
@@ -9,7 +10,10 @@ import { cleanCardText } from "./cardText";
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
 /** Структурированная секция печатной карточки: заголовок + подзаголовок + абзацы. */
-type PrintSection = { h?: string; sub?: string; lines: string[] };
+// ЗКН-Д013: строка печати — либо НАША проза (string), либо ЧУЖОЙ ГОЛОС.
+// PDF — это БУМАГА: ошибка переживёт все правки. Голос обязан быть виден и тут.
+type PrintLine = string | { t: string; voice: true };
+type PrintSection = { h?: string; sub?: string; lines: PrintLine[] };
 
 type Loaded =
   | { kind: "book"; chapters: ChapterRow[]; versesByCh: Record<string, ChapterVerse[]> }
@@ -225,7 +229,7 @@ function flattenDossierTopic(dos: PdfDossier | null, ptab: string, psub: string)
   const out: PrintSection[] = [];
   if (tabObj.lead) out.push({ h: tabObj.title || tabObj.label || "", sub: tabObj.lead, lines: [] });
   for (const sec of secs) {
-    const lines: string[] = [];
+    const lines: PrintLine[] = [];
     /* ЗКН-Т002 — ЛЮБОЙ ТЕКСТ ЛИЧНОСТИ ПРОХОДИТ ЧЕРЕЗ `cleanCardText`.
      *
      * PDF печатал абзацы НАПРЯМУЮ, минуя очистку. А очистка — это не косметика:
@@ -241,7 +245,7 @@ function flattenDossierTopic(dos: PdfDossier | null, ptab: string, psub: string)
     for (const q of qs) {
       if (!q?.t) continue;
       const attr = [q.by, q.ref].filter(Boolean).join(", ");
-      lines.push("\u00ab" + q.t + "\u00bb" + (attr ? "\n\u2014 " + attr : ""));
+      lines.push({ t: "\u00ab" + q.t + "\u00bb" + (attr ? "\n\u2014 " + attr : ""), voice: true });
     }
     if (sec.h || lines.length) out.push({ h: sec.h || undefined, lines });
   }
@@ -468,7 +472,11 @@ function CardPrint({ d }: { d: CardLoaded }) {
             <div key={i} style={{ marginTop: i ? "15pt" : 0, breakInside: "avoid" }}>
               {s.h && <div style={{ fontSize: "13.5pt", fontWeight: 800, letterSpacing: "-0.01em", color: "#1a1a1a", fontFamily: "Georgia, serif" }}>{s.h}</div>}
               {s.sub && <div style={{ marginTop: "2pt", fontSize: "10.5pt", fontStyle: "italic", color: "#70727b" }}>{s.sub}</div>}
-              {s.lines.map((ln, j) => <p key={j} style={{ margin: "6pt 0 0", fontSize: "11pt", lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{ln}</p>)}
+              {s.lines.map((ln, j) => {
+                const voice = typeof ln !== "string" && ln.voice;
+                const txt = typeof ln === "string" ? ln : ln.t;
+                return <p key={j} style={{ ...(voice ? SCRIPTURE_VOICE_PRINT : {}), margin: "6pt 0 0", fontSize: "11pt", lineHeight: 1.55, whiteSpace: "pre-wrap" }}>{txt}</p>;
+              })}
             </div>
           ))}
         </div>

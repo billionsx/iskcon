@@ -10,6 +10,7 @@
  * ключу ADMIN_TOKEN, который оператор вводит один раз (хранится локально).
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import { BackIcon } from "./ui/icons";
 import { api } from "./api";
 import { HubHeader } from "./ui/HubHeader";
@@ -631,7 +632,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
       ) : (
         <>
           {v.devanagari && <div style={{ marginTop: 6, fontSize: "var(--text-subhead)", lineHeight: 1.6, color: "var(--color-label)", whiteSpace: "pre-line" }}>{v.devanagari}</div>}
-          {v.translit && <div style={{ marginTop: 4, fontSize: "var(--text-footnote)", fontStyle: "italic", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>{v.translit}</div>}
+          {v.translit && <div style={{ ...SCRIPTURE_VOICE, marginTop: 4, fontSize: "var(--text-footnote)", fontStyle: "italic", color: "var(--color-label-2)", whiteSpace: "pre-line" }}>{v.translit}</div>}
           {v.tokens.length > 0 && (
             <div style={{ marginTop: 6, fontSize: "var(--text-caption)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
               {v.tokens.map((t, i) => (
@@ -643,7 +644,7 @@ function VersePreview({ v }: { v: PreviewVerse }) {
               ))}
             </div>
           )}
-          {v.translation && <div style={{ marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
+          {v.translation && <div style={{ ...SCRIPTURE_VOICE, marginTop: 8, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label)" }}>{v.translation}</div>}
           {v.purport && (
             <div style={{ marginTop: 6, fontSize: "var(--text-footnote)", lineHeight: 1.55, color: "var(--color-label-2)", whiteSpace: "pre-line" }}>
               {long && !more ? purp.slice(0, 280) + "…" : purp}

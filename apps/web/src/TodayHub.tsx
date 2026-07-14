@@ -7,6 +7,7 @@
  * Каждая карточка деградирует мягко: нет данных — карточка просто скрыта.
  */
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import { useAuth } from "./account/store";
 import { effectiveLevel, getLocalDevotee } from "./devotee";
 import { readingClient } from "./reading/api";
@@ -138,7 +139,7 @@ export default function TodayHub({ onOpenPath, onSub }: { onOpenPath: (path: str
           <Card onClick={() => onOpenPath("/verse")}>
             <div style={{ padding: "15px 16px" }}>
               <Eyebrow>{verse.label}</Eyebrow>
-              <div style={{ fontFamily: SERIF, fontSize: "var(--text-body)", lineHeight: 1.5, color: INK }}>
+              <div style={{ ...SCRIPTURE_VOICE, fontSize: "var(--text-body)", lineHeight: 1.5, color: INK }}>
                 {verse.translation ? `«${verse.translation.length > 210 ? verse.translation.slice(0, 208).trimEnd() + "…" : verse.translation}»` : "Откройте стих дня"}
               </div>
               <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, marginTop: 10 }}>Читать со стихом и комментарием →</div>

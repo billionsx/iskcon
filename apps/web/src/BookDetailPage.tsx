@@ -8,6 +8,7 @@
  * Данные книги — books.ts; стихи — API (/chapters/:n/read, /verses/:ref).
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { SCRIPTURE_VOICE } from "./ui/voice";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
 import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS, BOOKS, bookSlug } from "./books";
@@ -1725,7 +1726,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
                     <Pressable onClick={() => onOpenVerse(v.ref)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
                       <span style={{ flex: 1, minWidth: 0 }}>
                         <span style={{ display: "block", fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: GOLDT, marginBottom: 5 }}>{v.label}{isDemo && <DemoBadge />}</span>
-                        <span style={{ display: "block", fontSize: "var(--text-body)", lineHeight: 1.5, color: tr ? INK : INK2, fontStyle: tr ? "normal" : "italic" }}>
+                        <span style={{ ...SCRIPTURE_VOICE, display: "block", fontSize: "var(--text-body)", lineHeight: 1.5, color: tr ? INK : INK2 }}>
                           {tr ?? "перевод готовится"}
                         </span>
                       </span>
@@ -1867,7 +1868,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
       {r.translit && (
         <div style={{ marginBottom: 16 }}>
           {r.translit.split("\n").map((ln, i) => (
-            <div key={i} style={{ fontStyle: "italic", fontSize: "var(--text-subhead)", lineHeight: 1.45, letterSpacing: "-0.01em", textAlign: "center", textWrap: "balance", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
+            <div key={i} style={{ ...SCRIPTURE_VOICE, fontSize: "var(--text-subhead)", lineHeight: 1.45, letterSpacing: "-0.01em", textAlign: "center", textWrap: "balance", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
           ))}
         </div>
       )}
@@ -1890,7 +1891,7 @@ export function VerseBody({ v }: { v: ChapterVerse }) {
         <LayerLabel>Перевод</LayerLabel>
         {r.translation ? (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${GOLD}` }}>
-            <p style={{ margin: 0, fontSize: "var(--text-title3)", lineHeight: 1.5, fontWeight: 500, letterSpacing: "-0.01em", color: INK }}>{renderTerms(r.translation)}</p>
+            <p style={{ ...SCRIPTURE_VOICE, margin: 0, fontSize: "var(--text-title3)", lineHeight: 1.5, letterSpacing: "-0.01em", color: INK }}>{r.translation}</p>
           </div>
         ) : (
           <div style={{ paddingLeft: 18, borderLeft: `2px solid ${LINE}` }}>
@@ -2467,7 +2468,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
               {hasTranslit && (
                 <div style={{ marginBottom: 16 }}>
                   {evTranslit!.split("\n").map((ln, i) => (
-                    <div key={i} style={{ fontStyle: "italic", fontSize: "var(--text-subhead)", lineHeight: 1.45, letterSpacing: "-0.01em", textAlign: "center", textWrap: "balance", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
+                    <div key={i} style={{ ...SCRIPTURE_VOICE, fontSize: "var(--text-subhead)", lineHeight: 1.45, letterSpacing: "-0.01em", textAlign: "center", textWrap: "balance", color: INK2, marginTop: i === 0 ? 0 : 7 }}>{ln}</div>
                   ))}
                 </div>
               )}
