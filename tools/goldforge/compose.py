@@ -387,10 +387,10 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             lines.append("Молитвы и песни его авторства: %s."
                          % ", ".join("«%s»" % b for b in own_bhajans[:8]))
         vk.append(section("Наследие, оставленное лиле", lines, hero=HN))
-    if top:
-        me = hero == "prabhupada"
+    me = hero == "prabhupada"
+    if top and not me:
         vk.append(section(
-            "Его миссия — своими словами" if me else "Шрила Прабхупада о его вкладе",
+            "Шрила Прабхупада о его вкладе",
             [],
             quotes=[quote_of(f, forms, ids_ok, used) for f in top], hero=HN))
     if see and len(see) >= 2:
@@ -566,7 +566,8 @@ def build(dossier, hero_names, keep=None, per_work=MAX_PER_WORK):
             continue
         for sub in t.get("subtabs", []):
             sub["sections"] = [x for x in sub["sections"]
-                               if x.get("quotes") or x.get("cite") or x.get("see")]
+                               if x.get("quotes") or x.get("cite") or x.get("see")
+                               or x.get("p")]
         t["subtabs"] = [x for x in t.get("subtabs", []) if x["sections"]]
     tabs = [t for t in tabs
             if t.get("id") not in FORGE_TABS or t.get("subtabs") or t.get("sections")]
