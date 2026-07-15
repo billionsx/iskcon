@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: BUILD_SHA + SQL центров из задеплоенного воркера → D1
+      - name: Live-версия воркера + статусы центров в бандле → D1
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
@@ -19,50 +19,49 @@ jobs:
           dbid = re.search(r'database_id\s*=\s*"([^"]+)"', cfg).group(1)
           tok = os.environ["CLOUDFLARE_API_TOKEN"]
           H = {"Authorization": "Bearer " + tok}
-          notes = []
+          def get(path):
+              return json.load(urllib.request.urlopen(urllib.request.Request("https://api.cloudflare.com/client/v4"+path, headers=H), timeout=40))
+          out = []
+          # 1) live deployment (какие версии и % сейчас в бою)
+          try:
+              dep = get("/accounts/%s/workers/scripts/iskcon-web/deployments?per_page=1" % acc)
+              d0 = (dep.get("result") or {}).get("deployments", [{}])[0]
+              vs = d0.get("versions", [])
+              out.append("live_dep=%s created=%s vers=%s" % (d0.get("id","?")[:8], str(d0.get("created_on"))[:19], ";".join("%s@%s%%"%(v.get("version_id","?")[:8], v.get("percentage")) for v in vs)))
+          except Exception as e:
+              out.append("dep_err="+str(e)[:70])
+          # 2) latest uploaded versions (id + when + сообщение)
+          try:
+              ver = get("/accounts/%s/workers/scripts/iskcon-web/versions?per_page=3" % acc)
+              items = (ver.get("result") or {}).get("items", [])
+              for v in items[:3]:
+                  meta = v.get("metadata", {}) or {}
+                  out.append("ver=%s at=%s msg=%s" % (v.get("id","?")[:8], str(meta.get("created_on"))[:19], str((v.get("annotations",{}) or {}).get("workers/message",""))[:40]))
+          except Exception as e:
+              out.append("ver_err="+str(e)[:70])
+          # 3) bundle: статусы центров
           raw = ""
           try:
-              url = "https://api.cloudflare.com/client/v4/accounts/%s/workers/scripts/iskcon-web/content" % acc
-              raw = urllib.request.urlopen(urllib.request.Request(url, headers=H), timeout=60).read().decode("utf-8", "replace")
-              notes.append("code_bytes=%d" % len(raw))
-          except urllib.error.HTTPError as e:
-              notes.append("content_HTTP_%s" % e.code)
-              try:
-                  url2 = "https://api.cloudflare.com/client/v4/accounts/%s/workers/scripts/iskcon-web" % acc
-                  raw = urllib.request.urlopen(urllib.request.Request(url2, headers=H), timeout=60).read().decode("utf-8", "replace")
-                  notes.append("fallback_bytes=%d" % len(raw))
-              except Exception as e2:
-                  notes.append("fallback_err=" + str(e2)[:60])
+              raw = urllib.request.urlopen(urllib.request.Request("https://api.cloudflare.com/client/v4/accounts/%s/workers/scripts/iskcon-web"%acc, headers=H), timeout=60).read().decode("utf-8","replace")
           except Exception as e:
-              notes.append("content_err=" + str(e)[:80])
+              out.append("bundle_err="+str(e)[:60])
+          stats = sorted(set(re.findall(r"status\s*[=:]\s*'([a-z_]+)'", raw)))
+          out.append("status_literals=" + ",".join(stats))
+          # все FROM centers с окружением
+          fro = []
+          for m in re.finditer(r".{0,45}FROM\s+centers.{0,90}", raw):
+              fro.append(re.sub(r"\s+"," ", m.group(0)))
+          out.append("FROM_centers_n=%d" % len(fro))
 
-          shas = re.findall(r"[0-9a-f]{40}", raw)
-          notes.append("BUILD_SHA=" + (shas[0] if shas else "NONE"))
-          notes.append("uniq_sha=" + ",".join(sorted(set(shas))[:3]))
-          idx = raw.find("FROM centers")
-          if idx < 0:
-              idx = raw.replace(" ", "").find("FROMcenters")
-              notes.append("FROM_centers=only_minified" if idx >= 0 else "FROM_centers=ABSENT")
-          else:
-              notes.append("FROM_centers=present")
-          # найдём сам SELECT ... FROM centers ... (до LIMIT)
-          m = re.search(r".{0,60}FROM\s+centers.{0,140}", raw)
-          sql = re.sub(r"\s+", " ", m.group(0)) if m else "NO_SQL_SNIPPET"
-          for pat in ["status", "lat IS NOT NULL", "lng IS NOT NULL", "published", "visible", "deleted", "'live'", "live"]:
-              if pat in raw[max(0,idx-200):idx+300] if idx>=0 else False:
-                  notes.append("near[%s]" % pat)
-
-          note_s = " ;; ".join(notes)[:350]
-          for n in notes: print("::notice::" + n)
-          print("::notice SQL::" + sql[:300])
-          Hj = dict(H); Hj["Content-Type"] = "application/json"
-          qurl = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
-          for tgt, val in [("worker-build-sha", note_s), ("worker-centers-sql", sql[:400])]:
-              body = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),?,0,?)",
-                                 "params": [tgt, val.replace("'", " ").replace('"', " ")]}).encode()
-              try:
-                  urllib.request.urlopen(urllib.request.Request(qurl, data=body, headers=Hj), timeout=30).read()
-              except Exception as e:
-                  print("write err", e)
+          note = " ;; ".join(out)[:480]
+          fro_s = " ||| ".join(fro[:6])[:900]
+          for o in out: print("::notice::"+o)
+          for f in fro[:6]: print("::notice FROM::"+f)
+          Hj = dict(H); Hj["Content-Type"]="application/json"
+          q = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
+          for tgt,val in [("worker-live-ver", note), ("worker-from-centers", fro_s)]:
+              body = json.dumps({"sql":"INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),?,0,?)","params":[tgt, val.replace("'"," ").replace('"'," ")]}).encode()
+              try: urllib.request.urlopen(urllib.request.Request(q, data=body, headers=Hj), timeout=30).read()
+              except Exception as e: print("w",e)
           print("done")
           PY
