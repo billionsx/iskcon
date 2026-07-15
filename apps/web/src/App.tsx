@@ -140,6 +140,12 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
  * Теперь список ОДИН, и он же — источник для нижнего меню, для маршрутизатора
  * и для запасной ветки `Screen`. Разъехаться нечему. */
 export const TAB_IDS = ["iskcon", "bogatstva", "krishna", "gauranga", "sadhana"] as const;
+/* ЗКН-Н074 — ГЛАВНЫЙ ТАБ = ПЕРВЫЙ В МЕНЮ. Стартовая вкладка приложения и то,
+ * что открывает корень «/», ВЫВОДЯТСЯ отсюда — не вписываются руками. Поменялся
+ * порядок (ЗКН-Н072) → сменился и главный таб, одним движением. Раньше дефолт был
+ * прибит к «sadhana» отдельно от порядка кнопок — классическая болезнь «второго
+ * списка»: порядок сменили, а корень по-старому тянул Даршан. */
+const HOME_TAB = TAB_IDS[0] as string;
 export type TabId = typeof TAB_IDS[number];
 export function isTabId(v: string): v is TabId { return (TAB_IDS as readonly string[]).includes(v); }
 
@@ -848,7 +854,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   };
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
-      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange("sadhana"); window.dispatchEvent(new CustomEvent("tab-reset", { detail: "sadhana" })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
+      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange(HOME_TAB); window.dispatchEvent(new CustomEvent("tab-reset", { detail: HOME_TAB })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
           {/* ЗКН-Ф016 — ОДИН КРАШ НЕ УБИВАЕТ ВСЁ ПРИЛОЖЕНИЕ.
@@ -917,7 +923,7 @@ export default function App() {
   if (typeof window !== "undefined" && new URLSearchParams(window.location.search).has("pdf")) {
     return <Suspense fallback={null}><PdfDoc /></Suspense>;
   }
-  const [tab, setTab] = useState("sadhana");
+  const [tab, setTab] = useState(HOME_TAB);
   const [openBook, setOpenBook] = useState<string | null>(null);
   const [bookTarget, setBookTarget] = useState<{ div: string | null; chapter: string | null; verse: string | null } | null>(null);
   const [openBhajan, setOpenBhajan] = useState<string | null>(null);
@@ -1099,7 +1105,7 @@ const RESERVED: readonly string[] = [
    */
   const BASE_OF: Record<string, string> = {
     // Садхана (корень «/» — первый её раздел, Даршан; «feed» — старый адрес)
-    "": "sadhana", feed: "sadhana",
+    "": HOME_TAB, feed: "sadhana",
     japa: "sadhana", story: "sadhana", verse: "sadhana", promise: "sadhana",
     darshan: "sadhana", progress: "sadhana", ekadashi: "sadhana",
     calendar: "sadhana", id: "sadhana", sadhana: "sadhana",
@@ -1138,7 +1144,7 @@ const RESERVED: readonly string[] = [
       if (base) setTab(base);
     }
 
-    if (clean === "/") { setTab("sadhana"); return; }
+    if (clean === "/") { setTab(HOME_TAB); return; }
     // ЗКН-Н005: разделы Садханы — свои адреса (Практика / Календарь / Кабинет)
     /* ЗКН-Н023 — САДХАНА: каждый инструмент в КОРНЕ (схема основателя).
      *   /sadhana /japa /story /verse /promise /progress /darshan /calendar /ekadashi /id */

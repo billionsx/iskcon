@@ -422,6 +422,13 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
   const lastAnchor = useRef(iskconAnchorFromPath());
   const writeAnchor = (id: string) => {
     if (lastAnchor.current === id) return;
+    /* ЗКН-Н073 — НЕ ПЕРЕХВАТЫВАТЬ ЧУЖОЙ АДРЕС. Пока обрабатывался кадр скролла
+     * (rAF), мог случиться уход со страницы: клик по карточке блока «Практика»
+     * уже сделал pushUrl("/kirtans"). Поздний кадр НЕ должен переписать его на
+     * /iskcon/* — иначе зал Богатств не узнает витрину (bogSubFromPath) и молча
+     * откроет умолчание (Книги). Пишем адрес, только пока он ЕЩЁ наш. */
+    const seg = window.location.pathname.split("/").filter(Boolean);
+    if (seg.length && seg[0] !== "iskcon") return;
     lastAnchor.current = id;
     replaceAnchor(id === ISKCON_ANCHORS[0].id ? "/iskcon" : `/iskcon/${id}`);
   };
@@ -449,7 +456,11 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
           if (!el) continue;
           if (el.getBoundingClientRect().top - rootTop <= stack + 4) cur = a.id;
         }
-        if (root.scrollHeight - root.scrollTop - root.clientHeight <= 4) cur = ISKCON_ANCHORS[ISKCON_ANCHORS.length - 1].id;
+        /* ЗКН-Н073 — «докрутили до низа → последний блок» ТОЛЬКО на реально
+         * прокручиваемой странице. На монтировании (и при заходе на вкладку)
+         * высота ещё не набрана: scrollHeight ≈ clientHeight, и без этой проверки
+         * низ срабатывал ложно — адрес прыгал на /iskcon/next при КАЖДОМ заходе. */
+        if (root.scrollHeight - root.clientHeight > 40 && root.scrollHeight - root.scrollTop - root.clientHeight <= 4) cur = ISKCON_ANCHORS[ISKCON_ANCHORS.length - 1].id;
         setActiveAnchor(cur);
         writeAnchor(cur);          // ЗКН-Н073: скролл пишет адрес блока
       });
