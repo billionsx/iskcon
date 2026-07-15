@@ -67,19 +67,30 @@ def head_ok(url, timeout=45):
 
 
 def verify(rows):
-    dead = []
+    """Возвращает (потеряно, деградировано). Страховка держится, пока живо ХОТЯ БЫ
+    ОДНО зеркало класса (фейловер работает). Потеряно = 0 живых зеркал (真 беда).
+    Деградировано = 1 из 2 (редундантность просела — надо перезеркалить, но не пожар).
+    Это же корректно гасит лаг archive.org: свежий item ещё пропагируется (404), а
+    зеркало GitHub уже раздаёт — класс доступен."""
+    lost, degraded = [], []
     for rec in rows:
         cls = rec.get("class", "?")
+        live, states = 0, []
         for host, url in (("archive.org", rec.get("ia_url")), ("GitHub", rec.get("gh_url"))):
             if not url:
-                dead.append((cls, host, "нет URL в манифесте"))
+                states.append("%s: нет URL" % host)
                 continue
             ok, code = head_ok(url)
-            mark = "✓" if ok else "✗"
-            print("  %s %-10s %-24s %s (%s)" % (mark, host, cls, url, code))
-            if not ok:
-                dead.append((cls, host, "%s (%s)" % (url, code)))
-    return dead
+            print("  %s %-10s %-22s %s (%s)" % ("✓" if ok else "✗", host, cls, url, code))
+            if ok:
+                live += 1
+            else:
+                states.append("%s: %s (%s)" % (host, url, code))
+        if live == 0:
+            lost.append((cls, "; ".join(states)))
+        elif live == 1:
+            degraded.append((cls, "; ".join(states)))
+    return lost, degraded
 
 
 def selftest():
@@ -109,12 +120,15 @@ def main():
         print("::notice::манифест пуст — проверять нечего, гейт зелёный")
         return
     print("Проверка живости зеркал (%d классов):" % len(rows))
-    dead = verify(rows)
-    if dead:
-        for cls, host, why in dead:
-            print("::error title=Зеркало мертво::класс «%s» на %s: %s" % (cls, host, why))
+    lost, degraded = verify(rows)
+    for cls, why in degraded:
+        print("::warning title=Редундантность просела::класс «%s» жив на одном зеркале (%s) — перезеркалить" % (cls, why))
+    if lost:
+        for cls, why in lost:
+            print("::error title=Класс потерян::«%s» мёртв на ОБОИХ зеркалах: %s" % (cls, why))
         raise SystemExit(1)
-    print("::notice::✓ все зеркала живы (%d классов × 2)" % len(rows))
+    tail = " (%d с одним живым зеркалом — предупреждение)" % len(degraded) if degraded else ""
+    print("::notice::✓ у каждого класса живо ≥1 зеркало (%d классов)%s" % (len(rows), tail))
 
 
 if __name__ == "__main__":
