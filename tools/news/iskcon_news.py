@@ -362,6 +362,11 @@ def _google_tr(text, sl="en", tl="ru"):
 
 
 def _mymemory_tr(text, sl="en", tl="ru"):
+    # MyMemory для анонимов режет запрос на ~500 символах и возвращает ОШИБКУ в поле
+    # translatedText (например «QUERY LENGTH LIMIT EXCEEDED»). Такую «переводку» нельзя
+    # пускать в базу — проверяем responseStatus и длину.
+    if len(text) > 500:
+        raise RuntimeError("mymemory: чанк >500 символов (лимит анонима)")
     q = urllib.parse.urlencode({"q": text, "langpair": "%s|%s" % (sl, tl), "de": "ceo@billionsx.com"})
     req = urllib.request.Request(MYMEMORY_URL + "?" + q, headers={"User-Agent": UA})
     try:
@@ -369,7 +374,13 @@ def _mymemory_tr(text, sl="en", tl="ru"):
             d = json.load(r)
     except urllib.error.HTTPError as e:
         raise RuntimeError("mymemory HTTP %s" % e.code)
-    return (d.get("responseData") or {}).get("translatedText", "") or ""
+    status = d.get("responseStatus")
+    if str(status) != "200":
+        raise RuntimeError("mymemory status %s" % status)
+    out = (d.get("responseData") or {}).get("translatedText", "") or ""
+    if "QUERY LENGTH LIMIT" in out.upper() or "INVALID" in out.upper():
+        raise RuntimeError("mymemory: ответ-ошибка")
+    return out
 
 
 def _chunks(text, limit=1500):
@@ -420,20 +431,24 @@ def translate(text, sl="en", tl="ru"):
         if not got:
             raise TranslateFailed(last or "оба переводчика молчат")
         outs.append(got)
+        time.sleep(0.4)  # вежливая пауза между чанками — не будим лимит эндпоинта
     return canonize_ru(" ".join(outs))
 
 
 def translate_article(title_en, author_en, body_paras):
     """Заголовок + автор + абзацы → русский (бесплатно, с канонизацией имён).
-    lead — первые 1–2 предложения переведённого первого абзаца (свой лид статьи,
-    без AI-пересказа: ноль фабрикации)."""
+    Тело переводим ОДНИМ вызовом (абзацы через двойной перевод строки), а не по
+    абзацу — иначе на 12+ статьях упираемся в лимит запросов эндпоинта. lead — первые
+    1–2 предложения переведённого первого абзаца (свой лид, без AI-пересказа)."""
     title_ru = translate(title_en)
     author_ru = translate(author_en) if author_en else ""
-    body_ru = []
-    for para in body_paras:
-        p = translate(para)
-        if p:
-            body_ru.append(p)
+    sep = "\n\n"
+    joined = sep.join(p.strip() for p in body_paras if p and p.strip())
+    body_full = translate(joined)
+    # разбиваем обратно на абзацы; если разделитель не пережил перевод — один абзац
+    body_ru = [p.strip() for p in re.split(r"\n\s*\n", body_full) if p.strip()]
+    if len(body_ru) <= 1:
+        body_ru = [p.strip() for p in body_full.split("\n") if p.strip()] or ([body_full.strip()] if body_full.strip() else [])
     if not title_ru or not body_ru:
         raise TranslateFailed("пустой перевод заголовка/тела")
     first = body_ru[0]
@@ -489,21 +504,25 @@ def run_source(key, limit, pages, dry):
             print("→ [%s %s] %s" % (src["short"], r["wid"], r["title_en"][:66]))
             try:
                 t_ru, a_ru, lead_ru, b_ru = translate_article(r["title_en"], r["author"] or "", r["body_en"][:30])
+                rec = {
+                    "guid": guid, "slug": "%s-%s" % (src["short"], r["raw_slug"]),
+                    "url": r["url"], "published_at": r["published_at"] or _iso(""),
+                    "author": a_ru or r["author"] or "", "hero": r["hero"], "category": r["category"],
+                    "title_ru": t_ru, "title_en": r["title_en"], "lead_ru": lead_ru,
+                    "body_ru": b_ru, "body_en": r["body_en"],
+                }
+                if dry:
+                    print(json.dumps({k: rec[k] for k in ("guid", "slug", "title_ru", "lead_ru", "category")}, ensure_ascii=False))
+                else:
+                    insert(rec, src)
             except TranslateFailed as e:
                 print("::warning::[%s %s] перевод не удался (%s) — пропуск, вернёмся в следующий прогон" % (src["short"], r["wid"], e))
                 filtered += 1
                 continue
-            rec = {
-                "guid": guid, "slug": "%s-%s" % (src["short"], r["raw_slug"]),
-                "url": r["url"], "published_at": r["published_at"] or _iso(""),
-                "author": a_ru or r["author"] or "", "hero": r["hero"], "category": r["category"],
-                "title_ru": t_ru, "title_en": r["title_en"], "lead_ru": lead_ru,
-                "body_ru": b_ru, "body_en": r["body_en"],
-            }
-            if dry:
-                print(json.dumps({k: rec[k] for k in ("guid", "slug", "title_ru", "lead_ru", "category")}, ensure_ascii=False))
-            else:
-                insert(rec, src)
+            except Exception as e:  # noqa: BLE001 — одна битая статья НЕ роняет весь прогон
+                print("::warning::[%s %s] сбой обработки (%s) — пропуск" % (src["short"], r["wid"], str(e)[:150]))
+                filtered += 1
+                continue
             added += 1
             time.sleep(1.0)
         if added >= limit or used_rss:
