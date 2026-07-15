@@ -812,7 +812,7 @@ body.gtab-off .gtab-wrap { display: none; }
   -webkit-mask-position: center; mask-position: center;
   -webkit-mask-size: contain; mask-size: contain;
 }
-.gtab-ic.wide { }   /* лотос равен по высоте — отдельная ширина не нужна */
+.gtab-ic.wide { height: 19.95px; }   /* лотос на 5% меньше остальных — оптически тяжелее при равной высоте */
 .gtab-lbl {
   max-width: 100%; overflow: hidden; white-space: nowrap;
   font-family: var(--font-text); font-size: 10px; font-weight: 590;
@@ -820,7 +820,7 @@ body.gtab-off .gtab-wrap { display: none; }
 }
 /* «ИСККОН» набран капсом — при равном кегле он тяжелее и шире строчных подписей.
    Кегль чуть меньше + разрядка нормализуют оптический вес в один ряд с остальными. */
-.gtab-lbl.caps { font-size: 9px; letter-spacing: 0.2px; }
+.gtab-lbl.caps { font-size: 8px; letter-spacing: 0.2px; }
 @media (prefers-reduced-motion: reduce) {
   .gtab-lens { display: none; }
   .gtab-glint b { display: none; }
