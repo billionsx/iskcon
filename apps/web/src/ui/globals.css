@@ -633,83 +633,88 @@ body.player-on { --player-extra: 64px; }
  * плавающая пилюля скрывается, чтобы не накладываться на сфокусированный
  * оверлей (страховка к z-index на случай стек-ловушек iOS-скролла). */
 body.gtab-off .gtab-wrap { display: none; }
+/* ─────────── Нижнее меню — копия iOS 26 App Store (Liquid Glass) ───────────
+ * Плавающая стеклянная капсула. Светлая тема — эталон: плотное белое матовое
+ * стекло, чёрные иконки/подписи, синий #007AFF у активного, тонкая серая
+ * пилюля-линза. Тёмная — зеркально. Пилюля едет пружиной (liquid-glass move).
+ * ЗАКОН таб-бара: высота 62px, bottom 16px, z-40, резерв --gtab-reserve. */
 .gtab {
   pointer-events: auto; position: relative; margin: 0 auto;
-  width: calc(100% - 40px); height: 62px; border-radius: 31px;
-  padding: 0 8px;
-  --gt-ic: 26px; --gt-icw: 27px;
+  width: calc(100% - 32px); height: 62px; border-radius: 31px;
+  padding: 0 6px;
+  --gt-ic: 27px; --gt-icw: 28px;
+  --gt-accent: #0a84ff;                 /* активный таб (тёмная тема) */
   display: flex; align-items: stretch;
-  background: rgba(20, 20, 22, 0.72);
-  -webkit-backdrop-filter: blur(40px) saturate(110%);
-  backdrop-filter: blur(40px) saturate(110%);
+  background: rgba(30, 30, 32, 0.7);
+  -webkit-backdrop-filter: blur(36px) saturate(150%);
+  backdrop-filter: blur(36px) saturate(150%);
   box-shadow:
-    0 16px 42px rgba(0, 0, 0, 0.5),
-    0 5px 14px rgba(0, 0, 0, 0.32),
-    inset 0 1px 1px rgba(255, 255, 255, 0.24),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.06),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
+    0 12px 34px rgba(0, 0, 0, 0.44),
+    0 3px 10px rgba(0, 0, 0, 0.28),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
   overflow: hidden;
 }
-.gtab::before {            /* стеклянная кривизна — спекуляр-блик */
+.gtab::before {            /* верхний спекуляр-блик стекла */
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 42%,
-    rgba(255, 255, 255, 0) 72%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 45%);
 }
-.gtab-pill {                /* активный таб — liquid-glass линза */
+.gtab-pill {                /* активный таб — стеклянная линза, едет пружиной */
   position: absolute; top: 9px; left: 0; height: 44px; width: 54px; border-radius: 22px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.14);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.30),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.06),
-    0 2px 8px rgba(0, 0, 0, 0.18);
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.10),
+    0 1px 4px rgba(0, 0, 0, 0.16);
   z-index: 0;
-  transition: transform 0.32s cubic-bezier(0.34, 1.15, 0.5, 1),
-              width 0.32s cubic-bezier(0.34, 1.15, 0.5, 1), background 0.3s;
+  transition: transform 0.42s cubic-bezier(0.34, 1.28, 0.5, 1),
+              width 0.42s cubic-bezier(0.34, 1.28, 0.5, 1);
 }
 .gtab-slot {
   position: relative; z-index: 1; flex: 1 1 0; height: 100%; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   background: none; border: none; padding: 0; cursor: pointer;
-  color: rgba(255, 255, 255, 0.92);
-  -webkit-tap-highlight-color: transparent; transition: color 0.25s ease;
+  color: rgba(255, 255, 255, 0.94);
+  -webkit-tap-highlight-color: transparent; transition: color 0.28s ease;
 }
-.gtab-slot.on { color: var(--color-gold); }
-.gtab-slot:active { opacity: 0.6; }
+.gtab-slot.on { color: var(--gt-accent); }
 .gtab-ic {
   display: block; pointer-events: none; width: var(--gt-ic); height: var(--gt-ic); flex-shrink: 0;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   -webkit-mask-size: contain; mask-size: contain;
+  transition: transform 0.24s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
 .gtab-ic.wide { width: var(--gt-icw); height: var(--gt-icw); }
+.gtab-slot:active .gtab-ic { transform: scale(0.86); }   /* тактильное нажатие */
 .gtab-lbl {
   max-width: 100%; overflow: hidden; white-space: nowrap;
-  font-family: var(--font-text); font-size: 11px; font-weight: 600;
-  letter-spacing: 0.1px; line-height: 1; color: currentColor;
+  font-family: var(--font-text); font-size: 10px; font-weight: 590;
+  letter-spacing: -0.1px; line-height: 1; color: currentColor;
 }
+/* ── Светлая тема — ЭТАЛОН Apple: белое стекло, чёрные надписи, синий активный ── */
 :root[data-theme='light'] .gtab {
-  background: rgba(255, 255, 255, 0.5);
+  --gt-accent: #007aff;
+  background: rgba(255, 255, 255, 0.8);
+  -webkit-backdrop-filter: blur(36px) saturate(140%);
+  backdrop-filter: blur(36px) saturate(140%);
   box-shadow:
-    0 16px 42px rgba(0, 0, 0, 0.16),
-    0 5px 14px rgba(0, 0, 0, 0.10),
-    inset 0 1px 1px rgba(255, 255, 255, 0.9),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.4),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.6);
+    0 10px 30px rgba(0, 0, 0, 0.13),
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    inset 0 0.5px 0 rgba(255, 255, 255, 1),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.05);
 }
 :root[data-theme='light'] .gtab::before {
-  background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 42%,
-    rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.18) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 45%);
 }
-:root[data-theme='light'] .gtab-slot { color: rgba(0, 0, 0, 0.5); }
+:root[data-theme='light'] .gtab-slot { color: #1c1c1e; }
 :root[data-theme='light'] .gtab-pill {
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(0, 0, 0, 0.055);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.05),
-    0 2px 8px rgba(0, 0, 0, 0.10);
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.03),
+    0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Сторис даршана: на широких экранах (десктоп) портретный кадр иначе растягивается
