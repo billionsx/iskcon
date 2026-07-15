@@ -1,0 +1,41 @@
+name: centers-probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: verify /api/centers наполнен → D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.request
+          cfg = open("apps/web/wrangler.toml", encoding="utf-8").read()
+          acc = re.search(r'account_id\s*=\s*"([^"]+)"', cfg).group(1)
+          dbid = re.search(r'database_id\s*=\s*"([^"]+)"', cfg).group(1)
+          tok = os.environ["CLOUDFLARE_API_TOKEN"]
+          def probe(base, qs):
+              try:
+                  with urllib.request.urlopen(urllib.request.Request(base + "/api/centers" + qs, headers={"User-Agent": "verify"}), timeout=25) as r:
+                      b = r.read(60000).decode("utf-8", "replace")
+                      try: n = len(json.loads(b).get("items", []))
+                      except: n = "PF"
+                      return "items=%s" % n
+              except Exception as e:
+                  return "ERR " + str(e)[:100]
+          rows = []
+          for name, base in [("APEX", "https://gaurangers.com"), ("WDEV", "https://iskcon-web.ceo-5cb.workers.dev")]:
+              plain = probe(base, "?limit=80&offset=0")
+              geo = probe(base, "?lat=55.75&lng=37.61&radius_km=100&limit=80")  # Москва — должно быть >0
+              rows.append("%s plain[%s] geoMSK[%s]" % (name, plain, geo))
+              print("::notice::" + rows[-1])
+          safe = (" ;; ".join(rows))[:600]
+          H = {"Authorization": "Bearer " + tok, "Content-Type": "application/json"}
+          q = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
+          body = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'verify-fix',0,?)", "params": [safe]}).encode()
+          print("w:", urllib.request.urlopen(urllib.request.Request(q, data=body, headers=H), timeout=30).read().decode()[:100])
+          PY
