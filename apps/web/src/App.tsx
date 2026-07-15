@@ -139,16 +139,20 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
  *
  * Теперь список ОДИН, и он же — источник для нижнего меню, для маршрутизатора
  * и для запасной ветки `Screen`. Разъехаться нечему. */
-export const TAB_IDS = ["sadhana", "krishna", "gauranga", "iskcon", "bogatstva"] as const;
+export const TAB_IDS = ["iskcon", "bogatstva", "krishna", "gauranga", "sadhana"] as const;
 export type TabId = typeof TAB_IDS[number];
 export function isTabId(v: string): v is TabId { return (TAB_IDS as readonly string[]).includes(v); }
 
+/* ЗКН-Н072 — порядок нижних вкладок утверждён основателем 15.07.2026.
+ * Правится ТОЛЬКО им. Два списка (TABS визуальный · TAB_IDS канонический)
+ * обязаны идти в ОДНОМ порядке — иначе разъедутся молча (ЗКН-Н007/Н045).
+ * Сторожит nav-audit.py::check_n072. */
 const TABS = [
-  { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
-  { id: "krishna", label: "Кришна", src: "/vraj.svg", wide: false },
-  { id: "gauranga", label: "Гауранга", src: "/gauranga.svg", wide: false },
   { id: "iskcon", label: "ИСККОН", src: "/iskcon.svg", wide: true },
   { id: "bogatstva", label: "Богатства", src: "/bbt.svg", wide: false },
+  { id: "krishna", label: "Кришна", src: "/vraj.svg", wide: false },
+  { id: "gauranga", label: "Гауранга", src: "/gauranga.svg", wide: false },
+  { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
 ] as const;
 
 function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {
