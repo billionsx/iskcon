@@ -1,0 +1,89 @@
+name: "Вынос активов → archive.org + GitHub Releases (2 зеркала)"
+
+# Переносит НЕКРИТИЧЕСКИЕ несекретные бинари из git на ДВА независимых бесплатных
+# зеркала (страховка от бана любого хоста, ЗКН-Пл023): archive.org + GitHub Releases.
+# Индекс — docs/assets/manifest.jsonl (в git). После подтверждения ОБОИХ зеркал файлы
+# удаляются из дерева (git rm) и коммитятся. Бинарь больше не раздувает репозиторий.
+#
+# Запуск вручную (это миграция, не крон). Идемпотентно: класс уже в манифесте — пропуск.
+# Только бесплатно (ЗКН-Пр008): IA_ACCESS_KEY/IA_SECRET_KEY + встроенный GITHUB_TOKEN
+# (Releases публичного репо — бесплатно, ассет не считается в размер git).
+#
+# Коммит делает встроенный токен — по дизайну он НЕ триггерит другие воркфлоу, и это
+# правильно: удаление archive/ и мастеров источников деплой не требует (в приложении
+# они не раздаются). Капкан ЗКН-Ф022 тут не срабатывает.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Что выносить"
+        type: choice
+        default: "all"
+        options: ["all", "tilda", "sources"]
+
+concurrency:
+  group: assets-offload
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  offload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: "Зависимости (internetarchive)"
+        run: pip install "internetarchive>=3.5"
+      - name: "git identity"
+        run: |
+          git config user.name "Billions X"
+          git config user.email "ceo@billionsx.com"
+      - name: "Вынос: старый экспорт Tilda (мёртвый груз, ~438 МБ)"
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == 'tilda' }}
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/assets/offload.py offload \
+            --class tilda \
+            --path archive/tilda-export \
+            --source "Tilda export (перезаливаемо через tilda-import.yml)" \
+            --rm
+      - name: "Вынос: мастера источников (PDF/DOC, .txt остаётся)"
+        if: ${{ github.event.inputs.target == 'all' || github.event.inputs.target == 'sources' }}
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 tools/assets/offload.py offload \
+            --class sources \
+            --path docs/sources \
+            --ext pdf,doc,docx \
+            --source "первоисточники гаудия-вайшнавской библиотеки (мастера; в приложении используется .txt)" \
+            --rm
+      - name: "Коммит манифеста + удалений"
+        run: |
+          git add -A docs/assets
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::notice::нечего коммитить (всё уже вынесено ранее)"
+            exit 0
+          fi
+          n=$(git diff --cached --numstat | wc -l)
+          git commit -q -m "Вынос активов на 2 зеркала (archive.org+Releases), убраны из git (Пл023)"
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:main; then echo "PUSH OK"; break; fi
+            echo "rebase-retry $i"; git fetch origin main -q; GIT_EDITOR=true git rebase origin/main -q || git rebase --abort
+            sleep 4
+          done
+          echo "::notice::готово: изменено $n путей, размер репозитория уменьшен"
+      - name: "Живость зеркал (сразу после выноса)"
+        run: python3 tools/assets/verify.py

@@ -366,6 +366,15 @@ DEBT = {
         "pattern": re.compile(r"[\"'`]#[0-9a-fA-F]{3,8}[\"'`]"),
         "hint": "→ var(--color-gold) / var(--color-gold-deep); см. docs/STANDARD_design.md",
     },
+    "tracked_big_binary": {
+        "law": "ЗКН-Ф025",
+        "name": "тяжёлый бинарь закоммичен в git (>512 КБ)",
+        "scope": "git",
+        "hint": "→ бинарь (фото/видео/аудио/pdf) НЕ живёт в git — раздувает клон, "
+                "жрёт минуты CI, история не чистится. Выноси на два зеркала: "
+                "`tools/assets/offload.py` (archive.org + GitHub Releases), индекс в "
+                "docs/assets/manifest.jsonl (ЗКН-Пл023/Ф025). Шрифты не в счёт",
+    },
 }
 
 
@@ -488,12 +497,40 @@ def count_bare_urlopen():
                 n += 1
     return n
 
+
+BIG_BIN_EXT = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".tiff", ".pdf",
+               ".doc", ".docx", ".ppt", ".pptx", ".mp3", ".mp4", ".m4a", ".wav",
+               ".ogg", ".mov", ".zip", ".gz", ".ico"}
+BIG_BIN_BYTES = 512 * 1024  # шрифты (.ttf/.otf/.woff2) сюда не входят — им можно
+
+
+def count_big_binaries():
+    """Отслеживаемые в git медиа/документы тяжелее 512 КБ. Шрифты не в счёт."""
+    import subprocess
+    try:
+        out = subprocess.run(["git", "ls-files"], cwd=str(ROOT),
+                             capture_output=True, text=True).stdout
+    except Exception:
+        return 0
+    n = 0
+    for line in out.splitlines():
+        p = ROOT / line
+        if p.suffix.lower() in BIG_BIN_EXT:
+            try:
+                if p.stat().st_size > BIG_BIN_BYTES:
+                    n += 1
+            except OSError:
+                pass
+    return n
+
+
 def count_debt():
     counts = {k: 0 for k in DEBT}
     counts["bare_urlopen"] = count_bare_urlopen()
     counts["type_errors"] = count_type_errors()
     counts["long_union"] = count_long_union()
     counts["gates_removed"] = count_gates()
+    counts["tracked_big_binary"] = count_big_binaries()
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
             continue
@@ -502,7 +539,7 @@ def count_debt():
         except Exception:
             continue
         for k, d in DEBT.items():
-            if d.get("scope") in ("tools", "tsc"):
+            if d.get("scope") in ("tools", "tsc", "git"):
                 continue
             counts[k] += len(d["pattern"].findall(t))
     return counts

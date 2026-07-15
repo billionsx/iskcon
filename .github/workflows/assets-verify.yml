@@ -1,0 +1,30 @@
+name: "Живость зеркал активов (ранняя тревога о бане)"
+
+# Регулярно проверяет, что каждый вынесенный класс жив на ОБОИХ зеркалах
+# (archive.org + GitHub Releases). Если хоть одно мертво (бан аккаунта, пропажа item,
+# снятый релиз) — прогон краснеет и шлёт уведомление. Так бан обнаруживается СРАЗУ,
+# а не когда преданный упрётся в мёртвую ссылку. Пусто в манифесте → зелено (ЗКН-Пл023).
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"   # еженедельно, пн 06:17 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: assets-verify
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: "HEAD-проверка обоих зеркал по манифесту"
+        run: python3 tools/assets/verify.py
