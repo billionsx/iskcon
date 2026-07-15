@@ -101,7 +101,8 @@ def _get_json(url, tries=4):
         except Exception as e:  # noqa: BLE001
             last = str(e)[:160]
         time.sleep(1.5 * (i + 1))
-    raise SystemExit("::error title=REST::%s — %s" % (last, url))
+    print("::warning title=REST::%s — %s (откат/пропуск)" % (last, url))
+    return None
 
 
 def _get_text(url, tries=4):
@@ -116,7 +117,8 @@ def _get_text(url, tries=4):
         except Exception as e:  # noqa: BLE001
             last = str(e)[:160]
         time.sleep(1.5 * (i + 1))
-    raise SystemExit("::error title=RSS::%s — %s" % (last, url))
+    print("::warning title=RSS::%s — %s (пропуск источника)" % (last, url))
+    return None
 
 
 # ─────────────────────── разбор HTML/тела ───────────────────────
@@ -281,10 +283,13 @@ _NS = {"content": "http://purl.org/rss/1.0/modules/content/"}
 def rss_records(src):
     """RSS/Atom как откат (одна страница). Тело — из content:encoded, иначе description."""
     xml = _get_text(src["rss"])
+    if not xml:
+        return []
     try:
         root = ET.fromstring(xml)
     except ET.ParseError as e:
-        raise SystemExit("::error title=RSS parse::%s — %s" % (str(e)[:120], src["rss"]))
+        print("::warning title=RSS parse::%s — %s (пропуск источника)" % (str(e)[:120], src["rss"]))
+        return []
     items = root.findall(".//item") or root.findall(".//{http://www.w3.org/2005/Atom}entry")
     out = []
     for it in items:
@@ -574,7 +579,10 @@ def main():
     keys = [a.source] if a.source else list(SOURCES)
     total = 0
     for key in keys:
-        total += run_source(key, a.limit, a.pages, a.dry)
+        try:
+            total += run_source(key, a.limit, a.pages, a.dry)
+        except Exception as e:  # noqa: BLE001 — один источник НЕ роняет остальные
+            print("::warning title=%s::источник упал (%s) — пропуск, остальные продолжают" % (key, str(e)[:200]))
     print("::notice title=Новости ИСККОН::всего добавлено %d по %d источникам" % (total, len(keys)))
 
 
