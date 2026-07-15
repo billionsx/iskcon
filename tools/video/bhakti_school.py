@@ -20,8 +20,9 @@
 Запуск:
   python3 tools/video/bhakti_school.py --limit 3
   python3 tools/video/bhakti_school.py --selftest        # юнит чистых функций
-Переменные: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, ANTHROPIC_API_KEY,
-            IA_ACCESS_KEY, IA_SECRET_KEY.
+Переменные: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID,
+            IA_ACCESS_KEY, IA_SECRET_KEY.  Перевод заголовка — бесплатный, без ключа
+            (ЗКН-Пр008).
 
 ЗКН-Ф014: скрипт говорит, ЧТО именно сломалось, а не «exit 1».
 ЗКН-Пл020: стороннее видео перезаливается на archive.org, а не хотлинкуется.
@@ -38,26 +39,16 @@ import urllib.request
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "goldforge"))
 import d1  # noqa: E402
+# Перевод заголовка — тот же бесплатный переводчик + канонизатор имён, что у новостей
+# (ЗКН-Д002: один источник, без копий; ЗКН-Пр008: бесплатно, без ключа/баланса).
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "news"))
+from iskcon_news import translate as free_translate, TranslateFailed  # noqa: E402
 
-ANTHROPIC = "https://api.anthropic.com/v1/messages"
-MODEL = os.environ.get("VIDEO_MODEL", "claude-sonnet-5")
 CHANNEL = "https://www.youtube.com/@bhakti.school/videos"
 SOURCE = "youtube.com"
 SOURCE_LABEL = "Школа Бхакти"
 AUTHOR = "Школа Бхакти / Bhakti School"
 COLLECTION = os.environ.get("IA_COLLECTION", "opensource_movies")
-
-# BBT-глоссарий канонических имён — переводчик обязан их соблюдать (ЗКН-ПР005).
-SYSTEM = (
-    "Ты — переводчик гаудия-вайшнавского контента с BBT-точностью (Бхактиведанта Бук "
-    "Траст / Шрила Прабхупада). Переведи заголовок видео с английского на русский и "
-    "напиши ОДНО короткое предложение-описание по-русски. НОЛЬ фабрикации: не добавляй "
-    "фактов, которых нет в заголовке. Канон имён (строго): «Гауранга Махапрабху» "
-    "(Навадвипа-лила) и «Шри Кришна Чайтанья Махапрабху» (после санньясы); формы «Шри "
-    "Чайтанья», «Чайтанья», «Гаура-лила», одиночное «Радхарани» — ЗАПРЕЩЕНЫ; «Шримати "
-    "Радхарани», «Шрила Прабхупада», «Кришна». Верни СТРОГО JSON без обрамления: "
-    '{"title": "...", "summary": "..."}.'
-)
 
 
 # ─────────────────────── чистые функции (selftest) ───────────────────────
@@ -172,36 +163,15 @@ def ia_upload_files(ident, files, md):
               retries=4, queue_derive=False, verbose=True)
 
 
-# ─────────────────────── перевод ───────────────────────
+# ─────────────────────── перевод (бесплатный) ───────────────────────
 
 def translate_title(title_en):
-    body = json.dumps({
-        "model": MODEL, "max_tokens": 700, "system": SYSTEM,
-        "messages": [{"role": "user", "content": title_en}],
-    }).encode()
-    req = urllib.request.Request(ANTHROPIC, data=body, headers={
-        "x-api-key": os.environ["ANTHROPIC_API_KEY"],
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-    })
-    last = ""
-    for i in range(3):
-        try:
-            with urllib.request.urlopen(req, timeout=90) as r:
-                d = json.load(r)
-            txt = "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text")
-            txt = txt.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-            obj = json.loads(txt)
-            t = (obj.get("title") or "").strip()
-            if t:
-                return t, (obj.get("summary") or "").strip()
-            raise ValueError("пустой перевод")
-        except urllib.error.HTTPError as e:
-            last = "HTTP %s — %s" % (e.code, e.read().decode("utf-8", "replace")[:200])
-        except Exception as e:  # noqa: BLE001
-            last = str(e)[:200]
-        time.sleep(2.0 * (i + 1))
-    raise SystemExit("::error title=Anthropic::%s" % last)
+    """Заголовок EN→RU бесплатно (Google→MyMemory) + канонизатор имён.
+    Отказ обоих переводчиков — поднимаем TranslateFailed (видео пропустим)."""
+    t = free_translate(title_en)
+    if not t:
+        raise TranslateFailed("пустой перевод заголовка")
+    return t
 
 
 # ─────────────────────── D1 ───────────────────────
@@ -225,7 +195,7 @@ def insert(rec):
 # ─────────────────────── прогон ───────────────────────
 
 def run(limit):
-    for key in ("ANTHROPIC_API_KEY", "IA_ACCESS_KEY", "IA_SECRET_KEY"):
+    for key in ("IA_ACCESS_KEY", "IA_SECRET_KEY"):
         if not os.environ.get(key):
             raise SystemExit("::error::нет %s" % key)
     if not d1.available():
@@ -274,7 +244,12 @@ def run(limit):
                     ),
                 }
                 ia_upload_files(ident, files, md)
-                title_ru, summary_ru = translate_title(title_en)
+                try:
+                    title_ru = translate_title(title_en)
+                except TranslateFailed as e:
+                    print("::warning::%s — перевод заголовка не удался (%s), пропуск" % (vid, e))
+                    continue
+                summary_ru = ""
                 insert({
                     "guid": guid, "url": watch_url(vid),
                     "stream_url": ia_file_url(ident, mp4_name), "ident": ident,

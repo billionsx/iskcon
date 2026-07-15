@@ -25,7 +25,8 @@
   python3 tools/news/iskcon_news.py --limit 12 --pages 1
   python3 tools/news/iskcon_news.py --source iskconnews --limit 20
   python3 tools/news/iskcon_news.py --selftest        # юнит чистых функций, без сети/ключей
-Переменные: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, ANTHROPIC_API_KEY.
+Переменные: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID. Перевод — бесплатный
+(веб-эндпоинт Google → откат MyMemory), БЕЗ ключа и без баланса (ЗКН-Пр008).
 
 ЗКН-Ф014: скрипт говорит, ЧТО именно сломалось, а не «exit 1».
 ЗКН-Пл006: источник важнее метода — переводим РЕАЛЬНЫЙ материал сайтов, ничего не досочиняя.
@@ -38,6 +39,7 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 
@@ -45,8 +47,11 @@ import xml.etree.ElementTree as ET
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "goldforge"))
 import d1  # noqa: E402
 
-ANTHROPIC = "https://api.anthropic.com/v1/messages"
-MODEL = os.environ.get("NEWS_MODEL", "claude-sonnet-5")
+# Перевод — ТОЛЬКО бесплатные веб-эндпоинты, без ключа и без баланса (ЗКН-Пр008).
+# Основной — свободный веб-эндпоинт Google (тот же, что у браузерного перевода),
+# запасной — MyMemory (бесплатный, без ключа). Оба по HTTP, чистый stdlib.
+GT_URL = "https://translate.googleapis.com/translate_a/single"
+MYMEMORY_URL = "https://api.mymemory.translated.net/get"
 UA = "ISKCON-ONE-LOVE-News/1.0 (+https://gaurangers.com)"
 
 # Категории iskconnews.org → русские ярлыки (берём самый конкретный термин статьи).
@@ -67,21 +72,11 @@ CAT_RU = {
     "festivals": "Праздники", "festival": "Праздники", "events": "События",
 }
 
-SYSTEM = """Ты — переводчик новостной ленты ISKCON ONE LOVE. Переводишь официальные новости ИСККОН с английского на русский для преданных, читающих на русском.
-
-ЖЕЛЕЗНЫЕ ПРАВИЛА (нарушение = брак):
-1. НОЛЬ ФАБРИКАЦИИ. Переводишь только то, что есть в исходном тексте. Ни одного имени, числа, даты, места, которых нет в оригинале. Не понял фразу — переведи буквально по смыслу, не выдумывай.
-2. Естественный, живой русский — как в качественном издании. Не калька, не подстрочник. Сохраняй абзацную структуру: сколько дал абзацев на входе, столько верни на выходе, в том же порядке и смысле.
-3. КАНОНИЧЕСКИЕ ИМЕНА (обязательны):
-   • Господь: «Гауранга Махапрабху» (Навадвипа/общее) или «Шри Кришна Чайтанья Махапрабху» (санньяса/Пури). Голого «Чайтанья» не пиши.
-   • «Шримати Радхарани», «Шрила Прабхупада», «Шри Кришна», «Господь Джаганнатха», «Господь Нрисимхадев», «Радха-Мадхава».
-   • Основатель-ачарья — «Его Божественная Милость А. Ч. Бхактиведанта Свами Прабхупада».
-4. Санскритские и вайшнавские имена и термины передавай русской транслитерацией по принятому в гаудия-вайшнавизме написанию: Das → дас, Devi Dasi → деви даси, Swami → Свами, Prabhu → Прабху, Ratha-yatra → Ратха-ятра, prasadam → прасад, harinama → харинама, Bhagavad-gita → «Бхагавад-гита», Srimad Bhagavatam → «Шримад-Бхагаватам», sankirtana → санкиртана, brahmachari → брахмачари, japa → джапа. Названия храмов и городов — по устоявшемуся русскому написанию (Маяпур, Вриндаван, Бхактиведанта Мэнор).
-5. Никаких точек с запятой «;» и никаких прямых апострофов. Кавычки — «ёлочки».
-6. Тон нейтральный, уважительный. Без отсебятины, лозунгов и оценок сверх оригинала.
-
-ФОРМАТ ОТВЕТА — ЧИСТЫЙ JSON, без markdown и пояснений:
-{"title": "переведённый заголовок", "author": "переведённая/транслитерированная подпись автора", "lead": "короткая версия 2–3 предложения, суть новости своими словами по фактам из текста", "body": ["абзац 1", "абзац 2", ...]}"""
+# Канонические имена и термины теперь чинит детерминированный канонизатор
+# `canonize_ru()` (см. ниже, раздел «перевод») — генеративная модель больше не
+# участвует. Машинный перевод не знает наших форм, поэтому его выход ОБЯЗАН пройти
+# канонизатор (ЗКН-Пл022): «Гауранга Махапрабху», «Шримати Радхарани», «Шрила
+# Прабхупада» — вместо голых форм, которые отдаёт любой обычный переводчик.
 
 
 # ─────────────────────────── HTTP ───────────────────────────
@@ -329,36 +324,124 @@ def _rss_date(s):
     return s  # уже ISO или отдадим как есть
 
 
-# ─────────────────────── перевод ───────────────────────
+# ─────────────────────── перевод (бесплатный) + канонизатор ───────────────────────
 
-def anthropic_translate(title_en, body_paras):
-    prompt = json.dumps({"title": title_en, "body": body_paras}, ensure_ascii=False)
-    body = json.dumps({
-        "model": MODEL, "max_tokens": 4000, "system": SYSTEM,
-        "messages": [{"role": "user", "content": prompt}],
-    }).encode()
-    req = urllib.request.Request(ANTHROPIC, data=body, headers={
-        "x-api-key": os.environ["ANTHROPIC_API_KEY"],
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-    })
-    for i in range(3):
-        try:
-            with urllib.request.urlopen(req, timeout=120) as r:
-                d = json.load(r)
-            txt = "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text")
-            txt = txt.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-            obj = json.loads(txt)
-            out_body = [p.strip() for p in obj.get("body", []) if p and p.strip()]
-            if obj.get("title") and obj.get("lead") and out_body:
-                return obj.get("title").strip(), obj.get("author", "").strip(), obj.get("lead").strip(), out_body
-            raise ValueError("пустой перевод")
-        except urllib.error.HTTPError as e:
-            last = "HTTP %s — %s" % (e.code, e.read().decode("utf-8", "replace")[:200])
-        except Exception as e:  # noqa: BLE001
-            last = str(e)[:200]
-        time.sleep(2.0 * (i + 1))
-    raise SystemExit("::error title=Anthropic::%s" % last)
+# ЗКН-Пл022: выход машинного перевода ОБЯЗАН пройти канонизатор имён. Обычный
+# переводчик не знает наших форм и отдаёт голое «Чайтанья Махапрабху», «Радхарани»,
+# «Прабхупада». Чиним детерминированно (порядок важен: сначала составные формы).
+_CANON = [
+    # Господь Чайтанья → каноничная общая форма (проектный канон — «Гауранга Махапрабху»)
+    (re.compile(r"(?:Господ[а-я]+\s+)?(?:Шри\s+)?Чайтань[а-я]+(?:\s+Махапрабху)?"), "Гауранга Махапрабху"),
+    # Гаура-лила → Гауранга Лила (сохраняем падежное окончание)
+    (re.compile(r"Гаура-лил([а-я]*)"), r"Гауранга Лил\1"),
+    # Радхарани в одиночку → Шримати Радхарани (не трогаем, если уже «Шримати …»)
+    (re.compile(r"(?<!Шримати )Радхарани"), "Шримати Радхарани"),
+    # Прабхупада в одиночку → Шрила Прабхупада (не трогаем после «Шрила »/«Свами »)
+    (re.compile(r"(?<!Шрила )(?<!Свами )Прабхупада"), "Шрила Прабхупада"),
+    # частые термины BBT-написания
+    (re.compile(r"\bпрасадам\b", re.IGNORECASE), "прасад"),
+]
+
+
+def canonize_ru(s):
+    s = s or ""
+    for rx, repl in _CANON:
+        s = rx.sub(repl, s)
+    return s.strip()
+
+
+def _google_tr(text, sl="en", tl="ru"):
+    q = urllib.parse.urlencode({"client": "gtx", "sl": sl, "tl": tl, "dt": "t", "q": text})
+    req = urllib.request.Request(GT_URL + "?" + q, headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.load(r)
+    except urllib.error.HTTPError as e:
+        raise RuntimeError("google HTTP %s" % e.code)
+    return "".join(seg[0] for seg in (data[0] or []) if seg and seg[0])
+
+
+def _mymemory_tr(text, sl="en", tl="ru"):
+    q = urllib.parse.urlencode({"q": text, "langpair": "%s|%s" % (sl, tl), "de": "ceo@billionsx.com"})
+    req = urllib.request.Request(MYMEMORY_URL + "?" + q, headers={"User-Agent": UA})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            d = json.load(r)
+    except urllib.error.HTTPError as e:
+        raise RuntimeError("mymemory HTTP %s" % e.code)
+    return (d.get("responseData") or {}).get("translatedText", "") or ""
+
+
+def _chunks(text, limit=1500):
+    """Режем длинный абзац по границам предложений — эндпоинты не любят гигантский q."""
+    text = text.strip()
+    if len(text) <= limit:
+        return [text] if text else []
+    out, buf = [], ""
+    for part in re.split(r"(?<=[.!?])\s+", text):
+        if len(buf) + len(part) + 1 > limit and buf:
+            out.append(buf.strip())
+            buf = part
+        else:
+            buf = (buf + " " + part).strip()
+    if buf:
+        out.append(buf.strip())
+    return out
+
+
+class TranslateFailed(Exception):
+    pass
+
+
+def translate(text, sl="en", tl="ru"):
+    """EN→RU бесплатно: Google-веб-эндпоинт → откат на MyMemory → канонизатор.
+    Оба отказали — поднимаем TranslateFailed (статью пропустим, НЕ выдумываем)."""
+    text = (text or "").strip()
+    if not text:
+        return ""
+    parts = _chunks(text)
+    outs, last = [], ""
+    for chunk in parts:
+        got = None
+        for fn in (_google_tr, _mymemory_tr):
+            for i in range(2):
+                try:
+                    res = fn(chunk, sl, tl)
+                    if res and res.strip():
+                        got = res.strip()
+                        break
+                except urllib.error.HTTPError as e:
+                    last = "HTTP %s (%s)" % (e.code, getattr(fn, "__name__", "?"))
+                except Exception as e:  # noqa: BLE001
+                    last = "%s (%s)" % (str(e)[:120], getattr(fn, "__name__", "?"))
+                time.sleep(1.0 * (i + 1))
+            if got:
+                break
+        if not got:
+            raise TranslateFailed(last or "оба переводчика молчат")
+        outs.append(got)
+    return canonize_ru(" ".join(outs))
+
+
+def translate_article(title_en, author_en, body_paras):
+    """Заголовок + автор + абзацы → русский (бесплатно, с канонизацией имён).
+    lead — первые 1–2 предложения переведённого первого абзаца (свой лид статьи,
+    без AI-пересказа: ноль фабрикации)."""
+    title_ru = translate(title_en)
+    author_ru = translate(author_en) if author_en else ""
+    body_ru = []
+    for para in body_paras:
+        p = translate(para)
+        if p:
+            body_ru.append(p)
+    if not title_ru or not body_ru:
+        raise TranslateFailed("пустой перевод заголовка/тела")
+    first = body_ru[0]
+    sents = re.split(r"(?<=[.!?])\s+", first)
+    lead_ru = " ".join(sents[:2]).strip()
+    if len(lead_ru) > 320:
+        lead_ru = lead_ru[:317].rstrip() + "…"
+    return title_ru, author_ru, lead_ru, body_ru
 
 
 # ─────────────────────── D1 ───────────────────────
@@ -404,7 +487,12 @@ def run_source(key, limit, pages, dry):
                 filtered += 1
                 continue
             print("→ [%s %s] %s" % (src["short"], r["wid"], r["title_en"][:66]))
-            t_ru, a_ru, lead_ru, b_ru = anthropic_translate(r["title_en"], r["body_en"][:35])
+            try:
+                t_ru, a_ru, lead_ru, b_ru = translate_article(r["title_en"], r["author"] or "", r["body_en"][:30])
+            except TranslateFailed as e:
+                print("::warning::[%s %s] перевод не удался (%s) — пропуск, вернёмся в следующий прогон" % (src["short"], r["wid"], e))
+                filtered += 1
+                continue
             rec = {
                 "guid": guid, "slug": "%s-%s" % (src["short"], r["raw_slug"]),
                 "url": r["url"], "published_at": r["published_at"] or _iso(""),
@@ -435,6 +523,16 @@ def selftest():
                               ["By Radha Mohan Das. Monday marked a highly auspicious occasion — the 60th anniversary of the incorporation of ISKCON in New York, a milestone for the whole movement worldwide."]), "real article kept"
     assert _iso("2026-07-15 09:30:00") == "2026-07-15T09:30:00Z", "iso"
     assert _rss_date("Tue, 15 Jul 2026 09:30:00 +0000") == "2026-07-15T09:30:00Z", "rss date"
+    # канонизатор имён (ЗКН-Пл022) — генеративный MT не участвует, чиним детерминированно
+    assert canonize_ru("Господь Чайтанья Махапрабху посетил") == "Гауранга Махапрабху посетил", "Чайтанья→Гауранга"
+    assert canonize_ru("Шри Чайтанья прибыл") == "Гауранга Махапрабху прибыл", "Шри Чайтанья→Гауранга"
+    assert canonize_ru("поклонение Радхарани") == "поклонение Шримати Радхарани", "Радхарани→Шримати"
+    assert canonize_ru("уже Шримати Радхарани") == "уже Шримати Радхарани", "не дублируем Шримати"
+    assert canonize_ru("книги Прабхупады не трогаем формой") != "", "Прабхупада форма"
+    assert canonize_ru("основатель Шрила Прабхупада") == "основатель Шрила Прабхупада", "не дублируем Шрила"
+    assert canonize_ru("праздник Гаура-лилы") == "праздник Гауранга Лилы", "Гаура-лила→Гауранга Лила"
+    assert _chunks("a" * 10) == ["aaaaaaaaaa"] and _chunks("") == [], "chunks short"
+    assert len(_chunks("Один. " * 500, limit=200)) > 1, "chunks long split"
     print("selftest OK")
 
 
@@ -453,8 +551,6 @@ def main():
 
     if not a.dry and not d1.available():
         raise SystemExit("::error::нет доступа к D1 (CLOUDFLARE_API_TOKEN/ACCOUNT_ID)")
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        raise SystemExit("::error::нет ANTHROPIC_API_KEY")
 
     keys = [a.source] if a.source else list(SOURCES)
     total = 0

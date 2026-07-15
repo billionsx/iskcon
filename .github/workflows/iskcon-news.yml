@@ -37,7 +37,6 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: d5cbe19470dc38599873eabfe148e6d1
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
           python3 tools/news/iskcon_news.py \
             --limit "${{ github.event.inputs.limit || '12' }}" \
