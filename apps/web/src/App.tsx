@@ -120,10 +120,11 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
   );
 }
 
-/* ═════════ TabBar — нижнее меню gaurangers (Instagram-2026 · liquid glass) ═════════
- * Плавающая «таблетка», два размера (обычный ↔ компактный при прокрутке),
- * овальное выделение активного таба, иконки — логотипы через CSS-маску
- * (цвет = --color-label, т.е. чёрные в светлой теме / белые в тёмной). */
+/* ═════════ TabBar — нижнее меню gaurangers (Liquid Glass iOS 26 · ЗКН-Д016) ═════════
+ * Эталон — таб-бар App Store: линза покоя за активным табом; на нажатии она
+ * отрывается КАПЛЕЙ выше плашки, течёт за пальцем и ЛИНЗИРУЕТ иконки
+ * (увеличение + изгиб по кромке + спектральная кайма); иконки — логотипы
+ * через CSS-маску (цвет = --color-label: чёрные в светлой / белые в тёмной). */
 /* ЗКН-Н040 — ЗАКОННЫХ ВКЛАДОК РОВНО СТОЛЬКО, СКОЛЬКО РИСУЕТ `Screen`.
  *
  * ЭТО И БЫЛ КОРЕНЬ БЕЛЫХ ЭКРАНОВ ПО ВСЕМУ ПРИЛОЖЕНИЮ.
@@ -164,14 +165,22 @@ const TABS = [
 function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
-  const dlensRef = useRef<HTMLDivElement>(null);
+  const lensRef = useRef<HTMLDivElement>(null);
+  const magRef = useRef<HTMLDivElement>(null);
+  const edgeRef = useRef<HTMLDivElement>(null);
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([]);
   const slotRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const drag = useRef({ on: false, moved: false, id: -1, startX: 0 });
-  const draggedRef = useRef(false);
+  const copyRefs = useRef<HTMLSpanElement[][]>([[], []]);
+  const drag = useRef({ id: -1, startX: 0, moved: false });
   const suppressClick = useRef(false);
-  const stretchTimer = useRef<number | undefined>(undefined);
+  const lensNav = useRef(false);
 
-  /* Геометрия слота относительно бара (линза чуть уже слота — inset, как в App Store). */
+  /* Пружина капли (ЗКН-Д016): x — центр линзы по бару; m — морф формы
+   * (0 = линза покоя 44 x slot, 1 = капля D76 — ВЫШЕ плашки, как в App Store). */
+  const S = useRef({ on: false, raf: 0, t: 0, x: 0, vx: 0, tx: 0, m: 0, vm: 0, tm: 0, settle: false, slotW: 82, barW: 320 });
+  const BAR_H = 62, LENS_D = 76, REST_H = 44, REST_R = 22;
+
+  /* Геометрия слота относительно бара (линза покоя чуть уже слота — inset, как в App Store). */
   const metrics = (i: number) => {
     const nav = navRef.current; const slot = slotRefs.current[i];
     if (!nav || !slot) return null;
@@ -179,121 +188,184 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     const inset = 6;
     return { x: sr.left - nr.left + inset / 2, w: Math.max(0, sr.width - inset) };
   };
-  const setPill = (x: number, w: number, spring: boolean) => {
-    const pill = pillRef.current; if (!pill) return;
-    pill.style.transition = spring ? "" : "none";
-    pill.style.transform = `translateX(${x}px)`;
-    pill.dataset.x = String(x);
-    if (w >= 0) { pill.style.width = `${w}px`; pill.dataset.w = String(w); }
-  };
+  const slotCenter = (i: number) => { const m = metrics(i); return m ? m.x + m.w / 2 : S.current.barW / 2; };
+  const activeIdx = () => Math.max(0, TABS.findIndex((t) => t.id === active));
   const nearest = (cx: number) => {
     let best = 0, bd = Infinity;
     for (let i = 0; i < TABS.length; i++) {
       const s = slotRefs.current[i]; if (!s) continue;
-      const sr = s.getBoundingClientRect(); const c = sr.left + sr.width / 2;
-      const d = Math.abs(cx - c); if (d < bd) { bd = d; best = i; }
+      const sr = s.getBoundingClientRect(); const d = Math.abs(cx - (sr.left + sr.width / 2));
+      if (d < bd) { bd = d; best = i; }
     }
     return best;
   };
-  const preview = (i: number) => slotRefs.current.forEach((s, idx) => { if (s) s.classList.toggle("on", idx === i); });
+  /* Подсветка таба под каплей — и в баре, и в обеих копиях внутри линзы. */
+  const preview = (i: number) => {
+    slotRefs.current.forEach((s, idx) => { if (s) s.classList.toggle("on", idx === i); });
+    copyRefs.current.forEach((row) => row.forEach((s, idx) => { if (s) s.classList.toggle("on", idx === i); }));
+  };
+  const setPill = (x: number, w: number, animate: boolean) => {
+    const pill = pillRef.current; if (!pill) return;
+    pill.style.transition = animate ? "" : "none";
+    pill.style.transform = `translateX(${x}px)`;
+    pill.style.width = `${w}px`;
+  };
+  const measure = () => {
+    const st = S.current; const nav = navRef.current; if (!nav) return;
+    st.barW = nav.getBoundingClientRect().width;
+    const m0 = metrics(0); if (m0) st.slotW = m0.w;
+    rowRefs.current.forEach((r) => { if (r) r.style.width = `${st.barW}px`; });
+  };
 
-  /* ── Жест: зажать таб и вести пальцем — линза течёт за пальцем, иконки преломляются ── */
+  /* Кадр пружины: геометрия капли + контр-сдвиг копий = ЛИНЗИРОВАНИЕ
+   * (увеличение mag-слоя, изгиб edge-кольца), сплющивание по скорости. */
+  const frame = (now: number) => {
+    const st = S.current; const lens = lensRef.current; const nav = navRef.current;
+    if (!lens || !nav) { st.on = false; return; }
+    const dt = Math.min(0.032, Math.max(0.001, (now - st.t) / 1000)); st.t = now;
+    st.vx += ((st.tx - st.x) * 380 - st.vx * 34) * dt; st.x += st.vx * dt;
+    st.vm += ((st.tm - st.m) * 230 - st.vm * 24) * dt; st.m += st.vm * dt;
+    const m = Math.max(0, Math.min(1.06, st.m));
+    const w = st.slotW + (LENS_D - st.slotW) * m;
+    const h = REST_H + (LENS_D - REST_H) * m;
+    const r = REST_R + (LENS_D / 2 - REST_R) * m;
+    const top = (BAR_H - h) / 2;
+    const left = st.x - w / 2;
+    const sq = 1 + Math.max(-0.11, Math.min(0.11, st.vx * 0.00026)) * Math.min(1, m * 1.4);
+    lens.style.width = `${w}px`; lens.style.height = `${h}px`; lens.style.borderRadius = `${r}px`;
+    lens.style.transform = `translate3d(${left}px, ${top}px, 0) scale(${sq}, ${1 / sq})`;
+    lens.style.opacity = String(Math.min(1, m * 2.4));
+    lens.style.visibility = m > 0.012 ? "visible" : "hidden";
+    lens.style.setProperty("--lm", String(Math.min(1, m)));
+    if (magRef.current) magRef.current.style.transform = `scale(${1 + 0.17 * m})`;
+    if (edgeRef.current) edgeRef.current.style.transform = `scale(${1 + 0.42 * m})`;
+    rowRefs.current.forEach((rw) => { if (rw) rw.style.transform = `translate3d(${-left}px, ${-top}px, 0)`; });
+    if (st.settle && Math.abs(st.tx - st.x) < 1.2 && Math.abs(st.vx) < 30) st.tm = 0;
+    const still = Math.abs(st.tx - st.x) < 0.3 && Math.abs(st.vx) < 4 && Math.abs(st.tm - st.m) < 0.006 && Math.abs(st.vm) < 0.06;
+    if (still && st.tm === 0) {
+      st.on = false; st.m = 0; st.vm = 0;
+      lens.style.visibility = "hidden";
+      nav.classList.remove("pressing");
+      return;
+    }
+    st.raf = requestAnimationFrame(frame);
+  };
+  const wake = () => { const st = S.current; if (st.on) return; st.on = true; st.t = performance.now(); st.raf = requestAnimationFrame(frame); };
+  useEffect(() => { const st = S.current; return () => cancelAnimationFrame(st.raf); }, []);
+
+  const reduceMotion = () => typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ── Нажатие (iOS 26): линза покоя ОТРЫВАЕТСЯ от активного таба и каплей течёт к пальцу.
+   * Держишь — капля стоит над табом; ведёшь — течёт следом и преломляет иконки;
+   * отпускаешь — пружиной доезжает до ближайшего таба и оседает в линзу покоя. ── */
   const onDown = (e: ReactPointerEvent) => {
-    const nav = navRef.current; if (!nav) return;
-    drag.current = { on: true, moved: false, id: e.pointerId, startX: e.clientX };
-    /* НЕ захватываем указатель здесь — иначе click по табу не срабатывает (тап ломается).
-       Захват включаем ниже, только когда палец реально сдвинулся (начался drag). */
+    const nav = navRef.current; if (!nav || reduceMotion()) return;
+    measure();
+    const st = S.current;
+    const i = nearest(e.clientX);
+    drag.current = { id: e.pointerId, startX: e.clientX, moved: false };
+    if (st.m < 0.02) { st.x = slotCenter(activeIdx()); st.vx = 0; }   /* капля рождается из линзы покоя */
+    st.tx = slotCenter(i); st.tm = 1; st.settle = false;
+    nav.classList.add("pressing");
+    preview(i);
+    wake();
   };
   const onMove = (e: ReactPointerEvent) => {
-    const nav = navRef.current; const dl = dlensRef.current;
-    if (!drag.current.on || e.pointerId !== drag.current.id || !nav) return;
+    const nav = navRef.current;
+    if (drag.current.id !== e.pointerId || !nav) return;
     if (!drag.current.moved && Math.abs(e.clientX - drag.current.startX) > 4) {
-      drag.current.moved = true; nav.classList.add("dragging");
-      try { nav.setPointerCapture(e.pointerId); } catch { /* noop */ }   // захват только при реальном drag
+      drag.current.moved = true;
+      try { nav.setPointerCapture(e.pointerId); } catch { /* noop */ }   /* захват только при реальном drag — тап не ломаем */
     }
     if (!drag.current.moved) return;
     e.preventDefault();
+    const st = S.current;
     const nr = nav.getBoundingClientRect();
-    const w = parseFloat(pillRef.current?.dataset.w ?? "54");
-    let px = e.clientX - nr.left - w / 2;
-    px = Math.max(3, Math.min(nr.width - w - 3, px));
-    setPill(px, -1, false);                                   // линза следует за пальцем
-    if (dl) {
-      const dw = dl.offsetWidth || 58;
-      let dx = e.clientX - nr.left - dw / 2;
-      dx = Math.max(2, Math.min(nr.width - dw - 2, dx));
-      dl.style.transform = `translateX(${dx}px)`;              // преломляющее стекло сверху
-    }
-    preview(nearest(e.clientX));                              // подсветка таба под пальцем
+    const half = LENS_D / 2;
+    st.tx = Math.max(half - 6, Math.min(nr.width - half + 6, e.clientX - nr.left));
+    st.settle = false;
+    preview(nearest(e.clientX));
+    wake();
   };
-  const endDrag = (e: ReactPointerEvent) => {
+  const settleTo = (i: number) => { const st = S.current; st.tx = slotCenter(i); st.settle = true; wake(); };
+  const endPress = (e: ReactPointerEvent, cancelled: boolean) => {
     const nav = navRef.current;
-    if (!drag.current.on || e.pointerId !== drag.current.id) return;
+    if (drag.current.id !== e.pointerId) return;
     try { nav?.releasePointerCapture(e.pointerId); } catch { /* noop */ }
     const wasDrag = drag.current.moved;
-    drag.current.on = false;
-    nav?.classList.remove("dragging");
-    if (!wasDrag) return;                                     // это был тап — отдаём onClick
+    drag.current.id = -1; drag.current.moved = false;
+    if (cancelled) { preview(activeIdx()); settleTo(activeIdx()); return; }   /* скролл украл жест — капля домой */
+    const i = nearest(e.clientX);
+    settleTo(i);
+    if (!wasDrag) return;                                     /* это был тап — навигацию делает onClick */
     suppressClick.current = true;
-    window.setTimeout(() => { suppressClick.current = false; }, 400);  // на случай, если click не придёт
-    const i = nearest(e.clientX); const m = metrics(i);
-    if (m) setPill(m.x, m.w, true);                           // пружинная доводка к ближайшему табу
-    draggedRef.current = true;
+    window.setTimeout(() => { suppressClick.current = false; }, 400);
     const t = TABS[i];
+    lensNav.current = true;
     if (t.id !== active) onChange(t.id); else preview(i);
   };
-  const onClickTab = (t: (typeof TABS)[number]) => {
+  const onClickTab = (t: (typeof TABS)[number], i: number) => {
     if (suppressClick.current) { suppressClick.current = false; return; }
+    settleTo(i);
+    lensNav.current = true;
     if (t.id === active) { scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); window.dispatchEvent(new CustomEvent("tab-reset", { detail: t.id })); }
     onChange(t.id);
   };
 
-  const syncActive = () => { const i = TABS.findIndex((t) => t.id === active); const m = metrics(i); if (m) setPill(m.x, m.w, false); };
+  const syncActive = () => { const m = metrics(activeIdx()); if (m) setPill(m.x, m.w, false); };
   const syncRef = useRef(syncActive); syncRef.current = syncActive;
+  const measureRef = useRef(measure); measureRef.current = measure;
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => syncRef.current());
+    const ro = new ResizeObserver(() => { syncRef.current(); measureRef.current(); });
     ro.observe(nav);
     return () => ro.disconnect();
   }, []);
 
-  /* Доводка при смене активного (тап / внешняя навигация) с liquid-растяжением; после drag — пропуск. */
+  /* Смена активного: после капли линза покоя встаёт МГНОВЕННО (переезд уже показала капля);
+     внешняя навигация (не через бар) — обычная пружинная доводка CSS-перехода. */
   useLayoutEffect(() => {
-    const i = TABS.findIndex((t) => t.id === active);
-    const m = metrics(i); const pill = pillRef.current;
-    if (!m || !pill) return;
-    if (draggedRef.current) { draggedRef.current = false; pill.dataset.x = String(m.x); pill.dataset.w = String(m.w); return; }
-    const pX = parseFloat(pill.dataset.x ?? ""); const pW = parseFloat(pill.dataset.w ?? "");
-    window.clearTimeout(stretchTimer.current);
-    if (!isNaN(pX) && !isNaN(pW) && Math.abs(pX - m.x) > 1) {
-      pill.classList.remove("moving"); void pill.offsetWidth; pill.classList.add("moving");
-      const left = Math.min(pX, m.x); const right = Math.max(pX + pW, m.x + m.w);
-      setPill(left, right - left, true);
-      stretchTimer.current = window.setTimeout(() => setPill(m.x, m.w, true), 95);
-    } else {
-      setPill(m.x, m.w, true);
-    }
-    return () => window.clearTimeout(stretchTimer.current);
+    const m = metrics(activeIdx()); if (!m) return;
+    setPill(m.x, m.w, !lensNav.current);
+    lensNav.current = false;
   }, [active]);
+
+  /* Копия ряда табов внутри капли — её и увеличивает/гнёт линза (ЗКН-Д016). */
+  const copyRow = (ri: number) => (
+    <div ref={(el) => { rowRefs.current[ri] = el; }} className="gtab-lens-row">
+      {TABS.map((t, i) => (
+        <span key={t.id} ref={(el) => { if (el) copyRefs.current[ri][i] = el; }} className={active === t.id ? "gtab-slot on" : "gtab-slot"}>
+          <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} aria-hidden />
+          <span className="gtab-lbl">{t.label}</span>
+        </span>
+      ))}
+    </div>
+  );
 
   return (
     <div className="gtab-wrap">
       <nav ref={navRef} className="gtab" aria-label="Главная навигация"
         style={{ touchAction: "pan-y" }}
-        onPointerDown={onDown} onPointerMove={onMove} onPointerUp={endDrag} onPointerCancel={endDrag}>
+        onPointerDown={onDown} onPointerMove={onMove}
+        onPointerUp={(e) => endPress(e, false)} onPointerCancel={(e) => endPress(e, true)}>
+        <div className="gtab-bg" aria-hidden />
         <div ref={pillRef} className="gtab-pill" aria-hidden />
         {TABS.map((t, i) => {
           const on = active === t.id;
           return (
             <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className={on ? "gtab-slot on" : "gtab-slot"}
-              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => onClickTab(t)}>
+              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => onClickTab(t, i)}>
               <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} aria-hidden />
               <span className="gtab-lbl">{t.label}</span>
             </button>
           );
         })}
-        <div ref={dlensRef} className="gtab-dlens" aria-hidden />
+        <div ref={lensRef} className="gtab-lens" aria-hidden>
+          <div ref={edgeRef} className="gtab-lens-scale gtab-lens-edge">{copyRow(0)}</div>
+          <div ref={magRef} className="gtab-lens-scale gtab-lens-mag">{copyRow(1)}</div>
+          <div className="gtab-lens-rim" />
+        </div>
       </nav>
     </div>
   );

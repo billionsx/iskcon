@@ -170,7 +170,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   };
   const favs = useFavorites();
   const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key)), [favs]);
-  /* ═══ ЗКН-Н059 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
+  /* ═══ ЗКН-Н075 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
    *
    * Порядок был очередной — по голосам. Это неверно, и вот почему: человек отметил
    * запись ТОЛЬКО ЧТО. Если она утонет где-то в середине, он решит, что кнопка не

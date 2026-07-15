@@ -675,12 +675,47 @@ def check_f022_glob():
     return bad
 
 
+def check_d016_liquidglass():
+    """ЗКН-Д016 — ТАБ-БАР = LIQUID GLASS iOS 26 (эталон — App Store).
+
+    Основатель сверил бар со скринами App Store (15.07.2026): расхождение во
+    всех трёх слоях. «Линза» была blur-плёнкой (blur ≠ линзирование: стекло
+    ГНЁТ и УВЕЛИЧИВАЕТ контент, а не мылит), выделение красилось радужным
+    градиентом-плёнкой во всю пилюлю, а долгое нажатие вскрывало меню как
+    обычный текст — iOS показывала системную лупу и маркеры выделения.
+
+    Гейт держит три опоры материала:
+      1) слои линзирования .gtab-lens-mag / .gtab-lens-edge существуют
+         и в CSS, и в разметке TabBar (App.tsx рендерит копии .gtab-lens-row);
+      2) меню невыделяемо: в globals.css есть `-webkit-user-select: none`;
+      3) цветные плёнки на выделении запрещены: маркеры старой «дисперсии»
+         `rgba(230, 120, 220` / `rgba(90, 150, 255` в globals.css отсутствуют.
+    """
+    rule = {"id": "ЗКН-Д016", "name": "таб-бар — Liquid Glass iOS 26, эталон App Store",
+            "hint": "линзирование = mag/edge-копии; user-select: none в баре; без цветных плёнок на пилюле"}
+    bad = []
+    css = SRC / "ui" / "globals.css"
+    app = SRC / "App.tsx"
+    ct = css.read_text(encoding="utf-8")
+    at = app.read_text(encoding="utf-8")
+    for marker in ("gtab-lens-mag", "gtab-lens-edge", "-webkit-user-select: none"):
+        if marker not in ct:
+            bad.append((rule, str(css.relative_to(ROOT)), 1, "нет обязательного слоя/правила: " + marker))
+    for marker in ("gtab-lens-mag", "gtab-lens-edge", "gtab-lens-row"):
+        if marker not in at:
+            bad.append((rule, str(app.relative_to(ROOT)), 1, "TabBar не рендерит слой линзы: " + marker))
+    for i, line in enumerate(ct.split("\n"), 1):
+        if "rgba(230, 120, 220" in line or "rgba(90, 150, 255" in line:
+            bad.append((rule, str(css.relative_to(ROOT)), i, line.strip()[:80]))
+    return bad
+
+
 def main():
     if "--update-baseline" in sys.argv:
         check_ratchet(update=True)
         return 0
     bad = (check_rules() + check_prose_law() + check_floor_law() + check_missing_imports()
-           + check_unique_ids() + check_cyrillic_b() + check_d002_primitives() + check_f022_glob() + check_ratchet())
+           + check_unique_ids() + check_cyrillic_b() + check_d002_primitives() + check_f022_glob() + check_d016_liquidglass() + check_ratchet())
     if not bad:
         print("\nЛИНТЕР ЗАКОНОВ: нарушений нет ✓")
         print("  правил: %d + проза (Т002) + пол 11px (Д006) + храповик (Д001)" % len(RULES))

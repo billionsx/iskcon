@@ -109,7 +109,7 @@ function hrefFor(it: FavItem): string | null {
   if (type === "doc") return `/doc/${id}`;
   if (type === "centre" || type === "restaurant") return `/place/${id}`;
   if (type === "bhajan") return id.charAt(0) === "/" ? id : `/bhajans/${id}`;
-  /* ЗКН-Н059 · ПУТЬ РОЖДАЕТСЯ В ОДНОМ МЕСТЕ.
+  /* ЗКН-Н060 · ПУТЬ РОЖДАЕТСЯ В ОДНОМ МЕСТЕ.
    *
    * Здесь стояла своя строковая хирургия: `/books/{шифр}/{глава}/{стих}`.
    * Это ВТОРОЙ построитель пути — и он разошёлся с настоящим маршрутом книги

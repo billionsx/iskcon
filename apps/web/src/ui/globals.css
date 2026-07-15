@@ -633,88 +633,123 @@ body.player-on { --player-extra: 64px; }
  * плавающая пилюля скрывается, чтобы не накладываться на сфокусированный
  * оверлей (страховка к z-index на случай стек-ловушек iOS-скролла). */
 body.gtab-off .gtab-wrap { display: none; }
-/* ─────────── Нижнее меню — копия iOS 26 App Store (Liquid Glass) ───────────
- * Плавающая стеклянная капсула. Светлая тема — эталон: плотное белое матовое
- * стекло, чёрные иконки/подписи, синий #007AFF у активного, тонкая серая
- * пилюля-линза. Тёмная — зеркально. Пилюля едет пружиной (liquid-glass move).
+/* ─────────── Нижнее меню — Liquid Glass iOS 26, эталон App Store (ЗКН-Д016) ───────────
+ * Три слоя стекла, как у Apple:
+ *   .gtab-bg   — материал капсулы: blur+saturate, спекуляр-блик, ПРЕЛОМЛЯЮЩАЯ кромка
+ *                (свет у края стекла гнётся и уплотняется — кольцо-маска с backdrop);
+ *   .gtab-pill — линза покоя за активным табом: тонкое ПРИПОДНЯТОЕ стекло,
+ *                БЕЗ цветных плёнок (дисперсия — только каймой на капле);
+ *   .gtab-lens — капля нажатия/перетаскивания: ВЫШЕ плашки (D76 на 62), ЛИНЗИРУЕТ
+ *                иконки — увеличивает (mag-слой 1.17x) и гнёт по кромке (edge-кольцо
+ *                1.42x + лёгкий blur = сферическая аберрация), по краю спектральная
+ *                кайма (сферохроматизм) и блик-дуга. Линзирование = преломление,
+ *                НЕ blur: копии ряда табов масштабируются вокруг центра капли.
+ * Меню невыделяемо (user-select) — системная лупа iOS вскрывала стекло как текст.
  * ЗАКОН таб-бара: высота 62px, bottom 16px, z-40, резерв --gtab-reserve. */
 .gtab {
   pointer-events: auto; position: relative; margin: 0 auto;
-  width: calc(100% - 32px); height: 62px; border-radius: 31px;
+  width: calc(100% - 32px); height: 62px;
   padding: 0 6px;
-  --gt-ic-h: 21px; --gt-ic-w: 38px;     /* ещё -10% высота; бокс шире лотоса (1.64) → все упираются в высоту */
+  --gt-ic-h: 21px; --gt-ic-w: 38px;     /* бокс шире лотоса (1.64) — все упираются в высоту */
   --gt-accent: #0a84ff;                 /* активный таб (тёмная тема) */
   display: flex; align-items: stretch;
-  background: rgba(30, 30, 32, 0.58);
-  -webkit-backdrop-filter: blur(32px) saturate(160%) brightness(1.05);
-  backdrop-filter: blur(32px) saturate(160%) brightness(1.05);
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+}
+.gtab-bg {                  /* материал капсулы */
+  position: absolute; inset: 0; border-radius: 31px; overflow: hidden;
+  pointer-events: none; z-index: 0;
+  background: rgba(30, 30, 32, 0.55);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.04);
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.04);
   box-shadow:
-    0 12px 34px rgba(0, 0, 0, 0.44),
-    0 3px 10px rgba(0, 0, 0, 0.28),
-    inset 0 0.5px 0 rgba(255, 255, 255, 0.22),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.12);
-  overflow: hidden;
+    0 12px 34px rgba(0, 0, 0, 0.42),
+    0 3px 10px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.10),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.06);
 }
-.gtab::before {            /* верхний спекуляр-блик стекла */
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 45%);
+.gtab-bg::before {          /* верхний спекуляр-блик стекла */
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 42%);
 }
-.gtab-pill {                /* активный таб — стеклянная линза с преломлением, едет пружиной */
+.gtab-bg::after {           /* преломляющая кромка: у края капсулы свет гнётся и уплотняется */
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  padding: 2px; box-sizing: border-box;
+  -webkit-backdrop-filter: blur(8px) saturate(180%) brightness(1.14);
+  backdrop-filter: blur(8px) saturate(180%) brightness(1.14);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+.gtab-pill {                /* линза покоя за активным табом — приподнятое стекло, едет пружиной */
   position: absolute; top: 9px; left: 0; height: 44px; width: 54px; border-radius: 22px;
-  background: rgba(255, 255, 255, 0.12);
-  -webkit-backdrop-filter: blur(3px) brightness(1.12) saturate(1.4);
-  backdrop-filter: blur(3px) brightness(1.12) saturate(1.4);
+  z-index: 1; pointer-events: none;
+  background: rgba(255, 255, 255, 0.11);
+  -webkit-backdrop-filter: blur(2px) brightness(1.10) saturate(1.35);
+  backdrop-filter: blur(2px) brightness(1.10) saturate(1.35);
   box-shadow:
-    inset 0 0.5px 0 rgba(255, 255, 255, 0.4),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.42),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.14),
-    0 2px 6px rgba(0, 0, 0, 0.18);
-  z-index: 0; overflow: hidden;
+    inset 0 -1px 1px rgba(255, 255, 255, 0.10),
+    0 2px 6px rgba(0, 0, 0, 0.16);
   transition: transform 0.42s cubic-bezier(0.34, 1.28, 0.5, 1),
-              width 0.42s cubic-bezier(0.34, 1.28, 0.5, 1);
+              width 0.42s cubic-bezier(0.34, 1.28, 0.5, 1),
+              opacity 0.16s ease;
 }
-.gtab-pill::after {          /* liquid-glass дисперсия — радужный отблеск по краям линзы */
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  background: linear-gradient(100deg,
-    rgba(90, 150, 255, 0.30) 0%, rgba(120, 210, 255, 0.14) 22%, rgba(255, 255, 255, 0) 46%,
-    rgba(255, 255, 255, 0) 56%, rgba(180, 130, 255, 0.16) 78%, rgba(230, 120, 220, 0.30) 100%);
-}
-.gtab-pill::before {         /* бегущий блик в момент перехода */
-  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 100%; border-radius: inherit;
-  pointer-events: none; opacity: 0;
-  background: linear-gradient(105deg, transparent 34%, rgba(255, 255, 255, 0.6) 50%, transparent 66%);
-  transform: translateX(-120%);
-}
-.gtab-pill.moving::before { animation: gtab-sheen 0.55s ease-out; }
-@keyframes gtab-sheen {
-  0%   { transform: translateX(-120%); opacity: 0; }
-  25%  { opacity: 1; }
-  100% { transform: translateX(120%); opacity: 0; }
-}
-/* Линза перетаскивания: стекло ПОВЕРХ иконок, преломляет их при движении пальцем (iOS 26 drag) */
-.gtab-dlens {
-  position: absolute; top: 5px; left: 0; height: 52px; width: 58px; border-radius: 26px;
-  z-index: 3; pointer-events: none; opacity: 0; will-change: transform, opacity;
-  -webkit-backdrop-filter: blur(3px) brightness(1.16) saturate(1.5);
-  backdrop-filter: blur(3px) brightness(1.16) saturate(1.5);
-  background: linear-gradient(100deg,
-    rgba(90, 150, 255, 0.24) 0%, rgba(120, 210, 255, 0.10) 24%, rgba(255, 255, 255, 0.10) 50%,
-    rgba(180, 130, 255, 0.10) 76%, rgba(230, 120, 220, 0.24) 100%);
+.gtab.pressing .gtab-pill { opacity: 0; transition: opacity 0.1s ease; }  /* линза оторвалась каплей */
+/* ── Капля (drag/press): выпуклая линза над иконками. Геометрию ведёт пружина в JS. ── */
+.gtab-lens {
+  position: absolute; top: 0; left: 0; width: 76px; height: 76px; border-radius: 38px;
+  z-index: 3; pointer-events: none; visibility: hidden; opacity: 0;
+  overflow: hidden; transform-origin: 50% 50%;
+  will-change: transform, width, height;
+  --lm: 0;
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(2px) saturate(160%) brightness(1.10);
+  backdrop-filter: blur(2px) saturate(160%) brightness(1.10);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.32),
-    0 5px 16px rgba(0, 0, 0, 0.22);
-  transition: opacity 0.22s ease;
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.62),
+    inset 0 -1px 1.5px rgba(255, 255, 255, 0.22),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.30),
+    0 6px 20px rgba(0, 0, 0, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.16);
 }
-.gtab.dragging .gtab-dlens { opacity: 1; }
-.gtab.dragging .gtab-pill { opacity: 0; }
-:root[data-theme='light'] .gtab-dlens {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 0 0 0.5px rgba(255, 255, 255, 0.7),
-    0 5px 16px rgba(0, 0, 0, 0.16);
+.gtab-lens-scale { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.gtab-lens-mag { z-index: 1; }   /* mag-слой поверх edge-кольца */
+.gtab-lens-row {            /* точная копия ряда табов; ширина = бар (ставит JS), контр-сдвиг за каплей */
+  position: absolute; top: 0; left: 0; height: 62px;
+  display: flex; align-items: stretch; padding: 0 6px; box-sizing: border-box;
+  will-change: transform;
+}
+.gtab-lens-row .gtab-slot { cursor: default; }
+.gtab-lens-edge {           /* кольцо сильного преломления по кромке: иконки гнутся и двоятся */
+  -webkit-mask: radial-gradient(50% 50% at 50% 50%, transparent 54%, #000 70%, #000 86%, transparent 99%);
+  mask: radial-gradient(50% 50% at 50% 50%, transparent 54%, #000 70%, #000 86%, transparent 99%);
+}
+.gtab-lens-edge .gtab-lens-row { filter: blur(0.4px); }   /* сферическая аберрация у края */
+.gtab-lens-rim { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.gtab-lens-rim::before {    /* сферохроматизм: спектральная кайма по краю капли (холод слева, тепло справа) */
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  padding: 1.5px; box-sizing: border-box;
+  background: conic-gradient(from 230deg,
+    rgba(125, 210, 255, 0.85), rgba(150, 120, 255, 0.45) 16%, rgba(125, 210, 255, 0) 30%,
+    rgba(255, 255, 255, 0) 52%, rgba(255, 180, 90, 0.55) 66%, rgba(255, 95, 150, 0.5) 78%,
+    rgba(255, 95, 150, 0) 90%, rgba(125, 210, 255, 0.85));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  mix-blend-mode: screen;
+  opacity: calc(var(--lm) * 0.75);
+}
+.gtab-lens-rim::after {     /* блик-дуга сверху (выпуклое стекло ловит свет) */
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: radial-gradient(120% 90% at 50% -30%, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0) 55%);
+  opacity: var(--lm);
 }
 .gtab-slot {
-  position: relative; z-index: 1; flex: 1 1 0; height: 100%; min-width: 0;
+  position: relative; z-index: 2; flex: 1 1 0; height: 100%; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   background: none; border: none; padding: 0; cursor: pointer;
   color: rgba(255, 255, 255, 0.94);
@@ -727,40 +762,55 @@ body.gtab-off .gtab-wrap { display: none; }
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   -webkit-mask-size: contain; mask-size: contain;
-  transition: transform 0.24s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
-.gtab-ic.wide { }   /* лотос теперь равен по высоте — отдельная ширина не нужна */
-.gtab-slot:active .gtab-ic { transform: scale(0.86); }   /* тактильное нажатие */
+.gtab-ic.wide { }   /* лотос равен по высоте — отдельная ширина не нужна */
 .gtab-lbl {
   max-width: 100%; overflow: hidden; white-space: nowrap;
   font-family: var(--font-text); font-size: 10px; font-weight: 590;
   letter-spacing: -0.5px; line-height: 1; color: currentColor;
 }
-/* ── Светлая тема — ЭТАЛОН Apple: белое стекло, чёрные надписи, синий активный ── */
-:root[data-theme='light'] .gtab {
-  --gt-accent: #007aff;
-  background: rgba(255, 255, 255, 0.66);
-  -webkit-backdrop-filter: blur(32px) saturate(140%) brightness(1.03);
-  backdrop-filter: blur(32px) saturate(140%) brightness(1.03);
-  box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.14),
-    0 3px 10px rgba(0, 0, 0, 0.09),
-    inset 0 1px 0.5px rgba(255, 255, 255, 0.95),
-    inset 0 -10px 16px rgba(255, 255, 255, 0.4),
-    inset 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+@media (prefers-reduced-motion: reduce) {
+  .gtab-lens { display: none; }
+  .gtab.pressing .gtab-pill { opacity: 1; }
+  .gtab-pill { transition: opacity 0.16s ease; }
 }
-:root[data-theme='light'] .gtab::before {
+/* ── Светлая тема — ЭТАЛОН Apple: белое стекло, чёрные надписи, синий активный ── */
+:root[data-theme='light'] .gtab { --gt-accent: #007aff; }
+:root[data-theme='light'] .gtab-bg {
+  background: rgba(255, 255, 255, 0.62);
+  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  backdrop-filter: blur(28px) saturate(180%) brightness(1.05);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.16),
+    0 3px 10px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.95),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.045),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.55);
+}
+:root[data-theme='light'] .gtab-bg::before {
   background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.05) 40%,
-    rgba(255, 255, 255, 0) 60%, rgba(255, 255, 255, 0.25) 100%);
+    rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.04) 38%,
+    rgba(255, 255, 255, 0) 62%, rgba(255, 255, 255, 0.20) 100%);
 }
 :root[data-theme='light'] .gtab-slot { color: #1c1c1e; }
 :root[data-theme='light'] .gtab-pill {
-  background: rgba(0, 0, 0, 0.055);
+  background: rgba(255, 255, 255, 0.34);
+  -webkit-backdrop-filter: blur(2px) brightness(1.05) saturate(1.3);
+  backdrop-filter: blur(2px) brightness(1.05) saturate(1.3);
   box-shadow:
-    inset 0 0.5px 0 rgba(255, 255, 255, 0.7),
-    inset 0 0 0 0.5px rgba(0, 0, 0, 0.03),
-    0 1px 3px rgba(0, 0, 0, 0.05);
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.92),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+}
+:root[data-theme='light'] .gtab-lens {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.95),
+    inset 0 -1px 1.5px rgba(255, 255, 255, 0.45),
+    inset 0 0 0 0.5px rgba(0, 0, 0, 0.05),
+    0 8px 22px rgba(0, 0, 0, 0.20),
+    0 2px 6px rgba(0, 0, 0, 0.10);
 }
 
 /* Сторис даршана: на широких экранах (десктоп) портретный кадр иначе растягивается
