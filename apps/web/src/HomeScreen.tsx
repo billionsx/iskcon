@@ -23,7 +23,7 @@ import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
 import { HomeEducation, HomeNews } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
-import { pushUrl, subscribeNav } from "./nav";
+import { pushUrl, replaceAnchor, subscribeNav } from "./nav";
 import { HubHeader } from "./ui/HubHeader";
 
 const GOLD = "var(--color-gold)";
@@ -408,11 +408,30 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
   useEffect(() => { fetch(api("/entities/prabhupada")).catch(() => {}); }, []);
   const [spOpen, setSpOpen] = useState(false);
 
-  /* ── Tier-2: якорные субтабы по блокам страницы (scroll-spy + плавный переход) ── */
+  /* ── Tier-2: якорные субтабы по блокам страницы (scroll-spy + плавный переход) ──
+   * ЗКН-Н073 — АКТИВНЫЙ БЛОК ЖИВЁТ В АДРЕСЕ (/iskcon/dhama). Скролл и клик тихо
+   * пишут адрес (replaceAnchor — без спама истории и без будильника роутеру);
+   * заход по ссылке доводит до блока. Меню и подсветка были — адреса не было,
+   * поэтому поделиться можно было только верхом. */
   const subRef = useRef<HTMLElement | null>(null);
   const [subH, setSubH] = useState(44);
-  const [activeAnchor, setActiveAnchor] = useState(ISKCON_ANCHORS[0].id);
-  const clickLock = useRef(0);
+  const [activeAnchor, setActiveAnchor] = useState(iskconAnchorFromPath);
+  // Заход по ссылке: с первого кадра глушим scroll-spy, чтобы он не сбросил блок
+  // на «верх» раньше, чем эффект доводки успеет прокрутить.
+  const clickLock = useRef(iskconAnchorFromPath() !== ISKCON_ANCHORS[0].id ? Date.now() + 1000 : 0);
+  const lastAnchor = useRef(iskconAnchorFromPath());
+  const writeAnchor = (id: string) => {
+    if (lastAnchor.current === id) return;
+    lastAnchor.current = id;
+    replaceAnchor(id === ISKCON_ANCHORS[0].id ? "/iskcon" : `/iskcon/${id}`);
+  };
+  const scrollToAnchor = (id: string, behavior: ScrollBehavior): boolean => {
+    const root = scrollRoot(); const el = document.getElementById(`hsec-${id}`);
+    if (!root || !el) return false;
+    const top = root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top - (stickyTop + subH) - 6;
+    root.scrollTo({ top: Math.max(0, top), behavior });
+    return true;
+  };
   useEffect(() => {
     const root = scrollRoot();
     if (!root) return;
@@ -432,19 +451,32 @@ function IskconPresentation({ onChange, onOpenBook, onOpenEntity, onDonate, onBo
         }
         if (root.scrollHeight - root.scrollTop - root.clientHeight <= 4) cur = ISKCON_ANCHORS[ISKCON_ANCHORS.length - 1].id;
         setActiveAnchor(cur);
+        writeAnchor(cur);          // ЗКН-Н073: скролл пишет адрес блока
       });
     };
     root.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => { root.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scrollRoot, stickyTop, subH]);
+  /* ЗКН-Н073 — заход по ссылке /iskcon/<блок>: доводим до блока после отрисовки.
+   * Секции резервируют высоту (aspectRatio у Figure/Photo), поэтому хватает кадра
+   * и пары коррекций — доводка точная, без прыжков при догрузке картинок. */
+  useEffect(() => {
+    const id = iskconAnchorFromPath();
+    if (id === ISKCON_ANCHORS[0].id) return;      // верх — доводить нечего
+    let n = 0;
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const settle = () => { scrollToAnchor(id, "auto"); if (++n < 4) t = setTimeout(settle, 110); };
+    const r = requestAnimationFrame(settle);
+    return () => { cancelAnimationFrame(r); if (t) clearTimeout(t); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const goAnchor = (id: string) => {
-    const root = scrollRoot(); const el = document.getElementById(`hsec-${id}`);
-    if (!root || !el) return;
     setActiveAnchor(id);
+    writeAnchor(id);                               // ЗКН-Н073: клик по блоку пишет адрес
     clickLock.current = Date.now() + 700;
-    const top = root.scrollTop + el.getBoundingClientRect().top - root.getBoundingClientRect().top - (stickyTop + subH) - 6;
-    root.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    scrollToAnchor(id, "smooth");
   };
 
   return (
@@ -726,6 +758,16 @@ const ISKCON_ANCHORS: { id: string; label: string }[] = [
   { id: "parampara", label: "Парампара" },
   { id: "next", label: "Дальше" },
 ];
+
+/* ЗКН-Н073 — активный блок лендинга ИСККОН читается из адреса /iskcon/<блок>.
+ * Неизвестный хвост (в т.ч. реальные субтабы news/centres/… — их пространство
+ * имён не пересекается с якорями) → первый блок (верх страницы). */
+function iskconAnchorFromPath(): string {
+  if (typeof window === "undefined") return ISKCON_ANCHORS[0].id;
+  const seg = window.location.pathname.split("/").filter(Boolean);
+  if (seg[0] !== "iskcon" || !seg[1]) return ISKCON_ANCHORS[0].id;
+  return ISKCON_ANCHORS.some((a) => a.id === seg[1]) ? seg[1] : ISKCON_ANCHORS[0].id;
+}
 
 /* ───────── Главная: контейнер Tier-1 (ИСККОН | Центры | Рестораны | Документы | Структура | Ссылки | Лента) ───────── */
 export default function HomeScreen(props: {

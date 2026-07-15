@@ -125,6 +125,19 @@ export function replaceUrl(url: string): void {
   notifyNav(pathOf(abs));
 }
 
+/* ЗКН-Н073 — ЯКОРЬ БЛОКА В АДРЕСЕ, НО НЕ В ИСТОРИИ И НЕ В РОУТЕРЕ.
+ * Прокрутка длинной страницы пишет активный блок в строку адреса
+ * (/iskcon → /iskcon/dhama). В отличие от replaceUrl — БЕЗ notifyNav: вкладка и
+ * субтаб не меняются, меняется только хвост-якорь; будить роутер и подписчиков
+ * на каждый кадр скролла незачем — экран уже верный. replaceState (не push):
+ * история не засоряется десятком секций, «назад» уводит СО страницы, а не листает
+ * блоки. appIdx сохраняется. Сырой history.* здесь законен — nav.ts это шлюз. */
+export function replaceAnchor(url: string): void {
+  if (typeof window === "undefined") return;
+  const abs = absUrl(url);
+  try { window.history.replaceState({ appIdx: idx }, "", abs); } catch { /* noop */ }
+}
+
 /** Есть ли под нами запись приложения, на которую можно вернуться через history.back(). */
 export function canGoBack(): boolean { return idx > 0; }
 
