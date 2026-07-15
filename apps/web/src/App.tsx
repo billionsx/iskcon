@@ -201,13 +201,15 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
   const onDown = (e: ReactPointerEvent) => {
     const nav = navRef.current; if (!nav) return;
     drag.current = { on: true, moved: false, id: e.pointerId, startX: e.clientX };
-    try { nav.setPointerCapture(e.pointerId); } catch { /* noop */ }
+    /* НЕ захватываем указатель здесь — иначе click по табу не срабатывает (тап ломается).
+       Захват включаем ниже, только когда палец реально сдвинулся (начался drag). */
   };
   const onMove = (e: ReactPointerEvent) => {
     const nav = navRef.current; const dl = dlensRef.current;
     if (!drag.current.on || e.pointerId !== drag.current.id || !nav) return;
     if (!drag.current.moved && Math.abs(e.clientX - drag.current.startX) > 4) {
       drag.current.moved = true; nav.classList.add("dragging");
+      try { nav.setPointerCapture(e.pointerId); } catch { /* noop */ }   // захват только при реальном drag
     }
     if (!drag.current.moved) return;
     e.preventDefault();
@@ -233,6 +235,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     nav?.classList.remove("dragging");
     if (!wasDrag) return;                                     // это был тап — отдаём onClick
     suppressClick.current = true;
+    window.setTimeout(() => { suppressClick.current = false; }, 400);  // на случай, если click не придёт
     const i = nearest(e.clientX); const m = metrics(i);
     if (m) setPill(m.x, m.w, true);                           // пружинная доводка к ближайшему табу
     draggedRef.current = true;
