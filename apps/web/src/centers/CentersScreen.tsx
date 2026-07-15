@@ -32,11 +32,14 @@ const TYPES: { id: CenterType | "all"; label: string }[] = [
 ];
 
 export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => void; onOpenPath: (p: string) => void }) {
+  const PAGE = 80;
   const [q, setQ] = useState("");
   const [type, setType] = useState<CenterType | "all">("all");
   const [view, setView] = useState<"list" | "map">("list");
   const [items, setItems] = useState<CenterListItem[]>([]);
   const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
+  const [more, setMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const reqId = useRef(0);
 
   // карта: отдельная, более широкая выборка (пины лёгкие — можно больше, чем карточек)
@@ -45,17 +48,35 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
   const [mapPhase, setMapPhase] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const mapReqId = useRef(0);
 
+  // Первая страница: смена запроса/типа сбрасывает выборку и офсет.
   useEffect(() => {
     const id = ++reqId.current;
     const t = setTimeout(() => {
       setPhase((p) => (p === "ready" ? "ready" : "loading"));
       centersClient
-        .list({ q: q.trim() || undefined, type: type === "all" ? undefined : type, limit: 80 })
-        .then((r) => { if (id === reqId.current) { setItems(r.items); setPhase("ready"); } })
+        .list({ q: q.trim() || undefined, type: type === "all" ? undefined : type, limit: PAGE, offset: 0 })
+        .then((r) => { if (id === reqId.current) { setItems(r.items); setMore(r.items.length >= PAGE); setPhase("ready"); } })
         .catch(() => { if (id === reqId.current) setPhase("error"); });
     }, q ? 280 : 0);
     return () => clearTimeout(t);
   }, [q, type]);
+
+  // «Показать ещё» — дозагрузка следующей страницы поверх текущей (ЗКН-Пл017:
+  // каталог из ~960 центров должен листаться целиком, а не обрываться на 80).
+  const loadMore = () => {
+    if (loadingMore) return;
+    const id = reqId.current;
+    setLoadingMore(true);
+    centersClient
+      .list({ q: q.trim() || undefined, type: type === "all" ? undefined : type, limit: PAGE, offset: items.length })
+      .then((r) => {
+        if (id !== reqId.current) return;
+        setItems((prev) => [...prev, ...r.items]);
+        setMore(r.items.length >= PAGE);
+      })
+      .catch(() => { /* мягко: кнопка останется — можно повторить */ })
+      .finally(() => { if (id === reqId.current) setLoadingMore(false); });
+  };
 
   // подгружаем выборку для карты лениво — при первом открытии и смене фильтра
   useEffect(() => {
@@ -179,6 +200,12 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
                     <CenterHeroCard key={it.id} center={it} onOpen={() => onOpenPath(`/iskcon/centers/${it.slug}`)} onMenuSelect={onMenu(it)} />
                   ))}
                 </div>
+                {more && (
+                  <button type="button" onClick={loadMore} disabled={loadingMore}
+                    style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 16, padding: "13px 0", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1, WebkitTapHighlightColor: "transparent" }}>
+                    {loadingMore ? "Загрузка…" : "Показать ещё"}
+                  </button>
+                )}
                 <button type="button" onClick={() => onOpenPath("/my/centers/new")} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 18, padding: "13px 0", borderRadius: 14, border: `1px dashed ${GOLD}88`, background: "none", color: GOLD, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                   Добавить свой центр
                 </button>
