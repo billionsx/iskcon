@@ -1,0 +1,60 @@
+name: centers-probe
+
+# Одноразовая диагностика ЗКН-Пл017: что РЕАЛЬНО отдаёт /api/centers на боевом
+# входе (apex, через край Cloudflare) и мимо края (workers.dev). Результат кладём
+# в deploy_checks — читаем через D1, потому что логи GH на неаллоулистленном хосте.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe /api/centers (apex + workers.dev) → D1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, urllib.request
+          cfg = open("apps/web/wrangler.toml", encoding="utf-8").read()
+          acc = re.search(r'account_id\s*=\s*"([^"]+)"', cfg).group(1)
+          dbid = re.search(r'database_id\s*=\s*"([^"]+)"', cfg).group(1)
+          tok = os.environ["CLOUDFLARE_API_TOKEN"]
+
+          def probe(base):
+              try:
+                  req = urllib.request.Request(base + "/api/centers?limit=80&offset=0",
+                                               headers={"User-Agent": "centers-probe/1.0"})
+                  with urllib.request.urlopen(req, timeout=25) as r:
+                      code = r.status
+                      cc = r.headers.get("cf-cache-status", "-")
+                      body = r.read(20000).decode("utf-8", "replace")
+                  try:
+                      n = len(json.loads(body).get("items", []))
+                  except Exception:
+                      n = "PARSEFAIL"
+                  return f"http={code} cf={cc} items={n} :: {body[:140]}"
+              except Exception as e:
+                  return f"ERR {str(e)[:100]}"
+
+          rows = []
+          for name, base in [("APEX", "https://gaurangers.com"),
+                             ("WDEV", "https://iskcon-web.ceo-5cb.workers.dev")]:
+              line = probe(base)
+              rows.append(f"{name} {line}")
+              print(f"::notice title={name}::{line}")
+
+          safe = " ;; ".join(rows).replace("'", " ").replace('"', " ")[:450]
+          URL = f"https://api.cloudflare.com/client/v4/accounts/{acc}/d1/database/{dbid}/query"
+          payload = json.dumps({
+              "sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'api-centers-probe',0,?)",
+              "params": [safe],
+          }).encode()
+          req = urllib.request.Request(URL, data=payload,
+                                       headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
+          print("D1 write:", urllib.request.urlopen(req, timeout=30).read().decode()[:200])
+          PY
