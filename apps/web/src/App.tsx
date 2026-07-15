@@ -194,6 +194,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     const pX = parseFloat(pill.dataset.x ?? ""); const pW = parseFloat(pill.dataset.w ?? "");
     window.clearTimeout(stretchTimer.current);
     if (!isNaN(pX) && !isNaN(pW) && Math.abs(pX - x) > 1) {
+      pill.classList.remove("moving"); void pill.offsetWidth; pill.classList.add("moving");  /* рестарт блика */
       const left = Math.min(pX, x); const right = Math.max(pX + pW, x + w);
       pill.style.transform = `translateX(${left}px)`; pill.style.width = `${right - left}px`;
       stretchTimer.current = window.setTimeout(() => {
