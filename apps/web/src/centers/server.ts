@@ -64,7 +64,17 @@ const clip = (s: unknown, n: number) => String(s ?? "").trim().slice(0, n);
 const asArr = (v: unknown): string[] =>
   Array.isArray(v) ? v.map((x) => clip(x, 40)).filter(Boolean).slice(0, 50) : [];
 const isType = (s: string): boolean => (CENTER_TYPES as readonly string[]).includes(s);
-const num = (v: unknown): number | null => (Number.isFinite(Number(v)) ? Number(v) : null);
+const num = (v: unknown): number | null => {
+  // ВАЖНО (ЗКН-Пл018): отсутствующий/пустой параметр → null, а НЕ 0.
+  // `Number(null)===0` и `Number("")===0` — из-за этого `?lat`/`?lng` без значения
+  // давали 0, hasGeo становился true, и локатор фильтровал центры вокруг точки (0,0)
+  // в Гвинейском заливе → «Ничего не найдено». Легитимный «0» (строка) сохраняется.
+  if (v === null || v === undefined) return null;
+  const s = String(v).trim();
+  if (s === "") return null;
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+};
 /** Дни недели → уникальные целые 0–6 (0=Вс), по возрастанию. */
 const normDays = (v: unknown): number[] =>
   Array.isArray(v)
@@ -314,32 +324,6 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
   /* ───────── публичный локатор ───────── */
   if (p === "/api/centers" && method === "GET") {
     const sp = url.searchParams;
-
-    // [ВРЕМЕННО ЗКН-Пл017] диагностика: что реально видит env.DB живого воркера.
-    if (sp.get("__diag") === "1") {
-      const out: Record<string, unknown> = {};
-      try {
-        const a = await env.DB.prepare(`SELECT COUNT(*) AS n FROM centers`).first<{ n: number }>();
-        out.total = a?.n ?? null;
-      } catch (e) { out.total_err = String(e).slice(0, 140); }
-      try {
-        const b = await env.DB.prepare(`SELECT COUNT(*) AS n FROM centers WHERE status = 'live'`).first<{ n: number }>();
-        out.live = b?.n ?? null;
-      } catch (e) { out.live_err = String(e).slice(0, 140); }
-      try {
-        const { results } = await env.DB.prepare(`SELECT id, status FROM centers ORDER BY rowid LIMIT 4`).all();
-        out.sample = results;
-      } catch (e) { out.sample_err = String(e).slice(0, 140); }
-      try {
-        const { results } = await env.DB.prepare(
-          `SELECT id, type, name, slug, country, region, city, lat, lng, address, timezone,
-                  languages, phone, whatsapp, email, website, photos
-           FROM centers WHERE status = 'live' LIMIT ? OFFSET ?`,
-        ).bind(3, 0).all();
-        out.list_probe_n = (results as unknown[]).length;
-      } catch (e) { out.list_err = String(e).slice(0, 200); }
-      return jres({ __diag: true, ...out });
-    }
 
     // Сквозная связь с графом: центры, где есть это Божество или праздник (entity-id).
     const entity = (clip(sp.get("entity"), 64) || "").toLowerCase();
