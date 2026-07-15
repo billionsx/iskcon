@@ -283,3 +283,29 @@ jobs:
           echo "::error::Если workers.dev OK, а apex STALE — старую оболочку держит кэш края."
           echo "::error::Если оба STALE — трафик не переведён на новую версию воркера."
           exit 1
+
+      - name: Гейт наполненности локатора (ЗКН-Пл021)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -e
+          # Каталог наполнен (Пл017) ≠ каталог ОТДАЁТСЯ. Публичный локатор без
+          # фильтров обязан вернуть ≥1 центр. Фантомный гео-фильтр (num(null)===0 →
+          # точка (0,0)) молча обнулял выдачу при целой базе — этот шаг ловит рецидив.
+          probe() {  # $1 = base
+            curl -s --max-time 25 "$1/api/centers?limit=1" \
+              | python3 -c "import sys,json;print(len(json.load(sys.stdin).get('items',[])))" 2>/dev/null || echo 0
+          }
+          ok=0; A=0; W=0
+          for i in 1 2 3 4 5; do
+            A=$(probe "https://gaurangers.com")
+            W=$(probe "https://iskcon-web.ceo-5cb.workers.dev")
+            echo "::notice::локатор — apex items=$A · workers.dev items=$W (попытка $i)"
+            if [ "${A:-0}" -ge 1 ] && [ "${W:-0}" -ge 1 ]; then ok=1; break; fi
+            sleep 10
+          done
+          if [ "$ok" != "1" ]; then
+            echo "::error::Локатор /api/centers пуст при живой базе (ЗКН-Пл021). apex=$A workers.dev=$W"
+            exit 1
+          fi
+          echo "::notice::ЗКН-Пл021 OK — локатор отдаёт каталог"

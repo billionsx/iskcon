@@ -65,7 +65,7 @@ const asArr = (v: unknown): string[] =>
   Array.isArray(v) ? v.map((x) => clip(x, 40)).filter(Boolean).slice(0, 50) : [];
 const isType = (s: string): boolean => (CENTER_TYPES as readonly string[]).includes(s);
 const num = (v: unknown): number | null => {
-  // ВАЖНО (ЗКН-Пл018): отсутствующий/пустой параметр → null, а НЕ 0.
+  // ВАЖНО (ЗКН-Пл021): отсутствующий/пустой параметр → null, а НЕ 0.
   // `Number(null)===0` и `Number("")===0` — из-за этого `?lat`/`?lng` без значения
   // давали 0, hasGeo становился true, и локатор фильтровал центры вокруг точки (0,0)
   // в Гвинейском заливе → «Ничего не найдено». Легитимный «0» (строка) сохраняется.
