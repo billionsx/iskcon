@@ -8,60 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Live-версия воркера + статусы центров в бандле → D1
+      - name: __diag env.DB живого iskcon-web → D1
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           python3 - <<'PY'
-          import json, os, re, urllib.request, urllib.error
+          import json, os, re, urllib.request
           cfg = open("apps/web/wrangler.toml", encoding="utf-8").read()
           acc = re.search(r'account_id\s*=\s*"([^"]+)"', cfg).group(1)
           dbid = re.search(r'database_id\s*=\s*"([^"]+)"', cfg).group(1)
           tok = os.environ["CLOUDFLARE_API_TOKEN"]
-          H = {"Authorization": "Bearer " + tok}
-          def get(path):
-              return json.load(urllib.request.urlopen(urllib.request.Request("https://api.cloudflare.com/client/v4"+path, headers=H), timeout=40))
-          out = []
-          # 1) live deployment (какие версии и % сейчас в бою)
-          try:
-              dep = get("/accounts/%s/workers/scripts/iskcon-web/deployments?per_page=1" % acc)
-              d0 = (dep.get("result") or {}).get("deployments", [{}])[0]
-              vs = d0.get("versions", [])
-              out.append("live_dep=%s created=%s vers=%s" % (d0.get("id","?")[:8], str(d0.get("created_on"))[:19], ";".join("%s@%s%%"%(v.get("version_id","?")[:8], v.get("percentage")) for v in vs)))
-          except Exception as e:
-              out.append("dep_err="+str(e)[:70])
-          # 2) latest uploaded versions (id + when + сообщение)
-          try:
-              ver = get("/accounts/%s/workers/scripts/iskcon-web/versions?per_page=3" % acc)
-              items = (ver.get("result") or {}).get("items", [])
-              for v in items[:3]:
-                  meta = v.get("metadata", {}) or {}
-                  out.append("ver=%s at=%s msg=%s" % (v.get("id","?")[:8], str(meta.get("created_on"))[:19], str((v.get("annotations",{}) or {}).get("workers/message",""))[:40]))
-          except Exception as e:
-              out.append("ver_err="+str(e)[:70])
-          # 3) bundle: статусы центров
-          raw = ""
-          try:
-              raw = urllib.request.urlopen(urllib.request.Request("https://api.cloudflare.com/client/v4/accounts/%s/workers/scripts/iskcon-web"%acc, headers=H), timeout=60).read().decode("utf-8","replace")
-          except Exception as e:
-              out.append("bundle_err="+str(e)[:60])
-          stats = sorted(set(re.findall(r"status\s*[=:]\s*'([a-z_]+)'", raw)))
-          out.append("status_literals=" + ",".join(stats))
-          # все FROM centers с окружением
-          fro = []
-          for m in re.finditer(r".{0,45}FROM\s+centers.{0,90}", raw):
-              fro.append(re.sub(r"\s+"," ", m.group(0)))
-          out.append("FROM_centers_n=%d" % len(fro))
-
-          note = " ;; ".join(out)[:480]
-          fro_s = " ||| ".join(fro[:6])[:900]
-          for o in out: print("::notice::"+o)
-          for f in fro[:6]: print("::notice FROM::"+f)
-          Hj = dict(H); Hj["Content-Type"]="application/json"
+          def probe(base):
+              try:
+                  req = urllib.request.Request(base + "/api/centers?__diag=1", headers={"User-Agent": "diag2"})
+                  with urllib.request.urlopen(req, timeout=25) as r:
+                      return "http=%s %s" % (r.status, r.read(3500).decode("utf-8", "replace"))
+              except Exception as e:
+                  return "ERR " + str(e)[:150]
+          rows = []
+          for name, base in [("WDEV", "https://iskcon-web.ceo-5cb.workers.dev"), ("APEX", "https://gaurangers.com")]:
+              ln = probe(base); rows.append(name + " " + ln)
+              print("::notice::" + (name + " " + ln)[:500])
+          safe = (" ;;;; ".join(rows)).replace("'", " ")[:950]
+          H = {"Authorization": "Bearer " + tok, "Content-Type": "application/json"}
           q = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
-          for tgt,val in [("worker-live-ver", note), ("worker-from-centers", fro_s)]:
-              body = json.dumps({"sql":"INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),?,0,?)","params":[tgt, val.replace("'"," ").replace('"'," ")]}).encode()
-              try: urllib.request.urlopen(urllib.request.Request(q, data=body, headers=Hj), timeout=30).read()
-              except Exception as e: print("w",e)
-          print("done")
+          body = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'diag2',0,?)", "params": [safe]}).encode()
+          print("w:", urllib.request.urlopen(urllib.request.Request(q, data=body, headers=H), timeout=30).read().decode()[:120])
           PY
