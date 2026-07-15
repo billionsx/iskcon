@@ -635,76 +635,59 @@ body.player-on { --player-extra: 64px; }
 body.gtab-off .gtab-wrap { display: none; }
 .gtab {
   pointer-events: auto; position: relative; margin: 0 auto;
-  width: calc(100% - 44px); height: 62px; border-radius: 31px;
-  padding: 0 11px;                 /* padX = vGap (симметрия) */
-  --gt-ic: 24px; --gt-icw: 26px; --gt-ica: 25px;
-  display: flex; align-items: center;
-  background: rgba(28, 28, 30, 0.52);
-  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.08);
-  backdrop-filter: blur(28px) saturate(180%) brightness(1.08);
+  width: calc(100% - 40px); height: 62px; border-radius: 31px;
+  padding: 0 8px;
+  --gt-ic: 26px; --gt-icw: 27px;
+  display: flex; align-items: stretch;
+  background: rgba(28, 28, 30, 0.44);
+  -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
+  backdrop-filter: blur(32px) saturate(200%) brightness(1.1);
   box-shadow:
     0 16px 42px rgba(0, 0, 0, 0.5),
     0 5px 14px rgba(0, 0, 0, 0.32),
-    inset 0 1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 1px 1px rgba(255, 255, 255, 0.24),
     inset 0 -1px 1px rgba(255, 255, 255, 0.06),
     inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
   overflow: hidden;
-  transition: width 0.34s cubic-bezier(0.4, 0, 0.2, 1),
-              height 0.34s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.34s cubic-bezier(0.4, 0, 0.2, 1),
-              border-radius 0.34s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .gtab::before {            /* стеклянная кривизна — спекуляр-блик */
   content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
   background: linear-gradient(180deg,
-    rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 42%,
     rgba(255, 255, 255, 0) 72%, rgba(255, 255, 255, 0.05) 100%);
 }
-.gtab.compact {
-  width: calc(100% - 100px); height: 50px; border-radius: 25px; padding: 0 9px;
-  --gt-ic: 20px; --gt-icw: 22px; --gt-ica: 21px;
-}
-.gtab-pill {                /* активный овал — liquid-glass «галька» */
-  position: absolute; top: 11px; left: 0; height: 40px; width: 54px; border-radius: 20px;
+.gtab-pill {                /* активный таб — liquid-glass линза */
+  position: absolute; top: 9px; left: 0; height: 44px; width: 54px; border-radius: 22px;
   background: rgba(255, 255, 255, 0.16);
   box-shadow:
     inset 0 1px 1px rgba(255, 255, 255, 0.30),
     inset 0 -1px 1px rgba(0, 0, 0, 0.06),
     0 2px 8px rgba(0, 0, 0, 0.18);
   z-index: 0;
-  transition: transform 0.30s cubic-bezier(0.34, 1.15, 0.5, 1),
-              width 0.30s cubic-bezier(0.34, 1.15, 0.5, 1),
-              height 0.34s ease, top 0.34s ease, border-radius 0.34s ease, background 0.3s;
+  transition: transform 0.32s cubic-bezier(0.34, 1.15, 0.5, 1),
+              width 0.32s cubic-bezier(0.34, 1.15, 0.5, 1), background 0.3s;
 }
-.gtab.compact .gtab-pill { top: 9px; height: 32px; border-radius: 16px; }
 .gtab-slot {
-  position: relative; z-index: 1; flex: 1 1 0; height: 100%;
-  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1; flex: 1 1 0; height: 100%; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   background: none; border: none; padding: 0; cursor: pointer;
-  color: var(--color-label);
-  transition: transform 0.2s ease; -webkit-tap-highlight-color: transparent;
+  color: rgba(255, 255, 255, 0.92);
+  -webkit-tap-highlight-color: transparent; transition: color 0.25s ease;
 }
-.gtab-slot:active { opacity: 0.55; }
+.gtab-slot.on { color: var(--color-gold); }
+.gtab-slot:active { opacity: 0.6; }
 .gtab-ic {
-  display: block; pointer-events: none; width: var(--gt-ic); height: var(--gt-ic);
+  display: block; pointer-events: none; width: var(--gt-ic); height: var(--gt-ic); flex-shrink: 0;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   -webkit-mask-size: contain; mask-size: contain;
-  transition: width 0.3s ease, height 0.3s ease;
 }
 .gtab-ic.wide { width: var(--gt-icw); height: var(--gt-icw); }
-.gtab-ava {
-  position: relative; pointer-events: none; width: var(--gt-ica); height: var(--gt-ica); border-radius: 50%;
-  background: linear-gradient(160deg, #d6d6db, #a9a9b0);
-  display: flex; align-items: center; justify-content: center; color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-  transition: width 0.3s ease, height 0.3s ease;
-}
-.gtab-ava svg { width: 70%; height: 70%; margin-top: 8%; }
-.gtab-dot {
-  position: absolute; right: -1px; bottom: -1px; width: 10px; height: 10px;
-  border-radius: 50%; background: #ff3040; border: 2px solid var(--color-bg-2);
+.gtab-lbl {
+  max-width: 100%; overflow: hidden; white-space: nowrap;
+  font-family: var(--font-text); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1px; line-height: 1; color: currentColor;
 }
 :root[data-theme='light'] .gtab {
   background: rgba(255, 255, 255, 0.5);
@@ -720,6 +703,7 @@ body.gtab-off .gtab-wrap { display: none; }
     rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 42%,
     rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.18) 100%);
 }
+:root[data-theme='light'] .gtab-slot { color: rgba(0, 0, 0, 0.5); }
 :root[data-theme='light'] .gtab-pill {
   background: rgba(255, 255, 255, 0.62);
   box-shadow:

@@ -165,8 +165,8 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const slotRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const [compact, setCompact] = useState(false);
 
+  /* Пилюля-линза приклеена к активному табу; чуть уже слота (inset), как в App Store. */
   const moveHighlight = () => {
     const i = TABS.findIndex((t) => t.id === active);
     const slot = slotRefs.current[i];
@@ -175,14 +175,14 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     if (!slot || !nav || !pill) return;
     const nr = nav.getBoundingClientRect();
     const sr = slot.getBoundingClientRect();
-    pill.style.width = `${sr.width}px`;
-    pill.style.transform = `translateX(${sr.left - nr.left}px)`;
+    const inset = 6;
+    pill.style.width = `${Math.max(0, sr.width - inset)}px`;
+    pill.style.transform = `translateX(${sr.left - nr.left + inset / 2}px)`;
   };
 
-  // держим овал приклеенным к активному табу (смена таба / компакт / лейаут)
   const moveRef = useRef(moveHighlight);
   moveRef.current = moveHighlight;
-  useLayoutEffect(() => { moveHighlight(); }, [active, compact]);
+  useLayoutEffect(() => { moveHighlight(); }, [active]);
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || typeof ResizeObserver === "undefined") return;
@@ -191,33 +191,17 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     return () => ro.disconnect();
   }, []);
 
-  // прокрутка → компактный размер (как в Instagram 2026)
-  useEffect(() => {
-    const sc = scrollRef.current;
-    if (!sc) return;
-    const onScroll = () => setCompact((c) => { const w = sc.scrollTop > 22; return c === w ? c : w; });
-    onScroll();
-    sc.addEventListener("scroll", onScroll, { passive: true });
-    return () => sc.removeEventListener("scroll", onScroll);
-  }, [scrollRef]);
-
   return (
     <div className="gtab-wrap">
-      <nav ref={navRef} className={compact ? "gtab compact" : "gtab"} aria-label="Главная навигация">
+      <nav ref={navRef} className="gtab" aria-label="Главная навигация">
         <div ref={pillRef} className="gtab-pill" aria-hidden />
         {TABS.map((t, i) => {
           const on = active === t.id;
           return (
-            <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className="gtab-slot"
+            <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className={on ? "gtab-slot on" : "gtab-slot"}
               aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => { if (on) { scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); window.dispatchEvent(new CustomEvent("tab-reset", { detail: t.id })); } onChange(t.id); }}>
-              {t.src ? (
-                <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} />
-              ) : (
-                <span className="gtab-ava">
-                  <svg viewBox="0 0 24 24" aria-hidden><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" fill="currentColor" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" fill="currentColor" /></svg>
-                  <span className="gtab-dot" />
-                </span>
-              )}
+              <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} aria-hidden />
+              <span className="gtab-lbl">{t.label}</span>
             </button>
           );
         })}
