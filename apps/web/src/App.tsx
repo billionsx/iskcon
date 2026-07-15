@@ -5,7 +5,7 @@
  * Text strictly per Śrīla Prabhupāda. One type family throughout.
  */
 import { useState, useRef, useEffect, useLayoutEffect, Suspense, type ReactNode } from "react";
-import type { SVGProps, MouseEvent as ReactMouseEvent } from "react";
+import type { SVGProps, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import {
   HomeScreen, EntityPage, AccountScreen, BooksHub, KirtansScreen, AcharyaScreen, PracticeHub, DhamaScreen,
   BookDetailPage, BhajanDetailPage, KirtanArtistPage, ContentDetailPage, SearchScreen, FavoritesScreen,
@@ -164,71 +164,133 @@ const TABS = [
 function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
+  const dlensRef = useRef<HTMLDivElement>(null);
   const slotRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const drag = useRef({ on: false, moved: false, id: -1, startX: 0 });
+  const draggedRef = useRef(false);
+  const suppressClick = useRef(false);
+  const stretchTimer = useRef<number | undefined>(undefined);
 
-  /* Пилюля-линза приклеена к активному табу; чуть уже слота (inset), как в App Store. */
-  const place = (nav: HTMLElement, slot: HTMLElement) => {
-    const nr = nav.getBoundingClientRect();
-    const sr = slot.getBoundingClientRect();
+  /* Геометрия слота относительно бара (линза чуть уже слота — inset, как в App Store). */
+  const metrics = (i: number) => {
+    const nav = navRef.current; const slot = slotRefs.current[i];
+    if (!nav || !slot) return null;
+    const nr = nav.getBoundingClientRect(); const sr = slot.getBoundingClientRect();
     const inset = 6;
     return { x: sr.left - nr.left + inset / 2, w: Math.max(0, sr.width - inset) };
   };
-  const moveInstant = () => {
-    const i = TABS.findIndex((t) => t.id === active);
-    const slot = slotRefs.current[i]; const nav = navRef.current; const pill = pillRef.current;
-    if (!slot || !nav || !pill) return;
-    const { x, w } = place(nav, slot);
-    pill.style.transform = `translateX(${x}px)`; pill.style.width = `${w}px`;
-    pill.dataset.x = String(x); pill.dataset.w = String(w);
+  const setPill = (x: number, w: number, spring: boolean) => {
+    const pill = pillRef.current; if (!pill) return;
+    pill.style.transition = spring ? "" : "none";
+    pill.style.transform = `translateX(${x}px)`;
+    pill.dataset.x = String(x);
+    if (w >= 0) { pill.style.width = `${w}px`; pill.dataset.w = String(w); }
   };
-  const moveRef = useRef(moveInstant);
-  moveRef.current = moveInstant;
-  const stretchTimer = useRef<number | undefined>(undefined);
-
-  /* liquid-glass переход: линза растягивается, накрывая старый и новый таб, затем стягивается. */
-  useLayoutEffect(() => {
-    const i = TABS.findIndex((t) => t.id === active);
-    const slot = slotRefs.current[i]; const nav = navRef.current; const pill = pillRef.current;
-    if (!slot || !nav || !pill) return;
-    const { x, w } = place(nav, slot);
-    const pX = parseFloat(pill.dataset.x ?? ""); const pW = parseFloat(pill.dataset.w ?? "");
-    window.clearTimeout(stretchTimer.current);
-    if (!isNaN(pX) && !isNaN(pW) && Math.abs(pX - x) > 1) {
-      pill.classList.remove("moving"); void pill.offsetWidth; pill.classList.add("moving");  /* рестарт блика */
-      const left = Math.min(pX, x); const right = Math.max(pX + pW, x + w);
-      pill.style.transform = `translateX(${left}px)`; pill.style.width = `${right - left}px`;
-      stretchTimer.current = window.setTimeout(() => {
-        pill.style.transform = `translateX(${x}px)`; pill.style.width = `${w}px`;
-      }, 95);
-    } else {
-      pill.style.transform = `translateX(${x}px)`; pill.style.width = `${w}px`;
+  const nearest = (cx: number) => {
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < TABS.length; i++) {
+      const s = slotRefs.current[i]; if (!s) continue;
+      const sr = s.getBoundingClientRect(); const c = sr.left + sr.width / 2;
+      const d = Math.abs(cx - c); if (d < bd) { bd = d; best = i; }
     }
-    pill.dataset.x = String(x); pill.dataset.w = String(w);
-    return () => window.clearTimeout(stretchTimer.current);
-  }, [active]);
+    return best;
+  };
+  const preview = (i: number) => slotRefs.current.forEach((s, idx) => { if (s) s.classList.toggle("on", idx === i); });
 
+  /* ── Жест: зажать таб и вести пальцем — линза течёт за пальцем, иконки преломляются ── */
+  const onDown = (e: ReactPointerEvent) => {
+    const nav = navRef.current; if (!nav) return;
+    drag.current = { on: true, moved: false, id: e.pointerId, startX: e.clientX };
+    try { nav.setPointerCapture(e.pointerId); } catch { /* noop */ }
+  };
+  const onMove = (e: ReactPointerEvent) => {
+    const nav = navRef.current; const dl = dlensRef.current;
+    if (!drag.current.on || e.pointerId !== drag.current.id || !nav) return;
+    if (!drag.current.moved && Math.abs(e.clientX - drag.current.startX) > 4) {
+      drag.current.moved = true; nav.classList.add("dragging");
+    }
+    if (!drag.current.moved) return;
+    e.preventDefault();
+    const nr = nav.getBoundingClientRect();
+    const w = parseFloat(pillRef.current?.dataset.w ?? "54");
+    let px = e.clientX - nr.left - w / 2;
+    px = Math.max(3, Math.min(nr.width - w - 3, px));
+    setPill(px, -1, false);                                   // линза следует за пальцем
+    if (dl) {
+      const dw = dl.offsetWidth || 58;
+      let dx = e.clientX - nr.left - dw / 2;
+      dx = Math.max(2, Math.min(nr.width - dw - 2, dx));
+      dl.style.transform = `translateX(${dx}px)`;              // преломляющее стекло сверху
+    }
+    preview(nearest(e.clientX));                              // подсветка таба под пальцем
+  };
+  const endDrag = (e: ReactPointerEvent) => {
+    const nav = navRef.current;
+    if (!drag.current.on || e.pointerId !== drag.current.id) return;
+    try { nav?.releasePointerCapture(e.pointerId); } catch { /* noop */ }
+    const wasDrag = drag.current.moved;
+    drag.current.on = false;
+    nav?.classList.remove("dragging");
+    if (!wasDrag) return;                                     // это был тап — отдаём onClick
+    suppressClick.current = true;
+    const i = nearest(e.clientX); const m = metrics(i);
+    if (m) setPill(m.x, m.w, true);                           // пружинная доводка к ближайшему табу
+    draggedRef.current = true;
+    const t = TABS[i];
+    if (t.id !== active) onChange(t.id); else preview(i);
+  };
+  const onClickTab = (t: (typeof TABS)[number]) => {
+    if (suppressClick.current) { suppressClick.current = false; return; }
+    if (t.id === active) { scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); window.dispatchEvent(new CustomEvent("tab-reset", { detail: t.id })); }
+    onChange(t.id);
+  };
+
+  const syncActive = () => { const i = TABS.findIndex((t) => t.id === active); const m = metrics(i); if (m) setPill(m.x, m.w, false); };
+  const syncRef = useRef(syncActive); syncRef.current = syncActive;
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => moveRef.current());
+    const ro = new ResizeObserver(() => syncRef.current());
     ro.observe(nav);
     return () => ro.disconnect();
   }, []);
 
+  /* Доводка при смене активного (тап / внешняя навигация) с liquid-растяжением; после drag — пропуск. */
+  useLayoutEffect(() => {
+    const i = TABS.findIndex((t) => t.id === active);
+    const m = metrics(i); const pill = pillRef.current;
+    if (!m || !pill) return;
+    if (draggedRef.current) { draggedRef.current = false; pill.dataset.x = String(m.x); pill.dataset.w = String(m.w); return; }
+    const pX = parseFloat(pill.dataset.x ?? ""); const pW = parseFloat(pill.dataset.w ?? "");
+    window.clearTimeout(stretchTimer.current);
+    if (!isNaN(pX) && !isNaN(pW) && Math.abs(pX - m.x) > 1) {
+      pill.classList.remove("moving"); void pill.offsetWidth; pill.classList.add("moving");
+      const left = Math.min(pX, m.x); const right = Math.max(pX + pW, m.x + m.w);
+      setPill(left, right - left, true);
+      stretchTimer.current = window.setTimeout(() => setPill(m.x, m.w, true), 95);
+    } else {
+      setPill(m.x, m.w, true);
+    }
+    return () => window.clearTimeout(stretchTimer.current);
+  }, [active]);
+
   return (
     <div className="gtab-wrap">
-      <nav ref={navRef} className="gtab" aria-label="Главная навигация">
+      <nav ref={navRef} className="gtab" aria-label="Главная навигация"
+        style={{ touchAction: "pan-y" }}
+        onPointerDown={onDown} onPointerMove={onMove} onPointerUp={endDrag} onPointerCancel={endDrag}>
         <div ref={pillRef} className="gtab-pill" aria-hidden />
         {TABS.map((t, i) => {
           const on = active === t.id;
           return (
             <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className={on ? "gtab-slot on" : "gtab-slot"}
-              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => { if (on) { scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" }); window.dispatchEvent(new CustomEvent("tab-reset", { detail: t.id })); } onChange(t.id); }}>
+              aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => onClickTab(t)}>
               <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} aria-hidden />
               <span className="gtab-lbl">{t.label}</span>
             </button>
           );
         })}
+        <div ref={dlensRef} className="gtab-dlens" aria-hidden />
       </nav>
     </div>
   );
