@@ -363,7 +363,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
       {TABS.map((t, i) => (
         <span key={t.id} ref={(el) => { if (el) copyRefs.current[ri][i] = el; }} className={active === t.id ? "gtab-slot on" : "gtab-slot"}>
           <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} aria-hidden />
-          <span className="gtab-lbl">{t.label}</span>
+          <span className={t.wide ? "gtab-lbl caps" : "gtab-lbl"}>{t.label}</span>
         </span>
       ))}
     </div>
@@ -384,7 +384,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
             <button key={t.id} ref={(el) => { slotRefs.current[i] = el; }} className={on ? "gtab-slot on" : "gtab-slot"}
               aria-label={t.label} aria-current={on ? "page" : undefined} onClick={() => onClickTab(t, i)}>
               <span className={t.wide ? "gtab-ic wide" : "gtab-ic"} style={{ WebkitMaskImage: `url(${t.src})`, maskImage: `url(${t.src})` }} aria-hidden />
-              <span className="gtab-lbl">{t.label}</span>
+              <span className={t.wide ? "gtab-lbl caps" : "gtab-lbl"}>{t.label}</span>
             </button>
           );
         })}

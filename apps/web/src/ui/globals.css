@@ -818,6 +818,9 @@ body.gtab-off .gtab-wrap { display: none; }
   font-family: var(--font-text); font-size: 10px; font-weight: 590;
   letter-spacing: -0.5px; line-height: 1; color: currentColor;
 }
+/* «ИСККОН» набран капсом — при равном кегле он тяжелее и шире строчных подписей.
+   Кегль чуть меньше + разрядка нормализуют оптический вес в один ряд с остальными. */
+.gtab-lbl.caps { font-size: 9px; letter-spacing: 0.2px; }
 @media (prefers-reduced-motion: reduce) {
   .gtab-lens { display: none; }
   .gtab-glint b { display: none; }
