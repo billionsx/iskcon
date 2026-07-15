@@ -30,8 +30,8 @@ import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
 import { HomeCalendar } from "./HomeCalendar";
-import { HomeFeed, FeedPostFocus } from "./HomeFeed";
-import { DarshanRings } from "./DarshanStories";
+import { FeedPostFocus } from "./HomeFeed";
+import { DarshanFeed } from "./feed/DarshanFeed";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
 import { HubHeader, HubSearch, HubCount, HubEmpty } from "./ui/HubHeader";
 import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
@@ -975,7 +975,7 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
   return (
     <div>
       <HallTabs active={sub} onChange={pickSub} ariaLabel="Разделы Садханы" items={SAD_TABS} />
-      {sub === "darshan" && <><DarshanRings /><HomeFeed onDonate={onDonate} /></>}
+      {sub === "darshan" && <DarshanFeed onDonate={onDonate} />}
       {sub === "practice" && <PracticeHub onOpen={onOpenPath} />}
       {sub === "calendar" && <HomeCalendar stickyTop={46} onOpenEntity={onOpenEntity} />}
       {sub === "cabinet" && <AccountScreen onOpenPath={onOpenPath} onDonate={onDonate} flash={flash} />}
@@ -1420,8 +1420,19 @@ const RESERVED: readonly string[] = [
      *   /darshan/all  → «Даршан дня»: сетка архива, куда ведут те же кольца
      * Раньше `/darshan` открывал СЕТКУ поверх Ленты, в которой те же даршаны
      * уже показывались кольцами: два «Даршана» по одному адресу. */
-    if (clean === "/darshan/all") { setOpenDarshan(true); return; }
-    if (clean === "/darshan") { setTab("sadhana"); setOpenDarshan(false); return; }
+    /* ЗКН-Н036 / ЗКН-Н073 — ОДИН ОБРАБОТЧИК НА ВЕСЬ /darshan/*.
+     *   /darshan                РАЗДЕЛ «Даршан»: кольца + Лента (субтаб по умолчанию)
+     *   /darshan/news|photo|…   субтабы Даршана — активный читает DarshanFeed из адреса
+     *   /darshan/news/<slug>    фокус одной новости (тоже внутри DarshanFeed)
+     *   /darshan/all            «Даршан дня»: сетка архива (оверлей раздела)
+     * Раньше здесь были ДВЕ точечные ветки (`=== "/darshan"` и `=== "/darshan/all"`),
+     * а субтабы (`/darshan/news` …) не ловились вовсе и держались лишь на BASE_OF.
+     * Один обработчик на префикс — субтаб больше не «на честном слове». */
+    if (seg0 === "darshan") {
+      const s1 = clean.split("/")[2] || "";
+      if (s1 === "all") { setOpenDarshan(true); return; }
+      setTab("sadhana"); setOpenDarshan(false); return;
+    }
     if (clean === "/verse") { setOpenDailyVerse(true); return; }
     if (clean === "/ekadashi") { setOpenEkadashi(true); return; }
     if (clean === "/progress") { setOpenProgress(true); return; }

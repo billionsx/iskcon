@@ -345,7 +345,7 @@ function parseTgBlock(b: string): TgPost | null {
    • если на зоне включён Image Resizing — отдаём уменьшённую (быстро, но резко на экране),
      иначе оригинал (всё равно надёжно);
    • кэшируется на крае Cloudflare (повторные загрузки мгновенные). */
-const IMG_HOSTS = /(^|\.)(iskconvrindavan\.com|mayapur\.com|iskconchowpatty\.com|archive\.org|telesco\.pe|cdn-telegram\.org|telegram-cdn\.org)$/i;
+const IMG_HOSTS = /(^|\.)(iskconvrindavan\.com|mayapur\.com|iskconchowpatty\.com|archive\.org|telesco\.pe|cdn-telegram\.org|telegram-cdn\.org|iskconnews\.org|iskcon\.org|dandavats\.com|wp\.com|gravatar\.com|ytimg\.com|ggpht\.com)$/i;
 async function imgProxy(url: URL): Promise<Response> {
   const raw = url.searchParams.get("u") || "";
   let target: URL;
@@ -590,6 +590,103 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
 
 /* ───────────────────────── РОУТЕР ───────────────────────── */
 
+/* ───────── Новости ИСККОН (D1 news_posts) → субтаб «Новости» Даршана ─────────
+   Мульти-источник (iskconnews.org · iskcon.org · dandavats.com): парсер переводит
+   статьи на русский с BBT-точностью и льёт сюда, лента читает их отсюда. Один тип
+   контента ленты — как посты ТГ, видео и аудио (единая лента, много линз).
+
+   Кейсет-пагинация по (published_at DESC, id DESC): курсор `before=<published_at>|<id>`
+   — устойчив к добавлению свежих статей во время листания (в отличие от OFFSET).
+   Тело РУ отдаём сразу: раскрытие карточки без второго запроса. Hero заворачиваем
+   в /api/img (серверный прокси + кэш края — CDN источников часто блокируют хотлинк). */
+function newsRow(r: Record<string, unknown>) {
+  const hero = (r.hero as string) || "";
+  return {
+    kind: "news" as const,
+    id: String(r.id), slug: r.slug as string,
+    source: r.source as string, sourceLabel: r.source_label as string,
+    url: r.url as string, publishedAt: r.published_at as string,
+    author: (r.author as string) || "", category: (r.category as string) || "",
+    hero: hero ? `/api/img?u=${encodeURIComponent(hero)}&w=1600` : "",
+    title: r.title_ru as string, titleEn: (r.title_en as string) || "",
+    lead: r.lead_ru as string, body: r.body_ru as string,
+  };
+}
+async function newsList(env: HomeEnv, url: URL): Promise<Response> {
+  if (!env.DB) return jr({ items: [], hasMore: false, cursor: null });
+  const slug = url.searchParams.get("slug");
+  if (slug) {
+    const { results } = await env.DB.prepare(
+      "SELECT * FROM news_posts WHERE slug=?1 AND status='published' LIMIT 1",
+    ).bind(slug).all();
+    const row = (results || [])[0] as Record<string, unknown> | undefined;
+    return jr({ item: row ? newsRow(row) : null });
+  }
+  const limit = Math.min(40, Math.max(1, Number(url.searchParams.get("limit")) || 24));
+  const before = url.searchParams.get("before") || "";
+  let rows: unknown[];
+  if (before) {
+    const bar = before.indexOf("|");
+    const pa = bar >= 0 ? before.slice(0, bar) : before;
+    const bid = bar >= 0 ? Number(before.slice(bar + 1)) || 0 : 0;
+    ({ results: rows } = await env.DB.prepare(
+      "SELECT * FROM news_posts WHERE status='published' AND (published_at<?1 OR (published_at=?1 AND id<?2)) ORDER BY published_at DESC, id DESC LIMIT ?3",
+    ).bind(pa, bid, limit + 1).all());
+  } else {
+    ({ results: rows } = await env.DB.prepare(
+      "SELECT * FROM news_posts WHERE status='published' ORDER BY published_at DESC, id DESC LIMIT ?1",
+    ).bind(limit + 1).all());
+  }
+  const arr = (rows || []) as Record<string, unknown>[];
+  const hasMore = arr.length > limit;
+  const items = arr.slice(0, limit).map(newsRow);
+  const last = items[items.length - 1];
+  return jr({ items, hasMore, cursor: last ? `${last.publishedAt}|${last.id}` : null });
+}
+
+/* ───────── Медиа ленты (D1 feed_media) → видео/аудио с archive.org ─────────
+   Автономные медиа, НЕ привязанные к посту ТГ: ролики @bhakti.school, скачанные
+   yt-dlp, перезалитые на archive.org по нашему стандарту и переведённые на русский.
+   Тот же кейсет-курсор. stream_url — прямой mp4 на archive.org: лента играет
+   бесшовно (<video>), как рилс. thumb заворачиваем в /api/img. */
+function mediaRow(r: Record<string, unknown>) {
+  const thumb = (r.thumb as string) || "";
+  return {
+    kind: (r.kind as string) === "audio" ? "audio" as const : "video" as const,
+    id: String(r.id), guid: r.guid as string,
+    source: r.source as string, sourceLabel: r.source_label as string,
+    url: r.url as string, streamUrl: (r.stream_url as string) || "",
+    thumb: thumb ? `/api/img?u=${encodeURIComponent(thumb)}&w=1280` : "",
+    duration: (r.duration as string) || "", publishedAt: r.published_at as string,
+    author: (r.author as string) || "", title: r.title_ru as string,
+    titleEn: (r.title_en as string) || "", summary: (r.summary_ru as string) || "",
+  };
+}
+async function mediaList(env: HomeEnv, url: URL): Promise<Response> {
+  if (!env.DB) return jr({ items: [], hasMore: false, cursor: null });
+  const kind = url.searchParams.get("kind") || "video";
+  const limit = Math.min(40, Math.max(1, Number(url.searchParams.get("limit")) || 24));
+  const before = url.searchParams.get("before") || "";
+  let rows: unknown[];
+  if (before) {
+    const bar = before.indexOf("|");
+    const pa = bar >= 0 ? before.slice(0, bar) : before;
+    const bid = bar >= 0 ? Number(before.slice(bar + 1)) || 0 : 0;
+    ({ results: rows } = await env.DB.prepare(
+      "SELECT * FROM feed_media WHERE status='published' AND kind=?1 AND (published_at<?2 OR (published_at=?2 AND id<?3)) ORDER BY published_at DESC, id DESC LIMIT ?4",
+    ).bind(kind, pa, bid, limit + 1).all());
+  } else {
+    ({ results: rows } = await env.DB.prepare(
+      "SELECT * FROM feed_media WHERE status='published' AND kind=?1 ORDER BY published_at DESC, id DESC LIMIT ?2",
+    ).bind(kind, limit + 1).all());
+  }
+  const arr = (rows || []) as Record<string, unknown>[];
+  const hasMore = arr.length > limit;
+  const items = arr.slice(0, limit).map(mediaRow);
+  const last = items[items.length - 1];
+  return jr({ items, hasMore, cursor: last ? `${last.publishedAt}|${last.id}` : null });
+}
+
 export async function homeApi(request: Request, env: HomeEnv): Promise<Response | null> {
   const url = new URL(request.url);
   const p = url.pathname;
@@ -598,6 +695,8 @@ export async function homeApi(request: Request, env: HomeEnv): Promise<Response 
   const pid = p.match(/^\/api\/places\/([a-z0-9][a-z0-9._-]*)$/i);
   if (pid && pid[1] !== "facets") return placeById(env, url, pid[1]);
   if (p === "/api/documents") return documentsList(env, url);
+  if (p === "/api/news") return newsList(env, url);
+  if (p === "/api/media") return mediaList(env, url);
   if (p === "/api/img") return imgProxy(url);
   const tg = p.match(/^\/api\/tg\/([a-z0-9_]+)$/i);
   if (tg) {

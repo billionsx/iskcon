@@ -162,6 +162,7 @@ export const LEGACY: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
   [/^\/prasadam(\/.*)?$/, (m) => "/prasad" + (m[1] || "")],
   [/^\/center\/(.+)$/, (m) => "/iskcon/centers/" + m[1]],
   [/^\/centers$/, () => "/iskcon/centers"],
+  [/^\/iskcon\/news$/, () => "/darshan/news"],   // «Новости» уехали из ИСККОН в ленту Даршана (13.07.2026)
   [/^\/entity\/(.+)$/, (m) => "/" + m[1]],
   [/^\/person\/(.+)$/, (m) => "/" + m[1]],
 ];

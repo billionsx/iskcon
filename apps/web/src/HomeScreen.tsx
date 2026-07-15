@@ -21,7 +21,7 @@ import { SectionSubTabs } from "./SectionSubTabs";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
 import { HomePlaces } from "./HomePlaces";
 import { HomeDocuments, HomeStructure, HomeLinks } from "./HomeIskconInfo";
-import { HomeEducation, HomeNews } from "./HomeMore";
+import { HomeEducation } from "./HomeMore";
 import { ChevRightIcon } from "./ui/icons";
 import { pushUrl, replaceAnchor, subscribeNav } from "./nav";
 import { HubHeader } from "./ui/HubHeader";
@@ -800,13 +800,13 @@ export default function HomeScreen(props: {
    * Экран есть, а адреса у него нет — значит его как бы и нет.
    *
    *   /iskcon              ИСККОН
-   *   /iskcon/news         Новости
    *   /iskcon/centers      Центры
    *   /iskcon/restaurants  Рестораны
    *   /iskcon/education    Образование
    *   /iskcon/structure    Структура
    *   /iskcon/documents    Документы
    *   /iskcon/links        Ссылки
+   *   (Новости уехали в ленту Даршана: /darshan/news)
    */
   const [homeTab, setHomeTab] = useState<HomeTabId>(() => tabFromPath());
   useEffect(() => subscribeNav(() => setHomeTab(tabFromPath())), []);
@@ -851,7 +851,6 @@ export default function HomeScreen(props: {
       <HomeTabs active={homeTab} onChange={switchTab}
         navRef={(el) => { t1Ref.current = el; if (el) setT1H(el.offsetHeight); }} />
       {homeTab === "iskcon" && <IskconPresentation {...props} stickyTop={t1H} scrollRoot={scrollRoot} />}
-      {homeTab === "news" && <HomeNews />}
       {homeTab === "centres" && <HomePlaces kind="centre" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "restaurants" && <HomePlaces kind="restaurant" stickyTop={t1H} flash={props.flash} openSig={openSig} />}
       {homeTab === "education" && <HomeEducation />}

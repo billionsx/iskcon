@@ -33,7 +33,7 @@ interface TgSeg { t: "t" | "a"; v: string; href?: string }
 interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }
 interface TgAudio { kind: "voice" | "audio" | "file"; title: string; meta: string; src: string | null; kindLabel?: string }
 interface TgLink { href: string; title: string; desc: string; img: string | null }
-interface TgPost {
+export interface TgPost {
   id: string; date: string; views: string; text: string;
   rich: TgSeg[]; photos: string[]; photosFull?: string[]; videos: TgVideo[]; audios: TgAudio[]; link: TgLink | null;
 }
@@ -410,7 +410,7 @@ async function downloadPostPdf(p: TgPost, flash: (m: string) => void) {
 }
 
 /* ── один пост ленты ─────────────────────────────────────────────────────── */
-function FeedPost({ p, open, onToggle, onDonate, flash }: {
+export function FeedPost({ p, open, onToggle, onDonate, flash }: {
   p: TgPost; open: boolean; onToggle: () => void; onDonate?: () => void; flash: (m: string) => void;
 }) {
   const [view, setView] = useState<number | null>(null);
@@ -490,7 +490,30 @@ function FeedPost({ p, open, onToggle, onDonate, flash }: {
   );
 }
 
-export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
+/** Внешний медиа-элемент ленты (новость / IA-видео / IA-аудио), вклеиваемый в поток
+ *  ТГ по дате. render() рисует карточку сам (владеет своим раскрытием), at — Unix-мс
+ *  для хронологической сортировки вместе с постами канала. */
+export type FeedExtra = { id: string; at: number; render: () => React.ReactNode };
+export type FeedFilterKind = "photo" | "video" | "audio" | "file" | "link";
+
+/* Есть ли у поста ТГ медиа запрошенного типа — предикат линз (Фото/Видео/Аудио/…). */
+function postHasKind(p: TgPost, k: FeedFilterKind): boolean {
+  switch (k) {
+    case "photo": return p.photos.length > 0;
+    case "video": return p.videos.length > 0;
+    case "audio": return p.audios.some((a) => a.kind === "voice" || a.kind === "audio");
+    case "file": return p.audios.some((a) => a.kind === "file");
+    case "link": return p.link != null;
+  }
+}
+const postAt = (p: TgPost): number => { const t = Date.parse(p.date); return Number.isFinite(t) ? t : 0; };
+
+export function HomeFeed({ onDonate, filterKind = null, extraItems, intro }: {
+  onDonate?: () => void;
+  filterKind?: FeedFilterKind | null;   // показывать только посты ТГ с этим типом медиа
+  extraItems?: FeedExtra[];             // новости/медиа из D1, вклеенные в поток по дате
+  intro?: React.ReactNode;              // вводный блок над лентой (по умолчанию — про ИСККОН)
+}) {
   const [posts, setPosts] = useState<TgPost[] | null>(null);
   const [err, setErr] = useState(false);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -541,14 +564,32 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
     return () => io.disconnect();
   }, [posts, hasMore]);
 
+  // ЕДИНАЯ ЛЕНТА, МНОГО ЛИНЗ: посты канала (по фильтру медиа) + внешние элементы
+  // (новости, IA-видео/аудио) сливаются в ОДИН поток и сортируются по дате. Каждый
+  // элемент рисует свою карточку сам. Раскрытие постов ТГ помним по id (expanded).
+  const filtered = filterKind ? (posts || []).filter((p) => postHasKind(p, filterKind)) : (posts || []);
+  const rows: { key: string; at: number; el: React.ReactNode }[] = filtered.map((p) => ({
+    key: "tg-" + p.id, at: postAt(p),
+    el: (
+      <FeedPost key={"tg-" + p.id} p={p} open={expanded.has(p.id)} onDonate={onDonate} flash={flash}
+        onToggle={() => setExpanded((s) => { const n = new Set(s); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; })} />
+    ),
+  }));
+  if (extraItems) for (const ex of extraItems) rows.push({ key: ex.id, at: ex.at, el: <div key={ex.id}>{ex.render()}</div> });
+  rows.sort((a, b) => b.at - a.at);
+  const showSkeleton = !err && posts == null && rows.length === 0;
+  const showEmpty = posts != null && !hasMore && rows.length === 0;
+
   return (
     <div>
       <style>{`.iol-feed-carousel::-webkit-scrollbar{display:none}@keyframes feedspin{to{transform:rotate(360deg)}}`}</style>
 
       <div style={{ padding: "20px 0 0" }}>
-        <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Вдохновение дарами, которые принес Шрила Прабхупада в этой беспрецедентной волне Гауранга Лилы — Международное общество сознание Кришны (ИСККОН), развивающееся по всему миру и распространяющее Прему высшего порядка.
-        </p>
+        {intro !== undefined ? intro : (
+          <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
+            Вдохновение дарами, которые принес Шрила Прабхупада в этой беспрецедентной волне Гауранга Лилы — Международное общество сознание Кришны (ИСККОН), развивающееся по всему миру и распространяющее Прему высшего порядка.
+          </p>
+        )}
       </div>
 
       <div style={{ marginTop: 28 }} aria-live="polite">
@@ -558,17 +599,14 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
             <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал в Telegram →</a>
           </div>
         )}
-        {!err && !posts && (
+        {showSkeleton && (
           <div style={{ display: "grid", gap: 20 }}>
             {[0, 1, 2].map((i) => <div key={i} style={{ height: 360, ...fill, opacity: 0.6 }} />)}
           </div>
         )}
-        {posts && posts.length > 0 && (
+        {rows.length > 0 && (
           <div style={{ display: "grid", gap: 20 }}>
-            {posts.map((p) => (
-              <FeedPost key={p.id} p={p} open={expanded.has(p.id)} onDonate={onDonate} flash={flash}
-                onToggle={() => setExpanded((s) => { const n = new Set(s); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; })} />
-            ))}
+            {rows.map((r) => <div key={r.key}>{r.el}</div>)}
           </div>
         )}
         {posts && posts.length > 0 && hasMore && (
@@ -576,12 +614,12 @@ export function HomeFeed({ onDonate }: { onDonate?: () => void }) {
             <div style={{ width: 26, height: 26, borderRadius: "50%", border: "2.5px solid var(--color-hairline)", borderTopColor: GOLD, animation: "feedspin .8s linear infinite" }} />
           </div>
         )}
-        {posts && posts.length > 0 && !hasMore && (
+        {posts && posts.length > 0 && !hasMore && !filterKind && !extraItems && (
           <p style={{ margin: "18px 2px 0", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>Вы долистали до начала канала.</p>
         )}
-        {posts && posts.length === 0 && (
-          <div style={{ padding: "30px 10px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-3)" }}>
-            Пока нет постов. <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a>
+        {showEmpty && (
+          <div style={{ padding: "44px 16px", textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55, color: "var(--color-label-3)" }}>
+            {filterKind ? "Здесь пока пусто." : <>Пока нет постов. <a href={CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={{ color: "var(--color-gold-deep)", textDecoration: "none", fontWeight: 600 }}>Открыть канал →</a></>}
           </div>
         )}
       </div>
