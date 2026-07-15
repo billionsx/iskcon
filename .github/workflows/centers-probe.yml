@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: __diag env.DB живого iskcon-web → D1
+      - name: РЕАЛЬНЫЙ /api/centers (без диага) → D1
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
@@ -20,18 +20,21 @@ jobs:
           tok = os.environ["CLOUDFLARE_API_TOKEN"]
           def probe(base):
               try:
-                  req = urllib.request.Request(base + "/api/centers?__diag=1", headers={"User-Agent": "diag2"})
+                  req = urllib.request.Request(base + "/api/centers?limit=80&offset=0", headers={"User-Agent": "real"})
                   with urllib.request.urlopen(req, timeout=25) as r:
-                      return "http=%s %s" % (r.status, r.read(3500).decode("utf-8", "replace"))
+                      b = r.read(20000).decode("utf-8", "replace")
+                      try: n = len(json.loads(b).get("items", []))
+                      except: n = "PARSEFAIL"
+                      return "http=%s cf=%s items=%s :: %s" % (r.status, r.headers.get("cf-cache-status","-"), n, b[:90])
               except Exception as e:
-                  return "ERR " + str(e)[:150]
+                  return "ERR " + str(e)[:120]
           rows = []
           for name, base in [("WDEV", "https://iskcon-web.ceo-5cb.workers.dev"), ("APEX", "https://gaurangers.com")]:
               ln = probe(base); rows.append(name + " " + ln)
-              print("::notice::" + (name + " " + ln)[:500])
-          safe = (" ;;;; ".join(rows)).replace("'", " ")[:950]
+              print("::notice::" + (name + " " + ln)[:400])
+          safe = (" ;;;; ".join(rows)).replace("'", " ").replace('"', "`")[:800]
           H = {"Authorization": "Bearer " + tok, "Content-Type": "application/json"}
           q = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
-          body = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'diag2',0,?)", "params": [safe]}).encode()
+          body = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'real-centers',0,?)", "params": [safe]}).encode()
           print("w:", urllib.request.urlopen(urllib.request.Request(q, data=body, headers=H), timeout=30).read().decode()[:120])
           PY
