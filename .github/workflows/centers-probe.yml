@@ -1,19 +1,14 @@
 name: centers-probe
-
-# Диагностика ЗКН-Пл017: какую D1-базу РЕАЛЬНО биндит задеплоенный iskcon-web,
-# и сколько живых центров видит воркер в СВОЕЙ базе против repo-конфига (6226aded).
 on:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Реальный биндинг воркера + COUNT в его базе → D1
+      - name: Достать код задеплоенного iskcon-web и грепнуть SQL центров → D1
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
@@ -21,37 +16,40 @@ jobs:
           import json, os, re, urllib.request
           cfg = open("apps/web/wrangler.toml", encoding="utf-8").read()
           acc = re.search(r'account_id\s*=\s*"([^"]+)"', cfg).group(1)
-          repo_db = re.search(r'database_id\s*=\s*"([^"]+)"', cfg).group(1)
+          dbid = re.search(r'database_id\s*=\s*"([^"]+)"', cfg).group(1)
           tok = os.environ["CLOUDFLARE_API_TOKEN"]
-          H = {"Authorization": "Bearer " + tok, "Content-Type": "application/json"}
+          H = {"Authorization": "Bearer " + tok}
 
-          def get(url):
-              return json.load(urllib.request.urlopen(urllib.request.Request(url, headers=H), timeout=30))
+          url = f"https://api.cloudflare.com/client/v4/accounts/{acc}/workers/scripts/iskcon-web/content"
+          req = urllib.request.Request(url, headers=H)
+          raw = urllib.request.urlopen(req, timeout=60).read().decode("utf-8", "replace")
 
-          def d1count(dbid):
-              url = f"https://api.cloudflare.com/client/v4/accounts/{acc}/d1/database/{dbid}/query"
-              body = json.dumps({"sql": "SELECT COUNT(*) AS n FROM centers WHERE status='live'"}).encode()
-              try:
-                  r = json.load(urllib.request.urlopen(urllib.request.Request(url, data=body, headers=H), timeout=30))
-                  return (r.get("result") or [{}])[0].get("results", [{}])[0].get("n", "?")
-              except Exception as e:
-                  return "ERR " + str(e)[:60]
+          notes = []
+          notes.append(f"code_bytes={len(raw)}")
+          notes.append(f"has_status_live={'YES' if re.search(r\"status\\s*=\\s*'live'\", raw) else 'NO'}")
+          # все вхождения FROM centers ... с контекстом
+          occ = [m.start() for m in re.finditer(r"FROM\s+centers", raw)]
+          notes.append(f"FROM_centers_count={len(occ)}")
+          snips = []
+          for i in occ[:6]:
+              s = raw[max(0, i-20):i+120].replace("\n", " ")
+              s = re.sub(r"\s+", " ", s)
+              snips.append(s)
+          # ищем фильтры, которые могли бы обнулить
+          for pat in ["lat IS NOT NULL", "lng IS NOT NULL", "published", "visible", "is_live", "AND status", "deleted"]:
+              if pat in raw:
+                  notes.append(f"FOUND[{pat}]")
 
-          # реальные биндинги задеплоенного воркера
-          s = get(f"https://api.cloudflare.com/client/v4/accounts/{acc}/workers/scripts/iskcon-web/settings")
-          binds = (s.get("result") or {}).get("bindings", [])
-          d1b = [b for b in binds if str(b.get("type","")).startswith("d1")]
-          rows = [f"repo_cfg_db={repo_db} live={d1count(repo_db)}"]
-          for b in d1b:
-              did = b.get("id") or b.get("database_id") or "?"
-              rows.append(f"binding:{b.get('name')}={did} live={d1count(did)}")
-          if not d1b:
-              rows.append("NO_D1_BINDINGS_FOUND raw=" + json.dumps(binds)[:200])
+          payload_note = " ;; ".join(notes)[:300]
+          payload_snip = " ||| ".join(snips)[:900]
+          for n in notes: print("::notice::" + n)
+          for s in snips: print("::notice SQL::" + s)
 
-          for r in rows:
-              print("::notice::" + r)
-          safe = " ;; ".join(rows).replace("'", " ").replace('"', " ")[:480]
-          url = f"https://api.cloudflare.com/client/v4/accounts/{acc}/d1/database/{repo_db}/query"
-          payload = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'worker-db-binding',0,?)", "params": [safe]}).encode()
-          print("D1 write:", urllib.request.urlopen(urllib.request.Request(url, data=payload, headers=H), timeout=30).read().decode()[:150])
+          Hj = dict(H); Hj["Content-Type"] = "application/json"
+          qurl = f"https://api.cloudflare.com/client/v4/accounts/{acc}/d1/database/{dbid}/query"
+          for tgt, val in [("worker-code-notes", payload_note), ("worker-code-sql", payload_snip)]:
+              body = json.dumps({"sql": "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),?,0,?)",
+                                 "params": [tgt, val.replace("'", " ").replace('"', " ")]}).encode()
+              urllib.request.urlopen(urllib.request.Request(qurl, data=body, headers=Hj), timeout=30).read()
+          print("done")
           PY
