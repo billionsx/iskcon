@@ -315,6 +315,32 @@ export async function centersApi(request: Request, env: DB, url: URL): Promise<R
   if (p === "/api/centers" && method === "GET") {
     const sp = url.searchParams;
 
+    // [ВРЕМЕННО ЗКН-Пл017] диагностика: что реально видит env.DB живого воркера.
+    if (sp.get("__diag") === "1") {
+      const out: Record<string, unknown> = {};
+      try {
+        const a = await env.DB.prepare(`SELECT COUNT(*) AS n FROM centers`).first<{ n: number }>();
+        out.total = a?.n ?? null;
+      } catch (e) { out.total_err = String(e).slice(0, 140); }
+      try {
+        const b = await env.DB.prepare(`SELECT COUNT(*) AS n FROM centers WHERE status = 'live'`).first<{ n: number }>();
+        out.live = b?.n ?? null;
+      } catch (e) { out.live_err = String(e).slice(0, 140); }
+      try {
+        const { results } = await env.DB.prepare(`SELECT id, status FROM centers ORDER BY rowid LIMIT 4`).all();
+        out.sample = results;
+      } catch (e) { out.sample_err = String(e).slice(0, 140); }
+      try {
+        const { results } = await env.DB.prepare(
+          `SELECT id, type, name, slug, country, region, city, lat, lng, address, timezone,
+                  languages, phone, whatsapp, email, website, photos
+           FROM centers WHERE status = 'live' LIMIT ? OFFSET ?`,
+        ).bind(3, 0).all();
+        out.list_probe_n = (results as unknown[]).length;
+      } catch (e) { out.list_err = String(e).slice(0, 200); }
+      return jres({ __diag: true, ...out });
+    }
+
     // Сквозная связь с графом: центры, где есть это Божество или праздник (entity-id).
     const entity = (clip(sp.get("entity"), 64) || "").toLowerCase();
     if (entity) {
