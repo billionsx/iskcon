@@ -237,8 +237,8 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     lens.style.opacity = String(Math.min(1, m * 2.4));
     lens.style.visibility = m > 0.012 ? "visible" : "hidden";
     lens.style.setProperty("--lm", String(Math.min(1, m)));
-    if (magRef.current) magRef.current.style.transform = `scale(${1 + 0.17 * m})`;
-    if (edgeRef.current) edgeRef.current.style.transform = `scale(${1 + 0.42 * m})`;
+    if (magRef.current) magRef.current.style.transform = `scale(${1 + 0.22 * m})`;
+    if (edgeRef.current) edgeRef.current.style.transform = `scale(${1 + 0.52 * m})`;
     rowRefs.current.forEach((rw) => { if (rw) rw.style.transform = `translate3d(${-left}px, ${-top}px, 0)`; });
     if (st.settle && Math.abs(st.tx - st.x) < 1.2 && Math.abs(st.vx) < 30) st.tm = 0;
     const still = Math.abs(st.tx - st.x) < 0.3 && Math.abs(st.vx) < 4 && Math.abs(st.tm - st.m) < 0.006 && Math.abs(st.vm) < 0.06;
@@ -323,6 +323,32 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
     return () => ro.disconnect();
   }, []);
 
+
+  /* Свет живёт (голограмма): блик на капсуле едет за прокруткой контента —
+   * как спекуляр Apple отвечает на движение устройства. Треугольная волна,
+   * чтобы на границе периода блик не прыгал. */
+  useEffect(() => {
+    if (typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let el: HTMLElement | null = null; let raf = 0; let seek = 0;
+    const onScroll = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const nav = navRef.current; if (!nav || !el) return;
+        const p = (el.scrollTop % 1440) / 1440;
+        const gx = p < 0.5 ? p * 2 : 2 - p * 2;
+        nav.style.setProperty("--gx", gx.toFixed(4));
+      });
+    };
+    const attach = () => {
+      el = scrollRef.current;
+      if (!el) { seek = window.setTimeout(attach, 300); return; }
+      el.addEventListener("scroll", onScroll, { passive: true });
+    };
+    attach();
+    return () => { window.clearTimeout(seek); if (raf) cancelAnimationFrame(raf); el?.removeEventListener("scroll", onScroll); };
+  }, []);
+
   /* Смена активного: после капли линза покоя встаёт МГНОВЕННО (переезд уже показала капля);
      внешняя навигация (не через бар) — обычная пружинная доводка CSS-перехода. */
   useLayoutEffect(() => {
@@ -350,6 +376,7 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
         onPointerDown={onDown} onPointerMove={onMove}
         onPointerUp={(e) => endPress(e, false)} onPointerCancel={(e) => endPress(e, true)}>
         <div className="gtab-bg" aria-hidden />
+        <div className="gtab-glint" aria-hidden><b /></div>
         <div ref={pillRef} className="gtab-pill" aria-hidden />
         {TABS.map((t, i) => {
           const on = active === t.id;
