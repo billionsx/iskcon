@@ -167,22 +167,45 @@ function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k:
   const slotRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   /* Пилюля-линза приклеена к активному табу; чуть уже слота (inset), как в App Store. */
-  const moveHighlight = () => {
-    const i = TABS.findIndex((t) => t.id === active);
-    const slot = slotRefs.current[i];
-    const nav = navRef.current;
-    const pill = pillRef.current;
-    if (!slot || !nav || !pill) return;
+  const place = (nav: HTMLElement, slot: HTMLElement) => {
     const nr = nav.getBoundingClientRect();
     const sr = slot.getBoundingClientRect();
     const inset = 6;
-    pill.style.width = `${Math.max(0, sr.width - inset)}px`;
-    pill.style.transform = `translateX(${sr.left - nr.left + inset / 2}px)`;
+    return { x: sr.left - nr.left + inset / 2, w: Math.max(0, sr.width - inset) };
   };
+  const moveInstant = () => {
+    const i = TABS.findIndex((t) => t.id === active);
+    const slot = slotRefs.current[i]; const nav = navRef.current; const pill = pillRef.current;
+    if (!slot || !nav || !pill) return;
+    const { x, w } = place(nav, slot);
+    pill.style.transform = `translateX(${x}px)`; pill.style.width = `${w}px`;
+    pill.dataset.x = String(x); pill.dataset.w = String(w);
+  };
+  const moveRef = useRef(moveInstant);
+  moveRef.current = moveInstant;
+  const stretchTimer = useRef<number | undefined>(undefined);
 
-  const moveRef = useRef(moveHighlight);
-  moveRef.current = moveHighlight;
-  useLayoutEffect(() => { moveHighlight(); }, [active]);
+  /* liquid-glass переход: линза растягивается, накрывая старый и новый таб, затем стягивается. */
+  useLayoutEffect(() => {
+    const i = TABS.findIndex((t) => t.id === active);
+    const slot = slotRefs.current[i]; const nav = navRef.current; const pill = pillRef.current;
+    if (!slot || !nav || !pill) return;
+    const { x, w } = place(nav, slot);
+    const pX = parseFloat(pill.dataset.x ?? ""); const pW = parseFloat(pill.dataset.w ?? "");
+    window.clearTimeout(stretchTimer.current);
+    if (!isNaN(pX) && !isNaN(pW) && Math.abs(pX - x) > 1) {
+      const left = Math.min(pX, x); const right = Math.max(pX + pW, x + w);
+      pill.style.transform = `translateX(${left}px)`; pill.style.width = `${right - left}px`;
+      stretchTimer.current = window.setTimeout(() => {
+        pill.style.transform = `translateX(${x}px)`; pill.style.width = `${w}px`;
+      }, 95);
+    } else {
+      pill.style.transform = `translateX(${x}px)`; pill.style.width = `${w}px`;
+    }
+    pill.dataset.x = String(x); pill.dataset.w = String(w);
+    return () => window.clearTimeout(stretchTimer.current);
+  }, [active]);
+
   useEffect(() => {
     const nav = navRef.current;
     if (!nav || typeof ResizeObserver === "undefined") return;

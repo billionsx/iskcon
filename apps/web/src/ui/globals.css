@@ -642,7 +642,8 @@ body.gtab-off .gtab-wrap { display: none; }
   pointer-events: auto; position: relative; margin: 0 auto;
   width: calc(100% - 32px); height: 62px; border-radius: 31px;
   padding: 0 6px;
-  --gt-ic: 27px; --gt-icw: 28px;
+  --gt-ic-h: 26px; --gt-ic-w: 46px;     /* бокс шире самого широкого глифа (лотос 1.64:1),
+                                           чтобы ВСЕ иконки упирались в ВЫСОТУ → равная высота */
   --gt-accent: #0a84ff;                 /* активный таб (тёмная тема) */
   display: flex; align-items: stretch;
   background: rgba(30, 30, 32, 0.7);
@@ -670,6 +671,13 @@ body.gtab-off .gtab-wrap { display: none; }
   transition: transform 0.42s cubic-bezier(0.34, 1.28, 0.5, 1),
               width 0.42s cubic-bezier(0.34, 1.28, 0.5, 1);
 }
+.gtab-pill::after {          /* liquid-glass дисперсия — голограмный отблеск по краям линзы */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(100deg,
+    rgba(120, 170, 255, 0.14) 0%, rgba(255, 255, 255, 0.05) 30%,
+    rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.05) 70%,
+    rgba(205, 150, 255, 0.14) 100%);
+}
 .gtab-slot {
   position: relative; z-index: 1; flex: 1 1 0; height: 100%; min-width: 0;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
@@ -679,14 +687,14 @@ body.gtab-off .gtab-wrap { display: none; }
 }
 .gtab-slot.on { color: var(--gt-accent); }
 .gtab-ic {
-  display: block; pointer-events: none; width: var(--gt-ic); height: var(--gt-ic); flex-shrink: 0;
+  display: block; pointer-events: none; width: var(--gt-ic-w); height: var(--gt-ic-h); flex-shrink: 0;
   background-color: currentColor;
   -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
   -webkit-mask-position: center; mask-position: center;
   -webkit-mask-size: contain; mask-size: contain;
   transition: transform 0.24s cubic-bezier(0.34, 1.4, 0.5, 1);
 }
-.gtab-ic.wide { width: var(--gt-icw); height: var(--gt-icw); }
+.gtab-ic.wide { }   /* лотос теперь равен по высоте — отдельная ширина не нужна */
 .gtab-slot:active .gtab-ic { transform: scale(0.86); }   /* тактильное нажатие */
 .gtab-lbl {
   max-width: 100%; overflow: hidden; white-space: nowrap;
