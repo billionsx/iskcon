@@ -11,7 +11,7 @@ import {
   BookDetailPage, BhajanDetailPage, KirtanArtistPage, ContentDetailPage, SearchScreen, FavoritesScreen,
   NotesScreen, NoteDetail, BookLoaderPage, CartScreen, JapaScreen, SadhanaScreen, VowScreen, DarshanScreen,
   DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen,
-  CenterScreen, MyCentersScreen, CentersScreen, CenterEditor, CenterSchedule, CenterDeities, CenterEvents,
+  CenterScreen, MyCentersScreen, CenterEditor, CenterSchedule, CenterDeities, CenterEvents,
   CenterModeration, CenterPhotos, PrasadamScreen, RecipeDetail, CookbookScreen, DhamaDetailPage,
   TirthaDetailPage, PdfDoc, prefetchTopScreens,
 } from "./lazyScreens";
@@ -1133,7 +1133,6 @@ export default function App() {
   const [openProgress, setOpenProgress] = useState(false);
   const [openCenter, setOpenCenter] = useState<string | null>(null);
   const [openMyCenters, setOpenMyCenters] = useState(false);
-  const [openCenters, setOpenCenters] = useState(false);
   const [openCenterNew, setOpenCenterNew] = useState(false);
   const [openCenterEdit, setOpenCenterEdit] = useState<string | null>(null);
   const [openCenterSchedule, setOpenCenterSchedule] = useState<string | null>(null);
@@ -1200,7 +1199,6 @@ const RESERVED: readonly string[] = [
     if (openCenterEvents) return `/iskcon/centers/${openCenterEvents}/events`;
     if (openCenterPhotos) return `/iskcon/centers/${openCenterPhotos}/photos`;
     if (openCenterEdit) return `/iskcon/centers/${openCenterEdit}/edit`;
-    if (openCenters) return "/iskcon/centers";
     if (openMyCenters) return "/my/centers";
     if (openCenter) return `/iskcon/centers/${openCenter}`;
     if (prasadamRecipe) return "/prasad/" + prasadamRecipe;
@@ -1300,7 +1298,7 @@ const RESERVED: readonly string[] = [
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
 
     /* ЗКН-Н029 — ОСНОВА СТАВИТСЯ ПЕРВОЙ, ДО РАЗБОРА ОВЕРЛЕЯ.
@@ -1439,7 +1437,10 @@ const RESERVED: readonly string[] = [
     if (clean === "/centers/review") { setOpenModeration(true); return; }
     if (clean === "/my/centers/new") { setOpenCenterNew(true); return; }
     if (clean === "/my/centers") { setOpenMyCenters(true); return; }
-    if (clean === "/iskcon/centers") { setOpenCenters(true); return; }
+    /* ЗКН: /iskcon/centers — это вкладка «centres» хаба ИСККОН (HomePlaces, каталог 850+),
+       а НЕ отдельный экран-локатор с большими карточками. Перехват на CentersScreen
+       (введён в e54ec46d) убран: путь дотекает до `seg0 === "iskcon"` ниже, а HomeScreen
+       сам выбирает вкладку через tabFromPath("/iskcon/centers") → "centres". */
     /* ЗКН-Н023 — ПРАСАД: рецепт живёт в /prasad/<рецепт>, без папки «recipe».
      *   /prasad              витрина
      *   /prasad/book         книга «Кухня прасада»
@@ -1702,7 +1703,7 @@ const RESERVED: readonly string[] = [
     if (!next.startsWith("/")) return;
     if (window.location.pathname !== next) pushUrl(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [routeGen, tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openEkadashi, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader, openStoriesTool]);
+  }, [routeGen, tab, openBook, openBhajan, openKirtanArtist, openCatalog, openContent, openAdmin, openEntity, openCollection, openFavorites, openNotes, openNoteId, openCart, openJapa, openDiary, openVow, openDarshan, openDailyVerse, openEkadashi, openProgress, prasadamSection, prasadamRecipe, openCookbook, cookbookChapter, openCenter, openMyCenters, openCenterNew, openCenterEdit, openCenterSchedule, openCenterDeities, openCenterEvents, openCenterPhotos, openModeration, openDhama, openTirtha, openDownloader, openStoriesTool]);
 
   // «Назад»: единый стек. Если под нами есть запись приложения — pop; иначе (прямой
   // вход/QR на корневой записи) уходим к логическому родителю (главная), НЕ покидая сайт.
@@ -1838,7 +1839,7 @@ const RESERVED: readonly string[] = [
     // адрес личности — в КОРНЕ (ЗКН-Н023). pushUrl, чтобы «назад» вернул откуда пришёл.
     if (typeof window !== "undefined" && window.location.pathname !== "/" + id) pushUrl("/" + id);
   }
-  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
+  const tabBarVisible = !openAdmin && !openBook && !openBhajan && !openKirtanArtist && !openCatalog && !openContent && !openEntity && !openCollection && !openFavorites && !openSearch && !openNotes && !openNoteId && !openCart && !openJapa && !openDiary && !openVow && !openDarshan && !openDailyVerse && !openEkadashi && !openProgress && !prasadamSection && !prasadamRecipe && !openCookbook && !cookbookChapter && !openCenter && !openMyCenters && !openCenterNew && !openCenterEdit && !openCenterSchedule && !openCenterDeities && !openCenterEvents && !openCenterPhotos && !openModeration && !openDhama && !openTirtha && !openDownloader && !openStoriesTool;
   // Главное нижнее меню остаётся поверх страниц-оверлеев со скроллом (книга, ПКЛ,
   // контент, каталоги) — чтобы из любой главы/карточки можно было перейти в раздел.
   // Читалки (fixed, z70) и модалки перекрывают пилюлю (z40) сами → конфликта нет.
@@ -1995,10 +1996,6 @@ const RESERVED: readonly string[] = [
         ) : openCenterPhotos ? (
           <main key={openCenterPhotos} style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
             <CenterPhotos slug={openCenterPhotos} onBack={goBack} flash={flash} />
-          </main>
-        ) : openCenters ? (
-          <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
-            <CentersScreen onBack={goBack} onOpenPath={navigate} />
           </main>
         ) : openModeration ? (
           <main style={{ position: "relative", height: "100dvh", overflow: "hidden" }}>
