@@ -38,6 +38,10 @@ jobs:
           python-version: "3.12"
       - name: "ffmpeg (склейка видео+аудио в mp4)"
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: "Deno (JS-движок для n-challenge YouTube — без него нет форматов)"
+        run: |
+          curl -fsSL https://deno.land/install.sh | sh -s -- -y
+          echo "$HOME/.deno/bin" >> $GITHUB_PATH
       - name: "PO-token провайдер (обход SABR/PO-token YouTube)"
         run: |
           docker run -d --name bgutil -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider
@@ -77,7 +81,8 @@ jobs:
               for ln in buf.getvalue().splitlines():
                   low = ln.lower()
                   if any(k in low for k in ["warning", "gvs", "sabr", "nsig", "sign in", "members", "unavailable",
-                                            "not available", "po token", "generating", "fetching", "n-sig", "throttl"]):
+                                            "not available", "po token", "generating", "fetching", "n-sig", "throttl",
+                                            "challenge", "jsc", "runtime", "deno", "js challenge"]):
                       print("::notice title=%s-log::%s" % (label, ln.strip()[:220]))
           PY
       - name: "YouTube → archive.org → D1"
