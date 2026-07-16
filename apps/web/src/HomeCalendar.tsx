@@ -34,7 +34,9 @@ import { FilterChips as NavFilterChips } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "4";
-const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
+// iOS-26: поверхности карточек — чистый белый, а не серое «стекло»; отделяет
+// волосяная граница + мягкая тень (плавающая карточка на белом холсте).
+const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 20, border: "0.5px solid var(--color-hairline)", boxShadow: "var(--shadow-card)" };
 
 /** Границы данных: архив начинается с 2016-01 (scripts/gcal/generate_past_archive.py),
  *  живой фид кончается в 2028-02 (generate_all_cities.py). Стык без дыры. */
@@ -129,14 +131,26 @@ function fmtDay(iso: string): { d: string; wd: string; m: string; y: number } {
   return { d: String(dt.getDate()), wd: WD_RU[dt.getDay()], m: MONTH_RU[dt.getMonth()], y: dt.getFullYear() };
 }
 
+// Стандарт цвета (Apple 2026): у ВСЕХ типов метка одного нейтрального серого —
+// тип различает СЛОВО (Явление/Уход/Пост/Праздник), а не цвет. Золото
+// зарезервировано под «сейчас/выбрано» (число дня, «Сегодня ·»). Никакой радуги.
 const TYPE_META: Record<CalEvent["type"], { label: string; color: string }> = {
-  ekadasi: { label: "Экадаши", color: GOLD },
-  parana: { label: "Парана", color: "var(--color-label-3)" },
-  festival: { label: "Праздник", color: "var(--color-gold-deep)" },
-  appearance: { label: "Явление", color: "#2E9E5B" },
+  ekadasi: { label: "Экадаши", color: "var(--color-label-2)" },
+  parana: { label: "Парана", color: "var(--color-label-2)" },
+  festival: { label: "Праздник", color: "var(--color-label-2)" },
+  appearance: { label: "Явление", color: "var(--color-label-2)" },
   disappearance: { label: "Уход", color: "var(--color-label-2)" },
-  other: { label: "Событие", color: "var(--color-label-3)" },
+  other: { label: "Событие", color: "var(--color-label-2)" },
 };
+
+// Тип строчным словом — для hero-подписи «· пост / · праздник».
+const TYPE_WORD: Record<CalEvent["type"], string> = {
+  ekadasi: "пост", parana: "парана", festival: "праздник",
+  appearance: "явление", disappearance: "уход", other: "событие",
+};
+
+// Что достойно hero «что сейчас» (как в шапке): пост, праздник, явление, уход.
+const HERO_TYPES = new Set<CalEvent["type"]>(["ekadasi", "festival", "appearance", "disappearance"]);
 
 /* ── месяц как адрес ──────────────────────────────────────────────────────
  * ЗКН-Н005/Н035: `/calendar` = «Предстоящие» · `/calendar/2020-03` = месяц ·
@@ -411,6 +425,9 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   const [cardEvent, setCardEvent] = useState<CalEvent | null>(null);
   const [briefMap, setBriefMap] = useState<Map<string, EventBrief> | null>(null);
   const gen = useRef(0);
+  // Ссылка на строку выбранного дня — чтобы подвести её к центру экрана (п.1).
+  const pickedRef = useRef<HTMLElement | null>(null);
+  const setPicked = (el: HTMLElement | null) => { pickedRef.current = el; };
 
   /* ЗКН-Н033 — АДРЕС ЕДИНСТВЕННЫЙ ИСТОЧНИК ИСТИНЫ. Месяц ЧИТАЕТСЯ из пути на
    * каждое его изменение, а не снимается один раз при монтировании: иначе «назад»
@@ -473,17 +490,22 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   const all = useMemo(() => [...(past || []), ...(live || [])], [past, live]);
 
   const upcoming = useMemo(() => (live || []).filter((e) => e.date >= today), [live, today]);
-  const nextEka = useMemo(() => upcoming.find((e) => e.type === "ekadasi") || null, [upcoming]);
-  const nextParana = useMemo(() => {
-    if (!nextEka) return null;
-    return upcoming.find((e) => e.type === "parana" && e.date > nextEka.date) || null;
-  }, [upcoming, nextEka]);
-  const paranaText = useMemo(() => {
-    if (!nextParana) return "";
-    if (/\d{1,2}:\d{2}/.test(nextParana.title)) return nextParana.title;
-    const m = nextParana.orig.match(/(\d{1,2}:\d{2}).*?-\s*(\d{1,2}:\d{2})/);
-    return m ? `Выход из поста ${m[1]}–${m[2]}` : nextParana.title;
-  }, [nextParana]);
+
+  /* Hero «что сейчас»: события СЕГОДНЯ (их может быть несколько — праздник и два
+   * ухода в один день), а если сегодня пусто — БЛИЖАЙШЕЕ предстоящее. Парану
+   * показываем, только когда в фокусе экадаши. */
+  const todayFocus = useMemo(() => upcoming.filter((e) => e.date === today && HERO_TYPES.has(e.type)), [upcoming, today]);
+  const nearestFocus = useMemo(() => upcoming.find((e) => e.date > today && HERO_TYPES.has(e.type)) || null, [upcoming, today]);
+  const heroIsToday = todayFocus.length > 0;
+  const heroEvents = heroIsToday ? todayFocus : (nearestFocus ? [nearestFocus] : []);
+  const paranaFor = (eka: CalEvent | null): { date: string; text: string } | null => {
+    if (!eka) return null;
+    const p = upcoming.find((e) => e.type === "parana" && e.date > eka.date);
+    if (!p) return null;
+    if (/\d{1,2}:\d{2}/.test(p.title)) return { date: p.date, text: p.title };
+    const m = p.orig.match(/(\d{1,2}:\d{2}).*?-\s*(\d{1,2}:\d{2})/);
+    return { date: p.date, text: m ? `Выход из поста ${m[1]}–${m[2]}` : p.title };
+  };
 
   // Точки в сетке шита — по ВСЕМ событиям месяца, включая парану: пустой день без
   // точки честнее, чем открытый пустой экран (ЗКН-Пр007).
@@ -520,15 +542,26 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   const canNext = !!route.ym && route.ym < maxYm;
   const navLabel = route.ym
     ? `${MONTH_H[Number(route.ym.slice(5, 7)) - 1]} ${route.ym.slice(0, 4)}`
-    : "Предстоящие";
+    : "Выбрать дату";
 
   const arrow = (on: boolean): React.CSSProperties => ({
     display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34,
     flexShrink: 0, borderRadius: 999, border: "0.5px solid var(--color-hairline)",
-    background: "var(--color-glass-thin)", cursor: on ? "pointer" : "default",
+    background: "var(--color-bg-2)", cursor: on ? "pointer" : "default",
     color: on ? "var(--color-label)" : "var(--color-label-4)", opacity: on ? 1 : 0.5,
     WebkitTapHighlightColor: "transparent",
   });
+
+  /* На /calendar/YYYY-MM-DD подводим выбранный день к центру экрана — иначе месяц
+   * открывается сверху и нажатое событие остаётся за кадром (п.1). Ждём загрузку
+   * данных и отрисовку (deps: months). Без анимации: на холодной загрузке плавная
+   * прокрутка выглядела бы рывком. */
+  useEffect(() => {
+    if (!route.day || busy || monthBusy) return;
+    const el = pickedRef.current;
+    if (el) el.scrollIntoView({ behavior: "auto", block: "center" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route.day, busy, monthBusy, months]);
 
   return (
     <div>
@@ -544,7 +577,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           </button>
         </div>
         <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Экадаши, праздники и дни великих вайшнавов по расчётам GCal — официальной программы Календарного комитета GBC. Время — по городу {loc.ru}.
+          Экадаши, праздники и дни великих вайшнавов по расчётам GCal — официальной программы Календарного комитета GBC.
         </p>
       </div>
 
@@ -556,7 +589,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <button type="button" onClick={() => setDateOpen(true)} aria-label="Выбрать дату"
-          style={{ display: "inline-flex", flex: 1, minWidth: 0, alignItems: "center", justifyContent: "center", gap: 7, padding: "9px 12px", borderRadius: 999, border: `1px solid ${route.ym ? `color-mix(in srgb, ${GOLD} 45%, transparent)` : "var(--color-hairline)"}`, background: route.ym ? `color-mix(in srgb, ${GOLD} 10%, transparent)` : "var(--color-glass-thin)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>
+          style={{ display: "inline-flex", flex: 1, minWidth: 0, alignItems: "center", justifyContent: "center", gap: 7, padding: "9px 12px", borderRadius: 999, border: `1px solid ${route.ym ? `color-mix(in srgb, ${GOLD} 45%, transparent)` : "var(--color-hairline)"}`, background: route.ym ? `color-mix(in srgb, ${GOLD} 10%, transparent)` : "var(--color-bg-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-label)" }}>
           <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}>
             <rect x="3.5" y="5" width="17" height="15.5" rx="3" fill="none" stroke={GOLD} strokeWidth="1.7" />
             <path d="M3.5 9.6h17M8 3.5V6m8-2.5V6" stroke={GOLD} strokeWidth="1.7" strokeLinecap="round" />
@@ -569,30 +602,51 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         {route.ym && (
-          <button type="button" onClick={() => goto("/calendar")} aria-label="Вернуться к предстоящим"
-            style={{ flexShrink: 0, padding: "9px 12px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold-deep)" }}>
+          <button type="button" onClick={() => goto("/calendar")} aria-label="К ближайшим событиям"
+            style={{ flexShrink: 0, padding: "9px 12px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold-deep)" }}>
             Вперёд
           </button>
         )}
       </div>
 
-      {/* hero — только в «Предстоящих»: в прошлом месяце «ближайший экадаши» уже
-          не ближайший, и подпись врала бы (ЗКН-БТ002). */}
-      {!route.ym && nextEka && (
-        <div style={{ marginTop: 16, padding: "20px 18px", borderRadius: 22, background: `linear-gradient(135deg, color-mix(in srgb, ${GOLD} 16%, var(--color-glass-thin)), var(--color-glass-thin))` }}>
-          <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Ближайший экадаши · {loc.ru}</div>
-          <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{nextEka.title.replace(" — пост", "")}</div>
-          <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>
-            {(() => { const f = fmtDay(nextEka.date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · пост
-          </div>
-          {nextParana && (
-            <div style={{ marginTop: 10, display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-              {(() => { const f = fmtDay(nextParana.date); return `${f.d} ${f.m}: ${paranaText}`; })()}
+      {/* hero «что сейчас» — только в режиме ближайших (в выбранном месяце
+          «сегодня/ближайшее» не к месту). Чистая белая карточка с лёгким золотым
+          акцентом — без тяжёлого градиента (п.4). */}
+      {!route.ym && heroEvents.length > 0 && (() => {
+        const single = heroEvents.length === 1;
+        const par = paranaFor(heroEvents.find((e) => e.type === "ekadasi") || null);
+        return (
+          <div style={{ marginTop: 16, padding: 18, borderRadius: 22, background: `color-mix(in srgb, ${GOLD} 6%, var(--color-bg-2))`, border: `1px solid color-mix(in srgb, ${GOLD} 26%, transparent)`, boxShadow: "var(--shadow-card)" }}>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+              {heroIsToday ? "Сегодня" : "Ближайшее"} · {loc.ru}
             </div>
-          )}
-        </div>
-      )}
+            {single ? (
+              <>
+                <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{heroEvents[0].title.replace(" — пост", "")}</div>
+                <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>
+                  {(() => { const f = fmtDay(heroEvents[0].date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · {TYPE_WORD[heroEvents[0].type]}
+                </div>
+              </>
+            ) : (
+              <div style={{ marginTop: 10, display: "grid" }}>
+                {heroEvents.map((e, i) => (
+                  <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
+                    style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "8px 0", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                    <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.3, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
+                    <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {par && (
+              <div style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+                {(() => { const f = fmtDay(par.date); return `${f.d} ${f.m}: ${par.text}`; })()}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       <div style={{ height: 10 }} />
       <NavFilterChips sticky ariaLabel="Фильтр календаря"
@@ -600,7 +654,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         active={filt} onChange={(id) => setFilt(id as typeof filt)} />
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск: праздник, экадаши или имя" inputMode="search" aria-label="Поиск по календарю"
-        style={{ marginTop: 12, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", outline: "none" }} />
+        style={{ marginTop: 12, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", outline: "none" }} />
 
       <div style={{ marginTop: 6 }} aria-live="polite">
         {err && (
@@ -613,7 +667,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         )}
         {(busy || monthBusy) && !err && (
           <div style={{ display: "grid", gap: 12, marginTop: 10 }}>
-            {[0, 1, 2].map((i) => <div key={i} style={{ height: 76, ...fill, opacity: 0.6 }} />)}
+            {[0, 1, 2].map((i) => <div key={i} style={{ height: 76, borderRadius: 20, background: "var(--color-glass-thin)", opacity: 0.7 }} />)}
           </div>
         )}
         {monthErr && (
@@ -649,7 +703,9 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                       </div>
                       <div style={{ minWidth: 0, flex: 1 }}>
                         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.35, color: "var(--color-label)" }}>{e.title}</div>
-                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: meta.color }}>{isToday ? "Сегодня · " : ""}{meta.label}{linked ? " · Герой" : ""}</div>
+                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: "var(--color-label-2)" }}>
+                          {isToday && <span style={{ color: GOLD }}>Сегодня · </span>}{meta.label}{linked ? " · Герой" : ""}
+                        </div>
                       </div>
                       {tappable && (
                         <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}>
@@ -661,15 +717,15 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                   const rowStyle: React.CSSProperties = {
                     display: "flex", alignItems: "center", gap: 13, padding: "12px 14px",
                     borderTop: i ? "0.5px solid var(--color-hairline)" : "none",
-                    background: isPicked ? `color-mix(in srgb, ${GOLD} 8%, transparent)` : "none",
+                    background: isPicked ? `color-mix(in srgb, ${GOLD} 12%, var(--color-bg-2))` : "none",
                   };
                   return tappable ? (
-                    <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
+                    <button ref={isPicked ? setPicked : undefined} key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
                       style={{ ...rowStyle, width: "100%", textAlign: "left", border: "none", borderTop: rowStyle.borderTop, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                       {inner}
                     </button>
                   ) : (
-                    <div key={e.date + e.orig + i} style={rowStyle}>{inner}</div>
+                    <div ref={isPicked ? setPicked : undefined} key={e.date + e.orig + i} style={rowStyle}>{inner}</div>
                   );
                 })}
               </div>

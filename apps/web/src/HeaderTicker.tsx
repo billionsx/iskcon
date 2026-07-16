@@ -25,7 +25,7 @@ interface CalEvent { date: string; title: string; type: string }
 
 type Slot =
   | { kind: "logo" }
-  | { kind: "event"; when: "today" | "tomorrow"; typeWord: string; name: string; path: string };
+  | { kind: "event"; when: "today" | "tomorrow"; typeWord: string; name: string; path: string; seenKey: string };
 
 const DAY_MS = 86_400_000;
 const DWELL_LOGO = 6000;    // покой дышит дольше
@@ -44,6 +44,31 @@ const HONORIFIC = /^(?:Шри\s+Шри|Шрилы|Шримати|Шриман|Ш
 
 function ymd(d = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/* «Погашенные» напоминания. Тапнул событие в шапке и перешёл на него — больше
+ * его не показываем, и так по каждому событию отдельно (ЗКН-Н… п.7). Ключ включает
+ * дату, поэтому годовая повторяемость самолечится: у события следующего года
+ * другая дата → другой ключ → снова покажется. Хранилище может быть эфемерным
+ * (iOS Private / Block-All-Cookies) — тогда гашение живёт только в рамках сессии,
+ * и это допустимо. Прошедшие ключи вычищаем при загрузке, чтобы список не пух. */
+const SEEN_KEY = "cal-ticker-seen";
+const seenKeyOf = (e: CalEvent) => `${e.date}|${e.type}|${e.title}`;
+function loadSeen(): Set<string> {
+  try {
+    const raw = localStorage.getItem(SEEN_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw) as string[];
+    const today = ymd();
+    const kept = arr.filter((k) => (k.split("|")[0] || "") >= today);
+    if (kept.length !== arr.length) localStorage.setItem(SEEN_KEY, JSON.stringify(kept));
+    return new Set(kept);
+  } catch { return new Set(); }
+}
+function markSeen(prev: Set<string>, key: string): Set<string> {
+  const next = new Set(prev); next.add(key);
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify([...next])); } catch { /* эфемерное хранилище — ок */ }
+  return next;
 }
 
 /** Заголовок для шапки: до тире-описания и без хвостовых скобок; дефис в
@@ -74,7 +99,7 @@ async function fetchEvents(): Promise<CalEvent[]> {
 /** Слоты на ТЕКУЩИЙ момент: логотип + сегодняшние события + (с 18:00) завтрашнее. */
 const SHOWN = new Set(["ekadasi", "festival", "appearance", "disappearance"]);
 
-function deriveSlots(events: CalEvent[], now: Date): Slot[] {
+function deriveSlots(events: CalEvent[], now: Date, seen: Set<string>): Slot[] {
   const today = ymd(now);
   const tomorrow = ymd(new Date(now.getTime() + DAY_MS));
   const toSlot = (e: CalEvent, when: "today" | "tomorrow"): Slot => {
@@ -85,11 +110,12 @@ function deriveSlots(events: CalEvent[], now: Date): Slot[] {
     else { typeWord = "Праздник"; name = shortTitle(e.title); }
     name = name.replace(HONORIFIC, "").trim();
     const path = e.type === "ekadasi" ? "/ekadashi" : `/calendar/${e.date}`;
-    return { kind: "event", when, typeWord, name: name || shortTitle(e.title), path };
+    return { kind: "event", when, typeWord, name: name || shortTitle(e.title), path, seenKey: seenKeyOf(e) };
   };
+  const show = (e: CalEvent, d: string) => e.date === d && SHOWN.has(e.type) && !seen.has(seenKeyOf(e));
   const slots: Slot[] = [{ kind: "logo" }];
-  for (const e of events.filter((e) => e.date === today && SHOWN.has(e.type))) slots.push(toSlot(e, "today"));
-  if (now.getHours() >= 18) for (const e of events.filter((e) => e.date === tomorrow && SHOWN.has(e.type))) slots.push(toSlot(e, "tomorrow"));
+  for (const e of events.filter((e) => show(e, today))) slots.push(toSlot(e, "today"));
+  if (now.getHours() >= 18) for (const e of events.filter((e) => show(e, tomorrow))) slots.push(toSlot(e, "tomorrow"));
   return slots;
 }
 
@@ -147,6 +173,7 @@ export function HeaderTicker({ onHome, onOpenPath }: { onHome?: () => void; onOp
   const [events, setEvents] = useState<CalEvent[]>([]);
   const [clock, setClock] = useState(() => Date.now()); // грубые «часы» — двигают показ через 18:00 и полночь
   const [active, setActive] = useState(0);
+  const [seen, setSeen] = useState<Set<string>>(() => loadSeen()); // погашенные напоминания
   const reduced = useRef(typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
 
   // события: при монтировании и раз в 30 минут (ловим смену суток и новые праздники)
@@ -164,7 +191,7 @@ export function HeaderTicker({ onHome, onOpenPath }: { onHome?: () => void; onOp
     return () => clearInterval(id);
   }, []);
 
-  const slots = useMemo(() => deriveSlots(events, new Date(clock)), [events, clock]);
+  const slots = useMemo(() => deriveSlots(events, new Date(clock), seen), [events, clock, seen]);
 
   // список изменился — начинаем с логотипа
   useEffect(() => { setActive(0); }, [slots.length]);
@@ -189,7 +216,7 @@ export function HeaderTicker({ onHome, onOpenPath }: { onHome?: () => void; onOp
     const whenLabel = s.when === "tomorrow" ? "Завтра" : "Сегодня";
     return (
       <button type="button" aria-label={`${whenLabel} · ${s.typeWord}: ${s.name}`}
-        onClick={() => onOpenPath(s.path)}
+        onClick={() => { setSeen((prev) => markSeen(prev, s.seenKey)); onOpenPath(s.path); }}
         style={{ display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", gap: 3, height: "100%", width: "100%", padding: "0 4px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent", overflow: "hidden" }}>
         <span style={{ fontFamily: "var(--font-display)", fontSize: "7px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-label-2)", lineHeight: 1, textAlign: "center", marginRight: "-0.2em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {whenLabel} · {s.typeWord}
