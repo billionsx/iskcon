@@ -51,17 +51,21 @@ jobs:
           pip install -U bgutil-ytdlp-pot-provider   # плагин yt-dlp: берёт PO-token у провайдера
       - name: "Диагностика POT (провайдер + плагин связаны?)"
         run: |
-          echo "::notice title=POT /ping::$(curl -s --max-time 8 http://127.0.0.1:4416/ping | head -c 240 || echo 'нет ответа')"
-          pip show bgutil-ytdlp-pot-provider 2>/dev/null | grep -iE '^(Name|Version):' | sed 's/^/::notice title=POT-плагин::/' || echo "::warning::плагин bgutil не установлен"
+          echo "::notice title=POT /ping::$(curl -s --max-time 8 http://127.0.0.1:4416/ping | head -c 200 || echo 'нет ответа')"
+          echo "::notice title=bgutil-loc::$(pip show -f bgutil-ytdlp-pot-provider 2>/dev/null | grep -iE 'Location|yt_dlp_plugins' | tr '\n' ' ' | head -c 300)"
           python3 - <<'PY' || true
-          import sys
-          try:
-              import yt_dlp_plugins  # noqa: F401
-              import pkgutil, yt_dlp_plugins
-              mods = [m.name for m in pkgutil.walk_packages(yt_dlp_plugins.__path__, 'yt_dlp_plugins.')]
-              print("::notice title=yt_dlp_plugins::" + (", ".join(mods)[:240] or "пусто"))
-          except Exception as e:
-              print("::warning title=yt_dlp_plugins::не импортируется — %s" % e)
+          import io, contextlib
+          from yt_dlp import YoutubeDL
+          buf = io.StringIO()
+          with contextlib.redirect_stderr(buf):
+              YoutubeDL({"verbose": True})
+          hit = False
+          for ln in buf.getvalue().splitlines():
+              low = ln.lower()
+              if "plugin" in low or "pot provider" in low or "bgutil" in low:
+                  print("::notice title=ydl-plugins::" + ln.strip()[:220]); hit = True
+          if not hit:
+              print("::warning title=ydl-plugins::yt-dlp не сообщил о плагинах (POT-провайдер не загружен)")
           PY
       - name: "YouTube → archive.org → D1"
         env:
