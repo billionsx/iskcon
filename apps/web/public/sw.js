@@ -26,7 +26,7 @@
  *
  * v6 — доставка ЗКН-Н039…Н043 (корень белых экранов: роутер ставил вкладки,
  * которых нет). Код был исправлен и задеплоен, но до людей не доехал. */
-const CACHE = "iol-v6";
+const CACHE = "iol-v7";
 const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/favicon.svg"];
 
 self.addEventListener("install", (e) => {
