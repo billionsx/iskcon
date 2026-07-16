@@ -172,6 +172,26 @@ def list_videos(limit):
     return out
 
 
+def probe_formats(vid):
+    """Диагностика: какие форматы yt-dlp реально видит у ролика (при сбое выкачки)."""
+    yt = ytdlp()
+    try:
+        with yt.YoutubeDL({"quiet": True, "skip_download": True, **common_opts()}) as ydl:
+            info = ydl.extract_info(watch_url(vid), download=False)
+        fmts = (info or {}).get("formats") or []
+        if not fmts:
+            print("::warning title=Форматы %s::0 форматов — YouTube не отдаёт скачиваемых потоков (SABR/PO-token)" % vid)
+            return
+        rows = []
+        for f in fmts[:30]:
+            rows.append("%s/%s %sx%s v=%s a=%s %s" % (
+                f.get("format_id"), f.get("ext"), f.get("width") or "?", f.get("height") or "?",
+                (f.get("vcodec") or "-")[:8], (f.get("acodec") or "-")[:8], (f.get("format_note") or "")[:14]))
+        print("::warning title=Форматы %s (%d)::%s" % (vid, len(fmts), " || ".join(rows)))
+    except Exception as e:  # noqa: BLE001
+        print("::warning title=Проба форматов %s::%s" % (vid, str(e)[:160]))
+
+
 def fetch_one(vid, workdir):
     """Скачиваем лучший mp4 ≤1080p + превью. Возвращаем (mp4_path, thumb_path, meta)."""
     yt = ytdlp()
@@ -322,6 +342,8 @@ def run(limit):
             raise
         except Exception as e:  # noqa: BLE001
             print("::warning::%s — сбой: %s" % (vid, str(e)[:200]))
+            if fetched == 1:
+                probe_formats(vid)
             continue
     print("::notice::залито новых видео: %d" % done)
     if done == 0 and fetched > 0:
