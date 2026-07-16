@@ -38,8 +38,17 @@ jobs:
           python-version: "3.12"
       - name: "ffmpeg (склейка видео+аудио в mp4)"
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: "PO-token провайдер (обход SABR/PO-token YouTube)"
+        run: |
+          docker run -d --name bgutil -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider
+          for i in $(seq 1 20); do
+            if curl -s -o /dev/null http://127.0.0.1:4416/ 2>/dev/null; then echo "POT-провайдер поднялся"; break; fi
+            sleep 2
+          done
       - name: "Зависимости"
-        run: pip install -r tools/video/requirements.txt
+        run: |
+          pip install -r tools/video/requirements.txt
+          pip install -U bgutil-ytdlp-pot-provider   # плагин yt-dlp: берёт PO-token у провайдера
       - name: "YouTube → archive.org → D1"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

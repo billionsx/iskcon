@@ -145,11 +145,9 @@ def cookiefile():
 
 
 def common_opts():
-    """Общие ключи yt-dlp: cookies (если есть) + перебор клиентов + ретраи."""
-    opts = {
-        "extractor_args": {"youtube": {"player_client": ["tv", "default", "web_safari", "mweb"]}},
-        "retries": 3, "extractor_retries": 3, "socket_timeout": 30,
-    }
+    """Общие ключи yt-dlp: cookies (если есть) + ретраи. Клиентов НЕ навязываем —
+    yt-dlp сам выберет рабочие, а PO-token отдаст bgutil-провайдер (обход SABR)."""
+    opts = {"retries": 3, "extractor_retries": 3, "socket_timeout": 30}
     cf = cookiefile()
     if cf:
         opts["cookiefile"] = cf
@@ -283,7 +281,7 @@ def run(limit):
     done = 0
     fetched = 0  # сколько НОВЫХ роликов реально пытались скачать (не дедуп)
     for v in vids:
-        if done >= limit:
+        if done >= limit or fetched >= limit + 4:
             break
         vid = v["vid"]
         guid = "youtube:" + vid
