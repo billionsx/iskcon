@@ -55,28 +55,35 @@ jobs:
         run: |
           echo "::notice title=POT /ping::$(curl -s --max-time 8 http://127.0.0.1:4416/ping | head -c 200 || echo 'нет ответа')"
           python3 - <<'PY' || true
-          import io, contextlib, os, tempfile
+          import os, tempfile
           from yt_dlp import YoutubeDL
           cf = None
           raw = os.environ.get("YT_COOKIES", "").strip()
           if raw:
               fd, cf = tempfile.mkstemp(suffix=".txt")
               open(cf, "w").write(raw if raw.endswith("\n") else raw + "\n")
-          opts = {"verbose": True, "skip_download": True, "cookiefile": cf,
-                  "extractor_args": {"youtube": {"fetch_pot": ["always"], "player_client": ["web_safari", "mweb"]}}}
-          buf = io.StringIO(); nf = -1; err = ""
-          with contextlib.redirect_stderr(buf):
+          URL = "https://www.youtube.com/watch?v=8zGRtr1bE8E"
+          configs = [
+              ("default+pot", {"fetch_pot": ["always"]}),
+              ("web_safari", {"fetch_pot": ["always"], "player_client": ["web_safari"]}),
+              ("tv", {"fetch_pot": ["always"], "player_client": ["tv"]}),
+              ("tv_embedded", {"fetch_pot": ["always"], "player_client": ["tv_embedded"]}),
+              ("android_vr", {"fetch_pot": ["always"], "player_client": ["android_vr"]}),
+              ("ios", {"fetch_pot": ["always"], "player_client": ["ios"]}),
+              ("mweb", {"fetch_pot": ["always"], "player_client": ["mweb"]}),
+          ]
+          for name, ea in configs:
+              opts = {"quiet": True, "no_warnings": True, "skip_download": True, "cookiefile": cf,
+                      "extractor_args": {"youtube": ea}}
               try:
                   with YoutubeDL(opts) as ydl:
-                      info = ydl.extract_info("https://www.youtube.com/watch?v=8zGRtr1bE8E", download=False)
-                  nf = len((info or {}).get("formats") or [])
+                      info = ydl.extract_info(URL, download=False)
+                  fmts = (info or {}).get("formats") or []
+                  v = sum(1 for f in fmts if f.get("vcodec") not in (None, "none"))
+                  a = sum(1 for f in fmts if f.get("acodec") not in (None, "none"))
+                  print("::notice title=cfg %s::форматов=%d (видео=%d аудио=%d)" % (name, len(fmts), v, a))
               except Exception as e:
-                  err = str(e)[:200]
-          print("::notice title=extract-result::форматов=%d err=%s" % (nf, err or "нет"))
-          for ln in buf.getvalue().splitlines():
-              low = ln.lower()
-              if any(k in low for k in ["pot", "token", "gvs", "sabr", "getpot", "bgutil", "player", "not available", "missing"]):
-                  print("::notice title=extract::" + ln.strip()[:230])
+                  print("::notice title=cfg %s::ошибка: %s" % (name, str(e)[:110]))
           PY
       - name: "YouTube → archive.org → D1"
         env:
