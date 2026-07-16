@@ -2735,26 +2735,40 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
       // ЧЧ/ШБ: лила/песнь → глава → стих, через /toc и /division/<id>/read
       navLock.current = true;
       if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
+      /* ЗКН-Н079: id главы и ref стиха достраиваются из URL (формат БД
+       * work.<лила/песнь>.<глава>.<стих>, напр. "sb.1.9.40" / "cc.madhya.6.140").
+       * Это открывает СТИХ, даже если /toc не ответил, дивизион/глава не нашлись в
+       * оглавлении или сеть моргнула (мобильный) — стих не схлопывается на главу. */
+      const chapId = `${book.work}.${div}.${chapter}`;
+      const fallbackRef = `${chapId}.${verse}`;
       fetch(api(`/books/${book.work}/toc`))
         .then((r) => r.json())
         .then((d: CcToc) => {
           const divs = d?.divisions ?? [];
           const dv = divs.find((x) => x.id.split(".").pop() === div || x.slug === div) ?? null;
           const c = dv?.chapters.find((x) => x.number === chapter) ?? null;
-          if (!c) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
-          setOpenChapter({ id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses });
+          const id = c ? c.id : chapId;
+          setOpenChapter(c
+            ? { id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses }
+            : { id, number: chapter ?? "", title_ru: "", title_en: "", source_url: "", verses: 0 });
           if (verse) {
-            fetch(api(`/books/${book.work}/division/${c.id}/read`))
+            fetch(api(`/books/${book.work}/division/${id}/read`))
               .then((r) => r.json())
               .then((rd) => {
                 const vs = (rd.verses ?? []) as ChapterVerse[];
-                setReaderRef(resolveVerseRef(vs, verse));
+                setReaderRef(resolveVerseRef(vs, verse) || fallbackRef);
               })
-              .catch(() => {})
+              .catch(() => { setReaderRef(fallbackRef); })
               .finally(() => { navLock.current = false; });
           } else { setReaderRef(null); navLock.current = false; }
         })
-        .catch(() => { navLock.current = false; });
+        .catch(() => {
+          if (verse) {
+            setOpenChapter({ id: chapId, number: chapter ?? "", title_ru: "", title_en: "", source_url: "", verses: 0 });
+            setReaderRef(fallbackRef);
+          }
+          navLock.current = false;
+        });
       return;
     }
     if (!chapters) return;
@@ -2762,14 +2776,17 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
     const ch = chapters.find((x) => x.number === chapter) ?? null;
     setOpenChapter(ch);
-    if (ch && verse) {
+    if (verse) {
+      // ЗКН-Н079: ref стиха достраивается из URL (формат БД work.<глава>.<стих>, напр.
+      // "bg.2.13") — стих открывается даже при сбое фетча/поиска, не схлопываясь на главу.
+      const fallbackRef = `${book.work}.${chapter}.${verse}`;
       fetch(api(`/books/${book.work}/chapters/${chapter}/read`))
         .then((r) => r.json())
         .then((d) => {
           const vs = (d.verses ?? []) as ChapterVerse[];
-          setReaderRef(resolveVerseRef(vs, verse));
+          setReaderRef(resolveVerseRef(vs, verse) || fallbackRef);
         })
-        .catch(() => {})
+        .catch(() => { setReaderRef(fallbackRef); })
         .finally(() => { navLock.current = false; });
     } else {
       setReaderRef(null);

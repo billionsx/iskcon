@@ -1118,6 +1118,10 @@ def check_n079():
             bad.append(("BookDetailPage.tsx", "Н079: openTarget не использует resolveVerseRef из ./bookVerseRef"))
         if bdp.count("resolveVerseRef(vs, verse)") < 2:
             bad.append(("BookDetailPage.tsx", "Н079: обе ветки openTarget (иерарх.+плоская) обязаны звать resolveVerseRef(vs, verse) — иначе стих в одной из веток схлопнется на главу"))
+        if bdp.count("resolveVerseRef(vs, verse) || fallbackRef") < 2:
+            bad.append(("BookDetailPage.tsx", "Н079: обе ветки openTarget обязаны достраивать ref из URL (`|| fallbackRef`) — иначе при сбое /toc, фетча или поиска стих схлопнется на главу (ШБ не работал совсем, БГ через раз на мобильном)"))
+        if "const fallbackRef = `${book.work}." not in bdp:
+            bad.append(("BookDetailPage.tsx", "Н079: потеряна достройка ref стиха из URL (fallbackRef из формата БД work.<песнь/лила>.<глава>.<стих>)"))
         if re.search(r'vs\.find\(\(vv\)\s*=>\s*\(String\(vv\.ref\)\.split\("\."\)\.pop\(\)', bdp):
             bad.append(("BookDetailPage.tsx", "Н079: вернулся хрупкий матч ref.split('.').pop() === want — стих будет открывать главу"))
     if mod:
