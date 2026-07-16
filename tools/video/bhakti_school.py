@@ -152,7 +152,7 @@ def common_opts():
     opts = {
         "retries": 3, "extractor_retries": 3, "socket_timeout": 30,
         "js_runtimes": {"deno": {}},
-        "remote_components": {"ejs"},
+        "remote_components": {"ejs:github", "ejs:npm"},
         "extractor_args": {"youtube": {"fetch_pot": ["always"]}},
     }
     cf = cookiefile()
