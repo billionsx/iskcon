@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type CSSProperties, useMemo } from "react"
 import { createPortal } from "react-dom";
 import { COVER_FALLBACK, COVER_FALLBACK_DARK } from "../ui/CoverFallback";
 import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
-import { usePlayer, fmtTime, trackSubtitle, type Track } from "./store";
+import { usePlayer, fmtTime, trackSubtitle, kirtanTrackKey, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, RepeatVoiceIcon, MoonIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
@@ -163,11 +163,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * тот, что сейчас звучит и лёг на сердце. Без этого «Моё» — пустое обещание.
    *
    * Ключ — путь дорожки в архиве: он уникален и переживает переименования. */
-  const trackKey = (tr: Track | null) => {
-    if (!tr) return "";
-    const m = (tr.url || "").split("/audio/")[1];
-    return m ? `kirtan:${decodeURIComponent(m)}` : "";
-  };
+  const trackKey = (tr: Track | null) => (tr ? kirtanTrackKey(tr) : "");
   const favs = useFavorites();
   const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key)), [favs]);
   /* ═══ ЗКН-Н075 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
@@ -197,7 +193,9 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     const k = trackKey(tr);
     if (!k) return;
     const on = favSet.has(k);
-    if (on) removeFavorite(k); else addFavorite(k, { t: tr.title, s: tr.artist ?? "" });
+    // ЗКН-Н077: избранное трека несёт адрес самого трека (?t=<хвост audio>),
+    // чтобы открывалось воспроизведение трека, а не библиотека.
+    if (on) removeFavorite(k); else addFavorite(k, { t: tr.title, s: tr.artist ?? "", h: `/kirtans?t=${encodeURIComponent(k.slice(k.indexOf(":") + 1))}` });
     flash(on ? "Убрано из «Моё»" : "Добавлено в «Моё»");
   };
 

@@ -42,6 +42,16 @@ export interface Track {
   artist?: string;      // киртан: исполнитель
   album?: string;       // киртан: альбом
 }
+
+/* ЗКН-Н077: единый ключ трека-киртана — по хвосту audio-URL (после «/audio/»).
+ * ОДИН источник для трёх мест: избранного (запись), вкладки «Моё» (сопоставление)
+ * и deep-link из избранного (открытие). Разъедутся формы — избранное перестанет
+ * находить/открывать трек. Хвост включает статичный ?v=… (AUDIO_CACHE_BUST) и
+ * стабилен между деплоями. */
+export function kirtanTrackKey(tr: Track): string {
+  const m = (tr.url || "").split("/audio/")[1];
+  return m ? `kirtan:${decodeURIComponent(m)}` : "";
+}
 interface ModeData { identifier: string; tracks: Track[] }
 export interface CantoRef { canto: number; label: string; tracks: number }
 interface Manifest {

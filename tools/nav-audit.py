@@ -1048,8 +1048,33 @@ def check_n076():
     return bad
 
 
+def check_n077():
+    """ЗКН-Н077: избранное трека-киртана несёт адрес самого трека, не библиотеки.
+
+    (1) NowPlaying.addFavorite(k, {...}) для трека обязан класть `h` — иначе избранное
+    схлопнется на /kirtans. (2) FavoritesScreen.hrefFor для kirtan не должен возвращать
+    голый "/kirtans": адрес трека выводится из ключа kirtan:<хвост>. Лист (трек) обязан
+    открываться листом, а не контейнером (библиотекой) — как и стих (Н076).
+    """
+    bad = []
+    np = read(SRC / "player" / "NowPlaying.tsx")
+    if np:
+        m = re.search(r"addFavorite\(k,\s*\{([^}]*)\}\)", np)
+        if m and "h:" not in m.group(1):
+            ln = np[: m.start()].count("\n") + 1
+            bad.append(("NowPlaying.tsx", "стр.%d: addFavorite трека без h — избранное не откроет трек" % ln))
+    fs = read(SRC / "FavoritesScreen.tsx")
+    if fs:
+        m = re.search(r'indexOf\("kirtan"\)\s*===\s*0\)\s*return\s*"/kirtans"', fs)
+        if m:
+            ln = fs[: m.start()].count("\n") + 1
+            bad.append(("FavoritesScreen.tsx", "стр.%d: hrefFor kirtan → голый /kirtans; трек схлопнется на библиотеку" % ln))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Н076", "стих в избранном — канонический slug, не work-code", check_n076),
+    ("ЗКН-Н077", "избранное киртана открывает трек, не библиотеку", check_n077),
     ("ЗКН-Н018", "главная витрины — её суть, не список", check_n018),
     ("ЗКН-Н040", "роутер не ставит вкладку, которой нет", check_n040),
     ("ЗКН-Н039", "историю пишет только nav.ts", check_n039),

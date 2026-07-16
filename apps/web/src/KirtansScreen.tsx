@@ -12,10 +12,11 @@
  * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePlayer } from "./player/store";
+import { usePlayer, kirtanTrackKey } from "./player/store";
 import { NowPlaying } from "./player/NowPlaying";
 import { kirtanTracks, artistBySlug, type KirtanArtist } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
+import { replaceUrl } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HubHeader, HubSearch, HubEmpty } from "./ui/HubHeader";
 
@@ -80,6 +81,26 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     if (tracks.length > 0 && p.kind !== "kirtan") p.loadKirtan(ALL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tracks.length, p.kind]);
+
+  /* ЗКН-Н077: deep-link из избранного — доиграть КОНКРЕТНЫЙ трек, не библиотеку.
+   * Избранное киртана ведёт на `/kirtans?t=<хвост audio>`. Тут находим этот трек в
+   * манифесте и прыгаем на него (jumpTo автопроигрывает). Если трека нет в текущей
+   * очереди — грузим полный альбом `all` и повторяем; если и там нет — тихо остаёмся
+   * в библиотеке. Параметр гасим через replaceUrl, чтобы не срабатывало повторно. */
+  const deepDone = useRef(false);
+  useEffect(() => {
+    if (deepDone.current || tracks.length === 0 || typeof window === "undefined") return;
+    const t = new URLSearchParams(window.location.search).get("t");
+    if (!t) { deepDone.current = true; return; }
+    const want = "kirtan:" + decodeURIComponent(t);
+    if (p.kind === "kirtan" && p.tracks.length > 0) {
+      const idx = p.tracks.findIndex((tr) => kirtanTrackKey(tr) === want);
+      if (idx >= 0) { deepDone.current = true; p.jumpTo(idx); replaceUrl("/kirtans"); return; }
+      if (p.book === ALL) { deepDone.current = true; replaceUrl("/kirtans"); return; } // весь альбом загружен, трека нет
+    }
+    if (p.book !== ALL) p.loadKirtan(ALL); // трека нет в текущей очереди — грузим все, эффект повторится
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [p.kind, p.book, p.tracks.length, tracks.length]);
 
   const [q, setQ] = useState("");
   const [found, setFound] = useState<{ q: string; n: number } | null>(null);

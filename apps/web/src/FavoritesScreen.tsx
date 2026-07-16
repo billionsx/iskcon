@@ -127,7 +127,10 @@ function hrefFor(it: FavItem): string | null {
     if (segs[0] === w) segs = segs.slice(1);          // «cc.madhya.19.117» → без шифра
     return segs.length ? `/${bookSlug(w)}/${segs.join("/")}` : `/${bookSlug(w)}`;
   }
-  if (type.indexOf("kirtan") === 0) return "/kirtans";
+  // ЗКН-Н077: киртан-избранное ведёт к самому треку (?t=<хвост audio из ключа>),
+  // а не к библиотеке. id = хвост ключа kirtan:<хвост> → работает и для старых
+  // записей без сохранённого h.
+  if (type.indexOf("kirtan") === 0) return id ? `/kirtans?t=${encodeURIComponent(id)}` : "/kirtans";
   return null;
 }
 function titleFor(it: FavItem): string {
