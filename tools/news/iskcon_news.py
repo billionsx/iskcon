@@ -32,6 +32,7 @@
 ЗКН-Пл006: источник важнее метода — переводим РЕАЛЬНЫЙ материал сайтов, ничего не досочиняя.
 """
 import argparse
+import hashlib
 import html
 import json
 import os
@@ -280,6 +281,17 @@ def rest_records(src, page):
 _NS = {"content": "http://purl.org/rss/1.0/modules/content/"}
 
 
+def _wid_from(guid, link):
+    """Стабильный id статьи из RSS для дедупа: числовой из ?p=/хвоста/любых цифр;
+    если цифр НЕТ (guid — слаг/URN, как в Atom iskcon.org) — хэш адреса, а НЕ падение
+    на None.group (Пл024). Стабилен между прогонами → дедуп работает."""
+    guid, link = guid or "", link or ""
+    m = (re.search(r"[?&]p=(\d+)", link) or re.search(r"(\d+)/?$", guid)
+         or re.search(r"(\d+)", guid or link or ""))
+    wid = re.sub(r"\D", "", m.group(1)) if m else ""
+    return wid or hashlib.sha1((guid or link or "x").encode("utf-8")).hexdigest()[:12]
+
+
 def rss_records(src):
     """RSS/Atom как откат (одна страница). Тело — из content:encoded, иначе description."""
     xml = _get_text(src["rss"])
@@ -299,7 +311,7 @@ def rss_records(src):
         title_en = html.unescape(_strip_tags(gx("title"))).strip()
         link = gx("link") or ""
         guid = gx("guid") or link
-        wid = re.sub(r"\D", "", (re.search(r"[?&]p=(\d+)", link) or re.search(r"(\d+)/?$", guid) or re.search(r"(\d+)", guid or "0")).group(1)) if (guid or link) else "0"
+        wid = _wid_from(guid, link)
         enc = it.find("content:encoded", _NS)
         raw = enc.text if enc is not None and enc.text else gx("description")
         body_en = clean_body(raw) or [t for t in [html.unescape(_strip_tags(raw)).strip()] if t]
@@ -557,6 +569,12 @@ def selftest():
     assert canonize_ru("праздник Гаура-лилы") == "праздник Гауранга Лилы", "Гаура-лила→Гауранга Лила"
     assert _chunks("a" * 10) == ["aaaaaaaaaa"] and _chunks("") == [], "chunks short"
     assert len(_chunks("Один. " * 500, limit=200)) > 1, "chunks long split"
+    # id статьи из RSS: числовой, а на слаге без цифр — стабильный хэш, НЕ падение (Пл024)
+    assert _wid_from("https://s/?p=123", "") == "123", "wid numeric ?p="
+    assert _wid_from("https://iskcon.org/some-title/", "") == _wid_from("https://iskcon.org/some-title/", ""), "wid stable"
+    _h = _wid_from("https://iskcon.org/no-digits-here", "")
+    assert len(_h) == 12 and not _h.isdigit(), "wid digitless→hash"
+    assert _wid_from("", "") and _wid_from(None, None), "wid never empty/crash"
     print("selftest OK")
 
 
