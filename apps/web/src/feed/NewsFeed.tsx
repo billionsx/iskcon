@@ -6,7 +6,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { newsClient } from "./api";
-import { NewsCard } from "./NewsCard";
+import { NewsStory } from "./NewsStory";
 import type { NewsItem } from "./types";
 
 const GOLD = "var(--color-gold)";
@@ -69,15 +69,26 @@ export function NewsFeed() {
           </div>
         )}
         {!err && !items && (
-          <div style={{ display: "grid", gap: 20 }}>
-            {[0, 1, 2].map((i) => <div key={i} style={{ height: 320, background: "var(--color-bg)", borderRadius: 20, opacity: 0.6 }} />)}
+          <div>
+            {[0, 1, 2].map((i) => (
+              <div key={i} style={{ marginTop: i ? 26 : 0, borderTop: i ? "0.5px solid var(--color-hairline)" : "none", paddingTop: i ? 26 : 0 }}>
+                <div style={{ height: 9, width: "36%", borderRadius: 4, background: "var(--color-bg-2)" }} />
+                <div style={{ height: 22, width: "90%", borderRadius: 6, background: "var(--color-bg-2)", marginTop: 13 }} />
+                <div style={{ height: 22, width: "58%", borderRadius: 6, background: "var(--color-bg-2)", marginTop: 8 }} />
+                <div style={{ height: 12, width: "100%", borderRadius: 4, background: "var(--color-bg-2)", marginTop: 15, opacity: 0.55 }} />
+                <div style={{ height: 12, width: "82%", borderRadius: 4, background: "var(--color-bg-2)", marginTop: 7, opacity: 0.55 }} />
+              </div>
+            ))}
           </div>
         )}
         {items && items.length > 0 && (
-          <div style={{ display: "grid", gap: 20 }}>
-            {items.map((n) => (
-              <NewsCard key={n.id} n={n} open={open.has(n.slug)} flash={flash}
-                onToggle={() => setOpen((s) => { const x = new Set(s); if (x.has(n.slug)) x.delete(n.slug); else x.add(n.slug); return x; })} />
+          <div>
+            {items.map((n, i) => (
+              <div key={n.id}>
+                {i > 0 && <div aria-hidden style={{ height: 0.5, background: "var(--color-hairline)", margin: "26px 0" }} />}
+                <NewsStory n={n} lead={i === 0} open={open.has(n.slug)} flash={flash}
+                  onToggle={() => setOpen((s) => { const x = new Set(s); if (x.has(n.slug)) x.delete(n.slug); else x.add(n.slug); return x; })} />
+              </div>
             ))}
           </div>
         )}
@@ -137,7 +148,7 @@ export function NewsFocus({ slug, onBack }: { slug: string; onBack: () => void }
             Не удалось открыть новость.
           </div>
         )}
-        {state === "ok" && item && <NewsCard n={item} open flash={flash} onToggle={() => {}} />}
+        {state === "ok" && item && <NewsStory n={item} lead open flash={flash} onToggle={() => {}} />}
       </div>
       {toast && (
         <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: "var(--text-footnote)", lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>

@@ -18,14 +18,14 @@ import { exportToPdf } from "../pdf";
 import { ROUTES, url as absUrl } from "../routes";
 import type { NewsItem } from "./types";
 
-function fmtDate(iso: string): string {
+export function fmtDate(iso: string): string {
   if (!iso) return "";
   try { return new Date(iso).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" }).replace(/\s*г\.$/, ""); }
   catch { return ""; }
 }
 
 /** Абзацы тела: пустая строка — граница абзаца; одиночные переводы строки склеиваем. */
-function paragraphs(body: string): string[] {
+export function paragraphs(body: string): string[] {
   return (body || "")
     .split(/\n{2,}/)
     .map((p) => p.replace(/\s*\n\s*/g, " ").trim())
@@ -33,7 +33,7 @@ function paragraphs(body: string): string[] {
 }
 
 /* ── PDF новости: печатный конвейер браузера + книжный print-CSS ── */
-function buildNewsPrintNode(n: NewsItem): HTMLElement {
+export function buildNewsPrintNode(n: NewsItem): HTMLElement {
   const root = document.createElement("div");
   root.style.maxWidth = "640px";
   root.style.margin = "0 auto";

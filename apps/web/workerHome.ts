@@ -656,14 +656,14 @@ function newsRow(r: Record<string, unknown>) {
   };
 }
 async function newsList(env: HomeEnv, url: URL): Promise<Response> {
-  if (!env.DB) return jr({ items: [], hasMore: false, cursor: null });
+  if (!env.DB) return jr({ items: [], hasMore: false, cursor: null }, 200, "no-store");
   const slug = url.searchParams.get("slug");
   if (slug) {
     const { results } = await env.DB.prepare(
       "SELECT * FROM news_posts WHERE slug=?1 AND status='published' LIMIT 1",
     ).bind(slug).all();
     const row = (results || [])[0] as Record<string, unknown> | undefined;
-    return jr({ item: row ? newsRow(row) : null });
+    return jr({ item: row ? newsRow(row) : null }, 200, "no-store");
   }
   const limit = Math.min(40, Math.max(1, Number(url.searchParams.get("limit")) || 24));
   const before = url.searchParams.get("before") || "";
@@ -684,7 +684,7 @@ async function newsList(env: HomeEnv, url: URL): Promise<Response> {
   const hasMore = arr.length > limit;
   const items = arr.slice(0, limit).map(newsRow);
   const last = items[items.length - 1];
-  return jr({ items, hasMore, cursor: last ? `${last.publishedAt}|${last.id}` : null });
+  return jr({ items, hasMore, cursor: last ? `${last.publishedAt}|${last.id}` : null }, 200, "no-store");
 }
 
 /* ───────── Медиа ленты (D1 feed_media) → видео/аудио с archive.org ─────────
