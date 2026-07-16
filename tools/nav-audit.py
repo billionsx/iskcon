@@ -1026,7 +1026,30 @@ def check_n002():
     return bad
 
 
+def check_n076():
+    """ЗКН-Н076: сохранённая ссылка на стих — канонический slug, не work-code.
+
+    Href избранного/шаринга/QR для стиха (verseUrl в BookDetailPage) ОБЯЗАН
+    строиться из `/${bookSlug(work)}/...`, как favHref главы и весь URL-контур
+    читалки. work-code-форма `ROUTES.book(work, <глава>)` даёт `/bg/2/13`, которую
+    не узнаёт ни safety-net подписки читалки (`startsWith("/${bookSlug(work)}")`),
+    ни гейт route → при открытой книге стих не доставляется и открытие
+    схлопывается на главу. Расхождение форм ссылки на один и тот же контент
+    (код книги vs slug) запрещено.
+    """
+    bad = []
+    fp = SRC / "BookDetailPage.tsx"
+    src = read(fp)
+    if src:
+        m = re.search(r"const\s+verseUrl\s*=([\s\S]{0,500}?);", src)
+        if m and re.search(r"ROUTES\.book\(\s*work\b", m.group(1)):
+            ln = src[: m.start()].count("\n") + 1
+            bad.append(("BookDetailPage.tsx", "стр.%d: verseUrl построен через ROUTES.book(work,...) — work-code URL вместо slug (bookSlug); стих схлопнется на главу" % ln))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н076", "стих в избранном — канонический slug, не work-code", check_n076),
     ("ЗКН-Н018", "главная витрины — её суть, не список", check_n018),
     ("ЗКН-Н040", "роутер не ставит вкладку, которой нет", check_n040),
     ("ЗКН-Н039", "историю пишет только nav.ts", check_n039),

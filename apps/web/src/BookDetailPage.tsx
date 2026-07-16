@@ -2387,11 +2387,19 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
   const refDigits = (data?.ref ?? refStr).replace(/^[^\d]*/, "");           // "1.9.40" | "2.13" | "2.16-17"
   const chapterNo = divParts.length >= 2 ? divParts[divParts.length - 1] : (refDigits.split(".")[0] ?? "");
   const verseSeg = (data?.ref ?? refStr).split(".").pop() ?? "";            // "40" | "13" | "16-17"
+  /* ЗКН-Н076: сохранённая/расшаренная ссылка на стих ОБЯЗАНА быть той же
+   * канонической slug-формой (`/${bookSlug}/...`), что и ссылка на главу
+   * (см. favHref в ChapterPage) и весь URL-контур читалки. Раньше здесь
+   * стоял ROUTES.book(work), дающий work-code-форму `/bg/2/13`; её не узнаёт
+   * ни safety-net подписки читалки (`path.startsWith("/${bookSlug}")`), ни
+   * гейт route — поэтому при уже открытой книге стих не доставлялся и
+   * открытие «схлопывалось» на главу. Slug-форма чинит и тёплый, и холодный
+   * путь. */
   const verseUrl = work !== "bg"
     ? (divParts.length >= 3
-        ? url(ROUTES.book(work, divParts[1], divParts[2])) + (verseSeg ? `/${verseSeg}` : "")
-        : url(ROUTES.book(work)))
-    : url(ROUTES.book(work, String(chapterNo))) + (verseSeg ? `/${verseSeg}` : "");
+        ? url(`/${bookSlug(work)}/${divParts[1]}/${divParts[2]}`) + (verseSeg ? `/${verseSeg}` : "")
+        : url(`/${bookSlug(work)}`))
+    : url(`/${bookSlug(work)}/${chapterNo}`) + (verseSeg ? `/${verseSeg}` : "");
   const ccDiv = (data?.division ?? "").split(".");                 // ["cc","madhya","6"] | ["sb","1","9"]
   const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
   const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
