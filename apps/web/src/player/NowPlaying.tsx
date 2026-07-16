@@ -68,7 +68,6 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   const [collapsed, setCollapsed] = useState(false);
   const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const [favorited, setFavorited] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [qr, setQr] = useState<{ url: string; data: QrData } | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
@@ -415,11 +414,15 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    *
    * ЗКН-Н052 я записал, но до шапки не довёл. Теперь у аудиотеки сердце везде
    * означает ОДНО: эта запись. */
-  const heroFav = isAdHoc && p.track ? favSet.has(trackKey(p.track)) : favorited;
+  // ЗКН-Н078: книжное избранное из плеера — РЕАЛЬНОЕ (тот же ключ book:<id>, что и у
+  // карточки книги) и с внутренним адресом книги, а не локальный стейт.
+  const bookFavKey = `book:${p.book}`;
+  const bookFav = favs.some((f) => f.key === bookFavKey);
+  const heroFav = isAdHoc && p.track ? favSet.has(trackKey(p.track)) : bookFav;
   const heroFavToggle = () => {
     if (isAdHoc && p.track) { toggleTrackFav(p.track); return; }
-    const v = !favorited; setFavorited(v);
-    flash(v ? "Добавлено в избранное" : "Убрано из избранного");
+    if (bookFav) { removeFavorite(bookFavKey); flash("Убрано из избранного"); }
+    else { addFavorite(bookFavKey, { t: bookFullTitle(BOOK), s: BOOK.tagline, h: `/${bookSlug(p.book)}` }); flash("Добавлено в избранное"); }
   };
 
   const coverActions = (

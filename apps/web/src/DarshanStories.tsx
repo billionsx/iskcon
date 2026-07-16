@@ -19,6 +19,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { darshanClient, type DarshanItem } from "./darshan/api";
 import { useFavorite } from "./cardActions";
+import { replaceUrl } from "./nav";
 
 /* ── токены ── */
 const GOLD = "var(--color-gold)";
@@ -206,6 +207,22 @@ export function DarshanRings() {
     });
   }, [items, seen]);
 
+  /* ЗКН-Н078: deep-link из избранного — открыть КОНКРЕТНУЮ сторис даршана.
+   * Избранное ведёт на `/darshan?d=<postId|srcUrl>`. Даршаны эфемерны (лента дня):
+   * если сторис ещё в сегодняшней ленте — открываем её вьюером, иначе просто остаёмся
+   * на ленте. Параметр гасим, чтобы не срабатывало повторно. */
+  const deepDone = useRef(false);
+  useEffect(() => {
+    if (deepDone.current || !items || items.length === 0 || typeof window === "undefined") return;
+    const d = new URLSearchParams(window.location.search).get("d");
+    if (!d) { deepDone.current = true; return; }
+    deepDone.current = true;
+    const want = decodeURIComponent(d);
+    const idx = ordered.findIndex((it) => (it.postId || it.srcUrl) === want);
+    if (idx >= 0) setView({ list: ordered, start: idx });
+    replaceUrl("/darshan");
+  }, [items, ordered]);
+
   if (items === null) return <><RingsSkeleton /><Keyframes /></>;
   if (items.length === 0) return null;
 
@@ -270,7 +287,9 @@ function DarshanStoryViewer({ items, start, onSeen, onClose }: {
   const rateRef = useRef(rate); rateRef.current = rate;
   const toastT = useRef(0);
   // Избранное текущей истории (♥, localStorage `fav:*`). Ключ — стабильный id поста.
-  const fav = useFavorite(`darshan:${item.postId || item.srcUrl}`, { t: item.deities || item.templeName, s: "Ежедневный даршан", h: item.channelUrl || item.srcUrl });
+  // ЗКН-Н078: избранное ведёт ВНУТРЕННИМ адресом к самому даршану (/darshan?d=<id>),
+  // а не на внешний канал — иначе тап по избранному ломает навигацию приложения.
+  const fav = useFavorite(`darshan:${item.postId || item.srcUrl}`, { t: item.deities || item.templeName, s: "Ежедневный даршан", h: `/darshan?d=${encodeURIComponent(item.postId || item.srcUrl)}` });
   const flash = useCallback((m: string) => { setToast(m); window.clearTimeout(toastT.current); toastT.current = window.setTimeout(() => setToast(null), 1600); }, []);
 
   // Даршан-кадры показываем ЦЕЛИКОМ (object-fit: contain) — мурти никогда не режем.

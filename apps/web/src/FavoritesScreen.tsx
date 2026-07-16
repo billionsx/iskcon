@@ -55,7 +55,7 @@ function catOf(type: string): CatKey {
   if (type === "verse") return "verse";
   if (type === "bhajan") return "bhajan";
   if (type === "entity") return "entity";
-  if (type === "centre") return "centre";
+  if (type === "centre" || type === "center") return "centre";
   if (type === "restaurant") return "restaurant";
   if (type === "doc") return "doc";
   if (type === "post") return "feed";
@@ -108,6 +108,12 @@ function hrefFor(it: FavItem): string | null {
   if (type === "entity") return `/${id}`;
   if (type === "doc") return `/doc/${id}`;
   if (type === "centre" || type === "restaurant") return `/place/${id}`;
+  // ЗКН-Н078: полное покрытие типов — каждый вид избранного резолвится во ВНУТРЕННИЙ
+  // адрес к самому объекту даже без сохранённого h (страховка для legacy-записей).
+  if (type === "center") return `/iskcon/centers/${id}`;
+  if (type === "dhama") return `/dhama/${id}`;
+  if (type === "darshan") return id ? `/darshan?d=${encodeURIComponent(id)}` : "/darshan";
+  if (type === "content") return id.charAt(0) === "/" ? id : `/${id}`;
   if (type === "bhajan") return id.charAt(0) === "/" ? id : `/bhajans/${id}`;
   /* ЗКН-Н060 · ПУТЬ РОЖДАЕТСЯ В ОДНОМ МЕСТЕ.
    *

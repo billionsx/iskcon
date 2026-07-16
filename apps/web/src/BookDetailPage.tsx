@@ -2609,7 +2609,6 @@ function TopBtn({ solid, active, activeColor, ariaLabel, onClick, children }: { 
 /* ═════════ MAIN ═════════ */
 export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarget }: { book: BookData; onBack: () => void; onDonate: () => void; onOpenCart: () => void; initialTarget?: { div?: string | null; chapter: string | null; verse: string | null } | null }) {
   const [idx, setIdx] = useState(0);
-  const [favorited, setFavorited] = useState(false);
   const [inCart, setInCart] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);

@@ -13,6 +13,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
+import { useFavorite } from "./cardActions";
 import { BackIcon, HeartIcon, ShareIcon, MoreIcon, LinkIcon, TopIcon, type IconProps } from "./ui/icons";
 import { renderTerms } from "./ui/Skt";
 import { CoverFallback } from "./ui/CoverFallback";
@@ -173,7 +174,6 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const [t, setT] = useState(0); // 0..1 прогресс ухода hero под навбар
   const [prog, setProg] = useState(0); // 0..1 прогресс чтения по странице
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [favorited, setFavorited] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -184,7 +184,11 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
     try { if (typeof navigator !== "undefined" && (navigator as Navigator).share) { await (navigator as Navigator).share(payload); return; } } catch { /* cancelled */ }
     try { await navigator.clipboard.writeText(pageUrl); flash("Ссылка скопирована"); } catch { flash(pageUrl); }
   };
-  const toggleFav = () => { const nv = !favorited; setFavorited(nv); flash(nv ? "Добавлено в избранное" : "Убрано из избранного"); };
+  // ЗКН-Н078: «в избранное» обязано РЕАЛЬНО сохранять объект (не локальный стейт) и
+  // нести ВНУТРЕННИЙ адрес к самой странице. slug уже внутренний путь (/dasa/…).
+  const favHref = slug.charAt(0) === "/" ? slug : `/${slug}`;
+  const { on: favorited, toggle: toggleFavRaw } = useFavorite(`content:${slug}`, { t: data?.name || "", h: favHref });
+  const toggleFav = () => toggleFavRaw(flash);
   const menuItems = [
     { key: "share", label: "Поделиться", icon: <ShareIcon size={19} /> },
     { key: "copy", label: "Скопировать ссылку", icon: <LinkIcon size={19} /> },

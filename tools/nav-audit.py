@@ -1072,9 +1072,35 @@ def check_n077():
     return bad
 
 
+def check_n078():
+    """ЗКН-Н078: «в избранное» реально сохраняет объект и ведёт ВНУТРЕННИМ адресом к нему.
+
+    (1) Нет фальшивого сердечка — избранное не держится в локальном useState:
+    `setFavorited(` запрещён (сохранять через useFavorite/addFavorite). (2) В вызовах
+    useFavorite/addFavorite поле `h` — внутренний путь («/…»), не внешний URL: значения
+    с http/…Url (кроме уже срезанных .replace/.slice) запрещены. Обобщение Н076/Н077:
+    что сохранил — то и обязано открыться, самим собой и внутри приложения.
+    """
+    bad = []
+    for f in files():
+        code = strip_comments(read(f))
+        for mm in re.finditer(r"setFavorited\s*\(", code):
+            ln = code[: mm.start()].count("\n") + 1
+            bad.append((f.name, "стр.%d: setFavorited — избранное в локальном стейте, не сохраняется" % ln))
+        for mm in re.finditer(r"(?:useFavorite|addFavorite)\s*\([^\n]*?\bh:\s*([^,}\n]+)", code):
+            hv = mm.group(1).strip()
+            if re.match(r"[`\"']?/", hv) or ".replace(" in hv or ".slice(" in hv:
+                continue  # внутренний путь / origin уже срезан
+            if re.search(r"https?://|[Uu][Rr][Ll]\b", hv):
+                ln = code[: mm.start()].count("\n") + 1
+                bad.append((f.name, "стр.%d: h избранного — внешний адрес (%s); нужен внутренний путь" % (ln, hv[:40])))
+    return bad
+
+
 CHECKS = [
     ("ЗКН-Н076", "стих в избранном — канонический slug, не work-code", check_n076),
     ("ЗКН-Н077", "избранное киртана открывает трек, не библиотеку", check_n077),
+    ("ЗКН-Н078", "избранное реально сохраняет и ведёт внутренним адресом к объекту", check_n078),
     ("ЗКН-Н018", "главная витрины — её суть, не список", check_n018),
     ("ЗКН-Н040", "роутер не ставит вкладку, которой нет", check_n040),
     ("ЗКН-Н039", "историю пишет только nav.ts", check_n039),
