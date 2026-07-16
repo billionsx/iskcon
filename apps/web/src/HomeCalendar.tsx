@@ -36,7 +36,7 @@ const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "4";
 // iOS-26: поверхности карточек — чистый белый, а не серое «стекло»; отделяет
 // волосяная граница + мягкая многослойная тень (карточка парит над белым холстом).
-const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 22, border: "0.5px solid var(--color-hairline)", boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 12px 30px rgba(0,0,0,0.06)" };
+const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 22, border: "0.5px solid var(--color-hairline)", boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 16px 40px rgba(0,0,0,0.08)" };
 
 /** Границы данных: архив начинается с 2016-01 (scripts/gcal/generate_past_archive.py),
  *  живой фид кончается в 2028-02 (generate_all_cities.py). Стык без дыры. */
@@ -156,19 +156,19 @@ const HERO_TYPES = new Set<CalEvent["type"]>(["ekadasi", "festival", "appearance
  * (паттерн Apple Settings). Тип различает ФОРМА глифа: полумесяц — пост (лунный
  * день), искра — праздник, лотос — явление, пламя лампады — уход. Цвет один
  * (золото) — никакой радуги; насыщеннее только для «сейчас/выбрано». */
-function TypeIcon({ type, size = 30, today = false }: { type: CalEvent["type"]; size?: number; today?: boolean }) {
-  const g = Math.round(size * 0.6);
+function TypeIcon({ type, size = 28, today = false }: { type: CalEvent["type"]; size?: number; today?: boolean }) {
+  const g = Math.round(size * 0.64);
   const glyph: Record<CalEvent["type"], React.ReactNode> = {
-    ekadasi: <path d="M20.5 14.8A7.5 7.5 0 1 1 11.2 4.2a6 6 0 0 0 9.3 10.6Z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />,
-    festival: <path d="M12 3.2l1.7 4.9 4.9 1.7-4.9 1.7L12 16.4l-1.7-4.9L5.4 9.8l4.9-1.7z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
-    appearance: <g fill="currentColor"><path d="M12 16.8c-1.4-1.8-1.4-4.6 0-7 1.4 2.4 1.4 5.2 0 7Z" /><path d="M11.4 16.9c-2.4-.6-3.9-2.8-4.2-5.4 2.4.5 4 2.6 4.2 5.4Z" /><path d="M12.6 16.9c2.4-.6 3.9-2.8 4.2-5.4-2.4.5-4 2.6-4.2 5.4Z" /></g>,
-    disappearance: <path d="M12 3.6c2.5 3.3 4.2 5 4.2 7.6a4.2 4.2 0 0 1-8.4 0c0-1.3.6-2.4 1.6-3.3.3 1 .9 1.6 1.6 1.6-.4-1.7.2-4.2 1-5.9Z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
-    parana: <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.7" />,
-    other: <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.7" />,
+    ekadasi: <path d="M20.5 14.8A7.5 7.5 0 1 1 11.2 4.2a6 6 0 0 0 9.3 10.6Z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
+    festival: <path d="M12 3.6l1.5 4.9 4.9 1.5-4.9 1.5L12 16.4l-1.5-4.9L5.6 10l4.9-1.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />,
+    appearance: <g fill="currentColor"><path d="M12 16.5c-1.2-1.6-1.2-4.2 0-6.4 1.2 2.2 1.2 4.8 0 6.4Z" /><path d="M11.6 16.6c-2.2-.5-3.6-2.5-3.8-5 2.2.5 3.6 2.4 3.8 5Z" /><path d="M12.4 16.6c2.2-.5 3.6-2.5 3.8-5-2.2.5-3.6 2.4-3.8 5Z" /></g>,
+    disappearance: <path d="M12 3.2c2.2 2.8 3.6 4.4 3.6 6.6a3.6 3.6 0 0 1-7.2 0c0-1 .5-2 1.3-2.7.2.8.7 1.3 1.4 1.3-.4-1.5.1-3.5.9-5.1Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />,
+    parana: <circle cx="12" cy="12" r="2.4" fill="currentColor" />,
+    other: <circle cx="12" cy="12" r="2.4" fill="currentColor" />,
   };
   return (
-    <div style={{ flexShrink: 0, width: size, height: size, borderRadius: Math.round(size * 0.3), display: "flex", alignItems: "center", justifyContent: "center", background: `color-mix(in srgb, ${GOLD} ${today ? 18 : 9}%, transparent)`, border: today ? `0.5px solid color-mix(in srgb, ${GOLD} 30%, transparent)` : "none" }}>
-      <svg width={g} height={g} viewBox="0 0 24 24" aria-hidden style={{ color: GOLD }}>{glyph[type]}</svg>
+    <div style={{ flexShrink: 0, width: size, height: size, borderRadius: Math.round(size * 0.34), display: "flex", alignItems: "center", justifyContent: "center", background: today ? `color-mix(in srgb, ${GOLD} 15%, transparent)` : "transparent" }}>
+      <svg width={g} height={g} viewBox="0 0 24 24" aria-hidden style={{ color: today ? GOLD : "var(--color-label-3)" }}>{glyph[type]}</svg>
     </div>
   );
 }
@@ -637,7 +637,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         const single = heroEvents.length === 1;
         const par = paranaFor(heroEvents.find((e) => e.type === "ekadasi") || null);
         return (
-          <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: `linear-gradient(155deg, color-mix(in srgb, ${GOLD} 13%, var(--color-bg-2)) 0%, color-mix(in srgb, ${GOLD} 6%, var(--color-bg-2)) 58%, var(--color-bg-2) 100%)`, border: `1px solid color-mix(in srgb, ${GOLD} 24%, transparent)`, boxShadow: `0 10px 34px color-mix(in srgb, ${GOLD} 14%, transparent), 0 2px 10px rgba(0,0,0,0.05)` }}>
+          <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: "var(--color-bg-2)", border: `1px solid color-mix(in srgb, ${GOLD} 30%, transparent)`, boxShadow: "0 2px 8px rgba(0,0,0,0.05), 0 18px 44px rgba(0,0,0,0.09)" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
               {heroIsToday ? "Сегодня" : "Ближайшее"} · {loc.ru}
             </div>
@@ -655,7 +655,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
               <div style={{ marginTop: 12, display: "grid" }}>
                 {heroEvents.map((e, i) => (
                   <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
-                    style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", border: "none", borderTop: i ? `0.5px solid color-mix(in srgb, ${GOLD} 18%, transparent)` : "none", background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                    style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                     <TypeIcon type={e.type} size={34} today />
                     <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
                     <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
@@ -708,7 +708,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         {!busy && !monthBusy && months.map(([key, evs]) => {
           const [y, mo] = key.split("-").map(Number);
           return (
-            <section key={key} style={{ marginTop: 20 }}>
+            <section key={key} style={{ marginTop: 16 }}>
               <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "-0.015em", color: "var(--color-label)" }}>
                 {MONTH_H[mo - 1]} <span style={{ color: "var(--color-label-3)", fontWeight: 600 }}>{y}</span>
               </div>
