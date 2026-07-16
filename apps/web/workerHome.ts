@@ -599,17 +599,60 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
    — устойчив к добавлению свежих статей во время листания (в отличие от OFFSET).
    Тело РУ отдаём сразу: раскрытие карточки без второго запроса. Hero заворачиваем
    в /api/img (серверный прокси + кэш края — CDN источников часто блокируют хотлинк). */
+/** Автор-подпись в начале тела (частое у Dandavats: «Автор: X» или просто имя первым
+ *  абзацем) — вычленяем в author и убираем из тела; лид считаем по первому НАСТОЯЩЕМУ
+ *  абзацу. body_ru бывает JSON-массивом или текстом с \n\n. Чинит «сырой [ … ]»,
+ *  лид-подпись и байлайн-в-теле для ВСЕХ старых постов прямо на выдаче. */
+function cleanNews(bodyRaw: unknown, leadRaw: unknown, authorRaw: unknown): { body: string; lead: string; author: string } {
+  const raw = String(bodyRaw ?? "");
+  let paras: string[] = [];
+  try { const p = JSON.parse(raw); if (Array.isArray(p)) paras = p.map((x) => String(x)); } catch { /* не JSON — ниже */ }
+  if (!paras.length) paras = raw.split(/\n{2,}/);
+  paras = paras.map((s) => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+
+  const isByline = (s: string): boolean => {
+    const w = s.split(/\s+/).filter(Boolean).length;
+    return /^Автор[:\s]/i.test(s) || (s.length <= 60 && w <= 6 && !/[.!?…]/.test(s));
+  };
+
+  let author = String(authorRaw ?? "").trim();
+  if (paras.length && isByline(paras[0])) {
+    const name = paras[0].replace(/^Автор[:\s]*/i, "").trim();
+    if (!author && name) author = name;
+    paras = paras.slice(1);
+  }
+  const body = paras.join("\n\n");
+
+  let lead = String(leadRaw ?? "").trim();
+  if (!lead || isByline(lead)) {
+    const sents = (paras[0] || "").split(/(?<=[.!?…])\s+/);
+    lead = sents.slice(0, 2).join(" ").trim();
+  }
+  lead = lead.replace(/^Автор[:\s]*/i, "").trim();
+  if (lead.length > 220) lead = lead.slice(0, 219).replace(/\s+\S*$/, "").trim() + "…";
+
+  return { body, lead, author };
+}
+
+/** Видео-посты («Сегодняшнее рекомендуемое видео …») — без пользы в текстовой ленте,
+ *  не показываем (ЗКН: новостная лента — переведённые статьи, а не видео-врезки). */
+function isVideoNews(r: Record<string, unknown>): boolean {
+  const t = `${String(r.title_ru ?? "")} ${String(r.title_en ?? "")}`;
+  return /рекомендуемое видео|recommended video/i.test(t);
+}
+
 function newsRow(r: Record<string, unknown>) {
   const hero = (r.hero as string) || "";
+  const c = cleanNews(r.body_ru, r.lead_ru, r.author);
   return {
     kind: "news" as const,
     id: String(r.id), slug: r.slug as string,
     source: r.source as string, sourceLabel: r.source_label as string,
     url: r.url as string, publishedAt: r.published_at as string,
-    author: (r.author as string) || "", category: (r.category as string) || "",
+    author: c.author, category: (r.category as string) || "",
     hero: hero ? `/api/img?u=${encodeURIComponent(hero)}&w=1600` : "",
     title: r.title_ru as string, titleEn: (r.title_en as string) || "",
-    lead: r.lead_ru as string, body: r.body_ru as string,
+    lead: c.lead, body: c.body,
   };
 }
 async function newsList(env: HomeEnv, url: URL): Promise<Response> {
@@ -637,7 +680,7 @@ async function newsList(env: HomeEnv, url: URL): Promise<Response> {
       "SELECT * FROM news_posts WHERE status='published' ORDER BY published_at DESC, id DESC LIMIT ?1",
     ).bind(limit + 1).all());
   }
-  const arr = (rows || []) as Record<string, unknown>[];
+  const arr = ((rows || []) as Record<string, unknown>[]).filter((r) => !isVideoNews(r));
   const hasMore = arr.length > limit;
   const items = arr.slice(0, limit).map(newsRow);
   const last = items[items.length - 1];

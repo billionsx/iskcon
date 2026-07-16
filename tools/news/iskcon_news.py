@@ -201,6 +201,8 @@ def _iso(date_gmt):
 _VIDEO_TITLE_RE = re.compile(
     r"\|\|"                                   # «… || SB-… ||»
     r"|weekly\s+feed\s+archive"
+    r"|(?:recommended|featured)\s+video"      # «Today's recommended video: …»
+    r"|video\s+of\s+the\s+(?:day|week)"
     r"|\bch(?:annel)?\s*:"
     r"|\bSB[\s.-]?\d|\bBG[\s.-]?\d|\bCC[\s.-]?\d"  # SB3.16.26 / BG 2.13 …
     r"|\bclass\b.*\d{1,2}[.\-]\d{1,2}[.\-]\d{2,4}",
@@ -554,6 +556,7 @@ def run_source(key, limit, pages, dry):
 def selftest():
     assert clean_body("<p>Hello&nbsp;world</p><p>Tags: a,b</p><li>one</li>") == ["Hello world", "— one"], "clean_body"
     assert skip_dandavats("HH Swami || SB-11.03.26|| 15-06-2026", ["x"]), "dandavats video title"
+    assert skip_dandavats("Today's recommended video: An Experience with Lord Jagannath!", ["x"]), "recommended video"
     assert skip_dandavats("Weekly Feed Archive – July 15", ["x"]), "dandavats weekly"
     assert not skip_dandavats("Celebrating 60 Years of ISKCON at Bhaktivedanta Manor",
                               ["By Radha Mohan Das. Monday marked a highly auspicious occasion — the 60th anniversary of the incorporation of ISKCON in New York, a milestone for the whole movement worldwide."]), "real article kept"

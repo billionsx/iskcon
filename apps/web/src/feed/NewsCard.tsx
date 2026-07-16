@@ -15,7 +15,6 @@ import { BookMenuSheet } from "../BookMenuSheet";
 import { QrSheet } from "../QrSheet";
 import { ReportSheet } from "../ReportSheet";
 import { exportToPdf } from "../pdf";
-import { COVER_FALLBACK } from "../ui/CoverFallback";
 import { ROUTES, url as absUrl } from "../routes";
 import type { NewsItem } from "./types";
 
@@ -78,12 +77,15 @@ export function NewsCard({ n, open, onToggle, flash }: {
   const [menu, setMenu] = useState(false);
   const [qr, setQr] = useState(false);
   const [report, setReport] = useState(false);
+  const [imgBroken, setImgBroken] = useState(false);
 
   const path = `${ROUTES.darshan()}/news/${n.slug}`;
   const shareUrl = absUrl(path);
   const favKey = `news:${n.slug}`;
   const favMeta = { t: n.title.slice(0, 140), s: n.sourceLabel, h: path };
   const paras = paragraphs(n.body);
+  const showHero = !!n.hero && !imgBroken;
+  const eyebrow = [n.sourceLabel, n.category].filter(Boolean).join(" · ");
 
   const onPick = (id: string) => {
     if (id === "share") {
@@ -96,37 +98,43 @@ export function NewsCard({ n, open, onToggle, flash }: {
 
   return (
     <article style={{ overflow: "hidden", background: "var(--color-bg)", borderRadius: 20 }}>
-      {/* hero + действия оверлеем (эталон поста ленты) */}
-      <div style={{ position: "relative" }}>
-        <img src={n.hero || COVER_FALLBACK} alt="" loading="lazy"
-          style={{ width: "100%", display: "block", aspectRatio: "16 / 9", objectFit: "cover", background: "var(--color-bg-2)" }} />
-        <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(0,0,0,0.42), transparent 34%, transparent 62%, rgba(0,0,0,0.5))", pointerEvents: "none" }} />
-        {/* рубрика + источник — слева снизу на hero */}
-        <div style={{ position: "absolute", left: 14, bottom: 12, right: 64, display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
-          <span style={{ padding: "3px 9px", borderRadius: 999, background: "rgba(255,255,255,0.16)", backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "#fff" }}>{n.sourceLabel}</span>
-          {n.category && <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{n.category}</span>}
+      {/* hero — только если реально грузится; битую/мёртвую картинку прячем (не жёлтый бокс) */}
+      {showHero && (
+        <div style={{ position: "relative" }}>
+          <img src={n.hero} alt="" loading="lazy" onError={() => setImgBroken(true)}
+            style={{ width: "100%", display: "block", aspectRatio: "16 / 9", objectFit: "cover", background: "var(--color-bg-2)" }} />
+          <div aria-hidden style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(0,0,0,0.34), transparent 40%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", top: 16, right: 16, zIndex: 4 }}>
+            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} dark onMore={() => setMenu(true)} />
+          </div>
         </div>
-        <div style={{ position: "absolute", top: 16, right: 16, zIndex: 4 }}>
-          <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} dark onMore={() => setMenu(true)} />
-        </div>
-      </div>
+      )}
 
-      {/* заголовок + лид + раскрытие */}
-      <div style={{ padding: "13px 15px 15px" }}>
-        <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "var(--color-label)" }}>{n.title}</h3>
+      <div style={{ padding: showHero ? "13px 15px 15px" : "15px 15px 15px" }}>
+        {/* надзаголовок: источник · рубрика (всегда виден — и с картинкой, и без) */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+          <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</span>
+          {!showHero && (
+            <div style={{ flexShrink: 0, marginTop: -2 }}>
+              <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} onMore={() => setMenu(true)} />
+            </div>
+          )}
+        </div>
+
+        {/* заголовок */}
+        <h3 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "var(--color-label)" }}>{n.title}</h3>
+
+        {/* короткое описание */}
         {n.lead && (
           <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.52, color: "var(--color-label-2)" }}>{n.lead}</p>
         )}
 
+        {/* полный текст при раскрытии — абзацами, без ссылки на оригинал */}
         {open && paras.length > 0 && (
           <div style={{ marginTop: 10 }}>
             {paras.map((para, i) => (
               <p key={i} style={{ margin: i ? "10px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.58, color: "var(--color-label)" }}>{para}</p>
             ))}
-            <a href={n.url} target="_blank" rel="noopener noreferrer"
-              style={{ display: "inline-block", marginTop: 12, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold-deep)", textDecoration: "none" }}>
-              Оригинал на {n.sourceLabel} →
-            </a>
           </div>
         )}
 
