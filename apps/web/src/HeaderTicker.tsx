@@ -4,23 +4,20 @@
  * Центр шапки не статичен: он мягко перелистывает между ЛОГОТИПОМ и СОБЫТИЯМИ
  * календаря — как виджет на Lock Screen, который сам знает, что показать сейчас.
  *
- * Событие рисуется тремя строками (эталон — виджет «Календарь» iOS):
- *   • сверху — «когда» (Сегодня/Завтра): 8px, серым, капсом (тихий контекст);
- *   • центр — НАЗВАНИЕ капсом, крупно; если шире шапки — бежит строкой (marquee);
- *   • снизу — суть: ЯВЛЕНИЕ / УХОД / ПОСТ + окно параны (акцент золотом).
+ * Событие — ДВЕ строки, компактно, трекинг 20% (эхо вордмарка):
+ *   • сверху одной строкой «когда · суть»: СЕГОДНЯ · УХОД — 7px, серым;
+ *   • снизу — ИМЯ капсом, 8px, без гоноратива «Шри/Шрила»; шире шапки → бежит
+ *     строкой (marquee). Имя из календаря идёт в родительном падеже — так и есть
+ *     в источнике (СВАРУПЫ ДАМОДАРЫ ГОСВАМИ), склонять его нечем и незачем.
  *
  * Логика показа:
  *   • событий сегодня нет и до завтрашнего далеко → ТОЛЬКО логотип;
  *   • есть событие сегодня → логотип ⇄ событие(я);
  *   • завтрашнее «просыпается» с 18:00 (вечер — время готовить завтрашний день).
  *
- * Ритм неравномерный: логотип — покой, живёт дольше; событие — акцент, короче.
- * Переход — кросс-фейд с лёгким подъёмом. prefers-reduced-motion гасит анимацию.
- *
- * Данные — /api/calendar по сохранённому городу (или Вриндаван). Ошибка/пусто →
- * просто логотип. Тип события уже приходит из API: ekadasi | parana | festival |
- * appearance | disappearance. Парана (окно выхода из поста) — отдельное событие на
- * следующий за экадаши день; клеим его к экадаши для нижней строки.
+ * Показываем 4 рода событий: пост (экадаши), праздник, явление и уход вайшнава.
+ * Данные — /api/calendar по сохранённому городу (или Вриндаван); тип уже приходит
+ * из API (ekadasi | festival | appearance | disappearance). Ошибка/пусто → логотип.
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
@@ -28,18 +25,22 @@ interface CalEvent { date: string; title: string; type: string }
 
 type Slot =
   | { kind: "logo" }
-  | { kind: "event"; when: "today" | "tomorrow"; name: string; sub: string; path: string };
+  | { kind: "event"; when: "today" | "tomorrow"; typeWord: string; name: string; path: string };
 
 const DAY_MS = 86_400_000;
 const DWELL_LOGO = 6000;    // покой дышит дольше
-const DWELL_EVENT = 5200;   // 3 строки + возможная бегущая строка — глазу нужно больше
+const DWELL_EVENT = 5000;   // событие — акцент, короче; бегущей строке нужен запас
 const FADE_MS = 550;
 
-/* Ключи-кадры бегущей строки. Дистанция задаётся переменной --mq на самом
- * элементе, поэтому один @keyframes обслуживает любую ширину. Ping-pong с
- * задержками у краёв — спокойнее вечного прокручивания и не требует дубля DOM. */
+/* Ключи-кадры бегущей строки. Дистанция — переменная --mq на элементе, поэтому
+ * один @keyframes обслуживает любую ширину. Ping-pong с задержками у краёв. */
 const MARQUEE_CSS =
   "@keyframes iolhmarq{0%,9%{transform:translateX(0)}46%,54%{transform:translateX(var(--mq))}91%,100%{transform:translateX(0)}}";
+
+/* Ведущий гоноратив в родительном падеже — снимаем для компактной шапки (по
+ * просьбе основателя: «без Шри»). Полное почтительное имя остаётся на экране
+ * Календаря и на странице личности. «Шри Шри» — раньше «Шри», иначе съест лишь одно. */
+const HONORIFIC = /^(?:Шри\s+Шри|Шрилы|Шримати|Шриман|Шрила|Господа|Шри)\s+/;
 
 function ymd(d = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -49,19 +50,6 @@ function ymd(d = new Date()): string {
  *  «Йогини-экадаши» не трогаем (режем только « — …» с пробелами). */
 function shortTitle(t: string): string {
   return (t.split(/\s+[—–-]\s+/)[0] || t).replace(/\s*\([^)]*\)\s*$/, "").trim() || t;
-}
-
-/** Окно параны для экадаши: отдельное событие type=parana на СЛЕДУЮЩИЙ день,
- *  заголовок «Выход из поста HH:MM–HH:MM». Возвращаем «HH:MM–HH:MM» / «HH:MM» / null. */
-function paranaWindow(events: CalEvent[], ekadasiDate: string): string | null {
-  const [y, m, d] = ekadasiDate.split("-").map(Number);
-  const next = new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
-  const p = events.find((e) => e.type === "parana" && e.date === next);
-  if (!p) return null;
-  const two = p.title.match(/(\d{1,2}:\d{2})\D+(\d{1,2}:\d{2})/);
-  if (two) return `${two[1]}–${two[2]}`;
-  const one = p.title.match(/(\d{1,2}:\d{2})/);
-  return one ? one[1] : null;
 }
 
 async function fetchEvents(): Promise<CalEvent[]> {
@@ -83,22 +71,21 @@ async function fetchEvents(): Promise<CalEvent[]> {
   } catch { return []; }
 }
 
-/** Слоты на ТЕКУЩИЙ момент: логотип + сегодняшние события + (с 18:00) завтрашнее.
- *  Показываем 4 рода событий, которые уместны в шапке: пост (экадаши), праздник,
- *  явление и уход вайшнава. Санкранти/паран/«continues» — дело экрана Календаря. */
+/** Слоты на ТЕКУЩИЙ момент: логотип + сегодняшние события + (с 18:00) завтрашнее. */
 const SHOWN = new Set(["ekadasi", "festival", "appearance", "disappearance"]);
 
 function deriveSlots(events: CalEvent[], now: Date): Slot[] {
   const today = ymd(now);
   const tomorrow = ymd(new Date(now.getTime() + DAY_MS));
   const toSlot = (e: CalEvent, when: "today" | "tomorrow"): Slot => {
-    let name: string, sub = "";
-    if (e.type === "appearance") { name = e.title.replace(/^Явление[:\s]+/, ""); sub = "Явление"; }
-    else if (e.type === "disappearance") { name = e.title.replace(/^Уход[:\s]+/, ""); sub = "Уход"; }
-    else if (e.type === "ekadasi") { name = shortTitle(e.title); const w = paranaWindow(events, e.date); sub = w ? `Пост · парана ${w}` : "Пост"; }
-    else { name = shortTitle(e.title); sub = ""; } // festival — только название
+    let typeWord = "", name = "";
+    if (e.type === "appearance") { typeWord = "Явление"; name = e.title.replace(/^Явление[:\s]+/, ""); }
+    else if (e.type === "disappearance") { typeWord = "Уход"; name = e.title.replace(/^Уход[:\s]+/, ""); }
+    else if (e.type === "ekadasi") { typeWord = "Пост"; name = shortTitle(e.title); }
+    else { typeWord = "Праздник"; name = shortTitle(e.title); }
+    name = name.replace(HONORIFIC, "").trim();
     const path = e.type === "ekadasi" ? "/ekadashi" : `/calendar/${e.date}`;
-    return { kind: "event", when, name: name || shortTitle(e.title), sub, path };
+    return { kind: "event", when, typeWord, name: name || shortTitle(e.title), path };
   };
   const slots: Slot[] = [{ kind: "logo" }];
   for (const e of events.filter((e) => e.date === today && SHOWN.has(e.type))) slots.push(toSlot(e, "today"));
@@ -113,8 +100,8 @@ const WORDMARK_STYLE: CSSProperties = {
   letterSpacing: "0.2em", color: "var(--color-label)", whiteSpace: "nowrap", marginRight: "-0.2em",
 };
 
-/** Название события: капсом, крупно. Если шире шапки — едет бегущей строкой
- *  (ping-pong), иначе стоит по центру. Анимируем только активный слот. */
+/** Имя события: капсом, 8px, трекинг 20%. Влезает — по центру; шире шапки —
+ *  едет бегущей строкой (ping-pong). Анимируем только активный слот. */
 function NameMarquee({ text, active }: { text: string; active: boolean }) {
   const wrap = useRef<HTMLDivElement>(null);
   const inner = useRef<HTMLSpanElement>(null);
@@ -141,8 +128,9 @@ function NameMarquee({ text, active }: { text: string; active: boolean }) {
   const dur = Math.max(6, Math.round(dist / 16) + 4);
   const style: CSSProperties = {
     display: "inline-block", whiteSpace: "nowrap",
-    fontFamily: "var(--font-display)", fontSize: "var(--text-footnote)", fontWeight: 600,
-    letterSpacing: "0.015em", textTransform: "uppercase", color: "var(--color-label)", lineHeight: 1.15,
+    fontFamily: "var(--font-display)", fontSize: "8px", fontWeight: 600,
+    letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-label)",
+    lineHeight: 1.1, marginRight: "-0.2em",
   };
   if (over && active) {
     (style as Record<string, string>).animation = `iolhmarq ${dur}s ease-in-out infinite`;
@@ -198,19 +186,15 @@ export function HeaderTicker({ onHome, onOpenPath }: { onHome?: () => void; onOp
         </button>
       );
     }
+    const whenLabel = s.when === "tomorrow" ? "Завтра" : "Сегодня";
     return (
-      <button type="button" aria-label={`${s.when === "tomorrow" ? "Завтра" : "Сегодня"}: ${s.name}${s.sub ? ", " + s.sub : ""}`}
+      <button type="button" aria-label={`${whenLabel} · ${s.typeWord}: ${s.name}`}
         onClick={() => onOpenPath(s.path)}
-        style={{ display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", gap: 2, height: "100%", width: "100%", padding: "0 4px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent", overflow: "hidden" }}>
-        <span style={{ fontFamily: "var(--font-display)", fontSize: "8px", fontWeight: 600, letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--color-label-2)", lineHeight: 1, textAlign: "center", marginRight: "-0.18em" }}>
-          {s.when === "tomorrow" ? "Завтра" : "Сегодня"}
+        style={{ display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "center", gap: 3, height: "100%", width: "100%", padding: "0 4px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent", overflow: "hidden" }}>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: "7px", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-label-2)", lineHeight: 1, textAlign: "center", marginRight: "-0.2em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {whenLabel} · {s.typeWord}
         </span>
         <NameMarquee text={s.name} active={isActive} />
-        {s.sub && (
-          <span style={{ fontFamily: "var(--font-display)", fontSize: "8px", fontWeight: 600, letterSpacing: "0.13em", textTransform: "uppercase", color: "var(--color-gold-deep)", lineHeight: 1, textAlign: "center", marginRight: "-0.13em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-            {s.sub}
-          </span>
-        )}
       </button>
     );
   };
