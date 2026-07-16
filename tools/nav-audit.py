@@ -97,7 +97,7 @@ def check_n007():
 
 
 #: ЗКН-Н072 — порядок НИЖНИХ вкладок утверждён основателем 15.07.2026. Правится ТОЛЬКО им.
-TAB_ORDER = ["iskcon", "bogatstva", "krishna", "gauranga", "sadhana"]
+TAB_ORDER = ["sadhana", "bogatstva", "krishna", "gauranga", "iskcon"]
 
 
 def check_n072():

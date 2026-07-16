@@ -31,8 +31,8 @@ function Kicker({ text }: { text: string }) {
   return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.9px", textTransform: "uppercase", color: GOLD }}>{text}</div>;
 }
 
-export function NewsStory({ n, lead = false, open, onToggle, flash }: {
-  n: NewsItem; lead?: boolean; open: boolean; onToggle: () => void; flash: (m: string) => void;
+export function NewsStory({ n, lead = false, open, onToggle, flash, standalone = false }: {
+  n: NewsItem; lead?: boolean; open: boolean; onToggle: () => void; flash: (m: string) => void; standalone?: boolean;
 }) {
   const [menu, setMenu] = useState(false);
   const [qr, setQr] = useState(false);
@@ -101,7 +101,7 @@ export function NewsStory({ n, lead = false, open, onToggle, flash }: {
       )}
 
       <div style={{ marginTop: GAP, display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
-        {paras.length > 0 && (
+        {paras.length > 0 && !standalone && (
           <button type="button" onClick={onToggle}
             style={{ padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLD, WebkitTapHighlightColor: "transparent" }}>
             {open ? "Свернуть" : "Читать полностью"}

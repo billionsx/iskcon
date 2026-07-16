@@ -140,7 +140,7 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
  *
  * Теперь список ОДИН, и он же — источник для нижнего меню, для маршрутизатора
  * и для запасной ветки `Screen`. Разъехаться нечему. */
-export const TAB_IDS = ["iskcon", "bogatstva", "krishna", "gauranga", "sadhana"] as const;
+export const TAB_IDS = ["sadhana", "bogatstva", "krishna", "gauranga", "iskcon"] as const;
 /* ЗКН-Н074 — ГЛАВНЫЙ ТАБ = ПЕРВЫЙ В МЕНЮ. Стартовая вкладка приложения и то,
  * что открывает корень «/», ВЫВОДЯТСЯ отсюда — не вписываются руками. Поменялся
  * порядок (ЗКН-Н072) → сменился и главный таб, одним движением. Раньше дефолт был
@@ -155,11 +155,11 @@ export function isTabId(v: string): v is TabId { return (TAB_IDS as readonly str
  * обязаны идти в ОДНОМ порядке — иначе разъедутся молча (ЗКН-Н007/Н045).
  * Сторожит nav-audit.py::check_n072. */
 const TABS = [
-  { id: "iskcon", label: "ИСККОН", src: "/iskcon.svg", wide: true },
+  { id: "sadhana", label: "Даршан", src: "/prabhupada.svg", wide: false },
   { id: "bogatstva", label: "Богатства", src: "/bbt.svg", wide: false },
   { id: "krishna", label: "Кришна", src: "/vraj.svg", wide: false },
   { id: "gauranga", label: "Гауранга", src: "/gauranga.svg", wide: false },
-  { id: "sadhana", label: "Садхана", src: "/prabhupada.svg", wide: false },
+  { id: "iskcon", label: "ИСККОН", src: "/iskcon.svg", wide: true },
 ] as const;
 
 function TabBar({ active, onChange, scrollRef }: { active: string; onChange: (k: string) => void; scrollRef: { current: HTMLElement | null } }) {

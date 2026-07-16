@@ -148,7 +148,7 @@ export function NewsFocus({ slug, onBack }: { slug: string; onBack: () => void }
             Не удалось открыть новость.
           </div>
         )}
-        {state === "ok" && item && <NewsStory n={item} lead open flash={flash} onToggle={() => {}} />}
+        {state === "ok" && item && <NewsStory n={item} lead open standalone flash={flash} onToggle={() => {}} />}
       </div>
       {toast && (
         <div style={{ position: "fixed", left: "50%", bottom: 96, transform: "translateX(-50%)", zIndex: 2200, background: "rgba(28,28,30,0.96)", color: "#fff", padding: "13px 18px", borderRadius: 14, fontSize: "var(--text-footnote)", lineHeight: 1.5, fontFamily: "var(--font-text)", boxShadow: "0 12px 40px rgba(0,0,0,0.3)", width: "calc(100% - 40px)", maxWidth: 380, textAlign: "center" }}>{toast}</div>
