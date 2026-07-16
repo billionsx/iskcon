@@ -605,8 +605,13 @@ export function HomeFeed({ onDonate, filterKind = null, extraItems, intro }: {
           </div>
         )}
         {rows.length > 0 && (
-          <div style={{ display: "grid", gap: 20 }}>
-            {rows.map((r) => <div key={r.key}>{r.el}</div>)}
+          <div>
+            {rows.map((r, i) => (
+              <div key={r.key}>
+                {i > 0 && <div aria-hidden style={{ height: 0.5, background: "var(--color-hairline)", margin: "22px 0" }} />}
+                {r.el}
+              </div>
+            ))}
           </div>
         )}
         {posts && posts.length > 0 && hasMore && (

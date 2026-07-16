@@ -121,31 +121,37 @@ export function NewsCard({ n, open, onToggle, flash }: {
           )}
         </div>
 
-        {/* заголовок */}
-        <h3 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "var(--color-label)" }}>{n.title}</h3>
+        {/* заголовок · равные интервалы 12px между надзаголовком/заголовком/описанием/«читать» */}
+        <h3 style={{ margin: "12px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.22, color: "var(--color-label)" }}>{n.title}</h3>
 
-        {/* короткое описание */}
-        {n.lead && (
-          <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.52, color: "var(--color-label-2)" }}>{n.lead}</p>
+        {/* короткое описание — только свёрнутым (иначе дублирует первый абзац тела) */}
+        {!open && n.lead && (
+          <p style={{ margin: "12px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.52, color: "var(--color-label-2)" }}>{n.lead}</p>
         )}
 
         {/* полный текст при раскрытии — абзацами, без ссылки на оригинал */}
         {open && paras.length > 0 && (
-          <div style={{ marginTop: 10 }}>
+          <div style={{ marginTop: 12 }}>
             {paras.map((para, i) => (
               <p key={i} style={{ margin: i ? "10px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.58, color: "var(--color-label)" }}>{para}</p>
             ))}
           </div>
         )}
 
-        <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ marginTop: 12, display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
           {paras.length > 0 && (
             <button type="button" onClick={onToggle}
               style={{ padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, color: "var(--color-gold-deep)", WebkitTapHighlightColor: "transparent" }}>
               {open ? "Свернуть" : "Читать полностью"}
             </button>
           )}
-          <span style={{ marginLeft: "auto", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{fmtDate(n.publishedAt)}</span>
+          {(n.author || n.publishedAt) && (
+            <span style={{ marginLeft: "auto", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", textAlign: "right" }}>
+              {n.author && <span style={{ color: "var(--color-label-2)", fontWeight: 600 }}>{n.author}</span>}
+              {n.author && n.publishedAt && <span style={{ color: "var(--color-label-3)" }}> · </span>}
+              {n.publishedAt && <span style={{ color: "var(--color-label-3)" }}>{fmtDate(n.publishedAt)}</span>}
+            </span>
+          )}
         </div>
       </div>
 

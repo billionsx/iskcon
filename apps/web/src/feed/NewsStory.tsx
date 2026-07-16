@@ -46,7 +46,6 @@ export function NewsStory({ n, lead = false, open, onToggle, flash }: {
   const paras = paragraphs(n.body);
   const showHero = !!n.hero && !imgBroken;
   const kicker = [n.sourceLabel, n.category].filter(Boolean).join(" · ");
-  const byline = [n.author, fmtDate(n.publishedAt)].filter(Boolean).join(" · ");
 
   const onPick = (id: string) => {
     if (id === "share") {
@@ -60,6 +59,7 @@ export function NewsStory({ n, lead = false, open, onToggle, flash }: {
   // размерная шкала: lead заметно крупнее рядовых
   const titleSize = lead ? "var(--text-title1)" : "var(--text-title2)";
   const leadSize = lead ? "var(--text-body)" : "var(--text-callout)";
+  const GAP = 12;   // равные интервалы: надзаголовок · заголовок · описание · «читать»
 
   return (
     <article style={{ position: "relative" }}>
@@ -67,7 +67,7 @@ export function NewsStory({ n, lead = false, open, onToggle, flash }: {
 
       {showHero ? (
         <>
-          <div style={{ position: "relative", marginBottom: 15 }}>
+          <div style={{ position: "relative", marginBottom: GAP }}>
             <img src={n.hero} alt="" loading={lead ? "eager" : "lazy"} onError={() => setImgBroken(true)}
               style={{ width: "100%", display: "block", aspectRatio: lead ? "3 / 2" : "16 / 9", objectFit: "cover", borderRadius: 16, background: "var(--color-bg-2)" }} />
             <div style={{ position: "absolute", top: 12, right: 12, zIndex: 4 }}>
@@ -85,28 +85,35 @@ export function NewsStory({ n, lead = false, open, onToggle, flash }: {
         </div>
       )}
 
-      <h2 style={{ margin: "8px 0 0", fontFamily: "var(--font-display)", fontSize: titleSize, fontWeight: 800, letterSpacing: "-0.021em", lineHeight: 1.16, color: "var(--color-label)" }}>{n.title}</h2>
+      <h2 style={{ margin: `${GAP}px 0 0`, fontFamily: "var(--font-display)", fontSize: titleSize, fontWeight: 800, letterSpacing: "-0.021em", lineHeight: 1.16, color: "var(--color-label)" }}>{n.title}</h2>
 
-      {n.lead && (
-        <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)", fontSize: leadSize, lineHeight: 1.55, color: "var(--color-label-2)" }}>{n.lead}</p>
+      {/* описание — только в свёрнутом виде (в раскрытом его несёт первый абзац тела; иначе дубль) */}
+      {!open && n.lead && (
+        <p style={{ margin: `${GAP}px 0 0`, fontFamily: "var(--font-text)", fontSize: leadSize, lineHeight: 1.55, color: "var(--color-label-2)" }}>{n.lead}</p>
       )}
 
       {open && paras.length > 0 && (
-        <div style={{ marginTop: 13 }}>
+        <div style={{ marginTop: GAP }}>
           {paras.map((para, i) => (
             <p key={i} style={{ margin: i ? "12px 0 0" : 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)", lineHeight: 1.62, color: "var(--color-label)" }}>{para}</p>
           ))}
         </div>
       )}
 
-      <div style={{ marginTop: 13, display: "flex", alignItems: "baseline", gap: 12 }}>
+      <div style={{ marginTop: GAP, display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
         {paras.length > 0 && (
           <button type="button" onClick={onToggle}
             style={{ padding: 0, background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 700, color: GOLD, WebkitTapHighlightColor: "transparent" }}>
             {open ? "Свернуть" : "Читать полностью"}
           </button>
         )}
-        {byline && <span style={{ marginLeft: "auto", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)", textAlign: "right" }}>{byline}</span>}
+        {(n.author || n.publishedAt) && (
+          <span style={{ marginLeft: "auto", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", textAlign: "right" }}>
+            {n.author && <span style={{ color: "var(--color-label-2)", fontWeight: 600 }}>{n.author}</span>}
+            {n.author && n.publishedAt && <span style={{ color: "var(--color-label-3)" }}> · </span>}
+            {n.publishedAt && <span style={{ color: "var(--color-label-3)" }}>{fmtDate(n.publishedAt)}</span>}
+          </span>
+        )}
       </div>
 
       <BookMenuSheet open={menu} onClose={() => setMenu(false)} onSelect={onPick} variant="post" noTelegram />
