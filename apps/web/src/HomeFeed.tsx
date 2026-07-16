@@ -430,7 +430,7 @@ export function FeedPost({ p, open, onToggle, onDonate, flash }: {
           </div>
         </div>
       ) : (
-        <div style={{ padding: "14px 16px 2px", display: "flex" }}>
+        <div style={{ padding: "0 16px 2px", display: "flex" }}>
           <span style={{ marginLeft: "auto" }}>
             <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} onMore={() => setMenu(true)} />
           </span>
@@ -438,7 +438,7 @@ export function FeedPost({ p, open, onToggle, onDonate, flash }: {
       )}
 
       {/* подпись + техданные (дата · просмотры) */}
-      <div style={{ padding: "11px 14px 14px" }}>
+      <div style={{ padding: "11px 14px 0" }}>
         {p.text.trim() && (
           <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, letterSpacing: "-0.01em", color: "var(--color-label)", whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
             {renderRich(p.rich.length > 0 ? p.rich : [{ t: "t", v: p.text }], long && !open ? 170 : null)}

@@ -110,7 +110,7 @@ export function NewsCard({ n, open, onToggle, flash }: {
         </div>
       )}
 
-      <div style={{ padding: showHero ? "13px 15px 15px" : "15px 15px 15px" }}>
+      <div style={{ padding: showHero ? "12px 15px 0" : "0 15px 0" }}>
         {/* надзаголовок: источник · рубрика (всегда виден — и с картинкой, и без) */}
         <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
           <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</span>
