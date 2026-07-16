@@ -30,6 +30,7 @@ import { HeartIcon, HeadphonesIcon, MoreIcon } from "./ui/icons";
 import { MiniPlayer } from "./player/MiniPlayer";
 import { NowPlaying } from "./player/NowPlaying";
 import { HomeCalendar } from "./HomeCalendar";
+import { HeaderTicker } from "./HeaderTicker";
 import { FeedPostFocus } from "./HomeFeed";
 import { DarshanFeed } from "./feed/DarshanFeed";
 import { OPEN_NOTES_EVENT, takePendingNotes, requestNote, createNote, type NoteAttach } from "./notes";
@@ -95,7 +96,7 @@ function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
 }
 
 /* ═════════ TopHeader — search / wordmark / favorites ═════════ */
-function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onFavorites?: () => void; onSearch?: () => void }) {
+function TopHeader({ onHome, onFavorites, onSearch, onOpenPath }: { onHome?: () => void; onFavorites?: () => void; onSearch?: () => void; onOpenPath: (path: string) => void }) {
   return (
     <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, flexShrink: 0, background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div style={{ display: "grid", height: "100%", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 12px" }}>
@@ -104,14 +105,7 @@ function TopHeader({ onHome, onFavorites, onSearch }: { onHome?: () => void; onF
             <AISearchIcon size={25} />
           </button>
         </div>
-        <button type="button" aria-label="ISKCON ONE LOVE" onClick={onHome}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 8px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-          <span role="img" style={{
-            display: "block", width: 132, height: 132 * 53 / 815, backgroundColor: "var(--color-label)",
-            WebkitMaskImage: "url(/iskcon-one-love.svg)", maskImage: "url(/iskcon-one-love.svg)",
-            WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat", WebkitMaskSize: "contain", maskSize: "contain", WebkitMaskPosition: "center", maskPosition: "center",
-          }} />
-        </button>
+        <HeaderTicker onHome={onHome} onOpenPath={onOpenPath} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
           <button aria-label="Избранное" onClick={onFavorites} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer" }}><HeartIcon size={24} /></button>
         </div>
@@ -1026,7 +1020,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
   };
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
-      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onHome={() => { onChange(HOME_TAB); window.dispatchEvent(new CustomEvent("tab-reset", { detail: HOME_TAB })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
+      <TopHeader onFavorites={onFavorites} onSearch={onSearch} onOpenPath={onOpenPath} onHome={() => { onChange(HOME_TAB); window.dispatchEvent(new CustomEvent("tab-reset", { detail: HOME_TAB })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
         <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
           {/* ЗКН-Ф016 — ОДИН КРАШ НЕ УБИВАЕТ ВСЁ ПРИЛОЖЕНИЕ.
