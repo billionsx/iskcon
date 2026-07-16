@@ -11,6 +11,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { SCRIPTURE_VOICE } from "./ui/voice";
 import type { SVGProps, ReactNode, CSSProperties } from "react";
 import type { BookData } from "./books";
+import { resolveVerseRef } from "./bookVerseRef";
 import { BOOK_MENU_ITEMS, BOOK_ABOUT, bookShareTitle, bookFullTitle, AUDIO_WORKS, BOOKS, bookSlug } from "./books";
 import { PDF_CACHE_REV } from "./pdfRev";
 import { api } from "./api";
@@ -2747,9 +2748,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
               .then((r) => r.json())
               .then((rd) => {
                 const vs = (rd.verses ?? []) as ChapterVerse[];
-                const want = verse.replace(/[–—]/g, "-");
-                const hit = vs.find((vv) => (String(vv.ref).split(".").pop() ?? "").replace(/[–—]/g, "-") === want);
-                setReaderRef(hit ? hit.ref : null);
+                setReaderRef(resolveVerseRef(vs, verse));
               })
               .catch(() => {})
               .finally(() => { navLock.current = false; });
@@ -2768,9 +2767,7 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
         .then((r) => r.json())
         .then((d) => {
           const vs = (d.verses ?? []) as ChapterVerse[];
-          const want = verse.replace(/[–—]/g, "-");
-          const hit = vs.find((vv) => (String(vv.ref).split(".").pop() ?? "").replace(/[–—]/g, "-") === want);
-          setReaderRef(hit ? hit.ref : null);
+          setReaderRef(resolveVerseRef(vs, verse));
         })
         .catch(() => {})
         .finally(() => { navLock.current = false; });

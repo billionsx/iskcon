@@ -26,6 +26,7 @@
 Запуск: python3 tools/nav-audit.py
 """
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -1097,7 +1098,50 @@ def check_n078():
     return bad
 
 
+def check_n079():
+    """ЗКН-Н079: избранный/глубоко-ссылочный стих ОБЯЗАН открыться стихом, а не главой.
+
+    Н076 починил лишь ФОРМУ URL (slug), но стих всё равно открывал главу: openTarget
+    искал стих в загруженной главе хрупким матчем `ref.split(".").pop() === want`,
+    который ронял любой нестандартный формат ref, тире в диапазоне или ведущий ноль —
+    hit=undefined, readerRef=null, показывалась глава. Настоящий инвариант: стих
+    РЕЗОЛВИТСЯ и рендерится. Резолвер вынесен в `bookVerseRef.ts` (устойчивый матч +
+    достройка ref по образцу реального стиха), обе ветки openTarget зовут
+    `resolveVerseRef(vs, verse)`, хрупкий инлайн-матч запрещён, а поведение проверяется
+    живым self-тестом (без дрейфа) — чего не хватало прошлому гейту.
+    """
+    bad = []
+    bdp = read(SRC / "BookDetailPage.tsx")
+    mod = read(SRC / "bookVerseRef.ts")
+    if bdp:
+        if 'from "./bookVerseRef"' not in bdp or "resolveVerseRef" not in bdp:
+            bad.append(("BookDetailPage.tsx", "Н079: openTarget не использует resolveVerseRef из ./bookVerseRef"))
+        if bdp.count("resolveVerseRef(vs, verse)") < 2:
+            bad.append(("BookDetailPage.tsx", "Н079: обе ветки openTarget (иерарх.+плоская) обязаны звать resolveVerseRef(vs, verse) — иначе стих в одной из веток схлопнется на главу"))
+        if re.search(r'vs\.find\(\(vv\)\s*=>\s*\(String\(vv\.ref\)\.split\("\."\)\.pop\(\)', bdp):
+            bad.append(("BookDetailPage.tsx", "Н079: вернулся хрупкий матч ref.split('.').pop() === want — стих будет открывать главу"))
+    if mod:
+        if "endsWith" not in mod or "parts[parts.length - 1] = want" not in mod:
+            bad.append(("bookVerseRef.ts", "Н079: резолвер потерял многостратегийный матч или достройку ref по образцу"))
+    else:
+        bad.append(("bookVerseRef.ts", "Н079: модуль резолва стиха отсутствует"))
+    st = ROOT / "tools" / "verse-ref-selftest.mjs"
+    if st.exists():
+        try:
+            r = subprocess.run(["node", str(st)], capture_output=True, text=True, timeout=120)
+            if r.returncode != 0:
+                lines = (r.stderr or r.stdout or "").strip().splitlines()
+                tail = lines[-1] if lines else "провал"
+                bad.append(("verse-ref-selftest.mjs", "Н079: живой self-тест резолва стиха провален — %s" % tail))
+        except Exception as e:
+            bad.append(("verse-ref-selftest.mjs", "Н079: не удалось запустить self-тест (%s)" % type(e).__name__))
+    else:
+        bad.append(("verse-ref-selftest.mjs", "Н079: self-тест резолва стиха отсутствует"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н079", "избранный стих открывается стихом, не главой", check_n079),
     ("ЗКН-Н076", "стих в избранном — канонический slug, не work-code", check_n076),
     ("ЗКН-Н077", "избранное киртана открывает трек, не библиотеку", check_n077),
     ("ЗКН-Н078", "избранное реально сохраняет и ведёт внутренним адресом к объекту", check_n078),
