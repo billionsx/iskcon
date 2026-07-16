@@ -50,22 +50,33 @@ jobs:
           pip install -r tools/video/requirements.txt
           pip install -U bgutil-ytdlp-pot-provider   # плагин yt-dlp: берёт PO-token у провайдера
       - name: "Диагностика POT (провайдер + плагин связаны?)"
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
         run: |
           echo "::notice title=POT /ping::$(curl -s --max-time 8 http://127.0.0.1:4416/ping | head -c 200 || echo 'нет ответа')"
-          echo "::notice title=bgutil-loc::$(pip show -f bgutil-ytdlp-pot-provider 2>/dev/null | grep -iE 'Location|yt_dlp_plugins' | tr '\n' ' ' | head -c 300)"
           python3 - <<'PY' || true
-          import io, contextlib
+          import io, contextlib, os, tempfile
           from yt_dlp import YoutubeDL
-          buf = io.StringIO()
+          cf = None
+          raw = os.environ.get("YT_COOKIES", "").strip()
+          if raw:
+              fd, cf = tempfile.mkstemp(suffix=".txt")
+              open(cf, "w").write(raw if raw.endswith("\n") else raw + "\n")
+          opts = {"verbose": True, "skip_download": True, "cookiefile": cf,
+                  "extractor_args": {"youtube": {"fetch_pot": ["always"], "player_client": ["web_safari", "mweb"]}}}
+          buf = io.StringIO(); nf = -1; err = ""
           with contextlib.redirect_stderr(buf):
-              YoutubeDL({"verbose": True})
-          hit = False
+              try:
+                  with YoutubeDL(opts) as ydl:
+                      info = ydl.extract_info("https://www.youtube.com/watch?v=8zGRtr1bE8E", download=False)
+                  nf = len((info or {}).get("formats") or [])
+              except Exception as e:
+                  err = str(e)[:200]
+          print("::notice title=extract-result::форматов=%d err=%s" % (nf, err or "нет"))
           for ln in buf.getvalue().splitlines():
               low = ln.lower()
-              if "plugin" in low or "pot provider" in low or "bgutil" in low:
-                  print("::notice title=ydl-plugins::" + ln.strip()[:220]); hit = True
-          if not hit:
-              print("::warning title=ydl-plugins::yt-dlp не сообщил о плагинах (POT-провайдер не загружен)")
+              if any(k in low for k in ["pot", "token", "gvs", "sabr", "getpot", "bgutil", "player", "not available", "missing"]):
+                  print("::notice title=extract::" + ln.strip()[:230])
           PY
       - name: "YouTube → archive.org → D1"
         env:
