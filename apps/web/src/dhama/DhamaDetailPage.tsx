@@ -91,7 +91,7 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
         {t.iast && <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{t.iast}</span>}
         <span style={{ display: "block", marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
-      <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={34} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
+      <CardActionBtns plain favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={34} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
     </div>
   );
 }
@@ -121,7 +121,7 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
           style={{ display: "grid", placeItems: "center", width: 36, height: 36, borderRadius: "50%", border: `1px solid color-mix(in srgb, ${d.accent} 55%, transparent)`, background: `color-mix(in srgb, ${d.accent} 8%, transparent)`, color: d.accent, cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent" }}>
           <NavArrowIcon size={16} />
         </button>
-        <CardActionBtns favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={34} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
+        <CardActionBtns plain favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={34} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
       </span>
     </div>
   );

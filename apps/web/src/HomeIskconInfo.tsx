@@ -64,7 +64,7 @@ function DocSheet({ d, onClose, flash }: { d: IskconDoc | null; onClose: () => v
           </div>
           <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
             <h3 style={{ margin: "7px 0 0", flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.022em", lineHeight: 1.16, color: "var(--color-label)" }}>{d.title}</h3>
-            <CardActionBtns favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} onMore={() => openCardMenu(docCtx(d))} />
+            <CardActionBtns plain favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} onMore={() => openCardMenu(docCtx(d))} />
           </div>
           <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{d.issuer}</div>
 
@@ -105,7 +105,7 @@ function DocCard({ d, onOpen, flash }: { d: IskconDoc; onOpen: () => void; flash
       </div>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
         <h3 style={{ flex: 1, margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.018em", lineHeight: 1.22, color: "var(--color-label)" }}>{d.title}</h3>
-        <CardActionBtns favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} size={32} onMore={() => openCardMenu(docCtx(d))} />
+        <CardActionBtns plain favKey={`doc:${d.id}`} meta={favMetaFromCtx(docCtx(d))} flash={flash} size={32} onMore={() => openCardMenu(docCtx(d))} />
       </div>
       <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{d.issuer}</div>
       <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.55, letterSpacing: "-0.01em", color: "var(--color-label-2)" }}>{d.summary}</p>

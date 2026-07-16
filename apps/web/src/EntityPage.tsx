@@ -1419,7 +1419,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
         </button>
         <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", paddingInline: 6 }}>{data?.name_ru || ""}</span>
         {data && (
-          <CardActionBtns favKey={`entity:${id}`}
+          <CardActionBtns plain favKey={`entity:${id}`}
             meta={{ t: data.name_ru || id, s: data.note || data.name_iast || undefined, h: `/${encodeURIComponent(id)}` }}
             onMore={() => openCardMenu({
             type: "entity", id, title: data.name_ru || id, subtitle: data.note || data.name_iast || undefined,
@@ -1468,7 +1468,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
                       <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginTop: 18 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>{activeTabObj && <TabHeader tab={activeTabObj} flush />}</div>
                         <div style={{ flexShrink: 0, paddingTop: 2 }}>
-                          <CardActionBtns favKey={topicFavKey} meta={favMetaFromCtx(topicCtx)} onMore={() => openCardMenu(topicCtx)} />
+                          <CardActionBtns plain favKey={topicFavKey} meta={favMetaFromCtx(topicCtx)} onMore={() => openCardMenu(topicCtx)} />
                         </div>
                       </div>
                     ) : (activeTabObj && <TabHeader tab={activeTabObj} />)}

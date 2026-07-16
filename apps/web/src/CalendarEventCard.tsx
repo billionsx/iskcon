@@ -123,7 +123,7 @@ export function CalendarEventCard({ open, title, date, type, entityId, brief, on
               Открыть карточку
               <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </button>
-            {ctx && <CardActionBtns favKey={`entity:${entityId}`} meta={favMetaFromCtx(ctx)} size={40} onMore={() => openCardMenu(ctx)} />}
+            {ctx && <CardActionBtns plain favKey={`entity:${entityId}`} meta={favMetaFromCtx(ctx)} size={40} onMore={() => openCardMenu(ctx)} />}
           </div>
         </div>
       )}

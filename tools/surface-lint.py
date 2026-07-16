@@ -27,6 +27,13 @@
 
 Проверено на живом нарушении: вернуть `--color-glass-regular` фоном ВКЗ или
 скрим поверх заглушки — гейт краснеет.
+
+ПРАВИЛО 4 — голый ♥/⋯ (ЗКН-Д014). `<CardActionBtns>` / `<RoundBtn>` без `plain`
+  и без `dark` берёт серый кружок по умолчанию: на белой карточке это лишняя
+  плашка (та же болезнь), а прижатый к краю глиф ещё и обрезается под
+  `overflow:hidden`. Выбор обязателен: `plain` (чистая поверхность) | `dark`
+  (поверх медиа). Именно этого механизма не хватало — закон про глифы был, а
+  гейт ловил только контейнеры, поэтому голые кнопки просочились в ленту.
 """
 import re
 import sys
@@ -44,6 +51,29 @@ ABSOLUTE = re.compile(r"position:\s*[\"'`]absolute")
 FLAT_SCRIM = re.compile(r"background:\s*[\"'`]rgba\(0,\s*0,\s*0,")
 AUDIO_TAG = re.compile(r"<audio[\s>]")
 AUDIO_OK = {"AudioShowcaseCard.tsx", "store.tsx"}
+ACTION_BTN = re.compile(r"<(CardActionBtns|RoundBtn)\b")
+
+
+def blank_block_comments(text: str) -> str:
+    """Тело /* … */ → пробелы (переводы строк сохранены), чтобы <CardActionBtns>
+    в doc-комментарии не ловился и номера строк не съезжали."""
+    return re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), text, flags=re.S)
+
+
+def tag_end(text: str, start: int) -> int:
+    """Индекс за закрывающим '>' JSX-тега (с '<'), с учётом вложенных {…} —
+    чтобы '>' внутри onMore={() => …} не принять за конец тега."""
+    i, depth = start, 0
+    while i < len(text):
+        c = text[i]
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+        elif c == ">" and depth == 0:
+            return i + 1
+        i += 1
+    return len(text)
 
 
 def style_objects(text: str):
@@ -86,6 +116,19 @@ def main() -> int:
                 f"(AudioShowcaseCard.tsx) и глобального плеера (player/store.tsx). "
                 f"Звук рисует ОДИН компонент")
 
+        # ПРАВИЛО 4 — голый ♥/⋯ (ЗКН-Д014). CardActionBtns/RoundBtn без plain и без
+        # dark берёт серый кружок по умолчанию: на белом это лишняя плашка, а
+        # прижатый к краю глиф ещё и обрезается. Выбор обязателен: plain | dark.
+        code = blank_block_comments(text)
+        for m in ACTION_BTN.finditer(code):
+            tag = code[m.start():tag_end(code, m.start())]
+            if " plain" not in tag and " dark" not in tag:
+                line = code.count("\n", 0, m.start()) + 1
+                bad.append(
+                    f"{rel}:{line} — ЗКН-Д014: голый <{m.group(1)}> (серый кружок по "
+                    f"умолчанию). На чистой поверхности — plain (глиф без плашки), "
+                    f"поверх медиа — dark. Голый вариант запрещён")
+
         for tag, attrs, body, line in style_objects(text):
             # ПРАВИЛО 1 — серая плашка вместо поверхности
             if tag in CONTAINER_TAGS and GREY_FILL.search(body) and PADDING.search(body):
@@ -110,7 +153,7 @@ def main() -> int:
             print("  ✗ " + b)
         print(f"\nВсего: {len(bad)}")
         return 1
-    print("Гейт поверхности (ЗКН-Д014 · Д005 · Д015): чисто.")
+    print("Гейт поверхности (ЗКН-Д014 · Д005 · Д015 · голые ♥/⋯): чисто.")
     return 0
 
 

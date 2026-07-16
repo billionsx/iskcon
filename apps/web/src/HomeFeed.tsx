@@ -432,7 +432,7 @@ export function FeedPost({ p, open, onToggle, onDonate, flash }: {
       ) : (
         <div style={{ padding: "0 16px 2px", display: "flex" }}>
           <span style={{ marginLeft: "auto" }}>
-            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} onMore={() => setMenu(true)} />
+            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} plain onMore={() => setMenu(true)} />
           </span>
         </div>
       )}

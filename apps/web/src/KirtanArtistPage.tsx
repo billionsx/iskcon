@@ -62,7 +62,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
           {album.note && <div style={{ marginTop: 5, fontSize: "var(--text-footnote)", lineHeight: 1.4, color: "var(--color-label-3, #8e8e93)" }}>{album.note}</div>}
         </div>
         <span style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-          <CardActionBtns favKey={`kirtan-album:${album.id}`} meta={favMetaFromCtx(albumCtx)} size={32} onMore={() => openCardMenu(albumCtx)} />
+          <CardActionBtns plain favKey={`kirtan-album:${album.id}`} meta={favMetaFromCtx(albumCtx)} size={32} onMore={() => openCardMenu(albumCtx)} />
           {playable && (
             <button aria-label="Слушать альбом" onClick={() => player.playKirtan(album.id)} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", border: "none", cursor: "pointer", display: "grid", placeItems: "center", background: GOLD, color: "#1d1d1f", boxShadow: "0 4px 14px rgba(210,170,27,0.4)" }}>
               <svg width="20" height="20" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
@@ -96,7 +96,7 @@ function AlbumBlock({ album, artistSlug, artistName }: { album: KirtanAlbum; art
                     <span style={{ width: 22, textAlign: "center", flexShrink: 0, fontSize: "var(--text-footnote)", fontWeight: 600, color: active ? GOLD : "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{active ? "▶" : i + 1}</span>
                     <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-subhead)", fontWeight: active ? 600 : 400, color: "var(--color-label)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.title}</span>
                     {t.durationSec ? <span style={{ flexShrink: 0, fontSize: "var(--text-caption)", color: "var(--color-label-3, #8e8e93)", fontVariantNumeric: "tabular-nums" }}>{fmtTime(t.durationSec)}</span> : null}
-                    <CardActionBtns favKey={`kirtan-track:${album.id}:${i}`} meta={favMetaFromCtx(trackCtx)} size={28} onMore={() => openCardMenu(trackCtx)} />
+                    <CardActionBtns plain favKey={`kirtan-track:${album.id}:${i}`} meta={favMetaFromCtx(trackCtx)} size={28} onMore={() => openCardMenu(trackCtx)} />
                   </div>
                 );
               })}

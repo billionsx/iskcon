@@ -75,7 +75,7 @@ function Contents({ onBack, onOpenChapter, flash }: { onBack: () => void; onOpen
   }
   return (
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <Header onBack={onBack} title="Кухня прасада" right={<CardActionBtns favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={32} onMore={() => openCardMenu(cookbookCtx)} />} />
+      <Header onBack={onBack} title="Кухня прасада" right={<CardActionBtns plain favKey="book:cookbook" meta={favMetaFromCtx(cookbookCtx)} flash={flash} size={32} onMore={() => openCardMenu(cookbookCtx)} />} />
       <div style={{ padding: "8px 16px 64px", maxWidth: 600, margin: "0 auto" }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>Книга библиотеки</div>
         <h1 style={{ margin: "6px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-display)", fontWeight: 800, letterSpacing: "-0.025em", lineHeight: 1.05, color: "var(--color-label)" }}>{COOKBOOK.title}</h1>

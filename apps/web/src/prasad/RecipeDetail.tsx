@@ -74,7 +74,7 @@ export default function RecipeDetail({ slug, onBack, onOpenRecipe, onOpenOfferin
 
   return (
     <div style={{ height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <Header onBack={onBack} title="Прасадам" right={<CardActionBtns favKey={`recipe:${recipe.slug}`} meta={favMetaFromCtx(recipeCtx(recipe))} flash={flash} size={32} onMore={() => openCardMenu(recipeCtx(recipe))} />} />
+      <Header onBack={onBack} title="Прасадам" right={<CardActionBtns plain favKey={`recipe:${recipe.slug}`} meta={favMetaFromCtx(recipeCtx(recipe))} flash={flash} size={32} onMore={() => openCardMenu(recipeCtx(recipe))} />} />
 
       <div style={{ padding: "8px 16px 56px", maxWidth: 560, margin: "0 auto" }}>
         {/* Заголовок */}

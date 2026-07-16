@@ -103,7 +103,7 @@ function EntityRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
             whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_iast}</span>
         )}
       </span>
-      <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={26} onMore={() => openCardMenu(entityCtx(item))} />
+      <CardActionBtns plain favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={26} onMore={() => openCardMenu(entityCtx(item))} />
       <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)", fontSize: "var(--text-body)", marginLeft: 2 }}>›</span>
     </div>
   );
@@ -206,7 +206,7 @@ function ResultRow({ item, onOpen }: { item: Item; onOpen: (id: string, type: st
         <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, color: "var(--color-label)", lineHeight: 1.25, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.name_ru || item.id}</span>
         {item.name_iast && <span style={{ display: "block", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{item.name_iast}</span>}
       </span>
-      <CardActionBtns favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={28} onMore={() => openCardMenu(entityCtx(item))} />
+      <CardActionBtns plain favKey={`entity:${item.id}`} meta={favMetaFromCtx(entityCtx(item))} size={28} onMore={() => openCardMenu(entityCtx(item))} />
     </div>
   );
 }

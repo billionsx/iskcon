@@ -183,7 +183,7 @@ function Row({ p, onOpen }: { p: Person; onOpen: (id: string, type: string | nul
         <span className="lh-nm">{p.name}</span>
         {desc ? <span className="lh-sub">{desc}</span> : null}
       </span>
-      <CardActionBtns favKey={`entity:${p.slug}`} meta={favMetaFromCtx(entityCtx(p))} size={26} onMore={() => openCardMenu(entityCtx(p))} />
+      <CardActionBtns plain favKey={`entity:${p.slug}`} meta={favMetaFromCtx(entityCtx(p))} size={26} onMore={() => openCardMenu(entityCtx(p))} />
       <span aria-hidden className="lh-chev">›</span>
     </div>
   );

@@ -80,7 +80,7 @@ export function NewsStory({ n, lead = false, open, onToggle, flash }: {
         <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
           <div style={{ flex: 1, minWidth: 0 }}><Kicker text={kicker} /></div>
           <div style={{ flexShrink: 0, marginTop: -3 }}>
-            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} onMore={() => setMenu(true)} />
+            <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} plain onMore={() => setMenu(true)} />
           </div>
         </div>
       )}

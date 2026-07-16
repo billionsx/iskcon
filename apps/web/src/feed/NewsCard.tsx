@@ -116,7 +116,7 @@ export function NewsCard({ n, open, onToggle, flash }: {
           <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</span>
           {!showHero && (
             <div style={{ flexShrink: 0, marginTop: -2 }}>
-              <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} onMore={() => setMenu(true)} />
+              <CardActionBtns favKey={favKey} meta={favMeta} flash={flash} plain onMore={() => setMenu(true)} />
             </div>
           )}
         </div>
