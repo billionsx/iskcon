@@ -35,8 +35,8 @@ import { FilterChips as NavFilterChips } from "./ui/nav4";
 const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "4";
 // iOS-26: поверхности карточек — чистый белый, а не серое «стекло»; отделяет
-// волосяная граница + мягкая тень (плавающая карточка на белом холсте).
-const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 20, border: "0.5px solid var(--color-hairline)", boxShadow: "var(--shadow-card)" };
+// волосяная граница + мягкая многослойная тень (карточка парит над белым холстом).
+const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 22, border: "0.5px solid var(--color-hairline)", boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 12px 30px rgba(0,0,0,0.06)" };
 
 /** Границы данных: архив начинается с 2016-01 (scripts/gcal/generate_past_archive.py),
  *  живой фид кончается в 2028-02 (generate_all_cities.py). Стык без дыры. */
@@ -151,6 +151,27 @@ const TYPE_WORD: Record<CalEvent["type"], string> = {
 
 // Что достойно hero «что сейчас» (как в шапке): пост, праздник, явление, уход.
 const HERO_TYPES = new Set<CalEvent["type"]>(["ekadasi", "festival", "appearance", "disappearance"]);
+
+/* Иконка типа события — золотой глиф в мягко-золотом скруглённом квадрате
+ * (паттерн Apple Settings). Тип различает ФОРМА глифа: полумесяц — пост (лунный
+ * день), искра — праздник, лотос — явление, пламя лампады — уход. Цвет один
+ * (золото) — никакой радуги; насыщеннее только для «сейчас/выбрано». */
+function TypeIcon({ type, size = 30, today = false }: { type: CalEvent["type"]; size?: number; today?: boolean }) {
+  const g = Math.round(size * 0.6);
+  const glyph: Record<CalEvent["type"], React.ReactNode> = {
+    ekadasi: <path d="M20.5 14.8A7.5 7.5 0 1 1 11.2 4.2a6 6 0 0 0 9.3 10.6Z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />,
+    festival: <path d="M12 3.2l1.7 4.9 4.9 1.7-4.9 1.7L12 16.4l-1.7-4.9L5.4 9.8l4.9-1.7z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
+    appearance: <g fill="currentColor"><path d="M12 16.8c-1.4-1.8-1.4-4.6 0-7 1.4 2.4 1.4 5.2 0 7Z" /><path d="M11.4 16.9c-2.4-.6-3.9-2.8-4.2-5.4 2.4.5 4 2.6 4.2 5.4Z" /><path d="M12.6 16.9c2.4-.6 3.9-2.8 4.2-5.4-2.4.5-4 2.6-4.2 5.4Z" /></g>,
+    disappearance: <path d="M12 3.6c2.5 3.3 4.2 5 4.2 7.6a4.2 4.2 0 0 1-8.4 0c0-1.3.6-2.4 1.6-3.3.3 1 .9 1.6 1.6 1.6-.4-1.7.2-4.2 1-5.9Z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
+    parana: <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.7" />,
+    other: <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" strokeWidth="1.7" />,
+  };
+  return (
+    <div style={{ flexShrink: 0, width: size, height: size, borderRadius: Math.round(size * 0.3), display: "flex", alignItems: "center", justifyContent: "center", background: `color-mix(in srgb, ${GOLD} ${today ? 18 : 9}%, transparent)`, border: today ? `0.5px solid color-mix(in srgb, ${GOLD} 30%, transparent)` : "none" }}>
+      <svg width={g} height={g} viewBox="0 0 24 24" aria-hidden style={{ color: GOLD }}>{glyph[type]}</svg>
+    </div>
+  );
+}
 
 /* ── месяц как адрес ──────────────────────────────────────────────────────
  * ЗКН-Н005/Н035: `/calendar` = «Предстоящие» · `/calendar/2020-03` = месяц ·
@@ -616,31 +637,35 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         const single = heroEvents.length === 1;
         const par = paranaFor(heroEvents.find((e) => e.type === "ekadasi") || null);
         return (
-          <div style={{ marginTop: 16, padding: 18, borderRadius: 22, background: `color-mix(in srgb, ${GOLD} 6%, var(--color-bg-2))`, border: `1px solid color-mix(in srgb, ${GOLD} 26%, transparent)`, boxShadow: "var(--shadow-card)" }}>
-            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>
+          <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: `linear-gradient(155deg, color-mix(in srgb, ${GOLD} 13%, var(--color-bg-2)) 0%, color-mix(in srgb, ${GOLD} 6%, var(--color-bg-2)) 58%, var(--color-bg-2) 100%)`, border: `1px solid color-mix(in srgb, ${GOLD} 24%, transparent)`, boxShadow: `0 10px 34px color-mix(in srgb, ${GOLD} 14%, transparent), 0 2px 10px rgba(0,0,0,0.05)` }}>
+            <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
               {heroIsToday ? "Сегодня" : "Ближайшее"} · {loc.ru}
             </div>
             {single ? (
-              <>
-                <div style={{ marginTop: 6, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.018em", lineHeight: 1.18, color: "var(--color-label)" }}>{heroEvents[0].title.replace(" — пост", "")}</div>
-                <div style={{ marginTop: 5, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>
-                  {(() => { const f = fmtDay(heroEvents[0].date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · {TYPE_WORD[heroEvents[0].type]}
+              <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
+                <TypeIcon type={heroEvents[0].type} size={48} today />
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "var(--color-label)" }}>{heroEvents[0].title.replace(" — пост", "")}</div>
+                  <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-2)" }}>
+                    {(() => { const f = fmtDay(heroEvents[0].date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · {TYPE_WORD[heroEvents[0].type]}
+                  </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <div style={{ marginTop: 10, display: "grid" }}>
+              <div style={{ marginTop: 12, display: "grid" }}>
                 {heroEvents.map((e, i) => (
                   <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
-                    style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "8px 0", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                    <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.3, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
+                    style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", border: "none", borderTop: i ? `0.5px solid color-mix(in srgb, ${GOLD} 18%, transparent)` : "none", background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                    <TypeIcon type={e.type} size={34} today />
+                    <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
                     <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
                   </button>
                 ))}
               </div>
             )}
             {par && (
-              <div style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 7, padding: "7px 12px", borderRadius: 999, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+              <div style={{ marginTop: 14, display: "inline-flex", alignItems: "center", gap: 7, padding: "8px 13px", borderRadius: 999, background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden style={{ color: GOLD }}><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
                 {(() => { const f = fmtDay(par.date); return `${f.d} ${f.m}: ${par.text}`; })()}
               </div>
             )}
@@ -697,27 +722,28 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                   const accent = isToday || isPicked;
                   const inner = (
                     <>
-                      <div style={{ flexShrink: 0, width: 44, textAlign: "center" }}>
-                        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, lineHeight: 1, color: accent ? GOLD : "var(--color-label)" }}>{f.d}</div>
-                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.4px", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
+                      <div style={{ flexShrink: 0, width: 38, textAlign: "center" }}>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em", color: accent ? GOLD : "var(--color-label)" }}>{f.d}</div>
+                        <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
                       </div>
+                      <TypeIcon type={e.type} today={accent} />
                       <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, letterSpacing: "-0.01em", lineHeight: 1.35, color: "var(--color-label)" }}>{e.title}</div>
-                        <div style={{ marginTop: 2, fontFamily: "var(--font-text)", fontSize: 11.5, fontWeight: 600, color: "var(--color-label-2)" }}>
+                        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.3, color: "var(--color-label)" }}>{e.title}</div>
+                        <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, letterSpacing: "0.01em", color: "var(--color-label-2)" }}>
                           {isToday && <span style={{ color: GOLD }}>Сегодня · </span>}{meta.label}{linked ? " · Герой" : ""}
                         </div>
                       </div>
                       {tappable && (
-                        <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}>
-                          <svg width="14" height="14" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-4)" }}>
+                          <svg width="15" height="15" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </span>
                       )}
                     </>
                   );
                   const rowStyle: React.CSSProperties = {
-                    display: "flex", alignItems: "center", gap: 13, padding: "12px 14px",
+                    display: "flex", alignItems: "center", gap: 12, padding: "13px 15px",
                     borderTop: i ? "0.5px solid var(--color-hairline)" : "none",
-                    background: isPicked ? `color-mix(in srgb, ${GOLD} 12%, var(--color-bg-2))` : "none",
+                    background: isPicked ? `color-mix(in srgb, ${GOLD} 11%, var(--color-bg-2))` : "none",
                   };
                   return tappable ? (
                     <button ref={isPicked ? setPicked : undefined} key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
