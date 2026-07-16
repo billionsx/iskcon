@@ -216,40 +216,18 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
  * внутри приложения, без ухода на t.me. Высоту iframe берём из resize-сообщений Telegram. */
 function VideoBox({ v, id }: { v: TgVideo; id: string }) {
   const [playing, setPlaying] = useState(false);
-  const [embed, setEmbed] = useState(false);
-  const [embedH, setEmbedH] = useState(v.round ? 360 : 480);
-  const open = () => { if (v.src) setPlaying(true); else setEmbed(true); };
-
-  useEffect(() => {
-    if (!embed) return;
-    const onMsg = (e: MessageEvent) => {
-      if (e.origin !== "https://t.me") return;
-      let d: unknown = e.data;
-      try { if (typeof d === "string") d = JSON.parse(d); } catch { return; }
-      const rec = d as { height?: number; eventData?: { height?: number } } | null;
-      const h = rec && (rec.height ?? rec.eventData?.height);
-      if (typeof h === "number" && h > 120 && h < 5000) setEmbedH(h);
-    };
-    window.addEventListener("message", onMsg);
-    return () => window.removeEventListener("message", onMsg);
-  }, [embed]);
+  // ЗКН-Пл005: незамирроренное видео НЕ встраивается сырым Telegram-виджетом в ленту
+  // («Media is too big»). Пока зеркало archive.org не готово — открываем пост в
+  // Telegram новой вкладкой, а в ленте остаётся только наша опрятная превью-карточка.
+  const openTg = () => { if (typeof window !== "undefined") window.open(postUrl(id), "_blank", "noopener,noreferrer"); };
+  const open = () => { if (v.src) setPlaying(true); else openTg(); };
 
   if (playing && v.src) {
     return (
       <div style={{ background: "#000" }}>
         <video src={v.src} poster={v.thumb || undefined} controls autoPlay playsInline preload="metadata"
-          onError={() => { setPlaying(false); setEmbed(true); }}
+          onError={() => setPlaying(false)}
           style={{ width: "100%", display: "block", maxHeight: "80vh", background: "#000", ...(v.round ? { aspectRatio: "1 / 1", borderRadius: "50%", objectFit: "cover", maxWidth: 320, margin: "14px auto" } : {}) }} />
-      </div>
-    );
-  }
-  if (embed) {
-    return (
-      <div style={{ margin: "12px 0 0", borderRadius: 14, overflow: "hidden", background: "#000" }}>
-        <iframe src={`https://t.me/iskcone/${id}?embed=1&mode=tme`} title="Видео" loading="lazy"
-          allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowFullScreen
-          scrolling="no"
-          style={{ width: "100%", height: embedH, border: "none", display: "block", background: "#000", colorScheme: "normal" }} />
       </div>
     );
   }

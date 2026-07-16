@@ -432,7 +432,41 @@ def check_pl015():
     return []
 
 
+def check_pl005():
+    """ЗКН-Пл005: видео из Telegram — часто и автоматически в archive.org; лента играет с зеркала, без сырого Telegram-виджета.
+
+    (1) tg-video.yml обязан иметь ЧАСТЫЙ cron (интервал ≤ 60 мин, форма `*/N` при `*` в
+    часах) — миррор идёт постоянно, не в ручном режиме. (2) Воркер подаёт видео из
+    archive.org-зеркала: workerHome.ts джойнит feed_video. (3) Лента не встраивает сырой
+    Telegram-виджет: в HomeFeed.tsx нет iframe `embed=1&mode=tme` («Media is too big»-бред).
+    """
+    bad = []
+    tv = read(CI / "tg-video.yml")
+    if not tv:
+        bad.append(("tg-video.yml", "Пл005: воркфлоу миррора видео отсутствует"))
+    else:
+        m = re.search(r"cron:\s*[\"']([^\"']+)[\"']", tv)
+        if not m:
+            bad.append(("tg-video.yml", "Пл005: нет schedule/cron — миррор стал ручным"))
+        else:
+            fields = m.group(1).split()
+            minute = fields[0] if fields else ""
+            hour = fields[1] if len(fields) > 1 else ""
+            mm = re.fullmatch(r"\*/(\d+)", minute.strip())
+            ok_fast = hour.strip() == "*" and ((mm and int(mm.group(1)) <= 60) or minute.strip() == "*")
+            if not ok_fast:
+                bad.append(("tg-video.yml", "Пл005: cron '%s' реже 60 мин — видео висит в Telegram-эмбеде до миррора" % m.group(1)))
+    wh = read(WEB / "workerHome.ts")
+    if wh and "feed_video" not in wh:
+        bad.append(("workerHome.ts", "Пл005: нет джойна feed_video — видео не подаётся из archive.org-зеркала"))
+    hf = read(WEB / "src" / "HomeFeed.tsx")
+    if hf and re.search(r"embed=1&mode=tme", hf):
+        bad.append(("HomeFeed.tsx", "Пл005: сырой Telegram-виджет (embed=1&mode=tme) в ленте — «Media is too big»-бред"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Пл005", "видео мирроринг частый + лента с зеркала без Telegram-виджета", check_pl005),
     ("ЗКН-Пл016", "источник смертен — проверять живость", check_pl015),
     ("ЗКН-Ф013", "батч D1 не превышает 100 переменных", check_f013),
     ("ЗКН-Ф009", "не более 3 крон-триггеров", check_f009),
