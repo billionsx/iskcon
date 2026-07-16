@@ -147,7 +147,7 @@ def cookiefile():
 def common_opts():
     """Общие ключи yt-dlp: cookies (если есть) + перебор клиентов + ретраи."""
     opts = {
-        "extractor_args": {"youtube": {"player_client": ["default", "web_safari", "mweb"]}},
+        "extractor_args": {"youtube": {"player_client": ["tv", "default", "web_safari", "mweb"]}},
         "retries": 3, "extractor_retries": 3, "socket_timeout": 30,
     }
     cf = cookiefile()
