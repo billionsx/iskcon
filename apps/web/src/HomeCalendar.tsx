@@ -36,7 +36,7 @@ const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "4";
 // iOS-26: поверхности карточек — чистый белый, а не серое «стекло»; отделяет
 // волосяная граница + мягкая многослойная тень (карточка парит над белым холстом).
-const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 22, border: "0.5px solid var(--color-hairline)", boxShadow: "0 1px 3px rgba(0,0,0,0.05), 0 16px 40px rgba(0,0,0,0.08)" };
+const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 22, border: "0.5px solid var(--color-hairline)", boxShadow: "0 1px 2px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.04)" };
 
 /** Границы данных: архив начинается с 2016-01 (scripts/gcal/generate_past_archive.py),
  *  живой фид кончается в 2028-02 (generate_all_cities.py). Стык без дыры. */
@@ -637,7 +637,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         const single = heroEvents.length === 1;
         const par = paranaFor(heroEvents.find((e) => e.type === "ekadasi") || null);
         return (
-          <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: "var(--color-bg-2)", border: `1px solid color-mix(in srgb, ${GOLD} 30%, transparent)`, boxShadow: "0 2px 8px rgba(0,0,0,0.05), 0 18px 44px rgba(0,0,0,0.09)" }}>
+          <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: "var(--color-bg-2)", border: `1px solid color-mix(in srgb, ${GOLD} 30%, transparent)`, boxShadow: "0 1px 2px rgba(0,0,0,0.05), 0 5px 14px rgba(0,0,0,0.05)" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
               {heroIsToday ? "Сегодня" : "Ближайшее"} · {loc.ru}
             </div>
