@@ -53,17 +53,9 @@ jobs:
         run: |
           pip install -r tools/video/requirements.txt
           pip install -U bgutil-ytdlp-pot-provider   # плагин yt-dlp: берёт PO-token у провайдера
-      - name: "Диагностика POT (провайдер + плагин связаны?)"
-        env:
-          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+      - name: "Проверка remote-components (валиден ли ejs)"
         run: |
-          echo "::notice title=версии::yt-dlp $(yt-dlp --version) · $(deno --version 2>/dev/null | head -1)"
-          echo "::notice title=help::$(yt-dlp --help 2>&1 | grep -iE 'remote|ejs|challenge|js.runtime|jsi' | tr '\n' ' | ' | head -c 320 || echo none)"
-          printf '%s\n' "$YT_COOKIES" > /tmp/c.txt 2>/dev/null || true
-          yt-dlp -v --simulate --cookies /tmp/c.txt "https://www.youtube.com/watch?v=jNQXAC9IVRw" 2>&1 \
-            | grep -iE "challenge|nsig|deno|ejs|remote|solv|no video formats|player.?js|jsi|pot token|require" \
-            | head -22 | sed 's/^/::notice title=cli::/' || true
-          rm -f /tmp/c.txt
+          yt-dlp --help 2>&1 | grep -iE -A3 'remote-components' | head -8 | sed 's/^/::notice title=rc::/' || echo "::notice title=rc::строка не найдена"
       - name: "YouTube → archive.org → D1"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

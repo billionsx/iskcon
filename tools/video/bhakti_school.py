@@ -145,11 +145,15 @@ def cookiefile():
 
 
 def common_opts():
-    """Общие ключи yt-dlp: cookies + принудительный запрос PO-token у bgutil-провайдера
-    на web-клиенте (именно его форматы YouTube прячет за PO-token/SABR)."""
+    """Общие ключи yt-dlp для обхода защиты YouTube 2026:
+      • cookies — вход (обход bot-check);
+      • fetch_pot=always — PO-token у bgutil-провайдера (обход SABR);
+      • js_runtimes=deno + remote_components=ejs — решение n-challenge (иначе «нет форматов»)."""
     opts = {
         "retries": 3, "extractor_retries": 3, "socket_timeout": 30,
-        "extractor_args": {"youtube": {"fetch_pot": ["always"], "player_client": ["web_safari", "mweb"]}},
+        "js_runtimes": {"deno": {}},
+        "remote_components": {"ejs"},
+        "extractor_args": {"youtube": {"fetch_pot": ["always"]}},
     }
     cf = cookiefile()
     if cf:
