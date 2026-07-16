@@ -76,12 +76,12 @@ function deriveSlots(events: CalEvent[], now: Date): Slot[] {
   return slots;
 }
 
-const LOGO_STYLE = {
-  display: "block", width: 132, height: 132 * 53 / 815, backgroundColor: "var(--color-label)",
-  WebkitMaskImage: "url(/iskcon-one-love.svg)", maskImage: "url(/iskcon-one-love.svg)",
-  WebkitMaskRepeat: "no-repeat", maskRepeat: "no-repeat",
-  WebkitMaskSize: "contain", maskSize: "contain",
-  WebkitMaskPosition: "center", maskPosition: "center",
+/** Текстовый вордмарк: SF Pro Display Semibold, трекинг 20%, кап-высота ≈ прежнего
+ *  SVG-лого (12px SF Pro → кап ≈ 8.6px = рендер svg 132×8.58). marginRight гасит
+ *  трейлинг-трекинг справа, чтобы строка стояла оптически по центру. */
+const WORDMARK_STYLE = {
+  fontFamily: "var(--font-display)", fontSize: "var(--text-caption)", fontWeight: 600,
+  letterSpacing: "0.2em", color: "var(--color-label)", whiteSpace: "nowrap", marginRight: "-0.2em",
 } as const;
 
 export function HeaderTicker({ onHome, onOpenPath }: { onHome?: () => void; onOpenPath: (path: string) => void }) {
@@ -123,17 +123,20 @@ export function HeaderTicker({ onHome, onOpenPath }: { onHome?: () => void; onOp
       return (
         <button type="button" aria-label="ISKCON ONE LOVE" onClick={onHome}
           style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", width: "100%", padding: 0, background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-          <span role="img" style={LOGO_STYLE} />
+          <span style={WORDMARK_STYLE}>ISKCON ONE LOVE</span>
         </button>
       );
     }
+    // Напоминание в одной семье с вордмарком: та же SF Pro Display. «Когда» —
+    // эхо вордмарка (капс + тот же трекинг 0.2em), но золотом (событие + клик);
+    // название — тем же начертанием и цветом ярлыка, что и логотип.
     return (
       <button type="button" onClick={() => onOpenPath(s.path)}
-        style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 2, height: "100%", width: "100%", padding: "0 6px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent", overflow: "hidden" }}>
-        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.7px", textTransform: "uppercase", color: "var(--color-gold-deep)", lineHeight: 1 }}>
+        style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 3, height: "100%", width: "100%", padding: "0 6px", background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent", overflow: "hidden" }}>
+        <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-gold-deep)", lineHeight: 1, marginRight: "-0.2em" }}>
           {s.when === "tomorrow" ? "Завтра" : "Сегодня"}
         </span>
-        <span style={{ maxWidth: "100%", fontFamily: "var(--font-display)", fontSize: "var(--text-subhead)", fontWeight: 700, letterSpacing: "-0.01em", color: "var(--color-label)", lineHeight: 1.15, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <span style={{ maxWidth: "100%", fontFamily: "var(--font-display)", fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)", lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {s.title}
         </span>
       </button>
