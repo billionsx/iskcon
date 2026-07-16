@@ -25,6 +25,31 @@ function runningAssetHash(): string {
 }
 
 let updateChecking = false;
+
+/* Предохранитель от краш-петли перезагрузок («A problem repeatedly occurred»).
+ * Все авто-reload идут через него: если за 90с накопилось 3 перезагрузки —
+ * ГЛУШИМ авто-обновление до конца сессии. Лучше устаревший экран, чем
+ * бесконечный цикл, который iOS Safari показывает как краш страницы. */
+let reloadsBlocked = false;
+function safeReload(): void {
+  if (reloadsBlocked) return;
+  try {
+    const now = Date.now();
+    const log = (JSON.parse(sessionStorage.getItem("__reload_log") || "[]") as number[]).filter((t) => now - t < 90000);
+    log.push(now);
+    sessionStorage.setItem("__reload_log", JSON.stringify(log));
+    if (log.length >= 3) { reloadsBlocked = true; return; }
+  } catch {
+    // Нет доступа к sessionStorage — считать перезагрузки НЕЧЕМ, значит и
+    // оборвать возможный цикл нечем. Безопаснее НЕ перезагружаться (пусть экран
+    // устаревший), чем рискнуть бесконечным циклом, который iOS Safari покажет
+    // как «A problem repeatedly occurred». Все пути reload идут через этот
+    // предохранитель, поэтому здесь замыкается защита от петли на любом storage.
+    reloadsBlocked = true; return;
+  }
+  window.location.reload();
+}
+
 async function checkForUpdate(): Promise<void> {
   if (updateChecking) return;
   if (new URLSearchParams(window.location.search).has("pdf")) return; // печатный режим не трогаем
@@ -40,7 +65,7 @@ async function checkForUpdate(): Promise<void> {
     try { last = Number(sessionStorage.getItem("__app_reload_at") || "0"); } catch { /* ignore */ }
     if (Date.now() - last < 30000) return; // не зацикливаемся
     try { sessionStorage.setItem("__app_reload_at", String(Date.now())); } catch { /* ignore */ }
-    window.location.reload();
+    safeReload();
   } catch {
     /* офлайн / сетевой сбой — пропускаем */
   } finally {
@@ -75,16 +100,28 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
      * ПЕРЕРЕГИСТРИРУЕМ воркера. Метка в localStorage — чтобы сделать это ровно
      * один раз. */
     const HEAL_KEY = "__sw_heal_v5";
-    if (!localStorage.getItem(HEAL_KEY)) {
-      localStorage.setItem(HEAL_KEY, "1");
+    let needHeal = false;
+    // КРИТИЧНО: доступ к localStorage оборачиваем в try/catch. На iOS Safari при
+    // «Block All Cookies» / приватном режиме / эфемерном хранилище getItem/setItem
+    // БРОСАЮТ или молча не сохраняют — тогда метка «уже лечили» не переживает
+    // перезагрузку, HEAL срабатывает КАЖДЫЙ раз, сносит кеши и перезагружается
+    // по кругу → iOS Safari показывает это как «A problem repeatedly occurred».
+    // Нет надёжного хранилища — НЕ лечим (и не роняем загрузку).
+    try {
+      if (!localStorage.getItem(HEAL_KEY)) { localStorage.setItem(HEAL_KEY, "1"); needHeal = true; }
+    } catch { needHeal = false; }
+    if (needHeal) {
       void (async () => {
+        let changed = false;
         try {
           const keys = await caches.keys();
-          await Promise.all(keys.map((k) => caches.delete(k)));
+          if (keys.length) { await Promise.all(keys.map((k) => caches.delete(k))); changed = true; }
           const regs = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(regs.map((r) => r.unregister()));
+          if (regs.length) { await Promise.all(regs.map((r) => r.unregister())); changed = true; }
         } catch { /* ничего не поделать */ }
-        window.location.reload();
+        // Перезагружаемся ТОЛЬКО если реально что-то снесли, и ТОЛЬКО через
+        // предохранитель safeReload (3 перезагрузки / 90с — потом глушим).
+        if (changed) safeReload();
       })();
     }
 
@@ -95,7 +132,7 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
       try { last = Number(sessionStorage.getItem("__sw_reload_at") || "0"); } catch { /* ignore */ }
       if (Date.now() - last < 30000) return;
       try { sessionStorage.setItem("__sw_reload_at", String(Date.now())); } catch { /* ignore */ }
-      window.location.reload();
+      safeReload();
     });
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }).then((reg) => {
