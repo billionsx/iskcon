@@ -54,8 +54,16 @@ jobs:
           pip install -r tools/video/requirements.txt
           pip install -U bgutil-ytdlp-pot-provider   # плагин yt-dlp: берёт PO-token у провайдера
       - name: "Проверка remote-components (валиден ли ejs)"
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
         run: |
-          yt-dlp --help 2>&1 | grep -iE -A3 'remote-components' | head -8 | sed 's/^/::notice title=rc::/' || echo "::notice title=rc::строка не найдена"
+          echo "::notice title=rc-full::$(yt-dlp --help 2>&1 | grep -A6 'remote-components COMPONENT' | tr '\n' ' ' | head -c 400)"
+          printf '%s\n' "$YT_COOKIES" > /tmp/c.txt 2>/dev/null || true
+          yt-dlp -v --remote-components ejs --js-runtimes deno --simulate --cookies /tmp/c.txt \
+            "https://www.youtube.com/watch?v=jNQXAC9IVRw" 2>&1 \
+            | grep -iE "jsc|ejs|npm|cache|fetch|remote|deno|challenge|no video|solv|error|download" \
+            | head -26 | sed 's/^/::notice title=ejs::/' || true
+          rm -f /tmp/c.txt
       - name: "YouTube → archive.org → D1"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
