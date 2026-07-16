@@ -147,7 +147,7 @@ def cookiefile():
 def common_opts():
     """Общие ключи yt-dlp: cookies (если есть) + перебор клиентов + ретраи."""
     opts = {
-        "extractor_args": {"youtube": {"player_client": ["default", "web_safari", "mweb", "tv"]}},
+        "extractor_args": {"youtube": {"player_client": ["default", "web_safari", "mweb"]}},
         "retries": 3, "extractor_retries": 3, "socket_timeout": 30,
     }
     cf = cookiefile()
@@ -179,7 +179,7 @@ def fetch_one(vid, workdir):
     opts = {
         "quiet": True, "noprogress": True, "ignoreerrors": False,
         "outtmpl": out_tmpl, "writethumbnail": True, "merge_output_format": "mp4",
-        "format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best",
+        "format": "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
         "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
         **common_opts(),
     }
