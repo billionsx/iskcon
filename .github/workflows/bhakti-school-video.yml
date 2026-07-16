@@ -57,34 +57,13 @@ jobs:
         env:
           YT_COOKIES: ${{ secrets.YT_COOKIES }}
         run: |
-          echo "::notice title=POT /ping::$(curl -s --max-time 8 http://127.0.0.1:4416/ping | head -c 200 || echo 'нет ответа')"
-          python3 - <<'PY' || true
-          import io, contextlib, os, tempfile
-          from yt_dlp import YoutubeDL
-          cf = None
-          raw = os.environ.get("YT_COOKIES", "").strip()
-          if raw:
-              fd, cf = tempfile.mkstemp(suffix=".txt")
-              open(cf, "w").write(raw if raw.endswith("\n") else raw + "\n")
-          for label, vid in [("эталон-jNQXAC9IVRw", "jNQXAC9IVRw"), ("бхакти-8zGRtr1bE8E", "8zGRtr1bE8E")]:
-              opts = {"verbose": True, "skip_download": True, "cookiefile": cf,
-                      "extractor_args": {"youtube": {"fetch_pot": ["always"]}}}
-              buf = io.StringIO(); nf = -1; err = ""
-              with contextlib.redirect_stderr(buf):
-                  try:
-                      with YoutubeDL(opts) as ydl:
-                          info = ydl.extract_info("https://www.youtube.com/watch?v=" + vid, download=False)
-                      nf = len((info or {}).get("formats") or [])
-                  except Exception as e:
-                      err = str(e)[:150]
-              print("::notice title=%s::форматов=%d err=%s" % (label, nf, err or "нет"))
-              for ln in buf.getvalue().splitlines():
-                  low = ln.lower()
-                  if any(k in low for k in ["warning", "gvs", "sabr", "nsig", "sign in", "members", "unavailable",
-                                            "not available", "po token", "generating", "fetching", "n-sig", "throttl",
-                                            "challenge", "jsc", "runtime", "deno", "js challenge"]):
-                      print("::notice title=%s-log::%s" % (label, ln.strip()[:220]))
-          PY
+          echo "::notice title=версии::yt-dlp $(yt-dlp --version) · $(deno --version 2>/dev/null | head -1)"
+          echo "::notice title=help::$(yt-dlp --help 2>&1 | grep -iE 'remote|ejs|challenge|js.runtime|jsi' | tr '\n' ' | ' | head -c 320 || echo none)"
+          printf '%s\n' "$YT_COOKIES" > /tmp/c.txt 2>/dev/null || true
+          yt-dlp -v --simulate --cookies /tmp/c.txt "https://www.youtube.com/watch?v=jNQXAC9IVRw" 2>&1 \
+            | grep -iE "challenge|nsig|deno|ejs|remote|solv|no video formats|player.?js|jsi|pot token|require" \
+            | head -22 | sed 's/^/::notice title=cli::/' || true
+          rm -f /tmp/c.txt
       - name: "YouTube → archive.org → D1"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
