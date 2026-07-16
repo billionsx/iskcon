@@ -24,6 +24,13 @@
             IA_ACCESS_KEY, IA_SECRET_KEY.  Перевод заголовка — бесплатный, без ключа
             (ЗКН-Пр008).
 
+YT_COOKIES (опционально, но обычно ОБЯЗАТЕЛЬНО в CI): YouTube режет дата-центровые
+IP GitHub Actions и требует вход. Секрет YT_COOKIES = содержимое cookies.txt в формате
+Netscape для авторизованной сессии youtube.com. Как получить: расширение браузера
+«Get cookies.txt LOCALLY» → зайти на youtube.com под аккаунтом → экспортировать
+cookies.txt → вставить весь файл в секрет репозитория YT_COOKIES. Куки живут недели —
+при протухании прогон падает с понятной ошибкой, обновить тем же путём.
+
 ЗКН-Ф014: скрипт говорит, ЧТО именно сломалось, а не «exit 1».
 ЗКН-Пл020: стороннее видео перезаливается на archive.org, а не хотлинкуется.
 """
@@ -108,11 +115,52 @@ def ytdlp():
         raise SystemExit("::error title=yt-dlp::не установлен — %s" % e)
 
 
+def ytdlp_version():
+    try:
+        return getattr(ytdlp().version, "__version__", "?")
+    except Exception:  # noqa: BLE001
+        return "?"
+
+
+# YouTube жёстко режет дата-центровые IP GitHub Actions и часто требует вход.
+# Два рычага делают выкачку устойчивой:
+#   • YT_COOKIES — cookies.txt (Netscape) авторизованной сессии youtube.com, положенный
+#     секретом; пишем во временный файл и передаём yt-dlp (главный, надёжный рычаг);
+#   • перебор player_client — иногда пускает и без входа (запасной рычаг).
+_COOKIEFILE = None  # "" — искали и не нашли; путь — нашли; None — ещё не искали
+
+
+def cookiefile():
+    global _COOKIEFILE
+    if _COOKIEFILE is None:
+        raw = os.environ.get("YT_COOKIES", "").strip()
+        if raw:
+            fd, path = tempfile.mkstemp(suffix=".txt", prefix="ytcookies_")
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(raw if raw.endswith("\n") else raw + "\n")
+            _COOKIEFILE = path
+        else:
+            _COOKIEFILE = ""
+    return _COOKIEFILE or None
+
+
+def common_opts():
+    """Общие ключи yt-dlp: cookies (если есть) + перебор клиентов + ретраи."""
+    opts = {
+        "extractor_args": {"youtube": {"player_client": ["default", "web_safari", "mweb", "tv"]}},
+        "retries": 3, "extractor_retries": 3, "socket_timeout": 30,
+    }
+    cf = cookiefile()
+    if cf:
+        opts["cookiefile"] = cf
+    return opts
+
+
 def list_videos(limit):
     """Плоский список последних видео канала (новые первыми)."""
     yt = ytdlp()
     opts = {"quiet": True, "skip_download": True, "extract_flat": "in_playlist",
-            "playlistend": max(limit * 4, 20), "ignoreerrors": True}
+            "playlistend": max(limit * 4, 20), "ignoreerrors": True, **common_opts()}
     with yt.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(CHANNEL, download=False)
     entries = (info or {}).get("entries") or []
@@ -133,6 +181,7 @@ def fetch_one(vid, workdir):
         "outtmpl": out_tmpl, "writethumbnail": True, "merge_output_format": "mp4",
         "format": "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best",
         "postprocessors": [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}],
+        **common_opts(),
     }
     with yt.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(watch_url(vid), download=True)
@@ -201,9 +250,18 @@ def run(limit):
     if not d1.available():
         raise SystemExit("::error::нет доступа к D1 (CLOUDFLARE_API_TOKEN/ACCOUNT_ID)")
 
+    have_cookies = bool(cookiefile())
+    print("::notice::yt-dlp %s · cookies YT_COOKIES: %s" % (ytdlp_version(), "есть" if have_cookies else "НЕТ"))
     vids = list_videos(limit)
     print("::notice::плейлист @bhakti.school: %d роликов" % len(vids))
+    if not vids:
+        raise SystemExit(
+            "::error title=YouTube заблокировал выкачку::плейлист пуст. YouTube режет IP "
+            "GitHub Actions или требует вход. Нужен секрет YT_COOKIES — содержимое cookies.txt "
+            "(формат Netscape) авторизованной сессии youtube.com. См. инструкцию в шапке скрипта."
+        )
     done = 0
+    fetched = 0  # сколько НОВЫХ роликов реально пытались скачать (не дедуп)
     for v in vids:
         if done >= limit:
             break
@@ -211,6 +269,7 @@ def run(limit):
         guid = "youtube:" + vid
         if already(guid):
             continue
+        fetched += 1
         ident = ident_of(vid)
         try:
             with tempfile.TemporaryDirectory() as wd:
@@ -265,6 +324,11 @@ def run(limit):
             print("::warning::%s — сбой: %s" % (vid, str(e)[:200]))
             continue
     print("::notice::залито новых видео: %d" % done)
+    if done == 0 and fetched > 0:
+        raise SystemExit(
+            "::error title=Выкачка не удалась::найдено %d новых роликов, но ни один не "
+            "скачался/не залился (см. предупреждения выше). Вероятно, нужен YT_COOKIES." % fetched
+        )
 
 
 def selftest():
