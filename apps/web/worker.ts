@@ -2731,12 +2731,19 @@ export default {
         if (hit) return hit;
       }
       const target = "https://api.gaurangers.com/v1/" + url.pathname.slice(5) + url.search;
+      // Замер латентности второго бэкенда (/v1). Server-Timing на same-origin
+      // ответе виден клиенту через Resource Timing API — так видно, что именно
+      // тормозит: хоп на /v1 или сам воркер (временная диагностика).
+      const t0 = Date.now();
       const upstream = await fetch(target, {
         method: request.method,
         headers: { accept: "application/json" },
       });
+      const v1ms = Date.now() - t0;
       const out = new Response(upstream.body, upstream);
       out.headers.set("X-Robots-Tag", NOINDEX);
+      out.headers.set("Server-Timing", `v1;dur=${v1ms}`);
+      out.headers.set("Timing-Allow-Origin", "*");
       if (isBookRead && upstream.status === 200) {
         out.headers.set("Cache-Control", "public, max-age=60");
         ctx.waitUntil(cache.put(request, out.clone()));

@@ -143,6 +143,45 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
   }
 }
 
+/* Диагностика загрузки (?debug=1). Показывает, ГДЕ уходят секунды: TTFB воркера
+ * (отдача HTML), загрузка+парсинг бандла до интерактива, и самый медленный
+ * /api-запрос — с латентностью второго бэкенда (/v1) из Server-Timing. Виден
+ * ТОЛЬКО при ?debug=1 — обычных пользователей не трогает. Нужен, чтобы бить в
+ * точную причину медленной загрузки, а не гадать (замер прода с телефона, без Mac). */
+function bootDiag(): void {
+  try { if (!new URLSearchParams(location.search).has("debug")) return; } catch { return; }
+  const box = document.createElement("div");
+  box.style.cssText = "position:fixed;left:8px;right:8px;top:8px;z-index:99999;font:12px/1.45 ui-monospace,Menlo,monospace;background:rgba(0,0,0,.87);color:#fff;padding:10px 12px;border-radius:10px;white-space:pre-wrap;box-shadow:0 6px 20px rgba(0,0,0,.45)";
+  box.onclick = () => box.remove();
+  document.body.appendChild(box);
+  const ms = (n: number) => (n >= 1000 ? (n / 1000).toFixed(1) + "s" : Math.round(n) + "ms");
+  const render = () => {
+    const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+    const res = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
+    const apis = res.filter((r) => r.name.includes("/api/"));
+    let slow: PerformanceResourceTiming | null = null;
+    for (const r of apis) if (!slow || r.duration > slow.duration) slow = r;
+    const js = res.filter((r) => /\/assets\/index-.*\.js/.test(r.name)).reduce((a, r) => a + r.duration, 0);
+    let v1 = "";
+    const st = slow ? ((slow as unknown as { serverTiming?: { name: string; duration: number }[] }).serverTiming || []) : [];
+    for (const s of st) if (s.name === "v1") v1 = "  /v1=" + ms(s.duration);
+    const name = slow ? slow.name.replace(/^https?:\/\/[^/]+/, "").split("?")[0] : "—";
+    box.textContent =
+      "ДИАГНОСТИКА ЗАГРУЗКИ · тап — скрыть\n" +
+      "TTFB воркера (HTML): " + ms(nav ? nav.responseStart : 0) + "\n" +
+      "JS до интерактива: " + ms(nav ? nav.domInteractive : 0) + "  (сеть JS " + ms(js) + ")\n" +
+      "запросов /api: " + apis.length + "\n" +
+      "самый медленный API: " + ms(slow ? slow.duration : 0) + v1 + "\n" + name;
+  };
+  render();
+  const iv = window.setInterval(render, 1500);
+  window.setTimeout(() => window.clearInterval(iv), 45000);
+}
+if (typeof window !== "undefined") {
+  if (document.readyState === "complete") window.setTimeout(bootDiag, 600);
+  else window.addEventListener("load", () => window.setTimeout(bootDiag, 600));
+}
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
