@@ -5,6 +5,9 @@
  */
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { getEkadashiInfo, isEkadashiObserved, markEkadashiObserved, type EkadashiInfo } from "./ekadashi";
+import { moonPhase, moonLitPath } from "./moonPhase";
+
+const ON_GOLD = "var(--color-on-gold)";
 
 const GOLD = "var(--color-gold)";
 const INK = "var(--color-label)";
@@ -27,6 +30,21 @@ function Card({ children }: { children: ReactNode }) {
 function Eyebrow({ children }: { children: ReactNode }) {
   return <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: GOLD, fontFamily: FONT, marginBottom: 8 }}>{children}</div>;
 }
+
+/** Лик Луны этого Экадаши: шукла — растущая (почти полная), кришна — убывающий серп. */
+function MoonBadge({ date, accent }: { date: string; accent: boolean }) {
+  const p = moonPhase(date);
+  const col = accent ? GOLD : INK2;
+  return (
+    <div style={{ flexShrink: 0, width: 58, height: 58, borderRadius: 16, display: "grid", placeItems: "center", background: accent ? "color-mix(in srgb, var(--color-gold) 12%, transparent)" : "var(--color-fill-1)" }}>
+      <svg width={38} height={38} viewBox="0 0 24 24" aria-hidden style={{ color: col }}>
+        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth={0.9} opacity={0.32} />
+        <path d={moonLitPath(p.frac, p.waxing, 10)} fill="currentColor" />
+      </svg>
+    </div>
+  );
+}
+const phaseLine = (date: string) => (moonPhase(date).waxing ? "Растущая Луна · шукла-пакша" : "Убывающая Луна · кришна-пакша");
 
 export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => void; onOpenPath: (path: string) => void }) {
   const [info, setInfo] = useState<EkadashiInfo | null | "loading">("loading");
@@ -65,15 +83,19 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
     const today = info.daysUntil <= 0;
     body = (
       <>
-        {/* Герой */}
-        <div style={{ background: "linear-gradient(135deg, color-mix(in srgb, #D2AA1B 16%, var(--color-bg-2)), var(--color-bg-2))", borderRadius: 18, border: `0.5px solid ${HAIR}`, padding: "20px 18px", marginTop: 16 }}>
-          <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, fontFamily: FONT }}>{today ? "Сегодня Экадаши" : "Следующий Экадаши"}</div>
-          <div style={{ fontSize: "var(--text-title1)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 6 }}>{info.name}-экадаши</div>
-          <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 4 }}>{ruDate(info.date)} · {daysLabel(info.daysUntil)}</div>
+        {/* Герой — тихая карточка с настоящим ликом Луны (не золотая плашка) */}
+        <div style={{ background: SURF, borderRadius: 20, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: "16px 16px", marginTop: 16, display: "flex", alignItems: "center", gap: 15 }}>
+          <MoonBadge date={info.date} accent={today} />
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ fontSize: "var(--text-caption)", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", color: GOLD, fontFamily: FONT }}>{today ? "Сегодня Экадаши" : "Следующий Экадаши"}</div>
+            <div style={{ fontSize: "var(--text-title2)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.3, marginTop: 3, lineHeight: 1.15 }}>{info.name}-экадаши</div>
+            <div style={{ fontSize: "var(--text-subhead)", color: INK2, fontFamily: FONT, marginTop: 3 }}>{ruDate(info.date)} · {daysLabel(info.daysUntil)}</div>
+            <div style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT, marginTop: 3 }}>{phaseLine(info.date)}</div>
+          </div>
         </div>
 
         {/* Отметка соблюдения */}
-        <button onClick={toggle} style={{ width: "100%", marginTop: 14, padding: "15px 18px", borderRadius: 14, cursor: "pointer", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 650, border: `1.5px solid ${observed ? OK : GOLD}`, background: observed ? "color-mix(in srgb, #2a9c68 12%, transparent)" : GOLD, color: observed ? OK : "#1a1400", WebkitTapHighlightColor: "transparent", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+        <button onClick={toggle} style={{ width: "100%", marginTop: 14, padding: "15px 18px", borderRadius: 14, cursor: "pointer", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 650, border: `1.5px solid ${observed ? OK : GOLD}`, background: observed ? "color-mix(in srgb, var(--color-success-text, #2a9c68) 12%, transparent)" : GOLD, color: observed ? OK : ON_GOLD, WebkitTapHighlightColor: "transparent", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
           {observed ? "✓ Пост соблюдён" : "Соблюдаю пост"}
         </button>
         <div style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT, textAlign: "center", marginTop: 7, padding: "0 12px", lineHeight: 1.4 }}>Отметка сохраняется в дневник садханы.</div>
@@ -84,7 +106,7 @@ export default function EkadashiScreen({ onBack, onOpenPath }: { onBack: () => v
           <div style={{ padding: "16px 16px" }}>
             {info.paranStart ? (
               <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-                <span style={{ fontSize: "var(--text-title1)", fontWeight: 800, color: GOLD, fontFamily: FONT, letterSpacing: -0.5 }}>{info.paranStart}{info.paranEnd ? `–${info.paranEnd}` : ""}</span>
+                <span style={{ fontSize: "var(--text-title2)", fontWeight: 750, color: GOLD, fontFamily: FONT, letterSpacing: -0.3 }}>{info.paranStart}{info.paranEnd ? `–${info.paranEnd}` : ""}</span>
               </div>
             ) : (
               <div style={{ fontSize: "var(--text-callout)", color: INK2, fontFamily: FONT }}>Время уточняется в календаре</div>

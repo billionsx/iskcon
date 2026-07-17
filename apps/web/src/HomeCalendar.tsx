@@ -615,7 +615,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
             </div>
             {single ? (
               <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
-                <TypeIcon type={heroEvents[0].type} size={48} today />
+                <TypeIcon type={heroEvents[0].type} date={heroEvents[0].date} title={heroEvents[0].title} size={48} today />
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "var(--color-label)" }}>{heroEvents[0].title.replace(" — пост", "")}</div>
                   <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-2)" }}>
@@ -630,7 +630,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                   const canTap = (tgt === "entity" && !!onOpenEntity) || tgt === "ekadashi";
                   const rowInner = (
                     <>
-                      <TypeIcon type={e.type} size={34} today />
+                      <TypeIcon type={e.type} date={e.date} title={e.title} size={34} today />
                       <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
                       <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
                       {canTap && (

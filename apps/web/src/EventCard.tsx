@@ -19,6 +19,7 @@ import { ROUTES } from "./routes";
 import { cleanCardText } from "./cardText";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { CardActionBtns, favMetaFromCtx, useCardActions } from "./cardActions";
+import { moonPhase, moonLitPath } from "./moonPhase";
 
 const GOLD = "var(--color-gold)";
 
@@ -79,22 +80,60 @@ export function fmtDay(iso: string): { d: string; wd: string; m: string; y: numb
   return { d: String(dt.getDate()), wd: WD[dt.getDay()], m: MONTHS_GEN[dt.getMonth()], y: dt.getFullYear() };
 }
 
-/* Иконка типа события — золотой глиф в мягко-золотом скруглённом квадрате
- * (паттерн Apple Settings). Тип различает ФОРМА: полумесяц — пост, искра —
- * праздник, лотос — явление, пламя лампады — уход. Цвет один (золото). */
-export function TypeIcon({ type, size = 28, today = false }: { type: CalType; size?: number; today?: boolean }) {
+/* Иконка события — тонкий одновесный глиф в скруглённом квадрате (язык Apple).
+ * Тип различает ФОРМА, а тема календаря диктует смысл:
+ *   • Экадаши — НАСТОЯЩИЙ лик Луны по дате: шукла-экадаши растущая (почти полная),
+ *     кришна-экадаши убывающая (серп) — вычисляется в moonPhase.ts;
+ *   • пурнима → полная Луна, амавасья → новая Луна;
+ *   • Чатурмасья / пост от зелени → лист;
+ *   • явление → восход, уход → пламя лампады, праздник → искра, прочее → точка.
+ * Цвет один: серый в покое, золото на «сегодня/выбрано» (золото — только акцент). */
+const G_SUNRISE = (
+  <g fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 17h16" /><path d="M7.5 17a4.5 4.5 0 0 1 9 0" />
+    <path d="M12 5.4v2M5.6 8.1l1.4 1.4M18.4 8.1l-1.4 1.4" />
+  </g>
+);
+const G_FLAME = <path d="M12 3.4c2.4 3 3.8 4.7 3.8 7A3.8 3.8 0 0 1 8.2 10.4c0-1 .4-2 1.2-2.8.2.9.8 1.4 1.5 1.4-.5-1.7 0-3.8 1.1-5.6Z" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" />;
+const G_SPARKLE = <path d="M12 3.4c.5 3.3 1.5 4.3 4.8 4.8-3.3.5-4.3 1.5-4.8 4.8-.5-3.3-1.5-4.3-4.8-4.8 3.3-.5 4.3-1.5 4.8-4.8Z" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" />;
+const G_LEAF = (
+  <g fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 18C6 10 12 5 18 5c0 8-6 13-12 13Z" /><path d="M9 15c2-3 4.5-5.5 7.5-7" />
+  </g>
+);
+const G_MOON_FULL = <><circle cx="12" cy="12" r="9" fill="currentColor" opacity={0.22} /><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth={1.5} /></>;
+const G_MOON_NEW = <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth={1.4} opacity={0.85} />;
+const G_DOT = <circle cx="12" cy="12" r="2.3" fill="currentColor" />;
+
+function moonGlyph(date: string): React.ReactNode {
+  const p = moonPhase(date);
+  return (
+    <>
+      <path d={moonLitPath(p.frac, p.waxing)} fill="currentColor" />
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth={1.1} opacity={0.35} />
+    </>
+  );
+}
+
+function glyphFor(type: CalType, date?: string, title?: string): React.ReactNode {
+  const t = title || "";
+  if (type === "ekadasi" && date) return moonGlyph(date);
+  if (/пурнима|полнолуни/i.test(t)) return G_MOON_FULL;
+  if (/амавас|новолуни/i.test(t)) return G_MOON_NEW;
+  if (/чатурмас|листов|зелен/i.test(t)) return G_LEAF;
+  switch (type) {
+    case "festival": return G_SPARKLE;
+    case "appearance": return G_SUNRISE;
+    case "disappearance": return G_FLAME;
+    default: return G_DOT;
+  }
+}
+
+export function TypeIcon({ type, date, title, size = 28, today = false }: { type: CalType; date?: string; title?: string; size?: number; today?: boolean }) {
   const g = Math.round(size * 0.64);
-  const glyph: Record<CalType, React.ReactNode> = {
-    ekadasi: <path d="M20.5 14.8A7.5 7.5 0 1 1 11.2 4.2a6 6 0 0 0 9.3 10.6Z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
-    festival: <path d="M12 3.6l1.5 4.9 4.9 1.5-4.9 1.5L12 16.4l-1.5-4.9L5.6 10l4.9-1.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />,
-    appearance: <g fill="currentColor"><path d="M12 16.5c-1.2-1.6-1.2-4.2 0-6.4 1.2 2.2 1.2 4.8 0 6.4Z" /><path d="M11.6 16.6c-2.2-.5-3.6-2.5-3.8-5 2.2.5 3.6 2.4 3.8 5Z" /><path d="M12.4 16.6c2.2-.5 3.6-2.5 3.8-5-2.2.5-3.6 2.4-3.8 5Z" /></g>,
-    disappearance: <path d="M12 3.2c2.2 2.8 3.6 4.4 3.6 6.6a3.6 3.6 0 0 1-7.2 0c0-1 .5-2 1.3-2.7.2.8.7 1.3 1.4 1.3-.4-1.5.1-3.5.9-5.1Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />,
-    parana: <circle cx="12" cy="12" r="2.4" fill="currentColor" />,
-    other: <circle cx="12" cy="12" r="2.4" fill="currentColor" />,
-  };
   return (
     <div style={{ flexShrink: 0, width: size, height: size, borderRadius: Math.round(size * 0.34), display: "flex", alignItems: "center", justifyContent: "center", background: today ? `color-mix(in srgb, ${GOLD} 15%, transparent)` : "transparent" }}>
-      <svg width={g} height={g} viewBox="0 0 24 24" aria-hidden style={{ color: today ? GOLD : "var(--color-label-3)" }}>{glyph[type]}</svg>
+      <svg width={g} height={g} viewBox="0 0 24 24" aria-hidden style={{ color: today ? GOLD : "var(--color-label-3)" }}>{glyphFor(type, date, title)}</svg>
     </div>
   );
 }
@@ -137,17 +176,18 @@ function EventRow({ e, brief, parana, first, today, picked, onOpenEntity, innerR
   const f = fmtDay(e.date);
   const tap = () => goEvent(e, onOpenEntity);
   const rowStyle: React.CSSProperties = {
+    position: "relative",
     display: "flex", alignItems: "center", gap: 12, padding: "13px 15px",
-    borderTop: first ? "none" : "0.5px solid var(--color-hairline)",
     background: picked ? `color-mix(in srgb, ${GOLD} 11%, var(--color-bg-2))` : "none",
   };
   const inner = (
     <>
+      {!first && <span aria-hidden style={{ position: "absolute", top: 0, left: 62, right: 0, height: "0.5px", background: "var(--color-hairline)" }} />}
       <div style={{ flexShrink: 0, width: 38, textAlign: "center" }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em", color: accent ? GOLD : "var(--color-label)" }}>{f.d}</div>
         <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
       </div>
-      <TypeIcon type={e.type} today={accent} />
+      <TypeIcon type={e.type} date={e.date} title={e.title} today={accent} />
       <div style={{ minWidth: 0, flex: 1 }}>
         <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.3, color: "var(--color-label)" }}>{e.title}</div>
         <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, letterSpacing: "0.01em", color: "var(--color-label-2)" }}>
@@ -169,7 +209,7 @@ function EventRow({ e, brief, parana, first, today, picked, onOpenEntity, innerR
   );
   return tappable ? (
     <button ref={innerRef as (el: HTMLButtonElement | null) => void} type="button" onClick={tap}
-      style={{ ...rowStyle, width: "100%", textAlign: "left", border: "none", borderTop: rowStyle.borderTop, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+      style={{ ...rowStyle, width: "100%", textAlign: "left", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
       {inner}
     </button>
   ) : (
