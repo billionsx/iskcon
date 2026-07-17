@@ -29,7 +29,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { HomeSheet } from "./HomeSheet";
 import { api } from "./api";
 import { pushUrl, subscribeNav } from "./nav";
-import { CalendarEventCard, type EventBrief } from "./CalendarEventCard";
+import { EventCard, TypeIcon, TYPE_WORD, HERO_TYPES, fmtDay, goEvent, eventTarget, type EventBrief } from "./EventCard";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
 
 const GOLD = "var(--color-gold)";
@@ -118,60 +118,16 @@ async function loadLocs(): Promise<LocCountry[]> {
   return locsCache;
 }
 
-const MONTH_RU = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
 const MONTH_H = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-const WD_RU = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
 
 function todayISO(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
-function fmtDay(iso: string): { d: string; wd: string; m: string; y: number } {
-  const dt = new Date(iso + "T12:00:00");
-  return { d: String(dt.getDate()), wd: WD_RU[dt.getDay()], m: MONTH_RU[dt.getMonth()], y: dt.getFullYear() };
-}
+// fmtDay · TypeIcon · TYPE_WORD · HERO_TYPES живут в ./EventCard (единый модуль
+// карточки события): один визуал строки на «Календарь» и на ленту Даршана.
 
-// Стандарт цвета (Apple 2026): у ВСЕХ типов метка одного нейтрального серого —
-// тип различает СЛОВО (Явление/Уход/Пост/Праздник), а не цвет. Золото
-// зарезервировано под «сейчас/выбрано» (число дня, «Сегодня ·»). Никакой радуги.
-const TYPE_META: Record<CalEvent["type"], { label: string; color: string }> = {
-  ekadasi: { label: "Экадаши", color: "var(--color-label-2)" },
-  parana: { label: "Парана", color: "var(--color-label-2)" },
-  festival: { label: "Праздник", color: "var(--color-label-2)" },
-  appearance: { label: "Явление", color: "var(--color-label-2)" },
-  disappearance: { label: "Уход", color: "var(--color-label-2)" },
-  other: { label: "Событие", color: "var(--color-label-2)" },
-};
 
-// Тип строчным словом — для hero-подписи «· пост / · праздник».
-const TYPE_WORD: Record<CalEvent["type"], string> = {
-  ekadasi: "пост", parana: "парана", festival: "праздник",
-  appearance: "явление", disappearance: "уход", other: "событие",
-};
-
-// Что достойно hero «что сейчас» (как в шапке): пост, праздник, явление, уход.
-const HERO_TYPES = new Set<CalEvent["type"]>(["ekadasi", "festival", "appearance", "disappearance"]);
-
-/* Иконка типа события — золотой глиф в мягко-золотом скруглённом квадрате
- * (паттерн Apple Settings). Тип различает ФОРМА глифа: полумесяц — пост (лунный
- * день), искра — праздник, лотос — явление, пламя лампады — уход. Цвет один
- * (золото) — никакой радуги; насыщеннее только для «сейчас/выбрано». */
-function TypeIcon({ type, size = 28, today = false }: { type: CalEvent["type"]; size?: number; today?: boolean }) {
-  const g = Math.round(size * 0.64);
-  const glyph: Record<CalEvent["type"], React.ReactNode> = {
-    ekadasi: <path d="M20.5 14.8A7.5 7.5 0 1 1 11.2 4.2a6 6 0 0 0 9.3 10.6Z" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />,
-    festival: <path d="M12 3.6l1.5 4.9 4.9 1.5-4.9 1.5L12 16.4l-1.5-4.9L5.6 10l4.9-1.5z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />,
-    appearance: <g fill="currentColor"><path d="M12 16.5c-1.2-1.6-1.2-4.2 0-6.4 1.2 2.2 1.2 4.8 0 6.4Z" /><path d="M11.6 16.6c-2.2-.5-3.6-2.5-3.8-5 2.2.5 3.6 2.4 3.8 5Z" /><path d="M12.4 16.6c2.2-.5 3.6-2.5 3.8-5-2.2.5-3.6 2.4-3.8 5Z" /></g>,
-    disappearance: <path d="M12 3.2c2.2 2.8 3.6 4.4 3.6 6.6a3.6 3.6 0 0 1-7.2 0c0-1 .5-2 1.3-2.7.2.8.7 1.3 1.4 1.3-.4-1.5.1-3.5.9-5.1Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />,
-    parana: <circle cx="12" cy="12" r="2.4" fill="currentColor" />,
-    other: <circle cx="12" cy="12" r="2.4" fill="currentColor" />,
-  };
-  return (
-    <div style={{ flexShrink: 0, width: size, height: size, borderRadius: Math.round(size * 0.34), display: "flex", alignItems: "center", justifyContent: "center", background: today ? `color-mix(in srgb, ${GOLD} 15%, transparent)` : "transparent" }}>
-      <svg width={g} height={g} viewBox="0 0 24 24" aria-hidden style={{ color: today ? GOLD : "var(--color-label-3)" }}>{glyph[type]}</svg>
-    </div>
-  );
-}
 
 /* ── месяц как адрес ──────────────────────────────────────────────────────
  * ЗКН-Н005/Н035: `/calendar` = «Предстоящие» · `/calendar/2020-03` = месяц ·
@@ -443,7 +399,6 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   const [q, setQ] = useState("");
   const [pickOpen, setPickOpen] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
-  const [cardEvent, setCardEvent] = useState<CalEvent | null>(null);
   const [briefMap, setBriefMap] = useState<Map<string, EventBrief> | null>(null);
   const gen = useRef(0);
   // Ссылка на строку выбранного дня — чтобы подвести её к центру экрана (п.1).
@@ -526,6 +481,23 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
     if (/\d{1,2}:\d{2}/.test(p.title)) return { date: p.date, text: p.title };
     const m = p.orig.match(/(\d{1,2}:\d{2}).*?-\s*(\d{1,2}:\d{2})/);
     return { date: p.date, text: m ? `Выход из поста ${m[1]}–${m[2]}` : p.title };
+  };
+
+  // Парана экадаши строкой «День · выход из поста» для строки/карточки события.
+  // Ищем по ВСЕМ загруженным данным (архив+живой), отсортированным по дате, —
+  // так парана находится и на стыке месяцев. Формат: «12 января · 08:15–10:42».
+  const paranaList = useMemo(
+    () => all.filter((e) => e.type === "parana").slice().sort((a, b) => a.date.localeCompare(b.date)),
+    [all],
+  );
+  const paranaShortFor = (eka: CalEvent): string | null => {
+    const p = paranaList.find((e) => e.date > eka.date);
+    if (!p) return null;
+    const f = fmtDay(p.date);
+    const range = p.orig.match(/(\d{1,2}:\d{2}).*?[-–]\s*(\d{1,2}:\d{2})/) || p.title.match(/(\d{1,2}:\d{2}).*?[-–]\s*(\d{1,2}:\d{2})/);
+    if (range) return `${f.d} ${f.m} · ${range[1]}–${range[2]}`;
+    const one = p.title.match(/(\d{1,2}:\d{2})/) || p.orig.match(/(\d{1,2}:\d{2})/);
+    return one ? `${f.d} ${f.m} · ${one[1]}` : `${f.d} ${f.m}`;
   };
 
   // Точки в сетке шита — по ВСЕМ событиям месяца, включая парану: пустой день без
@@ -653,14 +625,31 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
               </div>
             ) : (
               <div style={{ marginTop: 12, display: "grid" }}>
-                {heroEvents.map((e, i) => (
-                  <button key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
-                    style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 0", border: "none", borderTop: i ? "0.5px solid var(--color-hairline)" : "none", background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                    <TypeIcon type={e.type} size={34} today />
-                    <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
-                    <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
-                  </button>
-                ))}
+                {heroEvents.map((e, i) => {
+                  const tgt = eventTarget(e);
+                  const canTap = (tgt === "entity" && !!onOpenEntity) || tgt === "ekadashi";
+                  const rowInner = (
+                    <>
+                      <TypeIcon type={e.type} size={34} today />
+                      <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
+                      <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
+                      {canTap && (
+                        <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-4)" }}>
+                          <svg width="14" height="14" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </span>
+                      )}
+                    </>
+                  );
+                  const heroRow: React.CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "10px 0", borderTop: i ? "0.5px solid var(--color-hairline)" : "none" };
+                  return canTap ? (
+                    <button key={e.date + e.orig + i} type="button" onClick={() => goEvent(e, onOpenEntity)}
+                      style={{ ...heroRow, border: "none", borderTop: heroRow.borderTop, background: "none", textAlign: "left", cursor: "pointer", WebkitTapHighlightColor: "transparent", width: "100%" }}>
+                      {rowInner}
+                    </button>
+                  ) : (
+                    <div key={e.date + e.orig + i} style={heroRow}>{rowInner}</div>
+                  );
+                })}
               </div>
             )}
             {par && (
@@ -714,44 +703,14 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
               </div>
               <div style={{ overflow: "hidden", ...fill }}>
                 {evs.map((e, i) => {
-                  const f = fmtDay(e.date); const meta = TYPE_META[e.type];
-                  const isToday = e.date === today;
                   const isPicked = e.date === route.day;
-                  const linked = !!e.entityId && !!onOpenEntity;
-                  const tappable = linked || e.type === "festival" || e.type === "appearance" || e.type === "disappearance" || e.type === "ekadasi";
-                  const accent = isToday || isPicked;
-                  const inner = (
-                    <>
-                      <div style={{ flexShrink: 0, width: 38, textAlign: "center" }}>
-                        <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em", color: accent ? GOLD : "var(--color-label)" }}>{f.d}</div>
-                        <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: accent ? GOLD : "var(--color-label-3)" }}>{f.wd}</div>
-                      </div>
-                      <TypeIcon type={e.type} today={accent} />
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.3, color: "var(--color-label)" }}>{e.title}</div>
-                        <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, letterSpacing: "0.01em", color: "var(--color-label-2)" }}>
-                          {isToday && <span style={{ color: GOLD }}>Сегодня · </span>}{meta.label}{linked ? " · Герой" : ""}
-                        </div>
-                      </div>
-                      {tappable && (
-                        <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-4)" }}>
-                          <svg width="15" height="15" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        </span>
-                      )}
-                    </>
-                  );
-                  const rowStyle: React.CSSProperties = {
-                    display: "flex", alignItems: "center", gap: 12, padding: "13px 15px",
-                    borderTop: i ? "0.5px solid var(--color-hairline)" : "none",
-                    background: isPicked ? `color-mix(in srgb, ${GOLD} 11%, var(--color-bg-2))` : "none",
-                  };
-                  return tappable ? (
-                    <button ref={isPicked ? setPicked : undefined} key={e.date + e.orig + i} type="button" onClick={() => setCardEvent(e)}
-                      style={{ ...rowStyle, width: "100%", textAlign: "left", border: "none", borderTop: rowStyle.borderTop, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                      {inner}
-                    </button>
-                  ) : (
-                    <div ref={isPicked ? setPicked : undefined} key={e.date + e.orig + i} style={rowStyle}>{inner}</div>
+                  return (
+                    <EventCard key={e.date + e.orig + i} variant="list" event={e}
+                      brief={e.entityId && briefMap ? (briefMap.get(e.entityId) || null) : null}
+                      parana={e.type === "ekadasi" ? paranaShortFor(e) : null}
+                      first={i === 0} today={e.date === today} picked={isPicked}
+                      onOpenEntity={onOpenEntity}
+                      innerRef={isPicked ? setPicked : undefined} />
                   );
                 })}
               </div>
@@ -773,16 +732,6 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         onPick={goto}
         onUpcoming={() => goto("/calendar")}
         onClose={() => { setDateOpen(false); setPreviewYm(null); }} />
-      <CalendarEventCard
-        open={!!cardEvent}
-        title={cardEvent?.title || ""}
-        date={cardEvent?.date || ""}
-        type={cardEvent?.type || "other"}
-        entityId={cardEvent?.entityId || null}
-        brief={cardEvent?.entityId && briefMap ? (briefMap.get(cardEvent.entityId) || null) : null}
-        onOpen={(id) => { setCardEvent(null); onOpenEntity?.(id, "personality"); }}
-        onClose={() => setCardEvent(null)}
-      />
     </div>
   );
 }

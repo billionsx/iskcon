@@ -162,7 +162,8 @@ export const LEGACY: Array<[RegExp, (m: RegExpMatchArray) => string]> = [
   [/^\/prasadam(\/.*)?$/, (m) => "/prasad" + (m[1] || "")],
   [/^\/center\/(.+)$/, (m) => "/iskcon/centers/" + m[1]],
   [/^\/centers$/, () => "/iskcon/centers"],
-  [/^\/iskcon\/news$/, () => "/darshan/news"],   // «Новости» уехали из ИСККОН в ленту Даршана (13.07.2026)
+  [/^\/darshan\/news(\/.*)?$/, () => "/darshan"],   // мусорная агентская лента новостей убрана (17.07.2026); закреп события в Ленте — замена
+  [/^\/iskcon\/news$/, () => "/darshan"],            // старый вход «Новости» из ИСККОН → Лента Даршана
   [/^\/entity\/(.+)$/, (m) => "/" + m[1]],
   [/^\/person\/(.+)$/, (m) => "/" + m[1]],
 ];
