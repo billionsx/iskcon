@@ -2731,67 +2731,52 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const navLock = useRef(false);
   const openTarget = useRef<(div: string | null, chapter: string | null, verse: string | null) => void>(() => {});
   openTarget.current = (div, chapter, verse) => {
+    navLock.current = true;
+    if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
+    /* ЗКН-Н079 · АДРЕС СТИХА У КАЖДОЙ КНИГИ СВОЙ.
+     * Ключ РАЗДЕЛА-главы в БД = work.<песнь/лила>.<глава> (напр. "sb.9.8",
+     * "cc.madhya.6", "cb.adi.1") — С префиксом работы, его можно достроить из
+     * адреса. А вот ref СТИХА у каждой книги СВОЙ и часто человекочитаемый
+     * ("9.8.11" у ШБ — без префикса; "БГ 2.13", "Ади 1.94" — с кириллицей).
+     * Достроить ref из адреса НЕЛЬЗЯ. Единственный источник истинного ref —
+     * список стихов главы: тянем /read по достроенному id раздела и матчим
+     * resolveVerseRef по номеру стиха. /toc — лишь для заголовка (не для стиха). */
     if (book.hierarchical) {
-      // ЧЧ/ШБ: лила/песнь → глава → стих, через /toc и /division/<id>/read
-      navLock.current = true;
-      if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
-      /* ЗКН-Н079: id главы и ref стиха достраиваются из URL (формат БД
-       * work.<лила/песнь>.<глава>.<стих>, напр. "sb.1.9.40" / "cc.madhya.6.140").
-       * Это открывает СТИХ, даже если /toc не ответил, дивизион/глава не нашлись в
-       * оглавлении или сеть моргнула (мобильный) — стих не схлопывается на главу. */
-      const chapId = `${book.work}.${div}.${chapter}`;
-      const fallbackRef = `${chapId}.${verse}`;
+      const chapId = `${book.work}.${div}.${chapter}`;                 // "sb.9.8"
+      setOpenChapter({ id: chapId, number: chapter ?? "", title_ru: "", title_en: "", source_url: "", verses: 0 });
+      if (verse) {
+        fetch(api(`/books/${book.work}/division/${chapId}/read`))
+          .then((r) => r.json())
+          .then((rd) => {
+            const vs = (rd.verses ?? []) as ChapterVerse[];
+            setReaderRef(resolveVerseRef(vs, verse) || `${div}.${chapter}.${verse}`);
+          })
+          .catch(() => { setReaderRef(`${div}.${chapter}.${verse}`); })
+          .finally(() => { navLock.current = false; });
+      } else { setReaderRef(null); navLock.current = false; }
       fetch(api(`/books/${book.work}/toc`))
         .then((r) => r.json())
         .then((d: CcToc) => {
-          const divs = d?.divisions ?? [];
-          const dv = divs.find((x) => x.id.split(".").pop() === div || x.slug === div) ?? null;
-          const c = dv?.chapters.find((x) => x.number === chapter) ?? null;
-          const id = c ? c.id : chapId;
-          setOpenChapter(c
-            ? { id: c.id, number: c.number, title_ru: c.title_ru, title_en: "", source_url: "", verses: c.verses }
-            : { id, number: chapter ?? "", title_ru: "", title_en: "", source_url: "", verses: 0 });
-          if (verse) {
-            fetch(api(`/books/${book.work}/division/${id}/read`))
-              .then((r) => r.json())
-              .then((rd) => {
-                const vs = (rd.verses ?? []) as ChapterVerse[];
-                setReaderRef(resolveVerseRef(vs, verse) || fallbackRef);
-              })
-              .catch(() => { setReaderRef(fallbackRef); })
-              .finally(() => { navLock.current = false; });
-          } else { setReaderRef(null); navLock.current = false; }
+          const dv = (d?.divisions ?? []).find((x) => x.id.split(".").pop() === div || x.slug === div) ?? null;
+          const c = dv?.chapters?.find((x) => x.number === chapter) ?? null;
+          if (c) setOpenChapter((prev) => (prev && prev.id === chapId ? { ...prev, title_ru: c.title_ru, verses: c.verses } : prev));
         })
-        .catch(() => {
-          if (verse) {
-            setOpenChapter({ id: chapId, number: chapter ?? "", title_ru: "", title_en: "", source_url: "", verses: 0 });
-            setReaderRef(fallbackRef);
-          }
-          navLock.current = false;
-        });
+        .catch(() => {});
       return;
     }
-    if (!chapters) return;
-    navLock.current = true;
-    if (!chapter) { setOpenChapter(null); setReaderRef(null); navLock.current = false; return; }
-    const ch = chapters.find((x) => x.number === chapter) ?? null;
+    const ch = (chapters ?? []).find((x) => x.number === chapter)
+      ?? { id: `${book.work}.${chapter}`, number: chapter ?? "", title_ru: "", title_en: "", source_url: "", verses: 0 };
     setOpenChapter(ch);
     if (verse) {
-      // ЗКН-Н079: ref стиха достраивается из URL (формат БД work.<глава>.<стих>, напр.
-      // "bg.2.13") — стих открывается даже при сбое фетча/поиска, не схлопываясь на главу.
-      const fallbackRef = `${book.work}.${chapter}.${verse}`;
       fetch(api(`/books/${book.work}/chapters/${chapter}/read`))
         .then((r) => r.json())
         .then((d) => {
           const vs = (d.verses ?? []) as ChapterVerse[];
-          setReaderRef(resolveVerseRef(vs, verse) || fallbackRef);
+          setReaderRef(resolveVerseRef(vs, verse) || `${chapter}.${verse}`);
         })
-        .catch(() => { setReaderRef(fallbackRef); })
+        .catch(() => { setReaderRef(`${chapter}.${verse}`); })
         .finally(() => { navLock.current = false; });
-    } else {
-      setReaderRef(null);
-      navLock.current = false;
-    }
+    } else { setReaderRef(null); navLock.current = false; }
   };
 
   /* ЗКН-Н059 · АДРЕС ЕСТЬ ИСТИНА ЭКРАНА.
@@ -2814,7 +2799,8 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
   const lastTarget = useRef<string>("");
   useEffect(() => {
     if (!initialTarget?.chapter) { lastTarget.current = ""; return; }
-    if (!book.hierarchical && !chapters) return;      // ждём оглавление
+    // openTarget сам достраивает главу и тянет стихи — ждать загрузку оглавления
+    // (chapters) не нужно: иначе БГ на холодном входе не открывался («через раз»).
     const sig = [initialTarget.div ?? "", initialTarget.chapter, initialTarget.verse ?? ""].join("|");
     if (sig === lastTarget.current) return;           // тот же адрес — не перезапускаем
     lastTarget.current = sig;
@@ -2830,13 +2816,17 @@ export function BookDetailPage({ book, onBack, onDonate, onOpenCart, initialTarg
     if (book.hierarchical) {
       const base = `/${bookSlug(book.work)}`;
       let path = base;
-      if (readerRef) {
-        const pr = readerRef.split(".");                 // ["cc","madhya","6","140"]
-        path = pr.length >= 4
-          ? `${base}/${pr[1]}/${pr[2]}/${pr[3]}`
-          : (openChapter ? `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}` : base);
-      } else if (openChapter) {
-        path = `${base}/${openChapter.id.split(".")[1]}/${openChapter.number}`;
+      /* ЗКН-Н079: адрес главы строим из id РАЗДЕЛА ("sb.9.8" → /9/8,
+       * "cc.madhya.6" → /madhya/6), а номер стиха — последний сегмент ref
+       * (форматы ref у книг разные, часто с кириллицей, но номер всегда в
+       * хвосте). Раньше адрес собирался из readerRef.split(".") в расчёте на
+       * 4-частный ref с префиксом — для ШБ ("9.8.11") это давало адрес ГЛАВЫ,
+       * pushUrl перезапускал навигацию, и стих схлопывался на главу. */
+      if (openChapter) {
+        const idp = openChapter.id.split(".");            // ["sb","9","8"] | ["cc","madhya","6"]
+        const chapPath = idp.length >= 3 ? `${base}/${idp[1]}/${idp[2]}` : `${base}/${openChapter.number}`;
+        const vseg = readerRef ? (readerRef.split(".").pop() ?? "") : "";
+        path = vseg ? `${chapPath}/${vseg}` : chapPath;
       }
       const cur = window.location.pathname;
       if (cur === path) { audioNavRef.current = false; return; }
