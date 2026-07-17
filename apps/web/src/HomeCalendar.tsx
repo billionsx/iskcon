@@ -531,8 +531,10 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
   const busy = !live && !err;
   const monthBusy = !!route.ym && route.ym < LIVE_FROM_YM && !past && pastState === "busy";
   const monthErr = !!route.ym && route.ym < LIVE_FROM_YM && pastState === "err";
-  const canPrev = !route.ym || route.ym > MIN_YM;
-  const canNext = !!route.ym && route.ym < maxYm;
+  const todayYm = ymOfToday();
+  const baseYm = route.ym || todayYm;              // опорный месяц для шага ‹ ›
+  const canPrev = baseYm > MIN_YM;
+  const canNext = baseYm < maxYm;
   const navLabel = route.ym
     ? `${MONTH_H[Number(route.ym.slice(5, 7)) - 1]} ${route.ym.slice(0, 4)}`
     : "Выбрать дату";
@@ -578,7 +580,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           Не липкий — иначе он встал бы вторым sticky-слоем поверх фильтра (ЗКН-Н010). */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 14 }}>
         <button type="button" aria-label="Предыдущий месяц" disabled={!canPrev} style={arrow(canPrev)}
-          onClick={() => canPrev && goto("/calendar/" + (route.ym ? ymAdd(route.ym, -1) : ymOfToday()))}>
+          onClick={() => canPrev && goto("/calendar/" + ymAdd(baseYm, -1))}>
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="m15 6-6 6 6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <button type="button" onClick={() => setDateOpen(true)} aria-label="Выбрать дату"
@@ -591,13 +593,14 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
           <svg width="11" height="11" viewBox="0 0 24 24" aria-hidden style={{ flexShrink: 0 }}><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <button type="button" aria-label="Следующий месяц" disabled={!canNext} style={arrow(canNext)}
-          onClick={() => canNext && route.ym && goto("/calendar/" + ymAdd(route.ym, 1))}>
+          onClick={() => canNext && goto("/calendar/" + ymAdd(baseYm, 1))}>
           <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
-        {route.ym && (
-          <button type="button" onClick={() => goto("/calendar")} aria-label="К ближайшим событиям"
-            style={{ flexShrink: 0, padding: "9px 12px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold-deep)" }}>
-            Вперёд
+        {route.ym && route.ym !== todayYm && (
+          <button type="button" onClick={() => goto("/calendar")} aria-label="Вернуться к сегодняшнему дню"
+            style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", gap: 5, padding: "9px 13px", borderRadius: 999, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", cursor: "pointer", WebkitTapHighlightColor: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-gold-deep)" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="M12 7.8V12l2.6 1.6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            Сегодня
           </button>
         )}
       </div>
