@@ -591,101 +591,17 @@ async function tgFeed(channel: string, before: string, env: HomeEnv): Promise<Re
 
 /* ───────────────────────── РОУТЕР ───────────────────────── */
 
-/* ───────── Новости ИСККОН (D1 news_posts) → субтаб «Новости» Даршана ─────────
-   Мульти-источник (iskconnews.org · iskcon.org · dandavats.com): парсер переводит
-   статьи на русский с BBT-точностью и льёт сюда, лента читает их отсюда. Один тип
-   контента ленты — как посты ТГ, видео и аудио (единая лента, много линз).
-
-   Кейсет-пагинация по (published_at DESC, id DESC): курсор `before=<published_at>|<id>`
-   — устойчив к добавлению свежих статей во время листания (в отличие от OFFSET).
-   Тело РУ отдаём сразу: раскрытие карточки без второго запроса. Hero заворачиваем
-   в /api/img (серверный прокси + кэш края — CDN источников часто блокируют хотлинк). */
-/** Автор-подпись в начале тела (частое у Dandavats: «Автор: X» или просто имя первым
- *  абзацем) — вычленяем в author и убираем из тела; лид считаем по первому НАСТОЯЩЕМУ
- *  абзацу. body_ru бывает JSON-массивом или текстом с \n\n. Чинит «сырой [ … ]»,
- *  лид-подпись и байлайн-в-теле для ВСЕХ старых постов прямо на выдаче. */
-function cleanNews(bodyRaw: unknown, leadRaw: unknown, authorRaw: unknown): { body: string; lead: string; author: string } {
-  const raw = String(bodyRaw ?? "");
-  let paras: string[] = [];
-  try { const p = JSON.parse(raw); if (Array.isArray(p)) paras = p.map((x) => String(x)); } catch { /* не JSON — ниже */ }
-  if (!paras.length) paras = raw.split(/\n{2,}/);
-  paras = paras.map((s) => s.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
-
-  const isByline = (s: string): boolean => {
-    const w = s.split(/\s+/).filter(Boolean).length;
-    return /^Автор[:\s]/i.test(s) || (s.length <= 60 && w <= 6 && !/[.!?…]/.test(s));
-  };
-
-  let author = String(authorRaw ?? "").trim();
-  if (paras.length && isByline(paras[0])) {
-    const name = paras[0].replace(/^Автор[:\s]*/i, "").trim();
-    if (!author && name) author = name;
-    paras = paras.slice(1);
-  }
-  const body = paras.join("\n\n");
-
-  let lead = String(leadRaw ?? "").trim();
-  if (!lead || isByline(lead)) {
-    const sents = (paras[0] || "").split(/(?<=[.!?…])\s+/);
-    lead = sents.slice(0, 2).join(" ").trim();
-  }
-  lead = lead.replace(/^Автор[:\s]*/i, "").trim();
-  if (lead.length > 220) lead = lead.slice(0, 219).replace(/\s+\S*$/, "").trim() + "…";
-
-  return { body, lead, author };
-}
-
-/** Видео-посты («Сегодняшнее рекомендуемое видео …») — без пользы в текстовой ленте,
- *  не показываем (ЗКН: новостная лента — переведённые статьи, а не видео-врезки). */
-function isVideoNews(r: Record<string, unknown>): boolean {
-  const t = `${String(r.title_ru ?? "")} ${String(r.title_en ?? "")}`;
-  return /рекомендуемое видео|recommended video/i.test(t);
-}
-
-function newsRow(r: Record<string, unknown>) {
-  const hero = (r.hero as string) || "";
-  const c = cleanNews(r.body_ru, r.lead_ru, r.author);
-  return {
-    kind: "news" as const,
-    id: String(r.id), slug: r.slug as string,
-    source: r.source as string, sourceLabel: r.source_label as string,
-    url: r.url as string, publishedAt: r.published_at as string,
-    author: c.author, category: (r.category as string) || "",
-    hero: hero ? `/api/img?u=${encodeURIComponent(hero)}&w=1600` : "",
-    title: r.title_ru as string, titleEn: (r.title_en as string) || "",
-    lead: c.lead, body: c.body,
-  };
-}
-async function newsList(env: HomeEnv, url: URL): Promise<Response> {
-  if (!env.DB) return jr({ items: [], hasMore: false, cursor: null }, 200, "no-store");
+/* ───────── Новости ИСККОН (D1 news_posts) — ОТКЛЮЧЕНЫ ─────────
+   Мусорная агентская лента (iskconnews.org · iskcon.org · dandavats.com) убрана
+   17.07.2026: значимость не отфильтровать алгоритмом надёжно, BBT-точность важнее
+   объёма. Замена — курируемые закреплённые посты события в Ленте (PinnedEvents).
+   Парсер, рендер и клиент удалены; /api/news отдаёт пусто (контракт сохранён,
+   чтобы старые кэшированные клиенты не падали). Строки в D1 news_posts не тронуты
+   (обратимо) — чистка таблицы отдельным шагом; ингест остановлен (cron снят). */
+async function newsList(_env: HomeEnv, url: URL): Promise<Response> {
   const slug = url.searchParams.get("slug");
-  if (slug) {
-    const { results } = await env.DB.prepare(
-      "SELECT * FROM news_posts WHERE slug=?1 AND status='published' LIMIT 1",
-    ).bind(slug).all();
-    const row = (results || [])[0] as Record<string, unknown> | undefined;
-    return jr({ item: row ? newsRow(row) : null }, 200, "no-store");
-  }
-  const limit = Math.min(40, Math.max(1, Number(url.searchParams.get("limit")) || 24));
-  const before = url.searchParams.get("before") || "";
-  let rows: unknown[];
-  if (before) {
-    const bar = before.indexOf("|");
-    const pa = bar >= 0 ? before.slice(0, bar) : before;
-    const bid = bar >= 0 ? Number(before.slice(bar + 1)) || 0 : 0;
-    ({ results: rows } = await env.DB.prepare(
-      "SELECT * FROM news_posts WHERE status='published' AND (published_at<?1 OR (published_at=?1 AND id<?2)) ORDER BY published_at DESC, id DESC LIMIT ?3",
-    ).bind(pa, bid, limit + 1).all());
-  } else {
-    ({ results: rows } = await env.DB.prepare(
-      "SELECT * FROM news_posts WHERE status='published' ORDER BY published_at DESC, id DESC LIMIT ?1",
-    ).bind(limit + 1).all());
-  }
-  const arr = ((rows || []) as Record<string, unknown>[]).filter((r) => !isVideoNews(r));
-  const hasMore = arr.length > limit;
-  const items = arr.slice(0, limit).map(newsRow);
-  const last = items[items.length - 1];
-  return jr({ items, hasMore, cursor: last ? `${last.publishedAt}|${last.id}` : null }, 200, "no-store");
+  if (slug) return jr({ item: null }, 200, "no-store");
+  return jr({ items: [], hasMore: false, cursor: null }, 200, "no-store");
 }
 
 /* ───────── Медиа ленты (D1 feed_media) → видео/аудио с archive.org ─────────
