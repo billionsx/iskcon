@@ -143,9 +143,12 @@ function PhotoLightbox({ photos, index, onIndex, onClose }: {
  *  Кадр показываем ЦЕЛИКОМ (contain) поверх размытой подложки — без обрезки и
  *  cover-увеличения. Счётчик «1/9» — слева сверху (справа сверху живут действия). */
 function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
-  // Прогрессивная загрузка как в Instagram/Telegram: показываем полноразмер (display),
-  // а под ним — лёгкое превью (preview) мгновенным фоном, чтобы не было серого ожидания.
-  const display = (p.photosFull && p.photosFull.length) ? p.photosFull : p.photos;
+  // ВНУТРИ ленты показываем display-размер (photos, ~1440 — ровно под ширину карусели
+  // даже при 3× DPR). Полноразмер (photosFull, ~2560) тянуть в ленту НЕЛЬЗЯ: на телефоне
+  // ~380px это ×2 лишних пикселей и мегабайты трафика на LTE (был самый медленный запрос
+  // /api/img ≈3.9с). Полноразмер нужен лишь в лайтбоксе (fullscreen-зум) — см. ниже.
+  // Поля вокруг object-fit:contain закрывает размытая подложка из того же кадра.
+  const display = p.photos.length ? p.photos : (p.photosFull ?? []);
   const preview = p.photos;
   const [idx, setIdx] = useState(0);
   const [ar, setAr] = useState<number | null>(null);  // аспект кадра берём из ПЕРВОГО фото (как в Instagram)

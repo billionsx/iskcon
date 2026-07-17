@@ -353,6 +353,7 @@ async function imgProxy(url: URL): Promise<Response> {
   if (target.protocol !== "https:" || !IMG_HOSTS.test(target.hostname)) return new Response("forbidden", { status: 403 });
   const w = Math.min(2560, Math.max(160, Number(url.searchParams.get("w")) || 1600));
   const hdr = { "User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love/1.0)", Referer: `${target.protocol}//${target.hostname}/`, accept: "image/*,*/*" };
+  const t0 = Date.now();
   let r: Response;
   try {
     r = await fetch(target.toString(), { headers: hdr, cf: { image: { width: w, quality: 90, fit: "scale-down" }, cacheEverything: true, cacheTtl: 86400 } } as RequestInit);
@@ -364,7 +365,7 @@ async function imgProxy(url: URL): Promise<Response> {
   }
   if (!r.ok) return new Response(`upstream ${r.status}`, { status: 502 });
   const ct = r.headers.get("content-type") || "image/jpeg";
-  return new Response(r.body, { status: 200, headers: { "content-type": ct, "cache-control": "public, max-age=86400, immutable", "x-content-type-options": "nosniff", "X-Robots-Tag": "noindex" } });
+  return new Response(r.body, { status: 200, headers: { "content-type": ct, "cache-control": "public, max-age=86400, immutable", "x-content-type-options": "nosniff", "X-Robots-Tag": "noindex", "Server-Timing": `img;dur=${Date.now() - t0}`, "Timing-Allow-Origin": "*" } });
 }
 
 /* Синтез поста ленты из строки D1 darshan: даршаны больше не идут в Telegram-канал,

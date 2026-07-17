@@ -165,6 +165,7 @@ function bootDiag(): void {
     let v1 = "";
     const st = slow ? ((slow as unknown as { serverTiming?: { name: string; duration: number }[] }).serverTiming || []) : [];
     for (const s of st) if (s.name === "v1") v1 = "  /v1=" + ms(s.duration);
+    for (const s of st) if (s.name === "img") v1 = "  исходник=" + ms(s.duration);
     let app = "";
     const nst = nav ? ((nav as unknown as { serverTiming?: { name: string; duration: number }[] }).serverTiming || []) : [];
     for (const s of nst) if (s.name === "app") app = ms(s.duration);
