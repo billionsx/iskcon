@@ -1858,8 +1858,10 @@ const RESERVED: readonly string[] = [
   return (
     <AuthProvider>
     <PlayerProvider>
-    <div style={{ display: "flex", justifyContent: "center", minHeight: "100vh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <div className={overlayTabBar ? "has-overlay-tabbar" : undefined} style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, minHeight: "100dvh", background: "var(--color-bg)" }}>
+    {/* ЗКН-Н084 — оболочка ровно во весь динамический вьюпорт (100dvh), не 100vh:
+        body/#root не скроллят, шапка и нижнее меню приколоты, скроллит только <main>. */}
+    <div style={{ display: "flex", justifyContent: "center", height: "100dvh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
+      <div className={overlayTabBar ? "has-overlay-tabbar" : undefined} style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, height: "100dvh", background: "var(--color-bg)" }}>
         <CardActionsProvider onDonate={openDonate}>
         <Suspense fallback={<ScreenFallback />}>
         {openStoriesTool ? (

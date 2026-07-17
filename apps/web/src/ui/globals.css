@@ -355,9 +355,27 @@
 
   body {
     margin: 0;
-    min-height: 100vh;
+    /* ЗКН-Н084 — ОБОЛОЧКА ПРИБИТА К ДИНАМИЧЕСКОМУ ВЬЮПОРТУ; СКРОЛЛИТ ТОЛЬКО ВНУТРЕННИЙ <main>.
+     *
+     * Было `min-height: 100vh` без блокировки скролла. На iOS Safari `100vh` — это
+     * БОЛЬШОЙ вьюпорт (панель URL убрана), а видимая высота при показанной панели
+     * МЕНЬШЕ. Разницу body прокручивал — и ВЕРХНЯЯ ШАПКА (TopHeader, в потоке НАД
+     * скролл-`main`) уезжала вверх. Смена таба сбрасывала лишь ВНУТРЕННИЙ скролл
+     * (`mainRef.scrollTop = 0`), а body оставался прокручен → шапка «не возвращалась».
+     * Ровно та жалоба. Прибиваем body/#root к 100dvh + overflow:hidden: body не
+     * скроллит вовсе, единственный скроллер — внутренний `<main>`, шапка приколота. */
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
     transition: background-color 200ms ease;
   }
+
+  #root { height: 100dvh; overflow: hidden; }
+
+  /* PDF-печать клонирует контент в #pdf-print-layer и печатает переполнение
+   * ПОСТРАНИЧНО — на это время блокировку оболочки снимаем, иначе многостраничный
+   * PDF схлопнулся бы в один экран (overflow:hidden гасит пагинацию). */
+  body.printing { height: auto; overflow: visible; }
 
   ::selection {
     background-color: var(--color-blue);
@@ -522,7 +540,7 @@
 #pdf-print-layer { display: none; }
 
 @media print {
-  html, body { background: #fff !important; }
+  html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
 
   /* печатаем только слой PDF; скрываем приложение И любые служебные
    * контейнеры (в т.ч. off-screen рендер книги из ленты — иначе он печатается

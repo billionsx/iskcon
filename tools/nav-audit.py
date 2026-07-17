@@ -1357,7 +1357,59 @@ def check_n083():
     return bad
 
 
+def check_n084():
+    """ЗКН-Н084: ОБОЛОЧКА ПРИКОЛОТА К ДИНАМИЧЕСКОМУ ВЬЮПОРТУ; BODY/#root НЕ СКРОЛЛЯТ — СКРОЛЛИТ ТОЛЬКО ВНУТРЕННИЙ <main>.
+
+    Верхняя шапка (TopHeader) лежит в потоке НАД скролл-`main`. Пока `body` мог
+    прокручиваться (`min-height: 100vh` без блокировки), на iOS Safari показ панели
+    URL давал разницу «большой 100vh ↔ видимая высота», body уезжал на неё, и шапка
+    прокручивалась вверх ЗА пределы экрана. Смена таба сбрасывала лишь ВНУТРЕННИЙ
+    скролл (`mainRef.scrollTop = 0`) — body оставался прокручен, и шапка «не
+    возвращалась». Инвариант: `body` и `#root` прибиты к `100dvh` + `overflow:hidden`
+    (единственный скроллер — внутренний `<main>`), а внешняя оболочка App — `height:
+    100dvh`, НЕ `min-height: 100vh`. Тогда шапке и нижнему меню некуда уехать.
+    Блокировка снимается под `body.printing`, иначе многостраничный PDF схлопнется.
+    """
+    bad = []
+    css_raw = read(SRC / "ui" / "globals.css")
+    app_raw = read(SRC / "App.tsx")
+    # Гейт стережёт КОД, не комментарий (ср. ЗКН-Ц008): в пояснениях сам фигурирует
+    # «min-height: 100vh» и «100dvh» — без вырезки комментариев был бы ложный вердикт.
+    css = re.sub(r"/\*.*?\*/", "", css_raw, flags=re.S) if css_raw else ""
+    app = re.sub(r"/\*.*?\*/", "", app_raw, flags=re.S) if app_raw else ""
+    if css:
+        m = re.search(r"(?ms)^\s*body\s*\{(.*?)\}", css)
+        if not m:
+            bad.append(("globals.css", "Н084: не найден блок body"))
+        else:
+            body = m.group(1)
+            if "min-height: 100vh" in body or "min-height:100vh" in body:
+                bad.append(("globals.css", "Н084: body снова min-height:100vh — body прокрутится на iOS, и ВЕРХНЯЯ ШАПКА уедет вверх и не вернётся; нужно height:100dvh + overflow:hidden"))
+            if "overflow: hidden" not in body and "overflow:hidden" not in body:
+                bad.append(("globals.css", "Н084: body без overflow:hidden — body сможет скроллить, шапка уедет за экран"))
+            if "100dvh" not in body:
+                bad.append(("globals.css", "Н084: body не прибит к динамическому вьюпорту (height:100dvh)"))
+        mr = re.search(r"(?ms)^\s*#root\s*\{(.*?)\}", css)
+        if not mr:
+            bad.append(("globals.css", "Н084: нет правила #root — корень React не прибит к вьюпорту (нужно height:100dvh; overflow:hidden)"))
+        else:
+            root = mr.group(1)
+            if ("overflow: hidden" not in root and "overflow:hidden" not in root) or "100dvh" not in root:
+                bad.append(("globals.css", "Н084: #root обязан быть height:100dvh; overflow:hidden — иначе внутренняя высота выпирает в body-скролл"))
+        if "body.printing" not in css:
+            bad.append(("globals.css", "Н084: нет снятия блокировки под body.printing — многостраничный PDF схлопнется в один экран"))
+    else:
+        bad.append(("globals.css", "Н084: globals.css отсутствует"))
+    if app:
+        if 'minHeight: "100vh"' in app:
+            bad.append(("App.tsx", "Н084: внешняя оболочка снова minHeight:\"100vh\" — вернётся body-скролл и уезжающая шапка; нужно height:\"100dvh\""))
+    else:
+        bad.append(("App.tsx", "Н084: App.tsx отсутствует"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н084", "оболочка приколота к вьюпорту; body не скроллит — только <main>", check_n084),
     ("ЗКН-Н083", "закладка стиха/главы = каноническая ссылка писания", check_n083),
     ("ЗКН-Н082", "повторный тап активного таба/логотип возвращают зал на первый подтаб", check_n082),
     ("ЗКН-Н081", "навигатор: «Сегодня» вместо «Вперёд», видим вне текущего месяца", check_n081),
