@@ -465,7 +465,31 @@ def check_pl025():
     return bad
 
 
+def check_f026():
+    """ЗКН-Ф026: GET-чтения книг (/api/books/*) кэшируются на краю Cloudflare.
+
+    Прокси на api.gaurangers.com/v1 раньше ставил no-store на ВСЕ ответы — и каждый
+    заход на стих/главу делал полный хоп worker->/v1->D1: лишний сетевой хоп на каждый
+    экран И 100k запросов в D1 при масштабе. Инвариант: статичные чтения книг
+    обслуживаются из caches.default (край) и браузерного кэша, в D1 идёт лишь первый
+    заход в регионе. Кэшируется только успех (200) — динамика остаётся no-store.
+    """
+    w = read(WEB / "worker.ts")
+    bad = []
+    if w:
+        if "isBookRead" not in w or "/api/books/" not in w:
+            bad.append(("worker.ts", "Ф026: в прокси нет предиката чтения книг (isBookRead + /api/books/)"))
+        if "caches.default" not in w or "cache.match(request)" not in w:
+            bad.append(("worker.ts", "Ф026: прокси не смотрит край (caches.default / cache.match) перед хопом на /v1 — каждый заход бьёт в D1"))
+        if "ctx.waitUntil(cache.put(request, out.clone()))" not in w:
+            bad.append(("worker.ts", "Ф026: успешный ответ книги не кладётся в край (ctx.waitUntil(cache.put)) — кэш не греется"))
+        if 'out.headers.set("Cache-Control", "public, max-age=60")' not in w:
+            bad.append(("worker.ts", "Ф026: чтения книг не помечены кэшируемыми (public, max-age) — вернулся no-store на статику, каждый заход = хоп в D1"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Ф026", "чтения книг кэшируются на краю", check_f026),
     ("ЗКН-Пл025", "видео мирроринг частый + лента с зеркала без Telegram-виджета", check_pl025),
     ("ЗКН-Пл016", "источник смертен — проверять живость", check_pl015),
     ("ЗКН-Ф013", "батч D1 не превышает 100 переменных", check_f013),

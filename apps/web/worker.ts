@@ -1952,7 +1952,7 @@ export default {
       ctx.waitUntil(igIngestAll(env).then(() => undefined).catch(() => undefined));
     }
   },
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {
     const url = new URL(request.url);
 
     // ── Каноничный адрес: сайт всегда открывается как https://gaurangers.com ──
@@ -2715,6 +2715,21 @@ export default {
 
     // Same-origin proxy to the API so the browser never makes a cross-origin call.
     if (url.pathname.startsWith("/api/")) {
+      /* ЗКН-Ф026 · КОНТЕНТ КНИГ КЭШИРУЕТСЯ НА КРАЮ (масштаб + скорость).
+       * Чтения книг (/api/books/*: /toc, /verses/:ref, /chapters/:n/read) — статика:
+       * стих не меняется от захода к заходу. Раньше прокси ставил no-store, и КАЖДЫЙ
+       * заход на стих/главу делал полный хоп worker→api.gaurangers.com/v1→D1 — лишний
+       * сетевой хоп на каждый экран И нагрузка на D1 при масштабе (100k = 100k запросов
+       * в D1). Теперь GET-чтения книг кэшируются на краю Cloudflare (caches.default) и в
+       * браузере: первый заход в регионе греет кэш, дальнейшие — из края без D1/хопа.
+       * TTL 60с — правки книг в D1 доезжают за ≤1 мин (дев-цикл не ломается). Динамика
+       * (me/push/заметки/обеты/мутации) — по-прежнему из сети (no-store). */
+      const isBookRead = request.method === "GET" && /^\/api\/books\//.test(url.pathname);
+      const cache = caches.default;
+      if (isBookRead) {
+        const hit = await cache.match(request);
+        if (hit) return hit;
+      }
       const target = "https://api.gaurangers.com/v1/" + url.pathname.slice(5) + url.search;
       const upstream = await fetch(target, {
         method: request.method,
@@ -2722,7 +2737,12 @@ export default {
       });
       const out = new Response(upstream.body, upstream);
       out.headers.set("X-Robots-Tag", NOINDEX);
-      out.headers.set("Cache-Control", "no-store");
+      if (isBookRead && upstream.status === 200) {
+        out.headers.set("Cache-Control", "public, max-age=60");
+        ctx.waitUntil(cache.put(request, out.clone()));
+      } else {
+        out.headers.set("Cache-Control", "no-store");
+      }
       return out;
     }
 
