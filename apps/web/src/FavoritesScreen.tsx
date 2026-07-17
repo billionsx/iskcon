@@ -15,14 +15,12 @@
  * Только инлайн-SVG и токены приложения (без сторонних зависимостей).
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { SCRIPTURE_VOICE } from "./ui/voice";
-
-// ЗКН-Д013: у сохранённого СТИХА и КУПЛЕТА подпись — это сам текст
-// писания, а не название. Он звучит чужим голосом, а не нашим.
-const VOICE_TYPES = new Set(["verse", "bhajan", "prayer", "quote"]);
 import { useFavorites, removeFavorite, type FavItem } from "./cardActions";
 import { useNotes, requestNote, requestOpenNote, type Note } from "./notes";
 import { BOOKS, bookFullTitle, bookSlug } from "./books";
+// ЗКН-Н083: закладка стиха/главы показывает КАНОНИЧЕСКУЮ ссылку (писание · песнь/
+// лила · глава · стих), а не голое «Текст 17». Строится единым модулем bookRef.
+import { scriptureRef, type ScriptureRef } from "./bookRef";
 
 /* ── палитра (зеркало книжного эталона) ── */
 const INK = "#1f2024";
@@ -139,7 +137,20 @@ function hrefFor(it: FavItem): string | null {
   if (type.indexOf("kirtan") === 0) return id ? `/kirtans?t=${encodeURIComponent(id)}` : "/kirtans";
   return null;
 }
+
+/** ЗКН-Н083 · каноническая ссылка стиха/главы (писание · песнь/лила · глава · стих).
+ *  Иерархию берём из сохранённого slug-пути `h` (иначе достроенного hrefFor).
+ *  null — для не-писаний и неизвестных книг (тогда работает прежняя логика). */
+function srefFor(it: FavItem): ScriptureRef | null {
+  if (it.type !== "verse" && it.type !== "chapter") return null;
+  const work = it.id.split("/")[0];
+  return scriptureRef(it.type, work, it.href ?? hrefFor(it));
+}
+
 function titleFor(it: FavItem): string {
+  // ЗКН-Н083: у писания жирная строка — ИМЯ книги; локация уходит в подпись.
+  const sref = srefFor(it);
+  if (sref) return sref.scripture;
   if (it.title) return it.title;
   const { type, id } = it;
   // ЗКН-Б001: название книги — только через bookFullTitle() (иначе видна половина)
@@ -153,8 +164,16 @@ function titleFor(it: FavItem): string {
   return id || CAT_META[catOf(type)].label;
 }
 
+/** Текст для поиска по избранному: имя + полный путь ссылки (чтобы находить по
+ *  «Песнь 1», «Глава 17», «Текст 17»), иначе — сохранённый подзаголовок. */
+function searchTextFor(it: FavItem): string {
+  const sref = srefFor(it);
+  const tail = sref ? [...sref.lead, sref.anchor].join(" ") : it.subtitle ?? "";
+  return `${titleFor(it)} ${tail}`;
+}
+
 /* ── ведущая плитка строки ── */
-function Tile({ it }: { it: FavItem }) {
+function Tile({ it, sref }: { it: FavItem; sref: ScriptureRef | null }) {
   const cat = catOf(it.type);
   const accent = CAT_META[cat].accent;
   if (cat === "book") {
@@ -163,6 +182,17 @@ function Tile({ it }: { it: FavItem }) {
       <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 11, display: "grid", placeItems: "center",
         background: "linear-gradient(135deg, #fbf4d8 0%, #f1e1a4 100%)", border: `0.5px solid ${GOLD}55`, boxShadow: "inset 0 1px 2px rgba(255,255,255,.5)" }}>
         <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, color: GOLDT, lineHeight: 1, letterSpacing: "-0.02em" }}>{initial}</span>
+      </span>
+    );
+  }
+  // ЗКН-Н083: у стиха/главы писания плитка — монограмма книги (ШБ · БГ · ЧЧ) в
+  // цвете категории. Это опознаёт писание мгновенно — сильнее безликого значка.
+  // Без аббревиатуры (редкая книга) остаётся штатный значок категории.
+  if (sref && sref.abbr) {
+    return (
+      <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: 12, display: "grid", placeItems: "center", color: accent, background: `${accent}1f` }}>
+        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1,
+          fontSize: sref.abbr.length > 2 ? "var(--text-subhead)" : "var(--text-callout)", fontVariantNumeric: "tabular-nums" }}>{sref.abbr}</span>
       </span>
     );
   }
@@ -208,7 +238,7 @@ function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: bo
   const tap = () => { if (moved.current || dx !== 0) { setDx(0); return; } onTap(); };
 
   const title = titleFor(it);
-
+  const sref = srefFor(it);
 
   return (
     <div style={{ position: "relative", maxHeight: removing ? 0 : 240, opacity: removing ? 0 : 1, overflow: "hidden",
@@ -227,13 +257,23 @@ function Row({ it, first, last, onTap, reduce, notes }: { it: FavItem; first: bo
         style={{ position: "relative", display: "flex", alignItems: "center", gap: 13, padding: "11px 14px", minHeight: 46,
           background: "var(--color-bg-2)", cursor: "pointer", transform: `translateX(${dx}px)`,
           transition: drag.current ? "none" : "transform .26s cubic-bezier(.22,.61,.36,1)", touchAction: "pan-y", WebkitTapHighlightColor: "transparent" }}>
-        <Tile it={it} />
+        <Tile it={it} sref={sref} />
         <span style={{ minWidth: 0, flex: 1 }}>
           <span style={{ display: "block", fontFamily: "var(--font-display)", fontSize: "var(--text-body)", fontWeight: 600,
             letterSpacing: "-0.014em", color: INK, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
-          {it.subtitle && (
+          {sref ? (
+            // ЗКН-Н083: путь «Песнь 1 · Глава 17» приглушён, сам стих «Текст 17» —
+            // темнее и весом 600 (это и есть сохранённая закладка).
+            <span style={{ fontFamily: "var(--font-text)", display: "block", marginTop: 2, fontSize: "var(--text-footnote)", lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {sref.lead.length > 0 && <span style={{ color: INK3 }}>{sref.lead.join(" · ")}{" · "}</span>}
+              <span style={{ color: INK2, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{sref.anchor}</span>
+              {it.type === "chapter" && it.title && it.title.trim() && it.title.trim() !== sref.anchor && (
+                <span style={{ color: INK3 }}>{" · " + it.title.trim()}</span>
+              )}
+            </span>
+          ) : it.subtitle ? (
             <span style={{ fontFamily: "var(--font-text)", display: "block", marginTop: 2, fontSize: "var(--text-footnote)", color: INK3, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.subtitle}</span>
-          )}
+          ) : null}
         </span>
         <button type="button" onClick={onNote}
           aria-label={notes.length > 0 ? `Заметки (${notes.length})` : "Добавить заметку"}
@@ -313,7 +353,7 @@ export default function FavoritesScreen({ onBack, onNavigate }: { onBack: () => 
   const sorted = useMemo(() => {
     const term = q.trim().toLowerCase();
     const base = term
-      ? favs.filter((f) => `${titleFor(f)} ${f.subtitle ?? ""}`.toLowerCase().includes(term))
+      ? favs.filter((f) => searchTextFor(f).toLowerCase().includes(term))
       : favs.slice();
     base.sort((a, b) => sort === "az"
       ? titleFor(a).localeCompare(titleFor(b), "ru")

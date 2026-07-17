@@ -20,6 +20,7 @@ import { DEMO_VERSES, DEMO_REFS } from "./demo";
 import { BackIcon, HeartIcon, MoreIcon, ShareIcon, HeadphonesIcon } from "./ui/icons";
 import { BookHeroCard } from "./BookHeroCard";
 import { useFavorite } from "./cardActions";
+import { scriptureRef } from "./bookRef";
 import { recordRead } from "./account/track";
 import { getReading, noteOpen, noteProgress, notePosition, noteReadingTime, addReadingMs } from "./reading";
 import { pushUrl, replaceUrl, canGoBack } from "./nav";
@@ -2405,7 +2406,15 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
   const ccLila = work !== "bg" ? (ccDiv[1] || undefined) : undefined;
   const ccChapterNum = work !== "bg" && ccDiv[2] ? Number(ccDiv[2]) : (Number(chapterNo) || 1);
   const chapterTitle = chapters?.find((c) => c.number === chapterNo)?.title_ru;
-  const { on: fav, toggle: toggleFav } = useFavorite(`verse:${work}/${refStr}`, { t: data?.label ?? refStr, s: `${chapterTitle ? chapterTitle + " · " : ""}${bookTitle}`, h: verseUrl.replace(/^https?:\/\/[^/]+/, "") });
+  // ЗКН-Н083: снимок избранного стиха — писание (t) + канонический путь «Песнь 1 ·
+  // Глава 17 · Текст 17» (s) через единый строитель ссылки (bookRef). Голое «Текст
+  // 17» вне книги в «Избранном» не опознаётся — это и была жалоба основателя.
+  const vFavHref = verseUrl.replace(/^https?:\/\/[^/]+/, "");
+  const vSref = scriptureRef("verse", work, vFavHref);
+  const { on: fav, toggle: toggleFav } = useFavorite(`verse:${work}/${refStr}`,
+    vSref
+      ? { t: vSref.scripture, s: [...vSref.lead, vSref.anchor].join(" · "), h: vFavHref }
+      : { t: data?.label ?? refStr, s: `${chapterTitle ? chapterTitle + " · " : ""}${bookTitle}`, h: vFavHref });
   const evDeva = data?.devanagari || demo?.devanagari || null;
   const evTranslit = data?.translit || demo?.translit || null;
   const evTokens = (data?.tokens && data.tokens.length ? data.tokens : demo?.tokens) ?? [];

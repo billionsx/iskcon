@@ -1301,7 +1301,64 @@ def check_d017():
     return bad
 
 
+def check_n083():
+    """ЗКН-Н083: ЗАКЛАДКА СТИХА/ГЛАВЫ ПОКАЗЫВАЕТ КАНОНИЧЕСКУЮ ССЫЛКУ (ПИСАНИЕ · ПЕСНЬ/ЛИЛА · ГЛАВА · СТИХ), А НЕ ГОЛОЕ «ТЕКСТ 17».
+
+    Мини-карточка «Избранного» у сохранённого стиха показывала лишь «Текст 17» с
+    подписью «Шримад-Бхагаватам» — без песни и главы: по такой закладке невозможно
+    понять, ЧТО это (текст 17 есть в тысячах глав). Это была прямая жалоба основателя.
+    Инвариант: у стиха/главы писания карточка строит подпись ЕДИНЫМ модулем
+    `bookRef.scriptureRef` (писание — жирная строка; путь «Песнь 1 · Глава 17 · Текст
+    17» приглушён, сам стих подсвечен; плитка — монограмма ШБ/БГ/ЧЧ), и ТОТ ЖЕ
+    строитель питает снимок избранного в читалке — формат не может разойтись между
+    «как сохранили» и «как показали». Гейт: FavoritesScreen зовёт scriptureRef и рисует
+    путь+якорь; читалка ставит снимок стиха через scriptureRef; модуль на месте;
+    поведение проверяется живым self-тестом на ШБ/ЧЧ/БГ (без дрейфа).
+    """
+    bad = []
+    fav = read(SRC / "FavoritesScreen.tsx")
+    bdp = read(SRC / "BookDetailPage.tsx")
+    mod = read(SRC / "bookRef.ts")
+    if fav:
+        if 'from "./bookRef"' not in fav or "scriptureRef" not in fav:
+            bad.append(("FavoritesScreen.tsx", "Н083: экран не импортирует scriptureRef из ./bookRef — карточка стиха/главы покажет голое «Текст 17» без книги/песни/главы"))
+        if "srefFor" not in fav:
+            bad.append(("FavoritesScreen.tsx", "Н083: нет srefFor — стих/глава не резолвятся в каноническую ссылку"))
+        if "sref.anchor" not in fav or "sref.lead" not in fav:
+            bad.append(("FavoritesScreen.tsx", "Н083: подзаголовок не рисует путь+якорь (sref.lead/anchor) — потеряны песнь/глава/стих"))
+        if "sref.abbr" not in fav:
+            bad.append(("FavoritesScreen.tsx", "Н083: плитка не несёт монограмму писания (sref.abbr) — писание не опознать с первого взгляда"))
+    else:
+        bad.append(("FavoritesScreen.tsx", "Н083: экран избранного отсутствует"))
+    if bdp:
+        if 'scriptureRef("verse"' not in bdp:
+            bad.append(("BookDetailPage.tsx", "Н083: снимок избранного стиха в читалке обязан строиться через scriptureRef(\"verse\", …) — иначе в базе избранного сохранится голое «Текст 17»"))
+    if mod:
+        if "LILA_LABEL" not in mod or "Мадхья-лила" not in mod:
+            bad.append(("bookRef.ts", "Н083: потерян словарь лил ЧЧ (LILA_LABEL)"))
+        if "Песнь" not in mod:
+            bad.append(("bookRef.ts", "Н083: потеряна метка песни ШБ"))
+        if "Тексты" not in mod or "Текст" not in mod:
+            bad.append(("bookRef.ts", "Н083: потеряно склонение стиха (Текст/Тексты) — диапазон «13-14» звучал бы «Текст»"))
+    else:
+        bad.append(("bookRef.ts", "Н083: модуль канонической ссылки писания отсутствует"))
+    st = ROOT / "tools" / "book-ref-selftest.mjs"
+    if st.exists():
+        try:
+            r = subprocess.run(["node", str(st)], capture_output=True, text=True, timeout=120)
+            if r.returncode != 0:
+                lines = (r.stderr or r.stdout or "").strip().splitlines()
+                tail = lines[-1] if lines else "провал"
+                bad.append(("book-ref-selftest.mjs", "Н083: живой self-тест ссылки писания провален — %s" % tail))
+        except Exception as e:
+            bad.append(("book-ref-selftest.mjs", "Н083: не удалось запустить self-тест (%s)" % type(e).__name__))
+    else:
+        bad.append(("book-ref-selftest.mjs", "Н083: self-тест ссылки писания отсутствует"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н083", "закладка стиха/главы = каноническая ссылка писания", check_n083),
     ("ЗКН-Н082", "повторный тап активного таба/логотип возвращают зал на первый подтаб", check_n082),
     ("ЗКН-Н081", "навигатор: «Сегодня» вместо «Вперёд», видим вне текущего месяца", check_n081),
     ("ЗКН-Д017", "иконки календаря — тематический набор + настоящая фаза Луны", check_d017),

@@ -11,6 +11,7 @@ export interface BookData {
   slug: string;          // url slug for detail route
   titleLine1: string;    // big title, one line ("Бхагавад-гита")
   titleLine2?: string;   // smaller second line ("как она есть"), future slot for canto/song
+  abbr?: string;         // каноническая аббревиатура-монограмма для ссылок/плиток ("ШБ", "БГ", "ЧЧ")
   iast: string;          // "Bhagavad-gītā"
   tagline: string;       // short gloss after iast ("Песнь Бога")
   author: string;        // full title of the author, single line
@@ -32,6 +33,7 @@ export const BOOKS: Record<string, BookData> = {
     id: "bhagavad_gita",
     work: "bg",
     slug: "bhagavad-gita",
+    abbr: "БГ",
     titleLine1: "Бхагавад-гита",
     titleLine2: "как она есть",
     iast: "Bhagavad-gītā",
@@ -56,6 +58,7 @@ export const BOOKS: Record<string, BookData> = {
     id: "cc",
     work: "cc",
     slug: "chaitanya-charitamrita",
+    abbr: "ЧЧ",
     titleLine1: "Шри Чайтанья-",
     titleLine2: "чаритамрита",
     iast: "Śrī Caitanya-caritāmṛta",
@@ -165,6 +168,7 @@ export const BOOKS: Record<string, BookData> = {
     id: "sb",
     work: "sb",
     slug: "shrimad-bhagavatam",
+    abbr: "ШБ",
     titleLine1: "Шримад-",
     titleLine2: "Бхагаватам",
     iast: "Śrīmad-Bhāgavatam",
