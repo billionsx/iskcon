@@ -155,6 +155,16 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   // грузим только для текущего±1 слайда — иначе все 9 слайдов × все посты тянут по 1440
   // сразу на входе (была лавина /api/img: 239 запросов).
   const tiny = (u: string) => u.replace(/([?&])w=\d+/, "$1w=64");
+  // Ширина под устройство: сервер отдаёт кадр w=1440, но на телефоне ширина колонки
+  // ~390px — декодировать 1440px незачем (каждый кадр ≈11МБ в RAM → при десятке видимых
+  // кадров вкладку убивает jetsam, отсюда «A problem repeatedly occurred»). Берём 2×
+  // retina от ширины колонки (кап 640) и НЕ превышаем исходную ширину сервера.
+  const fitW = (u: string): string => {
+    if (typeof window === "undefined") return u;
+    const cw = Math.min(window.innerWidth || 390, 640);
+    const want = Math.round(cw * Math.min(2, window.devicePixelRatio || 1));
+    return u.replace(/([?&])w=(\d+)/, (_m, s, w) => s + "w=" + Math.min(Number(w), want));
+  };
   const [idx, setIdx] = useState(0);
   const [ar, setAr] = useState<number | null>(null);  // аспект кадра берём из ПЕРВОГО фото (как в Instagram)
   const scRef = useRef<HTMLDivElement | null>(null);
@@ -177,7 +187,7 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
     return (
       <div onPointerDown={onDown} onClick={(e) => tryOpen(0, e)}
         style={{ background: "var(--color-bg)", backgroundImage: preview[0] && preview[0] !== display[0] ? `url("${preview[0]}")` : undefined, backgroundSize: "cover", backgroundPosition: "center" }}>
-        <img src={display[0]} alt="" loading="lazy"
+        <img src={fitW(display[0])} alt="" loading="lazy" decoding="async"
           style={{ width: "100%", height: "auto", display: "block", cursor: "zoom-in", imageOrientation: "from-image" }} />
       </div>
     );
@@ -206,7 +216,7 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
             <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", overflow: "hidden" }}>
               {near && preview[i] && <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${tiny(preview[i])}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(30px) brightness(0.55)", transform: "scale(1.15)" }} />}
               {near && (
-                <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
+                <img src={fitW(src)} alt="" loading="lazy" decoding="async" onClick={(e) => tryOpen(i, e)}
                   onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
               )}
