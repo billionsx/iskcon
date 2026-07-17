@@ -1148,7 +1148,60 @@ def check_n079():
     return bad
 
 
+def check_n080():
+    """ЗКН-Н080: тап по событию календаря/ленты ведёт СРАЗУ к цели, без всплывающего листа.
+
+    Раньше тап по событию открывал нижний лист CalendarEventCard — лишний слой
+    (объект → лист → снова переход к тому же объекту). Настоящий инвариант: ОДНА
+    точка перехода `goEvent` в EventCard.tsx (личность → onOpenEntity/адрес,
+    экадаши → экран практики), и строка календаря, и закреплённый пост ленты ходят
+    через неё одной и той же карточкой (variant list/feed). Лист-попап события
+    запрещён к возврату: ни импорта, ни JSX, ни объявления CalendarEventCard
+    (историческое упоминание в комментарии — можно, живой компонент — нет).
+    """
+    bad = []
+    ec = read(SRC / "EventCard.tsx")
+    hc = read(SRC / "HomeCalendar.tsx")
+    pe = read(SRC / "feed" / "PinnedEvents.tsx")
+
+    # 1. Единая точка перехода определена в EventCard.tsx и зовётся обеими линзами
+    if ec:
+        if "export function goEvent(" not in ec:
+            bad.append(("EventCard.tsx", "Н080: пропала единая точка перехода goEvent — тап события обязан идти через неё"))
+        if "export function eventTarget(" not in ec:
+            bad.append(("EventCard.tsx", "Н080: пропал eventTarget — без него goEvent не различит личность/экадаши"))
+        if ec.count("goEvent(e, onOpenEntity)") < 2:
+            bad.append(("EventCard.tsx", "Н080: обе линзы карточки (list + feed) обязаны звать goEvent(e, onOpenEntity) по тапу — иначе одна линза откроет не то"))
+    else:
+        bad.append(("EventCard.tsx", "Н080: единый модуль события EventCard.tsx отсутствует"))
+
+    # 2. Календарь ходит через ./EventCard, а не через свой обработчик/лист
+    if hc:
+        if 'from "./EventCard"' not in hc or "goEvent" not in hc:
+            bad.append(("HomeCalendar.tsx", "Н080: календарь обязан брать переход из ./EventCard (goEvent/EventCard), а не вести событие своим обработчиком"))
+        if 'variant="list"' not in hc:
+            bad.append(("HomeCalendar.tsx", "Н080: строка события календаря обязана рендериться <EventCard variant=\"list\">"))
+
+    # 3. Закреплённый пост ленты — та же карточка (variant feed), не свой попап
+    if pe:
+        if 'from "../EventCard"' not in pe:
+            bad.append(("PinnedEvents.tsx", "Н080: закреплённый пост события обязан рендериться через EventCard из ../EventCard"))
+        if 'variant="feed"' not in pe:
+            bad.append(("PinnedEvents.tsx", "Н080: закреплённый пост обязан быть <EventCard variant=\"feed\"> — тап уходит в общую точку goEvent"))
+
+    # 4. Лист-попап события запрещён к возврату (импорт / объявление / JSX)
+    for name, txt in (("EventCard.tsx", ec), ("HomeCalendar.tsx", hc), ("PinnedEvents.tsx", pe)):
+        if not txt:
+            continue
+        if (re.search(r"import[^\n]*CalendarEventCard", txt)
+                or re.search(r"(function|const)\s+CalendarEventCard", txt)
+                or "<CalendarEventCard" in txt):
+            bad.append((name, "Н080: вернулся лист-попап события CalendarEventCard — тап обязан вести СРАЗУ к цели, без промежуточного листа"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н080", "тап события ведёт СРАЗУ к цели, без всплывающего листа", check_n080),
     ("ЗКН-Н079", "избранный стих открывается стихом, не главой", check_n079),
     ("ЗКН-Н076", "стих в избранном — канонический slug, не work-code", check_n076),
     ("ЗКН-Н077", "избранное киртана открывает трек, не библиотеку", check_n077),
