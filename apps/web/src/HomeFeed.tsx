@@ -513,6 +513,28 @@ function postHasKind(p: TgPost, k: FeedFilterKind): boolean {
 }
 const postAt = (p: TgPost): number => { const t = Date.parse(p.date); return Number.isFinite(t) ? t : 0; };
 
+// Окно ленты: посты далеко за вьюпортом РАЗМОНТИРУЕМ, оставляя заглушку точной высоты
+// (замеряем перед снятием — поэтому контент выше не прыгает). Бесконечная лента иначе
+// копит ВСЕ прокрученные посты с кадрами в DOM → на мобильном это OOM и краш вкладки
+// («A problem repeatedly occurred»). Теперь в памяти всегда лишь ~видимое окно постов.
+function FeedRow({ index, children }: { index: number; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [mounted, setMounted] = useState(index < 6);   // первые экраны рисуем сразу
+  const hRef = useRef<number>(560);                     // высота заглушки (оценка → замер)
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const io = new IntersectionObserver((ents) => {
+      const e = ents[0];
+      if (e.isIntersecting) setMounted(true);
+      else { const h = node.getBoundingClientRect().height; if (h > 60) hRef.current = h; setMounted(false); }
+    }, { rootMargin: "1500px 0px" });
+    io.observe(node);
+    return () => io.disconnect();
+  }, []);
+  return <div ref={ref} style={mounted ? undefined : { height: hRef.current, contain: "strict" }}>{mounted ? children : null}</div>;
+}
+
 export function HomeFeed({ onDonate, filterKind = null, extraItems, intro }: {
   onDonate?: () => void;
   filterKind?: FeedFilterKind | null;   // показывать только посты ТГ с этим типом медиа
@@ -614,7 +636,7 @@ export function HomeFeed({ onDonate, filterKind = null, extraItems, intro }: {
             {rows.map((r, i) => (
               <div key={r.key}>
                 {i > 0 && <div aria-hidden style={{ height: 0.5, background: "var(--color-hairline)", margin: "22px 0" }} />}
-                {r.el}
+                <FeedRow index={i}>{r.el}</FeedRow>
               </div>
             ))}
           </div>

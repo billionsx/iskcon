@@ -148,6 +148,22 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
  * /api-запрос — с латентностью второго бэкенда (/v1) из Server-Timing. Виден
  * ТОЛЬКО при ?debug=1 — обычных пользователей не трогает. Нужен, чтобы бить в
  * точную причину медленной загрузки, а не гадать (замер прода с телефона, без Mac). */
+// Крэш-диагностика (только ?debug): ловим последнюю JS-ошибку и считаем загрузки за
+// минуту (частые = цикл краш→автоперезагрузка Safari). Ставим РАНО, до монтирования
+// приложения, чтобы поймать причину «A problem repeatedly occurred», а не гадать.
+if (typeof window !== "undefined") {
+  try {
+    if (new URLSearchParams(location.search).has("debug")) {
+      const put = (m: string) => { try { sessionStorage.setItem("__dbg_err", m.slice(0, 170) + " @" + new Date().toLocaleTimeString()); } catch { /* ignore */ } };
+      window.addEventListener("error", (e) => put("JS: " + (e.message || (e.error && e.error.message) || "error")));
+      window.addEventListener("unhandledrejection", (e) => put("promise: " + String((e as PromiseRejectionEvent).reason).slice(0, 130)));
+      const loads = (JSON.parse(sessionStorage.getItem("__dbg_loads") || "[]") as number[]).filter((t) => Date.now() - t < 60000);
+      loads.push(Date.now());
+      sessionStorage.setItem("__dbg_loads", JSON.stringify(loads));
+    }
+  } catch { /* ignore */ }
+}
+
 function bootDiag(): void {
   try { if (!new URLSearchParams(location.search).has("debug")) return; } catch { return; }
   const box = document.createElement("div");
@@ -170,12 +186,17 @@ function bootDiag(): void {
     const nst = nav ? ((nav as unknown as { serverTiming?: { name: string; duration: number }[] }).serverTiming || []) : [];
     for (const s of nst) if (s.name === "app") app = ms(s.duration);
     const name = slow ? slow.name.replace(/^https?:\/\/[^/]+/, "").split("?")[0] : "—";
+    let loads = 0; try { loads = (JSON.parse(sessionStorage.getItem("__dbg_loads") || "[]") as number[]).filter((t) => Date.now() - t < 60000).length; } catch { /* ignore */ }
+    const nodes = document.getElementsByTagName("*").length;
+    let lastErr = ""; try { lastErr = sessionStorage.getItem("__dbg_err") || ""; } catch { /* ignore */ }
     box.textContent =
       "ДИАГНОСТИКА ЗАГРУЗКИ · тап — скрыть\n" +
       "TTFB воркера (HTML): " + ms(nav ? nav.responseStart : 0) + (app ? "  (обработка " + app + ", остальное — старт+сеть)" : "") + "\n" +
       "JS до интерактива: " + ms(nav ? nav.domInteractive : 0) + "  (сеть JS " + ms(js) + ")\n" +
       "запросов /api: " + apis.length + "\n" +
-      "самый медленный API: " + ms(slow ? slow.duration : 0) + v1 + "\n" + name;
+      "самый медленный API: " + ms(slow ? slow.duration : 0) + v1 + "\n" + name + "\n" +
+      "загрузок за 60с: " + loads + "  ·  узлов DOM: " + nodes +
+      (lastErr ? "\nОШИБКА: " + lastErr : "");
   };
   render();
   const iv = window.setInterval(render, 1500);
