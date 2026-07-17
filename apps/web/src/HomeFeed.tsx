@@ -150,6 +150,11 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
   // Поля вокруг object-fit:contain закрывает размытая подложка из того же кадра.
   const display = p.photos.length ? p.photos : (p.photosFull ?? []);
   const preview = p.photos;
+  // Крошечная (64px) версия того же кадра для мгновенной размытой подложки: CSS-фон
+  // НЕ ленив, поэтому подложку берём лёгкой (~3КБ), а не 1440px. Резкий кадр (display)
+  // грузим только для текущего±1 слайда — иначе все 9 слайдов × все посты тянут по 1440
+  // сразу на входе (была лавина /api/img: 239 запросов).
+  const tiny = (u: string) => u.replace(/([?&])w=\d+/, "$1w=64");
   const [idx, setIdx] = useState(0);
   const [ar, setAr] = useState<number | null>(null);  // аспект кадра берём из ПЕРВОГО фото (как в Instagram)
   const scRef = useRef<HTMLDivElement | null>(null);
@@ -191,14 +196,23 @@ function PostMedia({ p, onOpen }: { p: TgPost; onOpen: (i: number) => void }) {
       <div style={{ position: "relative", width: "100%", paddingBottom: (100 / frame).toFixed(3) + "%", background: "#000", overflow: "hidden" }}>
         <div ref={scRef} onScroll={onScroll} onPointerDown={onDown} className="iol-feed-carousel"
           style={{ position: "absolute", inset: 0, display: "flex", overflowX: "auto", scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch", scrollbarWidth: "none" }}>
-          {display.map((src, i) => (
+          {display.map((src, i) => {
+            // Слайд рендерим (подложка+резкое фото) только для текущего±1: дальние
+            // слайды ЗА кадром горизонтального скролла — их не видно, но их подложки
+            // и фото раньше грузились сразу (лавина запросов на LTE). Пустой дальний
+            // слайд = чёрный фон карусели; при свайпе кадр подгружается точно вовремя.
+            const near = Math.abs(i - idx) <= 1;
+            return (
             <div key={i} style={{ flex: "0 0 100%", scrollSnapAlign: "center", scrollSnapStop: "always", position: "relative", height: "100%", overflow: "hidden" }}>
-              {preview[i] && <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${preview[i]}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(30px) brightness(0.55)", transform: "scale(1.15)" }} />}
-              <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
-                onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
+              {near && preview[i] && <div aria-hidden style={{ position: "absolute", inset: 0, backgroundImage: `url("${tiny(preview[i])}")`, backgroundSize: "cover", backgroundPosition: "center", filter: "blur(30px) brightness(0.55)", transform: "scale(1.15)" }} />}
+              {near && (
+                <img src={src} alt="" loading="lazy" onClick={(e) => tryOpen(i, e)}
+                  onLoad={i === 0 ? (e) => { const n = e.currentTarget; if (n.naturalWidth && n.naturalHeight) setAr(n.naturalWidth / n.naturalHeight); } : undefined}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", cursor: "zoom-in", imageOrientation: "from-image" }} />
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
         <span style={{ position: "absolute", top: 16, left: 16, padding: "3px 9px", borderRadius: 999, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", color: "#fff", fontSize: "var(--text-caption)", fontWeight: 700, fontFamily: "var(--font-text)", letterSpacing: "0.2px", zIndex: 3 }}>{idx + 1}/{display.length}</span>
         <div aria-hidden style={{ position: "absolute", left: 0, right: 0, bottom: 14, display: "flex", justifyContent: "center", gap: 5, pointerEvents: "none", zIndex: 3 }}>
