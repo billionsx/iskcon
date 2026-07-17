@@ -1408,7 +1408,49 @@ def check_n084():
     return bad
 
 
+def check_n085():
+    """ЗКН-Н085: СПРОЕКТИРОВАННЫЙ ЛАНДШАФТ ТЕЛЕФОНА — ОБОЛОЧКА НЕ ЛОМАЕТСЯ, ЛИСТ ЦЕНТРИРОВАН НА ПОЛЕ.
+
+    Портретная оболочка (лист до 480) на широком-низком ландшафтном вьюпорте раньше
+    ломалась: нижнее меню всплывало в середину, контент резался. Инвариант: (1) вёрстка
+    оболочки вынесена в CSS-классы `.app-viewport`/`.app-shell` (иначе поворотом не
+    порулить — inline-стили не переопределить медиазапросом), обе прибиты к 100dvh;
+    (2) App рисует именно эти классы; (3) есть правило `@media (orientation: landscape)`
+    (телефон: max-height ~600), которое предъявляет `.app-shell` спроектированным
+    центрированным листом (кромки/тень/поле), а не тянет вёрстку на всю ширину.
+    """
+    bad = []
+    css_raw = read(SRC / "ui" / "globals.css")
+    app_raw = read(SRC / "App.tsx")
+    css = re.sub(r"/\*.*?\*/", "", css_raw, flags=re.S) if css_raw else ""
+    app = re.sub(r"/\*.*?\*/", "", app_raw, flags=re.S) if app_raw else ""
+    if not css:
+        return [("globals.css", "Н085: globals.css отсутствует")]
+    for cls in (".app-viewport", ".app-shell"):
+        m = re.search(r"(?ms)^\s*" + re.escape(cls) + r"\s*\{(.*?)\}", css)
+        if not m:
+            bad.append(("globals.css", "Н085: нет класса " + cls + " — оболочка не управляется CSS, поворот не спроектировать"))
+        elif "100dvh" not in m.group(1):
+            bad.append(("globals.css", "Н085: " + cls + " не прибит к 100dvh"))
+    if app:
+        if "app-viewport" not in app or "app-shell" not in app:
+            bad.append(("App.tsx", "Н085: оболочка App не на классах app-viewport/app-shell — inline-стили не переопределить в ландшафте"))
+    else:
+        bad.append(("App.tsx", "Н085: App.tsx отсутствует"))
+    if "orientation: landscape" not in css and "orientation:landscape" not in css:
+        bad.append(("globals.css", "Н085: нет правила @media (orientation: landscape) — ландшафт не спроектирован, вёрстка сломается при повороте"))
+    else:
+        idx = css.find("orientation: landscape")
+        if idx < 0:
+            idx = css.find("orientation:landscape")
+        tail = css[idx:idx + 900]
+        if ".app-shell" not in tail:
+            bad.append(("globals.css", "Н085: ландшафтный @media не оформляет .app-shell (центрированный лист) — поворот не доведён до намеренного вида"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н085", "спроектированный ландшафт: оболочка не ломается, лист центрирован на поле", check_n085),
     ("ЗКН-Н084", "оболочка приколота к вьюпорту; body не скроллит — только <main>", check_n084),
     ("ЗКН-Н083", "закладка стиха/главы = каноническая ссылка писания", check_n083),
     ("ЗКН-Н082", "повторный тап активного таба/логотип возвращают зал на первый подтаб", check_n082),

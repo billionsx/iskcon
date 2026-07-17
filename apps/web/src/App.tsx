@@ -1858,10 +1858,11 @@ const RESERVED: readonly string[] = [
   return (
     <AuthProvider>
     <PlayerProvider>
-    {/* ЗКН-Н084 — оболочка ровно во весь динамический вьюпорт (100dvh), не 100vh:
-        body/#root не скроллят, шапка и нижнее меню приколоты, скроллит только <main>. */}
-    <div style={{ display: "flex", justifyContent: "center", height: "100dvh", width: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <div className={overlayTabBar ? "has-overlay-tabbar" : undefined} style={{ position: "relative", display: "flex", flexDirection: "column", width: "100%", maxWidth: 480, height: "100dvh", background: "var(--color-bg)" }}>
+    {/* ЗКН-Н084 — оболочка приколота к динамическому вьюпорту (100dvh), body/#root не скроллят.
+        ЗКН-Н085 — в ландшафте телефона приложение предъявляется спроектированным центрированным
+        «листом», а не ломается. Вся вёрстка оболочки — в globals.css (.app-viewport / .app-shell). */}
+    <div className="app-viewport">
+      <div className={"app-shell" + (overlayTabBar ? " has-overlay-tabbar" : "")}>
         <CardActionsProvider onDonate={openDonate}>
         <Suspense fallback={<ScreenFallback />}>
         {openStoriesTool ? (
