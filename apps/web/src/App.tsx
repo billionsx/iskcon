@@ -856,6 +856,12 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
   const [sub, setSub] = useState(() =>
     typeof window === "undefined" ? BOG_SUBS[0] : bogSubFromPath(window.location.pathname));
   useEffect(() => subscribeNav(() => setSub(bogSubFromPath(window.location.pathname))), []);
+  // ЗКН-Н082: повторный тап активного таба «Богатства» возвращает зал на первую витрину.
+  useEffect(() => {
+    const h = (e: Event) => { if ((e as CustomEvent).detail === "bogatstva") pushUrl(BOG_PATH[BOG_SUBS[0]]); };
+    window.addEventListener("tab-reset", h);
+    return () => window.removeEventListener("tab-reset", h);
+  }, []);
 
   /* Раздел Прасада — ИЗ АДРЕСА: /prasad → книга, /prasad/recipes → рецепты и т.д. */
   const prasadFromPath = () => {
@@ -964,6 +970,17 @@ function SadhanaHall({ onOpenPath, onOpenEntity, onDonate, flash }: {
    * Зал Садханы НЕ был подписан на адрес вовсе: «назад» из Практики в Ленту
    * менял адрес, а зал продолжал рисовать Практику. Богатства подписаны — Садхана нет. */
   useEffect(() => subscribeNav(() => setSub(sadSubFromPath(window.location.pathname))), []);
+  /* ЗКН-Н082 — ПОВТОРНЫЙ ТАП АКТИВНОГО TIER-1 ТАБА И ЛОГОТИП ВОЗВРАЩАЮТ ЗАЛ НА ПЕРВЫЙ
+   * ПОДТАБ. Стоя на Календаре (подтаб Садханы), тап по нижнему «Даршан» или по логотипу
+   * (он ведёт на HOME_TAB=sadhana) раньше НИЧЕГО не делал: setTab к той же вкладке —
+   * пустышка, а событие «tab-reset» слушал только зал ИСККОН. Теперь зал Садханы слушает
+   * своё событие и уходит на домашний адрес (лента Даршана) — адрес меняется, подтаб
+   * пересчитывается из него (ЗКН-Н031). Кросс-таб случай отрабатывает монтированием. */
+  useEffect(() => {
+    const h = (e: Event) => { if ((e as CustomEvent).detail === "sadhana") pushUrl(SAD_PATH[SAD_SUBS[0]]); };
+    window.addEventListener("tab-reset", h);
+    return () => window.removeEventListener("tab-reset", h);
+  }, []);
   // ЗКН-Н005: переключение раздела меняет адресную строку (через nav.ts — ЗКН-Н001)
   const pickSub = (v: string) => { setSub(v); pushUrl(SAD_PATH[v] || "/"); };
   return (

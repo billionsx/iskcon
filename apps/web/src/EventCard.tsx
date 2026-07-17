@@ -175,6 +175,12 @@ function EventRow({ e, brief, parana, first, today, picked, onOpenEntity, innerR
   const accent = today || picked;
   const f = fmtDay(e.date);
   const tap = () => goEvent(e, onOpenEntity);
+  // Формат строки (правка основателя): в ИМЕНИ нет «Уход/Явление» — оно строкой ниже.
+  // Явление/Уход → имя личности, а под ним «{Тип} › {Лила}»; праздник/экадаши/событие → сам тип.
+  const isBirth = e.type === "appearance" || e.type === "disappearance";
+  const lilaLabel = brief?.lila ? LILA_L[brief.lila] : null;
+  const rowTitle = isBirth ? (brief?.name || e.title.replace(/^(Уход|Явление)\s+/u, "")) : e.title;
+  const rowSub = isBirth && lilaLabel ? `${TYPE_LABEL[e.type]} \u203A ${lilaLabel}` : TYPE_LABEL[e.type];
   const rowStyle: React.CSSProperties = {
     position: "relative",
     display: "flex", alignItems: "center", gap: 12, padding: "13px 15px",
@@ -189,9 +195,9 @@ function EventRow({ e, brief, parana, first, today, picked, onOpenEntity, innerR
       </div>
       <TypeIcon type={e.type} date={e.date} title={e.title} today={accent} />
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.3, color: "var(--color-label)" }}>{e.title}</div>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.3, color: "var(--color-label)" }}>{rowTitle}</div>
         <div style={{ marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, letterSpacing: "0.01em", color: "var(--color-label-2)" }}>
-          {today && <span style={{ color: GOLD }}>Сегодня · </span>}{TYPE_LABEL[e.type]}{linked ? " · Личность" : ""}
+          {today && <span style={{ color: GOLD }}>Сегодня · </span>}{rowSub}
         </div>
         {e.type === "ekadasi" && parana && (
           <div style={{ marginTop: 6, display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", fontWeight: 600, color: "var(--color-label-2)" }}>

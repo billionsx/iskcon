@@ -611,6 +611,13 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
       {!route.ym && heroEvents.length > 0 && (() => {
         const single = heroEvents.length === 1;
         const par = paranaFor(heroEvents.find((e) => e.type === "ekadasi") || null);
+        // Имя без «Уход/Явление» (тип — на строке ниже, ЗКН-формат карточек события).
+        const heroTitle = (ev: (typeof heroEvents)[number]) => {
+          const b = ev.entityId && briefMap ? briefMap.get(ev.entityId) : null;
+          return (ev.type === "appearance" || ev.type === "disappearance")
+            ? (b?.name || ev.title.replace(/^(Уход|Явление)\s+/u, ""))
+            : ev.title.replace(" — пост", "");
+        };
         return (
           <div style={{ marginTop: 16, padding: 20, borderRadius: 24, background: "var(--color-bg-2)", border: `1px solid color-mix(in srgb, ${GOLD} 30%, transparent)`, boxShadow: "0 1px 2px rgba(0,0,0,0.05), 0 5px 14px rgba(0,0,0,0.05)" }}>
             <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: GOLD }}>
@@ -620,7 +627,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
               <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 14 }}>
                 <TypeIcon type={heroEvents[0].type} date={heroEvents[0].date} title={heroEvents[0].title} size={48} today />
                 <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "var(--color-label)" }}>{heroEvents[0].title.replace(" — пост", "")}</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.15, color: "var(--color-label)" }}>{heroTitle(heroEvents[0])}</div>
                   <div style={{ marginTop: 4, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 500, color: "var(--color-label-2)" }}>
                     {(() => { const f = fmtDay(heroEvents[0].date); return `${f.wd}, ${f.d} ${f.m} ${f.y}`; })()} · {TYPE_WORD[heroEvents[0].type]}
                   </div>
@@ -634,7 +641,7 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
                   const rowInner = (
                     <>
                       <TypeIcon type={e.type} date={e.date} title={e.title} size={34} today />
-                      <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{e.title.replace(" — пост", "")}</span>
+                      <span style={{ minWidth: 0, flex: 1, fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.015em", lineHeight: 1.25, color: "var(--color-label)" }}>{heroTitle(e)}</span>
                       <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: 600, color: "var(--color-label-2)" }}>{TYPE_WORD[e.type]}</span>
                       {canTap && (
                         <span aria-hidden style={{ flexShrink: 0, color: "var(--color-label-4)" }}>

@@ -811,9 +811,10 @@ export default function HomeScreen(props: {
   const [homeTab, setHomeTab] = useState<HomeTabId>(() => tabFromPath());
   useEffect(() => subscribeNav(() => setHomeTab(tabFromPath())), []);
   useEffect(() => { try { sessionStorage.setItem("home-tab", homeTab); } catch { /* noop */ } }, [homeTab]);
-  // Нижняя «Главная» (повторный тап) и логотип ISKCON ONE LOVE возвращают в корень главной.
+  // ЗКН-Н082: повторный тап нижнего «ИСККОН» возвращает зал на корень (событие несёт id
+  // таба «iskcon», а не «home»); уходим на домашний адрес — подтаб пересчитается из него.
   useEffect(() => {
-    const h = (e: Event) => { if ((e as CustomEvent).detail === "home") setHomeTab("iskcon"); };
+    const h = (e: Event) => { if ((e as CustomEvent).detail === "iskcon") pushUrl("/iskcon"); };
     window.addEventListener("tab-reset", h);
     return () => window.removeEventListener("tab-reset", h);
   }, []);

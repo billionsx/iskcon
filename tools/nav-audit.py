@@ -1200,6 +1200,36 @@ def check_n080():
     return bad
 
 
+def check_n082():
+    """ЗКН-Н082: повторный тап активного Tier-1 таба и логотип возвращают зал на первый подтаб.
+
+    Стоя на подтабе (напр. Календарь под залом Садханы), тап по нижнему табу того же
+    Tier-1 или по логотипу (он ведёт на HOME_TAB=sadhana) звал onChange=setTab к той же
+    вкладке — пустышка, а событие tab-reset слушал только зал ИСККОН (да и тот сверял
+    мёртвое detail === "home"). Инвариант: каждый Hall с подтабами слушает tab-reset по
+    СВОЕМУ id и уходит на домашний адрес таба (SAD_PATH[SAD_SUBS[0]] / BOG_PATH[BOG_SUBS[0]]
+    / /iskcon) — адрес меняется, подтаб пересчитывается из него. Событие несёт id таба.
+    """
+    bad = []
+    app = read(SRC / "App.tsx")
+    hs = read(SRC / "HomeScreen.tsx")
+    if app:
+        if 'detail === "sadhana"' not in app or "pushUrl(SAD_PATH[SAD_SUBS[0]])" not in app:
+            bad.append(("App.tsx", "Н082: зал Садханы обязан слушать tab-reset('sadhana') и уходить на SAD_PATH[SAD_SUBS[0]] — иначе повторный тап «Даршан»/логотип не вернут на ленту"))
+        if 'detail === "bogatstva"' not in app or "pushUrl(BOG_PATH[BOG_SUBS[0]])" not in app:
+            bad.append(("App.tsx", "Н082: зал Богатств обязан слушать tab-reset('bogatstva') и уходить на BOG_PATH[BOG_SUBS[0]]"))
+    else:
+        bad.append(("App.tsx", "Н082: App.tsx отсутствует"))
+    if hs:
+        if 'detail === "iskcon"' not in hs:
+            bad.append(("HomeScreen.tsx", "Н082: зал ИСККОН обязан слушать tab-reset('iskcon') — диспетчер шлёт id таба, не 'home'"))
+        if 'detail === "home"' in hs:
+            bad.append(("HomeScreen.tsx", "Н082: вернулась мёртвая сверка detail === 'home' — событие несёт id таба ('iskcon'), не 'home'"))
+    else:
+        bad.append(("HomeScreen.tsx", "Н082: HomeScreen.tsx отсутствует"))
+    return bad
+
+
 def check_n081():
     """ЗКН-Н081: в навигаторе календаря нет кнопки-двусмысленности «Вперёд».
 
@@ -1272,6 +1302,7 @@ def check_d017():
 
 
 CHECKS = [
+    ("ЗКН-Н082", "повторный тап активного таба/логотип возвращают зал на первый подтаб", check_n082),
     ("ЗКН-Н081", "навигатор: «Сегодня» вместо «Вперёд», видим вне текущего месяца", check_n081),
     ("ЗКН-Д017", "иконки календаря — тематический набор + настоящая фаза Луны", check_d017),
     ("ЗКН-Н080", "тап события ведёт СРАЗУ к цели, без всплывающего листа", check_n080),
