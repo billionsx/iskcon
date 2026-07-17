@@ -165,10 +165,13 @@ function bootDiag(): void {
     let v1 = "";
     const st = slow ? ((slow as unknown as { serverTiming?: { name: string; duration: number }[] }).serverTiming || []) : [];
     for (const s of st) if (s.name === "v1") v1 = "  /v1=" + ms(s.duration);
+    let app = "";
+    const nst = nav ? ((nav as unknown as { serverTiming?: { name: string; duration: number }[] }).serverTiming || []) : [];
+    for (const s of nst) if (s.name === "app") app = ms(s.duration);
     const name = slow ? slow.name.replace(/^https?:\/\/[^/]+/, "").split("?")[0] : "—";
     box.textContent =
       "ДИАГНОСТИКА ЗАГРУЗКИ · тап — скрыть\n" +
-      "TTFB воркера (HTML): " + ms(nav ? nav.responseStart : 0) + "\n" +
+      "TTFB воркера (HTML): " + ms(nav ? nav.responseStart : 0) + (app ? "  (обработка " + app + ", остальное — старт+сеть)" : "") + "\n" +
       "JS до интерактива: " + ms(nav ? nav.domInteractive : 0) + "  (сеть JS " + ms(js) + ")\n" +
       "запросов /api: " + apis.length + "\n" +
       "самый медленный API: " + ms(slow ? slow.duration : 0) + v1 + "\n" + name;

@@ -20,7 +20,15 @@ import { albumById as kirtanAlbumById, artistBySlug as kirtanArtistBySlug } from
 import { coverHtml } from "./src/pdfCover";
 import { PDF_CACHE_REV } from "./src/pdfRev";
 import puppeteer from "@cloudflare/puppeteer";
-import { PDFDocument } from "pdf-lib";
+// pdf-lib грузим ЛЕНИВО. Он большой (~0.5-0.8МБ бандла воркера) и нужен ТОЛЬКО
+// для склейки PDF (обложка+тело). Статический импорт тянул его в КАЖДЫЙ холодный
+// старт воркера — а холодный старт и есть TTFB отдачи HTML (первый запрос ~5.8с на
+// мобильном). Теперь pdf-lib загружается лишь при реальной генерации PDF.
+type PdfLibNS = typeof import("pdf-lib");
+let _pdfLib: PdfLibNS | null = null;
+async function pdfDoc(): Promise<PdfLibNS["PDFDocument"]> {
+  return (_pdfLib ??= await import("pdf-lib")).PDFDocument;
+}
 import { EmailMessage } from "cloudflare:email";
 import { createMimeMessage } from "mimetext/browser";
 
@@ -388,6 +396,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
       const headerT = `<div style="width:100%;padding:0 16mm;text-align:center;-webkit-print-color-adjust:exact;print-color-adjust:exact;"><div style="font-family:Georgia,'Times New Roman',serif;font-size:8px;letter-spacing:1.5px;line-height:1.3;text-transform:uppercase;color:#9a9a9e;">${escH(headerText)}</div></div>`;
       const footerT = `<div style="width:100%;padding:0 18mm;font-family:Georgia,'Times New Roman',serif;text-align:center;line-height:1.45;color:#8a8a8e;-webkit-print-color-adjust:exact;print-color-adjust:exact;"><div style="font-size:8.5px;letter-spacing:2px;">ISKCON ONE LOVE</div><div style="font-size:8px;letter-spacing:1px;color:#a7a8b0;">iskcone.com</div></div>`;
       await page.setViewport({ width: 820, height: 1160, deviceScaleFactor: 1 });
+      const PDFDocument = await pdfDoc();
       const merged = await PDFDocument.create();
       if (coverBytes) {
         try { const c = await PDFDocument.load(coverBytes); for (const p of await merged.copyPages(c, c.getPageIndices())) merged.addPage(p); }
@@ -450,6 +459,7 @@ async function handlePdf(env: Env, url: URL): Promise<Response> {
     let out: Uint8Array = bodyPdf as unknown as Uint8Array;
     if (coverBytes) {
       try {
+        const PDFDocument = await pdfDoc();
         const merged = await PDFDocument.create();
         const cover = await PDFDocument.load(coverBytes);
         const body = await PDFDocument.load(bodyPdf as unknown as Uint8Array);
@@ -1953,6 +1963,7 @@ export default {
     }
   },
   async fetch(request: Request, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {
+    const reqStart = Date.now();   // замер обработки воркера (Server-Timing app) — диагностика TTFB
     const url = new URL(request.url);
 
     // ── Каноничный адрес: сайт всегда открывается как https://gaurangers.com ──
@@ -2818,6 +2829,8 @@ export default {
         .transform(res);
       const out = new Response(transformed.body, transformed);
       out.headers.set("X-Robots-Tag", NOINDEX);
+      out.headers.set("Server-Timing", `app;dur=${Date.now() - reqStart}`);
+      out.headers.set("Timing-Allow-Origin", "*");
       // index.html НИКОГДА не должен кэшироваться, иначе новые хэши ассетов после
       // деплоя не подхватываются (старый JS/CSS грузится из кэша). CDN-Cache-Control
       // и Cloudflare-CDN-Cache-Control явно запрещают кэш на «крае» Cloudflare и
