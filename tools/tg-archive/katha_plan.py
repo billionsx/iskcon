@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent
-PROBE = HERE.parent.parent / "docs" / "diagnostics" / "katha-probe.json"
+PROBE = HERE.parent.parent / "docs" / "diagnostics" / "katha-probe-radhagovindasw.json"
 OUT = HERE / "katha_plan.json"
 
 SPEAKER = "radha-govinda-goswami"

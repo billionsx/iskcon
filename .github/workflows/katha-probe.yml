@@ -17,6 +17,9 @@ on:
       limit:
         description: "Лимит сообщений (пусто = весь канал)"
         default: ""
+      slug:
+        description: "Имя файла разведки (docs/diagnostics/katha-probe-<slug>.json)"
+        default: "radhagovindasw"
 
 permissions:
   contents: write
@@ -41,7 +44,7 @@ jobs:
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
           TG_CHANNELS: ${{ inputs.channel || '@radhagovindasw' }}
           TG_LIMIT: ${{ inputs.limit }}
-          PROBE_OUT: "../../docs/diagnostics/katha-probe.json"
+          PROBE_OUT: "../../docs/diagnostics/katha-probe-${{ inputs.slug || 'radhagovindasw' }}.json"
         run: |
           set +e
           python katha_probe.py 2>&1 | tee /tmp/probe.log
@@ -53,7 +56,7 @@ jobs:
         run: |
           git config user.name "Billions X"
           git config user.email "ceo@billionsx.com"
-          git add docs/diagnostics/katha-probe.json
+          git add docs/diagnostics/katha-probe-*.json
           git diff --cached --quiet && { echo "нечего коммитить"; exit 0; }
           git commit -m "Катха: инвентарь канала [skip ci]"
           for i in 1 2 3 4 5 6; do
@@ -64,5 +67,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: katha-probe
-          path: docs/diagnostics/katha-probe.json
+          path: docs/diagnostics/katha-probe-*.json
           retention-days: 7
