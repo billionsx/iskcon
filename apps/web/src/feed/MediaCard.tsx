@@ -43,7 +43,7 @@ export function MediaCard({ m, flash }: { m: MediaItem; flash: (m: string) => vo
   // ЗКН-Д015: звук рисует ОДИН компонент — ВКЗ (AudioShowcaseCard), а не свой плеер.
   if (isAudio) {
     return (
-      <article style={{ overflow: "hidden", background: "var(--color-bg)", borderRadius: 20 }}>
+      <article style={{ overflow: "hidden", background: "var(--color-bg-2)", borderRadius: 20 }}>
         <AudioShowcaseCard src={m.streamUrl} title={m.title}
           presenter={m.author || m.sourceLabel} kindLabel={m.sourceLabel}
           cover={m.thumb || undefined} durationHint={m.duration || undefined}
@@ -57,7 +57,7 @@ export function MediaCard({ m, flash }: { m: MediaItem; flash: (m: string) => vo
   }
 
   return (
-    <article style={{ overflow: "hidden", background: "var(--color-bg)", borderRadius: 20 }}>
+    <article style={{ overflow: "hidden", background: "var(--color-bg-2)", borderRadius: 20 }}>
       <div style={{ position: "relative" }}>
         {playing && m.streamUrl ? (
           <video src={m.streamUrl} poster={m.thumb || undefined} controls autoPlay playsInline preload="metadata"

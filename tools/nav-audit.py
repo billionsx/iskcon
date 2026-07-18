@@ -190,16 +190,37 @@ def check_n074():
 
 
 def check_n011():
-    """Навигация — стекло ЦВЕТА СТРАНИЦЫ. Серая плашка поверх белого = нарушение."""
+    """Навигация — стекло ЦВЕТА СТРАНИЦЫ. Плашка поверх страницы = нарушение.
+
+    ГЕЙТ СВЕРЯЛ С КОНСТАНТОЙ, а закон — про СООТВЕТСТВИЕ. Пока страница была
+    белой, «белый или чёрный» и «цвет страницы» совпадали, и подмена не мешала.
+    Стоило странице стать холстом App Store (242,242,246) — и константа стала
+    требовать БЕЛЫЙ БАР ПОВЕРХ СЕРОГО: ту же болезнь наизнанку, только теперь
+    руками гейта. Теперь сверяем с фактическим `--color-bg` темы.
+    """
     t = read(GLOBALS)
-    m = re.search(r"--color-glass-nav:\s*rgba\((\d+),\s*(\d+),\s*(\d+)", t)
-    if not m:
-        return []
-    r, g, b = int(m.group(1)), int(m.group(2)), int(m.group(3))
-    # светлая тема: должен быть белый (255,255,255), не серый (250,250,252)
-    if (r, g, b) not in ((255, 255, 255), (0, 0, 0)):
-        return [("globals.css", "glass-nav = rgb(%d,%d,%d) — серая плашка, нужен цвет страницы (ЗКН-Н011)" % (r, g, b))]
-    return []
+    bad = []
+    for theme, block in (("светлая", r":root\[data-theme='light'\]"), ("тёмная", r"^:root\s*\{")):
+        m = re.search(block + r"[\s\S]*?\n\}", t, re.M)
+        if not m:
+            continue
+        blk = m.group(0)
+        bgm = re.search(r"--color-bg:\s*(#[0-9a-fA-F]{6}|rgba?\([^)]+\))", blk)
+        navm = re.search(r"--color-glass-nav:\s*rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)", blk)
+        if not bgm or not navm:
+            continue
+        bg = bgm.group(1)
+        if bg.startswith("#"):
+            page = tuple(int(bg[i:i + 2], 16) for i in (1, 3, 5))
+        else:
+            page = tuple(int(x) for x in re.findall(r"\d+", bg)[:3])
+        nav = tuple(int(navm.group(i)) for i in (1, 2, 3))
+        # Допуск 4/255: стекло может быть на волос светлее холста, но не «баром».
+        if max(abs(a - b) for a, b in zip(page, nav)) > 4:
+            bad.append(("globals.css",
+                        "%s тема: glass-nav rgb%s ≠ цвет страницы rgb%s — это плашка "
+                        "поверх холста (ЗКН-Н011)" % (theme, nav, page)))
+    return bad
 
 
 def check_n012():

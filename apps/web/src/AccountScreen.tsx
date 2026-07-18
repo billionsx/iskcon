@@ -29,7 +29,6 @@ import { replaceUrl } from "./nav";
 import { ROUTES, SITE_HOST } from "./routes";
 import { accountClient, ApiError, type DevoteeLevel, type Initiation, type IdentityItem } from "./account/api";
 import { ProviderButtons, PROVIDER_META, PROVIDER_NAME, providerGlyph, oauthStartUrl, useAuthProviders, type ProviderId } from "./account/providers";
-import { useNotes } from "./notes";
 import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, updateCats, loadCats, type PushCats } from "./push";
 import { levelLabel, atLeastLevel, LEVEL_META } from "./devotee";
 import { BUILD_SHA } from "./buildStamp";
@@ -762,7 +761,6 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
   onOpenPath: (p: string) => void; onDonate: () => void; flash: (m: string) => void;
 }) {
   const { user, logout } = useAuth();
-  const notes = useNotes();
   const [sheet, setSheet] = useState<"" | "profile" | "level" | "push" | "security" | "about">("");
   const [pushOn, setPushOn] = useState<boolean | null>(null);
 
@@ -802,14 +800,9 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
           <Row title="Ступень практики" value={level ?? "Не выбрана"} last onClick={() => setSheet("level")} />
         </Group>
 
-        {/* МОЁ — то, что человек сам отложил. Не достижения и не практика:
-            просто его вещи, которые он хочет найти снова. */}
-        <Group header="Моё">
-          <Row title="Избранное" onClick={() => onOpenPath("/favorites")} />
-          <Row title="Заметки" value={notes.length ? String(notes.length) : undefined} onClick={() => onOpenPath("/notes")} />
-          <Row title="Загруженное" subtitle="Чтение и слушание без сети" last onClick={() => onOpenPath("/downloader")} />
-        </Group>
-
+        {/* «МОЁ» ЗДЕСЬ НЕ ЖИВЁТ (ЗКН-Н088). Избранное открывается сердцем в шапке
+            с ЛЮБОГО экрана, заметки и прочитанное — в Практике. Дублировать вход
+            в кабинете значит снова превращать его в свалку ссылок. */}
         <Group header="Аккаунт">
           <Row title="Вход и безопасность" onClick={() => setSheet("security")} />
           <Row title="Уведомления" value={pushOn == null ? undefined : pushOn ? "Включены" : "Выключены"} last onClick={() => setSheet("push")} />

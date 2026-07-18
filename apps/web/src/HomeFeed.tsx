@@ -28,7 +28,7 @@ import { exportToPdf, downloadServerPdf } from "./pdf";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 
 const GOLD = "var(--color-gold)";
-const fill: React.CSSProperties = { background: "var(--color-bg)", borderRadius: 20 };
+const fill: React.CSSProperties = { background: "var(--color-bg-2)", borderRadius: 20 };
 
 interface TgSeg { t: "t" | "a"; v: string; href?: string }
 interface TgVideo { thumb: string; src: string | null; duration: string; round: boolean }

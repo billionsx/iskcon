@@ -97,7 +97,7 @@ function Carousel({ items, ratio = "4 / 3" }: { items: string[]; ratio?: string 
 /* ───────── галерея №2: квадратная сетка 3×n (Instagram) ───────── */
 function SquareGrid({ items }: { items: string[] }) {
   return (
-    <div style={{ marginTop: 16, borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 3, background: "var(--color-bg)", transform: "translateZ(0)" }}>
+    <div style={{ marginTop: 16, borderRadius: 20, overflow: "hidden", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 3, background: "var(--color-bg-2)", transform: "translateZ(0)" }}>
       {items.map((src, i) => (
         <div key={i} style={{ background: IMG_BG }}>
           <img src={src} alt="" loading="lazy" style={{ width: "100%", display: "block", aspectRatio: "1 / 1", objectFit: "cover" }} />
