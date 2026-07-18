@@ -4,18 +4,18 @@
 
 | Песнь | Дорожек | Стихов | Введений | Глав озвучено | Глав в книге | Немых стихов | Живой плейлист |
 |---|---|---|---|---|---|---|---|
-| 1 | 784 | 779 | 1 | 19 | 19 | 0 | 784 |
-| 2 | 371 | 370 | 1 | 10 | 10 | 0 | 371 |
-| 3 | 1388 | 1388 | 0 | 33 | 33 | 0 | 1388 |
-| 4 | 1390 | 1387 | 0 | 31 | 31 | 0 | 1390 |
-| 5 | 677 | 650 | 26 | 26 | 26 | 0 | 677 |
-| 6 | 778 | 759 | 19 | 19 | 19 | 0 | 778 |
-| 7 | 691 | 676 | 15 | 15 | 15 | 0 | 691 |
-| 8 | 872 | 848 | 24 | 24 | 24 | 0 | 872 |
-| 9 | 869 | 845 | 24 | 24 | 24 | 1 | 869 |
-| 10 | 3662 | 3569 | 90 | 90 | 90 | 3 | 3662 |
-| 11 | 1278 | 1244 | 31 | 31 | 31 | 0 | 1278 |
-| 12 | 493 | 480 | 13 | 13 | 13 | 0 | 493 |
+| 1 | 784 | 779 | 1 | 19 | 19 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 2 | 371 | 370 | 1 | 10 | 10 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 3 | 1388 | 1388 | 0 | 33 | 33 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 4 | 1390 | 1387 | 0 | 31 | 31 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 5 | 677 | 650 | 26 | 26 | 26 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 6 | 778 | 759 | 19 | 19 | 19 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 7 | 691 | 676 | 15 | 15 | 15 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 8 | 872 | 848 | 24 | 24 | 24 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 9 | 869 | 845 | 24 | 24 | 24 | 1 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 10 | 3662 | 3569 | 90 | 90 | 90 | 3 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 11 | 1278 | 1244 | 31 | 31 | 31 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
+| 12 | 493 | 480 | 13 | 13 | 13 | 0 | ошибка: <urlopen error [Errno -5] No address associated with hostname> |
 
 **Сирот-ref (стих есть в аудио, но НЕ в книге): 0**
 
