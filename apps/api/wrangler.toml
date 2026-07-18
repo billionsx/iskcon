@@ -35,9 +35,13 @@ preview_id = "cc34a9282bf14f5fb99f899cf3823d8d"
 [observability]
 enabled = true
 
-# Custom domain — API на gaurangers.com (зона активна в Cloudflare)
+# Custom domain — api-поддомен КАНОНИЧЕСКОГО хоста из apps/web/src/routes.ts
+# (ЗКН-Н087·Г: pattern обязан равняться API_HOST реестра; зона brajs.com активна
+# в Cloudflare — на ней уже живёт custom_domain воркера iskcon-web).
+# 18.07.2026: gaurangers.com снят с проекта — прежний pattern умер вместе с зоной,
+# и /api-прокси сайта остался без апстрима (все витрины опустели).
 [[routes]]
-pattern = "api.gaurangers.com"
+pattern = "api.brajs.com"
 custom_domain = true
 
 # ---------------- staging ----------------
@@ -78,7 +82,5 @@ id = "de827666a549446b92d31d40c81c633d"
 #   wrangler secret put JWT_SECRET --env production
 #   wrangler secret put JWT_SECRET --env staging
 
-# Custom domain — раскомментировать ПОСЛЕ активации зоны gaurangers.com в Cloudflare
-# [[env.production.routes]]
-# pattern = "api.gaurangers.com/*"
-# custom_domain = true
+# env.production маршрутов не имеет: деплой идёт top-level конфигом (bunx wrangler
+# deploy без --env в deploy-api.yml), custom_domain задан выше.

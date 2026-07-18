@@ -497,7 +497,7 @@ def check_n087():
     охотой за хардкодами: что-то оставалось на старом хосте и молча ломалось —
     канонический 301, адрес отправителя писем, прод-пробы CI.
 
-    ДВЕ СТАТЬИ:
+    СТАТЬИ:
       A. В исходниках apps/web (кроме самого реестра src/routes.ts) нет голого
          домена вида *.com. Комментарии и текст документации не в счёт — ломается
          КОД, а не пояснение.
@@ -505,6 +505,10 @@ def check_n087():
          его www и каждый ALIAS_HOST. Иначе прежний домен перестанет быть
          привязан к воркеру, и 301 на канонический просто некому будет отдать —
          старые ссылки и QR-коды умрут молча.
+      Г. API_HOST переезжает ВМЕСТЕ с сайтом: поддомен SITE_HOST/alias (снятый —
+         авария), custom_domain apps/api/wrangler.toml и smoke deploy-api.yml
+         стоят ровно на нём. Авария 18.07.2026: api остался на снятом
+         gaurangers.com — /api-прокси бил в мёртвую зону, витрины опустели.
     """
     bad = []
     routes = ROOT / "apps" / "web" / "src" / "routes.ts"
@@ -517,7 +521,10 @@ def check_n087():
         return [("routes.ts", "нет константы SITE_HOST — канонический хост негде прочитать")]
     site = m.group(1)
     mail = (re.search(r'MAIL_HOST\s*=\s*"([^"]+)"', reg) or m).group(1)
-    api_host = (re.search(r'API_HOST\s*=\s*"([^"]+)"', reg) or m).group(1)
+    # API_HOST задаётся либо литералом "api.xxx", либо шаблоном `api.${SITE_HOST}`
+    # (канон после аварии 18.07.2026: производная форма переезжает сама).
+    _api = re.search(r'API_HOST\s*=\s*[`"]([^`"]+)[`"]', reg)
+    api_host = (_api.group(1) if _api else site).replace("${SITE_HOST}", site)
     aliases = re.findall(r'"([a-z0-9.-]+\.[a-z]{2,})"', 
                          (re.search(r'ALIAS_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) or
                           re.match(r'(?P<x>)', '')).group(1) if re.search(r'ALIAS_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) else "")
@@ -567,6 +574,31 @@ def check_n087():
         for host in retired:
             if re.search(r'pattern\s*=\s*"%s"' % re.escape(host), conf):
                 bad.append(("wrangler.toml", "снятый хост «%s» снова привязан маршрутом" % host))
+
+    # ── Г · API-хост переезжает ВМЕСТЕ с каноническим ──
+    # Авария 18.07.2026: gaurangers.com сняли с проекта, а API_HOST остался на
+    # api.gaurangers.com — прокси /api/* сайта бил в мёртвую зону, и ВСЕ витрины
+    # («Личности», «Бхаджаны»…) показывали пустоту при живой D1. Статьи A–B этого
+    # не ловили: они сканируют только apps/web. Инвариант из трёх звеньев:
+    #   1) API_HOST — поддомен SITE_HOST или alias; поддомен RETIRED — авария;
+    #   2) apps/api/wrangler.toml привязывает custom_domain ровно на API_HOST;
+    #   3) smoke-проверка deploy-api.yml бьёт ровно в API_HOST.
+    parent = api_host.split(".", 1)[1] if "." in api_host else api_host
+    if parent in retired or api_host in retired:
+        bad.append(("routes.ts", "API_HOST «%s» стоит на СНЯТОМ домене — /api-прокси бьёт в мёртвую зону" % api_host))
+    elif parent not in {site, *aliases}:
+        bad.append(("routes.ts", "API_HOST «%s» не на каноническом хосте и не на alias" % api_host))
+    wr_api = ROOT / "apps" / "api" / "wrangler.toml"
+    if wr_api.exists():
+        conf_api = wr_api.read_text(encoding="utf-8")
+        if not re.search(r'pattern\s*=\s*"%s"' % re.escape(api_host), conf_api):
+            bad.append(("apps/api/wrangler.toml", "custom_domain не привязан на API_HOST «%s» реестра" % api_host))
+        for host in retired:
+            if re.search(r'pattern\s*=\s*"(?:[a-z0-9-]+\.)?%s"' % re.escape(host), conf_api):
+                bad.append(("apps/api/wrangler.toml", "маршрут на поддомене снятого «%s»" % host))
+    dep_api = ROOT / ".github" / "workflows" / "deploy-api.yml"
+    if dep_api.exists() and ("https://" + api_host) not in dep_api.read_text(encoding="utf-8"):
+        bad.append(("deploy-api.yml", "smoke-проверка не бьёт в API_HOST «%s» реестра" % api_host))
     return bad
 
 

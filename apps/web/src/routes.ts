@@ -54,10 +54,13 @@ export const MAIL_HOST = "brajs.com";
 export const ORIGIN = `https://${SITE_HOST}`;
 
 /** Хост второго бэкенда (воркер apps/api, куда воркер сайта проксирует /api/*,
- *  которые не обслуживает сам). Отдельная зона и отдельный деплой, поэтому
- *  переключается ТРЕТЬИМ шагом — после того, как для api-поддомена нового домена
- *  заведён свой custom_domain в apps/api/wrangler.toml. */
-export const API_HOST = "api.gaurangers.com";
+ *  которые не обслуживает сам). ВЫВОДИТСЯ из SITE_HOST и переезжает ВМЕСТЕ с
+ *  сайтом: custom_domain в apps/api/wrangler.toml обязан стоять на этом же
+ *  хосте (Н087·Г), wrangler сам заводит DNS+сертификат в живой зоне при деплое.
+ *  Прежняя схема «api переключается третьим шагом» дала аварию 18.07.2026:
+ *  gaurangers.com сняли, API_HOST остался на api.gaurangers.com — прокси /api/*
+ *  бил в мёртвую зону, и все витрины опустели при живой D1. */
+export const API_HOST = `api.${SITE_HOST}`;
 export const API_ORIGIN = `https://${API_HOST}`;
 
 /** Хосты, которые обязаны 301-ить на канонический: www канонического и все alias

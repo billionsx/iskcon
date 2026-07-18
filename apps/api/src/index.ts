@@ -48,7 +48,7 @@ app.use('*', prettyJSON());
 app.use(
   '*',
   cors({
-    origin: ['http://localhost:5173', 'https://gaurangers.com', 'https://www.gaurangers.com'],
+    origin: ['http://localhost:5173', 'https://brajs.com', 'https://www.brajs.com'],
     credentials: true,
     allowHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
     allowMethods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
