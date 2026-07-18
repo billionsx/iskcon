@@ -255,7 +255,9 @@ jobs:
           # проверялся ОДИН хост, поэтому отвалившийся alias или непривязанный
           # новый домен деплой не замечал. Итог каждой проверки пишем в D1
           # (deploy_checks) — логи Actions живут 90 дней, база дольше.
-          for H in $(grep -oE '^pattern = "[^"]+"' apps/web/wrangler.toml | cut -d'"' -f2); do
+          HOSTS=$(grep -oE '^pattern = "[^"]+"' wrangler.toml | cut -d'"' -f2)
+          [ -z "$HOSTS" ] && { echo "::error::в wrangler.toml не найдено ни одного хоста — проверка Н087 не состоялась"; exit 1; }
+          for H in $HOSTS; do
             hc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$H/")
             loc=$(curl -s -I --max-time 25 "https://$H/" | grep -i '^location:' | tr -d '\r' | cut -c1-90)
             echo "::notice::хост $H -> HTTP $hc $loc"
