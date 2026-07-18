@@ -180,6 +180,26 @@ def ia_survey(albums: list) -> dict:
     return have
 
 
+
+def beat(stage: str, **kv):
+    """Пульс прогона в D1.
+
+    Логи раннера доступны не всегда, а archive.org из песочницы не виден вовсе.
+    Без пульса «идёт 40 минут» не отличить от «висит 40 минут»: обе картинки
+    выглядят одинаково — ничего не происходит. Поэтому прогон сам докладывает,
+    на какой он стадии и сколько прошёл, в таблицу, которую видно снаружи.
+    """
+    kv["stage"] = stage
+    kv["at"] = time.strftime("%H:%M:%S")
+    kv["min"] = round((time.time() - START) / 60, 1)
+    try:
+        d1("INSERT INTO app_config (key, value, updated_at) VALUES (?1, ?2, datetime('now')) "
+           "ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = datetime('now')",
+           ["goswami_progress", json.dumps(kv, ensure_ascii=False)])
+    except Exception as e:                                    # noqa: BLE001
+        print("::warning::пульс: %s" % str(e)[:120])
+
+
 # ─────────────────────── скачивание ─────────────────────────
 def fetch(url: str, dest: Path) -> int:
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": "https://goswami.ru/"})
@@ -250,6 +270,7 @@ async def main_run() -> int:
     else:
         register_speakers_albums(p)
 
+    beat("сверка с архивом", albums=len(albums))
     print("сверка с архивом…", flush=True)
     have = ia_survey(albums)
     already = sum(len(v) for v in have.values())
@@ -271,6 +292,7 @@ async def main_run() -> int:
     if LIMIT and len(todo) > LIMIT:
         print("::notice::потолок прогона: %d из %d" % (LIMIT, len(todo)), flush=True)
         todo = todo[:LIMIT]
+    beat("к заливке", already=already, todo=len(todo))
     print("::notice::в архиве уже %d · к заливке %d" % (already, len(todo)), flush=True)
 
     # то, что уже лежит в архиве, но ещё не в базе — регистрируем сразу
@@ -344,7 +366,7 @@ async def main_run() -> int:
     async def flush(force=False):
         nonlocal pending
         async with lock:
-            if not pending or (len(pending) < 40 and not force):
+            if not pending or (len(pending) < 10 and not force):
                 return
             batch, pending = pending, []
         try:
@@ -402,6 +424,10 @@ async def main_run() -> int:
             except Exception as e:                    # noqa: BLE001
                 fail += 1
                 print("::warning::%s/%s: %s" % (al["id"], t["file"], str(e)[:140]))
+            if done and done % 10 == 0:
+                beat("заливка", done=done, total=total, fail=fail,
+                     gb=round(bytes_done / 1e9, 2),
+                     mbs=round(bytes_done / 1e6 / max(1.0, time.time() - t0), 2))
             if done and done % 25 == 0:
                 el = max(1.0, time.time() - t0)
                 print("::notice::залито %d из %d · %.2f ГБ · %.1f МБ/с · %.1f зап/мин · ошибок %d"
