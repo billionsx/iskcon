@@ -7,18 +7,23 @@
 VAPID у пушей. Провайдер загорается в приложении **сразу**, без деплоя:
 `GET /api/auth/providers` читает конфиг на каждом запросе.
 
+> **Домен.** Рабочим доменом становится **brajs.com** (см. `docs/DOMAIN_migration.md`).
+> Ключи провайдеров заводятся ПОСЛЕ переезда домена — `redirect_uri` обязан
+> совпадать с каноническим хостом символ в символ, иначе `redirect_uri_mismatch`.
+> Канонический хост всегда виден в `apps/web/src/routes.ts` → `SITE_HOST`.
+
 **Redirect URI — один шаблон для всех:**
 
 ```
-https://gaurangers.com/api/auth/oauth/<провайдер>/callback
+https://brajs.com/api/auth/oauth/<провайдер>/callback
 ```
 
 | провайдер | точный адрес |
 |---|---|
-| apple | `https://gaurangers.com/api/auth/oauth/apple/callback` |
-| google | `https://gaurangers.com/api/auth/oauth/google/callback` |
-| yandex | `https://gaurangers.com/api/auth/oauth/yandex/callback` |
-| vk | `https://gaurangers.com/api/auth/oauth/vk/callback` |
+| apple | `https://brajs.com/api/auth/oauth/apple/callback` |
+| google | `https://brajs.com/api/auth/oauth/google/callback` |
+| yandex | `https://brajs.com/api/auth/oauth/yandex/callback` |
+| vk | `https://brajs.com/api/auth/oauth/vk/callback` |
 
 Символ в символ. Лишний `/` на конце или `www.` = ошибка `redirect_uri_mismatch`
 и вход не работает. Домен указываем **без www**: воркер делает 301 с www на apex,
@@ -31,7 +36,7 @@ https://gaurangers.com/api/auth/oauth/<провайдер>/callback
 1. Открыть **https://id.vk.com/about/business/go** → войти своим VK.
 2. **Создать приложение**. Название: `ISKCON ONE LOVE`. Иконку — логотип.
 3. Платформа — **Веб**.
-   * *Базовый домен*: `gaurangers.com`
+   * *Базовый домен*: `brajs.com`
    * *Доверенный Redirect URL*: адрес из таблицы выше.
 4. Вкладка **Авторизация** → в «Данные для регистрации» включить **Почта**.
 5. Скопировать **ID приложения** — это `client_id`.
@@ -75,11 +80,11 @@ Data Access / Clients). Старые инструкции в интернете 
      сайта. Поменять потом нельзя, только новым проектом.
    * *Contact information*: свой ящик → Finish.
 3. **https://console.cloud.google.com/auth/branding** → *Authorized domains*
-   добавить `gaurangers.com`.
+   добавить `brajs.com`.
 4. **https://console.cloud.google.com/auth/clients** → **Create client**:
    * *Application type*: **Web application**
    * *Name*: `gaurangers web`
-   * *Authorized JavaScript origins*: `https://gaurangers.com`
+   * *Authorized JavaScript origins*: `https://brajs.com`
    * *Authorized redirect URIs*: адрес из таблицы выше
    * **Create** → во всплывшем окне **Client ID** и **Client secret**.
 5. **https://console.cloud.google.com/auth/audience** → **Publish app**.
@@ -107,12 +112,12 @@ oauth_google_client_secret = <Client secret>  (GOCSPX-…)
    > `com.gaurangers.web` — это и есть `client_id` для веба, **не** Bundle ID.
 3. Открыть созданный Services ID → галочка **Sign In with Apple** → **Configure**:
    * *Primary App ID*: `com.gaurangers.app`
-   * *Domains and Subdomains*: `gaurangers.com` (**без** www и без `https://`)
+   * *Domains and Subdomains*: `brajs.com` (**без** www и без `https://`)
    * *Return URLs*: адрес apple из таблицы выше
 4. **Проверка домена.** В том же окне — кнопка **Download** рядом с доменом:
    скачается `apple-developer-domain-association.txt`. Открыть его блокнотом,
    **прислать содержимое мне** — я кладу его в `app_config`, и воркер начинает
-   отдавать файл по `https://gaurangers.com/.well-known/apple-developer-domain-association.txt`
+   отдавать файл по `https://brajs.com/.well-known/apple-developer-domain-association.txt`
    (маршрут уже в проде, до канонизации www→apex, потому что Apple по 301 не ходит).
    После этого — кнопка **Verify** → Continue → Save.
 5. **Ключ.** https://developer.apple.com/account/resources/authkeys/list → **+** →
@@ -143,9 +148,9 @@ apple_domain_association = <содержимое apple-developer-domain-associat
 пользователю письмо им не отправить, поэтому Resend.
 
 1. **https://resend.com** → регистрация.
-2. **Domains** → **Add Domain** → `gaurangers.com` → регион EU.
+2. **Domains** → **Add Domain** → `brajs.com` → регион EU.
 3. Resend покажет DNS-записи (MX + TXT SPF + TXT DKIM). Добавить их в Cloudflare:
-   dash.cloudflare.com → домен `gaurangers.com` → **DNS** → **Add record**,
+   dash.cloudflare.com → домен `brajs.com` → **DNS** → **Add record**,
    каждую запись как показано, **Proxy status = DNS only** (серое облако).
 4. Вернуться в Resend → **Verify**. Обычно 5–30 минут.
 5. **API Keys** → **Create API Key**, права *Sending access* → скопировать
@@ -167,7 +172,7 @@ INSERT INTO app_config (key, value) VALUES (?1, ?2)
 Проверка, что провайдер поднялся:
 
 ```
-GET https://gaurangers.com/api/auth/providers
+GET https://brajs.com/api/auth/providers
 → {"providers":{"apple":true,"google":true,"yandex":true,"vk":true}}
 ```
 
