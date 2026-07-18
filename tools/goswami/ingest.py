@@ -397,6 +397,7 @@ async def main_run() -> int:
     t0 = time.time()
     stop = False
     pending: list = []
+    beat_at = [0.0]
     lock = asyncio.Lock()
 
     async def flush(force=False):
@@ -460,7 +461,12 @@ async def main_run() -> int:
             except Exception as e:                    # noqa: BLE001
                 fail += 1
                 print("::warning::%s/%s: %s" % (al["id"], t["file"], str(e)[:140]))
-            if done and done % 10 == 0:
+            # Пульс по ВРЕМЕНИ, а не по кратности счётчика: двенадцать потоков
+            # увеличивают `done` наперегонки и круглые числа проскакивают —
+            # «каждые десять» молчит, и живой прогон выглядит замершим.
+            nonlocal_beat = time.time() - beat_at[0] > 45
+            if nonlocal_beat:
+                beat_at[0] = time.time()
                 beat("заливка", done=done, total=total, fail=fail,
                      gb=round(bytes_done / 1e9, 2),
                      mbs=round(bytes_done / 1e6 / max(1.0, time.time() - t0), 2))
