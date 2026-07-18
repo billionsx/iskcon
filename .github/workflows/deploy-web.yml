@@ -296,6 +296,20 @@ jobs:
               --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'retired $R',${rc:-0},'снят с проекта')" || true
           done
           [ "$fail" = "0" ] || { echo "::error::роли хостов не подтвердились — см. таблицу deploy_checks"; exit 1; }
+
+          # ЗКН-Н087 — СНЯТЫЕ ДОМЕНЫ: НАБЛЮДЕНИЕ, НЕ ВЕРДИКТ.
+          # Отвязка custom_domain в Cloudflare живёт вне репозитория (кабинет), а DNS
+          # ещё какое-то время резолвится. Поэтому здесь не гейт, а замер: пишем в D1,
+          # чем отвечает снятый хост. 000 = не резолвится (отвязан начисто), 301 = ещё
+          # привязан, но воркер уводит на канон, 200 = ТРЕВОГА, вторая живая копия.
+          for R in $(grep -oE '"[a-z0-9.-]+\.[a-z]{2,}"' ../../apps/web/src/routes.ts | tr -d '"' | sort -u); do
+            case " $HOSTS " in *" $R "*) continue;; esac
+            grep -q "RETIRED_HOSTS.*$R" ../../apps/web/src/routes.ts || continue
+            rc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://$R/" || echo 000)
+            echo "::notice::снятый хост $R -> HTTP $rc"
+            bunx wrangler d1 execute iskcon-db --remote \
+              --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'retired $R',${rc:-0},'снятый домен')" || true
+          done
           acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$SITE_HOST/")
           axr=$(curl -s -I --max-time 25 "https://$SITE_HOST/" | grep -i 'x-robots-tag' | tr -d '\r')
           echo "apex -> HTTP $acode ; $axr"
