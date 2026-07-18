@@ -1,0 +1,100 @@
+# ГОСВАМИ · ЗАЛИВКА (goswami.ru → archive.org → плеер)
+#
+# Исполняет карту tools/goswami/goswami_plan.json — цикл, имя файла в архиве и
+# название дорожки решены ДО заливки и лежат в репозитории (ЗКН-Пл010).
+#
+# Отличие от katha-ingest: источник — обычные ссылки, а не Telegram. Скачивание
+# дешёвое и параллелится, зато записей тысячи. Поэтому очередь СВОЯ (не
+# tg-archive-session): сессия Telegram здесь не задействована и делить её незачем.
+#
+# ЗКН-Ф021: цикл готов, только когда файлы ВИДНЫ в metadata-API archive.org, а не
+# когда «команда отправлена». Не всё доехало — прогон перезапускает себя.
+# Заливка идемпотентна: лежащее в архиве не качается заново, оборвать можно в
+# любой момент.
+name: "Госвами · заливка"
+run-name: "goswami-ingest · осталось: ${{ inputs.note || '?' }}"
+
+concurrency:
+  group: goswami-ingest
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "(служебное) счётчик самоцепочки"
+        default: ""
+      album:
+        description: "Только один цикл (id из карты; пусто = все)"
+        default: ""
+      limit:
+        description: "Потолок записей за прогон (0 = без потолка)"
+        default: "0"
+      dl_parallel:
+        description: "Потоков скачивания"
+        default: "12"
+      ia_parallel:
+        description: "Потоков заливки в архив"
+        default: "6"
+
+permissions:
+  contents: read
+  actions: write                 # самоцепочка: воркфлоу перезапускает сам себя
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Зависимости
+        run: pip install internetarchive requests
+
+      - name: Место на диске
+        run: df -h / | tail -1
+
+      - name: Залить
+        id: run
+        working-directory: tools/goswami
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ONLY_ALBUM: ${{ inputs.album }}
+          LIMIT: ${{ inputs.limit }}
+          BUDGET_MIN: "290"
+          DL_PARALLEL: ${{ inputs.dl_parallel }}
+          IA_PARALLEL: ${{ inputs.ia_parallel }}
+        run: python ingest.py run
+
+      # ЗКН-Ф021: сверка с архивом идёт всегда, даже после сбоя заливки —
+      # иначе в D1 останутся дорожки, которых в архиве нет.
+      - name: Сверка с архивом
+        if: always()
+        working-directory: tools/goswami
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ONLY_ALBUM: ${{ inputs.album }}
+        run: python ingest.py verify
+
+      - name: Сводка
+        if: always()
+        working-directory: tools/goswami
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: python ingest.py stats
+
+      - name: Продолжить, если осталось
+        if: ${{ steps.run.outputs.left != '0' && steps.run.outputs.left != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          LEFT="${{ steps.run.outputs.left }}"
+          echo "::notice::осталось $LEFT записей — перезапускаю себя"
+          curl -s -X POST -H "Authorization: token $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/goswami-ingest.yml/dispatches" \
+            -d "{\"ref\":\"main\",\"inputs\":{\"note\":\"$LEFT\",\"album\":\"${{ inputs.album }}\",\"limit\":\"${{ inputs.limit }}\",\"dl_parallel\":\"${{ inputs.dl_parallel }}\",\"ia_parallel\":\"${{ inputs.ia_parallel }}\"}}"
