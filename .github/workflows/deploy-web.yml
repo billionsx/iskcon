@@ -75,7 +75,7 @@ jobs:
           sys.exit(1 if bad else 0)
           PY
 
-      - name: Гейт поверхности (ЗКН-Д014 · Д005 · Д015)
+      - name: Гейт поверхности (ЗКН-Д014 · Д005 · Д015 · Д018 · Д019 · Н088)
         run: python3 tools/surface-lint.py
 
 
