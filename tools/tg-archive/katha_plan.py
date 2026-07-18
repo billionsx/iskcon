@@ -730,12 +730,28 @@ def build_purnacandra(audio):
                 cnt[base] = cnt.get(base, 0) + 1
                 r["title"] = "%s · часть %d" % (base, cnt[base])
         width = 3 if len(rows) > 99 else 2
-        tracks = []
-        for n, r in enumerate(rows, 1):
+        # Дата — не гарантия уникальности: за один день парикрамы записано три
+        # «Парикрамы», и в очереди они стояли неразличимой тройкой. Различаем
+        # ПОСЛЕ подстановки даты, иначе номер части ставится не там, где нужно.
+        for r in rows:
             t = r["title"]
             if al["dated"] and r["dt"]:
                 t += " · %s" % (str(r["dt"][0]) if not r["dt"][1]
                                 else ru_date(r["dt"][2], r["dt"][1], r["dt"][0]))
+            r["full"] = t
+        same = {}
+        for r in rows:
+            same[r["full"]] = same.get(r["full"], 0) + 1
+        used = {}
+        for r in rows:
+            if same[r["full"]] > 1:
+                used[r["full"]] = used.get(r["full"], 0) + 1
+                head, _, tail = r["full"].rpartition(" · ")
+                r["full"] = "%s · часть %d · %s" % (head, used[r["full"]], tail) if head \
+                    else "%s · часть %d" % (r["full"], used[r["full"]])
+        tracks = []
+        for n, r in enumerate(rows, 1):
+            t = r["full"]
             tracks.append({"msg_id": r["m"]["msg_id"], "title": t,
                            "duration": r["m"].get("duration") or 0,
                            "size": r["m"].get("size") or 0, "source": r["m"]["file_name"],
