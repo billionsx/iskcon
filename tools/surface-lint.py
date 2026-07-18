@@ -98,6 +98,12 @@ GROUP_TOKENS_LIGHT = ("--color-canvas", "--color-card", "--color-separator")
 # ЗКН-Н088 — адреса практики: их место в «Практике», а не в кабинете.
 PRACTICE_PATHS = ("/japa", "/story", "/promise", "/progress", "/verse")
 
+# ── ЗКН-Д022 · ПЛИТКА СТРОКИ: ЦВЕТ ПО СМЫСЛУ, ГЛИФ ЗАЛИТЫЙ ────────────────
+# Шесть одинаковых серых плиток читаются как ВЫКЛЮЧЕННЫЙ список; контурный
+# глиф в квадрате 29 мылится. Гейт держит оба признака ремесла.
+TILE_GREY_ONLY = re.compile(r'tint=\{?"?var\(--color-(?:label-2|tile)\)"?\}?')
+STROKE_IN_TILE = re.compile(r"<IconTile[^>]*>\s*<svg[^>]*stroke=")
+
 # ── ЗКН-Д020 · АКЦЕНТ ОДИН НА ПРИЛОЖЕНИЕ ──────────────────────────────────
 # Свой «фирменный» цвет раздела — самая заметная потеря целого: экран обета
 # сидел на шафране #DD7A1E рядом с золотым приложением и читался как чужой.
@@ -219,6 +225,24 @@ def check_grouped_screen() -> list[str]:
             bad.append(f"apps/web/src/PracticeHub.tsx — ЗКН-Н088: практика потеряла "
                        f"{', '.join(missing)}. Разделы не исчезают при переезде — "
                        f"они меняют место")
+    # ЗКН-Д022 — плитки строк: не монохром и не контур.
+    for name in GROUPED_SCREENS:
+        p = SRC / name
+        if not p.exists():
+            continue
+        t = p.read_text(encoding="utf-8")
+        m = TILE_GREY_ONLY.search(t)
+        if m:
+            line = t.count("\n", 0, m.start()) + 1
+            bad.append(f"apps/web/src/{name}:{line} — ЗКН-Д022: серая плитка. В iOS "
+                       f"серый в плитке = ВЫКЛЮЧЕНО; цвет обязан нести смысл "
+                       f"(--tile-blue · --tile-green · --tile-red · --tile-gold · --tile-grey)")
+        m = STROKE_IN_TILE.search(t)
+        if m:
+            line = t.count("\n", 0, m.start()) + 1
+            bad.append(f"apps/web/src/{name}:{line} — ЗКН-Д022: контурный глиф в плитке. "
+                       f"В квадрате 29 линия мылится — символ должен быть залитым (fill)")
+
     # ЗКН-Д020 — чужой акцент вместо золота.
     for f in sorted(SRC.rglob("*.tsx")):
         t = f.read_text(encoding="utf-8")

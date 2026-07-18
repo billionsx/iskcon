@@ -66,20 +66,21 @@ const KeyIco = ({ size = 20 }: IcoProps) => (
   <svg {...ico(size)}><circle {...STR} cx="8.2" cy="12" r="3.6" /><path {...STR} d="M11.8 12h8.4M17 12v3M20.2 12v2.2" /></svg>
 );
 
-/* ─────────────────── глифы строк кабинета (ЗКН-Д018) ───────────────────
- * Плитка 29 с линейным глифом. Заливка ГРАФИТОВАЯ у всех, кроме служения:
- * золото в приложении — акцент, а не раскраска списка. Без иконок семь строк
- * читались не как сдержанность, а как недоделанность: Apple обходится без них
- * только на ПЛОТНОМ списке.
+/* ─────────────────── глифы строк кабинета (ЗКН-Д022) ───────────────────
+ * ГЛИФ В ПЛИТКЕ — ЗАЛИТЫЙ, НЕ КОНТУРНЫЙ. Контурная линия 1.7 в квадрате 29
+ * мылится и читается как иконка из бесплатного набора; у Apple в плитке всегда
+ * плотный символ. ЦВЕТ ПЛИТКИ НЕСЁТ СМЫСЛ: уведомления красные, безопасность
+ * синяя, служебное серое — так список сканируется за полсекунды, а не читается
+ * построчно. Шесть одинаковых серых плиток выглядели выключенным списком.
  */
-const TILE = "var(--color-tile)";
-const PersonIco = () => (<svg {...ico(17)}><circle {...STR} cx="12" cy="8" r="3.6" /><path {...STR} d="M5 19.2c1.3-3.2 4-4.7 7-4.7s5.7 1.5 7 4.7" /></svg>);
-const StepsIco = () => (<svg {...ico(17)}><path {...STR} d="M4 19h4v-6H4zM10 19h4V9h-4zM16 19h4V5h-4z" /></svg>);
-const LockIco = () => (<svg {...ico(17)}><rect {...STR} x="5" y="10.5" width="14" height="9.5" rx="2.4" /><path {...STR} d="M8.4 10.5V7.8a3.6 3.6 0 0 1 7.2 0v2.7" /></svg>);
-const BellIco = () => (<svg {...ico(17)}><path {...STR} d="M6.4 17.2V11a5.6 5.6 0 0 1 11.2 0v6.2M4.6 17.2h14.8" /><path {...STR} d="M10.2 20.2a2 2 0 0 0 3.6 0" /></svg>);
-const HeartIco = () => (<svg {...ico(17)}><path {...STR} d="M12 20s-7.2-4.4-7.2-9.2A3.9 3.9 0 0 1 12 8.4a3.9 3.9 0 0 1 7.2 2.4C19.2 15.6 12 20 12 20Z" /></svg>);
-const ShareIco = () => (<svg {...ico(17)}><path {...STR} d="M12 15V4.6M8.6 8 12 4.6 15.4 8" /><path {...STR} d="M5.4 13.6v4.8a1.6 1.6 0 0 0 1.6 1.6h10a1.6 1.6 0 0 0 1.6-1.6v-4.8" /></svg>);
-const InfoIco = () => (<svg {...ico(17)}><circle {...STR} cx="12" cy="12" r="8.2" /><path {...STR} d="M12 11v5.2M12 8.1v.1" /></svg>);
+const fico = (size = 17) => ({ width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": true as const });
+const PersonIco = () => (<svg {...fico()}><circle cx="12" cy="7.8" r="3.9" /><path d="M12 13.4c-3.5 0-6.4 2-7.3 5.1-.3.9.4 1.7 1.3 1.7h12c.9 0 1.6-.8 1.3-1.7-.9-3.1-3.8-5.1-7.3-5.1Z" /></svg>);
+const StepsIco = () => (<svg {...fico()}><rect x="3.6" y="13" width="4" height="6.4" rx="1.2" /><rect x="10" y="8.6" width="4" height="10.8" rx="1.2" /><rect x="16.4" y="4.6" width="4" height="14.8" rx="1.2" /></svg>);
+const LockIco = () => (<svg {...fico()}><path d="M8.9 9.4V7.6a3.1 3.1 0 0 1 6.2 0v1.8h.6a2.3 2.3 0 0 1 2.3 2.3v6a2.3 2.3 0 0 1-2.3 2.3H8.3A2.3 2.3 0 0 1 6 17.4v-6a2.3 2.3 0 0 1 2.3-2.3zm1.7 0h2.8V7.6a1.4 1.4 0 0 0-2.8 0z" /></svg>);
+const BellIco = () => (<svg {...fico()}><path d="M12 3.4a5.6 5.6 0 0 0-5.6 5.6v3.8L5 15.4c-.4.7.1 1.6.9 1.6h12.2c.8 0 1.3-.9.9-1.6l-1.4-2.6V9A5.6 5.6 0 0 0 12 3.4Z" /><path d="M9.9 18.4a2.2 2.2 0 0 0 4.2 0z" /></svg>);
+const HeartIco = () => (<svg {...fico()}><path d="M12 20s-7.4-4.5-7.4-9.4a4 4 0 0 1 7.4-2.2 4 4 0 0 1 7.4 2.2C19.4 15.5 12 20 12 20Z" /></svg>);
+const ShareIco = () => (<svg {...fico()}><path d="M11.1 5.7 9 7.8a1.2 1.2 0 1 1-1.7-1.7l3.8-3.8a1.2 1.2 0 0 1 1.8 0l3.8 3.8A1.2 1.2 0 1 1 15 7.8l-2.1-2.1v9.1a1.2 1.2 0 0 1-2.4 0z" /><path d="M5.4 12.4c.7 0 1.2.5 1.2 1.2v4.1h10.8v-4.1a1.2 1.2 0 0 1 2.4 0v4.4a2.1 2.1 0 0 1-2.1 2.1H6.3a2.1 2.1 0 0 1-2.1-2.1v-4.4c0-.7.5-1.2 1.2-1.2Z" /></svg>);
+const InfoIco = () => (<svg {...fico()}><path d="M12 3.4a8.6 8.6 0 1 0 0 17.2 8.6 8.6 0 0 0 0-17.2Zm0 3.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm1.4 10.8h-2.8a.9.9 0 0 1 0-1.8h.5v-3.2h-.5a.9.9 0 0 1 0-1.8h1.5c.5 0 .9.4.9.9v4.1h.4a.9.9 0 0 1 0 1.8Z" /></svg>);
 
 /* ─────────────────────────── утилиты ─────────────────────────── */
 
@@ -762,7 +763,7 @@ function AboutSheet({ onClose }: { onClose: () => void }) {
       </div>
       <Groups>
         <Group footer="Приложение не показывает рекламу и не продаёт данные. Всё, что вы отмечаете, остаётся вашим.">
-          <Row title="Версия" value={version} chevron={false} />
+          <Row title="Сборка" value={version} chevron={false} />
           <Row title="Сайт" value={SITE_HOST} chevron={false} last />
         </Group>
       </Groups>
@@ -782,7 +783,11 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
   useEffect(() => { void isSubscribed().then(setPushOn).catch(() => setPushOn(false)); }, [sheet]);
 
   const level = levelLabel(user);
-  const display = (user?.name || "").trim() || "Преданный";
+  // ЗКН-Д022 — ИМЯ, А НЕ ИДЕНТИФИКАТОР. Показывали сырой логин «dasa» строчными:
+  // приложение обращалось к человеку его технической строкой. Первая буква —
+  // заглавная; пусто — «Преданный», а не пустота.
+  const raw = (user?.name || "").trim();
+  const display = raw ? raw.slice(0, 1).toLocaleUpperCase("ru") + raw.slice(1) : "Преданный";
 
   async function doLogout() {
     await logout();
@@ -813,19 +818,19 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
         {/* Группы ПЛОТНЫЕ: у Apple заголовок оправдан списком, а не одной
             строкой. Пять групп на девять строк читались как заготовка. */}
         <Group>
-          <Row icon={<IconTile tint={TILE}><PersonIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-blue)"><PersonIco /></IconTile>}
             title="Профиль" subtitle="Имя, духовное имя, инициация"
             onClick={() => setSheet("profile")} />
-          <Row icon={<IconTile tint={TILE}><StepsIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-green)"><StepsIco /></IconTile>}
             title="Ступень практики"
             value={level ?? <span style={{ color: GOLDT, fontWeight: 600 }}>Выбрать</span>}
             last onClick={() => setSheet("level")} />
         </Group>
 
         <Group header="Аккаунт">
-          <Row icon={<IconTile tint={TILE}><LockIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-blue)"><LockIco /></IconTile>}
             title="Вход и безопасность" onClick={() => setSheet("security")} />
-          <Row icon={<IconTile tint={TILE}><BellIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-red)"><BellIco /></IconTile>}
             title="Уведомления"
             value={pushOn == null ? undefined : pushOn ? "Включены" : "Выключены"}
             last onClick={() => setSheet("push")} />
@@ -833,15 +838,15 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
 
         <Group header="Приложение">
           {atLeastLevel(user, "practicing") && (
-            <Row icon={<IconTile tint={TILE}><PersonIco /></IconTile>}
+            <Row icon={<IconTile tint="var(--tile-green)"><PersonIco /></IconTile>}
               title="Мои центры" subtitle={`Ваша страница на ${SITE_HOST}`}
               onClick={() => onOpenPath("/my/centers")} />
           )}
           <Row icon={<IconTile><HeartIco /></IconTile>}
             title="Поддержать проект" onClick={onDonate} />
-          <Row icon={<IconTile tint={TILE}><ShareIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-blue)"><ShareIco /></IconTile>}
             title="Поделиться приложением" onClick={share} />
-          <Row icon={<IconTile tint={TILE}><InfoIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-grey)"><InfoIco /></IconTile>}
             title="О приложении" last onClick={() => setSheet("about")} />
         </Group>
 

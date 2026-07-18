@@ -181,9 +181,14 @@ export function IdentityHeader({ avatar, name, sacred, subtitle, onClick }: {
     <>
       <span style={{
         display: "grid", placeItems: "center", width: 88, height: 88, margin: "0 auto",
-        borderRadius: "50%", background: "var(--color-gold)", color: "var(--color-on-gold)",
+        borderRadius: "50%",
+        /* ЗКН-Д022 — монограмма читается, а не «монета». Тёмно-золотая буква на
+           золотом круге давала контраст около 1.6:1 — это не буква, это пятно.
+           Градиент даёт объём, белый знак — контраст. */
+        background: "linear-gradient(160deg, var(--color-gold) 0%, var(--color-gold-deep) 100%)",
+        color: "var(--color-brand-white)",
         fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 600,
-        letterSpacing: "-0.02em", boxShadow: "var(--shadow-group)",
+        letterSpacing: "-0.02em", boxShadow: "0 6px 18px rgba(0,0,0,0.14)",
       }}>{avatar}</span>
       <span style={{
         display: "block", marginTop: 14, fontFamily: "var(--font-display)",
@@ -490,7 +495,10 @@ export function Sheet({ title, onClose, children, action }: {
             flex: 1, minWidth: 0, margin: 0, fontFamily: "var(--font-display)",
             fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: "-0.03em", color: INK,
           }}>{title}</h2>
-          {action && (
+          {/* ЗКН-Д022 — ОДНА КНОПКА ЗАКРЫТИЯ, А НЕ ДВЕ. В листе профиля рядом
+              стояли «Готово» и крестик: два способа уйти, и непонятно, какой
+              сохраняет. У Apple либо подтверждающее действие, либо крестик. */}
+          {action ? (
             <button type="button" onClick={action.onClick} disabled={action.disabled}
               style={{ flexShrink: 0, background: "none", border: "none", padding: "0 4px", cursor: "pointer",
                 fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
@@ -498,12 +506,13 @@ export function Sheet({ title, onClose, children, action }: {
                 WebkitTapHighlightColor: "transparent" }}>
               {action.label}
             </button>
+          ) : (
+            <CircleButton label="Закрыть" onClick={onClose}>
+              <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden>
+                <path d="M3 3l12 12M15 3L3 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              </svg>
+            </CircleButton>
           )}
-          <CircleButton label="Закрыть" onClick={onClose}>
-            <svg width="17" height="17" viewBox="0 0 18 18" fill="none" aria-hidden>
-              <path d="M3 3l12 12M15 3L3 15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-            </svg>
-          </CircleButton>
         </div>
         <div style={{
           flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch",

@@ -35,15 +35,16 @@ const INK2 = "var(--color-label-2)";
 const INK3 = "var(--color-label-3)";
 const FONT = "var(--font-text)";
 
-/* ─────────────────── глифы строк (ЗКН-Д018, один язык с кабинетом) ─────── */
-const TILE = "var(--color-tile)";
-const g = (size = 17) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
-const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-const VerseIco = () => (<svg {...g()}><path {...S} d="M4 5.6h6.2c1 0 1.8.8 1.8 1.8V19a2 2 0 0 0-2-1.6H4zM20 5.6h-6.2c-1 0-1.8.8-1.8 1.8V19a2 2 0 0 1 2-1.6H20z" /></svg>);
-const VowIco = () => (<svg {...g()}><path {...S} d="M12 4.4 14.3 9l5.1.7-3.7 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1L4.6 9.7 9.7 9z" /></svg>);
-const BeadsIco = () => (<svg {...g()}><circle {...S} cx="12" cy="6.2" r="2" /><circle {...S} cx="17.6" cy="9.6" r="2" /><circle {...S} cx="17.6" cy="16" r="2" /><circle {...S} cx="12" cy="19.4" r="2" /><circle {...S} cx="6.4" cy="16" r="2" /><circle {...S} cx="6.4" cy="9.6" r="2" /></svg>);
-const DiaryIco = () => (<svg {...g()}><rect {...S} x="5" y="4.4" width="14" height="15.2" rx="2.2" /><path {...S} d="M9 9h6M9 12.6h6M9 16.2h3.6" /></svg>);
-const ChartIco = () => (<svg {...g()}><path {...S} d="M4.6 19h15M7.6 19v-5.4M12 19V7.4M16.4 19v-8.2" /></svg>);
+/* ─────────────── глифы строк (ЗКН-Д022, один язык с кабинетом) ───────────
+ * Залитые символы в цветных плитках: цвет отделяет ЧТЕНИЕ от СЧЁТА и от
+ * ОБЕТА быстрее, чем подпись. Серый монохром сканировать нечем.
+ */
+const fico = (size = 17) => ({ width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": true as const });
+const VerseIco = () => (<svg {...fico()}><path d="M11.1 6.4c-1.4-1.1-3.2-1.7-5.2-1.8-.8 0-1.5.6-1.5 1.4v10.3c0 .8.6 1.4 1.4 1.4 1.9 0 3.6.5 5.3 1.6zm1.8 0v12.9c1.7-1.1 3.4-1.6 5.3-1.6.8 0 1.4-.6 1.4-1.4V6c0-.8-.7-1.4-1.5-1.4-2 .1-3.8.7-5.2 1.8Z" /></svg>);
+const VowIco = () => (<svg {...fico()}><path d="m12 3.6 2.5 5 5.6.8-4 3.9.9 5.5-5-2.6-5 2.6.9-5.5-4-3.9 5.6-.8z" /></svg>);
+const BeadsIco = () => (<svg {...fico()}><circle cx="12" cy="5.4" r="2.3" /><circle cx="18.2" cy="9" r="2.3" /><circle cx="18.2" cy="15.6" r="2.3" /><circle cx="12" cy="19.2" r="2.3" /><circle cx="5.8" cy="15.6" r="2.3" /><circle cx="5.8" cy="9" r="2.3" /></svg>);
+const DiaryIco = () => (<svg {...fico()}><path d="M7.2 3.4h9.6a2.4 2.4 0 0 1 2.4 2.4v12.4a2.4 2.4 0 0 1-2.4 2.4H7.2a2.4 2.4 0 0 1-2.4-2.4V5.8a2.4 2.4 0 0 1 2.4-2.4Zm1.6 4.4a.9.9 0 0 0 0 1.8h6.4a.9.9 0 0 0 0-1.8Zm0 3.4a.9.9 0 0 0 0 1.8h6.4a.9.9 0 0 0 0-1.8Zm0 3.4a.9.9 0 0 0 0 1.8h3.8a.9.9 0 0 0 0-1.8Z" /></svg>);
+const ChartIco = () => (<svg {...fico()}><rect x="4" y="13.4" width="3.6" height="6" rx="1.1" /><rect x="10.2" y="7.4" width="3.6" height="12" rx="1.1" /><rect x="16.4" y="10.4" width="3.6" height="9" rx="1.1" /></svg>);
 
 /* ─────────────────────────── утилиты ─────────────────────────── */
 
@@ -241,17 +242,17 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
         <Group header="Сегодня" action={sad ? { label: "Дневник", onClick: () => go("/story") } : undefined}>
           {sad && <RoundsRow state={sad} onOpen={() => go("/story")} />}
           {sad && <Hair />}
-          <Row icon={<IconTile tint={TILE}><VerseIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-blue)"><VerseIco /></IconTile>}
             title="Стих дня" subtitle="Системное чтение Прабхупады: БГ → ШБ → ЧЧ" onClick={() => go("/verse")} />
-          <Row icon={<IconTile tint={TILE}><VowIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-gold)"><VowIco /></IconTile>}
             title="Мой обет" subtitle="Санкальпа на срок: служения и ежедневный отчёт" last onClick={() => go("/promise")} />
         </Group>
 
         {/* ПРАКТИКА — инструменты, к которым возвращаются каждый день. */}
         <Group header="Практика">
-          <Row icon={<IconTile tint={TILE}><BeadsIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-green)"><BeadsIco /></IconTile>}
             title="Счётчик джапы" subtitle="108 бусин, круги и Маха-мантра" onClick={() => go("/japa")} />
-          <Row icon={<IconTile tint={TILE}><DiaryIco /></IconTile>}
+          <Row icon={<IconTile tint="var(--tile-red)"><DiaryIco /></IconTile>}
             title="Дневник садханы" subtitle="Круги, чтение, подъём — серии и статистика" last onClick={() => go("/story")} />
           {/* ЗКН-Н088 — СТРОКА НЕ ОБЕЩАЕТ ТОГО, ЧЕГО ЗА НЕЙ НЕТ.
               Здесь стояло «Загруженное · Чтение и слушание без сети», а вело
@@ -265,7 +266,7 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
           <Group header="Прогресс">
             <StatStrip stats={stats} />
             <Hair />
-            <Row icon={<IconTile tint={TILE}><ChartIco /></IconTile>}
+            <Row icon={<IconTile tint="var(--tile-blue)"><ChartIco /></IconTile>}
               title="Мой прогресс" subtitle="Системное чтение, книги, время и серия" last onClick={() => go("/progress")} />
           </Group>
         )}
