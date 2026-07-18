@@ -17,7 +17,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePlayer, mediaTrackKey } from "./player/store";
 import { NowPlaying } from "./player/NowPlaying";
-import { kathaTracks, kathaSpeakers, KATHA_ALL, KATHA_FIND } from "./katha";
+import { kathaTracks, kathaSpeakers, kathaAlbumById, speakerBySlug, KATHA_ALL, KATHA_FIND } from "./katha";
 import { useKatha } from "./kathaHydrate";
 import { replaceUrl } from "./nav";
 import { HubHeader, HubSearch, HubEmpty } from "./ui/HubHeader";
@@ -28,11 +28,13 @@ export default function KathaScreen() {
   const tracks = useMemo(() => kathaTracks(), [kv]);
   const speakers = useMemo(() => kathaSpeakers(), [kv]);
 
-  /* Пока рассказчик один, шапка называет его. Станет больше — подпись честно
-     скажет «рассказчики», а не будет врать именем первого. */
+  /* Пока рассказчик один, шапка называет его. Станет больше — называем ведущий
+     голос (он первый по порядку) и честно добавляем остальных, а не врём, будто
+     раздел целиком его. И не сужаем до «Бхагаватам»: у Прабхупады здесь и «Гита»,
+     и «Чайтанья-чаритамрита», и утренние прогулки, и беседы. */
   const subtitle = speakers.length === 1
     ? `Бхагавата-катха · ${speakers[0].name}`
-    : "Повествования «Шримад-Бхагаватам» голосами рассказчиков традиции";
+    : `Лекции, беседы и катха — ${speakers[0]?.name ?? "рассказчики традиции"} и рассказчики традиции`;
 
   useEffect(() => {
     if (tracks.length > 0 && p.kind !== "katha") p.loadKatha(KATHA_ALL);
@@ -63,9 +65,19 @@ export default function KathaScreen() {
   const submit = () => {
     const s = q.trim();
     if (s.length < 2) return;
-    // ищем и по названию части, и по названию цикла: человек помнит «Гопи-гита»,
-    // а не «Часть 7» — искать только по дорожке значило бы не находить ничего.
-    const n = tracks.filter((t) => norm(t.title).includes(norm(s)) || norm(t.album).includes(norm(s))).length;
+    /* ⚠️ ВИТРИНА СЧИТАЛА НЕ ТО, ЧТО ОТБИРАЕТ СЕРВЕР.
+     *
+     * Счётчик здесь — сторож: `n === 0` показывает «ничего не найдено» и НЕ включает
+     * очередь. Он сверялся с `t.album` — а это СЛАГ цикла (`sb-01`), тогда как сервер
+     * ищет по НАЗВАНИЮ цикла и ИМЕНИ рассказчика. Пока рассказчик был один, разница
+     * не всплывала; с приходом Прабхупады запрос «Шримад-Бхагаватам» или «Прабхупада»
+     * давал бы «ничего не найдено» при 226 и 1234 записях на сервере.
+     *
+     * Правило: сторож обязан судить по тем же полям, что и отбор. Иначе витрина
+     * запрещает то, что сервер умеет. */
+    const n = tracks.filter((t) => norm(t.title).includes(norm(s))
+      || norm(kathaAlbumById(t.album)?.title ?? "").includes(norm(s))
+      || norm(speakerBySlug(t.speaker)?.name ?? "").includes(norm(s))).length;
     setFound({ q: s, n });
     if (n) p.playKatha(KATHA_FIND + s, 0, false);
   };
@@ -108,7 +120,7 @@ export default function KathaScreen() {
             Записи загружаются из канала.<br />Они появятся здесь по мере готовности.
           </div>
         ) : found && found.n === 0 ? (
-          <HubEmpty query={found.q} hint="Попробуйте название катхи — «Гопи-гита», «Аджамила»." />
+          <HubEmpty query={found.q} hint="Попробуйте имя рассказчика — «Прабхупада» — или название: «Утренние прогулки», «Гопи-гита»." />
         ) : (
           <NowPlaying embedded embeddedHeight={boxH || undefined} />
         )}

@@ -1538,7 +1538,44 @@ def check_n086():
     return bad
 
 
+def check_n089() -> list[tuple[str, str]]:
+    """ЗКН-Н089 — СТОРОЖ ВИТРИНЫ СУДИТ ПО ТЕМ ЖЕ ПОЛЯМ, ЧТО И ОТБОР СЕРВЕРА.
+
+    Витрина считает совпадения САМА (`const n = tracks.filter(...)`), и это не
+    украшение: `n === 0` рисует «ничего не найдено» и НЕ включает очередь. Отбор
+    же делает сервер (`*FindManifest`) по своему набору полей. Наборы разъехались:
+    сервер искал ещё и по имени рассказчика/исполнителя и по названию цикла, а
+    счётчик — только по названию дорожки. Запрос «Прабхупада» в катхе (1234
+    записи) и в киртанах давал «ничего не найдено» — витрина ЗАПРЕЩАЛА то, что
+    сервер умеет.
+
+    Инвариант: число полей у сторожа ≥ числа полей у отбора. Гейт считает
+    `.includes(` по обе стороны и сверяет.
+    """
+    bad: list[tuple[str, str]] = []
+    worker = read(SRC.parent / "worker.ts") or ""
+    pairs = [("katha", "kathaFindManifest", "KathaScreen.tsx"),
+             ("kirtan", "kirtanFindManifest", "KirtansScreen.tsx")]
+    for dom, fn, screen in pairs:
+        m = re.search(r"async function " + fn + r"\b.*?\n}", worker, re.S)
+        if not m:
+            bad.append(("worker.ts", f"Н089: не найден {fn} — нечем сверить поля отбора"))
+            continue
+        srv = len(re.findall(r"\.includes\(", m.group(0)))
+        t = read(SRC / screen) or ""
+        g = re.search(r"const n = tracks\.filter\(.*?\)\.length;", t, re.S)
+        if not g:
+            bad.append((screen, "Н089: не найден счётчик витрины `const n = tracks.filter(…)`"))
+            continue
+        cli = len(re.findall(r"\.includes\(", g.group(0)))
+        if cli < srv:
+            bad.append((screen, f"Н089: сторож витрины судит по {cli} полю(ям), а сервер отбирает по {srv} — "
+                                f"витрина скажет «ничего не найдено» там, где записи есть ({dom})"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н089", "сторож витрины судит по тем же полям, что и отбор сервера", check_n089),
     ("ЗКН-Н086", "ландшафт — режим: хрома и ширина листа в токенах, боковые вырезы, мера чтения", check_n086),
     ("ЗКН-Н085", "спроектированный ландшафт: оболочка не ломается, лист центрирован на поле", check_n085),
     ("ЗКН-Н084", "оболочка приколота к вьюпорту; body не скроллит — только <main>", check_n084),

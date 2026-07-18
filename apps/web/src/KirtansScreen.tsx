@@ -108,7 +108,11 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   const submit = () => {
     const s = q.trim();
     if (s.length < 2) return;
-    const n = tracks.filter((t) => norm(t.title).includes(norm(s))).length;
+    /* ЗКН-Н089: сторож витрины судит по ТЕМ ЖЕ полям, что и отбор сервера.
+     * Сервер ищет по названию И имени исполнителя; счётчик считал только названия —
+     * запрос «Прабхупада» давал «ничего не найдено» при полной полке записей. */
+    const n = tracks.filter((t) => norm(t.title).includes(norm(s))
+      || norm(artistBySlug(t.artist)?.name ?? "").includes(norm(s))).length;
     setFound({ q: s, n });
     if (n) p.playKirtan(FIND + s, 0, false);
   };

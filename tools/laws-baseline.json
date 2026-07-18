@@ -1,9 +1,9 @@
 {
-  "magic_font_size": 28,
+  "magic_font_size": 26,
   "gates_removed": -53,
   "long_union": 0,
-  "type_errors": 15,
+  "type_errors": 13,
   "bare_urlopen": 24,
-  "hardcoded_hex": 437,
-  "tracked_big_binary": 293
+  "hardcoded_hex": 412,
+  "tracked_big_binary": 7
 }
