@@ -72,7 +72,7 @@ const KeyIco = ({ size = 20 }: IcoProps) => (
  * читались не как сдержанность, а как недоделанность: Apple обходится без них
  * только на ПЛОТНОМ списке.
  */
-const TILE = "var(--color-label-2)";
+const TILE = "var(--color-tile)";
 const PersonIco = () => (<svg {...ico(17)}><circle {...STR} cx="12" cy="8" r="3.6" /><path {...STR} d="M5 19.2c1.3-3.2 4-4.7 7-4.7s5.7 1.5 7 4.7" /></svg>);
 const StepsIco = () => (<svg {...ico(17)}><path {...STR} d="M4 19h4v-6H4zM10 19h4V9h-4zM16 19h4V5h-4z" /></svg>);
 const LockIco = () => (<svg {...ico(17)}><rect {...STR} x="5" y="10.5" width="14" height="9.5" rx="2.4" /><path {...STR} d="M8.4 10.5V7.8a3.6 3.6 0 0 1 7.2 0v2.7" /></svg>);

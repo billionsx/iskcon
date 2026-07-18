@@ -36,14 +36,13 @@ const INK3 = "var(--color-label-3)";
 const FONT = "var(--font-text)";
 
 /* ─────────────────── глифы строк (ЗКН-Д018, один язык с кабинетом) ─────── */
-const TILE = "var(--color-label-2)";
+const TILE = "var(--color-tile)";
 const g = (size = 17) => ({ width: size, height: size, viewBox: "0 0 24 24", "aria-hidden": true as const });
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 const VerseIco = () => (<svg {...g()}><path {...S} d="M4 5.6h6.2c1 0 1.8.8 1.8 1.8V19a2 2 0 0 0-2-1.6H4zM20 5.6h-6.2c-1 0-1.8.8-1.8 1.8V19a2 2 0 0 1 2-1.6H20z" /></svg>);
 const VowIco = () => (<svg {...g()}><path {...S} d="M12 4.4 14.3 9l5.1.7-3.7 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1L4.6 9.7 9.7 9z" /></svg>);
 const BeadsIco = () => (<svg {...g()}><circle {...S} cx="12" cy="6.2" r="2" /><circle {...S} cx="17.6" cy="9.6" r="2" /><circle {...S} cx="17.6" cy="16" r="2" /><circle {...S} cx="12" cy="19.4" r="2" /><circle {...S} cx="6.4" cy="16" r="2" /><circle {...S} cx="6.4" cy="9.6" r="2" /></svg>);
 const DiaryIco = () => (<svg {...g()}><rect {...S} x="5" y="4.4" width="14" height="15.2" rx="2.2" /><path {...S} d="M9 9h6M9 12.6h6M9 16.2h3.6" /></svg>);
-const OfflineIco = () => (<svg {...g()}><path {...S} d="M12 4.6v9.6M8.4 10.8 12 14.4l3.6-3.6" /><path {...S} d="M5 15.6v2.2a1.6 1.6 0 0 0 1.6 1.6h10.8a1.6 1.6 0 0 0 1.6-1.6v-2.2" /></svg>);
 const ChartIco = () => (<svg {...g()}><path {...S} d="M4.6 19h15M7.6 19v-5.4M12 19V7.4M16.4 19v-8.2" /></svg>);
 
 /* ─────────────────────────── утилиты ─────────────────────────── */
@@ -105,8 +104,11 @@ function RoundsRow({ state, onOpen }: { state: SadhanaState; onOpen: () => void 
   const RAD = 58, CIRC = 2 * Math.PI * RAD;
   const frac = Math.min(1, r / Math.max(1, g));
   const read = state.todayRow.reading_min;
-  const bits: string[] = [`серия ${state.stats.currentStreak} ${plural(state.stats.currentStreak, "день", "дня", "дней")}`];
+  // Ноль в серии — не достижение и не новость: молчим, пока серии нет.
+  const bits: string[] = [];
+  if (state.stats.currentStreak > 0) bits.push(`серия ${state.stats.currentStreak} ${plural(state.stats.currentStreak, "день", "дня", "дней")}`);
   if (read > 0) bits.push(`чтение ${fmtMinShort(read)}`);
+  if (!bits.length) bits.push(done ? "норма закрыта" : `до нормы ${g - r} ${plural(g - r, "круг", "круга", "кругов")}`);
   return (
     <button type="button" onClick={onOpen} aria-label="Открыть дневник садханы" className="tap-row"
       style={{
@@ -139,13 +141,21 @@ function RoundsRow({ state, onOpen }: { state: SadhanaState; onOpen: () => void 
 }
 
 /** Четыре числа накопленного — показываются, только когда есть что показать. */
+/**
+ * Накопленное. ПОКАЗЫВАЕМ ТОЛЬКО ЖИВЫЕ ЧИСЛА (ЗКН-Д021).
+ *
+ * Было: четыре ячейки всегда, и у нового человека это «0 · 2 · 0 · 0» — стена
+ * нулей на видном месте. Ноль здесь не информация: он не говорит «ты прочитал
+ * ноль», он говорит «ты никто». Пустая ячейка молчит лучше.
+ */
 function StatStrip({ stats }: { stats: Overview["stats"] }) {
   const items = [
     { value: stats.reading, label: "Прочитано" },
     { value: stats.listening, label: "Прослушано" },
     { value: stats.bookmarks, label: "Сохранено" },
     { value: stats.books, label: "Книг" },
-  ];
+  ].filter((it) => it.value > 0);
+  if (!items.length) return null;
   return (
     <div style={{ display: "flex" }}>
       {items.map((it, i) => (
@@ -242,11 +252,12 @@ export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => voi
           <Row icon={<IconTile tint={TILE}><BeadsIco /></IconTile>}
             title="Счётчик джапы" subtitle="108 бусин, круги и Маха-мантра" onClick={() => go("/japa")} />
           <Row icon={<IconTile tint={TILE}><DiaryIco /></IconTile>}
-            title="Дневник садханы" subtitle="Круги, чтение, подъём — серии и статистика" onClick={() => go("/story")} />
-          {/* ЗКН-Н088 — офлайн переехал из кабинета сюда: это про чтение и
-              слушание, а не про настройки аккаунта. */}
-          <Row icon={<IconTile tint={TILE}><OfflineIco /></IconTile>}
-            title="Загруженное" subtitle="Чтение и слушание без сети" last onClick={() => go("/downloader")} />
+            title="Дневник садханы" subtitle="Круги, чтение, подъём — серии и статистика" last onClick={() => go("/story")} />
+          {/* ЗКН-Н088 — СТРОКА НЕ ОБЕЩАЕТ ТОГО, ЧЕГО ЗА НЕЙ НЕТ.
+              Здесь стояло «Загруженное · Чтение и слушание без сети», а вело
+              это на /downloader — АДМИНСКИЙ загрузчик архива с полем
+              ADMIN_TOKEN. Преданный нажимал строку про офлайн-чтение и упирался
+              в «Доступ оператора». Пока офлайна для человека нет, строки нет. */}
         </Group>
 
         {/* ПРОГРЕСС — накопленное. У нового человека пусто → блока просто нет. */}

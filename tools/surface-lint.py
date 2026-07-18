@@ -98,6 +98,20 @@ GROUP_TOKENS_LIGHT = ("--color-canvas", "--color-card", "--color-separator")
 # ЗКН-Н088 — адреса практики: их место в «Практике», а не в кабинете.
 PRACTICE_PATHS = ("/japa", "/story", "/promise", "/progress", "/verse")
 
+# ── ЗКН-Д020 · АКЦЕНТ ОДИН НА ПРИЛОЖЕНИЕ ──────────────────────────────────
+# Свой «фирменный» цвет раздела — самая заметная потеря целого: экран обета
+# сидел на шафране #DD7A1E рядом с золотым приложением и читался как чужой.
+ACCENT_HEX = re.compile(r"[\"'`](#(?:[dD][dD]7[aA]1[eE]|[fF][fF]9500|[eE][fF]6[cC]00|[fF][fF]7[aA]00))[\"'`]")
+
+# ── ЗКН-Д021 · ЭКРАН ЗА СТРОКОЙ ГОВОРИТ НА ТОМ ЖЕ ЯЗЫКЕ ───────────────────
+# Оглавления (Кабинет, Практика) переведены на язык ЗКН-Д018, а экраны, куда
+# они ведут, остались на серых плашках 2019 года. Долг назван поимённо и
+# может только СОКРАЩАТЬСЯ: новый экран практики на плашках валит гейт.
+PLAQUE_FILL = re.compile(
+    r"background: (?:FILL2?|PLATE|\"var\(--color-glass-(?:thin|regular)\)\""
+    r"|\"var\(--color-fill-[12]\)\"|\"rgba\(120, ?120, ?128)")
+D021_DEBT = {'JapaScreen.tsx': 14, 'SadhanaScreen.tsx': 13, 'VowScreen.tsx': 1, 'MyProgressScreen.tsx': 4, 'DailyVerseScreen.tsx': 3}
+
 
 def blank_block_comments(text: str) -> str:
     """Тело /* … */ → пробелы (переводы строк сохранены), чтобы <CardActionBtns>
@@ -205,6 +219,26 @@ def check_grouped_screen() -> list[str]:
             bad.append(f"apps/web/src/PracticeHub.tsx — ЗКН-Н088: практика потеряла "
                        f"{', '.join(missing)}. Разделы не исчезают при переезде — "
                        f"они меняют место")
+    # ЗКН-Д020 — чужой акцент вместо золота.
+    for f in sorted(SRC.rglob("*.tsx")):
+        t = f.read_text(encoding="utf-8")
+        m = ACCENT_HEX.search(t)
+        if m:
+            line = t.count("\n", 0, m.start()) + 1
+            bad.append(f"apps/web/src/{f.relative_to(SRC)}:{line} — ЗКН-Д020: свой "
+                       f"акцент {m.group(1)} вместо золота. Раздел с собственным "
+                       f"фирменным цветом читается как чужое приложение")
+
+    # ЗКН-Д021 — храповик серых плашек на экранах практики.
+    for name, cap in D021_DEBT.items():
+        p = SRC / name
+        if not p.exists():
+            continue
+        n = len(PLAQUE_FILL.findall(p.read_text(encoding="utf-8")))
+        if n > cap:
+            bad.append(f"apps/web/src/{name} — ЗКН-Д021: серых плашек {n} при "
+                       f"потолке {cap}. Экран за строкой обязан говорить на языке "
+                       f"ЗКН-Д018; долг может только сокращаться")
     return bad
 
 

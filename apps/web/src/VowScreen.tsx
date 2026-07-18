@@ -14,7 +14,14 @@ import {
 import { listCollectiveVows, contributeCollective, type CollectiveVow } from "./collectiveVows";
 import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
 
-const SAFFRON = "#DD7A1E";
+/* ЗКН-Д020 — АКЦЕНТ ПРИЛОЖЕНИЯ ОДИН, И ОН ЗОЛОТОЙ.
+ *
+ * Здесь жил СВОЙ шафран #DD7A1E — 25 употреблений на одном экране: кнопка
+ * «Принять обет», счётчик сангхи, полосы, рамки, чипы. Экран обета выглядел
+ * из другого приложения, и заметно это было мгновенно: рядом золотое всё
+ * остальное. Собственный акцент раздела — это не «характер раздела», это
+ * потеря целого. Акцент берётся из токена, а не заводится на месте. */
+const SAFFRON = "var(--color-gold)";
 const L1 = "var(--color-label)";
 const L2 = "var(--color-label-2)";
 const L3 = "var(--color-label-3)";
@@ -25,7 +32,7 @@ const BG2 = "var(--color-bg-2)";
 
 const STROKE = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 const Back = () => <svg width={24} height={24} viewBox="0 0 24 24" aria-hidden><path {...STROKE} d="M15 5l-7 7 7 7" /></svg>;
-const Check = ({ size = 15 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" d="M5 12.5l4.5 4.5L19 6.5" /></svg>;
+const Check = ({ size = 15 }: { size?: number }) => <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="var(--color-on-gold)" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round" d="M5 12.5l4.5 4.5L19 6.5" /></svg>;
 
 function japaCommitment(r: number): Commitment { return { id: "japa", label: "Джапа", detail: `${r} ${plural(r, "круг", "круга", "кругов")}`, target: r, unit: "кругов" }; }
 
@@ -187,14 +194,14 @@ function VowDashboard({ vow }: { vow: Vow }) {
             </div>
             <div style={{ display: "flex", gap: 10 }}>
               <button type="button" onClick={() => setConfirmClose(null)} style={{ flex: 1, height: 44, borderRadius: 12, border: `0.5px solid ${HAIR}`, background: "none", color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer" }}>Отмена</button>
-              <button type="button" onClick={() => { closeVow(confirmClose); }} style={{ flex: 1, height: 44, borderRadius: 12, border: "none", background: confirmClose === "completed" ? SAFFRON : "#C8473A", color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>
+              <button type="button" onClick={() => { closeVow(confirmClose); }} style={{ flex: 1, height: 44, borderRadius: 12, border: "none", background: confirmClose === "completed" ? SAFFRON : "var(--color-danger-text)", color: "var(--color-on-gold)", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer" }}>
                 {confirmClose === "completed" ? "Завершить" : "Отказаться"}
               </button>
             </div>
           </div>
         ) : (
           <div style={{ display: "flex", gap: 10 }}>
-            <button type="button" onClick={() => setConfirmClose("completed")} style={{ flex: 1, height: 46, borderRadius: 13, border: "none", background: SAFFRON, color: "#fff", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Завершить обет</button>
+            <button type="button" onClick={() => setConfirmClose("completed")} style={{ flex: 1, height: 46, borderRadius: 13, border: "none", background: SAFFRON, color: "var(--color-on-gold)", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Завершить обет</button>
             <button type="button" onClick={() => setConfirmClose("abandoned")} style={{ flexShrink: 0, height: 46, padding: "0 18px", borderRadius: 13, border: `0.5px solid ${HAIR}`, background: "none", color: L2, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Отказаться</button>
           </div>
         )}
@@ -241,7 +248,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
   };
 
   const sectionTitle: React.CSSProperties = { fontFamily: FD, fontSize: "var(--text-callout)", fontWeight: 700, color: L1, margin: "0 0 10px" };
-  const chip = (on: boolean): React.CSSProperties => ({ height: 36, padding: "0 15px", borderRadius: 999, border: on ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, background: on ? SAFFRON : BG2, color: on ? "#fff" : L2, WebkitTapHighlightColor: "transparent" });
+  const chip = (on: boolean): React.CSSProperties => ({ height: 36, padding: "0 15px", borderRadius: 999, border: on ? "none" : `0.5px solid ${HAIR}`, cursor: "pointer", fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, background: on ? SAFFRON : BG2, color: on ? "var(--color-on-gold)" : L2, WebkitTapHighlightColor: "transparent" });
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -321,7 +328,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
           <div style={{ display: "flex", gap: 8 }}>
             <input value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") addCustom(); }} placeholder="Своё служение"
               style={{ flex: 1, minWidth: 0, height: 44, padding: "0 14px", borderRadius: 12, border: `0.5px solid ${HAIR}`, background: BG2, fontFamily: FT, fontSize: "var(--text-subhead)", color: L1, outline: "none" }} />
-            <button type="button" onClick={addCustom} disabled={!customLabel.trim()} aria-label="Добавить служение" style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: "none", background: customLabel.trim() ? SAFFRON : HAIR, color: "#fff", fontSize: "var(--text-title2)", fontWeight: 400, cursor: customLabel.trim() ? "pointer" : "default", lineHeight: 1 }}>+</button>
+            <button type="button" onClick={addCustom} disabled={!customLabel.trim()} aria-label="Добавить служение" style={{ flexShrink: 0, width: 44, height: 44, borderRadius: 12, border: "none", background: customLabel.trim() ? SAFFRON : HAIR, color: "var(--color-on-gold)", fontSize: "var(--text-title2)", fontWeight: 400, cursor: customLabel.trim() ? "pointer" : "default", lineHeight: 1 }}>+</button>
           </div>
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <input type="number" inputMode="numeric" min={2} value={customTarget} onChange={(e) => setCustomTarget(e.target.value)} placeholder="цель/день"
@@ -336,7 +343,7 @@ function VowCreate({ onDone, onCancel }: { onDone: () => void; onCancel: () => v
       {/* действия */}
       <div style={{ display: "flex", gap: 10, paddingTop: 4 }}>
         <button type="button" onClick={onCancel} style={{ flexShrink: 0, height: 50, padding: "0 20px", borderRadius: 14, border: `0.5px solid ${HAIR}`, background: "none", color: L2, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer" }}>Отмена</button>
-        <button type="button" onClick={submit} disabled={!valid} style={{ flex: 1, height: 50, borderRadius: 14, border: "none", background: valid ? SAFFRON : HAIR, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: valid ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
+        <button type="button" onClick={submit} disabled={!valid} style={{ flex: 1, height: 50, borderRadius: 14, border: "none", background: valid ? SAFFRON : HAIR, color: "var(--color-on-gold)", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: valid ? "pointer" : "default", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
       </div>
     </div>
   );
@@ -461,7 +468,7 @@ export default function VowScreen({ onBack }: { onBack: () => void }) {
                   Санкальпа укрепляет духовную практику. Возьмите на себя конкретные служения на выбранный срок — и ведите ежедневный учёт с честным отчётом.
                 </p>
               </div>
-              <button type="button" onClick={() => setCreating(true)} style={{ width: "100%", height: 52, marginTop: 22, borderRadius: 15, border: "none", background: SAFFRON, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
+              <button type="button" onClick={() => setCreating(true)} style={{ width: "100%", height: 52, marginTop: 22, borderRadius: 15, border: "none", background: SAFFRON, color: "var(--color-on-gold)", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>Принять обет</button>
               <CollectiveVowsSection />
               <ArchiveList items={archive} />
             </>
