@@ -154,6 +154,63 @@ function CoverBox({ src, w, h, radius = 10, label }: { src: string | null; w: nu
   );
 }
 
+/* ───────────────── словарь сгруппированного списка ─────────────────
+ * Кабинет лежит на сером сгруппированном фоне, и на нём действует ровно один
+ * словарь — тот же, что в редакторе профиля: контейнер с радиусом 14 и
+ * волосяной линией, БЕЗ тени (тень нужна карточке, парящей над белым; на сером
+ * она делает из списка стопку отдельных плиток), строки внутри одного
+ * контейнера через волосяной разделитель, заголовок группы — мелкий серый.
+ *
+ * Прежде дашборд был собран другим словарём: каждая строка — своя парящая
+ * карточка с тенью, заголовки крупным чёрным (как у раздела контента), под
+ * иконки — цветные плашки (оранжевая, синяя, золотая, серая). Отсюда и вид
+ * «обычного приложения», а не тихого экрана: цвет расходовался на украшение
+ * строк, а золото по стандарту принадлежит только сегодняшнему акценту.
+ */
+const ROW_CSS = `
+.iol-row{transition:background .15s}
+.iol-row:active{background:color-mix(in srgb, var(--color-label) 5%, transparent)}
+@media (hover:hover){.iol-row:hover{background:color-mix(in srgb, var(--color-label) 3%, transparent)}}
+`;
+
+const GROUP: CSSProperties = {
+  background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden",
+};
+const HAIRLINE = { height: "0.5px", background: HAIR, marginLeft: 50 } as CSSProperties;
+
+/** Заголовок группы: мелкий, серый, прописной — не конкурирует с содержимым. */
+function GroupLabel({ title, action }: { title: string; action?: { label: string; onClick: () => void } }) {
+  return (
+    <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: "0 6px", marginBottom: 7 }}>
+      <span style={{ fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: 0.2, color: INK3, fontFamily: FONT }}>{title}</span>
+      {action && (
+        <button onClick={action.onClick} style={{ background: "none", border: "none", padding: 0, color: GOLD, fontSize: "var(--text-footnote)", fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+          {action.label}
+        </button>
+      )}
+    </div>
+  );
+}
+
+/** Строка списка: графитовый глиф без плашки, подпись, шеврон. */
+function Row({ icon, title, sub, onClick, last, tone }: {
+  icon: ReactNode; title: string; sub?: string; onClick: () => void; last?: boolean; tone?: string;
+}) {
+  return (
+    <>
+      <button onClick={onClick} className="iol-row" style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "12px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+        <span style={{ width: 24, flexShrink: 0, display: "grid", placeItems: "center", color: tone ?? INK2 }}>{icon}</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: "var(--text-body)", color: tone ?? INK, fontWeight: 400, lineHeight: 1.3 }}>{title}</span>
+          {sub && <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>{sub}</span>}
+        </span>
+        <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
+      </button>
+      {!last && <div style={HAIRLINE} />}
+    </>
+  );
+}
+
 function SectionTitle({ title, action }: { title: string; action?: { label: string; onClick: () => void } }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", padding: "0 4px", marginBottom: 10 }}>
@@ -170,12 +227,18 @@ function SectionTitle({ title, action }: { title: string; action?: { label: stri
 /* ─────────────────────────── заметки садху ─────────────────────────── */
 
 
+/**
+ * Заметки садху. Пустой список НЕ показывается вовсе: приглашение завести
+ * заметку живёт строкой в группе «С чего начать», а второе объявление о той же
+ * пустоте — во весь экран и с крупной кнопкой — только спорило с первым.
+ */
 function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
   const notes = useNotes();
+  if (!notes.length) return null;
   const recent = [...notes]
     .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.updatedAt - a.updatedAt)
     .slice(0, 6);
-  const cardStyle: CSSProperties = { background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" };
+  const cardStyle: CSSProperties = GROUP;
   // На витрине ⋯ держит быстрые действия (закрепить/поделиться), остальное —
   // в подробной карточке: открываем её.
   const railMenu = (n: Note) => (mid: string) => {
@@ -185,7 +248,7 @@ function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
   };
   return (
     <section>
-      <SectionTitle title="Заметки садху" action={notes.length ? { label: notes.length > recent.length ? `Все · ${notes.length}` : "Все", onClick: () => onOpenPath("/notes") } : undefined} />
+      <GroupLabel title="Заметки садху" action={notes.length ? { label: notes.length > recent.length ? `Все · ${notes.length}` : "Все", onClick: () => onOpenPath("/notes") } : undefined} />
       {recent.length > 0 ? (
         <HScroll>
           {recent.map((n) => (
@@ -499,7 +562,7 @@ function StatStrip({ stats }: { stats: Overview["stats"] }) {
     { value: stats.books, label: "Книг" },
   ];
   return (
-    <div style={{ display: "flex", background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+    <div style={{ ...GROUP, display: "flex" }}>
       {items.map((it, i) => (
         <div key={it.label} style={{ flex: 1, minWidth: 0, padding: "16px 4px", textAlign: "center", borderLeft: i ? `0.5px solid ${HAIR}` : "none" }}>
           <div style={{ fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.5, color: INK, fontFamily: FONT, lineHeight: 1.1 }}>{it.value}</div>
@@ -594,35 +657,28 @@ function ProfileHeader({ onEdit }: { onEdit: () => void }) {
   const level = levelLabel(user);
   const incomplete = !level || !(user?.name || "").trim();
   return (
-    <div style={{ background: SURFACE, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-    <div style={{ display: "flex", alignItems: "center", gap: 14, padding: 16 }}>
-      <div style={{ width: 60, height: 60, borderRadius: "50%", flexShrink: 0, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#E8C84A,#C09400)", color: "#fff", fontSize: "var(--text-title2)", fontWeight: 700, fontFamily: FONT, boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.25)" }}>
-        {initials(user?.name ?? null, user?.email ?? null)}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: -0.3, color: INK, fontFamily: FONT, lineHeight: 1.25, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{display}</div>
-        {user?.spiritualName && <div style={{ marginTop: 1, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLD, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.spiritualName}</div>}
-        {level && <div style={{ marginTop: 3, fontSize: "var(--text-caption)", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase", color: GOLD, fontFamily: FONT }}>{level}</div>}
-        {user?.email && <div style={{ marginTop: 2, fontSize: "var(--text-footnote)", color: INK2, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email}</div>}
-      </div>
-      <button
-        aria-label="Изменить профиль"
-        onClick={onEdit}
-        style={{ flexShrink: 0, width: 38, height: 38, borderRadius: "50%", border: `0.5px solid ${HAIR}`, background: GROUPED, color: INK2, display: "grid", placeItems: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
-      >
-        <PencilIco />
-      </button>
-    </div>
-      {incomplete && (
-        <button
-          onClick={() => window.dispatchEvent(new Event("iskcon:onboarding"))}
-          style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "12px 16px", background: "none", border: "none", borderTop: `0.5px solid ${HAIR}`, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}
-        >
-          <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-footnote)", color: INK2 }}>
-            Укажите ступень практики — приложение подстроится под неё
+    <div style={GROUP}>
+      <button onClick={onEdit} className="iol-row" style={{ display: "flex", width: "100%", alignItems: "center", gap: 13, padding: "14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+        <span style={{ width: 46, height: 46, borderRadius: "50%", flexShrink: 0, display: "grid", placeItems: "center", background: GOLD, color: "var(--color-on-gold)", fontSize: "var(--text-callout)", fontWeight: 600, fontFamily: FONT }}>
+          {initials(user?.name ?? null, user?.email ?? null)}
+        </span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: -0.2, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{display}</span>
+          {user?.spiritualName && <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-footnote)", fontWeight: 600, color: GOLDT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.spiritualName}</span>}
+          <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-footnote)", color: INK3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {level ? `${level} · ${user?.email ?? ""}` : (user?.email ?? "")}
           </span>
-          <span style={{ color: GOLD, fontSize: "var(--text-footnote)", fontWeight: 600, flexShrink: 0 }}>Настроить</span>
-        </button>
+        </span>
+        <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
+      </button>
+      {incomplete && (
+        <>
+          <div style={HAIRLINE} />
+          <button onClick={() => window.dispatchEvent(new Event("iskcon:onboarding"))} className="iol-row" style={{ display: "flex", width: "100%", alignItems: "center", gap: 10, padding: "11px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+            <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-footnote)", color: INK2 }}>Укажите ступень практики — приложение подстроится</span>
+            <span style={{ color: GOLDT, fontSize: "var(--text-footnote)", fontWeight: 600, flexShrink: 0 }}>Настроить</span>
+          </button>
+        </>
       )}
     </div>
   );
@@ -837,8 +893,8 @@ function NotificationsCard() {
 
   return (
     <div>
-      <SectionTitle title="Уведомления" />
-      <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+      <GroupLabel title="Уведомления" />
+      <div style={GROUP}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "13px 14px" }}>
           <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><BellIco /></span>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -946,8 +1002,8 @@ function SecurityCard({ flash }: { flash: (m: string) => void }) {
 
   return (
     <div>
-      <SectionTitle title="Вход и безопасность" />
-      <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+      <GroupLabel title="Вход и безопасность" />
+      <div style={GROUP}>
         {/* почта */}
         <div style={row}>
           {chip("rgba(120,120,128,0.12)", INK2, <MailIco size={17} />)}
@@ -1030,8 +1086,8 @@ function SettingsCard({ onEdit, onDonate, onLogout }: { onEdit: () => void; onDo
   ];
   return (
     <div>
-      <SectionTitle title="Настройки" />
-      <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+      <GroupLabel title="Настройки" />
+      <div style={GROUP}>
         {rows.map((r, i) => (
           <div key={r.label}>
             <button onClick={r.onClick} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
@@ -1104,9 +1160,10 @@ function SadhanaCard({ state, onOpen }: { state: SadhanaState; onOpen: () => voi
   if (read > 0) bits.push(`чтение ${fmtMinShort(read)}`);
   return (
     <button onClick={onOpen} aria-label="Открыть дневник садханы"
-      style={{ width: "100%", display: "flex", alignItems: "center", gap: 16, padding: 16, borderRadius: 18, background: SURFACE, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", fontFamily: FONT }}>
-      <div style={{ position: "relative", flexShrink: 0, width: 76, height: 76 }}>
-        <svg viewBox="0 0 140 140" width="76" height="76" style={{ transform: "rotate(-90deg)" }} aria-hidden>
+      className="iol-row"
+      style={{ width: "100%", display: "flex", alignItems: "center", gap: 14, padding: 14, background: "none", border: "none", cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent", fontFamily: FONT }}>
+      <div style={{ position: "relative", flexShrink: 0, width: 62, height: 62 }}>
+        <svg viewBox="0 0 140 140" width="62" height="62" style={{ transform: "rotate(-90deg)" }} aria-hidden>
           <circle cx="70" cy="70" r={RAD} fill="none" stroke="color-mix(in srgb, var(--color-label) 9%, transparent)" strokeWidth="10" />
           <circle cx="70" cy="70" r={RAD} fill="none" stroke={tone} strokeWidth="10" strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - frac)} style={{ transition: "stroke-dashoffset .35s ease" }} />
         </svg>
@@ -1176,31 +1233,28 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
     !!ov && (ov.continueReading.length > 0 || ov.recentListening.length > 0 || ov.bookmarks.length > 0 || ov.library.length > 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+      <style>{ROW_CSS}</style>
       <ProfileHeader onEdit={() => setEditing(true)} />
 
-      {/* ── СЕГОДНЯ — живая часть кабинета ──────────────────────────────────
-          Круги и обет — одно и то же действие человека в этот день, поэтому
-          они стоят рядом и первыми. Раньше садхана была ТРЕТЬИМ блоком (после
-          напоминания о профиле и стены нулей), а обет жил отдельным разделом
-          «Практика» с единственной строкой внутри: заголовок над одним пунктом
-          не структурирует, а шумит. */}
+      {/* ── СЕГОДНЯ — живое: круги и обет это одно действие человека в этот
+          день, поэтому они В ОДНОЙ группе и первыми. */}
       <section>
-        <SectionTitle title="Сегодня" action={{ label: "Дневник", onClick: () => onOpenPath("/story") }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {sad && <SadhanaCard state={sad} onOpen={() => onOpenPath("/story")} />}
-          <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-            <button onClick={() => onOpenPath("/promise")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
-              <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(221,122,30,0.14)", color: "#DD7A1E" }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 21l-5 2.1 1-5.5-4-3.9 5.5-.8z" /></svg>
-              </span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мой обет</span>
-                <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Санкальпа на срок: служения, ежедневный контроль и отчёт</span>
-              </span>
-              <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
-            </button>
-          </div>
+        <GroupLabel title="Сегодня" action={{ label: "Дневник", onClick: () => onOpenPath("/story") }} />
+        <div style={GROUP}>
+          {sad && (
+            <>
+              <SadhanaCard state={sad} onOpen={() => onOpenPath("/story")} />
+              <div style={HAIRLINE} />
+            </>
+          )}
+          <Row
+            last
+            icon={<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden><path fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 21l-5 2.1 1-5.5-4-3.9 5.5-.8z" /></svg>}
+            title="Мой обет"
+            sub="Санкальпа на срок: служения и ежедневный отчёт"
+            onClick={() => onOpenPath("/promise")}
+          />
         </div>
       </section>
 
@@ -1210,22 +1264,36 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
         <div style={{ display: "flex", justifyContent: "center", padding: "30px 0", color: INK3, fontSize: "var(--text-subhead)", fontFamily: FONT }}>Загружаю…</div>
       )}
 
+      {/* ── ПУСТО — ПРИГЛАШЕНИЕ СТРОКОЙ, А НЕ АФИШЕЙ ────────────────────────
+          Было две афиши подряд во весь экран («Здесь будет ваша садхана» и
+          «Записывайте ценное»), каждая с крупной чёрной пилюлей. Экран у нового
+          человека состоял из объявлений о собственной пустоте, а две тяжёлые
+          кнопки спорили за одно и то же внимание. Теперь — одна тихая группа из
+          двух строк: то же приглашение, вес обычной строки списка. */}
       {loaded && !hasAny && (
-        <div style={{ background: SURFACE, borderRadius: 18, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", padding: "26px 22px", textAlign: "center" }}>
-          <div style={{ width: 52, height: 52, margin: "0 auto 14px", borderRadius: "50%", background: "rgba(210,170,27,0.14)", color: GOLD, display: "grid", placeItems: "center" }}><BookIco size={26} /></div>
-          <div style={{ fontSize: "var(--text-body)", fontWeight: 700, color: INK, fontFamily: FONT, letterSpacing: -0.2 }}>Здесь будет ваша садхана</div>
-          <p style={{ margin: "8px auto 18px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, maxWidth: 280 }}>
-            Закладки, прогресс чтения и прослушанные киртаны появятся, как только вы начнёте.
-          </p>
-          <button onClick={() => onOpenPath("/books")} style={{ height: 46, padding: "0 22px", borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-            Открыть библиотеку
-          </button>
-        </div>
+        <section>
+          <GroupLabel title="С чего начать" />
+          <div style={GROUP}>
+            <Row
+              icon={<BookIco size={19} />}
+              title="Открыть библиотеку"
+              sub="Прогресс чтения и закладки появятся здесь"
+              onClick={() => onOpenPath("/books")}
+            />
+            <Row
+              last
+              icon={<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" /><path d="M14 3v5h5" /></g></svg>}
+              title="Новая заметка"
+              sub="Стих или мысль, которую хочется сохранить"
+              onClick={() => onOpenPath("/notes")}
+            />
+          </div>
+        </section>
       )}
 
       {ov && ov.continueReading.length > 0 && (
         <section>
-          <SectionTitle title="Продолжить чтение" />
+          <GroupLabel title="Продолжить чтение" />
           <HScroll>
             {ov.continueReading.map((it) => (
               <ContinueCard key={`${it.work}:${it.ref}`} item={it} onOpen={onOpenPath} />
@@ -1236,7 +1304,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
 
       {ov && ov.recentListening.length > 0 && (
         <section>
-          <SectionTitle title="Вы слушали" />
+          <GroupLabel title="Вы слушали" />
           <HScroll>
             {ov.recentListening.map((it) => (
               <ListenCard key={`${it.source}:${it.ref}`} item={it} onPlay={resumeListen} />
@@ -1247,8 +1315,8 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
 
       {ov && ov.bookmarks.length > 0 && (
         <section>
-          <SectionTitle title="Закладки" />
-          <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+          <GroupLabel title="Закладки" />
+          <div style={GROUP}>
             {ov.bookmarks.map((it, i) => (
               <BookmarkRow key={`${it.kind}:${it.ref}`} item={it} last={i === ov.bookmarks.length - 1} onOpen={onOpenPath} />
             ))}
@@ -1258,7 +1326,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
 
       {ov && ov.library.length > 0 && (
         <section>
-          <SectionTitle title="Моя библиотека" />
+          <GroupLabel title="Моя библиотека" />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))", gap: 14 }}>
             {ov.library.map((it) => {
               const meta = bookMeta(it.work);
@@ -1275,53 +1343,37 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
 
       <NotesSection onOpenPath={onOpenPath} />
 
-      {/* ── СЛУЖЕНИЕ ────────────────────────────────────────────────────────
-          Стоит после «моего»: сначала человек видит свою практику, потом — куда
-          её приложить. «Мои центры» — управление страницей храма или нама-хатты;
-          гостю и неофиту управлять нечем, поэтому строка появляется со ступени
-          практикующего (ЗКН-Ц1: интерфейс читает ступень, а не показывает всё
-          всем). */}
+      {/* ── ЕЩЁ — одна группа вместо трёх плавающих карточек ───────────────
+          Каталог, свои центры и настройки жили тремя отдельными карточками
+          подряд, и «Настройки» визуально попадали под заголовок «Служение».
+          Строка одного веса в одном контейнере снимает и то, и другое.
+          «Мои центры» — управление страницей храма: гостю и неофиту управлять
+          нечем, строка появляется со ступени практикующего. */}
       <section>
-        <SectionTitle title="Служение" />
-        <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-          <button onClick={() => onOpenPath("/iskcon/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
-            <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(76,110,245,0.14)", color: "#4C6EF5" }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></svg>
-            </span>
-            <span style={{ flex: 1, minWidth: 0 }}>
-              <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Каталог Ятры</span>
-              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храмы, нама-хатты, рестораны и фермы ИСККОН рядом</span>
-            </span>
-            <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
-          </button>
+        <GroupLabel title="Ещё" />
+        <div style={GROUP}>
+          <Row
+            icon={<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s6-5.3 6-10a6 6 0 1 0-12 0c0 4.7 6 10 6 10Z" /><circle cx="12" cy="11" r="2.2" /></g></svg>}
+            title="Каталог Ятры"
+            sub="Храмы, нама-хатты, рестораны и фермы рядом"
+            onClick={() => onOpenPath("/iskcon/centers")}
+          />
           {atLeastLevel(user, "practicing") && (
-            <button onClick={() => onOpenPath("/my/centers")} style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "13px 14px", background: "none", border: "none", borderTop: `0.5px solid ${HAIR}`, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
-              <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><TempleIco size={18} /></span>
-              <span style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мои центры</span>
-                <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на {SITE_HOST}</span>
-              </span>
-              <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
-            </button>
+            <Row
+              icon={<TempleIco size={19} />}
+              title="Мои центры"
+              sub={`Ваша страница на ${SITE_HOST}`}
+              onClick={() => onOpenPath("/my/centers")}
+            />
           )}
+          <Row
+            last
+            icon={<svg width="19" height="19" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><circle cx="12" cy="12" r="3.1" /><path d="M12 3.2v2.1M12 18.7v2.1M20.8 12h-2.1M5.3 12H3.2M18.2 5.8l-1.5 1.5M7.3 16.7l-1.5 1.5M18.2 18.2l-1.5-1.5M7.3 7.3 5.8 5.8" /></g></svg>}
+            title="Настройки"
+            onClick={() => setSettingsOpen(true)}
+          />
         </div>
       </section>
-
-      {/* ── НАСТРОЙКИ УХОДЯТ ИЗ ПОТОКА ──────────────────────────────────────
-          Уведомления, вход и безопасность, настройки были тремя карточками в
-          конце ленты: кабинет заканчивался не человеком, а конфигурацией, и
-          прокрутка до своей библиотеки шла сквозь тумблеры. Теперь один вход,
-          за ним лист — как на всех системных экранах. */}
-      <button
-        onClick={() => setSettingsOpen(true)}
-        style={{ display: "flex", width: "100%", alignItems: "center", gap: 12, padding: "14px", background: SURFACE, border: `0.5px solid ${HAIR}`, borderRadius: 16, boxShadow: "var(--shadow-card)", cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}
-      >
-        <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(120,120,128,0.12)", color: INK2 }}>
-          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden><g fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.4M12 18.8v2.4M21.2 12h-2.4M5.2 12H2.8M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7M18.5 18.5l-1.7-1.7M7.2 7.2 5.5 5.5" /></g></svg>
-        </span>
-        <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Настройки</span>
-        <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
-      </button>
 
       <p style={{ textAlign: "center", fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, margin: 0 }}>{SITE_HOST} · ИСККОН</p>
 
