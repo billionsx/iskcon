@@ -16,12 +16,13 @@ import { api } from "../api";
 import { bookSlug } from "../books";
 import { BOOKS, bookFullTitle } from "../books";
 import { albumById, artistBySlug, albumCover } from "../kirtans";
+import { kathaAlbumById, speakerBySlug } from "../katha";
 import { recordListen } from "../account/track";
 import { replaceUrl } from "../nav";
 import { createWebEngine, type AudioEngine } from "./engine";
 
 export type AudioMode = "plain" | "commentary";
-export type Source = "book" | "kirtan" | "bhajan";
+export type Source = "book" | "kirtan" | "bhajan" | "katha";
 
 export interface Track {
   kind: "intro" | "chapter" | "song";
@@ -48,10 +49,11 @@ export interface Track {
  * и deep-link из избранного (открытие). Разъедутся формы — избранное перестанет
  * находить/открывать трек. Хвост включает статичный ?v=… (AUDIO_CACHE_BUST) и
  * стабилен между деплоями. */
-export function kirtanTrackKey(tr: Track): string {
+export function mediaTrackKey(tr: Track, kind: Source): string {
   const m = (tr.url || "").split("/audio/")[1];
-  return m ? `kirtan:${decodeURIComponent(m)}` : "";
+  return m ? `${kind}:${decodeURIComponent(m)}` : "";
 }
+export function kirtanTrackKey(tr: Track): string { return mediaTrackKey(tr, "kirtan"); }
 interface ModeData { identifier: string; tracks: Track[] }
 export interface CantoRef { canto: number; label: string; tracks: number }
 interface Manifest {
@@ -102,6 +104,8 @@ export interface PlayerApi {
   playChapter(book: string, chapter: number, mode: AudioMode, lila?: string, ref?: string | null): void;
   playKirtan(albumId: string, startIndex?: number, expand?: boolean): void;
   loadKirtan(albumId: string): void;
+  playKatha(albumId: string, startIndex?: number, expand?: boolean): void;
+  loadKatha(albumId: string): void;
   playBhajan(slug: string, startIndex?: number, set?: "lectures"): void;
   // транспорт
   togglePlay(): void;
@@ -200,6 +204,17 @@ function cfgFor(id: string, src: Source): { title: string; cover: string; artist
       title: al?.title ?? "Киртан",
       cover: al ? albumCover(al) : AUDIO_FALLBACK_COVER,
       artist: al ? (artistBySlug(al.artist)?.name ?? "") : "",
+    };
+  }
+  if (src === "katha") {
+    // `all` — вся катха одной очередью; `a:<цикл>` — один цикл; `q:` — найденное.
+    if (id === "all") return { title: "Катха", cover: AUDIO_FALLBACK_COVER, artist: "" };
+    if (id.startsWith("q:")) return { title: `Найдено: ${id.slice(2)}`, cover: AUDIO_FALLBACK_COVER, artist: "" };
+    const al = kathaAlbumById(id.startsWith("a:") ? id.slice(2) : id);
+    return {
+      title: al?.title ?? "Катха",
+      cover: AUDIO_FALLBACK_COVER,
+      artist: al ? (speakerBySlug(al.speaker)?.name ?? "") : "",
     };
   }
   if (src === "bhajan") {
@@ -362,6 +377,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           : want.startsWith("fav:")
           ? `/kirtans/fav/audio?ids=${encodeURIComponent(want.slice(4))}`
           : `/kirtans/${want}/audio`)
+      : src === "katha"
+      ? (want.startsWith("q:")
+          ? `/katha/find/audio?q=${encodeURIComponent(want.slice(2))}`
+          : want.startsWith("a:")
+          ? `/katha/album/audio?id=${encodeURIComponent(want.slice(2))}`
+          : `/katha/all/audio`)
       : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
       : `/books/${want}/audio${scope ? `?canto=${encodeURIComponent(scope)}` : ""}`;
     return fetch(api(path))
@@ -404,12 +425,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     // Телеметрия прослушивания: только при реальном старте (autoplay), не при
     // тихом восстановлении позиции на старте приложения. No-op для гостя.
     if (autoplay && sourceRef.current !== "bhajan") {
-      const isK = sourceRef.current === "kirtan";
+      const isK = sourceRef.current === "kirtan" || sourceRef.current === "katha";
       const cfg = cfgFor(bookRef.current, sourceRef.current);
       let listenRef = t.url;
       try { listenRef = new URL(t.url).pathname; } catch { /* оставляем абсолютный url */ }
       recordListen({
-        source: isK ? "kirtan" : "book",
+        source: sourceRef.current === "katha" ? "katha" : (isK ? "kirtan" : "book"),
         ref: listenRef,
         title: t.title,
         subtitle: isK
@@ -532,6 +553,20 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
 
   function playKirtan(albumId: string, startIndex?: number, expand = true) {
     switchBook(albumId, "kirtan");
+    pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand };
+    restoreRef.current = null;
+    ensureManifest().then((m) => applyPending(m, true));
+  }
+  /* КАТХА. Устройство то же, что у киртанов: цикл — раздел очереди, а не второй
+   * механизм поверх плеера. `loadKatha` показывает список ДО первого нажатия —
+   * иначе встроенный плеер висел бы пустым (манифест грузится вместе со звуком). */
+  function loadKatha(albumId: string) {
+    if (bookRef.current === albumId && manifestRef.current) return;
+    switchBook(albumId, "katha");
+    void ensureManifest();
+  }
+  function playKatha(albumId: string, startIndex?: number, expand = true) {
+    switchBook(albumId, "katha");
     pendingRef.current = { mode: "plain", chapter: null, index: startIndex ?? 0, expand };
     restoreRef.current = null;
     ensureManifest().then((m) => applyPending(m, true));
@@ -698,7 +733,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   function updateMediaSession(t: Track, md: AudioMode) {
     if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
-    const isK = sourceRef.current === "kirtan";
+    const isK = sourceRef.current === "kirtan" || sourceRef.current === "katha";
     const cfg = cfgFor(bookRef.current, sourceRef.current);
     const album = isK
       ? cfg.title
@@ -707,7 +742,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     try {
       ms.metadata = new MediaMetadata({
         title: t.title,
-        artist: isK ? (cfg.artist || "Киртан") : cfg.title,
+        artist: isK ? (cfg.artist || (sourceRef.current === "katha" ? "Катха" : "Киртан")) : cfg.title,
         album,
         artwork: [
           { src: absUrl(cfg.cover), sizes: "512x512", type: "image/jpeg" },
@@ -753,7 +788,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
-    playBook, playChapter, playKirtan, loadKirtan, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setSleep, setEmbeddedVisible: setEmbeddedOn, setMode, jumpTo,
+    playBook, playChapter, playKirtan, loadKirtan, playKatha, loadKatha, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setSleep, setEmbeddedVisible: setEmbeddedOn, setMode, jumpTo,
     open: () => setExpanded(true),   // встроенный плеер раскрывается и до первого нажатия
     close: () => setExpanded(false),
     dismiss,

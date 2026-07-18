@@ -10,7 +10,7 @@ import { ORIGIN as SITE_ORIGIN } from "../routes";
 import { createPortal } from "react-dom";
 import { COVER_FALLBACK, COVER_FALLBACK_DARK } from "../ui/CoverFallback";
 import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
-import { usePlayer, fmtTime, trackSubtitle, kirtanTrackKey, type Track } from "./store";
+import { usePlayer, fmtTime, trackSubtitle, mediaTrackKey, type Track } from "./store";
 import { PlayIcon, PauseIcon, PrevIcon, NextIcon, ChevDownIcon, Back15Icon, Fwd15Icon, ShuffleIcon, RepeatIcon, RepeatOneIcon, RepeatLibraryIcon, RepeatVoiceIcon, MoonIcon, OrderForwardIcon, OrderReverseIcon } from "./icons";
 import { BookHeroCard, ActionBtn } from "../BookHeroCard";
 import { BookMenuSheet } from "../BookMenuSheet";
@@ -101,8 +101,12 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    *
    * Отдельной сетки папок для этого НЕ НУЖНО: пилюли разделов в плеере уже есть —
    * ими сделаны песни, главы и стихи у книг. */
-  const isKirtanQueue = p.kind === "kirtan";
-  if (isKirtanQueue && p.tracks.length > 1) divisions.push({ id: ALL_DIV, label: "Все голоса", count: p.tracks.length });
+  const isKirtanQueue = p.kind === "kirtan" || p.kind === "katha";
+  if (isKirtanQueue && p.tracks.length > 1) {
+    // У катхи разделы — ЦИКЛЫ, и первый псевдо-раздел зовётся своим словом:
+    // «голоса» — про пение, а катху ведёт один рассказчик неделями.
+    divisions.push({ id: ALL_DIV, label: p.kind === "katha" ? "Все катхи" : "Все голоса", count: p.tracks.length });
+  }
 
   const divCount: Record<string, number> = {};
   for (const t of p.tracks) {
@@ -163,9 +167,10 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * тот, что сейчас звучит и лёг на сердце. Без этого «Моё» — пустое обещание.
    *
    * Ключ — путь дорожки в архиве: он уникален и переживает переименования. */
-  const trackKey = (tr: Track | null) => (tr ? kirtanTrackKey(tr) : "");
+  const trackKey = (tr: Track | null) => (tr ? mediaTrackKey(tr, p.kind) : "");
   const favs = useFavorites();
-  const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith("kirtan:")).map((f) => f.key)), [favs]);
+  const favPrefix = p.kind + ":";
+  const favSet = useMemo(() => new Set(favs.filter((f) => f.key.startsWith(favPrefix)).map((f) => f.key)), [favs, favPrefix]);
   /* ═══ ЗКН-Н075 · «МОЁ» СОРТИРУЕТСЯ ПО ВРЕМЕНИ: НОВЫЕ СВЕРХУ ═══
    *
    * Порядок был очередной — по голосам. Это неверно, и вот почему: человек отметил
@@ -177,9 +182,9 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
    * дневник: что я отложил и когда. */
   const favAt = useMemo(() => {
     const m = new Map<string, number>();
-    favs.forEach((f) => { if (f.key.startsWith("kirtan:")) m.set(f.key, f.addedAt || 0); });
+    favs.forEach((f) => { if (f.key.startsWith(favPrefix)) m.set(f.key, f.addedAt || 0); });
     return m;
-  }, [favs]);
+  }, [favs, favPrefix]);
   const favTracks = useMemo(
     () => (isAdHoc
       ? p.tracks
@@ -195,7 +200,8 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
     const on = favSet.has(k);
     // ЗКН-Н077: избранное трека несёт адрес самого трека (?t=<хвост audio>),
     // чтобы открывалось воспроизведение трека, а не библиотека.
-    if (on) removeFavorite(k); else addFavorite(k, { t: tr.title, s: tr.artist ?? "", h: `/kirtans?t=${encodeURIComponent(k.slice(k.indexOf(":") + 1))}` });
+    const home = p.kind === "katha" ? "/katha" : "/kirtans";
+    if (on) removeFavorite(k); else addFavorite(k, { t: tr.title, s: tr.artist ?? "", h: `${home}?t=${encodeURIComponent(k.slice(k.indexOf(":") + 1))}` });
     flash(on ? "Убрано из «Моё»" : "Добавлено в «Моё»");
   };
 
@@ -329,8 +335,9 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   const BOOK = BOOKS[p.book] ?? BOOKS.bg;
   const isAudiobook = !isAdHoc && !!BOOK.noText; // аудиокнига без текста: «глав» нет — показываем название книги
   // Подпись — общая для всех поверхностей плеера (store.trackSubtitle).
+  const adHocFallback = p.kind === "katha" ? "Катха" : isKirtan ? "Киртан" : "Бхаджан";
   const sub = isAdHoc
-    ? (p.artist || (isKirtan ? "Киртан" : "Бхаджан"))
+    ? (p.artist || adHocFallback)
     : isAudiobook && !p.track?.lilaLabel && p.track?.chapter == null
       ? bookFullTitle(BOOK)
       : trackSubtitle(p.track, p.mode, p.hasCommentary);
@@ -341,7 +348,8 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
 
   const ORIGIN = SITE_ORIGIN;
   const artistSlug = isKirtan ? (albumById(p.book)?.artist ?? "") : "";
-  const kirtanUrl = artistSlug ? url(ROUTES.kirtanArtist(artistSlug)) : ORIGIN;
+  const kirtanUrl = p.kind === "katha" ? url(ROUTES.katha())
+    : artistSlug ? url(ROUTES.kirtanArtist(artistSlug)) : ORIGIN;
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;
   const isChapter = ch != null;
   const bookUrl = url(ROUTES.book(p.book)) + "?listen";
@@ -383,8 +391,8 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
           kind: "kirtan",
           ref: `${p.kind}:${p.book}`,
           title: p.bookTitle,
-          subtitle: `${p.track?.title ? p.track.title + " · " : ""}${p.artist || (isKirtan ? "Киртан" : "Бхаджан")}`,
-          href: isKirtan ? (kirtanUrl.replace(ORIGIN, "") || "/kirtans") : (p.book || "/"),
+          subtitle: `${p.track?.title ? p.track.title + " · " : ""}${p.artist || adHocFallback}`,
+          href: isKirtan || p.kind === "katha" ? (kirtanUrl.replace(ORIGIN, "") || "/kirtans") : (p.book || "/"),
         });
       } else {
         requestNote({

@@ -24,6 +24,7 @@ export const EntityPage = lazy(() => import("./EntityPage"));
 export const AccountScreen = lazy(() => import("./AccountScreen"));
 export const BooksHub = lazy(() => import("./BooksHub"));
 export const KirtansScreen = lazy(() => import("./KirtansScreen"));
+export const KathaScreen = lazy(() => import("./KathaScreen"));
 export const AcharyaScreen = lazy(() => import("./AcharyaScreen"));
 export const PracticeHub = lazy(() => import("./PracticeHub"));
 export const DhamaScreen = lazy(() => import("./dhama/DhamaScreen"));

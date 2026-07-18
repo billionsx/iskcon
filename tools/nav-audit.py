@@ -70,8 +70,9 @@ def check_n004():
     return bad
 
 
-#: ЗКН-Н007 — порядок утверждён основателем 13.07.2026. Правится ТОЛЬКО им.
-BOG_ORDER = ["books", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"]
+#: ЗКН-Н007 — порядок утверждён основателем 13.07.2026; «Катха» добавлена после
+#: «Книг» 18.07.2026. Правится ТОЛЬКО основателем.
+BOG_ORDER = ["books", "katha", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"]
 
 
 def check_n007():

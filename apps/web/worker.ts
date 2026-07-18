@@ -1117,6 +1117,66 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
   return json({ book: "all", kind: "kirtan", modes: { plain: { identifier: "kirtans-all", tracks } } });
 }
 
+/* ══════════════════ КАТХА ══════════════════
+ *
+ * Устройство то же, что у киртанов, и намеренно: цикл катхи — РАЗДЕЛ ОЧЕРЕДИ
+ * (`group`/`groupLabel`), а не отдельный механизм. Плеер уже умеет разделы —
+ * ими сделаны песни и главы у книг. Второй способ делать то же самое кончается
+ * тем, что экран и очередь расходятся.
+ *
+ * Порядок дорожек ОДИН И ТОТ ЖЕ здесь и в `/api/katha` (ORDER BY цикл, sort):
+ * разойдутся — витрина пошлёт индекс, а заиграет не то.
+ */
+async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
+  const stmt = env.DB.prepare(
+    `SELECT t.identifier, t.file, t.title, t.duration, t.album_id, t.speaker_slug,
+            b.title AS album, b.sort AS bsort, s.name AS speaker
+       FROM katha_tracks t
+       LEFT JOIN katha_albums b ON b.id = t.album_id
+       LEFT JOIN katha_speakers s ON s.slug = t.speaker_slug
+      ${where}
+      ORDER BY COALESCE(b.sort, 9999), b.title, t.sort, t.file`
+  );
+  const res = await (binds.length ? stmt.bind(...binds) : stmt).all<{
+    identifier: string; file: string; title: string; duration: number | null;
+    album_id: string; speaker_slug: string; album: string | null; speaker: string | null;
+  }>();
+  return res.results || [];
+}
+
+function kathaTracksToAudio(rows: Awaited<ReturnType<typeof kathaTrackRows>>, origin: string): AudioTrack[] {
+  return rows.map((r, i) => ({
+    kind: "song" as const, pos: i, chapter: null,
+    title: r.title, file: r.file,
+    url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
+    durationSec: r.duration || 0,
+    artist: r.speaker ?? "", album: r.album ?? "Катха",
+    group: r.album_id || "katha",
+    groupLabel: r.album ?? "Катха",
+  }));
+}
+
+async function kathaAllManifest(env: Env, origin: string): Promise<Response> {
+  const rows = await kathaTrackRows(env);
+  return json({ book: "all", kind: "katha", modes: { plain: { identifier: "katha-all", tracks: kathaTracksToAudio(rows, origin) } } });
+}
+
+async function kathaAlbumManifest(env: Env, origin: string, id: string): Promise<Response> {
+  const rows = await kathaTrackRows(env, "WHERE t.album_id = ?1", [id]);
+  return json({ book: `a:${id}`, kind: "katha", modes: { plain: { identifier: "katha-" + id, tracks: kathaTracksToAudio(rows, origin) } } });
+}
+
+/** ⚠️ Фильтруем В JS: SQLite `lower()` кириллицу НЕ ПОНИМАЕТ, и «Гопи» с «гопи»
+ *  для него разные слова — половина запросов молча не находила бы ничего. */
+async function kathaFindManifest(env: Env, origin: string, q: string): Promise<Response> {
+  const rows = await kathaTrackRows(env);
+  const s = q.toLowerCase();
+  const hit = rows.filter((r) => (r.title || "").toLowerCase().includes(s)
+    || (r.album || "").toLowerCase().includes(s)
+    || (r.speaker || "").toLowerCase().includes(s));
+  return json({ book: `q:${q}`, kind: "katha", modes: { plain: { identifier: "katha-find", tracks: kathaTracksToAudio(hit, origin) } } });
+}
+
 /**
  * ПОИСК — ЭТО СВОЙ АЛЬБОМ, А НЕ ФИЛЬТР СПИСКА.
  *
@@ -2241,6 +2301,52 @@ export default {
     const bookMetaM = url.pathname.match(/^\/api\/books\/([a-z0-9-]+)\/meta$/);
     if (bookMetaM) {
       return bookMetaResponse(env, bookMetaM[1]);
+    }
+
+    // ── КАТХА: реестр и очереди (вся катха · один цикл · найденное) ──
+    if (url.pathname === "/api/katha") {
+      const [sRes, aRes, tRes] = await Promise.all([
+        env.DB.prepare(
+          `SELECT slug, name, full, role, era, origin, bio, mono, accent, entity_id
+             FROM katha_speakers ORDER BY sort, name`
+        ).all<{ slug: string; name: string; full: string | null; role: string | null; era: string | null; origin: string | null; bio: string | null; mono: string | null; accent: number; entity_id: string | null }>(),
+        env.DB.prepare(
+          `SELECT b.id, b.speaker_slug, b.title, b.archive, b.year, b.note,
+                  (SELECT COUNT(*) FROM katha_tracks k WHERE k.album_id = b.id) AS n
+             FROM katha_albums b ORDER BY b.sort, b.title`
+        ).all<{ id: string; speaker_slug: string; title: string; archive: string | null; year: string | null; note: string | null; n: number }>(),
+        env.DB.prepare(
+          `SELECT t.id, t.speaker_slug, t.album_id, t.identifier, t.file, t.title, t.duration
+             FROM katha_tracks t LEFT JOIN katha_albums b ON b.id = t.album_id
+            ORDER BY COALESCE(b.sort, 9999), b.title, t.sort, t.file`
+        ).all<{ id: string; speaker_slug: string; album_id: string; identifier: string; file: string; title: string; duration: number | null }>(),
+      ]);
+      const speakers = (sRes.results || []).map((r) => ({
+        slug: r.slug, name: r.name, full: r.full ?? undefined, role: r.role ?? "",
+        era: r.era ?? undefined, origin: r.origin ?? undefined, bio: r.bio ?? "",
+        mono: r.mono ?? "", accent: !!r.accent, entityId: r.entity_id ?? undefined,
+      }));
+      // Пустой цикл в витрине — обещание без звука. Показываем те, где что-то залито.
+      const albums = (aRes.results || []).filter((r) => r.n > 0).map((r) => ({
+        id: r.id, speaker: r.speaker_slug, title: r.title, archive: r.archive ?? undefined,
+        year: r.year ?? undefined, note: r.note ?? undefined, n: r.n,
+      }));
+      const tracks = (tRes.results || []).map((r) => ({
+        id: r.id, speaker: r.speaker_slug, album: r.album_id, identifier: r.identifier,
+        file: r.file, title: r.title, duration: r.duration ?? 0,
+      }));
+      return json({ speakers, albums, tracks });
+    }
+    if (url.pathname === "/api/katha/all/audio") {
+      return kathaAllManifest(env, url.origin);
+    }
+    if (url.pathname === "/api/katha/album/audio") {
+      return kathaAlbumManifest(env, url.origin, url.searchParams.get("id") || "");
+    }
+    if (url.pathname === "/api/katha/find/audio") {
+      const q = url.searchParams.get("q") || "";
+      if (!q.trim()) return json({ book: "q:", kind: "katha", modes: { plain: { identifier: "", tracks: [] } } });
+      return kathaFindManifest(env, url.origin, q);
     }
 
     // GET /api/kirtans/:albumId/audio → трек-лист альбома киртанов/бхаджанов (live из IA)

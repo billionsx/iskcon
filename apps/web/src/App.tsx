@@ -7,7 +7,7 @@
 import { useState, useRef, useEffect, useLayoutEffect, Suspense, type ReactNode } from "react";
 import type { SVGProps, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from "react";
 import {
-  HomeScreen, EntityPage, AccountScreen, BooksHub, KirtansScreen, AcharyaScreen, PracticeHub, DhamaScreen,
+  HomeScreen, EntityPage, AccountScreen, BooksHub, KirtansScreen, KathaScreen, AcharyaScreen, PracticeHub, DhamaScreen,
   BookDetailPage, BhajanDetailPage, KirtanArtistPage, ContentDetailPage, SearchScreen, FavoritesScreen,
   NotesScreen, NoteDetail, BookLoaderPage, CartScreen, JapaScreen, SadhanaScreen, VowScreen, DarshanScreen,
   DownloaderScreen, StoriesToolScreen, DailyVerseScreen, EkadashiScreen, MyProgressScreen,
@@ -786,15 +786,15 @@ const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "bhagavatam-lila",
  * ЗКН-Н045 — ПОРЯДОК, РЕЙКА И УМОЛЧАНИЕ — ИЗ ОДНОГО СПИСКА.
  * Рейка больше не пишется руками, и умолчание зала не записывается отдельно:
  * оба ВЫВОДЯТСЯ отсюда. Переставил список — переставилось всё. */
-const BOG_SUBS = ["books", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"] as const;
+const BOG_SUBS = ["books", "katha", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"] as const;
 const BOG_LABEL: Record<string, string> = {
-  books: "Книги", lichnosti: "Личности", bhajans: "Бхаджаны",
+  books: "Книги", katha: "Катха", lichnosti: "Личности", bhajans: "Бхаджаны",
   kirtans: "Киртаны", dhama: "Дхама", prasad: "Прасад",
 };
 /* ЗКН-Н041: писатель и читатель адреса — ОДИН словарь. Личности живут на /hero
  * (историческое имя витрины), остальные витрины — в корне под своим id. */
 const BOG_PATH: Record<string, string> = {
-  books: "/books", lichnosti: "/hero", bhajans: "/bhajans",
+  books: "/books", katha: "/katha", lichnosti: "/hero", bhajans: "/bhajans",
   kirtans: "/kirtans", dhama: "/dhama", prasad: "/prasad",
 };
 const BOG_TABS = BOG_SUBS.map((id) => ({ id, label: BOG_LABEL[id] }));
@@ -955,6 +955,7 @@ function BogatstvaHall({ onOpenBook, onBookMenu, onOpenEntity, onOpenCollection,
       )}
       {sub === "dhama" && <DhamaScreen onOpen={(id) => onOpenPath("/dhama/" + id)} onOpenTirtha={(d, t) => onOpenPath("/dhama/" + d + "/" + t)} />}
       {sub === "kirtans" && <KirtansScreen onOpenArtist={onOpenArtist} onOpenBhajan={onOpenBhajan} onOpenCatalog={onOpenCatalog} />}
+      {sub === "katha" && <KathaScreen />}
       </div>
     </div>
   );
@@ -1295,7 +1296,7 @@ const RESERVED: readonly string[] = [
     place: "iskcon", doc: "iskcon", post: "iskcon", restaurant: "iskcon",
     // Богатства (включая лилы и кластеры личностей — они живут в корне)
     hero: "bogatstva", books: "bogatstva", bhajans: "bogatstva",
-    kirtans: "bogatstva", prasad: "bogatstva", dhama: "bogatstva",
+    kirtans: "bogatstva", katha: "bogatstva", prasad: "bogatstva", dhama: "bogatstva",
     ...Object.fromEntries(LILA_ROOTS.map((r) => [r, "bogatstva"])),
     // Царства
     krishna: "krishna", gauranga: "gauranga",

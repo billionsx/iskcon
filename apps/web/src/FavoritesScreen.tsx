@@ -32,12 +32,13 @@ const GOLDT = "#9c7c15";
 const RED = "#FF3B30";
 
 /* ── категории ── */
-type CatKey = "book" | "chapter" | "verse" | "kirtan" | "bhajan" | "entity" | "centre" | "restaurant" | "doc" | "feed" | "other";
-const CAT_ORDER: CatKey[] = ["book", "chapter", "verse", "kirtan", "bhajan", "entity", "centre", "restaurant", "doc", "feed", "other"];
+type CatKey = "book" | "chapter" | "verse" | "katha" | "kirtan" | "bhajan" | "entity" | "centre" | "restaurant" | "doc" | "feed" | "other";
+const CAT_ORDER: CatKey[] = ["book", "chapter", "verse", "katha", "kirtan", "bhajan", "entity", "centre", "restaurant", "doc", "feed", "other"];
 const CAT_META: Record<CatKey, { label: string; accent: string }> = {
   book: { label: "Книги", accent: "var(--color-gold)" },
   chapter: { label: "Главы", accent: "#0CA678" },
   verse: { label: "Стихи", accent: "#E8920C" },
+  katha: { label: "Катха", accent: "#B05CD6" },
   kirtan: { label: "Киртаны", accent: "#E64980" },
   bhajan: { label: "Бхаджаны", accent: "#7048E8" },
   entity: { label: "Герои", accent: "#4C6EF5" },
@@ -57,6 +58,7 @@ function catOf(type: string): CatKey {
   if (type === "restaurant") return "restaurant";
   if (type === "doc") return "doc";
   if (type === "post") return "feed";
+  if (type.indexOf("katha") === 0) return "katha";
   if (type.indexOf("kirtan") === 0) return "kirtan";
   return "other";
 }
@@ -72,6 +74,8 @@ function CatIcon({ cat, size = 22 }: { cat: CatKey; size?: number }) {
       return <svg {...p}><path {...STROKE} d="M7 4h10a1 1 0 0 1 1 1v15l-6-3.4L6 20V5a1 1 0 0 1 1-1Z" /></svg>;
     case "verse":
       return <svg {...p}><path {...STROKE} d="M9.5 7.5C7.6 8 6.3 9.5 6.3 11.6c0 1.7 1.1 2.9 2.6 2.9 1.3 0 2.3-.9 2.3-2.2 0-1.2-.8-2-1.9-2-.2 0-.5 0-.6.1.1-1 .9-1.8 2-2.1ZM16.4 7.5c-1.9.5-3.2 2-3.2 4.1 0 1.7 1.1 2.9 2.6 2.9 1.3 0 2.3-.9 2.3-2.2 0-1.2-.8-2-1.9-2-.2 0-.5 0-.6.1.1-1 .9-1.8 2-2.1Z" /></svg>;
+    case "katha":
+      return <svg {...p}><path {...STROKE} d="M4.8 6.2h5.4a1.8 1.8 0 0 1 1.8 1.8v10a1.5 1.5 0 0 0-1.5-1.5H4.8Z" /><path {...STROKE} d="M19.2 6.2h-5.4A1.8 1.8 0 0 0 12 8v10a1.5 1.5 0 0 1 1.5-1.5h5.7Z" /><path {...STROKE} d="M16.4 2.9c.9.8 1.4 1.6 1.4 2.4M19.2 2c1.2 1.1 1.9 2.2 1.9 3.3" /></svg>;
     case "kirtan":
       return <svg {...p}><circle {...STROKE} cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="2.1" fill="currentColor" /></svg>;
     case "bhajan":
@@ -134,6 +138,7 @@ function hrefFor(it: FavItem): string | null {
   // ЗКН-Н077: киртан-избранное ведёт к самому треку (?t=<хвост audio из ключа>),
   // а не к библиотеке. id = хвост ключа kirtan:<хвост> → работает и для старых
   // записей без сохранённого h.
+  if (type.indexOf("katha") === 0) return id ? `/katha?t=${encodeURIComponent(id)}` : "/katha";
   if (type.indexOf("kirtan") === 0) return id ? `/kirtans?t=${encodeURIComponent(id)}` : "/kirtans";
   return null;
 }

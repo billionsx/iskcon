@@ -122,6 +122,7 @@ export const ROUTES = {
   books: () => "/books",
   bhajans: (slug?: string) => (slug ? `/bhajans/${slug}` : "/bhajans"),
   kirtans: (slug?: string) => (slug ? `/kirtans/${slug}` : "/kirtans"),
+  katha: (albumId?: string) => (albumId ? `/katha/${albumId}` : "/katha"),
   prasad: () => "/prasad",
   dhama: (dhamaId?: string, tirthaId?: string) =>
     ["/dhama", dhamaId, tirthaId].filter(Boolean).join("/"),
@@ -169,7 +170,7 @@ export const ROOTS = [
   "sadhana", "japa", "story", "verse", "promise", "progress", "darshan",
   "calendar", "ekadashi", "id",
   // богатства
-  "hero", "books", "bhajans", "kirtans", "prasad", "dhama",
+  "hero", "books", "katha", "bhajans", "kirtans", "prasad", "dhama",
   // лилы и кластеры В КОРНЕ (решение основателя)
   // ⚠️ advaita и nityananda в корень НЕЛЬЗЯ — это Адвайта Ачарья и Нитьянанда
   // Прабху, живые личности. Корень принадлежит им.
@@ -249,7 +250,7 @@ export function url(path: string): string {
 export function allCanonicalPaths(): string[] {
   return [
     ROUTES.home(), ROUTES.practice(), ROUTES.calendar(), ROUTES.account(),
-    ROUTES.dhana(), ROUTES.books(), ROUTES.bhajans(), ROUTES.kirtans(),
+    ROUTES.dhana(), ROUTES.books(), ROUTES.katha(), ROUTES.bhajans(), ROUTES.kirtans(),
     ROUTES.prasad(), ROUTES.dhama(), ROUTES.iskcon(),
     ROUTES.krishna(), ROUTES.gauranga(), ROUTES.cookbook(),
   ];
