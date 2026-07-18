@@ -615,8 +615,10 @@ def check_pl026() -> list:
     txt = y.read_text(encoding="utf-8")
     if 'PREV="${{ inputs.note }}"' not in txt:
         bad.append((str(y.relative_to(ROOT)), "звено не получает прошлый счётчик (PREV) — ЗКН-Пл026"))
-    if '"$LEFT" = "$PREV"' not in txt:
-        bad.append((str(y.relative_to(ROOT)), "нет остановки при незыблемом счётчике — ЗКН-Пл026"))
+    if '"$LEFT" = "${PREV%!}"' not in txt:
+        bad.append((str(y.relative_to(ROOT)), "нет сверки счётчика с прошлым звеном — ЗКН-Пл026"))
+    if 'exit 0' not in txt or '"${PREV%!}" != "$PREV"' not in txt:
+        bad.append((str(y.relative_to(ROOT)), "нет остановки на втором топтании подряд — ЗКН-Пл026"))
     return bad
 
 
