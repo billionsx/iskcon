@@ -56,16 +56,17 @@ function codeLetter(code: string, purpose: "reset" | "verify"): { subject: strin
 }
 
 /** Отправка кода. true — письмо принято хотя бы одним транспортом. */
-export async function sendCodeMail(env: MailEnv, to: string, code: string, purpose: "reset" | "verify"): Promise<boolean> {
+export async function sendCodeMail(env: MailEnv, to: string, code: string, purpose: "reset" | "verify", apiKey?: string): Promise<boolean> {
   const { subject, text, html } = codeLetter(code, purpose);
   const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
 
   // 1) Resend — произвольные адресаты.
-  if (env.RESEND_API_KEY) {
+  const resendKey = apiKey || env.RESEND_API_KEY;
+  if (resendKey) {
     try {
       const r = await fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({ from: `${FROM_NAME} <${fromAddr}>`, to: [to], subject, text, html }),
       });
       if (r.ok) return true;

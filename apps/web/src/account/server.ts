@@ -418,9 +418,12 @@ async function issueCode(env: DB, email: string, purpose: "reset" | "verify"): P
       .prepare(`INSERT INTO auth_codes (id, email, code_hash, purpose, expires_at) VALUES (?1,?2,?3,?4, datetime('now','+${CODE_TTL_MIN} minutes'))`)
       .bind(hexId(), email, await sha256(code), purpose),
   ]);
+  // Ключ Resend живёт в app_config (как VAPID): включается без деплоя и без
+  // wrangler; секрет воркера RESEND_API_KEY остаётся резервом.
+  const keyRow = await env.DB.prepare(`SELECT value FROM app_config WHERE key = 'resend_api_key' LIMIT 1`).first<{ value: string }>().catch(() => null);
   // Потолок ожидания почты: медленный SMTP-шлюз не должен вешать ответ формы.
   const sent = await Promise.race([
-    sendCodeMail(env, email, code, purpose),
+    sendCodeMail(env, email, code, purpose, keyRow?.value?.trim() || undefined),
     new Promise<boolean>((r) => setTimeout(() => r(false), 3500)),
   ]).catch(() => false);
   return sent;
