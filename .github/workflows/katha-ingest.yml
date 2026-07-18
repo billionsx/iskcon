@@ -1,4 +1,4 @@
-# КАТХА · ЗАЛИВКА (@radhagovindasw → archive.org → плеер)
+# КАТХА · ЗАЛИВКА (каналы катхи → archive.org → плеер)
 #
 # Исполняет карту tools/tg-archive/katha_plan.json — альбом, имя файла в архиве и
 # название дорожки решены ДО заливки и лежат в репозитории (ЗКН-Пл010).
@@ -18,6 +18,9 @@ on:
     inputs:
       note:
         description: "(служебное) счётчик самоцепочки"
+        default: ""
+      speaker:
+        description: "Только один рассказчик (slug; пусто = все)"
         default: ""
 
 permissions:
@@ -43,7 +46,7 @@ jobs:
           TG_API_ID: ${{ secrets.TG_API_ID }}
           TG_API_HASH: ${{ secrets.TG_API_HASH }}
           TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
-          TG_CHANNEL: "@radhagovindasw"
+          ONLY_SPEAKER: ${{ inputs.speaker }}
           IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
           IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -59,6 +62,7 @@ jobs:
         working-directory: tools/tg-archive
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ONLY_SPEAKER: ${{ inputs.speaker }}
         run: python katha_ingest.py verify
 
       - name: Продолжить, если осталось
@@ -71,4 +75,4 @@ jobs:
           curl -s -X POST -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/katha-ingest.yml/dispatches" \
-            -d "{\"ref\":\"main\",\"inputs\":{\"note\":\"$LEFT\"}}"
+            -d "{\"ref\":\"main\",\"inputs\":{\"note\":\"$LEFT\",\"speaker\":\"${{ inputs.speaker }}\"}}"

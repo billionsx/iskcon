@@ -41,7 +41,10 @@ TOKEN = os.getenv("CLOUDFLARE_API_TOKEN") or ""
 BUDGET = float(os.getenv("BUDGET_MIN") or 300) * 60
 DL_PARALLEL = int(os.getenv("DL_PARALLEL") or 8)
 IA_PARALLEL = int(os.getenv("IA_PARALLEL") or 5)
-CHANNEL = os.getenv("TG_CHANNEL") or "@radhagovindasw"
+# Канал БОЛЬШЕ НЕ КОНСТАНТА: он записан у каждого альбома карты. Пока он жил
+# здесь, второй рассказчик означал бы второй файл — а второй файл расходится с
+# первым на первой же правке. ONLY_SPEAKER сужает прогон до одного голоса.
+ONLY = (os.getenv("ONLY_SPEAKER") or "").strip()
 WORK = Path("/tmp/katha")
 START = time.time()
 
@@ -98,6 +101,63 @@ def ia_files(identifier: str) -> dict:
     return out
 
 
+SPEAKERS = {
+    "prabhupada": {
+        "name": "Шрила Прабхупада",
+        # ЗКН-И004: полный титул — ПРОПИСЬЮ. Полусокращённая форма «А.Ч. …»
+        # запрещена: это ни полный титул, ни краткая форма.
+        "full": "Его Божественная Милость Абхай Чаранаравинда Бхактиведанта Свами "
+                "Шрила Прабхупада, Ачарья-основатель Международного общества "
+                "сознания Кришны, ИСККОН",
+        "role": "Ачарья-основатель ИСККОН",
+        "era": "1896–1977",
+        "origin": "Калькутта · Вриндаван",
+        "bio": "Записи 1966–1976 годов: лекции по «Шримад-Бхагаватам», «Бхагавад-гите» "
+               "и «Шри Чайтанья-чаритамрите», утренние прогулки, беседы и интервью — "
+               "голос, которым Гауранга Лила пришла на Запад.",
+        "mono": "Шрила Прабхупада", "accent": 1, "entity_id": "prabhupada", "sort": 10,
+    },
+    "radha-govinda-goswami": {
+        "name": "Радха Говинда Госвами Махарадж",
+        "role": "Санньяси ИСККОН · рассказчик Шримад-Бхагаватам",
+        "mono": "Радха Говинда", "accent": 0, "entity_id": "radha-govinda-swami", "sort": 20,
+    },
+}
+
+
+def sync_catalog(albums: list) -> None:
+    """Рассказчики и альбомы — ИЗ КАРТЫ, а не руками в базе.
+
+    Раньше строки `katha_speakers`/`katha_albums` заводились прямой правкой D1:
+    карта говорила одно, витрина показывала другое, и найти рассогласование
+    можно было только глазами. Теперь карта — единственный источник.
+    """
+    seen = []
+    for al in albums:
+        if al["speaker"] not in seen:
+            seen.append(al["speaker"])
+    for slug in seen:
+        s = SPEAKERS.get(slug)
+        if not s:
+            continue
+        d1("""INSERT INTO katha_speakers (slug, name, full, role, era, origin, bio, mono, accent, entity_id, sort)
+              VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11)
+              ON CONFLICT(slug) DO UPDATE SET name=excluded.name, full=excluded.full,
+                role=excluded.role, era=excluded.era, origin=excluded.origin, bio=excluded.bio,
+                mono=excluded.mono, accent=excluded.accent, entity_id=excluded.entity_id,
+                sort=excluded.sort""",
+           [slug, s["name"], s.get("full"), s.get("role"), s.get("era"), s.get("origin"),
+            s.get("bio"), s.get("mono"), s.get("accent", 0), s.get("entity_id"), s.get("sort", 50)])
+    for i, al in enumerate(albums, 1):
+        base = SPEAKERS.get(al["speaker"], {}).get("sort", 50) * 100
+        d1("""INSERT INTO katha_albums (id, speaker_slug, title, archive, sort)
+              VALUES (?1,?2,?3,?4,?5)
+              ON CONFLICT(id) DO UPDATE SET speaker_slug=excluded.speaker_slug,
+                title=excluded.title, archive=excluded.archive, sort=excluded.sort""",
+           [al["id"], al["speaker"], al["title"], al["identifier"], base + i])
+    print("::notice::каталог сверен: рассказчиков %d · альбомов %d" % (len(seen), len(albums)))
+
+
 def register(al: dict, t: dict, dur: int):
     d1("""INSERT INTO katha_tracks (id, speaker_slug, album_id, identifier, file, title, duration, msg_id, sort)
           VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)
@@ -114,24 +174,28 @@ async def main_run() -> int:
     from telethon.errors import FloodWaitError
 
     p = plan()
-    albums = p["albums"]
-    by_msg, have = {}, {}
+    albums = [a for a in p["albums"] if not ONLY or a["speaker"] == ONLY]
+    sync_catalog(albums)
+    have, by_channel = {}, {}
+    n_tracks = 0
     for al in albums:
         have[al["identifier"]] = ia_files(al["identifier"])
+        by_channel.setdefault(al["channel"], {})
         for t in al["tracks"]:
-            by_msg[t["msg_id"]] = (al, t)
+            by_channel[al["channel"]][t["msg_id"]] = (al, t)
+            n_tracks += 1
     already = sum(len(v) for v in have.values())
-    print("::notice::альбомов %d · записей %d · в архиве уже %d"
-          % (len(albums), len(by_msg), already))
+    print("::notice::каналов %d · альбомов %d · записей %d · в архиве уже %d"
+          % (len(by_channel), len(albums), n_tracks, already))
 
     WORK.mkdir(parents=True, exist_ok=True)
     ak, sk = os.environ["IA_ACCESS_KEY"], os.environ["IA_SECRET_KEY"]
     loop = asyncio.get_running_loop()
     pool = ThreadPoolExecutor(max_workers=IA_PARALLEL + 1)
     sem_up = asyncio.Semaphore(IA_PARALLEL)
-    speaker = p["speaker_name"]
 
     def do_upload(al: dict, remote: str, path: str):
+        speaker = al["speaker_name"]
         resp = ia.upload(
             al["identifier"], files={remote: path},
             metadata={
@@ -142,7 +206,7 @@ async def main_run() -> int:
                 "subject": ["katha", "srimad bhagavatam", "iskcon", "gaudiya vaishnava",
                             "bhakti", "катха", "Шримад-Бхагаватам"],
                 "language": ["rus"],
-                "description": "%s. %s. Бхагавата-катха на русском языке."
+                "description": "%s. %s. Катха на русском языке."
                                % (al["title"], speaker),
             },
             access_key=ak, secret_key=sk, queue_derive=False, verbose=False,
@@ -162,20 +226,21 @@ async def main_run() -> int:
 
     async with client:
         await client.start()
-        entity = await client.get_entity(CHANNEL)
 
         q: asyncio.Queue = asyncio.Queue()
-        async for msg in client.iter_messages(entity):
-            hit = by_msg.get(msg.id)
-            if not hit:
-                continue
-            al, t = hit
-            if t["file"] in have[al["identifier"]]:
-                continue                              # уже в архиве
-            doc = msg.audio or msg.document
-            if not doc:
-                continue
-            q.put_nowait((msg, al, t, getattr(doc, "size", 0) or 0))
+        for channel, by_msg in by_channel.items():
+            entity = await client.get_entity(channel)
+            async for msg in client.iter_messages(entity):
+                hit = by_msg.get(msg.id)
+                if not hit:
+                    continue
+                al, t = hit
+                if t["file"] in have[al["identifier"]]:
+                    continue                          # уже в архиве
+                doc = msg.audio or msg.document
+                if not doc:
+                    continue
+                q.put_nowait((msg, al, t, getattr(doc, "size", 0) or 0))
         total = q.qsize()
         print("::notice::к заливке в этом прогоне: %d записей" % total)
 
@@ -241,9 +306,11 @@ async def main_run() -> int:
 def cmd_verify(quiet: bool = False) -> int:
     """ЗКН-Ф021: «готово» = файлы ВИДНЫ В АРХИВЕ. Заодно правим длительность по архиву."""
     p = plan()
+    albums = [a for a in p["albums"] if not ONLY or a["speaker"] == ONLY]
+    sync_catalog(albums)
     missing_total = 0
     fixed = 0
-    for al in p["albums"]:
+    for al in albums:
         real = ia_files(al["identifier"])
         want = {t["file"]: t for t in al["tracks"]}
         missing = sorted(set(want) - set(real))
@@ -257,7 +324,7 @@ def cmd_verify(quiet: bool = False) -> int:
             if sec > 0 and abs(sec - t["duration"]) > 5:
                 fixed += 1
         mark = "✓" if not missing else "нет %d" % len(missing)
-        print("::notice::%-24s %2d/%2d  %s" % (al["id"], len(real), len(want), mark))
+        print("::notice::%-14s %4d/%4d  %s" % (al["id"], len(real), len(want), mark))
         if missing and not quiet:
             print("::warning::%s не залито: %s" % (al["id"], ", ".join(missing[:8])))
     n = d1("SELECT COUNT(*) c FROM katha_tracks")[0]["c"]
