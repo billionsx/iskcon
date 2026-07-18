@@ -1145,6 +1145,11 @@ async function kathaTrackRows(env: Env, where = "", binds: unknown[] = []) {
 }
 
 function kathaTracksToAudio(rows: Awaited<ReturnType<typeof kathaTrackRows>>, origin: string): AudioTrack[] {
+  /* Раздел очереди называется циклом — но «Шри Ишопанишад» читали и Шрила
+     Прабхупада, и Пурначандра Госвами, и в общей очереди два таких раздела
+     неразличимы. Пока голос один, имя рассказчика — лишний шум; как только
+     голосов больше, оно становится единственным различителем. */
+  const many = new Set(rows.map((r) => r.speaker_slug)).size > 1;
   return rows.map((r, i) => ({
     kind: "song" as const, pos: i, chapter: null,
     title: r.title, file: r.file,
@@ -1152,7 +1157,7 @@ function kathaTracksToAudio(rows: Awaited<ReturnType<typeof kathaTrackRows>>, or
     durationSec: r.duration || 0,
     artist: r.speaker ?? "", album: r.album ?? "Катха",
     group: r.album_id || "katha",
-    groupLabel: r.album ?? "Катха",
+    groupLabel: many && r.speaker ? `${r.album ?? "Катха"} · ${r.speaker}` : (r.album ?? "Катха"),
   }));
 }
 
