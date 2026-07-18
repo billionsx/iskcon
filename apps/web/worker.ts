@@ -2321,7 +2321,7 @@ export default {
             ORDER BY COALESCE(b.sort, 9999), b.title, t.sort, t.file`
         ).all<{ id: string; speaker_slug: string; album_id: string; identifier: string; file: string; title: string; duration: number | null }>(),
       ]);
-      const speakers = (sRes.results || []).map((r) => ({
+      const allSpeakers = (sRes.results || []).map((r) => ({
         slug: r.slug, name: r.name, full: r.full ?? undefined, role: r.role ?? "",
         era: r.era ?? undefined, origin: r.origin ?? undefined, bio: r.bio ?? "",
         mono: r.mono ?? "", accent: !!r.accent, entityId: r.entity_id ?? undefined,
@@ -2331,6 +2331,11 @@ export default {
         id: r.id, speaker: r.speaker_slug, title: r.title, archive: r.archive ?? undefined,
         year: r.year ?? undefined, note: r.note ?? undefined, n: r.n,
       }));
+      // То же и о рассказчике. Имя заводится в реестре ЗАРАНЕЕ — карта заливки
+      // создаёт его до того, как поедет первый файл, — и до конца заливки за
+      // именем нет ни одной лекции. Пока не залито, в витрине его нет.
+      const voiced = new Set(albums.map((a) => a.speaker));
+      const speakers = allSpeakers.filter((s) => voiced.has(s.slug));
       const tracks = (tRes.results || []).map((r) => ({
         id: r.id, speaker: r.speaker_slug, album: r.album_id, identifier: r.identifier,
         file: r.file, title: r.title, duration: r.duration ?? 0,
