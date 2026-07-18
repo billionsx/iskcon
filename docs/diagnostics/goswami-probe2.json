@@ -1,0 +1,374 @@
+{
+ "site": "https://goswami.ru",
+ "ts": "2026-07-18T15:25:23Z",
+ "home": {
+  "code": 200,
+  "len": 243218,
+  "ctype": "text/html; charset=utf-8"
+ },
+ "home_states": {
+  "__PRELOADED_STATE__": {
+   "audioPlayer.playlist": "None",
+   "audioPlayer.position": "None",
+   "audioPlayer.current": "None",
+   "audioPlayer.isPlaying": "False",
+   "audioPlayer.volume": "1",
+   "audioPlayer.muted": "False",
+   "audioPlayer.playedPercent": "0",
+   "audioPlayer.rate": "1",
+   "audioPlayer.duration": "'0:00:00'",
+   "audioPlayer.currentTime": "'0:00:00'",
+   "audioPlayer.rewind": "None",
+   "auth.authWindowOpenned": "False",
+   "auth.name": "None",
+   "auth.email": "None",
+   "auth.avatar": "None",
+   "auth.role": "None",
+   "auth.subscribed": "None",
+   "presetValues.loaded": "False",
+   "ui.title": "''",
+   "lecture.title": "''",
+   "lecture.date": "''",
+   "lecture.teaser": "''",
+   "lecture.videoId": "''",
+   "panel.id": "''",
+   "panel.position": "''",
+   "panel.file_url": "''",
+   "panel.faved": "False",
+   "panel.client": "''",
+   "panel.title": "''",
+   "panel.video_url": "''",
+   "sideVideo.isVisibleSideVideo": "False",
+   "lectureSidevideoInfo.info": "None",
+   "urlListener.prevURL": "'/'",
+   "checkedLecture.checkedLecture": "False",
+   "router.location.pathname": "'/'",
+   "router.location.search": "''",
+   "router.location.hash": "''",
+   "router.location.key": "'2msa95'",
+   "router.action": "'POP'"
+  }
+ },
+ "home_audio": [],
+ "home_assets": [
+  "https://assets.goswami.ru/lecture/27977d5d-f432-44c0-bb7d-f9ce56de71fc.jpg",
+  "https://assets.goswami.ru/lecture/2a747adc-12f4-4c16-8fa8-525f0be2bbd3.jpg",
+  "https://assets.goswami.ru/lecture/2ebcfe77-ee52-4d7c-9247-a408f5a502a7.jpg",
+  "https://assets.goswami.ru/lecture/32e8ede8-39a8-4d04-9f62-b6cc834a6224.jpg",
+  "https://assets.goswami.ru/lecture/44478033-268b-42e8-9d9b-d05ebf6dd8ed.jpg",
+  "https://assets.goswami.ru/lecture/4706a27b-a167-4633-a7cd-dbe2e5234093.jpg",
+  "https://assets.goswami.ru/lecture/4d6466ac-3fc6-4ec0-bb8d-7c5416c68e3a.jpg",
+  "https://assets.goswami.ru/lecture/8116f55e-5f88-4f0d-ac26-e9f4d7ddb1b3.jpg",
+  "https://assets.goswami.ru/lecture/8a0a178b-1ea6-4f68-94f2-9e3a25a6f2cc.jpg",
+  "https://assets.goswami.ru/lecture/8a9e444a-ddd3-4a78-a89f-086b7a25921b.jpg",
+  "https://assets.goswami.ru/lecture/9a95c35d-ffa1-4bd6-a1a6-ab84db8543da.jpg",
+  "https://assets.goswami.ru/lecture/9f4f3708-fb50-441c-aff3-3f32f4c80d3e.jpg",
+  "https://assets.goswami.ru/lecture/b14fc2ad-75aa-4b4c-b5d7-395129bbc7a1.jpg",
+  "https://assets.goswami.ru/lecture/bg_default.jpg",
+  "https://assets.goswami.ru/lecture/d5e6f7b7-7502-497a-abd1-222ba654dae2.jpg",
+  "https://assets.goswami.ru/lecture/f11b8e8b-c8cd-4e2d-a8b8-b1809e3f2fe5.jpg",
+  "https://assets.goswami.ru/lecture/feb93bc0-27d5-4681-a249-f9c340f2f77a.jpg",
+  "https://assets.goswami.ru/lecture/sb_default.jpg"
+ ],
+ "home_download_ctx": [
+  "22.4836755,19.1416002 C22.3705823,19.2482373 19.4678559,22.0030276 19.4678559,22.0030276 L19.4678559,12.1213281 C19.4678559,11.3570959 18.8081454,10.7350465 17.9976439,10.7350465 C17.1871424,10.7350465 16.5274318,11.3570959 16.5274318,12.1213281 L16.5274318,21.9852548 Z\" id=\"Path\" fill=\"#D2D2D2\" fill-rule=\"nonzero\"></path></g></g></g></g></g></g></g></g></svg><span class=\"IconButton_title__nwK7l\">Скачать (64 мб)</span></button><button class=\"IconButton_btn__3T-R5 IconButton_hidden_desktop__2zeXJ\" type=\"button\"><svg",
+  "22.4836755,19.1416002 C22.3705823,19.2482373 19.4678559,22.0030276 19.4678559,22.0030276 L19.4678559,12.1213281 C19.4678559,11.3570959 18.8081454,10.7350465 17.9976439,10.7350465 C17.1871424,10.7350465 16.5274318,11.3570959 16.5274318,12.1213281 L16.5274318,21.9852548 Z\" id=\"Path\" fill=\"#D2D2D2\" fill-rule=\"nonzero\"></path></g></g></g></g></g></g></g></g></svg><span class=\"IconButton_title__nwK7l\">Скачать (64 мб)</span></button><button class=\"IconButton_btn__3T-R5 IconButton_hidden_desktop__2zeXJ\" type=\"button\"><svg",
+  "22.4836755,19.1416002 C22.3705823,19.2482373 19.4678559,22.0030276 19.4678559,22.0030276 L19.4678559,12.1213281 C19.4678559,11.3570959 18.8081454,10.7350465 17.9976439,10.7350465 C17.1871424,10.7350465 16.5274318,11.3570959 16.5274318,12.1213281 L16.5274318,21.9852548 Z\" id=\"Path\" fill=\"#D2D2D2\" fill-rule=\"nonzero\"></path></g></g></g></g></g></g></g></g></svg><span class=\"IconButton_title__nwK7l\">Скачать (64 мб)</span></button><button class=\"IconButton_btn__3T-R5 IconButton_hidden_desktop__2zeXJ\" type=\"button\"><svg"
+ ],
+ "lecture": {
+  "code": 200,
+  "len": 20697
+ },
+ "lecture_states": {
+  "__PRELOADED_STATE__": {
+   "audioPlayer.playlist": "None",
+   "audioPlayer.position": "None",
+   "audioPlayer.current": "None",
+   "audioPlayer.isPlaying": "False",
+   "audioPlayer.volume": "1",
+   "audioPlayer.muted": "False",
+   "audioPlayer.playedPercent": "0",
+   "audioPlayer.rate": "1",
+   "audioPlayer.duration": "'0:00:00'",
+   "audioPlayer.currentTime": "'0:00:00'",
+   "audioPlayer.rewind": "None",
+   "auth.authWindowOpenned": "False",
+   "auth.name": "None",
+   "auth.email": "None",
+   "auth.avatar": "None",
+   "auth.role": "None",
+   "auth.subscribed": "None",
+   "presetValues.loaded": "False",
+   "ui.title": "'Bhagavad-gita 15.5'",
+   "breadCrumbs.value[len]": 2,
+   "breadCrumbs.value[].name": "'Лекции'",
+   "breadCrumbs.value[].link": "'/'",
+   "lecture.title": "''",
+   "lecture.date": "''",
+   "lecture.teaser": "''",
+   "lecture.videoId": "''",
+   "panel.id": "''",
+   "panel.position": "''",
+   "panel.file_url": "''",
+   "panel.faved": "False",
+   "panel.client": "''",
+   "panel.title": "''",
+   "panel.video_url": "''",
+   "sideVideo.isVisibleSideVideo": "False",
+   "lectureSidevideoInfo.info": "None",
+   "urlListener.prevURL": "'/'",
+   "checkedLecture.checkedLecture": "False",
+   "router.location.pathname": "'/lecture/6016'",
+   "router.location.search": "''",
+   "router.location.hash": "''",
+   "router.location.key": "'f9xyf2'",
+   "router.action": "'POP'"
+  }
+ },
+ "lecture_audio": [],
+ "lecture_assets": [
+  "https://assets.goswami.ru/lecture/bg_default.jpg"
+ ],
+ "lecture_state_full": {
+  "audioPlayer": {
+   "playlist": null,
+   "position": null,
+   "current": null,
+   "isPlaying": false,
+   "volume": 1,
+   "muted": false,
+   "playedPercent": 0,
+   "rate": 1,
+   "duration": "0:00:00",
+   "currentTime": "0:00:00",
+   "rewind": null
+  },
+  "auth": {
+   "authWindowOpenned": false,
+   "name": null,
+   "email": null,
+   "avatar": null,
+   "role": null,
+   "subscribed": null
+  },
+  "presetValues": {
+   "location": [],
+   "category": [],
+   "scripture": [],
+   "zeroCollections": [],
+   "loaded": false
+  },
+  "ui": {
+   "title": "Bhagavad-gita 15.5"
+  },
+  "breadCrumbs": {
+   "value": [
+    {
+     "name": "Лекции",
+     "link": "/"
+    },
+    {
+     "name": "Bhagavad-gita 15.5"
+    }
+   ]
+  },
+  "lecture": {
+   "title": "",
+   "date": "",
+   "teaser": "",
+   "videoId": ""
+  },
+  "panel": {
+   "id": "",
+   "position": "",
+   "file_url": "",
+   "faved": false,
+   "client": "",
+   "lectures": [],
+   "title": "",
+   "video_url": ""
+  },
+  "sideVideo": {
+   "isVisibleSideVideo": false
+  },
+  "lectureSidevideoInfo": {
+   "info": null
+  },
+  "urlListener": {
+   "prevURL": "/"
+  },
+  "checkedLecture": {
+   "checkedLecture": false
+  },
+  "timeMachine": {
+   "collections": []
+  },
+  "router": {
+   "location": {
+    "pathname": "/lecture/6016",
+    "search": "",
+    "hash": "",
+    "key": "f9xyf2"
+   },
+   "action": "POP"
+  }
+ },
+ "bundles": [
+  {
+   "url": "https://goswami.ru/static/bundle.72d094cf.js",
+   "code": 200,
+   "len": 1256963,
+   "api_paths": [
+    "/admin/lectures",
+    "/admin/lectures/edit/",
+    "/admin/lectures/new",
+    "/admin/lectures/preview/",
+    "/lecture",
+    "/lecture/"
+   ],
+   "hosts": [
+    "https://api.goswami.ru"
+   ],
+   "audio_hint": []
+  },
+  {
+   "url": "https://goswami.ru/static/vendor.e3dda9c5.chunk.js",
+   "code": 200,
+   "len": 1861736,
+   "api_paths": [],
+   "hosts": [
+    "https://api.goswami.ru"
+   ],
+   "audio_hint": []
+  }
+ ],
+ "sitemap": {
+  "code": 200,
+  "len": 1445,
+  "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">\n\t<url>\n\t\t<loc>http://goswami.ru/</loc>\n\t\t<changefreq>daily</changefreq>\n\t\t<priority>1.0</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/articles</loc>\n\t\t<changefreq>daily</changefreq>\n\t\t<priority>1.0</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/contacts</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/about_maharaj/goswami</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/about_maharaj/swami</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/about_maharaj/prabhupada</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/about_maharaj/goswami/info</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/about_maharaj/goswami/dedication_first</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n\t<url>\n\t\t<loc>http://goswami.ru/about_maharaj/goswami/dedication_second</loc>\n\t\t<changefreq>monthly</changefreq>\n\t\t<priority>0.2</priority>\n\t</url>\n</urlset>\n"
+ },
+ "sitemap_locs": [
+  "http://goswami.ru/",
+  "http://goswami.ru/articles",
+  "http://goswami.ru/contacts",
+  "http://goswami.ru/about_maharaj/goswami",
+  "http://goswami.ru/about_maharaj/swami",
+  "http://goswami.ru/about_maharaj/prabhupada",
+  "http://goswami.ru/about_maharaj/goswami/info",
+  "http://goswami.ru/about_maharaj/goswami/dedication_first",
+  "http://goswami.ru/about_maharaj/goswami/dedication_second"
+ ],
+ "sitemap_children": [],
+ "paging": [
+  {
+   "url": "/?page=2",
+   "code": 200,
+   "len": 243225,
+   "n_ids": 29,
+   "ids": [
+    "2",
+    "27977",
+    "32",
+    "4",
+    "44478033",
+    "4706",
+    "5994",
+    "6003"
+   ]
+  },
+  {
+   "url": "/?p=2",
+   "code": 200,
+   "len": 243222,
+   "n_ids": 29,
+   "ids": [
+    "2",
+    "27977",
+    "32",
+    "4",
+    "44478033",
+    "4706",
+    "5994",
+    "6003"
+   ]
+  },
+  {
+   "url": "/page/2",
+   "code": 404,
+   "len": 0,
+   "n_ids": 0,
+   "ids": []
+  },
+  {
+   "url": "/lectures?page=2",
+   "code": 404,
+   "len": 0,
+   "n_ids": 0,
+   "ids": []
+  },
+  {
+   "url": "/?offset=20",
+   "code": 200,
+   "len": 243228,
+   "n_ids": 29,
+   "ids": [
+    "2",
+    "27977",
+    "32",
+    "4",
+    "44478033",
+    "4706",
+    "5994",
+    "6003"
+   ]
+  },
+  {
+   "url": "/?skip=20",
+   "code": 200,
+   "len": 243226,
+   "n_ids": 29,
+   "ids": [
+    "2",
+    "27977",
+    "32",
+    "4",
+    "44478033",
+    "4706",
+    "5994",
+    "6003"
+   ]
+  }
+ ],
+ "home_ids": [
+  "2",
+  "27977",
+  "32",
+  "4",
+  "44478033",
+  "4706",
+  "5994",
+  "6003",
+  "6004",
+  "6005",
+  "6006",
+  "6007",
+  "6008",
+  "6009",
+  "6010",
+  "6011",
+  "6012",
+  "6013",
+  "6014",
+  "6015",
+  "6016",
+  "6017",
+  "6018",
+  "6019",
+  "6020",
+  "6021",
+  "8",
+  "8116",
+  "9"
+ ],
+ "audio_head": []
+}
