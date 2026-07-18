@@ -440,7 +440,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         cover: cfg.cover,
         album: bookRef.current, // машинный id книги/альбома — для «продолжить слушать»
         artist: isK ? (t.artist || cfg.artist || null) : null,
-        href: isK ? null : `/${bookSlug(bookRef.current)}`,
+        /* «Продолжить слушать» обязано вернуть в ТУ ЖЕ запись, а не в раздел.
+         * У катхи для этого уже есть механизм — тот же, что у избранного
+         * (ЗКН-Н077): `/katha?t=<хвост audio>` открывает витрину и прыгает на
+         * дорожку. Второго способа делать то же самое не заводим. */
+        href: sourceRef.current === "katha"
+          ? `/katha?t=${encodeURIComponent(listenRef.replace(/^\/audio\//, ""))}`
+          : isK ? null : `/${bookSlug(bookRef.current)}`,
         durationSec: t.durationSec ?? null,
         positionSec: 0,
       });
@@ -546,7 +552,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
    * человек что-то нажал. Без этого он висел бы пустым: список берётся из
    * манифеста, а манифест грузился только вместе с воспроизведением. */
   function loadKirtan(albumId: string) {
-    if (bookRef.current === albumId && manifestRef.current) return;
+    /* ⚠️ СВЕРЯЕМ И ИСТОЧНИК, А НЕ ТОЛЬКО ИМЯ ОЧЕРЕДИ.
+     * У киртанов и у катхи общая очередь зовётся одинаково — `all`. Проверка по
+     * одному имени считала «уже загружено» при переходе Катха → Киртаны, и
+     * витрина киртанов показывала ЧУЖОЙ список. Имя очереди уникально внутри
+     * раздела, а не между разделами. */
+    if (bookRef.current === albumId && sourceRef.current === "kirtan" && manifestRef.current) return;
     switchBook(albumId, "kirtan");
     void ensureManifest();
   }
@@ -561,7 +572,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
    * механизм поверх плеера. `loadKatha` показывает список ДО первого нажатия —
    * иначе встроенный плеер висел бы пустым (манифест грузится вместе со звуком). */
   function loadKatha(albumId: string) {
-    if (bookRef.current === albumId && manifestRef.current) return;
+    if (bookRef.current === albumId && sourceRef.current === "katha" && manifestRef.current) return;
     switchBook(albumId, "katha");
     void ensureManifest();
   }
