@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: Приёмка на живом проде
         run: |
-          AP=https://gaurangers.com
+          AP=https://brajs.com
           E=$(curl -s --max-time 25 "$AP/" | grep -oE '/assets/index-[A-Za-z0-9_-]+\.js' | head -1)
           echo "::notice::вход: $E"
           curl -s --max-time 60 "$AP$E" -o /tmp/all.js

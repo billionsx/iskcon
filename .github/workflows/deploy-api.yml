@@ -109,5 +109,5 @@ jobs:
               --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'$url',${code:-0},'$body');" || true
           }
           [ -n "$WD" ] && check "$WD"
-          check "https://api.gaurangers.com"
+          check "https://api.brajs.com"
           echo "smoke done"

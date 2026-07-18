@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       path:
-        description: "Path to GET on https://gaurangers.com"
+        description: "Path to GET on https://brajs.com"
         required: true
         default: "/api/tg/iskcone"
 
@@ -17,7 +17,7 @@ jobs:
       - name: GET
         run: |
           set -e
-          URL="https://gaurangers.com${{ github.event.inputs.path }}"
+          URL="https://brajs.com${{ github.event.inputs.path }}"
           BODY=$(curl -s -w "\nHTTP=%{http_code}" "$URL")
           echo "$BODY" | tail -c 1200
           CODE=$(echo "$BODY" | tail -1)
