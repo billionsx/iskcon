@@ -1967,6 +1967,22 @@ export default {
     const reqStart = Date.now();   // замер обработки воркера (Server-Timing app) — диагностика TTFB
     const url = new URL(request.url);
 
+    // ── Проверка домена Apple (Sign in with Apple) ──────────────────────────
+    // Apple тянет https://<домен>/.well-known/apple-developer-domain-association.txt
+    // и НЕ ходит по редиректам: 301 = «Verification failed for domain». Поэтому
+    // файл отдаётся ДО канонизации www→apex и на обоих хостах. Ассет-сервер здесь
+    // не годится: not_found_handling=single-page-application вернул бы index.html,
+    // и Apple увидела бы HTML вместо токена. Содержимое лежит в app_config
+    // (ключ apple_domain_association) — меняется без деплоя, как и ключи OAuth.
+    if (url.pathname === "/.well-known/apple-developer-domain-association.txt") {
+      const row = await env.DB.prepare(`SELECT value FROM app_config WHERE key = 'apple_domain_association' LIMIT 1`)
+        .first<{ value: string }>().catch(() => null);
+      if (!row?.value) return new Response("not configured", { status: 404, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+      return new Response(row.value, {
+        headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+      });
+    }
+
     // ── Каноничный адрес: сайт всегда открывается как https://gaurangers.com ──
     // Apex и www привязаны к воркеру как custom_domain (сертификат Cloudflare есть на
     // обоих), поэтому воркер исполняется на обоих хостах и здесь приводит любой вход к
