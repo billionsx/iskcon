@@ -362,8 +362,44 @@ async def main_run() -> int:
     pool.shutdown(wait=True)
     print("::notice::ЗА ПРОГОН: %d · ошибок %d" % (done, fail))
     left = cmd_verify(quiet=True)
-    Path(os.getenv("GITHUB_OUTPUT") or "/dev/null").open("a").write("left=%d\n" % left)
+    rest, nxt = remaining_others()
+    print("::notice::осталось у своего: %d · у остальных: %d · дальше: %s"
+          % (left, rest, nxt or "—"))
+    with Path(os.getenv("GITHUB_OUTPUT") or "/dev/null").open("a") as fh:
+        fh.write("left=%d\nrest=%d\nnext=%s\n" % (left, rest, nxt))
     return 0
+
+
+def remaining_by_speaker() -> dict:
+    """Незалитые записи по рассказчикам: {slug: сколько осталось}."""
+    rest = {}
+    for al in plan()["albums"]:
+        have = set(ia_files(al["identifier"]))
+        n = len(set(t["file"] for t in al["tracks"]) - have)
+        if n:
+            rest[al["speaker"]] = rest.get(al["speaker"], 0) + n
+    return rest
+
+
+def remaining_others() -> tuple:
+    """Чужой остаток и КОМУ передать ход: (сколько, slug).
+
+    Цепочка запускала себя с тем же фильтром, с каким её позвали. Пока рассказчик
+    был один, это было незаметно; с четырьмя каналами получилось так, что первый
+    же долгий голос занимает единственную сессию Telegram (ЗКН-Пл003) на сутки, а
+    следом никто не встаёт: очередь свободна, а звать в неё некому.
+
+    Ход передаём тому, у кого остаток МЕНЬШЕ. Иначе канал на сорок лекций стоит
+    за каналом на тысячу двести и не появляется в приложении неделю — при том,
+    что своей очереди ему хватило бы на час.
+    """
+    if not ONLY:
+        return 0, ""
+    rest = {k: v for k, v in remaining_by_speaker().items() if k != ONLY}
+    if not rest:
+        return 0, ""
+    nxt = min(rest, key=lambda s: rest[s])
+    return sum(rest.values()), nxt
 
 
 # ────────────────────────── verify ──────────────────────────

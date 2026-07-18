@@ -66,13 +66,23 @@ jobs:
         run: python katha_ingest.py verify
 
       - name: Продолжить, если осталось
-        if: ${{ steps.run.outputs.left != '0' && steps.run.outputs.left != '' }}
+        if: ${{ (steps.run.outputs.left != '0' && steps.run.outputs.left != '') || (steps.run.outputs.rest != '0' && steps.run.outputs.rest != '') }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
         run: |
           LEFT="${{ steps.run.outputs.left }}"
-          echo "::notice::осталось $LEFT записей — перезапускаю себя"
+          REST="${{ steps.run.outputs.rest }}"
+          NEXT="${{ inputs.speaker }}"
+          # Свой рассказчик долит — ФИЛЬТР СНИМАЕМ и передаём ход остальным.
+          # Иначе цепочка молча заканчивалась на своём голосе, освобождённую
+          # очередь Telegram никто не занимал, и следующий канал ждал человека.
+          if [ "$LEFT" = "0" ]; then
+            NEXT="${{ steps.run.outputs.next }}"; LEFT="$REST"
+            echo "::notice::свой рассказчик долит — передаю ход: $NEXT ($REST записей)"
+          else
+            echo "::notice::осталось $LEFT записей — перезапускаю себя"
+          fi
           curl -s -X POST -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/${{ github.repository }}/actions/workflows/katha-ingest.yml/dispatches" \
-            -d "{\"ref\":\"main\",\"inputs\":{\"note\":\"$LEFT\",\"speaker\":\"${{ inputs.speaker }}\"}}"
+            -d "{\"ref\":\"main\",\"inputs\":{\"note\":\"$LEFT\",\"speaker\":\"$NEXT\"}}"
