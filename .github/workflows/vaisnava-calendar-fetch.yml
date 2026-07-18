@@ -27,7 +27,7 @@ jobs:
           sys.excepthook = _hook
 
           BASE = "https://www.vaisnavacalendar.info/ICS"
-          UA = {"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"}
+          UA = {"User-Agent": "iskcon-one-love/1.0 (+https://brajs.com; ceo@billionsx.com)"}
 
           def fetch_ics(year):
               path = f"/{year}/Mayapur [India]-a{year}-ICS.ics"

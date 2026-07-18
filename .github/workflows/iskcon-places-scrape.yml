@@ -29,7 +29,7 @@ jobs:
           sys.excepthook = _hook
 
           S = requests.Session()
-          S.headers.update({"User-Agent": "iskcon-one-love/1.0 (+https://gaurangers.com; ceo@billionsx.com)"})
+          S.headers.update({"User-Agent": "iskcon-one-love/1.0 (+https://brajs.com; ceo@billionsx.com)"})
           DT = "https://centers.iskcondesiretree.com"
 
           def get_all(path, fields):

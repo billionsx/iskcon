@@ -28,7 +28,7 @@ jobs:
           data = json.load(open("apps/web/public/data/iskcon-places.json", encoding="utf-8"))
           places = data["places"]
           ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
-          UA = {"User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love-health/1.0; +https://gaurangers.com)"}
+          UA = {"User-Agent": "Mozilla/5.0 (compatible; iskcon-one-love-health/1.0; +https://brajs.com)"}
 
           def probe(p):
               url = (p.get("website") or "").strip()

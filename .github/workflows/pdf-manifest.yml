@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: fetch manifest keys
         run: |
-          curl -s "https://gaurangers.com/books/manifest.json" -o m.json
+          curl -s "https://brajs.com/books/manifest.json" -o m.json
           echo "size: $(wc -c < m.json) bytes"
           python3 - <<'PY'
           import json

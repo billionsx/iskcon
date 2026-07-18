@@ -40,7 +40,7 @@ jobs:
         run: |
           set -e
           ok=0
-          for host in "https://gaurangers.com" "https://www.gaurangers.com"; do
+          for host in "https://brajs.com" "https://www.brajs.com"; do
             code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "$host/api/me/notes" || echo 000)
             echo "GET $host/api/me/notes -> $code"
             case "$code" in

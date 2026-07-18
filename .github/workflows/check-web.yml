@@ -15,7 +15,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           set +e
-          for host in gaurangers.com www.gaurangers.com; do
+          for host in brajs.com www.brajs.com; do
             code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$host/")
             xr=$(curl -s -I --max-time 20 "https://$host/" | grep -i 'x-robots-tag' | tr -d '\r')
             echo "$host -> HTTP $code ; $xr"

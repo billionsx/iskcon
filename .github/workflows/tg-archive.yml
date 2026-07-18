@@ -1,4 +1,4 @@
-# Движок загрузчика аудио. Запускается из gaurangers.com/downloader (бэкенд
+# Движок загрузчика аудио. Запускается из brajs.com/downloader (бэкенд
 # /api/downloader/* диспетчеризует этот workflow), либо вручную: Actions →
 # «Загрузчик аудио (TG → archive.org)» → Run workflow.
 #
