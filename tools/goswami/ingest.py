@@ -181,13 +181,18 @@ def ia_survey(albums: list) -> dict:
 def fetch(url: str, dest: Path) -> int:
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Referer": "https://goswami.ru/"})
     size = 0
-    with urllib.request.urlopen(req, timeout=180, context=CTX) as r, dest.open("wb") as fh:
-        while True:
-            chunk = r.read(1 << 20)
-            if not chunk:
-                break
-            fh.write(chunk)
-            size += len(chunk)
+    # ЗКН-Ф014: HTTPError перехватывается ЗДЕСЬ. Без этого сайт отдаёт 404/403,
+    # а качалка падает молча — файл «не скачался», причина неизвестна.
+    try:
+        with urllib.request.urlopen(req, timeout=180, context=CTX) as r, dest.open("wb") as fh:
+            while True:
+                chunk = r.read(1 << 20)
+                if not chunk:
+                    break
+                fh.write(chunk)
+                size += len(chunk)
+    except urllib.error.HTTPError as e:
+        raise RuntimeError("HTTP %s на %s" % (e.code, url)) from e
     if size < 4096:
         raise RuntimeError("подозрительно мал: %d Б" % size)
     return size
