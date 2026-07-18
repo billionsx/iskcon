@@ -32,11 +32,11 @@
  */
 
 /** Канонический хост. ЕДИНСТВЕННОЕ место, где он записан. Переезд = эта строка. */
-export const SITE_HOST = "gaurangers.com";
+export const SITE_HOST = "brajs.com";
 
 /** Прежние хосты: остаются привязанными к воркеру и 301-ят на канонический.
  *  Убирать отсюда нельзя, пока живы ссылки и QR-коды на них. */
-export const ALIAS_HOSTS: readonly string[] = [];
+export const ALIAS_HOSTS: readonly string[] = ["gaurangers.com"];
 
 /** Хост отправителя писем. Отдельно от SITE_HOST НАМЕРЕННО: почтовый домен
  *  считается рабочим только после верификации в Resend и включения Email Routing,

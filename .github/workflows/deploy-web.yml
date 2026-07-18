@@ -261,6 +261,13 @@ jobs:
             hc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$H/")
             loc=$(curl -s -I --max-time 25 "https://$H/" | grep -i '^location:' | tr -d '\r' | cut -c1-90)
             echo "::notice::хост $H -> HTTP $hc $loc"
+            # Канонический хост обязан ОТДАВАТЬ приложение, все прочие — 301-ить на
+            # него. Наблюдения мало: отвалившийся alias — это мёртвые QR-коды.
+            if [ "$H" = "$SITE_HOST" ]; then
+              [ "${hc:-0}" -ge 200 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::канонический хост $H отдал HTTP $hc"; exit 1; }
+            else
+              [ "${hc:-0}" -ge 300 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::хост $H обязан 301-ить на $SITE_HOST, а отдал HTTP $hc"; exit 1; }
+            fi
             bunx wrangler d1 execute iskcon-db --remote \
               --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'host $H',${hc:-0},'$(echo "$loc" | tr -d "\"'" | cut -c1-120)')" || true
           done

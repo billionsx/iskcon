@@ -54,9 +54,8 @@ database_id = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 # Список обязан покрывать SITE_HOST + www и каждый ALIAS_HOST + www из
 # apps/web/src/routes.ts — это проверяет infra-audit.py::check_n087.
 #
-# ШАГ 1 переезда: brajs.com привязан и уже отдаёт приложение, но каноническим
-# ещё НЕ стал (SITE_HOST пока gaurangers.com). Так домен проверяется живьём —
-# сертификат выпущен, воркер отвечает — до того, как на него уведёт 301.
+# Канонический — brajs.com. gaurangers.com остаётся привязанным и 301-ит на него:
+# по нему уже разошлись ссылки, QR-коды и метаданные Internet Archive.
 
 [[routes]]
 pattern = "brajs.com"
