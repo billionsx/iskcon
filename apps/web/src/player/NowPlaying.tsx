@@ -451,28 +451,30 @@ function QueuePane({ paneRef, onBack, onRowMenu }: {
         <IconBtn label="К обложке" onClick={onBack} tone={INK2}><ChevDownIcon size={20} /></IconBtn>
       </div>
 
-      {/* правила очереди — три капсулы (у Apple здесь ровно этот ряд) */}
-      <div style={{ flexShrink: 0, display: "flex", gap: 8, padding: "0 20px 14px" }}>
-        <QueuePill label="Перемешать" active={p.order === "shuffle"} onClick={() => p.cycleOrder()}>
-          <OrderGlyph size={20} />
-        </QueuePill>
-        <QueuePill label={repeatLabel} active={p.repeat !== "off"} onClick={() => p.cycleRepeat()}>
-          <RepeatGlyph size={20} />
-        </QueuePill>
-        <QueuePill label="Заново" onClick={() => p.seek(0)}>
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor"
+      {/* ⚠️ ПРАВИЛА ОЧЕРЕДИ БЫЛИ ТРЕМЯ СЕРЫМИ ПЛАШКАМИ ВО ВСЮ ШИРИНУ.
+          Это самые редкие органы плеера — включил перемешивание и забыл, — а
+          занимали они больше места, чем сама очередь. У Apple они стоят в ОДНОЙ
+          СТРОКЕ с надписью «Далее»: знак, а не панель. */}
+      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 2,
+        padding: "0 20px 8px" }}>
+        <span style={{ flex: 1, minWidth: 0, fontSize: "var(--text-footnote)", fontWeight: 600,
+          letterSpacing: "0.02em", textTransform: "uppercase", color: INK3 }}>
+          {upcoming.length ? `Далее · ${upcoming.length}` : "Очередь окончена"}
+        </span>
+        <IconBtn label="Перемешать" onClick={() => p.cycleOrder()} size={36}
+          tone={p.order === "shuffle" ? ACCENT : INK3}><OrderGlyph size={19} /></IconBtn>
+        <IconBtn label={repeatLabel} onClick={() => p.cycleRepeat()} size={36}
+          tone={p.repeat !== "off" ? ACCENT : INK3}><RepeatGlyph size={19} /></IconBtn>
+        <IconBtn label="Заново" onClick={() => p.seek(0)} size={36} tone={INK3}>
+          <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor"
             strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
             <path d="M4.6 12a7.4 7.4 0 1 0 2.2-5.2" /><path d="M4.4 4.6v4.2h4.2" />
           </svg>
-        </QueuePill>
+        </IconBtn>
       </div>
 
       <div ref={paneRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", WebkitOverflowScrolling: "touch",
         padding: "0 20px calc(env(safe-area-inset-bottom, 0px) + 20px)", overscrollBehavior: "contain" }}>
-        <div style={{ fontSize: "var(--text-footnote)", fontWeight: 600, letterSpacing: "0.02em",
-          textTransform: "uppercase", color: INK3, padding: "2px 0 6px" }}>
-          {upcoming.length ? `Далее · ${upcoming.length}` : "Очередь окончена"}
-        </div>
         {upcoming.map(({ track: t, index: idx }, i) => (
           <MediaRow key={`${t.file}-${idx}`} num={i + 1} title={t.title}
             subtitle={p.kind === "book" ? undefined : (t.artist || t.album)}
@@ -488,22 +490,6 @@ function QueuePane({ paneRef, onBack, onRowMenu }: {
         )}
       </div>
     </div>
-  );
-}
-
-function QueuePill({ label, active, onClick, children }: {
-  label: string; active?: boolean; onClick: () => void; children: React.ReactNode;
-}) {
-  return (
-    <button type="button" aria-label={label} aria-pressed={!!active} onClick={onClick} className="tap-press"
-      style={{
-        flex: 1, minHeight: TAP, borderRadius: "var(--radius-md)", border: "none", cursor: "pointer",
-        display: "grid", placeItems: "center",
-        background: active ? "color-mix(in srgb, var(--color-gold) 20%, transparent)" : "var(--color-fill-1)",
-        color: active ? ACCENT : INK2, WebkitTapHighlightColor: "transparent",
-      }}>
-      {children}
-    </button>
   );
 }
 

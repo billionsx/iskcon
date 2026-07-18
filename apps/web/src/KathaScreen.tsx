@@ -146,7 +146,7 @@ export default function KathaScreen() {
       items.reduce((s, x) => (pred(x) ? s + x.seconds : s), 0);
     return {
       kind: "katha",
-      voicesTitle: "Рассказчики", voiceOne: "Рассказчик",
+      voicesTitle: "Рассказчики", voiceOne: "Рассказчик", homeLabel: "Катха",
       collectionsTitle: "Циклы", itemsTitle: "Записи",
       voices: speakers.map((s) => ({
         slug: s.slug, name: s.name, role: s.role, mono: s.mono, accent: s.accent,
@@ -176,8 +176,12 @@ export default function KathaScreen() {
   );
 
   return (
+    /* ⚠️ Мини-плеер висит НАД страницей и срезал последние строки списка.
+       Пока он на экране, страница обязана расступиться на его высоту. */
     <div style={{ fontFamily: "var(--font-text)",
-      paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
+      paddingBottom: p.active
+        ? "calc(170px + env(safe-area-inset-bottom, 0px))"
+        : "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
       {tracks.length === 0 ? (
         <>
           {header}

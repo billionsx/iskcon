@@ -95,6 +95,23 @@ export function CapsuleIcon({ label, onClick, active, children, anchorRef }: {
   );
 }
 
+/** Голый глиф панели навигации — без заливки и тени (замер iOS 26.5). */
+export function PlainIcon({ label, onClick, active, children, anchorRef }: {
+  label: string; onClick: () => void; active?: boolean; children: ReactNode;
+  anchorRef?: (el: HTMLButtonElement | null) => void;
+}) {
+  return (
+    <button ref={anchorRef} type="button" aria-label={label} onClick={onClick}
+      style={{
+        width: TAP, height: TAP, border: "none", background: "none", padding: 0,
+        display: "grid", placeItems: "center", cursor: "pointer",
+        color: ACCENT, opacity: active ? 0.6 : 1, WebkitTapHighlightColor: "transparent",
+      }}>
+      {children}
+    </button>
+  );
+}
+
 /**
  * Шапка экрана аудиотеки: [‹] крупный заголовок … [действия].
  *
@@ -102,22 +119,40 @@ export function CapsuleIcon({ label, onClick, active, children, anchorRef }: {
  * «Альбомы». Подзаголовок не обязателен: если он есть, он говорит, ЧТО тут
  * найдётся, а не повторяет заголовок другими словами.
  */
-export function ScreenHeader({ title, subtitle, onBack, actions }: {
-  title: string; subtitle?: string; onBack?: () => void; actions?: ReactNode;
+export function ScreenHeader({ title, subtitle, onBack, backLabel, actions }: {
+  title: string; subtitle?: string; onBack?: () => void; backLabel?: string; actions?: ReactNode;
 }) {
   return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, minHeight: TAP }}>
-        {onBack && (
-          <GlassCircle label="Назад" onClick={onBack}><ChevronLeftIcon size={20} /></GlassCircle>
-        )}
-        <h1 style={{
-          flex: 1, minWidth: 0, margin: 0, fontFamily: "var(--font-display)",
-          fontSize: "var(--text-display)", fontWeight: 800, letterSpacing: "-0.8px",
-          lineHeight: 1.1, color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>{title}</h1>
-        {actions}
-      </div>
+    <div style={{ marginBottom: 14 }}>
+      {/* ⚠️ НАЗАД БЫЛ ПЛАВАЮЩИМ БЕЛЫМ КРУЖКОМ НА БЕЛОМ ЛИСТЕ.
+          У Apple круглая кнопка живёт ПОВЕРХ МЕДИА — там её держит картинка. На
+          обычном списке навигация выглядит иначе: строка «‹ Откуда пришёл» над
+          крупным заголовком. Круг на белом — это пузырь ниоткуда, и он ещё и
+          прячет, КУДА возвращает. */}
+      {(onBack || actions) && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, minHeight: TAP, marginBottom: 2 }}>
+          {onBack && (
+            <button type="button" onClick={onBack} className="tap-row"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 2, height: TAP,
+                margin: "0 0 0 -6px", padding: "0 6px", border: "none", background: "none",
+                cursor: "pointer", color: ACCENT, fontFamily: FONT, fontSize: "var(--text-body)",
+                letterSpacing: "-0.01em", WebkitTapHighlightColor: "transparent",
+              }}>
+              <ChevronLeftIcon size={19} />
+              {backLabel ?? "Назад"}
+            </button>
+          )}
+          <span style={{ flex: 1 }} />
+          {actions}
+        </div>
+      )}
+      <h1 style={{
+        margin: 0, fontFamily: "var(--font-display)",
+        fontSize: title.length > 22 ? "var(--text-title1)" : "var(--text-display)",
+        fontWeight: 800, letterSpacing: "-0.6px", lineHeight: 1.08, color: INK,
+        overflowWrap: "anywhere", hyphens: "auto",
+      }}>{title}</h1>
       {subtitle && (
         <p style={{ margin: "6px 2px 0", fontFamily: FONT, fontSize: "var(--text-subhead)",
           color: INK2, lineHeight: 1.4 }}>{subtitle}</p>
@@ -256,14 +291,16 @@ function MenuLine() {
   return <div aria-hidden style={{ height: 1, background: "var(--color-separator)", marginInline: 24 }} />;
 }
 
-/** Кнопка, открывающая меню: держит свой якорь и состояние. */
-export function MenuButton({ label, items, actions, capsule, children, width }: {
-  label: string; items: MenuItem[]; actions?: MenuAction[]; capsule?: boolean;
+/** Кнопка, открывающая меню: держит свой якорь и состояние.
+ *  `plain` — голый глиф без плашки: так выглядит кнопка панели навигации на
+ *  обычном списке. Плашка нужна только поверх медиа, где глиф иначе теряется. */
+export function MenuButton({ label, items, actions, capsule, plain, children, width }: {
+  label: string; items: MenuItem[]; actions?: MenuAction[]; capsule?: boolean; plain?: boolean;
   children: ReactNode; width?: number;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
-  const Btn = capsule ? CapsuleIcon : GlassCircle;
+  const Btn = plain ? PlainIcon : capsule ? CapsuleIcon : GlassCircle;
   return (
     <>
       <Btn label={label} onClick={() => setOpen(true)} active={open} anchorRef={(el) => { ref.current = el; }}>
@@ -331,15 +368,16 @@ export function MediaRow({
   onClick: () => void; onMore?: (anchor: HTMLElement) => void; moreLabel?: string;
   last?: boolean; accessory?: ReactNode;
 }) {
-  const inset = art || num != null ? 74 : 16;
+  const inset = art ? 74 : num != null ? 42 : 0;
   return (
     <>
       <div data-active={active ? "1" : undefined}
-        style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 60, fontFamily: FONT }}>
+        style={{ display: "flex", alignItems: "center", gap: 12,
+          minHeight: art ? 60 : 54, fontFamily: FONT }}>
         <button type="button" onClick={onClick} className="tap-row"
           style={{
             flex: 1, minWidth: 0, display: "flex", alignItems: "center", gap: 12,
-            minHeight: 60, padding: "6px 0 6px 0", border: "none", background: "none",
+            minHeight: art ? 60 : 54, padding: "6px 0", border: "none", background: "none",
             cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent",
           }}>
           {art !== undefined && (
@@ -359,9 +397,16 @@ export function MediaRow({
             </span>
           )}
           {art === undefined && num != null && (
-            <span style={{ flexShrink: 0, width: 48, textAlign: "center", fontSize: "var(--text-subhead)",
+            <span style={{ flexShrink: 0, width: 30, textAlign: "center", fontSize: "var(--text-subhead)",
               color: active ? ACCENT : INK3, fontVariantNumeric: "tabular-nums" }}>
               {playing ? <EqBars /> : num}
+            </span>
+          )}
+          {/* Без обложки и без номера играющую запись всё равно видно: знак
+              звучания слева. Иначе в списке на тысячу строк непонятно, что идёт. */}
+          {art === undefined && num == null && playing && (
+            <span style={{ flexShrink: 0, display: "grid", placeItems: "center", width: 16 }}>
+              <EqBars />
             </span>
           )}
           <span style={{ flex: 1, minWidth: 0 }}>
@@ -423,9 +468,11 @@ export function PlayShuffle({ onPlay, onShuffle }: { onPlay: () => void; onShuff
   const base: CSSProperties = {
     flex: 1, minWidth: 0, minHeight: 50, borderRadius: "var(--radius-md)", border: "none",
     display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
-    background: "var(--color-card)", color: ACCENT, cursor: "pointer", fontFamily: FONT,
+    /* Белая кнопка на белом листе держится только тенью — её ВИДНО, но она не
+       читается как орган. У Apple здесь заливка, а акцент отдан надписи. */
+    background: "var(--color-fill-1)", color: ACCENT, cursor: "pointer", fontFamily: FONT,
     fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.01em",
-    boxShadow: "var(--shadow-1)", WebkitTapHighlightColor: "transparent",
+    WebkitTapHighlightColor: "transparent",
   };
   return (
     <div style={{ display: "flex", gap: 12 }}>

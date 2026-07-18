@@ -317,8 +317,36 @@ def check_player_bricks() -> list[str]:
     return bad
 
 
+
+#: ЗКН-Д025 — ПОВТОРЁННАЯ КАРТИНКА НЕ РАЗЛИЧАЕТ.
+#  Одна и та же заглушка, размноженная по списку (29 циклов, 1316 записей),
+#  перестаёт быть обложкой: она ничего не отличает и вдобавок врёт, будто
+#  картинка есть. Нет своих обложек — список типографический.
+FALLBACK_IN_LIST = re.compile(r"art=\{(?:COVER_FALLBACK|COVER_FALLBACK_DARK)\b")
+
+
+def check_repeated_cover() -> list[str]:
+    """ЗКН-Д025 — ПРАВИЛО 11: заглушка не может быть обложкой строки списка.
+
+    Ловим ровно признак болезни: константа-заглушка отдана в `art=` там, где
+    строки штампуются по списку. Одиночная заглушка (герой, карточка) законна —
+    она там ОДНА и работает как фирменный знак.
+    """
+    bad: list[str] = []
+    for f in sorted((SRC / "player").rglob("*.tsx")):
+        code = blank_block_comments(f.read_text(encoding="utf-8"))
+        if ".map(" not in code:
+            continue
+        for m in FALLBACK_IN_LIST.finditer(code):
+            line = code.count("\n", 0, m.start()) + 1
+            bad.append(f"{f.relative_to(SRC.parents[2])}:{line} — ЗКН-Д025: фирменная заглушка "
+                       f"как обложка строки списка. Повторённая картинка не различает записи — "
+                       f"либо разные обложки, либо ни одной (типографический список)")
+    return bad
+
+
 def main() -> int:
-    bad: list[str] = check_grouped_screen() + check_player_bricks()
+    bad: list[str] = check_grouped_screen() + check_player_bricks() + check_repeated_cover()
     for f in sorted(SRC.rglob("*.tsx")):
         text = f.read_text(encoding="utf-8")
         rel = f.relative_to(SRC.parents[2])

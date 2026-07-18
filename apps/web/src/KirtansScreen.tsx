@@ -120,7 +120,7 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     });
     return {
       kind: "kirtan",
-      voicesTitle: "Киртания", voiceOne: "Исполнитель",
+      voicesTitle: "Киртания", voiceOne: "Исполнитель", homeLabel: "Киртаны",
       itemsTitle: "Записи",
       voices: artists.map((a) => ({
         slug: a.slug, name: a.name, role: a.role, mono: a.mono, accent: a.accent,
@@ -149,8 +149,12 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   );
 
   return (
+    /* ⚠️ Мини-плеер висит НАД страницей и срезал последние строки списка.
+       Пока он на экране, страница обязана расступиться на его высоту. */
     <div style={{ fontFamily: "var(--font-text)",
-      paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
+      paddingBottom: p.active
+        ? "calc(170px + env(safe-area-inset-bottom, 0px))"
+        : "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
       {tracks.length === 0 ? (
         <>
           {header}

@@ -29,12 +29,11 @@ import { useMemo, useState, type ReactNode } from "react";
 import { usePlayer, mediaTrackKey } from "./store";
 import {
   ScreenHeader, SectionRow, MediaRow, ListCard, EmptyState, PlayShuffle, MenuButton,
-  GlassCapsule, GroupTitle, fmtDur, count, type MenuItem,
+  GroupTitle, RowLine, fmtDur, count, type MenuItem,
 } from "./ui";
 import {
-  VoiceIcon, MicIcon, StackIcon, NoteIcon, StarIcon, FilterIcon, ClockIcon,
+  VoiceIcon, MicIcon, StackIcon, NoteIcon, StarIcon, FilterIcon, ClockIcon, ChevronRightIcon,
 } from "./icons";
-import { COVER_FALLBACK } from "../ui/CoverFallback";
 import { useFavorites } from "../cardActions";
 
 const INK2 = "var(--color-label-2)";
@@ -72,6 +71,8 @@ export interface LibDomain {
   kind: "katha" | "kirtan";
   /** Как называется голос в этом разделе. */
   voicesTitle: string; voiceOne: string;
+  /** Как называется корень раздела — им подписана кнопка «назад». */
+  homeLabel: string;
   /** Как называется собрание; пусто — уровня нет (у киртанов альбом не связан с записями). */
   collectionsTitle?: string;
   itemsTitle: string;
@@ -99,6 +100,9 @@ export type LibView =
   | { name: "mine" };
 
 type SortKey = "default" | "title" | "voice" | "longest" | "shortest";
+
+/** До скольких голосов раздел показывает их ЦЕЛИКОМ, не пряча за переход. */
+const VOICES_INLINE = 6;
 
 const SORT_LABEL: Record<SortKey, string> = {
   default: "По умолчанию", title: "По названию", voice: "По имени",
@@ -167,19 +171,31 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
 
   const isPlaying = (key: string) => !!nowKey && nowKey === key;
 
-  /* ── корень: разделы + продолжить ── */
+  /* ═══ КОРЕНЬ ═══
+   *
+   * ⚠️ БЫЛО: четыре строки разделов — и две трети экрана белого поля. Витрина,
+   *    которая ничего не показывает, а только спрашивает «куда пойдёшь», —
+   *    это оглавление, а не витрина. Apple так не делает: под разделами
+   *    Медиатеки СРАЗУ идёт содержимое.
+   *
+   * Стало: разделы (компактно) → продолжить → голоса целиком (их единицы, прятать
+   * нечего) → самые крупные собрания. Экран отвечает, а не переспрашивает. */
   if (view.name === "home") {
     const mine = domain.items.filter((i) => favKeys.has(i.key));
+    const topVoices = domain.voices.slice().sort((a, b) => b.count - a.count);
+    const topCols = domain.collections.slice().sort((a, b) => b.count - a.count).slice(0, 6);
     return (
       <div>
         {header}
+        {/* ⚠️ РАЗДЕЛ И БЛОК НАЗЫВАЛИСЬ ОДИНАКОВО. «Рассказчики 3 ›» стояло строкой —
+            и тут же ниже шли те же три рассказчика списком. Строка-раздел нужна
+            ровно тогда, когда за ней ПРЯЧЕТСЯ то, что не поместилось; когда всё
+            видно, она просто повторяет заголовок. */}
         <ListCard>
-          <SectionRow icon={domain.kind === "katha" ? <VoiceIcon size={22} /> : <MicIcon size={22} />}
-            title={domain.voicesTitle} value={String(domain.voices.length)}
-            onClick={() => onView({ name: "voices" })} />
-          {domain.collectionsTitle && (
-            <SectionRow icon={<StackIcon size={22} />} title={domain.collectionsTitle}
-              value={String(domain.collections.length)} onClick={() => onView({ name: "collections" })} />
+          {domain.voices.length > VOICES_INLINE && (
+            <SectionRow icon={domain.kind === "katha" ? <VoiceIcon size={22} /> : <MicIcon size={22} />}
+              title={domain.voicesTitle} value={String(domain.voices.length)}
+              onClick={() => onView({ name: "voices" })} />
           )}
           <SectionRow icon={<NoteIcon size={22} />} title={domain.itemsTitle}
             value={String(domain.items.length)} onClick={() => onView({ name: "items" })} />
@@ -187,22 +203,55 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
             value={mine.length ? String(mine.length) : ""} onClick={() => onView({ name: "mine" })} last />
         </ListCard>
 
-        <p style={{ margin: "10px 4px 0", fontSize: "var(--text-footnote)", color: INK3 }}>
-          {count(domain.items.length, "запись", "записи", "записей")} · {fmtDur(totalSec)} звучания
-        </p>
-
         {/* ЗКН-Н091: место в лекции — то, ради чего человек вернулся. */}
-        {p.active && p.kind === domain.kind && (
-          <section style={{ marginTop: 22 }}>
+        {p.active && p.kind === domain.kind && p.track && (
+          <section style={{ marginTop: 24 }}>
             <GroupTitle>Продолжить</GroupTitle>
             <ListCard>
-              <MediaRow art={p.cover} title={p.track?.title ?? p.bookTitle}
-                subtitle={p.track?.artist || p.artist}
-                meta={p.duration > 0 ? fmtDur(Math.max(0, p.duration - p.currentTime)) : undefined}
+              <MediaRow title={p.track.title} subtitle={p.track.artist || p.artist}
+                meta={p.duration > 0 ? `осталось ${fmtDur(Math.max(0, p.duration - p.currentTime))}` : undefined}
                 active playing={p.isPlaying} onClick={() => p.open()} last />
             </ListCard>
           </section>
         )}
+
+        {topVoices.length > 0 && topVoices.length <= VOICES_INLINE && (
+          <section style={{ marginTop: 24 }}>
+            <GroupTitle>{domain.voicesTitle}</GroupTitle>
+            <ListCard>
+              {topVoices.map((v, i) => (
+                <VoiceRow key={v.slug} voice={v} last={i === topVoices.length - 1}
+                  onClick={() => (domain.voiceHref && onOpenPath
+                    ? onOpenPath(domain.voiceHref(v.slug))
+                    : onView({ name: "voice", slug: v.slug }))} />
+              ))}
+            </ListCard>
+          </section>
+        )}
+
+        {topCols.length > 0 && (
+          <section style={{ marginTop: 24 }}>
+            <GroupTitle action={
+              <button type="button" onClick={() => onView({ name: "collections" })}
+                style={{ border: "none", background: "none", cursor: "pointer", padding: 0,
+                  fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: ACCENT }}>
+                Все {domain.collections.length}
+              </button>
+            }>{domain.collectionsTitle}</GroupTitle>
+            <ListCard>
+              {topCols.map((c, i) => (
+                <MediaRow key={c.id} title={c.title}
+                  subtitle={`${count(c.count, "часть", "части", "частей")} · ${fmtDur(c.seconds)}`}
+                  onClick={() => onView({ name: "collection", id: c.id })}
+                  last={i === topCols.length - 1} />
+              ))}
+            </ListCard>
+          </section>
+        )}
+
+        <p style={{ margin: "16px 4px 0", fontSize: "var(--text-footnote)", color: INK3 }}>
+          {count(domain.items.length, "запись", "записи", "записей")} · {fmtDur(totalSec)} звучания
+        </p>
       </div>
     );
   }
@@ -213,23 +262,20 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
       sort === "voice" ? a.name.localeCompare(b.name, "ru") : b.count - a.count);
     return (
       <div>
-        <ScreenHeader title={domain.voicesTitle} onBack={() => onView({ name: "home" })}
+        <ScreenHeader title={domain.voicesTitle} onBack={() => onView({ name: "home" })} backLabel={domain.homeLabel}
           subtitle={`${count(domain.voices.length, "голос", "голоса", "голосов")} · ${fmtDur(totalSec)}`}
-          actions={<GlassCapsule>
-            <MenuButton capsule label="Порядок" width={230} items={[
+          actions={<>
+            <MenuButton plain label="Порядок" width={230} items={[
               { id: "count", label: "Сначала с бо́льшим собранием", checked: sort !== "voice", onSelect: () => setSort("default") },
               { id: "az", label: "По имени", checked: sort === "voice", onSelect: () => setSort("voice") },
-            ]}><FilterIcon size={20} /></MenuButton>
-          </GlassCapsule>} />
+            ]}><FilterIcon size={21} /></MenuButton>
+          </>} />
         <ListCard>
           {list.map((v, i) => (
-            <MediaRow key={v.slug} art={COVER_FALLBACK} round title={v.name}
-              subtitle={[v.role, `${count(v.count, "запись", "записи", "записей")} · ${fmtDur(v.seconds)}`]
-                .filter(Boolean).join(" · ")}
+            <VoiceRow key={v.slug} voice={v} last={i === list.length - 1}
               onClick={() => (domain.voiceHref && onOpenPath
                 ? onOpenPath(domain.voiceHref(v.slug))
-                : onView({ name: "voice", slug: v.slug }))}
-              last={i === list.length - 1} />
+                : onView({ name: "voice", slug: v.slug }))} />
           ))}
         </ListCard>
       </div>
@@ -244,15 +290,15 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
     if (!v) return <NotFound onBack={() => onView({ name: "voices" })} />;
     return (
       <div>
-        <ScreenHeader title={v.name} onBack={() => onView({ name: "voices" })}
+        <ScreenHeader title={v.name} onBack={() => onView({ name: "voices" })} backLabel={domain.voicesTitle}
           subtitle={[v.role, `${count(v.count, "запись", "записи", "записей")} · ${fmtDur(v.seconds)}`]
             .filter(Boolean).join(" · ")}
-          actions={<GlassCapsule>
-            <MenuButton capsule label="Порядок и фильтр" width={240}
+          actions={<>
+            <MenuButton plain label="Порядок и фильтр" width={240}
               items={[...sortMenu(["default", "title", "longest", "shortest"]), favFilter]}>
-              <FilterIcon size={20} />
+              <FilterIcon size={21} />
             </MenuButton>
-          </GlassCapsule>} />
+          </>} />
         <div style={{ marginBottom: 18 }}>
           <PlayShuffle onPlay={() => playQueue(items, "voice", false)} onShuffle={() => playQueue(items, "voice", true)} />
         </div>
@@ -262,7 +308,7 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
             <GroupTitle>{domain.collectionsTitle}</GroupTitle>
             <ListCard>
               {cols.map((c, i) => (
-                <MediaRow key={c.id} art={COVER_FALLBACK} title={c.title}
+                <MediaRow key={c.id} title={c.title}
                   subtitle={`${count(c.count, "часть", "части", "частей")} · ${fmtDur(c.seconds)}`}
                   onClick={() => onView({ name: "collection", id: c.id })}
                   last={i === cols.length - 1} />
@@ -273,7 +319,8 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
 
         <GroupTitle>{domain.itemsTitle}</GroupTitle>
         <ItemList items={items} onPlay={(it) => start(it, "voice")} isPlaying={isPlaying}
-          playingNow={p.isPlaying} empty="Здесь пока нет записей" />
+          playingNow={p.isPlaying} subtitleOf={(it) => it.collectionTitle}
+          empty="Здесь пока нет записей" />
       </div>
     );
   }
@@ -286,15 +333,15 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
         : b.count - a.count);
     return (
       <div>
-        <ScreenHeader title={domain.collectionsTitle ?? "Собрания"} onBack={() => onView({ name: "home" })}
+        <ScreenHeader title={domain.collectionsTitle ?? "Собрания"} onBack={() => onView({ name: "home" })} backLabel={domain.homeLabel}
           subtitle={count(list.length, "собрание", "собрания", "собраний")}
-          actions={<GlassCapsule>
-            <MenuButton capsule label="Порядок" width={230}
-              items={sortMenu(["default", "title", "voice"])}><FilterIcon size={20} /></MenuButton>
-          </GlassCapsule>} />
+          actions={<>
+            <MenuButton plain label="Порядок" width={230}
+              items={sortMenu(["default", "title", "voice"])}><FilterIcon size={21} /></MenuButton>
+          </>} />
         <ListCard>
           {list.map((c, i) => (
-            <MediaRow key={c.id} art={COVER_FALLBACK} title={c.title}
+            <MediaRow key={c.id} title={c.title}
               subtitle={`${c.voiceName} · ${count(c.count, "часть", "части", "частей")} · ${fmtDur(c.seconds)}`}
               onClick={() => onView({ name: "collection", id: c.id })} last={i === list.length - 1} />
           ))}
@@ -310,14 +357,14 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
     if (!c) return <NotFound onBack={() => onView({ name: "collections" })} />;
     return (
       <div>
-        <ScreenHeader title={c.title} onBack={() => onView({ name: "collections" })}
+        <ScreenHeader title={c.title} onBack={() => onView({ name: "collections" })} backLabel={domain.collectionsTitle}
           subtitle={`${c.voiceName} · ${count(c.count, "часть", "части", "частей")} · ${fmtDur(c.seconds)}`}
-          actions={<GlassCapsule>
-            <MenuButton capsule label="Порядок и фильтр" width={240}
+          actions={<>
+            <MenuButton plain label="Порядок и фильтр" width={240}
               items={[...sortMenu(["default", "title", "longest", "shortest"]), favFilter]}>
-              <FilterIcon size={20} />
+              <FilterIcon size={21} />
             </MenuButton>
-          </GlassCapsule>} />
+          </>} />
         {c.note && (
           <p style={{ margin: "0 2px 14px", fontSize: "var(--text-subhead)", color: INK2, lineHeight: 1.45 }}>
             {c.note}
@@ -338,19 +385,23 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
     const items = sortItems(domain.items);
     return (
       <div>
-        <ScreenHeader title={domain.itemsTitle} onBack={() => onView({ name: "home" })}
+        <ScreenHeader title={domain.itemsTitle} onBack={() => onView({ name: "home" })} backLabel={domain.homeLabel}
           subtitle={`${count(items.length, "запись", "записи", "записей")} · ${fmtDur(totalSec)}`}
-          actions={<GlassCapsule>
-            <MenuButton capsule label="Порядок и фильтр" width={240}
+          actions={<>
+            <MenuButton plain label="Порядок и фильтр" width={240}
               items={[...sortMenu(["default", "title", "voice", "longest", "shortest"]), favFilter]}>
-              <FilterIcon size={20} />
+              <FilterIcon size={21} />
             </MenuButton>
-          </GlassCapsule>} />
+          </>} />
         <div style={{ marginBottom: 18 }}>
           <PlayShuffle onPlay={() => playQueue(items, "all", false)} onShuffle={() => playQueue(items, "all", true)} />
         </div>
         <ItemList items={items} onPlay={(it) => start(it, "all")} isPlaying={isPlaying}
-          playingNow={p.isPlaying} showVoice empty="Записей пока нет" />
+          playingNow={p.isPlaying}
+          subtitleOf={(it) => (domain.voices.length > 1 && it.collectionTitle
+            ? `${it.collectionTitle} · ${it.voiceName}`
+            : it.collectionTitle || it.voiceName)}
+          empty="Записей пока нет" />
       </div>
     );
   }
@@ -359,7 +410,7 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
   const mine = domain.items.filter((i) => favKeys.has(i.key));
   return (
     <div>
-      <ScreenHeader title="Отложенное" onBack={() => onView({ name: "home" })}
+      <ScreenHeader title="Отложенное" onBack={() => onView({ name: "home" })} backLabel={domain.homeLabel}
         subtitle={mine.length ? count(mine.length, "запись", "записи", "записей") : undefined} />
       {mine.length > 0 && (
         <div style={{ marginBottom: 18 }}>
@@ -367,7 +418,7 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
         </div>
       )}
       <ItemList items={mine} onPlay={(it) => start(it, "voice")} isPlaying={isPlaying}
-        playingNow={p.isPlaying} showVoice
+        playingNow={p.isPlaying} subtitleOf={(it) => it.collectionTitle || it.voiceName}
         empty="Отложенных записей пока нет"
         hint="Сердце у записи — и она появится здесь." />
     </div>
@@ -376,10 +427,20 @@ export function AudioLibrary({ domain, view, onView, onOpenPath, header }: {
 
 /* ─────────────────────────── список записей ─────────────────────────── */
 
-function ItemList({ items, onPlay, isPlaying, playingNow, numbered, showVoice, empty, hint }: {
+/**
+ * СПИСОК ЗАПИСЕЙ.
+ *
+ * ⚠️ ПОДПИСЬ ПОВТОРЯЛА ТО, ЧТО И ТАК НАПИСАНО В ШАПКЕ. Внутри цикла «Шримад-
+ *    Бхагаватам · Песнь Первая» стояло под каждой из 226 строк — двести
+ *    двадцать шесть раз одно и то же. Подпись обязана РАЗЛИЧАТЬ строки, а не
+ *    повторять заголовок: где различает цикл — там цикл, где голос — голос,
+ *    а внутри собрания различать нечего, и подписи нет.
+ */
+function ItemList({ items, onPlay, isPlaying, playingNow, numbered, subtitleOf, empty, hint }: {
   items: LibItem[]; onPlay: (i: LibItem) => void;
   isPlaying: (key: string) => boolean; playingNow: boolean;
-  numbered?: boolean; showVoice?: boolean; empty: string; hint?: string;
+  numbered?: boolean; subtitleOf?: (i: LibItem) => string | undefined;
+  empty: string; hint?: string;
 }) {
   if (!items.length) return <EmptyState icon={<NoteIcon size={44} />} text={empty} hint={hint} />;
   return (
@@ -388,10 +449,9 @@ function ItemList({ items, onPlay, isPlaying, playingNow, numbered, showVoice, e
         const on = isPlaying(it.key);
         return (
           <MediaRow key={it.key}
-            art={numbered ? undefined : COVER_FALLBACK}
             num={numbered ? i + 1 : undefined}
             title={it.title}
-            subtitle={showVoice ? it.voiceName : it.collectionTitle}
+            subtitle={subtitleOf?.(it)}
             meta={it.seconds ? fmtDur(it.seconds) : undefined}
             active={on} playing={on && playingNow}
             onClick={() => onPlay(it)}
@@ -399,6 +459,50 @@ function ItemList({ items, onPlay, isPlaying, playingNow, numbered, showVoice, e
         );
       })}
     </ListCard>
+  );
+}
+
+/**
+ * СТРОКА ГОЛОСА.
+ *
+ * ⚠️ Была с «аватаром» — фирменной заглушкой, одинаковой у всех: три круга с
+ *    одним логотипом подряд. Повторённая картинка НЕ РАЗЛИЧАЕТ, а значит не
+ *    работает; вместо неё различает ИМЯ, набранное крупно, и вес собрания.
+ */
+function VoiceRow({ voice, onClick, last }: { voice: LibVoice; onClick: () => void; last?: boolean }) {
+  return (
+    <>
+      <button type="button" onClick={onClick} className="tap-row"
+        style={{
+          display: "flex", alignItems: "center", gap: 12, width: "100%", boxSizing: "border-box",
+          minHeight: 62, padding: "8px 16px 8px 0", border: "none", background: "none",
+          cursor: "pointer", textAlign: "left", fontFamily: "var(--font-text)",
+          WebkitTapHighlightColor: "transparent",
+        }}>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: "var(--text-body)", fontWeight: 600,
+            letterSpacing: "-0.01em", color: "var(--color-label)", lineHeight: 1.3,
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {voice.name}
+          </span>
+          <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-subhead)",
+            color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            {voice.role}
+          </span>
+        </span>
+        <span style={{ flexShrink: 0, textAlign: "right" }}>
+          <span style={{ display: "block", fontSize: "var(--text-subhead)", color: "var(--color-label)",
+            fontVariantNumeric: "tabular-nums" }}>{voice.count}</span>
+          <span style={{ display: "block", marginTop: 1, fontSize: "var(--text-caption)", color: INK3 }}>
+            {fmtDur(voice.seconds)}
+          </span>
+        </span>
+        <span aria-hidden style={{ flexShrink: 0, display: "grid", placeItems: "center", color: INK3 }}>
+          <ChevronRightIcon size={15} />
+        </span>
+      </button>
+      {!last && <RowLine />}
+    </>
   );
 }
 
