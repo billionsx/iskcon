@@ -1,15 +1,42 @@
 name: Fix domain binding (worker custom domain)
 
+# ЗКН-Н087·Г — привязчик custom domain воркера через CF API.
+# Родился 18.07.2026: wrangler deploy «успешен», а домен api.brajs.com не завёлся —
+# витрины пустые. Этот workflow диагностирует зону/DNS/worker-domains, привязывает
+# host → service, чистит конфликтные записи и пишет ВСЁ в deploy_checks (base64),
+# чтобы результат был читаем снаружи без доступа к логам Actions.
+
 on:
   workflow_dispatch:
+    inputs:
+      hostname:
+        description: "Хост для привязки"
+        required: false
+        default: "api.brajs.com"
+      service:
+        description: "Имя воркера"
+        required: false
+        default: "iskcon-api"
+      zone:
+        description: "Зона Cloudflare"
+        required: false
+        default: "brajs.com"
+      probe_path:
+        description: "Путь финальной пробы на хосте"
+        required: false
+        default: "/v1/health"
 
 jobs:
   fix:
     runs-on: ubuntu-latest
     steps:
-      - name: Diagnose + bind apex/www to iskcon-web, record into D1
+      - name: Diagnose + bind hostname to worker, record into D1
         env:
           T: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          HOSTN: ${{ github.event.inputs.hostname }}
+          SVC: ${{ github.event.inputs.service }}
+          ZN: ${{ github.event.inputs.zone }}
+          PP: ${{ github.event.inputs.probe_path }}
         run: |
           set +e
           ACCT=d5cbe19470dc38599873eabfe148e6d1
@@ -23,62 +50,45 @@ jobs:
             curl -s -X POST "$API/accounts/$ACCT/d1/database/$DB/query" "${auth[@]}" --data "$body" >/dev/null
           }
 
-          ZONE=$(curl -s "$API/zones?name=gaurangers.com" "${auth[@]}" | jq -r '.result[0].id')
-          echo "zone=$ZONE"
+          ZONE=$(curl -s "$API/zones?name=$ZN" "${auth[@]}" | jq -r '.result[0].id')
+          echo "zone($ZN)=$ZONE"
+          d1ins "fixdom zone $ZN" 0 "$(printf '%s' "$ZONE" | base64 -w0)"
 
-          SSL=$(curl -s "$API/zones/$ZONE/settings/ssl" "${auth[@]}")
           DNS=$(curl -s "$API/zones/$ZONE/dns_records?per_page=100" "${auth[@]}")
           WD=$(curl -s "$API/accounts/$ACCT/workers/domains?per_page=100" "${auth[@]}")
-          echo "SSL=$(printf '%s' "$SSL" | jq -c '.result.value')"
           echo "DNS names:"; printf '%s' "$DNS" | jq -r '.result[]? | "  \(.type) \(.name) -> \(.content) proxied=\(.proxied)"'
           echo "Worker domains:"; printf '%s' "$WD" | jq -r '.result[]? | "  \(.hostname) -> \(.service)/\(.environment)"'
-
-          d1ins "diag-ssl"  0 "$(printf '%s' "$SSL" | base64 -w0)"
-          d1ins "diag-dns"  0 "$(printf '%s' "$DNS" | base64 -w0)"
-          d1ins "diag-wdom" 0 "$(printf '%s' "$WD"  | base64 -w0)"
+          d1ins "fixdom diag-dns $ZN"  0 "$(printf '%s' "$DNS" | jq -c '[.result[]? | {type,name,content,proxied}]' | base64 -w0)"
+          d1ins "fixdom diag-wdom" 0 "$(printf '%s' "$WD" | jq -c '[.result[]? | {hostname,service}]' | base64 -w0)"
 
           attach() {
-            host=$1
-            abody=$(jq -nc --arg z "$ZONE" --arg host "$host" \
-              '{environment:"production",hostname:$host,service:"iskcon-web",zone_id:$z}')
+            abody=$(jq -nc --arg z "$ZONE" --arg host "$HOSTN" --arg s "$SVC" \
+              '{environment:"production",hostname:$host,service:$s,zone_id:$z}')
             curl -s -X PUT "$API/accounts/$ACCT/workers/domains" "${auth[@]}" --data "$abody"
           }
-          del_named() {
-            host=$1
-            ids=$(printf '%s' "$DNS" | jq -r --arg h "$host" \
+          r=$(attach)
+          ok=$(printf '%s' "$r" | jq -r '.success')
+          echo "attach $HOSTN -> $SVC success=$ok errors=$(printf '%s' "$r" | jq -c '.errors')"
+          if [ "$ok" != "true" ]; then
+            ids=$(printf '%s' "$DNS" | jq -r --arg h "$HOSTN" \
               '.result[]? | select(.name==$h and (.type=="A" or .type=="AAAA" or .type=="CNAME")) | .id')
             for id in $ids; do
-              echo "deleting conflicting record $id ($host)"
+              echo "deleting conflicting record $id ($HOSTN)"
               curl -s -X DELETE "$API/zones/$ZONE/dns_records/$id" "${auth[@]}" >/dev/null
             done
-          }
+            sleep 2
+            r=$(attach); ok=$(printf '%s' "$r" | jq -r '.success')
+            echo "re-attach -> success=$ok errors=$(printf '%s' "$r" | jq -c '.errors')"
+          fi
+          d1ins "fixdom bind $HOSTN" 0 "$(printf '%s' "$r" | base64 -w0)"
 
-          for host in gaurangers.com www.gaurangers.com; do
-            r=$(attach "$host")
-            ok=$(printf '%s' "$r" | jq -r '.success')
-            echo "attach $host -> success=$ok"
-            if [ "$ok" != "true" ]; then
-              echo "  errors: $(printf '%s' "$r" | jq -c '.errors')"
-              del_named "$host"
-              sleep 2
-              r=$(attach "$host")
-              ok=$(printf '%s' "$r" | jq -r '.success')
-              echo "re-attach $host -> success=$ok ; errors=$(printf '%s' "$r" | jq -c '.errors')"
-            fi
-            d1ins "bind $host" 0 "$(printf '%s' "$r" | base64 -w0)"
+          echo "waiting for edge..."
+          code=000
+          for i in $(seq 1 12); do
+            sleep 10
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$HOSTN$PP")
+            echo "  probe $i: https://$HOSTN$PP -> $code"
+            [ "$code" = "200" ] && break
           done
-
-          echo "waiting for edge to settle..."
-          sleep 10
-          for host in gaurangers.com www.gaurangers.com; do
-            code=000
-            for i in $(seq 1 9); do
-              code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://$host/")
-              echo "  $host attempt $i -> $code"
-              [ "$code" = "200" ] && break
-              sleep 9
-            done
-            xr=$(curl -s -I --max-time 20 "https://$host/" | grep -i 'x-robots-tag' | tr -d '\r')
-            d1ins "final $host" "${code:-0}" "$(printf '%s' "$xr" | base64 -w0)"
-          done
-          echo "done"
+          d1ins "fixdom final https://$HOSTN$PP" "${code:-0}" ""
+          echo "done ($code)"
