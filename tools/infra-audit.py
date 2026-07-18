@@ -542,6 +542,20 @@ def check_n087():
                          (re.search(r'RETIRED_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S).group(1)
                           if re.search(r'RETIRED_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) else ""))
 
+    # ── C · снятый домен не возвращается в маршруты ──
+    # Домен, снятый с проекта, не должен once again оказаться привязанным: иначе
+    # он начнёт отдавать вторую живую копию приложения (или молча её редиректить,
+    # создавая у команды иллюзию, что он всё ещё «наш»).
+    retired = re.findall(r'"([a-z0-9.-]+\.[a-z]{2,})"',
+                         (re.search(r'RETIRED_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S).group(1)
+                          if re.search(r'RETIRED_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) else ""))
+    wr_c = ROOT / "apps" / "web" / "wrangler.toml"
+    if wr_c.exists():
+        conf_c = wr_c.read_text(encoding="utf-8")
+        for host in retired:
+            if re.search(r'pattern\s*=\s*"%s"\s*$' % re.escape(host), conf_c, re.M):
+                bad.append(("wrangler.toml", "снятый хост «%s» снова привязан маршрутом" % host))
+
     # ── B · маршруты воркера покрывают все хосты реестра ──
     wr = ROOT / "apps" / "web" / "wrangler.toml"
     if wr.exists():
