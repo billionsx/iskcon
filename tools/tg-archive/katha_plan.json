@@ -1,0 +1,442 @@
+{
+ "channel": "@radhagovindasw",
+ "speaker": "radha-govinda-goswami",
+ "speaker_name": "Радха Говинда Госвами Махарадж",
+ "n_audio": 42,
+ "n_planned": 42,
+ "orphans": [],
+ "albums": [
+  {
+   "id": "parikshit-questions",
+   "title": "Вопросы Махараджа Парикшита",
+   "identifier": "iskcone-katha-rgs-parikshit-questions",
+   "speaker": "radha-govinda-goswami",
+   "n": 5,
+   "tracks": [
+    {
+     "msg_id": 41,
+     "file": "parikshit-questions-01.mp3",
+     "title": "Часть 1",
+     "duration": 6430,
+     "size": 102888593,
+     "source": "Радха_Говинда_Свами_Вопросы_Парикшита_1.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 42,
+     "file": "parikshit-questions-02.mp3",
+     "title": "Часть 2",
+     "duration": 5814,
+     "size": 93028936,
+     "source": "Радха_Говинда_Свами_Вопросы_Парикшита_2.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 43,
+     "file": "parikshit-questions-03.mp3",
+     "title": "Часть 3",
+     "duration": 6379,
+     "size": 102078588,
+     "source": "Радха_Говинда_Свами_Вопросы_Парикшита_3.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 44,
+     "file": "parikshit-questions-04.mp3",
+     "title": "Часть 4",
+     "duration": 5685,
+     "size": 90965890,
+     "source": "Радха_Говинда_Свами_Вопросы_Парикшита_4.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 45,
+     "file": "parikshit-questions-05.mp3",
+     "title": "Часть 5",
+     "duration": 4811,
+     "size": 76980557,
+     "source": "Радха_Говинда_Свами_Вопросы_Парикшита_5.mp3",
+     "sort": 5
+    }
+   ]
+  },
+  {
+   "id": "vritrasura-katha",
+   "title": "Вритрасура-катха",
+   "identifier": "iskcone-katha-rgs-vritrasura",
+   "speaker": "radha-govinda-goswami",
+   "n": 5,
+   "tracks": [
+    {
+     "msg_id": 47,
+     "file": "vritrasura-01.mp3",
+     "title": "Часть 1",
+     "duration": 27541,
+     "size": 110167510,
+     "source": "Радха_Говинда_Свами_Вритрасура_катха_1.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 48,
+     "file": "vritrasura-02.mp3",
+     "title": "Часть 2",
+     "duration": 3707,
+     "size": 59320529,
+     "source": "Радха_Говинда_Свами_Вритрасура_катха_2.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 49,
+     "file": "vritrasura-03.mp3",
+     "title": "Часть 3",
+     "duration": 4067,
+     "size": 65079589,
+     "source": "Радха_Говинда_Свами_Вритрасура_катха_3.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 50,
+     "file": "vritrasura-04.mp3",
+     "title": "Часть 4",
+     "duration": 3750,
+     "size": 60000131,
+     "source": "Радха_Говинда_Свами_Вритрасура_катха_4.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 51,
+     "file": "vritrasura-05.mp3",
+     "title": "Часть 5",
+     "duration": 3443,
+     "size": 55089946,
+     "source": "Радха_Говинда_Свами_Вритрасура_катха_5.mp3",
+     "sort": 5
+    }
+   ]
+  },
+  {
+   "id": "aghasura-katha",
+   "title": "Агхасура-катха",
+   "identifier": "iskcone-katha-rgs-aghasura",
+   "speaker": "radha-govinda-goswami",
+   "n": 4,
+   "tracks": [
+    {
+     "msg_id": 61,
+     "file": "aghasura-01.mp3",
+     "title": "Часть 1 · 24 октября 2015",
+     "duration": 3153,
+     "size": 15766740,
+     "source": "Радха_Говинда_Свами_1_Радха_Говинда_Свами_Вриндаван_24_10_2015_.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 62,
+     "file": "aghasura-02.mp3",
+     "title": "Часть 2 · 25 октября 2015",
+     "duration": 3471,
+     "size": 17359740,
+     "source": "Радха_Говинда_Свами_2_Радха_Говинда_Свами_Вриндаван_25_10_2015_.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 63,
+     "file": "aghasura-03.mp3",
+     "title": "Часть 3 · 26 октября 2015",
+     "duration": 1568,
+     "size": 7843500,
+     "source": "Радха_Говинда_Свами_3_Радха_Говинда_Свами_Вриндаван_26_10_2015_.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 64,
+     "file": "aghasura-04.mp3",
+     "title": "Часть 4 · 27 октября 2015",
+     "duration": 3593,
+     "size": 17970120,
+     "source": "Радха_Говинда_Свами_4_Радха_Говинда_Свами_Вриндаван_27_10_2015_.mp3",
+     "sort": 4
+    }
+   ]
+  },
+  {
+   "id": "janma-lila",
+   "title": "Джанма-лила",
+   "identifier": "iskcone-katha-rgs-janma-lila",
+   "speaker": "radha-govinda-goswami",
+   "n": 6,
+   "tracks": [
+    {
+     "msg_id": 75,
+     "file": "janma-lila-01.mp3",
+     "title": "Часть 1",
+     "duration": 3299,
+     "size": 52789915,
+     "source": "Радха_Говинда_Свами_Джанма_лила_1.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 76,
+     "file": "janma-lila-02.mp3",
+     "title": "Часть 2",
+     "duration": 3016,
+     "size": 48271777,
+     "source": "Радха_Говинда_Свами_Джанма_лила_2.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 77,
+     "file": "janma-lila-03.mp3",
+     "title": "Часть 3",
+     "duration": 4569,
+     "size": 73111927,
+     "source": "Радха_Говинда_Свами_Джанма_лила_3.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 78,
+     "file": "janma-lila-04.mp3",
+     "title": "Часть 4",
+     "duration": 5280,
+     "size": 84481670,
+     "source": "Радха_Говинда_Свами_Джанма_лила_4.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 79,
+     "file": "janma-lila-05.mp3",
+     "title": "Часть 5",
+     "duration": 4444,
+     "size": 71115754,
+     "source": "Радха_Говинда_Свами_Джанма_лила_5.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 80,
+     "file": "janma-lila-06.mp3",
+     "title": "Часть 6",
+     "duration": 5015,
+     "size": 80254013,
+     "source": "Радха_Говинда_Свами_Джанма_лила_6.mp3",
+     "sort": 6
+    }
+   ]
+  },
+  {
+   "id": "ajamila-katha",
+   "title": "Аджамила-катха",
+   "identifier": "iskcone-katha-rgs-ajamila",
+   "speaker": "radha-govinda-goswami",
+   "n": 12,
+   "tracks": [
+    {
+     "msg_id": 82,
+     "file": "ajamila-01.mp3",
+     "title": "Часть 1",
+     "duration": 6354,
+     "size": 101665227,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_1.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 83,
+     "file": "ajamila-02-1.mp3",
+     "title": "Часть 2 · 1",
+     "duration": 2901,
+     "size": 46422308,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_2_1.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 84,
+     "file": "ajamila-02-2.mp3",
+     "title": "Часть 2 · 2",
+     "duration": 3722,
+     "size": 59559601,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_2_2.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 85,
+     "file": "ajamila-03-1.mp3",
+     "title": "Часть 3 · 1",
+     "duration": 3281,
+     "size": 52503196,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_3_1.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 86,
+     "file": "ajamila-03-2.mp3",
+     "title": "Часть 3 · 2",
+     "duration": 2734,
+     "size": 43751130,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_3_2.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 87,
+     "file": "ajamila-04-1.mp3",
+     "title": "Часть 4 · 1",
+     "duration": 3396,
+     "size": 54349739,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_4_1.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 88,
+     "file": "ajamila-04-2.mp3",
+     "title": "Часть 4 · 2",
+     "duration": 3194,
+     "size": 51114317,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_4_2.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 89,
+     "file": "ajamila-05.mp3",
+     "title": "Часть 5",
+     "duration": 4392,
+     "size": 70279000,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_5.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 90,
+     "file": "ajamila-06.mp3",
+     "title": "Часть 6",
+     "duration": 6164,
+     "size": 98628335,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_6.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 91,
+     "file": "ajamila-07.mp3",
+     "title": "Часть 7",
+     "duration": 6210,
+     "size": 99360600,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_7.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 92,
+     "file": "ajamila-08.mp3",
+     "title": "Часть 8",
+     "duration": 5459,
+     "size": 87351379,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_8.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 93,
+     "file": "ajamila-09.mp3",
+     "title": "Часть 9",
+     "duration": 5748,
+     "size": 91984038,
+     "source": "Радха_Говинда_Свами_Аджамила_катха_9.mp3",
+     "sort": 12
+    }
+   ]
+  },
+  {
+   "id": "gopi-gita",
+   "title": "Гопи-гита",
+   "identifier": "iskcone-katha-rgs-gopi-gita",
+   "speaker": "radha-govinda-goswami",
+   "n": 10,
+   "tracks": [
+    {
+     "msg_id": 98,
+     "file": "gopi-gita-01.mp3",
+     "title": "Часть 1",
+     "duration": 6524,
+     "size": 104391993,
+     "source": "Радха Говинда Свами - Гопи Гита 1.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 99,
+     "file": "gopi-gita-02.mp3",
+     "title": "Часть 2",
+     "duration": 5869,
+     "size": 93917099,
+     "source": "Радха Говинда Свами - Гопи Гита 2.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 100,
+     "file": "gopi-gita-03.mp3",
+     "title": "Часть 3",
+     "duration": 7052,
+     "size": 112845217,
+     "source": "Радха Говинда Свами - Гопи Гита 3.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 101,
+     "file": "gopi-gita-04.mp3",
+     "title": "Часть 4",
+     "duration": 6551,
+     "size": 104819565,
+     "source": "Радха Говинда Свами - Гопи Гита 4.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 102,
+     "file": "gopi-gita-05.mp3",
+     "title": "Часть 5",
+     "duration": 5553,
+     "size": 88848926,
+     "source": "Радха Говинда Свами - Гопи Гита 5.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 103,
+     "file": "gopi-gita-06.mp3",
+     "title": "Часть 6",
+     "duration": 7028,
+     "size": 112450246,
+     "source": "Радха Говинда Свами - Гопи Гита 6.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 104,
+     "file": "gopi-gita-07.mp3",
+     "title": "Часть 7",
+     "duration": 7462,
+     "size": 119402997,
+     "source": "Радха Говинда Свами - Гопи Гита 7.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 105,
+     "file": "gopi-gita-08.mp3",
+     "title": "Часть 8",
+     "duration": 7449,
+     "size": 119200286,
+     "source": "Радха Говинда Свами - Гопи Гита 8.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 106,
+     "file": "gopi-gita-09.mp3",
+     "title": "Часть 9",
+     "duration": 6770,
+     "size": 108325824,
+     "source": "Радха Говинда Свами - Гопи Гита 9.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 107,
+     "file": "gopi-gita-10.mp3",
+     "title": "Часть 10",
+     "duration": 6600,
+     "size": 105605328,
+     "source": "Радха Говинда Свами - Гопи Гита 10.mp3",
+     "sort": 10
+    }
+   ]
+  }
+ ]
+}
