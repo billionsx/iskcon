@@ -249,6 +249,19 @@ jobs:
             bunx wrangler d1 execute iskcon-db --remote \
               --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'web workers.dev',${wcode:-0},'$(echo "$WD ; $wxr" | tr -d "\"'" | cut -c1-180)');" || true
           fi
+          # ЗКН-Н087 — ОТВЕЧАЕТ КАЖДЫЙ ХОСТ РЕЕСТРА, А НЕ ТОЛЬКО КАНОНИЧЕСКИЙ.
+          # Прежний домен обязан 301-ить на канонический (по нему ходят QR-коды и
+          # метаданные Internet Archive), новый — отдавать приложение. Раньше
+          # проверялся ОДИН хост, поэтому отвалившийся alias или непривязанный
+          # новый домен деплой не замечал. Итог каждой проверки пишем в D1
+          # (deploy_checks) — логи Actions живут 90 дней, база дольше.
+          for H in $(grep -oE '^pattern = "[^"]+"' apps/web/wrangler.toml | cut -d'"' -f2); do
+            hc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$H/")
+            loc=$(curl -s -I --max-time 25 "https://$H/" | grep -i '^location:' | tr -d '\r' | cut -c1-90)
+            echo "::notice::хост $H -> HTTP $hc $loc"
+            bunx wrangler d1 execute iskcon-db --remote \
+              --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'host $H',${hc:-0},'$(echo "$loc" | tr -d "\"'" | cut -c1-120)')" || true
+          done
           acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$SITE_HOST/")
           axr=$(curl -s -I --max-time 25 "https://$SITE_HOST/" | grep -i 'x-robots-tag' | tr -d '\r')
           echo "apex -> HTTP $acode ; $axr"
