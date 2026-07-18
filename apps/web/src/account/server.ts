@@ -21,6 +21,7 @@
 
 import type { D1Database } from "@cloudflare/workers-types";
 import { sendCodeMail } from "./mail";
+import { ROUTES } from "../routes";
 
 export interface DB {
   DB: D1Database;
@@ -294,7 +295,7 @@ export async function ensureSchema(env: DB): Promise<void> {
         state TEXT PRIMARY KEY,
         provider TEXT NOT NULL,
         verifier TEXT NOT NULL,
-        redirect_to TEXT NOT NULL DEFAULT '/account',
+        redirect_to TEXT NOT NULL DEFAULT '${ROUTES.id()}',
         link_user TEXT,
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
       )`,

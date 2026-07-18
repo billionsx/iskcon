@@ -101,7 +101,7 @@ const redirectUri = (p: ProviderId) => fullUrl(ROUTES.apiOauthCallback(p));
 
 /** Путь возврата в приложение: только свой относительный путь. */
 function safeTo(v: string | null): string {
-  if (!v || !v.startsWith("/") || v.startsWith("//") || v.includes("\\")) return "/account";
+  if (!v || !v.startsWith("/") || v.startsWith("//") || v.includes("\\")) return ROUTES.id();
   return v.slice(0, 300);
 }
 

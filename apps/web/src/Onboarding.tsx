@@ -16,6 +16,7 @@
  */
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
+import { ROUTES } from "./routes";
 import { enablePush, pushSupported } from "./push";
 import { markOnboarded, setLocalDevotee, getLocalDevotee, LEVEL_META } from "./devotee";
 import type { DevoteeLevel } from "./account/api";
@@ -300,7 +301,7 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
         <p style={sub}>Вход синхронизирует садхану, закладки, обеты и прогресс чтения на всех ваших устройствах.</p>
         <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10 }}>
           <ProviderButtons to="/" beforeLeave={commitLocal} />
-          <button className="onb-press" onClick={() => finish("/account")}
+          <button className="onb-press" onClick={() => finish(ROUTES.id())}
             style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: 50, borderRadius: 14, cursor: "pointer", background: CARD, color: INK, border: `0.5px solid ${HAIR}`, boxShadow: SHADOW, fontFamily: TEXT, fontSize: "var(--text-body)", fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
             <span style={{ position: "absolute", left: 16, display: "grid", placeItems: "center" }}><IcMail /></span>
             Войти по почте

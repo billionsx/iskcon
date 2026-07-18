@@ -15,6 +15,7 @@
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -965,6 +966,10 @@ def ids_from_wrangler():
     return (a.group(1) if a else None), (d.group(1) if d else None)
 
 
+class D1Down(Exception):
+    """Инфраструктурный отказ D1 (5xx/таймаут), а НЕ нарушение закона."""
+
+
 def d1(sql: str):
     wa, wd = ids_from_wrangler()
     acc = os.environ.get("CLOUDFLARE_ACCOUNT_ID") or wa
@@ -973,23 +978,44 @@ def d1(sql: str):
     if not (acc and tok and dbid):
         return None
     url = "https://api.cloudflare.com/client/v4/accounts/%s/d1/database/%s/query" % (acc, dbid)
-    req = urllib.request.Request(
-        url, data=json.dumps({"sql": sql}).encode(),
-        headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=60) as r:
-            body = json.load(r)
-    except urllib.error.HTTPError as e:
-        # ЗКН-Ф014: скрипт говорит, ЧТО именно сломалось. Без этого CI показывает
-        # лишь «exit code 1», и настоящая ошибка (напр. «too many SQL variables»)
-        # остаётся невидимой.
-        raise SystemExit("::error title=D1::HTTP %s — %s\n  SQL: %s"
-                         % (e.code, e.read().decode("utf-8", "replace")[:280], sql[:110]))
-    for blk in body.get("result", []):
-        rows = blk.get("results") or []
-        if rows:
-            return int(list(rows[0].values())[0])
-    return 0
+    # ЗКН-Ф014 · ОДНА ФЛАКА НЕ ГЛУШИТ ВЕСЬ АУДИТ.
+    #
+    # Было: любой сбой поднимал SystemExit ПРЯМО ИЗ d1(). SystemExit наследует
+    # BaseException, а цикл main() ловит Exception — поэтому ОДИН случайный
+    # «internal error» D1 (код 7500, отказ на стороне Cloudflare) убивал все
+    # ~60 проверок разом, и CI краснел так, будто нарушен закон. 18.07.2026
+    # это держало laws-lint красным, маскируя настоящие нарушения.
+    #
+    # Теперь: 5xx и таймаут — ИНФРАСТРУКТУРА, их трижды перепрашиваем с паузой;
+    # 4xx — ДЕФЕКТ ЗАПРОСА (битый SQL, >100 переменных), он обязан быть громким
+    # и падать сразу, без ретраев.
+    last = ""
+    for attempt in range(3):
+        req = urllib.request.Request(
+            url, data=json.dumps({"sql": sql}).encode(),
+            headers={"Authorization": "Bearer " + tok, "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:
+                body = json.load(r)
+            for blk in body.get("result", []):
+                rows = blk.get("results") or []
+                if rows:
+                    return int(list(rows[0].values())[0])
+            return 0
+        except urllib.error.HTTPError as e:
+            detail = e.read().decode("utf-8", "replace")[:280]
+            if e.code < 500:
+                # Дефект запроса: скрипт говорит, ЧТО именно сломалось. Без этого
+                # CI показывает лишь «exit code 1», и настоящая причина (напр.
+                # «too many SQL variables») остаётся невидимой.
+                raise SystemExit("::error title=D1::HTTP %s — %s\n  SQL: %s"
+                                 % (e.code, detail, sql[:110]))
+            last = "HTTP %s — %s" % (e.code, detail)
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            last = "сеть: %s" % str(e)[:120]
+        if attempt < 2:
+            time.sleep(3 * (attempt + 1))
+    raise D1Down(last)
 
 
 def main():
@@ -999,11 +1025,16 @@ def main():
         return 0
 
     bad = []
+    down = []
     print("АУДИТ ДАННЫХ · %d законов, живущих в D1" % len(CHECKS))
     print("─" * 68)
     for c in CHECKS:
         try:
             n = d1(c["sql"])
+        except D1Down as e:
+            print("  ? %-11s %-42s D1 недоступна: %s" % (c["law"], c["name"][:42], str(e)[:40]))
+            down.append((c, str(e)))
+            continue
         except Exception as e:
             print("  ? %-11s %-42s ошибка: %s" % (c["law"], c["name"][:42], str(e)[:30]))
             continue
@@ -1036,6 +1067,16 @@ def main():
             print("  %s — %d\n     %s\n" % (c["law"], n, c["hint"]))
         print("Свод: docs/LAWS.md")
         return 1
+    if down:
+        # Проверка, которая НЕ СМОГЛА выполниться, — это не пройденная проверка.
+        # Но и не нарушение закона: отличаем словами и кодом выхода, чтобы никто
+        # не чинил «нарушение», которого нет (и не считал зелёным то, что молчало).
+        print("\nD1 НЕДОСТУПНА — %d проверок не выполнились (по три попытки):\n" % len(down))
+        for c, e in down[:5]:
+            print("  %s — %s" % (c["law"], e[:120]))
+        print("\nЭто отказ инфраструктуры Cloudflare, а не нарушение закона.")
+        print("Перезапустить прогон после восстановления D1.")
+        return 2
     print("Нарушений в данных нет ✓")
     return 0
 

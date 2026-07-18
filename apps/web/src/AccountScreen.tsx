@@ -1061,7 +1061,7 @@ function SecurityCard({ flash }: { flash: (m: string) => void }) {
                 </span>
                 {isLinked
                   ? (methods > 1 ? act("Отключить", () => void unlink(m.id), true) : <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>Единственный вход</span>)
-                  : act("Подключить", () => window.location.assign(oauthStartUrl(m.id as ProviderId, "/account")))}
+                  : act("Подключить", () => window.location.assign(oauthStartUrl(m.id as ProviderId, ROUTES.id())))}
               </div>
             </div>
           );
