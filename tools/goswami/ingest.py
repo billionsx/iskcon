@@ -41,7 +41,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 HERE = Path(__file__).parent
@@ -125,12 +125,19 @@ def d1_batch(sql_head: str, cols: int, rows: list, tail: str = ""):
 
 # ─────────────────────── archive.org ────────────────────────
 def ia_files(identifier: str) -> dict:
-    """Что РЕАЛЬНО лежит в элементе: имя → длина в секундах. Истина — архив (ЗКН-Ф021)."""
+    """Что РЕАЛЬНО лежит в элементе: имя → длина в секундах. Истина — архив (ЗКН-Ф021).
+
+    Таймаут короткий намеренно. Metadata-API под напором отвечает не отказом, а
+    молчанием: запрос висит до таймаута, повтор висит снова. С 45 с и повтором
+    одна упрямая позиция крала полторы минуты, а весь прогон при этом выглядел
+    живым и не делал ничего. Лучше быстро признать «не знаю».
+    """
     url = f"https://archive.org/metadata/{identifier}"
+    data = None
     for attempt in range(2):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=45, context=CTX) as r:
+            with urllib.request.urlopen(req, timeout=15, context=CTX) as r:
                 data = json.loads(r.read())
             break
         except urllib.error.HTTPError as e:
@@ -139,12 +146,13 @@ def ia_files(identifier: str) -> dict:
             if attempt == 1:
                 print("::warning::archive.org %s: %s" % (e.code, identifier))
                 return {}
-            time.sleep(2)
+            time.sleep(1)
         except Exception as e:                        # noqa: BLE001
             if attempt == 1:
-                print("::warning::archive.org %s: %s" % (identifier, str(e)[:120]))
                 return {}
-            time.sleep(2)
+            time.sleep(1)
+    if not data:
+        return {}
     out = {}
     for f in data.get("files") or []:
         if f.get("source") != "original":
@@ -160,23 +168,41 @@ def ia_files(identifier: str) -> dict:
 
 
 def ia_survey(albums: list) -> dict:
-    """Сверка ПАРАЛЛЕЛЬНАЯ: по одному вызову на альбом, но в много потоков.
-    Последовательно тысяча альбомов съела бы весь бюджет прогона."""
+    """Сверка ПАРАЛЛЕЛЬНАЯ и ОГРАНИЧЕННАЯ ПО ВРЕМЕНИ.
+
+    Сверять надо (ЗКН-Ф021: истина — архив, а не наш журнал), но сверка не смеет
+    съесть прогон. Поэтому у неё есть срок: не уложилась — идём заливать с тем,
+    что успели узнать. Худшее следствие — повторная заливка нескольких файлов
+    поверх таких же; это трата, а не порча.
+    """
     have = {}
     t0 = time.time()
+    deadline = float(os.getenv("SURVEY_MIN") or 6) * 60
+    total = len(albums)
     with ThreadPoolExecutor(max_workers=META_PARALLEL) as pool:
         futs = {pool.submit(ia_files, al["identifier"]): al["identifier"] for al in albums}
         done = 0
-        for f in futs:
-            pass
-        for f, ident in futs.items():
+        for f in as_completed(futs):
+            ident = futs[f]
             try:
                 have[ident] = f.result()
             except Exception:                         # noqa: BLE001
                 have[ident] = {}
             done += 1
-            if done % 100 == 0:
-                print("  … сверено %d/%d альбомов (%.0f c)" % (done, len(futs), time.time() - t0), flush=True)
+            if done % 25 == 0 or done == total:
+                el = time.time() - t0
+                print("  … сверено %d/%d (%.0f c)" % (done, total, el), flush=True)
+                beat("сверка", done=done, total=total, sec=round(el))
+            if time.time() - t0 > deadline:
+                left = [futs[x] for x in futs if not x.done()]
+                print("::warning::сверка не уложилась в срок: %d из %d, остальные считаем неизвестными"
+                      % (done, total), flush=True)
+                beat("сверка оборвана", done=done, total=total, sec=round(time.time() - t0))
+                for i in left:
+                    have.setdefault(i, {})
+                for x in futs:
+                    x.cancel()
+                break
     return have
 
 
@@ -270,9 +296,19 @@ async def main_run() -> int:
     else:
         register_speakers_albums(p)
 
-    beat("сверка с архивом", albums=len(albums))
-    print("сверка с архивом…", flush=True)
-    have = ia_survey(albums)
+    # Сверять надо лишь то, что прогон тронет. Полная сверка 277 циклов ради
+    # сотни файлов — это минуты ожидания за данные, которые не понадобятся.
+    scope = [a for a in albums if not ONLY_ALBUM or a["id"] == ONLY_ALBUM]
+    if LIMIT:
+        need, cut = 0, []
+        for a in scope:
+            cut.append(a)
+            need += len(a["tracks"])
+            if need >= LIMIT:
+                break
+        scope = cut
+    print("сверка с архивом: %d из %d циклов…" % (len(scope), len(albums)), flush=True)
+    have = ia_survey(scope)
     already = sum(len(v) for v in have.values())
 
     todo = []
