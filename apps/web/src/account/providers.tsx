@@ -111,6 +111,12 @@ export function useAuthProviders(): ProvidersUp | null {
 
 /* ─────────────────────────── кнопки ─────────────────────────── */
 
+const PROV_CSS = `
+.iol-prov{transition:transform .16s cubic-bezier(.2,.8,.2,1),opacity .16s,background .18s}
+.iol-prov:active{transform:scale(.978)}
+.iol-prov:disabled{opacity:.55}
+`;
+
 const BTN: CSSProperties = {
   position: "relative", display: "flex", alignItems: "center", justifyContent: "center",
   width: "100%", height: 50, borderRadius: 14, cursor: "pointer",
@@ -125,7 +131,7 @@ export function ProviderButton({ id, label, onPress }: { id: ProviderId; label?:
   return (
     <button
       type="button"
-      className="onb-press"
+      className="iol-prov"
       onClick={() => onPress(id)}
       style={{
         ...BTN,
@@ -152,6 +158,7 @@ export function ProviderButtons({ to, beforeLeave }: { to: string; beforeLeave?:
   if (!live.length) return null;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <style>{PROV_CSS}</style>
       {live.map((m) => (
         <ProviderButton
           key={m.id}

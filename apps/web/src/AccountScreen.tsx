@@ -13,6 +13,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
 import { replaceUrl } from "./nav";
+import { ROUTES } from "./routes";
 import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState, type DevoteeLevel, type Initiation, type IdentityItem } from "./account/api";
 import { ProviderButtons, PROVIDER_META, PROVIDER_NAME, providerGlyph, oauthStartUrl, useAuthProviders, type ProviderId } from "./account/providers";
 import { usePlayer } from "./player/store";
@@ -213,11 +214,71 @@ function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
 
 /* ─────────────────────────── панель входа (гость) ─────────────────────────── */
 
+/* ─────────────────────────── вход (гость) ───────────────────────────
+ * Вход — это МОМЕНТ, а не форма под вкладками. Экран строится по-эпплски:
+ * один знак, одно обещание, способы войти, ничего конкурирующего. Поля —
+ * сгруппированная карточка с плавающими подписями (подпись не исчезает при
+ * вводе, как это делает placeholder, — человек всегда видит, что заполняет).
+ * Сегмент «Вход/Регистрация» убран: спрашивать это ДО ввода — лишний выбор,
+ * режим переключается тихой строкой внизу.
+ */
+
+const AUTH_CSS = `
+.iol-auth *{box-sizing:border-box}
+.iol-f{position:relative;display:block}
+.iol-f input{width:100%;height:58px;padding:23px 16px 7px;border:none;outline:none;background:transparent;
+  font-family:var(--font-text);font-size:var(--text-body);color:var(--color-label);border-radius:0}
+.iol-f input::placeholder{color:transparent}
+.iol-f span.lbl{position:absolute;left:16px;top:19px;pointer-events:none;transform-origin:left top;
+  font-family:var(--font-text);font-size:var(--text-body);color:var(--color-label-3);
+  transition:transform .2s cubic-bezier(.2,.8,.2,1),color .2s}
+.iol-f input:focus ~ span.lbl,.iol-f input:not(:placeholder-shown) ~ span.lbl{transform:translateY(-12px) scale(.76)}
+.iol-f input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px var(--color-bg) inset;-webkit-text-fill-color:var(--color-label);caret-color:var(--color-label)}
+.iol-group{transition:border-color .2s,box-shadow .2s}
+.iol-group:focus-within{border-color:rgba(210,170,27,.5);box-shadow:0 0 0 3px rgba(210,170,27,.10)}
+.iol-press{transition:transform .16s cubic-bezier(.2,.8,.2,1),opacity .16s}
+.iol-press:active{transform:scale(.978)}
+.iol-rise{animation:iolRise .5s cubic-bezier(.16,1,.3,1) both}
+@keyframes iolRise{from{opacity:0;transform:translate3d(0,14px,0)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.iol-rise{animation:none}}
+`;
+
+function Field({ label, value, onChange, type = "text", ...rest }: {
+  label: string; value: string; onChange: (v: string) => void; type?: string;
+  autoComplete?: string; inputMode?: "email" | "numeric" | "text"; maxLength?: number;
+  disabled?: boolean; onEnter?: () => void; trail?: ReactNode; mono?: boolean;
+}) {
+  const { autoComplete, inputMode, maxLength, disabled, onEnter, trail, mono } = rest;
+  return (
+    <div className="iol-f" style={{ display: "flex", alignItems: "center" }}>
+      <label style={{ flex: 1, minWidth: 0, display: "block", position: "relative" }}>
+      <input
+        type={type}
+        value={value}
+        placeholder=" "
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        maxLength={maxLength}
+        disabled={disabled}
+        autoCapitalize="none"
+        spellCheck={false}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter" && onEnter) onEnter(); }}
+        style={mono ? { letterSpacing: 7, fontVariantNumeric: "tabular-nums" } : undefined}
+      />
+      <span className="lbl">{label}</span>
+      </label>
+      {trail && <span style={{ position: "absolute", right: 12, display: "grid", placeItems: "center" }}>{trail}</span>}
+    </div>
+  );
+}
+
 function AuthPanel() {
   const { login, register, refresh } = useAuth();
+  const up = useAuthProviders();
   const [view, setView] = useState<"auth" | "reset">("auth");
   const [mode, setMode] = useState<"login" | "register">("login");
-  const [phase, setPhase] = useState<"email" | "code">("email"); // шаги сброса
+  const [phase, setPhase] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
@@ -225,10 +286,8 @@ function AuthPanel() {
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [note, setNote] = useState<string | null>(null);
 
-  // Ошибка OAuth-колбэка приходит query-параметром (?authError=…) — показываем
-  // её тем же инлайн-текстом, что и ошибки формы, и чистим адрес.
+  // Ошибку OAuth-колбэка (?authError=…) показываем тем же инлайном и чистим адрес.
   useEffect(() => {
     const q = new URLSearchParams(window.location.search);
     const ae = q.get("authError");
@@ -240,6 +299,7 @@ function AuthPanel() {
 
   const isReg = mode === "register";
   const emailOk = (em: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
+  const hasProviders = !!up && PROVIDER_META.some((m) => up[m.id]);
 
   async function submitAuth() {
     if (busy) return;
@@ -251,12 +311,9 @@ function AuthPanel() {
     try {
       if (isReg) await register(em, password, name.trim() || undefined);
       else await login(em, password);
-      // успех → AuthProvider переключит дерево на дашборд
     } catch (e) {
       setError(errorText(e instanceof ApiError ? e.code : ""));
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   }
 
   async function submitResetEmail() {
@@ -265,207 +322,161 @@ function AuthPanel() {
     const em = email.trim().toLowerCase();
     if (!emailOk(em)) { setError("Проверьте адрес e-mail."); return; }
     setBusy(true);
-    try {
-      await accountClient.resetRequest(em);
-      setPhase("code");
-      setNote("Если такой аккаунт есть, мы отправили 6-значный код на почту.");
-    } catch {
-      setError("Не получилось отправить код. Попробуйте ещё раз.");
-    } finally {
-      setBusy(false);
-    }
+    try { await accountClient.resetRequest(em); setPhase("code"); }
+    catch { setError("Не получилось отправить код. Попробуйте ещё раз."); }
+    finally { setBusy(false); }
   }
 
   async function submitResetConfirm() {
     if (busy) return;
     setError(null);
-    const em = email.trim().toLowerCase();
     if (!/^\d{6}$/.test(code.trim())) { setError("Введите 6 цифр из письма."); return; }
     if (password.length < 8) { setError("Пароль должен быть не короче 8 символов."); return; }
     setBusy(true);
     try {
-      await accountClient.resetConfirm(em, code.trim(), password);
-      await refresh(); // cookie уже стоит — подтягиваем пользователя
+      await accountClient.resetConfirm(email.trim().toLowerCase(), code.trim(), password);
+      await refresh();
     } catch (e) {
       setError(errorText(e instanceof ApiError ? e.code : ""));
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   }
 
-  const fieldWrap: CSSProperties = { background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden", boxShadow: "var(--shadow-card)" };
-  const rowStyle: CSSProperties = { display: "flex", alignItems: "center", height: 52, padding: "0 16px", gap: 10 };
-  const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: FONT, padding: 0 };
-  const hairline = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
-  const primary = (label: string, onClick: () => void) => (
-    <button
-      onClick={onClick}
-      disabled={busy}
-      style={{
-        marginTop: 18, width: "100%", height: 52, borderRadius: 14, border: "none",
-        background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
-        cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1, transition: "opacity 0.18s ease",
-        WebkitTapHighlightColor: "transparent",
-      }}
-    >
+  /* ── общие детали ── */
+  const group: CSSProperties = { background: "var(--color-fill-1)", borderRadius: 16, border: "0.5px solid transparent", overflow: "hidden" };
+  const hair = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
+  const title: CSSProperties = { margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.6, lineHeight: 1.14, color: INK, textAlign: "center", whiteSpace: "pre-line" };
+  const lead: CSSProperties = { margin: "10px 0 0", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, textAlign: "center", maxWidth: 312 };
+
+  const Primary = ({ label, onClick }: { label: string; onClick: () => void }) => (
+    <button className="iol-press" onClick={onClick} disabled={busy}
+      style={{ width: "100%", height: 52, borderRadius: 14, border: "none", background: INK, color: "var(--color-bg-2)",
+        fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: -0.1,
+        cursor: busy ? "default" : "pointer", opacity: busy ? 0.55 : 1, WebkitTapHighlightColor: "transparent" }}>
       {busy ? "Минуту…" : label}
     </button>
   );
-  const linkBtn = (label: string, onClick: () => void): ReactNode => (
-    <button onClick={onClick} style={{ background: "none", border: "none", padding: "8px 4px", color: GOLDT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+  const Quiet = ({ label, onClick, tone = "gold" }: { label: string; onClick: () => void; tone?: "gold" | "ink" }) => (
+    <button onClick={onClick} disabled={busy}
+      style={{ background: "none", border: "none", padding: "10px 6px", color: tone === "gold" ? GOLDT : INK2,
+        fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
       {label}
     </button>
   );
-  const pwField = (autoComplete: string) => (
-    <div style={rowStyle}>
-      <input
-        style={inputStyle}
-        type={showPw ? "text" : "password"}
-        placeholder={view === "reset" ? "Новый пароль" : "Пароль"}
-        autoComplete={autoComplete}
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") void (view === "reset" ? submitResetConfirm() : submitAuth()); }}
-      />
-      <button
-        type="button"
-        aria-label={showPw ? "Скрыть пароль" : "Показать пароль"}
-        onClick={() => setShowPw((s) => !s)}
-        style={{ background: "none", border: "none", padding: 4, color: INK3, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}
-      >
-        <EyeIco off={showPw} />
-      </button>
+  const Err = () => error ? (
+    <p style={{ margin: "12px 6px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT, textAlign: "center" }}>{error}</p>
+  ) : null;
+
+  const Mark = () => (
+    <img src="/iskcon-one-love-mark.svg" alt="" width={72} height={72}
+      style={{ display: "block", margin: "0 auto 22px" }}
+      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+  );
+
+  const shell = (children: ReactNode) => (
+    <div className="iol-auth iol-rise" style={{ width: "100%", maxWidth: 366, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <style>{AUTH_CSS}</style>
+      {children}
     </div>
   );
 
   /* ── восстановление пароля ── */
   if (view === "reset") {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 16 }}>
-        <h2 style={{ margin: "6px 0 0", fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.4, color: INK, fontFamily: FONT, textAlign: "center" }}>Восстановление пароля</h2>
-        <p style={{ margin: "8px 0 22px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, textAlign: "center", maxWidth: 310 }}>
+    return shell(
+      <>
+        <Mark />
+        <h1 style={title}>{phase === "email" ? "Восстановление\nпароля" : "Проверьте почту"}</h1>
+        <p style={lead}>
           {phase === "email"
-            ? "Укажите почту аккаунта — пришлём 6-значный код."
-            : note ?? "Введите код из письма и задайте новый пароль."}
+            ? "Укажите адрес аккаунта — пришлём шестизначный код."
+            : `Если аккаунт с адресом ${email.trim().toLowerCase()} существует, код уже в пути. Он действует 15 минут.`}
         </p>
-        <div style={{ width: "100%", maxWidth: 380 }}>
-          <div style={fieldWrap}>
-            <div style={rowStyle}>
-              <input style={inputStyle} type="email" inputMode="email" placeholder="E-mail" autoComplete="email" autoCapitalize="none" spellCheck={false}
-                value={email} onChange={(e) => setEmail(e.target.value)} disabled={phase === "code"}
-                onKeyDown={(e) => { if (e.key === "Enter" && phase === "email") void submitResetEmail(); }} />
-            </div>
+        <div style={{ width: "100%", marginTop: 24 }}>
+          <div className="iol-group" style={group}>
+            <Field label="E-mail" type="email" inputMode="email" autoComplete="email" value={email}
+              onChange={setEmail} disabled={phase === "code"} onEnter={() => phase === "email" && void submitResetEmail()} />
             {phase === "code" && (
               <>
-                {hairline}
-                <div style={rowStyle}>
-                  <input style={{ ...inputStyle, letterSpacing: 6, fontVariantNumeric: "tabular-nums" }} inputMode="numeric" pattern="[0-9]*" maxLength={6}
-                    placeholder="Код из письма" autoComplete="one-time-code" value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
-                </div>
-                {hairline}
-                {pwField("new-password")}
+                {hair}
+                <Field label="Код из письма" inputMode="numeric" maxLength={6} autoComplete="one-time-code" mono
+                  value={code} onChange={(v) => setCode(v.replace(/\D/g, ""))} />
+                {hair}
+                <Field label="Новый пароль" type={showPw ? "text" : "password"} autoComplete="new-password"
+                  value={password} onChange={setPassword} onEnter={() => void submitResetConfirm()}
+                  trail={<button type="button" aria-label={showPw ? "Скрыть пароль" : "Показать пароль"} onClick={() => setShowPw((s) => !s)}
+                    style={{ background: "none", border: "none", padding: 6, color: INK3, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+                    <EyeIco off={showPw} /></button>} />
               </>
             )}
           </div>
-          {error && <p style={{ margin: "12px 4px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>}
-          {phase === "email" ? primary("Отправить код", () => void submitResetEmail()) : primary("Сменить пароль и войти", () => void submitResetConfirm())}
-          <div style={{ display: "flex", justifyContent: "center", gap: 18, marginTop: 10 }}>
-            {phase === "code" && linkBtn("Отправить код ещё раз", () => { setPhase("email"); setCode(""); setNote(null); })}
-            {linkBtn("Назад ко входу", () => { setView("auth"); setPhase("email"); setCode(""); setError(null); setNote(null); })}
+          <Err />
+          <div style={{ marginTop: 18 }}>
+            {phase === "email"
+              ? <Primary label="Отправить код" onClick={() => void submitResetEmail()} />
+              : <Primary label="Сохранить и войти" onClick={() => void submitResetConfirm()} />}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 6 }}>
+            {phase === "code" && <Quiet label="Прислать ещё раз" onClick={() => { setPhase("email"); setCode(""); setError(null); }} />}
+            <Quiet tone="ink" label="Назад ко входу" onClick={() => { setView("auth"); setPhase("email"); setCode(""); setPassword(""); setError(null); }} />
           </div>
         </div>
-      </div>
+      </>,
     );
   }
 
   /* ── вход / регистрация ── */
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 16 }}>
-      {/* эмблема */}
-      <div style={{ width: 76, height: 76, borderRadius: "50%", display: "grid", placeItems: "center", background: SURFACE, border: `1px solid ${HAIR}`, boxShadow: "var(--shadow-card)", marginBottom: 16 }}>
-        <img src="/iskcon-sign.svg" alt="" style={{ width: 40, height: 40, opacity: 0.92 }} />
-      </div>
-      <h2 style={{ margin: 0, fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.4, color: INK, fontFamily: FONT, textAlign: "center" }}>Личный кабинет</h2>
-      <p style={{ margin: "8px 0 22px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, textAlign: "center", maxWidth: 300 }}>
-        Закладки, прогресс чтения и история прослушивания — на всех ваших устройствах.
+  return shell(
+    <>
+      <Mark />
+      <h1 style={title}>{isReg ? "Создать аккаунт" : "С возвращением"}</h1>
+      <p style={lead}>
+        {isReg
+          ? "Садхана, закладки и прогресс чтения — на всех ваших устройствах."
+          : "Войдите, и садхана продолжится там, где вы остановились."}
       </p>
 
-      <div style={{ width: "100%", maxWidth: 380 }}>
-        {/* внешние аккаунты: Apple · Google · Яндекс ID · VK ID */}
-        <ProviderButtons to="/account" />
-        <OrEmailDivider />
-
-        {/* сегмент-контрол */}
-        <div style={{ display: "flex", background: "rgba(118,118,128,0.12)", borderRadius: 10, padding: 2, marginBottom: 18 }}>
-          {(["login", "register"] as const).map((m) => {
-            const on = mode === m;
-            return (
-              <button
-                key={m}
-                onClick={() => { setMode(m); setError(null); }}
-                style={{
-                  flex: 1, height: 34, border: "none", borderRadius: 8, cursor: "pointer", fontFamily: FONT, fontSize: "var(--text-subhead)",
-                  fontWeight: on ? 600 : 500, color: on ? INK : INK2,
-                  background: on ? SURFACE : "transparent",
-                  boxShadow: on ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
-                  transition: "all 0.18s ease", WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                {m === "login" ? "Вход" : "Регистрация"}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* поля */}
-        <div style={fieldWrap}>
-          {isReg && (
-            <>
-              <div style={rowStyle}>
-                <input style={inputStyle} placeholder="Имя" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
-              </div>
-              {hairline}
-            </>
-          )}
-          <div style={rowStyle}>
-            <input style={inputStyle} type="email" inputMode="email" placeholder="E-mail" autoComplete="email" autoCapitalize="none" spellCheck={false}
-              value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          {hairline}
-          {pwField(isReg ? "new-password" : "current-password")}
-        </div>
-
-        {error && <p style={{ margin: "12px 4px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>}
-
-        {primary(isReg ? "Создать аккаунт" : "Войти", () => void submitAuth())}
-
-        {!isReg && (
-          <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
-            {linkBtn("Забыли пароль?", () => { setView("reset"); setError(null); })}
+      <div style={{ width: "100%", marginTop: 26 }}>
+        {/* внешние аккаунты */}
+        <ProviderButtons to={ROUTES.id()} />
+        {hasProviders && (
+          <div style={{ display: "flex", alignItems: "center", gap: 14, margin: "18px 0" }}>
+            <span style={{ flex: 1, height: "0.5px", background: HAIR }} />
+            <span style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT }}>или по почте</span>
+            <span style={{ flex: 1, height: "0.5px", background: HAIR }} />
           </div>
         )}
 
-        <p style={{ margin: "12px 4px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: FONT, textAlign: "center" }}>
-          {isReg
-            ? "Регистрируясь, вы соглашаетесь хранить отметки чтения и прослушивания в своём аккаунте."
-            : "Войдите, чтобы синхронизировать закладки и прогресс."}
+        <div className="iol-group" style={group}>
+          {isReg && (<><Field label="Имя" autoComplete="name" value={name} onChange={setName} />{hair}</>)}
+          <Field label="E-mail" type="email" inputMode="email" autoComplete="email" value={email} onChange={setEmail} />
+          {hair}
+          <Field label="Пароль" type={showPw ? "text" : "password"} value={password} onChange={setPassword}
+            autoComplete={isReg ? "new-password" : "current-password"} onEnter={() => void submitAuth()}
+            trail={<button type="button" aria-label={showPw ? "Скрыть пароль" : "Показать пароль"} onClick={() => setShowPw((s) => !s)}
+              style={{ background: "none", border: "none", padding: 6, color: INK3, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
+              <EyeIco off={showPw} /></button>} />
+        </div>
+
+        <Err />
+
+        <div style={{ marginTop: 18 }}>
+          <Primary label={isReg ? "Создать аккаунт" : "Войти"} onClick={() => void submitAuth()} />
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 4 }}>
+          {!isReg && <Quiet label="Забыли пароль?" onClick={() => { setView("reset"); setError(null); }} />}
+          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: isReg ? 8 : 0 }}>
+            <span style={{ fontSize: "var(--text-subhead)", color: INK3, fontFamily: FONT }}>
+              {isReg ? "Уже есть аккаунт?" : "Ещё нет аккаунта?"}
+            </span>
+            <Quiet label={isReg ? "Войти" : "Создать"} onClick={() => { setMode(isReg ? "login" : "register"); setError(null); }} />
+          </div>
+        </div>
+
+        <p style={{ margin: "18px 8px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: FONT, textAlign: "center" }}>
+          Вход хранит вашу практику в аккаунте и синхронизирует её между устройствами.
         </p>
       </div>
-    </div>
-  );
-}
-
-/** Волосяной разделитель «или по почте» между внешними кнопками и формой. */
-function OrEmailDivider() {
-  const up = useAuthProviders();
-  if (!up || !PROVIDER_META.some((m) => up[m.id])) return null;
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "16px 0" }}>
-      <span style={{ flex: 1, height: "0.5px", background: HAIR }} />
-      <span style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT }}>или по почте</span>
-      <span style={{ flex: 1, height: "0.5px", background: HAIR }} />
-    </div>
+    </>,
   );
 }
 
@@ -1264,9 +1275,18 @@ export default function AccountScreen({ onOpenPath, onDonate, flash }: { onOpenP
 
   return (
     // фон-вынос на всю ширину: сгруппированный серый iOS под белыми карточками
-    <div style={{ margin: "-16px -16px -116px", padding: "16px 16px calc(120px + env(safe-area-inset-bottom))", minHeight: "calc(100dvh - 56px)", background: GROUPED }}>
+    <div style={{
+      margin: "-16px -16px -116px",
+      padding: "16px 16px calc(120px + env(safe-area-inset-bottom))",
+      minHeight: "calc(100dvh - 56px)",
+      // Гостю — белый холст приложения и вертикальное центрирование: вход это
+      // момент, а не список карточек. Вошедшему — сгруппированный серый под
+      // белыми карточками дашборда.
+      background: status === "authed" ? GROUPED : "var(--color-bg)",
+      ...(status === "authed" ? null : { display: "flex", alignItems: "center", justifyContent: "center" }),
+    }}>
       {status === "loading" ? (
-        <div style={{ display: "flex", justifyContent: "center", paddingTop: 80, color: INK3, fontSize: "var(--text-subhead)", fontFamily: FONT }}>Загружаю…</div>
+        <div style={{ color: INK3, fontSize: "var(--text-subhead)", fontFamily: FONT }}>Загружаю…</div>
       ) : status === "guest" ? (
         <AuthPanel />
       ) : (
