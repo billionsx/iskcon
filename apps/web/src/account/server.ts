@@ -20,14 +20,20 @@
  */
 
 import type { D1Database } from "@cloudflare/workers-types";
+import { sendCodeMail } from "./mail";
 
-interface DB {
+export interface DB {
   DB: D1Database;
+  // Почта кодов (сброс/подтверждение) — см. ./mail. Поля опциональны: воркер
+  // передаёт сюда свой полный Env, эти биндинги в нём уже объявлены.
+  RESEND_API_KEY?: string;
+  REPORT_FROM_ADDR?: string;
+  SEB?: { send: (m: unknown) => Promise<void> };
 }
 
 const NOINDEX = "noindex, nofollow, noarchive, nosnippet, noimageindex";
 const COOKIE = "iol_sess";
-const SESSION_TTL_SEC = 60 * 60 * 24 * 60; // 60 дней
+export const SESSION_TTL_SEC = 60 * 60 * 24 * 60; // 60 дней
 const PBKDF2_ITERS = 100_000;
 
 /* ─────────────────────────── ответы ─────────────────────────── */
@@ -89,7 +95,7 @@ async function verifyPassword(password: string, stored: string): Promise<boolean
   const actual = await pbkdf2(password, salt, iters);
   return constEq(actual, expected);
 }
-function hexId(): string {
+export function hexId(): string {
   return crypto.randomUUID().replace(/-/g, "");
 }
 
@@ -105,7 +111,7 @@ function readCookie(req: Request, name: string): string | null {
   }
   return null;
 }
-function setCookie(token: string, maxAge: number): string {
+export function setCookie(token: string, maxAge: number): string {
   return `${COOKIE}=${encodeURIComponent(token)}; Path=/; Max-Age=${maxAge}; HttpOnly; Secure; SameSite=Lax`;
 }
 const clearCookie = () => `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`;
@@ -113,7 +119,7 @@ const clearCookie = () => `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; Same
 /* ─────────────────────────── схема ─────────────────────────── */
 
 let schemaReady = false;
-async function ensureSchema(env: DB): Promise<void> {
+export async function ensureSchema(env: DB): Promise<void> {
   if (schemaReady) return;
   await env.DB.batch([
     env.DB.prepare(
@@ -251,6 +257,48 @@ async function ensureSchema(env: DB): Promise<void> {
     ),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_notes_user ON notes(user_id, updated_at)`),
     env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_notes_ref ON notes(user_id, kind, ref)`),
+    // Внешние аккаунты (Apple/Google/Яндекс/VK): (provider, provider_uid) → users.id.
+    // email/name/avatar — снимок профиля провайдера на момент последнего входа.
+    // Зеркалирует apps/api/migrations/0024_auth_oauth_reset.sql.
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS auth_identities (
+        provider TEXT NOT NULL,
+        provider_uid TEXT NOT NULL,
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        email TEXT,
+        name TEXT,
+        avatar TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        PRIMARY KEY (provider, provider_uid)
+      )`,
+    ),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_identities_user ON auth_identities(user_id)`),
+    // Одноразовые коды на почту: сброс пароля и подтверждение адреса. В БД —
+    // только SHA-256 кода; TTL 15 минут; attempts ограничивает перебор.
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS auth_codes (
+        id TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        code_hash TEXT NOT NULL,
+        purpose TEXT NOT NULL,
+        attempts INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        expires_at TEXT NOT NULL
+      )`,
+    ),
+    env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_auth_codes_email ON auth_codes(email, purpose)`),
+    // OAuth-state: CSRF + PKCE-verifier + путь возврата + линк-режим. В D1, а не
+    // в cookie: колбэк Apple (form_post) — межсайтовый POST без SameSite-cookie.
+    env.DB.prepare(
+      `CREATE TABLE IF NOT EXISTS oauth_states (
+        state TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        verifier TEXT NOT NULL,
+        redirect_to TEXT NOT NULL DEFAULT '/account',
+        link_user TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      )`,
+    ),
   ]);
   schemaReady = true;
 }
@@ -289,7 +337,7 @@ function publicUser(u: UserRow, emailVerified = 0) {
   };
 }
 
-async function createSession(env: DB, userId: string, req: Request): Promise<string> {
+export async function createSession(env: DB, userId: string, req: Request): Promise<string> {
   const token = b64u(crypto.getRandomValues(new Uint8Array(32)));
   const tokenHash = await sha256(token);
   const ua = (req.headers.get("User-Agent") || "").slice(0, 300);
@@ -310,7 +358,9 @@ async function sessionUser(env: DB, req: Request): Promise<{ user: UserRow; veri
     `SELECT u.id, u.email, u.name, u.spiritual_name,
             u.level, u.initiation, u.diksha_guru, u.siksha_guru, u.principles_since, u.home_center_id,
             u.created_at,
-            COALESCE(a.email_verified,0) AS verified
+            CASE WHEN COALESCE(a.email_verified,0) = 1
+                   OR EXISTS (SELECT 1 FROM auth_identities ai WHERE ai.user_id = u.id)
+                 THEN 1 ELSE 0 END AS verified
      FROM sessions s
      JOIN users u ON u.id = s.user_id
      LEFT JOIN user_auth a ON a.user_id = u.id
@@ -338,6 +388,64 @@ export async function currentUserId(env: DB, req: Request): Promise<string | nul
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const normEmail = (s: unknown) => String(s ?? "").trim().toLowerCase().slice(0, 200);
 const clip = (s: unknown, n: number) => String(s ?? "").trim().slice(0, n);
+
+/* ─────────────────────────── одноразовые коды на почту ───────────────────────
+ * Сброс пароля и подтверждение адреса. Код — 6 цифр (crypto), в БД лишь его
+ * SHA-256, живёт 15 минут, повторная выдача не чаще раза в минуту, на проверку
+ * 6 попыток. Ответ /reset/request ВСЕГДА «ok» — существование аккаунта не
+ * раскрывается ни текстом, ни таймингом (письмо шлём после ответа не выйдет —
+ * ctx нет, поэтому шлём с жёстким потолком ожидания). */
+
+const CODE_TTL_MIN = 15;
+
+function newCode(): string {
+  const n = new Uint32Array(1);
+  crypto.getRandomValues(n);
+  return String(n[0] % 1_000_000).padStart(6, "0");
+}
+
+/** Выдать код и отправить письмо. null — троттлинг (минута не прошла). */
+async function issueCode(env: DB, email: string, purpose: "reset" | "verify"): Promise<boolean | null> {
+  const recent = await env.DB
+    .prepare(`SELECT 1 AS x FROM auth_codes WHERE email = ?1 AND purpose = ?2 AND created_at > datetime('now','-60 seconds') LIMIT 1`)
+    .bind(email, purpose)
+    .first<{ x: number }>();
+  if (recent) return null;
+  const code = newCode();
+  await env.DB.batch([
+    env.DB.prepare(`DELETE FROM auth_codes WHERE email = ?1 AND purpose = ?2`).bind(email, purpose),
+    env.DB
+      .prepare(`INSERT INTO auth_codes (id, email, code_hash, purpose, expires_at) VALUES (?1,?2,?3,?4, datetime('now','+${CODE_TTL_MIN} minutes'))`)
+      .bind(hexId(), email, await sha256(code), purpose),
+  ]);
+  // Потолок ожидания почты: медленный SMTP-шлюз не должен вешать ответ формы.
+  const sent = await Promise.race([
+    sendCodeMail(env, email, code, purpose),
+    new Promise<boolean>((r) => setTimeout(() => r(false), 3500)),
+  ]).catch(() => false);
+  return sent;
+}
+
+/** Проверить код; при успехе — коды по адресу гасятся. */
+async function checkCode(env: DB, email: string, purpose: "reset" | "verify", code: string): Promise<boolean> {
+  if (!/^\d{6}$/.test(code)) return false;
+  const row = await env.DB
+    .prepare(`SELECT id, code_hash, attempts FROM auth_codes WHERE email = ?1 AND purpose = ?2 AND expires_at > datetime('now') ORDER BY created_at DESC LIMIT 1`)
+    .bind(email, purpose)
+    .first<{ id: string; code_hash: string; attempts: number }>();
+  if (!row) return false;
+  if (row.attempts >= 6) {
+    await env.DB.prepare(`DELETE FROM auth_codes WHERE id = ?1`).bind(row.id).run().catch(() => undefined);
+    return false;
+  }
+  const ok = constEq(enc.encode(row.code_hash), enc.encode(await sha256(code)));
+  if (!ok) {
+    await env.DB.prepare(`UPDATE auth_codes SET attempts = attempts + 1 WHERE id = ?1`).bind(row.id).run().catch(() => undefined);
+    return false;
+  }
+  await env.DB.prepare(`DELETE FROM auth_codes WHERE email = ?1 AND purpose = ?2`).bind(email, purpose).run().catch(() => undefined);
+  return true;
+}
 
 /* ─────────────────────────── садхана · дневник ─────────────────────────── */
 // Круги берём из japa_round (источник — счётчик джапы), а чтение/подъём/заметки —
@@ -505,6 +613,9 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
       return err("email_taken", 409);
     }
     const token = await createSession(env, userId, request);
+    // Код подтверждения почты — мягко: сбой доставки не мешает регистрации,
+    // подтвердить адрес можно позже из кабинета («Вход и безопасность»).
+    await issueCode(env, email, "verify").catch(() => undefined);
     const u: UserRow = { id: userId, email, name, spiritual_name: null, created_at: new Date().toISOString().slice(0, 19).replace("T", " ") };
     return jres({ user: publicUser(u) }, { cookie: setCookie(token, SESSION_TTL_SEC) });
   }
@@ -545,6 +656,46 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
     return jres({ ok: true }, { cookie: clearCookie() });
   }
 
+  // Восстановление пароля — шаг 1: код на почту. Ответ всегда ok (адреса не
+  // раскрываем). Работает и для OAuth-пользователя без пароля: этим же путём
+  // он ЗАДАЁТ пароль (в user_auth появится строка).
+  if (p === "/api/auth/reset/request" && method === "POST") {
+    const b = await body();
+    const email = normEmail(b.email);
+    if (!EMAIL_RE.test(email)) return err("bad_email");
+    const u = await env.DB.prepare(`SELECT id FROM users WHERE email = ?1 LIMIT 1`).bind(email).first<{ id: string }>();
+    if (u) await issueCode(env, email, "reset").catch(() => undefined);
+    return jres({ ok: true });
+  }
+
+  // Восстановление пароля — шаг 2: код + новый пароль → вход. Все прежние
+  // сессии пользователя гасятся (украденная сессия умирает вместе со старым паролем).
+  if (p === "/api/auth/reset/confirm" && method === "POST") {
+    const b = await body();
+    const email = normEmail(b.email);
+    const code = String(b.code ?? "").trim();
+    const password = String(b.password ?? "");
+    if (!EMAIL_RE.test(email)) return err("bad_email");
+    if (password.length < 8 || password.length > 200) return err("weak_password");
+    const u = await env.DB.prepare(
+      `SELECT id, email, name, spiritual_name, level, initiation, diksha_guru, siksha_guru, principles_since, home_center_id, created_at
+       FROM users WHERE email = ?1 LIMIT 1`,
+    ).bind(email).first<UserRow>();
+    if (!u) return err("bad_code", 401);
+    const ok = await checkCode(env, email, "reset", code);
+    if (!ok) return err("bad_code", 401);
+    const hash = await hashPassword(password);
+    await env.DB.batch([
+      env.DB.prepare(
+        `INSERT INTO user_auth (user_id, password_hash, email_verified) VALUES (?1,?2,1)
+         ON CONFLICT(user_id) DO UPDATE SET password_hash = ?2, email_verified = 1, updated_at = datetime('now')`,
+      ).bind(u.id, hash),
+      env.DB.prepare(`DELETE FROM sessions WHERE user_id = ?1`).bind(u.id),
+    ]);
+    const token = await createSession(env, u.id, request);
+    return jres({ user: publicUser(u, 1) }, { cookie: setCookie(token, SESSION_TTL_SEC) });
+  }
+
   if (p === "/api/auth/me" && method === "GET") {
     const s = await sessionUser(env, request);
     return jres({ user: s ? publicUser(s.user, s.verified) : null });
@@ -555,6 +706,73 @@ export async function accountApi(request: Request, env: DB, url: URL): Promise<R
   const session = await sessionUser(env, request);
   if (!session) return err("unauthorized", 401);
   const uid = session.user.id;
+
+  // Подтверждение почты — код себе на адрес.
+  if (p === "/api/auth/verify/request" && method === "POST") {
+    if (session.verified) return jres({ ok: true, already: true });
+    const email = session.user.email;
+    if (!email) return err("no_email");
+    const sent = await issueCode(env, email, "verify").catch(() => false);
+    return jres({ ok: true, throttled: sent === null });
+  }
+
+  if (p === "/api/auth/verify/confirm" && method === "POST") {
+    const b = await body();
+    const email = session.user.email;
+    if (!email) return err("no_email");
+    const ok = await checkCode(env, email, "verify", String(b.code ?? "").trim());
+    if (!ok) return err("bad_code", 401);
+    await env.DB.prepare(
+      `INSERT INTO user_auth (user_id, password_hash, email_verified) VALUES (?1, '', 1)
+       ON CONFLICT(user_id) DO UPDATE SET email_verified = 1, updated_at = datetime('now')`,
+    ).bind(uid).run().catch(() => undefined);
+    return jres({ ok: true });
+  }
+
+  // Способы входа: пароль + внешние аккаунты. Для карточки «Вход и безопасность».
+  if (p === "/api/me/identities" && method === "GET") {
+    const [ids, auth] = await Promise.all([
+      env.DB.prepare(`SELECT provider, email, name, created_at FROM auth_identities WHERE user_id = ?1 ORDER BY created_at`).bind(uid).all<{ provider: string; email: string | null; name: string | null; created_at: string }>(),
+      env.DB.prepare(`SELECT password_hash FROM user_auth WHERE user_id = ?1`).bind(uid).first<{ password_hash: string }>(),
+    ]);
+    return jres({
+      identities: ids.results ?? [],
+      hasPassword: !!auth && auth.password_hash.length > 0,
+      emailVerified: !!session.verified,
+    });
+  }
+
+  // Отключить внешний аккаунт — только если остаётся другой способ входа.
+  if (p === "/api/me/identity" && method === "DELETE") {
+    const provider = clip(url.searchParams.get("provider"), 20);
+    const [cnt, auth] = await Promise.all([
+      env.DB.prepare(`SELECT COUNT(*) AS n FROM auth_identities WHERE user_id = ?1`).bind(uid).first<{ n: number }>(),
+      env.DB.prepare(`SELECT password_hash FROM user_auth WHERE user_id = ?1`).bind(uid).first<{ password_hash: string }>(),
+    ]);
+    const hasPassword = !!auth && auth.password_hash.length > 0;
+    if ((cnt?.n ?? 0) <= 1 && !hasPassword) return err("last_method", 409);
+    await env.DB.prepare(`DELETE FROM auth_identities WHERE user_id = ?1 AND provider = ?2`).bind(uid, provider).run();
+    return jres({ ok: true });
+  }
+
+  // Пароль: сменить (нужен текущий) или задать впервые (у OAuth-пользователя его нет).
+  if (p === "/api/me/password" && method === "POST") {
+    const b = await body();
+    const next = String(b.next ?? "");
+    if (next.length < 8 || next.length > 200) return err("weak_password");
+    const auth = await env.DB.prepare(`SELECT password_hash FROM user_auth WHERE user_id = ?1`).bind(uid).first<{ password_hash: string }>();
+    const hasPassword = !!auth && auth.password_hash.length > 0;
+    if (hasPassword) {
+      const ok = await verifyPassword(String(b.current ?? ""), auth.password_hash);
+      if (!ok) return err("bad_credentials", 401);
+    }
+    const hash = await hashPassword(next);
+    await env.DB.prepare(
+      `INSERT INTO user_auth (user_id, password_hash) VALUES (?1,?2)
+       ON CONFLICT(user_id) DO UPDATE SET password_hash = ?2, updated_at = datetime('now')`,
+    ).bind(uid, hash).run();
+    return jres({ ok: true });
+  }
 
   // профиль
   if (p === "/api/me/profile" && method === "PATCH") {

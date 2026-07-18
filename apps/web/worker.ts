@@ -1,7 +1,8 @@
 import { handleAdmin } from "./loader/handler";
 import { homeApi } from "./workerHome";
 import { calendarApi } from "./workerCalendar";
-import { accountApi } from "./src/account/server";
+import { accountApi, ensureSchema as ensureAccountSchema } from "./src/account/server";
+import { oauthApi } from "./src/account/oauth";
 import { pushApi, runNotifications } from "./src/push/server";
 import { vowsApi } from "./src/vows/server";
 import { centersApi } from "./src/centers/server";
@@ -2244,6 +2245,13 @@ export default {
     // ── Личный кабинет: регистрация/вход/сессия (cookie) + закладки, прогресс
     // чтения, история прослушивания. Та же база D1, тот же origin. Матчим ДО
     // общего /api-прокси, иначе cookie-маршруты ушли бы на api.gaurangers.com.
+    // ── Вход через внешние аккаунты (Apple/Google/Яндекс/VK): /api/auth/providers,
+    // /api/auth/oauth/:p/start|callback. ДО кабинета — иначе accountApi ответил бы
+    // 404 на неизвестные ему /api/auth/*-пути. Схему auth-таблиц гарантируем тут же.
+    if (url.pathname.startsWith("/api/auth/")) await ensureAccountSchema(env).catch(() => undefined);
+    const oaRes = await oauthApi(request, env, url);
+    if (oaRes) return oaRes;
+
     const accRes = await accountApi(request, env, url);
     if (accRes) return accRes;
 

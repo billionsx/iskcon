@@ -12,7 +12,9 @@
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
-import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState, type DevoteeLevel, type Initiation } from "./account/api";
+import { replaceUrl } from "./nav";
+import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState, type DevoteeLevel, type Initiation, type IdentityItem } from "./account/api";
+import { ProviderButtons, PROVIDER_META, PROVIDER_NAME, providerGlyph, oauthStartUrl, useAuthProviders, type ProviderId } from "./account/providers";
 import { usePlayer } from "./player/store";
 import { BOOKS, bookFullTitle, bookSlug } from "./books";
 import { albumById } from "./kirtans";
@@ -103,6 +105,21 @@ function errorText(code: string): string {
       return "Неверный e-mail или пароль.";
     case "unauthorized":
       return "Сессия истекла. Войдите снова.";
+    case "bad_code":
+      return "Код не подошёл или устарел. Запросите новый.";
+    case "last_method":
+      return "Нельзя отключить единственный способ входа. Сначала задайте пароль.";
+    case "no_email":
+      return "У аккаунта нет почты — добавьте её в профиле.";
+    case "cancelled":
+      return "Вход отменён.";
+    case "identity_taken":
+      return "Этот внешний аккаунт уже привязан к другому пользователю.";
+    case "state":
+      return "Сессия входа устарела. Попробуйте ещё раз.";
+    case "provider":
+    case "provider_off":
+      return "Провайдер входа сейчас недоступен. Войдите по почте.";
     default:
       return "Что-то пошло не так. Попробуйте ещё раз.";
   }
@@ -197,29 +214,39 @@ function NotesSection({ onOpenPath }: { onOpenPath: (p: string) => void }) {
 /* ─────────────────────────── панель входа (гость) ─────────────────────────── */
 
 function AuthPanel() {
-  const { login, register } = useAuth();
+  const { login, register, refresh } = useAuth();
+  const [view, setView] = useState<"auth" | "reset">("auth");
   const [mode, setMode] = useState<"login" | "register">("login");
+  const [phase, setPhase] = useState<"email" | "code">("email"); // шаги сброса
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(null);
+
+  // Ошибка OAuth-колбэка приходит query-параметром (?authError=…) — показываем
+  // её тем же инлайн-текстом, что и ошибки формы, и чистим адрес.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const ae = q.get("authError");
+    if (ae) {
+      setError(errorText(ae));
+      replaceUrl(window.location.pathname + window.location.hash);
+    }
+  }, []);
 
   const isReg = mode === "register";
+  const emailOk = (em: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em);
 
-  async function submit() {
+  async function submitAuth() {
     if (busy) return;
     setError(null);
     const em = email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) {
-      setError("Проверьте адрес e-mail.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Пароль должен быть не короче 8 символов.");
-      return;
-    }
+    if (!emailOk(em)) { setError("Проверьте адрес e-mail."); return; }
+    if (password.length < 8) { setError("Пароль должен быть не короче 8 символов."); return; }
     setBusy(true);
     try {
       if (isReg) await register(em, password, name.trim() || undefined);
@@ -232,10 +259,127 @@ function AuthPanel() {
     }
   }
 
+  async function submitResetEmail() {
+    if (busy) return;
+    setError(null);
+    const em = email.trim().toLowerCase();
+    if (!emailOk(em)) { setError("Проверьте адрес e-mail."); return; }
+    setBusy(true);
+    try {
+      await accountClient.resetRequest(em);
+      setPhase("code");
+      setNote("Если такой аккаунт есть, мы отправили 6-значный код на почту.");
+    } catch {
+      setError("Не получилось отправить код. Попробуйте ещё раз.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitResetConfirm() {
+    if (busy) return;
+    setError(null);
+    const em = email.trim().toLowerCase();
+    if (!/^\d{6}$/.test(code.trim())) { setError("Введите 6 цифр из письма."); return; }
+    if (password.length < 8) { setError("Пароль должен быть не короче 8 символов."); return; }
+    setBusy(true);
+    try {
+      await accountClient.resetConfirm(em, code.trim(), password);
+      await refresh(); // cookie уже стоит — подтягиваем пользователя
+    } catch (e) {
+      setError(errorText(e instanceof ApiError ? e.code : ""));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const fieldWrap: CSSProperties = { background: SURFACE, borderRadius: 14, border: `0.5px solid ${HAIR}`, overflow: "hidden", boxShadow: "var(--shadow-card)" };
   const rowStyle: CSSProperties = { display: "flex", alignItems: "center", height: 52, padding: "0 16px", gap: 10 };
   const inputStyle: CSSProperties = { flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontSize: "var(--text-body)", color: INK, fontFamily: FONT, padding: 0 };
+  const hairline = <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />;
+  const primary = (label: string, onClick: () => void) => (
+    <button
+      onClick={onClick}
+      disabled={busy}
+      style={{
+        marginTop: 18, width: "100%", height: 52, borderRadius: 14, border: "none",
+        background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
+        cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1, transition: "opacity 0.18s ease",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {busy ? "Минуту…" : label}
+    </button>
+  );
+  const linkBtn = (label: string, onClick: () => void): ReactNode => (
+    <button onClick={onClick} style={{ background: "none", border: "none", padding: "8px 4px", color: GOLDT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+      {label}
+    </button>
+  );
+  const pwField = (autoComplete: string) => (
+    <div style={rowStyle}>
+      <input
+        style={inputStyle}
+        type={showPw ? "text" : "password"}
+        placeholder={view === "reset" ? "Новый пароль" : "Пароль"}
+        autoComplete={autoComplete}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") void (view === "reset" ? submitResetConfirm() : submitAuth()); }}
+      />
+      <button
+        type="button"
+        aria-label={showPw ? "Скрыть пароль" : "Показать пароль"}
+        onClick={() => setShowPw((s) => !s)}
+        style={{ background: "none", border: "none", padding: 4, color: INK3, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}
+      >
+        <EyeIco off={showPw} />
+      </button>
+    </div>
+  );
 
+  /* ── восстановление пароля ── */
+  if (view === "reset") {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 16 }}>
+        <h2 style={{ margin: "6px 0 0", fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: -0.4, color: INK, fontFamily: FONT, textAlign: "center" }}>Восстановление пароля</h2>
+        <p style={{ margin: "8px 0 22px", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: INK2, fontFamily: FONT, textAlign: "center", maxWidth: 310 }}>
+          {phase === "email"
+            ? "Укажите почту аккаунта — пришлём 6-значный код."
+            : note ?? "Введите код из письма и задайте новый пароль."}
+        </p>
+        <div style={{ width: "100%", maxWidth: 380 }}>
+          <div style={fieldWrap}>
+            <div style={rowStyle}>
+              <input style={inputStyle} type="email" inputMode="email" placeholder="E-mail" autoComplete="email" autoCapitalize="none" spellCheck={false}
+                value={email} onChange={(e) => setEmail(e.target.value)} disabled={phase === "code"}
+                onKeyDown={(e) => { if (e.key === "Enter" && phase === "email") void submitResetEmail(); }} />
+            </div>
+            {phase === "code" && (
+              <>
+                {hairline}
+                <div style={rowStyle}>
+                  <input style={{ ...inputStyle, letterSpacing: 6, fontVariantNumeric: "tabular-nums" }} inputMode="numeric" pattern="[0-9]*" maxLength={6}
+                    placeholder="Код из письма" autoComplete="one-time-code" value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+                </div>
+                {hairline}
+                {pwField("new-password")}
+              </>
+            )}
+          </div>
+          {error && <p style={{ margin: "12px 4px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>}
+          {phase === "email" ? primary("Отправить код", () => void submitResetEmail()) : primary("Сменить пароль и войти", () => void submitResetConfirm())}
+          <div style={{ display: "flex", justifyContent: "center", gap: 18, marginTop: 10 }}>
+            {phase === "code" && linkBtn("Отправить код ещё раз", () => { setPhase("email"); setCode(""); setNote(null); })}
+            {linkBtn("Назад ко входу", () => { setView("auth"); setPhase("email"); setCode(""); setError(null); setNote(null); })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── вход / регистрация ── */
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 16 }}>
       {/* эмблема */}
@@ -248,6 +392,10 @@ function AuthPanel() {
       </p>
 
       <div style={{ width: "100%", maxWidth: 380 }}>
+        {/* внешние аккаунты: Apple · Google · Яндекс ID · VK ID */}
+        <ProviderButtons to="/account" />
+        <OrEmailDivider />
+
         {/* сегмент-контрол */}
         <div style={{ display: "flex", background: "rgba(118,118,128,0.12)", borderRadius: 10, padding: 2, marginBottom: 18 }}>
           {(["login", "register"] as const).map((m) => {
@@ -275,76 +423,48 @@ function AuthPanel() {
           {isReg && (
             <>
               <div style={rowStyle}>
-                <input
-                  style={inputStyle}
-                  placeholder="Имя"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <input style={inputStyle} placeholder="Имя" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
-              <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />
+              {hairline}
             </>
           )}
           <div style={rowStyle}>
-            <input
-              style={inputStyle}
-              type="email"
-              inputMode="email"
-              placeholder="E-mail"
-              autoComplete="email"
-              autoCapitalize="none"
-              spellCheck={false}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <input style={inputStyle} type="email" inputMode="email" placeholder="E-mail" autoComplete="email" autoCapitalize="none" spellCheck={false}
+              value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
-          <div style={{ height: "0.5px", background: HAIR, marginLeft: 16 }} />
-          <div style={rowStyle}>
-            <input
-              style={inputStyle}
-              type={showPw ? "text" : "password"}
-              placeholder="Пароль"
-              autoComplete={isReg ? "new-password" : "current-password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") void submit(); }}
-            />
-            <button
-              type="button"
-              aria-label={showPw ? "Скрыть пароль" : "Показать пароль"}
-              onClick={() => setShowPw((s) => !s)}
-              style={{ background: "none", border: "none", padding: 4, color: INK3, cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}
-            >
-              <EyeIco off={showPw} />
-            </button>
-          </div>
+          {hairline}
+          {pwField(isReg ? "new-password" : "current-password")}
         </div>
 
-        {error && (
-          <p style={{ margin: "12px 4px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>
+        {error && <p style={{ margin: "12px 4px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>}
+
+        {primary(isReg ? "Создать аккаунт" : "Войти", () => void submitAuth())}
+
+        {!isReg && (
+          <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
+            {linkBtn("Забыли пароль?", () => { setView("reset"); setError(null); })}
+          </div>
         )}
 
-        {/* основная кнопка */}
-        <button
-          onClick={() => void submit()}
-          disabled={busy}
-          style={{
-            marginTop: 18, width: "100%", height: 52, borderRadius: 14, border: "none",
-            background: INK, color: "var(--color-bg-2)", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
-            cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1, transition: "opacity 0.18s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-          {busy ? "Минуту…" : isReg ? "Создать аккаунт" : "Войти"}
-        </button>
-
-        <p style={{ margin: "16px 4px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: FONT, textAlign: "center" }}>
+        <p style={{ margin: "12px 4px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: FONT, textAlign: "center" }}>
           {isReg
             ? "Регистрируясь, вы соглашаетесь хранить отметки чтения и прослушивания в своём аккаунте."
             : "Войдите, чтобы синхронизировать закладки и прогресс."}
         </p>
       </div>
+    </div>
+  );
+}
+
+/** Волосяной разделитель «или по почте» между внешними кнопками и формой. */
+function OrEmailDivider() {
+  const up = useAuthProviders();
+  if (!up || !PROVIDER_META.some((m) => up[m.id])) return null;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "16px 0" }}>
+      <span style={{ flex: 1, height: "0.5px", background: HAIR }} />
+      <span style={{ fontSize: "var(--text-footnote)", color: INK3, fontFamily: FONT }}>или по почте</span>
+      <span style={{ flex: 1, height: "0.5px", background: HAIR }} />
     </div>
   );
 }
@@ -701,6 +821,162 @@ function NotificationsCard() {
   );
 }
 
+/* ─────────────────────── вход и безопасность (Ц-онбординг) ─────────────────────── */
+
+function SecurityCard({ flash }: { flash: (m: string) => void }) {
+  const { user, refresh } = useAuth();
+  const up = useAuthProviders();
+  const [ids, setIds] = useState<IdentityItem[] | null>(null);
+  const [hasPassword, setHasPassword] = useState(false);
+  const [verified, setVerified] = useState(true);
+  const [open, setOpen] = useState<"" | "verify" | "password">("");
+  const [code, setCode] = useState("");
+  const [curPw, setCurPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    accountClient.identities()
+      .then((d) => { setIds(d.identities); setHasPassword(d.hasPassword); setVerified(d.emailVerified); })
+      .catch(() => setIds([]));
+  }, []);
+  useEffect(load, [load]);
+
+  const linked = new Set((ids ?? []).map((i) => i.provider));
+  const methods = (ids?.length ?? 0) + (hasPassword ? 1 : 0);
+  const row: CSSProperties = { display: "flex", alignItems: "center", gap: 12, padding: "13px 14px", fontFamily: FONT };
+  const chip = (bg: string, color: string, node: ReactNode) => (
+    <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: bg, color }}>{node}</span>
+  );
+  const act = (label: string, onClick: () => void, danger = false) => (
+    <button onClick={onClick} disabled={busy}
+      style={{ background: "none", border: "none", padding: "6px 0 6px 8px", color: danger ? "var(--color-danger-text)" : GOLDT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", fontFamily: FONT, WebkitTapHighlightColor: "transparent", opacity: busy ? 0.5 : 1 }}>
+      {label}
+    </button>
+  );
+  const inlineInput: CSSProperties = { flex: 1, minWidth: 0, height: 40, border: `0.5px solid ${HAIR}`, borderRadius: 10, padding: "0 12px", fontSize: "var(--text-subhead)", color: INK, fontFamily: FONT, background: "var(--color-bg-3)", outline: "none" };
+  const hair = <div style={{ height: "0.5px", background: HAIR, marginLeft: 56 }} />;
+
+  async function startVerify() {
+    setError(null); setBusy(true);
+    try {
+      await accountClient.verifyRequest();
+      setOpen("verify");
+    } catch (e) { setError(errorText(e instanceof ApiError ? e.code : "")); }
+    finally { setBusy(false); }
+  }
+  async function confirmVerify() {
+    if (!/^\d{6}$/.test(code.trim())) { setError("Введите 6 цифр из письма."); return; }
+    setError(null); setBusy(true);
+    try {
+      await accountClient.verifyConfirm(code.trim());
+      setOpen(""); setCode(""); setVerified(true);
+      await refresh();
+      flash("Почта подтверждена");
+    } catch (e) { setError(errorText(e instanceof ApiError ? e.code : "")); }
+    finally { setBusy(false); }
+  }
+  async function savePassword() {
+    if (newPw.length < 8) { setError("Пароль должен быть не короче 8 символов."); return; }
+    setError(null); setBusy(true);
+    try {
+      await accountClient.setPassword(newPw, hasPassword ? curPw : undefined);
+      setOpen(""); setCurPw(""); setNewPw("");
+      flash(hasPassword ? "Пароль обновлён" : "Пароль задан");
+      load();
+    } catch (e) { setError(errorText(e instanceof ApiError ? e.code : "")); }
+    finally { setBusy(false); }
+  }
+  async function unlink(prov: string) {
+    setError(null); setBusy(true);
+    try {
+      await accountClient.unlinkIdentity(prov);
+      flash("Аккаунт отключён");
+      load();
+    } catch (e) { setError(errorText(e instanceof ApiError ? e.code : "")); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div>
+      <SectionTitle title="Вход и безопасность" />
+      <div style={{ background: SURFACE, borderRadius: 16, border: `0.5px solid ${HAIR}`, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+        {/* почта */}
+        <div style={row}>
+          {chip("rgba(120,120,128,0.12)", INK2, <MailIco size={17} />)}
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Почта</span>
+            <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user?.email ?? "не указана"}</span>
+          </span>
+          {user?.email && (verified
+            ? <span style={{ fontSize: "var(--text-footnote)", color: INK3, fontWeight: 500 }}>Подтверждена</span>
+            : act("Подтвердить", () => void startVerify()))}
+        </div>
+        {open === "verify" && (
+          <div style={{ display: "flex", gap: 8, padding: "0 14px 13px 56px" }}>
+            <input style={{ ...inlineInput, letterSpacing: 5, fontVariantNumeric: "tabular-nums" }} inputMode="numeric" pattern="[0-9]*" maxLength={6}
+              placeholder="Код из письма" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+            {act("Готово", () => void confirmVerify())}
+          </div>
+        )}
+        {hair}
+
+        {/* пароль */}
+        <div style={row}>
+          {chip("rgba(120,120,128,0.12)", INK2, <KeyIco size={17} />)}
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Пароль</span>
+            <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1 }}>{hasPassword ? "Для входа по почте" : "Не задан"}</span>
+          </span>
+          {act(open === "password" ? "Скрыть" : hasPassword ? "Изменить" : "Задать", () => { setOpen(open === "password" ? "" : "password"); setError(null); })}
+        </div>
+        {open === "password" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "0 14px 13px 56px" }}>
+            {hasPassword && (
+              <input style={inlineInput} type="password" placeholder="Текущий пароль" autoComplete="current-password" value={curPw} onChange={(e) => setCurPw(e.target.value)} />
+            )}
+            <div style={{ display: "flex", gap: 8 }}>
+              <input style={inlineInput} type="password" placeholder="Новый пароль" autoComplete="new-password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
+              {act("Сохранить", () => void savePassword())}
+            </div>
+          </div>
+        )}
+
+        {/* внешние аккаунты */}
+        {PROVIDER_META.map((m) => {
+          const isLinked = linked.has(m.id);
+          const canConnect = !!up?.[m.id];
+          if (!isLinked && !canConnect) return null; // мёртвых кнопок не показываем
+          return (
+            <div key={m.id}>
+              {hair}
+              <div style={row}>
+                {chip(m.id === "apple" ? "#000" : "var(--color-bg-3)", m.id === "apple" ? "#fff" : INK, providerGlyph(m.id, 17))}
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>{PROVIDER_NAME[m.id]}</span>
+                  <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1 }}>{isLinked ? "Подключено" : "Быстрый вход"}</span>
+                </span>
+                {isLinked
+                  ? (methods > 1 ? act("Отключить", () => void unlink(m.id), true) : <span style={{ fontSize: "var(--text-footnote)", color: INK3 }}>Единственный вход</span>)
+                  : act("Подключить", () => window.location.assign(oauthStartUrl(m.id as ProviderId, "/account")))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {error && <p style={{ margin: "10px 6px 0", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-danger-text)", fontFamily: FONT }}>{error}</p>}
+    </div>
+  );
+}
+
+const MailIco = ({ size = 20 }: IcoProps) => (
+  <svg {...ico(size)}><rect {...STR} x="3" y="5.4" width="18" height="13.2" rx="2.2" /><path {...STR} d="m4 7 8 5.6L20 7" /></svg>
+);
+const KeyIco = ({ size = 20 }: IcoProps) => (
+  <svg {...ico(size)}><circle {...STR} cx="8.2" cy="12" r="3.6" /><path {...STR} d="M11.8 12h8.4M17 12v3M20.2 12v2.2" /></svg>
+);
+
 function SettingsCard({ onEdit, onDonate, onLogout }: { onEdit: () => void; onDonate: () => void; onLogout: () => void }) {
   const rows: { icon: ReactNode; label: string; tint?: string; onClick: () => void }[] = [
     { icon: <PencilIco size={18} />, label: "Изменить профиль", onClick: onEdit },
@@ -959,6 +1235,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       )}
 
       <NotificationsCard />
+      <SecurityCard flash={flash} />
       <SettingsCard onEdit={() => setEditing(true)} onDonate={onDonate} onLogout={() => void doLogout()} />
 
       <p style={{ textAlign: "center", fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, margin: 0 }}>gaurangers.com · ИСККОН</p>
@@ -972,6 +1249,18 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
 
 export default function AccountScreen({ onOpenPath, onDonate, flash }: { onOpenPath: (path: string) => void; onDonate: () => void; flash: (m: string) => void }) {
   const { status } = useAuth();
+
+  // Возврат из OAuth-колбэка: ?welcome=1 — тихое приветствие; ?authError=… у
+  // вошедшего (неудачная привязка провайдера) — той же плашкой. Гостю ошибку
+  // показывает AuthPanel инлайн, здесь её не трогаем.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    let dirty = false;
+    if (q.get("welcome")) { flash("Вы вошли. Харе Кришна!"); dirty = true; }
+    const ae = q.get("authError");
+    if (ae && status === "authed") { flash(errorText(ae)); dirty = true; }
+    if (dirty) replaceUrl(window.location.pathname + window.location.hash);
+  }, [status, flash]);
 
   return (
     // фон-вынос на всю ширину: сгруппированный серый iOS под белыми карточками

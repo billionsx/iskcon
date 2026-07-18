@@ -19,6 +19,7 @@ import { useAuth } from "./account/store";
 import { enablePush, pushSupported } from "./push";
 import { markOnboarded, setLocalDevotee, getLocalDevotee, LEVEL_META } from "./devotee";
 import type { DevoteeLevel } from "./account/api";
+import { ProviderButtons } from "./account/providers";
 
 /* Единый акцент приложения — золото (как в TodayHub / Экадаши). */
 const GOLD = "var(--color-gold)";
@@ -55,6 +56,9 @@ const CSS = `
 /* ── Иконки (штрих, 24×24). Путь: компас → росток → рассвет → пламя → сияние. ── */
 const sv = (c: string, w = 1.7): CSSProperties => ({ fill: "none", stroke: c, strokeWidth: w, strokeLinecap: "round", strokeLinejoin: "round" }) as CSSProperties;
 
+function IcMail() {
+  return <svg width={18} height={18} viewBox="0 0 24 24" style={sv(INK, 1.8)}><rect x="3" y="5.4" width="18" height="13.2" rx="2.2" /><path d="m4 7 8 5.6L20 7" /></svg>;
+}
 function IcChevron({ c = INK }: { c?: string }) {
   return <svg width={17} height={17} viewBox="0 0 24 24" style={sv(c, 2.4)}><path d="M15 18l-6-6 6-6" /></svg>;
 }
@@ -117,15 +121,27 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
   const practicing = level === "practicing" || level === "initiated" || level === "guru";
   const initiated = level === "initiated" || level === "guru";
 
-  function go(n: number) { setDir(n >= step ? 1 : -1); setStep(n); }
+  function go(n: number) {
+    // Вошедшему шаг входа не нужен — перешагиваем в обе стороны.
+    if (n === 4 && status === "authed") n = dirOf(n) >= 0 ? 5 : 3;
+    setDir(n >= step ? 1 : -1); setStep(n);
+  }
+  const dirOf = (n: number) => (n >= step ? 1 : -1);
   function goBack() { go(Math.max(0, step - 1)); }
+
+  /** Зафиксировать ответы онбординга локально — вызывается и из finish(), и
+   *  ПЕРЕД уходом на сайт провайдера (OAuth покидает страницу; после колбэка
+   *  оверлей уже не должен показываться, а уровень — не потеряться). */
+  function commitLocal() {
+    setLocalDevotee({ level: level || "", name: name.trim(), spiritualName: spiritual.trim(), dikshaGuru: guru.trim(), chantNorm: practicing ? norm : undefined });
+    markOnboarded();
+  }
 
   function finish(navTo?: string) {
     if (busy) return;
     setBusy(true);
     const lv = level || "";
-    setLocalDevotee({ level: lv, name: name.trim(), spiritualName: spiritual.trim(), dikshaGuru: guru.trim(), chantNorm: practicing ? norm : undefined });
-    markOnboarded();
+    commitLocal();
     onClose?.();
     if (navTo) navigate(navTo);
     if (status === "authed") {
@@ -159,12 +175,12 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
 
   const Dots = () => (
     <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 18 }}>
-      {[1, 2, 3].map((i) => (
+      {[1, 2, 3, 4].map((i) => (
         <span key={i} style={{ width: step === i ? 22 : 6, height: 6, borderRadius: 6, background: step === i ? GOLD : step > i ? "rgba(210,170,27,0.4)" : "rgba(120,120,128,0.28)", transition: "all .3s cubic-bezier(.16,1,.3,1)" }} />
       ))}
     </div>
   );
-  const chromeSteps = step >= 1 && step <= 3;
+  const chromeSteps = step >= 1 && step <= 4;
   const Header = () => (
     <div style={header}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 30 }}>
@@ -277,6 +293,26 @@ export function Onboarding({ navigate, onClose }: { navigate: (path: string) => 
     foot = supported
       ? <div style={footer}><PrimaryBtn label={pushBusy ? "Подключаем…" : "Включить уведомления"} busy={pushBusy} onClick={() => void togglePush()} /><SubtleBtn label="Не сейчас" onClick={() => go(4)} disabled={pushBusy} /></div>
       : <div style={footer}><PrimaryBtn label="Далее" onClick={() => go(4)} /></div>;
+  } else if (step === 4) {
+    content = (
+      <div key="s5" className={stepClass} style={main}>
+        <h1 style={{ ...h1, marginTop: 18 }}>Сохраните свой путь</h1>
+        <p style={sub}>Вход синхронизирует садхану, закладки, обеты и прогресс чтения на всех ваших устройствах.</p>
+        <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10 }}>
+          <ProviderButtons to="/" beforeLeave={commitLocal} />
+          <button className="onb-press" onClick={() => finish("/account")}
+            style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: 50, borderRadius: 14, cursor: "pointer", background: CARD, color: INK, border: `0.5px solid ${HAIR}`, boxShadow: SHADOW, fontFamily: TEXT, fontSize: "var(--text-body)", fontWeight: 600, WebkitTapHighlightColor: "transparent" }}>
+            <span style={{ position: "absolute", left: 16, display: "grid", placeItems: "center" }}><IcMail /></span>
+            Войти по почте
+          </button>
+        </div>
+        <p style={{ margin: "16px 4px 0", fontSize: "var(--text-caption)", lineHeight: 1.5, color: INK3, fontFamily: TEXT, textAlign: "center" }}>
+          Можно продолжить и без входа — всё сохранится на этом устройстве.
+        </p>
+        <div style={{ flex: 1 }} />
+      </div>
+    );
+    foot = <div style={footer}><SubtleBtn label="Позже" onClick={() => go(5)} /></div>;
   } else {
     const nm = name.trim();
     const lvHint = level === "guest"

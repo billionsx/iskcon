@@ -41,6 +41,11 @@ export const ORIGIN = "https://gaurangers.com";
 export const ROUTES = {
   home: () => "/",
 
+  // ── API-адреса, уходящие НАРУЖУ (в консоли OAuth-провайдеров) ──
+  // Redirect URI регистрируется у Apple/Google/Яндекс/VK буквально: смена пути
+  // здесь = перерегистрация у всех четырёх. Потому он в реестре, а не строкой.
+  apiOauthCallback: (provider: string) => `/api/auth/oauth/${provider}/callback`,
+
   // ── Садхана ──
   sadhana: () => "/sadhana",
   japa: () => "/japa",

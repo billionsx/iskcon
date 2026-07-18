@@ -35,6 +35,7 @@ export interface ListenItem {
   cover: string | null; album: string | null; artist: string | null; href: string | null;
   duration_sec: number | null; position_sec: number | null; play_count: number; last_at: string;
 }
+export interface IdentityItem { provider: string; email: string | null; name: string | null; created_at: string }
 export interface BookmarkItem {
   kind: string; ref: string; title: string | null; subtitle: string | null;
   href: string | null; cover: string | null; created_at: string;
@@ -131,6 +132,21 @@ export const accountClient = {
     // по client_id; нужна, чтобы дневник учёл круги, отмеченные до входа/офлайн.
     sync: (rounds: JapaSyncRound[]) => request<{ ok: true; saved: number }>("POST", "/me/japa", { rounds }),
   },
+  // Восстановление пароля: код на почту → код + новый пароль = вход. Тем же
+  // путём OAuth-пользователь ЗАДАЁТ пароль (у него в user_auth строки ещё нет).
+  resetRequest: (email: string) => request<{ ok: true }>("POST", "/auth/reset/request", { email }),
+  resetConfirm: (email: string, code: string, password: string) =>
+    request<{ user: AccountUser }>("POST", "/auth/reset/confirm", { email, code, password }).then((d) => d.user),
+  // Подтверждение почты кода из письма (вошедшему).
+  verifyRequest: () => request<{ ok: true; throttled?: boolean; already?: boolean }>("POST", "/auth/verify/request"),
+  verifyConfirm: (code: string) => request<{ ok: true }>("POST", "/auth/verify/confirm", { code }),
+  // Способы входа для карточки «Вход и безопасность».
+  identities: () =>
+    request<{ identities: IdentityItem[]; hasPassword: boolean; emailVerified: boolean }>("GET", "/me/identities"),
+  unlinkIdentity: (provider: string) =>
+    request<{ ok: true }>("DELETE", `/me/identity?provider=${encodeURIComponent(provider)}`),
+  setPassword: (next: string, current?: string) =>
+    request<{ ok: true }>("POST", "/me/password", { next, current }),
 };
 
 export { ApiError };
