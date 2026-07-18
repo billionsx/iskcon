@@ -96,9 +96,25 @@ def source_alive(url: str) -> tuple:
 
 
 def get(url: str, timeout: int = 25) -> str:
+    """ЗКН-Ф014 — HTTP-ошибка обязана НАЗВАТЬ СЕБЯ.
+
+    `urlopen` без перехвата HTTPError валится трассировкой, в которой не видно
+    главного: какой код вернул сервер и что было в теле. 404 от переехавшей
+    страницы и 429 от лимита выглядят одинаково — «упало», — и время уходит на
+    диагностику того, что сервер уже сказал словами.
+    """
     req = urllib.request.Request(url, headers={"User-Agent": UA})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read().decode("utf-8", "replace")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as e:
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "replace")[:300]
+        except Exception:
+            pass
+        print("HTTP %d · %s%s" % (e.code, url, ("\n" + body) if body else ""))
+        raise
 
 
 def coords_from(html: str, dhama: str = "vrindavan"):

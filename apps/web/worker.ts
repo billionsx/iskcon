@@ -575,6 +575,12 @@ interface AudioTrack {
                           // хотя звук есть.
   artist?: string;        // kirtan only: исполнитель (отображаемое имя)
   album?: string;         // kirtan only: название альбома
+  /* ЗКН-Н090 — У АУДИОТЕКИ ТРИ УРОВНЯ: ГОЛОС → СОБРАНИЕ → ЗАПИСЬ.
+   * Дорожка несла ТОЛЬКО отображаемые строки (`artist`/`album`) — по ним нельзя
+   * ни сгруппировать, ни отфильтровать, ни собрать очередь: имена совпадают,
+   * склоняются и меняются. Слаг — машинный ключ, он и есть уровень. */
+  authorSlug?: string;    // слаг рассказчика (катха) / исполнителя (киртан)
+  collectionId?: string;  // слаг цикла (катха) / альбома (киртан)
 }
 
 function audioDuration(len?: string): number | null {
@@ -1111,6 +1117,7 @@ async function kirtanAllManifest(env: Env, origin: string): Promise<Response> {
     url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
     artist: r.artist ?? "", album: "Коллекция Гауранга Лилы",
+    authorSlug: r.artist_slug || "various",
     group: r.artist_slug || "various",
     groupLabel: r.artist ?? "Без исполнителя",
   }));
@@ -1156,6 +1163,7 @@ function kathaTracksToAudio(rows: Awaited<ReturnType<typeof kathaTrackRows>>, or
     url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
     artist: r.speaker ?? "", album: r.album ?? "Катха",
+    authorSlug: r.speaker_slug || "", collectionId: r.album_id || "",
     group: r.album_id || "katha",
     groupLabel: many && r.speaker ? `${r.album ?? "Катха"} · ${r.speaker}` : (r.album ?? "Катха"),
   }));
@@ -1169,6 +1177,15 @@ async function kathaAllManifest(env: Env, origin: string): Promise<Response> {
 async function kathaAlbumManifest(env: Env, origin: string, id: string): Promise<Response> {
   const rows = await kathaTrackRows(env, "WHERE t.album_id = ?1", [id]);
   return json({ book: `a:${id}`, kind: "katha", modes: { plain: { identifier: "katha-" + id, tracks: kathaTracksToAudio(rows, origin) } } });
+}
+
+/* ЗКН-Н090 — ОЧЕРЕДЬ РАССКАЗЧИКА. Её НЕ БЫЛО, и это корень свалки: единственной
+ * общей очередью катхи была `all` — 857 записей четырёх голосов вперемешку, где
+ * «дальше» уводило от Шрилы Прабхупады к другому рассказчику посреди цикла.
+ * Голос — это контекст слушания, а не фильтр показа: значит у него своя очередь. */
+async function kathaSpeakerManifest(env: Env, origin: string, slug: string): Promise<Response> {
+  const rows = await kathaTrackRows(env, "WHERE t.speaker_slug = ?1", [slug]);
+  return json({ book: `s:${slug}`, kind: "katha", modes: { plain: { identifier: "katha-s-" + slug, tracks: kathaTracksToAudio(rows, origin) } } });
 }
 
 /** ⚠️ Фильтруем В JS: SQLite `lower()` кириллицу НЕ ПОНИМАЕТ, и «Гопи» с «гопи»
@@ -1194,10 +1211,10 @@ async function kathaFindManifest(env: Env, origin: string, q: string): Promise<R
  */
 async function kirtanFindManifest(env: Env, origin: string, q: string): Promise<Response> {
   const res = await env.DB.prepare(
-    `SELECT t.identifier, t.file, t.title, t.duration, a.name AS artist
+    `SELECT t.identifier, t.file, t.title, t.duration, t.artist_slug, a.name AS artist
        FROM kirtan_tracks t LEFT JOIN kirtan_artists a ON a.slug = t.artist_slug
       ORDER BY t.artist_slug, t.file`
-  ).all<{ identifier: string; file: string; title: string; duration: number | null; artist: string | null }>();
+  ).all<{ identifier: string; file: string; title: string; duration: number | null; artist_slug: string; artist: string | null }>();
 
   const nq = q.trim().toLowerCase();
   const hits = (res.results || []).filter(
@@ -1208,7 +1225,7 @@ async function kirtanFindManifest(env: Env, origin: string, q: string): Promise<
     title: r.title, file: r.file,
     url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
-    artist: r.artist ?? "", album: `Найдено: ${q}`,
+    artist: r.artist ?? "", album: `Найдено: ${q}`, authorSlug: r.artist_slug || "",
   }));
   return json({ book: `q:${q}`, kind: "kirtan", modes: { plain: { identifier: "kirtans-find", tracks } } });
 }
@@ -1233,7 +1250,7 @@ async function kirtanFolderManifest(env: Env, origin: string, slug: string): Pro
     title: r.title, file: r.file,
     url: `${origin}/audio/${r.identifier}/${encodeURIComponent(r.file)}${AUDIO_CACHE_BUST}`,
     durationSec: r.duration || 0,
-    artist: r.artist ?? "", album: r.artist ?? "Киртаны",
+    artist: r.artist ?? "", album: r.artist ?? "Киртаны", authorSlug: slug,
   }));
   return json({ book: `f:${slug}`, kind: "kirtan", modes: { plain: { identifier: "kirtans-" + slug, tracks } } });
 }
@@ -2352,6 +2369,9 @@ export default {
     }
     if (url.pathname === "/api/katha/album/audio") {
       return kathaAlbumManifest(env, url.origin, url.searchParams.get("id") || "");
+    }
+    if (url.pathname === "/api/katha/speaker/audio") {
+      return kathaSpeakerManifest(env, url.origin, url.searchParams.get("slug") || "");
     }
     if (url.pathname === "/api/katha/find/audio") {
       const q = url.searchParams.get("q") || "";

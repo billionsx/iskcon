@@ -138,3 +138,174 @@ export function OrderReverseIcon(p: P) {
     </svg>
   );
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ЗКН-Д023 · ЗНАКИ АУДИОТЕКИ — ЯЗЫК SF SYMBOLS.
+ *
+ * Набор снят с Apple Music (iOS 26.5): те же метафоры, та же оптика, та же
+ * толщина штриха. Свой рисунок иконки — это свой диалект: человек, знающий
+ * систему, перестаёт узнавать кнопку и вынужден ЧИТАТЬ интерфейс вместо того,
+ * чтобы им пользоваться.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/** ⋯ — «ещё» (SF: ellipsis). */
+export function EllipsisIcon(p: P) {
+  return <svg {...sp(p)}><g fill="currentColor"><circle cx="5.4" cy="12" r="1.75" /><circle cx="12" cy="12" r="1.75" /><circle cx="18.6" cy="12" r="1.75" /></g></svg>;
+}
+/** › — шеврон строки (SF: chevron.right). */
+export function ChevronRightIcon(p: P) {
+  return <svg {...sp(p)}><path {...S} strokeWidth={2.2} d="M9.5 5.5 16 12l-6.5 6.5" /></svg>;
+}
+/** ‹ — назад (SF: chevron.left). */
+export function ChevronLeftIcon(p: P) {
+  return <svg {...sp(p)}><path {...S} strokeWidth={2.2} d="M14.5 5.5 8 12l6.5 6.5" /></svg>;
+}
+/** ✓ — выбранный пункт меню (SF: checkmark). */
+export function CheckIcon(p: P) {
+  return <svg {...sp(p)}><path {...S} strokeWidth={2.2} d="M4.5 12.4 9.6 17.5 19.5 6.6" /></svg>;
+}
+/** Фильтр и сортировка (SF: line.3.horizontal.decrease). */
+export function FilterIcon(p: P) {
+  return <svg {...sp(p)}><g {...S} strokeWidth={2}><path d="M4 7h16M6.5 12h11M9.5 17h5" /></g></svg>;
+}
+/** Поделиться (SF: square.and.arrow.up). */
+export function ShareIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}>
+        <path d="M12 3.6v11" /><path d="M8.6 7 12 3.6 15.4 7" />
+        <path d="M6.6 10.4H5.4v9.2h13.2v-9.2h-1.2" />
+      </g>
+    </svg>
+  );
+}
+/** Добавить в плейлист (SF: text.badge.plus) — та же пара, что в шапке «Медиатеки». */
+export function PlusListIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}><path d="M3.4 7.4h11M3.4 12h11M3.4 16.6h7.4" /><path d="M18 8.4v7.2M14.4 12h7.2" /></g>
+    </svg>
+  );
+}
+/** + — добавить (SF: plus). */
+export function PlusIcon(p: P) {
+  return <svg {...sp(p)}><path {...S} strokeWidth={2.1} d="M12 5.2v13.6M5.2 12h13.6" /></svg>;
+}
+/** Плитка (SF: square.grid.2x2). */
+export function GridIcon(p: P) {
+  return <svg {...sp(p)}><g fill="currentColor"><rect x="3.6" y="3.6" width="7.4" height="7.4" rx="2" /><rect x="13" y="3.6" width="7.4" height="7.4" rx="2" /><rect x="3.6" y="13" width="7.4" height="7.4" rx="2" /><rect x="13" y="13" width="7.4" height="7.4" rx="2" /></g></svg>;
+}
+/** Список (SF: list.bullet). */
+export function ListIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S} strokeWidth={2}><path d="M8.4 6.4h11.2M8.4 12h11.2M8.4 17.6h11.2" /></g>
+      <g fill="currentColor"><circle cx="4.4" cy="6.4" r="1.35" /><circle cx="4.4" cy="12" r="1.35" /><circle cx="4.4" cy="17.6" r="1.35" /></g>
+    </svg>
+  );
+}
+/** Рассказчик катхи (SF: quote.bubble) — голос ведёт повествование. */
+export function VoiceIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}>
+        <path d="M12 3.8c4.7 0 8.4 2.9 8.4 6.7 0 3.8-3.7 6.7-8.4 6.7-.9 0-1.8-.1-2.6-.3l-4.2 2 1.1-3.3C4.6 14.4 3.6 12.6 3.6 10.5c0-3.8 3.7-6.7 8.4-6.7Z" />
+        <path d="M9.6 8.8c-.9.5-1.3 1.2-1.3 2 0 .6.4 1 .9 1s.9-.4.9-1c0-.3-.1-.5-.3-.7M14.4 8.8c-.9.5-1.3 1.2-1.3 2 0 .6.4 1 .9 1s.9-.4.9-1c0-.3-.1-.5-.3-.7" />
+      </g>
+    </svg>
+  );
+}
+/** Киртания (SF: music.mic). */
+export function MicIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}>
+        <path d="M16.6 3.6a3.8 3.8 0 1 1-2.7 6.5L5 19a1.9 1.9 0 0 1-2.7-2.7l8.9-8.9a3.8 3.8 0 0 1 5.4-3.8Z" />
+      </g>
+    </svg>
+  );
+}
+/** Собрание записей — цикл катхи / альбом киртанов (SF: square.stack). */
+export function StackIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}><rect x="6.6" y="7.4" width="13" height="13" rx="3.2" /><path d="M4.4 16.6V6.4a2.4 2.4 0 0 1 2.4-2.4h9.4" /></g>
+    </svg>
+  );
+}
+/** Запись (SF: music.note). */
+export function NoteIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <path {...S} d="M9.4 17.6V6.2l9.2-2v11" />
+      <g fill="currentColor"><ellipse cx="6.8" cy="17.6" rx="2.7" ry="2.3" /><ellipse cx="16" cy="15.2" rx="2.7" ry="2.3" /></g>
+    </svg>
+  );
+}
+/** Отложенное — «Моё» (SF: star). */
+export function StarIcon({ filled, ...p }: P & { filled?: boolean }) {
+  return (
+    <svg {...sp(p)}>
+      <path {...S} fill={filled ? "currentColor" : "none"}
+        d="m12 3.9 2.55 5.32 5.85.78-4.27 4.05 1.09 5.79L12 17.06l-5.22 2.78 1.09-5.79L3.6 10l5.85-.78L12 3.9Z" />
+    </svg>
+  );
+}
+/** Часы — недавнее (SF: clock). */
+export function ClockIcon(p: P) {
+  return <svg {...sp(p)}><g {...S}><circle cx="12" cy="12" r="8.4" /><path d="M12 6.9V12l3.4 2.1" /></g></svg>;
+}
+/** Текст записи / книга (SF: text.quote). */
+export function TextIcon(p: P) {
+  return <svg {...sp(p)}><g {...S}><path d="M4 6.4h16M4 11h9.4M4 15.6h16M4 20.2h9.4" /></g></svg>;
+}
+/** Громкость — тише (SF: speaker.fill). */
+export function VolumeLowIcon(p: P) {
+  return <svg {...sp(p)}><path fill="currentColor" d="M11 5.2 6.6 8.9H3.4v6.2h3.2L11 18.8z" /></svg>;
+}
+/** Громкость — громче (SF: speaker.wave.3.fill). */
+export function VolumeHighIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <path fill="currentColor" d="M11 5.2 6.6 8.9H3.4v6.2h3.2L11 18.8z" />
+      <g {...S}><path d="M14 9.2a4 4 0 0 1 0 5.6M16.6 6.8a7.6 7.6 0 0 1 0 10.4" /></g>
+    </svg>
+  );
+}
+/** Скорость воспроизведения (SF: gauge). */
+export function SpeedIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}><path d="M4.2 17.6a9 9 0 1 1 15.6 0" /><path d="M12 12.8 16 8.6" /></g>
+      <circle cx="12" cy="13.4" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
+/** Скачать запись (SF: arrow.down.circle). */
+export function DownloadIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}><circle cx="12" cy="12" r="8.6" /><path d="M12 7.6v7.2M8.8 11.6 12 14.8l3.2-3.2" /></g>
+    </svg>
+  );
+}
+/** Заметка к записи (SF: square.and.pencil). */
+export function NoteEditIcon(p: P) {
+  return (
+    <svg {...sp(p)}>
+      <g {...S}>
+        <path d="M19.4 12.6v5.2a2.2 2.2 0 0 1-2.2 2.2H6.2A2.2 2.2 0 0 1 4 17.8V6.8a2.2 2.2 0 0 1 2.2-2.2h5.2" />
+        <path d="m15.4 4.2 4.4 4.4-6.6 6.6-4.6 1 1-4.6z" />
+      </g>
+    </svg>
+  );
+}
+/** Поддержать проект (SF: heart). */
+export function HeartGlyph({ filled, ...p }: P & { filled?: boolean }) {
+  return (
+    <svg {...sp(p)}>
+      <path {...S} fill={filled ? "currentColor" : "none"}
+        d="M12 20.2c-.4 0-.8-.2-1.1-.4C6.4 16.2 3.4 13.4 3.4 9.9a4.6 4.6 0 0 1 8.6-2.4 4.6 4.6 0 0 1 8.6 2.4c0 3.5-3 6.3-7.5 9.9-.3.2-.7.4-1.1.4Z" />
+    </svg>
+  );
+}

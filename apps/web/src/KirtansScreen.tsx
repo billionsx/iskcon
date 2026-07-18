@@ -1,29 +1,32 @@
 /**
  * KirtansScreen — витрина аудиотеки раздела «Киртаны».
  *
- * Секции:
- *  • альбомы со звуком (Internet Archive), тап → плеер;
- *  • полный реестр киртания, тап → страница исполнителя;
- *  • чипы-классификации (тип/настроение), фильтруют альбомы.
+ * ЗКН-Н090 · ТРИ УРОВНЯ ВМЕСТО СВАЛКИ.
  *
- * ЗКН-Н036 (решение основателя 13.07.2026): НАДПИСЕЙ НАД РАЗДЕЛАМИ НЕТ и плашек
- * типа на обложках НЕТ. Содержимое говорит само за себя.
+ * Витрина показывала встроенный плеер с общей очередью на 1062 записи — то же
+ * самое, что и в катхе: список всего, что нашлось. Теперь это МЕДИАТЕКА
+ * (`AudioLibrary`): киртания → записи, у каждого уровня своя очередь
+ * (`f:<слаг>` / `all`), а плеер снова только играет.
  *
- * Эстетика — iOS-grouped-list на дизайн-токенах, в одном языке с разделом книг.
+ * ПОЧЕМУ У КИРТАНОВ НЕТ УРОВНЯ АЛЬБОМА. Записи канала не привязаны к альбомам
+ * реестра (`kirtan_tracks` знает исполнителя, но не альбом). Показать альбомы
+ * между исполнителем и записью — значит обещать содержимое, которого за ними
+ * нет. Дискография живёт на странице исполнителя, где ей и место.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePlayer, kirtanTrackKey } from "./player/store";
-import { NowPlaying } from "./player/NowPlaying";
-import { kirtanTracks, artistBySlug, type KirtanArtist } from "./kirtans";
+import { AudioLibrary, type LibDomain, type LibView } from "./player/AudioLibrary";
+import { kirtanTracks, artistBySlug, kirtanArtists, type KirtanArtist } from "./kirtans";
 import { useKirtans } from "./kirtansHydrate";
-import { replaceUrl } from "./nav";
+import { pushUrl, replaceUrl, subscribeNav } from "./nav";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HubHeader, HubSearch, HubEmpty } from "./ui/HubHeader";
 
 const ALL = "all";
 const FIND = "q:";
-
-/** Поиск — свой альбом плеера: `q:<запрос>`. Библиотека остаётся альбомом-папкой. */
+/* ПАПКА — ЭТО ОЧЕРЕДЬ ПЛЕЕРА, А НЕ ФИЛЬТР СПИСКА. Выбрал исполнителя — очередь
+ * СТАЛА его записями: «следующая» ведёт к следующей записи ТОГО ЖЕ голоса. */
+const FOLDER = "f:";
 
 /** Монограмма-аватар исполнителя: золотой круг у Прабхупады, нейтральный у остальных. */
 export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number }) {
@@ -35,27 +38,23 @@ export function ArtistMono({ size = 52 }: { artist: KirtanArtist; size?: number 
   );
 }
 
-/* ═══ АРХИТЕКТУРА ВИТРИНЫ КИРТАНОВ ═══
- *
- * ПАПКА — ЭТО ОЧЕРЕДЬ ПЛЕЕРА, А НЕ ФИЛЬТР СПИСКА.
- *
- * Выбрал исполнителя — очередь СТАЛА его записями: «следующая» ведёт к следующей
- * записи ТОГО ЖЕ исполнителя. Если бы папка только фильтровала показ, очередь
- * разъехалась бы с экраном: видишь десять строк, а «дальше» уводит в одиннадцатую,
- * которой не видно. Поэтому у каждой папки СВОЙ манифест на сервере.
- *
- *   Все        →  `all`             1062 записи одной очередью (решение основателя)
- *   Избранное  →  `fav:<msg_id,…>`  порядок — как человек добавлял
- *   Исполнитель→  `f:<слаг>`        Шрила Прабхупада первым
- *   Найдено    →  `q:<запрос>`      поиск тоже отдельная очередь
- *
- * ВИД (плитка/список) меняет только то, КАК показаны папки. Он НЕ трогает очередь:
- * вид — это про глаза, очередь — про звук. Смешаешь их — получишь плеер, который
- * играет не то, что видно.
- */
-const FOLDER = "f:";
-const FAV_KEY = (msgId: number) => `kirtan:${msgId}`;
-
+/** Адрес → уровень медиатеки. Слаги исполнителей длиннее и с этими не совпадают. */
+function viewFromPath(path: string): LibView {
+  const seg = path.split("?")[0].split("/").filter(Boolean);
+  const a = seg[1] ?? "";
+  if (a === "voices") return { name: "voices" };
+  if (a === "tracks") return { name: "items" };
+  if (a === "mine") return { name: "mine" };
+  return { name: "home" };
+}
+function pathFromView(v: LibView): string {
+  switch (v.name) {
+    case "voices": return "/kirtans/voices";
+    case "items": return "/kirtans/tracks";
+    case "mine": return "/kirtans/mine";
+    default: return "/kirtans";
+  }
+}
 
 export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalog }: {
   onOpenArtist: (slug: string) => void;
@@ -65,28 +64,16 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
   const p = usePlayer();
   const kv = useKirtans();
   const tracks = useMemo(() => kirtanTracks(), [kv]);
+  const artists = useMemo(() => kirtanArtists(), [kv]);
 
-  /* ЗКН-Б011 · решение основателя 14.07.2026 — ПАПКИ ЖИВУТ В ПЛЕЕРЕ,
-   * И ЭТО НЕ НОВЫЙ МЕХАНИЗМ.
-   *
-   * Плеер УЖЕ умеет разделы очереди — ими сделаны песни, главы и стихи у книг:
-   * дорожка несёт `group`/`groupLabel`, из них строятся пилюли, очередь показывает
-   * только активный раздел. Киртанам достаточно проставить дорожке раздел =
-   * исполнитель, и всё работает само.
-   *
-   * Я вместо этого построил СВОЮ сетку папок поверх плеера — второй способ делать
-   * то же самое. Снёс. Здесь остаётся только шапка и поиск; всё остальное — плеер.
-   */
-  useEffect(() => {
-    if (tracks.length > 0 && p.kind !== "kirtan") p.loadKirtan(ALL);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tracks.length, p.kind]);
+  const [view, setView] = useState<LibView>(() =>
+    viewFromPath(typeof window === "undefined" ? "/kirtans" : window.location.pathname));
+  useEffect(() => subscribeNav((path) => setView(viewFromPath(path))), []);
+  const goto = (v: LibView) => { setView(v); pushUrl(pathFromView(v)); };
 
-  /* ЗКН-Н077: deep-link из избранного — доиграть КОНКРЕТНЫЙ трек, не библиотеку.
-   * Избранное киртана ведёт на `/kirtans?t=<хвост audio>`. Тут находим этот трек в
-   * манифесте и прыгаем на него (jumpTo автопроигрывает). Если трека нет в текущей
-   * очереди — грузим полный альбом `all` и повторяем; если и там нет — тихо остаёмся
-   * в библиотеке. Параметр гасим через replaceUrl, чтобы не срабатывало повторно. */
+  /* ЗКН-Н077: deep-link из отложенного — доиграть КОНКРЕТНУЮ запись, не библиотеку.
+   * Находим её в манифесте и прыгаем; нет в текущей очереди — грузим `all` и
+   * повторяем; нет и там — тихо остаёмся. Параметр гасим через replaceUrl. */
   const deepDone = useRef(false);
   useEffect(() => {
     if (deepDone.current || tracks.length === 0 || typeof window === "undefined") return;
@@ -96,9 +83,9 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     if (p.kind === "kirtan" && p.tracks.length > 0) {
       const idx = p.tracks.findIndex((tr) => kirtanTrackKey(tr) === want);
       if (idx >= 0) { deepDone.current = true; p.jumpTo(idx); replaceUrl("/kirtans"); return; }
-      if (p.book === ALL) { deepDone.current = true; replaceUrl("/kirtans"); return; } // весь альбом загружен, трека нет
+      if (p.book === ALL) { deepDone.current = true; replaceUrl("/kirtans"); return; }
     }
-    if (p.book !== ALL) p.loadKirtan(ALL); // трека нет в текущей очереди — грузим все, эффект повторится
+    if (p.book !== ALL) p.loadKirtan(ALL);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.kind, p.book, p.tracks.length, tracks.length]);
 
@@ -114,74 +101,75 @@ export default function KirtansScreen({ onOpenArtist, onOpenBhajan, onOpenCatalo
     const n = tracks.filter((t) => norm(t.title).includes(norm(s))
       || norm(artistBySlug(t.artist)?.name ?? "").includes(norm(s))).length;
     setFound({ q: s, n });
-    if (n) p.playKirtan(FIND + s, 0, false);
+    if (n) p.playKirtan(FIND + s, 0, true);
   };
 
-  /* ЗКН-Н012 — плеер влезает в экран: высоту считает витрина, а не `vh`. */
-  const boxRef = useRef<HTMLDivElement>(null);
-  const [boxH, setBoxH] = useState(0);
-  useEffect(() => {
-    const calc = () => {
-      const top = boxRef.current?.getBoundingClientRect().top ?? 0;
-      /* ⚠️ ПЛЕЕР УЖИМАЛСЯ ПОД ОСТАТОК ЭКРАНА.
-       * На телефоне над ним стоят шапка, вкладки, заголовок и поиск — остатка не
-       * хватало, и плеер схлопывался: обложка в ноготь, список в две строки, внутри
-       * ничего не сделать.
-       *
-       * У плеера ЕСТЬ ПОЛ — 600 точек. Меньше нельзя: там просто нечем пользоваться.
-       * Не влезло в экран — пусть прокрутится СТРАНИЦА. Лучше дотянуться пальцем,
-       * чем не суметь пользоваться вовсе. */
-      setBoxH(Math.max(600, Math.round(window.innerHeight - top - 104)));
+  /* ═══ ДОМЕН КИРТАНОВ ═══ */
+  const domain = useMemo<LibDomain>(() => {
+    const byVoice = new Map<string, number>();
+    const items = tracks.map((t, gi) => {
+      const vi = byVoice.get(t.artist) ?? 0; byVoice.set(t.artist, vi + 1);
+      return {
+        key: `kirtan:${t.identifier}/${t.file}`,
+        title: t.title,
+        voiceSlug: t.artist,
+        voiceName: artistBySlug(t.artist)?.name ?? "",
+        seconds: t.duration || 0,
+        globalIndex: gi, voiceIndex: vi, collectionIndex: 0,
+      };
+    });
+    return {
+      kind: "kirtan",
+      voicesTitle: "Киртания", voiceOne: "Исполнитель",
+      itemsTitle: "Записи",
+      voices: artists.map((a) => ({
+        slug: a.slug, name: a.name, role: a.role, mono: a.mono, accent: a.accent,
+        count: items.filter((x) => x.voiceSlug === a.slug).length,
+        seconds: items.reduce((s, x) => (x.voiceSlug === a.slug ? s + x.seconds : s), 0),
+      })).filter((v) => v.count > 0),
+      collections: [],
+      items,
+      allQueue: ALL,
+      voiceQueue: (slug) => `${FOLDER}${slug}`,
+      /* Голос киртанов — это полноценная страница с дискографией: ведём туда,
+         а не в урезанный список внутри медиатеки. */
+      voiceHref: (slug) => `/kirtans/${slug}`,
     };
-    calc();
+  }, [tracks, artists]);
 
-    /* ⚠️ ПЛЕЕР ПРЫГАЛ ПОД ПАЛЬЦЕМ.
-     *
-     * Safari прячет адресную строку при прокрутке — `innerHeight` меняется на ~100
-     * точек, слушатель `resize` срабатывает, и плеер пересчитывает высоту ПРЯМО ВО
-     * ВРЕМЯ ЖЕСТА. Экран дёргается, палец промахивается.
-     *
-     * Ширина при этом не меняется — а меняется она только при НАСТОЯЩЕЙ перестройке:
-     * поворот, разделение экрана, смена окна. По ней и судим. Дрожание высоты от
-     * адресной строки — не перестройка, а дыхание браузера, и отвечать на него нельзя. */
-    let lastW = window.innerWidth;
-    const onResize = () => {
-      if (window.innerWidth === lastW) return;   // только высота дрогнула — молчим
-      lastW = window.innerWidth;
-      calc();
-    };
-    window.addEventListener("resize", onResize);
-    window.addEventListener("orientationchange", calc);
-    return () => { window.removeEventListener("resize", onResize); window.removeEventListener("orientationchange", calc); };
-  }, [tracks.length]);
-
-  /* ⚠️ НИЗ ПЛЕЕРА УХОДИЛ ПОД НИЖНЕЕ МЕНЮ.
-   * Я дал плееру пол в 600 точек — а страница снизу не расступилась. Транспорт со
-   * скоростью, повтором и таймером спрятался под белой плашкой, и до него нельзя
-   * было доскроллить: меню висит НАД страницей.
-   * Страница обязана оставить под меню место — иначе последний экран недостижим. */
-  return (
-    <div style={{ fontFamily: "var(--font-text)",
-      paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
+  const header = (
+    <>
       <HubHeader eyebrow="Аудиотека" title="Киртаны"
         subtitle="Святое имя в голосах ачарьев и киртания — записи канала ISKCON Kirtans" />
-
       {/* ЗКН-Н044: поиск витрины. Найденное — своя очередь, а не второй список. */}
       <HubSearch value={q} onChange={setQ}
         placeholder="Найти киртан и включить" ariaLabel="Поиск по аудиотеке" onSubmit={submit} />
+      <div style={{ height: 16 }} />
+    </>
+  );
 
-      <div ref={boxRef} style={{ marginTop: 16 }}>
-        {tracks.length === 0 ? (
+  return (
+    <div style={{ fontFamily: "var(--font-text)",
+      paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))" }}>
+      {tracks.length === 0 ? (
+        <>
+          {header}
           <div style={{ padding: "34px 8px", textAlign: "center", color: "var(--color-label-3)",
             fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
             Записи загружаются из канала.<br />Они появятся здесь по мере готовности.
           </div>
-        ) : found && found.n === 0 ? (
+        </>
+      ) : found && found.n === 0 ? (
+        <>
+          {header}
           <HubEmpty query={found.q} hint="Попробуйте название киртана или имя исполнителя." />
-        ) : (
-          <NowPlaying embedded embeddedHeight={boxH || undefined} />
-        )}
-      </div>
+        </>
+      ) : (
+        <AudioLibrary domain={domain} view={view} onView={goto} onOpenPath={onOpenArtist ? (path) => {
+          const slug = path.split("/").filter(Boolean)[1] ?? "";
+          if (slug) onOpenArtist(slug);
+        } : undefined} header={view.name === "home" ? header : null} />
+      )}
     </div>
   );
 }

@@ -42,6 +42,11 @@ export interface Track {
   covers?: string[];    // ШБ: ВСЕ стихи книги, покрытые дорожкой (аудио «18-20» = книга «18-19» + «20»)
   artist?: string;      // киртан: исполнитель
   album?: string;       // киртан: альбом
+  /* ЗКН-Н090 — У АУДИОТЕКИ ТРИ УРОВНЯ: ГОЛОС → СОБРАНИЕ → ЗАПИСЬ.
+   * `artist`/`album` — ОТОБРАЖАЕМЫЕ строки: по ним нельзя ни сгруппировать, ни
+   * собрать очередь (имена совпадают и меняются). Уровень — это слаг. */
+  authorSlug?: string;   // слаг рассказчика (катха) / исполнителя (киртан)
+  collectionId?: string; // слаг цикла (катха) / альбома (киртан)
 }
 
 /* ЗКН-Н077: единый ключ трека-киртана — по хвосту audio-URL (после «/audio/»).
@@ -114,7 +119,15 @@ export interface PlayerApi {
   seek(sec: number): void;
   skip(delta: number): void;
   cycleRate(): void;
+  /** Скорость ВЫБИРАЮТ из списка, а не прокручивают по кругу: у лекции на два
+   *  часа «1.5×» — это решение, а не следующий шаг цикла (ЗКН-Д023). */
+  setRate(r: number): void;
+  /** НАСТОЯЩИЙ порядок очереди (индексы) — по нему строится «Далее». */
+  sequence: number[];
   cycleOrder(): void;
+  /** Порядок ставится ПРЯМО — «Перемешать» в шапке собрания включает случайный
+   *  порядок, а не «следующий по кругу» (ЗКН-Д023). */
+  setOrder(o: OrderMode): void;
   cycleRepeat(): void;
   /** Встроенный плеер на экране — мини-плеер не нужен. */
   embeddedOn: boolean;
@@ -207,9 +220,13 @@ function cfgFor(id: string, src: Source): { title: string; cover: string; artist
     };
   }
   if (src === "katha") {
-    // `all` — вся катха одной очередью; `a:<цикл>` — один цикл; `q:` — найденное.
+    // `all` — вся катха одной очередью; `s:<голос>` — рассказчик; `a:<цикл>` — цикл; `q:` — найденное.
     if (id === "all") return { title: "Катха", cover: AUDIO_FALLBACK_COVER, artist: "" };
     if (id.startsWith("q:")) return { title: `Найдено: ${id.slice(2)}`, cover: AUDIO_FALLBACK_COVER, artist: "" };
+    if (id.startsWith("s:")) {
+      const sp = speakerBySlug(id.slice(2));
+      return { title: sp?.name ?? "Катха", cover: AUDIO_FALLBACK_COVER, artist: sp?.name ?? "" };
+    }
     const al = kathaAlbumById(id.startsWith("a:") ? id.slice(2) : id);
     return {
       title: al?.title ?? "Катха",
@@ -282,6 +299,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const orderModeRef = useRef<OrderMode>("forward");
   const repeatRef = useRef<RepeatMode>("off");
   const seqRef = useRef<number[]>([]);
+  const [sequence, setSequence] = useState<number[]>([]);
   manifestRef.current = manifest;
   bookRef.current = bookId;
   sourceRef.current = source;
@@ -340,12 +358,21 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(PERSIST_KEY) ?? localStorage.getItem("iol.player.bg.v1");
       if (raw) {
-        const s = JSON.parse(raw) as { book?: string; scope?: string | null; mode: AudioMode; chapter: number | null; time: number; rate: number };
+        const s = JSON.parse(raw) as { kind?: Source; book?: string; scope?: string | null; mode: AudioMode; chapter: number | null; index?: number; file?: string | null; time: number; rate: number };
         if (s && (s.mode === "plain" || s.mode === "commentary")) {
-          const bk = s.book && BOOKS[s.book] ? s.book : "bg";
-          bookRef.current = bk; setBookId(bk);
-          scopeRef.current = SCOPED_BOOKS.has(bk) && s.scope ? String(s.scope) : "";
-          pendingRef.current = { mode: s.mode, chapter: s.chapter, lila: scopeRef.current || undefined, expand: false };
+          const kd: Source = s.kind === "kirtan" || s.kind === "katha" ? s.kind : "book";
+          if (kd === "book") {
+            const bk = s.book && BOOKS[s.book] ? s.book : "bg";
+            bookRef.current = bk; setBookId(bk);
+            scopeRef.current = SCOPED_BOOKS.has(bk) && s.scope ? String(s.scope) : "";
+            pendingRef.current = { mode: s.mode, chapter: s.chapter, lila: scopeRef.current || undefined, expand: false };
+          } else {
+            // ЗКН-Н091: у аудиотеки ключ восстановления — очередь + место в ней.
+            bookRef.current = s.book || "all"; setBookId(s.book || "all");
+            sourceRef.current = kd; setSource(kd);
+            scopeRef.current = "";
+            pendingRef.current = { mode: "plain", chapter: null, index: s.index ?? 0, file: s.file ?? undefined, expand: false };
+          }
           restoreRef.current = { time: s.time || 0 };
           if (s.rate) { rateRef.current = s.rate; setRate(s.rate); }
           ensureManifest().then((m) => applyPending(m, false));
@@ -382,6 +409,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
           ? `/katha/find/audio?q=${encodeURIComponent(want.slice(2))}`
           : want.startsWith("a:")
           ? `/katha/album/audio?id=${encodeURIComponent(want.slice(2))}`
+          /* ЗКН-Н090: ГОЛОС — ЭТО ОЧЕРЕДЬ. Без неё «дальше» уводило от Шрилы
+             Прабхупады к другому рассказчику посреди цикла. */
+          : want.startsWith("s:")
+          ? `/katha/speaker/audio?slug=${encodeURIComponent(want.slice(2))}`
           : `/katha/all/audio`)
       : src === "bhajan" ? `/bhajans/audio?slug=${encodeURIComponent(bhajBase)}${bhajIsLec ? "&set=lectures" : ""}`
       : `/books/${want}/audio${scope ? `?canto=${encodeURIComponent(scope)}` : ""}`;
@@ -395,13 +426,23 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       });
   }
 
+  /* ЗКН-Н091 — ПЛЕЕР ПОМНИТ, ЧТО ИГРАЛО, ДЛЯ ЛЮБОГО ЗВУКА, А НЕ ТОЛЬКО ДЛЯ КНИГИ.
+   *
+   * Позиция сохранялась ТОЛЬКО у книг: катха и киртаны исчезали при перезагрузке
+   * страницы, будто их и не включали. Для лекции на два часа это потеря места в
+   * повествовании — то самое, ради чего человек и пришёл. Причина была
+   * техническая (у аудиотеки нет «главы»), а не смысловая; ключ восстановления
+   * для неё — ИНДЕКС в очереди, а очередь у неё уже своя (`a:`/`s:`/`f:`). */
   function persist() {
     try {
-      if (sourceRef.current !== "book") return; // киртаны/бхаджаны не восстанавливаем (v2)
+      const src = sourceRef.current;
+      if (src === "bhajan") return;            // бхаджан — короткая запись со страницы текста
       const m = manifestRef.current; if (!m) return;
       const t = (m.modes[modeRef.current] ?? m.modes.plain).tracks[indexRef.current];
       localStorage.setItem(PERSIST_KEY, JSON.stringify({
+        kind: src,
         book: bookRef.current, scope: scopeRef.current || null, mode: modeRef.current, chapter: t?.chapter ?? null,
+        index: indexRef.current, file: t?.file ?? null,
         time: Math.floor(timeRef.current), rate: rateRef.current,
       }));
     } catch { /* ignore */ }
@@ -412,7 +453,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const useMode: AudioMode = m.modes[md] ? md : "plain";
     const list = m.modes[useMode].tracks;
     if (i < 0 || i >= list.length) return;
-    if (seqRef.current.length !== list.length) seqRef.current = buildOrder(list.length, orderModeRef.current, i);
+    if (seqRef.current.length !== list.length) setSeq(buildOrder(list.length, orderModeRef.current, i));
     const t = list[i];
     modeRef.current = useMode; setModeState(useMode);
     indexRef.current = i; setIndex(i);
@@ -498,7 +539,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     sourceRef.current = src; setSource(src);
     scopeRef.current = scope; setScopeId(scope);
     manifestRef.current = null; setManifest(null); // вынудить перезагрузку манифеста новой книги/раздела
-    seqRef.current = [];
+    setSeq([]);
   }
   function playBook(opts?: { book?: string; mode?: AudioMode; chapter?: number; expand?: boolean }) {
     const b = opts?.book ?? bookRef.current;
@@ -600,9 +641,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     for (let i = rest.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [rest[i], rest[j]] = [rest[j], rest[i]]; }
     return current >= 0 && current < n ? [current, ...rest] : rest;
   }
+  /* ЗКН-Н090 — ОЧЕРЕДЬ, КОТОРУЮ ВИДНО, И ОЧЕРЕДЬ, КОТОРАЯ ИГРАЕТ, — ОДНА.
+   *
+   * Настоящий порядок живёт в `seqRef` (при перемешивании это СЛУЧАЙНАЯ
+   * последовательность индексов). Экран «Далее», построенный по исходному
+   * списку, показывал бы соседние записи — а заиграла бы другая: та же болезнь,
+   * что и с индексом манифеста, только видимая глазом. Поэтому порядок выходит
+   * наружу состоянием, а не пересчитывается на витрине заново — второй вызов
+   * `buildOrder` со случайностью дал бы ТРЕТИЙ порядок. */
+  function setSeq(v: number[]) { seqRef.current = v; setSequence(v); }
   function rebuildOrder() {
-    const m = manifestRef.current; if (!m) { seqRef.current = []; return; }
-    seqRef.current = buildOrder((m.modes[modeRef.current] ?? m.modes.plain).tracks.length, orderModeRef.current, indexRef.current);
+    const m = manifestRef.current; if (!m) { setSeq([]); return; }
+    setSeq(buildOrder((m.modes[modeRef.current] ?? m.modes.plain).tracks.length, orderModeRef.current, indexRef.current));
   }
   function relIndex(step: number): number {
     const m = manifestRef.current; if (!m) return -1;
@@ -662,7 +712,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const nxt = (m.cantos ?? []).map((c) => c.canto).filter((c) => c > cur).sort((a, b) => a - b)[0];
     if (!nxt) return false;
     scopeRef.current = String(nxt); setScopeId(String(nxt));
-    manifestRef.current = null; setManifest(null); seqRef.current = [];
+    manifestRef.current = null; setManifest(null); setSeq([]);
     pendingRef.current = { mode: modeRef.current, chapter: null, index: 0, expand: false };
     restoreRef.current = null;
     ensureManifest().then((mm) => applyPending(mm, true)).catch(() => setPlaying(false));
@@ -678,7 +728,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
   function cycleOrder() {
     const opts: OrderMode[] = ["forward", "shuffle", "reverse"];
-    const o = opts[(opts.indexOf(orderModeRef.current) + 1) % opts.length];
+    applyOrder(opts[(opts.indexOf(orderModeRef.current) + 1) % opts.length]);
+  }
+  function applyOrder(o: OrderMode) {
     orderModeRef.current = o; setOrderMode(o); rebuildOrder();
   }
   function setSleep(v: number | "track" | null) {
@@ -708,7 +760,9 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }
   function cycleRate() {
     const i = PLAYER_RATES.indexOf(rateRef.current);
-    const r = PLAYER_RATES[(i + 1) % PLAYER_RATES.length];
+    applyRate(PLAYER_RATES[(i + 1) % PLAYER_RATES.length]);
+  }
+  function applyRate(r: number) {
     rateRef.current = r; setRate(r); engineRef.current?.setRate(r); persist();
   }
 
@@ -795,11 +849,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const cfg = cfgFor(bookId, source);
   const value: PlayerApi = {
     ready: !!manifest, active, expanded, loading, mode, tracks, index, track,
-    isPlaying, currentTime, duration, rate, order: orderMode, repeat, sleepAt, sleepEnd, embeddedOn,
+    isPlaying, currentTime, duration, rate, order: orderMode, sequence, repeat, sleepAt, sleepEnd, embeddedOn,
     cover: cfg.cover, bookTitle: cfg.title, book: bookId, kind: source, artist: cfg.artist,
     hasCommentary: !!manifest?.modes.commentary && (manifest.modes.commentary.tracks.length > 0),
     cantos: manifest?.cantos ?? [], scope: scopeId, tracksFor, playTrack,
-    playBook, playChapter, playKirtan, loadKirtan, playKatha, loadKatha, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, cycleOrder, cycleRepeat, setSleep, setEmbeddedVisible: setEmbeddedOn, setMode, jumpTo,
+    playBook, playChapter, playKirtan, loadKirtan, playKatha, loadKatha, playBhajan, togglePlay, next: goNext, prev: goPrev, seek, skip, cycleRate, setRate: applyRate, cycleOrder, setOrder: applyOrder, cycleRepeat, setSleep, setEmbeddedVisible: setEmbeddedOn, setMode, jumpTo,
     open: () => setExpanded(true),   // встроенный плеер раскрывается и до первого нажатия
     close: () => setExpanded(false),
     dismiss,

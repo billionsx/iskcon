@@ -787,6 +787,8 @@ const LILA_ROOTS = ["gauranga-lila", "krishna-lila", "bhagavatam-lila",
  * Рейка больше не пишется руками, и умолчание зала не записывается отдельно:
  * оба ВЫВОДЯТСЯ отсюда. Переставил список — переставилось всё. */
 const BOG_SUBS = ["books", "katha", "lichnosti", "bhajans", "kirtans", "dhama", "prasad"] as const;
+/** ЗКН-Н090 — уровни медиатеки киртанов: это адреса ВИТРИНЫ, а не слаги исполнителей. */
+const KIRTAN_LIB_VIEWS = new Set(["voices", "tracks", "mine"]);
 const BOG_LABEL: Record<string, string> = {
   books: "Книги", katha: "Катха", lichnosti: "Личности", bhajans: "Бхаджаны",
   kirtans: "Киртаны", dhama: "Дхама", prasad: "Прасад",
@@ -1548,7 +1550,10 @@ const RESERVED: readonly string[] = [
     }
     if (seg0 === "kirtans") {
       const ks = clean.split("/")[2] ?? "";
-      if (ks) setOpenKirtanArtist(ks); else setTab("bogatstva");
+      /* ЗКН-Н090: уровни медиатеки — часть адреса витрины, а не слаги исполнителей.
+         Без этой оговорки `/kirtans/voices` открыл бы «исполнителя по имени voices»
+         и человек увидел бы пустую страницу вместо списка киртания. */
+      if (ks && !KIRTAN_LIB_VIEWS.has(ks)) setOpenKirtanArtist(ks); else setTab("bogatstva");
       return;
     }
     if (seg0 === "lichnosti-collection") { const ck = clean.split("/")[2] ?? ""; setTab("bogatstva"); if (ck) setOpenCollection(ck); return; }

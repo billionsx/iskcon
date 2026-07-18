@@ -266,8 +266,63 @@ def check_grouped_screen() -> list[str]:
     return bad
 
 
+
+#: ЗКН-Д023 — КИРПИЧИ АУДИОТЕКИ ЖИВУТ В ОДНОМ МЕСТЕ.
+#  Замеры Apple Music (строка 44/52/60, меню 250/26, обложка 48) объявлены в
+#  `player/ui.tsx`. Второй раз те же числа — это второй набор, который разойдётся
+#  с первым; так плеер и стал коробкой на 1343 строки со своими радиусами в
+#  каждом углу.
+PLAYER_BRICKS = "ui.tsx"
+#: Числа, по которым узнаётся самодельная копия кирпича.
+PLAYER_MAGIC = re.compile(r"const TAP\s*=\s*\d|borderRadius:\s*26\b|width\s*=\s*250\b")
+#: Плеер СВЕТЛЫЙ. Тёмная доска была чужой там, где всё остальное — белые карточки.
+DARK_LEFTOVER = re.compile(r"--color-on-dark|rgba\(255,\s*255,\s*255,\s*0\.[01]\d?\)")
+
+
+def check_player_bricks() -> list[str]:
+    """ЗКН-Д023 — ПРАВИЛО 10: аудиотека собирается из замеренных кирпичей.
+
+    Стережём ровно две вещи, из-за которых плеер и распух:
+
+      1. набор примитивов НА МЕСТЕ (`player/ui.tsx` с MediaRow/PopMenu/ScreenHeader) —
+         снесёшь его, и каждый экран снова начнёт рисовать строку по-своему;
+      2. замеры НЕ ДУБЛИРУЮТСЯ: `TAP`, радиус меню 26 и ширина 250 объявлены один
+         раз. Своя копия числа = свой диалект геометрии.
+
+    И третье, цветовое: плеер светлый. `--color-on-dark` и белое стекло
+    `rgba(255,255,255,0.1…)` в файлах плеера — это возвращение тёмной доски.
+    """
+    bad: list[str] = []
+    pdir = SRC / "player"
+    ui = pdir / PLAYER_BRICKS
+    if not ui.exists():
+        return [f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д023: набор кирпичей аудиотеки снесён; "
+                f"без него каждый экран нарисует свою строку и своё меню"]
+    src = ui.read_text(encoding="utf-8")
+    for name in ("MediaRow", "PopMenu", "ScreenHeader", "SectionRow"):
+        if f"export function {name}" not in src:
+            bad.append(f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д023: пропал кирпич {name}()")
+
+    for f in sorted(pdir.rglob("*.tsx")):
+        if f.name == PLAYER_BRICKS:
+            continue
+        code = blank_block_comments(f.read_text(encoding="utf-8"))
+        rel = f.relative_to(SRC.parents[2])
+        m = PLAYER_MAGIC.search(code)
+        if m:
+            line = code.count("\n", 0, m.start()) + 1
+            bad.append(f"{rel}:{line} — ЗКН-Д023: замер Apple вписан руками мимо примитива "
+                       f"(«{m.group(0)}»). Числа объявлены один раз, в player/{PLAYER_BRICKS}")
+        d = DARK_LEFTOVER.search(code)
+        if d:
+            line = code.count("\n", 0, d.start()) + 1
+            bad.append(f"{rel}:{line} — ЗКН-Д023: тёмная доска вернулась («{d.group(0)}»). "
+                       f"Плеер светлый: поверхности — var(--color-card)/var(--color-menu-glass)")
+    return bad
+
+
 def main() -> int:
-    bad: list[str] = check_grouped_screen()
+    bad: list[str] = check_grouped_screen() + check_player_bricks()
     for f in sorted(SRC.rglob("*.tsx")):
         text = f.read_text(encoding="utf-8")
         rel = f.relative_to(SRC.parents[2])
@@ -305,7 +360,12 @@ def main() -> int:
         for tag, attrs, body, line in style_objects(text):
             # ПРАВИЛО 5 — обводка вокруг карточки группы (ЗКН-Д018).
             # Замер iOS 26.5: карточка — белое на сером, БЕЗ линии по периметру.
-            if CARD_FILL.search(body) and BORDER_KEY.search(body):
+            # ⚠️ Судим КАРТОЧКУ, а не кнопку. Кнопке `border: "none"` — это СБРОС
+            #    браузерной рамки, без него у неё вырастает системная обводка;
+            #    круглая кнопка шапки плеера на белой заливке ловилась как «карточка
+            #    с линией по периметру». Гейт, который кричит на кнопки, отключат
+            #    через неделю — и вместе с ним умрёт закон (урок ЗКН-Н024).
+            if tag in CONTAINER_TAGS and CARD_FILL.search(body) and BORDER_KEY.search(body):
                 bad.append(
                     f"{rel}:{line} — ЗКН-Д018: обводка вокруг карточки группы. "
                     f"Слой держит материал (--shadow-card), а не линия по периметру: "

@@ -1574,7 +1574,76 @@ def check_n089() -> list[tuple[str, str]]:
     return bad
 
 
+
+def check_n090() -> list[tuple[str, str]]:
+    """ЗКН-Н090 — У АУДИОТЕКИ ТРИ УРОВНЯ: ГОЛОС → СОБРАНИЕ → ЗАПИСЬ.
+
+    Свалка катхи была не оплошностью вёрстки: уровня рассказчика НЕ
+    СУЩЕСТВОВАЛО. Единственной очередью была `all` — 857 записей четырёх
+    голосов вперемешку, и «дальше» посреди цикла Шрилы Прабхупады включало
+    чужую лекцию.
+
+    Стережём три несущих кости, без любой из которых уровень схлопывается:
+
+      1. очередь голоса есть на СЕРВЕРЕ  (`/api/katha/speaker/audio`)
+      2. очередь голоса есть в СТОРЕ     (ветка `s:` в ensureManifest)
+      3. дорожка несёт СЛАГ              (`authorSlug` в манифестах воркера)
+
+    Отображаемого имени мало: имена совпадают, склоняются и меняются —
+    группировать и собирать очередь можно только по слагу.
+    """
+    bad = []
+    worker = (SRC.parent / "worker.ts").read_text(encoding="utf-8")
+    store = (SRC / "player" / "store.tsx").read_text(encoding="utf-8")
+
+    if "/api/katha/speaker/audio" not in worker:
+        bad.append(("worker.ts", "Н090: нет очереди рассказчика — катха снова одна свалка на всех"))
+    if "kathaSpeakerManifest" not in worker:
+        bad.append(("worker.ts", "Н090: пропал сборщик очереди голоса (kathaSpeakerManifest)"))
+    if "authorSlug" not in worker:
+        bad.append(("worker.ts", "Н090: дорожка не несёт слаг голоса — уровень нечем собрать"))
+    if 'want.startsWith("s:")' not in store:
+        bad.append(("player/store.tsx", "Н090: стор не знает очереди голоса (`s:`) — сервер отдаёт, клиент не просит"))
+    if "authorSlug" not in store:
+        bad.append(("player/store.tsx", "Н090: слаг голоса не доходит до дорожки в сторе"))
+
+    lib = SRC / "player" / "AudioLibrary.tsx"
+    if not lib.exists():
+        bad.append(("player/AudioLibrary.tsx", "Н090: медиатека исчезла — библиотека вернулась внутрь плеера"))
+    else:
+        t = lib.read_text(encoding="utf-8")
+        # Место записи в КАЖДОЙ очереди: один индекс на все случаи и был причиной
+        # того, что после лекции начиналась чужая.
+        for f in ("globalIndex", "voiceIndex", "collectionIndex"):
+            if f not in t:
+                bad.append(("player/AudioLibrary.tsx", f"Н090: у записи нет места в очереди `{f}` — «дальше» уведёт не туда"))
+    return bad
+
+
+def check_n091() -> list[tuple[str, str]]:
+    """ЗКН-Н091 — ПЛЕЕР ПОМНИТ МЕСТО ДЛЯ ЛЮБОГО ЗВУКА, А НЕ ТОЛЬКО ДЛЯ КНИГИ.
+
+    `persist()` выходил по `sourceRef.current !== "book"` — катха и киртаны
+    исчезали при перезагрузке, будто их не включали. Для лекции на два часа это
+    потеря места в повествовании.
+    """
+    bad = []
+    store = (SRC / "player" / "store.tsx").read_text(encoding="utf-8")
+    m = re.search(r"function persist\(\)[\s\S]{0,900}?\n  \}", store)
+    if not m:
+        return [("player/store.tsx", "Н091: не найден persist() — снимок плеера некому писать")]
+    body = m.group(0)
+    if re.search(r'!==\s*"book"\)\s*return', body):
+        bad.append(("player/store.tsx", "Н091: снимок пишется ТОЛЬКО для книги — аудиотека забывается при перезагрузке"))
+    for f in ("kind:", "index:"):
+        if f not in body:
+            bad.append(("player/store.tsx", f"Н091: в снимке нет поля `{f}` — очередь аудиотеки нечем восстановить"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н090", "у аудиотеки три уровня: голос → собрание → запись", check_n090),
+    ("ЗКН-Н091", "плеер помнит место для любого звука, не только для книги", check_n091),
     ("ЗКН-Н089", "сторож витрины судит по тем же полям, что и отбор сервера", check_n089),
     ("ЗКН-Н086", "ландшафт — режим: хрома и ширина листа в токенах, боковые вырезы, мера чтения", check_n086),
     ("ЗКН-Н085", "спроектированный ландшафт: оболочка не ломается, лист центрирован на поле", check_n085),
