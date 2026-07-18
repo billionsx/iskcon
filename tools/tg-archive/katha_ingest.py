@@ -26,6 +26,7 @@ import asyncio
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 import urllib.error
@@ -138,6 +139,21 @@ SPEAKERS = {
         "role": "Санньяси ИСККОН · рассказчик Шримад-Бхагаватам",
         "mono": "Радха Говинда", "accent": 0, "entity_id": "radha-govinda-swami", "sort": 20,
     },
+    "gour-govinda-swami": {
+        "name": "Гоур Говинда Свами Махарадж",
+        "full": "Его Божественная Милость Шри Шримад Гоур Говинда Свами Махарадж",
+        "role": "Санньяси ИСККОН · рассказчик Шримад-Бхагаватам",
+        "era": "1929–1996",
+        "origin": "Орисса · Гадеигири и Бхуванешвар",
+        "bio": "Ученик Шрилы Прабхупады. Родился 2 сентября 1929 года в деревне "
+               "Джаганнатхпур близ Джаганнатха Пури; вырос в Гадеигири, в роду Гири, "
+               "славившемся киртаном со времён Шьямананды Прабху. Санньясу принял от "
+               "Шрилы Прабхупады в 1975 году во Вриндаване, на открытии храма "
+               "Кришны-Баларамы, и по его указанию поднял храм ИСККОН в Бхуванешваре — "
+               "на пустой земле, в одиночку. Ушёл в Шри Маяпур-дхаме 9 февраля 1996 года. "
+               "Его лекции считают одними из самых глубоких в движении.",
+        "mono": "Гоур Говинда", "accent": 0, "entity_id": "gour-govinda-swami", "sort": 30,
+    },
 }
 
 
@@ -172,6 +188,30 @@ def sync_catalog(albums: list) -> None:
                 title=excluded.title, archive=excluded.archive, sort=excluded.sort""",
            [al["id"], al["speaker"], al["title"], al["identifier"], base + i])
     print("::notice::каталог сверен: рассказчиков %d · альбомов %d" % (len(seen), len(albums)))
+
+
+def ext_of(name: str) -> str:
+    m = re.search(r"\.([A-Za-z0-9]{2,4})$", name or "")
+    return ("." + m.group(1).lower()) if m else ".bin"
+
+
+def to_mp3(src: str, dst: str) -> None:
+    """Несжатую запись — в mp3 ПЕРЕД заливкой.
+
+    Часть записей залита в каналы как .wav и .m4a: одна лекция весит до 109 МБ.
+    Отдавать такое телефону нельзя, и сверка с архивом (ЗКН-Ф021) считает только
+    исходные mp3 — файл в другом формате навсегда остался бы «незалитым», а
+    самоцепочка крутилась бы вхолостую до конца времён.
+
+    Падаем громко: залить .wav под именем .mp3 — значит соврать о содержимом
+    файла, и плеер обнаружит это уже у человека в руках.
+    """
+    r = subprocess.run(
+        ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-i", src,
+         "-vn", "-codec:a", "libmp3lame", "-q:a", "4", dst],
+        capture_output=True, text=True)
+    if r.returncode != 0 or not Path(dst).exists() or Path(dst).stat().st_size == 0:
+        raise RuntimeError("ffmpeg: %s" % (r.stderr or "пустой файл")[:200])
 
 
 def register(al: dict, t: dict, dur: int):
@@ -263,14 +303,21 @@ async def main_run() -> int:
         async def one(msg, al, t, size):
             nonlocal done, bytes_done
             dest = WORK / ("%d-%s" % (msg.id, t["file"]))
+            raw = dest
             try:
+                if t.get("transcode"):
+                    # Скачиваем под исходным расширением: Telethon выбирает
+                    # кодек по нему, а .mp3 на wav-потоке дал бы битый файл.
+                    raw = WORK / ("%d-src%s" % (msg.id, ext_of(t.get("source") or "")))
                 while True:                           # FloodWait — ждём, а не падаем
                     try:
-                        await client.download_media(msg, file=str(dest))
+                        await client.download_media(msg, file=str(raw))
                         break
                     except FloodWaitError as e:
                         print("FloodWait %ss" % e.seconds)
                         await asyncio.sleep(e.seconds + 1)
+                if t.get("transcode"):
+                    await loop.run_in_executor(pool, to_mp3, str(raw), str(dest))
                 last = None
                 for attempt in range(3):              # гонка создания элемента
                     try:
@@ -285,6 +332,7 @@ async def main_run() -> int:
                     raise last
             finally:
                 dest.unlink(missing_ok=True)
+                raw.unlink(missing_ok=True)          # исходник перекодировки
             register(al, t, t["duration"])
             done += 1
             bytes_done += size

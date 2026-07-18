@@ -23,10 +23,18 @@
    "n_audio": 384,
    "n_planned": 299,
    "orphans": []
+  },
+  {
+   "channel": "@gourgovindaswamimaharaj",
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "n_audio": 47,
+   "n_planned": 45,
+   "orphans": []
   }
  ],
- "n_audio": 1660,
- "n_planned": 1575,
+ "n_audio": 1707,
+ "n_planned": 1620,
  "albums": [
   {
    "id": "sb-01",
@@ -14664,6 +14672,504 @@
    "speaker_name": "Пурначандра дас Госвами Махарадж",
    "channel": "@purnacandragoswami",
    "n": 32
+  },
+  {
+   "id": "ggs-bhagavatam",
+   "title": "Шримад-Бхагаватам",
+   "identifier": "iskcone-katha-ggs-bhagavatam",
+   "tracks": [
+    {
+     "msg_id": 36,
+     "title": "ШБ 2.2.27 · Как понять Веды · 4 августа 1994",
+     "duration": 5709,
+     "size": 40740941,
+     "source": "Гоур_Говинда_Свами_ШБ_2_2_27_Как_понять_Веды_04_08_94.mp3",
+     "file": "sb-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 38,
+     "title": "ШБ 7.6.1 · Оковы в темнице майи · 31 мая 1995",
+     "duration": 6011,
+     "size": 72907303,
+     "source": "Гоур_Говинда_Свами_ШБ_7_61_Оковы_в_темнице_майи_1995_05_31.mp3",
+     "file": "sb-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 37,
+     "title": "ШБ 7.15.29 · Филадельфия, 30 мая 1992",
+     "duration": 4442,
+     "size": 36313807,
+     "source": "Гоур_Говинда_Свами_ШБ_7_15_29_30_05_92_Филадельыия.mp3",
+     "file": "sb-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 39,
+     "title": "ШБ 8.7.22 · Шива-таттва · Австралия, 27 октября 1990",
+     "duration": 4422,
+     "size": 36149358,
+     "source": "Гоур_Говинда_Свами_ШБ_8_7_22_Шива_Таттва_27_10_90_Австралия.mp3",
+     "file": "sb-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 40,
+     "title": "ШБ 8.22.34 · часть 1",
+     "duration": 4204,
+     "size": 51231148,
+     "source": "Гоур Говинда Свами - ШБ 8.22.34 ч1.mp3",
+     "file": "sb-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 41,
+     "title": "ШБ 8.22.34 · часть 2",
+     "duration": 1010,
+     "size": 12892588,
+     "source": "Гоур Говинда Свами - ШБ 8.22.34 ч2.mp3",
+     "file": "sb-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 42,
+     "title": "ШБ 9.4.17–20",
+     "duration": 5376,
+     "size": 86784217,
+     "source": "Гоур Говинда Свами - ШБ 9.4.17-20.mp3",
+     "file": "sb-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 43,
+     "title": "ШБ 9.9.48 · Цена этой веры · Гита-нагари, 28 мая 1992",
+     "duration": 5175,
+     "size": 42180724,
+     "source": "Гоур_Говинда_Свами_ШБ_9_9_48_Цена_этовера_28_05_92_Гита_нагари.mp3",
+     "file": "sb-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 44,
+     "title": "ШБ 9.16.7–9 · 7 февраля 1995",
+     "duration": 5319,
+     "size": 43330484,
+     "source": "Гоур_Говинда_Свами_ШБ_9_16_7_9_07_02_95.MP3",
+     "file": "sb-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 8,
+     "title": "ШБ 9.18.2 · Слушай каждый день",
+     "duration": 5873,
+     "size": 71146927,
+     "source": "Гоур_Говинда_Свами_Ежедневно_слушай_ШБ_9_18_2.mp3",
+     "file": "sb-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 45,
+     "title": "ШБ 9.18.2 · 3 августа 1994",
+     "duration": 3380,
+     "size": 41339639,
+     "source": "Гоур_Говинда_Свами_ШБ_9_18_2_1994_08_03.mp3",
+     "file": "sb-11.mp3",
+     "sort": 11
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 11
+  },
+  {
+   "id": "ggs-gauranga-lila",
+   "title": "Гауранга Лила",
+   "identifier": "iskcone-katha-ggs-gauranga-lila",
+   "tracks": [
+    {
+     "msg_id": 27,
+     "title": "ЧЧ 1.22.24–26 · Практика чистого повторения · часть 1",
+     "duration": 3948,
+     "size": 48159837,
+     "source": "Гоур_Говинда_Свами_Практика_чистого_повторения_ЧЧ_1_22_24_26_ч1.mp3",
+     "file": "gauranga-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 28,
+     "title": "ЧЧ 1.22.24–26 · Практика чистого повторения · часть 2",
+     "duration": 3704,
+     "size": 45221375,
+     "source": "Гоур_Говинда_Свами_Практика_чистого_повторения_ЧЧ_1_22_24_26_ч2.mp3",
+     "file": "gauranga-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 24,
+     "title": "Поражение Кешавы Кашмири · 1 июня 1995",
+     "duration": 5474,
+     "size": 66470824,
+     "source": "Гоур_Говинда_Свами_Поражение_Кешава_Кашмири_1995_06_01.mp3",
+     "file": "gauranga-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 49,
+     "title": "Тайна лилы Гундича-марджаны",
+     "duration": 0,
+     "size": 55572264,
+     "source": "Тайна лилы Гундича Марджана.wav",
+     "file": "gauranga-04.mp3",
+     "sort": 4,
+     "transcode": true
+    },
+    {
+     "msg_id": 51,
+     "title": "Не убегай от объятий Махапрабху",
+     "duration": 4514,
+     "size": 71666887,
+     "source": "Не_убегай_от_объятий_Махапрабху.m4a",
+     "file": "gauranga-05.mp3",
+     "sort": 5,
+     "transcode": true
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 5
+  },
+  {
+   "id": "ggs-tattva",
+   "title": "Таттва",
+   "identifier": "iskcone-katha-ggs-tattva",
+   "tracks": [
+    {
+     "msg_id": 7,
+     "title": "Гуру-таттва · Австралия, 1 октября 1992",
+     "duration": 3532,
+     "size": 29035673,
+     "source": "Гоур_Говинда_Свами_Гуру_Таттва_01_10_92_Австралия.MP3",
+     "file": "tattva-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 4,
+     "title": "Гаура-таттва · Австралия, 30 сентября 1992",
+     "duration": 4652,
+     "size": 37991913,
+     "source": "Гоур_Говинда_Свами_Гаура_Таттва_30_09_92_Австралия.MP3",
+     "file": "tattva-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 25,
+     "title": "Постичь Кришну в таттве · 12 июля 1995",
+     "duration": 2063,
+     "size": 25530182,
+     "source": "Гоур_Говинда_Свами_Постичь_Кришну_в_Таттве_Yuga_Dharma_Tape_Ministry.mp3",
+     "file": "tattva-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 14,
+     "title": "Кришна — наш вечный благожелатель · 11 июня 1995",
+     "duration": 2078,
+     "size": 25711981,
+     "source": "Гоур_Говинда_Свами_Кришна_наш_вечный_благожелатель_11_06_1995.mp3",
+     "file": "tattva-04.mp3",
+     "sort": 4
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 4
+  },
+  {
+   "id": "ggs-nama",
+   "title": "Святое имя и према",
+   "identifier": "iskcone-katha-ggs-nama",
+   "tracks": [
+    {
+     "msg_id": 35,
+     "title": "Хари-катха",
+     "duration": 1984,
+     "size": 24583736,
+     "source": "Гоур Говинда Свами - Хари-Катха.mp3",
+     "file": "nama-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 22,
+     "title": "Повторяй Святое имя. Предайся Братьям",
+     "duration": 1292,
+     "size": 24686698,
+     "source": "Гоур_Говинда_Свами_Повторяй_Святое_имя_Предайся_Братьям!.mp3",
+     "file": "nama-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 50,
+     "title": "Гирлянда премы и намы",
+     "duration": 2492,
+     "size": 39569757,
+     "source": "Гирлянда Премы и Намы.m4a",
+     "file": "nama-03.mp3",
+     "sort": 3,
+     "transcode": true
+    },
+    {
+     "msg_id": 31,
+     "title": "Развей жадность по Кришна-преме · часть 1 · 14 июля 1993",
+     "duration": 3171,
+     "size": 38825351,
+     "source": "Гоур_Говинда_Свами_Развей_жадность_по_Кришна_преме_01_1993_07_14.mp3",
+     "file": "nama-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 32,
+     "title": "Развей жадность по Кришна-преме · часть 2 · 14 июля 1993",
+     "duration": 3100,
+     "size": 37979298,
+     "source": "Гоур_Говинда_Свами_Развей_жадность_по_Кришна_преме_02_1993_07_14.mp3",
+     "file": "nama-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 33,
+     "title": "Развитие привязанности к лотосным стопам Кришны",
+     "duration": 3248,
+     "size": 39749158,
+     "source": "Гоур_Говинда_Свами_Развитие_привязанности_к_лотосоподобным_стопам.mp3",
+     "file": "nama-06.mp3",
+     "sort": 6
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 6
+  },
+  {
+   "id": "ggs-sadhana",
+   "title": "Садхана",
+   "identifier": "iskcone-katha-ggs-sadhana",
+   "tracks": [
+    {
+     "msg_id": 2,
+     "title": "БГ 3.37 · 27 октября 1990",
+     "duration": 3801,
+     "size": 46385866,
+     "source": "Гоур Говинда Свами - БГ 3.37 (1990.10.27).mp3",
+     "file": "sadhana-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 34,
+     "title": "Сомнения опасны · 9 февраля 1993",
+     "duration": 5374,
+     "size": 65268024,
+     "source": "Гоур_Говинда_Свами_Сомнения_опасны_1993_02_09.mp3",
+     "file": "sadhana-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 15,
+     "title": "Милостивые игры Господа · 16 февраля 1993",
+     "duration": 3979,
+     "size": 48521251,
+     "source": "Гоур_Говинда_Свами_Милостивые_игры_Господа_1993_02_16.mp3",
+     "file": "sadhana-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 19,
+     "title": "Нет предания без веры · 17 февраля 1993",
+     "duration": 2413,
+     "size": 29694784,
+     "source": "Гоур_Говинда_Свами_Нет_предания_без_веры_1993_02_17.mp3",
+     "file": "sadhana-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 21,
+     "title": "Оставьте майю · 23 мая 1993",
+     "duration": 3966,
+     "size": 48375468,
+     "source": "Гоур_Говинда_Свами_Оставьте_Майю_23_05_1993.mp3",
+     "file": "sadhana-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 9,
+     "title": "Если Кришна удовлетворён — удовлетворены все · 12 июля 1993",
+     "duration": 1089,
+     "size": 13842816,
+     "source": "Гоур_Говинда_Свами_Если_Кришна_удовлетворен_то_все_будут_удовлетворены.mp3",
+     "file": "sadhana-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 6,
+     "title": "Гуру-сева — это наше всё · Товако, 4 июня 1994",
+     "duration": 4417,
+     "size": 36109230,
+     "source": "Гоур_Говинда_Свами_Гуру_сева_это_наше_всё_04_06_94_Товако.mp3",
+     "file": "sadhana-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 16,
+     "title": "Молись о садху-санге. Слава махапрасада · 3 августа 1994",
+     "duration": 4188,
+     "size": 51037188,
+     "source": "Гоур_Говинда_Свами_Молись_о_садху_санге_Слава_махапрасада_1994_08.mp3",
+     "file": "sadhana-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 13,
+     "title": "Когда распускается лотос удачи · 8 августа 1994",
+     "duration": 5665,
+     "size": 68760416,
+     "source": "Гоур_Говинда_Свами_Когда_распускается_лотос_удачи_1994_08_08.mp3",
+     "file": "sadhana-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 46,
+     "title": "Почему Дхритараштра не обрёл чистую преданность",
+     "duration": 0,
+     "size": 78060364,
+     "source": "Почему_Дхритараштра_не_получил_чистую_преданность.wav",
+     "file": "sadhana-10.mp3",
+     "sort": 10,
+     "transcode": true
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 10
+  },
+  {
+   "id": "ggs-iskcon",
+   "title": "ИСККОН",
+   "identifier": "iskcone-katha-ggs-iskcon",
+   "tracks": [
+    {
+     "msg_id": 47,
+     "title": "Что такое ИСККОН",
+     "duration": 0,
+     "size": 108883054,
+     "source": "Что такое Исккон.wav",
+     "file": "iskcon-01.mp3",
+     "sort": 1,
+     "transcode": true
+    },
+    {
+     "msg_id": 29,
+     "title": "Прибытие из Африки · 5 февраля 1995",
+     "duration": 1480,
+     "size": 12616558,
+     "source": "Гоур_Говинда_Свами_Прибытие_из_Африки_05_02_95.mp3",
+     "file": "iskcon-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 3,
+     "title": "Возвращение из Маяпура. Встреча Джи-Би-Си · 5 марта 1995",
+     "duration": 2280,
+     "size": 19015346,
+     "source": "Гоур_Говинда_Свами_Возвращение_из_Маяпура_Джибиси_встреча_05_03.mp3",
+     "file": "iskcon-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 20,
+     "title": "О руководстве ИСККОН · 15 марта 1995",
+     "duration": 2283,
+     "size": 9904777,
+     "source": "Гоур_Говинда_Свами_О_руководстве_ИСККОН_15_03_1995.mp3",
+     "file": "iskcon-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 30,
+     "title": "Принципы ведического брака · 21 марта 1995",
+     "duration": 2871,
+     "size": 35229528,
+     "source": "Гоур_Говинда_Свами_Принципы_ведического_брака_1995_03_21.mp3",
+     "file": "iskcon-05.mp3",
+     "sort": 5
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 5
+  },
+  {
+   "id": "ggs-kathamrita",
+   "title": "Катхамрита",
+   "identifier": "iskcone-katha-ggs-kathamrita",
+   "tracks": [
+    {
+     "msg_id": 11,
+     "title": "Часть 2а",
+     "duration": 3624,
+     "size": 44269933,
+     "source": "Гоур_Говинда_Свами_Катхамрита_2а.mp3",
+     "file": "kathamrita-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 12,
+     "title": "Часть 2б",
+     "duration": 2840,
+     "size": 34858955,
+     "source": "Гоур_Говинда_Свами_Катхамрита_2б.mp3",
+     "file": "kathamrita-02.mp3",
+     "sort": 2
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 2
+  },
+  {
+   "id": "ggs-misc",
+   "title": "Разное",
+   "identifier": "iskcone-katha-ggs-misc",
+   "tracks": [
+    {
+     "msg_id": 17,
+     "title": "Запись без названия · 1",
+     "duration": 1793,
+     "size": 33897567,
+     "source": "Гоур Говинда Свами - Неизветно 01.mp3",
+     "file": "misc-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 18,
+     "title": "Запись без названия · 2",
+     "duration": 5332,
+     "size": 98893249,
+     "source": "Гоур Говинда Свами - Неизветно 02.mp3",
+     "file": "misc-02.mp3",
+     "sort": 2
+    }
+   ],
+   "speaker": "gour-govinda-swami",
+   "speaker_name": "Гоур Говинда Свами Махарадж",
+   "channel": "@gourgovindaswamimaharaj",
+   "n": 2
   }
  ]
 }
