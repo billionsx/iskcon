@@ -48,7 +48,7 @@ export const RETIRED_HOSTS: readonly string[] = ["gaurangers.com", "www.gaurange
  *  считается рабочим только после верификации в Resend и включения Email Routing,
  *  а это происходит не в тот же момент, что переезд сайта. Переключается вторым
  *  шагом — когда почта на новом домене реально подтверждена. */
-export const MAIL_HOST = "gaurangers.com";
+export const MAIL_HOST = "brajs.com";
 
 /** Боевой origin. Выводится из SITE_HOST — строкой не собирается нигде больше. */
 export const ORIGIN = `https://${SITE_HOST}`;

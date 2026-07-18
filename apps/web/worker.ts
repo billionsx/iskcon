@@ -1383,14 +1383,15 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
 
   // 2) Резерв — Resend (если задан ключ и нативная отправка не сработала).
   let resendErr = "";
-  if (!emailed && env.RESEND_API_KEY) {
+  const rkey = await resendKey(env);
+  if (!emailed && rkey) {
     try {
       const from = env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`;
       const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
       if (rec.email) payload.reply_to = rec.email;
       const r = await fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+        headers: { Authorization: `Bearer ${rkey}`, "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       emailed = r.ok;
@@ -1508,12 +1509,13 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
       emailed = true;
     } catch { /* fallthrough */ }
   }
-  if (!emailed && env.RESEND_API_KEY) {
+  const rkey = await resendKey(env);
+  if (!emailed && rkey) {
     try {
       const from = env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`;
       const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
       if (contact.email) payload.reply_to = contact.email;
-      const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${rkey}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
       emailed = r.ok;
     } catch { /* noop */ }
   }
@@ -1586,9 +1588,10 @@ async function handleOrderConfirm(request: Request, env: Env, url: URL): Promise
         sent = true;
       } catch { /* fallthrough */ }
     }
-    if (!sent && env.RESEND_API_KEY) {
+    const rkey = await resendKey(env);
+    if (!sent && rkey) {
       try {
-        await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`, to: [custEmail], subject: subj, text: txt }) });
+        await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${rkey}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`, to: [custEmail], subject: subj, text: txt }) });
       } catch { /* noop */ }
     }
   }
@@ -1900,6 +1903,23 @@ async function igRunTargets(env: Env, targets: { user: string; slug: string; dei
 
 async function igIngestAll(env: Env): Promise<{ slug: string; ok: boolean; n: number; msg: string }[]> {
   return igRunTargets(env, IG_TARGETS);
+}
+
+
+/**
+ * Ключ Resend — ИЗ ОДНОГО МЕСТА (ЗКН-Ф007 по духу: ключ живёт в конфиге, не в
+ * коде и не в двух местах). Раньше письма с кодами входа читали ключ из
+ * `app_config`, а отчёты и заказы — из секрета воркера `RESEND_API_KEY`: замена
+ * ключа чинила одну половину почты и молча оставляла сломанной вторую.
+ * Порядок: app_config (меняется без деплоя) → секрет воркера (запасной путь).
+ */
+async function resendKey(env: Env): Promise<string | null> {
+  try {
+    const row = await env.DB.prepare(`SELECT value FROM app_config WHERE key = 'resend_api_key' LIMIT 1`)
+      .first<{ value: string }>();
+    if (row?.value) return row.value;
+  } catch { /* конфиг недоступен — идём к секрету */ }
+  return env.RESEND_API_KEY || null;
 }
 
 async function serveIgImg(env: Env, slug: string, date: string, idx: number): Promise<Response> {
