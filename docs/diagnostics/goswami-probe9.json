@@ -1,0 +1,231 @@
+{
+ "gql": "https://api.goswami.ru/graphql",
+ "ts": 1784395358,
+ "wrap": {
+  "MediaResponse": [],
+  "CollectionsResponse": []
+ },
+ "size": {
+  "total": null,
+  "per_page": 0,
+  "list_field": "data",
+  "count_field": null
+ },
+ "rows": {
+  "sample": [],
+  "query": "{getMedia(input:{page:1}){data{id title description teaser file_url video_url alias_url img_url duration size language type canto chapter verse scripture_id collection_id location_name in_collections issue_date occurrence_date}}}"
+ },
+ "collections": {
+  "total": null,
+  "n": 10,
+  "query": "{getCollections(input:{page:1}){data{id full_name sub_name annotation child_collections_id date_to direction img_url language scripture_id source}}}",
+  "sample": [
+   {
+    "id": 13,
+    "full_name": "Бхакти-сангама",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     717,
+     741,
+     759,
+     767,
+     776
+    ],
+    "date_to": null,
+    "direction": null,
+    "img_url": "https://assets.goswami.ru/collection/bhakti-sangama.jpg",
+    "language": null,
+    "scripture_id": null,
+    "source": "collection"
+   },
+   {
+    "id": 14,
+    "full_name": "Ретриты Святого имени",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     652,
+     655,
+     668,
+     673,
+     693,
+     710,
+     734,
+     748,
+     774
+    ],
+    "date_to": null,
+    "direction": null,
+    "img_url": "https://assets.goswami.ru/collection/nama-retreats.jpg",
+    "language": null,
+    "scripture_id": null,
+    "source": "collection"
+   },
+   {
+    "id": 15,
+    "full_name": "Ретриты для наставников",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     644,
+     647,
+     667,
+     670,
+     671,
+     677,
+     686,
+     694,
+     695,
+     702,
+     708,
+     713,
+     720,
+     721,
+     743,
+     781,
+     789,
+     793
+    ],
+    "date_to": null,
+    "direction": null,
+    "img_url": "https://assets.goswami.ru/collection/master-retreats.jpg",
+    "language": null,
+    "scripture_id": null,
+    "source": "collection"
+   },
+   {
+    "id": 16,
+    "full_name": "Ретриты Школы джапа-медитации",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     1175,
+     980,
+     624,
+     642,
+     648
+    ],
+    "date_to": null,
+    "direction": null,
+    "img_url": "https://assets.goswami.ru/collection/shdm-retreats.jpg",
+    "language": null,
+    "scripture_id": null,
+    "source": "collection"
+   },
+   {
+    "id": 17,
+    "full_name": "Бхагавад-гита",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     889,
+     18,
+     887,
+     19,
+     20,
+     21,
+     22,
+     23,
+     24,
+     25,
+     26,
+     27,
+     28,
+     29,
+     30,
+     31,
+     32,
+     33,
+     34,
+     35,
+     36
+    ],
+    "date_to": null,
+    "direction": null,
+    "img_url": "https://assets.goswami.ru/collection/bg.jpg",
+    "language": null,
+    "scripture_id": null,
+    "source": "collection"
+   },
+   {
+    "id": 18,
+    "full_name": "Семинары по Бхагавад-гите",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     802,
+     1056,
+     1119
+    ],
+    "date_to": null,
+    "direction": null,
+    "img_url": "https://assets.goswami.ru/collection/bg-seminar.jpg",
+    "language": null,
+    "scripture_id": null,
+    "source": "collection"
+   },
+   {
+    "id": 19,
+    "full_name": "Бхагавад-гита, Глава 1",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     null
+    ],
+    "date_to": null,
+    "direction": "ASC",
+    "img_url": "https://assets.goswami.ru/collection/bg1.jpg",
+    "language": null,
+    "scripture_id": 1,
+    "source": "filter"
+   },
+   {
+    "id": 20,
+    "full_name": "Бхагавад-гита, Глава 2",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     null
+    ],
+    "date_to": null,
+    "direction": "ASC",
+    "img_url": "https://assets.goswami.ru/collection/bg2.jpg",
+    "language": null,
+    "scripture_id": 1,
+    "source": "filter"
+   },
+   {
+    "id": 21,
+    "full_name": "Бхагавад-гита, Глава 3",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     null
+    ],
+    "date_to": null,
+    "direction": "ASC",
+    "img_url": "https://assets.goswami.ru/collection/bg3.jpg",
+    "language": null,
+    "scripture_id": 1,
+    "source": "filter"
+   },
+   {
+    "id": 22,
+    "full_name": "Бхагавад-гита, Глава 4",
+    "sub_name": null,
+    "annotation": null,
+    "child_collections_id": [
+     null
+    ],
+    "date_to": null,
+    "direction": "ASC",
+    "img_url": "https://assets.goswami.ru/collection/bg4.jpg",
+    "language": null,
+    "scripture_id": 1,
+    "source": "filter"
+   }
+  ]
+ },
+ "axes": {}
+}
