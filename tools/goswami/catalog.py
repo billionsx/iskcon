@@ -76,7 +76,14 @@ def gql(q, timeout=60, retries=3):
                     raw = gzip.GzipFile(fileobj=io.BytesIO(raw)).read()
                 time.sleep(PAUSE)
                 return json.loads(raw.decode("utf-8", "replace"))
-        except Exception as e:
+        except urllib.error.HTTPError as e:               # ЗКН-Ф014: не падать молча
+            # Тело ответа — единственное место, где сервер объясняет отказ:
+            # 403 от защиты, лимит запросов, поломанный запрос. Без него в логе
+            # остаётся голый номер, и разбирать нечего.
+            last = e
+            print("::warning::GraphQL %s: %s" % (e.code, e.read().decode("utf-8", "replace")[:200]))
+            time.sleep(1.5 * (a + 1))
+        except Exception as e:                            # noqa: BLE001
             last = e
             time.sleep(1.5 * (a + 1))
     print("::warning::запрос не прошёл: %s" % str(last)[:160])
