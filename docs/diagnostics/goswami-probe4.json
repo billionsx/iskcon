@@ -1,0 +1,148 @@
+{
+ "api": "https://api.goswami.ru",
+ "ts": "2026-07-18T15:31:55Z",
+ "jira": [
+  {
+   "url": "https://api.goswami.ru/jira/import/0/10",
+   "code": 200,
+   "keys": [
+    "total",
+    "lectures"
+   ],
+   "total": 0,
+   "n": 0,
+   "item_keys": {},
+   "sample": []
+  },
+  {
+   "url": "https://api.goswami.ru/jira/import/0/100",
+   "code": 200,
+   "keys": [
+    "total",
+    "lectures"
+   ],
+   "total": 0,
+   "n": 0,
+   "item_keys": {},
+   "sample": []
+  },
+  {
+   "url": "https://api.goswami.ru/jira/import/10/10",
+   "code": 200,
+   "keys": [
+    "total",
+    "lectures"
+   ],
+   "total": 0,
+   "n": 0,
+   "item_keys": {},
+   "sample": []
+  }
+ ],
+ "gql_endpoints": [
+  {
+   "url": "https://api.goswami.ru/graphql",
+   "code": 200,
+   "body": "{\"data\": {\"__typename\": \"Query\"}, \"extensions\": {\"tracing\": {\"version\": 1, \"startTime\": \"2026-07-18T15:32:03.886Z\", \"endTime\": \"2026-07-18T15:32:03.886Z\", \"duration\": 294512, \"execution\": {\"resolvers\": []}}, \"cacheControl\": {\"version\": 1, \"hints\": []}}}"
+  },
+  {
+   "url": "https://api.goswami.ru/api/graphql",
+   "code": 404,
+   "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/graphql</pre>\n</body>\n</html>\n"
+  },
+  {
+   "url": "https://api.goswami.ru/gql",
+   "code": 404,
+   "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /gql</pre>\n</body>\n</html>\n"
+  },
+  {
+   "url": "https://api.goswami.ru/query",
+   "code": 404,
+   "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /query</pre>\n</body>\n</html>\n"
+  },
+  {
+   "url": "https://api.goswami.ru/graphql/",
+   "code": 200,
+   "body": "{\"data\": {\"__typename\": \"Query\"}, \"extensions\": {\"tracing\": {\"version\": 1, \"startTime\": \"2026-07-18T15:32:09.535Z\", \"endTime\": \"2026-07-18T15:32:09.535Z\", \"duration\": 83487, \"execution\": {\"resolvers\": []}}, \"cacheControl\": {\"version\": 1, \"hints\": []}}}"
+  }
+ ],
+ "gql_live": "https://api.goswami.ru/graphql/",
+ "introspection_code": 400,
+ "introspection_error": "\u001f�\b\u0000\u0000\u0000\u0000\u0000\u0000\u0003U�MK�0\u0010����a�����\u0002�G���.^d)i:�B��N\u0012���w����ޙ���wA\u0012a�X},8Q�擰�G1a�70�$\u001c\u0003�4��1��\u0004�9��\u001e�\u0019t�r�\u001b�\u0017��.'H\u0003�9��`�'3�B�m�\u0003M\u0006XJNs�[82�7��k��`b��U�$\u0013$��m��@\u0010��A������\u0018W�X�)����K\\O\n�'��\u001b�����=�ק}Ӿ���c���>躹�ẞ֛_�shw$\u0001\u0000\u0000",
+ "gql_bodies": [],
+ "gql_names": [],
+ "rest_calls": [
+  "/404",
+  "/about_maharaj",
+  "/about_maharaj/goswami",
+  "/about_maharaj/goswami/dedication_first",
+  "/about_maharaj/goswami/dedication_second",
+  "/about_maharaj/goswami/info",
+  "/about_maharaj/prabhupada",
+  "/about_maharaj/swami",
+  "/account",
+  "/account/favorite",
+  "/account/history",
+  "/account/profile",
+  "/account/profile_choose",
+  "/add_collection",
+  "/admin",
+  "/admin/articles",
+  "/admin/articles/edit/",
+  "/admin/articles/new",
+  "/admin/books",
+  "/admin/books/edit/",
+  "/admin/books/new",
+  "/admin/collection",
+  "/admin/collection/edit/",
+  "/admin/collection/new",
+  "/admin/donations",
+  "/admin/donations/edit/",
+  "/admin/donations/new",
+  "/admin/job/new",
+  "/admin/jobs",
+  "/admin/jobs/",
+  "/admin/lectures",
+  "/admin/lectures/edit/",
+  "/admin/lectures/new",
+  "/admin/lectures/preview/",
+  "/article",
+  "/article/",
+  "/articles",
+  "/auth/get_info",
+  "/auth/logout",
+  "/auth/refresh",
+  "/authpage",
+  "/book",
+  "/books",
+  "/collection",
+  "/collection/",
+  "/collections",
+  "/contacts",
+  "/disciple",
+  "/disciple/harinama",
+  "/disciple/mantra",
+  "/disciple/pranama",
+  "/disciple/schedule",
+  "/donations",
+  "/edit",
+  "/favorite",
+  "/files/upload/",
+  "/files/upload/user",
+  "/gallery",
+  "/gallery/",
+  "/graphql",
+  "/history",
+  "/jira/import/",
+  "/jobs",
+  "/lecture",
+  "/lecture/",
+  "/logout",
+  "/new",
+  "/preview",
+  "/profile",
+  "/restore_password",
+  "/static/",
+  "/support"
+ ]
+}
