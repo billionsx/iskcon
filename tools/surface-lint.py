@@ -263,7 +263,7 @@ def check_grouped_screen() -> list[str]:
 
 
 
-#: ЗКН-Д024 — КИРПИЧИ АУДИОТЕКИ ЖИВУТ В ОДНОМ МЕСТЕ.
+#: ЗКН-Д023 — КИРПИЧИ АУДИОТЕКИ ЖИВУТ В ОДНОМ МЕСТЕ.
 #  Замеры Apple Music (строка 44/52/60, меню 250/26, обложка 48) объявлены в
 #  `player/ui.tsx`. Второй раз те же числа — это второй набор, который разойдётся
 #  с первым; так плеер и стал коробкой на 1343 строки со своими радиусами в
@@ -276,7 +276,7 @@ DARK_LEFTOVER = re.compile(r"--color-on-dark|rgba\(255,\s*255,\s*255,\s*0\.[01]\
 
 
 def check_player_bricks() -> list[str]:
-    """ЗКН-Д024 — ПРАВИЛО 10: аудиотека собирается из замеренных кирпичей.
+    """ЗКН-Д023 — ПРАВИЛО 10: аудиотека собирается из замеренных кирпичей.
 
     Стережём ровно две вещи, из-за которых плеер и распух:
 
@@ -292,12 +292,12 @@ def check_player_bricks() -> list[str]:
     pdir = SRC / "player"
     ui = pdir / PLAYER_BRICKS
     if not ui.exists():
-        return [f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д024: набор кирпичей аудиотеки снесён; "
+        return [f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д023: набор кирпичей аудиотеки снесён; "
                 f"без него каждый экран нарисует свою строку и своё меню"]
     src = ui.read_text(encoding="utf-8")
     for name in ("MediaRow", "PopMenu", "ScreenHeader", "SectionRow"):
         if f"export function {name}" not in src:
-            bad.append(f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д024: пропал кирпич {name}()")
+            bad.append(f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д023: пропал кирпич {name}()")
 
     for f in sorted(pdir.rglob("*.tsx")):
         if f.name == PLAYER_BRICKS:
@@ -307,12 +307,12 @@ def check_player_bricks() -> list[str]:
         m = PLAYER_MAGIC.search(code)
         if m:
             line = code.count("\n", 0, m.start()) + 1
-            bad.append(f"{rel}:{line} — ЗКН-Д024: замер Apple вписан руками мимо примитива "
+            bad.append(f"{rel}:{line} — ЗКН-Д023: замер Apple вписан руками мимо примитива "
                        f"(«{m.group(0)}»). Числа объявлены один раз, в player/{PLAYER_BRICKS}")
         d = DARK_LEFTOVER.search(code)
         if d:
             line = code.count("\n", 0, d.start()) + 1
-            bad.append(f"{rel}:{line} — ЗКН-Д024: тёмная доска вернулась («{d.group(0)}»). "
+            bad.append(f"{rel}:{line} — ЗКН-Д023: тёмная доска вернулась («{d.group(0)}»). "
                        f"Плеер светлый: поверхности — var(--color-card)/var(--color-menu-glass)")
     return bad
 
