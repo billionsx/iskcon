@@ -47,3 +47,25 @@ export const LEVEL_META: { id: DevoteeLevel; label: string; hint: string }[] = [
   { id: "initiated", label: "Инициированный", hint: "Принял(а) духовного учителя" },
   { id: "guru", label: "Наставник", hint: "Наставляю других преданных" },
 ];
+
+/* ─────────────────── ступень как ПОРЯДОК, а не как ярлык ───────────────────
+ * Ступени идут по возрастанию вовлечённости, поэтому интерфейс может спрашивать
+ * не «какая ступень», а «не ниже ли такой-то». Без этого адаптация вырождается
+ * в перечисление равных вариантов: гостю показывали управление страницей храма,
+ * наставнику — приглашение начать практику.
+ */
+const LEVEL_RANK: Record<DevoteeLevel, number> = {
+  guest: 0, neophyte: 1, practicing: 2, initiated: 3, guru: 4,
+};
+
+/** Ступень пользователя не ниже указанной. Неизвестная ступень — самая младшая. */
+export function atLeastLevel(user: AccountUser | null, min: DevoteeLevel): boolean {
+  const l = effectiveLevel(user);
+  return LEVEL_RANK[l ?? "guest"] >= LEVEL_RANK[min];
+}
+
+/** Подпись ступени для показа человеку (null — ступень не выбрана). */
+export function levelLabel(user: AccountUser | null): string | null {
+  const l = effectiveLevel(user);
+  return l ? (LEVEL_META.find((m) => m.id === l)?.label ?? null) : null;
+}
