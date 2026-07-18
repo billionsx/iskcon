@@ -257,20 +257,36 @@ jobs:
           # (deploy_checks) — логи Actions живут 90 дней, база дольше.
           HOSTS=$(grep -oE '^pattern = "[^"]+"' wrangler.toml | cut -d'"' -f2)
           [ -z "$HOSTS" ] && { echo "::error::в wrangler.toml не найдено ни одного хоста — проверка Н087 не состоялась"; exit 1; }
+          # Канонический хост обязан ОТДАВАТЬ приложение, все прочие — 301-ить на
+          # него: отвалившийся alias — это мёртвые QR-коды и ссылки.
+          # Утверждение с ЗАПАСОМ НА РАСКАТКУ: свежая версия воркера доезжает до края
+          # не мгновенно, и проверка одним выстрелом ловила старую версию (www нового
+          # домена ещё отдавал приложение вместо 301). Ждём до 6 попыток по 10 с —
+          # но не сдаёмся молча: не дождались = ошибка деплоя.
+          fail=0
           for H in $HOSTS; do
-            hc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$H/")
-            loc=$(curl -s -I --max-time 25 "https://$H/" | grep -i '^location:' | tr -d '\r' | cut -c1-90)
+            hc=0; loc=""
+            for a in 1 2 3 4 5 6; do
+              hc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$H/")
+              loc=$(curl -s -I --max-time 25 "https://$H/" | grep -i '^location:' | tr -d '\r' | cut -c1-90)
+              if [ "$H" = "$SITE_HOST" ]; then
+                [ "${hc:-0}" -ge 200 ] && [ "${hc:-0}" -lt 400 ] && break
+              else
+                [ "${hc:-0}" -ge 300 ] && [ "${hc:-0}" -lt 400 ] && break
+              fi
+              sleep 10
+            done
             echo "::notice::хост $H -> HTTP $hc $loc"
-            # Канонический хост обязан ОТДАВАТЬ приложение, все прочие — 301-ить на
-            # него. Наблюдения мало: отвалившийся alias — это мёртвые QR-коды.
-            if [ "$H" = "$SITE_HOST" ]; then
-              [ "${hc:-0}" -ge 200 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::канонический хост $H отдал HTTP $hc"; exit 1; }
-            else
-              [ "${hc:-0}" -ge 300 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::хост $H обязан 301-ить на $SITE_HOST, а отдал HTTP $hc"; exit 1; }
-            fi
+            # В D1 пишем ВСЕГДА, до вердикта: провалившаяся проверка ценнее удачной.
             bunx wrangler d1 execute iskcon-db --remote \
               --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'host $H',${hc:-0},'$(echo "$loc" | tr -d "\"'" | cut -c1-120)')" || true
+            if [ "$H" = "$SITE_HOST" ]; then
+              [ "${hc:-0}" -ge 200 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::канонический хост $H отдал HTTP $hc"; fail=1; }
+            else
+              [ "${hc:-0}" -ge 300 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::хост $H обязан 301-ить на $SITE_HOST, а отдал HTTP $hc"; fail=1; }
+            fi
           done
+          [ "$fail" = "0" ] || { echo "::error::роли хостов не подтвердились — см. таблицу deploy_checks"; exit 1; }
           acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$SITE_HOST/")
           axr=$(curl -s -I --max-time 25 "https://$SITE_HOST/" | grep -i 'x-robots-tag' | tr -d '\r')
           echo "apex -> HTTP $acode ; $axr"
