@@ -56,6 +56,8 @@ DL_PARALLEL = int(os.getenv("DL_PARALLEL") or 12)
 IA_PARALLEL = int(os.getenv("IA_PARALLEL") or 6)
 META_PARALLEL = int(os.getenv("META_PARALLEL") or 24)
 WORK = Path(os.getenv("WORK") or "/tmp/goswami")
+ONLY_ALBUM = (os.getenv("ONLY_ALBUM") or "").strip()
+LIMIT = int(os.getenv("LIMIT") or 0)
 START = time.time()
 
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
@@ -250,6 +252,8 @@ async def main_run() -> int:
 
     todo = []
     for al in albums:
+        if ONLY_ALBUM and al["id"] != ONLY_ALBUM:
+            continue
         got = have.get(al["identifier"], {})
         for t in al["tracks"]:
             if t["file"] in got:
@@ -257,6 +261,12 @@ async def main_run() -> int:
             if not t.get("url"):
                 continue
             todo.append((al, t))
+    # Потолок прогона (ЗКН-Пл012): прежде чем пускать многочасовую переброску,
+    # скорость меряется на первой сотне файлов. Без этого потолка «пробный»
+    # прогон увёз бы всю базу.
+    if LIMIT and len(todo) > LIMIT:
+        print("::notice::потолок прогона: %d из %d" % (LIMIT, len(todo)), flush=True)
+        todo = todo[:LIMIT]
     print("::notice::в архиве уже %d · к заливке %d" % (already, len(todo)), flush=True)
 
     # то, что уже лежит в архиве, но ещё не в базе — регистрируем сразу
