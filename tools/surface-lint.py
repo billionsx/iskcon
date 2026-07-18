@@ -84,6 +84,7 @@ ACTION_BTN = re.compile(r"<(CardActionBtns|RoundBtn)\b")
 # ── ЗКН-Д018 · сгруппированный экран iOS 26.5 ──────────────────────────────
 CARD_FILL = re.compile(r"background:\s*[\"'`]var\(--color-card\)")
 BORDER_KEY = re.compile(r"\bborder:\s*[\"'`0-9]")
+SHADOW_KEY = re.compile(r"\bboxShadow:")
 # Экраны, обязанные собираться из ui/ios.tsx (кирпичи с замеренной геометрией).
 GROUPED_SCREENS = ("AccountScreen.tsx", "PracticeHub.tsx")
 IOS_IMPORT = re.compile(r"from\s+[\"'`]\./ui/ios[\"'`]")
@@ -92,7 +93,7 @@ SEARCH_INPUT = re.compile(r"inputMode=[\"'`]search[\"'`]")
 SEARCH_OK = {"ios.tsx"}
 # ЗКН-Д018 — токены замера. Пропажа = возврат к «на глаз».
 GROUP_TOKENS = ("--color-canvas", "--color-card", "--color-separator",
-                "--radius-card", "--row-h", "--gap-group")
+                "--radius-card", "--row-h", "--gap-group", "--shadow-card")
 GROUP_TOKENS_LIGHT = ("--color-canvas", "--color-card", "--color-separator")
 # ЗКН-Н088 — адреса практики: их место в «Практике», а не в кабинете.
 PRACTICE_PATHS = ("/japa", "/story", "/promise", "/progress", "/verse")
@@ -249,8 +250,15 @@ def main() -> int:
             if CARD_FILL.search(body) and BORDER_KEY.search(body):
                 bad.append(
                     f"{rel}:{line} — ЗКН-Д018: обводка вокруг карточки группы. "
-                    f"Слой создаёт белое на сером (--color-card на --color-canvas); "
-                    f"линия по периметру превращает группу в таблицу")
+                    f"Слой держит материал (--shadow-card), а не линия по периметру: "
+                    f"обводка превращает группу в таблицу и читается как веб-форма")
+            # Холст БЕЛЫЙ (решение основателя 18.07.2026) — значит без тени
+            # карточки группы попросту НЕ ВИДНО. Материал обязателен.
+            if CARD_FILL.search(body) and not SHADOW_KEY.search(body):
+                bad.append(
+                    f"{rel}:{line} — ЗКН-Д018: карточка группы без материала. "
+                    f"Холст белый, обводка запрещена — слой создаёт только "
+                    f"boxShadow: var(--shadow-card). Без него группы не видно")
             # ПРАВИЛО 1 — серая плашка вместо поверхности
             if tag in CONTAINER_TAGS and GREY_FILL.search(body) and PADDING.search(body):
                 r = RADIUS.search(body)
