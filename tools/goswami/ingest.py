@@ -58,6 +58,11 @@ META_PARALLEL = int(os.getenv("META_PARALLEL") or 8)
 WORK = Path(os.getenv("WORK") or "/tmp/goswami")
 ONLY_ALBUM = (os.getenv("ONLY_ALBUM") or "").strip()
 LIMIT = int(os.getenv("LIMIT") or 0)
+BATCH = int(os.getenv("BATCH") or 8)
+# Работников МЕНЬШЕ, чем раньше: каждый теперь тянет не файл, а пачку из BATCH
+# штук сразу. Оставить прежние двенадцать — это 96 одновременных скачиваний
+# в источник, и он закроется первым.
+WORKERS = int(os.getenv("WORKERS") or 4)
 DRY_RUN = (os.getenv("DRY_RUN") or "").strip() not in ("", "0", "false", "no")
 START = time.time()
 
@@ -391,12 +396,19 @@ async def main_run() -> int:
     pool = ThreadPoolExecutor(max_workers=IA_PARALLEL + 2)
     sem_up = asyncio.Semaphore(IA_PARALLEL)
 
-    def do_upload(al: dict, remote: str, path: str, t: dict):
-        # Происхождение проставляется ВСЕГДА: зеркало обязано указывать на
-        # первоисточник, иначе через год никто не скажет, откуда запись и кто
-        # её правообладатель. `originalurl`/`source` — штатные поля archive.org
-        # ровно для этого.
-        src = t.get("src_page") or SOURCE_HOME
+    def do_upload(al: dict, items: list):
+        """Заливает СРАЗУ НЕСКОЛЬКО файлов одного цикла одним вызовом.
+
+        По файлу за вызов — это отдельный запрос к S3 и отдельная гонка создания
+        элемента на КАЖДУЮ запись. При тысячах записей архив начинает отвечать
+        отказами (поймали 24 подряд), а наши повторы ждут по 5/20/60 секунд и
+        душат скорость сильнее самих отказов. Пачкой на цикл запросов в BATCH раз
+        меньше, элемент создаётся однажды, и поводов для отказа почти не остаётся.
+
+        Происхождение проставляется ВСЕГДА: зеркало обязано указывать на
+        первоисточник, иначе через год никто не скажет, откуда запись и кто её
+        правообладатель. `originalurl`/`source` — штатные поля archive.org.
+        """
         meta = {
             "title": "%s — %s" % (speaker, al["title"]),
             "creator": speaker,
@@ -406,28 +418,38 @@ async def main_run() -> int:
                         "катха", "лекция", "Бхакти Вигьяна Госвами"],
             "language": ["rus"],
             "source": SOURCE_HOME,
-            "originalurl": src,
-            "description": "%s. %s. Лекции на русском языке. Зеркало записи с %s"
-                           % (al["title"], speaker, src),
+            "originalurl": SOURCE_HOME,
+            "description": "%s. %s. Лекции на русском языке. Зеркало с %s"
+                           % (al["title"], speaker, SOURCE_HOME),
         }
         if al.get("year"):
             meta["year"] = al["year"]
-        if t.get("date"):
-            meta["date"] = t["date"]
+        files = {remote: path for remote, path, _t in items}
         resp = ia.upload(
-            al["identifier"], files={remote: path}, metadata=meta,
+            al["identifier"], files=files, metadata=meta,
             access_key=ak, secret_key=sk, queue_derive=False, verbose=False,
-            retries=2, retries_sleep=20,
-            request_kwargs={"timeout": 300},          # БЕЗ НЕГО ЗАЛИВКА ВИСНЕТ ЧАСАМИ
+            retries=2, retries_sleep=15,
+            request_kwargs={"timeout": 600},          # БЕЗ НЕГО ЗАЛИВКА ВИСНЕТ ЧАСАМИ
         )
         bad = [x for x in resp if getattr(x, "status_code", 200) not in (200, None)]
         if bad:
             raise RuntimeError("HTTP %s" % [getattr(x, "status_code", None) for x in bad])
 
+    # Очередь не из файлов, а из ПАЧЕК одного цикла: один вызов заливки
+    # закрывает сразу несколько записей.
+    grouped: dict = {}
+    for al, t in todo:
+        grouped.setdefault(al["id"], (al, []))[1].append(t)
+    batches = []
+    for al, ts in grouped.values():
+        for i in range(0, len(ts), BATCH):
+            batches.append((al, ts[i:i + BATCH]))
+
     q: asyncio.Queue = asyncio.Queue()
-    for item in todo:
-        q.put_nowait(item)
-    total = q.qsize()
+    for b in batches:
+        q.put_nowait(b)
+    total = len(todo)
+    print("::notice::пачек %d по %d файлов" % (len(batches), BATCH), flush=True)
 
     done = fail = 0
     bytes_done = 0.0
@@ -448,72 +470,82 @@ async def main_run() -> int:
         except Exception as e:                        # noqa: BLE001
             print("::warning::запись в D1: %s" % str(e)[:160])
 
-    async def one(al, t):
+    async def one(al, tracks):
+        """Пачка: качаем параллельно, заливаем одним вызовом, чистим за собой."""
         nonlocal done, bytes_done
-        dest = WORK / ("%s-%s" % (al["id"], t["file"]))
+        got = []
         try:
-            size = await loop.run_in_executor(pool, fetch, t["url"], dest)
+            async def grab(t):
+                dest = WORK / ("%s-%s" % (al["id"], t["file"]))
+                size = await loop.run_in_executor(pool, fetch, t["url"], dest)
+                return t, dest, size
+
+            for res in await asyncio.gather(*[grab(t) for t in tracks], return_exceptions=True):
+                if isinstance(res, Exception):
+                    print("::warning::%s: скачивание: %s" % (al["id"], str(res)[:120]))
+                    continue
+                got.append(res)
+            if not got:
+                raise RuntimeError("ни один файл пачки не скачался")
+
             if DRY_RUN:
                 # Вхолостую: цепочка проверяется целиком, кроме публикации.
-                # Скачали, убедились, что источник отдаёт и имя файла собирается,
-                # и удалили. В архив не уходит ничего, в базу — тоже.
+                for _t, _d, size in got:
+                    bytes_done += size
+                    done += 1
                 return
+
+            items = [(t["file"], str(dest), t) for t, dest, _s in got]
             last = None
             for attempt in range(3):                  # гонка создания элемента: 503/SlowDown
                 try:
                     async with sem_up:
-                        await loop.run_in_executor(pool, do_upload, al, t["file"], str(dest), t)
+                        await loop.run_in_executor(pool, do_upload, al, items)
                     last = None
                     break
                 except Exception as e:                # noqa: BLE001
                     last = e
-                    await asyncio.sleep((5, 20, 60)[attempt])
+                    await asyncio.sleep((5, 15, 40)[attempt])
             if last:
                 raise last
         finally:
-            if DRY_RUN:
-                sz = dest.stat().st_size if dest.exists() else 0
-                bytes_done += sz
-                done += 1
-            dest.unlink(missing_ok=True)
+            for _t, dest, _s in got:
+                dest.unlink(missing_ok=True)
         if DRY_RUN:
             return
-        pending.append((al, t, t.get("duration") or 0))
-        done += 1
-        bytes_done += size
+        for t, _d, size in got:
+            pending.append((al, t, t.get("duration") or 0))
+            done += 1
+            bytes_done += size
         await flush()
 
     async def worker():
         nonlocal fail, stop
         while not stop:
             try:
-                al, t = q.get_nowait()
+                al, tracks = q.get_nowait()
             except asyncio.QueueEmpty:
                 return
             if time.time() - START > BUDGET:
                 stop = True
                 return
             try:
-                await one(al, t)
+                await one(al, tracks)
             except Exception as e:                    # noqa: BLE001
-                fail += 1
-                print("::warning::%s/%s: %s" % (al["id"], t["file"], str(e)[:140]))
-            # Пульс по ВРЕМЕНИ, а не по кратности счётчика: двенадцать потоков
-            # увеличивают `done` наперегонки и круглые числа проскакивают —
-            # «каждые десять» молчит, и живой прогон выглядит замершим.
-            nonlocal_beat = time.time() - beat_at[0] > 45
-            if nonlocal_beat:
+                fail += len(tracks)
+                print("::warning::%s (пачка %d): %s" % (al["id"], len(tracks), str(e)[:140]))
+            # Пульс по ВРЕМЕНИ, а не по кратности счётчика: потоки увеличивают
+            # `done` наперегонки и круглые числа проскакивают.
+            if time.time() - beat_at[0] > 45:
                 beat_at[0] = time.time()
-                beat("заливка", done=done, total=total, fail=fail,
-                     gb=round(bytes_done / 1e9, 2),
-                     mbs=round(bytes_done / 1e6 / max(1.0, time.time() - t0), 2))
-            if done and done % 25 == 0:
                 el = max(1.0, time.time() - t0)
+                beat("заливка", done=done, total=total, fail=fail,
+                     gb=round(bytes_done / 1e9, 2), mbs=round(bytes_done / 1e6 / el, 2))
                 print("::notice::залито %d из %d · %.2f ГБ · %.1f МБ/с · %.1f зап/мин · ошибок %d"
-                      % (done, total, bytes_done / 1e9, bytes_done / 1e6 / el, done / el * 60, fail),
-                      flush=True)
+                      % (done, total, bytes_done / 1e9, bytes_done / 1e6 / el,
+                         done / el * 60, fail), flush=True)
 
-    await asyncio.gather(*[worker() for _ in range(DL_PARALLEL)])
+    await asyncio.gather(*[worker() for _ in range(WORKERS)])
     await flush(force=True)
     pool.shutdown(wait=True)
 
