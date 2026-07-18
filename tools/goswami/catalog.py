@@ -217,6 +217,19 @@ def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding="utf-8")
 
+    # Сводка отдельным файлом: сам каталог тяжёлый и в репозитории не нужен, а
+    # цифры нужны — по ним видно, что выкачалось и сколько предстоит везти.
+    stats_path = OUT.parent / (OUT.stem + "-stats.json")
+    stats_path.write_text(json.dumps({
+        "ts": doc["ts"], "source": doc["source"],
+        "stats": doc["stats"],
+        "collections": len(cols),
+        "presets": {k: len(v) for k, v in presets.items()},
+        "top_collections": [
+            {"id": c["id"], "name": c.get("full_name"), "scripture_id": c.get("scripture_id")}
+            for c in cols[:60]],
+    }, ensure_ascii=False, indent=1), encoding="utf-8")
+
     print("\n═══ КАТАЛОГ ═══")
     print("  записей: %d · со звуком: %d · без ссылки: %d" % (len(lectures), len(withu), no_url))
     print("  звучание: %.0f ч · объём: %.1f ГБ" % (hours, gb))
