@@ -286,6 +286,15 @@ jobs:
               [ "${hc:-0}" -ge 300 ] && [ "${hc:-0}" -lt 400 ] || { echo "::error::хост $H обязан 301-ить на $SITE_HOST, а отдал HTTP $hc"; fail=1; }
             fi
           done
+          # Снятые с проекта домены: не роняем деплой (DNS отваливается не мгновенно),
+          # но состояние пишем — чтобы было видно, отвязались они на самом деле.
+          RET=$(sed -n 's/.*RETIRED_HOSTS[^=]*= *\[\(.*\)\].*/\1/p' src/routes.ts | tr -d '"' | tr ',' ' ')
+          for R in $RET; do
+            rc=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://$R/" || echo 000)
+            echo "::notice::снятый хост $R -> HTTP $rc"
+            bunx wrangler d1 execute iskcon-db --remote \
+              --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'retired $R',${rc:-0},'снят с проекта')" || true
+          done
           [ "$fail" = "0" ] || { echo "::error::роли хостов не подтвердились — см. таблицу deploy_checks"; exit 1; }
           acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$SITE_HOST/")
           axr=$(curl -s -I --max-time 25 "https://$SITE_HOST/" | grep -i 'x-robots-tag' | tr -d '\r')

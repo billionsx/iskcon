@@ -54,8 +54,8 @@ database_id = "6226aded-dd03-4e74-977f-9cd0b509e73d"
 # Список обязан покрывать SITE_HOST + www и каждый ALIAS_HOST + www из
 # apps/web/src/routes.ts — это проверяет infra-audit.py::check_n087.
 #
-# Канонический — brajs.com. gaurangers.com остаётся привязанным и 301-ит на него:
-# по нему уже разошлись ссылки, QR-коды и метаданные Internet Archive.
+# Канонический и единственный — brajs.com. gaurangers.com снят с проекта
+# (18.07.2026): маршрутов больше нет, домен воркеру не принадлежит.
 
 [[routes]]
 pattern = "brajs.com"
@@ -63,14 +63,6 @@ custom_domain = true
 
 [[routes]]
 pattern = "www.brajs.com"
-custom_domain = true
-
-[[routes]]
-pattern = "gaurangers.com"
-custom_domain = true
-
-[[routes]]
-pattern = "www.gaurangers.com"
 custom_domain = true
 
 # CRM-загрузчик (/api/admin/*): секрет оператора, без него маршруты отдают 503.

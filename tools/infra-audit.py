@@ -537,6 +537,11 @@ def check_n087():
                 if hit in known:
                     bad.append((f.name, "стр.%d: домен «%s» строкой мимо src/routes.ts" % (i, hit)))
 
+    # ── C · снятый домен не возвращается в маршруты ──
+    retired = re.findall(r'"([a-z0-9.-]+\.[a-z]{2,})"',
+                         (re.search(r'RETIRED_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S).group(1)
+                          if re.search(r'RETIRED_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) else ""))
+
     # ── B · маршруты воркера покрывают все хосты реестра ──
     wr = ROOT / "apps" / "web" / "wrangler.toml"
     if wr.exists():
@@ -545,6 +550,9 @@ def check_n087():
         for host in need:
             if not re.search(r'pattern\s*=\s*"%s"' % re.escape(host), conf):
                 bad.append(("wrangler.toml", "хост «%s» из реестра не привязан маршрутом" % host))
+        for host in retired:
+            if re.search(r'pattern\s*=\s*"%s"' % re.escape(host), conf):
+                bad.append(("wrangler.toml", "снятый хост «%s» снова привязан маршрутом" % host))
     return bad
 
 

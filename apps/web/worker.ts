@@ -12,7 +12,7 @@ import { darshanApi, DARSHAN_RE, NON_DARSHAN_RE } from "./src/darshan/server";
  * Archive, ссылка подтверждения — в почту. И `bookPageUrl` вёл на `/books/<слаг>`,
  * хотя книга по ЗКН-Н023b живёт В КОРНЕ (`/brahma-samhita`). Ссылка была МЁРТВАЯ —
  * ровно та поломка, ради которой Н020 и написан: адрес переехал, писатель остался. */
-import { ROUTES, url, SITE_HOST, MAIL_HOST, API_ORIGIN, REDIRECT_HOSTS } from "./src/routes";
+import { ROUTES, url, SITE_HOST, MAIL_HOST, API_ORIGIN, isServiceHost } from "./src/routes";
 import { readingApi } from "./src/reading/server";
 import { downloaderApi } from "./src/downloader/server";
 import { storiesSyncApi } from "./src/stories/server";
@@ -1984,14 +1984,15 @@ export default {
     }
 
     // ── Каноничный адрес (ЗКН-Н087) ──────────────────────────────────────────
-    // Канонический хост и список прежних доменов живут в реестре (src/routes.ts).
-    // Все они привязаны к воркеру как custom_domain, поэтому воркер исполняется на
-    // каждом и приводит вход к единому origin, сохраняя путь и query:
-    //   www.<канон>/*, <прежний домен>/*, www.<прежний>/*  → https://<канон>/*  (301)
-    //   http://<любой хост>/*                              → https://<канон>/*  (301)
-    // Служебный хост workers.dev НЕ редиректится: на нём деплой мгновенно проверяет
-    // свежесть бандла (шаг 16), 301 сорвал бы проверку.
-    if (REDIRECT_HOSTS.includes(url.hostname) || url.protocol === "http:") {
+    // Приложение живёт РОВНО на одном хосте — SITE_HOST из реестра. Любой другой
+    // хост, на котором воркер вдруг исполнился, уводится на канонический 301-м,
+    // сохраняя путь и query. Правило СПИСОЧНОЕ было хрупким: снимаешь домен с
+    // проекта, а `custom_domain` в Cloudflare остаётся привязанным — и снятый
+    // хост начинает отдавать ВТОРУЮ живую копию приложения вместо редиректа.
+    // Теперь по умолчанию редиректится всё, что не канон. Исключение одно:
+    // служебный workers.dev, на котором деплой мгновенно проверяет свежесть
+    // бандла (шаг 16) — 301 сорвал бы проверку.
+    if ((url.hostname !== SITE_HOST && !isServiceHost(url.hostname)) || url.protocol === "http:") {
       url.hostname = SITE_HOST;
       url.protocol = "https:";
       url.port = "";
