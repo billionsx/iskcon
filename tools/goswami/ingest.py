@@ -54,7 +54,7 @@ SOURCE_HOME = os.getenv("SOURCE_HOME") or "https://goswami.ru/"
 BUDGET = float(os.getenv("BUDGET_MIN") or 300) * 60
 DL_PARALLEL = int(os.getenv("DL_PARALLEL") or 12)
 IA_PARALLEL = int(os.getenv("IA_PARALLEL") or 6)
-META_PARALLEL = int(os.getenv("META_PARALLEL") or 24)
+META_PARALLEL = int(os.getenv("META_PARALLEL") or 8)
 WORK = Path(os.getenv("WORK") or "/tmp/goswami")
 ONLY_ALBUM = (os.getenv("ONLY_ALBUM") or "").strip()
 LIMIT = int(os.getenv("LIMIT") or 0)
@@ -124,35 +124,34 @@ def d1_batch(sql_head: str, cols: int, rows: list, tail: str = ""):
 
 
 # ─────────────────────── archive.org ────────────────────────
-def ia_files(identifier: str) -> dict:
+def ia_files(identifier: str):
     """Что РЕАЛЬНО лежит в элементе: имя → длина в секундах. Истина — архив (ЗКН-Ф021).
 
-    Таймаут короткий намеренно. Metadata-API под напором отвечает не отказом, а
-    молчанием: запрос висит до таймаута, повтор висит снова. С 45 с и повтором
-    одна упрямая позиция крала полторы минуты, а весь прогон при этом выглядел
-    живым и не делал ничего. Лучше быстро признать «не знаю».
+    Возвращает `None`, если УЗНАТЬ НЕ УДАЛОСЬ, и `{}`, если элемента нет или он
+    пуст. Разница принципиальна. Раньше оба случая давали `{}`, и «я не смог
+    проверить» читалось как «там ничего нет»: сверка отрапортовала 0 залитых при
+    136 подтверждённых, а прогон собрался везти их заново. На суточной работе
+    такая подмена уничтожает идемпотентность — любой перезапуск начинает с нуля.
     """
     url = f"https://archive.org/metadata/{identifier}"
-    data = None
-    for attempt in range(2):
+    for attempt in range(3):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=15, context=CTX) as r:
+            with urllib.request.urlopen(req, timeout=25, context=CTX) as r:
                 data = json.loads(r.read())
             break
         except urllib.error.HTTPError as e:
             if e.code == 404:
-                return {}
-            if attempt == 1:
-                print("::warning::archive.org %s: %s" % (e.code, identifier))
-                return {}
-            time.sleep(1)
-        except Exception as e:                        # noqa: BLE001
-            if attempt == 1:
-                return {}
-            time.sleep(1)
-    if not data:
-        return {}
+                return {}                              # элемента нет — это ЗНАНИЕ
+            if attempt == 2:
+                return None                            # не смогли — это НЕЗНАНИЕ
+            time.sleep(2 * (attempt + 1))
+        except Exception:                              # noqa: BLE001
+            if attempt == 2:
+                return None
+            time.sleep(2 * (attempt + 1))
+    else:
+        return None
     out = {}
     for f in data.get("files") or []:
         if f.get("source") != "original":
@@ -167,18 +166,41 @@ def ia_files(identifier: str) -> dict:
     return out
 
 
+def d1_known(speaker: str) -> dict:
+    """Что мы САМИ считаем залитым, по нашей базе: цикл → {имя файла: длительность}.
+
+    Запасная опора на случай, когда archive.org не отвечает. Она слабее архива и
+    первой не спрашивается, но она несравнимо лучше, чем принять молчание сети
+    за пустой архив и повезти двести гигабайт по второму разу.
+    """
+    out = {}
+    try:
+        rows = d1("SELECT b.id AS aid, t.file, t.duration FROM katha_tracks t "
+                  "JOIN katha_albums b ON b.id = t.album_id WHERE t.speaker_slug = ?1",
+                  [speaker])
+    except Exception as e:                             # noqa: BLE001
+        print("::warning::опора на базу недоступна: %s" % str(e)[:120])
+        return out
+    for r in rows:
+        out.setdefault(r["aid"], {})[r["file"]] = int(r["duration"] or 0)
+    return out
+
+
 def ia_survey(albums: list) -> dict:
     """Сверка ПАРАЛЛЕЛЬНАЯ и ОГРАНИЧЕННАЯ ПО ВРЕМЕНИ.
 
     Сверять надо (ЗКН-Ф021: истина — архив, а не наш журнал), но сверка не смеет
-    съесть прогон. Поэтому у неё есть срок: не уложилась — идём заливать с тем,
-    что успели узнать. Худшее следствие — повторная заливка нескольких файлов
-    поверх таких же; это трата, а не порча.
+    съесть прогон. Не уложились — идём дальше, пометив неопрошенное как
+    НЕИЗВЕСТНОЕ (`None`), а не как пустое.
+
+    Потоков немного намеренно: под напором metadata-API не отказывает, а молчит,
+    и два десятка потоков делают молчание массовым.
     """
     have = {}
     t0 = time.time()
-    deadline = float(os.getenv("SURVEY_MIN") or 6) * 60
+    deadline = float(os.getenv("SURVEY_MIN") or 8) * 60
     total = len(albums)
+    unknown = 0
     with ThreadPoolExecutor(max_workers=META_PARALLEL) as pool:
         futs = {pool.submit(ia_files, al["identifier"]): al["identifier"] for al in albums}
         done = 0
@@ -186,23 +208,26 @@ def ia_survey(albums: list) -> dict:
             ident = futs[f]
             try:
                 have[ident] = f.result()
-            except Exception:                         # noqa: BLE001
-                have[ident] = {}
+            except Exception:                          # noqa: BLE001
+                have[ident] = None
+            if have[ident] is None:
+                unknown += 1
             done += 1
             if done % 25 == 0 or done == total:
                 el = time.time() - t0
-                print("  … сверено %d/%d (%.0f c)" % (done, total, el), flush=True)
-                beat("сверка", done=done, total=total, sec=round(el))
+                print("  … сверено %d/%d (не узнали %d, %.0f c)" % (done, total, unknown, el), flush=True)
+                beat("сверка", done=done, total=total, unknown=unknown, sec=round(el))
             if time.time() - t0 > deadline:
                 left = [futs[x] for x in futs if not x.done()]
-                print("::warning::сверка не уложилась в срок: %d из %d, остальные считаем неизвестными"
-                      % (done, total), flush=True)
-                beat("сверка оборвана", done=done, total=total, sec=round(time.time() - t0))
+                print("::warning::сверка не уложилась в срок: %d из %d" % (done, total), flush=True)
                 for i in left:
-                    have.setdefault(i, {})
+                    have.setdefault(i, None)
                 for x in futs:
                     x.cancel()
                 break
+    if unknown:
+        print("::warning::archive.org не ответил по %d циклам — для них опора на нашу базу" % unknown,
+              flush=True)
     return have
 
 
@@ -309,13 +334,25 @@ async def main_run() -> int:
         scope = cut
     print("сверка с архивом: %d из %d циклов…" % (len(scope), len(albums)), flush=True)
     have = ia_survey(scope)
-    already = sum(len(v) for v in have.values())
+
+    # «Не узнали» ≠ «пусто». Там, где archive.org промолчал, опираемся на нашу
+    # базу — она знает, что мы уже возили. Иначе одно молчание сети стоит
+    # повторной перевозки сотен гигабайт.
+    mine = d1_known(p["speaker"])
+    unknown = [i for i, v in have.items() if v is None]
+    if unknown:
+        by_ident = {a["identifier"]: a["id"] for a in albums}
+        for ident in unknown:
+            have[ident] = dict(mine.get(by_ident.get(ident, ""), {}))
+        print("::notice::по %d циклам ответа архива нет — взято из базы (%d дорожек)"
+              % (len(unknown), sum(len(have[i]) for i in unknown)), flush=True)
+    already = sum(len(v or {}) for v in have.values())
 
     todo = []
     for al in albums:
         if ONLY_ALBUM and al["id"] != ONLY_ALBUM:
             continue
-        got = have.get(al["identifier"], {})
+        got = have.get(al["identifier"]) or {}
         for t in al["tracks"]:
             if t["file"] in got:
                 continue
@@ -334,7 +371,7 @@ async def main_run() -> int:
     # то, что уже лежит в архиве, но ещё не в базе — регистрируем сразу
     known = []
     for al in albums:
-        got = have.get(al["identifier"], {})
+        got = have.get(al["identifier"]) or {}
         for t in al["tracks"]:
             sec = got.get(t["file"])
             if sec is not None:
