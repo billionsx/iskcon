@@ -28,6 +28,7 @@
  *                        витрина без описания оставляет гостя в догадках.
  */
 import { useRef, type ReactNode } from "react";
+import { SearchField } from "./ios";
 
 export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
   /** Надпись золотом — КОНТЕКСТ раздела. Не повторяет вкладку. */
@@ -115,28 +116,20 @@ export function HubSearch({ value, onChange, placeholder, ariaLabel, onSubmit }:
   /** Enter → открыть первый результат. Нет результата — ничего не делаем. */
   onSubmit?: () => void;
 }) {
-  const ref = useRef<HTMLInputElement>(null);
+  const ref = useRef<HTMLInputElement | null>(null);
   return (
-    <div role="search" style={{ position: "relative", marginTop: 14 }}>
-      <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
-        <svg width="18" height="18" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-      </span>
-      <input ref={ref} value={value} onChange={(e) => onChange(e.target.value)}
+    /* ЗКН-Д019 — ЭТАЛОН APP STORE, ОДНА РЕАЛИЗАЦИЯ НА ПРИЛОЖЕНИЕ.
+       Здесь стояла своя обведённая коробочка radius 14 — язык веб-формы.
+       Замер iOS 26.5: капсула 38, заливка карточки, без обводки, тень. */
+    <div role="search" style={{ marginTop: 14 }}>
+      <SearchField
+        value={value} onChange={onChange} placeholder={placeholder}
+        inputRef={(el) => { ref.current = el; }}
+        onClear={() => { onChange(""); ref.current?.focus(); }}
         onKeyDown={(e) => {
           if (e.key === "Escape") onChange("");
           else if (e.key === "Enter") { e.currentTarget.blur(); onSubmit?.(); }
-        }}
-        placeholder={placeholder} inputMode="search" enterKeyHint="search"
-        autoComplete="off" autoCorrect="off" spellCheck={false} aria-label={ariaLabel ?? placeholder}
-        style={{ width: "100%", boxSizing: "border-box", padding: "12px 40px", borderRadius: 14, border: "0.5px solid var(--color-hairline)",
-          background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
-      {value && (
-        <button type="button" aria-label="Очистить" onClick={() => { onChange(""); ref.current?.focus(); }}
-          style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
-            background: "var(--color-fill-1)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
-          <svg width="13" height="13" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
-        </button>
-      )}
+        }} />
     </div>
   );
 }

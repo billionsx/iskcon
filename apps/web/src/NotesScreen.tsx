@@ -11,6 +11,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { createNote, deleteNote, noteTitle, notePreview, togglePin, useNotes, type Note, type NoteAttach } from "./notes";
+import { SearchField } from "./ui/ios";
 
 const INK = "#1f2024";
 const INK2 = "#70727b";
@@ -162,14 +163,8 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
       ) : (
         <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
           <div style={{ padding: "12px 16px 8px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, height: 38, padding: "0 12px", borderRadius: 11, background: "rgba(120,120,128,0.12)" }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: INK3, flexShrink: 0 }}><circle {...STROKE} cx="11" cy="11" r="7" /><path {...STROKE} d="m20 20-3.2-3.2" /></svg>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск в заметках" inputMode="search"
-                style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: INK }} />
-              {q && <button type="button" aria-label="Очистить" onClick={() => setQ("")} style={{ border: "none", background: "none", color: INK3, cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
-              </button>}
-            </div>
+            {/* ЗКН-Д019 — строка поиска = эталон App Store (ui/ios.tsx) */}
+            <SearchField value={q} onChange={setQ} placeholder="Поиск в заметках" onClear={() => setQ("")} />
           </div>
 
           <div style={{ padding: "4px 16px calc(96px + env(safe-area-inset-bottom,0px))" }}>

@@ -1303,7 +1303,7 @@ const RESERVED: readonly string[] = [
   };
 
   /** Оверлеи ПРИЛОЖЕНИЯ: ложатся поверх ЛЮБОГО экрана, основу не трогают. */
-  const APP_OVERLAY = new Set(["search", "favorites", "notes", "note", "cart", "donate"]);
+  const APP_OVERLAY = new Set(["search", "favorites", "notes", "note", "cart", "donate", "downloader"]);
 
   function applyPath(path: string) {
     fromPop.current = true;

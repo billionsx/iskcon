@@ -10,6 +10,7 @@ import { centersClient, CENTER_TYPE_LABEL, type CenterListItem, type CenterType 
 import { CenterHeroCard, centerMapsHref } from "./CenterHeroCard";
 import CentersMap from "./CentersMap";
 import { requestNote } from "../notes";
+import { SearchField } from "../ui/ios";
 
 const GOLD = "var(--color-gold)";
 const L1 = "var(--color-label)";
@@ -127,14 +128,8 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
         <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "0 0 calc(40px + env(safe-area-inset-bottom,0px))" }}>
           {/* поиск */}
           <div style={{ padding: "12px 16px 8px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, height: 40, padding: "0 12px", borderRadius: 12, background: "rgba(120,120,128,0.12)" }}>
-              <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden style={{ color: L3, flexShrink: 0 }}><circle {...STROKE} cx="11" cy="11" r="7" /><path {...STROKE} d="m20 20-3.2-3.2" /></svg>
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Город, страна, название" inputMode="search"
-                style={{ flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: FT, fontSize: "var(--text-subhead)", color: L1 }} />
-              {q && <button type="button" aria-label="Очистить" onClick={() => setQ("")} style={{ border: "none", background: "none", color: L3, cursor: "pointer", padding: 2, display: "grid", placeItems: "center" }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><circle cx="12" cy="12" r="9" fill="rgba(120,120,128,0.45)" /><path d="M9 9l6 6M15 9l-6 6" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" /></svg>
-              </button>}
-            </div>
+            {/* ЗКН-Д019 — строка поиска = эталон App Store (ui/ios.tsx) */}
+            <SearchField value={q} onChange={setQ} placeholder="Город, страна, название" onClear={() => setQ("")} />
           </div>
 
           {/* типы */}

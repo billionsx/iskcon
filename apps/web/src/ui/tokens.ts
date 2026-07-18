@@ -63,7 +63,28 @@ export const tk = {
     lg: 'var(--radius-lg)', //   18
     glass: 'var(--radius-glass)', // 20
     xl: 'var(--radius-xl)', //   22
+    /** ЗКН-Д018 — карточка сгруппированного экрана iOS 26.5 (замер: 24). */
+    card: 'var(--radius-card)', // 24
+    /** ЗКН-Д018 — крупная медиа-карточка App Store (замер: 20). */
+    hero: 'var(--radius-hero)', // 20
     pill: 'var(--radius-pill)', // 999
+  },
+  /**
+   * ЗКН-Д018 · СГРУППИРОВАННЫЙ ЭКРАН iOS 26.5.
+   * Геометрия снята пиксельно со скриншотов App Store / Settings / Fitness
+   * (см. шапку globals.css). Компоненты берут отсюда, а не выдумывают.
+   */
+  group: {
+    canvas: 'var(--color-canvas)', //   холст группы   #F2F2F6 / #1C1C1E
+    card: 'var(--color-card)', //       карточка       #FFFFFF / #2C2C2E
+    separator: 'var(--color-separator)', // разделитель #E7E7E8 / #404043, 1px
+    rowH: 'var(--row-h)', //            48
+    rowH2: 'var(--row-h-2)', //         60
+    insetCard: 'var(--inset-card)', //  16
+    insetRow: 'var(--inset-row)', //    16
+    gap: 'var(--gap-group)', //         35
+    tile: 'var(--icon-tile)', //        29
+    circle: 'var(--control-circle)', // 44
   },
   /** Цвета. */
   color: {

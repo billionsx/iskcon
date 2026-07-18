@@ -18,6 +18,7 @@ import { useCatalog, catalogNow } from "./bookCatalog";
 import { searchBooks } from "./bookSearch";
 import { loadCityDocs, searchStatic, type StaticHit, type CityDoc, type LocCity } from "./searchStatic";
 import type { PlaceItem } from "./placesShared";
+import { SearchField } from "./ui/ios";
 
 type Person = { id: string; type: string | null; name_ru: string | null; name_iast: string | null };
 type Verse = { book: string; ref: string; work?: string; snippet: string; href: string };
@@ -365,16 +366,25 @@ export default function SearchScreen({ onBack, onOpenEntity, onOpenBook, onNavig
 
   return (
     <div style={{ minHeight: "100%", background: "var(--color-bg)", color: "var(--color-label)" }}>
-      <div style={{ position: "sticky", top: 0, zIndex: 11, display: "flex", alignItems: "center", gap: 8, height: 56, padding: "0 10px",
+      {/* ЗКН-Д019 — СТРОКА ПОИСКА = ЭТАЛОН APP STORE.
+          Замер по скриншоту iOS 26.5: капсула, высота 38, врезка 20 от края,
+          заливка цвета карточки, БЕЗ обводки — читается мягкой тенью; лупа
+          слева, крестик очистки справа. Прежняя обведённая «коробочка» radius 12
+          — язык веб-формы, а не iOS. */}
+      <div style={{ position: "sticky", top: 0, zIndex: 11, display: "flex", alignItems: "center", gap: 8,
+        padding: "9px var(--search-inset) 11px 10px",
         background: "color-mix(in srgb, var(--color-bg) 90%, transparent)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
         borderBottom: present.length >= 2 ? "none" : "0.5px solid var(--color-hairline)" }}>
         <button type="button" aria-label="Назад" onClick={onBack}
           style={{ flexShrink: 0, display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: "var(--color-label)", cursor: "pointer" }}>
           <BackIcon size={22} />
         </button>
-        <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder="Поиск по всему приложению…" inputMode="search"
-          style={{ flex: 1, minWidth: 0, boxSizing: "border-box", padding: "11px 14px", borderRadius: 12, border: "0.5px solid var(--color-hairline)",
-            background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none" }} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <SearchField value={q} onChange={setQ} onKeyDown={onKey} autoFocus
+            inputRef={(el) => { inputRef.current = el; }}
+            onClear={() => { setQ(""); setActive(-1); inputRef.current?.focus(); }}
+            placeholder="Поиск по всему приложению" />
+        </div>
       </div>
 
       {searching && present.length >= 2 && (

@@ -34,6 +34,34 @@
   `overflow:hidden`. Выбор обязателен: `plain` (чистая поверхность) | `dark`
   (поверх медиа). Именно этого механизма не хватало — закон про глифы был, а
   гейт ловил только контейнеры, поэтому голые кнопки просочились в ленту.
+
+ПРАВИЛО 5 — обводка вокруг карточки группы (ЗКН-Д018). Замер по iOS 26.5:
+  карточка сгруппированного экрана — БЕЛОЕ НА СЕРОМ, без единой линии по
+  периметру. Обводка превращает группу в «таблицу» и читается как дешёвая
+  копия системного экрана. Стиль с `background: var(--color-card)` и ключом
+  `border:` — нарушение.
+
+ПРАВИЛО 6 — сгруппированный экран собирается из общих кирпичей (ЗКН-Д018).
+  Экраны кабинета и практики обязаны брать строку/группу/лист из `ui/ios.tsx`,
+  где числа сняты со скриншотов Apple. Свой велосипед строки = свой радиус,
+  свой разделитель 0.5px и свои отступы «на глаз» — ровно то, из-за чего
+  кабинет выглядел дёшево.
+
+ПРАВИЛО 7 — строка поиска одна на приложение (ЗКН-Д019). Эталон — App Store:
+  капсула 38, врезка 20, заливка карточки, БЕЗ обводки, читается тенью.
+  Реализация ровно одна — `<SearchField>` в `ui/ios.tsx`; собственный
+  `<input inputMode="search">` где-либо ещё запрещён.
+
+ПРАВИЛО 8 — токены сгруппированного экрана существуют (ЗКН-Д018). В
+  `globals.css` обязаны быть `--color-canvas` · `--color-card` ·
+  `--color-separator` · `--radius-card` · `--row-h` · `--gap-group`, причём
+  цвета — и в тёмной, и в светлой теме. Молча удалить замер нельзя.
+
+ПРАВИЛО 9 — в кабинете живёт только кабинет (ЗКН-Н088). Практика, прогресс и
+  достижения переехали в «Практику» решением основателя 18.07.2026. Гейт держит
+  РАЗДЕЛЕНИЕ, а не намерение: адреса практики (`/japa` · `/story` · `/promise` ·
+  `/progress` · `/verse`) запрещены в `AccountScreen.tsx` и обязаны быть в
+  `PracticeHub.tsx`. Иначе свалка вернётся тихо, строчка за строчкой.
 """
 import re
 import sys
@@ -52,6 +80,22 @@ FLAT_SCRIM = re.compile(r"background:\s*[\"'`]rgba\(0,\s*0,\s*0,")
 AUDIO_TAG = re.compile(r"<audio[\s>]")
 AUDIO_OK = {"AudioShowcaseCard.tsx", "store.tsx"}
 ACTION_BTN = re.compile(r"<(CardActionBtns|RoundBtn)\b")
+
+# ── ЗКН-Д018 · сгруппированный экран iOS 26.5 ──────────────────────────────
+CARD_FILL = re.compile(r"background:\s*[\"'`]var\(--color-card\)")
+BORDER_KEY = re.compile(r"\bborder:\s*[\"'`0-9]")
+# Экраны, обязанные собираться из ui/ios.tsx (кирпичи с замеренной геометрией).
+GROUPED_SCREENS = ("AccountScreen.tsx", "PracticeHub.tsx")
+IOS_IMPORT = re.compile(r"from\s+[\"'`]\./ui/ios[\"'`]")
+# ЗКН-Д019 — единственная реализация строки поиска.
+SEARCH_INPUT = re.compile(r"inputMode=[\"'`]search[\"'`]")
+SEARCH_OK = {"ios.tsx"}
+# ЗКН-Д018 — токены замера. Пропажа = возврат к «на глаз».
+GROUP_TOKENS = ("--color-canvas", "--color-card", "--color-separator",
+                "--radius-card", "--row-h", "--gap-group")
+GROUP_TOKENS_LIGHT = ("--color-canvas", "--color-card", "--color-separator")
+# ЗКН-Н088 — адреса практики: их место в «Практике», а не в кабинете.
+PRACTICE_PATHS = ("/japa", "/story", "/promise", "/progress", "/verse")
 
 
 def blank_block_comments(text: str) -> str:
@@ -101,12 +145,82 @@ def style_objects(text: str):
     return out
 
 
-def main() -> int:
+def check_grouped_screen() -> list[str]:
+    """ЗКН-Д018 · ЗКН-Д019 · ЗКН-Н088 — сгруппированный экран iOS 26.5.
+
+    Три беды одной природы: экран собирают «на глаз», строку поиска рисуют
+    заново в каждом месте, а в кабинет сползает всё подряд. Гейт держит замер,
+    единственную реализацию и разделение разделов.
+    """
     bad: list[str] = []
+
+    # ПРАВИЛО 8 — токены замера на месте (и в тёмной, и в светлой теме).
+    css = SRC / "ui" / "globals.css"
+    if css.exists():
+        t = css.read_text(encoding="utf-8")
+        for tok in GROUP_TOKENS:
+            if f"{tok}:" not in t:
+                bad.append(f"apps/web/src/ui/globals.css — ЗКН-Д018: пропал токен "
+                           f"{tok}. Геометрия сгруппированного экрана снята со "
+                           f"скриншотов iOS 26.5 и живёт в токенах, а не в головах")
+        light = t.split(":root[data-theme='light']", 1)
+        if len(light) > 1:
+            for tok in GROUP_TOKENS_LIGHT:
+                if f"{tok}:" not in light[1]:
+                    bad.append(f"apps/web/src/ui/globals.css — ЗКН-Д018: у светлой темы "
+                               f"нет {tok}. Холст и карточка обязаны быть замерены "
+                               f"в ОБЕИХ темах, иначе светлая уедет на дефолт тёмной")
+        else:
+            bad.append("apps/web/src/ui/globals.css — ЗКН-Д018: нет блока светлой темы")
+    else:
+        bad.append("apps/web/src/ui/globals.css — ЗКН-Д018: файл токенов исчез")
+
+    # ПРАВИЛО 6 — экраны кабинета/практики собираются из ui/ios.tsx.
+    for name in GROUPED_SCREENS:
+        p = SRC / name
+        if not p.exists():
+            bad.append(f"apps/web/src/{name} — ЗКН-Д018: экран исчез")
+            continue
+        t = p.read_text(encoding="utf-8")
+        if not IOS_IMPORT.search(t):
+            bad.append(f"apps/web/src/{name} — ЗКН-Д018: экран не берёт кирпичи из "
+                       f"./ui/ios. Своя строка списка = свой радиус, свой "
+                       f"разделитель и свои отступы «на глаз»")
+
+    # ПРАВИЛО 9 — в кабинете живёт только кабинет.
+    acc = SRC / "AccountScreen.tsx"
+    prac = SRC / "PracticeHub.tsx"
+    if acc.exists():
+        t = blank_block_comments(acc.read_text(encoding="utf-8"))
+        for path in PRACTICE_PATHS:
+            if f'"{path}"' in t:
+                bad.append(f"apps/web/src/AccountScreen.tsx — ЗКН-Н088: в кабинете "
+                           f"адрес практики «{path}». Практика, прогресс и достижения "
+                           f"живут в «Практике» (PracticeHub), кабинет — про аккаунт")
+    if prac.exists():
+        t = prac.read_text(encoding="utf-8")
+        missing = [p for p in PRACTICE_PATHS if f'"{p}"' not in t]
+        if missing:
+            bad.append(f"apps/web/src/PracticeHub.tsx — ЗКН-Н088: практика потеряла "
+                       f"{', '.join(missing)}. Разделы не исчезают при переезде — "
+                       f"они меняют место")
+    return bad
+
+
+def main() -> int:
+    bad: list[str] = check_grouped_screen()
     for f in sorted(SRC.rglob("*.tsx")):
         text = f.read_text(encoding="utf-8")
         rel = f.relative_to(SRC.parents[2])
         has_fallback = bool(FALLBACK_COVER.search(text))
+
+        # ПРАВИЛО 7 — строка поиска ровно одна (ЗКН-Д019, эталон App Store)
+        if f.name not in SEARCH_OK and SEARCH_INPUT.search(text):
+            line = text.count("\n", 0, SEARCH_INPUT.search(text).start()) + 1
+            bad.append(
+                f"{rel}:{line} — ЗКН-Д019: своя строка поиска. Эталон App Store "
+                f"живёт один раз — <SearchField> в ui/ios.tsx (капсула 38, врезка 20, "
+                f"без обводки, читается тенью)")
 
         # ПРАВИЛО 3 — второй плеер
         if AUDIO_TAG.search(text) and f.name not in AUDIO_OK:
@@ -130,6 +244,13 @@ def main() -> int:
                     f"поверх медиа — dark. Голый вариант запрещён")
 
         for tag, attrs, body, line in style_objects(text):
+            # ПРАВИЛО 5 — обводка вокруг карточки группы (ЗКН-Д018).
+            # Замер iOS 26.5: карточка — белое на сером, БЕЗ линии по периметру.
+            if CARD_FILL.search(body) and BORDER_KEY.search(body):
+                bad.append(
+                    f"{rel}:{line} — ЗКН-Д018: обводка вокруг карточки группы. "
+                    f"Слой создаёт белое на сером (--color-card на --color-canvas); "
+                    f"линия по периметру превращает группу в таблицу")
             # ПРАВИЛО 1 — серая плашка вместо поверхности
             if tag in CONTAINER_TAGS and GREY_FILL.search(body) and PADDING.search(body):
                 r = RADIUS.search(body)
@@ -153,7 +274,7 @@ def main() -> int:
             print("  ✗ " + b)
         print(f"\nВсего: {len(bad)}")
         return 1
-    print("Гейт поверхности (ЗКН-Д014 · Д005 · Д015 · голые ♥/⋯): чисто.")
+    print("Гейт поверхности (ЗКН-Д014 · Д005 · Д015 · Д018 · Д019 · Н088): чисто.")
     return 0
 
 

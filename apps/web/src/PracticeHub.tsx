@@ -1,107 +1,294 @@
 /**
- * PracticeHub — подтаб «Садхана» на Главной: хаб ежедневной практики преданного.
- * Пока заглушка: разделы перечислены карточками с бейджем «Скоро» — это каркас,
- * по которому будут собраны джапа, дневник, стих/даршан дня, новости,
- * изучение и путь. Дизайн повторяет язык Главной (золото + мягкая заливка без
- * обводок). Объём зафиксирован в docs/DECISIONS.md; разделы соответствуют
- * docs/PRODUCT_ARCHITECTURE.md и вехам docs/ROADMAP_MILESTONES.md.
+ * ПРАКТИКА — подтаб «Практика» зала Садханы.
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * ЗКН-Н088 — ПРАКТИКА, ПРОГРЕСС И ДОСТИЖЕНИЯ ЖИВУТ ЗДЕСЬ, А НЕ В КАБИНЕТЕ.
+ *
+ * Раньше здесь стоял каркас с бейджами «Скоро», а живая практика (круги, обет,
+ * дневник, статистика, «продолжить чтение», «вы слушали», библиотека) лежала
+ * в личном кабинете — то есть в разделе про НАСТРОЙКИ АККАУНТА. Кабинет
+ * отвечал сразу на пять вопросов, а «Практика» — ни на один.
+ *
+ * Теперь порядок повторяет день преданного:
+ *   СЕГОДНЯ  — круги · стих дня · обет (одно действие в этот день)
+ *   ПРАКТИКА — джапа · дневник
+ *   ПРОГРЕСС — накопленное: четыре числа + «мой прогресс»
+ *   ЧТЕНИЕ И СЛУШАНИЕ — продолжить · вы слушали · моя библиотека
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * Язык интерфейса — ЗКН-Д018 (сгруппированный экран iOS 26.5, `ui/ios.tsx`):
+ * холст группы, карточка радиусом 24 без обводки, строка 48, разделитель 1px,
+ * воздух 35. Ни одного числа «на глаз».
  */
+import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { useAuth } from "./account/store";
+import { accountClient, type Overview, type ReadingItem, type ListenItem, type SadhanaState } from "./account/api";
+import { usePlayer } from "./player/store";
+import { BOOKS, bookFullTitle, bookSlug } from "./books";
+import { albumById } from "./kirtans";
+import { plural } from "./ui/primitives";   // ЗКН-Д002: одна функция, не копия
+import { GroupedCanvas, Groups, Group, GroupHeader, Row, Chevron } from "./ui/ios";
+
 const GOLD = "var(--color-gold)";
-const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
+const INK = "var(--color-label)";
+const INK2 = "var(--color-label-2)";
+const INK3 = "var(--color-label-3)";
+const FONT = "var(--font-text)";
 
-type Glyph = React.ReactNode;
-const I = (d: React.ReactNode): Glyph => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>{d}</svg>
-);
-const ICON = {
-  verse: I(<><path d="M7 7h10M7 12h10M7 17h6" /></>),
-  darshan: I(<><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z" /><circle cx="12" cy="12" r="2.5" /></>),
-  japa: I(<><circle cx="12" cy="5" r="1.9" /><circle cx="18" cy="9" r="1.9" /><circle cx="6" cy="9" r="1.9" /><circle cx="16" cy="16" r="1.9" /><circle cx="8" cy="16" r="1.9" /></>),
-  diary: I(<><path d="M5 4h11l3 3v13H5z" /><path d="M9 12l2 2 4-4" /></>),
-  moon: I(<><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" /></>),
-  bowl: I(<><path d="M3 11h18a8 8 0 0 1-16 0z" /><path d="M8.5 7.5c0-1.6 1-2.4 1-3.6M12.5 7.5c0-1.6 1-2.4 1-3.6" /></>),
-  news: I(<><path d="M4 5h13v14H4z" /><path d="M17 8h3v9a2 2 0 0 1-2 2M7 9h7M7 13h7M7 17h4" /></>),
-  progress: I(<><path d="M5 19V9M12 19V5M19 19v-7" /></>),
-  bookmark: I(<><path d="M7 4h10v16l-5-3-5 3z" /></>),
-  path: I(<><circle cx="6" cy="18" r="1.6" /><circle cx="18" cy="6" r="1.6" /><path d="M7.5 16.5l9-9" strokeDasharray="2 2.4" /></>),
-  pin: I(<><path d="M12 21s7-6.3 7-11a7 7 0 0 0-14 0c0 4.7 7 11 7 11z" /><circle cx="12" cy="10" r="2.4" /></>),
-};
-const ChevR = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden style={{ flexShrink: 0, color: "var(--color-label-3)" }}><path d="M9 5l7 7-7 7" /></svg>;
+/* ─────────────────────────── утилиты ─────────────────────────── */
 
-interface Row { icon: Glyph; t: string; d: string; pri?: boolean; to?: string; go?: () => void }
-interface Group { group: string; items: Row[] }
+function ymdLocal(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function fmtMinShort(min: number): string {
+  const m = Math.max(0, Math.round(min));
+  if (m < 60) return `${m} мин`;
+  const h = Math.floor(m / 60); const r = m % 60;
+  return r ? `${h} ч ${r} мин` : `${h} ч`;
+}
+function bookMeta(work: string): { title: string; cover: string | null } {
+  const b = BOOKS[work];
+  if (b) return { title: bookFullTitle(b), cover: b.covers?.[0] ?? null };
+  return { title: work.toUpperCase(), cover: null };
+}
 
-const GROUPS: Group[] = [
-  { group: "Каждый день", items: [
-    { icon: ICON.verse, t: "Стих дня", d: "Системное чтение Прабхупады — стих за стихом, БГ → ШБ → ЧЧ", pri: true, to: "/verse" },
-  ] },
-  { group: "Моя практика", items: [
-    { icon: ICON.japa, t: "Счётчик джапы", d: "108 бусин, цель в кругах, Маха-мантра и аналитика", pri: true, to: "/japa" },
-    { icon: ICON.diary, t: "Дневник садханы", d: "Круги, чтение, подъём — стрики и статистика", pri: true, to: "/story" },
-    // ЗКН-Н007: Экадаши убраны из «Моей практики» — они живут в Календаре.
-  ] },
-  // ЗКН-Н007: прасад убран из «Практики» → витрина «Рецепты» в Богатствах
-  { group: "Изучение", items: [
-    { icon: ICON.progress, t: "Мой прогресс", d: "Прочитано: системное чтение, книги, время и стрик", to: "/progress" },
-  ] },
-  { group: "Рост", items: [
-    { icon: ICON.path, t: "Путь преданного", d: "Ступени от шраддхи к преме, цели и достижения" },
-  ] },
-];
+function CoverBox({ src, w, h, radius = 10, label }: { src: string | null; w: number; h: number; radius?: number; label?: string }) {
+  if (src) {
+    return (
+      <img src={src} alt="" loading="lazy"
+        style={{ width: w, height: h, objectFit: "cover", borderRadius: radius, flexShrink: 0, background: "var(--color-bg-3)" }} />
+    );
+  }
+  return (
+    <div style={{ width: w, height: h, borderRadius: radius, flexShrink: 0, background: "var(--color-bg-3)", color: INK3, display: "grid", placeItems: "center", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: 0.4, textAlign: "center", padding: 4 }}>
+      {label ?? ""}
+    </div>
+  );
+}
+
+/** Горизонтальная лента: врезка равна отступу карточек — ритм не ломается. */
+function HScroll({ children }: { children: ReactNode }) {
+  return (
+    <div className="scrollbar-none" style={{
+      display: "flex", gap: 12, overflowX: "auto", WebkitOverflowScrolling: "touch",
+      padding: "0 var(--inset-card)", scrollSnapType: "x proximity",
+    }}>
+      {children}
+    </div>
+  );
+}
+
+/** Разделитель внутри карточки — тот же 1px, что у строк (ЗКН-Д018). */
+function Hair() {
+  return <div aria-hidden style={{ height: 1, background: "var(--color-separator)", marginLeft: 16, marginRight: 16 }} />;
+}
+
+/* ─────────────────────────── сегодня ─────────────────────────── */
+
+/** Круги сегодня: кольцо нормы, серия, чтение → дневник. */
+function RoundsRow({ state, onOpen }: { state: SadhanaState; onOpen: () => void }) {
+  const r = state.stats.todayRounds, g = state.goal;
+  const done = r >= g;
+  const tone = done ? "var(--color-success-text)" : GOLD;
+  const RAD = 58, CIRC = 2 * Math.PI * RAD;
+  const frac = Math.min(1, r / Math.max(1, g));
+  const read = state.todayRow.reading_min;
+  const bits: string[] = [`серия ${state.stats.currentStreak} ${plural(state.stats.currentStreak, "день", "дня", "дней")}`];
+  if (read > 0) bits.push(`чтение ${fmtMinShort(read)}`);
+  return (
+    <button type="button" onClick={onOpen} aria-label="Открыть дневник садханы" className="tap-row"
+      style={{
+        display: "flex", alignItems: "center", gap: 14, width: "100%", boxSizing: "border-box",
+        padding: "12px var(--inset-row)", background: "none", border: "none", cursor: "pointer",
+        textAlign: "left", font: "inherit", WebkitTapHighlightColor: "transparent",
+      }}>
+      <span style={{ position: "relative", flexShrink: 0, width: 56, height: 56 }}>
+        <svg viewBox="0 0 140 140" width="56" height="56" style={{ transform: "rotate(-90deg)" }} aria-hidden>
+          <circle cx="70" cy="70" r={RAD} fill="none" stroke="var(--color-fill-2)" strokeWidth="11" />
+          <circle cx="70" cy="70" r={RAD} fill="none" stroke={tone} strokeWidth="11" strokeLinecap="round"
+            strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - frac)} style={{ transition: "stroke-dashoffset .35s ease" }} />
+        </svg>
+        <span style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: 700, letterSpacing: "-0.03em", lineHeight: 1, color: INK }}>{r}</span>
+          <span style={{ fontFamily: FONT, fontSize: "var(--text-caption2)", color: INK2, marginTop: 1 }}>из {g}</span>
+        </span>
+      </span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{ display: "block", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.02em", color: done ? "var(--color-success-text)" : INK }}>
+          {done ? "Норма выполнена" : "Круги сегодня"}
+        </span>
+        <span style={{ display: "block", marginTop: 2, fontFamily: FONT, fontSize: "var(--text-footnote)", color: INK2 }}>
+          {bits.join(" · ")}
+        </span>
+      </span>
+      <Chevron />
+    </button>
+  );
+}
+
+/** Четыре числа накопленного — показываются, только когда есть что показать. */
+function StatStrip({ stats }: { stats: Overview["stats"] }) {
+  const items = [
+    { value: stats.reading, label: "Прочитано" },
+    { value: stats.listening, label: "Прослушано" },
+    { value: stats.bookmarks, label: "Сохранено" },
+    { value: stats.books, label: "Книг" },
+  ];
+  return (
+    <div style={{ display: "flex" }}>
+      {items.map((it, i) => (
+        <div key={it.label} style={{
+          flex: 1, minWidth: 0, padding: "14px 4px", textAlign: "center",
+          borderLeft: i ? "1px solid var(--color-separator)" : "none",
+        }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.03em", color: INK, lineHeight: 1.1 }}>{it.value}</div>
+          <div style={{ marginTop: 3, fontFamily: FONT, fontSize: "var(--text-caption2)", color: INK2 }}>{it.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ContinueCard({ item, onOpen }: { item: ReadingItem; onOpen: (p: string) => void }) {
+  const meta = bookMeta(item.work);
+  // ЗКН-Н060: путь книги — только через bookSlug.
+  const href = item.href || `/${bookSlug(item.work)}`;
+  return (
+    <button type="button" onClick={() => onOpen(href)}
+      style={{ flexShrink: 0, width: 116, background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, scrollSnapAlign: "start", WebkitTapHighlightColor: "transparent" }}>
+      <CoverBox src={meta.cover} w={116} h={154} radius={12} label={meta.title} />
+      <span style={{ display: "block", marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{meta.title}</span>
+      <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-caption)", color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.label || "Продолжить"}</span>
+    </button>
+  );
+}
+
+function ListenCard({ item, onPlay }: { item: ListenItem; onPlay: (it: ListenItem) => void }) {
+  return (
+    <button type="button" onClick={() => onPlay(item)}
+      style={{ flexShrink: 0, width: 132, background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, scrollSnapAlign: "start", WebkitTapHighlightColor: "transparent" }}>
+      <span style={{ position: "relative", display: "block" }}>
+        <CoverBox src={item.cover} w={132} h={132} radius={12} label={item.title || ""} />
+        <span style={{ position: "absolute", right: 8, bottom: 8, width: 32, height: 32, borderRadius: "50%", background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)", display: "grid", placeItems: "center" }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden><path fill="var(--color-brand-white)" d="M8 5v14l11-7z" /></svg>
+        </span>
+      </span>
+      <span style={{ display: "block", marginTop: 8, fontSize: "var(--text-footnote)", fontWeight: 600, color: INK, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title || "Без названия"}</span>
+      <span style={{ display: "block", marginTop: 2, fontSize: "var(--text-caption)", color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.subtitle || item.artist || ""}</span>
+    </button>
+  );
+}
+
+/* ─────────────────────────── экран ─────────────────────────── */
 
 export default function PracticeHub({ onOpen }: { onOpen?: (path: string) => void }) {
+  const { status, user } = useAuth();
+  const player = usePlayer();
+  const [ov, setOv] = useState<Overview | null>(null);
+  const [sad, setSad] = useState<SadhanaState | null>(null);
+  const authed = status === "authed";
+  const go = useCallback((p: string) => onOpen?.(p), [onOpen]);
+
+  useEffect(() => {
+    if (!authed) { setOv(null); setSad(null); return; }
+    let alive = true;
+    accountClient.overview().then((d) => { if (alive) setOv(d); }).catch(() => {});
+    accountClient.sadhana.get(ymdLocal()).then((d) => { if (alive) setSad(d); }).catch(() => {});
+    return () => { alive = false; };
+  }, [authed]);
+
+  const resumeListen = useCallback((it: ListenItem) => {
+    try {
+      if (it.source === "kirtan" && it.album && albumById(it.album)) { player.playKirtan(it.album); return; }
+      if (it.source !== "kirtan" && it.album && BOOKS[it.album]) { player.playBook({ book: it.album }); return; }
+      if (it.href) go(it.href);
+    } catch { /* воспроизведение не удалось — экран остаётся на месте */ }
+  }, [player, go]);
+
+  const stats = ov?.stats;
+  const hasStats = !!stats && !!(stats.reading || stats.listening || stats.bookmarks || stats.books);
+  const name = (user?.spiritualName || user?.name || "").trim();
+  const clamp2: CSSProperties = {
+    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+  };
+
   return (
-    <div style={{ fontFamily: "var(--font-text)" }}>
-      <div style={{ padding: "20px 0 0" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.5px", textTransform: "uppercase", color: GOLD }}>Каждый день</div>
-        <h2 style={{ margin: "5px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.022em", lineHeight: 1.1, color: "var(--color-label)" }}>Садхана</h2>
-        <p style={{ margin: "8px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.5, color: "var(--color-label-2)" }}>
-          Личное пространство ежедневной практики: стих дня, джапа, дневник и путь преданного. Здесь будет ваш ежедневный заход в храм.
-        </p>
-      </div>
+    <GroupedCanvas>
+      <Groups>
+        {/* СЕГОДНЯ — одно действие человека в этот день. */}
+        <Group header="Сегодня" action={sad ? { label: "Дневник", onClick: () => go("/story") } : undefined}>
+          {sad && <RoundsRow state={sad} onOpen={() => go("/story")} />}
+          {sad && <Hair />}
+          <Row title="Стих дня" subtitle="Системное чтение Прабхупады: БГ → ШБ → ЧЧ" onClick={() => go("/verse")} />
+          <Row title="Мой обет" subtitle="Санкальпа на срок: служения и ежедневный отчёт" last onClick={() => go("/promise")} />
+        </Group>
 
-      {GROUPS.map((g) => (
-        <section key={g.group} style={{ marginTop: 26 }}>
-          <div style={{ margin: "0 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.6px", textTransform: "uppercase", color: "var(--color-label-3)" }}>{g.group}</div>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none", overflow: "hidden", ...fill }}>
-            {g.items.map((it, i) => {
-              const activate = it.to ? () => onOpen?.(it.to!) : it.go;
-              const nav = !!activate;
-              const inner = (
-                <>
-                  <span aria-hidden style={{ flexShrink: 0, width: 36, height: 36, borderRadius: 11, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${GOLD} 14%, transparent)`, color: GOLD }}>{it.icon}</span>
-                  <span style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>{it.t}</span>
-                      {it.pri && <span title="Приоритет" aria-label="приоритет" style={{ flexShrink: 0, width: 6, height: 6, borderRadius: "50%", background: GOLD }} />}
-                    </span>
-                    <span style={{ display: "block", marginTop: 2, fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 1.45, color: "var(--color-label-2)" }}>{it.d}</span>
-                  </span>
-                  {nav
-                    ? <ChevR />
-                    : <span style={{ flexShrink: 0, padding: "2px 8px", borderRadius: 999, background: "var(--color-glass-regular)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: 700, letterSpacing: "0.4px", textTransform: "uppercase", color: "var(--color-label-3)" }}>Скоро</span>}
-                </>
-              );
-              return (
-                <li key={it.t} style={{ borderTop: i ? "0.5px solid var(--color-hairline)" : "none" }}>
-                  {nav ? (
-                    <button type="button" onClick={activate}
-                      style={{ display: "flex", alignItems: "center", gap: 13, width: "100%", padding: "14px 16px", border: "none", background: "none", cursor: "pointer", textAlign: "left", font: "inherit", WebkitTapHighlightColor: "transparent" }}>
-                      {inner}
-                    </button>
-                  ) : (
-                    <div style={{ display: "flex", alignItems: "center", gap: 13, padding: "14px 16px" }}>
-                      {inner}
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      ))}
+        {/* ПРАКТИКА — инструменты, к которым возвращаются каждый день. */}
+        <Group header="Практика">
+          <Row title="Счётчик джапы" subtitle="108 бусин, круги и Маха-мантра" onClick={() => go("/japa")} />
+          <Row title="Дневник садханы" subtitle="Круги, чтение, подъём — серии и статистика" last onClick={() => go("/story")} />
+        </Group>
 
-      <div style={{ height: 24 }} />
-    </div>
+        {/* ПРОГРЕСС — накопленное. У нового человека пусто → блока просто нет. */}
+        {hasStats && stats && (
+          <Group header="Прогресс">
+            <StatStrip stats={stats} />
+            <Hair />
+            <Row title="Мой прогресс" subtitle="Системное чтение, книги, время и серия" last onClick={() => go("/progress")} />
+          </Group>
+        )}
+
+        {ov && ov.continueReading.length > 0 && (
+          <section>
+            <GroupHeader title="Продолжить чтение" />
+            <HScroll>
+              {ov.continueReading.map((it) => (
+                <ContinueCard key={`${it.work}:${it.ref}`} item={it} onOpen={go} />
+              ))}
+            </HScroll>
+          </section>
+        )}
+
+        {ov && ov.recentListening.length > 0 && (
+          <section>
+            <GroupHeader title="Вы слушали" />
+            <HScroll>
+              {ov.recentListening.map((it) => (
+                <ListenCard key={`${it.source}:${it.ref}`} item={it} onPlay={resumeListen} />
+              ))}
+            </HScroll>
+          </section>
+        )}
+
+        {ov && ov.library.length > 0 && (
+          <section>
+            <GroupHeader title="Моя библиотека" />
+            <div style={{
+              display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(96px, 1fr))",
+              gap: 14, padding: "0 var(--inset-card)",
+            }}>
+              {ov.library.map((it) => {
+                const meta = bookMeta(it.work);
+                return (
+                  <button key={it.work} type="button" onClick={() => go(`/${bookSlug(it.work)}`)}
+                    style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontFamily: FONT, WebkitTapHighlightColor: "transparent" }}>
+                    <CoverBox src={meta.cover} w={96} h={128} radius={10} label={meta.title} />
+                    <span style={{ ...clamp2, marginTop: 6, fontSize: "var(--text-caption)", fontWeight: 500, color: INK, lineHeight: 1.3 }}>{meta.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ГОСТЮ — одно тихое приглашение, а не афиша о пустоте. */}
+        {!authed && (
+          <Group footer="Круги, дневник и прогресс чтения хранятся в аккаунте и синхронизируются между устройствами.">
+            <Row title="Войти" subtitle={name ? `Продолжить как ${name}` : "Садхана продолжится на всех устройствах"} last onClick={() => go("/id")} />
+          </Group>
+        )}
+      </Groups>
+    </GroupedCanvas>
   );
 }

@@ -22,6 +22,7 @@ import { api } from "./api";
 import { type PlaceItem } from "./placesShared";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
 import { ROUTES, url } from "./routes";
+import { SearchField } from "./ui/ios";
 
 const GOLD = "var(--color-gold)";
 const fill: React.CSSProperties = { background: "var(--color-glass-thin)", borderRadius: 20 };
@@ -382,22 +383,11 @@ export function HomePlaces({ kind, stickyTop, flash, openSig }: { kind: "centre"
       {/* поиск — липкий к верху (как в календаре), над фильтрами */}
       <div ref={(el) => { sRef.current = el; if (el) setSH(el.offsetHeight); }}
         style={{ position: "sticky", top: stickyTop, zIndex: 18, marginTop: 14, paddingBottom: 10, background: "var(--color-bg)" }}>
-        <div role="search" style={{ position: "relative" }}>
-          <span aria-hidden style={{ position: "absolute", left: 13, top: 0, bottom: 0, display: "grid", placeItems: "center", color: "var(--color-label-3)", pointerEvents: "none" }}>
-            <svg width="17" height="17" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" strokeWidth="1.8" /><path d="m20 20-3.4-3.4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
-          </span>
-          <input value={q} onChange={(e) => setQ(e.target.value)}
+        {/* ЗКН-Д019 — строка поиска = эталон App Store (ui/ios.tsx) */}
+        <div role="search">
+          <SearchField value={q} onChange={setQ}
             placeholder={kind === "restaurant" ? "Город, страна или название" : "Город, страна или название центра"}
-            inputMode="search" autoComplete="off" autoCorrect="off" spellCheck={false} aria-label="Поиск по каталогу"
-            style={{ width: "100%", boxSizing: "border-box", padding: "12px 38px", borderRadius: 14, border: "none",
-              background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", color: "var(--color-label)", outline: "none", WebkitAppearance: "none" }} />
-          {q && (
-            <button type="button" aria-label="Очистить" onClick={() => setQ("")}
-              style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", width: 26, height: 26, borderRadius: "50%", border: "none",
-                background: "var(--color-glass-regular)", color: "var(--color-label-2)", cursor: "pointer", display: "grid", placeItems: "center", WebkitTapHighlightColor: "transparent" }}>
-              <svg width="12" height="12" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>
-            </button>
-          )}
+            onClear={() => setQ("")} />
         </div>
       </div>
 

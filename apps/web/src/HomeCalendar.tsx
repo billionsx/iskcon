@@ -31,6 +31,7 @@ import { api } from "./api";
 import { pushUrl, subscribeNav } from "./nav";
 import { EventCard, TypeIcon, TYPE_WORD, HERO_TYPES, fmtDay, goEvent, eventTarget, type EventBrief } from "./EventCard";
 import { FilterChips as NavFilterChips } from "./ui/nav4";
+import { SearchField } from "./ui/ios";
 
 const GOLD = "var(--color-gold)";
 const CAL_CLIENT_VER = "4";
@@ -318,8 +319,8 @@ function LocationSheet({ open, current, onPick, onClose }: { open: boolean; curr
         Время экадаши и параны зависит от восхода солнца — календарь рассчитывается для конкретного города. Нет в списке? Введите любой город мира — рассчитаем календарь по нему.
       </p>
       <div style={{ position: "sticky", top: 0, zIndex: 5, background: "var(--color-bg)", padding: "12px 0 8px" }}>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Страна или город" inputMode="search"
-          style={{ width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-glass-thin)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", outline: "none" }} />
+        {/* ЗКН-Д019 — строка поиска = эталон App Store (ui/ios.tsx) */}
+        <SearchField value={q} onChange={setQ} placeholder="Страна или город" onClear={() => setQ("")} />
       </div>
       {!q.trim() && (
         <button type="button" onClick={useMyLocation} disabled={geoMe === "busy"} aria-label="Определить календарь по моей геолокации"
@@ -677,8 +678,10 @@ export function HomeCalendar({ stickyTop, onOpenEntity }: { stickyTop: number; o
         items={[{ id: "all", label: "Все" }, { id: "ekadasi", label: "Экадаши" }, { id: "festival", label: "Праздники" }]}
         active={filt} onChange={(id) => setFilt(id as typeof filt)} />
 
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Поиск: праздник, экадаши или имя" inputMode="search" aria-label="Поиск по календарю"
-        style={{ marginTop: 12, width: "100%", boxSizing: "border-box", padding: "11px 14px", borderRadius: 14, border: "0.5px solid var(--color-hairline)", background: "var(--color-bg-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label)", outline: "none" }} />
+      {/* ЗКН-Д019 — строка поиска = эталон App Store (ui/ios.tsx) */}
+      <div style={{ marginTop: 12 }}>
+        <SearchField value={q} onChange={setQ} placeholder="Праздник, экадаши или имя" onClear={() => setQ("")} />
+      </div>
 
       <div style={{ marginTop: 6 }} aria-live="polite">
         {err && (
