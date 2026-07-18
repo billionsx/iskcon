@@ -57,7 +57,22 @@ MAX_ALBUM = int(os.getenv("MAX_ALBUM") or 220)
 
 MONTHS = {1: "января", 2: "февраля", 3: "марта", 4: "апреля", 5: "мая", 6: "июня",
           7: "июля", 8: "августа", 9: "сентября", 10: "октября", 11: "ноября", 12: "декабря"}
-ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"]
+MONTHS_NOM = {1: "январь", 2: "февраль", 3: "март", 4: "апрель", 5: "май", 6: "июнь",
+              7: "июль", 8: "август", 9: "сентябрь", 10: "октябрь", 11: "ноябрь", 12: "декабрь"}
+
+
+def span_label(chunk):
+    """Подпись части по её собственным датам: «январь–июнь» или «2011–2013»."""
+    ds = sorted(t.get("date") for t in chunk if t.get("date"))
+    if not ds:
+        return "без даты"
+    a, b = ds[0], ds[-1]
+    if a[:4] != b[:4]:
+        return "%s–%s" % (a[:4], b[:4])
+    ma, mb = int(a[5:7]), int(b[5:7])
+    if ma == mb:
+        return MONTHS_NOM[ma]
+    return "%s–%s" % (MONTHS_NOM[ma], MONTHS_NOM[mb])
 
 # Вёдра-сборники: попадание сюда не считается принадлежностью к циклу.
 # «Диск 92» — отдельная история: это не тема, а номер болванки, которую когда-то
@@ -198,8 +213,8 @@ def main() -> int:
             items.sort(key=lambda x: (x.get("date") or "", x.get("id") or 0), reverse=desc)
 
         # Длинный цикл режем. Резать «частью I» и «частью II» нельзя: римская
-        # цифра ничего не сообщает о содержимом. Если цикл растянут по годам —
-        # режем по годам, и название остаётся говорящим.
+        # цифра ничего не сообщает о содержимом. Режем по времени и подписываем
+        # временем — «Лекции 2021 · январь–июнь» сразу говорит, что внутри.
         chunks, labels = [items], [None]
         if len(items) > MAX_ALBUM:
             byyear = defaultdict(list)
@@ -210,9 +225,10 @@ def main() -> int:
                 chunks = [byyear[y] for y in ys]
                 labels = list(ys)
             else:
-                chunks = [items[i:i + MAX_ALBUM] for i in range(0, len(items), MAX_ALBUM)]
-                labels = [ROMAN[i] if i < len(ROMAN) else str(i)
-                          for i in range(1, len(chunks) + 1)]
+                n = -(-len(items) // MAX_ALBUM)          # округление вверх
+                step = -(-len(items) // n)
+                chunks = [items[i:i + step] for i in range(0, len(items), step)]
+                labels = [span_label(c) for c in chunks]
 
         for ci, (chunk, lab) in enumerate(zip(chunks, labels), 1):
             t = title if lab is None else "%s · %s" % (title, lab)
