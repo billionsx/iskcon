@@ -12,6 +12,12 @@ on:
       limit:
         description: "Лимит лекций (пусто = весь каталог)"
         default: ""
+      script:
+        description: "Скрипт разведки"
+        default: "probe.py"
+      out:
+        description: "Куда положить отчёт"
+        default: "docs/diagnostics/goswami-probe.json"
 
 permissions:
   contents: write
@@ -29,9 +35,11 @@ jobs:
       - name: Разведка
         env:
           PROBE_LIMIT: ${{ inputs.limit }}
+          SCRIPT: ${{ inputs.script || 'probe.py' }}
+          PROBE_OUT: ${{ inputs.out || 'docs/diagnostics/goswami-probe.json' }}
         run: |
           set +e
-          python tools/goswami/probe.py 2>&1 | tee /tmp/probe.log
+          python tools/goswami/${SCRIPT:-probe.py} 2>&1 | tee /tmp/probe.log
           rc=${PIPESTATUS[0]}
           if [ $rc -ne 0 ]; then
             echo "::error title=goswami-probe::$(tail -c 1500 /tmp/probe.log | tr '\n\r\t' '   ')"
@@ -39,10 +47,13 @@ jobs:
           exit 0
 
       - name: Итог в лог
+        env:
+          OUTF: ${{ inputs.out || 'docs/diagnostics/goswami-probe.json' }}
         run: |
           python3 - <<'PY'
           import json, pathlib
-          p = pathlib.Path("docs/diagnostics/goswami-probe.json")
+          import os
+          p = pathlib.Path(os.getenv("OUTF") or "docs/diagnostics/goswami-probe.json")
           if not p.exists():
               print("НЕТ ФАЙЛА"); raise SystemExit(0)
           d = json.loads(p.read_text(encoding="utf-8"))
@@ -69,7 +80,7 @@ jobs:
         run: |
           git config user.name "Billions X"
           git config user.email "ceo@billionsx.com"
-          git add -f docs/diagnostics/goswami-probe.json || true
+          git add -f docs/diagnostics/goswami-probe*.json || true
           git diff --cached --quiet && { echo "нечего коммитить"; exit 0; }
           git commit -m "Госвами: инвентарь каталога [skip ci]"
           for i in 1 2 3 4 5 6; do
@@ -81,5 +92,5 @@ jobs:
         if: always()
         with:
           name: goswami-probe
-          path: docs/diagnostics/goswami-probe.json
+          path: docs/diagnostics/goswami-probe*.json
           retention-days: 14
