@@ -98,11 +98,13 @@ GROUP_TOKENS_LIGHT = ("--color-canvas", "--color-card", "--color-separator")
 # ЗКН-Н088 — адреса практики: их место в «Практике», а не в кабинете.
 PRACTICE_PATHS = ("/japa", "/story", "/promise", "/progress", "/verse")
 
-# ── ЗКН-Д022 · ПЛИТКА СТРОКИ: ЦВЕТ ПО СМЫСЛУ, ГЛИФ ЗАЛИТЫЙ ────────────────
-# Шесть одинаковых серых плиток читаются как ВЫКЛЮЧЕННЫЙ список; контурный
-# глиф в квадрате 29 мылится. Гейт держит оба признака ремесла.
-TILE_GREY_ONLY = re.compile(r'tint=\{?"?var\(--color-(?:label-2|tile)\)"?\}?')
-STROKE_IN_TILE = re.compile(r"<IconTile[^>]*>\s*<svg[^>]*stroke=")
+# ── ЗКН-Д024 · СТРОКА ДЕРЖИТСЯ ТИПОГРАФИКОЙ, А НЕ ИКОНКОЙ ─────────────────
+# Плитку пробовали дважды: серую (список выглядел выключенным) и цветную по
+# образцу настроек iOS. Решение основателя 18.07.2026 — убрать совсем. Цветные
+# плитки у Apple разделяют РАЗНОРОДНОЕ (звук, экран, Wi-Fi — полсотни пунктов);
+# у нас в группе две-три строки одного рода, и цвет там только шумит.
+ROW_ICON = re.compile(r"<Row\b[^>]*\bicon=")
+TILE_ANY = re.compile(r"\bIconTile\b")
 
 # ── ЗКН-Д020 · АКЦЕНТ ОДИН НА ПРИЛОЖЕНИЕ ──────────────────────────────────
 # Свой «фирменный» цвет раздела — самая заметная потеря целого: экран обета
@@ -225,23 +227,17 @@ def check_grouped_screen() -> list[str]:
             bad.append(f"apps/web/src/PracticeHub.tsx — ЗКН-Н088: практика потеряла "
                        f"{', '.join(missing)}. Разделы не исчезают при переезде — "
                        f"они меняют место")
-    # ЗКН-Д022 — плитки строк: не монохром и не контур.
-    for name in GROUPED_SCREENS:
-        p = SRC / name
-        if not p.exists():
-            continue
-        t = p.read_text(encoding="utf-8")
-        m = TILE_GREY_ONLY.search(t)
-        if m:
-            line = t.count("\n", 0, m.start()) + 1
-            bad.append(f"apps/web/src/{name}:{line} — ЗКН-Д022: серая плитка. В iOS "
-                       f"серый в плитке = ВЫКЛЮЧЕНО; цвет обязан нести смысл "
-                       f"(--tile-blue · --tile-green · --tile-red · --tile-gold · --tile-grey)")
-        m = STROKE_IN_TILE.search(t)
-        if m:
-            line = t.count("\n", 0, m.start()) + 1
-            bad.append(f"apps/web/src/{name}:{line} — ЗКН-Д022: контурный глиф в плитке. "
-                       f"В квадрате 29 линия мылится — символ должен быть залитым (fill)")
+    # ЗКН-Д024 — ни плиток, ни иконок в строках сгруппированного экрана.
+    for f in sorted(SRC.rglob("*.tsx")):
+        t = f.read_text(encoding="utf-8")
+        for pat, why in ((TILE_ANY, "плитка иконки (IconTile) удалена из языка"),
+                         (ROW_ICON, "иконка в строке списка")):
+            m = pat.search(t)
+            if m:
+                line = t.count("\n", 0, m.start()) + 1
+                bad.append(f"apps/web/src/{f.relative_to(SRC)}:{line} — ЗКН-Д024: {why}. "
+                           f"Строка держится типографикой: 17 обычным, подпись 15 серым, "
+                           f"значение 17 серым справа, шеврон третичным")
 
     # ЗКН-Д020 — чужой акцент вместо золота.
     for f in sorted(SRC.rglob("*.tsx")):
@@ -267,7 +263,7 @@ def check_grouped_screen() -> list[str]:
 
 
 
-#: ЗКН-Д023 — КИРПИЧИ АУДИОТЕКИ ЖИВУТ В ОДНОМ МЕСТЕ.
+#: ЗКН-Д024 — КИРПИЧИ АУДИОТЕКИ ЖИВУТ В ОДНОМ МЕСТЕ.
 #  Замеры Apple Music (строка 44/52/60, меню 250/26, обложка 48) объявлены в
 #  `player/ui.tsx`. Второй раз те же числа — это второй набор, который разойдётся
 #  с первым; так плеер и стал коробкой на 1343 строки со своими радиусами в
@@ -280,7 +276,7 @@ DARK_LEFTOVER = re.compile(r"--color-on-dark|rgba\(255,\s*255,\s*255,\s*0\.[01]\
 
 
 def check_player_bricks() -> list[str]:
-    """ЗКН-Д023 — ПРАВИЛО 10: аудиотека собирается из замеренных кирпичей.
+    """ЗКН-Д024 — ПРАВИЛО 10: аудиотека собирается из замеренных кирпичей.
 
     Стережём ровно две вещи, из-за которых плеер и распух:
 
@@ -296,12 +292,12 @@ def check_player_bricks() -> list[str]:
     pdir = SRC / "player"
     ui = pdir / PLAYER_BRICKS
     if not ui.exists():
-        return [f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д023: набор кирпичей аудиотеки снесён; "
+        return [f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д024: набор кирпичей аудиотеки снесён; "
                 f"без него каждый экран нарисует свою строку и своё меню"]
     src = ui.read_text(encoding="utf-8")
     for name in ("MediaRow", "PopMenu", "ScreenHeader", "SectionRow"):
         if f"export function {name}" not in src:
-            bad.append(f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д023: пропал кирпич {name}()")
+            bad.append(f"apps/web/src/player/{PLAYER_BRICKS} — ЗКН-Д024: пропал кирпич {name}()")
 
     for f in sorted(pdir.rglob("*.tsx")):
         if f.name == PLAYER_BRICKS:
@@ -311,12 +307,12 @@ def check_player_bricks() -> list[str]:
         m = PLAYER_MAGIC.search(code)
         if m:
             line = code.count("\n", 0, m.start()) + 1
-            bad.append(f"{rel}:{line} — ЗКН-Д023: замер Apple вписан руками мимо примитива "
+            bad.append(f"{rel}:{line} — ЗКН-Д024: замер Apple вписан руками мимо примитива "
                        f"(«{m.group(0)}»). Числа объявлены один раз, в player/{PLAYER_BRICKS}")
         d = DARK_LEFTOVER.search(code)
         if d:
             line = code.count("\n", 0, d.start()) + 1
-            bad.append(f"{rel}:{line} — ЗКН-Д023: тёмная доска вернулась («{d.group(0)}»). "
+            bad.append(f"{rel}:{line} — ЗКН-Д024: тёмная доска вернулась («{d.group(0)}»). "
                        f"Плеер светлый: поверхности — var(--color-card)/var(--color-menu-glass)")
     return bad
 

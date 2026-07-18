@@ -33,7 +33,7 @@ import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, u
 import { levelLabel, atLeastLevel, LEVEL_META } from "./devotee";
 import { BUILD_SHA } from "./buildStamp";
 import {
-  GroupedCanvas, Groups, Group, Row, IdentityHeader, IconTile, Separator, Sheet,
+  GroupedCanvas, Groups, Group, Row, IdentityHeader, Separator, Sheet,
   Toggle, Checkmark,
 } from "./ui/ios";
 
@@ -59,28 +59,6 @@ const EyeIco = ({ size = 20, off }: IcoProps & { off?: boolean }) =>
   ) : (
     <svg {...ico(size)}><path {...STR} d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7Z" /><circle {...STR} cx="12" cy="12" r="3" /></svg>
   );
-const MailIco = ({ size = 20 }: IcoProps) => (
-  <svg {...ico(size)}><rect {...STR} x="3" y="5.4" width="18" height="13.2" rx="2.2" /><path {...STR} d="m4 7 8 5.6L20 7" /></svg>
-);
-const KeyIco = ({ size = 20 }: IcoProps) => (
-  <svg {...ico(size)}><circle {...STR} cx="8.2" cy="12" r="3.6" /><path {...STR} d="M11.8 12h8.4M17 12v3M20.2 12v2.2" /></svg>
-);
-
-/* ─────────────────── глифы строк кабинета (ЗКН-Д022) ───────────────────
- * ГЛИФ В ПЛИТКЕ — ЗАЛИТЫЙ, НЕ КОНТУРНЫЙ. Контурная линия 1.7 в квадрате 29
- * мылится и читается как иконка из бесплатного набора; у Apple в плитке всегда
- * плотный символ. ЦВЕТ ПЛИТКИ НЕСЁТ СМЫСЛ: уведомления красные, безопасность
- * синяя, служебное серое — так список сканируется за полсекунды, а не читается
- * построчно. Шесть одинаковых серых плиток выглядели выключенным списком.
- */
-const fico = (size = 17) => ({ width: size, height: size, viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": true as const });
-const PersonIco = () => (<svg {...fico()}><circle cx="12" cy="7.8" r="3.9" /><path d="M12 13.4c-3.5 0-6.4 2-7.3 5.1-.3.9.4 1.7 1.3 1.7h12c.9 0 1.6-.8 1.3-1.7-.9-3.1-3.8-5.1-7.3-5.1Z" /></svg>);
-const StepsIco = () => (<svg {...fico()}><rect x="3.6" y="13" width="4" height="6.4" rx="1.2" /><rect x="10" y="8.6" width="4" height="10.8" rx="1.2" /><rect x="16.4" y="4.6" width="4" height="14.8" rx="1.2" /></svg>);
-const LockIco = () => (<svg {...fico()}><path d="M8.9 9.4V7.6a3.1 3.1 0 0 1 6.2 0v1.8h.6a2.3 2.3 0 0 1 2.3 2.3v6a2.3 2.3 0 0 1-2.3 2.3H8.3A2.3 2.3 0 0 1 6 17.4v-6a2.3 2.3 0 0 1 2.3-2.3zm1.7 0h2.8V7.6a1.4 1.4 0 0 0-2.8 0z" /></svg>);
-const BellIco = () => (<svg {...fico()}><path d="M12 3.4a5.6 5.6 0 0 0-5.6 5.6v3.8L5 15.4c-.4.7.1 1.6.9 1.6h12.2c.8 0 1.3-.9.9-1.6l-1.4-2.6V9A5.6 5.6 0 0 0 12 3.4Z" /><path d="M9.9 18.4a2.2 2.2 0 0 0 4.2 0z" /></svg>);
-const HeartIco = () => (<svg {...fico()}><path d="M12 20s-7.4-4.5-7.4-9.4a4 4 0 0 1 7.4-2.2 4 4 0 0 1 7.4 2.2C19.4 15.5 12 20 12 20Z" /></svg>);
-const ShareIco = () => (<svg {...fico()}><path d="M11.1 5.7 9 7.8a1.2 1.2 0 1 1-1.7-1.7l3.8-3.8a1.2 1.2 0 0 1 1.8 0l3.8 3.8A1.2 1.2 0 1 1 15 7.8l-2.1-2.1v9.1a1.2 1.2 0 0 1-2.4 0z" /><path d="M5.4 12.4c.7 0 1.2.5 1.2 1.2v4.1h10.8v-4.1a1.2 1.2 0 0 1 2.4 0v4.4a2.1 2.1 0 0 1-2.1 2.1H6.3a2.1 2.1 0 0 1-2.1-2.1v-4.4c0-.7.5-1.2 1.2-1.2Z" /></svg>);
-const InfoIco = () => (<svg {...fico()}><path d="M12 3.4a8.6 8.6 0 1 0 0 17.2 8.6 8.6 0 0 0 0-17.2Zm0 3.2a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6Zm1.4 10.8h-2.8a.9.9 0 0 1 0-1.8h.5v-3.2h-.5a.9.9 0 0 1 0-1.8h1.5c.5 0 .9.4.9.9v4.1h.4a.9.9 0 0 1 0 1.8Z" /></svg>);
 
 /* ─────────────────────────── утилиты ─────────────────────────── */
 
@@ -688,7 +666,7 @@ function SecuritySheet({ onClose, flash }: { onClose: () => void; flash: (m: str
       <Groups>
         <Group header="Почта и пароль" footer={error ?? undefined}>
           <Row
-            icon={<MailIco size={20} />} title="Почта" subtitle={user?.email ?? "не указана"} chevron={false}
+            title="Почта" subtitle={user?.email ?? "не указана"} chevron={false}
             accessory={user?.email
               ? (verified
                 ? <span style={{ fontFamily: FONT, fontSize: "var(--text-subhead)", color: INK2 }}>Подтверждена</span>
@@ -702,7 +680,7 @@ function SecuritySheet({ onClose, flash }: { onClose: () => void; flash: (m: str
             </>
           )}
           <Row
-            icon={<KeyIco size={20} />} title="Пароль" subtitle={hasPassword ? "Задан" : "Не задан"} chevron={false}
+            title="Пароль" subtitle={hasPassword ? "Задан" : "Не задан"} chevron={false}
             last={open !== "password"}
             accessory={act(open === "password" ? "Скрыть" : hasPassword ? "Изменить" : "Задать",
               () => { setOpen(open === "password" ? "" : "password"); setError(null); })} />
@@ -724,8 +702,10 @@ function SecuritySheet({ onClose, flash }: { onClose: () => void; flash: (m: str
               return (
                 <Row
                   key={m.id}
-                  icon={<span style={{ display: "grid", placeItems: "center", width: 20, height: 20, color: INK }}>{providerGlyph(m.id, 18)}</span>}
-                  title={PROVIDER_NAME[m.id]}
+                  title={<span style={{ display: "inline-flex", alignItems: "center", gap: 9 }}>
+                    <span style={{ display: "grid", placeItems: "center", width: 20, height: 20, color: INK }}>{providerGlyph(m.id, 18)}</span>
+                    {PROVIDER_NAME[m.id]}
+                  </span>}
                   subtitle={isLinked ? "Подключено" : "Не подключено"}
                   chevron={false}
                   last={i === providers.length - 1}
@@ -805,8 +785,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
 
   return (
     <>
-      {/* ЛИЧНОСТЬ — ПРИСУТСТВИЕ, А НЕ СТРОКА КОНТАКТА (ЗКН-Д018). Портрет 88,
-          имя титульным кеглем, духовное имя золотом. Экран сразу «про меня». */}
+      {/* ЛИЧНОСТЬ — ПРИСУТСТВИЕ, А НЕ СТРОКА КОНТАКТА (ЗКН-Д018). */}
       <IdentityHeader
         avatar={initials(user?.name ?? null, user?.email ?? null)}
         name={display}
@@ -815,39 +794,31 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
         onClick={() => setSheet("profile")} />
 
       <Groups>
-        {/* Группы ПЛОТНЫЕ: у Apple заголовок оправдан списком, а не одной
-            строкой. Пять групп на девять строк читались как заготовка. */}
+        {/* СТРОКА ДЕРЖИТСЯ ТИПОГРАФИКОЙ (ЗКН-Д024): 17 обычным, значение 17
+            серым справа, шеврон третичным. Подписи под строкой НЕТ там, где
+            заголовок и так исчерпывает смысл: «Профиль», «Уведомления» не
+            нуждаются в объяснении, а лишняя строка ломает ритм 48. */}
         <Group>
-          <Row icon={<IconTile tint="var(--tile-blue)"><PersonIco /></IconTile>}
-            title="Профиль" subtitle="Имя, духовное имя, инициация"
-            onClick={() => setSheet("profile")} />
-          <Row icon={<IconTile tint="var(--tile-green)"><StepsIco /></IconTile>}
-            title="Ступень практики"
-            value={level ?? <span style={{ color: GOLDT, fontWeight: 600 }}>Выбрать</span>}
+          <Row title="Профиль" onClick={() => setSheet("profile")} />
+          <Row title="Ступень практики"
+            value={level ?? <span style={{ color: GOLDT }}>Выбрать</span>}
             last onClick={() => setSheet("level")} />
         </Group>
 
         <Group header="Аккаунт">
-          <Row icon={<IconTile tint="var(--tile-blue)"><LockIco /></IconTile>}
-            title="Вход и безопасность" onClick={() => setSheet("security")} />
-          <Row icon={<IconTile tint="var(--tile-red)"><BellIco /></IconTile>}
-            title="Уведомления"
+          <Row title="Вход и безопасность" onClick={() => setSheet("security")} />
+          <Row title="Уведомления"
             value={pushOn == null ? undefined : pushOn ? "Включены" : "Выключены"}
             last onClick={() => setSheet("push")} />
         </Group>
 
         <Group header="Приложение">
           {atLeastLevel(user, "practicing") && (
-            <Row icon={<IconTile tint="var(--tile-green)"><PersonIco /></IconTile>}
-              title="Мои центры" subtitle={`Ваша страница на ${SITE_HOST}`}
-              onClick={() => onOpenPath("/my/centers")} />
+            <Row title="Мои центры" onClick={() => onOpenPath("/my/centers")} />
           )}
-          <Row icon={<IconTile><HeartIco /></IconTile>}
-            title="Поддержать проект" onClick={onDonate} />
-          <Row icon={<IconTile tint="var(--tile-blue)"><ShareIco /></IconTile>}
-            title="Поделиться приложением" onClick={share} />
-          <Row icon={<IconTile tint="var(--tile-grey)"><InfoIco /></IconTile>}
-            title="О приложении" last onClick={() => setSheet("about")} />
+          <Row title="Поддержать проект" onClick={onDonate} />
+          <Row title="Поделиться приложением" onClick={share} />
+          <Row title="О приложении" last onClick={() => setSheet("about")} />
         </Group>
 
         <Group>

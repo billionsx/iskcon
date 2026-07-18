@@ -182,18 +182,19 @@ export function IdentityHeader({ avatar, name, sacred, subtitle, onClick }: {
       <span style={{
         display: "grid", placeItems: "center", width: 88, height: 88, margin: "0 auto",
         borderRadius: "50%",
-        /* ЗКН-Д022 — монограмма читается, а не «монета». Тёмно-золотая буква на
-           золотом круге давала контраст около 1.6:1 — это не буква, это пятно.
-           Градиент даёт объём, белый знак — контраст. */
-        background: "linear-gradient(160deg, var(--color-gold) 0%, var(--color-gold-deep) 100%)",
-        color: "var(--color-brand-white)",
+        /* ЗКН-Д024 — МОНОГРАММА ТИХАЯ. Насыщенный золотой диск был самым
+           громким пятном экрана и притягивал взгляд сильнее имени. Тон 16 %
+           золота + тёмно-золотой знак: контраст высокий, присутствие спокойное.
+           Ни тени, ни градиента — круг лежит на странице, а не парит. */
+        background: "color-mix(in srgb, var(--color-gold) 16%, transparent)",
+        color: "var(--color-gold-deep)",
         fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 600,
-        letterSpacing: "-0.02em", boxShadow: "0 6px 18px rgba(0,0,0,0.14)",
+        letterSpacing: "-0.02em",
       }}>{avatar}</span>
       <span style={{
-        display: "block", marginTop: 14, fontFamily: "var(--font-display)",
-        fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em",
-        lineHeight: 1.15, color: "var(--color-label)",
+        display: "block", marginTop: 13, fontFamily: "var(--font-display)",
+        fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: "-0.03em",
+        lineHeight: 1.14, color: "var(--color-label)",
       }}>{name}</span>
       {sacred && (
         <span style={{
@@ -220,24 +221,20 @@ export function IdentityHeader({ avatar, name, sacred, subtitle, onClick }: {
     : <div style={style}>{inner}</div>;
 }
 
-/** Плитка иконки строки настроек — 29px, радиус 7, цветная заливка. */
-export function IconTile({ tint, children }: { tint?: string; children: ReactNode }) {
-  return (
-    <span aria-hidden style={{
-      flexShrink: 0, width: "var(--icon-tile)", height: "var(--icon-tile)", borderRadius: 7,
-      display: "grid", placeItems: "center",
-      background: tint ?? "var(--color-gold-deep)", color: "var(--color-brand-white)",
-    }}>
-      {children}
-    </span>
-  );
-}
-
-/* ─────────────────────────── строка ─────────────────────────── */
+/* ПЛИТКИ ИКОНОК ЗДЕСЬ НЕТ И НЕ БУДЕТ (ЗКН-Д024).
+ *
+ * Она была: сначала полупрозрачно-серая (список выглядел выключенным), потом
+ * цветная по образцу настроек iOS. Решение основателя 18.07.2026 — убрать
+ * совсем: «не нужно цветных иконок и плашек на иконках». И это верно для НАШЕГО
+ * предмета. Цветные плитки у Apple разделяют РАЗНОРОДНОЕ — звук, экран, Wi-Fi,
+ * батарею, полсотни пунктов. У нас в группе две-три строки, все одного рода;
+ * цвет там ничего не разделяет, а шумит. Лист «Apple Account» — тоже без плиток.
+ *
+ * Строка держится ТИПОГРАФИКОЙ: 17 обычным на почти-чёрном, 15 серым во второй
+ * строке, значение 17 серым справа, шеврон третичным. Больше ничего не нужно.
+ */
 
 export interface RowProps {
-  /** Плитка (IconTile) или глиф. Влияет на врезку разделителя. */
-  icon?: ReactNode;
   title: ReactNode;
   /** Вторая строка — делает строку высотой 60. */
   subtitle?: ReactNode;
@@ -261,24 +258,29 @@ export interface RowProps {
  * поле 16, плитка 29 + зазор 9, разделитель врезан по началу текста.
  */
 export function Row({
-  icon, title, subtitle, value, accessory, chevron, onClick,
+  title, subtitle, value, accessory, chevron, onClick,
   destructive, centered, last,
 }: RowProps) {
   const showChevron = chevron ?? (!!onClick && !accessory);
   const tone = destructive ? "var(--color-danger-text)" : INK;
   const inner = (
     <>
-      {icon && <span style={{ flexShrink: 0, display: "grid", placeItems: "center", color: INK2 }}>{icon}</span>}
       <span style={{ flex: 1, minWidth: 0, textAlign: centered ? "center" : "left" }}>
+        {/* ЗАГОЛОВОК СТРОКИ — 17 обычным. Не 16, не полужирным: в списке iOS
+            вес несёт ИЕРАРХИЮ, а не важность каждой строки. */}
         <span style={{
           display: "block", fontFamily: FONT, fontSize: "var(--text-body)",
-          fontWeight: centered ? 500 : 400, color: tone, lineHeight: 1.25,
+          fontWeight: centered ? 500 : 400, color: tone, lineHeight: 1.29,
           letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>{title}</span>
         {subtitle && (
+          /* ПОДПИСЬ — 15 серым, НЕ 13. Тринадцатый кегль в строке 48 читается
+             как сноска и ломает вертикальный ритм: у Apple вторая строка
+             ровно на ступень ниже основной, а не на две. */
           <span style={{
-            display: "block", marginTop: 2, fontFamily: FONT, fontSize: "var(--text-footnote)",
-            color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+            display: "block", marginTop: 1, fontFamily: FONT, fontSize: "var(--text-subhead)",
+            color: INK2, lineHeight: 1.33, letterSpacing: "-0.01em",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>{subtitle}</span>
         )}
       </span>
@@ -294,7 +296,7 @@ export function Row({
     </>
   );
   const style: CSSProperties = {
-    display: "flex", alignItems: "center", gap: 9, width: "100%", boxSizing: "border-box",
+    display: "flex", alignItems: "center", gap: 8, width: "100%", boxSizing: "border-box",
     minHeight: subtitle ? "var(--row-h-2)" : "var(--row-h)",
     padding: "0 var(--inset-row)",
     background: "none", border: "none", cursor: onClick ? "pointer" : "default",
@@ -306,62 +308,12 @@ export function Row({
       {onClick
         ? <button type="button" className="tap-row" onClick={onClick} style={style}>{inner}</button>
         : <div style={style}>{inner}</div>}
-      {!last && <Separator inset={icon ? 54 : 16} />}
-    </>
-  );
-}
-
-/* ─────────────────────────── личность ─────────────────────────── */
-
-/**
- * Строка личности — верх листа «Apple Account»: круглый портрет 52,
- * имя 17 полужирным, подпись серым, шеврон. Высота задаётся содержимым.
- */
-export function IdentityRow({ avatar, title, subtitle, note, onClick, last }: {
-  avatar: ReactNode; title: string; subtitle?: string; note?: ReactNode;
-  onClick?: () => void; last?: boolean;
-}) {
-  const inner = (
-    <>
-      <span style={{
-        flexShrink: 0, width: 52, height: 52, borderRadius: "50%", overflow: "hidden",
-        display: "grid", placeItems: "center", background: "var(--color-gold)",
-        color: "var(--color-on-gold)", fontFamily: FONT, fontSize: "var(--text-title3)", fontWeight: 600,
-      }}>{avatar}</span>
-      <span style={{ flex: 1, minWidth: 0 }}>
-        <span style={{
-          display: "block", fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
-          letterSpacing: "-0.02em", color: INK, lineHeight: 1.25,
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>{title}</span>
-        {note}
-        {subtitle && (
-          <span style={{
-            display: "block", marginTop: 1, fontFamily: FONT, fontSize: "var(--text-subhead)",
-            color: INK2, lineHeight: 1.3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>{subtitle}</span>
-        )}
-      </span>
-      {onClick && <Chevron />}
-    </>
-  );
-  const style: CSSProperties = {
-    display: "flex", alignItems: "center", gap: 13, width: "100%", boxSizing: "border-box",
-    padding: "12px var(--inset-row)", background: "none", border: "none",
-    cursor: onClick ? "pointer" : "default", textAlign: "left", font: "inherit", color: "inherit",
-    WebkitTapHighlightColor: "transparent",
-  };
-  return (
-    <>
-      {onClick
-        ? <button type="button" className="tap-row" onClick={onClick} style={style}>{inner}</button>
-        : <div style={style}>{inner}</div>}
+      {/* Разделитель начинается ТАМ ЖЕ, ГДЕ ТЕКСТ (врезка 16 = поле строки).
+          Иначе линия висит под пустотой и группа рассыпается. */}
       {!last && <Separator inset={16} />}
     </>
   );
 }
-
-/* ─────────────────────────── контролы ─────────────────────────── */
 
 /** Круглая кнопка шапки листа — 44, полупрозрачная заливка (iOS 26.5). */
 export function CircleButton({ label, onClick, children }: {
