@@ -1,0 +1,144 @@
+{
+ "gql": "https://api.goswami.ru/graphql",
+ "ts": 1784394208,
+ "exec": {
+  "getMediaByFilter": {
+   "ok": false,
+   "errors": []
+  },
+  "getMedia": {
+   "ok": false,
+   "errors": [
+    "Cannot query field \"id\" on type \"MediaResponse\"."
+   ]
+  },
+  "getAlbums": {
+   "ok": false,
+   "errors": [
+    "Cannot query field \"id\" on type \"AlbumResponse\"."
+   ]
+  },
+  "getCollections": {
+   "ok": false,
+   "errors": [
+    "Cannot query field \"id\" on type \"CollectionsResponse\"."
+   ]
+  },
+  "getZeroCollections": {
+   "ok": false,
+   "errors": [
+    "Cannot query field \"id\" on type \"CollectionsResponse\"."
+   ]
+  },
+  "getPresetCategory": {
+   "query": "{getPresetCategory{id name}}",
+   "ok": true,
+   "n": 8,
+   "sample": [
+    {
+     "id": 1,
+     "name": "Паломничество"
+    },
+    {
+     "id": 2,
+     "name": "Праздник"
+    }
+   ]
+  },
+  "getPresetScripture": {
+   "query": "{getPresetScripture{id name}}",
+   "ok": true,
+   "n": 8,
+   "sample": [
+    {
+     "id": 1,
+     "name": "Бхагавад-гита"
+    },
+    {
+     "id": 2,
+     "name": "Шримад-бхагаватам"
+    }
+   ]
+  },
+  "getPresetLocation": {
+   "query": "{getPresetLocation{id name}}",
+   "ok": true,
+   "n": 10,
+   "sample": [
+    {
+     "id": 1,
+     "name": "Москва"
+    },
+    {
+     "id": 2,
+     "name": "Санкт-Петербург"
+    }
+   ]
+  },
+  "searchTags": {
+   "query": "{searchTags{id name}}",
+   "ok": true,
+   "n": 0,
+   "sample": []
+  }
+ },
+ "args": {
+  "getMediaByFilter": {
+   "input": "Expected type MediaFilterInput, found 1."
+  },
+  "getMedia": {
+   "input": "Expected type MediaInput, found 1."
+  },
+  "getAlbums": {
+   "input": "Expected type GetAlbumsInput, found 1."
+  },
+  "getCollections": {
+   "input": "Expected type getCollectionsInput, found 1."
+  }
+ },
+ "fields": {
+  "getMediaByFilter": [
+   "alias_url",
+   "canto",
+   "chapter",
+   "collection_id",
+   "description",
+   "duration",
+   "file_url",
+   "id",
+   "img_url",
+   "in_collections",
+   "issue_date",
+   "language",
+   "location_name",
+   "occurrence_date",
+   "scripture_id",
+   "secondImage",
+   "size",
+   "teaser",
+   "text",
+   "title",
+   "type",
+   "verse",
+   "video_url",
+   "youtube_thumbnail"
+  ],
+  "getMedia": [],
+  "getAlbums": [],
+  "getCollections": [],
+  "getZeroCollections": [
+   "annotation",
+   "child_collections_id",
+   "date_to",
+   "direction",
+   "full_name",
+   "id",
+   "img_url",
+   "language",
+   "scripture_id",
+   "source",
+   "sub_name"
+  ]
+ },
+ "sample": {}
+}
