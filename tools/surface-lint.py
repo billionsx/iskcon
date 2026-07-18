@@ -93,7 +93,7 @@ SEARCH_INPUT = re.compile(r"inputMode=[\"'`]search[\"'`]")
 SEARCH_OK = {"ios.tsx"}
 # ЗКН-Д018 — токены замера. Пропажа = возврат к «на глаз».
 GROUP_TOKENS = ("--color-canvas", "--color-card", "--color-separator",
-                "--radius-card", "--row-h", "--gap-group", "--shadow-card")
+                "--radius-card", "--row-h", "--gap-group", "--shadow-group")
 GROUP_TOKENS_LIGHT = ("--color-canvas", "--color-card", "--color-separator")
 # ЗКН-Н088 — адреса практики: их место в «Практике», а не в кабинете.
 PRACTICE_PATHS = ("/japa", "/story", "/promise", "/progress", "/verse")
@@ -258,7 +258,7 @@ def main() -> int:
                 bad.append(
                     f"{rel}:{line} — ЗКН-Д018: карточка группы без материала. "
                     f"Холст белый, обводка запрещена — слой создаёт только "
-                    f"boxShadow: var(--shadow-card). Без него группы не видно")
+                    f"boxShadow: var(--shadow-group). Без него группы не видно")
             # ПРАВИЛО 1 — серая плашка вместо поверхности
             if tag in CONTAINER_TAGS and GREY_FILL.search(body) and PADDING.search(body):
                 r = RADIUS.search(body)

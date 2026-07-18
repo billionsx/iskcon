@@ -33,7 +33,7 @@ import { pushSupported, pushPermission, isSubscribed, enablePush, disablePush, u
 import { levelLabel, atLeastLevel, LEVEL_META } from "./devotee";
 import { BUILD_SHA } from "./buildStamp";
 import {
-  GroupedCanvas, Groups, Group, Row, IdentityRow, Separator, Sheet,
+  GroupedCanvas, Groups, Group, Row, IdentityHeader, IconTile, Separator, Sheet,
   Toggle, Checkmark,
 } from "./ui/ios";
 
@@ -65,6 +65,21 @@ const MailIco = ({ size = 20 }: IcoProps) => (
 const KeyIco = ({ size = 20 }: IcoProps) => (
   <svg {...ico(size)}><circle {...STR} cx="8.2" cy="12" r="3.6" /><path {...STR} d="M11.8 12h8.4M17 12v3M20.2 12v2.2" /></svg>
 );
+
+/* ─────────────────── глифы строк кабинета (ЗКН-Д018) ───────────────────
+ * Плитка 29 с линейным глифом. Заливка ГРАФИТОВАЯ у всех, кроме служения:
+ * золото в приложении — акцент, а не раскраска списка. Без иконок семь строк
+ * читались не как сдержанность, а как недоделанность: Apple обходится без них
+ * только на ПЛОТНОМ списке.
+ */
+const TILE = "var(--color-label-2)";
+const PersonIco = () => (<svg {...ico(17)}><circle {...STR} cx="12" cy="8" r="3.6" /><path {...STR} d="M5 19.2c1.3-3.2 4-4.7 7-4.7s5.7 1.5 7 4.7" /></svg>);
+const StepsIco = () => (<svg {...ico(17)}><path {...STR} d="M4 19h4v-6H4zM10 19h4V9h-4zM16 19h4V5h-4z" /></svg>);
+const LockIco = () => (<svg {...ico(17)}><rect {...STR} x="5" y="10.5" width="14" height="9.5" rx="2.4" /><path {...STR} d="M8.4 10.5V7.8a3.6 3.6 0 0 1 7.2 0v2.7" /></svg>);
+const BellIco = () => (<svg {...ico(17)}><path {...STR} d="M6.4 17.2V11a5.6 5.6 0 0 1 11.2 0v6.2M4.6 17.2h14.8" /><path {...STR} d="M10.2 20.2a2 2 0 0 0 3.6 0" /></svg>);
+const HeartIco = () => (<svg {...ico(17)}><path {...STR} d="M12 20s-7.2-4.4-7.2-9.2A3.9 3.9 0 0 1 12 8.4a3.9 3.9 0 0 1 7.2 2.4C19.2 15.6 12 20 12 20Z" /></svg>);
+const ShareIco = () => (<svg {...ico(17)}><path {...STR} d="M12 15V4.6M8.6 8 12 4.6 15.4 8" /><path {...STR} d="M5.4 13.6v4.8a1.6 1.6 0 0 0 1.6 1.6h10a1.6 1.6 0 0 0 1.6-1.6v-4.8" /></svg>);
+const InfoIco = () => (<svg {...ico(17)}><circle {...STR} cx="12" cy="12" r="8.2" /><path {...STR} d="M12 11v5.2M12 8.1v.1" /></svg>);
 
 /* ─────────────────────────── утилиты ─────────────────────────── */
 
@@ -785,39 +800,49 @@ function Dashboard({ onOpenPath, onDonate, flash }: {
 
   return (
     <>
+      {/* ЛИЧНОСТЬ — ПРИСУТСТВИЕ, А НЕ СТРОКА КОНТАКТА (ЗКН-Д018). Портрет 88,
+          имя титульным кеглем, духовное имя золотом. Экран сразу «про меня». */}
+      <IdentityHeader
+        avatar={initials(user?.name ?? null, user?.email ?? null)}
+        name={display}
+        sacred={user?.spiritualName || undefined}
+        subtitle={user?.email ?? undefined}
+        onClick={() => setSheet("profile")} />
+
       <Groups>
-        {/* ЛИЧНОСТЬ — первое и главное: кто я. Ступень стоит рядом, потому что
-            именно она настраивает приложение под человека. */}
+        {/* Группы ПЛОТНЫЕ: у Apple заголовок оправдан списком, а не одной
+            строкой. Пять групп на девять строк читались как заготовка. */}
         <Group>
-          <IdentityRow
-            avatar={initials(user?.name ?? null, user?.email ?? null)}
-            title={display}
-            subtitle={user?.email ?? undefined}
-            note={user?.spiritualName
-              ? <span style={{ display: "block", marginTop: 1, fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 600, color: GOLDT }}>{user.spiritualName}</span>
-              : undefined}
+          <Row icon={<IconTile tint={TILE}><PersonIco /></IconTile>}
+            title="Профиль" subtitle="Имя, духовное имя, инициация"
             onClick={() => setSheet("profile")} />
-          <Row title="Ступень практики" value={level ?? "Не выбрана"} last onClick={() => setSheet("level")} />
+          <Row icon={<IconTile tint={TILE}><StepsIco /></IconTile>}
+            title="Ступень практики"
+            value={level ?? <span style={{ color: GOLDT, fontWeight: 600 }}>Выбрать</span>}
+            last onClick={() => setSheet("level")} />
         </Group>
 
-        {/* «МОЁ» ЗДЕСЬ НЕ ЖИВЁТ (ЗКН-Н088). Избранное открывается сердцем в шапке
-            с ЛЮБОГО экрана, заметки и прочитанное — в Практике. Дублировать вход
-            в кабинете значит снова превращать его в свалку ссылок. */}
         <Group header="Аккаунт">
-          <Row title="Вход и безопасность" onClick={() => setSheet("security")} />
-          <Row title="Уведомления" value={pushOn == null ? undefined : pushOn ? "Включены" : "Выключены"} last onClick={() => setSheet("push")} />
-        </Group>
-
-        <Group header="Служение">
-          {atLeastLevel(user, "practicing") && (
-            <Row title="Мои центры" subtitle={`Ваша страница на ${SITE_HOST}`} onClick={() => onOpenPath("/my/centers")} />
-          )}
-          <Row title="Поддержать проект" last onClick={onDonate} />
+          <Row icon={<IconTile tint={TILE}><LockIco /></IconTile>}
+            title="Вход и безопасность" onClick={() => setSheet("security")} />
+          <Row icon={<IconTile tint={TILE}><BellIco /></IconTile>}
+            title="Уведомления"
+            value={pushOn == null ? undefined : pushOn ? "Включены" : "Выключены"}
+            last onClick={() => setSheet("push")} />
         </Group>
 
         <Group header="Приложение">
-          <Row title="О приложении" onClick={() => setSheet("about")} />
-          <Row title="Поделиться приложением" last onClick={share} />
+          {atLeastLevel(user, "practicing") && (
+            <Row icon={<IconTile tint={TILE}><PersonIco /></IconTile>}
+              title="Мои центры" subtitle={`Ваша страница на ${SITE_HOST}`}
+              onClick={() => onOpenPath("/my/centers")} />
+          )}
+          <Row icon={<IconTile><HeartIco /></IconTile>}
+            title="Поддержать проект" onClick={onDonate} />
+          <Row icon={<IconTile tint={TILE}><ShareIco /></IconTile>}
+            title="Поделиться приложением" onClick={share} />
+          <Row icon={<IconTile tint={TILE}><InfoIco /></IconTile>}
+            title="О приложении" last onClick={() => setSheet("about")} />
         </Group>
 
         <Group>

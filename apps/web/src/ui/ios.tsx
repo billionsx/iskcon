@@ -120,7 +120,7 @@ export function GroupHeader({ title, action }: {
  * СЛОЙ ДЕРЖИТ МАТЕРИАЛ, А НЕ СЕРЫЙ ФОН (ЗКН-Д018). У Apple карточка читается
  * разницей с серым холстом; у нас холст белый — под ним лежат Божества, алтари
  * и книги, и серая подложка их гасит. Поэтому группа отделяется мягкой тенью:
- * контактная 1px + рассеянная 24px, обе почти неощутимые. Обводка запрещена —
+ * плотной и короткой (список настроек не парит над страницей). Обводка запрещена —
  * линия по периметру превращает группу в таблицу и читается как веб-форма.
  */
 export function Group({ header, action, footer, children }: {
@@ -134,7 +134,7 @@ export function Group({ header, action, footer, children }: {
         margin: "0 var(--inset-card)",
         background: "var(--color-card)",
         borderRadius: "var(--radius-card)",
-        boxShadow: "var(--shadow-card)",
+        boxShadow: "var(--shadow-group)",
         overflow: "hidden",
       }}>
         {children}
@@ -164,6 +164,55 @@ export function Separator({ inset = 16 }: { inset?: number }) {
       marginLeft: inset, marginRight: "var(--inset-row)",
     }} />
   );
+}
+
+/**
+ * ШАПКА ЛИЧНОСТИ — портрет, имя, подписи. Не строка списка, а ПРИСУТСТВИЕ.
+ *
+ * Кабинет открывали и видели строку контакта: кружок 52 и две строчки текста.
+ * Экран «про меня» начинался как чужой список. В листе «Apple Account» сверху
+ * крупный портрет и имя большим кеглем — и экран сразу твой. Замер iOS 26.5:
+ * портрет 88, имя титульным кеглем, подписи 15 серым, центр, воздух под 26.
+ */
+export function IdentityHeader({ avatar, name, sacred, subtitle, onClick }: {
+  avatar: ReactNode; name: string; sacred?: string; subtitle?: string; onClick?: () => void;
+}) {
+  const inner = (
+    <>
+      <span style={{
+        display: "grid", placeItems: "center", width: 88, height: 88, margin: "0 auto",
+        borderRadius: "50%", background: "var(--color-gold)", color: "var(--color-on-gold)",
+        fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 600,
+        letterSpacing: "-0.02em", boxShadow: "var(--shadow-group)",
+      }}>{avatar}</span>
+      <span style={{
+        display: "block", marginTop: 14, fontFamily: "var(--font-display)",
+        fontSize: "var(--text-title2)", fontWeight: 700, letterSpacing: "-0.02em",
+        lineHeight: 1.15, color: "var(--color-label)",
+      }}>{name}</span>
+      {sacred && (
+        <span style={{
+          display: "block", marginTop: 3, fontFamily: FONT, fontSize: "var(--text-subhead)",
+          fontWeight: 600, color: "var(--color-gold-deep)",
+        }}>{sacred}</span>
+      )}
+      {subtitle && (
+        <span style={{
+          display: "block", marginTop: 3, fontFamily: FONT, fontSize: "var(--text-subhead)",
+          color: "var(--color-label-2)",
+        }}>{subtitle}</span>
+      )}
+    </>
+  );
+  const style: CSSProperties = {
+    display: "block", width: "100%", boxSizing: "border-box",
+    padding: "6px 20px 26px", textAlign: "center",
+    background: "none", border: "none", font: "inherit",
+    cursor: onClick ? "pointer" : "default", WebkitTapHighlightColor: "transparent",
+  };
+  return onClick
+    ? <button type="button" onClick={onClick} style={style}>{inner}</button>
+    : <div style={style}>{inner}</div>;
 }
 
 /** Плитка иконки строки настроек — 29px, радиус 7, цветная заливка. */
