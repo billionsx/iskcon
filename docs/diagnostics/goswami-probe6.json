@@ -1,0 +1,304 @@
+{
+ "gql": "https://api.goswami.ru/graphql",
+ "ts": "2026-07-18T15:36:09Z",
+ "root_fields": [
+  "_empty",
+  "getAlbums",
+  "getCollections",
+  "getCollectionsForAdmin",
+  "getDonationById",
+  "getDonations",
+  "getLocationByID",
+  "getMedia",
+  "getMediaByFilter",
+  "getPresetCategory",
+  "getPresetLocation",
+  "getPresetScripture",
+  "getProfileInfo",
+  "getTagById",
+  "getUsers",
+  "getVacancyById",
+  "getVacncies",
+  "getZeroCollections",
+  "searchTags"
+ ],
+ "root_probed": 1623,
+ "types": [
+  {
+   "field": "getCollections",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"CollectionsResponse\"."
+   ],
+   "subfields": [
+    "data"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getCollections\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"CollectionsResponse\"."
+   ]
+  },
+  {
+   "field": "getLocationByID",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"PresetValue\"."
+   ],
+   "subfields": [
+    "id",
+    "name"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getLocationByID\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getPresetCategory",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"PresetValue\"."
+   ],
+   "subfields": [
+    "id",
+    "name"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getPresetCategory\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getPresetLocation",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"PresetValue\"."
+   ],
+   "subfields": [
+    "id",
+    "name"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getPresetLocation\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getPresetScripture",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"PresetValue\"."
+   ],
+   "subfields": [
+    "id",
+    "name"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getPresetScripture\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getTagById",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"Tag\"."
+   ],
+   "subfields": [
+    "id",
+    "name"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getTagById\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getZeroCollections",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"CollectionsResponse\"."
+   ],
+   "subfields": [
+    "data"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getZeroCollections\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"CollectionsResponse\"."
+   ]
+  },
+  {
+   "field": "searchTags",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"Tag\"."
+   ],
+   "subfields": [
+    "id",
+    "name"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"searchTags\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "_empty",
+   "needs_args": false,
+   "scalar": true,
+   "raw": [
+    "Field \"_empty\" must not have a selection since type \"String\" has no subfields."
+   ],
+   "value": "{\"data\": {\"_empty\": null}, \"extensions\": {\"tracing\": {\"version\": 1, \"startTime\": \"2026-07-18T15:54:58.835Z\", \"endTime\": \"2026-07-18T15:54:58.835Z\", \"duration\": 236784, \"execution\": {\"resolvers\": [{\"path\": [\"_empty\"], \"parentType\": \"Query\", \"fieldName\": \"_empty\", \"returnType\": \"String\", \"startOffset\": 220924, \"duration\": 10780}]}}, \"cacheControl\": {\"version\": 1, \"hints\": [{\"path\": [\"_empty\"], \"maxAge\": 0}]}}}"
+  },
+  {
+   "field": "getAlbums",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"AlbumResponse\"."
+   ],
+   "subfields": [
+    "total"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getAlbums\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"AlbumResponse\"."
+   ]
+  },
+  {
+   "field": "getDonationById",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"DonationResponse\"."
+   ],
+   "subfields": [
+    "data"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getDonationById\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"DonationResponse\"."
+   ]
+  },
+  {
+   "field": "getDonations",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"DonationsResponse\"."
+   ],
+   "subfields": [
+    "data"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getDonations\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"DonationsResponse\"."
+   ]
+  },
+  {
+   "field": "getMedia",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"MediaResponse\"."
+   ],
+   "subfields": [],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getMedia\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"MediaResponse\"."
+   ]
+  },
+  {
+   "field": "getMediaByFilter",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"Media\"."
+   ],
+   "subfields": [
+    "category_id",
+    "collection_id",
+    "description",
+    "duration",
+    "file_url",
+    "id",
+    "in_collections",
+    "location_id",
+    "location_name",
+    "played",
+    "scripture_id",
+    "size",
+    "teaser",
+    "title",
+    "video_id",
+    "video_url"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getMediaByFilter\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getProfileInfo",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"Profile\"."
+   ],
+   "subfields": [
+    "username"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getProfileInfo\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"Profile\"."
+   ]
+  },
+  {
+   "field": "getUsers",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"UsersResponse\"."
+   ],
+   "subfields": [],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getUsers\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"UsersResponse\"."
+   ]
+  },
+  {
+   "field": "getVacancyById",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"Vacancy\"."
+   ],
+   "subfields": [
+    "description",
+    "id",
+    "img_uri",
+    "title"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getVacancyById\" of type \"Query\"."
+   ]
+  },
+  {
+   "field": "getVacncies",
+   "needs_args": false,
+   "scalar": false,
+   "raw": [
+    "Cannot query field \"zzqqzz\" on type \"VacancyResponse\"."
+   ],
+   "subfields": [
+    "data"
+   ],
+   "args_hint": [
+    "Unknown argument \"zzqqzz\" on field \"getVacncies\" of type \"Query\".",
+    "Cannot query field \"id\" on type \"VacancyResponse\"."
+   ]
+  }
+ ]
+}
