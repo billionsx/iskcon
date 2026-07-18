@@ -58,6 +58,7 @@ META_PARALLEL = int(os.getenv("META_PARALLEL") or 24)
 WORK = Path(os.getenv("WORK") or "/tmp/goswami")
 ONLY_ALBUM = (os.getenv("ONLY_ALBUM") or "").strip()
 LIMIT = int(os.getenv("LIMIT") or 0)
+DRY_RUN = (os.getenv("DRY_RUN") or "").strip() not in ("", "0", "false", "no")
 START = time.time()
 
 UA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
@@ -244,7 +245,10 @@ async def main_run() -> int:
     print("::notice::карта: циклов %d · записей %d"
           % (len(albums), sum(len(a["tracks"]) for a in albums)), flush=True)
 
-    register_speakers_albums(p)
+    if DRY_RUN:
+        print("::notice::ВХОЛОСТУЮ: ничего не публикуется и не пишется в базу", flush=True)
+    else:
+        register_speakers_albums(p)
 
     print("сверка с архивом…", flush=True)
     have = ia_survey(albums)
@@ -353,6 +357,11 @@ async def main_run() -> int:
         dest = WORK / ("%s-%s" % (al["id"], t["file"]))
         try:
             size = await loop.run_in_executor(pool, fetch, t["url"], dest)
+            if DRY_RUN:
+                # Вхолостую: цепочка проверяется целиком, кроме публикации.
+                # Скачали, убедились, что источник отдаёт и имя файла собирается,
+                # и удалили. В архив не уходит ничего, в базу — тоже.
+                return
             last = None
             for attempt in range(3):                  # гонка создания элемента: 503/SlowDown
                 try:
@@ -366,7 +375,13 @@ async def main_run() -> int:
             if last:
                 raise last
         finally:
+            if DRY_RUN:
+                sz = dest.stat().st_size if dest.exists() else 0
+                bytes_done += sz
+                done += 1
             dest.unlink(missing_ok=True)
+        if DRY_RUN:
+            return
         pending.append((al, t, t.get("duration") or 0))
         done += 1
         bytes_done += size

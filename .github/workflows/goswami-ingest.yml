@@ -30,6 +30,10 @@ on:
       limit:
         description: "Потолок записей за прогон (0 = без потолка)"
         default: "0"
+      dry_run:
+        description: "Вхолостую: качать и мерить, ничего не публиковать"
+        type: boolean
+        default: false
       dl_parallel:
         description: "Потоков скачивания"
         default: "12"
@@ -65,6 +69,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           ONLY_ALBUM: ${{ inputs.album }}
           LIMIT: ${{ inputs.limit }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
           BUDGET_MIN: "290"
           DL_PARALLEL: ${{ inputs.dl_parallel }}
           IA_PARALLEL: ${{ inputs.ia_parallel }}
@@ -73,7 +78,7 @@ jobs:
       # ЗКН-Ф021: сверка с архивом идёт всегда, даже после сбоя заливки —
       # иначе в D1 останутся дорожки, которых в архиве нет.
       - name: Сверка с архивом
-        if: always()
+        if: ${{ always() && !inputs.dry_run }}
         working-directory: tools/goswami
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -81,14 +86,14 @@ jobs:
         run: python ingest.py verify
 
       - name: Сводка
-        if: always()
+        if: ${{ always() && !inputs.dry_run }}
         working-directory: tools/goswami
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: python ingest.py stats
 
       - name: Продолжить, если осталось
-        if: ${{ steps.run.outputs.left != '0' && steps.run.outputs.left != '' }}
+        if: ${{ !inputs.dry_run && steps.run.outputs.left != '0' && steps.run.outputs.left != '' }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
         run: |
