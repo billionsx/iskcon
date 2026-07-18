@@ -78,6 +78,7 @@ jobs:
       # ЗКН-Ф021: сверка с архивом идёт всегда, даже после сбоя заливки —
       # иначе в D1 останутся дорожки, которых в архиве нет.
       - name: Сверка с архивом
+        id: verify
         if: ${{ always() && !inputs.dry_run }}
         working-directory: tools/goswami
         env:
@@ -92,12 +93,21 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: python ingest.py stats
 
+      # Цепочка обязана пережить ПЛОХОЙ прогон, а не только удачный.
+      # Раньше условие смотрело только на вывод заливки: упала она жёстко —
+      # `left` пуст, и цепочка обрывалась молча, посреди базы. Теперь шаг идёт
+      # ВСЕГДА, а остаток берётся у сверки (она считает недостающее по архиву)
+      # и только потом у заливки. Пусто у обеих — значит правда всё.
       - name: Продолжить, если осталось
-        if: ${{ !inputs.dry_run && steps.run.outputs.left != '0' && steps.run.outputs.left != '' }}
+        if: ${{ always() && !inputs.dry_run }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
         run: |
-          LEFT="${{ steps.run.outputs.left }}"
+          LEFT="${{ steps.verify.outputs.left || steps.run.outputs.left }}"
+          if [ -z "$LEFT" ] || [ "$LEFT" = "0" ]; then
+            echo "::notice::очередь пуста — цепочка закончена"
+            exit 0
+          fi
           echo "::notice::осталось $LEFT записей — перезапускаю себя"
           curl -s -X POST -H "Authorization: token $GH_TOKEN" \
             -H "Accept: application/vnd.github+json" \
