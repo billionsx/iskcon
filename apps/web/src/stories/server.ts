@@ -53,7 +53,7 @@ function ghHeaders(token: string): Record<string, string> {
     Authorization: `Bearer ${token}`,
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "gaurangers-stories",
+    "User-Agent": "iskcon-one-love-stories",
   };
 }
 
@@ -69,7 +69,7 @@ export async function storiesSyncApi(
   if (sub === "manifest" && request.method === "GET") {
     try {
       const r = await fetch(IA_MANIFEST, {
-        headers: { accept: "application/json,*/*", "User-Agent": "gaurangers-stories" },
+        headers: { accept: "application/json,*/*", "User-Agent": "iskcon-one-love-stories" },
         cf: { cacheTtl: 60 },
       } as RequestInit);
       if (!r.ok) return reply({ ok: false, status: r.status, count: 0, stories: [] });

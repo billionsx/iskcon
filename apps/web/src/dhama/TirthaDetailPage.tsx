@@ -20,6 +20,7 @@ import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
 import { NotesAtSource } from "../NotesAtSource";
 
+import { SITE_HOST } from "../routes";
 const NAV_H = 52;
 
 const navBtn = (active: boolean): CSSProperties => ({ display: "grid", height: 44, width: 44, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: active ? "var(--color-red)" : "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" });
@@ -258,7 +259,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
 
           {/* сноска об источнике */}
           <p style={{ margin: "22px 2px 0", fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", lineHeight: "var(--leading-normal)", color: "var(--color-label-3)" }}>
-            Описание подготовлено редакцией gaurangers.com на основе традиционных источников. Координаты приблизительны.
+            Описание подготовлено редакцией {SITE_HOST} на основе традиционных источников. Координаты приблизительны.
           </p>
         </div>
       </div>

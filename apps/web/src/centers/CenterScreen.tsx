@@ -20,6 +20,7 @@ import { QrSheet } from "../QrSheet";
 import { requestNote } from "../notes";
 import { NotesAtSource } from "../NotesAtSource";
 
+import { SITE_HOST } from "../routes";
 /* ───────────────────── палитра / токены ───────────────────── */
 const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
@@ -527,7 +528,7 @@ export default function CenterScreen({
         <button type="button" onClick={onShare} style={{ display: "flex", width: "100%", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 24, padding: "13px 0", borderRadius: 14, border: "none", background: FILL, color: L1, fontFamily: FT, fontSize: "var(--text-subhead)", fontWeight: 600, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <Share size={17} />Поделиться центром
         </button>
-        <p style={{ textAlign: "center", fontFamily: FT, fontSize: "var(--text-caption)", color: L3, margin: "18px 0 0" }}>gaurangers.com · ИСККОН</p>
+        <p style={{ textAlign: "center", fontFamily: FT, fontSize: "var(--text-caption)", color: L3, margin: "18px 0 0" }}>{SITE_HOST} · ИСККОН</p>
       </div>
       {qr && typeof window !== "undefined" && (
         <QrSheet

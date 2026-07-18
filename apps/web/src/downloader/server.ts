@@ -62,7 +62,7 @@ function ghHeaders(token: string): Record<string, string> {
     Authorization: `Bearer ${token}`,
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "gaurangers-downloader",
+    "User-Agent": "iskcon-one-love-downloader",
   };
 }
 
@@ -221,7 +221,7 @@ export async function downloaderApi(
         ids.map(async (id) => {
           try {
             const r = await fetch(`https://archive.org/metadata/${encodeURIComponent(id)}`, {
-              headers: { "User-Agent": "gaurangers-downloader", Accept: "application/json" },
+              headers: { "User-Agent": "iskcon-one-love-downloader", Accept: "application/json" },
             });
             if (!r.ok) return { id, status: "ERROR", mp3: 0, playlist: false, cover: false };
             const d = (await r.json()) as { files?: { name?: string }[] };
@@ -247,7 +247,7 @@ export async function downloaderApi(
       let files: { name?: string; size?: string }[] = [];
       try {
         const r = await fetch(`https://archive.org/metadata/${encodeURIComponent(id)}`, {
-          headers: { "User-Agent": "gaurangers-downloader", Accept: "application/json" },
+          headers: { "User-Agent": "iskcon-one-love-downloader", Accept: "application/json" },
         });
         if (r.ok) {
           const d = (await r.json()) as {
@@ -270,7 +270,7 @@ export async function downloaderApi(
         try {
           const pr = await fetch(
             `https://archive.org/download/${encodeURIComponent(id)}/playlist.json`,
-            { headers: { "User-Agent": "gaurangers-downloader" } },
+            { headers: { "User-Agent": "iskcon-one-love-downloader" } },
           );
           if (pr.ok) {
             const pj = (await pr.json()) as { tracks?: { file?: string; title?: string }[] };

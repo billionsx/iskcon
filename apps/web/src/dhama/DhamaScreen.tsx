@@ -5,6 +5,7 @@
  * подробной), действия ♥ · карты · ⋯ (книжный двухвидовой стандарт). Тап → ПКП.
  */
 import { useMemo, useState } from "react";
+import { ORIGIN as SITE_ORIGIN } from "../routes";
 import { getDhama, tirthaOfDay, KIND_RU, dhamasNow, allTirthasNow, type Dhama, type Tirtha, type TirthaKind } from "./dhamas";
 import { useDhamas } from "./dhamasHydrate";
 import { DhamaHeroCard, dhamaMapsHref } from "./DhamaHeroCard";
@@ -24,7 +25,7 @@ function shareUrl(url: string, title: string) {
   if (nav?.share) void nav.share({ title, url }).catch(() => undefined);
   else { try { void nav?.clipboard?.writeText(url); } catch { /* noop */ } }
 }
-const origin = () => (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com");
+const origin = () => (typeof window !== "undefined" ? window.location.origin : SITE_ORIGIN);
 
 export default function DhamaScreen({ onOpen, onOpenTirtha }: { onOpen: (id: string) => void; onOpenTirtha?: (dhamaId: string, tirthaId: string) => void }) {
   const onMenuDhama = (d: Dhama) => (id: string) => {

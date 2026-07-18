@@ -17,6 +17,7 @@
  * Данные — с воркера /api/tg/iskcone (парсинг t.me/s, кеш 5 мин), бесконечная лента.
  */
 import { useEffect, useRef, useState } from "react";
+import { ORIGIN } from "./routes";
 import { api } from "./api";
 import { CardActionBtns } from "./cardActions";
 import { AudioShowcaseCard } from "./AudioShowcaseCard";
@@ -431,7 +432,7 @@ export function FeedPost({ p, open, onToggle, onDonate, flash }: {
   // Даршан-посты синтезируются из D1 и в Telegram-канале их нет — share/QR/report ведут
   // на пост в приложении, пункт «Открыть в Telegram» скрыт.
   const isDar = p.id.startsWith("d");
-  const shareUrl = isDar ? `${typeof location !== "undefined" ? location.origin : "https://gaurangers.com"}/post/${p.id}` : postUrl(p.id);
+  const shareUrl = isDar ? `${typeof location !== "undefined" ? location.origin : ORIGIN}/post/${p.id}` : postUrl(p.id);
 
   const onPick = (id: string) => {
     if (id === "telegram") { window.open(postUrl(p.id), "_blank", "noopener"); return; }

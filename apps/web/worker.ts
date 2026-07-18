@@ -12,7 +12,7 @@ import { darshanApi, DARSHAN_RE, NON_DARSHAN_RE } from "./src/darshan/server";
  * Archive, ссылка подтверждения — в почту. И `bookPageUrl` вёл на `/books/<слаг>`,
  * хотя книга по ЗКН-Н023b живёт В КОРНЕ (`/brahma-samhita`). Ссылка была МЁРТВАЯ —
  * ровно та поломка, ради которой Н020 и написан: адрес переехал, писатель остался. */
-import { ROUTES, url } from "./src/routes";
+import { ROUTES, url, SITE_HOST, MAIL_HOST, API_ORIGIN, REDIRECT_HOSTS } from "./src/routes";
 import { readingApi } from "./src/reading/server";
 import { downloaderApi } from "./src/downloader/server";
 import { storiesSyncApi } from "./src/stories/server";
@@ -49,12 +49,12 @@ interface Env {
   // только сохраняется в D1, а клиент доставляет письмо через mailto-фолбэк.
   //   wrangler secret put RESEND_API_KEY
   RESEND_API_KEY?: string;
-  REPORT_FROM?: string; // напр. "ISKCON ONE LOVE <noreply@gaurangers.com>"
+  REPORT_FROM?: string; // напр. "ISKCON ONE LOVE <noreply@<почтовый домен>>"
   // Нативная отправка через Cloudflare Email Routing (без сторонних сервисов).
   // Биндинг send_email в wrangler.toml; destination support@billionsx.com должен
-  // быть подтверждён, а Email Routing включён на домене-отправителе gaurangers.com.
+  // быть подтверждён, а Email Routing включён на почтовом домене (MAIL_HOST).
   SEB?: { send: (m: EmailMessage) => Promise<void> };
-  REPORT_FROM_ADDR?: string; // напр. "noreply@gaurangers.com"
+  REPORT_FROM_ADDR?: string; // напр. "noreply@<почтовый домен>"
   // Доставка отчётов в Telegram (без DNS, не зависит от домена). Секреты:
   //   wrangler secret put TELEGRAM_BOT_TOKEN   /   wrangler secret put TELEGRAM_CHAT_ID
   TELEGRAM_BOT_TOKEN?: string;
@@ -1366,7 +1366,7 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
   let sebErr = "";
 
   // 1) Cloudflare Email Routing — нативно, без сторонних сервисов (основной путь).
-  const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+  const fromAddr = env.REPORT_FROM_ADDR || `noreply@${MAIL_HOST}`;
   if (env.SEB) {
     try {
       const mm = createMimeMessage();
@@ -1385,7 +1385,7 @@ async function handleReport(request: Request, env: Env): Promise<Response> {
   let resendErr = "";
   if (!emailed && env.RESEND_API_KEY) {
     try {
-      const from = env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>";
+      const from = env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`;
       const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
       if (rec.email) payload.reply_to = rec.email;
       const r = await fetch("https://api.resend.com/emails", {
@@ -1496,7 +1496,7 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
     + `</div>`;
 
   let emailed = false;
-  const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+  const fromAddr = env.REPORT_FROM_ADDR || `noreply@${MAIL_HOST}`;
   if (env.SEB) {
     try {
       const mm = createMimeMessage();
@@ -1510,7 +1510,7 @@ async function handleOrder(request: Request, env: Env): Promise<Response> {
   }
   if (!emailed && env.RESEND_API_KEY) {
     try {
-      const from = env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>";
+      const from = env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`;
       const payload: Record<string, unknown> = { from, to: ["support@billionsx.com"], subject, text, html };
       if (contact.email) payload.reply_to = contact.email;
       const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -1573,7 +1573,7 @@ async function handleOrderConfirm(request: Request, env: Env, url: URL): Promise
     const fmt = (n: number) => n.toLocaleString("ru-RU") + " \u20bd";
     const subj = `Оплата получена — заказ ${orderNo}`;
     const txt = `${custName ? custName + ", о" : "О"}плата по заказу ${orderNo} на сумму ${fmt(row.total)} получена. Спасибо! Мы приступаем к обработке.\n\nISKCON ONE LOVE · support@billionsx.com`;
-    const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+    const fromAddr = env.REPORT_FROM_ADDR || `noreply@${MAIL_HOST}`;
     let sent = false;
     if (env.SEB) {
       try {
@@ -1588,7 +1588,7 @@ async function handleOrderConfirm(request: Request, env: Env, url: URL): Promise
     }
     if (!sent && env.RESEND_API_KEY) {
       try {
-        await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: env.REPORT_FROM || "ISKCON ONE LOVE <noreply@gaurangers.com>", to: [custEmail], subject: subj, text: txt }) });
+        await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" }, body: JSON.stringify({ from: env.REPORT_FROM || `ISKCON ONE LOVE <noreply@${MAIL_HOST}>`, to: [custEmail], subject: subj, text: txt }) });
       } catch { /* noop */ }
     }
   }
@@ -1938,7 +1938,7 @@ async function dispatchStories(env: Env): Promise<void> {
       Authorization: `Bearer ${env.GH_TOKEN}`,
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "gaurangers-stories-cron",
+      "User-Agent": `${SITE_HOST}-stories-cron`,
       "content-type": "application/json",
     },
     body: JSON.stringify({ ref: "main", inputs: { run_tag: tag, channel: "", identifier: "" } }),
@@ -1983,14 +1983,16 @@ export default {
       });
     }
 
-    // ── Каноничный адрес: сайт всегда открывается как https://gaurangers.com ──
-    // Apex и www привязаны к воркеру как custom_domain (сертификат Cloudflare есть на
-    // обоих), поэтому воркер исполняется на обоих хостах и здесь приводит любой вход к
-    // единому каноничному origin, сохраняя путь и query-строку:
-    //   www.gaurangers.com/*   → https://gaurangers.com/*   (301)   lint-ok: комментарий ОПИСЫВАЕТ канонический origin, а не строит адрес
-    //   http://<любой хост>/*  → https://gaurangers.com/*   (301)   lint-ok: то же — описание редиректа, не построение адреса
-    if (url.hostname === "www.gaurangers.com" || url.protocol === "http:") {
-      url.hostname = "gaurangers.com";
+    // ── Каноничный адрес (ЗКН-Н087) ──────────────────────────────────────────
+    // Канонический хост и список прежних доменов живут в реестре (src/routes.ts).
+    // Все они привязаны к воркеру как custom_domain, поэтому воркер исполняется на
+    // каждом и приводит вход к единому origin, сохраняя путь и query:
+    //   www.<канон>/*, <прежний домен>/*, www.<прежний>/*  → https://<канон>/*  (301)
+    //   http://<любой хост>/*                              → https://<канон>/*  (301)
+    // Служебный хост workers.dev НЕ редиректится: на нём деплой мгновенно проверяет
+    // свежесть бандла (шаг 16), 301 сорвал бы проверку.
+    if (REDIRECT_HOSTS.includes(url.hostname) || url.protocol === "http:") {
+      url.hostname = SITE_HOST;
       url.protocol = "https:";
       url.port = "";
       return Response.redirect(url.toString(), 301);
@@ -2765,7 +2767,7 @@ export default {
         const hit = await cache.match(request);
         if (hit) return hit;
       }
-      const target = "https://api.gaurangers.com/v1/" + url.pathname.slice(5) + url.search;
+      const target = `${API_ORIGIN}/v1/` + url.pathname.slice(5) + url.search;
       // Замер латентности второго бэкенда (/v1). Server-Timing на same-origin
       // ответе виден клиенту через Resource Timing API — так видно, что именно
       // тормозит: хоп на /v1 или сам воркер (временная диагностика).

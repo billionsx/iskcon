@@ -7,6 +7,7 @@ import { tattvaRu, categoriesRu } from "./entityLabels";
 import { getDhama, getTirthaById, KIND_RU } from "./dhama/dhamas";
 import { cleanCardText } from "./cardText";
 
+import { SITE_HOST } from "./routes";
 const CC_LILA: Record<string, string> = { adi: "Ади-лила", madhya: "Мадхья-лила", antya: "Антья-лила" };
 
 /** Структурированная секция печатной карточки: заголовок + подзаголовок + абзацы. */
@@ -292,7 +293,7 @@ async function loadCard(ctype: string, cid: string, album: string, track: string
       if (t.lila) body.push("Лила\n" + t.lila);
       if (t.persons && t.persons.length) body.push("Связанные личности: " + t.persons.map((p) => p.name).join(", "));
       return { kind: "card", header: `${d.name} · святое место`, title: t.name, subtitle: t.iast || undefined, rows, body,
-        footer: "Источник: редакция gaurangers.com · координаты приблизительны" };
+        footer: `Источник: редакция ${SITE_HOST} · координаты приблизительны` };
     }
     if (ctype === "place" || ctype === "restaurant") {
       const wrap = await (await fetch(`/api/places/${encodeURIComponent(cid)}`)).json() as { place?: Record<string, string | null> };
@@ -436,7 +437,7 @@ async function loadCard(ctype: string, cid: string, album: string, track: string
         rows: [["Автор", COOKBOOK.author], ["Разделов", String(COOKBOOK.chapters.length)], ["Рецептов", String(pr.RECIPE_COUNT)]],
         body: [COOKBOOK.blurb],
         sections,
-        footer: "Кухня прасада · gaurangers.com · оригинальное руководство в традиции ИСККОН",
+        footer: `Кухня прасада · ${SITE_HOST} · оригинальное руководство в традиции ИСККОН`,
       };
     }
   } catch { return null; }

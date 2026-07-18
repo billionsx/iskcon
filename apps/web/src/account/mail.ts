@@ -6,7 +6,7 @@
  * (биндинг SEB) умеет отправлять ТОЛЬКО на верифицированные destination-адреса
  * аккаунта. Поэтому:
  *
- *   1) Resend (секрет RESEND_API_KEY, домен gaurangers.com верифицирован в
+ *   1) Resend (секрет RESEND_API_KEY, почтовый домен MAIL_HOST верифицирован в
  *      Resend) — ОСНОВНОЙ путь для писем пользователям.
  *   2) SEB — резерв: сработает лишь если адресат совпал с верифицированным
  *      destination (наши собственные ящики) — полезно для проверки без ключа.
@@ -18,6 +18,7 @@
 
 import { EmailMessage } from "cloudflare:email";
 import { createMimeMessage } from "mimetext/browser";
+import { MAIL_HOST } from "../routes";
 
 export interface MailEnv {
   RESEND_API_KEY?: string;
@@ -58,7 +59,7 @@ function codeLetter(code: string, purpose: "reset" | "verify"): { subject: strin
 /** Отправка кода. true — письмо принято хотя бы одним транспортом. */
 export async function sendCodeMail(env: MailEnv, to: string, code: string, purpose: "reset" | "verify", apiKey?: string): Promise<boolean> {
   const { subject, text, html } = codeLetter(code, purpose);
-  const fromAddr = env.REPORT_FROM_ADDR || "noreply@gaurangers.com";
+  const fromAddr = env.REPORT_FROM_ADDR || `noreply@${MAIL_HOST}`;
 
   // 1) Resend — произвольные адресаты.
   const resendKey = apiKey || env.RESEND_API_KEY;

@@ -26,6 +26,17 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      # ЗКН-Н087 — КАНОНИЧЕСКИЙ ХОСТ ЧИТАЕТСЯ ИЗ РЕЕСТРА, А НЕ ПИШЕТСЯ В WORKFLOW.
+      # Домен приложения переезжает (gaurangers.com → brajs.com → iskcone.com).
+      # Пока хост стоял строкой в шести шагах, переезд оставлял пробы и сброс кэша
+      # на МЁРТВОМ домене: деплой продолжал зеленеть, «подтверждая» старый сайт.
+      - name: Канонический хост из реестра (ЗКН-Н087)
+        run: |
+          SITE=$(grep -oE 'SITE_HOST = "[^"]+"' apps/web/src/routes.ts | head -1 | cut -d'"' -f2)
+          if [ -z "$SITE" ]; then echo "::error::SITE_HOST не найден в apps/web/src/routes.ts"; exit 1; fi
+          echo "SITE_HOST=$SITE" >> "$GITHUB_ENV"
+          echo "::notice::канонический хост — $SITE"
+
       - name: Install deps
         run: bun install
       # ── ЗКН-Пф001: версия кэша PDF выводится из СБОРКИ, а не из руки ──
@@ -95,7 +106,8 @@ jobs:
         timeout-minutes: 55
         working-directory: apps/web
         env:
-          GEN_API_ORIGIN: https://gaurangers.com
+          # ЗКН-Н087: origin берётся из реестра src/routes.ts, а не строкой в workflow
+          GEN_API_ORIGIN: https://${{ env.SITE_HOST }}
           # Пусто на push → genpdf берёт ВСЕ книги из BOOKS (закон: новая книга = запись
           # в BOOKS, без правки workflow). Инкрементально по sig — неизменные пропускаются,
           # поэтому штатный push пересобирает только реально изменившиеся книги.
@@ -216,7 +228,7 @@ jobs:
           fi
           # Край Cloudflare кэширует HTML вопреки no-store (видели cf-cache-status: HIT).
           # Сносим кэш зоны — иначе люди часами получают старую оболочку.
-          ZONE=$(curl -s "$API/zones?name=gaurangers.com" "${auth[@]}" | jq -r '.result[0].id')
+          ZONE=$(curl -s "$API/zones?name=$SITE_HOST" "${auth[@]}" | jq -r '.result[0].id')
           if [ -n "$ZONE" ] && [ "$ZONE" != "null" ]; then
             PR=$(curl -s -X POST "$API/zones/$ZONE/purge_cache" "${auth[@]}" --data '{"purge_everything":true}' | jq -r '.success')
             echo "::notice::кэш зоны снесён: success=$PR"
@@ -237,8 +249,8 @@ jobs:
             bunx wrangler d1 execute iskcon-db --remote \
               --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'web workers.dev',${wcode:-0},'$(echo "$WD ; $wxr" | tr -d "\"'" | cut -c1-180)');" || true
           fi
-          acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://gaurangers.com/")
-          axr=$(curl -s -I --max-time 25 "https://gaurangers.com/" | grep -i 'x-robots-tag' | tr -d '\r')
+          acode=$(curl -s -o /dev/null -w "%{http_code}" --max-time 25 "https://$SITE_HOST/")
+          axr=$(curl -s -I --max-time 25 "https://$SITE_HOST/" | grep -i 'x-robots-tag' | tr -d '\r')
           echo "apex -> HTTP $acode ; $axr"
           bunx wrangler d1 execute iskcon-db --remote \
             --command "INSERT INTO deploy_checks (checked_at,target,http_code,body) VALUES (datetime('now'),'web apex',${acode:-0},'$(echo "$axr" | tr -d "\"'" | cut -c1-150)');" || true
@@ -271,7 +283,7 @@ jobs:
           }
 
           for i in 1 2 3 4 5 6 7 8; do
-            A=$(probe "https://gaurangers.com")
+            A=$(probe "https://$SITE_HOST")
             W=$(probe "https://iskcon-web.ceo-5cb.workers.dev")
             echo "::notice::попытка $i · apex: $A · workers.dev: $W"
             case "$A $W" in
@@ -298,7 +310,7 @@ jobs:
           }
           ok=0; A=0; W=0
           for i in 1 2 3 4 5; do
-            A=$(probe "https://gaurangers.com")
+            A=$(probe "https://$SITE_HOST")
             W=$(probe "https://iskcon-web.ceo-5cb.workers.dev")
             echo "::notice::локатор — apex items=$A · workers.dev items=$W (попытка $i)"
             if [ "${A:-0}" -ge 1 ] && [ "${W:-0}" -ge 1 ]; then ok=1; break; fi

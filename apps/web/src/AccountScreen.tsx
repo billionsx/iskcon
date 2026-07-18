@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuth } from "./account/store";
 import { replaceUrl } from "./nav";
-import { ROUTES } from "./routes";
+import { ROUTES, SITE_HOST } from "./routes";
 import { accountClient, ApiError, type Overview, type ReadingItem, type ListenItem, type BookmarkItem, type SadhanaState, type DevoteeLevel, type Initiation, type IdentityItem } from "./account/api";
 import { ProviderButtons, PROVIDER_META, PROVIDER_NAME, providerGlyph, oauthStartUrl, useAuthProviders, type ProviderId } from "./account/providers";
 import { usePlayer } from "./player/store";
@@ -1169,7 +1169,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
             <span style={{ width: 30, height: 30, borderRadius: 8, flexShrink: 0, display: "grid", placeItems: "center", background: "rgba(210,170,27,0.14)", color: GOLD }}><TempleIco size={18} /></span>
             <span style={{ flex: 1, minWidth: 0 }}>
               <span style={{ display: "block", fontSize: "var(--text-callout)", color: INK, fontWeight: 500 }}>Мои центры</span>
-              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на gaurangers.com</span>
+              <span style={{ display: "block", fontSize: "var(--text-footnote)", color: INK3, marginTop: 1, lineHeight: 1.35 }}>Храм, нама-хатта, ферма — ваша страница на {SITE_HOST}</span>
             </span>
             <span style={{ color: INK3, flexShrink: 0 }}><ChevR /></span>
           </button>
@@ -1249,7 +1249,7 @@ function Dashboard({ onOpenPath, onDonate, flash }: { onOpenPath: (p: string) =>
       <SecurityCard flash={flash} />
       <SettingsCard onEdit={() => setEditing(true)} onDonate={onDonate} onLogout={() => void doLogout()} />
 
-      <p style={{ textAlign: "center", fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, margin: 0 }}>gaurangers.com · ИСККОН</p>
+      <p style={{ textAlign: "center", fontSize: "var(--text-caption)", color: INK3, fontFamily: FONT, margin: 0 }}>{SITE_HOST} · ИСККОН</p>
 
       {editing && <ProfileEditor onClose={() => setEditing(false)} />}
     </div>

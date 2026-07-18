@@ -7,12 +7,13 @@
  * пошаговое приготовление, девотический совет и переход к «Как предлагать».
  */
 import { recipeBySlug, deityById, DIFFICULTY_LABEL, DIETS, type Recipe } from "./prasad";
+import { ORIGIN as SITE_ORIGIN } from "../routes";
 import { chapterForRecipe } from "./cookbook";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
 import { NotesAtSource } from "../NotesAtSource";
 import { ROUTES, url } from "../routes";
 
-const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
+const ORIGIN = typeof window !== "undefined" ? window.location.origin : SITE_ORIGIN;
 export function recipeCtx(r: { slug: string; title: string; subtitle: string }): CardCtx {
   return {
     type: "recipe", id: r.slug, title: r.title, subtitle: r.subtitle,

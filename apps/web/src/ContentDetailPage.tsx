@@ -18,6 +18,7 @@ import { BackIcon, HeartIcon, ShareIcon, MoreIcon, LinkIcon, TopIcon, type IconP
 import { renderTerms } from "./ui/Skt";
 import { CoverFallback } from "./ui/CoverFallback";
 
+import { url, SITE_HOST } from "./routes";
 /** Круглая стеклянная кнопка навбара (как в ПКП). На hero — тёмное стекло; при
  *  скролле растворяется в фон и icon берёт цвет контента (передаётся onGlass). */
 function NavBtn({ ariaLabel, onClick, onGlass, active, activeColor, children }: { ariaLabel: string; onClick: () => void; onGlass: number; active?: boolean; activeColor?: string; children: React.ReactNode }) {
@@ -178,9 +179,9 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const flash = (m: string) => { setToast(m); if (toastTimer.current) clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(null), 2000); };
-  const pageUrl = `https://gaurangers.com${slug}`;
+  const pageUrl = url(slug);
   const share = async () => {
-    const payload = { title: data?.name ?? "ISKCON ONE LOVE", text: data?.name ? `${data.name} — gaurangers.com` : "gaurangers.com", url: pageUrl };
+    const payload = { title: data?.name ?? "ISKCON ONE LOVE", text: data?.name ? `${data.name} — ${SITE_HOST}` : SITE_HOST, url: pageUrl };
     try { if (typeof navigator !== "undefined" && (navigator as Navigator).share) { await (navigator as Navigator).share(payload); return; } } catch { /* cancelled */ }
     try { await navigator.clipboard.writeText(pageUrl); flash("Ссылка скопирована"); } catch { flash(pageUrl); }
   };

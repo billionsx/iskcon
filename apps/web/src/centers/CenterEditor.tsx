@@ -11,6 +11,7 @@
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useAuthed, requireAuth } from "./../account/track";
+import { SITE_HOST } from "../routes";
 import {
   centersClient,
   CENTER_TYPE_LABEL,
@@ -313,7 +314,7 @@ export default function CenterEditor({
           <Field
             label="Адрес страницы"
             error={errField(["bad_slug", "slug_taken"])}
-            hint={<span>gaurangers.com/center/<b style={{ color: L2 }}>{form.slug || "адрес"}</b></span>}
+            hint={<span>{SITE_HOST}/center/<b style={{ color: L2 }}>{form.slug || "адрес"}</b></span>}
           >
             <input
               style={inputStyle}
@@ -327,7 +328,7 @@ export default function CenterEditor({
           </Field>
         ) : (
           <Field label="Адрес страницы" hint="Адрес нельзя изменить после создания.">
-            <div style={{ fontFamily: FT, fontSize: "var(--text-callout)", color: L2 }}>gaurangers.com/center/{form.slug}</div>
+            <div style={{ fontFamily: FT, fontSize: "var(--text-callout)", color: L2 }}>{SITE_HOST}/center/{form.slug}</div>
           </Field>
         )}
         {sep}

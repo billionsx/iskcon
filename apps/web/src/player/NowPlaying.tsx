@@ -6,6 +6,7 @@
  * Контент-слой position:absolute inset:0 — гарантированно на всю высоту, без просветов.
  */
 import { useEffect, useRef, useState, type CSSProperties, useMemo } from "react";
+import { ORIGIN as SITE_ORIGIN } from "../routes";
 import { createPortal } from "react-dom";
 import { COVER_FALLBACK, COVER_FALLBACK_DARK } from "../ui/CoverFallback";
 import { addFavorite, removeFavorite, useFavorites } from "../cardActions";
@@ -338,7 +339,7 @@ export function NowPlaying({ onOpenPath, onOpenBhajan, onDonate, embedded = fals
   function onMove(e: React.PointerEvent) { if (startY.current == null) return; const dy = e.clientY - startY.current; if (dy > 0) setDrag(dy); }
   function onUp() { if (startY.current == null) return; const d = drag; startY.current = null; setDragging(false); setDrag(0); if (d > 110) p.close(); }
 
-  const ORIGIN = "https://gaurangers.com";
+  const ORIGIN = SITE_ORIGIN;
   const artistSlug = isKirtan ? (albumById(p.book)?.artist ?? "") : "";
   const kirtanUrl = artistSlug ? url(ROUTES.kirtanArtist(artistSlug)) : ORIGIN;
   const ch = p.track?.kind === "chapter" ? (p.track?.chapter ?? null) : null;

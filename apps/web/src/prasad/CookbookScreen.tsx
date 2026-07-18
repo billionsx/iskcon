@@ -10,6 +10,7 @@
  * Контент — модуль cookbook.ts (оригинальная проза). См. шапку cookbook.ts.
  */
 import type { ReactNode } from "react";
+import { ORIGIN as SITE_ORIGIN } from "../routes";
 import { COOKBOOK, chapterById, chapterRecipes, COOKBOOK_PRAYERS, type Block, type Chapter } from "./cookbook";
 import { DIFFICULTY_LABEL } from "./prasad";
 import { CardActionBtns, favMetaFromCtx, useCardActions, type CardCtx } from "../cardActions";
@@ -17,7 +18,7 @@ import { ROUTES, url } from "../routes";
 
 const GOLD = "var(--color-gold)";
 
-const ORIGIN = typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com";
+const ORIGIN = typeof window !== "undefined" ? window.location.origin : SITE_ORIGIN;
 const cookbookCtx: CardCtx = {
   type: "cookbook", id: "cookbook", title: COOKBOOK.title, subtitle: COOKBOOK.subtitle,
   url: url(ROUTES.cookbook()), context: `Книга · ${COOKBOOK.title} · ${ROUTES.cookbook()}`,

@@ -1177,7 +1177,7 @@ export default function EntityPage({ id, onBack, onOpen, onNavigate, onOpenColle
   const topicPath = topicIsDefault
     ? "/" + id
     : sub ? `/${id}/${encodeURIComponent(tab)}/${encodeURIComponent(sub)}` : `/${id}/${encodeURIComponent(tab)}`;
-  const topicUrl = "https://gaurangers.com" + topicPath;
+  const topicUrl = url(topicPath);
   const topicSubObj = visibleSubs.find((st) => st.id === sub);
   const topicTabLabel = activeTabObj?.title || activeTabObj?.label || "";
   const topicSubLabel = topicSubObj?.label || "";

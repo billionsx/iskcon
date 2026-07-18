@@ -5,6 +5,7 @@
  * действия; тяжёлые уводят на ПКП.
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { ORIGIN as SITE_ORIGIN } from "../routes";
 import { centersClient, CENTER_TYPE_LABEL, type CenterListItem, type CenterType } from "./api";
 import { CenterHeroCard, centerMapsHref } from "./CenterHeroCard";
 import CentersMap from "./CentersMap";
@@ -93,7 +94,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
   }, [view, q, type]);
 
   const onMenu = (it: CenterListItem) => (id: string) => {
-    const url = (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com") + "/iskcon/centers/" + it.slug;
+    const url = (typeof window !== "undefined" ? window.location.origin : SITE_ORIGIN) + "/iskcon/centers/" + it.slug;
     const place = [it.city, it.country].filter(Boolean).join(", ");
     if (id === "share") {
       const nav = typeof navigator !== "undefined" ? navigator : null;

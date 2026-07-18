@@ -24,6 +24,7 @@ import { mirrorFavorite, syncFavoritesToServer, useAuthed } from "./account/trac
 import { syncNotesWithServer, resetNotesSync, requestNote } from "./notes";
 import { HeartIcon, MoreIcon } from "./ui/icons";
 
+import { ORIGIN } from "./routes";
 /* ── Избранное: localStorage `fav:<key>`; key = `<type>:<id>`.
  *  Значение — JSON {ts,t,s,h}: момент добавления + снимок для экрана «Избранное»
  *  (заголовок · подзаголовок · относительная in-app ссылка). Старые записи "1"
@@ -233,7 +234,7 @@ export function CardActionsProvider({ children, onDonate }: { children: ReactNod
     if (id === "report") { setReport(c); return; }
     if (id === "note") {
       let href = c.url;
-      try { href = new URL(c.url, typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com").pathname; } catch { /* keep as-is */ }
+      try { href = new URL(c.url, typeof window !== "undefined" ? window.location.origin : ORIGIN).pathname; } catch { /* keep as-is */ }
       requestNote({ kind: c.type, ref: `${c.type}:${c.id}`, title: c.title, subtitle: c.subtitle, href });
       return;
     }

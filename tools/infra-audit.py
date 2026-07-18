@@ -488,7 +488,68 @@ def check_f026():
     return bad
 
 
+
+def check_n087():
+    """ЗКН-Н087 — ДОМЕН ЖИВЁТ В РЕЕСТРЕ, ПЕРЕЕЗД = ОДНА СТРОКА.
+
+    Домен приложения меняется (gaurangers.com → brajs.com → iskcone.com). Пока он
+    был записан строкой в воркере, в wrangler.toml и в шагах деплоя, переезд был
+    охотой за хардкодами: что-то оставалось на старом хосте и молча ломалось —
+    канонический 301, адрес отправителя писем, прод-пробы CI.
+
+    ДВЕ СТАТЬИ:
+      A. В исходниках apps/web (кроме самого реестра src/routes.ts) нет голого
+         домена вида *.com. Комментарии и текст документации не в счёт — ломается
+         КОД, а не пояснение.
+      B. Маршруты apps/web/wrangler.toml покрывают канонический хост (SITE_HOST),
+         его www и каждый ALIAS_HOST. Иначе прежний домен перестанет быть
+         привязан к воркеру, и 301 на канонический просто некому будет отдать —
+         старые ссылки и QR-коды умрут молча.
+    """
+    bad = []
+    routes = ROOT / "apps" / "web" / "src" / "routes.ts"
+    if not routes.exists():
+        return [("routes.ts", "нет реестра адресов — Н087 не на чем держаться")]
+    reg = routes.read_text(encoding="utf-8")
+
+    m = re.search(r'SITE_HOST\s*=\s*"([^"]+)"', reg)
+    if not m:
+        return [("routes.ts", "нет константы SITE_HOST — канонический хост негде прочитать")]
+    site = m.group(1)
+    mail = (re.search(r'MAIL_HOST\s*=\s*"([^"]+)"', reg) or m).group(1)
+    api_host = (re.search(r'API_HOST\s*=\s*"([^"]+)"', reg) or m).group(1)
+    aliases = re.findall(r'"([a-z0-9.-]+\.[a-z]{2,})"', 
+                         (re.search(r'ALIAS_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) or
+                          re.match(r'(?P<x>)', '')).group(1) if re.search(r'ALIAS_HOSTS[^=]*=\s*\[(.*?)\]', reg, re.S) else "")
+
+    # ── A · голый домен в коде мимо реестра ──
+    known = {site, mail, api_host, *aliases}
+    dom_re = re.compile(r'["\'`][^"\'`]*\b([a-z0-9-]+\.(?:com|ru|org|net))\b')
+    src = ROOT / "apps" / "web" / "src"
+    for f in list(src.rglob("*.ts")) + list(src.rglob("*.tsx")) + [ROOT / "apps" / "web" / "worker.ts"]:
+        if f.name == "routes.ts":
+            continue
+        for i, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            s = line.strip()
+            if s.startswith("*") or s.startswith("//") or s.startswith("/*"):
+                continue
+            for hit in dom_re.findall(line):
+                if hit in known:
+                    bad.append((f.name, "стр.%d: домен «%s» строкой мимо src/routes.ts" % (i, hit)))
+
+    # ── B · маршруты воркера покрывают все хосты реестра ──
+    wr = ROOT / "apps" / "web" / "wrangler.toml"
+    if wr.exists():
+        conf = wr.read_text(encoding="utf-8")
+        need = [site, "www." + site] + [h for a in aliases for h in (a, "www." + a)]
+        for host in need:
+            if not re.search(r'pattern\s*=\s*"%s"' % re.escape(host), conf):
+                bad.append(("wrangler.toml", "хост «%s» из реестра не привязан маршрутом" % host))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н087", "домен только из реестра routes.ts", check_n087),
     ("ЗКН-Ф026", "чтения книг кэшируются на краю", check_f026),
     ("ЗКН-Пл025", "видео мирроринг частый + лента с зеркала без Telegram-виджета", check_pl025),
     ("ЗКН-Пл016", "источник смертен — проверять живость", check_pl015),

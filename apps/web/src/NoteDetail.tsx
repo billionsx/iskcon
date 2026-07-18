@@ -8,6 +8,7 @@
  * сразу открывает редактор.
  */
 import { useEffect, useRef, useState } from "react";
+import { ORIGIN } from "./routes";
 import { createPortal } from "react-dom";
 import { NoteHeroCard } from "./NoteHeroCard";
 import NoteEditor from "./NoteEditor";
@@ -95,7 +96,7 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
     }
   };
 
-  const noteUrl = (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com") + "/note/" + note.id;
+  const noteUrl = (typeof window !== "undefined" ? window.location.origin : ORIGIN) + "/note/" + note.id;
 
   return (
     <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)", overflow: "hidden" }}>

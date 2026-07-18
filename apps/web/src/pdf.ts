@@ -1,4 +1,5 @@
-/**
+
+import { SITE_HOST } from "./routes";/**
  * PDF export for the current level (book / chapter / verse / bhajan).
  *
  * We don't rasterise — we use the browser's print pipeline so text stays
@@ -64,7 +65,7 @@ export function exportToPdf(
   const footTd = document.createElement("td");
   const foot = document.createElement("div");
   foot.className = "pdf-foot";
-  foot.textContent = "ISKCON ONE LOVE · " + ((typeof location !== "undefined" && location.hostname) || "gaurangers.com");
+  foot.textContent = "ISKCON ONE LOVE · " + ((typeof location !== "undefined" && location.hostname) || SITE_HOST);
   footTd.appendChild(foot);
   footTr.appendChild(footTd);
   tfoot.appendChild(footTr);

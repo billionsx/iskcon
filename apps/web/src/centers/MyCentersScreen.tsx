@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } 
 import { useAuthed, requireAuth } from "./../account/track";
 import { centersClient, CENTER_TYPE_LABEL, STATUS_LABEL, type MyCenterItem, type CenterStatus } from "./api";
 
+import { SITE_HOST } from "../routes";
 /* ───────────────────── палитра ───────────────────── */
 const GOLD = "var(--color-gold)";
 const GOLDT = "#9c7c15";
@@ -122,7 +123,7 @@ export default function MyCentersScreen({
           <span style={{ display: "grid", placeItems: "center", width: 56, height: 56, margin: "0 auto 14px", borderRadius: 16, background: `color-mix(in srgb, ${GOLD} 14%, transparent)` }}><Temple size={26} /></span>
           <div style={{ fontFamily: FD, fontSize: "var(--text-title2)", fontWeight: 800, letterSpacing: "-0.02em", color: L1 }}>Мои центры</div>
           <p style={{ margin: "9px auto 0", maxWidth: 320, fontFamily: FT, fontSize: "var(--text-subhead)", lineHeight: 1.5, color: L2 }}>
-            Войдите, чтобы добавить храм, нама-хатту или проповеднический центр и вести его страницу на gaurangers.com.
+            Войдите, чтобы добавить храм, нама-хатту или проповеднический центр и вести его страницу на {SITE_HOST}.
           </p>
           <button type="button" onClick={requireAuth} style={{ marginTop: 18, width: "100%", padding: "13px 0", borderRadius: 13, border: "none", background: GOLD, color: "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
             Войти

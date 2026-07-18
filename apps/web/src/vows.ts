@@ -11,6 +11,7 @@
 import { useCallback, useSyncExternalStore } from "react";
 import { api } from "./api";
 
+import { SITE_HOST } from "./routes";
 export type Commitment = { id: string; label: string; detail?: string; target?: number; unit?: string };
 export type VowStatus = "active" | "completed" | "abandoned";
 export interface Vow {
@@ -251,7 +252,7 @@ export function vowReportText(vow: Vow): string {
     `Выполнено: ${s.pct}% · серия ${s.current}, лучшая ${s.longest}`,
     "Служения:",
     ...vow.commitments.map((c) => { const p = s.per.find((x) => x.id === c.id); return `• ${c.label}${c.detail ? ` (${c.detail})` : ""} — ${p?.pct ?? 0}%${p?.numeric ? ` · ${p.sum} ${c.unit || ""}`.trimEnd() : ""}`; }),
-    "gaurangers.com",
+    SITE_HOST,
   ];
   return lines.join("\n");
 }
