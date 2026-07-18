@@ -440,7 +440,7 @@ export default function VowScreen({ onBack }: { onBack: () => void }) {
       </header>
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
+        <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "16px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
           {creating ? (
             <VowCreate onDone={() => setCreating(false)} onCancel={() => setCreating(false)} />
           ) : active ? (

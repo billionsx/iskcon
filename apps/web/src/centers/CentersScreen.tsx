@@ -123,7 +123,7 @@ export default function CentersScreen({ onBack, onOpenPath }: { onBack: () => vo
       </header>
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 0 calc(40px + env(safe-area-inset-bottom,0px))" }}>
+        <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "0 0 calc(40px + env(safe-area-inset-bottom,0px))" }}>
           {/* поиск */}
           <div style={{ padding: "12px 16px 8px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, height: 40, padding: "0 12px", borderRadius: 12, background: "rgba(120,120,128,0.12)" }}>

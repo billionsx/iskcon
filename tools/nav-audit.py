@@ -1449,7 +1449,74 @@ def check_n085():
     return bad
 
 
+def check_n086():
+    """ЗКН-Н086: ЛАНДШАФТ ТЕЛЕФОНА — ЭТО РЕЖИМ, А НЕ СЛУЧАЙНОСТЬ: ХРОМА И ШИРИНА ЛИСТА ЖИВУТ В ТОКЕНАХ.
+
+    В ландшафте телефона ВЫСОТА — дефицит (~390px), ШИРИНА — избыток (~844px). Пока
+    высоты шапки/меню и ширина листа были зашиты числами по двадцати файлам, поворот
+    нельзя было спроектировать — только перевёрстывать всё руками. Инвариант:
+    (1) в `:root` живут токены `--h-top-header` · `--gtab-h` · `--gtab-bottom` ·
+    `--content-bottom` · `--sheet-max` · `--read-max` · `--safe-l`/`--safe-r`;
+    (2) ландшафтный `@media` переопределяет ИХ (ужимает хрому, расширяет лист);
+    (3) `.app-viewport` держит БОКОВЫЕ вырезы (в ландшафте вырез съедает боковой край);
+    (4) полноэкранные читалки не зажаты числом 480, а берут меру чтения `--read-max`;
+    (5) КРИТИЧНО: `--gtab-h` в CSS обязан совпадать с `BAR_H` в App.tsx — физика линзы
+    Liquid Glass считает центр капли от высоты плашки, рассинхрон увёл бы линзу.
+    """
+    bad = []
+    css_raw = read(SRC / "ui" / "globals.css")
+    app_raw = read(SRC / "App.tsx")
+    css = re.sub(r"/\*.*?\*/", "", css_raw, flags=re.S) if css_raw else ""
+    app = re.sub(r"/\*.*?\*/", "", app_raw, flags=re.S) if app_raw else ""
+    if not css or not app:
+        return [("globals.css/App.tsx", "Н086: нет исходников оболочки")]
+
+    for tok in ("--h-top-header", "--gtab-h", "--gtab-bottom", "--content-bottom",
+                "--sheet-max", "--read-max", "--safe-l", "--safe-r"):
+        if not re.search(r"^\s*" + re.escape(tok) + r"\s*:", css, flags=re.M):
+            bad.append(("globals.css", "Н086: нет токена " + tok + " — хрома снова зашита числом, поворот не спроектировать"))
+
+    m = re.search(r"@media \(orientation: landscape\)[^{]*\{(.*)", css, flags=re.S)
+    if not m:
+        bad.append(("globals.css", "Н086: нет ландшафтного @media"))
+    else:
+        block = m.group(1)[:1400]
+        if "--sheet-max" not in block or "--h-top-header" not in block:
+            bad.append(("globals.css", "Н086: ландшафтный @media не переопределяет токены (--sheet-max/--h-top-header) — поворот ничего не меняет"))
+
+    vp = re.search(r"(?ms)^\s*\.app-viewport\s*\{(.*?)\}", css)
+    if not vp or "--safe-l" not in vp.group(1):
+        bad.append(("globals.css", "Н086: .app-viewport без боковых вырезов (--safe-l/--safe-r) — в ландшафте контент уедет под вырез"))
+    sh = re.search(r"(?ms)^\s*\.app-shell\s*\{(.*?)\}", css)
+    if not sh or "var(--sheet-max)" not in sh.group(1):
+        bad.append(("globals.css", "Н086: .app-shell не берёт ширину из --sheet-max"))
+    wrap = re.search(r"(?ms)^\s*\.gtab-wrap\s*\{(.*?)\}", css)
+    if not wrap or "var(--gtab-bottom)" not in wrap.group(1):
+        bad.append(("globals.css", "Н086: .gtab-wrap не берёт отступ из --gtab-bottom"))
+
+    if 'height: "var(--h-top-header)"' not in app:
+        bad.append(("App.tsx", "Н086: TopHeader снова с зашитой высотой — в ландшафте шапка не ужмётся"))
+    if "var(--content-bottom)" not in app:
+        bad.append(("App.tsx", "Н086: нижний воздух контента зашит числом вместо --content-bottom"))
+
+    # Полноэкранные читалки не зажаты числом 480.
+    for p in sorted(SRC.rglob("*.tsx")):
+        t = read(p) or ""
+        if re.search(r"maxWidth: 480, zIndex: (70|80)", t):
+            bad.append((p.name, "Н086: полноэкранная читалка зажата 480 — обязана брать var(--read-max)/var(--sheet-max)"))
+
+    # CSS ↔ JS: высота пилюли и BAR_H физики линзы.
+    mc = re.search(r"--gtab-h\s*:\s*(\d+)px", css)
+    mj = re.search(r"BAR_H\s*=\s*(\d+)", app)
+    if mc and mj and mc.group(1) != mj.group(1):
+        bad.append(("globals.css/App.tsx", "Н086: --gtab-h=" + mc.group(1) + " ≠ BAR_H=" + mj.group(1) + " — линза Liquid Glass съедет по вертикали; менять только вместе"))
+    elif not mj:
+        bad.append(("App.tsx", "Н086: не найден BAR_H — нечем сверить высоту пилюли с CSS"))
+    return bad
+
+
 CHECKS = [
+    ("ЗКН-Н086", "ландшафт — режим: хрома и ширина листа в токенах, боковые вырезы, мера чтения", check_n086),
     ("ЗКН-Н085", "спроектированный ландшафт: оболочка не ломается, лист центрирован на поле", check_n085),
     ("ЗКН-Н084", "оболочка приколота к вьюпорту; body не скроллит — только <main>", check_n084),
     ("ЗКН-Н083", "закладка стиха/главы = каноническая ссылка писания", check_n083),

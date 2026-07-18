@@ -98,7 +98,7 @@ function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
 /* ═════════ TopHeader — search / wordmark / favorites ═════════ */
 function TopHeader({ onHome, onFavorites, onSearch, onOpenPath }: { onHome?: () => void; onFavorites?: () => void; onSearch?: () => void; onOpenPath: (path: string) => void }) {
   return (
-    <header style={{ position: "sticky", top: 0, zIndex: 30, height: 56, flexShrink: 0, background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
+    <header style={{ position: "sticky", top: 0, zIndex: 30, height: "var(--h-top-header)", flexShrink: 0, background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
       <div style={{ display: "grid", height: "100%", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", padding: "0 12px" }}>
         <div style={{ display: "flex", justifyContent: "flex-start" }}>
           <button aria-label="Поиск" onClick={onSearch} style={{ display: "grid", height: 40, width: 40, placeItems: "center", borderRadius: "50%", background: "none", border: "none", color: "var(--color-label)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
@@ -1039,7 +1039,7 @@ function Screen({ tab, onChange, onOpenBook, onOpenBhajan, onOpenKirtanArtist, o
     <div style={{ position: "relative", display: "flex", flexDirection: "column", height: "100dvh", minHeight: 0 }}>
       <TopHeader onFavorites={onFavorites} onSearch={onSearch} onOpenPath={onOpenPath} onHome={() => { onChange(HOME_TAB); window.dispatchEvent(new CustomEvent("tab-reset", { detail: HOME_TAB })); mainRef.current?.scrollTo({ top: 0, behavior: "smooth" }); }} />
       <main ref={mainRef} style={{ position: "relative", flex: 1, minHeight: 0, overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
-        <div style={{ padding: "16px 16px calc(116px + var(--player-extra))" }}>
+        <div style={{ padding: "16px 16px calc(var(--content-bottom) + var(--player-extra))" }}>
           {/* ЗКН-Ф016 — ОДИН КРАШ НЕ УБИВАЕТ ВСЁ ПРИЛОЖЕНИЕ.
            * Без границы React размонтирует ВСЁ ДЕРЕВО при первом же исключении:
            * человек видит белый лист ВЕЗДЕ, пока не перезагрузит. Так один битый

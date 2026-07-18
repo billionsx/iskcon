@@ -413,7 +413,7 @@ export default function JapaScreen({ onBack }: { onBack: () => void }) {
       </header>
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", padding: "12px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
+        <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "12px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
 
           {/* режимы */}
           <div style={{ display: "flex", gap: 3, padding: 3, borderRadius: 12, background: FILL, marginBottom: 16 }}>

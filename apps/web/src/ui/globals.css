@@ -49,7 +49,22 @@
      контент и нижние подписи не прятались под пилюлю. Полноэкранные оверлеи
      (читалки/истории/модалки с крестиком, z≥70) перекрывают пилюлю целиком и
      используют собственный env(safe-area-inset-bottom) — им резерв не нужен. */
-  --gtab-reserve: calc(104px + env(safe-area-inset-bottom));
+  /* ЗКН-Н086 — ХРОМА И ШИРИНА ЛИСТА ЖИВУТ В ТОКЕНАХ, А НЕ В ЧИСЛАХ ПО ФАЙЛАМ.
+     Ландшафт телефона переопределяет ИХ (см. @media orientation: landscape) —
+     и вся оболочка перестраивается разом, без правок в двадцати местах. */
+  --gtab-h: 62px;             /* ⚠ синхронизировано с BAR_H в App.tsx (физика линзы
+                                 Liquid Glass считает центр капли от высоты плашки).
+                                 Менять ТОЛЬКО вместе с BAR_H — иначе линза съедет. */
+  --gtab-bottom: 16px;        /* отступ пилюли от низа — ландшафт ужимает */
+  --gtab-reserve: calc(var(--gtab-h) + var(--gtab-bottom) + 26px + env(safe-area-inset-bottom));
+  --h-top-header: 56px;       /* высота верхней шапки (TopHeader) */
+  --content-bottom: 116px;    /* нижний воздух контента шелла (под пилюлей) */
+  --sheet-max: 480px;         /* ширина ЛИСТА приложения и оверлеев-списков */
+  --read-max: 480px;          /* ширина колонки НЕПРЕРЫВНОГО ЧТЕНИЯ (мера строки) */
+  /* Боковые вырезы. В ландшафте айфона Dynamic Island/вырез съедает БОКОВОЙ край —
+     без этих отступов текст и кнопки уезжают под железо. В портрете они равны 0. */
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
   /* Доп. высота, когда виден мини-плеер (он сидит над пилюлей, height≈58 + зазор).
      Скролл-контейнеры добавляют её к нижнему резерву, чтобы плеер не закрывал низ
      страниц (пейджер/последний абзац). Включается классом body.player-on. */
@@ -385,6 +400,12 @@
     justify-content: center;
     height: 100dvh;
     width: 100%;
+    /* ЗКН-Н086 — БОКОВЫЕ ВЫРЕЗЫ. В ландшафте вырез/Dynamic Island съедает боковой
+     * край экрана. Поле держит отступ, лист центрируется в БЕЗОПАСНОЙ области —
+     * ни текст, ни кнопки не уезжают под железо. В портрете отступы равны 0. */
+    box-sizing: border-box;
+    padding-left: var(--safe-l);
+    padding-right: var(--safe-r);
     background: var(--color-bg);
     color: var(--color-label);
   }
@@ -393,7 +414,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 480px;
+    max-width: var(--sheet-max);
     height: 100dvh;
     background: var(--color-bg);
   }
@@ -414,6 +435,20 @@
    * Порог max-height:600px отделяет ТЕЛЕФОН в ландшафте (высота ~375…430) от
    * планшета (высота ≥768): планшету рамка-лист не нужна — ему хватает колонки. */
   @media (orientation: landscape) and (max-height: 600px) {
+    /* ЗКН-Н086 — ЛАНДШАФТ ПЕРЕНАСТРАИВАЕТ ТОКЕНЫ, А НЕ ПЕРЕВЁРСТЫВАЕТ ЭКРАНЫ.
+     * В ландшафте телефона ВЫСОТА — дефицит (≈390px), ШИРИНА — избыток (≈844px).
+     * Поэтому: хрома ужимается по высоте (шапка 56→44, пилюля ближе к низу),
+     * а лист расширяется 480→680, чтобы ширина работала на контент.
+     * Высоту пилюли НЕ трогаем: её центр считает JS (BAR_H) — рассинхрон увёл бы
+     * линзу Liquid Glass. Колонка чтения (--read-max) отстаёт от листа: строка
+     * длиннее ~75 знаков нечитаема, поэтому текст держит меру, а не край листа. */
+    :root {
+      --h-top-header: 44px;
+      --gtab-bottom: 10px;
+      --content-bottom: 110px;
+      --sheet-max: 680px;
+      --read-max: 600px;
+    }
     .app-viewport {
       background: color-mix(in srgb, var(--color-label) 3%, var(--color-bg));
     }
@@ -685,7 +720,7 @@
  * плашки симметричен сверху/снизу/слева/справа (padX = vGap).
  * ─────────────────────────────────────────────────────────────────── */
 .gtab-wrap {
-  position: absolute; left: 0; right: 0; bottom: 16px; z-index: 40;
+  position: absolute; left: 0; right: 0; bottom: var(--gtab-bottom); z-index: 40;
   pointer-events: none; padding-bottom: env(safe-area-inset-bottom);
 }
 /* Главное меню поверх страниц-оверлеев со скроллом → нижний воздух (--gtab-reserve),
@@ -719,7 +754,7 @@ body.gtab-off .gtab-wrap { display: none; }
  * ЗАКОН таб-бара: высота 62px, bottom 16px, z-40, резерв --gtab-reserve. */
 .gtab {
   pointer-events: auto; position: relative; margin: 0 auto;
-  width: calc(100% - 32px); height: 62px;
+  width: calc(100% - 32px); height: var(--gtab-h);
   padding: 0 6px;
   --gt-ic-h: 21px; --gt-ic-w: 38px;     /* бокс шире лотоса (1.64) — все упираются в высоту */
   --gt-accent: #0a84ff;                 /* активный таб (тёмная тема) */

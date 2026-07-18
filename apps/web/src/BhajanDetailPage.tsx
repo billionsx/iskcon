@@ -156,7 +156,7 @@ function BhajanVerseScreen({ verses, idx, bhajanName, onClose, onNav }: { verses
     }
   };
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 80, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       <header style={{ flexShrink: 0, height: 52, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: "var(--color-bg)", borderBottom: "0.5px solid var(--color-hairline)" }}>
         <PlainBtn ariaLabel="К бхаджану" onClick={onClose}><BackIcon size={22} /></PlainBtn>
         <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>
@@ -431,7 +431,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
   }, [vIdx, prevB, nextB, onBack, onOpenBhajan]);
 
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* scroll-edge навбар — назад + титул на скролле */}
       <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 2, padding: "0 8px",
         background: `color-mix(in srgb, var(--color-glass-nav) ${Math.round(t * 100)}%, transparent)`,

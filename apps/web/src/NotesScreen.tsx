@@ -147,7 +147,7 @@ export default function NotesScreen({ onBack, onNavigate, initial }: { onBack: (
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--sheet-max)", zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack}
           style={{ display: "grid", height: 38, width: 38, placeItems: "center", borderRadius: "50%", border: "none", background: "none", color: INK, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>

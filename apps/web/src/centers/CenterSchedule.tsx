@@ -185,7 +185,7 @@ export default function CenterSchedule({
         {right ?? <span style={{ width: 38 }} />}
       </header>
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", padding: "14px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>{children}</div>
+        <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "14px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>{children}</div>
       </div>
     </div>
   );

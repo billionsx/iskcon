@@ -1685,7 +1685,7 @@ function ChapterPage({ chapter, chapters, hierOrder, hierWeights, divisionInfo, 
   };
 
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "left", paddingLeft: 4, opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
@@ -2257,7 +2257,7 @@ function ProseChapterPage({ chapter, chapters, bookTitle, work = "brs", onBack, 
   };
 
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 70, display: "flex", flexDirection: "column", background: PAPER }}>
       <header style={{ flexShrink: 0, height: 56, display: "flex", alignItems: "center", gap: 4, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${collapsed ? LINE : "transparent"}`, transition: "border-color .2s", zIndex: 2 }}>
         <NavBtn ariaLabel="Назад" onClick={onBack}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, textAlign: "center", opacity: collapsed ? 1 : 0, transform: collapsed ? "none" : "translateY(3px)", transition: "opacity .2s, transform .2s" }}>
@@ -2442,7 +2442,7 @@ function VerseReader({ refStr, bookTitle, work = "bg", chapters, hierOrder, hier
   };
 
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 80, display: "flex", flexDirection: "column", background: PAPER }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 80, display: "flex", flexDirection: "column", background: PAPER }}>
       <header style={{ flexShrink: 0, height: 54, display: "flex", alignItems: "center", gap: 1, padding: "0 6px", background: PAPER, borderBottom: `0.5px solid ${LINE}`, zIndex: 3 }}>
         <NavBtn ariaLabel="Закрыть" onClick={onClose}><BackIcon size={22} /></NavBtn>
         <div style={{ flex: 1, minWidth: 0, paddingLeft: 2 }}>

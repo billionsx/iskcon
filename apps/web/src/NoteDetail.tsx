@@ -98,7 +98,7 @@ export default function NoteDetail({ id, onBack, onNavigate }: { id: string; onB
   const noteUrl = (typeof window !== "undefined" ? window.location.origin : "https://gaurangers.com") + "/note/" + note.id;
 
   return (
-    <div style={{ position: "fixed", inset: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)", overflow: "hidden" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)", overflow: "hidden" }}>
       <style>{DOC_CSS}</style>
       <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch", padding: "12px 16px calc(40px + env(safe-area-inset-bottom))" }}>
         {/* шапка-карточка (ПКП hero) */}

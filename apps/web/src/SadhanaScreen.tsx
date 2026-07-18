@@ -378,7 +378,7 @@ export default function SadhanaScreen({ onBack, onOpenPath }: { onBack: () => vo
       </header>
 
       <div style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", padding: "14px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
+        <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "14px 16px calc(40px + env(safe-area-inset-bottom,0px))" }}>
 
           {/* — гость — */}
           {status === "guest" && (

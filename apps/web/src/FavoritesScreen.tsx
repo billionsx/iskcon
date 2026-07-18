@@ -379,7 +379,7 @@ export default function FavoritesScreen({ onBack, onNavigate }: { onBack: () => 
     borderBottom: `0.5px solid ${LINE}` };
 
   return (
-    <div style={{ position: "fixed", inset: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--sheet-max)", zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* навбар */}
       <header style={navStyle}>
         <button type="button" aria-label="Назад" onClick={onBack}

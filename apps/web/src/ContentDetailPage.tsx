@@ -244,7 +244,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
   const firstAccentIdx = blocks.findIndex((b) => b.kind === "accent");
 
   return (
-    <div style={{ position: "fixed", top: 0, bottom: 0, left: 0, right: 0, margin: "0 auto", width: "100%", maxWidth: 480, zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
+    <div style={{ position: "fixed", top: 0, bottom: 0, left: "var(--safe-l)", right: "var(--safe-r)", margin: "0 auto", width: "100%", maxWidth: "var(--read-max)", zIndex: 70, display: "flex", flexDirection: "column", background: "var(--color-bg)" }}>
       {/* nav bar: прозрачный над hero → liquid-glass со scroll-edge blur; заголовок проявляется */}
       <header style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 30, height: 52, display: "flex", alignItems: "center", gap: 2, padding: "0 6px",
         background: `color-mix(in srgb, var(--color-glass-nav) ${Math.round(t * 100)}%, transparent)`,

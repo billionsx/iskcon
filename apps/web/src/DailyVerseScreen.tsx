@@ -107,7 +107,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
       </header>
 
       <div ref={scroller} style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", WebkitOverflowScrolling: "touch" }}>
-        <div style={{ maxWidth: 480, margin: "0 auto", padding: "20px 20px calc(120px + env(safe-area-inset-bottom,0px))" }}>
+        <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "20px 20px calc(120px + env(safe-area-inset-bottom,0px))" }}>
 
           {loading && <div style={{ padding: "70px 0", textAlign: "center", color: INK3, fontFamily: FT, fontSize: "var(--text-subhead)" }}>Загрузка…</div>}
 
@@ -169,7 +169,7 @@ export default function DailyVerseScreen({ onBack, onOpenVerse }: { onBack: () =
       {/* нижняя панель действия */}
       {!loading && !failed && unit && (
         <div style={{ position: "sticky", bottom: 0, padding: "12px 16px calc(14px + env(safe-area-inset-bottom,0px))", background: PAPER, borderTop: `0.5px solid ${LINE}` }}>
-          <div style={{ maxWidth: 480, margin: "0 auto" }}>
+          <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto" }}>
             <button type="button" onClick={onNext} disabled={unit.done}
               style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", height: 50, borderRadius: 14, border: "none", background: unit.done ? FILL : GOLD, color: unit.done ? INK3 : "#fff", fontFamily: FT, fontSize: "var(--text-callout)", fontWeight: 700, cursor: unit.done ? "default" : "pointer", WebkitTapHighlightColor: "transparent", boxShadow: unit.done ? "none" : "0 4px 16px color-mix(in srgb, " + GOLD + " 40%, transparent)" }}>
               {unit.done ? "Корпус прочитан" : <>Прочитано · дальше <ArrowR /></>}

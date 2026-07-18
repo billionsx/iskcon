@@ -699,7 +699,7 @@ export function FeedPostFocus({ id, onBack, onDonate }: { id: string; onBack: ()
         <span style={{ flex: 1, minWidth: 0, textAlign: "center", fontFamily: "var(--font-text)", fontSize: "var(--text-callout)", fontWeight: 700, letterSpacing: "0.04em", color: "var(--color-label)", paddingRight: 38 }}>ISKCON ONE LOVE</span>
       </header>
 
-      <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 0 40px" }}>
+      <div style={{ maxWidth: "var(--sheet-max)", margin: "0 auto", padding: "16px 0 40px" }}>
         {state === "loading" && (
           <div style={{ padding: "40px 0", display: "grid", placeItems: "center" }}>
             <div style={{ width: 26, height: 26, borderRadius: "50%", border: "2.5px solid var(--color-hairline)", borderTopColor: GOLD, animation: "feedspin .8s linear infinite" }} />
