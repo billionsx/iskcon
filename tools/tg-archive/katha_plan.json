@@ -15,10 +15,18 @@
    "n_audio": 42,
    "n_planned": 42,
    "orphans": []
+  },
+  {
+   "channel": "@purnacandragoswami",
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "n_audio": 384,
+   "n_planned": 299,
+   "orphans": []
   }
  ],
- "n_audio": 1276,
- "n_planned": 1276,
+ "n_audio": 1660,
+ "n_planned": 1575,
  "albums": [
   {
    "id": "sb-01",
@@ -11734,6 +11742,2928 @@
    "speaker_name": "Радха Говинда Госвами Махарадж",
    "channel": "@radhagovindasw",
    "n": 10
+  },
+  {
+   "id": "sochi-1997",
+   "title": "Сочи · 1997",
+   "identifier": "iskcone-katha-pcg-sochi-1997",
+   "tracks": [
+    {
+     "msg_id": 47,
+     "title": "Бхагавад-гита 9.26 · 27 августа 1997",
+     "duration": 4598,
+     "size": 27593480,
+     "source": "97.08.27 Б.Г, 9.26 Сочи.mp3",
+     "file": "sochi-1997-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 50,
+     "title": "Шримад-Бхагаватам 3.13.1 · 28 августа 1997",
+     "duration": 3160,
+     "size": 18964496,
+     "source": "97.08.28 Ш.Б.  3.13.1 Сочи.mp3",
+     "file": "sochi-1997-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 72,
+     "title": "Шримад-Бхагаватам 3.13.4 · 29 августа 1997",
+     "duration": 4376,
+     "size": 26257520,
+     "source": "97.08.29 Ш.Б. 3.13.4 Сочи.mp3",
+     "file": "sochi-1997-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 49,
+     "title": "Предание · 30 августа 1997",
+     "duration": 4950,
+     "size": 29704232,
+     "source": "97.08.30 Предание Сочи.mp3",
+     "file": "sochi-1997-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 42,
+     "title": "Обзор «Бхагавад-гиты»: карма, гьяна, бхакти · 31 августа 1997",
+     "duration": 4123,
+     "size": 24742064,
+     "source": "97_08_31_Обзор_БГ,_карма,_гьяна,_бхакти_Сочи.mp3",
+     "file": "sochi-1997-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 43,
+     "title": "Бхагавад-гита, глава 18 · 31 августа 1997",
+     "duration": 3924,
+     "size": 23548232,
+     "source": "97.08.31 Б.Г. гл.18  Сочи.mp3",
+     "file": "sochi-1997-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 44,
+     "title": "Бхагавад-гита, главы 13–18 · 1 сентября 1997",
+     "duration": 5112,
+     "size": 30674936,
+     "source": "97.09.01 Б.Г. гл.13-18 Сочи.mp3",
+     "file": "sochi-1997-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 45,
+     "title": "Бхагавад-гита, глава 18, тексты 19–55 · 2 сентября 1997",
+     "duration": 5476,
+     "size": 32856320,
+     "source": "97.09.02 Б.Г.  гл. 18 стихи 19-55 Сочи.mp3",
+     "file": "sochi-1997-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 46,
+     "title": "Бхагавад-гита, глава 18, тексты 56–66 · 3 сентября 1997",
+     "duration": 5252,
+     "size": 31517552,
+     "source": "97.09.03 Б.Г. гл. 18 56-66 Сочи.mp3",
+     "file": "sochi-1997-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 71,
+     "title": "О Радхарани · Сухарево · 10 сентября 1997",
+     "duration": 4901,
+     "size": 29408102,
+     "source": "97.09.10 О Радхарани Сухарево.mp3",
+     "file": "sochi-1997-10.mp3",
+     "sort": 10
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 10
+  },
+  {
+   "id": "ishopanishad",
+   "title": "Шри Ишопанишад",
+   "identifier": "iskcone-katha-pcg-ishopanishad",
+   "tracks": [
+    {
+     "msg_id": 53,
+     "title": "Введение",
+     "duration": 9044,
+     "size": 27006636,
+     "source": "97.11.20 Введение.mp3",
+     "file": "ishopanishad-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 54,
+     "title": "Парибхаша-сутра",
+     "duration": 12273,
+     "size": 36648216,
+     "source": "97.11.21 Парибхаса-Сутра.mp3",
+     "file": "ishopanishad-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 55,
+     "title": "Мантра 1",
+     "duration": 13513,
+     "size": 40349940,
+     "source": "97.11.24 Mantra-1.mp3",
+     "file": "ishopanishad-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 56,
+     "title": "Мантра 2–3",
+     "duration": 14010,
+     "size": 41833500,
+     "source": "97.11.25 Mantra-2,3.mp3",
+     "file": "ishopanishad-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 57,
+     "title": "Мантра 4",
+     "duration": 12220,
+     "size": 36490344,
+     "source": "97.11.27 Mantra-4.mp3",
+     "file": "ishopanishad-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 58,
+     "title": "Мантра 5",
+     "duration": 12019,
+     "size": 35889900,
+     "source": "97.11.28 Mantra-5.mp3",
+     "file": "ishopanishad-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 59,
+     "title": "Мантра 6",
+     "duration": 14832,
+     "size": 44290344,
+     "source": "97.12.08 Mantra-6.mp3",
+     "file": "ishopanishad-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 60,
+     "title": "Мантра 7",
+     "duration": 11829,
+     "size": 35321280,
+     "source": "97.12.09 Mantra-7.mp3",
+     "file": "ishopanishad-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 61,
+     "title": "Мантра 8",
+     "duration": 12888,
+     "size": 38484648,
+     "source": "97.12.10 Mantra-8.mp3",
+     "file": "ishopanishad-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 62,
+     "title": "Мантра 9",
+     "duration": 14358,
+     "size": 42874176,
+     "source": "97.12.11 Mantra-9.mp3",
+     "file": "ishopanishad-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 64,
+     "title": "Мантра 10",
+     "duration": 10896,
+     "size": 32537460,
+     "source": "97.12.12 Mantra-10.mp3",
+     "file": "ishopanishad-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 65,
+     "title": "Мантра 11",
+     "duration": 13224,
+     "size": 39488976,
+     "source": "97.12.15 Mantra-11.mp3",
+     "file": "ishopanishad-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 66,
+     "title": "Мантра 12",
+     "duration": 13485,
+     "size": 40268040,
+     "source": "97.12.16 Mantra-12.mp3",
+     "file": "ishopanishad-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 67,
+     "title": "Мантра 13",
+     "duration": 14210,
+     "size": 42431292,
+     "source": "97.12.17 Mantra-13.mp3",
+     "file": "ishopanishad-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 68,
+     "title": "Мантра 14",
+     "duration": 10396,
+     "size": 31042668,
+     "source": "97.12.18 Mantra-14.mp3",
+     "file": "ishopanishad-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 69,
+     "title": "Мантра 15",
+     "duration": 15618,
+     "size": 46634712,
+     "source": "97.12.19 Mantra-15.mp3",
+     "file": "ishopanishad-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 70,
+     "title": "Мантра 16",
+     "duration": 11440,
+     "size": 34161576,
+     "source": "97.12.20 Mantra-16.mp3",
+     "file": "ishopanishad-17.mp3",
+     "sort": 17
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 17
+  },
+  {
+   "id": "upadeshamrita",
+   "title": "Упадешамрита",
+   "identifier": "iskcone-katha-pcg-upadeshamrita",
+   "tracks": [
+    {
+     "msg_id": 74,
+     "title": "Введение",
+     "duration": 12186,
+     "size": 36386916,
+     "source": "98.01.07 Введение.mp3",
+     "file": "upadeshamrita-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 75,
+     "title": "Текст 1",
+     "duration": 12140,
+     "size": 36251040,
+     "source": "98.01.08 Текст-1.mp3",
+     "file": "upadeshamrita-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 76,
+     "title": "Текст 2 · часть 1",
+     "duration": 12632,
+     "size": 37720872,
+     "source": "98.01.09 Текст-2.mp3",
+     "file": "upadeshamrita-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 77,
+     "title": "Текст 2 · часть 2",
+     "duration": 9401,
+     "size": 28073520,
+     "source": "98.01.10 Текст-2.mp3",
+     "file": "upadeshamrita-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 78,
+     "title": "Текст 2 · часть 3",
+     "duration": 7973,
+     "size": 23807544,
+     "source": "98.01.13 Текст-2.mp3",
+     "file": "upadeshamrita-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 79,
+     "title": "Текст 3",
+     "duration": 11877,
+     "size": 35466672,
+     "source": "98.01.14 Текст-3.mp3",
+     "file": "upadeshamrita-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 80,
+     "title": "Текст 4",
+     "duration": 13219,
+     "size": 39473532,
+     "source": "98.01.15 Текст-4.mp3",
+     "file": "upadeshamrita-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 81,
+     "title": "Текст 5",
+     "duration": 10977,
+     "size": 32777076,
+     "source": "98.01.16 Текст-5.mp3",
+     "file": "upadeshamrita-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 82,
+     "title": "Текст 6",
+     "duration": 11113,
+     "size": 33185172,
+     "source": "98.01.17 Текст-6.mp3",
+     "file": "upadeshamrita-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 83,
+     "title": "Текст 7",
+     "duration": 10795,
+     "size": 32235756,
+     "source": "98.01.19 Текст-7.mp3",
+     "file": "upadeshamrita-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 84,
+     "title": "Текст 8",
+     "duration": 5032,
+     "size": 30056278,
+     "source": "98.01.20 Текст-8.mp3",
+     "file": "upadeshamrita-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 85,
+     "title": "Текст 8, продолжение",
+     "duration": 5976,
+     "size": 35688502,
+     "source": "98.01.20 Текст-8b.mp3",
+     "file": "upadeshamrita-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 86,
+     "title": "Текст 9",
+     "duration": 18629,
+     "size": 55625616,
+     "source": "98.01.21 Текст-9.mp3",
+     "file": "upadeshamrita-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 87,
+     "title": "Текст 10",
+     "duration": 4984,
+     "size": 29764870,
+     "source": "98.01.22 Текст-10.mp3",
+     "file": "upadeshamrita-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 88,
+     "title": "Поправки",
+     "duration": 4596,
+     "size": 13726512,
+     "source": "98.01.23  Тест, поправки.mp3",
+     "file": "upadeshamrita-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 89,
+     "title": "Текст 11",
+     "duration": 11760,
+     "size": 35116920,
+     "source": "98.01.23 Текст-11.mp3",
+     "file": "upadeshamrita-16.mp3",
+     "sort": 16
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 16
+  },
+  {
+   "id": "brihad-bhagavatamrita",
+   "title": "Брихад-Бхагаватамрита",
+   "identifier": "iskcone-katha-pcg-brihad-bhagavatamrita",
+   "tracks": [
+    {
+     "msg_id": 91,
+     "title": "Часть 1",
+     "duration": 5737,
+     "size": 34425864,
+     "source": "01 Lection.MP3",
+     "file": "brihad-bhagavatamrita-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 92,
+     "title": "Часть 2",
+     "duration": 2612,
+     "size": 10449504,
+     "source": "02  Lection.MP3",
+     "file": "brihad-bhagavatamrita-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 93,
+     "title": "Часть 3",
+     "duration": 5188,
+     "size": 20755176,
+     "source": "03 Lection.MP3",
+     "file": "brihad-bhagavatamrita-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 94,
+     "title": "Часть 4",
+     "duration": 3196,
+     "size": 12784304,
+     "source": "04 Lection.MP3",
+     "file": "brihad-bhagavatamrita-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 95,
+     "title": "Часть 5",
+     "duration": 3527,
+     "size": 14108016,
+     "source": "05 Lection.MP3",
+     "file": "brihad-bhagavatamrita-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 96,
+     "title": "Часть 6",
+     "duration": 3667,
+     "size": 14670864,
+     "source": "06 Lection.MP3",
+     "file": "brihad-bhagavatamrita-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 97,
+     "title": "Часть 7",
+     "duration": 2364,
+     "size": 9457032,
+     "source": "07 Lection.MP3",
+     "file": "brihad-bhagavatamrita-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 98,
+     "title": "Часть 8",
+     "duration": 4592,
+     "size": 18370144,
+     "source": "08 Lection.MP3",
+     "file": "brihad-bhagavatamrita-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 99,
+     "title": "Часть 9",
+     "duration": 5433,
+     "size": 21733608,
+     "source": "09 Lection.MP3",
+     "file": "brihad-bhagavatamrita-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 100,
+     "title": "Часть 10",
+     "duration": 5379,
+     "size": 21517704,
+     "source": "10 Lection.MP3",
+     "file": "brihad-bhagavatamrita-10.mp3",
+     "sort": 10
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 10
+  },
+  {
+   "id": "names-of-the-lord",
+   "title": "Имена Господа · Брихад-Бхагаватамрита",
+   "identifier": "iskcone-katha-pcg-names-of-the-lord",
+   "tracks": [
+    {
+     "msg_id": 104,
+     "title": "Бхаума-нама",
+     "duration": 5237,
+     "size": 83792875,
+     "source": "04.05.13 Лекция 1 Бхаума-Нама.mp3",
+     "file": "names-of-the-lord-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 105,
+     "title": "Дивья-нама",
+     "duration": 5390,
+     "size": 86255073,
+     "source": "04.05.13 Лекция 2 Дивья-Нама.mp3",
+     "file": "names-of-the-lord-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 106,
+     "title": "Прапанчатита-нама",
+     "duration": 5359,
+     "size": 85751850,
+     "source": "04.05.13 Лекция 3_Прапанчатита-Нама.mp3",
+     "file": "names-of-the-lord-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 107,
+     "title": "Бхакта-нама",
+     "duration": 5438,
+     "size": 87015758,
+     "source": "04.05.14 Лекция 4 Бхакта-Нама.mp3",
+     "file": "names-of-the-lord-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 108,
+     "title": "Прия-нама · часть 1",
+     "duration": 6151,
+     "size": 98421447,
+     "source": "04.05.16 Лекция 5 Прия-Нама.mp3",
+     "file": "names-of-the-lord-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 109,
+     "title": "Приятама-нама · часть 1",
+     "duration": 1931,
+     "size": 30901394,
+     "source": "04.05.16 Лекция 6 Прийатама-Нама.mp3",
+     "file": "names-of-the-lord-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 110,
+     "title": "Прия-нама · часть 2",
+     "duration": 2637,
+     "size": 42204682,
+     "source": "04.05.16 Лекция 6 Прия-Нама.mp3",
+     "file": "names-of-the-lord-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 111,
+     "title": "Приятама-нама · часть 2",
+     "duration": 5917,
+     "size": 94672353,
+     "source": "04.05.16 Лекция 7 Прийатама-Нама.mp3",
+     "file": "names-of-the-lord-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 112,
+     "title": "Пурна-нама",
+     "duration": 5276,
+     "size": 84421068,
+     "source": "04.05.17 Лекция 8 Пурна-Нама.mp3",
+     "file": "names-of-the-lord-09.mp3",
+     "sort": 9
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 9
+  },
+  {
+   "id": "prema-bhakti-chandrika",
+   "title": "Према-бхакти-чандрика · Одесса",
+   "identifier": "iskcone-katha-pcg-prema-bhakti-chandrika",
+   "tracks": [
+    {
+     "msg_id": 134,
+     "title": "Часть 1",
+     "duration": 5508,
+     "size": 44068362,
+     "source": "05.09.05 Lec1.mp3",
+     "file": "prema-bhakti-chandrika-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 135,
+     "title": "Часть 2",
+     "duration": 5137,
+     "size": 41096673,
+     "source": "05.09.06 Lec2.mp3",
+     "file": "prema-bhakti-chandrika-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 136,
+     "title": "Часть 3",
+     "duration": 4622,
+     "size": 36981505,
+     "source": "05.09.07 Lec3.mp3",
+     "file": "prema-bhakti-chandrika-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 137,
+     "title": "Часть 4",
+     "duration": 5260,
+     "size": 42083474,
+     "source": "05.09.08 Lec4.mp3",
+     "file": "prema-bhakti-chandrika-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 138,
+     "title": "Часть 5",
+     "duration": 10208,
+     "size": 81671105,
+     "source": "05.09.09 Lec5.mp3",
+     "file": "prema-bhakti-chandrika-05.mp3",
+     "sort": 5
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 5
+  },
+  {
+   "id": "krishna-lila",
+   "title": "Кришна Лила",
+   "identifier": "iskcone-katha-pcg-krishna-lila",
+   "tracks": [
+    {
+     "msg_id": 101,
+     "title": "Ягьяпатни-лила · часть 1 · Сочи · 24 марта 1998",
+     "duration": 3772,
+     "size": 22633040,
+     "source": "98.03.24 Ягьяпатни 01 Сочи.mp3",
+     "file": "krishna-lila-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 102,
+     "title": "Ягьяпатни-лила · часть 2 · Сочи · 25 марта 1998",
+     "duration": 6294,
+     "size": 37767296,
+     "source": "98.03.25  Ягьяпатни 02 Сочи.mp3",
+     "file": "krishna-lila-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 118,
+     "title": "Ягьяпатни-лила · часть 1 · Баку · 2004",
+     "duration": 3371,
+     "size": 26973410,
+     "source": "2004 Ягьяпатни лила 1 Баку.MP3",
+     "file": "krishna-lila-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 119,
+     "title": "Ягьяпатни-лила · часть 2 · Баку · 2004",
+     "duration": 2289,
+     "size": 18313071,
+     "source": "2004 Ягьяпатни ли ла 2 Баку.MP3",
+     "file": "krishna-lila-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 120,
+     "title": "Тринаварта-вадха · Баку · 2004",
+     "duration": 3748,
+     "size": 29990027,
+     "source": "2004 Тринаварта вадха Баку.MP3",
+     "file": "krishna-lila-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 121,
+     "title": "Калия-дамана-лила · Баку · 2004",
+     "duration": 5190,
+     "size": 41521494,
+     "source": "2004 Калия Даман лила Баку.MP3",
+     "file": "krishna-lila-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 122,
+     "title": "Дамодара-лила · Баку · 2004",
+     "duration": 5462,
+     "size": 43696990,
+     "source": "2004 Дамодара лила Баку.MP3",
+     "file": "krishna-lila-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 123,
+     "title": "Вопросы и ответы · Баку · 2004",
+     "duration": 3551,
+     "size": 28415138,
+     "source": "2004 Вопросы и ответы Баку.MP3",
+     "file": "krishna-lila-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 124,
+     "title": "Вопросы и ответы · часть 2 · Баку · 2004",
+     "duration": 3420,
+     "size": 27361048,
+     "source": "2004 Вопросы и ответы (2) Баку.MP3",
+     "file": "krishna-lila-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 261,
+     "title": "«Кришна», глава 29 · раса-лила · Баку · 11 июня 2008",
+     "duration": 4594,
+     "size": 18378754,
+     "source": "08_06_11_Кришна_бук_глава_29_Раса_лила,_Баку.mp3",
+     "file": "krishna-lila-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 262,
+     "title": "«Кришна», глава 29 · раса-лила · Баку · 13 июня 2008",
+     "duration": 3089,
+     "size": 12358575,
+     "source": "08_06_13_Кришна_бук_глава_29_Раса_лила,_Баку.mp3",
+     "file": "krishna-lila-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 263,
+     "title": "«Кришна», глава 29 · раса-лила · Баку · 14 июня 2008",
+     "duration": 3276,
+     "size": 13106826,
+     "source": "08_06_14_Кришна_бук_глава_29_Раса_лила,_Баку.mp3",
+     "file": "krishna-lila-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 264,
+     "title": "«Кришна», глава 29 · раса-лила · Баку · 15 июня 2008",
+     "duration": 4340,
+     "size": 17360710,
+     "source": "08_06_15_Кришна_бук_глава_29_Раса_лила,_Баку.mp3",
+     "file": "krishna-lila-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 368,
+     "title": "Слушание лилы · 10 января 2010",
+     "duration": 258,
+     "size": 1032508,
+     "source": "10.01.10 Слушание лилы.mp3",
+     "file": "krishna-lila-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 369,
+     "title": "Дамодара-лила · дама-бандхана · 10 января 2010",
+     "duration": 9780,
+     "size": 39122695,
+     "source": "10.01.10 Дама-Бандана лила (Дамодара).mp3",
+     "file": "krishna-lila-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 370,
+     "title": "Калия-дамана-лила · 17 января 2010",
+     "duration": 11422,
+     "size": 45690193,
+     "source": "10.01.17 Калия-Дамана лила.mp3",
+     "file": "krishna-lila-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 371,
+     "title": "Ягьяпатни-лила · 24 января 2010",
+     "duration": 10012,
+     "size": 40051819,
+     "source": "10.01.24 Ягья Патни лила.mp3",
+     "file": "krishna-lila-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 345,
+     "title": "Лолита",
+     "duration": 137,
+     "size": 548406,
+     "source": "Лолита.mp3",
+     "file": "krishna-lila-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 346,
+     "title": "Служанки Лолиты",
+     "duration": 42,
+     "size": 171721,
+     "source": "Служанки Лолиты.mp3",
+     "file": "krishna-lila-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 347,
+     "title": "Раса-лила",
+     "duration": 637,
+     "size": 2549804,
+     "source": "Раса Лила.mp3",
+     "file": "krishna-lila-20.mp3",
+     "sort": 20
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 20
+  },
+  {
+   "id": "vraja-lila-odessa",
+   "title": "Враджа-лила · Одесский фестиваль",
+   "identifier": "iskcone-katha-pcg-vraja-lila-odessa",
+   "tracks": [
+    {
+     "msg_id": 114,
+     "title": "Комментарии",
+     "duration": 291,
+     "size": 1751667,
+     "source": "04.08.24 коментарии.mp3",
+     "file": "vraja-lila-odessa-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 115,
+     "title": "Часть 1",
+     "duration": 5967,
+     "size": 47742288,
+     "source": "04.08.24 Лекция 01.mp3",
+     "file": "vraja-lila-odessa-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 116,
+     "title": "Часть 2",
+     "duration": 6893,
+     "size": 41359308,
+     "source": "04.08.25 Лекция 02.mp3",
+     "file": "vraja-lila-odessa-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 117,
+     "title": "Часть 3",
+     "duration": 7824,
+     "size": 46949564,
+     "source": "04.08.26 Лекция 3.mp3",
+     "file": "vraja-lila-odessa-04.mp3",
+     "sort": 4
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 4
+  },
+  {
+   "id": "heart-opening",
+   "title": "Открытие сердца · Одесса",
+   "identifier": "iskcone-katha-pcg-heart-opening",
+   "tracks": [
+    {
+     "msg_id": 188,
+     "title": "О любви и доверии",
+     "duration": 3287,
+     "size": 26298580,
+     "source": "99.07.23 О любви и доверии.mp3",
+     "file": "heart-opening-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 189,
+     "title": "Препятствия на пути преданного служения · часть 1",
+     "duration": 5252,
+     "size": 42018988,
+     "source": "99_07_24_Препятствия_на_пути_преданного_служения.mp3",
+     "file": "heart-opening-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 190,
+     "title": "Препятствия на пути преданного служения · часть 2",
+     "duration": 3615,
+     "size": 28927639,
+     "source": "99_07_25_Препятствия_на_пути_преданного_служения.mp3",
+     "file": "heart-opening-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 191,
+     "title": "Вопросы и ответы",
+     "duration": 5197,
+     "size": 41579317,
+     "source": "99.07.26 Вопросы и ответы.mp3",
+     "file": "heart-opening-04.mp3",
+     "sort": 4
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 4
+  },
+  {
+   "id": "divine-love",
+   "title": "Основы божественной любви",
+   "identifier": "iskcone-katha-pcg-divine-love",
+   "tracks": [
+    {
+     "msg_id": 140,
+     "title": "Часть 1 · 4 сентября 2006",
+     "duration": 6312,
+     "size": 37874535,
+     "source": "06.09.04 HG Purnacandra Prabhu - Osnovi Bozjestvennoj lubvi.MP3",
+     "file": "divine-love-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 141,
+     "title": "Часть 2 · 5 сентября 2006",
+     "duration": 4028,
+     "size": 24170594,
+     "source": "06.09.05 HG Purnacandra Prabhu - Osnovi Bozjestvennoj lubvi.MP3",
+     "file": "divine-love-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 142,
+     "title": "Часть 3 · 6 сентября 2006",
+     "duration": 6472,
+     "size": 38840177,
+     "source": "06.09.06 HG Purnacandra Prabhu - Osnovi Bozjestvennoj lubvi.MP3",
+     "file": "divine-love-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 143,
+     "title": "Часть 4 · 7 сентября 2006",
+     "duration": 5396,
+     "size": 32383178,
+     "source": "06.09.07 HG Purnacandra Prabhu - Osnovi Bozjestvennoj lubvi.MP3",
+     "file": "divine-love-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 144,
+     "title": "Часть 5 · 8 сентября 2006",
+     "duration": 6234,
+     "size": 37407465,
+     "source": "06.09.08 HG Purnacandra Prabhu - Osnovi Bozjestvennoj lubvi.MP3",
+     "file": "divine-love-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 145,
+     "title": "Часть 6 · 9 сентября 2006",
+     "duration": 6114,
+     "size": 36685636,
+     "source": "06.09.09 HG Purnacandra Prabhu - Osnovi Bozjestvennoj lubvi.MP3",
+     "file": "divine-love-06.mp3",
+     "sort": 6
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 6
+  },
+  {
+   "id": "odessa-festival",
+   "title": "Фестиваль в Одессе",
+   "identifier": "iskcone-katha-pcg-odessa-festival",
+   "tracks": [
+    {
+     "msg_id": 225,
+     "title": "Джапа",
+     "duration": 5578,
+     "size": 44626338,
+     "source": "03.08.26 Джапа.mp3",
+     "file": "odessa-festival-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 226,
+     "title": "Плач о Кришне",
+     "duration": 5597,
+     "size": 44777012,
+     "source": "03.08.27 Плачь о Кришне.mp3",
+     "file": "odessa-festival-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 227,
+     "title": "Культура",
+     "duration": 7810,
+     "size": 62480091,
+     "source": "03.08.28 Культура.mp3",
+     "file": "odessa-festival-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 228,
+     "title": "Сражение с грехами",
+     "duration": 6851,
+     "size": 54814720,
+     "source": "03.08.30 Сражение с грехами.mp3",
+     "file": "odessa-festival-04.mp3",
+     "sort": 4
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 4
+  },
+  {
+   "id": "japa-workshop",
+   "title": "Мастерская джапы",
+   "identifier": "iskcone-katha-pcg-japa-workshop",
+   "tracks": [
+    {
+     "msg_id": 48,
+     "title": "Мастерская джапы · Сочи · 1 сентября 1997",
+     "duration": 4713,
+     "size": 28278632,
+     "source": "97.09.01 Мастерская джапы Сочи.mp3",
+     "file": "japa-workshop-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 187,
+     "title": "Мастерская джапы · 20 июля 1999",
+     "duration": 4669,
+     "size": 37359996,
+     "source": "99.07.20 Мастерская джапы.mp3",
+     "file": "japa-workshop-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 231,
+     "title": "Часть 1 · 29 сентября 2003",
+     "duration": 5772,
+     "size": 46180431,
+     "source": "03.09.29 Лекция 1.mp3",
+     "file": "japa-workshop-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 232,
+     "title": "Часть 2 · 30 сентября 2003",
+     "duration": 4879,
+     "size": 39032422,
+     "source": "03.09.30 Лекция 2.mp3",
+     "file": "japa-workshop-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 233,
+     "title": "Часть 3 · 1 октября 2003",
+     "duration": 6189,
+     "size": 49519415,
+     "source": "03.10.01 Лекция 3.mp3",
+     "file": "japa-workshop-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 234,
+     "title": "Часть 4 · 2 октября 2003",
+     "duration": 8651,
+     "size": 69215366,
+     "source": "03.10.02 Лекция 4.mp3",
+     "file": "japa-workshop-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 235,
+     "title": "Часть 5 · 3 октября 2003",
+     "duration": 6445,
+     "size": 51563226,
+     "source": "03.10.03 Лекция 5.mp3",
+     "file": "japa-workshop-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 162,
+     "title": "Мастерская джапы · 17 марта 2007",
+     "duration": 9682,
+     "size": 67780206,
+     "source": "07.03.17 Джапа воркшоп.mp3",
+     "file": "japa-workshop-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 274,
+     "title": "Мастерская джапы · Ахтуба · 31 июля 2008",
+     "duration": 8095,
+     "size": 32383731,
+     "source": "08.07.31 Джапа ворк шоп Ахтуба.mp3",
+     "file": "japa-workshop-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 185,
+     "title": "Джапа · часть 1",
+     "duration": 1250,
+     "size": 20011520,
+     "source": "джапа.mp3",
+     "file": "japa-workshop-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 532,
+     "title": "Джапа · часть 2",
+     "duration": 3590,
+     "size": 57452251,
+     "source": "Джапа ЕС Пурначандра Госвами.mp3",
+     "file": "japa-workshop-11.mp3",
+     "sort": 11
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 11
+  },
+  {
+   "id": "prabhupada-katha",
+   "title": "Прабхупада-катха",
+   "identifier": "iskcone-katha-pcg-prabhupada-katha",
+   "tracks": [
+    {
+     "msg_id": 194,
+     "title": "Воспоминания о Прабхупаде · Курган · 29 июня 2002",
+     "duration": 4139,
+     "size": 66224379,
+     "source": "02_06_29_Воспоминания_о_Прабхупаде_Курган.mp3",
+     "file": "prabhupada-katha-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 229,
+     "title": "Воспоминания о Прабхупаде · Уфа · 3 июля 2003",
+     "duration": 5388,
+     "size": 86211187,
+     "source": "03_07_03_Воспоминания_о_Прабхупаде_Уфа.mp3",
+     "file": "prabhupada-katha-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 147,
+     "title": "Прабхупада-катха · 11 сентября 2007",
+     "duration": 4569,
+     "size": 27416064,
+     "source": "07.09.11 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 148,
+     "title": "Прабхупада-катха · 12 сентября 2007",
+     "duration": 4418,
+     "size": 26511576,
+     "source": "07.09.12 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 149,
+     "title": "Прабхупада-катха · 13 сентября 2007",
+     "duration": 6372,
+     "size": 38232948,
+     "source": "07.09.13 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 150,
+     "title": "Прабхупада-катха · 14 сентября 2007",
+     "duration": 5929,
+     "size": 35577672,
+     "source": "07.09.14 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 151,
+     "title": "Прабхупада-катха · 15 сентября 2007",
+     "duration": 5507,
+     "size": 33045168,
+     "source": "07.09.15 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 258,
+     "title": "Фильм о принятии санньясы · 13 апреля 2008",
+     "duration": 2568,
+     "size": 10272958,
+     "source": "08_04_13_аудио_просмотр_фильма_о_принятии_саньясы.mp3",
+     "file": "prabhupada-katha-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 275,
+     "title": "Прабхупада-катха · Ахтуба · 1 августа 2008",
+     "duration": 3958,
+     "size": 15833801,
+     "source": "08.08.01 Прабхупада катха Ахтуба.mp3",
+     "file": "prabhupada-katha-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 277,
+     "title": "Прабхупада-катха · 14 сентября 2008",
+     "duration": 5212,
+     "size": 52129437,
+     "source": "08.09.14 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 282,
+     "title": "Значение слова Гурудев · Евпатория · 14 сентября 2008",
+     "duration": 205,
+     "size": 822379,
+     "source": "08_09_14_Значение_слова_Гурудев_Евпатория.mp3",
+     "file": "prabhupada-katha-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 278,
+     "title": "Прабхупада-катха · 15 сентября 2008",
+     "duration": 4064,
+     "size": 40647053,
+     "source": "08.09.15 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 279,
+     "title": "Прабхупада-катха · 16 сентября 2008",
+     "duration": 4971,
+     "size": 49711020,
+     "source": "08.09.16 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 280,
+     "title": "Прабхупада-катха · 17 сентября 2008",
+     "duration": 4444,
+     "size": 44444735,
+     "source": "08.09.17 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 283,
+     "title": "Значение инициации · Евпатория · 17 сентября 2008",
+     "duration": 754,
+     "size": 3018650,
+     "source": "08_09_17_Значение_инициации_Евпатория.mp3",
+     "file": "prabhupada-katha-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 281,
+     "title": "Прабхупада-катха · 18 сентября 2008",
+     "duration": 4256,
+     "size": 42560522,
+     "source": "08.09.18 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 359,
+     "title": "День явления Шрилы Прабхупады · 15 августа 2009",
+     "duration": 4383,
+     "size": 17534268,
+     "source": "09_08_15_День_явления_Шрилы_Прабхупады.mp3",
+     "file": "prabhupada-katha-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 362,
+     "title": "Прабхупада-катха · 2 сентября 2009",
+     "duration": 6003,
+     "size": 24015979,
+     "source": "09.09.02 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 363,
+     "title": "Прабхупада-катха · 7 сентября 2009",
+     "duration": 5979,
+     "size": 23917654,
+     "source": "09.09.07 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 364,
+     "title": "Прабхупада-катха · 9 сентября 2009",
+     "duration": 6519,
+     "size": 26077144,
+     "source": "09.09.09 Прабхупада катха.mp3",
+     "file": "prabhupada-katha-20.mp3",
+     "sort": 20
+    },
+    {
+     "msg_id": 333,
+     "title": "День ухода Шрилы Прабхупады · 21 октября 2009",
+     "duration": 1767,
+     "size": 7069824,
+     "source": "09.10.21 День ухода Шрилы Прабхупады.mp3",
+     "file": "prabhupada-katha-21.mp3",
+     "sort": 21
+    },
+    {
+     "msg_id": 385,
+     "title": "Лекция в день явления Шрилы Прабхупады у Аннирудхи Прабху · 3 сентября 2010",
+     "duration": 2879,
+     "size": 46066512,
+     "source": "10_09_03_Лекция_в_день_явления_Шрилы_Прабхупады_у_Аннирудхи_Прабху.mp3",
+     "file": "prabhupada-katha-22.mp3",
+     "sort": 22
+    },
+    {
+     "msg_id": 256,
+     "title": "Предисловие · отец Сергий",
+     "duration": 533,
+     "size": 2134562,
+     "source": "Предисловие - Отец Сергий.mp3",
+     "file": "prabhupada-katha-23.mp3",
+     "sort": 23
+    },
+    {
+     "msg_id": 257,
+     "title": "Послесловие · отец Сергий",
+     "duration": 2105,
+     "size": 8420877,
+     "source": "Послесловие - отец Сергий.mp3",
+     "file": "prabhupada-katha-24.mp3",
+     "sort": 24
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 24
+  },
+  {
+   "id": "russia-yatra",
+   "title": "Ятра по России · Урал и Поволжье",
+   "identifier": "iskcone-katha-pcg-russia-yatra",
+   "tracks": [
+    {
+     "msg_id": 192,
+     "title": "Бхагавад-гита 7.10 · Курган · 27 июня 2002",
+     "duration": 6295,
+     "size": 100725238,
+     "source": "02.06.27 БГ 7.10 Курган.mp3",
+     "file": "russia-yatra-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 193,
+     "title": "Бхагавад-гита 11.45 · Курган · 28 июня 2002",
+     "duration": 5885,
+     "size": 94164532,
+     "source": "02.06.28 БГ 11.45 Курган.mp3",
+     "file": "russia-yatra-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 195,
+     "title": "Чайтанья-чаритамрита · часть 1 · Уфа · 30 июня 2002",
+     "duration": 6873,
+     "size": 109969241,
+     "source": "02.06.30 ЧЧ Лекция 1 Уфа.mp3",
+     "file": "russia-yatra-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 196,
+     "title": "Чайтанья-чаритамрита · часть 2 · Уфа · 1 июля 2002",
+     "duration": 1628,
+     "size": 26048052,
+     "source": "02.07.01 ЧЧ Лекция 2 Уфа.mp3",
+     "file": "russia-yatra-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 197,
+     "title": "Бхагавад-гита 9.26 · Стерлитамак · 1 июля 2002",
+     "duration": 3696,
+     "size": 59151256,
+     "source": "02.07.01 БГ 9.26 Стерлитамак.mp3",
+     "file": "russia-yatra-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 198,
+     "title": "Бхагавад-гита 10.10 · Кумертау · 2 июля 2002",
+     "duration": 6241,
+     "size": 99867585,
+     "source": "02.07.02 БГ 10.10 Кумертау.mp3",
+     "file": "russia-yatra-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 199,
+     "title": "Шримад-Бхагаватам 1.5.22 · Кумертау · 3 июля 2002",
+     "duration": 3743,
+     "size": 59899402,
+     "source": "02.07.03 ШБ 1.5.22 Кумертау.mp3",
+     "file": "russia-yatra-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 200,
+     "title": "Бхагавад-гита 9.3 · Златоуст · 4 июля 2002",
+     "duration": 4938,
+     "size": 79009332,
+     "source": "02.07.04 БГ 9.3 Златоуст.mp3",
+     "file": "russia-yatra-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 201,
+     "title": "Источник вечного наслаждения, глава 21 · Челябинск · 6 июля 2002",
+     "duration": 5703,
+     "size": 91258880,
+     "source": "02.07.06 ИВН 21 Челябинск.mp3",
+     "file": "russia-yatra-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 202,
+     "title": "Шримад-Бхагаватам 1.18.12 · Челябинск · 8 июля 2002",
+     "duration": 5467,
+     "size": 87479275,
+     "source": "02.07.08 ШБ 1.18.12 Челябинск.mp3",
+     "file": "russia-yatra-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 203,
+     "title": "Шримад-Бхагаватам 11.29 · Челябинск · 8 июля 2002",
+     "duration": 4074,
+     "size": 57036800,
+     "source": "02.07.08 ШБ 11.29 Челябинск.mp3",
+     "file": "russia-yatra-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 204,
+     "title": "Бхагавад-гита 4.34 · Екатеринбург · 9 июля 2002",
+     "duration": 5172,
+     "size": 82754664,
+     "source": "02.07.09 БГ 4.34 Екатеринбург.mp3",
+     "file": "russia-yatra-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 205,
+     "title": "Источник вечного наслаждения, глава 26 · Екатеринбург · 10 июля 2002",
+     "duration": 6469,
+     "size": 103505920,
+     "source": "02.07.10 ИВН 26 Екатеринбург.mp3",
+     "file": "russia-yatra-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 206,
+     "title": "Источник вечного наслаждения, глава 64 · Екатеринбург · 10 июля 2002",
+     "duration": 5213,
+     "size": 83411696,
+     "source": "02.07.10 ИВН 64 Екатеринбург.mp3",
+     "file": "russia-yatra-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 207,
+     "title": "Шримад-Бхагаватам 11.11.34–41 · Екатеринбург · 12 июля 2002",
+     "duration": 5365,
+     "size": 85846727,
+     "source": "02.07.12 ШБ 11.11.34-41Екатеринбург.mp3",
+     "file": "russia-yatra-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 208,
+     "title": "Шримад-Бхагаватам 11.20.27–28 · Екатеринбург · 13 июля 2002",
+     "duration": 4659,
+     "size": 74545528,
+     "source": "02.07.13 ШБ 11.20.27-28 Екатеринбург.mp3",
+     "file": "russia-yatra-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 209,
+     "title": "Джаганнатха Ратха-ятра · Нижний Тагил · 14 июля 2002",
+     "duration": 2604,
+     "size": 41676800,
+     "source": "02_07_14_Джаганнатха_Ратха_йатра_НТагил.mp3",
+     "file": "russia-yatra-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 210,
+     "title": "Бхагавад-гита 8.14 · Нижний Тагил · 15 июля 2002",
+     "duration": 6998,
+     "size": 111983386,
+     "source": "02.07.15 БГ 8.14 НТагил.mp3",
+     "file": "russia-yatra-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 211,
+     "title": "Бхагавад-гита 17.21 · Нижний Тагил · 17 июля 2002",
+     "duration": 4955,
+     "size": 79295634,
+     "source": "02.07.17 БГ 17.21 НТагил.mp3",
+     "file": "russia-yatra-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 212,
+     "title": "Бхагавад-гита 9.25 · Пермь · 17 июля 2002",
+     "duration": 3796,
+     "size": 60742844,
+     "source": "02.07.17 БГ 9.25 Пермь.mp3",
+     "file": "russia-yatra-20.mp3",
+     "sort": 20
+    },
+    {
+     "msg_id": 213,
+     "title": "Бхагавад-гита 15.18 · Березники · 18 июля 2002",
+     "duration": 4942,
+     "size": 79082893,
+     "source": "02.07.18 БГ 15.18 Березники.mp3",
+     "file": "russia-yatra-21.mp3",
+     "sort": 21
+    },
+    {
+     "msg_id": 214,
+     "title": "Бхагавад-гита 18.65 · Березники · 19 июля 2002",
+     "duration": 6469,
+     "size": 103519295,
+     "source": "02.07.19 БГ 18.65 Березники.mp3",
+     "file": "russia-yatra-22.mp3",
+     "sort": 22
+    },
+    {
+     "msg_id": 215,
+     "title": "Брихад-Бхагаватамрита · часть 1 · Пермь · 20 июля 2002",
+     "duration": 5521,
+     "size": 88344033,
+     "source": "02.07.20 - ББхаг Лекция 1 Пермь.mp3",
+     "file": "russia-yatra-23.mp3",
+     "sort": 23
+    },
+    {
+     "msg_id": 216,
+     "title": "Брихад-Бхагаватамрита · часть 2 · Пермь · 21 июля 2002",
+     "duration": 5623,
+     "size": 89976163,
+     "source": "02.07.21 ББхаг Лекция 2 Пермь.mp3",
+     "file": "russia-yatra-24.mp3",
+     "sort": 24
+    },
+    {
+     "msg_id": 217,
+     "title": "Суздаль · часть 1 · 8 августа 2002",
+     "duration": 3749,
+     "size": 22499540,
+     "source": "02.08.08 - Суздаль 01.mp3",
+     "file": "russia-yatra-25.mp3",
+     "sort": 25
+    },
+    {
+     "msg_id": 218,
+     "title": "Суздаль · часть 2 · 9 августа 2002",
+     "duration": 3717,
+     "size": 22305476,
+     "source": "02.08.09 - Суздаль 02.mp3",
+     "file": "russia-yatra-26.mp3",
+     "sort": 26
+    },
+    {
+     "msg_id": 219,
+     "title": "Суздаль · часть 3 · 10 августа 2002",
+     "duration": 3015,
+     "size": 18090356,
+     "source": "02.08.10 - Суздаль 03.mp3",
+     "file": "russia-yatra-27.mp3",
+     "sort": 27
+    },
+    {
+     "msg_id": 220,
+     "title": "Суздаль · часть 4 · 11 августа 2002",
+     "duration": 5398,
+     "size": 32388380,
+     "source": "02.08.11 - Суздаль 04.mp3",
+     "file": "russia-yatra-28.mp3",
+     "sort": 28
+    },
+    {
+     "msg_id": 221,
+     "title": "Шримад-Бхагаватам 3.25.24 · Суздаль · 11 августа 2002",
+     "duration": 4701,
+     "size": 28206956,
+     "source": "02.08.11 Ш.Б 3.25.24 Суздаль.mp3",
+     "file": "russia-yatra-29.mp3",
+     "sort": 29
+    },
+    {
+     "msg_id": 222,
+     "title": "Шримад-Бхагаватам 3.25.26 · Суздаль · 12 августа 2002",
+     "duration": 4661,
+     "size": 27970460,
+     "source": "02.08.12 Ш.Б.  3.25.26 Суздаль.mp3",
+     "file": "russia-yatra-30.mp3",
+     "sort": 30
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 30
+  },
+  {
+   "id": "akhtuba",
+   "title": "Шримад-Бхагаватам · Ахтуба",
+   "identifier": "iskcone-katha-pcg-akhtuba",
+   "tracks": [
+    {
+     "msg_id": 267,
+     "title": "Шримад-Бхагаватам 1.1.7",
+     "duration": 3582,
+     "size": 14329879,
+     "source": "08.07.27 Ш.Б.1.1.7 Ахтуба.mp3",
+     "file": "akhtuba-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 268,
+     "title": "Шримад-Бхагаватам 1.1.8",
+     "duration": 4486,
+     "size": 17946271,
+     "source": "08.07.28 Ш.Б.1.1.8 Ахтуба.mp3",
+     "file": "akhtuba-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 269,
+     "title": "Шримад-Бхагаватам 1.1.9",
+     "duration": 4179,
+     "size": 16719561,
+     "source": "08.07.29 Ш.Б.1.1.9 Ахтуба.mp3",
+     "file": "akhtuba-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 270,
+     "title": "Вопросы",
+     "duration": 6021,
+     "size": 24086718,
+     "source": "08.07.29 Вопросы Ахтуба.mp3",
+     "file": "akhtuba-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 271,
+     "title": "Шримад-Бхагаватам 1.1.10",
+     "duration": 3191,
+     "size": 12765458,
+     "source": "08.07.30 Ш.Б.1.1.10 Ахтуба.mp3",
+     "file": "akhtuba-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 272,
+     "title": "Шримад-Бхагаватам 1.1.10 · Вопросы",
+     "duration": 1922,
+     "size": 7691642,
+     "source": "08.07.30 Ш.Б.1.1.10 Вопросы Ахтуба.mp3",
+     "file": "akhtuba-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 273,
+     "title": "Шримад-Бхагаватам 1.1.11",
+     "duration": 4274,
+     "size": 17096769,
+     "source": "08.07.31 Ш.Б.1.1.11 Ахтуба.mp3",
+     "file": "akhtuba-07.mp3",
+     "sort": 7
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 7
+  },
+  {
+   "id": "vrindavan-parikrama",
+   "title": "Вриндаван-парикрама",
+   "identifier": "iskcone-katha-pcg-vrindavan-parikrama",
+   "tracks": [
+    {
+     "msg_id": 285,
+     "title": "Калия-гхата · 10 февраля 2008",
+     "duration": 2145,
+     "size": 8581373,
+     "source": "08.02.10 Калия Гхата.mp3",
+     "file": "vrindavan-parikrama-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 286,
+     "title": "Храм Мадана-мохана · 10 февраля 2008",
+     "duration": 780,
+     "size": 3121572,
+     "source": "08.02.10 Храм Мадана Мохана.mp3",
+     "file": "vrindavan-parikrama-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 287,
+     "title": "Сакши-Гопал · 11 февраля 2008",
+     "duration": 365,
+     "size": 1461229,
+     "source": "08.02.11 Сакши Гопал.mp3",
+     "file": "vrindavan-parikrama-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 288,
+     "title": "Храм Говиндаджи · 11 февраля 2008",
+     "duration": 1620,
+     "size": 6483009,
+     "source": "08.02.11 Храм Говиндаджи.mp3",
+     "file": "vrindavan-parikrama-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 289,
+     "title": "Парикрама · 11 февраля 2008",
+     "duration": 1180,
+     "size": 4723505,
+     "source": "08.02.11_1.mp3",
+     "file": "vrindavan-parikrama-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 290,
+     "title": "Парикрама · 11 февраля 2008",
+     "duration": 511,
+     "size": 2045223,
+     "source": "08.02.11_2.mp3",
+     "file": "vrindavan-parikrama-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 291,
+     "title": "Парикрама · 11 февраля 2008",
+     "duration": 403,
+     "size": 1615352,
+     "source": "08.02.11_3.mp3",
+     "file": "vrindavan-parikrama-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 292,
+     "title": "Парикрама · 12 февраля 2008",
+     "duration": 1795,
+     "size": 7181523,
+     "source": "08.02.12_1.mp3",
+     "file": "vrindavan-parikrama-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 293,
+     "title": "Парикрама · 12 февраля 2008",
+     "duration": 401,
+     "size": 1607829,
+     "source": "08.02.12_2.mp3",
+     "file": "vrindavan-parikrama-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 294,
+     "title": "Парикрама · 12 февраля 2008",
+     "duration": 1002,
+     "size": 4010258,
+     "source": "08.02.12_3.mp3",
+     "file": "vrindavan-parikrama-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 295,
+     "title": "Парикрама · 12 февраля 2008",
+     "duration": 2753,
+     "size": 11014418,
+     "source": "08.02.12_4.mp3",
+     "file": "vrindavan-parikrama-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 326,
+     "title": "Лекция Гурудева · 23 сентября 2009",
+     "duration": 2199,
+     "size": 17592781,
+     "source": "09.09.23 лекция Гурудева.mp3",
+     "file": "vrindavan-parikrama-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 327,
+     "title": "О Говардхане · 23 сентября 2009",
+     "duration": 1771,
+     "size": 14172204,
+     "source": "09.09.23 о Говардхане.mp3",
+     "file": "vrindavan-parikrama-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 330,
+     "title": "Говинда-кунда · 24 сентября 2009",
+     "duration": 1283,
+     "size": 5135509,
+     "source": "09.09.24 - Говинда Кунда.mp3",
+     "file": "vrindavan-parikrama-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 331,
+     "title": "Поклонение Говардхану · 24 сентября 2009",
+     "duration": 1397,
+     "size": 5591606,
+     "source": "09.09.24 Поклонение Говардхану.mp3",
+     "file": "vrindavan-parikrama-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 328,
+     "title": "Парикрама по хвосту Говардхана · 28 сентября 2009",
+     "duration": 1682,
+     "size": 6731590,
+     "source": "09_09_28_парикрама_по_хвосту_Говардхана.mp3",
+     "file": "vrindavan-parikrama-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 329,
+     "title": "Двадашадитья-тила · 30 сентября 2009",
+     "duration": 593,
+     "size": 2374261,
+     "source": "09.09.30 Двадаши адитья тила.mp3",
+     "file": "vrindavan-parikrama-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 332,
+     "title": "Радха-кунда · 3 октября 2009",
+     "duration": 1353,
+     "size": 5413033,
+     "source": "09.10.03 Радха Кунда.mp3",
+     "file": "vrindavan-parikrama-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 334,
+     "title": "Кусум-саровара · Цветочное озеро · 26 октября 2009",
+     "duration": 1023,
+     "size": 4095313,
+     "source": "09_10_26_Кусум_Саровара_Цветочное_озеро.mp3",
+     "file": "vrindavan-parikrama-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 335,
+     "title": "Лекция на Кусум-сароваре · 26 октября 2009",
+     "duration": 1127,
+     "size": 4509719,
+     "source": "09.10.26 Лекция на Кусум Саровара.mp3",
+     "file": "vrindavan-parikrama-20.mp3",
+     "sort": 20
+    },
+    {
+     "msg_id": 336,
+     "title": "Уддхава-кунда · 26 октября 2009",
+     "duration": 377,
+     "size": 1510862,
+     "source": "09.10.26 Уддхава кунда.mp3",
+     "file": "vrindavan-parikrama-21.mp3",
+     "sort": 21
+    },
+    {
+     "msg_id": 337,
+     "title": "Принятие прасада · 27 октября 2009",
+     "duration": 897,
+     "size": 3589269,
+     "source": "09.10.27 Принятие прасада.mp3",
+     "file": "vrindavan-parikrama-22.mp3",
+     "sort": 22
+    },
+    {
+     "msg_id": 338,
+     "title": "Гаура Кишора дас Бабаджи · часть 1 · 29 октября 2009",
+     "duration": 266,
+     "size": 1064273,
+     "source": "09.10.29 Гаура Кишор Дас Бабаджи_1.mp3",
+     "file": "vrindavan-parikrama-23.mp3",
+     "sort": 23
+    },
+    {
+     "msg_id": 339,
+     "title": "Гаура Кишора дас Бабаджи · часть 2 · 29 октября 2009",
+     "duration": 672,
+     "size": 2688357,
+     "source": "09.10.29 Гаура Кишор Дас Бабаджи_2.mp3",
+     "file": "vrindavan-parikrama-24.mp3",
+     "sort": 24
+    },
+    {
+     "msg_id": 340,
+     "title": "Божество Баларамы чёрного цвета",
+     "duration": 498,
+     "size": 1992455,
+     "source": "Божество Баларамы черного цвета.mp3",
+     "file": "vrindavan-parikrama-25.mp3",
+     "sort": 25
+    },
+    {
+     "msg_id": 341,
+     "title": "Куда поехать на день ухода Шрилы Прабхупады",
+     "duration": 1105,
+     "size": 4420380,
+     "source": "Куда_поехать_на_день_ухода_Шрилы_Пабхупады.mp3",
+     "file": "vrindavan-parikrama-26.mp3",
+     "sort": 26
+    },
+    {
+     "msg_id": 342,
+     "title": "Лекция Гурудева во Вриндаване",
+     "duration": 1245,
+     "size": 4980655,
+     "source": "Лекция Гурудева во Вриндаване.mp3",
+     "file": "vrindavan-parikrama-27.mp3",
+     "sort": 27
+    },
+    {
+     "msg_id": 343,
+     "title": "Лекция Гурудева во Вриндаване · часть 2",
+     "duration": 3344,
+     "size": 13380067,
+     "source": "Лекция Гурудева во Вриндаване 2.mp3",
+     "file": "vrindavan-parikrama-28.mp3",
+     "sort": 28
+    },
+    {
+     "msg_id": 344,
+     "title": "Прогулка по Вриндавану",
+     "duration": 803,
+     "size": 3212374,
+     "source": "прогулка Вриндаван.mp3",
+     "file": "vrindavan-parikrama-29.mp3",
+     "sort": 29
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 29
+  },
+  {
+   "id": "perm-2001",
+   "title": "Пермь · 2001",
+   "identifier": "iskcone-katha-pcg-perm-2001",
+   "tracks": [
+    {
+     "msg_id": 420,
+     "title": "Шримад-Бхагаватам 3.1.25",
+     "duration": 5564,
+     "size": 44515744,
+     "source": "Пурначандра_Пр_№02_ШБ_3_1_25_Пермь_11_06_01.MP3",
+     "file": "perm-2001-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 421,
+     "title": "Источник вечного наслаждения",
+     "duration": 5460,
+     "size": 43685824,
+     "source": "Пурначандра_Пр_№03_по_книге_ИВН_Пермь_11_06_01.MP3",
+     "file": "perm-2001-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 422,
+     "title": "Шримад-Бхагаватам 3.1.26",
+     "duration": 4021,
+     "size": 32168864,
+     "source": "Пурначандра_Пр_№04_ШБ_3_1_26_Пермь_12_06_01.MP3",
+     "file": "perm-2001-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 423,
+     "title": "Бхагавад-гита",
+     "duration": 5660,
+     "size": 45281808,
+     "source": "Пурначандра_Пр_№05_БГ_Пермь_13_06_01.MP3",
+     "file": "perm-2001-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 418,
+     "title": "Шримад-Бхагаватам 4.29.29",
+     "duration": 4499,
+     "size": 17999974,
+     "source": "SB-04_29_29_ПУРНАЧАНДРА_ПР_.MP3",
+     "file": "perm-2001-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 419,
+     "title": "Воскресная программа",
+     "duration": 6197,
+     "size": 49579504,
+     "source": "Пурначандра_Пр_№01_Воскресная_прогр_Пермь_10_06_01_арх.MP3",
+     "file": "perm-2001-06.mp3",
+     "sort": 6
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 6
+  },
+  {
+   "id": "lectures-2003-2005",
+   "title": "Лекции · 2003–2005",
+   "identifier": "iskcone-katha-pcg-lectures-2003-2005",
+   "tracks": [
+    {
+     "msg_id": 237,
+     "title": "Вечерняя лекция в Москве · 20 июня 2003",
+     "duration": 3241,
+     "size": 19453989,
+     "source": "03.06.20 Вечерняя лекция в Москве.mp3",
+     "file": "lectures-2003-2005-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 125,
+     "title": "Явление Гададхара Пандита · 8 апреля 2004",
+     "duration": 5056,
+     "size": 40448253,
+     "source": "04.04.08 Явление Гададхара Пандита.mp3",
+     "file": "lectures-2003-2005-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 126,
+     "title": "Бхагавад-гита 11.47 · 13 апреля 2004",
+     "duration": 3992,
+     "size": 31942992,
+     "source": "04.04.13 Б.Г.11.47.mp3",
+     "file": "lectures-2003-2005-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 127,
+     "title": "Шримад-Бхагаватам 5.18.11 · 27 августа 2004",
+     "duration": 2838,
+     "size": 17033770,
+     "source": "04.08.27 Ш.Б. 5.18.11.mp3",
+     "file": "lectures-2003-2005-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 128,
+     "title": "Лекция · 30 сентября 2004",
+     "duration": 5254,
+     "size": 84067617,
+     "source": "04.09.30 Лекция.mp3",
+     "file": "lectures-2003-2005-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 129,
+     "title": "Гурудев в сознании Кришны · очевидное и невероятное · 1 октября 2004",
+     "duration": 3081,
+     "size": 24648416,
+     "source": "04_10_01_Гурудев_в_сознании_Кришны_Очевидное_и_невероятное.mp3",
+     "file": "lectures-2003-2005-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 130,
+     "title": "Очевидное и невероятное · битва · 2 октября 2004",
+     "duration": 6038,
+     "size": 96610560,
+     "source": "04_10_02_Очевидное_и_невероятное_Битва_.mp3",
+     "file": "lectures-2003-2005-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 131,
+     "title": "Распространение книг · 4 октября 2004",
+     "duration": 5834,
+     "size": 93354624,
+     "source": "04.10.04 Распространение книг.mp3",
+     "file": "lectures-2003-2005-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 132,
+     "title": "Лекция · 5 октября 2004",
+     "duration": 3229,
+     "size": 25836304,
+     "source": "04.10.05 Лекция.mp3",
+     "file": "lectures-2003-2005-09.mp3",
+     "sort": 9
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 9
+  },
+  {
+   "id": "lectures-2007",
+   "title": "Лекции · 2007",
+   "identifier": "iskcone-katha-pcg-lectures-2007",
+   "tracks": [
+    {
+     "msg_id": 159,
+     "title": "Выбор Гуру · 21 января 2007",
+     "duration": 5677,
+     "size": 68133376,
+     "source": "07.01.21 Выбор Гуру.MP3",
+     "file": "lectures-2007-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 160,
+     "title": "Сначала - религиозность · 28 января 2007",
+     "duration": 5897,
+     "size": 70773248,
+     "source": "07.01.28 Сначала - религиозность.MP3",
+     "file": "lectures-2007-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 161,
+     "title": "ВАД в ИСККОН · 11 февраля 2007",
+     "duration": 5627,
+     "size": 67526144,
+     "source": "07.02.11 ВАД в ИССКОН.MP3",
+     "file": "lectures-2007-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 163,
+     "title": "Дхарма-сету · 18 марта 2007",
+     "duration": 7269,
+     "size": 50883291,
+     "source": "07.03.18 Дхарма-сету.mp3",
+     "file": "lectures-2007-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 164,
+     "title": "Гуру-таттва · 19 марта 2007",
+     "duration": 11326,
+     "size": 79286674,
+     "source": "07.03.19 Гуру-таттва.mp3",
+     "file": "lectures-2007-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 166,
+     "title": "Гададхара Пандит · 17 апреля 2007",
+     "duration": 4980,
+     "size": 39841662,
+     "source": "07.04.17 Гададхара Пандит.mp3",
+     "file": "lectures-2007-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 167,
+     "title": "Любовь к Богу, Господь Чайтанья · 19 апреля 2007",
+     "duration": 11421,
+     "size": 91375605,
+     "source": "07_04_19_Любовь_к_Богу,_Господь_Чайтанья.mp3",
+     "file": "lectures-2007-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 168,
+     "title": "Философия Сознания Кришны для начинающих, плач о Кришне · 19 апреля 2007",
+     "duration": 9313,
+     "size": 74509375,
+     "source": "07_04_19_Философия_Сознания_Кришны_для_начинающих,_плачь_о_Кришне.mp3",
+     "file": "lectures-2007-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 169,
+     "title": "Шри Ишопанишад 1 мантра все принадлежит Богу · 21 апреля 2007",
+     "duration": 8338,
+     "size": 66706495,
+     "source": "07_04_21_Шри_Ишопанишад_1_мантра_все_принадлежит_Богу.mp3",
+     "file": "lectures-2007-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 170,
+     "title": "Выжимание свободного места для бхакти · 28 апреля 2007",
+     "duration": 4484,
+     "size": 71751471,
+     "source": "07_04_28_Выжимание_свободного_места_для_бхакти.mp3",
+     "file": "lectures-2007-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 171,
+     "title": "Гададхара Пандит · 14 июля 2007",
+     "duration": 2751,
+     "size": 11005223,
+     "source": "07.07.14 Гададхара Пандит.mp3",
+     "file": "lectures-2007-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 172,
+     "title": "Джанмаштами · 4 сентября 2007",
+     "duration": 4346,
+     "size": 17385056,
+     "source": "07.09.04 Джанмаштами.mp3",
+     "file": "lectures-2007-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 173,
+     "title": "Бхагавад-гита 9.7 · Создание и разрушение материального мира · 8 сентября 2007",
+     "duration": 6498,
+     "size": 25995015,
+     "source": "07_09_08_Б_Г_9_7_Создание_и_разрушение_материального_мира.mp3",
+     "file": "lectures-2007-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 174,
+     "title": "Третья мировая война · 14 сентября 2007",
+     "duration": 5857,
+     "size": 23430104,
+     "source": "07.09.14 3 мировая война.mp3",
+     "file": "lectures-2007-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 152,
+     "title": "Лекция на Радхаштами · 20 сентября 2007",
+     "duration": 4172,
+     "size": 33376383,
+     "source": "07.09.20 Лекция на Радхаштами.mp3",
+     "file": "lectures-2007-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 175,
+     "title": "Бхагавад-гита 7.25 · Влияние йога Майи, как видеть Кришну · 29 сентября 2007",
+     "duration": 3186,
+     "size": 12746859,
+     "source": "07_09_29_Б_Г_7_25_Влияние_йога_Майи,_как_видеть_Кришну.mp3",
+     "file": "lectures-2007-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 176,
+     "title": "Кришна и его преданные, ценность проповеди, чистота служения · 6 октября 2007",
+     "duration": 3580,
+     "size": 57293888,
+     "source": "07_10_06_Кришна_и_его_преданные,_ценность_проповеди,_чистота_служения.mp3",
+     "file": "lectures-2007-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 177,
+     "title": "Кришна - Господь в отпуске · 7 октября 2007",
+     "duration": 3603,
+     "size": 14414676,
+     "source": "07.10.07 Кришна - Господь в отпуске.mp3",
+     "file": "lectures-2007-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 178,
+     "title": "Бхагавад-гита 9.28 · Истинное отречение · 14 октября 2007",
+     "duration": 3081,
+     "size": 12325033,
+     "source": "07.10.14 Б.Г.9.28 Истинное отречение.mp3",
+     "file": "lectures-2007-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 179,
+     "title": "О Картике · 20 октября 2007",
+     "duration": 4680,
+     "size": 18722421,
+     "source": "07.10.20 О Картике.mp3",
+     "file": "lectures-2007-20.mp3",
+     "sort": 20
+    },
+    {
+     "msg_id": 180,
+     "title": "Бхагавад-гита 7.1 · Звуковая вибрация · 21 октября 2007",
+     "duration": 4387,
+     "size": 17548896,
+     "source": "07.10.21 Б.Г.7.1 Звуковая вибрация.mp3",
+     "file": "lectures-2007-21.mp3",
+     "sort": 21
+    },
+    {
+     "msg_id": 181,
+     "title": "10 оскорблений · 18 ноября 2007",
+     "duration": 9313,
+     "size": 223515332,
+     "source": "07.11.18 10 оскорблений.mp3",
+     "file": "lectures-2007-22.mp3",
+     "sort": 22
+    },
+    {
+     "msg_id": 182,
+     "title": "Гуру и ученик, о Радхарани · 18 ноября 2007",
+     "duration": 10931,
+     "size": 87452993,
+     "source": "07.11.18 Гуру и ученик, о Радхарани.mp3",
+     "file": "lectures-2007-23.mp3",
+     "sort": 23
+    },
+    {
+     "msg_id": 183,
+     "title": "Основы духовной жизни · 18 ноября 2007",
+     "duration": 4647,
+     "size": 18589094,
+     "source": "07.11.18 Основы духовной жизни.mp3",
+     "file": "lectures-2007-24.mp3",
+     "sort": 24
+    },
+    {
+     "msg_id": 184,
+     "title": "Уход Бхишмадева · 18 ноября 2007",
+     "duration": 5897,
+     "size": 141532676,
+     "source": "07.11.18 Уход Бхишмадева.mp3",
+     "file": "lectures-2007-25.mp3",
+     "sort": 25
+    },
+    {
+     "msg_id": 158,
+     "title": "07. Лекция на Гаура-пурниму 2007",
+     "duration": 4315,
+     "size": 51787264,
+     "source": "07. Лекция на Гаура Пурниму  2007.MP3",
+     "file": "lectures-2007-26.mp3",
+     "sort": 26
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 26
+  },
+  {
+   "id": "lectures-2008",
+   "title": "Лекции · 2008",
+   "identifier": "iskcone-katha-pcg-lectures-2008",
+   "tracks": [
+    {
+     "msg_id": 296,
+     "title": "Бхагавад-гита 10.14 · 1 марта 2008",
+     "duration": 3981,
+     "size": 15924498,
+     "source": "08.03.01 Б.Г.10.14.mp3",
+     "file": "lectures-2008-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 297,
+     "title": "День ухода Бабаджи Махараджа · 8 марта 2008",
+     "duration": 1033,
+     "size": 4133347,
+     "source": "08_03_08_День_ухода_Бабаджи_Махараджа.mp3",
+     "file": "lectures-2008-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 298,
+     "title": "Тула - открытие программы · 15 марта 2008",
+     "duration": 3938,
+     "size": 15754702,
+     "source": "08.03.15 Тула - открытие программы.mp3",
+     "file": "lectures-2008-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 299,
+     "title": "Бхагавад-гита 7.14 · 16 марта 2008",
+     "duration": 3894,
+     "size": 15577696,
+     "source": "08.03.16  Б.Г. 7.14.mp3",
+     "file": "lectures-2008-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 300,
+     "title": "Вопросы и ответы · 28 марта 2008",
+     "duration": 4350,
+     "size": 17401043,
+     "source": "08.03.28 Вопросы и ответы.mp3",
+     "file": "lectures-2008-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 301,
+     "title": "Принятие санньясы · 28 марта 2008",
+     "duration": 2361,
+     "size": 9446235,
+     "source": "08.03.28 Принятие Саньясы.mp3",
+     "file": "lectures-2008-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 302,
+     "title": "Шримад-Бхагаватам 4.1 появление Нарады · 4 апреля 2008",
+     "duration": 4761,
+     "size": 19044877,
+     "source": "08.04.04 Ш.Б.4.1 появление Нарады.mp3",
+     "file": "lectures-2008-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 303,
+     "title": "Бхагавад-гита 8.11 · Момент смерти роль чакр · 5 апреля 2008",
+     "duration": 3605,
+     "size": 14422980,
+     "source": "08_04_05_Б_Г_8_11_Момент_смерти_роль_чакр.mp3",
+     "file": "lectures-2008-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 304,
+     "title": "Шримад-Бхагаватам 3.28.50 · История Пуранжаны · 13 апреля 2008",
+     "duration": 7107,
+     "size": 28429210,
+     "source": "08.04.13 Ш.Б.3.28.50 История Пуранжаны.mp3",
+     "file": "lectures-2008-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 260,
+     "title": "Рама-навами Шримад-Бхагаватам 10.9.4 · 14 апреля 2008",
+     "duration": 2883,
+     "size": 11532374,
+     "source": "08.04.14 Рамнавами Ш.Б. 10.9.4 .mp3",
+     "file": "lectures-2008-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 305,
+     "title": "Шримад-Бхагаватам 10.9.4 · Рама-навами · 14 апреля 2008",
+     "duration": 6365,
+     "size": 101844158,
+     "source": "08.04.14 Ш.Б.10.9.4 Рамнавами.mp3",
+     "file": "lectures-2008-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 306,
+     "title": "Ярославль взаимоотношения между преданными · 1 мая 2008",
+     "duration": 5717,
+     "size": 22870562,
+     "source": "08_05_01_Ярославль_взаимоотношения_между_преданными.mp3",
+     "file": "lectures-2008-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 307,
+     "title": "Бхагавад-гита 5.29 · Формула мира · 3 мая 2008",
+     "duration": 5417,
+     "size": 21669660,
+     "source": "08.05.03 Б.Г.5.29 Формула мира.mp3",
+     "file": "lectures-2008-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 308,
+     "title": "Вопросы и ответы · 10 мая 2008",
+     "duration": 3435,
+     "size": 13743796,
+     "source": "08.05.10 Вопросы и ответы.mp3",
+     "file": "lectures-2008-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 309,
+     "title": "Бхагавад-гита 3.27 · Ложное эго · 5 июня 2008",
+     "duration": 5663,
+     "size": 22653223,
+     "source": "08.06.05 Б.Г. 3.27 Ложное эго.mp3",
+     "file": "lectures-2008-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 265,
+     "title": "Фильм о воде · введение, · Баку · 12 июня 2008",
+     "duration": 716,
+     "size": 2867975,
+     "source": "08_06_12_фильм_о_воде_введение,_Баку_.mp3",
+     "file": "lectures-2008-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 266,
+     "title": "Фильм о воде · комментарии, · Баку · 12 июня 2008",
+     "duration": 573,
+     "size": 2295998,
+     "source": "08_06_12_фильм_о_воде_коментарии,_Баку.mp3",
+     "file": "lectures-2008-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 310,
+     "title": "Кулимела Свобода в Сознании Кришны · 13 июля 2008",
+     "duration": 2410,
+     "size": 9641004,
+     "source": "08_07_13_Кулимела_Свобода_в_Сознании_Кришны_.mp3",
+     "file": "lectures-2008-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 311,
+     "title": "Лаванга Павана рассказ Гурудева · 28 августа 2008",
+     "duration": 659,
+     "size": 2636531,
+     "source": "08_08_28_Лаванга_Павана_рассказ_Гурудева.mp3",
+     "file": "lectures-2008-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 312,
+     "title": "Приезд из США · 16 декабря 2008",
+     "duration": 1601,
+     "size": 6405164,
+     "source": "08.12.16 Приезд из США.mp3",
+     "file": "lectures-2008-20.mp3",
+     "sort": 20
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 20
+  },
+  {
+   "id": "lectures-2009-2010",
+   "title": "Лекции · 2009–2010",
+   "identifier": "iskcone-katha-pcg-lectures-2009-2010",
+   "tracks": [
+    {
+     "msg_id": 348,
+     "title": "Приезд из Боснии · 25 февраля 2009",
+     "duration": 994,
+     "size": 3977553,
+     "source": "09.02.25 Приезд из Боснии.mp3",
+     "file": "lectures-2009-2010-01.mp3",
+     "sort": 1
+    },
+    {
+     "msg_id": 349,
+     "title": "Бхагавад-гита 4.11 · Предание · 28 февраля 2009",
+     "duration": 5354,
+     "size": 21418885,
+     "source": "09.02.28 Б.Г.4.11 Предание.mp3",
+     "file": "lectures-2009-2010-02.mp3",
+     "sort": 2
+    },
+    {
+     "msg_id": 350,
+     "title": "Гаура-пурнима · 10 марта 2009",
+     "duration": 5332,
+     "size": 63986438,
+     "source": "09.03.10 Гаура Пурнима.MP3",
+     "file": "lectures-2009-2010-03.mp3",
+     "sort": 3
+    },
+    {
+     "msg_id": 351,
+     "title": "Бхагавад-гита 17.16 · Виды аскез · 29 марта 2009",
+     "duration": 4006,
+     "size": 16026271,
+     "source": "09.03.29 Б.Г. 17.16 Виды аскез.mp3",
+     "file": "lectures-2009-2010-04.mp3",
+     "sort": 4
+    },
+    {
+     "msg_id": 317,
+     "title": "Бхагавад-гита 17.66 · 3 апреля 2009",
+     "duration": 5085,
+     "size": 20341073,
+     "source": "09.04.03 БГ 17.66.mp3",
+     "file": "lectures-2009-2010-05.mp3",
+     "sort": 5
+    },
+    {
+     "msg_id": 318,
+     "title": "Вопросы и ответы · 5 апреля 2009",
+     "duration": 4461,
+     "size": 17847110,
+     "source": "09.04.05 Вопросы и ответы.mp3",
+     "file": "lectures-2009-2010-06.mp3",
+     "sort": 6
+    },
+    {
+     "msg_id": 352,
+     "title": "Вопросы-ответы · 12 апреля 2009",
+     "duration": 4296,
+     "size": 17187675,
+     "source": "09.04.12 Вопросы-ответы.mp3",
+     "file": "lectures-2009-2010-07.mp3",
+     "sort": 7
+    },
+    {
+     "msg_id": 353,
+     "title": "Возможность различать · 19 апреля 2009",
+     "duration": 7316,
+     "size": 29266486,
+     "source": "09.04.19 Возможность различать.mp3",
+     "file": "lectures-2009-2010-08.mp3",
+     "sort": 8
+    },
+    {
+     "msg_id": 354,
+     "title": "Бхагавад-гита · 26 апреля 2009",
+     "duration": 4876,
+     "size": 19505886,
+     "source": "09.04.26 Б.Г.18.63-65.mp3",
+     "file": "lectures-2009-2010-09.mp3",
+     "sort": 9
+    },
+    {
+     "msg_id": 355,
+     "title": "День ухода Джаянанды Прабху · 3 мая 2009",
+     "duration": 4284,
+     "size": 102829890,
+     "source": "09.05.03 День ухода Джаянанды Прабху.mp3",
+     "file": "lectures-2009-2010-10.mp3",
+     "sort": 10
+    },
+    {
+     "msg_id": 321,
+     "title": "Шримад-Бхагаватам 10.33 · Курск · 16 мая 2009",
+     "duration": 7399,
+     "size": 29598973,
+     "source": "09.05.16 Ш.Б. 10.33_Курск.mp3",
+     "file": "lectures-2009-2010-11.mp3",
+     "sort": 11
+    },
+    {
+     "msg_id": 322,
+     "title": "Бхагавад-гита 18.56 · Курск · 17 мая 2009",
+     "duration": 6036,
+     "size": 24145024,
+     "source": "09.05.17 B.G.18.56_Курск.mp3",
+     "file": "lectures-2009-2010-12.mp3",
+     "sort": 12
+    },
+    {
+     "msg_id": 356,
+     "title": "Бхагавад-гита 2.38.39 · Типы йоги · 31 мая 2009",
+     "duration": 5773,
+     "size": 23094588,
+     "source": "09.05.31 Б.Г.2.38-39 Типы йоги.mp3",
+     "file": "lectures-2009-2010-13.mp3",
+     "sort": 13
+    },
+    {
+     "msg_id": 358,
+     "title": "Джанмаштами · 14 августа 2009",
+     "duration": 3376,
+     "size": 13505350,
+     "source": "09.08.14 Джанмаштами.mp3",
+     "file": "lectures-2009-2010-14.mp3",
+     "sort": 14
+    },
+    {
+     "msg_id": 360,
+     "title": "Внутренняя духовная жизнь · 23 августа 2009",
+     "duration": 5502,
+     "size": 22009043,
+     "source": "09.08.23 Внутренняя духовная жизнь.mp3",
+     "file": "lectures-2009-2010-15.mp3",
+     "sort": 15
+    },
+    {
+     "msg_id": 361,
+     "title": "Радхаштами · 27 августа 2009",
+     "duration": 3173,
+     "size": 12693569,
+     "source": "09.08.27 Радхаштами.mp3",
+     "file": "lectures-2009-2010-16.mp3",
+     "sort": 16
+    },
+    {
+     "msg_id": 365,
+     "title": "Шримад-Бхагаватам 7.5.23–24 · Памятование · 27 сентября 2009",
+     "duration": 6660,
+     "size": 26641285,
+     "source": "09.09.27 ШБ 7.5.23-24 Памятование.mp3",
+     "file": "lectures-2009-2010-17.mp3",
+     "sort": 17
+    },
+    {
+     "msg_id": 366,
+     "title": "Вопросы-ответы · 8 ноября 2009",
+     "duration": 4529,
+     "size": 18118679,
+     "source": "09.11.08 Вопросы-ответы.mp3",
+     "file": "lectures-2009-2010-18.mp3",
+     "sort": 18
+    },
+    {
+     "msg_id": 367,
+     "title": "Новый год лекция с Медини Пати · 31 декабря 2009",
+     "duration": 3649,
+     "size": 14598731,
+     "source": "09_12_31_Новый_год_лекция_с_Медини_Пати.mp3",
+     "file": "lectures-2009-2010-19.mp3",
+     "sort": 19
+    },
+    {
+     "msg_id": 378,
+     "title": "Вопросы ответы Встреча с учениками · 5 января 2010",
+     "duration": 3578,
+     "size": 14314624,
+     "source": "10_01_05_Вопросы_ответы_Встреча_с_учениками.mp3",
+     "file": "lectures-2009-2010-20.mp3",
+     "sort": 20
+    },
+    {
+     "msg_id": 379,
+     "title": "День явления Господа Нитьянанды · 30 января 2010",
+     "duration": 5347,
+     "size": 21390673,
+     "source": "10_01_30_День_явления_Господа_Нитьянанды.mp3",
+     "file": "lectures-2009-2010-21.mp3",
+     "sort": 21
+    },
+    {
+     "msg_id": 380,
+     "title": "Гаура-пурнима · 28 февраля 2010",
+     "duration": 4353,
+     "size": 17412537,
+     "source": "10.02.28 Гаура Пурнима.mp3",
+     "file": "lectures-2009-2010-22.mp3",
+     "sort": 22
+    },
+    {
+     "msg_id": 372,
+     "title": "Лекция · 26 марта 2010",
+     "duration": 2958,
+     "size": 11833095,
+     "source": "10.03.26 Лекция.mp3",
+     "file": "lectures-2009-2010-23.mp3",
+     "sort": 23
+    },
+    {
+     "msg_id": 373,
+     "title": "Инициация · 28 марта 2010",
+     "duration": 6964,
+     "size": 111433813,
+     "source": "10.03.28 Инициация.mp3",
+     "file": "lectures-2009-2010-24.mp3",
+     "sort": 24
+    },
+    {
+     "msg_id": 374,
+     "title": "Баку · 2 апреля 2010",
+     "duration": 5452,
+     "size": 21812080,
+     "source": "10.04.02 Баку.mp3",
+     "file": "lectures-2009-2010-25.mp3",
+     "sort": 25
+    },
+    {
+     "msg_id": 375,
+     "title": "Баку · 3 апреля 2010",
+     "duration": 3519,
+     "size": 14077223,
+     "source": "10.04.03 Баку.mp3",
+     "file": "lectures-2009-2010-26.mp3",
+     "sort": 26
+    },
+    {
+     "msg_id": 376,
+     "title": "Баку 2 Бхагавад-гита 3.35 · 3 апреля 2010",
+     "duration": 5388,
+     "size": 21553154,
+     "source": "10.04.03 Баку_2 БГ 3.35.mp3",
+     "file": "lectures-2009-2010-27.mp3",
+     "sort": 27
+    },
+    {
+     "msg_id": 377,
+     "title": "Баку 7.19 · 4 апреля 2010",
+     "duration": 3320,
+     "size": 13283100,
+     "source": "10.04.04 Баку 7.19.mp3",
+     "file": "lectures-2009-2010-28.mp3",
+     "sort": 28
+    },
+    {
+     "msg_id": 381,
+     "title": "Храм на Динамо Лекция о Святом Имени · 16 мая 2010",
+     "duration": 4395,
+     "size": 17584005,
+     "source": "10_05_16_Храм_на_Динамо_Лекция_о_Святом_Имени.mp3",
+     "file": "lectures-2009-2010-29.mp3",
+     "sort": 29
+    },
+    {
+     "msg_id": 382,
+     "title": "Гурудев о Балараме · 25 августа 2010",
+     "duration": 2250,
+     "size": 36007488,
+     "source": "10.08.25 Гурудев о Балараме..mp3",
+     "file": "lectures-2009-2010-30.mp3",
+     "sort": 30
+    },
+    {
+     "msg_id": 383,
+     "title": "Чайтанья-чаритамрита в гостях у Гуруваке и Нада Бинду · 29 августа 2010",
+     "duration": 5675,
+     "size": 90810296,
+     "source": "10_08_29_Чайтанья_Чаритамрита_в_гостях_у_Гуруваке_и_Нада_Бинду.mp3",
+     "file": "lectures-2009-2010-31.mp3",
+     "sort": 31
+    },
+    {
+     "msg_id": 384,
+     "title": "Лекция на Джанмаштами 2010 Динамо · 2 сентября 2010",
+     "duration": 3880,
+     "size": 62090649,
+     "source": "10_09_02_Лекция_на_Джанмаштами_2010_Динамо.mp3",
+     "file": "lectures-2009-2010-32.mp3",
+     "sort": 32
+    }
+   ],
+   "speaker": "purnacandra-goswami",
+   "speaker_name": "Пурначандра дас Госвами Махарадж",
+   "channel": "@purnacandragoswami",
+   "n": 32
   }
  ]
 }
