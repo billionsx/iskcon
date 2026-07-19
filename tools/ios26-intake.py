@@ -22,10 +22,12 @@
 """
 import argparse
 import datetime as dt
+import hashlib
 import json
 import math
 import os
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -34,9 +36,73 @@ REFS = ROOT / "docs" / "design" / "ios26" / "refs"
 INDEX = ROOT / "docs" / "design" / "ios26" / "INDEX.md"
 MANIFEST = ROOT / "docs" / "assets" / "manifest.jsonl"
 CLASS_PREFIX = "ios26-refs"
+TSV_GLOB = "iskcon-onelove-ios26-refs*.files.tsv"
+
+# Куда основатель РЕАЛЬНО кладёт файлы. 19.07.2026 он залил десять продуктов
+# в `tools/assets/` — потому что папка называется «assets», и это разумно.
+# Инструмент, который на это отвечает «не туда», перекладывает свою работу на
+# человека. Приём подбирает `apple*.pdf` из любой из этих точек.
+DROP_POINTS = ["docs/design/ios26/refs", "docs/design/ios26", "tools/assets", "docs/assets", "."]
 SHEET_MAX = 512 * 1024
 COLS = 8
 THUMB = (170, 369)
+
+
+def normalize(stem: str) -> str:
+    """«apple app store-1-15_compressed» → «apple_app_store_1_15».
+
+    Имя обязано быть машинным, потому что на него ссылается стандарт. Но
+    приводить его к машинному — работа МАШИНЫ, а не человека с телефоном."""
+    t = stem.lower().strip()
+    t = re.sub(r"_?compressed", "", t)
+    t = re.sub(r"[^a-z0-9]+", "_", t).strip("_")
+    if not t.startswith("apple"):
+        t = "apple_" + t
+    t = re.sub(r"^apple_?", "apple_", t)
+    return re.sub(r"_+", "_", t).strip("_")
+
+
+def offloaded_hashes() -> dict:
+    """SHA уже вынесенных мастеров: повторную заливку не принимаем дважды."""
+    out = {}
+    d = ROOT / "docs" / "assets"
+    if not d.is_dir():
+        return out
+    for tsv in d.glob(TSV_GLOB):
+        for row in tsv.read_text(encoding="utf-8").splitlines()[1:]:
+            c = row.split("\t")
+            if len(c) >= 3 and c[0].endswith(".pdf"):
+                out[c[2]] = Path(c[0]).name
+    return out
+
+
+def sweep() -> list[str]:
+    """Собрать `apple*.pdf` из всех точек сброса в refs/ с машинным именем."""
+    notes, known = [], offloaded_hashes()
+    REFS.mkdir(parents=True, exist_ok=True)
+    for dp in DROP_POINTS:
+        d = ROOT / dp
+        if not d.is_dir():
+            continue
+        for f in sorted(d.glob("*.pdf")):
+            if not f.name.lower().startswith("apple"):
+                continue
+            h = hashlib.sha256(f.read_bytes()).hexdigest()
+            if h in known:
+                if f.parent != REFS or f.name != known[h]:
+                    f.unlink()
+                    notes.append(f"{dp}/{f.name}: повтор уже вынесенного «{known[h]}» — удалён")
+                continue
+            dst = REFS / (normalize(f.stem) + ".pdf")
+            if f.resolve() == dst.resolve():
+                continue
+            if dst.exists():
+                f.unlink()
+                notes.append(f"{dp}/{f.name}: «{dst.name}» уже принят — удалён")
+                continue
+            shutil.move(str(f), str(dst))
+            notes.append(f"{dp}/{f.name} → refs/{dst.name}")
+    return notes
 
 
 def next_class() -> str:
@@ -140,17 +206,14 @@ def main() -> int:
         print("::error::нет docs/design/ios26/refs/")
         return 1
 
+    for n in sweep():
+        print(f"::notice::{n}")
+
     pdfs = sorted(REFS.glob("*.pdf"))
     if not pdfs:
         print("::notice::новых мастеров нет — приём пропущен")
         print("CLASS=")
         return 0
-
-    for pdf in pdfs:
-        if not re.match(r"^apple_[a-z0-9_]+$", pdf.stem):
-            print(f"::error::{pdf.name} — имя обязано быть apple_<продукт>.pdf "
-                  f"(строчные, латиница): на него ссылается стандарт")
-            return 1
 
     for pdf in pdfs:
         if a.dry:
