@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fitness · кадр 1 · Workout</title>
+<style>
+/* ═══ БЛОК ЗАМЕРОВ ═══════════════════════════════════════════════════════
+   Кадр: docs/design/ios26/refs/apple_fitness.pdf, с. 1 — 1179×2556 px = 393×852 pt @3x.
+   Единица: pt эталона = px CSS при @1x. 📐 снято · ⚙️ выведено · 🕳 долг.
+   Литеральных чисел ниже блока быть не должно — их видит tools/ios26-mock.py. */
+:root{
+  --stage-w: 393px;
+  --stage-h: 852px;
+  --canvas: #000000;  /* мода по краю кадра 📐 */
+  --hair: 0.33px;
+  --sb-cap-top: 22.33px;
+  --sb-base: 34.67px;
+  --sb-time-x: 39.0px;
+  --sb-lte-x: 307.67px;
+  --sb-bat-x: 334.67px;
+  --sb-bat-y: 23.0px;
+  --sb-bat-w: 24.0px;
+  --sb-bat-h: 11.33px;
+  --sb-bat-r: 3.4px;
+  --sb-bat-fill: 9.0px;
+  --sb-nub-w: 1.6px;
+  --sb-nub-h: 4.4px;
+  --sb-sig-x: 280.0px;
+  --sb-sig-w: 19.33px;
+  --sb-sig-h: 12.0px;
+  --fs-sb: 17.61px;
+  --fs-lte: 13.0px;
+  --title-x: 16.67px;
+  --title-base: 93.0px;
+  --title-cap: 24.0px;  /* cap заголовка 69.0→93.0 📐 · fs = cap ÷ 0.70 → канон Large Title 34 ⚙️ */
+  --fs-title: 34.29px;
+  --hbtn-y: 59.0px;
+  --hbtn-d: 44.0px;  /* круглые кнопки шапки 44.0 📐 */
+  --hbtn1-x: 277.0px;
+  --hbtn2-x: 333.0px;
+  --hbtn-fill: #181818;
+  --hbtn-glyph: 21.0px;
+  --ban-x: 16.0px;
+  --ban-y: 123.0px;
+  --ban-w: 361.0px;
+  --ban-h: 112.01px;
+  --ban-fill: #1C1C1C;
+  --ban-r: 30.14px;  /* угол баннера: дуга RMSE 5.76 px против суперэллипса n=2.45 RMSE 0.53 px 📐 */
+  --ban-icon-x: 35.33px;
+  --ban-icon-y: 148.33px;
+  --ban-icon-d: 38.33px;
+  --ban-heart: 21.3px;
+  --ban-text-x: 93.33px;
+  --ban-text-base: 158.33px;
+  --ban-text-cap: 10.33px;
+  --ban-text-step: 18.67px;
+  --fs-ban: 14.76px;
+  --ban-x-x: 337.33px;
+  --ban-x-y: 138.33px;
+  --ban-x-d: 24.33px;
+  --ban-x-fill: #414143;
+  --ban-x-glyph: 10.67px;
+  --ban-x-ink: #BEBEC6;
+  --tc-x: 16.0px;
+  --tc-w: 361.0px;
+  --tc-fill: #0F1901;
+  --tc-r: 33.88px;  /* угол карточки: дуга RMSE 8.01 px против суперэллипса n=2.55 RMSE 0.53 px 📐 */
+  --tc-gap: 10.0px;  /* зазор карточек 451.17−441.17 = 655.50−645.50 = 10.00 📐 */
+  --tc1-y: 244.83px;
+  --tc1-h: 196.34px;  /* 196.34 📐 — карточка 1 на 2.0 выше прочих при том же наборе, причина не установлена */
+  --tc2-y: 451.17px;
+  --tc2-h: 194.33px;  /* 194.33 📐 */
+  --tc3-y: 655.5px;
+  --tc3-h: 189.16px;  /* 189.16 ⚙️ — низ под затемняющим слоем, восстановлен по модели */
+  --tc-glyph-x: 41.0px;
+  --tc-play-x: 309.0px;
+  --tc-play-d: 43.67px;
+  --tc-play-glyph: 18.0px;
+  --tc1-glyph-dy: 23.84px;
+  --tc1-glyph-w: 27.0px;
+  --tc1-glyph-h: 43.67px;
+  --tc1-play-dy: 24.5px;
+  --tc2-glyph-dy: 24.16px;
+  --tc2-glyph-w: 32.0px;
+  --tc2-glyph-h: 42.0px;
+  --tc2-play-dy: 23.5px;
+  --tc3-glyph-dy: 27.17px;
+  --tc3-glyph-w: 48.0px;
+  --tc3-glyph-h: 36.67px;
+  --tc3-play-dy: 23.5px;
+  --tc1-title-dbase: 106.17px;
+  --tc2-title-dbase: 104.15px;
+  --tc3-title-dbase: 104.17px;
+  --tc-title-x: 37.0px;
+  --tc-title-cap: 14.33px;
+  --fs-tc-title: 20.47px;
+  --tc1-slot-dy: 127.01px;
+  --tc2-slot-dy: 125.0px;
+  --tc3-slot-dy: 125.0px;
+  --tc-slot-h: 49.33px;
+  --tc-slot-r: 17.31px;
+  --tc-slot-l-x: 35.8px;
+  --tc-slot-l-w: 156.7px;
+  --tc-slot-r-x: 200.54px;
+  --tc-slot-r-w: 156.27px;
+  --tc-slot-l-fill: #162100;
+  --tc-slot-r-fill: #213301;
+  --tc-slot-glyph: 14.33px;
+  --slot-ink: #BEC4B7;
+  --lime: #A5FF00;
+  --scrim-y: 727.0px;  /* затемнение содержимого 📐: k=1.0 до 727 · .105 на 750 · .275 на 763 · .459 на 780 · .687 на 800 · .830 на 820 · .922 на 840 · 1.0 на 852 */
+  --scrim-h: 125.0px;
+  --bar-x: 60.0px;
+  --bar-y: 769.0px;
+  --bar-w: 274.0px;  /* 274.0 📐 — НЕ 351: ширина слоя следует содержимому, постоянны ось и высота */
+  --bar-h: 62.0px;  /* 62.0 📐 */
+  --bar-r: 31.0px;
+  --bar-axis: 52.0px;  /* 52.0 = 852 − (769+831)/2 📐 — совпадает с осью слоя стандарта */
+  --bar-tint: rgba(255,255,255,.085);  /* ⚙️ материал не выводится из одного кадра однозначно: подобран так, чтобы дать снятые #181E12 полосы и #3B3F31 капсулы */
+  --bar-rim: rgba(255,255,255,.22);
+  --bar-blur: 24.0px;
+  --bar-sat: 1.8px;
+  --pill-x: 149.0px;
+  --pill-y: 774.0px;
+  --pill-w: 94.0px;  /* выбранная капсула 94.0×52.0 📐 */
+  --pill-h: 52.0px;
+  --pill-r: 26.0px;
+  --pill-tint: rgba(255,255,255,.14);
+  --tab1-cx: 111.3px;
+  --tab2-cx: 197.0px;
+  --tab3-cx: 282.75px;
+  --tab-w: 85.75px;
+  --tab-icon-top: 781.0px;
+  --tab-icon-h: 24.0px;
+  --tab-badge-d: 32.0px;
+  --tab-badge-top: 772.67px;
+  --tab-badge-glyph: 20.0px;
+  --tab-label-base: 818.0px;
+  --tab-label-cap: 7.67px;
+  --fs-tab: 10.96px;
+  --cap-off: 0.1695px;  /* ⚙️ SF Pro: (1−(0.952+0.213))/2 + 0.952 − 0.700 em */
+  --label: #FFFFFF;
+  --ban-path: "M 330.86 0.00 L 337.49 0.30 L 342.42 1.21 L 346.68 2.71 L 350.39 4.79 L 353.57 7.43 L 356.21 10.61 L 358.29 14.32 L 359.79 18.58 L 360.70 23.51 L 361.00 30.14 L 361.00 81.87 L 360.70 88.50 L 359.79 93.43 L 358.29 97.69 L 356.21 101.40 L 353.57 104.58 L 350.39 107.22 L 346.68 109.30 L 342.42 110.80 L 337.49 111.71 L 330.86 112.01 L 30.14 112.01 L 23.51 111.71 L 18.58 110.80 L 14.32 109.30 L 10.61 107.22 L 7.43 104.58 L 4.79 101.40 L 2.71 97.69 L 1.21 93.43 L 0.30 88.50 L 0.00 81.87 L 0.00 30.14 L 0.30 23.51 L 1.21 18.58 L 2.71 14.32 L 4.79 10.61 L 7.43 7.43 L 10.61 4.79 L 14.32 2.71 L 18.58 1.21 L 23.51 0.30 L 30.14 0.00 Z";
+  --tc1-path: "M 327.12 0.00 L 335.03 0.33 L 340.61 1.31 L 345.36 2.93 L 349.45 5.19 L 352.94 8.06 L 355.81 11.55 L 358.07 15.64 L 359.69 20.39 L 360.67 25.97 L 361.00 33.88 L 361.00 162.46 L 360.67 170.37 L 359.69 175.95 L 358.07 180.70 L 355.81 184.79 L 352.94 188.28 L 349.45 191.15 L 345.36 193.41 L 340.61 195.03 L 335.03 196.01 L 327.12 196.34 L 33.88 196.34 L 25.97 196.01 L 20.39 195.03 L 15.64 193.41 L 11.55 191.15 L 8.06 188.28 L 5.19 184.79 L 2.93 180.70 L 1.31 175.95 L 0.33 170.37 L 0.00 162.46 L 0.00 33.88 L 0.33 25.97 L 1.31 20.39 L 2.93 15.64 L 5.19 11.55 L 8.06 8.06 L 11.55 5.19 L 15.64 2.93 L 20.39 1.31 L 25.97 0.33 L 33.88 0.00 Z";
+  --tc2-path: "M 327.12 0.00 L 335.03 0.33 L 340.61 1.31 L 345.36 2.93 L 349.45 5.19 L 352.94 8.06 L 355.81 11.55 L 358.07 15.64 L 359.69 20.39 L 360.67 25.97 L 361.00 33.88 L 361.00 160.45 L 360.67 168.36 L 359.69 173.94 L 358.07 178.69 L 355.81 182.78 L 352.94 186.27 L 349.45 189.14 L 345.36 191.40 L 340.61 193.02 L 335.03 194.00 L 327.12 194.33 L 33.88 194.33 L 25.97 194.00 L 20.39 193.02 L 15.64 191.40 L 11.55 189.14 L 8.06 186.27 L 5.19 182.78 L 2.93 178.69 L 1.31 173.94 L 0.33 168.36 L 0.00 160.45 L 0.00 33.88 L 0.33 25.97 L 1.31 20.39 L 2.93 15.64 L 5.19 11.55 L 8.06 8.06 L 11.55 5.19 L 15.64 2.93 L 20.39 1.31 L 25.97 0.33 L 33.88 0.00 Z";
+  --tc3-path: "M 327.12 0.00 L 335.03 0.33 L 340.61 1.31 L 345.36 2.93 L 349.45 5.19 L 352.94 8.06 L 355.81 11.55 L 358.07 15.64 L 359.69 20.39 L 360.67 25.97 L 361.00 33.88 L 361.00 155.28 L 360.67 163.19 L 359.69 168.77 L 358.07 173.52 L 355.81 177.61 L 352.94 181.10 L 349.45 183.97 L 345.36 186.23 L 340.61 187.85 L 335.03 188.83 L 327.12 189.16 L 33.88 189.16 L 25.97 188.83 L 20.39 187.85 L 15.64 186.23 L 11.55 183.97 L 8.06 181.10 L 5.19 177.61 L 2.93 173.52 L 1.31 168.77 L 0.33 163.19 L 0.00 155.28 L 0.00 33.88 L 0.33 25.97 L 1.31 20.39 L 2.93 15.64 L 5.19 11.55 L 8.06 8.06 L 11.55 5.19 L 15.64 2.93 L 20.39 1.31 L 25.97 0.33 L 33.88 0.00 Z";
+  --slot-l-path: "M 139.39 0.00 L 143.04 0.32 L 146.32 1.26 L 149.28 2.79 L 151.83 4.87 L 153.91 7.42 L 155.44 10.38 L 156.38 13.66 L 156.70 17.31 L 156.70 32.02 L 156.38 35.67 L 155.44 38.95 L 153.91 41.91 L 151.83 44.46 L 149.28 46.54 L 146.32 48.07 L 143.04 49.01 L 139.39 49.33 L 17.31 49.33 L 13.66 49.01 L 10.38 48.07 L 7.42 46.54 L 4.87 44.46 L 2.79 41.91 L 1.26 38.95 L 0.32 35.67 L 0.00 32.02 L 0.00 17.31 L 0.32 13.66 L 1.26 10.38 L 2.79 7.42 L 4.87 4.87 L 7.42 2.79 L 10.38 1.26 L 13.66 0.32 L 17.31 0.00 Z";
+  --slot-r-path: "M 138.96 0.00 L 142.61 0.32 L 145.89 1.26 L 148.85 2.79 L 151.40 4.87 L 153.48 7.42 L 155.01 10.38 L 155.95 13.66 L 156.27 17.31 L 156.27 32.02 L 155.95 35.67 L 155.01 38.95 L 153.48 41.91 L 151.40 44.46 L 148.85 46.54 L 145.89 48.07 L 142.61 49.01 L 138.96 49.33 L 17.31 49.33 L 13.66 49.01 L 10.38 48.07 L 7.42 46.54 L 4.87 44.46 L 2.79 41.91 L 1.26 38.95 L 0.32 35.67 L 0.00 32.02 L 0.00 17.31 L 0.32 13.66 L 1.26 10.38 L 2.79 7.42 L 4.87 4.87 L 7.42 2.79 L 10.38 1.26 L 13.66 0.32 L 17.31 0.00 Z";
+}
+/* конец блока замеров */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0b0b0b;display:flex;justify-content:center;
+ font-family:-apple-system,"SF Pro Display","SF Pro Text",system-ui,"Helvetica Neue",sans-serif;
+ -webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+.stage{position:relative;width:var(--stage-w);height:var(--stage-h);
+ background:var(--canvas);overflow:hidden;color:var(--label)}
+.stage *{position:absolute}
+i svg,span svg{display:block;width:100%;height:100%}
+.t{line-height:1;white-space:nowrap}
+.round{border-radius:50%;display:flex;align-items:center;justify-content:center}
+.round>i,.round>span{position:static}
+
+/* статусбар */
+.sb-time{left:var(--sb-time-x);font-size:var(--fs-sb);font-weight:590;letter-spacing:-.01em;
+ top:calc(var(--sb-base) - var(--fs-sb)*.7 - var(--cap-off)*var(--fs-sb))}
+.sb-lte{left:var(--sb-lte-x);font-size:var(--fs-lte);font-weight:590;
+ top:calc(var(--sb-base) - var(--fs-lte)*.7 - var(--cap-off)*var(--fs-lte))}
+.sb-sig{left:var(--sb-sig-x);top:var(--sb-cap-top);width:var(--sb-sig-w);height:var(--sb-sig-h);
+ display:flex;align-items:flex-end;gap:calc(var(--sb-sig-w)/9)}
+.sb-sig b{position:relative;flex:1;background:currentColor;border-radius:var(--hair)}
+.sb-sig b:nth-child(1){height:38%} .sb-sig b:nth-child(2){height:58%}
+.sb-sig b:nth-child(3){height:79%} .sb-sig b:nth-child(4){height:100%}
+.sb-bat{left:var(--sb-bat-x);top:var(--sb-bat-y);width:var(--sb-bat-w);height:var(--sb-bat-h);
+ border:var(--hair) solid rgba(255,255,255,.42);border-radius:var(--sb-bat-r)}
+.sb-bat b{left:var(--hair);top:var(--hair);bottom:var(--hair);width:var(--sb-bat-fill);
+ background:#fff;border-radius:calc(var(--sb-bat-r) - var(--hair))}
+.sb-nub{left:calc(var(--sb-bat-x) + var(--sb-bat-w) + var(--hair));
+ top:calc(var(--sb-bat-y) + (var(--sb-bat-h) - var(--sb-nub-h))/2);
+ width:var(--sb-nub-w);height:var(--sb-nub-h);background:rgba(255,255,255,.42);
+ border-radius:0 var(--sb-nub-w) var(--sb-nub-w) 0}
+
+/* шапка */
+.title{left:var(--title-x);font-size:var(--fs-title);font-weight:700;letter-spacing:-.026em;
+ top:calc(var(--title-base) - var(--title-cap) - var(--cap-off)*var(--fs-title))}
+.hbtn{top:var(--hbtn-y);width:var(--hbtn-d);height:var(--hbtn-d);background:var(--hbtn-fill)}
+.hbtn>i{width:var(--hbtn-glyph);height:var(--hbtn-glyph)}
+.hbtn1{left:var(--hbtn1-x)} .hbtn2{left:var(--hbtn2-x)}
+
+/* баннер */
+.ban{left:var(--ban-x);top:var(--ban-y);width:var(--ban-w);height:var(--ban-h);
+ background:var(--ban-fill);border-radius:var(--ban-r);clip-path:path(var(--ban-path))}
+.ban-icon{left:calc(var(--ban-icon-x) - var(--ban-x));top:calc(var(--ban-icon-y) - var(--ban-y));
+ width:var(--ban-icon-d);height:var(--ban-icon-d);background:var(--lime);color:var(--ban-fill)}
+.ban-icon>i{width:var(--ban-heart);height:var(--ban-heart)}
+.ban-t{left:calc(var(--ban-text-x) - var(--ban-x));font-size:var(--fs-ban);letter-spacing:-.006em;
+ line-height:1;white-space:nowrap}
+.ban-x{left:calc(var(--ban-x-x) - var(--ban-x));top:calc(var(--ban-x-y) - var(--ban-y));
+ width:var(--ban-x-d);height:var(--ban-x-d);background:var(--ban-x-fill);color:var(--ban-x-ink)}
+.ban-x>i{width:var(--ban-x-glyph);height:var(--ban-x-glyph)}
+
+/* тонированные карточки */
+.tc{left:var(--tc-x);width:var(--tc-w);background:var(--tc-fill);border-radius:var(--tc-r)}
+.tc-glyph{left:calc(var(--tc-glyph-x) - var(--tc-x));color:var(--lime)}
+.tc-play{left:calc(var(--tc-play-x) - var(--tc-x));width:var(--tc-play-d);height:var(--tc-play-d);
+ border-radius:50%;background:var(--lime);color:var(--tc-fill);
+ display:flex;align-items:center;justify-content:center}
+.tc-play svg{position:static;width:var(--tc-play-glyph);height:var(--tc-play-glyph)}
+.tc-title{left:calc(var(--tc-title-x) - var(--tc-x));font-size:var(--fs-tc-title);
+ font-weight:700;letter-spacing:-.02em}
+.slot{height:var(--tc-slot-h);border-radius:var(--tc-slot-r);color:var(--slot-ink);
+ display:flex;align-items:center;justify-content:center}
+.slot>i{position:static;width:var(--tc-slot-glyph);height:var(--tc-slot-glyph)}
+.slot-l{left:calc(var(--tc-slot-l-x) - var(--tc-x));width:var(--tc-slot-l-w);
+ background:var(--tc-slot-l-fill);clip-path:path(var(--slot-l-path))}
+.slot-r{left:calc(var(--tc-slot-r-x) - var(--tc-x));width:var(--tc-slot-r-w);
+ background:var(--tc-slot-r-fill);clip-path:path(var(--slot-r-path))}
+.tc1{top:var(--tc1-y);height:var(--tc1-h);clip-path:path(var(--tc1-path))}
+.tc1 .tc-glyph{top:var(--tc1-glyph-dy);width:var(--tc1-glyph-w);height:var(--tc1-glyph-h)}
+.tc1 .tc-play{top:var(--tc1-play-dy)}
+.tc1 .tc-title{top:calc(var(--tc1-title-dbase) - var(--tc-title-cap) - var(--cap-off)*var(--fs-tc-title))}
+.tc1 .slot{top:var(--tc1-slot-dy)}
+.tc2{top:var(--tc2-y);height:var(--tc2-h);clip-path:path(var(--tc2-path))}
+.tc2 .tc-glyph{top:var(--tc2-glyph-dy);width:var(--tc2-glyph-w);height:var(--tc2-glyph-h)}
+.tc2 .tc-play{top:var(--tc2-play-dy)}
+.tc2 .tc-title{top:calc(var(--tc2-title-dbase) - var(--tc-title-cap) - var(--cap-off)*var(--fs-tc-title))}
+.tc2 .slot{top:var(--tc2-slot-dy)}
+.tc3{top:var(--tc3-y);height:var(--tc3-h);clip-path:path(var(--tc3-path))}
+.tc3 .tc-glyph{top:var(--tc3-glyph-dy);width:var(--tc3-glyph-w);height:var(--tc3-glyph-h)}
+.tc3 .tc-play{top:var(--tc3-play-dy)}
+.tc3 .tc-title{top:calc(var(--tc3-title-dbase) - var(--tc-title-cap) - var(--cap-off)*var(--fs-tc-title))}
+.tc3 .slot{top:var(--tc3-slot-dy)}
+
+/* затемнение содержимого под слоем */
+.scrim{left:0;top:var(--scrim-y);width:var(--stage-w);height:var(--scrim-h);
+ background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 20%,
+ rgba(0,0,0,.28) 30%,rgba(0,0,0,.46) 42%,rgba(0,0,0,.69) 58%,rgba(0,0,0,.83) 74%,
+ rgba(0,0,0,.92) 90%,rgba(0,0,0,1) 100%)}
+
+/* плавающий слой */
+.bar{left:var(--bar-x);top:var(--bar-y);width:var(--bar-w);height:var(--bar-h);
+ border-radius:var(--bar-r);background:var(--bar-tint);
+ -webkit-backdrop-filter:blur(var(--bar-blur)) saturate(var(--bar-sat));
+ backdrop-filter:blur(var(--bar-blur)) saturate(var(--bar-sat));
+ box-shadow:inset 0 0 0 var(--hair) var(--bar-rim)}
+.pill{left:calc(var(--pill-x) - var(--bar-x));top:calc(var(--pill-y) - var(--bar-y));
+ width:var(--pill-w);height:var(--pill-h);border-radius:var(--pill-r);background:var(--pill-tint)}
+.tab{top:calc(var(--tab-icon-top) - var(--bar-y));width:var(--tab-w);
+ margin-left:calc(0px - var(--tab-w)/2);text-align:center}
+.tab>i{position:relative;display:inline-block;width:var(--tab-icon-h);height:var(--tab-icon-h)}
+.tab .lb{left:0;width:var(--tab-w);text-align:center;font-size:var(--fs-tab);font-weight:510;
+ line-height:1;top:calc(var(--tab-label-base) - var(--tab-icon-top) - var(--tab-label-cap)
+ - var(--cap-off)*var(--fs-tab))}
+.tab1{left:calc(var(--tab1-cx) - var(--bar-x))}
+.tab2{left:calc(var(--tab2-cx) - var(--bar-x))}
+.tab3{left:calc(var(--tab3-cx) - var(--bar-x))}
+.badge{left:calc(50% - var(--tab-badge-d)/2);top:calc(var(--tab-badge-top) - var(--tab-icon-top));
+ width:var(--tab-badge-d);height:var(--tab-badge-d);border-radius:50%;background:var(--lime);
+ color:var(--tc-fill);display:flex;align-items:center;justify-content:center}
+.badge>i{position:static;width:var(--tab-badge-glyph);height:var(--tab-badge-glyph)}
+.tab2 .lb{color:var(--lime)}
+</style></head>
+<body>
+<div class="stage">
+  <div class="t sb-time">22:45</div>
+  <div class="sb-sig"><b></b><b></b><b></b><b></b></div>
+  <div class="t sb-lte">LTE</div>
+  <div class="sb-bat"><b></b></div><div class="sb-nub"></div>
+
+  <div class="t title">Workout</div>
+  <div class="hbtn round hbtn1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 13v5.3a2.6 2.6 0 0 1-2.6 2.6H5.7a2.6 2.6 0 0 1-2.6-2.6V6.5a2.6 2.6 0 0 1 2.6-2.6h5.4"/><path d="M17.4 3 21 6.6l-9.4 9.3-4.3.7.7-4.3z"/></svg></i></div>
+  <div class="hbtn round hbtn2"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 12.2h3.2l1.8-4.4 2.5 8 2-5.2"/><path d="M15.6 4.8c2.4 0 4.2 1.9 4.2 4.4 0 3.4-4.6 6.4-5.8 7.2"/><path d="M3.2 2.6 21.4 20.8"/></svg></i></div>
+
+  <div class="ban">
+    <div class="ban-icon round"><i><svg viewBox="0 0 24 22" fill="currentColor"><path d="M12 21.3 3.2 12.6C.4 9.8.7 5.4 3.8 3.1 6.3 1.3 9.7 1.9 12 4.6c2.3-2.7 5.7-3.3 8.2-1.5 3.1 2.3 3.4 6.7.6 9.5z"/></svg></i></div>
+    <div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 0*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">To track other workout types,</div><div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 1*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">connect Apple Watch, AirPods</div><div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 2*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">with heart rate detection or a</div><div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 3*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">device with a heart rate sensor.</div>
+    <div class="ban-x round"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M5.6 5.6 18.4 18.4M18.4 5.6 5.6 18.4"/></svg></i></div>
+  </div>
+
+  <div class="tc tc1">
+    <i class="tc-glyph"><svg viewBox="0 0 27 44" fill="currentColor"><circle cx="9.6" cy="4.6" r="4.6"/><path d="M10 11.2c2.6-.7 4.6.4 5.6 2.3l2.4 4.5c.5.9 1.3 1.4 2.3 1.6l4.3.8a2 2 0 0 1-.7 4l-4.7-1c-1.9-.4-3.3-1.4-4.2-3l-.9-1.7-1.6 6.4 3.9 4.3c.6.7.9 1.4.9 2.3v9.9a2.2 2.2 0 0 1-4.4 0v-8.9l-5.2-5.4-2.4 8.2-3.6 6.1a2.2 2.2 0 1 1-3.8-2.2l3.3-5.7 4.1-15.5c.3-3 1.9-5.9 4.7-7z"/></svg></i>
+    <i class="tc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 4.5 19 11.4c.5.3.5 1 0 1.3L7.8 19.5c-.5.3-1.2 0-1.2-.6V5.1c0-.6.7-.9 1.2-.6z"/></svg></i>
+    <div class="t tc-title">Outdoor Walk</div>
+    <div class="slot slot-l"><i><svg viewBox="0 0 22 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 17.2V5.6l8-1.9v11.4"/><circle cx="6" cy="17.6" r="3" fill="currentColor" stroke="none"/><circle cx="14" cy="15.1" r="3" fill="currentColor" stroke="none"/><path d="M2.6 2.6 19.4 21.4" stroke-width="2.1"/></svg></i></div>
+    <div class="slot slot-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4a8 8 0 1 1-8 8" stroke-dasharray=".1 3.5"/><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8"/><path d="M12 7.8V12l2.9 1.9"/></svg></i></div>
+  </div>
+  <div class="tc tc2">
+    <i class="tc-glyph"><svg viewBox="0 0 32 42" fill="currentColor"><circle cx="19.6" cy="4.4" r="4.4"/><path d="M16.6 11.2c2.8-.9 5.4.3 6.7 2.4l2.5 4.2c.6 1 1.4 1.5 2.5 1.6l1.6.2a1.9 1.9 0 0 1-.2 3.8l-2.3-.2c-2.2-.2-3.9-1.2-5-3l-.7-1.2-2 5.8 3.9 4c.7.7 1 1.5 1 2.4v9a2.1 2.1 0 0 1-4.2 0v-8l-5.4-5.4-2 6.7-4.2 6a2.1 2.1 0 1 1-3.5-2.3l3.7-5.4 3.3-13c.4-3.3 1.8-6 4.3-7.6z"/><path d="M12.5 16.3 3.9 20.3a1.9 1.9 0 0 1-1.6-3.5l8.5-3.9z"/></svg></i>
+    <i class="tc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 4.5 19 11.4c.5.3.5 1 0 1.3L7.8 19.5c-.5.3-1.2 0-1.2-.6V5.1c0-.6.7-.9 1.2-.6z"/></svg></i>
+    <div class="t tc-title">Outdoor Run</div>
+    <div class="slot slot-l"><i><svg viewBox="0 0 22 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 17.2V5.6l8-1.9v11.4"/><circle cx="6" cy="17.6" r="3" fill="currentColor" stroke="none"/><circle cx="14" cy="15.1" r="3" fill="currentColor" stroke="none"/><path d="M2.6 2.6 19.4 21.4" stroke-width="2.1"/></svg></i></div>
+    <div class="slot slot-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4a8 8 0 1 1-8 8" stroke-dasharray=".1 3.5"/><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8"/><path d="M12 7.8V12l2.9 1.9"/></svg></i></div>
+  </div>
+  <div class="tc tc3">
+    <i class="tc-glyph"><svg viewBox="0 0 48 37" fill="none" stroke="currentColor" stroke-width="3"><circle cx="8.6" cy="27.4" r="8"/><circle cx="39.4" cy="27.4" r="8"/><path d="M15 27.4h9.4l7.6-11.6 4.6 11.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M21 15.8h7.6" stroke-linecap="round"/><circle cx="36.6" cy="4.6" r="4.6" fill="currentColor" stroke="none"/></svg></i>
+    <i class="tc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 4.5 19 11.4c.5.3.5 1 0 1.3L7.8 19.5c-.5.3-1.2 0-1.2-.6V5.1c0-.6.7-.9 1.2-.6z"/></svg></i>
+    <div class="t tc-title">Outdoor Cycle</div>
+    <div class="slot slot-l"><i><svg viewBox="0 0 22 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 17.2V5.6l8-1.9v11.4"/><circle cx="6" cy="17.6" r="3" fill="currentColor" stroke="none"/><circle cx="14" cy="15.1" r="3" fill="currentColor" stroke="none"/><path d="M2.6 2.6 19.4 21.4" stroke-width="2.1"/></svg></i></div>
+    <div class="slot slot-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4a8 8 0 1 1-8 8" stroke-dasharray=".1 3.5"/><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8"/><path d="M12 7.8V12l2.9 1.9"/></svg></i></div>
+  </div>
+  <div class="scrim"></div>
+  <div class="bar">
+    <div class="pill"></div>
+    <div class="tab tab1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 1 1-6.4 15.3"/></svg></i><div class="t lb">Summary</div></div>
+    <div class="tab tab2"><span class="badge"><i><svg viewBox="0 0 32 42" fill="currentColor"><circle cx="19.6" cy="4.4" r="4.4"/><path d="M16.6 11.2c2.8-.9 5.4.3 6.7 2.4l2.5 4.2c.6 1 1.4 1.5 2.5 1.6l1.6.2a1.9 1.9 0 0 1-.2 3.8l-2.3-.2c-2.2-.2-3.9-1.2-5-3l-.7-1.2-2 5.8 3.9 4c.7.7 1 1.5 1 2.4v9a2.1 2.1 0 0 1-4.2 0v-8l-5.4-5.4-2 6.7-4.2 6a2.1 2.1 0 1 1-3.5-2.3l3.7-5.4 3.3-13c.4-3.3 1.8-6 4.3-7.6z"/><path d="M12.5 16.3 3.9 20.3a1.9 1.9 0 0 1-1.6-3.5l8.5-3.9z"/></svg></i></span><div class="t lb">Workout</div></div>
+    <div class="tab tab3"><i><svg viewBox="0 0 30 24" fill="currentColor"><circle cx="11" cy="6.4" r="5"/><path d="M11 12.8c5 0 8.6 3 8.6 6.2 0 1.4-1 2.2-2.6 2.2H5c-1.6 0-2.6-.8-2.6-2.2 0-3.2 3.6-6.2 8.6-6.2z"/><circle cx="23.4" cy="8" r="4"/><path d="M23.4 13.4c4 0 6.3 2.4 6.3 4.8 0 1-.6 1.6-1.7 1.6h-5.3c.5-.6.7-1.3.7-2.2 0-1.6-.7-3.2-2-4.2z"/></svg></i><div class="t lb">Sharing</div></div>
+  </div>
+</div>
+</body></html>

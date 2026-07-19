@@ -99,6 +99,10 @@ jobs:
       - name: Гейт эталона iOS 26.5 (ЗКН-Д026)
         run: python3 tools/ios26-lint.py
 
+      - name: Мокап = отрисованный замер (ЗКН-Д026)
+        if: always()
+        run: python3 tools/ios26-mock.py verify
+
       - name: Аудит конституции (свод против кода)
         if: always()
         run: python3 tools/laws-audit.py
