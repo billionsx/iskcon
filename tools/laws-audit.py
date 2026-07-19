@@ -167,6 +167,12 @@ def actual_level(lid: str) -> tuple[int, str]:
         if "check_f017" in t:
             return 5, "гейт инфраструктуры"
 
+    # Д026 — эталон iOS 26.5: гейт живёт в отдельном инструменте.
+    if lid == "ЗКН-Д026":
+        t26 = ROOT / "tools" / "ios26-lint.py"
+        if t26.exists() and "ЗКН-Д026" in t26.read_text(encoding="utf-8"):
+            return 5, "гейт эталона iOS 26.5 (ios26-lint.py)"
+
     if lid == "ЗКН-Д009":
         t = (ROOT / "apps" / "web" / "src" / "ui" / "HubHeader.tsx").read_text(encoding="utf-8")
         if "SECTION_GAP" in t:
