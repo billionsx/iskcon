@@ -34,7 +34,9 @@ import json
 import os
 import subprocess
 import sys
+import subprocess
 import tarfile
+import tempfile
 import time
 import urllib.error
 import urllib.parse
@@ -296,6 +298,134 @@ def do_offload(cls, paths, source, do_rm, exts=None, base=None):
     return 0
 
 
+def files_index_rows(cls):
+    """Поимённый индекс класса: [(rel_path, bytes, sha256)]."""
+    idx = os.path.join(ASSETS_DIR, "%s.files.tsv" % os.path.basename(tar_name(cls)).replace(".tar.gz", ""))
+    if not os.path.exists(idx):
+        raise SystemExit("::error::нет индекса %s — восстанавливать не по чему" % idx)
+    rows = []
+    with open(idx, encoding="utf-8") as f:
+        for line in f:
+            line = line.rstrip("\n")
+            if not line or line.startswith("#"):
+                continue
+            rel, size, sha = line.split("\t")
+            rows.append((rel, int(size), sha))
+    return rows
+
+
+def blob_from_history(rel):
+    """Файл вынесен из дерева — поднять его из коммита, который его удалил.
+
+    Обобщение ручного трюка `git show <коммит>^:<путь>`: коммит ищется сам,
+    чтобы рецепт не устаревал вместе с хэшем.
+    """
+    q = subprocess.run(["git", "log", "--all", "--diff-filter=D", "--format=%H", "--", rel],
+                       capture_output=True, text=True, cwd=ROOT)
+    for commit in q.stdout.split():
+        blob = subprocess.run(["git", "show", "%s^:%s" % (commit, rel)],
+                              capture_output=True, cwd=ROOT)
+        if blob.returncode == 0 and blob.stdout:
+            return blob.stdout, commit
+    return None, None
+
+
+def do_reupload(cls, dry_run=False):
+    """Перезалить класс, у которого зеркало пусто, НЕ возвращая мастера в дерево.
+
+    Зачем отдельный режим. `offload` идемпотентен по классу: увидев запись в
+    манифесте, он молча выходит — ровно то поведение, из-за которого пустой
+    релиз `assets-ios26-refs-2` невозможно было починить его же руками. Здесь
+    запись в манифесте не повод пропустить, а наоборот — список того, что
+    обязано лежать на зеркале.
+
+    Целостность держится на поимённых SHA-256 из `<класс>.files.tsv`: каждый
+    файл сверяется до упаковки, расхождение хотя бы в одном — отказ целиком.
+    """
+    rec = manifest_record(cls)
+    if not rec:
+        raise SystemExit("::error::класс «%s» не найден в манифесте" % cls)
+    rows = files_index_rows(cls)
+    tmp = tempfile.mkdtemp(prefix="reupload-")
+    ok = 0
+    for rel, size, sha in rows:
+        full = os.path.join(ROOT, rel)
+        src = "дерево"
+        data = None
+        if os.path.exists(full):
+            with open(full, "rb") as f:
+                data = f.read()
+            if hashlib.sha256(data).hexdigest() != sha:
+                data = None
+        if data is None:
+            data, commit = blob_from_history(rel)
+            src = "git %s^" % (commit[:8] if commit else "?")
+        if data is None:
+            raise SystemExit("::error::%s не найден ни в дереве, ни в истории" % rel)
+        got = hashlib.sha256(data).hexdigest()
+        if got != sha or len(data) != size:
+            raise SystemExit("::error::%s — SHA-256 не сошёлся (%s), заливать нельзя" % (rel, src))
+        dst = os.path.join(tmp, rel)
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        with open(dst, "wb") as f:
+            f.write(data)
+        ok += 1
+        print("::notice::✓ %s (%s, %s)" % (rel, human(len(data)), src))
+    print("::notice::сошлось %d/%d файлов" % (ok, len(rows)))
+
+    tarp = os.path.join(tmp, os.path.basename(tar_name(cls)))
+    files = sorted(os.path.join(dp, fn) for dp, _, fns in os.walk(tmp) for fn in fns
+                   if not fn.endswith(".tar.gz"))
+    with tarfile.open(tarp, "w:gz") as tar:
+        for f in files:
+            tar.add(f, arcname=os.path.relpath(f, tmp))
+    tar_sha = sha256_file(tarp)
+    tar_bytes = os.path.getsize(tarp)
+    print("::notice::тарбол %s (%s), sha256=%s" % (os.path.basename(tarp), human(tar_bytes), tar_sha[:16]))
+
+    if dry_run:
+        print("::notice::--dry-run: собрано и сверено, заливка не выполнялась")
+        return 0
+
+    ia_url = ia_upload(ia_identifier(cls), tarp, cls, rec.get("source", ""))
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if not token:
+        raise SystemExit("::error::нет GH_TOKEN — второе зеркало не закрыть (ЗКН-Пл023)")
+    rel_gh = gh_get_or_create_release(gh_tag(cls), token)
+    gh_url = gh_upload_asset(rel_gh, tarp, token)
+    update_manifest(cls, {"sha256": tar_sha, "bytes": tar_bytes, "ia_url": ia_url,
+                          "gh_url": gh_url, "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+    print("::notice::перезалито: %s | %s" % (ia_url, gh_url))
+    return 0
+
+
+def manifest_record(cls):
+    if not os.path.exists(MANIFEST):
+        return None
+    with open(MANIFEST, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and json.loads(line).get("class") == cls:
+                return json.loads(line)
+    return None
+
+
+def update_manifest(cls, patch):
+    """Правит запись класса на месте: перезаливка меняет sha тарбола, а не файлов."""
+    out = []
+    with open(MANIFEST, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            rec = json.loads(line)
+            if rec.get("class") == cls:
+                rec.update(patch)
+            out.append(json.dumps(rec, ensure_ascii=False))
+    with open(MANIFEST, "w", encoding="utf-8") as f:
+        f.write("\n".join(out) + "\n")
+
+
 def do_restore(cls):
     rec = None
     if os.path.exists(MANIFEST):
@@ -363,6 +493,9 @@ def main():
     o.add_argument("--rm", action="store_true")
     r = sub.add_parser("restore")
     r.add_argument("--class", dest="cls", required=True)
+    u = sub.add_parser("reupload", help="перезалить класс на зеркала, не возвращая файлы в дерево")
+    u.add_argument("--class", dest="cls", required=True)
+    u.add_argument("--dry-run", action="store_true", help="собрать и сверить SHA, но не заливать")
     sub.add_parser("selftest")
     a = ap.parse_args()
 
@@ -373,6 +506,8 @@ def main():
         do_offload(a.cls, a.path, a.source, a.rm, exts, a.base or None)
     elif a.cmd == "restore":
         do_restore(a.cls)
+    elif a.cmd == "reupload":
+        do_reupload(a.cls, a.dry_run)
 
 
 if __name__ == "__main__":

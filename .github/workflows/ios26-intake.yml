@@ -91,6 +91,15 @@ jobs:
       - name: "Гейт эталона — не разошлось ли (ЗКН-Д026)"
         run: python3 tools/ios26-lint.py
 
-      - name: "Живость обоих зеркал"
+      # Скидка на лаг нужна только archive.org: свежий item там ещё деривируется
+      # и честно отдаёт 404. У GitHub Releases заливка синхронная — лага нет,
+      # поэтому пустой релиз здесь ошибка, а не предупреждение. Раньше стояло
+      # `verify.py || echo ::warning::`, и класс ios26-refs-2 родился с пустым
+      # зеркалом: гейт отработал, приписка его обнулила.
+      - name: "Зеркало GitHub непустое (лага там не бывает)"
         if: ${{ steps.intake.outputs.cls != '' }}
-        run: python3 tools/assets/verify.py || echo "::warning::archive.org отдаёт не сразу — item в очереди деривации"
+        run: python3 tools/assets/verify.py --class "${{ steps.intake.outputs.cls }}" --strict-gh
+
+      - name: "Живость обоих зеркал (archive.org может ещё деривировать)"
+        if: ${{ steps.intake.outputs.cls != '' }}
+        run: python3 tools/assets/verify.py --class "${{ steps.intake.outputs.cls }}" || echo "::warning::archive.org отдаёт не сразу — item в очереди деривации"

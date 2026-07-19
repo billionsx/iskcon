@@ -108,17 +108,52 @@ def selftest():
     print("selftest OK")
 
 
+def gh_alive(rec):
+    """Отдельно про GitHub Releases: заливка туда синхронная, лага у неё нет.
+
+    archive.org после загрузки некоторое время деривирует item и честно отдаёт
+    404 — на это скидка есть. У Releases такой скидки нет: если сразу после
+    выноса ассета в релизе нет, значит его там и не будет. Ровно так родился
+    пустой `assets-ios26-refs-2`: класс уехал в манифест, зеркало осталось
+    пустым, а общий гейт увидел «одно живое из двух» и написал предупреждение.
+    Предупреждение в логе CI не читает никто.
+    """
+    url = rec.get("gh_url")
+    if not url:
+        return False, "нет URL"
+    return head_ok(url)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest", action="store_true")
+    ap.add_argument("--class", dest="cls", default="", help="проверить один класс, а не весь манифест")
+    ap.add_argument("--strict-gh", action="store_true",
+                    help="мёртвое зеркало GitHub — ошибка, а не предупреждение (для приёмки: там лага не бывает)")
     a = ap.parse_args()
     if a.selftest:
         selftest()
         return
     rows = read_manifest()
+    if a.cls:
+        rows = [r for r in rows if r.get("class") == a.cls]
+        if not rows:
+            raise SystemExit("::error::класс «%s» не найден в манифесте" % a.cls)
     if not rows:
         print("::notice::манифест пуст — проверять нечего, гейт зелёный")
         return
+    if a.strict_gh:
+        dead = []
+        for rec in rows:
+            ok, code = gh_alive(rec)
+            print("  %s GitHub     %-22s %s" % ("✓" if ok else "✗", rec.get("class", "?"), code))
+            if not ok:
+                dead.append((rec.get("class", "?"), code))
+        if dead:
+            for cls, code in dead:
+                print("::error title=Зеркало GitHub пусто::класс «%s» — релиз без ассета (%s). "
+                      "Чинится так: python3 tools/assets/offload.py reupload --class %s" % (cls, code, cls))
+            raise SystemExit(1)
     print("Проверка живости зеркал (%d классов):" % len(rows))
     lost, degraded = verify(rows)
     for cls, why in degraded:
