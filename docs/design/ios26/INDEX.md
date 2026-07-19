@@ -39,7 +39,7 @@
 | 5 | `apple_id.pdf` | Настройки / Apple Account | 9 | **Эталон сгруппированного списка**: врезки, радиус, разделители, шаг строки, плитки иконок, аватар |
 | 6 | `apple_tv.pdf` | Apple TV | 31 | Медиа-витрина: крупные постеры, горизонтальные полки, экран тайтла, поиск, тёмный холст под медиа |
 | 7 | `apple_app_store.pdf` | App Store | 32 | ✅ роспись 32/32 · замеры в 5.16 стандарта |
-| 8 | `apple_music.pdf` | Music | 35 | 🕳 роспись не сделана — принят автоматически |
+| 8 | `apple_music.pdf` | Music | 35 | ✅ роспись 35/35 · замеры в 5.17 стандарта |
 | 9 | `apple_notes.pdf` | Notes | 18 | ✅ роспись 18/18 · замеры в 5.15 стандарта |
 | 10 | `apple_wallet.pdf` | Wallet | 8 | 🕳 роспись не сделана — принят автоматически |
 
@@ -204,9 +204,52 @@
 
 ## 8. `apple_music.pdf` — Music · 35 кадров
 
-> **Роспись — долг 🕳.** Файл принят автоматически 19.07.2026. Покадровый
-> разбор не сделан. Писать его «примерно» значит выдумать (ЗКН-БТ001):
-> заглушка честнее правдоподобной таблицы, которую нельзя проверить.
+Роспись снята 19.07.2026, опознание по тексту кадра и структуре. Замеры —
+в `STANDARD_ios26_css.md`, раздел 5.17.
+
+| с. | Экран | Что снимаем |
+|---|---|---|
+| 1 | Медиатека · Альбомы — меню вида и сортировки | «⊞ Grid / ≡ List», ниже сортировка: Title · Date Added · Artist · Year; под меню — пустое состояние «Music purchased in iTunes…» |
+| 2 | Альбомы — меню фильтра | «⊞ All Albums» с галочкой, Albums · ★ Favourites · ⤓ Downloads |
+| 3 | Домой — полки настроений | Полки Commuting · Oldies · African · Reggae · Arabic, строка «Recommend ›»; внизу мини-плеер |
+| 4 | Плейлисты — меню фильтра | «≡ All Playlists», Playlists · ★ Favourites · ⤓ Downloads; пустое состояние + мини-плеер |
+| 5 | Лист «Apple Account» | ✕, имя, «Account info, payments and settings», плашка «Get 1 Month free» |
+| 6 | Сейчас играет — контекст-меню | Go to Album · Go to Artist поверх обложки; метка LIVE |
+| 7 | Выбор устройства вывода | «Homegrown (feat. Blxst) · Nippa», строка «iPhone Speaker» с галочкой |
+| 8 | Сейчас играет — подсказка Radio | «To see the schedule and find more live shows, explore Radio» |
+| 9 | Вкладка Radio | Крупный заголовок, баннер «Try it now and get 1 month free», полки станций |
+| 10 | Страница шоу | «The Estelle Show» и редакционное описание ведущей |
+| 11 | Список «Interviews» | Строки: дата КАПСОМ + имя + подпись («2 MAY 2026 · Lekan…») |
+| 12 | Полка «Featured Playlists» | Плитки плейлистов с марками @Music |
+| 13 | Список «In the Mix» | Дата + автор микса + описание |
+| 14 | «In the Mix» — разворот | Крупная обложка, «In the Mix: 7», описание |
+| 15 | Полка «Featured Videos» | Плитки видео: «Eve: Essentials Radio», «Estelle's All-Time Classics ›» |
+| 16 | Вкладка «Медиатека» | Крупный заголовок Library, строки разделов Playlists · Artists · Albums · Songs; мини-плеер + таб-бар |
+| 17 | Медиатека — меню «Edit Sections» | Меню поверх списка разделов |
+| 18 | Медиатека — правка разделов | Полный список: Playlists · Artists · Albums · Songs · Music Videos · Genres · Compilations · Composers |
+| 19 | Плейлисты — пусто | «+», «•••», пустое состояние «Playlists you create will appear here» |
+| 20 | Песни — меню сортировки | Title · Date Added · Songs · Artist · A-Z |
+| 21 | Плейлисты — меню вида и сортировки | Grid/List + Title · Date Added · Last Played · Date Updated · Playlist Type |
+| 22 | Артисты — меню фильтра | «All Artists», Artists · ⤓ Downloads; пустое состояние |
+| 23 | Артисты — пусто | «Add an artist's music and they will appear here» |
+| 24 | Альбомы — пусто | «•••», пустое состояние + мини-плеер |
+| 25 | Поиск — клавиатура | Переключатель Apple Music / Library, «No Recent Searches», клавиатура |
+| 26 | Поиск — поле | Поле «Artists, Songs, Lyrics and More» с ✕ |
+| 27 | Песни — пусто | Пустое состояние + строка «Recommend ›» |
+| 28 | Песни — меню фильтра | «All Songs», Songs · ★ Favourites · ⤓ Downloads |
+| 29 | Вкладка Search — предложение подписки | «Get 1 month of free music. Plus your entire music library on all your devices» |
+| 30 | Обзор категорий | Плитки Apple Music Live · Up Next · Fitness · Charts · Focus · Alternative · Rock |
+| 31 | Сейчас играет — полный экран | Обложка, название, исполнитель, метка LIVE, транспорт и громкость |
+| 32 | Вкладка «Домой» — предложение подписки | «Music just for you. 1 month free», кнопка **Accept Free Trial** |
+| 33 | Сейчас играет — меню действий | Add to Playlist · Go to Album · Go to Artist |
+| 34 | Тарифы подписки | Две плашки Accept Free Trial: 4,99 US$/мес и 7,99 US$/мес |
+| 35 | Сейчас играет — вариант | Тот же экран с раскрытой панелью управления |
+
+**Чем Music отличается.** У него внизу **два яруса**, а не один: мини-плеер
+стоит отдельной капсулой над таб-баром через зазор 8.0 pt. Это единственный из
+десяти продуктов, где плавающий слой двухэтажный, — и он же объясняет, почему
+у Music больше всего экранов с меню: почти каждый раздел медиатеки имеет своё
+меню вида, сортировки и фильтра.
 
 ## 9. `apple_notes.pdf` — Notes · 18 кадров
 
