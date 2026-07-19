@@ -8,8 +8,8 @@
    📐 снято · ⚙️ выведено · 🕳 долг. Литеральных чисел ниже блока быть не должно —
    их видит tools/ios26-mock.py. */
 :root{
-  --stage-w: 393px;
-  --stage-h: 852px;
+  --stage-w: 393.0px;
+  --stage-h: 852.0px;
   --canvas: #000000;
   --label: #FFFFFF;
   --lime: #A5FF01;
@@ -43,7 +43,7 @@
   --w-lb2: 40.33px;
   --w-lb3: 36.33px;
   --sb-time-x: 38.4px;
-  --sb-time-top: 22.2631px;
+  --sb-time-top: 22.26px;
   --fs-sb: 17.16px;
   --sb-heart-x: 89.67px;
   --sb-heart-y: 23.0px;
@@ -81,9 +81,9 @@
   --g-hdr2-h: 21.67px;
   --title-x: 17.34px;
   --title-top: 124.4px;
-  --fs-title: 31.108px;
+  --fs-title: 31.11px;
   --chip-y: 180.0px;
-  --chip-h: 32.33px;
+  --chip-h: 32.83px;
   --chip-r: 16.17px;
   --chip-fill: #1C1C1C;
   --chip0-x: 15.0px;  /* 📐 чипов ПЯТЬ: All · Workouts · Walking · Other · Hiking; строка уходит за правый край, пятый обрезан на 393 */
@@ -105,13 +105,13 @@
   --chip3-x: 259.33px;
   --chip3-w: 65.67px;
   --chip4-x: 335.0px;
-  --chip4-w: 58.0px;
+  --chip4-w: 69.6px;
   --chip-text-top: 9.6px;
-  --fs-chip: 12.378px;
+  --fs-chip: 11.98px;
   --chip-ink: #EDEDED;
   --col-x: 16.0px;
   --col2-x: 129.34px;
-  --col3-x: 236.67px;
+  --col3-x: 237.37px;
   --w-v1: 4.67px;
   --w-v1b: 9.0px;
   --w-t1: 58.67px;
@@ -124,17 +124,17 @@
   --w-k2b: 72.33px;
   --m1-top: 243.2px;  /* 📐 сводка месяца лежит ПРЯМО НА ХОЛСТЕ, без карточки: группировку даёт типографика */
   --m2-top: 504.2px;
-  --fs-month: 19.7331px;
-  --head-top: 292.9678px;
-  --head2-top: 553.2678px;
-  --fs-head: 17.575px;
-  --row1-top: 320.27px;
+  --fs-month: 19.73px;
+  --head-top: 292.97px;
+  --head2-top: 553.62px;
+  --fs-head: 17.57px;
+  --row1-top: 320.77px;
   --row2-top: 340.61px;
   --row3-top: 360.61px;
-  --row1b-top: 581.27px;
+  --row1b-top: 581.77px;
   --row2b-top: 601.61px;
   --row3b-top: 621.61px;
-  --fs-row: 17.4159px;
+  --fs-row: 17.42px;
   --c-x: 16.0px;
   --c-w: 361.0px;
   --disc-x: 32.0px;
@@ -169,16 +169,16 @@
   --fs-date2: 12.5px;
   --c-text-x: 88.67px;
   --cv-x: 87.67px;
-  --c1-t1-top: 18.3994px;
-  --fs-c-t1: 14.1264px;
+  --c1-t1-top: 18.4px;
+  --fs-c-t1: 14.13px;
   --c1-t2-top: 42.01px;
   --fs-c-t2: 25.46px;
   --c2-t1-top: 18.2px;
   --c2-t2-top: 42.01px;
   --scrim-y: 727.0px;
   --scrim-h: 125.0px;
-  --bar-x: 60.67px;
-  --bar-y: 769.67px;
+  --bar-x: 59.97px;
+  --bar-y: 768.97px;
   --bar-w: 272.67px;
   --bar-h: 60.67px;
   --bar-r: 30.33px;
@@ -195,7 +195,7 @@
   --pill-tint: rgba(255,255,255,.134);
   --pill-top: rgba(255,255,255,.052);
   --glow-x: 53.0px;
-  --glow-y: 831.0px;
+  --glow-y: 829.0px;
   --glow-w: 105.0px;
   --glow-h: 21.0px;
   --glow: rgba(255,255,255,.16);
@@ -215,7 +215,7 @@
   --tab2-cx: 196.5px;
   --tab3-cx: 282.8px;
   --tab-w: 85.75px;
-  --tab-label-top: 809.4px;
+  --tab-label-top: 810.9px;
   --fs-tab: 10.25px;
   --accent: #C5FD2C;
   --c1-path: "M 339.87 0.00 L 345.38 0.19 L 348.89 0.75 L 351.79 1.70 L 354.25 3.01 L 356.31 4.69 L 357.99 6.75 L 359.30 9.21 L 360.25 12.11 L 360.81 15.62 L 361.00 21.13 L 361.00 56.87 L 360.81 62.38 L 360.25 65.89 L 359.30 68.79 L 357.99 71.25 L 356.31 73.31 L 354.25 74.99 L 351.79 76.30 L 348.89 77.25 L 345.38 77.81 L 339.87 78.00 L 21.13 78.00 L 15.62 77.81 L 12.11 77.25 L 9.21 76.30 L 6.75 74.99 L 4.69 73.31 L 3.01 71.25 L 1.70 68.79 L 0.75 65.89 L 0.19 62.38 L 0.00 56.87 L 0.00 21.13 L 0.19 15.62 L 0.75 12.11 L 1.70 9.21 L 3.01 6.75 L 4.69 4.69 L 6.75 3.01 L 9.21 1.70 L 12.11 0.75 L 15.62 0.19 L 21.13 0.00 Z";
