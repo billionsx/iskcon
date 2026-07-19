@@ -103,6 +103,10 @@ jobs:
         if: always()
         run: python3 tools/ios26-mock.py verify
 
+      - name: Конституция интерфейса ONE LOVE (ЗКН-Д027)
+        if: always()
+        run: python3 tools/one-love-lint.py
+
       - name: Аудит конституции (свод против кода)
         if: always()
         run: python3 tools/laws-audit.py
