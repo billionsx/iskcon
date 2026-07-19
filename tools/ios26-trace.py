@@ -32,6 +32,8 @@ import sys
 import numpy as np
 from PIL import Image
 
+UP = 4  # во сколько раз частить сетку перед поиском контура
+
 
 def load(path):
     return np.asarray(Image.open(path).convert("RGB")).astype(float)
@@ -64,10 +66,50 @@ def douglas_peucker(pts, tol):
     return np.vstack([a, b])
 
 
+def smooth(pts, sharp_deg=142.0):
+    """Ломаная → кубические Безье через Кэтмулл–Ром, острые углы сохраняются.
+
+    Обводка растра даёт ломаную. На знаке в 20 pt её грани видно глазом, а у Apple
+    знак гладкий: SF Symbols — кривые, не многоугольники. Поэтому точки соединяются
+    кубическими Безье с касательными по Кэтмулл–Рому. Но не везде: у знака есть
+    НАСТОЯЩИЕ углы (уголок пера, стык штрихов), и сглаживать их — врать в другую
+    сторону. Точка, где направление меняется резче порога, остаётся углом.
+    """
+    n = len(pts)
+    if n < 4:
+        return "M" + " ".join(f"{x:.2f},{y:.2f}" for x, y in pts) + "Z"
+    P = np.asarray(pts, float)
+    prev = P - np.roll(P, 1, axis=0)
+    nxt = np.roll(P, -1, axis=0) - P
+    lp = np.hypot(*prev.T)
+    ln = np.hypot(*nxt.T)
+    cosang = np.einsum("ij,ij->i", prev, nxt) / np.maximum(lp * ln, 1e-9)
+    ang = np.degrees(np.arccos(np.clip(cosang, -1, 1)))
+    corner = ang > (180.0 - sharp_deg)
+    tan = (np.roll(P, -1, axis=0) - np.roll(P, 1, axis=0)) / 6.0
+    tan[corner] = 0.0
+    d = [f"M{P[0,0]:.2f},{P[0,1]:.2f}"]
+    for i in range(n):
+        j = (i + 1) % n
+        c1 = P[i] + tan[i]
+        c2 = P[j] - tan[j]
+        d.append(f"C{c1[0]:.2f},{c1[1]:.2f} {c2[0]:.2f},{c2[1]:.2f} {P[j,0]:.2f},{P[j,1]:.2f}")
+    return "".join(d) + "Z"
+
+
 def trace(img, box, fill, back, tol=0.6, vb=None):
     from skimage import measure
+    from PIL import Image as _Im
     x0, y0, x1, y1 = [int(round(v * 3)) for v in box]
     sub = img[y0:y1, x0:x1]
+    # Растр знака мал: при 20 pt это 60 px, и контур по такой сетке выходит гранёным.
+    # Область увеличивается бикубически, порог берётся на частой сетке — грань уходит,
+    # а положение края не смещается: интерполяция симметрична относительно уровня 50 %.
+    up = UP
+    if up > 1:
+        im = _Im.fromarray(np.uint8(np.clip(sub, 0, 255)))
+        sub = np.asarray(im.resize((sub.shape[1] * up, sub.shape[0] * up),
+                                   _Im.BICUBIC)).astype(float)
     mk = mask(sub, fill, back)
     if not mk.any():
         raise SystemExit("в прямоугольнике нет материала знака")
@@ -77,21 +119,21 @@ def trace(img, box, fill, back, tol=0.6, vb=None):
     pad = np.zeros((mk.shape[0] + 2, mk.shape[1] + 2), bool)
     pad[1:-1, 1:-1] = mk
     cs = measure.find_contours(pad.astype(float), 0.5)
-    w, h = (gx1 - gx0) / 3.0, (gy1 - gy0) / 3.0
+    U = 3.0 * UP
+    w, h = (gx1 - gx0) / U, (gy1 - gy0) / U
     sc = (vb / max(w, h)) if vb else 1.0
     out = []
     for c in cs:
         if len(c) < 8:
             continue
-        p = np.stack([c[:, 1] - 1 - gx0, c[:, 0] - 1 - gy0], axis=1) / 3.0 * sc
+        p = np.stack([c[:, 1] - 1 - gx0, c[:, 0] - 1 - gy0], axis=1) / U * sc
         p = douglas_peucker(p, tol / 3.0 * sc)
         if len(p) < 3:
             continue
-        d = "M" + " ".join(f"{x:.2f},{y:.2f}" for x, y in p) + "Z"
-        out.append((abs(_area(p)), d))
+        out.append((abs(_area(p)), smooth(p)))
     out.sort(reverse=True)
     return dict(w=round(w, 2), h=round(h, 2),
-                x=round(gx0 / 3.0, 2), y=round(gy0 / 3.0, 2),
+                x=round(gx0 / U, 2), y=round(gy0 / U, 2),
                 paths=[d for _, d in out])
 
 
