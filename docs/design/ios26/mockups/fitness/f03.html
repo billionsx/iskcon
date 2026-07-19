@@ -36,7 +36,7 @@
   --w-c2v: 52.0px;
   --w-c2d: 60.0px;
   --c1-unit-x: 130.33px;
-  --fs-unit: 25.46px;
+  --fs-unit: 20.38px;
   --w-c3: 105.33px;
   --w-c3v: 74.0px;
   --w-lb1: 46.33px;
@@ -137,6 +137,13 @@
   --fs-row: 17.4159px;
   --c-x: 16.0px;
   --c-w: 361.0px;
+  --disc-x: 32.0px;
+  --disc-d: 48.0px;
+  --disc1-y: 410.0px;
+  --disc2-y: 670.0px;
+  --disc3-y: 758.0px;
+  --disc1-fill: #172005;
+  --disc-fill: #000000;
   --card-r: 21.13px;  /* 📐 общий угол карточек, суперэллипс n 2.76 (ONE LOVE §2) */
   --card-n: 2.76;
   --c1-y: 394.0px;
@@ -153,7 +160,7 @@
   --g-w2-y: 675.67px;
   --g-w2-w: 36.67px;
   --g-w2-h: 36.67px;
-  --c1-unit-top: 42.34px;
+  --c1-unit-top: 44.4px;
   --c-date-x: 305.67px;
   --c2-date-x: 300.34px;
   --c1-date-top: 49.33px;
@@ -208,7 +215,7 @@
   --tab2-cx: 196.5px;
   --tab3-cx: 282.8px;
   --tab-w: 85.75px;
-  --tab-label-top: 810.7345px;
+  --tab-label-top: 809.4px;
   --fs-tab: 10.25px;
   --accent: #C5FD2C;
   --c1-path: "M 339.87 0.00 L 345.38 0.19 L 348.89 0.75 L 351.79 1.70 L 354.25 3.01 L 356.31 4.69 L 357.99 6.75 L 359.30 9.21 L 360.25 12.11 L 360.81 15.62 L 361.00 21.13 L 361.00 56.87 L 360.81 62.38 L 360.25 65.89 L 359.30 68.79 L 357.99 71.25 L 356.31 73.31 L 354.25 74.99 L 351.79 76.30 L 348.89 77.25 L 345.38 77.81 L 339.87 78.00 L 21.13 78.00 L 15.62 77.81 L 12.11 77.25 L 9.21 76.30 L 6.75 74.99 L 4.69 73.31 L 3.01 71.25 L 1.70 68.79 L 0.75 65.89 L 0.19 62.38 L 0.00 56.87 L 0.00 21.13 L 0.19 15.62 L 0.75 12.11 L 1.70 9.21 L 3.01 6.75 L 4.69 4.69 L 6.75 3.01 L 9.21 1.70 L 12.11 0.75 L 15.62 0.19 L 21.13 0.00 Z";
@@ -298,6 +305,11 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 .c1{top:var(--c1-y);height:var(--c1-h);clip-path:path(var(--c1-path))}
 .c2{top:var(--c2-y);height:var(--c2-h);clip-path:path(var(--c2-path))}
 .c3{top:var(--c3-y);height:var(--c3-h);clip-path:path(var(--c3-path))}
+.disc{left:calc(var(--disc-x) - var(--c-x));width:var(--disc-d);height:var(--disc-d);
+ border-radius:50%;background:var(--disc-fill)}
+.c1 .disc{top:calc(var(--disc1-y) - var(--c1-y));background:var(--disc1-fill)}
+.c2 .disc{top:calc(var(--disc2-y) - var(--c2-y))}
+.c3 .disc{top:calc(var(--disc3-y) - var(--c3-y))}
 .ci{color:var(--lime)}
 .c1 .ci{left:calc(var(--g-d-x) - var(--c-x));top:calc(var(--g-d-y) - var(--c1-y));
  width:var(--g-d-w);height:var(--g-d-h)}
@@ -375,6 +387,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   <div class="t rw rr y3 vk" data-w="w-k2" data-x="col3-x">213 KCAL</div>
 
   <div class="card c1">
+    <div class="disc"></div>
     <i class="g g-dance ci"></i>
     <div class="t ct1" data-w="w-c1">Social Dance</div>
     <div class="t ct2" data-w="w-c1v">213</div>
@@ -395,6 +408,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   <div class="t rw rr y3b vk" data-w="w-k2b" data-x="col3-x">155 KCAL</div>
 
   <div class="card c2">
+    <div class="disc"></div>
     <i class="g g-walk2 ci"></i>
     <div class="t ct1" data-w="w-c2">Outdoor Walk</div>
     <div class="t ct2" data-w="w-c2v">0:49</div>
@@ -402,6 +416,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   </div>
 
   <div class="card c3">
+    <div class="disc"></div>
     <i class="g g-walk2 ci"></i>
     <div class="t ct1" data-w="w-c3">Outdoor Walk</div>
     <div class="t ct2" data-w="w-c3v">1:02</div>
