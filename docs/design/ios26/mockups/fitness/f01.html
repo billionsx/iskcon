@@ -9,6 +9,19 @@
    их видит tools/ios26-mock.py. */
 :root{
   --stage-w: 393px;
+  --w-sb-time: 64.0px;
+  --w-lte: 19.0px;
+  --w-title: 131.67px;
+  --w-tc1-title: 122.33px;
+  --w-tc2-title: 113.0px;
+  --w-tc3-title: 128.67px;
+  --w-ban1: 192.33px;
+  --w-ban2: 199.67px;
+  --w-ban3: 190.67px;
+  --w-ban4: 205.0px;
+  --w-lb1: 45.33px;
+  --w-lb2: 39.0px;
+  --w-lb3: 36.33px;
   --stage-h: 852px;
   --canvas: #000000;  /* мода по краю кадра 📐 */
   --label: #FFFFFF;
@@ -342,37 +355,37 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 </style></head>
 <body>
 <div class="stage">
-  <div class="t sb-time">22:45</div>
+  <div class="t sb-time" data-w="w-sb-time" data-x="sb-time-x">22:45</div>
   <i class="g g-sbheart sb-heart"></i>
   <div class="sb-sig"><b></b><b></b><b></b><b></b></div>
-  <div class="t sb-lte">LTE</div>
+  <div class="t sb-lte" data-w="w-lte" data-x="sb-lte-x">LTE</div>
   <i class="g g-batgrey bat"></i><i class="g g-batwhite bat-f"></i>
 
-  <div class="t title">Workout</div>
+  <div class="t title" data-w="w-title" data-x="title-x">Workout</div>
   <div class="hbtn hbtn1"></div><i class="g g-compose"></i>
   <div class="hbtn hbtn2"></div><i class="g g-hrslash"></i>
 
   <div class="ban"><div class="ban-icon"></div><i class="g g-heart"></i>
-    <div class="t ban-t" style="top:calc(var(--ban-t-top) + 0*var(--ban-text-step))">To track other workout types,</div><div class="t ban-t" style="top:calc(var(--ban-t-top) + 1*var(--ban-text-step))">connect Apple Watch, AirPods</div><div class="t ban-t" style="top:calc(var(--ban-t-top) + 2*var(--ban-text-step))">with heart rate detection or a</div><div class="t ban-t" style="top:calc(var(--ban-t-top) + 3*var(--ban-text-step))">device with a heart rate sensor.</div><div class="ban-x"></div><i class="g g-xmark"></i></div>
+    <div class="t ban-t" data-w="w-ban1" style="top:calc(var(--ban-t-top) + 0*var(--ban-text-step))">To track other workout types,</div><div class="t ban-t" data-w="w-ban2" style="top:calc(var(--ban-t-top) + 1*var(--ban-text-step))">connect Apple Watch, AirPods</div><div class="t ban-t" data-w="w-ban3" style="top:calc(var(--ban-t-top) + 2*var(--ban-text-step))">with heart rate detection or a</div><div class="t ban-t" data-w="w-ban4" style="top:calc(var(--ban-t-top) + 3*var(--ban-text-step))">device with a heart rate sensor.</div><div class="ban-x"></div><i class="g g-xmark"></i></div>
 
   <div class="tc tc1">
     <i class="g g-walk g-glyph"></i>
     <div class="tc-play"></div><i class="g g-play"></i>
-    <div class="t tc-title">Outdoor Walk</div>
+    <div class="t tc-title" data-w="w-tc1-title">Outdoor Walk</div>
     <div class="slot slot-l"></div><div class="slot slot-r"></div>
     <i class="g g-note"></i><i class="g g-timer"></i>
   </div>
   <div class="tc tc2">
     <i class="g g-run g-glyph"></i>
     <div class="tc-play"></div><i class="g g-play"></i>
-    <div class="t tc-title">Outdoor Run</div>
+    <div class="t tc-title" data-w="w-tc2-title">Outdoor Run</div>
     <div class="slot slot-l"></div><div class="slot slot-r"></div>
     <i class="g g-note"></i><i class="g g-timer"></i>
   </div>
   <div class="tc tc3">
     <i class="g g-cycle g-glyph"></i>
     <div class="tc-play"></div><i class="g g-play"></i>
-    <div class="t tc-title">Outdoor Cycle</div>
+    <div class="t tc-title" data-w="w-tc3-title">Outdoor Cycle</div>
     <div class="slot slot-l"></div><div class="slot slot-r"></div>
     <i class="g g-note"></i><i class="g g-timer"></i>
   </div>
@@ -380,8 +393,53 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   <div class="bar"></div><div class="pill"></div>
   <div class="badge"></div>
   <i class="g g-rings"></i><i class="g g-people"></i><i class="g g-badge"></i>
-  <div class="t lb lb1">Summary</div>
-  <div class="t lb lb2">Workout</div>
-  <div class="t lb lb3">Sharing</div>
+  <div class="t lb lb1" data-w="w-lb1">Summary</div>
+  <div class="t lb lb2" data-w="w-lb2">Workout</div>
+  <div class="t lb lb3" data-w="w-lb3">Sharing</div>
 </div>
+
+<script>
+/* ЗКН-Д026 · ШИРИНА СТРОКИ — ЗАМЕР, ТРЕКИНГ — СЛЕДСТВИЕ.
+   Трекинг у Apple живёт в таблице ВНУТРИ шрифта: система подставляет его сама на
+   каждом кегле, а браузер этого не делает. Значит letter-spacing в мокапе обязан
+   воспроизвести системный трекинг — но его величина зависит от того, каким шрифтом
+   строка нарисована. На машине с SF Pro поправка одна, на машине без него — другая.
+   Поэтому в мокапе хранится ЗАМЕР — ширина чернил строки, снятая с кадра, — а
+   трекинг вычисляется на месте под тот шрифт, который реально доступен. Меряется
+   через canvas: actualBoundingBox даёт чернила, а не рамку с боковыми отступами. */
+(function(){
+  var st = document.querySelector('.stage');
+  if (!st) return;
+  var ctx = document.createElement('canvas').getContext('2d');
+  function num(name){ return parseFloat(getComputedStyle(st).getPropertyValue('--'+name)); }
+  function ink(el, ls){
+    var cs = getComputedStyle(el);
+    ctx.font = cs.fontStyle+' '+cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = ls+'px';
+    var m = ctx.measureText(el.textContent);
+    return { w: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, l: m.actualBoundingBoxLeft };
+  }
+  function fit(){
+    var list = st.querySelectorAll('[data-w]');
+    for (var i=0;i<list.length;i++){
+      var el = list[i], target = num(el.dataset.w);
+      var n = (el.textContent||'').length;
+      if (!(target>0) || n<2) continue;
+      var ls = 0;
+      for (var k=0;k<5;k++){
+        var m = ink(el, ls);
+        if (Math.abs(m.w-target) < 0.02) break;
+        ls += (target - m.w)/(n-1);
+      }
+      el.style.letterSpacing = ls.toFixed(4)+'px';
+      if (el.dataset.x){
+        var mm = ink(el, ls);
+        el.style.left = (num(el.dataset.x) + mm.l).toFixed(2)+'px';
+      }
+    }
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  else window.addEventListener('load', fit);
+})();
+</script>
 </body></html>

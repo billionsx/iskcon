@@ -117,15 +117,63 @@ HEAD = """<!DOCTYPE html>
 <div class="stage">
 {body}
 </div>
+{fit}
 </body></html>
 """
+
+
+FIT_SCRIPT = """
+<script>
+/* ЗКН-Д026 · ШИРИНА СТРОКИ — ЗАМЕР, ТРЕКИНГ — СЛЕДСТВИЕ.
+   Трекинг у Apple живёт в таблице ВНУТРИ шрифта: система подставляет его сама на
+   каждом кегле, а браузер этого не делает. Значит letter-spacing в мокапе обязан
+   воспроизвести системный трекинг — но его величина зависит от того, каким шрифтом
+   строка нарисована. На машине с SF Pro поправка одна, на машине без него — другая.
+   Поэтому в мокапе хранится ЗАМЕР — ширина чернил строки, снятая с кадра, — а
+   трекинг вычисляется на месте под тот шрифт, который реально доступен. Меряется
+   через canvas: actualBoundingBox даёт чернила, а не рамку с боковыми отступами. */
+(function(){
+  var st = document.querySelector('.stage');
+  if (!st) return;
+  var ctx = document.createElement('canvas').getContext('2d');
+  function num(name){ return parseFloat(getComputedStyle(st).getPropertyValue('--'+name)); }
+  function ink(el, ls){
+    var cs = getComputedStyle(el);
+    ctx.font = cs.fontStyle+' '+cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;
+    if ('letterSpacing' in ctx) ctx.letterSpacing = ls+'px';
+    var m = ctx.measureText(el.textContent);
+    return { w: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, l: m.actualBoundingBoxLeft };
+  }
+  function fit(){
+    var list = st.querySelectorAll('[data-w]');
+    for (var i=0;i<list.length;i++){
+      var el = list[i], target = num(el.dataset.w);
+      var n = (el.textContent||'').length;
+      if (!(target>0) || n<2) continue;
+      var ls = 0;
+      for (var k=0;k<5;k++){
+        var m = ink(el, ls);
+        if (Math.abs(m.w-target) < 0.02) break;
+        ls += (target - m.w)/(n-1);
+      }
+      el.style.letterSpacing = ls.toFixed(4)+'px';
+      if (el.dataset.x){
+        var mm = ink(el, ls);
+        el.style.left = (num(el.dataset.x) + mm.l).toFixed(2)+'px';
+      }
+    }
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  else window.addEventListener('load', fit);
+})();
+</script>"""
 
 
 def emit(out_dir, num, title, frame, V, ADDR, css, body, meta=None):
     d = Path(out_dir)
     d.mkdir(parents=True, exist_ok=True)
     html = HEAD.format(title=title, frame=frame, vars=varblock(V, ADDR),
-                       font=FONT_FACE, reset=RESET, css=css, body=body)
+                       font=FONT_FACE, reset=RESET, css=css, body=body, fit=FIT_SCRIPT)
     (d / f"f{num:02d}.html").write_text(html, encoding="utf-8")
     spec = dict(meta or {})
     spec["vars"] = {k: v for k, v in V.items() if not k.endswith("-path")}
