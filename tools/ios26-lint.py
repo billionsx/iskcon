@@ -10,8 +10,16 @@
 строка реестра осталась, адрес замера ведёт в пустоту, и через месяц число
 в коде уже ничьё. Ровно так умер бы гейт по ЗКН-Ц011, если бы за ним не следили.
 
-ПРАВИЛО 1 — эталон существует. Папка `refs/` есть и не пуста.
-             Нет папки — закон Д026 объявлен У5 и не принуждается ничем.
+ПРАВИЛО 1 — эталон ДОСТИЖИМ. Мастер-кадры каждого продукта либо лежат в
+             `refs/`, либо вынесены на два зеркала и записаны в
+             `docs/assets/manifest.jsonl` (ЗКН-Ф025: тяжёлый бинарь не живёт
+             в git). Инвариант — «до кадра можно дойти», а не «кадр лежит тут»:
+             первая формулировка стоила бы нарушения Ф025, вторая — ничего.
+
+ПРАВИЛО 1-бис — папка не пуста для человека. У каждого продукта есть
+             контактный лист `<продукт>.contact.jpg`: открыл папку — видишь
+             все кадры сразу, без скачивания мастера. Лист лёгкий (<512 КБ),
+             мерить по нему нельзя — он для навигации.
 
 ПРАВИЛО 2 — биекция «файл ↔ реестр». Каждый PDF в `refs/` назван в `INDEX.md`,
              и каждый названный в реестре файл лежит в `refs/`. Файл без строки
@@ -42,6 +50,8 @@ REFS = DESIGN / "refs"
 INDEX = DESIGN / "INDEX.md"
 STANDARD = DESIGN / "STANDARD_ios26_css.md"
 BASELINE = ROOT / "tools" / "ios26-baseline.json"
+MANIFEST = ROOT / "docs" / "assets" / "manifest.jsonl"
+REF_CLASS = "ios26-refs"
 
 MIN_REFS = 6
 
@@ -62,6 +72,34 @@ REQUIRED_SECTIONS = [
 MEASURE_MARK = "\U0001F4D0"  # 📐 — знак замера
 
 
+def mirrored_masters() -> set[str]:
+    """Мастера, вынесенные на зеркала (ЗКН-Ф025). Истина — манифест + files.tsv."""
+    out: set[str] = set()
+    if not MANIFEST.exists():
+        return out
+    for line in MANIFEST.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            rec = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if rec.get("class") != REF_CLASS:
+            continue
+        # Оба зеркала обязаны быть в записи: одно зеркало — это не страховка (Пл023).
+        if not (rec.get("ia_url") and rec.get("gh_url")):
+            continue
+        idx = ROOT / str(rec.get("files_index", ""))
+        if idx.exists():
+            for row in idx.read_text(encoding="utf-8").splitlines():
+                for cell in row.split("\t"):
+                    cell = cell.strip()
+                    if cell.endswith(".pdf"):
+                        out.add(Path(cell).name)
+    return out
+
+
 def load_baseline() -> dict:
     if BASELINE.exists():
         return json.loads(BASELINE.read_text(encoding="utf-8"))
@@ -71,17 +109,37 @@ def load_baseline() -> dict:
 def main() -> int:
     bad: list[str] = []
 
-    # ── ПРАВИЛО 1 — эталон существует ────────────────────────────────────
+    # ── ПРАВИЛО 1 — эталон ДОСТИЖИМ ──────────────────────────────────────
     if not REFS.is_dir():
         print("ГЕЙТ ЭТАЛОНА iOS 26.5 — НАРУШЕНИЕ:\n")
         print("  \u2717 docs/design/ios26/refs/ — ЗКН-Д026: папка эталона исчезла. "
               "Сверяться не с чем, закон не принуждается ничем")
         return 1
 
-    pdfs = sorted(p.name for p in REFS.glob("*.pdf"))
+    local = {p.name for p in REFS.glob("*.pdf")}
+    mirrored = mirrored_masters()
+    pdfs = sorted(local | mirrored)
+
     if len(pdfs) < MIN_REFS:
-        bad.append(f"docs/design/ios26/refs/ — ЗКН-Д026: кадров эталона {len(pdfs)} "
-                   f"при базе {MIN_REFS}; референс не удаляют, его дополняют")
+        bad.append(f"docs/design/ios26/ — ЗКН-Д026: мастер-кадров {len(pdfs)} "
+                   f"при базе {MIN_REFS}. Референс не удаляют — его выносят на "
+                   f"зеркала (Ф025) и записывают в docs/assets/manifest.jsonl")
+
+    for name in pdfs:
+        if name not in local and name not in mirrored:
+            bad.append(f"{name} — ЗКН-Д026: мастер недостижим ни локально, ни по зеркалу")
+
+    # ── ПРАВИЛО 1-бис — контактный лист у каждого продукта ───────────────
+    for name in pdfs:
+        sheet = REFS / (name[:-4] + ".contact.jpg")
+        if not sheet.exists():
+            bad.append(f"docs/design/ios26/refs/{sheet.name} — ЗКН-Д026: у продукта "
+                       f"«{name[:-4]}» пропал контактный лист; папка перестала "
+                       f"открываться глазами")
+        elif sheet.stat().st_size > 512 * 1024:
+            bad.append(f"docs/design/ios26/refs/{sheet.name} — ЗКН-Ф025: контактный "
+                       f"лист {sheet.stat().st_size // 1024} КБ > 512 КБ; лист нужен "
+                       f"лёгким, мастер живёт на зеркалах")
 
     # ── ПРАВИЛО 2 — биекция «файл ↔ реестр» ──────────────────────────────
     if not INDEX.exists():
@@ -143,8 +201,10 @@ def main() -> int:
         print(f"\nВсего: {len(bad)}")
         return 1
 
-    print(f"Гейт эталона iOS 26.5 (ЗКН-Д026): чисто. "
-          f"Кадров-продуктов {len(pdfs)}, замеров в стандарте {n_meas} (база {floor}).")
+    where = "локально" if local else "на зеркалах"
+    print(f"Гейт эталона iOS 26.5 (ЗКН-Д026): чисто. Продуктов {len(pdfs)} ({where}), "
+          f"контактных листов {len(list(REFS.glob('*.contact.jpg')))}, "
+          f"замеров в стандарте {n_meas} (база {floor}).")
     return 0
 
 
