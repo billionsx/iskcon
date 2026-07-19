@@ -98,8 +98,54 @@ def verify(product=None):
                     continue
                 print(f"🔴 {html.name}: литеральное число {m.group(0).strip()} вне блока замеров")
                 bad += 1
+            bad += css_sanity(html.name, body)
     print(f"сверено значений: {total} · расхождений: {bad}")
     return 1 if bad else 0
+
+
+def css_sanity(name, body):
+    """ЗКН-Д026 · вёрстка обязана быть исполнимой, а не только правильной по числам.
+
+    Кадр 1 прошёл сверку чисел на 131 из 131 и приехал в прод развалившимся:
+    `--cap-off: 0.1695px` сделал `calc(var(--cap-off)*var(--fs))` произведением
+    ДВУХ ДЛИН, весь `top` у текста стал недействительным, строки сложились в одну.
+    Сверка чисел такого не видит по устройству: числа-то верные. Значит гейт
+    обязан читать CSS как CSS.
+
+    Три правила, каждое — на свой класс поломки:
+      1. РАЗМЕРНОСТЬ. В `calc()` нельзя умножать длину на длину и делить на
+         безразмерное без нужды: `px*px` — недействительное выражение, и браузер
+         молча выбрасывает ВСЮ декларацию.
+      2. ОБЪЯВЛЕНА. Каждая `var(--x)` объявлена в блоке замеров: иначе значение
+         тихо становится пустым и правило снова умирает целиком.
+      3. ЗНАК В ПОТОКЕ. Если в файле есть сплошной селектор `* {position:absolute}`,
+         обязано быть и правило, возвращающее `svg` в поток: иначе `<svg>` внутри
+         `<i>` позиционируется от ближайшего предка с позицией, а `width:100%`
+         считается от НЕГО — знак раздувается на всю карточку.
+    """
+    import re as _re
+    errs = 0
+    decl = dict(_re.findall(r"--([a-z0-9-]+)\s*:\s*([^;]+);", body, _re.I))
+    islen = {k: bool(_re.search(r"\d(px|pt|em|rem|%)", v)) for k, v in decl.items()}
+    for m in _re.finditer(r"calc\(([^()]*(?:\([^()]*\)[^()]*)*)\)", body):
+        e = m.group(1)
+        for a, b in _re.findall(r"var\(--([a-z0-9-]+)\)\s*\*\s*var\(--([a-z0-9-]+)\)", e, _re.I):
+            if islen.get(a, True) and islen.get(b, True):
+                print(f"🔴 {name}: calc умножает длину на длину — --{a} * --{b}")
+                errs += 1
+        for a in _re.findall(r"var\(--([a-z0-9-]+)\)\s*\*\s*-?\d+(?:\.\d+)?(?:px|pt)", e, _re.I):
+            if islen.get(a, True):
+                print(f"🔴 {name}: calc умножает длину --{a} на длину")
+                errs += 1
+    used = set(_re.findall(r"var\(\s*--([^),\s]+)", body))
+    for u in sorted(used - set(decl)):
+        print(f"🔴 {name}: var(--{u}) не объявлена")
+        errs += 1
+    if _re.search(r"[^>a-z0-9_.-]\*\s*\{[^}]*position\s*:\s*absolute", body, _re.I) \
+       and not _re.search(r"svg\s*\{[^}]*position\s*:\s*static", body, _re.I):
+        print(f"🔴 {name}: сплошной * {{position:absolute}} без возврата svg в поток")
+        errs += 1
+    return errs
 
 
 if __name__ == "__main__":

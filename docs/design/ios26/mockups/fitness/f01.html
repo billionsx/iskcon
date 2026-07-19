@@ -14,22 +14,25 @@
   --hair: 0.33px;
   --sb-cap-top: 22.33px;
   --sb-base: 34.67px;
-  --sb-time-x: 39.0px;
+  --sb-time-x: 38.4px;
+  --sb-heart-x: 89.33px;
+  --sb-heart-w: 13.67px;
+  --sb-heart-y: 24.0px;
   --sb-lte-x: 307.67px;
   --sb-bat-x: 334.67px;
-  --sb-bat-y: 23.0px;
-  --sb-bat-w: 24.0px;
-  --sb-bat-h: 11.33px;
+  --sb-bat-y: 22.33px;
+  --sb-bat-w: 25.0px;
+  --sb-bat-h: 13.67px;
   --sb-bat-r: 3.4px;
   --sb-bat-fill: 9.0px;
   --sb-nub-w: 1.6px;
   --sb-nub-h: 4.4px;
   --sb-sig-x: 280.0px;
   --sb-sig-w: 19.33px;
-  --sb-sig-h: 12.0px;
-  --fs-sb: 17.61px;
-  --fs-lte: 13.0px;
-  --title-x: 16.67px;
+  --sb-sig-h: 13.67px;
+  --fs-sb: 17.16px;
+  --fs-lte: 14.44px;
+  --title-x: 16.0px;
   --title-base: 93.0px;
   --title-cap: 24.0px;  /* cap заголовка 69.0→93.0 📐 · fs = cap ÷ 0.70 → канон Large Title 34 ⚙️ */
   --fs-title: 34.29px;
@@ -39,6 +42,7 @@
   --hbtn2-x: 333.0px;
   --hbtn-fill: #181818;
   --hbtn-glyph: 21.0px;
+  --hbtn2-glyph: 23.33px;
   --ban-x: 16.0px;
   --ban-y: 123.0px;
   --ban-w: 361.0px;
@@ -48,17 +52,17 @@
   --ban-icon-x: 35.33px;
   --ban-icon-y: 148.33px;
   --ban-icon-d: 38.33px;
-  --ban-heart: 21.3px;
-  --ban-text-x: 93.33px;
+  --ban-heart: 20.33px;
+  --ban-text-x: 93.0px;
   --ban-text-base: 158.33px;
   --ban-text-cap: 10.33px;
-  --ban-text-step: 18.67px;
-  --fs-ban: 14.76px;
+  --ban-text-step: 18.89px;
+  --fs-ban: 14.39px;
   --ban-x-x: 337.33px;
   --ban-x-y: 138.33px;
   --ban-x-d: 24.33px;
   --ban-x-fill: #414143;
-  --ban-x-glyph: 10.67px;
+  --ban-x-glyph: 9.67px;
   --ban-x-ink: #BEBEC6;
   --tc-x: 16.0px;
   --tc-w: 361.0px;
@@ -74,7 +78,7 @@
   --tc-glyph-x: 41.0px;
   --tc-play-x: 309.0px;
   --tc-play-d: 43.67px;
-  --tc-play-glyph: 18.0px;
+  --tc-play-glyph: 15.33px;
   --tc1-glyph-dy: 23.84px;
   --tc1-glyph-w: 27.0px;
   --tc1-glyph-h: 43.67px;
@@ -90,9 +94,9 @@
   --tc1-title-dbase: 106.17px;
   --tc2-title-dbase: 104.15px;
   --tc3-title-dbase: 104.17px;
-  --tc-title-x: 37.0px;
+  --tc-title-x: 36.0px;
   --tc-title-cap: 14.33px;
-  --fs-tc-title: 20.47px;
+  --fs-tc-title: 19.56px;
   --tc1-slot-dy: 127.01px;
   --tc2-slot-dy: 125.0px;
   --tc3-slot-dy: 125.0px;
@@ -115,10 +119,10 @@
   --bar-h: 62.0px;  /* 62.0 📐 */
   --bar-r: 31.0px;
   --bar-axis: 52.0px;  /* 52.0 = 852 − (769+831)/2 📐 — совпадает с осью слоя стандарта */
-  --bar-tint: rgba(255,255,255,.085);  /* ⚙️ материал не выводится из одного кадра однозначно: подобран так, чтобы дать снятые #181E12 полосы и #3B3F31 капсулы */
+  --bar-tint: rgba(255,255,255,.0735);  /* ⚙️ материал не выводится из одного кадра однозначно: подобран так, чтобы дать снятые #181E12 полосы и #3B3F31 капсулы */
   --bar-rim: rgba(255,255,255,.22);
   --bar-blur: 24.0px;
-  --bar-sat: 1.8px;
+  --bar-sat: 1.8;
   --pill-x: 149.0px;
   --pill-y: 774.0px;
   --pill-w: 94.0px;  /* выбранная капсула 94.0×52.0 📐 */
@@ -130,14 +134,40 @@
   --tab3-cx: 282.75px;
   --tab-w: 85.75px;
   --tab-icon-top: 781.0px;
-  --tab-icon-h: 24.0px;
-  --tab-badge-d: 32.0px;
-  --tab-badge-top: 772.67px;
-  --tab-badge-glyph: 20.0px;
+  --tab-icon-w: 23.33px;
+  --people-w: 31.0px;
+  --people-h: 20.33px;
+  --badge-w: 21.0px;
+  --compose-w: 21.0px;
+  --hrslash-w: 23.0px;
+  --heart-h: 18.0px;
+  --xmark-h: 9.67px;
+  --play-h: 17.67px;
+  --note-w: 11.33px;
+  --note-h: 14.0px;
+  --timer-h: 14.33px;
+  --tab-icon-h: 23.33px;
+  --tab-badge-d: 23.0px;
+  --tab-badge-top: 781.67px;
+  --tab-badge-glyph: 22.0px;
   --tab-label-base: 818.0px;
   --tab-label-cap: 7.67px;
-  --fs-tab: 10.96px;
-  --cap-off: 0.1695px;  /* ⚙️ SF Pro: (1−(0.952+0.213))/2 + 0.952 − 0.700 em */
+  --fs-tab: 10.25px;
+  --sb-time-top: 22.5992px;
+  --sb-lte-top: 23.9008px;
+  --title-top: 66.3px;
+  --ban-t-top: 24.0px;
+  --tc1-title-top: 89.8px;
+  --tc2-title-top: 87.7996px;
+  --tc3-title-top: 87.8004px;
+  --tab-label-top: 30.1008px;
+  --cap-off: 0.15;  /* ⚙️ SF Pro при em 1000: asc 950 · desc 250 · cap 700 → (1−1.2)/2 + 0.95 − 0.70 */
+  --tr-title: -0.0244;
+  --tr-tc-title: -0.0092;
+  --tr-ban: 0.0047;
+  --tr-sb: 0.0046;
+  --tr-lte: 1.1277;
+  --tr-tab: 0.0163;
   --label: #FFFFFF;
   --ban-path: "M 330.86 0.00 L 337.49 0.30 L 342.42 1.21 L 346.68 2.71 L 350.39 4.79 L 353.57 7.43 L 356.21 10.61 L 358.29 14.32 L 359.79 18.58 L 360.70 23.51 L 361.00 30.14 L 361.00 81.87 L 360.70 88.50 L 359.79 93.43 L 358.29 97.69 L 356.21 101.40 L 353.57 104.58 L 350.39 107.22 L 346.68 109.30 L 342.42 110.80 L 337.49 111.71 L 330.86 112.01 L 30.14 112.01 L 23.51 111.71 L 18.58 110.80 L 14.32 109.30 L 10.61 107.22 L 7.43 104.58 L 4.79 101.40 L 2.71 97.69 L 1.21 93.43 L 0.30 88.50 L 0.00 81.87 L 0.00 30.14 L 0.30 23.51 L 1.21 18.58 L 2.71 14.32 L 4.79 10.61 L 7.43 7.43 L 10.61 4.79 L 14.32 2.71 L 18.58 1.21 L 23.51 0.30 L 30.14 0.00 Z";
   --tc1-path: "M 327.12 0.00 L 335.03 0.33 L 340.61 1.31 L 345.36 2.93 L 349.45 5.19 L 352.94 8.06 L 355.81 11.55 L 358.07 15.64 L 359.69 20.39 L 360.67 25.97 L 361.00 33.88 L 361.00 162.46 L 360.67 170.37 L 359.69 175.95 L 358.07 180.70 L 355.81 184.79 L 352.94 188.28 L 349.45 191.15 L 345.36 193.41 L 340.61 195.03 L 335.03 196.01 L 327.12 196.34 L 33.88 196.34 L 25.97 196.01 L 20.39 195.03 L 15.64 193.41 L 11.55 191.15 L 8.06 188.28 L 5.19 184.79 L 2.93 180.70 L 1.31 175.95 L 0.33 170.37 L 0.00 162.46 L 0.00 33.88 L 0.33 25.97 L 1.31 20.39 L 2.93 15.64 L 5.19 11.55 L 8.06 8.06 L 11.55 5.19 L 15.64 2.93 L 20.39 1.31 L 25.97 0.33 L 33.88 0.00 Z";
@@ -147,31 +177,41 @@
   --slot-r-path: "M 138.96 0.00 L 142.61 0.32 L 145.89 1.26 L 148.85 2.79 L 151.40 4.87 L 153.48 7.42 L 155.01 10.38 L 155.95 13.66 L 156.27 17.31 L 156.27 32.02 L 155.95 35.67 L 155.01 38.95 L 153.48 41.91 L 151.40 44.46 L 148.85 46.54 L 145.89 48.07 L 142.61 49.01 L 138.96 49.33 L 17.31 49.33 L 13.66 49.01 L 10.38 48.07 L 7.42 46.54 L 4.87 44.46 L 2.79 41.91 L 1.26 38.95 L 0.32 35.67 L 0.00 32.02 L 0.00 17.31 L 0.32 13.66 L 1.26 10.38 L 2.79 7.42 L 4.87 4.87 L 7.42 2.79 L 10.38 1.26 L 13.66 0.32 L 17.31 0.00 Z";
 }
 /* конец блока замеров */
+/* Подменное начертание с метриками SF Pro: на Mac берётся настоящий SF Pro
+   (он раньше в цепочке), везде ещё — Inter, приведённый к тем же метрикам
+   (ascender .950 · descender .250 · capHeight .700 при em 1000). Без этого
+   мокап невозможно проверить: подставленный шрифт сдвигает каждую строку. */
+@font-face{font-family:"SFPro-metric";src:local("Inter Regular");font-weight:400;
+ ascent-override:95%;descent-override:25%;line-gap-override:0%;size-adjust:96.2%}
+@font-face{font-family:"SFPro-metric";src:local("Inter Medium");font-weight:500;
+ ascent-override:95%;descent-override:25%;line-gap-override:0%;size-adjust:96.2%}
+@font-face{font-family:"SFPro-metric";src:local("Inter SemiBold");font-weight:600;
+ ascent-override:95%;descent-override:25%;line-gap-override:0%;size-adjust:96.2%}
+@font-face{font-family:"SFPro-metric";src:local("Inter Bold");font-weight:700;
+ ascent-override:95%;descent-override:25%;line-gap-override:0%;size-adjust:96.2%}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:#0b0b0b;display:flex;justify-content:center;
- font-family:-apple-system,"SF Pro Display","SF Pro Text",system-ui,"Helvetica Neue",sans-serif;
+ font-family:-apple-system,"SF Pro Display","SF Pro Text","SFPro-metric",system-ui,sans-serif;
  -webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
 .stage{position:relative;width:var(--stage-w);height:var(--stage-h);
  background:var(--canvas);overflow:hidden;color:var(--label)}
-.stage *{position:absolute}
-i svg,span svg{display:block;width:100%;height:100%}
+.stage>*{position:absolute}
+.stage svg{position:static;display:block;width:100%;height:100%}
 .t{line-height:1;white-space:nowrap}
 .round{border-radius:50%;display:flex;align-items:center;justify-content:center}
 .round>i,.round>span{position:static}
 
 /* статусбар */
-.sb-time{left:var(--sb-time-x);font-size:var(--fs-sb);font-weight:590;letter-spacing:-.01em;
- top:calc(var(--sb-base) - var(--fs-sb)*.7 - var(--cap-off)*var(--fs-sb))}
-.sb-lte{left:var(--sb-lte-x);font-size:var(--fs-lte);font-weight:590;
- top:calc(var(--sb-base) - var(--fs-lte)*.7 - var(--cap-off)*var(--fs-lte))}
-.sb-sig{left:var(--sb-sig-x);top:var(--sb-cap-top);width:var(--sb-sig-w);height:var(--sb-sig-h);
- display:flex;align-items:flex-end;gap:calc(var(--sb-sig-w)/9)}
-.sb-sig b{position:relative;flex:1;background:currentColor;border-radius:var(--hair)}
-.sb-sig b:nth-child(1){height:38%} .sb-sig b:nth-child(2){height:58%}
-.sb-sig b:nth-child(3){height:79%} .sb-sig b:nth-child(4){height:100%}
+.sb-time{left:var(--sb-time-x);font-size:var(--fs-sb);font-weight:600;letter-spacing:calc(var(--tr-sb)*1em);
+ top:var(--sb-time-top)}
+.sb-heart{left:var(--sb-heart-x);top:var(--sb-heart-y);width:var(--sb-heart-w);
+ height:var(--sb-heart-w);color:var(--label)}
+.sb-lte{left:var(--sb-lte-x);font-size:var(--fs-lte);font-weight:600;letter-spacing:calc(var(--tr-lte)*1em);
+ top:var(--sb-lte-top)}
+.sb-sig{left:var(--sb-sig-x);top:var(--sb-cap-top);width:var(--sb-sig-w);height:var(--sb-sig-h)}
 .sb-bat{left:var(--sb-bat-x);top:var(--sb-bat-y);width:var(--sb-bat-w);height:var(--sb-bat-h);
  border:var(--hair) solid rgba(255,255,255,.42);border-radius:var(--sb-bat-r)}
-.sb-bat b{left:var(--hair);top:var(--hair);bottom:var(--hair);width:var(--sb-bat-fill);
+.sb-bat b{position:absolute;left:var(--hair);top:var(--hair);bottom:var(--hair);width:var(--sb-bat-fill);
  background:#fff;border-radius:calc(var(--sb-bat-r) - var(--hair))}
 .sb-nub{left:calc(var(--sb-bat-x) + var(--sb-bat-w) + var(--hair));
  top:calc(var(--sb-bat-y) + (var(--sb-bat-h) - var(--sb-nub-h))/2);
@@ -179,36 +219,38 @@ i svg,span svg{display:block;width:100%;height:100%}
  border-radius:0 var(--sb-nub-w) var(--sb-nub-w) 0}
 
 /* шапка */
-.title{left:var(--title-x);font-size:var(--fs-title);font-weight:700;letter-spacing:-.026em;
- top:calc(var(--title-base) - var(--title-cap) - var(--cap-off)*var(--fs-title))}
+.title{left:var(--title-x);font-size:var(--fs-title);font-weight:700;letter-spacing:calc(var(--tr-title)*1em);
+ top:var(--title-top)}
 .hbtn{top:var(--hbtn-y);width:var(--hbtn-d);height:var(--hbtn-d);background:var(--hbtn-fill)}
-.hbtn>i{width:var(--hbtn-glyph);height:var(--hbtn-glyph)}
+.hbtn>i{width:var(--compose-w);height:var(--hbtn-glyph)}
 .hbtn1{left:var(--hbtn1-x)} .hbtn2{left:var(--hbtn2-x)}
+.hbtn2>i{width:var(--hrslash-w);height:var(--hbtn2-glyph)}
 
 /* баннер */
 .ban{left:var(--ban-x);top:var(--ban-y);width:var(--ban-w);height:var(--ban-h);
  background:var(--ban-fill);border-radius:var(--ban-r);clip-path:path(var(--ban-path))}
-.ban-icon{left:calc(var(--ban-icon-x) - var(--ban-x));top:calc(var(--ban-icon-y) - var(--ban-y));
+.ban-icon{position:absolute;left:calc(var(--ban-icon-x) - var(--ban-x));top:calc(var(--ban-icon-y) - var(--ban-y));
  width:var(--ban-icon-d);height:var(--ban-icon-d);background:var(--lime);color:var(--ban-fill)}
-.ban-icon>i{width:var(--ban-heart);height:var(--ban-heart)}
-.ban-t{left:calc(var(--ban-text-x) - var(--ban-x));font-size:var(--fs-ban);letter-spacing:-.006em;
+.ban-icon>i{width:var(--ban-heart);height:var(--heart-h)}
+.ban-t{position:absolute;left:calc(var(--ban-text-x) - var(--ban-x));font-size:var(--fs-ban);letter-spacing:calc(var(--tr-ban)*1em);
  line-height:1;white-space:nowrap}
-.ban-x{left:calc(var(--ban-x-x) - var(--ban-x));top:calc(var(--ban-x-y) - var(--ban-y));
+.ban-x{position:absolute;left:calc(var(--ban-x-x) - var(--ban-x));top:calc(var(--ban-x-y) - var(--ban-y));
  width:var(--ban-x-d);height:var(--ban-x-d);background:var(--ban-x-fill);color:var(--ban-x-ink)}
-.ban-x>i{width:var(--ban-x-glyph);height:var(--ban-x-glyph)}
+.ban-x>i{width:var(--ban-x-glyph);height:var(--xmark-h)}
 
 /* тонированные карточки */
 .tc{left:var(--tc-x);width:var(--tc-w);background:var(--tc-fill);border-radius:var(--tc-r)}
-.tc-glyph{left:calc(var(--tc-glyph-x) - var(--tc-x));color:var(--lime)}
-.tc-play{left:calc(var(--tc-play-x) - var(--tc-x));width:var(--tc-play-d);height:var(--tc-play-d);
+.tc-glyph{position:absolute;left:calc(var(--tc-glyph-x) - var(--tc-x));color:var(--lime)}
+.tc-play{position:absolute;left:calc(var(--tc-play-x) - var(--tc-x));width:var(--tc-play-d);height:var(--tc-play-d);
  border-radius:50%;background:var(--lime);color:var(--tc-fill);
  display:flex;align-items:center;justify-content:center}
-.tc-play svg{position:static;width:var(--tc-play-glyph);height:var(--tc-play-glyph)}
-.tc-title{left:calc(var(--tc-title-x) - var(--tc-x));font-size:var(--fs-tc-title);
- font-weight:700;letter-spacing:-.02em}
-.slot{height:var(--tc-slot-h);border-radius:var(--tc-slot-r);color:var(--slot-ink);
+.tc-play svg{width:var(--tc-play-glyph);height:var(--play-h)}
+.tc-title{position:absolute;left:calc(var(--tc-title-x) - var(--tc-x));font-size:var(--fs-tc-title);
+ font-weight:700;letter-spacing:calc(var(--tr-tc-title)*1em)}
+.slot{position:absolute;height:var(--tc-slot-h);border-radius:var(--tc-slot-r);color:var(--slot-ink);
  display:flex;align-items:center;justify-content:center}
-.slot>i{position:static;width:var(--tc-slot-glyph);height:var(--tc-slot-glyph)}
+.slot>i{position:static;width:var(--tc-slot-glyph);height:var(--timer-h)}
+.slot-l>i{width:var(--note-w);height:var(--note-h)}
 .slot-l{left:calc(var(--tc-slot-l-x) - var(--tc-x));width:var(--tc-slot-l-w);
  background:var(--tc-slot-l-fill);clip-path:path(var(--slot-l-path))}
 .slot-r{left:calc(var(--tc-slot-r-x) - var(--tc-x));width:var(--tc-slot-r-w);
@@ -216,17 +258,17 @@ i svg,span svg{display:block;width:100%;height:100%}
 .tc1{top:var(--tc1-y);height:var(--tc1-h);clip-path:path(var(--tc1-path))}
 .tc1 .tc-glyph{top:var(--tc1-glyph-dy);width:var(--tc1-glyph-w);height:var(--tc1-glyph-h)}
 .tc1 .tc-play{top:var(--tc1-play-dy)}
-.tc1 .tc-title{top:calc(var(--tc1-title-dbase) - var(--tc-title-cap) - var(--cap-off)*var(--fs-tc-title))}
+.tc1 .tc-title{top:var(--tc1-title-top)}
 .tc1 .slot{top:var(--tc1-slot-dy)}
 .tc2{top:var(--tc2-y);height:var(--tc2-h);clip-path:path(var(--tc2-path))}
 .tc2 .tc-glyph{top:var(--tc2-glyph-dy);width:var(--tc2-glyph-w);height:var(--tc2-glyph-h)}
 .tc2 .tc-play{top:var(--tc2-play-dy)}
-.tc2 .tc-title{top:calc(var(--tc2-title-dbase) - var(--tc-title-cap) - var(--cap-off)*var(--fs-tc-title))}
+.tc2 .tc-title{top:var(--tc2-title-top)}
 .tc2 .slot{top:var(--tc2-slot-dy)}
 .tc3{top:var(--tc3-y);height:var(--tc3-h);clip-path:path(var(--tc3-path))}
 .tc3 .tc-glyph{top:var(--tc3-glyph-dy);width:var(--tc3-glyph-w);height:var(--tc3-glyph-h)}
 .tc3 .tc-play{top:var(--tc3-play-dy)}
-.tc3 .tc-title{top:calc(var(--tc3-title-dbase) - var(--tc-title-cap) - var(--cap-off)*var(--fs-tc-title))}
+.tc3 .tc-title{top:var(--tc3-title-top)}
 .tc3 .slot{top:var(--tc3-slot-dy)}
 
 /* затемнение содержимого под слоем */
@@ -241,67 +283,68 @@ i svg,span svg{display:block;width:100%;height:100%}
  -webkit-backdrop-filter:blur(var(--bar-blur)) saturate(var(--bar-sat));
  backdrop-filter:blur(var(--bar-blur)) saturate(var(--bar-sat));
  box-shadow:inset 0 0 0 var(--hair) var(--bar-rim)}
-.pill{left:calc(var(--pill-x) - var(--bar-x));top:calc(var(--pill-y) - var(--bar-y));
+.pill{position:absolute;left:calc(var(--pill-x) - var(--bar-x));top:calc(var(--pill-y) - var(--bar-y));
  width:var(--pill-w);height:var(--pill-h);border-radius:var(--pill-r);background:var(--pill-tint)}
-.tab{top:calc(var(--tab-icon-top) - var(--bar-y));width:var(--tab-w);
+.tab{position:absolute;top:calc(var(--tab-icon-top) - var(--bar-y));width:var(--tab-w);
  margin-left:calc(0px - var(--tab-w)/2);text-align:center}
-.tab>i{position:relative;display:inline-block;width:var(--tab-icon-h);height:var(--tab-icon-h)}
-.tab .lb{left:0;width:var(--tab-w);text-align:center;font-size:var(--fs-tab);font-weight:510;
- line-height:1;top:calc(var(--tab-label-base) - var(--tab-icon-top) - var(--tab-label-cap)
- - var(--cap-off)*var(--fs-tab))}
+.tab>i{position:relative;display:inline-block;width:var(--tab-icon-w);height:var(--tab-icon-h)}
+.tab .lb{position:absolute;left:0;width:var(--tab-w);text-align:center;font-size:var(--fs-tab);font-weight:500;letter-spacing:calc(var(--tr-tab)*1em);letter-spacing:calc(var(--tr-tab)*1em);
+ line-height:1;top:var(--tab-label-top)}
+.tab3>i{width:var(--people-w);height:var(--people-h)}
 .tab1{left:calc(var(--tab1-cx) - var(--bar-x))}
 .tab2{left:calc(var(--tab2-cx) - var(--bar-x))}
 .tab3{left:calc(var(--tab3-cx) - var(--bar-x))}
-.badge{left:calc(50% - var(--tab-badge-d)/2);top:calc(var(--tab-badge-top) - var(--tab-icon-top));
+.badge{position:absolute;left:calc(50% - var(--tab-badge-d)/2);top:calc(var(--tab-badge-top) - var(--tab-icon-top));
  width:var(--tab-badge-d);height:var(--tab-badge-d);border-radius:50%;background:var(--lime);
  color:var(--tc-fill);display:flex;align-items:center;justify-content:center}
-.badge>i{position:static;width:var(--tab-badge-glyph);height:var(--tab-badge-glyph)}
+.badge>i{position:static;width:var(--badge-w);height:var(--tab-badge-glyph)}
 .tab2 .lb{color:var(--lime)}
 </style></head>
 <body>
 <div class="stage">
   <div class="t sb-time">22:45</div>
-  <div class="sb-sig"><b></b><b></b><b></b><b></b></div>
+  <i class="sb-heart"><svg viewBox="0 0 24.00 21.25" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M12.20,21.05 11.41,21.05 11.02,20.66 9.84,20.26 6.69,17.51 6.30,17.51 3.34,14.56 3.34,14.16 2.16,12.98 2.16,12.59 1.38,11.80 1.38,11.41 0.59,10.23 0.59,9.44 0.20,9.05 0.20,7.08 -0.20,6.69 -0.20,5.90 0.20,5.51 0.20,3.93 1.18,2.16 2.75,0.59 3.93,0.20 4.33,-0.20 8.26,-0.20 8.66,0.20 9.84,0.59 11.80,2.56 13.77,0.59 14.16,0.59 15.34,-0.20 19.28,-0.20 20.46,0.59 20.85,0.59 22.03,1.77 22.62,2.36 22.62,2.75 23.41,3.93 23.41,5.51 23.80,5.90 23.80,7.08 23.41,7.48 23.41,9.05 23.02,9.44 23.02,10.23 22.23,11.41 22.23,11.80 20.26,14.16 20.26,14.56 17.31,17.51 16.92,17.51 15.34,19.08 14.95,19.08 14.16,19.87 13.77,19.87 12.98,20.66 12.59,20.66 12.20,21.05Z"/></svg></i>
+  <i class="sb-sig"><svg viewBox="0 0 20.00 13.11" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M18.97,8.45 17.24,8.45 16.38,7.59 16.38,0.69 17.24,-0.17 18.97,-0.17 19.83,0.69 19.83,7.59 18.97,8.45ZM13.45,8.45 11.72,8.45 10.86,7.59 10.86,2.41 11.72,1.55 13.45,1.55 14.31,2.41 14.31,7.59 13.45,8.45ZM7.93,8.45 6.21,8.45 5.34,7.59 5.34,4.14 6.21,3.28 7.93,3.28 8.79,4.14 8.79,7.59 7.93,8.45ZM2.41,8.45 0.69,8.45 -0.17,7.59 -0.17,5.17 0.69,4.31 2.41,4.31 3.28,5.17 3.28,7.59 2.41,8.45ZM14.14,12.93 11.03,12.93 10.86,12.76 10.86,11.03 11.72,10.17 13.45,10.17 14.31,11.03 14.31,12.76 14.14,12.93ZM8.62,12.93 5.52,12.93 5.34,12.76 5.34,11.03 6.21,10.17 7.93,10.17 8.79,11.03 8.79,12.76 8.62,12.93ZM3.10,12.93 0.00,12.93 -0.17,12.76 -0.17,11.03 0.69,10.17 2.41,10.17 3.28,11.03 3.28,12.76 3.10,12.93ZM19.66,12.93 16.55,12.93 16.38,12.76 16.38,11.03 17.24,10.17 18.97,10.17 19.83,11.03 19.83,12.76 19.66,12.93Z"/></svg></i>
   <div class="t sb-lte">LTE</div>
   <div class="sb-bat"><b></b></div><div class="sb-nub"></div>
 
   <div class="t title">Workout</div>
-  <div class="hbtn round hbtn1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.2 13v5.3a2.6 2.6 0 0 1-2.6 2.6H5.7a2.6 2.6 0 0 1-2.6-2.6V6.5a2.6 2.6 0 0 1 2.6-2.6h5.4"/><path d="M17.4 3 21 6.6l-9.4 9.3-4.3.7.7-4.3z"/></svg></i></div>
-  <div class="hbtn round hbtn2"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.4 12.2h3.2l1.8-4.4 2.5 8 2-5.2"/><path d="M15.6 4.8c2.4 0 4.2 1.9 4.2 4.4 0 3.4-4.6 6.4-5.8 7.2"/><path d="M3.2 2.6 21.4 20.8"/></svg></i></div>
+  <div class="hbtn round hbtn1"><i><svg viewBox="0 0 24.00 24.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M17.90,23.81 3.43,23.81 1.90,23.05 0.19,21.33 0.19,20.57 -0.19,20.19 -0.19,5.71 0.19,5.33 0.19,4.57 1.90,2.86 3.43,2.10 17.14,2.10 17.33,2.29 15.62,4.00 6.86,4.00 6.48,4.38 6.10,4.00 5.33,4.00 4.95,4.38 3.43,4.38 2.10,5.71 2.10,6.86 1.71,7.24 1.71,18.67 2.10,19.05 2.10,20.19 2.67,20.76 3.43,21.52 4.57,21.52 4.95,21.90 16.38,21.90 16.76,21.52 17.90,21.52 19.24,20.19 19.24,18.29 19.62,17.90 19.62,10.29 19.24,9.90 19.62,9.52 19.62,8.00 21.33,6.29 21.52,6.48 21.52,19.81 21.14,20.19 21.14,21.33 19.05,23.43 18.29,23.43 17.90,23.81ZM9.14,15.43 8.19,15.24 8.19,14.48 8.95,12.95 20.19,1.71 21.90,3.43 10.67,14.67 9.14,15.43ZM22.86,2.48 21.14,0.76 22.10,-0.19 23.24,-0.19 23.81,0.38 23.81,1.52 22.86,2.48Z"/></svg></i></div>
+  <div class="hbtn round hbtn2"><i><svg viewBox="0 0 23.66 24.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M16.46,8.74 16.11,8.74 14.06,7.03 13.54,6.86 12.17,5.14 11.49,3.77 11.49,1.37 12.69,0.17 13.37,-0.17 14.74,-0.17 16.11,0.86 16.46,0.86 17.83,-0.17 19.20,-0.17 19.89,0.17 21.09,1.37 21.09,3.77 20.74,4.11 20.74,4.80 18.86,7.03 18.51,7.03 17.14,8.40 16.46,8.74ZM22.97,23.83 22.29,23.83 -0.17,1.37 -0.17,0.69 0.34,0.17 0.69,0.17 23.49,22.97 23.49,23.31 22.97,23.83ZM1.37,20.40 0.17,20.23 0.17,9.94 0.69,9.43 1.37,9.43 1.89,9.94 1.89,19.89 1.37,20.40ZM14.06,22.80 13.03,22.80 12.51,22.29 12.51,16.80 12.69,16.63 13.20,16.80 14.23,17.83 14.57,18.51 14.57,22.29 14.06,22.80ZM7.89,15.94 6.86,15.94 6.34,15.43 6.34,10.63 6.51,10.46 6.86,10.46 7.89,11.49 8.40,12.34 8.40,15.09 7.89,15.94ZM20.57,17.66 19.03,16.11 19.03,12.00 19.54,11.49 20.23,11.49 20.74,12.00 20.74,17.49 20.57,17.66Z"/></svg></i></div>
 
   <div class="ban">
-    <div class="ban-icon round"><i><svg viewBox="0 0 24 22" fill="currentColor"><path d="M12 21.3 3.2 12.6C.4 9.8.7 5.4 3.8 3.1 6.3 1.3 9.7 1.9 12 4.6c2.3-2.7 5.7-3.3 8.2-1.5 3.1 2.3 3.4 6.7.6 9.5z"/></svg></i></div>
-    <div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 0*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">To track other workout types,</div><div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 1*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">connect Apple Watch, AirPods</div><div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 2*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">with heart rate detection or a</div><div class="t ban-t" style="top:calc(var(--ban-text-base) - var(--ban-y) + 3*var(--ban-text-step) - var(--ban-text-cap) - var(--cap-off)*var(--fs-ban))">device with a heart rate sensor.</div>
-    <div class="ban-x round"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path d="M5.6 5.6 18.4 18.4M18.4 5.6 5.6 18.4"/></svg></i></div>
+    <div class="ban-icon round"><i><svg viewBox="0 0 24.00 21.25" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M12.20,21.05 11.41,21.05 11.02,20.66 9.84,20.26 6.69,17.51 6.30,17.51 3.34,14.56 3.34,14.16 2.16,12.98 2.16,12.59 1.38,11.80 1.38,11.41 0.59,10.23 0.59,9.44 0.20,9.05 0.20,7.08 -0.20,6.69 -0.20,5.90 0.20,5.51 0.20,3.93 1.18,2.16 2.75,0.59 3.93,0.20 4.33,-0.20 8.26,-0.20 8.66,0.20 9.84,0.59 11.80,2.56 13.77,0.59 14.16,0.59 15.34,-0.20 19.28,-0.20 20.46,0.59 20.85,0.59 22.03,1.77 22.62,2.36 22.62,2.75 23.41,3.93 23.41,5.51 23.80,5.90 23.80,7.08 23.41,7.48 23.41,9.05 23.02,9.44 23.02,10.23 22.23,11.41 22.23,11.80 20.26,14.16 20.26,14.56 17.31,17.51 16.92,17.51 15.34,19.08 14.95,19.08 14.16,19.87 13.77,19.87 12.98,20.66 12.59,20.66 12.20,21.05Z"/></svg></i></div>
+    <div class="t ban-t" style="top:calc(var(--ban-t-top) + 0*var(--ban-text-step))">To track other workout types,</div><div class="t ban-t" style="top:calc(var(--ban-t-top) + 1*var(--ban-text-step))">connect Apple Watch, AirPods</div><div class="t ban-t" style="top:calc(var(--ban-t-top) + 2*var(--ban-text-step))">with heart rate detection or a</div><div class="t ban-t" style="top:calc(var(--ban-t-top) + 3*var(--ban-text-step))">device with a heart rate sensor.</div>
+    <div class="ban-x round"><i><svg viewBox="0 0 14.00 14.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M13.52,13.76 11.59,13.76 7.72,9.90 7.24,9.90 3.38,13.76 0.48,13.76 -0.24,13.03 -0.24,12.55 1.21,11.10 1.21,10.62 3.38,8.93 3.86,7.97 4.59,7.72 4.59,6.76 -0.24,1.93 0.24,0.48 0.97,-0.24 1.93,-0.24 2.41,0.24 2.90,0.24 7.24,4.59 7.72,4.59 8.21,4.10 11.34,0.97 11.59,0.24 12.07,0.24 12.55,-0.24 13.76,0.00 13.76,3.38 9.90,7.24 13.76,11.10 13.76,13.52 13.52,13.76Z"/></svg></i></div>
   </div>
 
   <div class="tc tc1">
-    <i class="tc-glyph"><svg viewBox="0 0 27 44" fill="currentColor"><circle cx="9.6" cy="4.6" r="4.6"/><path d="M10 11.2c2.6-.7 4.6.4 5.6 2.3l2.4 4.5c.5.9 1.3 1.4 2.3 1.6l4.3.8a2 2 0 0 1-.7 4l-4.7-1c-1.9-.4-3.3-1.4-4.2-3l-.9-1.7-1.6 6.4 3.9 4.3c.6.7.9 1.4.9 2.3v9.9a2.2 2.2 0 0 1-4.4 0v-8.9l-5.2-5.4-2.4 8.2-3.6 6.1a2.2 2.2 0 1 1-3.8-2.2l3.3-5.7 4.1-15.5c.3-3 1.9-5.9 4.7-7z"/></svg></i>
-    <i class="tc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 4.5 19 11.4c.5.3.5 1 0 1.3L7.8 19.5c-.5.3-1.2 0-1.2-.6V5.1c0-.6.7-.9 1.2-.6z"/></svg></i>
+    <i class="tc-glyph"><svg viewBox="0 0 27.20 44.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M20.82,43.83 19.15,43.83 17.97,42.66 15.62,37.95 15.62,37.28 14.95,36.61 14.95,35.94 14.27,35.27 13.94,33.92 11.92,31.57 10.92,29.89 9.57,28.55 9.57,28.21 8.23,26.87 7.22,24.85 7.22,20.15 7.56,19.82 7.39,17.63 6.38,17.63 4.87,19.15 4.87,19.82 4.53,20.15 4.53,23.51 4.20,23.85 4.20,25.19 3.36,26.03 1.68,26.03 0.84,25.19 0.84,20.49 1.18,20.15 1.18,18.14 1.85,16.79 6.38,12.26 6.72,12.26 8.73,10.58 9.40,10.58 9.74,10.24 12.76,10.24 13.44,10.58 15.28,12.76 15.28,13.44 15.62,13.77 15.62,15.45 15.28,15.79 15.28,20.15 14.95,20.49 14.95,23.18 14.61,23.51 13.94,27.21 16.96,31.24 22.00,41.31 22.00,42.66 20.82,43.83ZM2.35,43.83 1.01,43.83 0.17,43.33 -0.17,42.66 -0.17,41.31 4.20,36.27 4.20,35.94 6.21,33.92 6.55,33.25 6.55,32.24 6.89,31.91 6.89,30.90 7.22,30.56 7.22,29.22 7.73,29.05 10.58,32.58 10.24,34.60 8.90,36.27 8.90,36.61 5.54,40.31 5.54,40.64 3.53,42.66 3.36,43.16 2.35,43.83ZM14.11,8.23 12.76,8.23 12.43,7.89 11.08,7.56 9.57,6.05 9.57,5.37 9.24,5.04 9.24,2.69 9.57,2.02 10.75,0.50 12.09,-0.17 14.78,-0.17 16.12,0.50 17.63,2.69 17.63,5.37 17.30,6.05 15.45,7.89 14.44,7.89 14.11,8.23ZM25.86,21.66 19.48,21.66 18.81,21.33 16.96,19.48 16.96,17.80 17.30,17.47 17.30,14.78 17.47,14.61 17.80,14.95 17.97,15.45 20.49,17.97 25.53,17.97 25.86,18.31 26.53,18.31 27.04,19.15 27.04,20.82 25.86,21.66Z"/></svg></i>
+    <i class="tc-play"><svg viewBox="0 0 20.82 24.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M2.26,23.77 0.45,23.77 -0.23,23.09 -0.23,0.45 0.45,-0.23 2.72,-0.23 3.17,0.23 3.62,0.23 4.53,1.13 5.89,1.58 6.79,2.49 8.15,2.94 9.06,3.85 10.42,4.30 11.32,5.21 12.68,5.66 13.58,6.57 14.04,6.57 14.49,7.02 15.85,7.47 16.75,8.38 18.11,8.83 20.60,10.87 20.60,12.68 19.92,13.36 19.47,13.36 18.57,14.26 17.21,14.72 16.30,15.62 14.94,16.08 14.04,16.98 12.68,17.43 11.77,18.34 9.51,19.25 8.60,20.15 7.25,20.60 6.34,21.51 4.98,21.96 4.08,22.87 3.62,22.87 2.26,23.77Z"/></svg></i>
     <div class="t tc-title">Outdoor Walk</div>
-    <div class="slot slot-l"><i><svg viewBox="0 0 22 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 17.2V5.6l8-1.9v11.4"/><circle cx="6" cy="17.6" r="3" fill="currentColor" stroke="none"/><circle cx="14" cy="15.1" r="3" fill="currentColor" stroke="none"/><path d="M2.6 2.6 19.4 21.4" stroke-width="2.1"/></svg></i></div>
-    <div class="slot slot-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4a8 8 0 1 1-8 8" stroke-dasharray=".1 3.5"/><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8"/><path d="M12 7.8V12l2.9 1.9"/></svg></i></div>
+    <div class="slot slot-l"><i><svg viewBox="0 0 12.95 16.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M6.86,6.29 5.52,4.95 5.52,1.52 6.48,0.57 7.24,0.57 7.62,0.19 9.14,0.19 9.52,-0.19 11.05,-0.19 11.62,0.76 11.62,3.43 11.05,4.00 10.29,4.00 9.90,4.38 8.76,4.38 8.38,4.76 7.24,4.76 6.86,6.29ZM12.19,15.05 -0.19,2.67 0.38,2.10 1.14,2.10 12.76,13.71 12.76,14.48 12.19,15.05ZM4.19,15.81 3.43,15.81 3.05,15.43 2.67,15.43 1.71,14.48 1.71,12.57 2.29,11.62 2.67,11.62 3.05,11.24 3.81,11.24 4.19,10.86 5.33,10.86 5.71,10.10 7.05,11.43 7.05,12.95 6.67,13.33 6.67,14.10 5.33,15.43 4.57,15.43 4.19,15.81Z"/></svg></i></div>
+    <div class="slot slot-r"><i><svg viewBox="0 0 16.00 16.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M9.67,15.81 7.44,15.81 7.26,15.63 7.26,14.51 7.81,13.95 9.67,13.95 12.47,12.28 12.47,11.91 13.21,11.16 13.58,10.05 13.95,9.67 13.95,5.95 13.58,5.58 13.21,4.47 11.53,2.79 9.67,2.05 9.30,1.67 8.74,1.86 8.74,2.98 7.81,3.91 7.63,3.72 7.26,3.35 7.26,0.37 7.81,-0.19 9.30,-0.19 9.67,0.19 11.53,0.56 12.28,1.30 12.65,1.30 14.70,3.35 14.70,3.72 15.81,5.58 15.81,10.05 15.44,10.42 15.44,11.16 14.70,11.91 14.70,12.28 12.28,14.70 11.91,14.70 10.79,15.44 10.05,15.44 9.67,15.81ZM8.56,9.12 7.44,9.12 6.14,7.81 6.14,7.44 5.40,6.70 5.02,5.58 4.28,4.84 4.47,4.28 5.21,4.28 5.58,4.65 5.95,4.65 7.07,5.77 7.44,5.77 9.12,7.07 9.49,8.19 8.56,9.12ZM5.95,15.44 5.21,15.44 4.65,14.88 4.65,14.51 5.21,13.95 5.95,13.95 6.51,14.51 6.51,14.88 5.95,15.44ZM1.86,4.65 1.30,4.09 1.30,3.35 1.86,2.79 2.23,2.79 2.79,3.35 2.79,4.09 1.86,4.65ZM4.09,14.33 2.98,14.33 2.79,14.14 2.79,13.40 3.35,12.84 3.72,12.84 4.28,13.40 4.09,14.33ZM2.23,12.84 1.30,12.65 1.30,11.53 1.49,11.35 2.23,11.35 2.79,11.91 2.79,12.28 2.23,12.84ZM1.12,10.98 0.74,10.98 0.19,10.42 0.37,9.49 1.49,9.49 1.67,9.67 1.67,10.42 1.12,10.98ZM0.74,8.74 0.37,8.74 -0.19,8.19 0.00,7.26 1.12,7.26 1.30,7.44 1.30,8.19 0.74,8.74ZM1.12,6.51 0.74,6.51 0.19,5.95 0.37,5.02 1.49,5.02 1.67,5.21 1.67,5.95 1.12,6.51Z"/></svg></i></div>
   </div>
   <div class="tc tc2">
-    <i class="tc-glyph"><svg viewBox="0 0 32 42" fill="currentColor"><circle cx="19.6" cy="4.4" r="4.4"/><path d="M16.6 11.2c2.8-.9 5.4.3 6.7 2.4l2.5 4.2c.6 1 1.4 1.5 2.5 1.6l1.6.2a1.9 1.9 0 0 1-.2 3.8l-2.3-.2c-2.2-.2-3.9-1.2-5-3l-.7-1.2-2 5.8 3.9 4c.7.7 1 1.5 1 2.4v9a2.1 2.1 0 0 1-4.2 0v-8l-5.4-5.4-2 6.7-4.2 6a2.1 2.1 0 1 1-3.5-2.3l3.7-5.4 3.3-13c.4-3.3 1.8-6 4.3-7.6z"/><path d="M12.5 16.3 3.9 20.3a1.9 1.9 0 0 1-1.6-3.5l8.5-3.9z"/></svg></i>
-    <i class="tc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 4.5 19 11.4c.5.3.5 1 0 1.3L7.8 19.5c-.5.3-1.2 0-1.2-.6V5.1c0-.6.7-.9 1.2-.6z"/></svg></i>
+    <i class="tc-glyph"><svg viewBox="0 0 33.52 44.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M17.81,38.24 16.76,37.89 15.89,37.02 15.89,35.62 21.48,30.38 20.95,29.86 19.21,29.16 18.51,28.46 13.62,26.02 11.00,23.75 11.00,23.05 10.65,22.70 10.65,21.30 11.35,19.90 11.35,18.86 12.05,17.46 12.05,16.41 12.75,15.02 12.75,14.67 11.87,13.79 9.43,13.79 8.56,14.32 8.56,16.06 8.21,16.41 7.86,20.25 6.98,21.48 5.24,21.48 4.37,20.60 4.37,17.81 4.71,17.46 4.71,15.37 5.06,15.02 5.06,12.57 5.41,12.22 5.41,11.52 6.98,10.30 9.78,10.30 10.13,9.95 15.02,9.95 15.37,9.60 15.71,9.95 17.81,9.95 18.16,10.30 18.86,10.30 20.60,11.35 22.17,12.92 22.87,14.32 25.49,17.63 26.54,17.63 30.73,15.54 32.48,15.54 33.35,16.41 33.35,18.16 32.83,18.68 30.73,19.73 30.03,19.73 27.59,21.13 26.89,21.13 25.84,21.83 24.10,21.83 20.95,17.63 19.73,17.81 18.33,23.40 25.14,27.76 26.71,29.33 26.71,30.73 25.84,31.95 25.49,31.95 23.75,33.70 23.40,33.70 21.30,35.79 20.95,35.79 19.21,37.54 17.81,38.24ZM2.44,43.83 1.05,43.83 0.35,43.48 -0.17,42.60 -0.17,41.21 7.16,33.87 7.51,32.48 7.86,32.13 8.21,30.03 8.56,29.68 8.56,28.63 9.25,27.24 9.25,26.19 9.78,25.32 10.83,26.37 13.44,27.94 13.44,28.98 12.75,30.03 12.75,30.73 11.35,33.52 11.00,35.27 10.65,35.97 3.84,42.78 2.44,43.83ZM21.30,8.56 18.86,8.21 17.29,6.98 16.59,5.59 16.59,2.79 16.94,2.10 18.16,0.52 19.56,0.17 19.90,-0.17 21.65,-0.17 22.00,0.17 23.40,0.52 24.97,2.44 24.97,3.49 25.32,3.84 25.32,4.54 24.27,6.98 22.70,8.21 21.65,8.21 21.30,8.56Z"/></svg></i>
+    <i class="tc-play"><svg viewBox="0 0 20.82 24.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M2.26,23.77 0.45,23.77 -0.23,23.09 -0.23,0.45 0.45,-0.23 2.72,-0.23 3.17,0.23 3.62,0.23 4.53,1.13 5.89,1.58 6.79,2.49 8.15,2.94 9.06,3.85 10.42,4.30 11.32,5.21 12.68,5.66 13.58,6.57 14.04,6.57 14.49,7.02 15.85,7.47 16.75,8.38 18.11,8.83 20.60,10.87 20.60,12.68 19.92,13.36 19.47,13.36 18.57,14.26 17.21,14.72 16.30,15.62 14.94,16.08 14.04,16.98 12.68,17.43 11.77,18.34 9.51,19.25 8.60,20.15 7.25,20.60 6.34,21.51 4.98,21.96 4.08,22.87 3.62,22.87 2.26,23.77Z"/></svg></i>
     <div class="t tc-title">Outdoor Run</div>
-    <div class="slot slot-l"><i><svg viewBox="0 0 22 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 17.2V5.6l8-1.9v11.4"/><circle cx="6" cy="17.6" r="3" fill="currentColor" stroke="none"/><circle cx="14" cy="15.1" r="3" fill="currentColor" stroke="none"/><path d="M2.6 2.6 19.4 21.4" stroke-width="2.1"/></svg></i></div>
-    <div class="slot slot-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4a8 8 0 1 1-8 8" stroke-dasharray=".1 3.5"/><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8"/><path d="M12 7.8V12l2.9 1.9"/></svg></i></div>
+    <div class="slot slot-l"><i><svg viewBox="0 0 12.95 16.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M6.86,6.29 5.52,4.95 5.52,1.52 6.48,0.57 7.24,0.57 7.62,0.19 9.14,0.19 9.52,-0.19 11.05,-0.19 11.62,0.76 11.62,3.43 11.05,4.00 10.29,4.00 9.90,4.38 8.76,4.38 8.38,4.76 7.24,4.76 6.86,6.29ZM12.19,15.05 -0.19,2.67 0.38,2.10 1.14,2.10 12.76,13.71 12.76,14.48 12.19,15.05ZM4.19,15.81 3.43,15.81 3.05,15.43 2.67,15.43 1.71,14.48 1.71,12.57 2.29,11.62 2.67,11.62 3.05,11.24 3.81,11.24 4.19,10.86 5.33,10.86 5.71,10.10 7.05,11.43 7.05,12.95 6.67,13.33 6.67,14.10 5.33,15.43 4.57,15.43 4.19,15.81Z"/></svg></i></div>
+    <div class="slot slot-r"><i><svg viewBox="0 0 16.00 16.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M9.67,15.81 7.44,15.81 7.26,15.63 7.26,14.51 7.81,13.95 9.67,13.95 12.47,12.28 12.47,11.91 13.21,11.16 13.58,10.05 13.95,9.67 13.95,5.95 13.58,5.58 13.21,4.47 11.53,2.79 9.67,2.05 9.30,1.67 8.74,1.86 8.74,2.98 7.81,3.91 7.63,3.72 7.26,3.35 7.26,0.37 7.81,-0.19 9.30,-0.19 9.67,0.19 11.53,0.56 12.28,1.30 12.65,1.30 14.70,3.35 14.70,3.72 15.81,5.58 15.81,10.05 15.44,10.42 15.44,11.16 14.70,11.91 14.70,12.28 12.28,14.70 11.91,14.70 10.79,15.44 10.05,15.44 9.67,15.81ZM8.56,9.12 7.44,9.12 6.14,7.81 6.14,7.44 5.40,6.70 5.02,5.58 4.28,4.84 4.47,4.28 5.21,4.28 5.58,4.65 5.95,4.65 7.07,5.77 7.44,5.77 9.12,7.07 9.49,8.19 8.56,9.12ZM5.95,15.44 5.21,15.44 4.65,14.88 4.65,14.51 5.21,13.95 5.95,13.95 6.51,14.51 6.51,14.88 5.95,15.44ZM1.86,4.65 1.30,4.09 1.30,3.35 1.86,2.79 2.23,2.79 2.79,3.35 2.79,4.09 1.86,4.65ZM4.09,14.33 2.98,14.33 2.79,14.14 2.79,13.40 3.35,12.84 3.72,12.84 4.28,13.40 4.09,14.33ZM2.23,12.84 1.30,12.65 1.30,11.53 1.49,11.35 2.23,11.35 2.79,11.91 2.79,12.28 2.23,12.84ZM1.12,10.98 0.74,10.98 0.19,10.42 0.37,9.49 1.49,9.49 1.67,9.67 1.67,10.42 1.12,10.98ZM0.74,8.74 0.37,8.74 -0.19,8.19 0.00,7.26 1.12,7.26 1.30,7.44 1.30,8.19 0.74,8.74ZM1.12,6.51 0.74,6.51 0.19,5.95 0.37,5.02 1.49,5.02 1.67,5.21 1.67,5.95 1.12,6.51Z"/></svg></i></div>
   </div>
   <div class="tc tc3">
-    <i class="tc-glyph"><svg viewBox="0 0 48 37" fill="none" stroke="currentColor" stroke-width="3"><circle cx="8.6" cy="27.4" r="8"/><circle cx="39.4" cy="27.4" r="8"/><path d="M15 27.4h9.4l7.6-11.6 4.6 11.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M21 15.8h7.6" stroke-linecap="round"/><circle cx="36.6" cy="4.6" r="4.6" fill="currentColor" stroke="none"/></svg></i>
-    <i class="tc-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.8 4.5 19 11.4c.5.3.5 1 0 1.3L7.8 19.5c-.5.3-1.2 0-1.2-.6V5.1c0-.6.7-.9 1.2-.6z"/></svg></i>
+    <i class="tc-glyph"><svg viewBox="0 0 48.00 36.67" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M11.67,36.50 8.67,36.50 8.33,36.17 7.00,36.17 3.33,34.17 1.50,32.00 0.17,29.33 0.17,28.33 -0.17,28.00 -0.17,24.33 0.17,24.00 0.17,23.00 1.83,20.00 5.00,17.17 6.33,16.50 7.33,16.50 7.67,16.17 9.33,16.17 9.67,15.83 13.67,16.50 16.67,18.17 18.83,20.67 19.83,22.67 20.17,24.67 20.50,25.00 20.50,27.33 20.17,27.67 20.17,29.00 19.83,29.33 19.50,30.67 18.83,31.33 18.17,32.67 15.33,35.17 13.00,36.17 12.00,36.17 11.67,36.50ZM24.33,29.17 23.00,28.83 21.83,27.33 21.83,18.33 20.17,16.67 20.17,16.33 19.33,15.83 17.50,14.00 17.50,13.67 14.83,11.33 13.50,9.00 13.50,6.67 14.17,5.33 16.00,3.50 16.67,3.17 29.00,3.17 29.67,3.50 31.50,5.67 31.50,13.33 33.00,13.50 33.33,13.83 33.67,13.50 36.33,13.50 36.67,13.83 37.33,13.50 37.67,13.83 38.33,13.83 38.83,14.33 39.50,15.67 38.83,17.00 38.00,17.50 29.33,17.50 27.83,16.33 27.83,10.33 27.33,9.83 20.33,9.83 20.17,10.67 22.83,13.33 22.83,13.67 25.50,16.33 25.83,17.00 25.83,27.67 25.17,28.67 24.33,29.17ZM11.17,34.00 12.67,33.83 14.67,32.83 17.17,30.00 17.50,28.67 17.83,28.33 17.83,27.00 18.17,26.67 17.83,26.33 18.17,26.00 17.83,25.33 17.83,24.00 15.83,20.67 14.33,19.50 12.00,18.50 8.00,18.50 5.33,19.83 3.17,22.33 2.17,24.67 2.17,27.67 3.50,30.67 5.67,32.83 6.00,32.83 6.67,33.50 8.67,33.83 9.00,34.17 11.17,34.00ZM39.33,36.50 36.33,36.50 36.00,36.17 34.67,36.17 34.33,35.83 33.67,35.83 31.33,34.50 29.83,33.00 29.83,32.67 28.83,31.67 27.50,28.67 27.50,24.00 28.17,22.67 28.17,22.00 28.67,21.50 29.67,21.17 30.50,22.00 30.17,24.33 29.83,24.67 29.83,28.00 30.83,30.33 32.67,32.50 34.33,33.50 36.33,33.83 36.67,34.17 39.00,34.17 40.33,33.50 41.00,33.50 43.50,31.67 43.50,31.33 44.50,30.33 45.50,28.00 45.50,24.33 44.17,21.67 42.50,20.00 42.50,18.67 43.33,18.17 44.00,18.17 46.17,20.33 47.17,22.00 47.17,22.67 47.83,24.00 47.83,28.67 46.50,31.67 44.00,34.50 43.00,34.83 41.67,35.83 39.67,36.17 39.33,36.50ZM38.33,8.17 37.00,8.17 36.67,7.83 35.33,7.50 33.83,5.67 33.83,5.00 33.50,4.67 33.50,3.33 33.83,3.00 34.17,1.67 35.33,0.50 36.67,-0.17 38.67,-0.17 39.00,0.17 40.33,0.50 41.83,2.67 41.83,5.33 41.50,6.00 40.67,7.17 40.33,7.17 39.67,7.83 38.67,7.83 38.33,8.17Z"/></svg></i>
+    <i class="tc-play"><svg viewBox="0 0 20.82 24.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M2.26,23.77 0.45,23.77 -0.23,23.09 -0.23,0.45 0.45,-0.23 2.72,-0.23 3.17,0.23 3.62,0.23 4.53,1.13 5.89,1.58 6.79,2.49 8.15,2.94 9.06,3.85 10.42,4.30 11.32,5.21 12.68,5.66 13.58,6.57 14.04,6.57 14.49,7.02 15.85,7.47 16.75,8.38 18.11,8.83 20.60,10.87 20.60,12.68 19.92,13.36 19.47,13.36 18.57,14.26 17.21,14.72 16.30,15.62 14.94,16.08 14.04,16.98 12.68,17.43 11.77,18.34 9.51,19.25 8.60,20.15 7.25,20.60 6.34,21.51 4.98,21.96 4.08,22.87 3.62,22.87 2.26,23.77Z"/></svg></i>
     <div class="t tc-title">Outdoor Cycle</div>
-    <div class="slot slot-l"><i><svg viewBox="0 0 22 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M9 17.2V5.6l8-1.9v11.4"/><circle cx="6" cy="17.6" r="3" fill="currentColor" stroke="none"/><circle cx="14" cy="15.1" r="3" fill="currentColor" stroke="none"/><path d="M2.6 2.6 19.4 21.4" stroke-width="2.1"/></svg></i></div>
-    <div class="slot slot-r"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4a8 8 0 1 1-8 8" stroke-dasharray=".1 3.5"/><path d="M12 4a8 8 0 0 1 8 8 8 8 0 0 1-8 8"/><path d="M12 7.8V12l2.9 1.9"/></svg></i></div>
+    <div class="slot slot-l"><i><svg viewBox="0 0 12.95 16.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M6.86,6.29 5.52,4.95 5.52,1.52 6.48,0.57 7.24,0.57 7.62,0.19 9.14,0.19 9.52,-0.19 11.05,-0.19 11.62,0.76 11.62,3.43 11.05,4.00 10.29,4.00 9.90,4.38 8.76,4.38 8.38,4.76 7.24,4.76 6.86,6.29ZM12.19,15.05 -0.19,2.67 0.38,2.10 1.14,2.10 12.76,13.71 12.76,14.48 12.19,15.05ZM4.19,15.81 3.43,15.81 3.05,15.43 2.67,15.43 1.71,14.48 1.71,12.57 2.29,11.62 2.67,11.62 3.05,11.24 3.81,11.24 4.19,10.86 5.33,10.86 5.71,10.10 7.05,11.43 7.05,12.95 6.67,13.33 6.67,14.10 5.33,15.43 4.57,15.43 4.19,15.81Z"/></svg></i></div>
+    <div class="slot slot-r"><i><svg viewBox="0 0 16.00 16.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M9.67,15.81 7.44,15.81 7.26,15.63 7.26,14.51 7.81,13.95 9.67,13.95 12.47,12.28 12.47,11.91 13.21,11.16 13.58,10.05 13.95,9.67 13.95,5.95 13.58,5.58 13.21,4.47 11.53,2.79 9.67,2.05 9.30,1.67 8.74,1.86 8.74,2.98 7.81,3.91 7.63,3.72 7.26,3.35 7.26,0.37 7.81,-0.19 9.30,-0.19 9.67,0.19 11.53,0.56 12.28,1.30 12.65,1.30 14.70,3.35 14.70,3.72 15.81,5.58 15.81,10.05 15.44,10.42 15.44,11.16 14.70,11.91 14.70,12.28 12.28,14.70 11.91,14.70 10.79,15.44 10.05,15.44 9.67,15.81ZM8.56,9.12 7.44,9.12 6.14,7.81 6.14,7.44 5.40,6.70 5.02,5.58 4.28,4.84 4.47,4.28 5.21,4.28 5.58,4.65 5.95,4.65 7.07,5.77 7.44,5.77 9.12,7.07 9.49,8.19 8.56,9.12ZM5.95,15.44 5.21,15.44 4.65,14.88 4.65,14.51 5.21,13.95 5.95,13.95 6.51,14.51 6.51,14.88 5.95,15.44ZM1.86,4.65 1.30,4.09 1.30,3.35 1.86,2.79 2.23,2.79 2.79,3.35 2.79,4.09 1.86,4.65ZM4.09,14.33 2.98,14.33 2.79,14.14 2.79,13.40 3.35,12.84 3.72,12.84 4.28,13.40 4.09,14.33ZM2.23,12.84 1.30,12.65 1.30,11.53 1.49,11.35 2.23,11.35 2.79,11.91 2.79,12.28 2.23,12.84ZM1.12,10.98 0.74,10.98 0.19,10.42 0.37,9.49 1.49,9.49 1.67,9.67 1.67,10.42 1.12,10.98ZM0.74,8.74 0.37,8.74 -0.19,8.19 0.00,7.26 1.12,7.26 1.30,7.44 1.30,8.19 0.74,8.74ZM1.12,6.51 0.74,6.51 0.19,5.95 0.37,5.02 1.49,5.02 1.67,5.21 1.67,5.95 1.12,6.51Z"/></svg></i></div>
   </div>
   <div class="scrim"></div>
   <div class="bar">
     <div class="pill"></div>
-    <div class="tab tab1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 3a9 9 0 1 1-6.4 15.3"/></svg></i><div class="t lb">Summary</div></div>
-    <div class="tab tab2"><span class="badge"><i><svg viewBox="0 0 32 42" fill="currentColor"><circle cx="19.6" cy="4.4" r="4.4"/><path d="M16.6 11.2c2.8-.9 5.4.3 6.7 2.4l2.5 4.2c.6 1 1.4 1.5 2.5 1.6l1.6.2a1.9 1.9 0 0 1-.2 3.8l-2.3-.2c-2.2-.2-3.9-1.2-5-3l-.7-1.2-2 5.8 3.9 4c.7.7 1 1.5 1 2.4v9a2.1 2.1 0 0 1-4.2 0v-8l-5.4-5.4-2 6.7-4.2 6a2.1 2.1 0 1 1-3.5-2.3l3.7-5.4 3.3-13c.4-3.3 1.8-6 4.3-7.6z"/><path d="M12.5 16.3 3.9 20.3a1.9 1.9 0 0 1-1.6-3.5l8.5-3.9z"/></svg></i></span><div class="t lb">Workout</div></div>
-    <div class="tab tab3"><i><svg viewBox="0 0 30 24" fill="currentColor"><circle cx="11" cy="6.4" r="5"/><path d="M11 12.8c5 0 8.6 3 8.6 6.2 0 1.4-1 2.2-2.6 2.2H5c-1.6 0-2.6-.8-2.6-2.2 0-3.2 3.6-6.2 8.6-6.2z"/><circle cx="23.4" cy="8" r="4"/><path d="M23.4 13.4c4 0 6.3 2.4 6.3 4.8 0 1-.6 1.6-1.7 1.6h-5.3c.5-.6.7-1.3.7-2.2 0-1.6-.7-3.2-2-4.2z"/></svg></i><div class="t lb">Sharing</div></div>
+    <div class="tab tab1"><i><svg viewBox="0 0 26.00 26.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M14.49,25.81 10.77,25.81 10.40,25.44 9.29,25.44 4.83,23.21 2.41,20.80 2.41,20.43 1.67,19.69 0.56,17.46 0.56,16.71 0.19,16.34 0.19,15.23 -0.19,14.86 -0.19,11.14 0.19,10.77 0.19,9.29 0.56,8.91 0.56,8.17 1.67,5.94 3.16,4.46 3.16,4.09 5.57,2.04 8.54,0.56 9.29,0.56 9.66,0.19 11.89,0.19 12.26,-0.19 13.00,-0.19 14.67,0.74 15.04,1.49 15.04,3.34 14.67,4.09 14.11,4.64 13.37,4.64 13.00,5.01 10.77,5.01 10.40,5.39 9.66,5.39 8.91,5.76 8.17,6.50 7.80,6.50 6.13,8.17 5.01,10.40 5.01,11.89 4.64,12.26 4.64,13.74 5.01,14.11 5.01,15.23 6.13,17.46 8.17,19.50 8.54,19.50 9.29,20.24 10.03,20.24 10.40,20.61 11.51,20.61 11.89,20.99 15.23,20.61 16.71,19.87 17.46,19.13 17.83,19.13 19.13,17.83 19.13,17.46 20.24,15.97 20.24,15.23 20.61,14.86 20.61,11.14 20.24,10.77 20.24,10.03 19.50,8.54 17.09,6.13 15.04,5.20 16.16,2.97 16.16,1.86 15.41,0.74 15.60,0.19 15.97,0.56 17.09,0.56 19.31,1.67 20.06,2.41 20.43,2.41 23.21,5.20 23.21,5.57 23.96,6.31 25.07,8.54 25.07,9.66 25.44,10.03 25.44,12.26 25.81,12.63 25.81,13.37 25.44,13.74 25.44,15.97 25.07,16.34 25.07,17.09 23.59,20.06 22.47,21.17 22.47,21.54 19.69,23.96 17.46,25.07 16.71,25.07 16.34,25.44 14.86,25.44 14.49,25.81Z"/></svg></i><div class="t lb">Summary</div></div>
+    <div class="tab tab2"><span class="badge"><i><svg viewBox="0 0 33.52 44.00" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M17.81,38.24 16.76,37.89 15.89,37.02 15.89,35.62 21.48,30.38 20.95,29.86 19.21,29.16 18.51,28.46 13.62,26.02 11.00,23.75 11.00,23.05 10.65,22.70 10.65,21.30 11.35,19.90 11.35,18.86 12.05,17.46 12.05,16.41 12.75,15.02 12.75,14.67 11.87,13.79 9.43,13.79 8.56,14.32 8.56,16.06 8.21,16.41 7.86,20.25 6.98,21.48 5.24,21.48 4.37,20.60 4.37,17.81 4.71,17.46 4.71,15.37 5.06,15.02 5.06,12.57 5.41,12.22 5.41,11.52 6.98,10.30 9.78,10.30 10.13,9.95 15.02,9.95 15.37,9.60 15.71,9.95 17.81,9.95 18.16,10.30 18.86,10.30 20.60,11.35 22.17,12.92 22.87,14.32 25.49,17.63 26.54,17.63 30.73,15.54 32.48,15.54 33.35,16.41 33.35,18.16 32.83,18.68 30.73,19.73 30.03,19.73 27.59,21.13 26.89,21.13 25.84,21.83 24.10,21.83 20.95,17.63 19.73,17.81 18.33,23.40 25.14,27.76 26.71,29.33 26.71,30.73 25.84,31.95 25.49,31.95 23.75,33.70 23.40,33.70 21.30,35.79 20.95,35.79 19.21,37.54 17.81,38.24ZM2.44,43.83 1.05,43.83 0.35,43.48 -0.17,42.60 -0.17,41.21 7.16,33.87 7.51,32.48 7.86,32.13 8.21,30.03 8.56,29.68 8.56,28.63 9.25,27.24 9.25,26.19 9.78,25.32 10.83,26.37 13.44,27.94 13.44,28.98 12.75,30.03 12.75,30.73 11.35,33.52 11.00,35.27 10.65,35.97 3.84,42.78 2.44,43.83ZM21.30,8.56 18.86,8.21 17.29,6.98 16.59,5.59 16.59,2.79 16.94,2.10 18.16,0.52 19.56,0.17 19.90,-0.17 21.65,-0.17 22.00,0.17 23.40,0.52 24.97,2.44 24.97,3.49 25.32,3.84 25.32,4.54 24.27,6.98 22.70,8.21 21.65,8.21 21.30,8.56Z"/></svg></i></span><div class="t lb">Workout</div></div>
+    <div class="tab tab3"><i><svg viewBox="0 0 32.00 20.99" fill="currentColor" preserveAspectRatio="none"><path fill-rule="evenodd" d="M30.97,20.82 13.08,20.82 12.22,20.30 12.22,17.89 12.90,16.52 15.14,14.28 15.48,14.28 16.17,13.59 17.55,12.90 18.24,12.90 18.58,12.56 19.96,12.56 20.30,12.22 23.74,12.22 24.09,12.56 25.12,12.56 25.46,12.90 26.15,12.90 28.22,13.94 30.11,15.48 30.11,15.83 31.14,16.86 31.48,17.55 31.48,18.24 31.83,18.58 31.83,19.61 30.97,20.82ZM10.67,20.82 0.69,20.82 -0.17,19.96 -0.17,18.24 0.17,17.89 0.17,17.20 0.86,15.83 2.75,13.94 3.10,13.94 3.78,13.25 4.47,12.90 5.16,12.90 5.51,12.56 6.19,12.56 6.54,12.22 9.98,12.22 10.32,12.56 11.35,12.56 11.70,12.90 12.39,12.90 13.25,13.42 13.25,13.76 12.22,14.80 12.22,15.14 11.53,15.83 10.84,17.20 10.84,17.89 10.49,18.24 10.49,20.30 10.84,20.65 10.67,20.82ZM23.05,10.15 20.99,10.15 19.61,9.46 18.06,7.91 17.38,6.54 17.38,3.44 18.06,2.06 19.61,0.52 20.30,0.17 20.99,0.17 21.33,-0.17 23.74,0.17 24.43,0.86 24.77,0.86 25.63,1.72 26.32,3.10 26.32,3.78 26.67,4.13 26.67,5.85 26.32,6.19 26.32,6.88 25.63,8.26 24.43,9.46 23.05,10.15ZM8.95,10.49 7.91,10.49 7.57,10.15 6.88,10.15 6.19,9.81 4.65,7.91 4.65,7.23 4.30,6.88 4.30,5.16 4.65,4.82 4.65,4.13 4.99,3.44 6.54,1.89 7.23,1.89 7.57,1.55 9.63,1.55 10.32,1.89 11.87,3.44 12.22,4.13 12.22,4.82 12.56,5.16 12.56,6.54 12.22,6.88 12.22,7.91 11.53,8.60 11.53,8.95 9.98,10.15 9.29,10.15 8.95,10.49Z"/></svg></i><div class="t lb">Sharing</div></div>
   </div>
 </div>
 </body></html>
