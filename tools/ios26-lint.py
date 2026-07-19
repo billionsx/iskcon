@@ -51,7 +51,7 @@ INDEX = DESIGN / "INDEX.md"
 STANDARD = DESIGN / "STANDARD_ios26_css.md"
 BASELINE = ROOT / "tools" / "ios26-baseline.json"
 MANIFEST = ROOT / "docs" / "assets" / "manifest.jsonl"
-REF_CLASS = "ios26-refs"
+REF_CLASS = "ios26-refs"   # семейство: ios26-refs, ios26-refs-2, … (offload идемпотентен по классу)
 
 MIN_REFS = 6
 
@@ -85,7 +85,7 @@ def mirrored_masters() -> set[str]:
             rec = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if rec.get("class") != REF_CLASS:
+        if not str(rec.get("class", "")).startswith(REF_CLASS):
             continue
         # Оба зеркала обязаны быть в записи: одно зеркало — это не страховка (Пл023).
         if not (rec.get("ia_url") and rec.get("gh_url")):
