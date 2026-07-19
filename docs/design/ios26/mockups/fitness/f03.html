@@ -36,15 +36,15 @@
   --w-c2v: 52.0px;
   --w-c2d: 60.0px;
   --c1-unit-x: 130.33px;
-  --fs-unit: 20.38px;
-  --w-c3: 105.33px;
-  --w-c3v: 74.0px;
+  --fs-unit: 23.81px;
+  --w-c3: 87.33px;
+  --w-c3v: 52.0px;
   --w-lb1: 46.33px;
   --w-lb2: 40.33px;
   --w-lb3: 36.33px;
   --sb-time-x: 38.4px;
   --sb-time-top: 22.26px;
-  --fs-sb: 17.16px;
+  --fs-sb: 17.74px;
   --sb-heart-x: 89.67px;
   --sb-heart-y: 23.0px;
   --sb-heart-w: 14.0px;
@@ -83,7 +83,7 @@
   --title-top: 124.4px;
   --fs-title: 31.11px;
   --chip-y: 180.0px;
-  --chip-h: 32.83px;
+  --chip-h: 32.33px;
   --chip-r: 16.17px;
   --chip-fill: #1C1C1C;
   --chip0-x: 15.0px;  /* 📐 чипов ПЯТЬ: All · Workouts · Walking · Other · Hiking; строка уходит за правый край, пятый обрезан на 393 */
@@ -107,7 +107,7 @@
   --chip4-x: 335.0px;
   --chip4-w: 69.6px;
   --chip-text-top: 9.6px;
-  --fs-chip: 11.98px;
+  --fs-chip: 12.28px;
   --chip-ink: #EDEDED;
   --col-x: 16.0px;
   --col2-x: 129.34px;
@@ -124,17 +124,17 @@
   --w-k2b: 72.33px;
   --m1-top: 243.2px;  /* 📐 сводка месяца лежит ПРЯМО НА ХОЛСТЕ, без карточки: группировку даёт типографика */
   --m2-top: 504.2px;
-  --fs-month: 19.73px;
+  --fs-month: 18.6px;
   --head-top: 292.97px;
   --head2-top: 553.62px;
-  --fs-head: 17.57px;
+  --fs-head: 17.33px;
   --row1-top: 320.77px;
   --row2-top: 340.61px;
   --row3-top: 360.61px;
   --row1b-top: 581.77px;
   --row2b-top: 601.61px;
   --row3b-top: 621.61px;
-  --fs-row: 17.42px;
+  --fs-row: 17.33px;
   --c-x: 16.0px;
   --c-w: 361.0px;
   --disc-x: 32.0px;
@@ -160,19 +160,19 @@
   --g-w2-y: 675.67px;
   --g-w2-w: 36.67px;
   --g-w2-h: 36.67px;
-  --c1-unit-top: 44.4px;
-  --c-date-x: 305.67px;
+  --c1-unit-top: 44.65px;
+  --c-date-x: 323.0px;
   --c2-date-x: 300.34px;
   --c1-date-top: 49.33px;
   --c2-date-top: 52.37px;
-  --fs-date: 15.7px;
-  --fs-date2: 12.5px;
+  --fs-date: 11.93px;
+  --fs-date2: 12.61px;
   --c-text-x: 88.67px;
   --cv-x: 87.67px;
   --c1-t1-top: 18.4px;
-  --fs-c-t1: 14.13px;
+  --fs-c-t1: 14.22px;
   --c1-t2-top: 42.01px;
-  --fs-c-t2: 25.46px;
+  --fs-c-t2: 25.68px;
   --c2-t1-top: 18.2px;
   --c2-t2-top: 42.01px;
   --scrim-y: 727.0px;
@@ -419,7 +419,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
     <div class="disc"></div>
     <i class="g g-walk2 ci"></i>
     <div class="t ct1" data-w="w-c3">Outdoor Walk</div>
-    <div class="t ct2" data-w="w-c3v">1:02</div>
+    <div class="t ct2" data-w="w-c3v">0:49</div>
     <div class="t cd" data-w="w-c2d">15.10.2025</div>
   </div>
 
@@ -464,6 +464,13 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
         if (Math.abs(m.w-target) < 0.02) break;
         ls += (target - m.w)/(n-1);
       }
+      /* ПРЕДЕЛ ПОПРАВКИ. Системный трекинг Apple не выходит за ±0.4 pt на текстовых
+         кеглях. Если подгонка просит больше — виноват не трекинг, а КЕГЛЬ: строка
+         набрана не тем размером, и разницу вытягивает межбуквенный просвет. На чужом
+         шрифте эта разница будет другой, и текст поедет. Поэтому поправка режется:
+         лучше строка естественной ширины, чем раздавленная или растянутая. */
+      if (ls >  0.4) ls =  0.4;
+      if (ls < -0.4) ls = -0.4;
       el.style.letterSpacing = ls.toFixed(4)+'px';
       if (el.dataset.x){
         var mm = ink(el, ls);
