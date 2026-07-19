@@ -15,6 +15,8 @@
   --lime: #A5FF01;
   --second: #8D8D90;
   --third: #97979A;
+  --vtime: #F4E134;
+  --vkcal: #D91851;
   --card: #1C1C1C;
   --w-sb-time: 64.33px;
   --w-lte: 19.0px;
@@ -26,15 +28,17 @@
   --w-r1: 71.0px;
   --w-r2: 36.33px;
   --w-r3: 85.0px;
-  --w-v1: 4.67px;
-  --w-t1: 57.33px;
-  --w-t2: 55.0px;
   --w-c1: 82.33px;
-  --w-c1v: 99.0px;
-  --w-c1d: 33.0px;
+  --w-c1v: 22.0px;
+  --w-c1u: 67.0px;
+  --w-c1d: 32.67px;
   --w-c2: 88.0px;
-  --w-c2v: 54.0px;
-  --w-c2d: 61.0px;
+  --w-c2v: 52.0px;
+  --w-c2d: 60.0px;
+  --c1-unit-x: 115.67px;
+  --fs-unit: 16.0px;
+  --w-c3: 105.33px;
+  --w-c3v: 74.0px;
   --w-lb1: 46.33px;
   --w-lb2: 40.33px;
   --w-lb3: 36.33px;
@@ -82,11 +86,18 @@
   --chip-h: 32.33px;
   --chip-r: 16.17px;
   --chip-fill: #1C1C1C;
-  --chip1-x: 58.0px;  /* 📐 строка чипов уходит за правый край — четвёртый обрезан на 393 */
-  --chip1-w: 105.0px;
+  --chip0-x: 15.0px;  /* 📐 чипов ПЯТЬ: All · Workouts · Walking · Other · Hiking; строка уходит за правый край, пятый обрезан на 393 */
+  --chip0-w: 47.33px;
+  --chip1-x: 70.67px;
+  --chip1-w: 90.33px;
   --chip1-y: 178.0px;
   --chip1-h: 35.33px;  /* 📐 выбранный чип на 3.0 pt выше прочих: 35.33 против 32.33 */
   --chip1-r: 17.67px;
+  --w-chip0: 13.67px;
+  --w-chip1: 82.33px;
+  --w-chip2: 45.0px;
+  --w-chip3: 32.33px;
+  --w-chip4: 35.67px;
   --chip2-x: 170.67px;
   --chip2-w: 78.66px;
   --chip3-x: 259.33px;
@@ -99,18 +110,28 @@
   --col-x: 16.0px;
   --col2-x: 128.67px;
   --col3-x: 236.67px;
+  --w-v1: 4.67px;
+  --w-v1b: 9.0px;
+  --w-t1: 58.67px;
+  --w-t2: 58.67px;
+  --w-t1b: 58.0px;
+  --w-t2b: 56.33px;
+  --w-k1: 72.0px;
+  --w-k2: 72.0px;
+  --w-k1b: 74.67px;
+  --w-k2b: 72.33px;
   --m1-top: 243.2px;  /* 📐 сводка месяца лежит ПРЯМО НА ХОЛСТЕ, без карточки: группировку даёт типографика */
   --m2-top: 504.2px;
   --fs-month: 19.7331px;
-  --head-top: 292.9671px;
-  --head2-top: 553.2671px;
+  --head-top: 292.6342px;
+  --head2-top: 553.9342px;
   --fs-head: 17.575px;
-  --row1-top: 319.9329px;
-  --row2-top: 340.2671px;
-  --row3-top: 360.2671px;
-  --row1b-top: 580.9329px;
-  --row2b-top: 601.2671px;
-  --row3b-top: 621.2671px;
+  --row1-top: 320.2658px;
+  --row2-top: 340.9342px;
+  --row3-top: 360.9342px;
+  --row1b-top: 581.2658px;
+  --row2b-top: 601.9342px;
+  --row3b-top: 621.9342px;
   --fs-row: 17.4159px;
   --c-x: 16.0px;
   --c-w: 361.0px;
@@ -119,7 +140,9 @@
   --c1-y: 394.0px;
   --c1-h: 78.0px;
   --c2-y: 655.0px;
-  --c2-h: 90.0px;
+  --c2-h: 78.0px;
+  --c3-y: 743.0px;
+  --c3-h: 78.0px;
   --g-d-x: 43.67px;
   --g-d-y: 422.33px;
   --g-d-w: 24.33px;
@@ -128,16 +151,17 @@
   --g-w2-y: 675.67px;
   --g-w2-w: 36.67px;
   --g-w2-h: 36.67px;
+  --c1-unit-top: 40.4px;
   --c-date-x: 299.0px;
   --c1-date-top: 47.4px;
   --c2-date-top: 48.4px;
   --fs-date: 14.29px;
   --c-text-x: 88.67px;
-  --c1-t1-top: 18.733px;
-  --fs-c-t1: 14.291px;
+  --c1-t1-top: 18.3994px;
+  --fs-c-t1: 14.1264px;
   --c1-t2-top: 39.4px;
   --fs-c-t2: 14.29px;
-  --c2-t1-top: 10.4px;
+  --c2-t1-top: 18.0668px;
   --c2-t2-top: 40.4px;
   --scrim-y: 727.0px;
   --scrim-h: 125.0px;
@@ -179,11 +203,12 @@
   --tab2-cx: 196.5px;
   --tab3-cx: 282.8px;
   --tab-w: 85.75px;
-  --tab-label-top: 810.7338px;
+  --tab-label-top: 810.4009px;
   --fs-tab: 10.25px;
   --accent: #C5FD2C;
   --c1-path: "M 339.87 0.00 L 345.38 0.19 L 348.89 0.75 L 351.79 1.70 L 354.25 3.01 L 356.31 4.69 L 357.99 6.75 L 359.30 9.21 L 360.25 12.11 L 360.81 15.62 L 361.00 21.13 L 361.00 56.87 L 360.81 62.38 L 360.25 65.89 L 359.30 68.79 L 357.99 71.25 L 356.31 73.31 L 354.25 74.99 L 351.79 76.30 L 348.89 77.25 L 345.38 77.81 L 339.87 78.00 L 21.13 78.00 L 15.62 77.81 L 12.11 77.25 L 9.21 76.30 L 6.75 74.99 L 4.69 73.31 L 3.01 71.25 L 1.70 68.79 L 0.75 65.89 L 0.19 62.38 L 0.00 56.87 L 0.00 21.13 L 0.19 15.62 L 0.75 12.11 L 1.70 9.21 L 3.01 6.75 L 4.69 4.69 L 6.75 3.01 L 9.21 1.70 L 12.11 0.75 L 15.62 0.19 L 21.13 0.00 Z";
-  --c2-path: "M 339.87 0.00 L 345.38 0.19 L 348.89 0.75 L 351.79 1.70 L 354.25 3.01 L 356.31 4.69 L 357.99 6.75 L 359.30 9.21 L 360.25 12.11 L 360.81 15.62 L 361.00 21.13 L 361.00 68.87 L 360.81 74.38 L 360.25 77.89 L 359.30 80.79 L 357.99 83.25 L 356.31 85.31 L 354.25 86.99 L 351.79 88.30 L 348.89 89.25 L 345.38 89.81 L 339.87 90.00 L 21.13 90.00 L 15.62 89.81 L 12.11 89.25 L 9.21 88.30 L 6.75 86.99 L 4.69 85.31 L 3.01 83.25 L 1.70 80.79 L 0.75 77.89 L 0.19 74.38 L 0.00 68.87 L 0.00 21.13 L 0.19 15.62 L 0.75 12.11 L 1.70 9.21 L 3.01 6.75 L 4.69 4.69 L 6.75 3.01 L 9.21 1.70 L 12.11 0.75 L 15.62 0.19 L 21.13 0.00 Z";
+  --c2-path: "M 339.87 0.00 L 345.38 0.19 L 348.89 0.75 L 351.79 1.70 L 354.25 3.01 L 356.31 4.69 L 357.99 6.75 L 359.30 9.21 L 360.25 12.11 L 360.81 15.62 L 361.00 21.13 L 361.00 56.87 L 360.81 62.38 L 360.25 65.89 L 359.30 68.79 L 357.99 71.25 L 356.31 73.31 L 354.25 74.99 L 351.79 76.30 L 348.89 77.25 L 345.38 77.81 L 339.87 78.00 L 21.13 78.00 L 15.62 77.81 L 12.11 77.25 L 9.21 76.30 L 6.75 74.99 L 4.69 73.31 L 3.01 71.25 L 1.70 68.79 L 0.75 65.89 L 0.19 62.38 L 0.00 56.87 L 0.00 21.13 L 0.19 15.62 L 0.75 12.11 L 1.70 9.21 L 3.01 6.75 L 4.69 4.69 L 6.75 3.01 L 9.21 1.70 L 12.11 0.75 L 15.62 0.19 L 21.13 0.00 Z";
+  --c3-path: "M 339.87 0.00 L 345.38 0.19 L 348.89 0.75 L 351.79 1.70 L 354.25 3.01 L 356.31 4.69 L 357.99 6.75 L 359.30 9.21 L 360.25 12.11 L 360.81 15.62 L 361.00 21.13 L 361.00 56.87 L 360.81 62.38 L 360.25 65.89 L 359.30 68.79 L 357.99 71.25 L 356.31 73.31 L 354.25 74.99 L 351.79 76.30 L 348.89 77.25 L 345.38 77.81 L 339.87 78.00 L 21.13 78.00 L 15.62 77.81 L 12.11 77.25 L 9.21 76.30 L 6.75 74.99 L 4.69 73.31 L 3.01 71.25 L 1.70 68.79 L 0.75 65.89 L 0.19 62.38 L 0.00 56.87 L 0.00 21.13 L 0.19 15.62 L 0.75 12.11 L 1.70 9.21 L 3.01 6.75 L 4.69 4.69 L 6.75 3.01 L 9.21 1.70 L 12.11 0.75 L 15.62 0.19 L 21.13 0.00 Z";
 }
 /* конец блока замеров */
 /* Подменное начертание с метриками SF Pro (em 1000: asc 950 · desc 250 · cap 700).
@@ -247,6 +272,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 .chip1{left:var(--chip1-x);width:var(--chip1-w);top:var(--chip1-y);height:var(--chip1-h);
  border-radius:var(--chip1-r);background:var(--lime)}
 .chip1 .t{color:var(--canvas);font-weight:600}
+.chip0{left:var(--chip0-x);width:var(--chip0-w)}
 .chip2{left:var(--chip2-x);width:var(--chip2-w)}
 .chip3{left:var(--chip3-x);width:var(--chip3-w)}
 .chip4{left:var(--chip4-x);width:var(--chip4-w)}
@@ -257,6 +283,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 .h1{left:var(--col2-x);top:var(--head-top)} .h2{left:var(--col3-x);top:var(--head-top)}
 .h1b{left:var(--col2-x);top:var(--head2-top)} .h2b{left:var(--col3-x);top:var(--head2-top)}
 .rw{font-size:var(--fs-row)}
+.vt{color:var(--vtime)} .vk{color:var(--vkcal)}
 .rl{left:var(--col-x)} .rc{left:var(--col2-x)} .rr{left:var(--col3-x)}
 .y1{top:var(--row1-top)} .y2{top:var(--row2-top)} .y3{top:var(--row3-top)}
 .y1b{top:var(--row1b-top)} .y2b{top:var(--row2b-top)} .y3b{top:var(--row3b-top)}
@@ -265,6 +292,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 .card>*{position:absolute}
 .c1{top:var(--c1-y);height:var(--c1-h);clip-path:path(var(--c1-path))}
 .c2{top:var(--c2-y);height:var(--c2-h);clip-path:path(var(--c2-path))}
+.c3{top:var(--c3-y);height:var(--c3-h);clip-path:path(var(--c3-path))}
 .ci{color:var(--lime)}
 .c1 .ci{left:calc(var(--g-d-x) - var(--c-x));top:calc(var(--g-d-y) - var(--c1-y));
  width:var(--g-d-w);height:var(--g-d-h)}
@@ -272,9 +300,15 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
  width:var(--g-w2-w);height:var(--g-w2-h);color:var(--label)}
 .card .t{left:calc(var(--c-text-x) - var(--c-x))}
 .card .ct1{font-size:var(--fs-c-t1);font-weight:600}
-.card .ct2{font-size:var(--fs-c-t2);font-weight:600}
+.card .ct2{font-size:var(--fs-c-t2);font-weight:600;color:var(--lime)}
+.card .cu{left:calc(var(--c1-unit-x) - var(--c-x));font-size:var(--fs-unit);
+ font-weight:600;color:var(--lime)}
+.c1 .cu{top:var(--c1-unit-top)}
 .card .cd{left:calc(var(--c-date-x) - var(--c-x));font-size:var(--fs-date);color:var(--third)}
 .c1 .cd{top:var(--c1-date-top)} .c2 .cd{top:var(--c2-date-top)}
+.c3 .ci{left:calc(var(--g-w2-x) - var(--c-x));top:calc(var(--g-w2-y) - var(--c2-y));
+ width:var(--g-w2-w);height:var(--g-w2-h);color:var(--label)}
+.c3 .ct1{top:var(--c2-t1-top)} .c3 .ct2{top:var(--c2-t2-top)} .c3 .cd{top:var(--c2-date-top)}
 .c1 .ct1{top:var(--c1-t1-top)} .c1 .ct2{top:var(--c1-t2-top)}
 .c2 .ct1{top:var(--c2-t1-top)} .c2 .ct2{top:var(--c2-t2-top)}
 
@@ -314,10 +348,11 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   <div class="hbtn"></div><i class="g g-chevron"></i><i class="g g-hdr2"></i>
   <div class="t title" data-w="w-title" data-x="title-x">Sessions</div>
 
-  <div class="chip chip1"><div class="t">Workouts</div></div>
-  <div class="chip chip2"><div class="t">Walking</div></div>
-  <div class="chip chip3"><div class="t">Other</div></div>
-  <div class="chip chip4"><div class="t">Hiking</div></div>
+  <div class="chip chip0"><div class="t" data-w="w-chip0">All</div></div>
+  <div class="chip chip1"><div class="t" data-w="w-chip1">Workouts</div></div>
+  <div class="chip chip2"><div class="t" data-w="w-chip2">Walking</div></div>
+  <div class="chip chip3"><div class="t" data-w="w-chip3">Other</div></div>
+  <div class="chip chip4"><div class="t" data-w="w-chip4">Hiking</div></div>
 
   <div class="t month m1" data-w="w-month1" data-x="col-x">July 2026</div>
   <div class="t hcol h1" data-w="w-total" data-x="col2-x">Total</div>
@@ -325,14 +360,17 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   <div class="t rw rl y1" data-w="w-r1" data-x="col-x">Workouts</div>
   <div class="t rw rc y1" data-w="w-v1" data-x="col2-x">1</div>
   <div class="t rw rl y2" data-w="w-r2" data-x="col-x">Time</div>
-  <div class="t rw rc y2" data-w="w-t1" data-x="col2-x">0:30:00</div>
-  <div class="t rw rr y2" data-w="w-t2" data-x="col3-x">0:30:00</div>
+  <div class="t rw rc y2 vt" data-w="w-t1" data-x="col2-x">0:30:00</div>
+  <div class="t rw rr y2 vt" data-w="w-t2" data-x="col3-x">0:30:00</div>
   <div class="t rw rl y3" data-w="w-r3" data-x="col-x">Kilocalories</div>
+  <div class="t rw rc y3 vk" data-w="w-k1" data-x="col2-x">213 KCAL</div>
+  <div class="t rw rr y3 vk" data-w="w-k2" data-x="col3-x">213 KCAL</div>
 
   <div class="card c1">
     <i class="g g-dance ci"></i>
     <div class="t ct1" data-w="w-c1">Social Dance</div>
-    <div class="t ct2" data-w="w-c1v">213 KCAL</div>
+    <div class="t ct2" data-w="w-c1v">213</div>
+    <div class="t cu" data-w="w-c1u">KCAL</div>
     <div class="t cd" data-w="w-c1d">Today</div>
   </div>
 
@@ -340,14 +378,26 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
   <div class="t hcol h1b" data-w="w-total" data-x="col2-x">Total</div>
   <div class="t hcol h2b" data-w="w-avg" data-x="col3-x">Average</div>
   <div class="t rw rl y1b" data-w="w-r1" data-x="col-x">Workouts</div>
+  <div class="t rw rc y1b" data-w="w-v1b" data-x="col2-x">4</div>
   <div class="t rw rl y2b" data-w="w-r2" data-x="col-x">Time</div>
+  <div class="t rw rc y2b vt" data-w="w-t1b" data-x="col2-x">2:32:56</div>
+  <div class="t rw rr y2b vt" data-w="w-t2b" data-x="col3-x">0:38:14</div>
   <div class="t rw rl y3b" data-w="w-r3" data-x="col-x">Kilocalories</div>
+  <div class="t rw rc y3b vk" data-w="w-k1b" data-x="col2-x">622 KCAL</div>
+  <div class="t rw rr y3b vk" data-w="w-k2b" data-x="col3-x">155 KCAL</div>
 
   <div class="card c2">
     <i class="g g-walk2 ci"></i>
     <div class="t ct1" data-w="w-c2">Outdoor Walk</div>
     <div class="t ct2" data-w="w-c2v">0:49</div>
     <div class="t cd" data-w="w-c2d">16.10.2025</div>
+  </div>
+
+  <div class="card c3">
+    <i class="g g-walk2 ci"></i>
+    <div class="t ct1" data-w="w-c3">Outdoor Walk</div>
+    <div class="t ct2" data-w="w-c3v">1:02</div>
+    <div class="t cd" data-w="w-c2d">15.10.2025</div>
   </div>
 
   <div class="scrim"></div>
