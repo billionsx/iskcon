@@ -34,7 +34,6 @@ import json
 import os
 import subprocess
 import sys
-import subprocess
 import tarfile
 import tempfile
 import time
@@ -218,16 +217,42 @@ def gh_upload_asset(rel, tar_path, token):
     up = rel["upload_url"].split("{")[0] + "?name=%s" % urllib.parse.quote(name)
     with open(tar_path, "rb") as f:
         blob = f.read()
-    req = urllib.request.Request(up, data=blob, method="POST")
-    req.add_header("Authorization", "Bearer %s" % token)
-    req.add_header("Accept", "application/vnd.github+json")
-    req.add_header("Content-Type", "application/gzip")
-    req.add_header("User-Agent", UA)
-    try:
-        with urllib.request.urlopen(req, timeout=1800) as r:
-            asset = json.load(r)
-    except urllib.error.HTTPError as e:
-        raise RuntimeError("GitHub asset upload → HTTP %s: %s" % (e.code, e.read().decode("utf-8", "replace")[:300]))
+    # Заливка ассета срывается: класс ios26-refs-4 (20.3 МБ) дважды подряд дал
+    # релиз с НУЛЁМ ассетов, а шаг упал с голым «exit code 1». Молчащий отказ
+    # хуже отказа: диагноз пришлось собирать по состоянию релиза через API.
+    # Поэтому здесь три вещи: повтор с отступом, печать причины в stderr и
+    # ::error:: — чтобы следующая поломка называла себя сама.
+    asset, last = None, ""
+    for attempt in range(1, 4):
+        req = urllib.request.Request(up, data=blob, method="POST")
+        req.add_header("Authorization", "Bearer %s" % token)
+        req.add_header("Accept", "application/vnd.github+json")
+        req.add_header("Content-Type", "application/octet-stream")
+        req.add_header("Content-Length", str(len(blob)))
+        req.add_header("User-Agent", UA)
+        try:
+            with urllib.request.urlopen(req, timeout=1800) as r:
+                asset = json.load(r)
+            break
+        except urllib.error.HTTPError as e:
+            last = "HTTP %s: %s" % (e.code, e.read().decode("utf-8", "replace")[:400])
+        except Exception as e:                      # таймаут, обрыв, сброс
+            last = "%s: %s" % (type(e).__name__, e)
+        print("::warning::зеркало GitHub, попытка %d/3 — %s" % (attempt, last), file=sys.stderr)
+        # ассет мог осесть частично — снимаем перед повтором
+        try:
+            _, fresh = _gh_req("GET", "https://api.github.com/repos/%s/releases/%d"
+                               % (REPO, rel["id"]), token)
+            for a in fresh.get("assets", []):
+                if a.get("name") == name:
+                    _gh_req("DELETE", "https://api.github.com/repos/%s/releases/assets/%d"
+                            % (REPO, a["id"]), token)
+        except Exception:
+            pass
+        time.sleep(5 * attempt)
+    if asset is None:
+        print("::error::зеркало GitHub Releases не закрыто (ЗКН-Пл023): %s" % last, file=sys.stderr)
+        raise RuntimeError("GitHub asset upload: %s" % last)
     return asset.get("browser_download_url") or "https://github.com/%s/releases/download/%s/%s" % (REPO, rel["tag_name"], name)
 
 
