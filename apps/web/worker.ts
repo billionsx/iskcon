@@ -2364,6 +2364,23 @@ export default {
       }));
       return json({ speakers, albums, tracks });
     }
+    /* ЛЁГКИЙ СПИСОК ЦИКЛОВ. `/api/katha` отдаёт 1,68 МБ и разбирается на телефоне
+       заметным подвисом (Ц12 в UX_AUDIT). Плееру для очереди нужен не весь
+       каталог, а перечень циклов: 326 строк по пять полей — около 30 КБ.
+       Дорожки тянутся отдельно и только для выбранного цикла. */
+    if (url.pathname === "/api/katha/albums") {
+      const res = await env.DB.prepare(
+        `SELECT b.id, b.title, s.name AS speaker, COUNT(t.file) AS n,
+                SUM(COALESCE(t.duration, 0)) AS secs
+           FROM katha_albums b
+           LEFT JOIN katha_tracks t ON t.album_id = b.id
+           LEFT JOIN katha_speakers s ON s.slug = b.speaker_slug
+          GROUP BY b.id
+         HAVING n > 0
+          ORDER BY COALESCE(b.sort, 9999), b.title`
+      ).all<{ id: string; title: string; speaker: string | null; n: number; secs: number }>();
+      return json({ albums: res.results || [] });
+    }
     if (url.pathname === "/api/katha/all/audio") {
       return kathaAllManifest(env, url.origin);
     }

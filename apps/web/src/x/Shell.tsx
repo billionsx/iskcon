@@ -87,14 +87,64 @@ function Frame({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * ЦИКЛ КАТХИ — настоящие записи из каталога.
+ *
+ * Модель катхи содержательна: РАССКАЗЧИК → ЦИКЛ → ЧАСТЬ. «Гопи-гита, часть 7»
+ * без частей 1–6 не самостоятельна, поэтому очередь плеера — это цикл целиком,
+ * а оглавление показывает части по порядку.
+ *
+ * Вид записи — «лекция», а не «киртан»: катха это ПОВЕСТВОВАНИЕ. Отсюда и
+ * повадка плеера — перемотка ±15, скорость, оглавление; перемешивания нет,
+ * потому что у частей цикла порядок есть.
+ *
+ * ЗАЧЕМ УЗКИЙ МАРШРУТ. `/api/katha` отдаёт 1,68 МБ и разбирается на телефоне
+ * заметным подвисом (Ц12). Плееру нужен перечень циклов — около 30 КБ — и
+ * дорожки одного выбранного цикла. Пробная оболочка не должна унаследовать
+ * болезнь, которую в текущей уже описали.
+ */
+interface AlbumRow { id: string; title: string; speaker: string | null; n: number; secs: number }
+
+function hours(secs: number): string {
+  const h = Math.floor(secs / 3600), m = Math.round((secs % 3600) / 60);
+  return h ? `${h} ч ${m} мин` : `${m} мин`;
+}
+
 function PlayScreen() {
+  const [albums, setAlbums] = useState<AlbumRow[] | null>(null);
+  const [queue, setQueue] = useState<Track[]>(DEMO);
   const [index, setIndex] = useState(0);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/katha/albums", { credentials: "same-origin" })
+      .then((r) => r.json() as Promise<{ albums: AlbumRow[] }>)
+      .then((d) => setAlbums(d.albums ?? []))
+      .catch(() => setAlbums([]));
+  }, []);
+
+  async function openCycle(a: AlbumRow) {
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/katha/album/audio?id=${encodeURIComponent(a.id)}`,
+        { credentials: "same-origin" });
+      const d = await r.json() as {
+        modes: { plain: { tracks: { title: string; url: string; durationSec: number; artist: string }[] } };
+      };
+      const tracks: Track[] = (d.modes?.plain?.tracks ?? []).map((x, k) => ({
+        id: `${a.id}:${k}`, kind: "lecture" as const,
+        title: x.title, subtitle: x.artist || a.speaker || "Катха",
+        duration: x.durationSec, src: x.url,
+      }));
+      if (tracks.length) { setQueue(tracks); setIndex(0); setOpenId(a.id); }
+    } catch { /* сеть могла упасть — очередь остаётся прежней */ }
+    setBusy(false);
+  }
+
   return (
     <Frame>
-      {/* Таб-бара на этом экране нет, поэтому мини-плеер садится на своё
-        замеренное место — 21 pt от низа (📐 5.16). Значение 91 = 21 + 62 + 8
-        появится, когда под ним встанет таб-бар. */}
-    <PlayerHost queue={DEMO} index={index} onIndex={setIndex} tabBarBottom={21}>
+      <PlayerHost queue={queue} index={index} onIndex={setIndex} tabBarBottom={21}>
       <main style={{ padding: "16px 16px 96px", height: "100%", overflowY: "auto",
         background: "var(--color-canvas)", fontFamily: "var(--font-text)" }}>
         <h1 className="t-display" style={{ margin: "8px 0 4px", fontWeight: 700,
@@ -103,33 +153,38 @@ function PlayScreen() {
           fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
           letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)" }}>
           Один компонент на шесть видов звука. Различаются они не элементами,
-          а доступными действиями: у книги, лекции и бхаджана есть переход на текст.
+          а доступными действиями.
         </p>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-          {DEMO.map((t, i) => (
-            <li key={t.id}>
-              <button type="button" onClick={() => setIndex(i)}
-                style={{ display: "flex", alignItems: "center", gap: "var(--media-gap)",
-                  width: "100%", minHeight: "var(--row-h-media)", padding: "0 var(--inset-row)",
-                  background: i === index ? "var(--color-fill-1)" : "none",
-                  border: "none", borderRadius: "var(--radius-thumb)", cursor: "pointer",
-                  textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
-                <span aria-hidden style={{ width: "var(--thumb-square)", height: "var(--thumb-square)",
-                  borderRadius: "var(--radius-thumb)", background: "var(--color-fill-1)",
-                  display: "grid", placeItems: "center", flexShrink: 0,
-                  fontFamily: "var(--font-display)", fontSize: "var(--text-caption2)",
-                  fontWeight: 600, color: "var(--color-label-3)" }}>
-                  {t.kind.slice(0, 2).toUpperCase()}
-                </span>
+
+        <h2 style={sectionHead}>Катха — настоящие записи</h2>
+        {albums === null && <p style={hint}>Загружаю каталог…</p>}
+        {albums?.length === 0 && <p style={hint}>Каталог сейчас недоступен.</p>}
+        <ul style={{ listStyle: "none", margin: "0 0 24px", padding: 0 }}>
+          {(albums ?? []).slice(0, 12).map((a) => (
+            <li key={a.id}>
+              <button type="button" onClick={() => openCycle(a)} disabled={busy}
+                style={{ ...rowStyle, background: openId === a.id ? "var(--color-fill-1)" : "none" }}>
+                <span aria-hidden style={monoStyle}>КА</span>
                 <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={{ display: "block", fontFamily: "var(--font-text)",
-                    fontSize: "var(--text-body)", lineHeight: "var(--lh-body)",
-                    letterSpacing: "var(--ls-body)", color: "var(--color-label)",
-                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.title}</span>
-                  <span style={{ display: "block", fontFamily: "var(--font-text)",
-                    fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
-                    letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)",
-                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{t.subtitle}</span>
+                  <span style={rowTitle}>{a.title}</span>
+                  <span style={rowSub}>{a.speaker ?? "Катха"} · {a.n} ч. · {hours(a.secs)}</span>
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <h2 style={sectionHead}>Витрина видов</h2>
+        <p style={hint}>Звука нет — показ раскладки для всех шести повадок.</p>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {DEMO.map((d) => (
+            <li key={d.id}>
+              <button type="button" onClick={() => { setQueue(DEMO); setIndex(DEMO.indexOf(d)); setOpenId(null); }}
+                style={rowStyle}>
+                <span aria-hidden style={monoStyle}>{d.kind.slice(0, 2).toUpperCase()}</span>
+                <span style={{ minWidth: 0, flex: 1 }}>
+                  <span style={rowTitle}>{d.title}</span>
+                  <span style={rowSub}>{d.subtitle}</span>
                 </span>
               </button>
             </li>
@@ -140,6 +195,40 @@ function PlayScreen() {
     </Frame>
   );
 }
+
+const sectionHead: React.CSSProperties = {
+  margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
+  lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)", fontWeight: 700,
+  color: "var(--color-label)",
+};
+const hint: React.CSSProperties = {
+  margin: "0 0 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+  lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
+  color: "var(--color-label-3)",
+};
+const rowStyle: React.CSSProperties = {
+  display: "flex", alignItems: "center", gap: "var(--media-gap)", width: "100%",
+  minHeight: "var(--row-h-media)", padding: "0 var(--inset-row)", background: "none",
+  border: "none", borderRadius: "var(--radius-thumb)", cursor: "pointer", textAlign: "left",
+  WebkitTapHighlightColor: "transparent",
+};
+const monoStyle: React.CSSProperties = {
+  width: "var(--thumb-square)", height: "var(--thumb-square)", flexShrink: 0,
+  borderRadius: "var(--radius-thumb)", background: "var(--color-fill-1)",
+  display: "grid", placeItems: "center", fontFamily: "var(--font-display)",
+  fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)",
+};
+const rowTitle: React.CSSProperties = {
+  display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
+  lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)", color: "var(--color-label)",
+  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+};
+const rowSub: React.CSSProperties = {
+  display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+  lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
+  color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden",
+  textOverflow: "ellipsis",
+};
 
 export default function XShell() {
   /* ЗКН-Н002 — ВЛАДЕЛЕЦ popstate ОДИН. Второй слушатель гонялся бы с тем, что
