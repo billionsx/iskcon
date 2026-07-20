@@ -107,6 +107,10 @@ jobs:
         if: always()
         run: python3 tools/one-love-lint.py
 
+      - name: Мост токен ← стандарт (ЗКН-Д028)
+        if: always()
+        run: python3 tools/ios26-tokens.py
+
       - name: Аудит конституции (свод против кода)
         if: always()
         run: python3 tools/laws-audit.py

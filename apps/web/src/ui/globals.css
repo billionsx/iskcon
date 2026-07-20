@@ -52,54 +52,54 @@
   /* ЗКН-Н086 — ХРОМА И ШИРИНА ЛИСТА ЖИВУТ В ТОКЕНАХ, А НЕ В ЧИСЛАХ ПО ФАЙЛАМ.
      Ландшафт телефона переопределяет ИХ (см. @media orientation: landscape) —
      и вся оболочка перестраивается разом, без правок в двадцати местах. */
-  --gtab-h: 62px;             /* ⚠ синхронизировано с BAR_H в App.tsx (физика линзы
+  --gtab-h: 62px;  /* 📐 5.20 · синхронизировано с BAR_H в App.tsx (физика линзы
                                  Liquid Glass считает центр капли от высоты плашки).
                                  Менять ТОЛЬКО вместе с BAR_H — иначе линза съедет. */
-  --gtab-bottom: 16px;        /* отступ пилюли от низа — ландшафт ужимает */
-  --gtab-reserve: calc(var(--gtab-h) + var(--gtab-bottom) + 26px + env(safe-area-inset-bottom));
-  --h-top-header: 56px;       /* высота верхней шапки (TopHeader) */
-  --content-bottom: 116px;    /* нижний воздух контента шелла (под пилюлей) */
-  --sheet-max: 480px;         /* ширина ЛИСТА приложения и оверлеев-списков */
-  --read-max: 480px;          /* ширина колонки НЕПРЕРЫВНОГО ЧТЕНИЯ (мера строки) */
+  --gtab-bottom: 16px;  /* ⚠ 5.20 · отступ пилюли от низа — ландшафт ужимает */
+  --gtab-reserve: calc(var(--gtab-h) + var(--gtab-bottom) + 26px + env(safe-area-inset-bottom));  /* ⚙️ */
+  --h-top-header: 56px;  /* 🕳 · высота верхней шапки (TopHeader) */
+  --content-bottom: 116px;  /* ⚙️ · нижний воздух контента шелла (под пилюлей) */
+  --sheet-max: 480px;  /* 🕳 · ширина ЛИСТА приложения и оверлеев-списков */
+  --read-max: 480px;  /* 🕳 · ширина колонки НЕПРЕРЫВНОГО ЧТЕНИЯ (мера строки) */
   /* Боковые вырезы. В ландшафте айфона Dynamic Island/вырез съедает БОКОВОЙ край —
      без этих отступов текст и кнопки уезжают под железо. В портрете они равны 0. */
-  --safe-l: env(safe-area-inset-left, 0px);
-  --safe-r: env(safe-area-inset-right, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);  /* ⚙️ */
+  --safe-r: env(safe-area-inset-right, 0px);  /* ⚙️ */
   /* Доп. высота, когда виден мини-плеер (он сидит над пилюлей, height≈58 + зазор).
      Скролл-контейнеры добавляют её к нижнему резерву, чтобы плеер не закрывал низ
      страниц (пейджер/последний абзац). Включается классом body.player-on. */
-  --player-extra: 0px;
+  --player-extra: 0px;  /* ⚙️ */
 
   /* iOS 26+ semantic colors (dark-first) */
-  --color-bg: #000000;
-  --color-bg-2: #0a0a0a;
-  --color-bg-3: #1c1c1e;
+  --color-bg: #000000;  /* 📐 5.19 */
+  --color-bg-2: #1c1c1e;  /* 📐 5.19 */
+  --color-bg-3: #2c2c2e;  /* 📐 5.16 */
 
-  --color-label: rgba(255, 255, 255, 0.95);
-  --color-label-2: rgba(235, 235, 245, 0.6);
-  --color-label-3: rgba(235, 235, 245, 0.3);
+  --color-label: #ffffff;  /* 📐 5.21 */
+  --color-label-2: rgba(235, 235, 245, 0.6);  /* 📐 5.21 */
+  --color-label-3: rgba(235, 235, 245, 0.3);  /* 📐 5.21 */
 
   /* Glass surfaces */
-  --color-glass-thin: rgba(255, 255, 255, 0.08);
-  --color-glass-regular: rgba(255, 255, 255, 0.12);
-  --color-glass-thick: rgba(255, 255, 255, 0.18);
-  --color-glass-stroke: rgba(255, 255, 255, 0.2);
+  --color-glass-thin: rgba(255, 255, 255, 0.05);  /* 🍎 6.2 */
+  --color-glass-regular: rgba(255, 255, 255, 0.06);  /* 🍎 6.2 */
+  --color-glass-thick: rgba(255, 255, 255, 0.09);  /* 🍎 6.2 */
+  --color-glass-stroke: rgba(255, 255, 255, 0.2);  /* 🕳 */
 
   /* Interactive surfaces (header blur on scroll, button hover/active, separators) */
-  --color-header-blur: rgba(0, 0, 0, 0.65);
+  --color-header-blur: rgba(0, 0, 0, 0.65);  /* 🕳 */
   /* Тинт sticky-навигации (.glass-nav) — Liquid Glass (iOS 26/27):
      материал полупрозрачный, контент читается сквозь blur(40px) saturate(180%). */
-  --color-glass-nav: rgba(0, 0, 0, 0.72);   /* тёмная тема — цвет страницы */
-  --color-hover: rgba(255, 255, 255, 0.05);
-  --color-active: rgba(255, 255, 255, 0.10);
-  --color-hairline: rgba(255, 255, 255, 0.15);
+  --color-glass-nav: rgba(0, 0, 0, 0.72);  /* 🕳 · тёмная тема — цвет страницы */
+  --color-hover: rgba(255, 255, 255, 0.05);  /* 🕳 */
+  --color-active: rgba(255, 255, 255, 0.10);  /* 🕳 */
+  --color-hairline: rgba(255, 255, 255, 0.15);  /* 🕳 */
 
   /* Accents (iOS system semantics) */
-  --color-blue-system: #0a84ff;
-  --color-green: #30d158;
-  --color-orange: #ff9f0a;
-  --color-red: #ff453a;
-  --color-yellow: #ffd60a;
+  --color-blue-system: #0a84ff;  /* 🍎 */
+  --color-green: #30d158;  /* 🍎 2.5 */
+  --color-orange: #ff9f0a;  /* 🍎 2.5 */
+  --color-red: #ff453a;  /* 🍎 2.5 */
+  --color-yellow: #ffd60a;  /* 🍎 */
 
   /* ISKCON ONE LOVE — фирменное золото. Единственный источник истины (ЗКН-Д001).
    * --color-gold      — золото логотипа ИСККОН и надписей-классификаций (ВБК/ВСК)
@@ -107,50 +107,50 @@
    * Шкала 50–900 выведена из золота: прежние синие остатки шаблона удалены. */
   /* ЗКН-Н006: высота Tier-1 (HallTabs). Уровни ниже липнут ПОД неё — иначе
    * Tier-2 уезжает под Tier-1 и исчезает (был баг). */
-  --h-hall-tabs: 40px;
+  --h-hall-tabs: 40px;  /* 🕳 */
 
   /* ЗКН-Н006: четвёртый оттенок метки — для счётчиков верхним индексом
    * и неактивных элементов Tier-2 (они должны быть тише label-3). */
-  --color-label-4: #c2c2c7;
-  --color-hairline-strong: #e3e3e8;
+  --color-label-4: #c2c2c7;  /* 🕳 */
+  --color-hairline-strong: #e3e3e8;  /* 🕳 */
 
-  --color-gold: #D2AA1B;
+  --color-gold: #D2AA1B;  /* 🎨 */
   /* ЗКН-Д001: текст и знаки НА золоте (кнопка «играть», «К текущей»).
      Токена не было — оттого он и писался голым числом в трёх местах. */
-  --color-on-gold: #141416;
+  --color-on-gold: #141416;  /* 🎨 */
   /* ЗКН-Д001: сердце избранного. Писалось числом трижды — теперь токен. */
-  --color-heart: #FF453A;
+  --color-heart: #FF453A;  /* 🎨 */
   /* Текст на тёмной поверхности плеера. */
-  --color-on-dark: #ffffff;
-  --color-gold-deep: #9c7c15;
-  --color-gold-50: #fbf6e4;
-  --color-gold-100: #f5e9bc;
-  --color-gold-200: #ebd98c;
-  --color-gold-300: #e0c75b;
-  --color-gold-400: #d9b935;
-  --color-gold-500: #d2aa1b;
-  --color-gold-600: #b08e16;
-  --color-gold-700: #8a6f11;
-  --color-gold-800: #64500c;
-  --color-gold-900: #3e3208;
-  --color-brand-black: #1e1e1e;
-  --color-brand-white: #ffffff;
+  --color-on-dark: #ffffff;  /* 🎨 */
+  --color-gold-deep: #9c7c15;  /* 🎨 */
+  --color-gold-50: #fbf6e4;  /* 🎨 */
+  --color-gold-100: #f5e9bc;  /* 🎨 */
+  --color-gold-200: #ebd98c;  /* 🎨 */
+  --color-gold-300: #e0c75b;  /* 🎨 */
+  --color-gold-400: #d9b935;  /* 🎨 */
+  --color-gold-500: #d2aa1b;  /* 🎨 */
+  --color-gold-600: #b08e16;  /* 🎨 */
+  --color-gold-700: #8a6f11;  /* 🎨 */
+  --color-gold-800: #64500c;  /* 🎨 */
+  --color-gold-900: #3e3208;  /* 🎨 */
+  --color-brand-black: #1e1e1e;  /* 🎨 */
+  --color-brand-white: #ffffff;  /* 🎨 */
 
   /* Reader accent — тёплый шафран; гармонирует с девотической графикой (обложки/миниатюры). */
-  --reader-accent: #e3953a;
-  --reader-accent-soft: rgba(227, 149, 58, 0.16);
+  --reader-accent: #e3953a;  /* 🎨 */
+  --reader-accent-soft: rgba(227, 149, 58, 0.16);  /* 🎨 */
 
   /* Default action color = brand blue. Components reference this, not raw hex. */
-  --color-blue: var(--color-gold-deep);
+  --color-blue: var(--color-gold-deep);  /* 🎨 */
 
   /* Typography */
-  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;  /* 🍎 3.1 */
+  --font-text: 'SF Pro Text', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;  /* 🍎 3.1 */
   /* Священный текст (стихи, цитаты, транслитерация, термины): Georgia — даёт
      красивый книжный курсив и корректно несёт диакритику над кириллицей в
      современных браузерах (кр̣па̄, кр̣шн̣а — как на iskcone.com). Gentium Book Plus —
      запасной для редких глифов, которых нет в Georgia; Times — крайний случай. */
-  --font-scripture: Georgia, 'Gentium Book Plus', 'Times New Roman', serif;
+  --font-scripture: Georgia, 'Gentium Book Plus', 'Times New Roman', serif;  /* 🎨 */
   /* ЗКН-Д013 (исключение по ПИСЬМУ): деванагари — своё письмо со своим шрифтом.
    * Курсивной Georgia санскрит не набирают: у неё нет деванагарских глифов,
    * браузер подставляет случайный фолбэк и синтезирует наклон. Прямой, свой. */
@@ -162,12 +162,12 @@
      строчные буквы совпадают по размеру. Применяется ко всему курсиву в приложении
      (правило [style*="italic"] и .skt). Блочные цитаты сознательно крупнее и
      отключают это через inline font-size-adjust:none. */
-  --ital-xheight: 0.52;
+  --ital-xheight: 0.52;  /* 🎨 */
 
   /* Radius */
-  --radius-glass: 20px;
-  --radius-glass-lg: 28px;
-  --radius-squircle: 13px;
+  --radius-glass: 20px;  /* 📐 4.2 */
+  --radius-glass-lg: 28px;  /* 🕳 */
+  --radius-squircle: 13px;  /* 🕳 */
 
   /* ───────────────────────────────────────────────────────────
    * Spacing scale — стандарт ISKCON ONE LOVE (сетка 4pt, ЗКН-Д004).
@@ -185,12 +185,12 @@
    *   --pad-screen-x   — боковой отступ контента от края экрана
    *   --pad-card       — padding контентных карточек (rounded glass surfaces)
    * ─────────────────────────────────────────────────────────── */
-  --space-section: 40px;
-  --space-block: 24px;
-  --space-inner: 12px;
-  --space-tight: 6px;
-  --pad-screen-x: 16px;
-  --pad-card: 20px;
+  --space-section: 40px;  /* 🕳 */
+  --space-block: 24px;  /* 🕳 */
+  --space-inner: 12px;  /* 🕳 */
+  --space-tight: 6px;  /* 🕳 */
+  --pad-screen-x: 16px;  /* 📐 5.19 */
+  --pad-card: 20px;  /* 🕳 */
 
   /* ───────────────────────────────────────────────────────────
    * UI ЗОЛОТОЙ СТАНДАРТ (веха ui-0) — единые токены интерфейса.
@@ -198,52 +198,52 @@
    * ─────────────────────────────────────────────────────────── */
 
   /* Типографическая шкала — текстовые стили Apple (DESIGN-LAW §5.2, выверено по HIG) */
-  --text-caption2: 11px;   /* Caption 2 — мелкие метки, eyebrow (пол: ниже 11px нельзя) */
-  --text-caption: 12px;    /* Caption 1 — подписи, вторичные метки */
-  --text-footnote: 13px;   /* Footnote — мелкий текст, строки */
-  --text-subhead: 15px;    /* Subheadline — подзаголовки, метаданные */
-  --text-callout: 16px;    /* Callout — акцентный body */
-  --text-body: 17px;       /* Body — основной текст (= размер Headline) */
-  --text-headline: 17px;   /* Headline — заголовок блока (= размер Body, вес тяжелее) */
-  --text-title3: 20px;     /* Title 3 — заголовок секции */
-  --text-title2: 22px;     /* Title 2 — заголовок таба */
-  --text-title1: 28px;     /* Title 1 — hero-заголовок */
-  --text-display: 34px;    /* Large Title — крупные числа, display */
+  --text-caption2: 11px;  /* 📐 3.2 · Caption 2 — мелкие метки, eyebrow (пол: ниже 11px нельзя) */
+  --text-caption: 12px;  /* 📐 3.2 · Caption 1 — подписи, вторичные метки */
+  --text-footnote: 13px;  /* 📐 3.2 · Footnote — мелкий текст, строки */
+  --text-subhead: 15px;  /* 📐 3.2 · Subheadline — подзаголовки, метаданные */
+  --text-callout: 16px;  /* 📐 3.2 · Callout — акцентный body */
+  --text-body: 17px;  /* 📐 3.2 · Body — основной текст (= размер Headline) */
+  --text-headline: 17px;  /* 📐 3.2 · Headline — заголовок блока (= размер Body, вес тяжелее) */
+  --text-title3: 20px;  /* 📐 3.2 · Title 3 — заголовок секции */
+  --text-title2: 22px;  /* 📐 3.2 · Title 2 — заголовок таба */
+  --text-title1: 28px;  /* 📐 3.2 · Title 1 — hero-заголовок */
+  --text-display: 34px;  /* 📐 3.2 · Large Title — крупные числа, display */
 
   /* Жирности */
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  --weight-heavy: 800;
+  --weight-regular: 400;  /* 📐 5.21 */
+  --weight-medium: 500;  /* 📐 5.21 */
+  --weight-semibold: 600;  /* 📐 5.21 */
+  --weight-bold: 700;  /* 📐 5.21 */
+  --weight-heavy: 800;  /* ⚠ 5.21 */
 
   /* Межстрочный интервал */
-  --leading-tight: 1.1;    /* крупные заголовки */
-  --leading-snug: 1.35;    /* заголовки блоков */
-  --leading-normal: 1.5;   /* body-текст */
+  --leading-tight: 1.1;  /* ⚠ 3.2 · крупные заголовки */
+  --leading-snug: 1.35;  /* ⚠ 3.2 · заголовки блоков */
+  --leading-normal: 1.5;  /* ⚠ 5.28 · body-текст */
 
   /* Трекинг */
-  --tracking-tight: -0.3px;  /* крупные заголовки */
-  --tracking-normal: 0;
-  --tracking-wide: 0.4px;    /* eyebrow-капс */
+  --tracking-tight: -0.3px;  /* ⚠ 3.2 · крупные заголовки */
+  --tracking-normal: 0;  /* 📐 3.2 */
+  --tracking-wide: 0.4px;  /* ⚠ 3.2 · eyebrow-капс */
 
   /* Сетка отступов — система 8pt с полушагом 4pt (DESIGN-LAW §6.1) */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
+  --space-1: 4px;  /* 🕳 */
+  --space-2: 8px;  /* 🕳 */
+  --space-3: 12px;  /* 🕳 */
+  --space-4: 16px;  /* 📐 5.19 */
+  --space-5: 20px;  /* 🕳 */
+  --space-6: 24px;  /* 🕳 */
+  --space-8: 32px;  /* 🕳 */
 
   /* Радиусы — единая шкала */
-  --radius-xs: 8px;
-  --radius-control: 12px;   /* DESIGN-LAW §7 — inputs, small controls */
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 18px;
-  --radius-xl: 22px;
-  --radius-pill: 999px;
+  --radius-xs: 8px;  /* 🕳 */
+  --radius-control: 12px;  /* 🕳 · DESIGN-LAW §7 — inputs, small controls */
+  --radius-sm: 10px;  /* 🕳 */
+  --radius-md: 14px;  /* 🕳 */
+  --radius-lg: 18px;  /* 🕳 */
+  --radius-xl: 22px;  /* 🕳 */
+  --radius-pill: 999px;  /* ⚙️ */
 
   /* ═══════════════════════════════════════════════════════════════════════
    * ЗКН-Д018 · СГРУППИРОВАННЫЙ ЭКРАН iOS 26.5 — ЗАМЕР, А НЕ ВКУС.
@@ -262,85 +262,85 @@
    * КАРТОЧКА БЕЗ ОБВОДКИ. Белое на сером само создаёт слой; обводка (мы её
    * ставили) превращает группу в «таблицу» вместо поверхности.
    * ═══════════════════════════════════════════════════════════════════════ */
-  --color-canvas: #1c1c1e;      /* холст сгруппированного экрана */
-  --color-card: #2c2c2e;        /* поверхность карточки группы */
-  --color-separator: #404043;   /* разделитель строк (1px, НЕ волосяная) */
+  --color-canvas: #1c1c1e;  /* 📐 5.19 · холст сгруппированного экрана */
+  --color-card: #2c2c2e;  /* 📐 5.16 · поверхность карточки группы */
+  --color-separator: #38383a;  /* 📐 5.33 · разделитель строк (1px, НЕ волосяная) */
   /* ЗКН-Д023 — МЕНЮ И ПОДЛОЖКА АУДИОТЕКИ (замер Apple Music iOS 26.5).
      Меню — не «серая плашка», а МАТЕРИАЛ: полупрозрачная поверхность карточки
      поверх blur(30px). Подложка гасит фон ровно настолько, чтобы меню читалось,
      и не превращает экран в чёрный колодец. */
-  --color-menu-glass: rgba(44, 44, 46, 0.86);
-  --color-scrim-soft: rgba(0, 0, 0, 0.28);
+  --color-menu-glass: rgba(44, 44, 46, 0.86);  /* 🕳 */
+  --color-scrim-soft: rgba(0, 0, 0, 0.28);  /* 🕳 */
   /* Свечение светлого плеера: тёплое золото у обложки, чистый холст ко дну. */
-  --player-glow: radial-gradient(120% 62% at 50% 0%, rgba(210, 170, 27, 0.16) 0%, rgba(210, 170, 27, 0.05) 42%, rgba(0, 0, 0, 0) 74%);
-  --radius-card: 24px;          /* радиус карточки группы (замер) */
-  --radius-hero: 20px;          /* радиус крупной медиа-карточки App Store */
-  --row-h: 48px;                /* высота строки списка */
-  --row-h-2: 60px;              /* строка с подписью в две линии */
-  --inset-card: 16px;           /* отступ карточки от края экрана */
-  --inset-row: 16px;            /* поле содержимого внутри карточки */
-  --gap-group: 35px;            /* воздух между группами */
-  --icon-tile: 29px;            /* плитка иконки в строке настроек */
-  --control-circle: 44px;       /* круглая кнопка шапки листа (X / назад) */
+  --player-glow: radial-gradient(120% 62% at 50% 0%, rgba(210, 170, 27, 0.16) 0%, rgba(210, 170, 27, 0.05) 42%, rgba(0, 0, 0, 0) 74%);  /* 🎨 */
+  --radius-card: 24px;  /* 📐 4.2 · радиус карточки группы (замер) */
+  --radius-hero: 20px;  /* ⚠ 4.2 · радиус крупной медиа-карточки App Store */
+  --row-h: 48px;  /* ⚠ 5.19 · высота строки списка */
+  --row-h-2: 60px;  /* ⚠ 5.19 · строка с подписью в две линии */
+  --inset-card: 16px;  /* 📐 5.19 · отступ карточки от края экрана */
+  --inset-row: 16px;  /* 📐 5.24 · поле содержимого внутри карточки */
+  --gap-group: 35px;  /* 🕳 · воздух между группами */
+  --icon-tile: 29px;  /* 📐 4.2 · плитка иконки в строке настроек */
+  --control-circle: 44px;  /* 📐 5.15 · круглая кнопка шапки листа (X / назад) */
 
   /* Строка поиска — эталон App Store (замер: врезка 20, высота 38, капсула,
    * заливка цвета карточки, БЕЗ обводки, читается мягкой тенью). */
-  --search-h: 38px;
-  --search-inset: 20px;
-  --shadow-search: 0 1px 2px rgba(0, 0, 0, 0.30), 0 8px 22px rgba(0, 0, 0, 0.36);
+  --search-h: 38px;  /* 🕳 */
+  --search-inset: 20px;  /* 🕳 */
+  --shadow-search: 0 1px 2px rgba(0, 0, 0, 0.30), 0 8px 22px rgba(0, 0, 0, 0.36);  /* 🕳 */
 
   /* Семантические цвета — заливки/иконки (dark-first) */
-  --color-success: var(--color-green);
-  --color-warning: var(--color-orange);
-  --color-danger: var(--color-red);
-  --color-info: var(--color-gold-deep);
+  --color-success: var(--color-green);  /* ⚙️ */
+  --color-warning: var(--color-orange);  /* ⚙️ */
+  --color-danger: var(--color-red);  /* ⚙️ */
+  --color-info: var(--color-gold-deep);  /* ⚙️ */
 
   /* Семантические цвета — ТЕКСТ (контраст под тему) */
-  --color-success-text: #30d158;
-  --color-warning-text: #ff9f0a;
-  --color-danger-text: #ff453a;
-  --color-info-text: var(--color-gold-deep);
+  --color-success-text: #30d158;  /* ⚙️ */
+  --color-warning-text: #ff9f0a;  /* ⚙️ */
+  --color-danger-text: #ff453a;  /* ⚙️ */
+  --color-info-text: var(--color-gold-deep);  /* ⚙️ */
 
   /* Семантические тонированные подложки */
-  --color-success-surface: rgba(48, 209, 88, 0.16);
-  --color-warning-surface: rgba(255, 159, 10, 0.16);
-  --color-danger-surface: rgba(255, 69, 58, 0.16);
-  --color-info-surface: rgba(156, 124, 21, 0.16);
+  --color-success-surface: rgba(48, 209, 88, 0.16);  /* ⚙️ */
+  --color-warning-surface: rgba(255, 159, 10, 0.16);  /* ⚙️ */
+  --color-danger-surface: rgba(255, 69, 58, 0.16);  /* ⚙️ */
+  --color-info-surface: rgba(156, 124, 21, 0.16);  /* ⚙️ */
 
   /* Нейтральные заливки (алиасы glass — для inline-читаемости) */
-  --color-fill-1: var(--color-glass-thin);
-  --color-fill-2: var(--color-glass-regular);
+  --color-fill-1: var(--color-glass-thin);  /* ⚙️ */
+  --color-fill-2: var(--color-glass-regular);  /* ⚙️ */
 
   /* Возвышение (elevation) */
-  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.25);
-  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.30);
-  --shadow-3: 0 10px 28px rgba(0, 0, 0, 0.32);
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.25);  /* 🕳 */
+  --shadow-2: 0 4px 14px rgba(0, 0, 0, 0.30);  /* 🕳 */
+  --shadow-3: 0 10px 28px rgba(0, 0, 0, 0.32);  /* 🕳 */
   /* Карточка контента — мягкое двухслойное возвышение (iOS grouped card) */
-  --shadow-card: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 20px rgba(0, 0, 0, 0.28);
+  --shadow-card: 0 0 0 0.5px rgba(255, 255, 255, 0.06), 0 6px 20px rgba(0, 0, 0, 0.28);  /* 🕳 */
   /* ЗКН-Д018 — материал ГРУППЫ, а не карточки контента. Список настроек у
      Apple НЕ ПАРИТ: у него контактный край, а не подушка. Поэтому тень
      плотная и короткая, без рассеянного ореола --shadow-card. */
-  --shadow-group: 0 0 0 0.5px rgba(255, 255, 255, 0.05);
+  --shadow-group: 0 0 0 0.5px rgba(255, 255, 255, 0.05);  /* 🕳 */
   /* ЗКН-Д018 — заливка плитки строки. Полупрозрачный серый (label-2) давал
      мутное пятно: иконки выглядели ВЫКЛЮЧЕННЫМИ. У Apple плитка плотная. */
   /* ЗКН-Д023 — ПАЛИТРА ПЛИТОК. В iOS серая плитка читается как ВЫКЛЮЧЕННАЯ;
      ряд одинаковых серых квадратов выглядит задизейбленным списком. У Apple
      плитка цветная и цвет НЕСЁТ СМЫСЛ: уведомления красные, безопасность синяя,
      служебное серое. Это не украшение — это скорость чтения списка. */
-  --tile-blue: #0a84ff;
-  --tile-green: #30d158;
-  --tile-red: #ff453a;
-  --tile-gold: var(--color-gold);
-  --tile-grey: #8e8e93;
-  --color-tile: #8e8e93;
+  --tile-blue: #0a84ff;  /* 🕳 */
+  --tile-green: #30d158;  /* 🕳 */
+  --tile-red: #ff453a;  /* 🕳 */
+  --tile-gold: var(--color-gold);  /* 🎨 */
+  --tile-grey: #8e8e93;  /* 🕳 */
+  --color-tile: #8e8e93;  /* 🕳 */
 
   /* Движение — DESIGN-LAW §10 (выверено по Apple HIG Motion / WWDC) */
-  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);  /* дефолт переходов (≈ .smooth) */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);        /* появления, раскрытия */
-  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);         /* исчезновения */
-  --duration-fast: 150ms;   /* press-фидбек, микро */
-  --duration-base: 250ms;   /* переходы страниц / листов */
-  --duration-slow: 400ms;   /* онбординг, hero-раскрытия */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);  /* 🕳 · дефолт переходов (≈ .smooth) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);  /* 🕳 · появления, раскрытия */
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);  /* 🕳 · исчезновения */
+  --duration-fast: 150ms;  /* 🕳 · press-фидбек, микро */
+  --duration-base: 250ms;  /* 🕳 · переходы страниц / листов */
+  --duration-slow: 400ms;  /* 🕳 · онбординг, hero-раскрытия */
 }
 
 /* ─────────────────────────────────────────────────────────────────
