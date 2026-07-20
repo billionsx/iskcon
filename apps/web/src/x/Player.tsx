@@ -94,7 +94,9 @@ function ChevronDownGlyph({ size = 18 }: { size?: number }) {
 
 /* ─────────────────────────── обложка ─────────────────────────── */
 
-function Cover({ track, size, radius }: { track: Track; size: number | string; radius: number | string }) {
+function Cover({ track, size, radius, big }: {
+  track: Track; size: number | string; radius: number | string; big?: boolean;
+}) {
   const box: CSSProperties = {
     /* aspectRatio обязателен: квадрат со стороной «100%» без него схлопывает
        высоту в полоску — ровно это и случилось на первом прогоне. */
@@ -111,10 +113,11 @@ function Cover({ track, size, radius }: { track: Track; size: number | string; r
      экране читается как ошибка загрузки, а знак — как «так и задумано». */
   return <span style={box} aria-hidden>
     <span style={{
-      fontFamily: "var(--font-display)", fontSize: "var(--text-caption2)",
-      letterSpacing: "var(--ls-caption2)", fontWeight: 600,
-      color: "var(--color-label-3)",
-    }}>{KIND_LABEL[track.kind].slice(0, 2).toUpperCase()}</span>
+      fontFamily: "var(--font-display)",
+      fontSize: big ? "var(--text-title1)" : "var(--text-caption2)",
+      letterSpacing: big ? "var(--ls-title1)" : "var(--ls-caption2)",
+      fontWeight: 600, color: "var(--color-label-3)",
+    }}>{big ? KIND_LABEL[track.kind] : KIND_LABEL[track.kind].slice(0, 2).toUpperCase()}</span>
   </span>;
 }
 
@@ -310,14 +313,16 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
           сняты с открытым текстом песни. */}
       <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
         padding: "0 24px" }}>
-        {/* ОБЛОЖКА — врезка 24.0 симметрично (📐 apple_music с.35: 23.7 / 24.3) */}
         {/* Врезка 24.0 симметрично — в кадре 393 обложка выходит 345. Высота
             отдаётся остатку: квадрат сохраняется, но не выталкивает управление. */}
-        <div style={{ flex: 1, minHeight: 0, display: "grid", placeItems: "center",
-          paddingBottom: 20 }}>
-          <div style={{ width: "min(100%, calc(100% - 0px))", maxHeight: "100%",
-            aspectRatio: "1", display: "grid" }}>
-            <Cover track={track} size="100%" radius="var(--radius-card)" />
+        {/* Квадрат задаётся ШИРИНОЙ и ограничивается высотой экрана. Прежде здесь
+            стоял flex:1 вместе с aspect-ratio: флекс раздавал остаток высоты,
+            отношение сторон пересчитывало ширину, коробка вылезала за родителя
+            и ложилась ПОВЕРХ заголовка. Флекс и aspect-ratio на одном узле
+            спорят за одну величину — их надо разводить. */}
+        <div style={{ display: "grid", placeItems: "center", paddingBottom: 20 }}>
+          <div style={{ width: "min(100%, 42vh)", aspectRatio: "1", display: "grid" }}>
+            <Cover track={track} size="100%" radius="var(--radius-card)" big />
           </div>
         </div>
 
@@ -364,7 +369,8 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
             «Текст» — НАШЕ, у Apple его нет; включается только там, где текст есть. */}
         <div style={{ display: "flex", alignItems: "center",
           justifyContent: hasText ? "space-between" : "center",
-          padding: "0 3px", marginTop: 60, marginBottom: 40 }}>
+          padding: "0 3px", marginTop: "auto",
+          marginBottom: "calc(40px + env(safe-area-inset-bottom))" }}>
           {hasText && (
             <button type="button" onClick={onText} className="sq" style={pillStyle}>
               <TextGlyph size={18} /> Текст
