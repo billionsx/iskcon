@@ -94,10 +94,10 @@
   --chip-fill: #1C1C1C;
   --chip0-x: 15.0px;  /* 📐 чипов ПЯТЬ: All · Workouts · Walking · Other · Hiking; строка уходит за правый край, пятый обрезан на 393 */
   --chip0-w: 47.33px;
-  --chip1-x: 70.67px;
-  --chip1-w: 90.33px;
-  --chip1-y: 178.0px;
-  --chip1-h: 35.33px;  /* 📐 выбранный чип на 3.0 pt выше прочих: 35.33 против 32.33 */
+  --chip1-x: 72.33px;
+  --chip1-w: 88.33px;
+  --chip1-y: 180.0px;
+  --chip1-h: 32.33px;  /* 📐 все чипы одной высоты 32.33 — прежний замер 35.33 был ошибкой порога */
   --chip1-r: 17.67px;
   --fs-chip1: 14.6px;
   --chip1-text-top: 9.6px;
@@ -148,6 +148,11 @@
   --disc1-y: 410.0px;
   --disc2-y: 670.0px;
   --disc3-y: 758.0px;
+  --c4-x: 16.67px;
+  --c4-y: 831.0px;
+  --c4-w: 359.67px;
+  --c4-h: 21.0px;
+  --c4-fill: #1C1C1C;
   --disc1-fill: #172005;
   --disc-fill: #000000;
   --card-r: 21.13px;  /* 📐 общий угол карточек, суперэллипс n 2.76 (ONE LOVE §2) */
@@ -193,11 +198,11 @@
   --bar-blur: 24.0px;
   --bar-sat: 1.8;
   --hair: 0.33px;
-  --pill-x: 63.84px;
-  --pill-y: 772.83px;
-  --pill-w: 94.33px;
-  --pill-h: 54.33px;
-  --pill-r: 27.17px;
+  --pill-x: 62.67px;
+  --pill-y: 775.0px;
+  --pill-w: 95.33px;
+  --pill-h: 52.0px;
+  --pill-r: 26.0px;
   --pill-tint: rgba(255,255,255,.134);
   --pill-top: rgba(255,255,255,.052);
   --glow-x: 53.0px;
@@ -317,6 +322,8 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
  border-radius:50%;background:var(--disc-fill)}
 .c1 .disc{top:calc(var(--disc1-y) - var(--c1-y));background:var(--disc1-fill)}
 .c2 .disc{top:calc(var(--disc2-y) - var(--c2-y))}
+.c4{left:var(--c4-x);top:var(--c4-y);width:var(--c4-w);height:var(--c4-h);
+ background:var(--c4-fill);border-radius:var(--c-r)}
 .c3 .disc{top:calc(var(--disc3-y) - var(--c3-y))}
 .ci{color:var(--lime)}
 .c1 .ci{left:calc(var(--g-d-x) - var(--c-x));top:calc(var(--g-d-y) - var(--c1-y));
@@ -343,7 +350,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 .scrim{left:0;top:var(--scrim-y);width:var(--stage-w);height:var(--scrim-h);
  background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,.10) 20%,
  rgba(0,0,0,.28) 30%,rgba(0,0,0,.46) 42%,rgba(0,0,0,.69) 58%,rgba(0,0,0,.83) 74%,
- rgba(0,0,0,.92) 90%,rgba(0,0,0,1) 100%)}
+ rgba(0,0,0,.88) 90%,rgba(0,0,0,.862) 100%)}
 .bar{left:var(--bar-x);top:var(--bar-y);width:var(--bar-w);height:var(--bar-h);
  border-radius:var(--bar-r);background:var(--bar-tint);
  -webkit-backdrop-filter:blur(var(--bar-blur)) saturate(var(--bar-sat));
@@ -432,6 +439,7 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
     <div class="t cd" data-w="w-c2d">15.10.2025</div>
   </div>
 
+  <div class="c4"></div>
   <div class="scrim"></div>
   <div class="bar"></div><div class="glow"></div><div class="pill"></div>
   <i class="g g-rings"></i><i class="g g-runtab"></i><i class="g g-people"></i>
