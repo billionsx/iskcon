@@ -41,6 +41,7 @@ import { AuthProvider } from "./account/store";
 import { Onboarding } from "./Onboarding";
 import { AUTH_REQUIRED_EVENT } from "./account/track";
 import { navInit, navSetIdxFromState, pushUrl, replaceUrl, canGoBack, applyRoute, setRouter, subscribeNav } from "./nav";
+import DesignFitness from "./design/DesignFitness";
 import { COVER_FALLBACK } from "./ui/CoverFallback";
 import { HallTabs } from "./ui/nav4";
 import { api } from "./api";
@@ -1124,6 +1125,7 @@ export default function App() {
   const [openAdmin, setOpenAdmin] = useState(false);
   const [openDownloader, setOpenDownloader] = useState(false);
   const [openStoriesTool, setOpenStoriesTool] = useState(false);
+  const [openDesignFit, setOpenDesignFit] = useState<"01"|"02"|"03"|null>(null);
   const [openEntity, setOpenEntity] = useState<string | null>(null);
   const [openPost, setOpenPost] = useState<string | null>(null);
   const [openCollection, setOpenCollection] = useState<string | null>(null);
@@ -1222,6 +1224,7 @@ const RESERVED: readonly string[] = [
     if (openAdmin) return "/admin";
     if (openDownloader) return "/downloader";
     if (openStoriesTool) return "/stories-tool";
+    if (openDesignFit) return "/design/fitness/" + openDesignFit;
     if (openBook) { const base = `/${bookSlug(openBook)}`; return (typeof window !== "undefined" && window.location.pathname.startsWith(base)) ? window.location.pathname : base; }
     /* ЗКН-Н060 — СОСТОЯНИЕ ХРАНИТ СЛАГ, АДРЕС СТРОИТ ROUTES.
      * Здесь стояло `return openBhajan` с подписью «slug сам по себе путь» — ЛОЖЬ:
@@ -1312,7 +1315,7 @@ const RESERVED: readonly string[] = [
     const clean = (path || "/").replace(/\/+$/, "") || "/";
     if (clean === "/donate") { setDonate(true); return; }   // оверлей доната — подложку не трогаем
     setDonate(false);
-    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenPost(null);
+    setOpenBook(null); setBookTarget(null); setOpenBhajan(null); setOpenKirtanArtist(null); setOpenCatalog(false); setOpenContent(null); setOpenAdmin(false); setOpenEntity(null); setOpenCollection(null); setOpenFavorites(false); setOpenSearch(false); setOpenNotes(false); setOpenNoteId(null); setOpenCart(false); setOpenJapa(false); setOpenDiary(false); setOpenVow(false); setOpenDarshan(false); setOpenDailyVerse(false); setOpenEkadashi(false); setOpenProgress(false); setPrasadamSection(null); setPrasadamRecipe(null); setOpenCookbook(false); setCookbookChapter(null); setOpenCenter(null); setOpenMyCenters(false); setOpenCenterNew(false); setOpenCenterEdit(null); setOpenCenterSchedule(null); setOpenCenterDeities(null); setOpenCenterEvents(null); setOpenCenterPhotos(null); setOpenModeration(false); setOpenDhama(null); setOpenTirtha(null); setOpenDownloader(false); setOpenStoriesTool(false); setOpenDesignFit(null); setOpenPost(null);
     const seg0 = clean.split("/")[1] ?? "";
 
     /* ЗКН-Н029 — ОСНОВА СТАВИТСЯ ПЕРВОЙ, ДО РАЗБОРА ОВЕРЛЕЯ.
@@ -1328,6 +1331,11 @@ const RESERVED: readonly string[] = [
       if (base) setTab(base);
     }
 
+    if (clean === "/design/fitness" || clean.startsWith("/design/fitness/")) {
+      const n = clean.split("/")[3];
+      setOpenDesignFit(n === "02" || n === "03" ? n : "01");
+      return;
+    }
     if (clean === "/") { setTab(HOME_TAB); return; }
     // ЗКН-Н005: разделы Садханы — свои адреса (Практика / Календарь / Кабинет)
     /* ЗКН-Н023 — САДХАНА: каждый инструмент в КОРНЕ (схема основателя).
@@ -1871,7 +1879,13 @@ const RESERVED: readonly string[] = [
       <div className={"app-shell" + (overlayTabBar ? " has-overlay-tabbar" : "")}>
         <CardActionsProvider onDonate={openDonate}>
         <Suspense fallback={<ScreenFallback />}>
-        {openStoriesTool ? (
+        {openDesignFit ? (
+          <DesignFitness
+            screen={openDesignFit}
+            onPick={(n) => pushUrl("/design/fitness/" + n)}
+            onClose={goBack}
+          />
+        ) : openStoriesTool ? (
           <main style={{ position: "relative", height: "100dvh", overflowX: "hidden", overflowY: "auto", overscrollBehavior: "contain" }}>
             <StoriesToolScreen onBack={goBack} />
           </main>
