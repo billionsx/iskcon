@@ -1,6 +1,17 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { lazy, Suspense } from "react";
+
+/* ПРОБНАЯ ОБОЛОЧКА /x — развилка стоит ЗДЕСЬ, а не внутри App.
+   Текущая версия приложения о существовании /x не знает и не меняется. */
+const XShell = lazy(() => import("./x/Shell"));
+function Root() {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/x")) {
+    return <Suspense fallback={null}><XShell /></Suspense>;
+  }
+  return <App />;
+}
 import "./ui/globals.css";
 import "./styles.css";
 
@@ -209,6 +220,6 @@ if (typeof window !== "undefined") {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>
 );

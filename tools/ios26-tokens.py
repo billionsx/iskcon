@@ -46,6 +46,23 @@
             быть объявлен в `globals.css`. Токен, живущий только в зеркале, —
             это число, которое браузер возьмёт из воздуха.
 
+
+ПРАВИЛО 6 — пятого начертания нет. `fontWeight: 800` и `--weight-heavy` считаются
+            отдельным храповиком. Вес НЕ входит в роль намеренно (§3.3), поэтому
+            `fontWeight: 600` рядом с ролью — законное употребление, а не долг.
+            Долг — именно восьмисотый: в корпусе Apple его нет ни разу (§5.21).
+
+ПРАВИЛО 7 — в слое `ui/` нет мёртвых кирпичей. Экспорт, которого никто не зовёт —
+            ни снаружи, ни внутри слоя, — считается храповиком. Библиотека, где
+            кирпич может лежать неиспользованным, становится складом.
+
+ПРАВИЛО 8 — две оболочки не срастаются. Пробная `x/` не импортирует из текущей,
+            текущая — из `x/`. Общее только `ui/`. Развилка стоит в одном месте —
+            `main.tsx`. Иначе через месяц оболочки срастутся без злого умысла, и
+            подмена одной на другую станет невозможной, а весь смысл пробной
+            версии в том, чтобы ставить её на место основной флагом, а не
+            миграцией.
+
 Запуск: python3 tools/ios26-tokens.py
 """
 import json
@@ -144,10 +161,30 @@ def main() -> int:
             if uses == 0:
                 dead_bricks.append(f"{f.name}:{nm}")
 
+    # правило 8 — две оболочки не срастаются
+    leaks = []
+    IMP = re.compile(r'''from\s+['"]([^'"]+)['"]''')
+    xdir = web / 'x'
+    if xdir.exists():
+        for f in xdir.rglob('*.tsx'):
+            for m in IMP.finditer(f.read_text(encoding='utf-8')):
+                tgt = m.group(1)
+                if tgt.startswith('..') and 'ui/' not in tgt:
+                    leaks.append(f'x/{f.name} -> {tgt}')
+        for f in web.rglob('*.tsx'):
+            if f.parent.name == 'x' or f.name == 'main.tsx':
+                continue
+            for m in IMP.finditer(f.read_text(encoding='utf-8')):
+                if '/x/' in m.group(1) or m.group(1).startswith('./x/'):
+                    leaks.append(f'{f.name} -> {m.group(1)}')
+
     # правило 3 — храповик
     base = json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else {}
     cap_h, cap_d = base.get("holes", len(holes)), base.get("deviations", len(devs))
     cap_t = base.get("total", len(holes) + len(devs))
+    if leaks:
+        fail.append('оболочки срастаются: ' + ', '.join(leaks[:4]) +
+                    '. Пробная `x/` и текущая делят только `ui/` (правило 8)')
     cap_db = base.get("dead_bricks", len(dead_bricks))
     if len(dead_bricks) > cap_db:
         fail.append(f"храповик мёртвых кирпичей: {len(dead_bricks)} > {cap_db} "
@@ -179,7 +216,8 @@ def main() -> int:
           f"долг всего — {len(holes) + len(devs)}/{cap_t}   "
           f"литералов в tsx — {lits}/{cap_l}   "
           f"вес 800 — {heavy}/{cap_hv}   "
-          f"мёртвых кирпичей — {len(dead_bricks)}/{cap_db}")
+          f"мёртвых кирпичей — {len(dead_bricks)}/{cap_db}   "
+          f"сращений — {len(leaks)}")
 
     if fail:
         print("\nЗКН-Д028 — ГЕЙТ КРАСНЫЙ:")
