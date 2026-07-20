@@ -20,6 +20,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps" / "web" / "src"
 
+LIT_LH = re.compile(r"\s*lineHeight:\s*[0-9.]+\s*,?")
+LIT_LS = re.compile(r"\s*letterSpacing:\s*['\"]-?[0-9.]+(?:em|px)['\"]\s*,?")
+FAM = re.compile(r"\s*fontFamily:\s*(?:FONT|['\"]var\(--font-(?:text|display)\)['\"])\s*,?")
+FS_LINE = re.compile(r"fontSize:\s*(?:tk\.text\.\w+|['\"]var\(--text-[a-z0-9]+\)['\"])\s*,?")
+
 ROLES = ("display", "title1", "title2", "title3", "headline", "body",
          "callout", "subhead", "footnote", "caption2", "caption")
 
@@ -50,8 +55,55 @@ def blocks(text: str):
     return out
 
 
+def fold_literals(text: str):
+    """Свернуть рукописную типографику в роль. Роль берётся из кегля в том же
+    объекте стиля. Класс дефекта: `fontSize: "var(--text-body)",
+    letterSpacing: "-0.01em"` — кегль из токена, трекинг придуман на месте,
+    хотя канон Body −0.0253em, то есть в 2.5 раза больше по модулю."""
+    out, changed = text, 0
+    for a, b in reversed(blocks(text)):
+        blk = text[a:b]
+        if not (LIT_LH.search(blk) or LIT_LS.search(blk) or FAM.search(blk)):
+            continue
+        if len(FS_LINE.findall(blk)) != 1:
+            continue
+        roles = {r for pair in FS.findall(blk) for r in pair if r}
+        if len(roles) != 1:
+            continue
+        role = roles.pop()
+        if role not in ROLES:
+            continue
+        ts = "tk.text." in blk
+        fam = "display" if role in ("display", "title1", "title2", "title3") else "text"
+        spread = (f"...tk.type.{role}," if ts else
+                  f"fontFamily: 'var(--font-{fam})', fontSize: 'var(--text-{role})',"
+                  f" lineHeight: 'var(--lh-{role})', letterSpacing: 'var(--ls-{role})',")
+        nb = FS_LINE.sub(spread, FAM.sub("", LIT_LS.sub("", LIT_LH.sub("", blk))), count=1)
+        if nb != blk:
+            out = out[:a] + nb + out[b:]
+            changed += 1
+    return out, changed
+
+
 def main() -> int:
     dry = "--dry" in sys.argv
+    if "--literals" in sys.argv:
+        # Радиус задаётся явно: сплошной проход дал бы 1003 объекта в 83 файлах,
+        # то есть смену живой типографики всего приложения разом, без сверки.
+        only = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--only=")), "")
+        tot, fl = 0, 0
+        for f in sorted(SRC.rglob("*.tsx")):
+            if only and only not in str(f.relative_to(SRC)):
+                continue
+            t = f.read_text(encoding="utf-8")
+            nt, n = fold_literals(t)
+            if n:
+                fl += 1; tot += n
+                if not dry:
+                    f.write_text(nt, encoding="utf-8")
+                print(f"  {f.relative_to(SRC)}: {n}")
+        print(f"свёрнуто в роль: {tot} объектов в {fl} файлах")
+        return 0
     total, files, skipped = 0, 0, []
     for p in sorted(SRC.rglob("*.tsx")):
         text = p.read_text(encoding="utf-8")

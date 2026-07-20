@@ -29,6 +29,7 @@
  */
 import { useRef, type ReactNode } from "react";
 import { SearchField } from "./ios";
+import { tk } from "./tokens";
 
 export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
   /** Надпись золотом — КОНТЕКСТ раздела. Не повторяет вкладку. */
@@ -57,14 +58,16 @@ export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
         <div style={{ minWidth: 0 }}>
           <div style={{
-            fontSize: "var(--text-caption2)", fontWeight: 600, letterSpacing: "0.4px",
+            fontFamily: 'var(--font-text)', fontSize: 'var(--text-caption2)', lineHeight: 'var(--lh-caption2)', letterSpacing: 'var(--ls-caption2)', fontWeight: 600,
             textTransform: "uppercase", color: "var(--color-gold-deep)",
           }}>{eyebrow}</div>
 
           <H style={{
-            margin: "2px 0 0", fontFamily: "var(--font-display)",
-            fontSize: level === 1 ? "var(--text-title1)" : "var(--text-title2)",
-            fontWeight: 800, letterSpacing: "-0.4px", color: "var(--color-label)",
+            margin: "2px 0 0",
+            // Роль целиком. Трекинг был −0.4px на обоих уровнях; канон §3.2 даёт
+            // Title 1 **+0.36 pt** — разрядку, а не поджим. Знак был обратным.
+            ...(level === 1 ? tk.type.title1 : tk.type.title2),
+            fontWeight: 800, color: "var(--color-label)",
           }}>{title}</H>
         </div>
 
@@ -73,8 +76,8 @@ export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
 
       {subtitle ? (
         <p style={{
-          margin: "4px 0 0", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
-          color: "var(--color-label-2)", lineHeight: 1.4,
+          margin: "4px 0 0", fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
+          color: "var(--color-label-2)",
         }}>{subtitle}</p>
       ) : null}
     </div>
@@ -137,7 +140,7 @@ export function HubSearch({ value, onChange, placeholder, ariaLabel, onSubmit }:
 /** ЗКН-Н044: строка счёта над результатами — одна на все витрины. */
 export function HubCount({ children }: { children: ReactNode }) {
   return (
-    <div style={{ margin: "2px 2px 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>
+    <div style={{ margin: "2px 2px 10px", fontFamily: 'var(--font-text)', fontSize: 'var(--text-footnote)', lineHeight: 'var(--lh-footnote)', letterSpacing: 'var(--ls-footnote)', color: "var(--color-label-3)" }}>
       {children}
     </div>
   );
@@ -146,7 +149,7 @@ export function HubCount({ children }: { children: ReactNode }) {
 /** ЗКН-Н044: пустой результат — один текст, одна типографика, все витрины. */
 export function HubEmpty({ query, hint }: { query: string; hint?: string }) {
   return (
-    <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 1.55 }}>
+    <div style={{ padding: "26px 8px", textAlign: "center", color: "var(--color-label-3)", fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',}}>
       Ничего не найдено по запросу «{query}».{hint ? <><br />{hint}</> : null}
     </div>
   );

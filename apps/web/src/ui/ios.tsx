@@ -98,13 +98,13 @@ export function GroupHeader({ title, action }: {
       display: "flex", alignItems: "baseline", justifyContent: "space-between",
       gap: 12, padding: "0 calc(var(--inset-card) + var(--inset-row))", margin: "0 0 8px",
     }}>
-      <span style={{ fontFamily: FONT, fontSize: "var(--text-subhead)", fontWeight: 400, color: INK2, letterSpacing: "-0.01em" }}>
+      <span style={{ fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)', fontWeight: 400, color: INK2,}}>
         {title}
       </span>
       {action && (
         <button type="button" onClick={action.onClick}
-          style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: FONT,
-            fontSize: "var(--text-subhead)", fontWeight: 600, color: "var(--color-gold-deep)",
+          style={{ background: "none", border: "none", padding: 0, cursor: "pointer",
+            fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)', fontWeight: 600, color: "var(--color-gold-deep)",
             WebkitTapHighlightColor: "transparent" }}>
           {action.label}
         </button>
@@ -141,8 +141,7 @@ export function Group({ header, action, footer, children }: {
       </div>
       {footer && (
         <p style={{
-          margin: "8px calc(var(--inset-card) + var(--inset-row)) 0",
-          fontFamily: FONT, fontSize: "var(--text-footnote)", lineHeight: 1.45, color: INK2,
+          margin: "8px calc(var(--inset-card) + var(--inset-row)) 0", fontFamily: 'var(--font-text)', fontSize: 'var(--text-footnote)', lineHeight: 'var(--lh-footnote)', letterSpacing: 'var(--ls-footnote)', color: INK2,
         }}>
           {footer}
         </p>
@@ -187,24 +186,21 @@ export function IdentityHeader({ avatar, name, sacred, subtitle, onClick }: {
            золота + тёмно-золотой знак: контраст высокий, присутствие спокойное.
            Ни тени, ни градиента — круг лежит на странице, а не парит. */
         background: "color-mix(in srgb, var(--color-gold) 16%, transparent)",
-        color: "var(--color-gold-deep)",
-        fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: 600,
-        letterSpacing: "-0.02em",
+        color: "var(--color-gold-deep)", fontFamily: 'var(--font-display)', fontSize: 'var(--text-title1)', lineHeight: 'var(--lh-title1)', letterSpacing: 'var(--ls-title1)', fontWeight: 600,
       }}>{avatar}</span>
       <span style={{
-        display: "block", marginTop: 13, fontFamily: "var(--font-display)",
-        fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: "-0.03em",
-        lineHeight: 1.14, color: "var(--color-label)",
+        display: "block", marginTop: 13,
+        fontFamily: 'var(--font-display)', fontSize: 'var(--text-title1)', lineHeight: 'var(--lh-title1)', letterSpacing: 'var(--ls-title1)', fontWeight: 700, color: "var(--color-label)",
       }}>{name}</span>
       {sacred && (
         <span style={{
-          display: "block", marginTop: 3, fontFamily: FONT, fontSize: "var(--text-subhead)",
+          display: "block", marginTop: 3, fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
           fontWeight: 600, color: "var(--color-gold-deep)",
         }}>{sacred}</span>
       )}
       {subtitle && (
         <span style={{
-          display: "block", marginTop: 3, fontFamily: FONT, fontSize: "var(--text-subhead)",
+          display: "block", marginTop: 3, fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
           color: "var(--color-label-2)",
         }}>{subtitle}</span>
       )}
@@ -269,25 +265,23 @@ export function Row({
         {/* ЗАГОЛОВОК СТРОКИ — 17 обычным. Не 16, не полужирным: в списке iOS
             вес несёт ИЕРАРХИЮ, а не важность каждой строки. */}
         <span style={{
-          display: "block", fontFamily: FONT, fontSize: "var(--text-body)",
-          fontWeight: centered ? 500 : 400, color: tone, lineHeight: 1.29,
-          letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          display: "block", fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)',
+          fontWeight: centered ? 500 : 400, color: tone, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>{title}</span>
         {subtitle && (
           /* ПОДПИСЬ — 15 серым, НЕ 13. Тринадцатый кегль в строке 48 читается
              как сноска и ломает вертикальный ритм: у Apple вторая строка
              ровно на ступень ниже основной, а не на две. */
           <span style={{
-            display: "block", marginTop: 1, fontFamily: FONT, fontSize: "var(--text-subhead)",
-            color: INK2, lineHeight: 1.33, letterSpacing: "-0.01em",
+            display: "block", marginTop: 1, fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
+            color: INK2,
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>{subtitle}</span>
         )}
       </span>
       {value != null && (
         <span style={{
-          flexShrink: 0, fontFamily: FONT, fontSize: "var(--text-body)", color: INK2,
-          letterSpacing: "-0.01em", maxWidth: "48%", overflow: "hidden",
+          flexShrink: 0, fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)', color: INK2, maxWidth: "48%", overflow: "hidden",
           textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>{value}</span>
       )}
@@ -345,8 +339,7 @@ export function CapsuleButton({ label, onClick, variant = "plain", tone, disable
         width: "100%", minHeight: 50, padding: "0 20px", borderRadius: "var(--radius-pill)",
         border: "none", cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.5 : 1,
         background: variant === "filled" ? accent : "var(--color-card)",
-        color: variant === "filled" ? "var(--color-brand-white)" : accent,
-        fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600, letterSpacing: "-0.01em",
+        color: variant === "filled" ? "var(--color-brand-white)" : accent, fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)', fontWeight: 600,
         WebkitTapHighlightColor: "transparent",
       }}>
       {label}
@@ -402,8 +395,7 @@ export function SearchField({ value, onChange, placeholder, inputRef, onKeyDown,
         ref={inputRef} value={value} onChange={(e) => onChange(e.target.value)} onKeyDown={onKeyDown}
         placeholder={placeholder} inputMode="search" autoFocus={autoFocus}
         style={{
-          flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent",
-          fontFamily: FONT, fontSize: "var(--text-body)", letterSpacing: "-0.01em", color: INK, padding: 0,
+          flex: 1, minWidth: 0, border: "none", outline: "none", background: "transparent", fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)', color: INK, padding: 0,
         }} />
       {value && onClear && (
         <button type="button" aria-label="Очистить" onClick={onClear}
@@ -444,16 +436,15 @@ export function Sheet({ title, onClose, children, action }: {
           padding: "14px var(--inset-card) 10px",
         }}>
           <h2 style={{
-            flex: 1, minWidth: 0, margin: 0, fontFamily: "var(--font-display)",
-            fontSize: "var(--text-title1)", fontWeight: 700, letterSpacing: "-0.03em", color: INK,
+            flex: 1, minWidth: 0, margin: 0,
+            fontFamily: 'var(--font-display)', fontSize: 'var(--text-title1)', lineHeight: 'var(--lh-title1)', letterSpacing: 'var(--ls-title1)', fontWeight: 700, color: INK,
           }}>{title}</h2>
           {/* ЗКН-Д022 — ОДНА КНОПКА ЗАКРЫТИЯ, А НЕ ДВЕ. В листе профиля рядом
               стояли «Готово» и крестик: два способа уйти, и непонятно, какой
               сохраняет. У Apple либо подтверждающее действие, либо крестик. */}
           {action ? (
             <button type="button" onClick={action.onClick} disabled={action.disabled}
-              style={{ flexShrink: 0, background: "none", border: "none", padding: "0 4px", cursor: "pointer",
-                fontFamily: FONT, fontSize: "var(--text-body)", fontWeight: 600,
+              style={{ flexShrink: 0, background: "none", border: "none", padding: "0 4px", cursor: "pointer", fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)', fontWeight: 600,
                 color: "var(--color-gold-deep)", opacity: action.disabled ? 0.5 : 1,
                 WebkitTapHighlightColor: "transparent" }}>
               {action.label}

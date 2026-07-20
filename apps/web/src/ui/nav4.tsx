@@ -70,11 +70,10 @@ export function HallTabs({ items, active, onChange, ariaLabel = "Разделы"
           return (
             <button key={t.id} ref={(el) => { iRefs.current[t.id] = el; }} type="button"
               role="tab" aria-selected={on} onClick={() => onChange(t.id)}
-              style={{ position: "relative", flexShrink: 0, padding: "0 13px", display: "flex", alignItems: "center",
-                fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+              style={{ position: "relative", flexShrink: 0, padding: "0 13px", display: "flex", alignItems: "center", fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
                 background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap",
                 color: on ? "var(--color-label)" : "var(--color-label-3)",
-                fontWeight: on ? 600 : 400, letterSpacing: "-0.01em",
+                fontWeight: on ? 600 : 400,
                 transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
               {t.label}
               {on && <span aria-hidden style={{ position: "absolute", left: 9, right: 9, bottom: 0, height: 2, borderRadius: 2, background: "var(--color-gold)" }} />}
@@ -115,10 +114,9 @@ export function ScopeTitle({ items, active, onChange, ariaLabel = "Област�
         return (
           <button key={t.id} ref={(el) => { iRefs.current[t.id] = el; }} type="button"
             role="tab" aria-selected={on} onClick={() => onChange(t.id)}
-            style={{ flexShrink: 0, background: "none", border: "none", padding: 0, cursor: "pointer",
-              fontFamily: "var(--font-text)", fontSize: "var(--text-title3)", whiteSpace: "nowrap",
+            style={{ flexShrink: 0, background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: 'var(--font-display)', fontSize: 'var(--text-title3)', lineHeight: 'var(--lh-title3)', letterSpacing: 'var(--ls-title3)', whiteSpace: "nowrap",
               color: on ? "var(--color-label)" : "var(--color-label-4, #c2c2c7)",
-              fontWeight: on ? 700 : 400, letterSpacing: "-0.024em",
+              fontWeight: on ? 700 : 400,
               transition: "color .15s", WebkitTapHighlightColor: "transparent" }}>
             {t.label}<Sup n={t.count} tone={on ? "on" : "quiet"} />
           </button>
@@ -162,8 +160,7 @@ export function FilterChips({ items, active, onChange, ariaLabel = "Фильтр
           <button key={t.id} ref={(el) => { iRefs.current[t.id] = el; }} type="button"
             role="tab" aria-selected={on} onClick={() => onChange(t.id)}
             style={{ flexShrink: 0, display: "inline-flex", alignItems: "center", height: 28, padding: "0 12px",
-              borderRadius: "var(--radius-pill)", background: "none", cursor: "pointer", whiteSpace: "nowrap",
-              fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)",
+              borderRadius: "var(--radius-pill)", background: "none", cursor: "pointer", whiteSpace: "nowrap", fontFamily: 'var(--font-text)', fontSize: 'var(--text-footnote)', lineHeight: 'var(--lh-footnote)', letterSpacing: 'var(--ls-footnote)',
               border: on ? "1px solid var(--color-gold)" : "0.5px solid var(--color-hairline-strong, #e3e3e8)",
               color: on ? "var(--color-label)" : "var(--color-label-3)",
               fontWeight: on ? 600 : 400, transition: "all .15s", WebkitTapHighlightColor: "transparent" }}>
@@ -188,11 +185,11 @@ export function Disclosure({ id, title, count, note, open, onToggle, children }:
           borderTop: "0.5px solid var(--color-hairline)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <span aria-hidden style={{ flexShrink: 0, width: 15, color: "var(--color-label-3)",
           transform: open ? "rotate(90deg)" : "none", transition: "transform .2s ease" }}>›</span>
-        <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
-          fontWeight: 600, letterSpacing: "-0.01em", color: "var(--color-label)" }}>
+        <span style={{ flex: 1, minWidth: 0, fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)',
+          fontWeight: 600, color: "var(--color-label)" }}>
           {title}<Sup n={count} tone="on" />
         </span>
-        {note && <span style={{ flexShrink: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", color: "var(--color-label-3)" }}>{note}</span>}
+        {note && <span style={{ flexShrink: 0, fontFamily: 'var(--font-text)', fontSize: 'var(--text-caption)', lineHeight: 'var(--lh-caption)', letterSpacing: 'var(--ls-caption)', color: "var(--color-label-3)" }}>{note}</span>}
       </button>
       {open && <div>{children}</div>}
     </section>

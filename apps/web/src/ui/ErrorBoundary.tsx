@@ -59,13 +59,12 @@ export class ErrorBoundary extends Component<Props, State> {
         padding: "48px 20px", textAlign: "center",
         fontFamily: "var(--font-text)", color: "var(--color-label-2)",
       }}>
-        <div style={{
-          fontFamily: "var(--font-display)", fontSize: "var(--text-title3)",
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-title3)', lineHeight: 'var(--lh-title3)', letterSpacing: 'var(--ls-title3)',
           fontWeight: 700, color: "var(--color-label)", marginBottom: 8,
         }}>
           Этот раздел не открылся
         </div>
-        <div style={{ fontSize: "var(--text-subhead)", lineHeight: 1.45, maxWidth: 320, margin: "0 auto" }}>
+        <div style={{ fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)', maxWidth: 320, margin: "0 auto" }}>
           Остальное приложение работает — перейдите на другую вкладку.
         </div>
       </div>
