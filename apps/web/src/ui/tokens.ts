@@ -25,6 +25,41 @@ export const tk = {
     title1: 'var(--text-title1)', //    28
     display: 'var(--text-display)', //  34
   },
+  /**
+   * ЗКН-Д028 · РОЛИ ТИПОГРАФИКИ §3.2. Кегль, интерлиньяж и трекинг ходят
+   * ВМЕСТЕ: у Body трекинг −0.0253em, у Large Title +0.0118em — они разного
+   * знака, и тремя глобальными константами их не выразить.
+   * Семейство входит в роль (§3.1: Text до 20 pt, Display от 20 — РАЗНЫЕ
+   * шрифты, не масштаб). Наследование семейства уже стоило кадра.
+   * Веса здесь НЕТ намеренно (§3.3): один кегль несёт разный вес, и это
+   * и есть выделение. Вес задаётся отдельно.
+   *
+   * Применение: `style={{ ...tk.type.body }}` либо класс `.t-body`.
+   */
+  type: {
+    /** Large Title 34/41 +0.40 */
+    display: { fontFamily: 'var(--font-display)', fontSize: 'var(--text-display)', lineHeight: 'var(--lh-display)', letterSpacing: 'var(--ls-display)' },
+    /** Title 1 28/34 +0.36 */
+    title1: { fontFamily: 'var(--font-display)', fontSize: 'var(--text-title1)', lineHeight: 'var(--lh-title1)', letterSpacing: 'var(--ls-title1)' },
+    /** Title 2 22/28 −0.26 */
+    title2: { fontFamily: 'var(--font-display)', fontSize: 'var(--text-title2)', lineHeight: 'var(--lh-title2)', letterSpacing: 'var(--ls-title2)' },
+    /** Title 3 20/25 −0.45 */
+    title3: { fontFamily: 'var(--font-display)', fontSize: 'var(--text-title3)', lineHeight: 'var(--lh-title3)', letterSpacing: 'var(--ls-title3)' },
+    /** Headline 17/22 −0.43 */
+    headline: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-headline)', lineHeight: 'var(--lh-headline)', letterSpacing: 'var(--ls-headline)' },
+    /** Body 17/22 −0.43 */
+    body: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)' },
+    /** Callout 16/21 −0.31 */
+    callout: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-callout)', lineHeight: 'var(--lh-callout)', letterSpacing: 'var(--ls-callout)' },
+    /** Subheadline 15/20 −0.23 */
+    subhead: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-subhead)', lineHeight: 'var(--lh-subhead)', letterSpacing: 'var(--ls-subhead)' },
+    /** Footnote 13/18 −0.08 */
+    footnote: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-footnote)', lineHeight: 'var(--lh-footnote)', letterSpacing: 'var(--ls-footnote)' },
+    /** Caption 1 12/16 0 */
+    caption: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-caption)', lineHeight: 'var(--lh-caption)', letterSpacing: 'var(--ls-caption)' },
+    /** Caption 2 11/13 +0.06 */
+    caption2: { fontFamily: 'var(--font-text)', fontSize: 'var(--text-caption2)', lineHeight: 'var(--lh-caption2)', letterSpacing: 'var(--ls-caption2)' },
+  },
   /** Жирности. */
   weight: {
     regular: 'var(--weight-regular)', //   400
@@ -33,17 +68,10 @@ export const tk = {
     bold: 'var(--weight-bold)', //         700
     heavy: 'var(--weight-heavy)', //       800
   },
-  /** Межстрочный интервал. */
+  /** Интерлиньяж ПРОЗЫ. Интерфейс берёт интерлиньяж из роли — `tk.type.*`.
+   * Абзаца сплошного текста среди 217 кадров нет, поэтому здесь 🕳. */
   leading: {
-    tight: 'var(--leading-tight)', //   1.1
-    snug: 'var(--leading-snug)', //     1.35
-    normal: 'var(--leading-normal)', // 1.5
-  },
-  /** Трекинг. */
-  tracking: {
-    tight: 'var(--tracking-tight)', //   -0.3
-    normal: 'var(--tracking-normal)', //  0
-    wide: 'var(--tracking-wide)', //      0.4
+    normal: 'var(--leading-normal)', // 1.5 — проза чтения
   },
   /** Мелкая сетка отступов — 4pt. */
   space: {

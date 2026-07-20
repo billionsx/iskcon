@@ -89,7 +89,7 @@ function TirthaRow({ d, t, onOpen }: { d: Dhama; t: Tirtha; onOpen: (id: string)
           <KindChip d={d} kind={t.kind} />
         </span>
         {t.iast && <span style={{ display: "block", marginTop: 1, fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-footnote)", color: "var(--color-label-3)" }}>{t.iast}</span>}
-        <span style={{ display: "block", marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>{t.blurb}</span>
+        <span style={{ display: "block", marginTop: "var(--space-1)", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 'var(--lh-subhead)', color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
       <CardActionBtns plain favKey={`tirtha:${t.id}`} meta={favMetaFromCtx(tirthaCtx(d.id, t))} size={34} onMore={() => openCardMenu(tirthaCtx(d.id, t))} />
     </div>
@@ -113,7 +113,7 @@ function ParikramaStop({ d, t, n, lastInGroup, onOpen }: { d: Dhama; t: Tirtha; 
           <span style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-callout)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.2px", color: "var(--color-label)" }}>{t.name}</span>
           <KindChip d={d} kind={t.kind} />
         </span>
-        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>{t.blurb}</span>
+        <span style={{ display: "block", marginTop: 3, fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", lineHeight: 'var(--lh-subhead)', color: "var(--color-label-2)" }}>{t.blurb}</span>
       </span>
       <span style={{ alignSelf: "center", display: "flex", alignItems: "center", gap: 6 }}>
         <button aria-label="Проложить маршрут" title="Проложить маршрут в Google Maps" className="tap-press"
@@ -201,7 +201,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
         <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
           <BackIcon size={24} />
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: navSolid ? 1 : 0, transform: navSolid ? "none" : "translateY(3px)", transition: "opacity var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-standard)", pointerEvents: "none" }}>{dhama.name}</div>
+        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: 'var(--ls-headline)', color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: navSolid ? 1 : 0, transform: navSolid ? "none" : "translateY(3px)", transition: "opacity var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-standard)", pointerEvents: "none" }}>{dhama.name}</div>
         <div data-pdf-no-print style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
           <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={22} filled={favorited} /></button>
           <button aria-label="Открыть в картах" onClick={() => { try { window.open(dhamaMapsHref(dhama), "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIconNav size={22} /></button>
@@ -248,7 +248,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
                     <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "-0.3px", color: "var(--color-label)" }}>{cluster.title}</h3>
                     <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption)", fontWeight: "var(--weight-semibold)", color: "var(--color-label-3)", flexShrink: 0 }}>{items.length}</span>
                   </div>
-                  {cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: "var(--leading-snug)" }}>{cluster.note}</p>}
+                  {cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 'var(--lh-footnote)' }}>{cluster.note}</p>}
                   <div>
                     {items.map((t) => <TirthaRow key={t.id} d={dhama} t={t} onOpen={onOpenTirtha} />)}
                   </div>
@@ -276,7 +276,7 @@ export default function DhamaDetailPage({ dhama, onBack, onOpenTirtha }: { dhama
                           {g.items.length > 1 ? `${g.start + 1}–${g.start + g.items.length}` : `${g.start + 1}`}
                         </span>
                       </div>
-                      {g.cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: "var(--leading-snug)" }}>{g.cluster.note}</p>}
+                      {g.cluster.note && <p style={{ margin: "0 0 6px", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", color: "var(--color-label-3)", lineHeight: 'var(--lh-footnote)' }}>{g.cluster.note}</p>}
                       <div>
                         {g.items.map((t, i) => <ParikramaStop key={t.id} d={dhama} t={t} n={g.start + i + 1} lastInGroup={i === g.items.length - 1} onOpen={onOpenTirtha} />)}
                       </div>

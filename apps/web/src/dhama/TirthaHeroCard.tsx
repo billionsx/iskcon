@@ -79,8 +79,8 @@ export function TirthaHeroCard({ dhamaId, tirtha, accent, dhamaName, clusterTitl
             <span style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>{KIND_RU[t.kind]}</span>
           </div>
           {t.iast && <p style={{ margin: "0 0 2px", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-subhead)", color: "rgba(255,255,255,.82)" }}>{t.iast}</p>}
-          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.name}</h3>
-          {t.blurb && <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-regular)", lineHeight: "var(--leading-snug)", letterSpacing: "-0.01em", color: "rgba(255,255,255,.88)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.blurb}</p>}
+          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "-0.025em", color: "#fff", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.name}</h3>
+          {t.blurb && <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-regular)", lineHeight: 'var(--lh-subhead)', letterSpacing: "-0.01em", color: "rgba(255,255,255,.88)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{t.blurb}</p>}
           {place && (
             <div style={{ marginTop: 14 }}>
               <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,.16)", height: 26, padding: "0 12px", fontSize: "var(--text-caption)", lineHeight: 1, fontWeight: "var(--weight-semibold)", color: "#fff" }}>{place}</span>

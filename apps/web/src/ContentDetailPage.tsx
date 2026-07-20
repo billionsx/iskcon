@@ -92,7 +92,7 @@ function PullQuote({ text, ref, onPerson, onBook, onRef }: { text: string; ref: 
         {text}
       </blockquote>
       {ref && (hasStruct || ref.raw) && (
-        <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>
+        <figcaption style={{ marginTop: "var(--space-4)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 'var(--lh-footnote)', color: "var(--color-label-2)" }}>
           {hasStruct ? (
             <>
               {/* строка 1 — автор → личность */}
@@ -258,7 +258,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
             backdropFilter: t < 0.9 ? "blur(12px)" : "none", WebkitBackdropFilter: t < 0.9 ? "blur(12px)" : "none" }}>
           <BackIcon size={22} />
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: t > 0.6 ? (t - 0.6) / 0.4 : 0 }}>
+        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-bold)", letterSpacing: 'var(--ls-headline)', color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: t > 0.6 ? (t - 0.6) / 0.4 : 0 }}>
           {data?.name ?? ""}
         </div>
         {data && (
@@ -293,7 +293,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                   {data.kind}
                 </div>
               )}
-              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>
+              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>
                 {data.name}
               </h1>
 
@@ -305,7 +305,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                     const next = blocks[i + 1];
                     switch (b.kind) {
                       case "heading":
-                        return <h2 key={i} style={{ margin: "var(--space-8) 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", lineHeight: "var(--leading-snug)", color: "var(--color-label)" }}>{b.text}</h2>;
+                        return <h2 key={i} style={{ margin: "var(--space-8) 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-bold)", letterSpacing: 'var(--ls-title3)', lineHeight: 'var(--lh-title3)', color: "var(--color-label)" }}>{b.text}</h2>;
                       case "accent": {
                         // дек — крупный серый подзаголовок сразу под именем (стандарт страницы Кришны)
                         if (i === firstAccentIdx)
@@ -313,7 +313,7 @@ export default function ContentDetailPage({ slug, onBack, onOpenContent, onOpenB
                         // секционная интерлюдия — по центру, с тонкой линией сверху; пара accent'ов подряд читается как один блок
                         const prevAccent = blocks[i - 1]?.kind === "accent";
                         return (
-                          <p key={i} style={{ margin: prevAccent ? "var(--space-2) 0 0" : "var(--space-8) 0 0", paddingTop: prevAccent ? 0 : "var(--space-6)", borderTop: prevAccent ? "none" : "0.5px solid var(--color-hairline)", textAlign: "center", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-medium)", letterSpacing: "var(--tracking-tight)", lineHeight: "var(--leading-snug)", color: "var(--color-label)" }}>{b.text}</p>
+                          <p key={i} style={{ margin: prevAccent ? "var(--space-2) 0 0" : "var(--space-8) 0 0", paddingTop: prevAccent ? 0 : "var(--space-6)", borderTop: prevAccent ? "none" : "0.5px solid var(--color-hairline)", textAlign: "center", fontFamily: "var(--font-display)", fontSize: "var(--text-title3)", fontWeight: "var(--weight-medium)", letterSpacing: 'var(--ls-title3)', lineHeight: 'var(--lh-title3)', color: "var(--color-label)" }}>{b.text}</p>
                         );
                       }
                       case "image":

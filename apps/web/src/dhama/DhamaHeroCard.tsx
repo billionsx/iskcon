@@ -73,7 +73,7 @@ export function DhamaHeroCard({ dhama, topLeft, onOpen, presentational, onMenuSe
             <span style={{ fontSize: "var(--text-caption2)", fontWeight: "var(--weight-bold)", letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>Святая дхама</span>
           </div>
           {dhama.iast && <p style={{ margin: "0 0 2px", fontFamily: "var(--font-scripture)", fontStyle: "italic", fontSize: "var(--text-subhead)", color: "rgba(255,255,255,.82)" }}>{dhama.iast}</p>}
-          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.03em", color: "#fff" }}>{dhama.name}</h3>
+          <h3 style={{ margin: 0, fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "-0.03em", color: "#fff" }}>{dhama.name}</h3>
           <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-regular)", letterSpacing: "-0.01em", color: "rgba(255,255,255,.88)" }}>{dhama.tagline}</p>
           <div style={{ marginTop: "var(--space-4)", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
             <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,.18)", height: 26, padding: "0 12px", fontSize: "var(--text-caption)", lineHeight: 1, fontWeight: "var(--weight-semibold)", color: "#fff" }}>{dhama.deity}</span>

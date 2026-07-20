@@ -143,7 +143,7 @@ export default function TirthaDetailPage({ dhama, tirthaId, onBack, onOpenEntity
         <button aria-label="Назад" onClick={onBack} style={navBtn(false)}>
           <BackIcon size={24} />
         </button>
-        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: navSolid ? 1 : 0, transform: navSolid ? "none" : "translateY(3px)", transition: "opacity var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-standard)", pointerEvents: "none" }}>{t.name}</div>
+        <div style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-headline)", fontWeight: "var(--weight-semibold)", letterSpacing: 'var(--ls-headline)', color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", opacity: navSolid ? 1 : 0, transform: navSolid ? "none" : "translateY(3px)", transition: "opacity var(--duration-base) var(--ease-standard), transform var(--duration-base) var(--ease-standard)", pointerEvents: "none" }}>{t.name}</div>
         <div data-pdf-no-print style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>
           <button aria-label="В избранное" onClick={() => toggleFav(flash)} style={navBtn(favorited)}><HeartIcon size={22} filled={favorited} /></button>
           <button aria-label="Открыть в картах" onClick={() => { try { window.open(mapsHref, "_blank", "noopener"); } catch { /* noop */ } }} style={navBtn(false)}><PinIcon size={22} /></button>

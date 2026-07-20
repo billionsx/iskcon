@@ -404,7 +404,7 @@ function ComingSoon({ src, title, subtitle }: { src?: string; title: string; sub
           <svg width="58" height="58" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 11.6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /><path d="M5.8 20c.7-3.6 3.1-5.5 6.2-5.5s5.5 1.9 6.2 5.5z" /></svg>
         </span>
       )}
-      <h1 style={{ margin: "24px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{title}</h1>
+      <h1 style={{ margin: "24px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: 'var(--ls-title1)', color: "var(--color-label)" }}>{title}</h1>
       <p style={{ margin: "8px 0 0", fontSize: "var(--text-subhead)", color: "var(--color-label-2)", lineHeight: 1.45, maxWidth: 290 }}>{subtitle}</p>
     </div>
   );
@@ -713,8 +713,8 @@ function ContentSection({ eyebrow, title, endpoint, onOpen }: { eyebrow: string;
   return (
     <section style={{ marginTop: "var(--space-8)" }}>
       <div style={{ marginBottom: "var(--space-3)" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
-        <h2 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: "var(--weight-bold)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>{title}</h2>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: 'var(--ls-caption2)', textTransform: "uppercase", color: "var(--color-gold-deep)" }}>{eyebrow}</div>
+        <h2 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)", fontWeight: "var(--weight-bold)", letterSpacing: 'var(--ls-title2)', color: "var(--color-label)" }}>{title}</h2>
       </div>
       {!items && <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", color: "var(--color-label-2)" }}>Загрузка…</div>}
       {items && (
@@ -747,8 +747,8 @@ function FeedScreen({ onOpen }: { onOpen: (slug: string) => void }) {
   return (
     <div>
       <div style={{ marginBottom: "var(--space-2)" }}>
-        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: "var(--color-gold-deep)" }}>ISKCON ONE LOVE</div>
-        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)", color: "var(--color-label)" }}>Лента</h1>
+        <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: 'var(--ls-caption2)', textTransform: "uppercase", color: "var(--color-gold-deep)" }}>ISKCON ONE LOVE</div>
+        <h1 style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: 'var(--ls-title1)', color: "var(--color-label)" }}>Лента</h1>
       </div>
       <ContentSection eyebrow="Личности" title="Кришна, аватары и спутники" endpoint="/content/personalities" onOpen={onOpen} />
       <ContentSection eyebrow="Заметки на полях сердца" title="Статьи" endpoint="/content/articles" onOpen={onOpen} />

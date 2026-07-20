@@ -87,7 +87,7 @@ function FitText({ text, max = 18.5, min = 12, style }: { text: string; max?: nu
 
 /* eyebrow-метка (Caption2, uppercase, трекинг) */
 function Eyebrow({ children, blue }: { children: React.ReactNode; blue?: boolean }) {
-  return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: "var(--tracking-wide)", textTransform: "uppercase", color: blue ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>{children}</div>;
+  return <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", fontWeight: "var(--weight-semibold)", letterSpacing: 'var(--ls-caption2)', textTransform: "uppercase", color: blue ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>{children}</div>;
 }
 
 /** Карточка стиха — тапабельное превью (как строка стиха в главе книги): метка ·
@@ -311,7 +311,7 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
                     <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: isCur ? "var(--color-gold-deep)" : "var(--color-label)", overflowWrap: "anywhere" }}>{l.title || "Лекция"}</span>
                     {(l.subtitle || l.date) ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{[l.subtitle, l.date].filter(Boolean).join(" · ")}</span> : null}
                   </span>
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{label}</span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: 'var(--ls-caption2)', flexShrink: 0 }}>{label}</span>
                 </button>
               );
             })}
@@ -341,7 +341,7 @@ function MediaSections({ media, slug, onView }: { media: BhajanMedia; slug: stri
                     <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: "var(--weight-medium)", color: "var(--color-label)", overflowWrap: "anywhere" }}>{s.title || "Ноты"}</span>
                     {s.description ? <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-caption1)", color: "var(--color-label-2)" }}>{s.description}</span> : null}
                   </span>
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: "var(--tracking-wide)", flexShrink: 0 }}>{isPdf ? "PDF" : "Изобр."}</span>
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)", color: "var(--color-label-2)", textTransform: "uppercase", letterSpacing: 'var(--ls-caption2)', flexShrink: 0 }}>{isPdf ? "PDF" : "Изобр."}</span>
                 </button>
               );
             })}
@@ -461,7 +461,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
             {/* ШАПКА — чистая, выразительная */}
             <div style={{ padding: "64px var(--pad-card) 0" }}>
               {data.category && <Eyebrow blue>{data.category}</Eyebrow>}
-              <h1 style={{ margin: data.category ? "var(--space-2) 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: "var(--leading-tight)", fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>{data.name}</h1>
+              <h1 style={{ margin: data.category ? "var(--space-2) 0 0" : 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", lineHeight: 'var(--lh-title1)', fontWeight: "var(--weight-heavy)", letterSpacing: "-0.5px", color: "var(--color-label)" }}>{data.name}</h1>
               {data.author && (
                 data.author_entity && onOpenEntity ? (
                   <button onClick={() => onOpenEntity(data.author_entity || "", "personality")} aria-label={`Об авторе: ${data.author}`}
@@ -481,7 +481,7 @@ export default function BhajanDetailPage({ slug, onBack, onOpenEntity, onOpenBha
               {data.pending ? (
                 <div style={{ padding: "var(--space-6) var(--space-5)", borderRadius: "var(--radius-lg)", background: "var(--color-bg-2)", border: "0.5px solid var(--color-hairline)", textAlign: "center" }}>
                   <div style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)", fontWeight: "var(--weight-semibold)", color: "var(--color-label)" }}>Текст готовится</div>
-                  <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: "var(--leading-snug)", color: "var(--color-label-2)" }}>Перевод этого бхаджана появится здесь после подготовки.</div>
+                  <div style={{ marginTop: "var(--space-2)", fontFamily: "var(--font-text)", fontSize: "var(--text-footnote)", lineHeight: 'var(--lh-footnote)', color: "var(--color-label-2)" }}>Перевод этого бхаджана появится здесь после подготовки.</div>
                 </div>
               ) : hasVerses ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-4)" }}>{data.verses.map((v, i) => <VerseCard key={v.ord} v={v} onOpen={() => setVIdx(i)} />)}</div>

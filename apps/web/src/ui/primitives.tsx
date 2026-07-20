@@ -57,7 +57,7 @@ export function SectionHeader({
           style={{
             fontSize: tk.text.caption2,
             fontWeight: tk.weight.semibold,
-            letterSpacing: tk.tracking.wide,
+            letterSpacing: tk.type.caption2.letterSpacing,
             textTransform: 'uppercase',
             color: tk.color.brand,
           }}
@@ -68,10 +68,11 @@ export function SectionHeader({
       <h3
         style={{
           margin: 0,
-          fontSize: size === 'section' ? tk.text.title3 : tk.text.headline,
+          // Роль целиком: кегль, интерлиньяж, трекинг и СЕМЕЙСТВО ходят вместе.
+          // 20 pt — порог оптического размера (§3.1), поэтому «section» берёт
+          // Display, а «card» — Text. Раньше семейство наследовалось от родителя.
+          ...(size === 'section' ? tk.type.title3 : tk.type.headline),
           fontWeight: tk.weight.bold,
-          lineHeight: tk.leading.snug,
-          letterSpacing: tk.tracking.tight,
           color: tk.color.label,
         }}
       >
@@ -101,7 +102,7 @@ export function Eyebrow({ children }: { children: ReactNode }) {
       style={{
         fontSize: tk.text.caption2,
         fontWeight: tk.weight.semibold,
-        letterSpacing: tk.tracking.wide,
+        letterSpacing: tk.type.caption2.letterSpacing,
         textTransform: 'uppercase',
         color: tk.color.brand,
       }}
@@ -141,7 +142,7 @@ export function Stat({
           fontSize: tk.text.headline,
           fontWeight: tk.weight.heavy,
           color: valueColor,
-          letterSpacing: tk.tracking.tight,
+          letterSpacing: tk.type.headline.letterSpacing,
         }}
       >
         {value}

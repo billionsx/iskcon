@@ -207,7 +207,7 @@ function Wrap({ children, onBack }: { children: React.ReactNode; onBack: () => v
           <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           Назад
         </button>
-        <h1 style={{ margin: "12px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: "var(--tracking-tight)" }}>Сторис</h1>
+        <h1 style={{ margin: "12px 0 0", fontFamily: "var(--font-display)", fontSize: "var(--text-title1)", fontWeight: "var(--weight-heavy)", letterSpacing: 'var(--ls-title1)' }}>Сторис</h1>
         {children}
       </div>
     </div>
