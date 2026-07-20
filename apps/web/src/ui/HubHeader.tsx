@@ -66,8 +66,16 @@ export function HubHeader({ eyebrow, title, subtitle, action, level = 1 }: {
             margin: "2px 0 0",
             // Роль целиком. Трекинг был −0.4px на обоих уровнях; канон §3.2 даёт
             // Title 1 **+0.36 pt** — разрядку, а не поджим. Знак был обратным.
-            ...(level === 1 ? tk.type.title1 : tk.type.title2),
-            fontWeight: 800, color: "var(--color-label)",
+            //
+            // Заголовок ЭКРАНА берёт Large Title 34, а не Title 1 28 (📐 3.2 —
+            // замер «July», «Search», «Recents», «Workout»). Соответствие держится:
+            // у Apple полоса хрома 44 несёт кнопки, а Large Title идёт под ней;
+            // у нас ту же роль играет шапка с вордмарком, и заголовок витрины —
+            // это и есть заголовок экрана. Раздел ВНУТРИ экрана остаётся Title 2.
+            ...(level === 1 ? tk.type.display : tk.type.title2),
+            // Вес 700, а не 800: пятого начертания в корпусе Apple нет ни разу
+            // (📐 5.21 — Regular 493, Medium 178, Semibold 86, Bold 80, и всё).
+            fontWeight: level === 1 ? 700 : 800, color: "var(--color-label)",
           }}>{title}</H>
         </div>
 

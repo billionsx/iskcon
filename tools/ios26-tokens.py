@@ -122,10 +122,20 @@ def main() -> int:
     for f in web.rglob("*.tsx"):
         lits += len(LIT.findall(f.read_text(encoding="utf-8")))
 
+    # правило 6 — пятого начертания нет
+    HEAVY = re.compile(r"fontWeight:\s*['\"]?800|weight\.heavy|--weight-heavy")
+    heavy = 0
+    for f in web.rglob("*.tsx"):
+        heavy += len(HEAVY.findall(f.read_text(encoding="utf-8")))
+
     # правило 3 — храповик
     base = json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else {}
     cap_h, cap_d = base.get("holes", len(holes)), base.get("deviations", len(devs))
     cap_t = base.get("total", len(holes) + len(devs))
+    cap_hv = base.get("heavy", heavy)
+    if heavy > cap_hv:
+        fail.append(f"храповик пятого начертания: {heavy} > {cap_hv}. Веса 800 в "
+                    f"корпусе Apple нет ни разу — берётся Bold 700 (правило 6)")
     cap_l = base.get("literals", lits)
     if lits > cap_l:
         fail.append(f"храповик литералов: {lits} > {cap_l}. Кегль, интерлиньяж и "
@@ -146,7 +156,8 @@ def main() -> int:
           f"📐/🍎/⚙️/🎨 обосновано — {len(decls) - len(holes) - len(devs)}   "
           f"🕳 не снято — {len(holes)}/{cap_h}   ⚠ расходится — {len(devs)}/{cap_d}   "
           f"долг всего — {len(holes) + len(devs)}/{cap_t}   "
-          f"литералов в tsx — {lits}/{cap_l}")
+          f"литералов в tsx — {lits}/{cap_l}   "
+          f"вес 800 — {heavy}/{cap_hv}")
 
     if fail:
         print("\nЗКН-Д028 — ГЕЙТ КРАСНЫЙ:")
