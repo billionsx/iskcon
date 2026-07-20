@@ -210,9 +210,17 @@ def gh_get_or_create_release(tag, token):
 
 def gh_upload_asset(rel, tar_path, token):
     name = os.path.basename(tar_path)
-    # если ассет с таким именем уже есть — снести и перезалить (идемпотентность)
+    # Ассет уже лежит и целиком залит — зеркало ЗАКРЫТО, делать нечего.
+    # Прежний код сносил его и лил 20 МБ заново: самый хрупкий путь там, где
+    # не нужен никакой. Класс идемпотентен по определению (см. шапку), и
+    # повторный прогон приёма обязан быть дешёвым, а не рискованным.
     for a in rel.get("assets", []):
-        if a.get("name") == name:
+        if a.get("name") == name and a.get("state") == "uploaded" and a.get("size", 0) > 0:
+            print("::notice::зеркало GitHub: ассет уже на месте (%d Б) — не перезаливаю"
+                  % a["size"], flush=True)
+            return a.get("browser_download_url")
+    for a in rel.get("assets", []):
+        if a.get("name") == name:      # недолитый огрызок — снести
             _gh_req("DELETE", "https://api.github.com/repos/%s/releases/assets/%d" % (REPO, a["id"]), token)
     up = rel["upload_url"].split("{")[0] + "?name=%s" % urllib.parse.quote(name)
     with open(tar_path, "rb") as f:
@@ -238,7 +246,7 @@ def gh_upload_asset(rel, tar_path, token):
             last = "HTTP %s: %s" % (e.code, e.read().decode("utf-8", "replace")[:400])
         except Exception as e:                      # таймаут, обрыв, сброс
             last = "%s: %s" % (type(e).__name__, e)
-        print("::warning::зеркало GitHub, попытка %d/3 — %s" % (attempt, last), file=sys.stderr)
+        print("::warning::зеркало GitHub, попытка %d/3 — %s" % (attempt, last), flush=True)
         # ассет мог осесть частично — снимаем перед повтором
         try:
             _, fresh = _gh_req("GET", "https://api.github.com/repos/%s/releases/%d"
@@ -251,7 +259,7 @@ def gh_upload_asset(rel, tar_path, token):
             pass
         time.sleep(5 * attempt)
     if asset is None:
-        print("::error::зеркало GitHub Releases не закрыто (ЗКН-Пл023): %s" % last, file=sys.stderr)
+        print("::error::зеркало GitHub Releases не закрыто (ЗКН-Пл023): %s" % last, flush=True)
         raise RuntimeError("GitHub asset upload: %s" % last)
     return asset.get("browser_download_url") or "https://github.com/%s/releases/download/%s/%s" % (REPO, rel["tag_name"], name)
 
