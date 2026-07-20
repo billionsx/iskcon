@@ -3,7 +3,7 @@
  * Общие UI-кирпичи приложения ISKCON ONE LOVE (ЗКН-Д002).
  *
  * Заменяют разрозненные локальные реализации (SectionHeader был
- * продублирован 25 раз, Card/Chip/Stat — у каждого таба свои).
+ * продублирован 25 раз, Card/Chip — у каждого таба свои).
  * Один источник правды для шрифтов, цветов, отступов, радиусов.
  */
 
@@ -112,48 +112,6 @@ export function Eyebrow({ children }: { children: ReactNode }) {
   );
 }
 
-/* ── Stat — метрика-плитка (значение + подпись) ───────────────────────── */
-
-export function Stat({
-  value,
-  label,
-  tone = 'neutral',
-  accent = false,
-}: {
-  value: ReactNode;
-  label: string;
-  tone?: SemanticTone;
-  /** accent — выделить плитку бренд-подложкой. */
-  accent?: boolean;
-}) {
-  const valueColor = tone === 'neutral' ? (accent ? tk.color.brand : tk.color.label) : toneColors(tone).text;
-  return (
-    <div
-      style={{
-        flex: 1,
-        minWidth: 0,
-        padding: `${tk.space[2]} ${tk.space[3]}`,
-        borderRadius: tk.radius.md,
-        background: accent ? tk.color.infoSurface : tk.color.fill1,
-      }}
-    >
-      <div
-        style={{
-          fontSize: tk.text.headline,
-          fontWeight: tk.weight.heavy,
-          color: valueColor,
-          letterSpacing: tk.type.headline.letterSpacing,
-        }}
-      >
-        {value}
-      </div>
-      <div style={{ fontSize: tk.text.caption2, color: tk.color.label3, marginTop: 2 }}>
-        {label}
-      </div>
-    </div>
-  );
-}
-
 /* ── Chip — пилюля-тег ────────────────────────────────────────────────── */
 
 export function Chip({
@@ -181,78 +139,6 @@ export function Chip({
     >
       {children}
     </span>
-  );
-}
-
-/* ── StatusBadge — статус-метка ───────────────────────────────────────── */
-
-export function StatusBadge({ label, tone }: { label: string; tone: SemanticTone }) {
-  const c = toneColors(tone);
-  return (
-    <span
-      style={{
-        fontSize: tk.text.caption2,
-        fontWeight: tk.weight.semibold,
-        padding: `2px ${tk.space[2]}`,
-        borderRadius: tk.radius.xs,
-        background: c.surface,
-        color: c.text,
-        whiteSpace: 'nowrap',
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
-/* ── KeyValueRow — строка «ключ → значение» ──────────────────────────── */
-
-export function KeyValueRow({
-  label,
-  value,
-  emphasis = false,
-}: {
-  label: string;
-  value: ReactNode;
-  emphasis?: boolean;
-}) {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-        gap: tk.space[3],
-        padding: `${tk.space[2]} 0`,
-      }}
-    >
-      <span style={{ fontSize: tk.text.footnote, color: tk.color.label2 }}>{label}</span>
-      <span
-        style={{
-          fontSize: emphasis ? tk.text.callout : tk.text.footnote,
-          fontWeight: emphasis ? tk.weight.bold : tk.weight.semibold,
-          color: tk.color.label,
-          textAlign: 'right',
-        }}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}
-
-/* ── Divider — hairline-разделитель ───────────────────────────────────── */
-
-export function Divider({ inset = 0 }: { inset?: number }) {
-  return (
-    <div
-      style={{
-        height: 0.5,
-        background: tk.color.glassStroke,
-        marginLeft: inset,
-        marginRight: inset,
-      }}
-    />
   );
 }
 

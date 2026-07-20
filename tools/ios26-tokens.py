@@ -128,10 +128,31 @@ def main() -> int:
     for f in web.rglob("*.tsx"):
         heavy += len(HEAVY.findall(f.read_text(encoding="utf-8")))
 
+    # правило 7 — в слое ui нет мёртвых кирпичей
+    ui = web / "ui"
+    tsx = list(web.rglob("*.tsx"))
+    dead_bricks = []
+    for f in sorted(ui.glob("*.tsx")):
+        for m in re.finditer(r"^export function (\w+)", f.read_text(encoding="utf-8"), re.M):
+            nm = m.group(1)
+            uses = 0
+            for g2 in tsx:
+                txt = g2.read_text(encoding="utf-8")
+                if g2 == f:
+                    txt = re.sub(rf"^export function {nm}\b", "", txt, flags=re.M)
+                uses += len(re.findall(rf"<{nm}[\s/>]|[^.\w]{nm}\(", txt))
+            if uses == 0:
+                dead_bricks.append(f"{f.name}:{nm}")
+
     # правило 3 — храповик
     base = json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else {}
     cap_h, cap_d = base.get("holes", len(holes)), base.get("deviations", len(devs))
     cap_t = base.get("total", len(holes) + len(devs))
+    cap_db = base.get("dead_bricks", len(dead_bricks))
+    if len(dead_bricks) > cap_db:
+        fail.append(f"храповик мёртвых кирпичей: {len(dead_bricks)} > {cap_db} "
+                    f"({', '.join(dead_bricks[:4])}). Экспорт без потребителя — "
+                    f"не библиотека, а склад (правило 7)")
     cap_hv = base.get("heavy", heavy)
     if heavy > cap_hv:
         fail.append(f"храповик пятого начертания: {heavy} > {cap_hv}. Веса 800 в "
@@ -157,7 +178,8 @@ def main() -> int:
           f"🕳 не снято — {len(holes)}/{cap_h}   ⚠ расходится — {len(devs)}/{cap_d}   "
           f"долг всего — {len(holes) + len(devs)}/{cap_t}   "
           f"литералов в tsx — {lits}/{cap_l}   "
-          f"вес 800 — {heavy}/{cap_hv}")
+          f"вес 800 — {heavy}/{cap_hv}   "
+          f"мёртвых кирпичей — {len(dead_bricks)}/{cap_db}")
 
     if fail:
         print("\nЗКН-Д028 — ГЕЙТ КРАСНЫЙ:")

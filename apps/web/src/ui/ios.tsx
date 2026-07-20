@@ -429,28 +429,6 @@ export function CircleButton({ label, onClick, children }: {
     </button>
   );
 }
-
-/** Капсульная кнопка — заливка карточки (plain) или акцент (filled). */
-export function CapsuleButton({ label, onClick, variant = "plain", tone, disabled }: {
-  label: ReactNode; onClick: () => void; variant?: "plain" | "filled";
-  tone?: "accent" | "danger" | "ink"; disabled?: boolean;
-}) {
-  const accent = tone === "danger" ? "var(--color-danger-text)"
-    : tone === "ink" ? INK : "var(--color-gold-deep)";
-  return (
-    <button type="button" onClick={onClick} disabled={disabled} className="tap-press"
-      style={{
-        width: "100%", minHeight: 50, padding: "0 20px", borderRadius: "var(--radius-pill)",
-        border: "none", cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.5 : 1,
-        background: variant === "filled" ? accent : "var(--color-card)",
-        color: variant === "filled" ? "var(--color-brand-white)" : accent, fontFamily: 'var(--font-text)', fontSize: 'var(--text-body)', lineHeight: 'var(--lh-body)', letterSpacing: 'var(--ls-body)', fontWeight: 600,
-        WebkitTapHighlightColor: "transparent",
-      }}>
-      {label}
-    </button>
-  );
-}
-
 /** Тумблер iOS — 51×31. */
 export function Toggle({ on, busy, onToggle, tint = "var(--color-gold)" }: {
   on: boolean; busy?: boolean; onToggle: () => void; tint?: string;

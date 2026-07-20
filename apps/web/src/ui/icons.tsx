@@ -15,7 +15,6 @@ export function HeartIcon(p: IconProps) {
   return p.filled ? <svg {...sp(p)}><path d={d} fill="currentColor" /></svg> : <svg {...sp(p)}><path {...STROKE} d={d} /></svg>;
 }
 export function ShareIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 3v13M8 7l4-4 4 4" /><path {...STROKE} d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" /></svg>; }
-export function BookOpenIcon(p: IconProps) { return <svg {...sp(p)}><path {...STROKE} d="M12 6.6C10.4 5.4 8.3 4.9 5.5 5.3A1 1 0 0 0 4.6 6.3v10.9a1 1 0 0 0 1.1 1c2.5-.34 4.6.1 6.3 1.3 1.7-1.2 3.8-1.64 6.3-1.3a1 1 0 0 0 1.1-1V6.3a1 1 0 0 0-.9-1C15.7 4.9 13.6 5.4 12 6.6Z" /><path {...STROKE} d="M12 6.6v12.2" /></svg>; }
 export function MoreIcon(p: IconProps) { return <svg {...sp(p)}><circle cx="12" cy="5" r="1.7" fill="currentColor" /><circle cx="12" cy="12" r="1.7" fill="currentColor" /><circle cx="12" cy="19" r="1.7" fill="currentColor" /></svg>; }
 export function BagIcon(p: IconProps & { cornerGlyph?: "plus" | "minus" | null }) {
   const { cornerGlyph, ...rest } = p;

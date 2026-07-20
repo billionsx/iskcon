@@ -29,7 +29,7 @@ const TONE = {
 } as const;
 
 export function SectionSubTabs({
-  items, active, onChange, top = 0, tone = "light", navRef, ariaLabel = "Части книги", bleed = 0, variant = "rail",
+  items, active, onChange, top = 0, tone = "light", navRef, ariaLabel = "Части книги", bleed = 0,
 }: {
   items: SubTabDef[];
   active: string;
@@ -39,7 +39,6 @@ export function SectionSubTabs({
   navRef?: (el: HTMLElement | null) => void;     // для замера высоты ленты вызывающей стороной
   ariaLabel?: string;
   bleed?: number;                                // full-bleed: вынос за паддинг контейнера (px)
-  variant?: "rail" | "chips";                    // rail — рейка-подчёркивание; chips — капсулы iOS 26
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -51,37 +50,6 @@ export function SectionSubTabs({
     const target = el.offsetLeft - (cont.clientWidth - el.clientWidth) / 2;
     cont.scrollTo({ left: Math.max(0, target), behavior: "smooth" });
   }, [active]);
-
-  /* ── variant="chips" — лёгкая вторичная навигация по стандарту iOS 26 (Liquid Glass):
-     капсулы вместо рейки, активная — чернильная заливка, без нижней линии. ── */
-  if (variant === "chips") {
-    const chipFg = tone === "dark" ? "#0d0d0f" : "var(--color-bg)";
-    return (
-      <nav ref={navRef} data-pdf-no-print aria-label={ariaLabel}
-        style={{ position: "sticky", top, zIndex: 15, marginInline: bleed ? -bleed : undefined,
-          background: c.glass, backdropFilter: "blur(40px) saturate(180%)", WebkitBackdropFilter: "blur(40px) saturate(180%)" }}>
-        <div ref={containerRef} style={{ display: "flex", alignItems: "center", gap: 8, overflowX: "auto",
-          padding: `9px ${bleed || 16}px`, scrollPaddingLeft: bleed || 16, scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
-          {items.map((it) => {
-            const on = it.id === active;
-            return (
-              <button key={it.id} ref={(el) => { itemRefs.current[it.id] = el; }} type="button" onClick={() => onChange(it.id)}
-                onPointerDown={(e) => { if (!on) e.currentTarget.style.opacity = "0.55"; }}
-                onPointerUp={(e) => (e.currentTarget.style.opacity = "1")}
-                onPointerLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                style={{ flexShrink: 0, padding: "7px 13px", borderRadius: 999, border: "none", cursor: "pointer",
-                  fontSize: "var(--text-footnote)", fontFamily: "var(--font-text)", letterSpacing: "-0.01em", whiteSpace: "nowrap",
-                  background: on ? c.active : "var(--color-glass-regular)",
-                  color: on ? chipFg : c.inactive, fontWeight: 600,
-                  transition: "background .18s, color .18s", WebkitTapHighlightColor: "transparent" }}>
-                {it.label}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-    );
-  }
 
   return (
     <nav ref={navRef} data-pdf-no-print aria-label={ariaLabel}

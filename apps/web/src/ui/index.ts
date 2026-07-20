@@ -3,7 +3,7 @@
  *
  * Компоненты берут кирпичи отсюда, а не изобретают свои:
  *
- *   import { tk, Card, SectionHeader, Chip, Stat } from "./ui";
+ *   import { tk, Card, SectionHeader, Chip } from "./ui";
  *
  * Правила (docs/STANDARD_design.md):
  *   Д001 — размеры/цвета/отступы/радиусы только через `tk.*` или `var(--…)`
