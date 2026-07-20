@@ -807,6 +807,7 @@
   --c-w: 361.0px;
   --disc-x: 32.0px;
   --disc-d: 48.0px;
+  --disc-r: 10.67px;
   --disc1-y: 410.0px;
   --disc2-y: 670.0px;
   --disc3-y: 758.0px;
@@ -980,9 +981,13 @@
 .fit-03 .c1{top:var(--c1-y);height:var(--c1-h);clip-path:path(var(--c1-path))}
 .fit-03 .c2{top:var(--c2-y);height:var(--c2-h);clip-path:path(var(--c2-path))}
 .fit-03 .c3{top:var(--c3-y);height:var(--c3-h);clip-path:path(var(--c3-path))}
+/* ПОДЛОЖКА ЗНАКА — КВАДРАТ СО СКРУГЛЕНИЕМ, А НЕ КРУГ.
+   Круглая она только у первой карточки (Social Dance); у прогулок это квадрат
+   48×48 с радиусом 10.67 pt — замерено по профилю левого края: отступ тёмного
+   от края обнуляется на 32-м пикселе, это и есть радиус. */
 .fit-03 .disc{left:calc(var(--disc-x) - var(--c-x));width:var(--disc-d);height:var(--disc-d);
- border-radius:50%;background:var(--disc-fill)}
-.fit-03 .c1 .disc{top:calc(var(--disc1-y) - var(--c1-y));background:var(--disc1-fill)}
+ border-radius:var(--disc-r);background:var(--disc-fill)}
+.fit-03 .c1 .disc{top:calc(var(--disc1-y) - var(--c1-y));background:var(--disc1-fill);border-radius:50%}
 .fit-03 .c2 .disc{top:calc(var(--disc2-y) - var(--c2-y))}
 .fit-03 .c4{left:var(--c4-x);top:var(--c4-y);width:var(--c4-w);height:var(--c4-h);
  background:var(--c4-fill);clip-path:path(var(--c4-path))}
@@ -1035,22 +1040,32 @@
 
 
 /* ── обвязка страницы /design/fitness ── */
-.fit-root{position:fixed;inset:0;z-index:60;background:#0b0b0b;color:#e8e8ea;
- display:flex;flex-direction:column;
+/* НАСТОЯЩАЯ СТРАНИЦА, А НЕ СТЕНД В РАМКЕ.
+   Экран занимает весь вьюпорт: холст 393×852 pt — это система координат обмера,
+   она масштабируется под ширину устройства целиком, без полей и теней. На 393 pt
+   масштаб равен 1 и пиксели ложатся ровно на замер; на другой ширине сцена
+   растягивается пропорционально, сохраняя все пропорции. */
+.fit-root{position:fixed;inset:0;z-index:60;background:#000;color:#fff;overflow:hidden;
  font:14px/1.45 -apple-system,"SF Pro Text",system-ui,sans-serif}
-.fit-bar{display:flex;align-items:center;gap:12px;padding:10px 14px;flex:none;
- border-bottom:.5px solid #2a2a2d;background:#161618}
-.fit-back{background:#242427;color:#e8e8ea;border:.5px solid #3a3a3d;border-radius:9px;
- width:34px;height:32px;font:inherit;cursor:pointer}
-.fit-title{font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fit-pick{display:flex;gap:6px}
-.fit-pick button{background:#242427;color:#e8e8ea;border:.5px solid #3a3a3d;border-radius:9px;
- padding:7px 11px;font:inherit;cursor:pointer;white-space:nowrap}
-.fit-pick button.on{background:#C5FD2C;color:#111;border-color:#C5FD2C}
-.fit-box{flex:1;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px 0 32px}
-.fit-wrap{width:393px;height:852px;flex:none;transform-origin:top center;
- box-shadow:0 20px 60px rgba(0,0,0,.6);cursor:pointer}
+.fit-wrap{position:absolute;left:50%;top:0;width:393px;height:852px;
+ transform-origin:top left}
 .fit-01,.fit-02,.fit-03{width:393px;height:852px}
+
+/* Переключатель экранов — служебный слой поверх сцены, не часть эталона. */
+/* Переключатель уводится ВВЕРХ: внизу экрана живёт таб-бар эталона, и служебный
+   слой не имеет права его перекрывать — иначе сверка меряет мой переключатель. */
+.fit-pick{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top));
+ transform:translateX(-50%);z-index:70;display:flex;gap:6px;
+ background:rgba(28,28,30,.82);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+ border:.5px solid rgba(255,255,255,.14);border-radius:22px;padding:5px}
+.fit-pick button{background:transparent;color:#e8e8ea;border:0;border-radius:18px;
+ padding:8px 14px;font:13px/1 -apple-system,"SF Pro Text",system-ui,sans-serif;cursor:pointer}
+.fit-pick button.on{background:#C5FD2C;color:#111}
+.fit-exit{position:fixed;left:calc(8px + env(safe-area-inset-left));
+ top:calc(8px + env(safe-area-inset-top));z-index:70;
+ background:rgba(28,28,30,.82);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+ color:#e8e8ea;border:.5px solid rgba(255,255,255,.14);border-radius:16px;
+ width:32px;height:32px;font:15px/1 system-ui;cursor:pointer}
 
 /* ЗКН-Д027 · ШРИФТ СТЕНДА ЗАДАЁТСЯ ЯВНО.
    В мокапе шрифт висит на html,body; в приложении такого правила нет, и .stage

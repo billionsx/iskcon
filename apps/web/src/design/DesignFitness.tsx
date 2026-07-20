@@ -36,11 +36,12 @@ export default function DesignFitness(
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
+    /* Масштаб СТРАНИЦЫ: холст 393×852 pt — система координат обмера. Она
+       растягивается под вьюпорт целиком, а не вписывается в рамку с полями.
+       Берём меньший из двух коэффициентов, чтобы экран не обрезался по высоте. */
     const fit = () => {
-      const box = wrapRef.current?.parentElement;
-      if (!box) return;
-      const k = Math.min(box.clientWidth / 393, (box.clientHeight - 24) / 852, 1);
-      setScale(k > 0 ? k : 1);
+      const vw = window.innerWidth, vh = window.innerHeight;
+      setScale(Math.min(vw / 393, vh / 852));
     };
     fit();
     window.addEventListener("resize", fit);
@@ -103,28 +104,19 @@ export default function DesignFitness(
     return () => { alive = false; clearTimeout(t); };
   }, [screen]);
 
+  /* ?bare=1 — экран без служебных слоёв: так его снимает сверка и так его видно
+     «как на устройстве». Переключатель и выход — леса, они не часть эталона. */
+  const bare = typeof window !== "undefined" && /[?&]bare=1/.test(window.location.search);
+
   return (
     <div className="fit-root">
-      <div className="fit-bar">
-        <button className="fit-back" onClick={onClose} aria-label="Назад">←</button>
-        <span className="fit-title">{TITLE[screen]}</span>
-        <div className="fit-pick">
-          {(["01", "02", "03"] as Screen[]).map((s) => (
-            <button key={s} className={s === screen ? "on" : ""} onClick={() => setScreen(s)}>
-              {s === "01" ? "Тренировка" : s === "02" ? "Награды" : "История"}
-            </button>
-          ))}
-        </div>
-      </div>
+      {!bare && <button className="fit-exit" onClick={onClose} aria-label="Выйти">✕</button>}
 
-      <div className="fit-box">
-        <div
-          ref={wrapRef}
-          className="fit-wrap"
-          style={{ transform: `scale(${scale})` }}
-          onClick={() => setScreen(NEXT[screen])}
-          title="Нажмите, чтобы перейти к следующему экрану"
-        >
+      <div
+        ref={wrapRef}
+        className="fit-wrap"
+        style={{ transform: `translateX(-50%) scale(${scale})`, marginLeft: 0 }}
+      >
           {screen === "01" && <div className="fit-01"><div className="stage">
 
   <div className="t sb-time" data-w="w-sb-time" data-x="sb-time-x">22:45</div>
@@ -287,8 +279,16 @@ export default function DesignFitness(
   <div className="t lb lb3" data-w="w-lb3">Sharing</div>
 
           </div></div>}
-        </div>
       </div>
+
+      {!bare && <nav className="fit-pick" aria-label="Экраны эталона">
+        {(["01", "02", "03"] as Screen[]).map((n) => (
+          <button key={n} className={n === screen ? "on" : ""} onClick={() => setScreen(n)}
+                  aria-current={n === screen ? "page" : undefined}>
+            {n === "01" ? "Тренировка" : n === "02" ? "Награды" : "История"}
+          </button>
+        ))}
+      </nav>}
     </div>
   );
 }

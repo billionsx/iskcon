@@ -146,6 +146,7 @@
   --c-w: 361.0px;
   --disc-x: 32.0px;
   --disc-d: 48.0px;
+  --disc-r: 10.67px;
   --disc1-y: 410.0px;
   --disc2-y: 670.0px;
   --disc3-y: 758.0px;
@@ -321,9 +322,13 @@ html,body{background:#0b0b0b;display:flex;justify-content:center;
 .c1{top:var(--c1-y);height:var(--c1-h);clip-path:path(var(--c1-path))}
 .c2{top:var(--c2-y);height:var(--c2-h);clip-path:path(var(--c2-path))}
 .c3{top:var(--c3-y);height:var(--c3-h);clip-path:path(var(--c3-path))}
+/* ПОДЛОЖКА ЗНАКА — КВАДРАТ СО СКРУГЛЕНИЕМ, А НЕ КРУГ.
+   Круглая она только у первой карточки (Social Dance); у прогулок это квадрат
+   48×48 с радиусом 10.67 pt — замерено по профилю левого края: отступ тёмного
+   от края обнуляется на 32-м пикселе, это и есть радиус. */
 .disc{left:calc(var(--disc-x) - var(--c-x));width:var(--disc-d);height:var(--disc-d);
- border-radius:50%;background:var(--disc-fill)}
-.c1 .disc{top:calc(var(--disc1-y) - var(--c1-y));background:var(--disc1-fill)}
+ border-radius:var(--disc-r);background:var(--disc-fill)}
+.c1 .disc{top:calc(var(--disc1-y) - var(--c1-y));background:var(--disc1-fill);border-radius:50%}
 .c2 .disc{top:calc(var(--disc2-y) - var(--c2-y))}
 .c4{left:var(--c4-x);top:var(--c4-y);width:var(--c4-w);height:var(--c4-h);
  background:var(--c4-fill);clip-path:path(var(--c4-path))}
