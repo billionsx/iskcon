@@ -9,10 +9,10 @@
  * ЧТО ЗДЕСЬ ЗАМЕРЕНО, А ЧТО НЕТ.
  *
  * Замерено (📐):
- *   мини-плеер     высота 48.0, врезка 21.0, ширина 351.0, заливка #181818 (5.17)
+ *   мини-плеер     высота 48.0, врезка 21.0, ширина 351.0, заливка --player-mini-bg (5.17)
  *   зазор до таб-бара  8.0 — совпал на пяти кадрах (5.17)
  *   сегменты внутри    [28 + 48] обложка · [88 + 277] содержимое (5.20, состояние 6)
- *   плеер как слой     высота 38.0, ширина 277.0, заливка #111111, ось 56 (5.20, состояние 3)
+ *   плеер как слой     высота 38.0, ширина 277.0, заливка --player-bar-bg, ось 56 (5.20)
  *   обложка на весь экран  врезка 24.0 симметрично (apple_music с.35)
  *   центральная кнопка  ось 196.5 = центр экрана (apple_music с.31, 35)
  *
@@ -28,10 +28,34 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Reac
 
 export type PlayKind = "book" | "lecture" | "kirtan" | "bhajan" | "podcast" | "inspiration";
 
-/** У каких видов есть переход на текст. Это единственное, чем виды различаются. */
-const HAS_TEXT: Record<PlayKind, boolean> = {
-  book: true, lecture: true, bhajan: true,
-  kirtan: false, podcast: false, inspiration: false,
+/**
+ * МАТРИЦА ВОЗМОЖНОСТЕЙ. Первая версия различала виды одним флагом «есть текст»,
+ * и это было слишком грубо: у Apple книга, подкаст и песня живут в РАЗНЫХ
+ * приложениях именно потому, что у них разный транспорт. Книге нужна перемотка
+ * на ±15 секунд и скорость чтения, песне — переход по трекам и повтор. Мы держим
+ * один компонент, значит различие переезжает сюда.
+ *
+ *   text   — переход на текст (наше, у Apple такого нет)
+ *   skip   — перемотка ±15 с вместо перехода по трекам (длинная запись)
+ *   speed  — скорость воспроизведения (речь, не музыка)
+ *   repeat — повтор (киртан и бхаджан поют кругами)
+ *   queue  — очередь / оглавление
+ */
+interface Caps { text: boolean; skip: boolean; speed: boolean; repeat: boolean; queue: boolean }
+const CAPS: Record<PlayKind, Caps> = {
+  book:        { text: true,  skip: true,  speed: true,  repeat: false, queue: true  },
+  lecture:     { text: true,  skip: true,  speed: true,  repeat: false, queue: true  },
+  podcast:     { text: false, skip: true,  speed: true,  repeat: false, queue: true  },
+  kirtan:      { text: false, skip: false, speed: false, repeat: true,  queue: true  },
+  bhajan:      { text: true,  skip: false, speed: false, repeat: true,  queue: true  },
+  inspiration: { text: false, skip: false, speed: false, repeat: false, queue: false },
+};
+
+/** Оттенок вида — 🎨 наше. У Apple фон выводится из обложки; когда обложки нет,
+ *  выводить не из чего, и вид даёт свой тон, чтобы экран не был мёртвым. */
+const TINT: Record<PlayKind, string> = {
+  book: "var(--tint-book)", lecture: "var(--tint-lecture)", kirtan: "var(--tint-kirtan)",
+  bhajan: "var(--tint-bhajan)", podcast: "var(--tint-podcast)", inspiration: "var(--tint-inspiration)",
 };
 
 const KIND_LABEL: Record<PlayKind, string> = {
@@ -50,6 +74,9 @@ export interface Track {
   duration: number;
   /** Куда ведёт «Текст». Задаётся, только если у вида он есть. */
   textHref?: string;
+  /** Текст с таймкодами: секунда начала абзаца и сам абзац. Даёт синхронное
+   *  чтение — абзац подсвечивается по ходу звука, нажатие перематывает. */
+  text?: { t: number; s: string }[];
 }
 
 export type LayerState = "hidden" | "mini" | "full";
@@ -86,6 +113,23 @@ function TextGlyph({ size = 20 }: { size?: number }) {
 function QueueGlyph({ size = 20 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
     <path {...S} d="M5 7h10M5 12h10M5 17h6" /><path {...S} d="M18 9v8M18 9l3 2-3 2" /></svg>;
+}
+function Back15Glyph({ size = 26 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M11.5 5.5a7 7 0 1 1-6.8 8.7" /><path {...S} d="M8.2 3.1 11.5 5.5 8.6 8.2" />
+    <text x="12" y="15.6" textAnchor="middle" fontSize="7.4" fontWeight="700"
+      fill="currentColor" stroke="none" fontFamily="system-ui">15</text></svg>;
+}
+function Fwd15Glyph({ size = 26 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M12.5 5.5a7 7 0 1 0 6.8 8.7" /><path {...S} d="M15.8 3.1 12.5 5.5l2.9 2.7" />
+    <text x="12" y="15.6" textAnchor="middle" fontSize="7.4" fontWeight="700"
+      fill="currentColor" stroke="none" fontFamily="system-ui">15</text></svg>;
+}
+function RepeatGlyph({ size = 20 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M6 8h11a3 3 0 0 1 3 3v1" /><path {...S} d="M17 5.5 19.8 8 17 10.5" />
+    <path {...S} d="M18 16H7a3 3 0 0 1-3-3v-1" /><path {...S} d="M7 18.5 4.2 16 7 13.5" /></svg>;
 }
 function ChevronDownGlyph({ size = 18 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
@@ -265,127 +309,287 @@ export function MiniPlayer({ track, playing, position, onToggle, onOpen, onNext,
 
 /* ─────────────────────────── полный экран ─────────────────────────── */
 
+/* ─────────────────────────── фон из обложки ─────────────────────────── */
+
 /**
- * «Сейчас играет». Из замера здесь достоверны врезка обложки 24.0 и ось
- * центральной кнопки 196.5 (центр экрана). Остальное 🕳 — фон экрана у Apple
- * выводится из обложки, плоских заливок нет, и статический переписчик его
- * не берёт.
+ * 📐 Факт из замера: на экране плеера у Apple **нет плоских заливок вовсе** —
+ * переписчик возвращает осколки градиента, потому что фон выводится ИЗ ОБЛОЖКИ.
+ * 🕳 Как именно он строится, со статики не снять. Здесь взято самое простое, что
+ * даёт тот же эффект: обложка, растянутая и размытая, плюс затемняющая пелена,
+ * чтобы текст держал контраст.
  *
- * НАШЕ, чего у Apple нет: кнопка «Текст». Она включается только для книги,
- * лекции и бхаджана — там, где текст существует.
+ * Когда обложки нет — а у нас её нет у большинства записей — выводить не из чего,
+ * и тон берётся от вида (🎨 наше). Пустой чёрный прямоугольник читается как
+ * ошибка загрузки, тон — как замысел.
  */
-export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev, onNext, onClose, onText, onQueue }: {
-  track: Track; playing: boolean; position: number;
-  onToggle: () => void; onSeek: (s: number) => void;
-  onPrev: () => void; onNext: () => void; onClose: () => void;
-  onText?: () => void; onQueue?: () => void;
-}) {
-  const hasText = HAS_TEXT[track.kind] && !!track.textHref;
+function Ambient({ track }: { track: Track }) {
   return (
-    <div role="dialog" aria-modal="true" aria-label={`Сейчас играет: ${track.title}`}
-      style={{
-        position: "absolute", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
-        /* 🕳 Фон у Apple выведен из обложки. Пока — ступень поверхности листа. */
-        background: "var(--color-bg-2)",
-        paddingTop: "env(safe-area-inset-top)",
-      }}>
-      {/* шапка листа: свернуть */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center",
-        height: 44, flexShrink: 0 }}>
-        <button type="button" onClick={onClose} aria-label="Свернуть плеер"
-          style={{ width: 44, height: 44, display: "grid", placeItems: "center",
-            background: "none", border: "none", color: "var(--color-label-2)", cursor: "pointer",
-            WebkitTapHighlightColor: "transparent" }}>
+    <div aria-hidden style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0 }}>
+      {track.cover ? (
+        <img src={track.cover} alt="" style={{
+          position: "absolute", inset: "-25%", width: "150%", height: "150%",
+          objectFit: "cover", filter: "blur(64px) saturate(180%)", opacity: 0.6,
+        }} />
+      ) : (
+        <div style={{ position: "absolute", inset: 0,
+          background: `radial-gradient(130% 85% at 50% 0%, ${TINT[track.kind]} 0%, transparent 72%)` }} />
+      )}
+      <div style={{ position: "absolute", inset: 0,
+        background: "linear-gradient(180deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.78) 100%)" }} />
+    </div>
+  );
+}
+
+/* ─────────────────────────── очередь ─────────────────────────── */
+
+/**
+ * Лист очереди. Поверхности берутся по §5.16: холст листа --color-bg-2, карточка на
+ * нём --color-bg-3 — лист сам является поверхностью, поэтому ступень выше главного
+ * экрана. Ступень задаётся переопределением токена, а не отдельным компонентом.
+ */
+function QueueSheet({ queue, index, onPick, onClose, kind }: {
+  queue: Track[]; index: number; onPick: (i: number) => void; onClose: () => void; kind: PlayKind;
+}) {
+  const title = kind === "book" || kind === "lecture" ? "Оглавление" : "Очередь";
+  return (
+    <div role="dialog" aria-modal="true" aria-label={title}
+      style={{ position: "absolute", inset: 0, zIndex: 1500, display: "flex", flexDirection: "column",
+        background: "var(--color-bg-2)", ["--color-card" as string]: "var(--color-bg-3)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 16px", height: 56, flexShrink: 0 }}>
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
+          lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)", fontWeight: 700,
+          color: "var(--color-label)" }}>{title}</h2>
+        <button type="button" onClick={onClose} aria-label="Закрыть"
+          style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
+            border: "none", color: "var(--color-label-2)", cursor: "pointer" }}>
           <ChevronDownGlyph size={20} />
         </button>
       </div>
-
-      {/* РАСКЛАДКА ПО ЗАМЕРЕННЫМ ВЫСОТАМ, А НЕ ПО ОТСТУПАМ СВЕРХУ.
-          Первый прогон складывал экран сверху вниз, и внизу оставалась пустота.
-          В кадре 852 pt блок управления стоит на своих местах (📐 apple_music
-          с.31 и 35, оба кадра дали одно и то же):
-            заголовок    y 483 … 504, врезка 33.7
-            знак         y 557 … 565, по центру, ширина 25
-            транспорт    y 635 … 672, по центру
-            нижний ряд   y 732 … 749, врезка 27, ширина 338
-          Обложка занимает то, что выше. Её собственная геометрия — 🕳: в наборе
-          Music НЕТ ни одного кадра чистого «сейчас играет», все плеерные кадры
-          сняты с открытым текстом песни. */}
-      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
-        padding: "0 24px" }}>
-        {/* Врезка 24.0 симметрично — в кадре 393 обложка выходит 345. Высота
-            отдаётся остатку: квадрат сохраняется, но не выталкивает управление. */}
-        {/* Квадрат задаётся ШИРИНОЙ и ограничивается высотой экрана. Прежде здесь
-            стоял flex:1 вместе с aspect-ratio: флекс раздавал остаток высоты,
-            отношение сторон пересчитывало ширину, коробка вылезала за родителя
-            и ложилась ПОВЕРХ заголовка. Флекс и aspect-ratio на одном узле
-            спорят за одну величину — их надо разводить. */}
-        <div style={{ display: "grid", placeItems: "center", paddingBottom: 20 }}>
-          <div style={{ width: "min(100%, 42vh)", aspectRatio: "1", display: "grid" }}>
-            <Cover track={track} size="100%" radius="var(--radius-card)" big />
-          </div>
-        </div>
-
-        <div style={{ marginBottom: 6, fontFamily: "var(--font-text)",
-          fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
-          letterSpacing: "var(--ls-caption2)", fontWeight: 600,
-          color: "var(--color-gold-deep)" }}>
-          {KIND_LABEL[track.kind]}
-        </div>
-        <h1 style={{ margin: 0, fontFamily: "var(--font-display)",
-          fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
-          letterSpacing: "var(--ls-title2)", fontWeight: 700, color: "var(--color-label)" }}>
-          {track.title}
-        </h1>
-        {track.subtitle && (
-          <p style={{ margin: "2px 0 0", fontFamily: "var(--font-text)",
-            fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
-            letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)" }}>
-            {track.subtitle}
-          </p>
-        )}
-
-        {/* 483→557: разрыв 53 между заголовком и шкалой (📐) */}
-        <div style={{ marginTop: 22 }}>
-          <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
-        </div>
-
-        {/* ТРАНСПОРТ. Центральная кнопка на оси экрана (📐 apple_music с.31, 35). */}
-        {/* 565→635: разрыв 70 до транспорта (📐) */}
-        <div style={{ marginTop: 26, display: "flex", alignItems: "center",
-          justifyContent: "center", gap: 36 }}>
-          <button type="button" onClick={onPrev} aria-label="Назад"
-            style={transportStyle}><PrevGlyph size={26} /></button>
-          <button type="button" onClick={onToggle} aria-label={playing ? "Пауза" : "Воспроизвести"}
-            style={{ ...transportStyle, width: 56, height: 56 }}>
-            {playing ? <PauseGlyph size={34} /> : <PlayGlyph size={34} />}
-          </button>
-          <button type="button" onClick={onNext} aria-label="Дальше"
-            style={transportStyle}><NextGlyph size={26} /></button>
-        </div>
-
-        {/* НИЖНИЙ РЯД — 📐 врезка 27, ширина 338, y 732…749. Действия расходятся
-            по краям, а не жмутся в центр: у Apple здесь ряд равноудалённых знаков.
-            «Текст» — НАШЕ, у Apple его нет; включается только там, где текст есть. */}
-        <div style={{ display: "flex", alignItems: "center",
-          justifyContent: hasText ? "space-between" : "center",
-          padding: "0 3px", marginTop: "auto",
-          marginBottom: "calc(40px + env(safe-area-inset-bottom))" }}>
-          {hasText && (
-            <button type="button" onClick={onText} className="sq" style={pillStyle}>
-              <TextGlyph size={18} /> Текст
+      <ul style={{ listStyle: "none", margin: 0, padding: "0 16px 32px", overflowY: "auto", flex: 1 }}>
+        {queue.map((t, k) => (
+          <li key={t.id}>
+            <button type="button" onClick={() => onPick(k)}
+              style={{ display: "flex", alignItems: "center", gap: "var(--media-gap)", width: "100%",
+                minHeight: "var(--row-h-media)", padding: "0 var(--inset-row)", border: "none",
+                borderRadius: "var(--radius-thumb)", cursor: "pointer", textAlign: "left",
+                background: k === index ? "var(--color-card)" : "none",
+                WebkitTapHighlightColor: "transparent" }}>
+              <Cover track={t} size={44} radius="var(--radius-thumb)" />
+              <span style={{ minWidth: 0, flex: 1 }}>
+                <span style={{ display: "block", fontFamily: "var(--font-text)",
+                  fontSize: "var(--text-body)", lineHeight: "var(--lh-body)",
+                  letterSpacing: "var(--ls-body)", whiteSpace: "nowrap", overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  color: k === index ? "var(--color-gold-deep)" : "var(--color-label)" }}>{t.title}</span>
+                <span style={{ display: "block", fontFamily: "var(--font-text)",
+                  fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+                  letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
+                  {clock(t.duration)}
+                </span>
+              </span>
             </button>
-          )}
-          <button type="button" onClick={onQueue} aria-label="Очередь"
-            style={{ ...transportStyle, width: 40, height: 40,
-              color: "var(--color-label-2)" }}>
-            <QueueGlyph size={20} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* ─────────────────────────── синхронное чтение ─────────────────────────── */
+
+/**
+ * НАШЕ, и это главное отличие от Apple Music. Абзац подсвечивается по ходу звука,
+ * нажатие на абзац перематывает запись на его начало. Для книги, лекции и бхаджана
+ * это снимает главную боль: слушал в дороге — сел читать с того же места.
+ *
+ * Совпадение ищется по последнему абзацу, чьё время начала не превысило позицию:
+ * таймкоды монотонны, поэтому достаточно одного прохода.
+ */
+function TextSheet({ track, position, onSeek, onClose }: {
+  track: Track; position: number; onSeek: (s: number) => void; onClose: () => void;
+}) {
+  const paras = track.text ?? [];
+  let active = -1;
+  for (let k = 0; k < paras.length; k++) if (paras[k].t <= position) active = k;
+  const ref = useRef<HTMLLIElement | null>(null);
+  useEffect(() => { ref.current?.scrollIntoView({ block: "center", behavior: "smooth" }); }, [active]);
+  return (
+    <div role="dialog" aria-modal="true" aria-label={`Текст: ${track.title}`}
+      style={{ position: "absolute", inset: 0, zIndex: 1500, display: "flex", flexDirection: "column",
+        background: "var(--color-bg-2)" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 16px", height: 56, flexShrink: 0 }}>
+        <h2 style={{ margin: 0, minWidth: 0, fontFamily: "var(--font-display)",
+          fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
+          letterSpacing: "var(--ls-title2)", fontWeight: 700, color: "var(--color-label)",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{track.title}</h2>
+        <button type="button" onClick={onClose} aria-label="Закрыть"
+          style={{ width: 44, height: 44, flexShrink: 0, display: "grid", placeItems: "center",
+            background: "none", border: "none", color: "var(--color-label-2)", cursor: "pointer" }}>
+          <ChevronDownGlyph size={20} />
+        </button>
+      </div>
+      <ul style={{ listStyle: "none", margin: 0, padding: "0 24px 48px", overflowY: "auto", flex: 1 }}>
+        {paras.map((para, k) => (
+          <li key={k} ref={k === active ? ref : undefined}>
+            <button type="button" onClick={() => onSeek(para.t)}
+              style={{ display: "block", width: "100%", textAlign: "left", background: "none",
+                border: "none", padding: "10px 0", cursor: "pointer",
+                fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
+                /* Интерлиньяж ПРОЗЫ, а не интерфейса: §5.28 меряет строку хрома,
+                   абзац сплошного текста живёт по своему правилу. */
+                lineHeight: "var(--leading-normal)", letterSpacing: "var(--ls-body)",
+                color: k === active ? "var(--color-label)" : "var(--color-label-3)",
+                transition: "color .25s", WebkitTapHighlightColor: "transparent" }}>
+              {para.s}
+            </button>
+          </li>
+        ))}
+        {paras.length === 0 && (
+          <li style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+            color: "var(--color-label-3)", padding: "24px 0" }}>
+            Текст этой записи ещё не сверен.
+          </li>
+        )}
+      </ul>
+    </div>
+  );
+}
+
+/* ─────────────────────────── полный экран ─────────────────────────── */
+
+const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
+
+/**
+ * «Сейчас играет». Блок управления стоит на замеренных высотах (📐 apple_music
+ * с.31 и 35, кадр 393 × 852): заголовок y 483, знак y 557, транспорт y 635,
+ * нижний ряд y 732 при врезке 27.
+ *
+ * Транспорт зависит от ВИДА, а не один на всех: длинной записи нужна перемотка
+ * на ±15 секунд и скорость, песне — переход по трекам и повтор. Матрица CAPS.
+ */
+export function FullPlayer({ track, playing, position, speed, repeat, onToggle, onSeek, onPrev,
+  onNext, onClose, onText, onQueue, onSpeed, onRepeat }: {
+  track: Track; playing: boolean; position: number; speed: number; repeat: boolean;
+  onToggle: () => void; onSeek: (s: number) => void;
+  onPrev: () => void; onNext: () => void; onClose: () => void;
+  onText?: () => void; onQueue?: () => void;
+  onSpeed: (v: number) => void; onRepeat: () => void;
+}) {
+  const caps = CAPS[track.kind];
+  const hasText = caps.text && (!!track.text?.length || !!track.textHref);
+  return (
+    <div role="dialog" aria-modal="true" aria-label={`Сейчас играет: ${track.title}`}
+      style={{ position: "absolute", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
+        background: "var(--color-bg-2)", paddingTop: "env(safe-area-inset-top)" }}>
+      <Ambient track={track} />
+
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column",
+        flex: 1, minHeight: 0 }}>
+        {/* шапка: свернуть слева-по-центру, повтор справа — если вид его знает */}
+        <div style={{ display: "flex", alignItems: "center", height: 44, flexShrink: 0,
+          padding: "0 12px" }}>
+          <span style={{ width: 44 }} />
+          <button type="button" onClick={onClose} aria-label="Свернуть плеер"
+            style={{ flex: 1, height: 44, display: "grid", placeItems: "center", background: "none",
+              border: "none", color: "var(--color-label-2)", cursor: "pointer",
+              WebkitTapHighlightColor: "transparent" }}>
+            <ChevronDownGlyph size={20} />
           </button>
+          {caps.repeat ? (
+            <button type="button" onClick={onRepeat} aria-pressed={repeat} aria-label="Повтор"
+              style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
+                border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                color: repeat ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
+              <RepeatGlyph size={20} />
+            </button>
+          ) : <span style={{ width: 44 }} />}
+        </div>
+
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+          padding: "0 24px" }}>
+          {/* Квадрат задаётся ШИРИНОЙ и ограничивается высотой экрана. Флекс и
+              aspect-ratio на одном узле спорят за одну величину — их разводим. */}
+          <div style={{ display: "grid", placeItems: "center", paddingBottom: 20 }}>
+            <div style={{ width: "min(100%, 42vh)", aspectRatio: "1", display: "grid" }}>
+              <Cover track={track} size="100%" radius="var(--radius-card)" big />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 6, fontFamily: "var(--font-text)",
+            fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+            letterSpacing: "var(--ls-caption2)", fontWeight: 600,
+            color: "var(--color-gold-deep)" }}>
+            {KIND_LABEL[track.kind]}
+          </div>
+          <h1 style={{ margin: 0, fontFamily: "var(--font-display)",
+            fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
+            letterSpacing: "var(--ls-title2)", fontWeight: 700, color: "var(--color-label)" }}>
+            {track.title}
+          </h1>
+          {track.subtitle && (
+            <p style={{ margin: "2px 0 0", fontFamily: "var(--font-text)",
+              fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+              letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)" }}>
+              {track.subtitle}
+            </p>
+          )}
+
+          {/* 483 → 557: разрыв 53 до шкалы (📐) */}
+          <div style={{ marginTop: 22 }}>
+            <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
+          </div>
+
+          {/* 565 → 635: разрыв 70 до транспорта (📐) */}
+          <div style={{ marginTop: 26, display: "flex", alignItems: "center",
+            justifyContent: "center", gap: 36 }}>
+            <button type="button" onClick={() => caps.skip ? onSeek(position - 15) : onPrev()}
+              aria-label={caps.skip ? "Назад на 15 секунд" : "Предыдущая"} style={transportStyle}>
+              {caps.skip ? <Back15Glyph size={28} /> : <PrevGlyph size={26} />}
+            </button>
+            <button type="button" onClick={onToggle} aria-label={playing ? "Пауза" : "Воспроизвести"}
+              style={{ ...transportStyle, width: 56, height: 56 }}>
+              {playing ? <PauseGlyph size={34} /> : <PlayGlyph size={34} />}
+            </button>
+            <button type="button" onClick={() => caps.skip ? onSeek(position + 15) : onNext()}
+              aria-label={caps.skip ? "Вперёд на 15 секунд" : "Следующая"} style={transportStyle}>
+              {caps.skip ? <Fwd15Glyph size={28} /> : <NextGlyph size={26} />}
+            </button>
+          </div>
+
+          {/* НИЖНИЙ РЯД — 📐 врезка 27, ширина 338, y 732…749. Слева наше действие,
+              справа служебные. Слабина уходит сюда, а не в дыру под обложкой. */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+            gap: 8, padding: "0 3px", marginTop: "auto",
+            marginBottom: "calc(40px + env(safe-area-inset-bottom))" }}>
+            <span style={{ display: "flex", gap: 8, minWidth: 0 }}>
+              {hasText && (
+                <button type="button" onClick={onText} className="sq" style={pillStyle}>
+                  <TextGlyph size={18} /> Текст
+                </button>
+              )}
+              {caps.speed && (
+                <button type="button" className="sq" style={pillStyle}
+                  aria-label={`Скорость ${speed}×`}
+                  onClick={() => onSpeed(SPEEDS[(SPEEDS.indexOf(speed as never) + 1) % SPEEDS.length])}>
+                  {speed}×
+                </button>
+              )}
+            </span>
+            {caps.queue && (
+              <button type="button" onClick={onQueue} aria-label="Очередь"
+                style={{ ...transportStyle, width: 40, height: 40, color: "var(--color-label-2)" }}>
+                <QueueGlyph size={20} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
+
 
 const transportStyle: CSSProperties = {
   width: 48, height: 48, display: "grid", placeItems: "center",
@@ -409,8 +613,12 @@ const pillStyle: CSSProperties = {
 
 /**
  * Держатель состояния слоя. Плеер не «висит поверх» — он ЗАБИРАЕТ слой себе,
- * как в замере (§5.20, состояние 3: табы схлопываются с 281 до 51 pt).
- * Здесь это выражено проще: пока плеер развёрнут, нижняя навигация не рисуется.
+ * как в замере (§5.20, состояние 3: табы схлопываются с 281 до 51 pt). Здесь это
+ * выражено просто: пока плеер развёрнут, нижней навигации нет.
+ *
+ * Повтор и скорость живут ЗДЕСЬ, а не в экране: при переходе к следующей записи
+ * скорость чтения должна сохраняться — человек выбрал её один раз на всю сессию,
+ * а не на трек.
  */
 export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children }: {
   queue: Track[]; index: number; onIndex: (i: number) => void;
@@ -421,14 +629,12 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
   const [playing, setPlaying] = useState(false);
   const [position, setPosition] = useState(0);
   const [state, setState] = useState<LayerState>("mini");
+  const [sheet, setSheet] = useState<"none" | "queue" | "text">("none");
+  const [speed, setSpeed] = useState(1);
+  const [repeat, setRepeat] = useState(false);
   const track = queue[index];
 
   useEffect(() => { setPosition(0); }, [index]);
-  useEffect(() => {
-    if (!playing) return;
-    const t = setInterval(() => setPosition((p) => Math.min(track.duration, p + 1)), 1000);
-    return () => clearInterval(t);
-  }, [playing, track]);
 
   const next = useCallback(() => onIndex((index + 1) % queue.length), [index, queue.length, onIndex]);
   const prev = useCallback(() => {
@@ -436,25 +642,51 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
     onIndex((index - 1 + queue.length) % queue.length);
   }, [index, position, queue.length, onIndex]);
 
+  /* Ход воспроизведения. Скорость учитывается, потому что она влияет на то,
+     как быстро бежит позиция; повтор — на то, что делать в конце записи. */
+  useEffect(() => {
+    if (!playing || !track) return;
+    const t = setInterval(() => setPosition((prevPos) => {
+      const nextPos = prevPos + speed;
+      if (nextPos < track.duration) return nextPos;
+      if (repeat) return 0;
+      next();
+      return 0;
+    }), 1000);
+    return () => clearInterval(t);
+  }, [playing, track, speed, repeat, next]);
+
   if (!track) return <>{children}</>;
+  const seek = (s: number) => setPosition(Math.max(0, Math.min(track.duration, s)));
   return (
     <>
       {children}
-      {state === "mini" && (
+      {state === "mini" && sheet === "none" && (
         <MiniPlayer track={track} playing={playing} position={position}
-          onToggle={() => setPlaying((p) => !p)}
+          onToggle={() => setPlaying((v) => !v)}
           onOpen={() => setState("full")}
           onNext={next}
           bottom={tabBarBottom} />
       )}
       {state === "full" && (
-        <FullPlayer track={track} playing={playing} position={position}
-          onToggle={() => setPlaying((p) => !p)}
-          onSeek={(s) => setPosition(Math.max(0, Math.min(track.duration, s)))}
+        <FullPlayer track={track} playing={playing} position={position} speed={speed} repeat={repeat}
+          onToggle={() => setPlaying((v) => !v)}
+          onSeek={seek}
           onPrev={prev} onNext={next}
           onClose={() => setState("mini")}
-          onText={track.textHref ? () => { window.location.href = track.textHref!; } : undefined}
-          onQueue={undefined} />
+          onText={CAPS[track.kind].text ? () => setSheet("text") : undefined}
+          onQueue={CAPS[track.kind].queue ? () => setSheet("queue") : undefined}
+          onSpeed={setSpeed}
+          onRepeat={() => setRepeat((v) => !v)} />
+      )}
+      {sheet === "queue" && (
+        <QueueSheet queue={queue} index={index} kind={track.kind}
+          onPick={(k) => { onIndex(k); setSheet("none"); }}
+          onClose={() => setSheet("none")} />
+      )}
+      {sheet === "text" && (
+        <TextSheet track={track} position={position} onSeek={seek}
+          onClose={() => setSheet("none")} />
       )}
     </>
   );
