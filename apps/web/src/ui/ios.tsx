@@ -150,10 +150,12 @@ export function Group({ header, action, footer, children }: {
   return (
     <section>
       {header && <GroupHeader title={header} action={action} />}
-      <div style={{
+      {/* Класс `sq` несёт ФОРМУ угла: дуга по умолчанию, суперэллипс n≈2.5 там,
+          где браузер умеет `corner-shape` (📐 4.2 — точнее дуги во всех девяти
+          продуктах). Радиус задаётся классом, поэтому здесь его нет. */}
+      <div className="sq" style={{
         margin: "0 var(--inset-card)",
         background: "var(--color-card)",
-        borderRadius: "var(--radius-card)",
         boxShadow: "var(--shadow-group)",
         overflow: "hidden",
       }}>

@@ -305,7 +305,9 @@
   /* Свечение светлого плеера: тёплое золото у обложки, чистый холст ко дну. */
   --player-glow: radial-gradient(120% 62% at 50% 0%, rgba(210, 170, 27, 0.16) 0%, rgba(210, 170, 27, 0.05) 42%, rgba(0, 0, 0, 0) 74%);  /* 🎨 */
   --radius-card: 24px;  /* 📐 4.2 · радиус карточки группы (замер) */
-  --radius-hero: 20px;  /* ⚠ 4.2 · радиус крупной медиа-карточки App Store */
+  /* Радиус — свойство РОЛИ, форма угла — нет (📐 4.2, девять продуктов, 31 подгонка).
+     Семей две: 24–26 при врезке 16 и 37.8 у полноширинной карточки (врезка 0). */
+  --radius-card-full: 37.8px;  /* 📐 4.2 · fitness · music · tv */
   --row-h: 49px;  /* 📐 5.19 · шаг сгруппированного списка. Поправка 3: кластер 47.0
                      целиком приходит с врезки 37.3 (не список); при врезке ровно 16
                      мода 49.0 на шести продуктах, разброс ±1 = округление рендера */
@@ -1171,3 +1173,26 @@ body.gtab-off .gtab-wrap { display: none; }
 .t-footnote{font-family:var(--font-text);font-size:var(--text-footnote);line-height:var(--lh-footnote);letter-spacing:var(--ls-footnote)}
 .t-caption{font-family:var(--font-text);font-size:var(--text-caption);line-height:var(--lh-caption);letter-spacing:var(--ls-caption)}
 .t-caption2{font-family:var(--font-text);font-size:var(--text-caption2);line-height:var(--lh-caption2);letter-spacing:var(--ls-caption2)}
+
+/* ═══ ЗКН-Д028 · ФОРМА УГЛА ═══
+ * §4.2: суперэллипс |x/R|ⁿ + |y/R|ⁿ = 1 точнее дуги окружности во ВСЕХ девяти
+ * продуктах — в 1.7–3.5 раза по RMSE, — а показатель держится в узком коридоре
+ * n = 2.5–2.6. Дуга даёт «пузырь» вместо яблочного угла.
+ *
+ * Радиус и форма — РАЗНЫЕ решения, и переносятся порознь: радиус зависит от роли
+ * (24–26 при врезке 16, 37.8 у полноширинной), показатель от роли не зависит.
+ *
+ * Круглый 24 занимает ту же зону, что непрерывный 16, — поэтому при переходе на
+ * `corner-shape` радиус УМЕНЬШАЕТСЯ. Свойство новое, поддержки почти нет: под
+ * @supports это чистое улучшение, которое нигде не ломает.
+ *
+ * n ≈ 2.5 — МЯГКАЯ непрерывность, а не «сквиркл 4–5» из презентаций. Числа сняты
+ * с кадров. */
+.sq { border-radius: var(--radius-card); }
+@supports (corner-shape: squircle) {
+  .sq { corner-shape: squircle; border-radius: 16px; }
+}
+.sq-full { border-radius: var(--radius-card-full); }
+@supports (corner-shape: squircle) {
+  .sq-full { corner-shape: squircle; border-radius: 25px; }
+}

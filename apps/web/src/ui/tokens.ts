@@ -94,7 +94,6 @@ export const tk = {
     /** ЗКН-Д018 — карточка сгруппированного экрана iOS 26.5 (замер: 24). */
     card: 'var(--radius-card)', // 24
     /** ЗКН-Д018 — крупная медиа-карточка App Store (замер: 20). */
-    hero: 'var(--radius-hero)', // 20
     pill: 'var(--radius-pill)', // 999
   },
   /**
