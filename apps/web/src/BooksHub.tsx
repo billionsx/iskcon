@@ -92,9 +92,12 @@ function BookRow({ book, last, query = "", onOpenBook, onOpenAuthor }: {
     <li style={{ position: "relative", borderBottom: last ? "none" : "0.5px solid var(--color-hairline)" }}>
       <button type="button" aria-label={`Открыть: ${book.title}`} onClick={() => onOpenBook(book)}
         style={{ position: "absolute", inset: 0, zIndex: 1, background: "none", border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent" }} />
-      <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: 12, padding: "11px 13px", pointerEvents: "none" }}>
+      {/* Строка с книжной обложкой — 📐 5.39: шаг 106, обложка 52 держит ШИРИНУ,
+          высота отпускается (у книг разные пропорции блока), зазор 12.5, поле 16.
+          Прежде обложка кадрировалась в квадрат 50×50 — портретный блок обрезался. */}
+      <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", gap: "var(--media-gap)", minHeight: "var(--row-h-cover)", padding: "0 var(--inset-row)", pointerEvents: "none" }}>
         {cover
-          ? <img src={cover} alt="" loading="lazy" style={{ width: 50, height: 50, borderRadius: 11, objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
+          ? <img src={cover} alt="" loading="lazy" style={{ width: "var(--cover-w)", aspectRatio: "1 / 1.41", borderRadius: "var(--radius-thumb)", objectFit: "cover", flexShrink: 0, border: "0.5px solid var(--color-hairline)" }} />
           : <BookMonogram />}
         <span style={{ minWidth: 0, flex: 1 }}>
           <span style={{ display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)", fontWeight: 600, lineHeight: 1.25, color: "var(--color-label)",

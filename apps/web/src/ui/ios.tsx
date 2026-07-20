@@ -37,6 +37,17 @@
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 
 const FONT = "var(--font-text)";
+/** Роль типографики §3.2 целиком: кегль, интерлиньяж, трекинг и семейство. */
+function typeStyle(role: "body" | "subhead" | "footnote" | "caption2"): CSSProperties {
+  const display = false;
+  return {
+    fontFamily: display ? "var(--font-display)" : "var(--font-text)",
+    fontSize: `var(--text-${role})`,
+    lineHeight: `var(--lh-${role})`,
+    letterSpacing: `var(--ls-${role})`,
+  };
+}
+
 const INK = "var(--color-label)";
 const INK2 = "var(--color-label-2)";
 const INK3 = "var(--color-label-3)";
@@ -322,6 +333,80 @@ export function Row({
       {/* Разделитель начинается ТАМ ЖЕ, ГДЕ ТЕКСТ (врезка 16 = поле строки).
           Иначе линия висит под пустотой и группа рассыпается. */}
       {!last && <Separator inset={16} />}
+    </>
+  );
+}
+
+/**
+ * СТРОКА С МЕДИА. Три шага, промежуточных у Apple нет (📐 5.19 · 5.39):
+ *
+ *   `square` — квадратная миниатюра 48, строка **64**   (Files, 39 попаданий)
+ *   `cover`  — книжная обложка 52 × 73.5, строка **106** (Books, пять шагов подряд)
+ *
+ * Обложка держит **ширину**, отпуская высоту: у книг разные пропорции блока, и
+ * замер даёт 73.0 · 74.0 · 73.3 при ширине 52.0 без разброса. Этим книжная полка
+ * отличается от квадратной миниатюры, где фиксированы обе стороны.
+ *
+ * Радиус миниатюры — **концентричность** (🍎 4.2): вложенный элемент получает
+ * `R_внутр = R_внешн − отступ`, то есть 24 − 16 = 8. Одинаковый радиус у вложенных
+ * углов читается как ошибка вёрстки.
+ *
+ * ЗКН-Д025 не отменяется: если у всех строк ОДНА И ТА ЖЕ картинка — медиа не
+ * ставится вовсе, список остаётся типографическим.
+ */
+export function MediaRow({
+  media, kind = "square", title, subtitle, value, chevron, onClick, last,
+}: {
+  media: ReactNode; kind?: "square" | "cover"; title: ReactNode;
+  subtitle?: ReactNode; value?: ReactNode; chevron?: boolean;
+  onClick?: () => void; last?: boolean;
+}) {
+  const cover = kind === "cover";
+  const showChevron = chevron ?? !!onClick;
+  const box: CSSProperties = cover
+    ? { width: "var(--cover-w)", aspectRatio: `1 / var(--cover-ratio)` }
+    : { width: "var(--thumb-square)", height: "var(--thumb-square)" };
+  const style: CSSProperties = {
+    display: "flex", alignItems: "center", gap: "var(--media-gap)",
+    width: "100%", boxSizing: "border-box",
+    minHeight: cover ? "var(--row-h-cover)" : "var(--row-h-media)",
+    padding: "0 var(--inset-row)",
+    background: "none", border: "none", cursor: onClick ? "pointer" : "default",
+    textAlign: "left", font: "inherit", color: "inherit",
+    WebkitTapHighlightColor: "transparent",
+  };
+  const inner = (
+    <>
+      <span aria-hidden style={{
+        ...box, flexShrink: 0, overflow: "hidden",
+        borderRadius: "var(--radius-thumb)", background: "var(--color-fill-1)",
+        display: "grid", placeItems: "center",
+      }}>{media}</span>
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span style={{
+          display: "block", ...typeStyle("body"),
+          color: INK, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+        }}>{title}</span>
+        {subtitle && (
+          <span style={{
+            display: "block", marginTop: 1, ...typeStyle("subhead"),
+            color: INK2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>{subtitle}</span>
+        )}
+      </span>
+      {value != null && (
+        <span style={{ flexShrink: 0, ...typeStyle("subhead"), color: INK2 }}>{value}</span>
+      )}
+      {showChevron && <Chevron />}
+    </>
+  );
+  return (
+    <>
+      {onClick
+        ? <button type="button" className="tap-row" onClick={onClick} style={style}>{inner}</button>
+        : <div style={style}>{inner}</div>}
+      {/* Врезка разделителя — СЛЕДСТВИЕ строки: начало текста = 16 + медиа + зазор. */}
+      {!last && <Separator inset={cover ? 52 + 12.5 + 16 : 48 + 12.5 + 16} />}
     </>
   );
 }
