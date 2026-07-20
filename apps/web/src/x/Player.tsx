@@ -41,15 +41,25 @@ export type PlayKind = "book" | "lecture" | "kirtan" | "bhajan" | "podcast" | "i
  *   repeat — повтор (киртан и бхаджан поют кругами)
  *   queue  — очередь / оглавление
  */
-interface Caps { text: boolean; skip: boolean; speed: boolean; repeat: boolean; queue: boolean }
+interface Caps {
+  text: boolean; skip: boolean; speed: boolean; repeat: boolean; queue: boolean;
+  /** Перемешивание. У книги и лекции глав ПОРЯДОК ЕСТЬ — перемешать их значит
+   *  испортить; у киртана порядок случаен по природе. */
+  shuffle: boolean;
+  /** Таймер сна. ЗКН-Н054: святое имя ставят на ночь. Вдохновению на полторы
+   *  минуты таймер не нужен, всему остальному нужен. */
+  sleep: boolean;
+}
 const CAPS: Record<PlayKind, Caps> = {
-  book:        { text: true,  skip: true,  speed: true,  repeat: false, queue: true  },
-  lecture:     { text: true,  skip: true,  speed: true,  repeat: false, queue: true  },
-  podcast:     { text: false, skip: true,  speed: true,  repeat: false, queue: true  },
-  kirtan:      { text: false, skip: false, speed: false, repeat: true,  queue: true  },
-  bhajan:      { text: true,  skip: false, speed: false, repeat: true,  queue: true  },
-  inspiration: { text: false, skip: false, speed: false, repeat: false, queue: false },
+  book:        { text: true,  skip: true,  speed: true,  repeat: false, queue: true,  shuffle: false, sleep: true  },
+  lecture:     { text: true,  skip: true,  speed: true,  repeat: false, queue: true,  shuffle: false, sleep: true  },
+  podcast:     { text: false, skip: true,  speed: true,  repeat: false, queue: true,  shuffle: false, sleep: true  },
+  kirtan:      { text: false, skip: false, speed: false, repeat: true,  queue: true,  shuffle: true,  sleep: true  },
+  bhajan:      { text: true,  skip: false, speed: false, repeat: true,  queue: true,  shuffle: true,  sleep: true  },
+  inspiration: { text: false, skip: false, speed: false, repeat: false, queue: false, shuffle: false, sleep: false },
 };
+
+export type OrderMode = "forward" | "shuffle";
 
 /** Оттенок вида — 🎨 наше. У Apple фон выводится из обложки; когда обложки нет,
  *  выводить не из чего, и вид даёт свой тон, чтобы экран не был мёртвым. */
@@ -133,6 +143,26 @@ function RepeatGlyph({ size = 20 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
     <path {...S} d="M6 8h11a3 3 0 0 1 3 3v1" /><path {...S} d="M17 5.5 19.8 8 17 10.5" />
     <path {...S} d="M18 16H7a3 3 0 0 1-3-3v-1" /><path {...S} d="M7 18.5 4.2 16 7 13.5" /></svg>;
+}
+function HeartGlyph({ size = 20, filled }: { size?: number; filled?: boolean }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} fill={filled ? "currentColor" : "none"}
+      d="M12 20s-7-4.4-7-9a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4.6-7 9-7 9z" /></svg>;
+}
+function MoreGlyph({ size = 20 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <circle cx="5.5" cy="12" r="1.7" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.7" fill="currentColor" />
+    <circle cx="18.5" cy="12" r="1.7" fill="currentColor" /></svg>;
+}
+function MoonGlyph({ size = 20 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M20 14.2A8.2 8.2 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2z" /></svg>;
+}
+function ShuffleGlyph({ size = 20 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M4 7h3.2l9.6 10H20M4 17h3.2l2.4-2.6M14.4 9.6 16.8 7H20" />
+    <path {...S} d="M17.6 4.6 20.4 7l-2.8 2.4M17.6 14.6 20.4 17l-2.8 2.4" /></svg>;
 }
 function ChevronDownGlyph({ size = 18 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
@@ -356,6 +386,91 @@ function SpeedSheet({ value, onPick, onClose }: {
   );
 }
 
+/* ─────────────────────────── ещё: сон и порядок ─────────────────────────── */
+
+const SLEEP_MIN = [5, 10, 15, 30, 45, 60] as const;
+
+/**
+ * ТАЙМЕР СНА — ЗКН-Н054, и это не мелкое удобство.
+ *
+ * Киртан слушают, ЗАСЫПАЯ: святое имя ставят на ночь. Плеер без таймера
+ * заставляет ПРОСЫПАТЬСЯ, чтобы его выключить, — и человек либо не ставит
+ * киртан на ночь вовсе, либо утром находит разряженный телефон.
+ *
+ * Видов два, и «после этой записи» ВАЖНЕЕ минут: обрывать киртан на середине
+ * нельзя. Поэтому он стоит первым, а не в конце списка.
+ *
+ * ПОРЯДОК ставится ПРЯМО (ЗКН-Д023), а не прокручивается по кругу. И он есть
+ * не у всех: у глав книги порядок свой, перемешать их значит испортить чтение.
+ */
+function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrder, onClose }: {
+  caps: Caps; sleepMin: number | null; sleepEnd: boolean; order: OrderMode;
+  onSleep: (m: number | null) => void; onSleepEnd: (v: boolean) => void;
+  onOrder: (o: OrderMode) => void; onClose: () => void;
+}) {
+  const row: CSSProperties = {
+    display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
+    minHeight: "var(--row-h)", padding: "0 var(--inset-row)", background: "none", border: "none",
+    cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
+    lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)", color: "var(--color-label)",
+    WebkitTapHighlightColor: "transparent",
+  };
+  const head: CSSProperties = {
+    margin: "18px 0 6px", padding: "0 var(--inset-row)", fontFamily: "var(--font-text)",
+    fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+    letterSpacing: "var(--ls-subhead)", color: "var(--color-label-3)",
+  };
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Ещё" onClick={onClose}
+      style={{ position: "absolute", inset: 0, zIndex: 1600, display: "flex",
+        flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.5)" }}>
+      <div onClick={(e) => e.stopPropagation()} className="sq" style={{
+        background: "var(--color-bg-2)", ["--color-card" as string]: "var(--color-bg-3)",
+        borderTopLeftRadius: 40, borderTopRightRadius: 40, maxHeight: "82%", overflowY: "auto",
+        padding: "14px 16px calc(24px + env(safe-area-inset-bottom))" }}>
+
+        {caps.sleep && (
+          <>
+            <p style={{ ...head, marginTop: 4 }}>Таймер сна</p>
+            <button type="button" style={row}
+              onClick={() => { onSleepEnd(!sleepEnd); onSleep(null); }}>
+              <span>После этой записи</span>
+              {sleepEnd && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
+            </button>
+            {SLEEP_MIN.map((m) => (
+              <button key={m} type="button" style={row}
+                onClick={() => { onSleep(sleepMin === m ? null : m); onSleepEnd(false); }}>
+                <span>Через {m} мин</span>
+                {sleepMin === m && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
+              </button>
+            ))}
+            {(sleepMin || sleepEnd) && (
+              <button type="button" style={{ ...row, color: "var(--color-label-2)" }}
+                onClick={() => { onSleep(null); onSleepEnd(false); }}>
+                <span>Выключить таймер</span>
+              </button>
+            )}
+          </>
+        )}
+
+        {caps.shuffle && (
+          <>
+            <p style={head}>Порядок</p>
+            <button type="button" style={row} onClick={() => onOrder("forward")}>
+              <span>По списку</span>
+              {order === "forward" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
+            </button>
+            <button type="button" style={row} onClick={() => onOrder("shuffle")}>
+              <span>Перемешать</span>
+              {order === "shuffle" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ─────────────────────────── полный экран ─────────────────────────── */
 
 /* ─────────────────────────── фон из обложки ─────────────────────────── */
@@ -518,9 +633,11 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
  * Транспорт зависит от ВИДА, а не один на всех: длинной записи нужна перемотка
  * на ±15 секунд и скорость, песне — переход по трекам и повтор. Матрица CAPS.
  */
-export function FullPlayer({ track, playing, position, speed, repeat, onToggle, onSeek, onPrev,
-  onNext, onClose, onText, onQueue, onSpeedPick, onRepeat }: {
+export function FullPlayer({ track, playing, position, speed, repeat, fav, sleepOn, order,
+  onToggle, onSeek, onPrev, onNext, onClose, onText, onQueue, onSpeedPick, onRepeat,
+  onFav, onMore }: {
   track: Track; playing: boolean; position: number; speed: number; repeat: boolean;
+  fav: boolean; sleepOn: boolean; order: OrderMode;
   onToggle: () => void; onSeek: (s: number) => void;
   onPrev: () => void; onNext: () => void; onClose: () => void;
   onText?: () => void; onQueue?: () => void;
@@ -529,6 +646,7 @@ export function FullPlayer({ track, playing, position, speed, repeat, onToggle, 
    *  В первой версии здесь стоял именно цикл — закон уже был написан, я его
    *  повторно нарушил, прочитав только после. */
   onSpeedPick: () => void; onRepeat: () => void;
+  onFav: () => void; onMore: () => void;
 }) {
   const caps = CAPS[track.kind];
   const hasText = caps.text && (!!track.text?.length || !!track.textHref);
@@ -541,21 +659,28 @@ export function FullPlayer({ track, playing, position, speed, repeat, onToggle, 
       <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column",
         flex: 1, minHeight: 0 }}>
         {/* шапка: свернуть слева-по-центру, повтор справа — если вид его знает */}
+        {/* Круглые кнопки шапки — 44 pt (📐 5.15). Избранное слева, «ещё» справа,
+            свёртка по центру: середину занимает то, что человек ищет первым. */}
         <div style={{ display: "flex", alignItems: "center", height: 44, flexShrink: 0,
           padding: "0 12px" }}>
-          <span style={{ width: 44 }} />
+          <button type="button" onClick={onFav} aria-pressed={fav} aria-label="В избранное"
+            style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
+              border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
+              color: fav ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
+            <HeartGlyph size={20} filled={fav} />
+          </button>
           <button type="button" onClick={onClose} aria-label="Свернуть плеер"
             style={{ flex: 1, height: 44, display: "grid", placeItems: "center", background: "none",
               border: "none", color: "var(--color-label-2)", cursor: "pointer",
               WebkitTapHighlightColor: "transparent" }}>
             <ChevronDownGlyph size={20} />
           </button>
-          {caps.repeat ? (
-            <button type="button" onClick={onRepeat} aria-pressed={repeat} aria-label="Повтор"
+          {(caps.sleep || caps.shuffle) ? (
+            <button type="button" onClick={onMore} aria-label="Ещё"
               style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
                 border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
-                color: repeat ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
-              <RepeatGlyph size={20} />
+                color: (sleepOn || order === "shuffle") ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
+              {sleepOn ? <MoonGlyph size={20} /> : order === "shuffle" ? <ShuffleGlyph size={20} /> : <MoreGlyph size={20} />}
             </button>
           ) : <span style={{ width: 44 }} />}
         </div>
@@ -639,12 +764,21 @@ export function FullPlayer({ track, playing, position, speed, repeat, onToggle, 
                 </button>
               )}
             </span>
-            {caps.queue && (
-              <button type="button" onClick={onQueue} aria-label="Очередь"
-                style={{ ...transportStyle, width: 40, height: 40, color: "var(--color-label-2)" }}>
-                <QueueGlyph size={20} />
-              </button>
-            )}
+            <span style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+              {caps.repeat && (
+                <button type="button" onClick={onRepeat} aria-pressed={repeat} aria-label="Повтор"
+                  style={{ ...transportStyle, width: 40, height: 40,
+                    color: repeat ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
+                  <RepeatGlyph size={20} />
+                </button>
+              )}
+              {caps.queue && (
+                <button type="button" onClick={onQueue} aria-label="Очередь"
+                  style={{ ...transportStyle, width: 40, height: 40, color: "var(--color-label-2)" }}>
+                  <QueueGlyph size={20} />
+                </button>
+              )}
+            </span>
           </div>
         </div>
       </div>
@@ -674,6 +808,7 @@ const pillStyle: CSSProperties = {
 /* ─────────────────────────── склейка ─────────────────────────── */
 
 const RESUME_KEY = "iol.x.player.v1";
+const FAV_KEY = "iol.x.favs.v1";
 
 /**
  * Держатель состояния слоя и НАСТОЯЩИЙ звук.
@@ -702,9 +837,14 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [state, setState] = useState<LayerState>("mini");
-  const [sheet, setSheet] = useState<"none" | "queue" | "text" | "speed">("none");
+  const [sheet, setSheet] = useState<"none" | "queue" | "text" | "speed" | "more">("none");
   const [speed, setSpeed] = useState(1);
   const [repeat, setRepeat] = useState(false);
+  const [favs, setFavs] = useState<string[]>([]);
+  const [order, setOrder] = useState<OrderMode>("forward");
+  const [sleepMin, setSleepMin] = useState<number | null>(null);
+  const [sleepEnd, setSleepEnd] = useState(false);
+  const [sleepAt, setSleepAt] = useState<number | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
   const track = queue[index];
 
@@ -732,7 +872,43 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
     return () => clearInterval(id);
   }, [track, position, speed]);
 
-  const next = useCallback(() => onIndex((index + 1) % queue.length), [index, queue.length, onIndex]);
+  /* ── ИЗБРАННОЕ. Хранится списком идентификаторов: список переживает смену
+       каталога, а индексы — нет. */
+  useEffect(() => {
+    try { setFavs(JSON.parse(localStorage.getItem(FAV_KEY) ?? "[]")); } catch { /* noop */ }
+  }, []);
+  const toggleFav = useCallback(() => {
+    if (!track) return;
+    setFavs((prev) => {
+      const nextList = prev.includes(track.id) ? prev.filter((x) => x !== track.id) : [...prev, track.id];
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(nextList)); } catch { /* noop */ }
+      return nextList;
+    });
+  }, [track]);
+
+  /* ── ПОРЯДОК. «Перемешать» строит последовательность ОДИН раз и держит её:
+       пересчёт на каждом переходе давал бы повторы и пропуски. */
+  const [seq, setSeq] = useState<number[]>([]);
+  useEffect(() => {
+    const base = queue.map((_, k) => k);
+    if (order === "forward") { setSeq(base); return; }
+    const rest = base.filter((k) => k !== index);
+    for (let k = rest.length - 1; k > 0; k--) {
+      const j = Math.floor(Math.random() * (k + 1));
+      [rest[k], rest[j]] = [rest[j], rest[k]];
+    }
+    setSeq([index, ...rest]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order, queue.length]);
+
+  const next = useCallback(() => {
+    /* Таймер «после этой записи» останавливает ИМЕННО ЗДЕСЬ — на границе,
+       а не посреди киртана (ЗКН-Н054). */
+    if (sleepEnd) { setPlaying(false); setSleepEnd(false); return; }
+    const at = seq.indexOf(index);
+    const k = at >= 0 && seq.length ? seq[(at + 1) % seq.length] : (index + 1) % queue.length;
+    onIndex(k);
+  }, [index, queue.length, onIndex, seq, sleepEnd]);
   const prev = useCallback(() => {
     if (position > 3) { seekTo(0); return; }
     onIndex((index - 1 + queue.length) % queue.length);
@@ -782,6 +958,19 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
     return () => clearInterval(id);
   }, [playing, track, speed, repeat, next]);
 
+  /* ── ТАЙМЕР ПО МИНУТАМ. Отдельная метка времени, а не отсчёт от позиции:
+       человек ставит «через 30 минут» по часам, а не по длине записи. */
+  useEffect(() => {
+    setSleepAt(sleepMin ? Date.now() + sleepMin * 60_000 : null);
+  }, [sleepMin]);
+  useEffect(() => {
+    if (!sleepAt) return;
+    const id = setInterval(() => {
+      if (Date.now() >= sleepAt) { setPlaying(false); setSleepAt(null); setSleepMin(null); }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [sleepAt]);
+
   /* ── ЛОКСКРИН. Без этого приложение со звуком не выглядит настоящим ни на
        iOS, ни на Android: наушники и экран блокировки должны им управлять. */
   useEffect(() => {
@@ -822,6 +1011,8 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
       )}
       {state === "full" && (
         <FullPlayer track={shown} playing={playing} position={position} speed={speed} repeat={repeat}
+          fav={favs.includes(track.id)} sleepOn={!!sleepMin || sleepEnd} order={order}
+          onFav={toggleFav} onMore={() => setSheet("more")}
           onToggle={() => setPlaying((v) => !v)}
           onSeek={seekTo}
           onPrev={prev} onNext={next}
@@ -842,6 +1033,11 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
       )}
       {sheet === "speed" && (
         <SpeedSheet value={speed} onPick={setSpeed} onClose={() => setSheet("none")} />
+      )}
+      {sheet === "more" && (
+        <MoreSheet caps={CAPS[track.kind]} sleepMin={sleepMin} sleepEnd={sleepEnd} order={order}
+          onSleep={setSleepMin} onSleepEnd={setSleepEnd} onOrder={setOrder}
+          onClose={() => setSheet("none")} />
       )}
     </>
   );
