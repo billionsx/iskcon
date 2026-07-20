@@ -511,8 +511,16 @@ export function Sheet({ title, onClose, children, action }: {
       style={{ position: "fixed", inset: 0, zIndex: 1300, display: "flex", flexDirection: "column",
         justifyContent: "flex-end", background: "rgba(0,0,0,0.4)" }}
       onClick={onClose} role="dialog" aria-modal="true" aria-label={title}>
+      {/* ЛИСТ САМ ЯВЛЯЕТСЯ ПОВЕРХНОСТЬЮ (📐 5.16, подтверждено на Books с.3, 7).
+          Поэтому холст листа — не чёрный, а #1C1C1E, а карточка НА нём поднимается
+          на ступень выше, чем карточка на главном экране: #2C2C2E против #1C1C1E.
+          Ступень задаётся переопределением токена на поддереве, поэтому `Group`
+          внутри листа не знает, что он в листе, и остаётся одним компонентом. */}
       <div onClick={(e) => e.stopPropagation()} style={{
-        background: "var(--color-canvas)", borderTopLeftRadius: 40, borderTopRightRadius: 40,
+        background: "var(--color-bg-2)",
+        ["--color-card" as string]: "var(--color-bg-3)",
+        ["--color-canvas" as string]: "var(--color-bg-2)",
+        borderTopLeftRadius: 40, borderTopRightRadius: 40,
         width: "100%", maxWidth: "var(--sheet-max)", margin: "0 auto", maxHeight: "92dvh",
         display: "flex", flexDirection: "column", overflow: "hidden", fontFamily: FONT,
       }}>
