@@ -9,7 +9,7 @@
  * приведённые к замерам за восемь заходов. Иначе через месяц две оболочки
  * срастутся незаметно, и подмена одной на другую станет невозможной.
  */
-import { useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { PlayerHost, type Track } from "./Player";
 
 /** Витрина плеера: по одному образцу каждого вида звука. */
@@ -25,11 +25,50 @@ const DEMO: Track[] = [
   { id: "i1", kind: "inspiration", title: "Утренняя мысль", subtitle: "Вдохновение дня", duration: 95 },
 ];
 
+/**
+ * КАДР — система отсчёта пробной оболочки.
+ *
+ * Все замеры стандарта сняты с экрана 393 pt: ширина слоя 351, врезка 21,
+ * обложка 24, ось 196.5. Вне кадра эти числа бессмысленны — в окне 2400 px
+ * обложка растягивается в полоску, а шкала уезжает на всю ширину. Кадр
+ * возвращает числам их систему координат: внутри него pt = px один к одному.
+ *
+ * ТЁМНАЯ ТЕМА. Приложение переводится на тёмную, и пробная оболочка строится
+ * сразу под неё. Атрибут ставится на документ, а не на поддерево: `[data-theme]`
+ * в globals.css объявлен для светлой ветки, и вложенное переключение потребовало
+ * бы дублировать все цвета. Оболочка /x рендерится ВМЕСТО App, поэтому смена
+ * атрибута никого не задевает, а на выходе возвращается прежнее значение.
+ */
+function Frame({ children }: { children: ReactNode }) {
+  useEffect(() => {
+    const el = document.documentElement;
+    const prev = el.dataset.theme ?? "light";
+    el.dataset.theme = "dark";
+    const prevBg = document.body.style.background;
+    document.body.style.background = "#000000";
+    return () => { el.dataset.theme = prev; document.body.style.background = prevBg; };
+  }, []);
+  return (
+    <div style={{
+      /* 393 × 852 — тот самый кадр, с которого сняты все замеры. Высота нужна
+         не меньше ширины: без неё вертикальный ритм не проверить, а именно он
+         и разъехался на первом прогоне. */
+      width: "min(393px, 100vw)", height: "min(852px, 100dvh)",
+      margin: "0 auto", position: "relative", overflow: "hidden",
+      background: "var(--color-canvas)",
+    }}>{children}</div>
+  );
+}
+
 function PlayScreen() {
   const [index, setIndex] = useState(0);
   return (
-    <PlayerHost queue={DEMO} index={index} onIndex={setIndex}>
-      <main style={{ padding: "16px 16px 180px", minHeight: "100dvh",
+    <Frame>
+      {/* Таб-бара на этом экране нет, поэтому мини-плеер садится на своё
+        замеренное место — 21 pt от низа (📐 5.16). Значение 91 = 21 + 62 + 8
+        появится, когда под ним встанет таб-бар. */}
+    <PlayerHost queue={DEMO} index={index} onIndex={setIndex} tabBarBottom={21}>
+      <main style={{ padding: "16px 16px 96px", height: "100%", overflowY: "auto",
         background: "var(--color-canvas)", fontFamily: "var(--font-text)" }}>
         <h1 className="t-display" style={{ margin: "8px 0 4px", fontWeight: 700,
           color: "var(--color-label)" }}>Плеер</h1>
@@ -70,7 +109,8 @@ function PlayScreen() {
           ))}
         </ul>
       </main>
-    </PlayerHost>
+      </PlayerHost>
+    </Frame>
   );
 }
 
@@ -83,7 +123,8 @@ export default function XShell() {
   const path = typeof window === "undefined" ? "/x" : window.location.pathname;
   if (path.startsWith("/x/play")) return <PlayScreen />;
   return (
-    <main style={{ padding: 24, minHeight: "100dvh", background: "var(--color-canvas)" }}>
+    <Frame>
+    <main style={{ padding: 24, height: "100%", overflowY: "auto", background: "var(--color-canvas)" }}>
       <h1 className="t-display" style={{ fontWeight: 700, color: "var(--color-label)" }}>
         Пробная оболочка
       </h1>
@@ -92,5 +133,6 @@ export default function XShell() {
         Готов компонент плеера — <a href="/x/play" style={{ color: "var(--color-gold-deep)" }}>/x/play</a>
       </p>
     </main>
+    </Frame>
   );
 }

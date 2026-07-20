@@ -96,7 +96,10 @@ function ChevronDownGlyph({ size = 18 }: { size?: number }) {
 
 function Cover({ track, size, radius }: { track: Track; size: number | string; radius: number | string }) {
   const box: CSSProperties = {
-    width: size, height: size, borderRadius: radius, flexShrink: 0,
+    /* aspectRatio обязателен: квадрат со стороной «100%» без него схлопывает
+       высоту в полоску — ровно это и случилось на первом прогоне. */
+    width: size, height: size === "100%" ? "auto" : size, aspectRatio: "1",
+    borderRadius: radius, flexShrink: 0,
     overflow: "hidden", display: "grid", placeItems: "center",
     background: "var(--color-fill-1)",
   };
@@ -197,7 +200,10 @@ export function MiniPlayer({ track, playing, position, onToggle, onOpen, onNext,
   const pct = track.duration > 0 ? Math.min(1, position / track.duration) : 0;
   return (
     <div style={{
-      position: "fixed", left: "50%", transform: "translateX(-50%)", bottom,
+      /* КООРДИНАТЫ ПРИНАДЛЕЖАТ КАДРУ, А НЕ ОКНУ. Замеры 351/21/24 сняты с экрана
+         393 pt; в окне браузера шириной 2400 px они не значат ничего. Поэтому
+         absolute внутри рамки, а не fixed относительно вьюпорта. */
+      position: "absolute", left: "50%", transform: "translateX(-50%)", bottom,
       width: "min(351px, calc(100% - 42px))",   /* 📐 5.17 · ширина 351, врезка 21 */
       height: 48,                                /* 📐 5.17 */
       zIndex: 45,
@@ -275,7 +281,7 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
   return (
     <div role="dialog" aria-modal="true" aria-label={`Сейчас играет: ${track.title}`}
       style={{
-        position: "fixed", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
+        position: "absolute", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
         /* 🕳 Фон у Apple выведен из обложки. Пока — ступень поверхности листа. */
         background: "var(--color-bg-2)",
         paddingTop: "env(safe-area-inset-top)",
@@ -294,7 +300,9 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
       <div style={{ flex: 1, minHeight: 0, overflowY: "auto",
         padding: "0 24px calc(24px + env(safe-area-inset-bottom))" }}>
         {/* ОБЛОЖКА — врезка 24.0 симметрично (📐 apple_music с.35: 23.7 / 24.3) */}
-        <div style={{ display: "grid", placeItems: "center", padding: "8px 0 28px" }}>
+        {/* Врезка 24.0 симметрично (📐 apple_music с.35). В кадре 393 это даёт
+            обложку 345 — то самое число, что снято с эталона. */}
+        <div style={{ padding: "8px 0 28px" }}>
           <Cover track={track} size="100%" radius="var(--radius-card)" />
         </div>
 
