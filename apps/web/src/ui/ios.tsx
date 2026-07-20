@@ -469,9 +469,12 @@ export function SearchField({ value, onChange, placeholder, inputRef, onKeyDown,
       background: "var(--color-card)", borderRadius: "var(--radius-pill)",
       boxShadow: "var(--shadow-search)",
     }}>
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden style={{ flexShrink: 0, color: INK2 }}>
-        <circle cx="6.8" cy="6.8" r="5.1" stroke="currentColor" strokeWidth="1.9" />
-        <path d="M10.6 10.6 14.4 14.4" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" />
+      {/* Лупа 14 на отступе 13 (📐 5.4). Штрих 1.33 = ровно 4 физических пикселя:
+          §5.22 — штрих квантуется, бывает только 3 или 4, промежуточных нет.
+          Прежние 1.9 давали 5.7 px — та же ошибка, что была у шеврона. */}
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden style={{ flexShrink: 0, color: INK2 }}>
+        <circle cx="5.95" cy="5.95" r="4.6" stroke="currentColor" strokeWidth="1.33" />
+        <path d="M9.3 9.3 12.9 12.9" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" />
       </svg>
       <input
         ref={inputRef} value={value} onChange={(e) => onChange(e.target.value)} onKeyDown={onKeyDown}
@@ -485,7 +488,7 @@ export function SearchField({ value, onChange, placeholder, inputRef, onKeyDown,
             border: "none", borderRadius: "50%", background: "var(--color-label-3)",
             color: "var(--color-card)", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
           <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden>
-            <path d="M1.6 1.6l6.8 6.8M8.4 1.6l-6.8 6.8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            <path d="M1.6 1.6l6.8 6.8M8.4 1.6l-6.8 6.8" stroke="currentColor" strokeWidth="1.33" strokeLinecap="round" />
           </svg>
         </button>
       )}
