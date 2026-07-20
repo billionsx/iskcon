@@ -70,8 +70,11 @@ export interface Track {
   kind: PlayKind;
   /** Обложка. Нет — рисуется монограмма, а не пустой прямоугольник. */
   cover?: string;
-  /** Длительность, секунды. */
+  /** Длительность, секунды. Уточняется из метаданных, когда звук загрузится. */
   duration: number;
+  /** Адрес звука. Нет — плеер идёт «вхолостую» по таймеру: это витрина
+   *  раскладки, а не обман. Плашка внизу говорит об этом прямо. */
+  src?: string;
   /** Куда ведёт «Текст». Задаётся, только если у вида он есть. */
   textHref?: string;
   /** Текст с таймкодами: секунда начала абзаца и сам абзац. Даёт синхронное
@@ -307,6 +310,52 @@ export function MiniPlayer({ track, playing, position, onToggle, onOpen, onNext,
   );
 }
 
+/* ─────────────────────────── выбор скорости ─────────────────────────── */
+
+/**
+ * ЗКН-Д023 — скорость ВЫБИРАЮТ, а не прокручивают. Список показывает все
+ * значения сразу, текущее отмечено. Прокрутка по кругу заставляет человека
+ * тыкать шесть раз, чтобы вернуться на единицу, — и это на лекции, которую он
+ * слушает второй час.
+ */
+function SpeedSheet({ value, onPick, onClose }: {
+  value: number; onPick: (v: number) => void; onClose: () => void;
+}) {
+  return (
+    <div role="dialog" aria-modal="true" aria-label="Скорость"
+      onClick={onClose}
+      style={{ position: "absolute", inset: 0, zIndex: 1600, display: "flex",
+        flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.5)" }}>
+      <div onClick={(e) => e.stopPropagation()} className="sq" style={{
+        background: "var(--color-bg-2)", ["--color-card" as string]: "var(--color-bg-3)",
+        borderTopLeftRadius: 40, borderTopRightRadius: 40,
+        padding: `14px 16px calc(24px + env(safe-area-inset-bottom))` }}>
+        <h2 style={{ margin: "0 0 10px", padding: "0 var(--inset-row)",
+          fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
+          lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)",
+          fontWeight: 700, color: "var(--color-label)" }}>Скорость</h2>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+          {SPEEDS.map((v) => (
+            <li key={v}>
+              <button type="button" onClick={() => { onPick(v); onClose(); }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                  width: "100%", minHeight: "var(--row-h)", padding: "0 var(--inset-row)",
+                  background: "none", border: "none", cursor: "pointer",
+                  fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
+                  lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)",
+                  color: v === value ? "var(--color-gold-deep)" : "var(--color-label)",
+                  WebkitTapHighlightColor: "transparent" }}>
+                <span>{v}×{v === 1 ? "  обычная" : ""}</span>
+                {v === value && <span aria-hidden>✓</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
 /* ─────────────────────────── полный экран ─────────────────────────── */
 
 /* ─────────────────────────── фон из обложки ─────────────────────────── */
@@ -470,12 +519,16 @@ const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
  * на ±15 секунд и скорость, песне — переход по трекам и повтор. Матрица CAPS.
  */
 export function FullPlayer({ track, playing, position, speed, repeat, onToggle, onSeek, onPrev,
-  onNext, onClose, onText, onQueue, onSpeed, onRepeat }: {
+  onNext, onClose, onText, onQueue, onSpeedPick, onRepeat }: {
   track: Track; playing: boolean; position: number; speed: number; repeat: boolean;
   onToggle: () => void; onSeek: (s: number) => void;
   onPrev: () => void; onNext: () => void; onClose: () => void;
   onText?: () => void; onQueue?: () => void;
-  onSpeed: (v: number) => void; onRepeat: () => void;
+  /** ЗКН-Д023 — скорость ВЫБИРАЮТ из списка, а не прокручивают по кругу:
+   *  у лекции на два часа «1.5×» это решение, а не следующий шаг цикла.
+   *  В первой версии здесь стоял именно цикл — закон уже был написан, я его
+   *  повторно нарушил, прочитав только после. */
+  onSpeedPick: () => void; onRepeat: () => void;
 }) {
   const caps = CAPS[track.kind];
   const hasText = caps.text && (!!track.text?.length || !!track.textHref);
@@ -558,6 +611,16 @@ export function FullPlayer({ track, playing, position, speed, repeat, onToggle, 
             </button>
           </div>
 
+          {/* Витрина не притворяется плеером. Если звука нет — так и сказано:
+              умолчание здесь было бы обманом, а не деликатностью. */}
+          {!track.src && (
+            <p style={{ margin: "14px 0 0", textAlign: "center", fontFamily: "var(--font-text)",
+              fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+              letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
+              Запись не подключена — идёт показ раскладки
+            </p>
+          )}
+
           {/* НИЖНИЙ РЯД — 📐 врезка 27, ширина 338, y 732…749. Слева наше действие,
               справа служебные. Слабина уходит сюда, а не в дыру под обложкой. */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -571,8 +634,7 @@ export function FullPlayer({ track, playing, position, speed, repeat, onToggle, 
               )}
               {caps.speed && (
                 <button type="button" className="sq" style={pillStyle}
-                  aria-label={`Скорость ${speed}×`}
-                  onClick={() => onSpeed(SPEEDS[(SPEEDS.indexOf(speed as never) + 1) % SPEEDS.length])}>
+                  aria-label={`Скорость ${speed}×, выбрать`} onClick={onSpeedPick}>
                   {speed}×
                 </button>
               )}
@@ -611,14 +673,24 @@ const pillStyle: CSSProperties = {
 
 /* ─────────────────────────── склейка ─────────────────────────── */
 
+const RESUME_KEY = "iol.x.player.v1";
+
 /**
- * Держатель состояния слоя. Плеер не «висит поверх» — он ЗАБИРАЕТ слой себе,
- * как в замере (§5.20, состояние 3: табы схлопываются с 281 до 51 pt). Здесь это
- * выражено просто: пока плеер развёрнут, нижней навигации нет.
+ * Держатель состояния слоя и НАСТОЯЩИЙ звук.
  *
- * Повтор и скорость живут ЗДЕСЬ, а не в экране: при переходе к следующей записи
- * скорость чтения должна сохраняться — человек выбрал её один раз на всю сессию,
- * а не на трек.
+ * Плеер не «висит поверх» — он ЗАБИРАЕТ слой себе (§5.20, состояние 3: табы
+ * схлопываются с 281 до 51 pt). Пока плеер развёрнут, нижней навигации нет.
+ *
+ * ЗВУК. Первая версия гоняла позицию таймером и не играла ничего — это была
+ * раскладка, а не плеер. Теперь всем правит один элемент `<audio>`: он источник
+ * правды о позиции и длительности, а React только отражает его состояние.
+ * Обратный порядок (React ведёт, звук догоняет) даёт дребезг на перемотке.
+ *
+ * Когда у записи нет адреса, остаётся холостой ход по таймеру — витрина
+ * раскладки. Об этом сказано на экране прямо, а не умолчано.
+ *
+ * СКОРОСТЬ И ПОВТОР живут здесь, а не в экране: человек выбирает скорость один
+ * раз на сессию, а не на каждую главу.
  */
 export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children }: {
   queue: Track[]; index: number; onIndex: (i: number) => void;
@@ -628,55 +700,135 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
 }) {
   const [playing, setPlaying] = useState(false);
   const [position, setPosition] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [state, setState] = useState<LayerState>("mini");
-  const [sheet, setSheet] = useState<"none" | "queue" | "text">("none");
+  const [sheet, setSheet] = useState<"none" | "queue" | "text" | "speed">("none");
   const [speed, setSpeed] = useState(1);
   const [repeat, setRepeat] = useState(false);
+  const audio = useRef<HTMLAudioElement | null>(null);
   const track = queue[index];
 
-  useEffect(() => { setPosition(0); }, [index]);
+  /* ── ВОЗВРАТ НА МЕСТО. Лекция идёт 55 минут: потерять место — потерять всё.
+       Пишем редко (раз в 5 секунд по ходу), читаем один раз при запуске. */
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RESUME_KEY);
+      if (!raw) return;
+      const s = JSON.parse(raw) as { id?: string; t?: number; rate?: number };
+      if (s.rate) setSpeed(s.rate);
+      const k = queue.findIndex((x) => x.id === s.id);
+      if (k >= 0) { onIndex(k); if (s.t) setPosition(s.t); }
+    } catch { /* хранилище может быть закрыто — это не повод падать */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    if (!track) return;
+    const id = setInterval(() => {
+      try {
+        localStorage.setItem(RESUME_KEY, JSON.stringify({
+          id: track.id, t: Math.floor(position), rate: speed }));
+      } catch { /* noop */ }
+    }, 5000);
+    return () => clearInterval(id);
+  }, [track, position, speed]);
 
   const next = useCallback(() => onIndex((index + 1) % queue.length), [index, queue.length, onIndex]);
   const prev = useCallback(() => {
-    if (position > 3) { setPosition(0); return; }
+    if (position > 3) { seekTo(0); return; }
     onIndex((index - 1 + queue.length) % queue.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, position, queue.length, onIndex]);
 
-  /* Ход воспроизведения. Скорость учитывается, потому что она влияет на то,
-     как быстро бежит позиция; повтор — на то, что делать в конце записи. */
+  function seekTo(s: number) {
+    const lim = duration || track?.duration || 0;
+    const v = Math.max(0, Math.min(lim, s));
+    setPosition(v);
+    if (audio.current) audio.current.currentTime = v;
+  }
+
+  /* ── ЗВУК ВЕДЁТ. Позиция и длительность приходят ОТ элемента. */
   useEffect(() => {
-    if (!playing || !track) return;
-    const t = setInterval(() => setPosition((prevPos) => {
-      const nextPos = prevPos + speed;
-      if (nextPos < track.duration) return nextPos;
+    const el = audio.current; if (!el) return;
+    const onTime = () => setPosition(el.currentTime);
+    const onMeta = () => setDuration(el.duration || 0);
+    const onEnd = () => { if (!repeat) next(); };
+    el.addEventListener("timeupdate", onTime);
+    el.addEventListener("loadedmetadata", onMeta);
+    el.addEventListener("ended", onEnd);
+    return () => {
+      el.removeEventListener("timeupdate", onTime);
+      el.removeEventListener("loadedmetadata", onMeta);
+      el.removeEventListener("ended", onEnd);
+    };
+  }, [repeat, next]);
+
+  useEffect(() => { if (audio.current) audio.current.playbackRate = speed; }, [speed, index]);
+  useEffect(() => { if (audio.current) audio.current.loop = repeat; }, [repeat, index]);
+  useEffect(() => {
+    const el = audio.current; if (!el || !track?.src) return;
+    if (playing) el.play().catch(() => setPlaying(false)); else el.pause();
+  }, [playing, track]);
+  useEffect(() => { setPosition(0); setDuration(0); }, [index]);
+
+  /* ── ХОЛОСТОЙ ХОД. Только когда звука нет: иначе позиция считалась бы дважды. */
+  useEffect(() => {
+    if (!playing || !track || track.src) return;
+    const id = setInterval(() => setPosition((v) => {
+      const n = v + speed;
+      if (n < track.duration) return n;
       if (repeat) return 0;
-      next();
-      return 0;
+      next(); return 0;
     }), 1000);
-    return () => clearInterval(t);
+    return () => clearInterval(id);
   }, [playing, track, speed, repeat, next]);
 
+  /* ── ЛОКСКРИН. Без этого приложение со звуком не выглядит настоящим ни на
+       iOS, ни на Android: наушники и экран блокировки должны им управлять. */
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !("mediaSession" in navigator) || !track) return;
+    const ms = navigator.mediaSession;
+    ms.metadata = new MediaMetadata({
+      title: track.title,
+      artist: track.subtitle ?? KIND_LABEL[track.kind],
+      album: KIND_LABEL[track.kind],
+      artwork: track.cover ? [{ src: track.cover, sizes: "512x512" }] : [],
+    });
+    ms.playbackState = playing ? "playing" : "paused";
+    const caps = CAPS[track.kind];
+    ms.setActionHandler("play", () => setPlaying(true));
+    ms.setActionHandler("pause", () => setPlaying(false));
+    ms.setActionHandler("previoustrack", caps.skip ? null : prev);
+    ms.setActionHandler("nexttrack", caps.skip ? null : next);
+    ms.setActionHandler("seekbackward", caps.skip ? () => seekTo(position - 15) : null);
+    ms.setActionHandler("seekforward", caps.skip ? () => seekTo(position + 15) : null);
+    ms.setActionHandler("seekto", (e) => { if (e.seekTime != null) seekTo(e.seekTime); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [track, playing, position, prev, next]);
+
   if (!track) return <>{children}</>;
-  const seek = (s: number) => setPosition(Math.max(0, Math.min(track.duration, s)));
+  const shown: Track = duration ? { ...track, duration } : track;
   return (
     <>
       {children}
+      {/* Один элемент на всё приложение: два звука разом — это ошибка, а не
+          возможность (та же мысль, что ЗКН-Н065 в текущей оболочке). */}
+      <audio ref={audio} src={track.src} preload="metadata" playsInline />
       {state === "mini" && sheet === "none" && (
-        <MiniPlayer track={track} playing={playing} position={position}
+        <MiniPlayer track={shown} playing={playing} position={position}
           onToggle={() => setPlaying((v) => !v)}
           onOpen={() => setState("full")}
           onNext={next}
           bottom={tabBarBottom} />
       )}
       {state === "full" && (
-        <FullPlayer track={track} playing={playing} position={position} speed={speed} repeat={repeat}
+        <FullPlayer track={shown} playing={playing} position={position} speed={speed} repeat={repeat}
           onToggle={() => setPlaying((v) => !v)}
-          onSeek={seek}
+          onSeek={seekTo}
           onPrev={prev} onNext={next}
           onClose={() => setState("mini")}
           onText={CAPS[track.kind].text ? () => setSheet("text") : undefined}
           onQueue={CAPS[track.kind].queue ? () => setSheet("queue") : undefined}
-          onSpeed={setSpeed}
+          onSpeedPick={() => setSheet("speed")}
           onRepeat={() => setRepeat((v) => !v)} />
       )}
       {sheet === "queue" && (
@@ -685,8 +837,11 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
           onClose={() => setSheet("none")} />
       )}
       {sheet === "text" && (
-        <TextSheet track={track} position={position} onSeek={seek}
+        <TextSheet track={shown} position={position} onSeek={seekTo}
           onClose={() => setSheet("none")} />
+      )}
+      {sheet === "speed" && (
+        <SpeedSheet value={speed} onPick={setSpeed} onClose={() => setSheet("none")} />
       )}
     </>
   );
