@@ -297,13 +297,28 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
         </button>
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: "auto",
-        padding: "0 24px calc(24px + env(safe-area-inset-bottom))" }}>
+      {/* РАСКЛАДКА ПО ЗАМЕРЕННЫМ ВЫСОТАМ, А НЕ ПО ОТСТУПАМ СВЕРХУ.
+          Первый прогон складывал экран сверху вниз, и внизу оставалась пустота.
+          В кадре 852 pt блок управления стоит на своих местах (📐 apple_music
+          с.31 и 35, оба кадра дали одно и то же):
+            заголовок    y 483 … 504, врезка 33.7
+            знак         y 557 … 565, по центру, ширина 25
+            транспорт    y 635 … 672, по центру
+            нижний ряд   y 732 … 749, врезка 27, ширина 338
+          Обложка занимает то, что выше. Её собственная геометрия — 🕳: в наборе
+          Music НЕТ ни одного кадра чистого «сейчас играет», все плеерные кадры
+          сняты с открытым текстом песни. */}
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+        padding: "0 24px" }}>
         {/* ОБЛОЖКА — врезка 24.0 симметрично (📐 apple_music с.35: 23.7 / 24.3) */}
-        {/* Врезка 24.0 симметрично (📐 apple_music с.35). В кадре 393 это даёт
-            обложку 345 — то самое число, что снято с эталона. */}
-        <div style={{ padding: "8px 0 28px" }}>
-          <Cover track={track} size="100%" radius="var(--radius-card)" />
+        {/* Врезка 24.0 симметрично — в кадре 393 обложка выходит 345. Высота
+            отдаётся остатку: квадрат сохраняется, но не выталкивает управление. */}
+        <div style={{ flex: 1, minHeight: 0, display: "grid", placeItems: "center",
+          paddingBottom: 20 }}>
+          <div style={{ width: "min(100%, calc(100% - 0px))", maxHeight: "100%",
+            aspectRatio: "1", display: "grid" }}>
+            <Cover track={track} size="100%" radius="var(--radius-card)" />
+          </div>
         </div>
 
         <div style={{ marginBottom: 6, fontFamily: "var(--font-text)",
@@ -325,12 +340,14 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
           </p>
         )}
 
-        <div style={{ marginTop: 24 }}>
+        {/* 483→557: разрыв 53 между заголовком и шкалой (📐) */}
+        <div style={{ marginTop: 22 }}>
           <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
         </div>
 
         {/* ТРАНСПОРТ. Центральная кнопка на оси экрана (📐 apple_music с.31, 35). */}
-        <div style={{ marginTop: 20, display: "flex", alignItems: "center",
+        {/* 565→635: разрыв 70 до транспорта (📐) */}
+        <div style={{ marginTop: 26, display: "flex", alignItems: "center",
           justifyContent: "center", gap: 36 }}>
           <button type="button" onClick={onPrev} aria-label="Назад"
             style={transportStyle}><PrevGlyph size={26} /></button>
@@ -342,19 +359,22 @@ export function FullPlayer({ track, playing, position, onToggle, onSeek, onPrev,
             style={transportStyle}><NextGlyph size={26} /></button>
         </div>
 
-        {/* НАШЕ: переход на текст. Только там, где текст есть. */}
-        <div style={{ marginTop: 28, display: "flex", justifyContent: "center", gap: 10 }}>
+        {/* НИЖНИЙ РЯД — 📐 врезка 27, ширина 338, y 732…749. Действия расходятся
+            по краям, а не жмутся в центр: у Apple здесь ряд равноудалённых знаков.
+            «Текст» — НАШЕ, у Apple его нет; включается только там, где текст есть. */}
+        <div style={{ display: "flex", alignItems: "center",
+          justifyContent: hasText ? "space-between" : "center",
+          padding: "0 3px", marginTop: 60, marginBottom: 40 }}>
           {hasText && (
-            <button type="button" onClick={onText} className="sq"
-              style={{ ...pillStyle }}>
+            <button type="button" onClick={onText} className="sq" style={pillStyle}>
               <TextGlyph size={18} /> Текст
             </button>
           )}
-          {onQueue && (
-            <button type="button" onClick={onQueue} className="sq" style={pillStyle}>
-              <QueueGlyph size={18} /> Очередь
-            </button>
-          )}
+          <button type="button" onClick={onQueue} aria-label="Очередь"
+            style={{ ...transportStyle, width: 40, height: 40,
+              color: "var(--color-label-2)" }}>
+            <QueueGlyph size={20} />
+          </button>
         </div>
       </div>
     </div>
