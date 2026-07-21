@@ -45,7 +45,7 @@
 .amx-scr {
   position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
-  padding: calc(var(--sat) + 10px) 0 calc(var(--sab) + 218px);
+  padding: calc(var(--sat) + 10px) 0 calc(var(--sab) + 190px);  /* 48 + 8 + 62 + 21 + воздух */
 }
 .amx-pad { padding-left: 20px; padding-right: 20px; }
 
@@ -276,7 +276,7 @@
 /* ── Меню (поповер) ─────────────────────────────────────────────────────── */
 .amx-dim { position: absolute; inset: 0; z-index: 60; }
 .amx-menu {
-  position: absolute; width: 296px; border-radius: 22px; overflow: hidden;
+  position: absolute; width: 296px; border-radius: 26px; overflow: hidden;  /* 📐 скругление 26 */
   background: var(--menu);
   -webkit-backdrop-filter: blur(46px) saturate(1.8); backdrop-filter: blur(46px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 18px 50px rgba(0,0,0,.55);
@@ -294,36 +294,42 @@
 .amx-menu .mi .chk { width: 20px; flex: 0 0 20px; }
 .amx-menu .mi.pad { padding-left: 20px; }
 .amx-menu .sep { height: 1px; background: rgba(255,255,255,.14); transform: scaleY(.5); margin: 0; }
+/* Узкое меню выбора (фильтр · сортировка · вид) — 📐 248.0 × шаг 36 */
+.amx-menu.narrow { width: 248px; }
+.amx-menu.narrow .mi { padding: 0 14px 0 8px; min-height: 36px; display: grid; grid-template-columns: 31px 30px 1fr; gap: 0; align-items: center; }
+.amx-menu.narrow .mi .chk { width: auto; display: flex; justify-content: center; color: var(--red); }
+.amx-menu.narrow .mi > svg:first-child { justify-self: center; }
 .amx-menu .sep.thick { height: 8px; background: rgba(0,0,0,.22); transform: none; }
 .amx-menu .grp + .grp { border-top: .5px solid rgba(255,255,255,.14); }
 
 /* ── Док (нижняя зона): мини-плеер + вкладки + поиск ────────────────────── */
-.amx-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 12px calc(var(--sab) + 8px); pointer-events: none; }
+/* 📐 IMG_1966 · IMG_1963 (совпало дважды): врезка 21, низ 21 */
+.amx-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 21px calc(var(--sab) + 21px); pointer-events: none; }
 .amx-dock > * { pointer-events: auto; }
 .amx-mini {
-  display: flex; align-items: center; gap: 10px; height: 58px; border-radius: 29px; padding: 0 8px 0 9px;
+  display: flex; align-items: center; gap: 10px; height: 48px; border-radius: 24px; padding: 0 6px 0 7px;  /* 📐 h48 */
   background: var(--glass);
   -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
 }
-.amx-mini .m-art { width: 40px; height: 40px; border-radius: 8px; flex: 0 0 auto; }
+.amx-mini .m-art { width: 36px; height: 36px; border-radius: 7px; flex: 0 0 auto; }  /* внутрь 48: 48−2×6 */
 .amx-mini .m-art.ph { background: rgba(120,120,128,.3); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.75); }
 .amx-mini .m-c { flex: 1; min-width: 0; }
 .amx-mini .m-t { font-size: 16px; font-weight: 600; letter-spacing: -.31px; /* 📐 чернила 16.3 ⇒ 16 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .amx-mini .m-t.np { font-weight: 600; color: #fff; }
 .amx-mini .m-s { font-size: 12px; letter-spacing: 0; color: var(--g2); /* §3.2 Caption 1 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.amx-mini .m-b { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.amx-mini .m-b { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 .amx-mini .m-b.dim { color: rgba(235,235,245,.4); }
-.amx-tabsrow { display: flex; align-items: stretch; gap: 10px; margin-top: 9px; }
+.amx-tabsrow { display: flex; align-items: stretch; gap: 8px; margin-top: 8px; }  /* 📐 зазор 8.0 (761→769) */
 .amx-tabs {
-  flex: 1; display: flex; border-radius: 37px; padding: 5px;
+  flex: 1; display: flex; border-radius: 31px; padding: 4px;  /* 📐 h62 */
   background: var(--glass);
   -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
 }
-.amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 32px; height: 64px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); } /* 📐 чернила 7.3 ⇒ 10 */
+.amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 27px; height: 54px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); } /* 📐 чернила 7.3 ⇒ 10 */
 .amx-tab.on { background: rgba(120,120,128,.30); color: var(--red); font-weight: 600; }
-.amx-scir { width: 74px; height: 74px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+.amx-scir { width: 62px; height: 62px; border-radius: 50%;  /* 📐 [310 + 62] */ flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
   background: var(--glass);
   -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
@@ -331,11 +337,11 @@
 .amx-scir.red { color: var(--red); }
 /* свёрнутый док: [иконка вкладки][мини-плеер][поиск] */
 .amx-dockrow { display: flex; align-items: center; gap: 10px; }
-.amx-dockrow .amx-cir { width: 58px; height: 58px; }
+.amx-dockrow .amx-cir { width: 48px; height: 48px; }
 .amx-dockrow .amx-mini { flex: 1; }
 /* док вкладки Search: [банка][строка ввода] */
 .amx-sfield {
-  flex: 1; display: flex; align-items: center; gap: 10px; height: 58px; border-radius: 29px; padding: 0 16px;
+  flex: 1; display: flex; align-items: center; gap: 10px; height: 48px; border-radius: 24px; padding: 0 14px;
   background: var(--glass);
   -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
@@ -353,7 +359,7 @@
 .amx-find-empty .ed { font-size: 17px; letter-spacing: -.43px; color: var(--g2); margin-top: 8px; line-height: 22px; }
 .amx-findbar { position: absolute; left: 12px; right: 12px; bottom: calc(var(--sab) + 10px); display: flex; align-items: center; gap: 10px; z-index: 45; }
 .amx-findbar .amx-sfield { color: #fff; }
-.amx-findbar .amx-cir { width: 58px; height: 58px; }
+.amx-findbar .amx-cir { width: 48px; height: 48px; }
 .amx-results { position: absolute; inset: 0; overflow-y: auto; padding: calc(var(--sat) + 84px) 0 calc(var(--sab) + 90px); }
 
 /* ── Хаб (Summertime Sounds): хосты с белой лентой ──────────────────────── */
@@ -387,6 +393,16 @@
 .amx-lyr .ln.on { color: rgba(255,255,255,.96); filter: blur(0); }
 .amx-lyr .ln.next { filter: blur(1.2px); color: rgba(255,255,255,.6); }
 .amx-kara { position: absolute; right: 4px; bottom: 14px; width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.16); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; }
+/* ГЛАВНЫЙ ВИД — большая обложка. 📐 живые снимки IMG_1950/1951: обложка
+   345×345 при врезке 24 (393−24−24=345), под ней название, исполнитель и ⋯
+   в одной строке. Экран лирики — ОТДЕЛЬНЫЙ режим с компактной шапкой; клон
+   открывался сразу в него, и большой обложки не показывал вовсе. */
+.amx-pl .pl-art { width: 100%; aspect-ratio: 1; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.5); }
+.amx-pl .pl-meta { display: flex; align-items: flex-start; gap: 12px; margin-top: 30px; }
+.amx-pl .pl-meta .mt { font-size: 22px; font-weight: 700; letter-spacing: -.26px; line-height: 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-pl .pl-meta .ms { font-size: 22px; font-weight: 400; letter-spacing: -.26px; line-height: 28px; color: rgba(255,255,255,.62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-pl .pl-meta .amx-cir { width: 30px; height: 30px; margin-top: 6px; background: rgba(255,255,255,.18); box-shadow: none; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
 /* режим очереди */
 .amx-pl .pl-tog { display: flex; gap: 10px; margin-top: 18px; }
 .amx-pl .pl-tog button { flex: 1; height: 52px; border-radius: 26px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.8); }

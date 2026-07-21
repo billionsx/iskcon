@@ -150,7 +150,8 @@ export function LibListScreen({ ui, id, onNewPlaylist }: { ui: UI; id: LibId; on
       )}
 
       {menu ? (
-        <Menu at={menu.at} width={menu.kind === "create" ? 276 : 296} onClose={() => setMenu(null)}
+        <Menu at={menu.at} narrow={menu.kind !== "create"}
+          width={menu.kind === "create" ? 276 : undefined} onClose={() => setMenu(null)}
           items={menu.kind === "create" ? createItems : menu.kind === "sort" ? sortItems : filterItems} />
       ) : null}
     </Scr>

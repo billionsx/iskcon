@@ -105,7 +105,11 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   open: boolean; onClose: () => void; onFav: (s: Song) => void; favOn: (s: Song) => boolean;
 }) {
   const p = usePlayer();
-  const [view, setView] = useState<"lyrics" | "queue">("lyrics");
+  /* ГЛАВНЫЙ ВИД — ОБЛОЖКА. У Apple мини-плеер раскрывается в большую обложку
+     (📐 IMG_1950/1951: 345×345 при врезке 24); лирика и очередь — ОТДЕЛЬНЫЕ
+     режимы, куда переходят кнопками внизу. Клон открывался сразу в лирику и
+     большой обложки не показывал ни разу. */
+  const [view, setView] = useState<"art" | "lyrics" | "queue">("art");
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const [tip, setTip] = useState(false);
   const tipSeen = useRef(false);
@@ -138,6 +142,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
     const el = lyrRef.current?.children[lineIdx + 1] as HTMLElement | undefined; // +1: точки-лоадер
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [lineIdx, view]);
+  /* прокрутка не трогает другие режимы: элемента там нет */
 
   if (!open || !cur) return null;
 
@@ -193,6 +198,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
       <div className="pl-in">
         <div onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}>
           <button className="pl-grab" onClick={onClose} aria-label="close" />
+          {view === "art" ? null : (
           <div className="pl-head">
             <Cover id={cur.id} cls="p-art" />
             <div style={{ minWidth: 0 }}>
@@ -201,10 +207,23 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
             </div>
             <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 22 })}</button>
           </div>
+          )}
         </div>
 
         <div className="pl-mid">
-          {view === "lyrics" ? (
+          {view === "art" ? (
+            <div style={{ position: "absolute", inset: 0, display: "flex",
+              flexDirection: "column", justifyContent: "center", padding: "0 4px" }}>
+              <Cover id={cur.id} cls="pl-art" />
+              <div className="pl-meta">
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div className="mt">{cur.t}</div>
+                  <div className="ms">{cur.a}</div>
+                </div>
+                <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 17 })}</button>
+              </div>
+            </div>
+          ) : view === "lyrics" ? (
             <>
               <div ref={lyrRef} className="amx-lyr" style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
                 <div className="pl-dots"><i /><i /><i /></div>
@@ -269,9 +288,12 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           {I.spkHi({ s: 20 })}
         </div>
         <div className="pl-brow">
-          <button className={view === "lyrics" ? "on" : ""} onClick={() => setView("lyrics")}>{I.quote({ s: 24 })}</button>
+          {/* Повторное нажатие возвращает к обложке — как у Apple */}
+          <button className={view === "lyrics" ? "on" : ""}
+            onClick={() => setView(view === "lyrics" ? "art" : "lyrics")}>{I.quote({ s: 24 })}</button>
           <button>{I.airplay({ s: 24 })}</button>
-          <button className={view === "queue" ? "on" : ""} onClick={() => setView("queue")}>{I.queue({ s: 24 })}</button>
+          <button className={view === "queue" ? "on" : ""}
+            onClick={() => setView(view === "queue" ? "art" : "queue")}>{I.queue({ s: 24 })}</button>
         </div>
       </div>
 

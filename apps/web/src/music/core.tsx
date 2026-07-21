@@ -148,14 +148,17 @@ export function frameRect(): { l: number; t: number; w: number; h: number } {
   return { l: 0, t: 0, w, h };
 }
 
-export function Menu({ at, quick, items, onClose, width }: {
-  at: { x: number; y: number; up?: boolean }; quick?: MQuick[]; items: MItem[]; onClose: () => void; width?: number;
+export function Menu({ at, quick, items, onClose, width, narrow }: {
+  at: { x: number; y: number; up?: boolean }; quick?: MQuick[]; items: MItem[];
+  onClose: () => void; width?: number;
+  /** Узкое меню выбора — 📐 248.0, шаг строки 36, отметка слева. */
+  narrow?: boolean;
 }) {
-  const w = width ?? 296;
+  const w = width ?? (narrow ? 248 : 296);
   const fr = frameRect();
   const ax = at.x - fr.l, ay = at.y - fr.t;
   const left = Math.min(Math.max(8, ax - (ax > fr.w / 2 ? w : 0)), fr.w - w - 8);
-  const est = (quick ? 78 : 0) + items.reduce((a, it) => a + ("sep" in it ? ("thick" in it && it.thick ? 8 : 1) : ("sub" in it && it.sub ? 62 : 50)), 0);
+  const est = (quick ? 78 : 0) + items.reduce((a, it) => a + ("sep" in it ? ("thick" in it && it.thick ? 8 : 1) : ("sub" in it && it.sub ? 62 : narrow ? 36 : 50)), 0);
   const up = at.up ?? (ay + est + 16 > fr.h);
   const style: React.CSSProperties = up
     ? { left, bottom: Math.max(10, fr.h - ay + 10), ["--oy" as never]: "100%" as never }
@@ -169,7 +172,7 @@ export function Menu({ at, quick, items, onClose, width }: {
   }, [onClose]);
   return (
     <div className="amx-dim" onClick={onClose} style={{ background: "rgba(0,0,0,.32)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
-      <div className="amx-menu" style={{ ...style, width: w, ["--ox" as never]: ox as never }} onClick={(e) => e.stopPropagation()}>
+      <div className={"amx-menu" + (narrow ? " narrow" : "")} style={{ ...style, width: w, ["--ox" as never]: ox as never }} onClick={(e) => e.stopPropagation()}>
         {quick ? (
           <>
             <div className="mq">
