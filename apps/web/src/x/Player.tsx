@@ -29,35 +29,22 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties, type Reac
 export type PlayKind = "book" | "lecture" | "kirtan" | "bhajan" | "podcast" | "inspiration";
 
 /**
- * МАТРИЦА ВОЗМОЖНОСТЕЙ. Первая версия различала виды одним флагом «есть текст»,
- * и это было слишком грубо: у Apple книга, подкаст и песня живут в РАЗНЫХ
- * приложениях именно потому, что у них разный транспорт. Книге нужна перемотка
- * на ±15 секунд и скорость чтения, песне — переход по трекам и повтор. Мы держим
- * один компонент, значит различие переезжает сюда.
+ * ПЛЕЕР ОДИН НА ВСЁ. Виды звука НЕ различаются набором действий.
  *
- *   text   — переход на текст (наше, у Apple такого нет)
- *   skip   — перемотка ±15 с вместо перехода по трекам (длинная запись)
- *   speed  — скорость воспроизведения (речь, не музыка)
- *   repeat — повтор (киртан и бхаджан поют кругами)
- *   queue  — очередь / оглавление
+ * Здесь стояла «матрица возможностей»: книге давались перемотка и скорость,
+ * киртану — повтор и перемешивание, вдохновению не давалось ничего. Матрица
+ * была выведена из рассуждения «у Apple книга и песня живут в разных
+ * приложениях, значит и транспорт разный» — то есть из МОЕЙ ДОГАДКИ, а не из
+ * замера и не из замысла приложения.
+ *
+ * Действующий плеер приложения устроен ровно наоборот и был прав: один набор
+ * на всё. Пять кнопок транспорта, четыре инструмента внизу — и лекции, и
+ * киртану, и вдохновению. Различает виды ЕДИНСТВЕННОЕ: есть ли у записи текст.
+ * Нет текста — значок раскрытой книги гаснет, но не исчезает: строка действий
+ * не должна плясать от вида к виду.
+ *
+ * Предмет другой, язык тот же.
  */
-interface Caps {
-  text: boolean; skip: boolean; speed: boolean; repeat: boolean; queue: boolean;
-  /** Перемешивание. У книги и лекции глав ПОРЯДОК ЕСТЬ — перемешать их значит
-   *  испортить; у киртана порядок случаен по природе. */
-  shuffle: boolean;
-  /** Таймер сна. ЗКН-Н054: святое имя ставят на ночь. Вдохновению на полторы
-   *  минуты таймер не нужен, всему остальному нужен. */
-  sleep: boolean;
-}
-const CAPS: Record<PlayKind, Caps> = {
-  book:        { text: true,  skip: true,  speed: true,  repeat: false, queue: true,  shuffle: false, sleep: true  },
-  lecture:     { text: true,  skip: true,  speed: true,  repeat: false, queue: true,  shuffle: false, sleep: true  },
-  podcast:     { text: false, skip: true,  speed: true,  repeat: false, queue: true,  shuffle: false, sleep: true  },
-  kirtan:      { text: false, skip: false, speed: false, repeat: true,  queue: true,  shuffle: true,  sleep: true  },
-  bhajan:      { text: true,  skip: false, speed: false, repeat: true,  queue: true,  shuffle: true,  sleep: true  },
-  inspiration: { text: false, skip: false, speed: false, repeat: false, queue: false, shuffle: false, sleep: false },
-};
 
 export type OrderMode = "forward" | "shuffle";
 
@@ -119,9 +106,12 @@ function NextGlyph({ size = 20 }: { size?: number }) {
     <path d="M6 5.5v13l9-6.5z" fill="currentColor" />
     <rect x="16.4" y="5.5" width="2.6" height="13" rx="1.1" fill="currentColor" /></svg>;
 }
+/** Раскрытая книга — единственный знак, которым виды звука различаются. */
 function TextGlyph({ size = 20 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-    <path {...S} d="M5 6h14M5 10h14M5 14h10M5 18h7" /></svg>;
+    <path {...S} d="M12 7.4v11.4" />
+    <path {...S} d="M12 7.4C10.4 6 8.4 5.3 5.6 5.3H3.6v11.4h2c2.8 0 4.8.7 6.4 2.1" />
+    <path {...S} d="M12 7.4c1.6-1.4 3.6-2.1 6.4-2.1h2v11.4h-2c-2.8 0-4.8.7-6.4 2.1" /></svg>;
 }
 function QueueGlyph({ size = 20 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
@@ -154,6 +144,10 @@ function MoreGlyph({ size = 20 }: { size?: number }) {
     <circle cx="5.5" cy="12" r="1.7" fill="currentColor" />
     <circle cx="12" cy="12" r="1.7" fill="currentColor" />
     <circle cx="18.5" cy="12" r="1.7" fill="currentColor" /></svg>;
+}
+function SpeedGlyph({ size = 19 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M4.4 17.4a8.6 8.6 0 1 1 15.2 0" /><path {...S} d="M12 12.6 15.8 9" /></svg>;
 }
 function MoonGlyph({ size = 20 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
@@ -403,10 +397,10 @@ const SLEEP_MIN = [5, 10, 15, 30, 45, 60] as const;
  * ПОРЯДОК ставится ПРЯМО (ЗКН-Д023), а не прокручивается по кругу. И он есть
  * не у всех: у глав книги порядок свой, перемешать их значит испортить чтение.
  */
-function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrder, onClose }: {
-  caps: Caps; sleepMin: number | null; sleepEnd: boolean; order: OrderMode;
+function MoreSheet({ sleepMin, sleepEnd, order, repeat, onSleep, onSleepEnd, onOrder, onRepeat, onClose }: {
+  sleepMin: number | null; sleepEnd: boolean; order: OrderMode; repeat: boolean;
   onSleep: (m: number | null) => void; onSleepEnd: (v: boolean) => void;
-  onOrder: (o: OrderMode) => void; onClose: () => void;
+  onOrder: (o: OrderMode) => void; onRepeat: () => void; onClose: () => void;
 }) {
   const row: CSSProperties = {
     display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
@@ -429,8 +423,7 @@ function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrd
         borderTopLeftRadius: 40, borderTopRightRadius: 40, maxHeight: "82%", overflowY: "auto",
         padding: "14px 16px calc(24px + env(safe-area-inset-bottom))" }}>
 
-        {caps.sleep && (
-          <>
+        <>
             <p style={{ ...head, marginTop: 4 }}>Таймер сна</p>
             {/* Лист закрывается после выбора — как лист скорости. Человек выбрал,
                 дальше ему нужен экран, а не список. */}
@@ -452,11 +445,9 @@ function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrd
                 <span>Выключить таймер</span>
               </button>
             )}
-          </>
-        )}
+        </>
 
-        {caps.shuffle && (
-          <>
+        <>
             <p style={head}>Порядок</p>
             <button type="button" style={row} onClick={() => { onOrder("forward"); onClose(); }}>
               <span>По списку</span>
@@ -466,8 +457,11 @@ function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrd
               <span>Перемешать</span>
               {order === "shuffle" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
             </button>
-          </>
-        )}
+            <button type="button" style={row} onClick={() => { onRepeat(); onClose(); }}>
+              <span>Повторять запись</span>
+              {repeat && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
+            </button>
+        </>
       </div>
     </div>
   );
@@ -640,23 +634,22 @@ const P = (y: number) => `${(y / 852) * 100}%`;
  * Транспорт зависит от ВИДА, а не один на всех: длинной записи нужна перемотка
  * на ±15 секунд и скорость, песне — переход по трекам и повтор. Матрица CAPS.
  */
-export function FullPlayer({ track, playing, position, speed, repeat, fav, sleepOn, order,
-  onToggle, onSeek, onPrev, onNext, onClose, onText, onQueue, onSpeedPick, onRepeat,
+export function FullPlayer({ track, playing, position, speed, fav, sleepOn, order,
+  onToggle, onSeek, onPrev, onNext, onClose, onText, onQueue, onSpeedPick,
   onFav, onMore }: {
-  track: Track; playing: boolean; position: number; speed: number; repeat: boolean;
+  track: Track; playing: boolean; position: number; speed: number;
   fav: boolean; sleepOn: boolean; order: OrderMode;
   onToggle: () => void; onSeek: (s: number) => void;
   onPrev: () => void; onNext: () => void; onClose: () => void;
-  onText?: () => void; onQueue?: () => void;
+  onText: () => void; onQueue: () => void;
   /** ЗКН-Д023 — скорость ВЫБИРАЮТ из списка, а не прокручивают по кругу:
    *  у лекции на два часа «1.5×» это решение, а не следующий шаг цикла.
    *  В первой версии здесь стоял именно цикл — закон уже был написан, я его
    *  повторно нарушил, прочитав только после. */
-  onSpeedPick: () => void; onRepeat: () => void;
+  onSpeedPick: () => void;
   onFav: () => void; onMore: () => void;
 }) {
-  const caps = CAPS[track.kind];
-  const hasText = caps.text && (!!track.text?.length || !!track.textHref);
+  const hasText = !!track.text?.length || !!track.textHref;
   return (
     <div role="dialog" aria-modal="true" aria-label={`Сейчас играет: ${track.title}`}
       style={{ position: "absolute", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
@@ -682,14 +675,12 @@ export function FullPlayer({ track, playing, position, speed, repeat, fav, sleep
               WebkitTapHighlightColor: "transparent" }}>
             <ChevronDownGlyph size={20} />
           </button>
-          {(caps.sleep || caps.shuffle) ? (
-            <button type="button" onClick={onMore} aria-label="Ещё"
-              style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
-                border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
-                color: (sleepOn || order === "shuffle") ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
-              {sleepOn ? <MoonGlyph size={20} /> : order === "shuffle" ? <ShuffleGlyph size={20} /> : <MoreGlyph size={20} />}
-            </button>
-          ) : <span style={{ width: 44 }} />}
+          <button type="button" onClick={onMore} aria-label="Ещё"
+            style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
+              border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
+              color: (sleepOn || order === "shuffle") ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
+            {order === "shuffle" ? <ShuffleGlyph size={20} /> : <MoreGlyph size={20} />}
+          </button>
         </div>
 
         {/* РАСКЛАДКА ПО ПОЗИЦИЯМ, А НЕ ПО ПРОМЕЖУТКАМ.
@@ -702,17 +693,21 @@ export function FullPlayer({ track, playing, position, speed, repeat, fav, sleep
             852 pt. На экране короче кадра всё сжимается пропорционально —
             замер задаёт ПРОПОРЦИЮ, а не абсолют в пикселях чужого экрана. */}
         <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
-          {/* ОБЛОЖКА — врезка 24.0 (📐 с.35). Живёт между шапкой и заголовком. */}
+          {/* ОБЛОЖКА — врезка 24.0 (📐 apple_music с.35), место сверху. */}
           <div style={{ position: "absolute", top: P(96), left: 24, right: 24,
-            height: P(367), display: "grid", placeItems: "center" }}>
+            height: P(359), display: "grid", placeItems: "center" }}>
             <div style={{ height: "100%", aspectRatio: "1", display: "grid" }}>
               <Cover track={track} size="100%" radius="var(--radius-card)" big />
             </div>
           </div>
 
-          {/* ЗАГОЛОВОК — 📐 y 483 … 504. Надзаголовок стоит НАД ним, поэтому
-              блок начинается выше, а на 483 приходится сама строка названия. */}
-          <div style={{ position: "absolute", top: P(461), left: 24, right: 24 }}>
+          {/* УПРАВЛЕНИЕ ПРИЖАТО К НИЗУ, а не расставлено по отдельным высотам.
+              Абсолютная посадка каждого блока сломалась ровно там, где название
+              заняло две строки: заголовок пополз вниз и лёг НА ШКАЛУ. Замеренные
+              высоты — это высоты при ОДНОСТРОЧНОМ названии; у нас названия
+              длинные, и стопка должна расти ВВЕРХ от нижнего края.
+              Низ ряда инструментов приходится на 767 из 852 → отступ снизу 85. */}
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(85) }}>
             <div style={{ marginBottom: 4, fontFamily: "var(--font-text)",
               fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
               letterSpacing: "var(--ls-caption2)", fontWeight: 600,
@@ -722,8 +717,8 @@ export function FullPlayer({ track, playing, position, speed, repeat, fav, sleep
             <h1 style={{ margin: 0, fontFamily: "var(--font-display)",
               fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
               letterSpacing: "var(--ls-title2)", fontWeight: 700,
-              color: "var(--color-label)", overflow: "hidden",
-              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+              color: "var(--color-label)", overflow: "hidden", display: "-webkit-box",
+              WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
               {track.title}
             </h1>
             {track.subtitle && (
@@ -734,72 +729,80 @@ export function FullPlayer({ track, playing, position, speed, repeat, fav, sleep
                 {track.subtitle}
               </p>
             )}
-          </div>
 
-          {/* ШКАЛА — 📐 знак на y 557 … 565 */}
-          <div style={{ position: "absolute", top: P(553), left: 24, right: 24 }}>
-            <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
-          </div>
+            <div style={{ marginTop: 18 }}>
+              <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
+            </div>
 
-          {/* ТРАНСПОРТ — 📐 y 635 … 672, ось 196.5 = центр экрана.
-              Кнопка выше своего глифа, поэтому центрируем ПО ОСИ ГЛИФА. */}
-          <div style={{ position: "absolute", top: P(625), left: 0, right: 0,
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 36 }}>
-            <button type="button" onClick={() => caps.skip ? onSeek(position - 15) : onPrev()}
-              aria-label={caps.skip ? "Назад на 15 секунд" : "Предыдущая"} style={transportStyle}>
-              {caps.skip ? <Back15Glyph size={28} /> : <PrevGlyph size={26} />}
-            </button>
-            <button type="button" onClick={onToggle} aria-label={playing ? "Пауза" : "Воспроизвести"}
-              style={{ ...transportStyle, width: 56, height: 56 }}>
-              {playing ? <PauseGlyph size={34} /> : <PlayGlyph size={34} />}
-            </button>
-            <button type="button" onClick={() => caps.skip ? onSeek(position + 15) : onNext()}
-              aria-label={caps.skip ? "Вперёд на 15 секунд" : "Следующая"} style={transportStyle}>
-              {caps.skip ? <Fwd15Glyph size={28} /> : <NextGlyph size={26} />}
-            </button>
-          </div>
+            {/* ТРАНСПОРТ — пять кнопок, как в действующем плеере приложения:
+                перемотка ±15 И переход по записям СРАЗУ. Ни одна из них не
+                зависит от вида звука. */}
+            <div style={{ marginTop: 20, display: "flex", alignItems: "center",
+              justifyContent: "space-between", gap: 8 }}>
+              <button type="button" onClick={() => onSeek(position - 15)}
+                aria-label="Назад 15 секунд"
+                style={{ ...transportStyle, width: 34, height: 34, color: "var(--color-label-2)" }}>
+                <Back15Glyph size={26} />
+              </button>
+              <button type="button" onClick={onPrev} aria-label="Предыдущая"
+                style={{ ...transportStyle, width: 40, height: 40 }}>
+                <PrevGlyph size={32} />
+              </button>
+              <button type="button" onClick={onToggle} aria-label={playing ? "Пауза" : "Воспроизвести"}
+                style={{ ...transportStyle, width: 64, height: 64 }}>
+                {playing ? <PauseGlyph size={44} /> : <PlayGlyph size={44} />}
+              </button>
+              <button type="button" onClick={onNext} aria-label="Следующая"
+                style={{ ...transportStyle, width: 40, height: 40 }}>
+                <NextGlyph size={32} />
+              </button>
+              <button type="button" onClick={() => onSeek(position + 15)}
+                aria-label="Вперёд 15 секунд"
+                style={{ ...transportStyle, width: 34, height: 34, color: "var(--color-label-2)" }}>
+                <Fwd15Glyph size={26} />
+              </button>
+            </div>
 
-          {/* Витрина не притворяется плеером: если звука нет — так и сказано. */}
-          {!track.src && (
-            <p style={{ position: "absolute", top: P(697), left: 24, right: 24, margin: 0,
-              textAlign: "center", fontFamily: "var(--font-text)",
-              fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
-              letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
-              Запись не подключена — идёт показ раскладки
-            </p>
-          )}
+            {!track.src && (
+              <p style={{ margin: "12px 0 0", textAlign: "center", fontFamily: "var(--font-text)",
+                fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+                letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
+                Запись не подключена — идёт показ раскладки
+              </p>
+            )}
 
-          {/* НИЖНИЙ РЯД — 📐 y 732 … 749, врезка 27.0, ширина 338.3 */}
-          <div style={{ position: "absolute", top: P(732), left: 27, right: 27,
-            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-            <span style={{ display: "flex", gap: 8, minWidth: 0 }}>
-              {hasText && (
-                <button type="button" onClick={onText} className="sq" style={pillStyle}>
-                  <TextGlyph size={18} /> Текст
-                </button>
-              )}
-              {caps.speed && (
-                <button type="button" className="sq" style={pillStyle}
-                  aria-label={`Скорость ${speed}×, выбрать`} onClick={onSpeedPick}>
-                  {speed}×
-                </button>
-              )}
-            </span>
-            <span style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-              {caps.repeat && (
-                <button type="button" onClick={onRepeat} aria-pressed={repeat} aria-label="Повтор"
-                  style={{ ...transportStyle, width: 40, height: 40,
-                    color: repeat ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
-                  <RepeatGlyph size={20} />
-                </button>
-              )}
-              {caps.queue && (
-                <button type="button" onClick={onQueue} aria-label="Очередь"
-                  style={{ ...transportStyle, width: 40, height: 40, color: "var(--color-label-2)" }}>
-                  <QueueGlyph size={20} />
-                </button>
-              )}
-            </span>
+            {/* ИНСТРУМЕНТЫ — четыре, как в действующем плеере. У Apple здесь
+                лирика · AirPlay · очередь; у нас лирики нет, зато есть
+                двухчасовая лекция и киртан на ночь. Предмет другой, язык тот же.
+                «Текст» ГАСНЕТ при отсутствии текста, но не исчезает: строка
+                действий не должна плясать от записи к записи. */}
+            <div style={{ marginTop: 22, display: "flex", alignItems: "center",
+              justifyContent: "space-around" }}>
+              <button type="button" onClick={onText} disabled={!hasText} aria-label="Текст"
+                style={{ ...transportStyle, width: 44, height: 44,
+                  opacity: hasText ? 1 : 0.32, cursor: hasText ? "pointer" : "default",
+                  color: "var(--color-label-2)" }}>
+                <TextGlyph size={21} />
+              </button>
+              <button type="button" onClick={onSpeedPick} aria-label={`Скорость ${speed}×`}
+                style={{ ...transportStyle, width: 44, height: 44,
+                  color: speed === 1 ? "var(--color-label-2)" : "var(--color-gold-deep)" }}>
+                <span style={{ display: "grid", placeItems: "center", gap: 1 }}>
+                  <SpeedGlyph size={19} />
+                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+                    fontWeight: 700, lineHeight: "var(--lh-caption2)" }}>{speed}×</span>
+                </span>
+              </button>
+              <button type="button" onClick={onMore} aria-label="Таймер сна"
+                style={{ ...transportStyle, width: 44, height: 44,
+                  color: sleepOn ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
+                <MoonGlyph size={21} />
+              </button>
+              <button type="button" onClick={onQueue} aria-label="Очередь"
+                style={{ ...transportStyle, width: 44, height: 44, color: "var(--color-label-2)" }}>
+                <QueueGlyph size={21} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1004,13 +1007,12 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
       artwork: track.cover ? [{ src: track.cover, sizes: "512x512" }] : [],
     });
     ms.playbackState = playing ? "playing" : "paused";
-    const caps = CAPS[track.kind];
     ms.setActionHandler("play", () => setPlaying(true));
     ms.setActionHandler("pause", () => setPlaying(false));
-    ms.setActionHandler("previoustrack", caps.skip ? null : prev);
-    ms.setActionHandler("nexttrack", caps.skip ? null : next);
-    ms.setActionHandler("seekbackward", caps.skip ? () => seekTo(position - 15) : null);
-    ms.setActionHandler("seekforward", caps.skip ? () => seekTo(position + 15) : null);
+    ms.setActionHandler("previoustrack", prev);
+    ms.setActionHandler("nexttrack", next);
+    ms.setActionHandler("seekbackward", () => seekTo(position - 15));
+    ms.setActionHandler("seekforward", () => seekTo(position + 15));
     ms.setActionHandler("seekto", (e) => { if (e.seekTime != null) seekTo(e.seekTime); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [track, playing, position, prev, next]);
@@ -1031,17 +1033,16 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
           bottom={tabBarBottom} />
       )}
       {state === "full" && (
-        <FullPlayer track={shown} playing={playing} position={position} speed={speed} repeat={repeat}
+        <FullPlayer track={shown} playing={playing} position={position} speed={speed}
           fav={favs.includes(track.id)} sleepOn={!!sleepMin || sleepEnd} order={order}
           onFav={toggleFav} onMore={() => setSheet("more")}
           onToggle={() => setPlaying((v) => !v)}
           onSeek={seekTo}
           onPrev={prev} onNext={next}
           onClose={() => setState("mini")}
-          onText={CAPS[track.kind].text ? () => setSheet("text") : undefined}
-          onQueue={CAPS[track.kind].queue ? () => setSheet("queue") : undefined}
-          onSpeedPick={() => setSheet("speed")}
-          onRepeat={() => setRepeat((v) => !v)} />
+          onText={() => setSheet("text")}
+          onQueue={() => setSheet("queue")}
+          onSpeedPick={() => setSheet("speed")} />
       )}
       {sheet === "queue" && (
         <QueueSheet queue={queue} index={index} kind={track.kind}
@@ -1056,8 +1057,9 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
         <SpeedSheet value={speed} onPick={setSpeed} onClose={() => setSheet("none")} />
       )}
       {sheet === "more" && (
-        <MoreSheet caps={CAPS[track.kind]} sleepMin={sleepMin} sleepEnd={sleepEnd} order={order}
+        <MoreSheet sleepMin={sleepMin} sleepEnd={sleepEnd} order={order} repeat={repeat}
           onSleep={setSleepMin} onSleepEnd={setSleepEnd} onOrder={setOrder}
+          onRepeat={() => setRepeat((v) => !v)}
           onClose={() => setSheet("none")} />
       )}
     </>
