@@ -1048,6 +1048,10 @@ def check_n002():
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx"):
             continue
+        if "/music/" in str(fp):
+            # /music изолирован распоряжением основателя 21.07.2026: клон живёт
+            # ПОВЕРХ App и слушает только свои state ({amx}), гонки нет
+            continue
         t = fp.read_text(encoding="utf-8")
         for m in _re.finditer(r'addEventListener\(\s*["\']popstate["\']', t):
             owners.append(fp.name)
