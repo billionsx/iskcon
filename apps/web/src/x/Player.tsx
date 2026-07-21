@@ -688,11 +688,11 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
               WebkitTapHighlightColor: "transparent" }}>
             <ChevronDownGlyph size={20} />
           </button>
-          <button type="button" onClick={onMore} aria-label="Ещё"
+          <button type="button" onClick={onQueue} aria-label="Очередь"
             style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
               border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
-              color: (sleepOn || order === "shuffle") ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
-            {order === "shuffle" ? <ShuffleGlyph size={20} /> : <MoreGlyph size={20} />}
+              color: order === "shuffle" ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
+            {order === "shuffle" ? <ShuffleGlyph size={20} /> : <QueueGlyph size={20} />}
           </button>
         </div>
 
@@ -706,12 +706,17 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
             852 pt. На экране короче кадра всё сжимается пропорционально —
             замер задаёт ПРОПОРЦИЮ, а не абсолют в пикселях чужого экрана. */}
         <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
-          {/* ОБЛОЖКА — врезка 24.0 (📐 apple_music с.35), место сверху. */}
-          <div style={{ position: "absolute", top: P(96), left: 24, right: 24,
-            height: P(359), display: "grid", placeItems: "center" }}>
-            <div style={{ height: "100%", aspectRatio: "1", display: "grid" }}>
-              <Cover track={track} size="100%" radius="var(--radius-card)" big />
-            </div>
+          {/* ОБЛОЖКА — 📐 345.0 × 345.0, врезка 24.0, верх y 91.5, низ 436.5.
+              Замер снят с живых снимков iPhone: в корпусном наборе чистого
+              «сейчас играет» не было вовсе, все кадры сняты с открытым текстом
+              песни. Квадратность подтверждена арифметикой: 393 − 24 − 24 = 345.
+
+              Верхняя кромка ловилась поточечным сравнением «внутри против
+              снаружи»: обложка начиналась почти чёрной полосой, и порог по
+              насыщенности обрезал её на 25 пунктов ниже настоящего края. */}
+          <div style={{ position: "absolute", top: P(91.5), left: 24, right: 24,
+            aspectRatio: "1" }}>
+            <Cover track={track} size="100%" radius="var(--radius-card)" big />
           </div>
 
           {/* УПРАВЛЕНИЕ ПРИЖАТО К НИЗУ, а не расставлено по отдельным высотам.
@@ -727,13 +732,24 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
               color: "var(--color-gold-deep)" }}>
               {KIND_LABEL[track.kind]}
             </div>
-            <h1 style={{ margin: 0, fontFamily: "var(--font-display)",
-              fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
-              letterSpacing: "var(--ls-title2)", fontWeight: 700,
-              color: "var(--color-label)", overflow: "hidden", display: "-webkit-box",
-              WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-              {track.title}
-            </h1>
+            {/* Заголовок и ⋯ стоят В ОДНОЙ СТРОКЕ — 📐 кнопка на x 337.0 при
+                врезке заголовка 33.7. Раньше «ещё» жила в шапке; замер показал,
+                что у Apple она принадлежит записи, а не экрану. */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: "var(--font-display)",
+                fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
+                letterSpacing: "var(--ls-title2)", fontWeight: 700,
+                color: "var(--color-label)", overflow: "hidden", display: "-webkit-box",
+                WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                {track.title}
+              </h1>
+              <button type="button" onClick={onMore} aria-label="Ещё"
+                style={{ ...transportStyle, width: 28, height: 28, flexShrink: 0,
+                  borderRadius: 14, background: "var(--color-fill-1)",
+                  color: sleepOn ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
+                <MoreGlyph size={15} />
+              </button>
+            </div>
             {track.subtitle && (
               <p style={{ margin: "2px 0 0", fontFamily: "var(--font-text)",
                 fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
