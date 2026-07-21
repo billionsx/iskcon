@@ -232,7 +232,7 @@ function Shell() {
                 <div className="amx-tabs">
                   {(["home", "new", "radio", "library"] as Tab[]).map((t) => (
                     <button key={t} className={"amx-tab" + (baseTab === t ? " on" : "")} onClick={() => setTab(t)}>
-                      {TAB_ICON[t](25)}
+                      {TAB_ICON[t](26)}
                       <span>{t === "home" ? "Home" : t === "new" ? "New" : t === "radio" ? "Radio" : "Library"}</span>
                     </button>
                   ))}

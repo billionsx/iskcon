@@ -135,17 +135,21 @@ export function LibListScreen({ ui, id, onNewPlaylist }: { ui: UI; id: LibId; on
           <SongRow key={s.id} s={s} onPlay={() => ui.play(favSongs, i, "Favourite Songs")}
             onDots={(e) => ui.dots("track", s, menuAt(e))} />
         ))
-      ) : id === "playlists" || id === "artists" ? (
-        <div className="amx-empty">
-          <span className="ei">{I.cloud({ s: 66 })}</span>
-          <div className="et">Syncing Library</div>
-          <div className="ed">Once your library has synced, added music will appear here.</div>
-        </div>
       ) : (
+        /* 📐 IMG_1971 · IMG_1975: у Apple в пустом состоянии ЗАГОЛОВКА НЕТ —
+           знак 41 и одна строка описания. «Syncing Library» было моей
+           выдумкой. Тексты взяты со снимков дословно. */
         <div className="amx-empty">
-          <span className="ei">{I.note({ s: 60 })}</span>
-          <div className="ed" style={{ marginTop: 14 }}>Music you add from Apple Music, from your computer or that you buy in iTunes will appear here.</div>
-          <button className="eb" onClick={() => ui.push({ k: "tab", t: "new" })}>Browse Apple Music</button>
+          <span className="ei">
+            {id === "playlists" ? I.queue({ s: 41 })
+              : id === "artists" ? I.mic({ s: 41 })
+              : I.note({ s: 41 })}
+          </span>
+          <div className="ed">
+            {id === "playlists" ? "Playlists you create will appear here."
+              : id === "artists" ? "Add an artist’s music and they will appear here."
+              : "Music purchased in iTunes or added from your computer will appear here."}
+          </div>
         </div>
       )}
 
@@ -174,8 +178,8 @@ export function UserPlaylistScreen({ ui, id }: { ui: UI; id: string }) {
           onDots={(e) => ui.dots("track", s, menuAt(e))} />
       )) : (
         <div className="amx-empty">
-          <span className="ei">{I.note({ s: 60 })}</span>
-          <div className="ed" style={{ marginTop: 14 }}>Songs you add to this playlist will appear here.</div>
+          <span className="ei">{I.note({ s: 41 })}</span>
+          <div className="ed">Songs you add to this playlist will appear here.</div>
         </div>
       )}
     </Scr>

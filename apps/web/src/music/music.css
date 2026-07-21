@@ -285,9 +285,7 @@
 .amx-librow + .amx-librow::before { content: ""; position: absolute; left: 58.7px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }  /* 📐 разделитель ОТ ТЕКСТА */
 .amx-empty { padding: 120px 40px 0; text-align: center; }
 .amx-empty .ei { color: rgba(235,235,245,.5); }
-.amx-empty .et { font-size: 22px; font-weight: 700; letter-spacing: -.26px; line-height: 28px; margin-top: 18px; }
-.amx-empty .ed { font-size: 17px; letter-spacing: -.43px; color: var(--g2); margin-top: 10px; line-height: 22px; }
-.amx-empty .eb { color: var(--red); font-size: 17px; font-weight: 500; margin-top: 22px; display: inline-block; }
+.amx-empty .ed { font-size: 15px; letter-spacing: -.23px; color: var(--g2); margin-top: 20.7px; line-height: 19px; }  /* 📐 чернила 13.0 · шаг 19.0 · зазор 20.7 */
 
 /* ── Меню (поповер) ─────────────────────────────────────────────────────── */
 .amx-dim { position: absolute; inset: 0; z-index: 60; }
@@ -327,7 +325,7 @@
 .amx-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 21px calc(var(--sab) + 21px); pointer-events: none; }
 .amx-dock > * { pointer-events: auto; }
 .amx-mini {
-  display: flex; align-items: center; gap: 10px; height: 48px; border-radius: 24px; padding: 0 6px 0 7px;  /* 📐 h48 */
+  display: flex; align-items: center; gap: 12px; height: 48px; border-radius: 24px; padding: 0 6px 0 7px;  /* 📐 h48; текст с +55 = 7 + 36 + 12 */
   background: var(--glass);
   -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
@@ -342,12 +340,13 @@
 .amx-mini .m-b.dim { color: rgba(235,235,245,.4); }
 .amx-tabsrow { display: flex; align-items: stretch; gap: 8px; margin-top: 8px; }  /* 📐 зазор 8.0 (761→769) */
 .amx-tabs {
-  flex: 1; display: flex; border-radius: 31px; padding: 4px;  /* 📐 h62 */
+  flex: 1; display: flex; border-radius: 31px; padding: 8.7px;  /* 📐 8.7 + 44.6 + 8.7 = 62 */
   background: var(--glass);
   -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
 }
-.amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; border-radius: 27px; height: 54px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); } /* 📐 чернила 7.3 ⇒ 10 */
+/* 📐 вкладка 87.9 × 44.6 · знак 26 · подпись 10 · зазор знак→подпись 4 */
+.amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 22.3px; height: 44.6px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); }
 .amx-tab.on { background: rgba(120,120,128,.30); color: var(--red); font-weight: 600; }
 .amx-scir { width: 62px; height: 62px; border-radius: 50%;  /* 📐 [310 + 62] */ flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
   background: var(--glass);
@@ -371,13 +370,13 @@
 .amx-sfield input { flex: 1; font-size: 17px; }
 
 /* ── Оверлей поиска ─────────────────────────────────────────────────────── */
-.amx-seg { display: flex; margin: calc(var(--sat) + 14px) 16px 0; height: 56px; border-radius: 28px; padding: 4px; background: rgba(28,28,30,.9); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.07); }
+.amx-seg { display: flex; margin: calc(var(--sat) + 14px) 20px 0;  /* 📐 врезка 20, ширина 353 */ height: 56px; border-radius: 28px; padding: 4px; background: rgba(28,28,30,.9); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.07); }
 .amx-seg button { flex: 1; border-radius: 24px; font-size: 17px; font-weight: 600; letter-spacing: -.43px; color: rgba(235,235,245,.9); }
 .amx-seg button.on { background: rgba(120,120,128,.32); color: #fff; }
 .amx-find-empty { position: absolute; left: 0; right: 0; top: 30%; text-align: center; padding: 0 40px; }
 .amx-find-empty .et { font-size: 22px; font-weight: 700; letter-spacing: -.26px; line-height: 28px; margin-top: 16px; }
 .amx-find-empty .ed { font-size: 17px; letter-spacing: -.43px; color: var(--g2); margin-top: 8px; line-height: 22px; }
-.amx-findbar { position: absolute; left: 12px; right: 12px; bottom: calc(var(--sab) + 10px); display: flex; align-items: center; gap: 10px; z-index: 45; }
+.amx-findbar { position: absolute; left: 8px; right: 8px; bottom: calc(var(--sab) + 10px); display: flex; align-items: center; gap: 8px; z-index: 45; }  /* 📐 8 + 321 + 8 + 48 = 385 + 8 = 393 */
 .amx-findbar .amx-sfield { color: #fff; }
 .amx-findbar .amx-cir { width: 48px; height: 48px; }
 .amx-results { position: absolute; inset: 0; overflow-y: auto; padding: calc(var(--sat) + 84px) 0 calc(var(--sab) + 90px); }
