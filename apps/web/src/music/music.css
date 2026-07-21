@@ -161,10 +161,10 @@
 /* ── Полки ──────────────────────────────────────────────────────────────── */
 .amx-shelf { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px 4px; scroll-snap-type: x mandatory; }
 .amx-shelf > * { scroll-snap-align: start; }
-.amx-cardw { width: 168px; flex: 0 0 auto; }
+.amx-cardw { width: 141px; flex: 0 0 auto; }  /* 📐 шаг 153 − зазор 12 */
 .amx-cardw .cw-t { font-size: 15px; font-weight: 400; letter-spacing: -.23px; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
 .amx-cardw .cw-s { font-size: 13px; letter-spacing: -.08px; color: var(--g2); margin-top: 1px; /* §3.2 Footnote */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.amx-cardw .amx-cov { width: 168px; height: 168px; border-radius: 10px; }
+.amx-cardw .amx-cov { width: 141px; height: 141px; border-radius: 10px; }  /* 📐 141 × 141 */
 .amx-cardw.wide { width: 240px; }
 .amx-cardw.wide .amx-cov { width: 240px; height: 150px; border-radius: 12px; }
 .amx-cardw.tall { width: 200px; }
@@ -256,14 +256,16 @@
 .amx-city .t-b .amx-cov { position: absolute; inset: 0; border-radius: 6px; }
 
 /* ── Радио-эпизоды (двухколоночный пейджер строк с описанием) ───────────── */
-.amx-ep { display: flex; align-items: flex-start; gap: 14px; padding: 10px 12px; position: relative; }
-.amx-ep .e-art { width: 128px; height: 128px; border-radius: 10px; flex: 0 0 auto; }
+/* 📐 IMG_1957 · IMG_1958 (совпало): миниатюра 88.0 на x20, зазор 12.7,
+   текст с 120.7, шаг строки 102.0. Стояло 128 — на сорок больше эталона. */
+.amx-ep { display: flex; align-items: flex-start; gap: 12.7px; padding: 7px 12px; position: relative; }
+.amx-ep .e-art { width: 88px; height: 88px; border-radius: 10px; flex: 0 0 auto; }  /* 📐 88.0 */
 .amx-ep .e-k { font-size: 13px; font-weight: 700; letter-spacing: .4px; color: var(--g2); }
 .amx-ep .e-t { font-size: 17px; font-weight: 600; letter-spacing: -.43px; margin-top: 3px; display: flex; align-items: center; gap: 6px; }
 .amx-ep .e-d { font-size: 15px; letter-spacing: -.23px; color: var(--g2); margin-top: 3px; line-height: 20px;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .amx-ep .r-dots { margin-left: auto; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.7); flex: 0 0 auto; }
-.amx-ep + .amx-ep::before { content: ""; position: absolute; left: 154px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
+.amx-ep + .amx-ep::before { content: ""; position: absolute; left: 112.7px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }  /* 📐 разделитель от текста 120.7 */
 
 /* ── Вкладка Search (обзор) ─────────────────────────────────────────────── */
 .amx-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 11.6px; padding: 4px 20px 0; }  /* 📐 зазор 11.6 */
