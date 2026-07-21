@@ -53,9 +53,14 @@ export type OrderMode = "forward" | "shuffle";
 
 /** Оттенок вида — 🎨 наше. У Apple фон выводится из обложки; когда обложки нет,
  *  выводить не из чего, и вид даёт свой тон, чтобы экран не был мёртвым. */
-const TINT: Record<PlayKind, string> = {
-  book: "var(--tint-book)", lecture: "var(--tint-lecture)", kirtan: "var(--tint-kirtan)",
-  bhajan: "var(--tint-bhajan)", podcast: "var(--tint-podcast)", inspiration: "var(--tint-inspiration)",
+/** Свечение фона по виду — три пятна, как расплывшаяся обложка. */
+const GLOW: Record<PlayKind, [string, string, string]> = {
+  book: ["rgba(150,112,38,0.52)", "rgba(96,66,22,0.44)", "rgba(44,32,14,0.72)"],
+  lecture: ["rgba(74,96,138,0.48)", "rgba(44,58,98,0.42)", "rgba(18,22,38,0.72)"],
+  kirtan: ["rgba(164,72,92,0.48)", "rgba(104,42,64,0.42)", "rgba(38,18,26,0.70)"],
+  bhajan: ["rgba(164,72,92,0.48)", "rgba(104,42,64,0.42)", "rgba(38,18,26,0.70)"],
+  podcast: ["rgba(58,120,104,0.46)", "rgba(32,76,66,0.42)", "rgba(14,30,26,0.70)"],
+  inspiration: ["rgba(150,112,38,0.52)", "rgba(96,66,22,0.44)", "rgba(44,32,14,0.72)"],
 };
 
 const KIND_LABEL: Record<PlayKind, string> = {
@@ -192,15 +197,18 @@ function Cover({ track, size, radius, big }: {
     return <img src={track.cover} alt="" loading="lazy"
       style={{ ...box, objectFit: "cover" }} />;
   }
-  /* Нет обложки — монограмма вида, а не пустой прямоугольник: пустота на
-     экране читается как ошибка загрузки, а знак — как «так и задумано». */
-  return <span style={box} aria-hidden>
+  /* Нет обложки — ГРАДИЕНТ ВИДА с монограммой, не серая плита со словом:
+     слово на карточке выдавало заглушку, у Apple обложка всегда живая. */
+  const g = GLOW[track.kind];
+  return <span style={{ ...box,
+    background: `linear-gradient(155deg, ${g[0]} 0%, ${g[2]} 100%), var(--color-bg-3)` }}
+    aria-hidden>
     <span style={{
       fontFamily: "var(--font-display)",
       fontSize: big ? "var(--text-title1)" : "var(--text-caption2)",
       letterSpacing: big ? "var(--ls-title1)" : "var(--ls-caption2)",
-      fontWeight: 600, color: "var(--color-label-3)",
-    }}>{big ? KIND_LABEL[track.kind] : KIND_LABEL[track.kind].slice(0, 2).toUpperCase()}</span>
+      fontWeight: 600, color: "rgba(255,255,255,0.34)",
+    }}>{KIND_LABEL[track.kind].slice(0, 2).toUpperCase()}</span>
   </span>;
 }
 
@@ -249,12 +257,13 @@ function Scrubber({ position, duration, onSeek, bare }: {
           if (e.key === "ArrowRight") onSeek(position + 15);
         }}
         style={{
-          height: 4, borderRadius: 2, cursor: "pointer", position: "relative",
+          /* 📐 живой снимок: полоса y 557.3…565.3 — ВОСЕМЬ pt, не нитка */
+          height: 8, borderRadius: 4, cursor: "pointer", position: "relative",
           background: "rgba(255,255,255,0.22)",  /* 🕳 — заливка дорожки не снята */
           touchAction: "none",
         }}>
         <div style={{ position: "absolute", inset: 0, width: `${pct * 100}%`,
-          borderRadius: 2, background: "var(--color-label)" }} />
+          borderRadius: 4, background: "var(--color-label)" }} />
       </div>
       {!bare && (
         <div style={{
@@ -373,19 +382,28 @@ export function MiniPlayer({ track, playing, position, onToggle, onOpen, onNext,
  * ошибка загрузки, тон — как замысел.
  */
 function Ambient({ track }: { track: Track }) {
+  /* У APPLE ПЛЕЕР ЖИВЁТ ЦВЕТОМ ОБЛОЖКИ (📐 IMG_1950: оливковое свечение от
+     фотографии заливает весь экран). Чёрная плита с картой посередине — то,
+     что основатель справедливо назвал подделкой. Пока обложек нет, свечение
+     строится из палитры вида — тремя пятнами, как расплывается настоящая
+     фотография: верхний свет, боковой отсвет, тёмный низ. */
+  const g = GLOW[track.kind];
   return (
     <div aria-hidden style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0 }}>
       {track.cover ? (
         <img src={track.cover} alt="" style={{
           position: "absolute", inset: "-25%", width: "150%", height: "150%",
-          objectFit: "cover", filter: "blur(64px) saturate(180%)", opacity: 0.6,
+          objectFit: "cover", filter: "blur(64px) saturate(180%)", opacity: 0.8,
         }} />
       ) : (
-        <div style={{ position: "absolute", inset: 0,
-          background: `radial-gradient(130% 85% at 50% 0%, ${TINT[track.kind]} 0%, transparent 72%)` }} />
+        <div style={{ position: "absolute", inset: 0, background: `
+          radial-gradient(120% 85% at 22% 8%, ${g[0]} 0%, transparent 62%),
+          radial-gradient(130% 95% at 86% 34%, ${g[1]} 0%, transparent 58%),
+          radial-gradient(150% 110% at 50% 100%, ${g[2]} 0%, transparent 66%),
+          var(--color-bg-2)` }} />
       )}
       <div style={{ position: "absolute", inset: 0,
-        background: "linear-gradient(180deg, rgba(0,0,0,0.30) 0%, rgba(0,0,0,0.55) 55%, rgba(0,0,0,0.78) 100%)" }} />
+        background: "linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.34) 55%, rgba(0,0,0,0.55) 100%)" }} />
     </div>
   );
 }
@@ -669,7 +687,8 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
               снаружи»: обложка начиналась почти чёрной полосой, и порог по
               насыщенности обрезал её на 25 пунктов ниже настоящего края. */}
           <div style={{ position: "absolute", top: P(91.5), left: 24, right: 24,
-            aspectRatio: "1" }}>
+            aspectRatio: "1", borderRadius: "var(--radius-card)",
+            boxShadow: "0 14px 44px rgba(0,0,0,0.55)" }}>
             <Cover track={track} size="100%" radius="var(--radius-card)" big />
           </div>
 
@@ -688,13 +707,10 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
                 громкость      732.3…748.7 → bottom P(103)
                 плашка         без записи → bottom P(66)
                 инструменты    ≈788…812 → bottom P(38), высота 44 */}
+          {/* Кикера над названием у Apple НЕТ (📐 IMG_1950: заголовок, под ним
+              исполнитель — и всё). Золотая подпись вида была моей добавкой
+              поверх эталона; вид записи и так показывает знак книги внизу. */}
           <div style={{ position: "absolute", left: 24, right: 24, bottom: P(315) }}>
-            <div style={{ marginBottom: 4, fontFamily: "var(--font-text)",
-              fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
-              letterSpacing: "var(--ls-caption2)", fontWeight: 600,
-              color: "var(--color-gold-deep)" }}>
-              {KIND_LABEL[track.kind]}
-            </div>
             {/* Заголовок и ⋯ В ОДНОЙ СТРОКЕ — 📐 кнопка на x 337.0 при врезке
                 заголовка 33.7: «ещё» принадлежит записи, а не экрану. */}
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -845,7 +861,7 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
       {/* Полоса громкости без видимого бегунка — он появляется под пальцем */}
       <style>{`
         @keyframes xSheetUp { from { transform: translateY(103%); } to { transform: translateY(0); } }
-        .xvol { -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px;
+        .xvol { -webkit-appearance: none; appearance: none; height: 7px; border-radius: 4px;
           background: linear-gradient(to right, var(--color-label-2) calc(var(--v, 50) * 1%), var(--color-fill-2) 0);
           outline: none; }
         .xvol::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px;
