@@ -134,14 +134,14 @@
 .amx-cov .brand { position: absolute; top: 7px; right: 9px; font-size: 10.5px; font-weight: 600; color: rgba(28,28,30,.55); }
 
 /* ── Ряд песни ──────────────────────────────────────────────────────────── */
-.amx-row { display: flex; align-items: center; gap: 12px; padding: 0 20px; min-height: 74px; position: relative; }
-.amx-row .r-art { width: 52px; height: 52px; border-radius: 7px; }
-.amx-row .r-c { flex: 1; min-width: 0; padding: 10px 0; }
-.amx-row .r-t { font-size: 17px; font-weight: 400; letter-spacing: -.43px; line-height: 22px; /* §3.2 Body */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
-.amx-row .r-s { font-size: 15px; letter-spacing: -.23px; line-height: 20px; color: var(--g2); margin-top: 1px; /* §3.2 Subhead */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.amx-row .r-dots { width: 44px; height: 44px; margin-right: -10px; display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.7); }
+.amx-row { display: flex; align-items: center; gap: 12px; padding: 0 20px; min-height: 49.33px; position: relative; }  /* 📐 шаг строки 49.33 — IMG_2347+2381+2382 */
+.amx-row .r-art { width: 41.33px; height: 41.33px; border-radius: 5px; }  /* 📐 обложка 41.33 — IMG_2347+2381+2382 */
+.amx-row .r-c { flex: 1; min-width: 0; padding: 0; }
+.amx-row .r-t { font-size: 13px; font-weight: 400; letter-spacing: -.08px; line-height: 16px; /* 📐 капитель 28 px — IMG_2347+2381+2382 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+.amx-row .r-s { font-size: 12px; letter-spacing: 0; line-height: 14px; color: var(--g2); margin-top: 0; /* 📐 капитель 25 px — IMG_2347+2381+2382 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-row .r-dots { width: 44px; height: 44px; margin-right: 0; /* 📐 центр многоточия 350.67 — IMG_2347 */ display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.7); }
 .amx-row + .amx-row::before, .amx-hr {
-  content: ""; position: absolute; left: 84px; right: 0; top: 0; height: 1px;
+  content: ""; position: absolute; left: 73.33px; right: 0; top: 0; height: 1px;  /* 📐 разделитель 73.33→373 — IMG_2347+2381+2382 */
   background: var(--hair); transform: scaleY(.5);
 }
 .amx-e {
@@ -173,7 +173,7 @@
 .amx-paged { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 8px; }
 .amx-page { flex: 0 0 88%; scroll-snap-align: start; }
 .amx-page .amx-row { padding: 0 12px; min-height: 72px; }
-.amx-page .amx-row + .amx-row::before { left: 76px; }
+.amx-page .amx-row + .amx-row::before { left: 65.33px; }
 
 /* ── Красные ссылки-строки «More to explore» ────────────────────────────── */
 .amx-links { padding: 0 20px; }
@@ -182,12 +182,12 @@
 .amx-link + .amx-link::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
 
 /* ── Герой-карточки вкладки New / хаба ──────────────────────────────────── */
-.amx-heroes { display: flex; gap: 14px; overflow-x: auto; padding: 2px 20px 4px; scroll-snap-type: x mandatory; }  /* 📐 зазор 14 (306 − 292) */
-.amx-hero { flex: 0 0 86%; scroll-snap-align: start; }
+.amx-heroes { display: flex; gap: 12px; overflow-x: auto; padding: 2px 20px 4px; scroll-snap-type: x mandatory; }  /* 📐 зазор 12, шаг 306 — IMG_2377 */
+.amx-hero { flex: 0 0 294px; scroll-snap-align: start; }  /* 📐 обложка 294 — IMG_2339+2377 */
 .amx-hero .hk { font-size: 13px; font-weight: 600; letter-spacing: .4px; color: var(--g2); }
 .amx-hero .ht { font-size: 22px; font-weight: 500; letter-spacing: -.26px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .amx-hero .hs { font-size: 21px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.amx-hero .amx-cov { width: 100%; aspect-ratio: 16/10.2; border-radius: 14px; margin-top: 12px; }
+.amx-hero .amx-cov { width: 100%; aspect-ratio: 5/3; border-radius: 14px; margin-top: 12px; }  /* 📐 294 × 176.67 — IMG_2339 */
 .amx-hero .cap {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 16px 12px;
   font-size: 15px; line-height: 1.32; color: rgba(255,255,255,.96);
@@ -198,17 +198,17 @@
 .amx-hero .band + .mk { top: 34%; inset-inline: 26%; bottom: 12%; }
 
 /* ── Вкладка Home ───────────────────────────────────────────────────────── */
-.amx-pick { flex: 0 0 82%; scroll-snap-align: start; border-radius: 20px; position: relative; overflow: hidden; aspect-ratio: 10/13.4; padding: 18px; display: flex; flex-direction: column; }
+.amx-pick { flex: 0 0 217.33px; scroll-snap-align: start; border-radius: 20px; position: relative; overflow: hidden; aspect-ratio: 10/12.98; padding: 18px; /* 📐 217.33 × 282.00 — IMG_2336 */ display: flex; flex-direction: column; }
 .amx-pick .brand { position: absolute; top: 12px; right: 14px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.9); }
 .amx-pick .bub { position: absolute; border-radius: 50%; overflow: hidden; }
 .amx-pick .bub .amx-cov { position: absolute; inset: 0; }
 .amx-pick .pk { margin-top: auto; font-size: 16px; font-weight: 600; letter-spacing: -.31px; }
 .amx-pick .pt { font-size: 20px; font-weight: 700; letter-spacing: -.45px; margin-top: 2px; }
-.amx-mood { width: 208px; flex: 0 0 auto; }
-.amx-mood .tile { width: 208px; height: 208px; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.amx-mood { width: 141px; flex: 0 0 auto; }  /* 📐 плитка 141, шаг 153 — IMG_2336+2337 */
+.amx-mood .tile { width: 141px; height: 141px; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .amx-mood .tile .brand { position: absolute; top: 8px; right: 10px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.92); }
-.amx-mood .mt { font-size: 16px; font-weight: 600; margin-top: 8px; }
-.amx-mood .ms { font-size: 14.5px; color: var(--g2); margin-top: 1px; }
+.amx-mood .mt { font-size: 12px; line-height: 15px; font-weight: 600; margin-top: 7px; }  /* 📐 капитель 25 px — IMG_2336+2337 */
+.amx-mood .ms { font-size: 12px; line-height: 15px; color: var(--g2); margin-top: 0; }  /* 📐 капитель 25 px — IMG_2336+2337 */
 .amx-tkbig { margin: 0 20px; border-radius: 20px; overflow: hidden; position: relative; aspect-ratio: 10/12.6; }
 .amx-tkbig .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 44px 18px 16px; font-size: 15.5px; text-align: center; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5)); }
 
