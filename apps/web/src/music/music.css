@@ -213,10 +213,10 @@
 .amx-tkbig .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 44px 18px 16px; font-size: 15.5px; text-align: center; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5)); }
 
 /* Концерты */
-.amx-conc { margin: 0 20px; background: var(--card); border-radius: 16px; padding: 18px 16px 16px; position: relative; }
+.amx-conc { margin: 0 20px; background: var(--card); border-radius: 16px; padding: 22px 22px 16px; position: relative; }  /* 📐 353 × 163, врезка 20, поле 22 — IMG_2338 */
 .amx-conc .cx { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(120,120,128,.28); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.8); }
 .amx-conc .crow { display: flex; align-items: center; gap: 16px; padding-right: 40px; }
-.amx-conc .cico { width: 96px; height: 96px; border-radius: 50%; flex: 0 0 auto; background: radial-gradient(120% 120% at 30% 20%, #FF7A85 0%, #F5424F 55%, #D22735 100%); display: flex; align-items: center; justify-content: center; color: #fff; }
+.amx-conc .cico { width: 64px; height: 64px;  /* 📐 кружок 64 — IMG_2338 */ border-radius: 50%; flex: 0 0 auto; background: radial-gradient(120% 120% at 30% 20%, #FF7A85 0%, #F5424F 55%, #D22735 100%); display: flex; align-items: center; justify-content: center; color: #fff; }
 .amx-conc .ct { font-size: 19px; font-weight: 700; letter-spacing: -.4px; }
 .amx-conc .cs { font-size: 15px; letter-spacing: -.23px; color: var(--g2); margin-top: 3px; }
 .amx-conc .cbtn { margin-top: 16px; width: 100%; height: 50px; border-radius: 12px; background: var(--card2); color: var(--red); font-size: 17px; font-weight: 600; letter-spacing: -.43px; }
@@ -289,7 +289,7 @@
 /* ── Меню (поповер) ─────────────────────────────────────────────────────── */
 .amx-dim { position: absolute; inset: 0; z-index: 60; }
 .amx-menu {
-  position: absolute; width: 296px; border-radius: 26px; overflow: hidden;  /* 📐 скругление 26 */
+  position: absolute; width: 250px; border-radius: 26px; overflow: hidden;  /* 📐 коробка 250 × 275 — IMG_2348 */
   background: var(--menu);
   -webkit-backdrop-filter: blur(46px) saturate(1.8); backdrop-filter: blur(46px) saturate(1.8);
   box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 18px 50px rgba(0,0,0,.55);
@@ -299,7 +299,7 @@
 @keyframes amx-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .amx-menu .mq { display: flex; padding: 14px 8px 12px; }
 .amx-menu .mq button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 14px; }
-.amx-menu .mi { display: flex; align-items: center; gap: 14px; padding: 13px 16px; font-size: 17px; letter-spacing: -.43px; position: relative; }
+.amx-menu .mi { display: flex; align-items: center; gap: 14px; padding: 0 16px 0 21px; min-height: 56.67px; font-size: 17px; letter-spacing: -.43px; position: relative; }  /* 📐 шаг разделителей 170 px = 56.67; подпись с 59.00 = 21 + 24 + 14 — IMG_2348 */
 .amx-menu .mi .ms { font-size: 13px; letter-spacing: -.08px; color: var(--g2); margin-top: 2px; }
 .amx-menu .mi .mc { flex: 1; min-width: 0; }
 .amx-menu .mi .mc > div:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
