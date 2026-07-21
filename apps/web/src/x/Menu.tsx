@@ -5,17 +5,21 @@
  * f22, f28), сортировка (f20), действия над записью (f33). Apple не заводит под
  * каждую роль свой вид — и нам не нужно.
  *
- * ЗАМЕРЕНО (📐 f02):
- *   коробка        230.7 × 146.0, заливка #111111 (тон слоя-плеера, 5.20)
- *   положение      правый край в 16.0 от края экрана
- *   верх           y 60.0 — совпадает с верхом навигационной капсулы
- *   строки         набор на +19.0, +76.3, +112.3 от верха меню
- *   шаг            36.0 между второй и третьей
- *   разделитель    +54.7 — первый пункт отделён от остальных
+ * ЗАМЕРЕНО на ЖИВОМ устройстве — четыре снимка 1179 × 2556 (= 393 × 852 @3x):
+ *   коробка        ширина 248.0, высота 147.7, верх y 59.0
+ *   правый край    12.3 … 15.0 от края экрана
+ *   шаг строки     36.3 (фильтр) · 35.7 (сортировка)
+ *   ГАЛОЧКА        x 19.3, ширина 8.0 — СЛЕВА
+ *   знак           x ≈41, ширина 11.7 … 15.0
+ *   подпись        x ≈70
  *
- * 🕳 Врезка набора расходится: 3.3 у первой строки против 24.3 у прочих.
- * Скорее всего у первой знак слева, у остальных справа, но со статики это не
- * различимо, и я не выдумываю.
+ * Прежняя версия ставила галочку СПРАВА — это была догадка, и она оказалась
+ * неверной. Живой снимок показал левую колонку отметки: так глаз находит
+ * выбранный пункт, не дочитывая строку до конца.
+ *
+ * Разделитель добавляет к шагу ~20: у меню фильтра шаги 55.7 · 36.3, у меню
+ * сортировки — 35.7 · 35.7 ровно, и разделителя там нет. Неровный шаг был не
+ * сбоем замера, а группировкой.
  *
  * ГРУППЫ — не украшение. Разделитель на +54.7 отделяет «показать всё» от
  * «показать отобранное»: это разные по смыслу действия, а не соседние пункты
@@ -38,13 +42,22 @@ export interface MenuItem {
 /** Группы разделяются хейрлайном. Одна группа — просто один массив. */
 export type MenuGroups = MenuItem[][];
 
+/* 📐 шаг 36. Колонки внутри строки: галочка 19.3 · знак 41 · подпись 70 —
+   считая от левого края коробки. */
 const rowStyle: CSSProperties = {
-  display: "flex", alignItems: "center", gap: 10, width: "100%",
-  /* 📐 шаг 36.0 */
-  height: 36, padding: "0 14px", background: "none", border: "none",
+  display: "flex", alignItems: "center", width: "100%",
+  height: 36, padding: 0, background: "none", border: "none",
   cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent",
   fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
   lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
+};
+const checkCol: CSSProperties = {
+  width: 41 - 19.3, paddingLeft: 19.3, flexShrink: 0, display: "grid",
+  placeItems: "start center", color: "var(--color-label)",
+};
+const iconCol: CSSProperties = {
+  width: 70 - 41, flexShrink: 0, display: "grid", placeItems: "center",
+  color: "var(--color-label-2)",
 };
 
 export function Menu({ groups, onClose, anchor = "right" }: {
@@ -73,9 +86,9 @@ export function Menu({ groups, onClose, anchor = "right" }: {
         style={{
           position: "absolute",
           /* 📐 верх меню совпадает с верхом навигационной капсулы */
-          top: `${(60 / 852) * 100}%`,
-          [anchor]: 16,                     /* 📐 16.0 от края экрана */
-          width: 230.7,                     /* 📐 */
+          top: `${(59 / 852) * 100}%`,      /* 📐 верх меню */
+          [anchor]: 14,                     /* 📐 12.3 … 15.0 от края экрана */
+          width: 248,                       /* 📐 живой снимок */
           /* §4.2: меню · лист · алерт — радиус 20. Стояло 14 — взято ниоткуда.
              Материал — стекло: 📐 «#111111 стекло над чёрным», не заливка. */
           ["--glass-r" as string]: "20px",
@@ -93,14 +106,13 @@ export function Menu({ groups, onClose, anchor = "right" }: {
                 onClick={() => { it.onSelect(); onClose(); }}
                 style={{ ...rowStyle,
                   color: it.danger ? "var(--color-danger)" : "var(--color-label)" }}>
-                {it.icon && <span style={{ display: "grid", flexShrink: 0,
-                  color: "var(--color-label-2)" }}>{it.icon}</span>}
-                <span style={{ flex: 1, minWidth: 0, whiteSpace: "nowrap",
-                  overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
-                {it.checked && (
-                  <span aria-hidden style={{ flexShrink: 0,
-                    color: "var(--color-gold-deep)" }}>✓</span>
-                )}
+                {/* Отметка СЛЕВА — 📐 x 19.3. Глаз находит выбранный пункт,
+                    не дочитывая строку до конца. */}
+                <span aria-hidden style={checkCol}>{it.checked ? "✓" : ""}</span>
+                <span aria-hidden style={iconCol}>{it.icon}</span>
+                <span style={{ flex: 1, minWidth: 0, paddingRight: 14,
+                  whiteSpace: "nowrap", overflow: "hidden",
+                  textOverflow: "ellipsis" }}>{it.label}</span>
               </button>
             ))}
           </div>

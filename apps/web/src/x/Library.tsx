@@ -259,3 +259,61 @@ export default function LibraryScreen() {
     </div>
   );
 }
+
+/* ─────────────────────── строка списка с миниатюрой ─────────────────────── */
+
+/**
+ * 📐 IMG_1958 («Интервью»), шаг **102.0** ровно — трижды подряд:
+ *   миниатюра        x 20.0, размер 87.7 × 87.7
+ *   зазор до текста  13.0
+ *   текст            с 120.7
+ *   многоточие       x 344.7, ширина 12.0
+ *
+ * Это НЕ строка библиотеки: там шаг ≈52 и знак 18.7. Разные строки — разные
+ * замеры, и подставлять один вместо другого нельзя.
+ */
+export function MediaRow({ thumb, over, title, subtitle, onMore, onClick }: {
+  thumb?: ReactNode; over?: string; title: string; subtitle?: string;
+  onMore?: () => void; onClick?: () => void;
+}) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", height: 102, gap: 13 }}>
+      <button type="button" onClick={onClick}
+        style={{ display: "flex", alignItems: "center", gap: 13, flex: 1, minWidth: 0,
+          height: "100%", padding: "0 0 0 20px", background: "none", border: "none",
+          cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent" }}>
+        <span style={{ width: 87.7, height: 87.7, flexShrink: 0, overflow: "hidden",
+          borderRadius: "var(--radius-thumb)", background: "var(--color-fill-1)",
+          display: "grid", placeItems: "center" }}>{thumb}</span>
+        <span style={{ minWidth: 0, flex: 1 }}>
+          {over && (
+            <span style={{ display: "block", fontFamily: "var(--font-text)",
+              fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+              letterSpacing: "var(--ls-caption2)", fontWeight: 600,
+              textTransform: "uppercase", color: "var(--color-label-3)" }}>{over}</span>
+          )}
+          <span style={{ display: "block", fontFamily: "var(--font-text)",
+            fontSize: "var(--text-body)", lineHeight: "var(--lh-body)",
+            letterSpacing: "var(--ls-body)", color: "var(--color-label)",
+            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</span>
+          {subtitle && (
+            <span style={{ fontFamily: "var(--font-text)",
+              fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+              letterSpacing: "var(--ls-subhead)", color: "var(--color-label-3)",
+              overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical" }}>{subtitle}</span>
+          )}
+        </span>
+      </button>
+      {onMore && (
+        <button type="button" onClick={onMore} aria-label="Ещё"
+          style={{ width: 44, height: 44, marginRight: 4, flexShrink: 0, display: "grid",
+            placeItems: "center", background: "none", border: "none",
+            color: "var(--color-label-2)", cursor: "pointer",
+            WebkitTapHighlightColor: "transparent" }}>
+          <DotsGlyph size={18} />
+        </button>
+      )}
+    </div>
+  );
+}
