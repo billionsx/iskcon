@@ -1,0 +1,417 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   /music — ИЗОЛИРОВАННАЯ ОБОЛОЧКА «APPLE MUSIC» (iOS 26, тёмная тема).
+   Ни один закон ONE LOVE здесь не действует (распоряжение основателя
+   21.07.2026): только стандарт Apple Music, воспроизведённый по 45 экранам.
+   Все классы под префиксом .amx, корень position:fixed поверх всего.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.amx, .amx * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+.amx {
+  position: fixed; inset: 0; z-index: 2147480000;
+  background: #000; color: #fff;
+  font-family: -apple-system, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  overflow: hidden; user-select: none; -webkit-user-select: none;
+  --red: #FB4B57;
+  --g2: rgba(235,235,245,.62);
+  --g3: rgba(235,235,245,.34);
+  --hair: rgba(255,255,255,.10);
+  --glass: rgba(28,28,30,.66);
+  --glass-hi: rgba(70,70,74,.55);
+  --menu: rgba(44,44,48,.86);
+  --card: #1C1C1E;
+  --card2: #2C2C2E;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+.amx img { pointer-events: none; }
+.amx button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.amx input { font: inherit; color: #fff; background: none; border: 0; outline: none; }
+.amx input::placeholder { color: rgba(235,235,245,.45); }
+.amx ::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ── Экран-скроллер ─────────────────────────────────────────────────────── */
+.amx-scr {
+  position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  padding: calc(var(--sat) + 10px) 0 calc(var(--sab) + 218px);
+}
+.amx-pad { padding-left: 20px; padding-right: 20px; }
+
+/* ── Верх: крупный заголовок + аватар ───────────────────────────────────── */
+.amx-top { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 6px; }
+.amx-h1 { font-size: 34px; font-weight: 800; letter-spacing: -.5px; line-height: 1.12; }
+.amx-ava {
+  width: 42px; height: 42px; border-radius: 50%; flex: 0 0 auto;
+  background: radial-gradient(120% 120% at 30% 20%, #6E6889 0%, #4A4560 60%, #383349 100%);
+  color: #EDEBF6; font-size: 16px; font-weight: 700; letter-spacing: .3px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Навигационный ряд внутренних страниц: назад · заголовок · действия */
+.amx-nav { display: flex; align-items: center; padding: 4px 16px 8px; min-height: 56px; position: relative; }
+.amx-nav .nv-title {
+  position: absolute; left: 76px; right: 76px; text-align: center;
+  font-size: 19px; font-weight: 700; letter-spacing: -.2px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.amx-nav .nv-title.lft { position: static; text-align: left; margin-left: 14px; flex: 1; }
+.amx-nav .sp { flex: 1; }
+
+/* Стеклянные круги и капсулы кнопок */
+.amx-cir {
+  width: 52px; height: 52px; border-radius: 50%; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(28px) saturate(1.7); backdrop-filter: blur(28px) saturate(1.7);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.09), 0 8px 24px rgba(0,0,0,.35);
+}
+.amx-pill {
+  display: flex; align-items: center; border-radius: 26px; height: 52px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(28px) saturate(1.7); backdrop-filter: blur(28px) saturate(1.7);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.09), 0 8px 24px rgba(0,0,0,.35);
+}
+.amx-pill > button { width: 56px; height: 52px; display: flex; align-items: center; justify-content: center; }
+.amx-pill > button + button { position: relative; }
+
+/* ── Секции ─────────────────────────────────────────────────────────────── */
+.amx-h2 {
+  display: flex; align-items: center; gap: 7px; padding: 26px 20px 14px;
+  font-size: 22px; font-weight: 800; letter-spacing: -.3px;
+}
+.amx-h2 svg { opacity: .45; margin-top: 2px; }
+.amx-h2.plain { pointer-events: none; }
+.amx-kick { font-size: 13px; font-weight: 700; letter-spacing: .4px; color: var(--g2); text-transform: uppercase; }
+
+/* ── Обложка (маска-логотип ISKCON ONE LOVE на цветном поле) ────────────── */
+.amx-cov { position: relative; overflow: hidden; flex: 0 0 auto; background: #222; }
+.amx-cov .mk {
+  position: absolute; inset: 18%;
+  background: rgba(255,255,255,.92);
+  -webkit-mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
+          mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
+}
+.amx-cov .wm {
+  position: absolute; left: 10%; right: 10%; top: 44%; height: 12%;
+  background: rgba(255,255,255,.9);
+  -webkit-mask: url(/iskcon-one-love.svg) center / contain no-repeat;
+          mask: url(/iskcon-one-love.svg) center / contain no-repeat;
+}
+.amx-cov .lab {
+  position: absolute; left: 10px; bottom: 8px; right: 10px;
+  font-size: 13px; font-weight: 700; letter-spacing: .1px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.35);
+}
+.amx-cov .brand { position: absolute; top: 7px; right: 9px; font-size: 10.5px; font-weight: 600; color: rgba(255,255,255,.85); }
+
+/* ── Ряд песни ──────────────────────────────────────────────────────────── */
+.amx-row { display: flex; align-items: center; gap: 12px; padding: 0 20px; min-height: 74px; position: relative; }
+.amx-row .r-art { width: 52px; height: 52px; border-radius: 7px; }
+.amx-row .r-c { flex: 1; min-width: 0; padding: 10px 0; }
+.amx-row .r-t { font-size: 16.5px; font-weight: 500; letter-spacing: -.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+.amx-row .r-s { font-size: 14.5px; color: var(--g2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-row .r-dots { width: 44px; height: 44px; margin-right: -10px; display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.7); }
+.amx-row + .amx-row::before, .amx-hr {
+  content: ""; position: absolute; left: 84px; right: 0; top: 0; height: 1px;
+  background: var(--hair); transform: scaleY(.5);
+}
+.amx-e {
+  flex: 0 0 auto; font-size: 10.5px; font-weight: 700; line-height: 1;
+  padding: 2.5px 4.5px; border-radius: 3.5px;
+  background: rgba(235,235,245,.26); color: rgba(250,250,252,.92);
+}
+
+/* Крупный ряд (плейлисты «Summer In:», станции жанра) */
+.amx-row.big { min-height: 128px; }
+.amx-row.big .r-art { width: 112px; height: 112px; border-radius: 10px; }
+.amx-row.big + .amx-row.big::before { left: 144px; }
+.amx-row.big .r-t { font-size: 17px; font-weight: 500; }
+.amx-row.big .r-s { font-size: 15px; }
+
+/* ── Полки ──────────────────────────────────────────────────────────────── */
+.amx-shelf { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px 4px; scroll-snap-type: x mandatory; }
+.amx-shelf > * { scroll-snap-align: start; }
+.amx-cardw { width: 168px; flex: 0 0 auto; }
+.amx-cardw .cw-t { font-size: 15px; font-weight: 500; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+.amx-cardw .cw-s { font-size: 14px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-cardw .amx-cov { width: 168px; height: 168px; border-radius: 10px; }
+.amx-cardw.wide { width: 240px; }
+.amx-cardw.wide .amx-cov { width: 240px; height: 150px; border-radius: 12px; }
+.amx-cardw.tall { width: 200px; }
+.amx-cardw.tall .amx-cov { width: 200px; height: 264px; border-radius: 14px; }
+
+/* Пейджер песен 2×N: горизонтальные страницы по 4 ряда */
+.amx-paged { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 8px; }
+.amx-page { flex: 0 0 88%; scroll-snap-align: start; }
+.amx-page .amx-row { padding: 0 12px; min-height: 72px; }
+.amx-page .amx-row + .amx-row::before { left: 76px; }
+
+/* ── Красные ссылки-строки «More to explore» ────────────────────────────── */
+.amx-links { padding: 0 20px; }
+.amx-link { display: flex; align-items: center; min-height: 64px; position: relative; color: var(--red); font-size: 20px; }
+.amx-link svg { margin-left: auto; color: rgba(235,235,245,.35); }
+.amx-link + .amx-link::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
+
+/* ── Герой-карточки вкладки New / хаба ──────────────────────────────────── */
+.amx-heroes { display: flex; gap: 16px; overflow-x: auto; padding: 2px 20px 4px; scroll-snap-type: x mandatory; }
+.amx-hero { flex: 0 0 86%; scroll-snap-align: start; }
+.amx-hero .hk { font-size: 13px; font-weight: 700; letter-spacing: .4px; color: var(--g2); }
+.amx-hero .ht { font-size: 22px; font-weight: 500; letter-spacing: -.2px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-hero .hs { font-size: 21px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-hero .amx-cov { width: 100%; aspect-ratio: 16/10.2; border-radius: 14px; margin-top: 12px; }
+.amx-hero .cap {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 16px 12px;
+  font-size: 15px; line-height: 1.32; color: rgba(255,255,255,.96);
+  background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.44));
+}
+.amx-hero .band { position: absolute; left: 0; right: 0; top: 0; height: 26%; background: #F4EFDF; display: flex; align-items: center; padding: 0 14px; }
+.amx-hero .band b { font-size: 15px; font-weight: 800; letter-spacing: .3px; color: #2F6BD8; line-height: 1.05; }
+.amx-hero .band + .mk { top: 34%; inset-inline: 26%; bottom: 12%; }
+
+/* ── Вкладка Home ───────────────────────────────────────────────────────── */
+.amx-pick { flex: 0 0 82%; scroll-snap-align: start; border-radius: 20px; position: relative; overflow: hidden; aspect-ratio: 10/13.4; padding: 18px; display: flex; flex-direction: column; }
+.amx-pick .brand { position: absolute; top: 12px; right: 14px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.9); }
+.amx-pick .bub { position: absolute; border-radius: 50%; overflow: hidden; }
+.amx-pick .bub .amx-cov { position: absolute; inset: 0; }
+.amx-pick .pk { margin-top: auto; font-size: 16px; font-weight: 600; }
+.amx-pick .pt { font-size: 20px; font-weight: 800; letter-spacing: -.2px; margin-top: 2px; }
+.amx-mood { width: 208px; flex: 0 0 auto; }
+.amx-mood .tile { width: 208px; height: 208px; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; }
+.amx-mood .tile .brand { position: absolute; top: 8px; right: 10px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.92); }
+.amx-mood .mt { font-size: 16px; font-weight: 600; margin-top: 8px; }
+.amx-mood .ms { font-size: 14.5px; color: var(--g2); margin-top: 1px; }
+.amx-tkbig { margin: 0 20px; border-radius: 20px; overflow: hidden; position: relative; aspect-ratio: 10/12.6; }
+.amx-tkbig .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 44px 18px 16px; font-size: 15.5px; text-align: center; background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.5)); }
+
+/* Концерты */
+.amx-conc { margin: 0 20px; background: var(--card); border-radius: 16px; padding: 18px 16px 16px; position: relative; }
+.amx-conc .cx { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(120,120,128,.28); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.8); }
+.amx-conc .crow { display: flex; align-items: center; gap: 16px; padding-right: 40px; }
+.amx-conc .cico { width: 96px; height: 96px; border-radius: 50%; flex: 0 0 auto; background: radial-gradient(120% 120% at 30% 20%, #FF7A85 0%, #F5424F 55%, #D22735 100%); display: flex; align-items: center; justify-content: center; color: #fff; }
+.amx-conc .ct { font-size: 19px; font-weight: 700; }
+.amx-conc .cs { font-size: 15px; color: var(--g2); margin-top: 3px; }
+.amx-conc .cbtn { margin-top: 16px; width: 100%; height: 50px; border-radius: 12px; background: var(--card2); color: var(--red); font-size: 17px; font-weight: 600; }
+
+/* ── Вкладка Radio ──────────────────────────────────────────────────────── */
+.amx-rgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 6px 20px 0; }
+.amx-rtile { aspect-ratio: 1; border-radius: 22px; background: #F5F5F7; color: #111; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 20px; box-shadow: 0 4px 16px rgba(0,0,0,.35); }
+.amx-rtile .rl { position: absolute; bottom: 12px; font-size: 11px; font-weight: 600; color: #3A3A3C; }
+.amx-rtile .rl b { font-weight: 700; }
+.rt-one { font-size: 62px; font-weight: 800; color: #E7332B; line-height: .9; }
+.rt-hits { font-size: 21px; font-weight: 900; font-style: italic; letter-spacing: -.5px; line-height: .92; background: linear-gradient(180deg, #1D50E0, #6FB9F2); -webkit-background-clip: text; background-clip: text; color: transparent; text-align: center; }
+.rt-country { position: relative; font-size: 17px; font-weight: 900; letter-spacing: -.4px; color: #163B8F; z-index: 1; }
+.rt-country::before { content: "★"; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -54%); font-size: 58px; color: #F0B428; z-index: -1; }
+.rt-musica { font-size: 19px; font-weight: 900; font-style: italic; color: #D63384; text-align: center; line-height: .95; letter-spacing: -.3px; }
+.rt-club { font-size: 27px; font-weight: 900; letter-spacing: -1px; color: #111; -webkit-text-stroke: 1px #111; font-style: italic; }
+.rt-chill { font-size: 27px; font-weight: 800; color: #2E7CF6; letter-spacing: -.5px; }
+.amx-onair { flex: 0 0 88%; scroll-snap-align: start; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 22px rgba(0,0,0,.4); }
+.amx-onair .oa-top { background: #F5F5F7; aspect-ratio: 10/7.4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.amx-onair .oa-top .rt-one { font-size: 128px; }
+.amx-onair .oa-top .rl { font-size: 20px; font-weight: 600; color: #3A3A3C; }
+.amx-onair .oa-info { padding: 14px 16px 16px; }
+.amx-onair .oa-k { font-size: 14px; font-weight: 600; opacity: .92; }
+.amx-onair .oa-t { font-size: 17px; font-weight: 700; margin-top: 3px; }
+.amx-onair .oa-d { font-size: 16px; margin-top: 2px; opacity: .94; }
+
+/* ── New: топ-100 и города ──────────────────────────────────────────────── */
+.amx-t100 { width: 196px; flex: 0 0 auto; }
+.amx-t100 .t-tile { width: 196px; height: 196px; border-radius: 14px; background: #F5F5F7; color: #111; padding: 12px 14px; position: relative; overflow: hidden; }
+.amx-t100 .t-k { font-size: 17px; font-weight: 700; letter-spacing: -.2px; }
+.amx-t100 .t-n { font-size: 20px; font-weight: 800; margin-top: 1px; }
+.amx-t100 .t-b { position: absolute; left: 12px; right: 12px; bottom: 12px; top: 84px; display: grid; grid-template-columns: repeat(5, 1fr); grid-auto-rows: 1fr; }
+.amx-t100 .brand2 { position: absolute; top: 12px; right: 12px; font-size: 10.5px; font-weight: 600; color: #6E6E73; }
+.amx-t100 .cw-t { font-size: 15px; font-weight: 500; margin-top: 8px; }
+.amx-t100 .cw-s { font-size: 14px; color: var(--g2); margin-top: 1px; }
+.amx-city .t-b { top: 66px; display: block; }
+.amx-city .t-b .amx-cov { position: absolute; inset: 0; border-radius: 6px; }
+
+/* ── Радио-эпизоды (двухколоночный пейджер строк с описанием) ───────────── */
+.amx-ep { display: flex; align-items: flex-start; gap: 14px; padding: 10px 12px; position: relative; }
+.amx-ep .e-art { width: 128px; height: 128px; border-radius: 10px; flex: 0 0 auto; }
+.amx-ep .e-k { font-size: 12.5px; font-weight: 700; letter-spacing: .4px; color: var(--g2); }
+.amx-ep .e-t { font-size: 17px; font-weight: 600; margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+.amx-ep .e-d { font-size: 15px; color: var(--g2); margin-top: 3px; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.amx-ep .r-dots { margin-left: auto; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.7); flex: 0 0 auto; }
+.amx-ep + .amx-ep::before { content: ""; position: absolute; left: 154px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
+
+/* ── Вкладка Search (обзор) ─────────────────────────────────────────────── */
+.amx-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 4px 20px 0; }
+.amx-cat { aspect-ratio: 16/10.3; border-radius: 12px; position: relative; overflow: hidden; }
+.amx-cat .lab { position: absolute; left: 12px; bottom: 10px; font-size: 19px; font-weight: 700; letter-spacing: -.2px; text-shadow: 0 1px 10px rgba(0,0,0,.4); }
+
+/* ── Библиотека ─────────────────────────────────────────────────────────── */
+.amx-sync { margin: 10px 20px 4px; background: var(--card); border-radius: 22px; padding: 26px 56px 24px; text-align: center; position: relative; }
+.amx-sync .st { font-size: 17px; font-weight: 700; line-height: 1.3; }
+.amx-sync .sb { color: var(--red); font-size: 17px; font-weight: 600; margin-top: 10px; display: inline-block; }
+.amx-sync .cx { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(120,120,128,.26); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.8); }
+.amx-librow { display: flex; align-items: center; gap: 18px; min-height: 78px; padding: 0 20px; position: relative; font-size: 20px; }
+.amx-librow .li { width: 34px; display: flex; justify-content: center; color: var(--red); }
+.amx-librow svg.ch { margin-left: auto; color: rgba(235,235,245,.3); }
+.amx-librow + .amx-librow::before { content: ""; position: absolute; left: 72px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
+.amx-empty { padding: 120px 40px 0; text-align: center; }
+.amx-empty .ei { color: rgba(235,235,245,.5); }
+.amx-empty .et { font-size: 22px; font-weight: 700; margin-top: 18px; }
+.amx-empty .ed { font-size: 17px; color: var(--g2); margin-top: 10px; line-height: 1.35; }
+.amx-empty .eb { color: var(--red); font-size: 17px; font-weight: 500; margin-top: 22px; display: inline-block; }
+
+/* ── Меню (поповер) ─────────────────────────────────────────────────────── */
+.amx-dim { position: absolute; inset: 0; z-index: 60; }
+.amx-menu {
+  position: absolute; width: 296px; border-radius: 22px; overflow: hidden;
+  background: var(--menu);
+  -webkit-backdrop-filter: blur(46px) saturate(1.8); backdrop-filter: blur(46px) saturate(1.8);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 18px 50px rgba(0,0,0,.55);
+  transform-origin: var(--ox, 90%) var(--oy, 0%);
+  animation: amx-pop .22s cubic-bezier(.2,1.2,.3,1);
+}
+@keyframes amx-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.amx-menu .mq { display: flex; padding: 14px 8px 12px; }
+.amx-menu .mq button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 14px; }
+.amx-menu .mi { display: flex; align-items: center; gap: 14px; padding: 13px 16px; font-size: 17px; position: relative; }
+.amx-menu .mi .ms { font-size: 14px; color: var(--g2); margin-top: 2px; }
+.amx-menu .mi .mc { flex: 1; min-width: 0; }
+.amx-menu .mi .mc > div:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-menu .mi svg:first-child { flex: 0 0 24px; }
+.amx-menu .mi .chk { width: 20px; flex: 0 0 20px; }
+.amx-menu .mi.pad { padding-left: 20px; }
+.amx-menu .sep { height: 1px; background: rgba(255,255,255,.14); transform: scaleY(.5); margin: 0; }
+.amx-menu .sep.thick { height: 8px; background: rgba(0,0,0,.22); transform: none; }
+.amx-menu .grp + .grp { border-top: .5px solid rgba(255,255,255,.14); }
+
+/* ── Док (нижняя зона): мини-плеер + вкладки + поиск ────────────────────── */
+.amx-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 12px calc(var(--sab) + 8px); pointer-events: none; }
+.amx-dock > * { pointer-events: auto; }
+.amx-mini {
+  display: flex; align-items: center; gap: 10px; height: 58px; border-radius: 29px; padding: 0 8px 0 9px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
+}
+.amx-mini .m-art { width: 40px; height: 40px; border-radius: 8px; flex: 0 0 auto; }
+.amx-mini .m-art.ph { background: rgba(120,120,128,.3); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.75); }
+.amx-mini .m-c { flex: 1; min-width: 0; }
+.amx-mini .m-t { font-size: 15.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-mini .m-t.np { font-weight: 600; color: #fff; }
+.amx-mini .m-s { font-size: 13px; color: var(--g2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-mini .m-b { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.amx-mini .m-b.dim { color: rgba(235,235,245,.4); }
+.amx-tabsrow { display: flex; align-items: stretch; gap: 10px; margin-top: 9px; }
+.amx-tabs {
+  flex: 1; display: flex; border-radius: 37px; padding: 5px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
+}
+.amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 32px; height: 64px; font-size: 11.5px; font-weight: 500; color: rgba(235,235,245,.85); }
+.amx-tab.on { background: rgba(120,120,128,.30); color: var(--red); font-weight: 600; }
+.amx-scir { width: 74px; height: 74px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
+}
+.amx-scir.red { color: var(--red); }
+/* свёрнутый док: [иконка вкладки][мини-плеер][поиск] */
+.amx-dockrow { display: flex; align-items: center; gap: 10px; }
+.amx-dockrow .amx-cir { width: 58px; height: 58px; }
+.amx-dockrow .amx-mini { flex: 1; }
+/* док вкладки Search: [банка][строка ввода] */
+.amx-sfield {
+  flex: 1; display: flex; align-items: center; gap: 10px; height: 58px; border-radius: 29px; padding: 0 16px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8);
+  box-shadow: inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);
+  color: rgba(235,235,245,.6); font-size: 17px;
+}
+.amx-sfield .ph { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.amx-sfield input { flex: 1; font-size: 17px; }
+
+/* ── Оверлей поиска ─────────────────────────────────────────────────────── */
+.amx-seg { display: flex; margin: calc(var(--sat) + 14px) 16px 0; height: 56px; border-radius: 28px; padding: 4px; background: rgba(28,28,30,.9); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.07); }
+.amx-seg button { flex: 1; border-radius: 24px; font-size: 17px; font-weight: 600; color: rgba(235,235,245,.9); }
+.amx-seg button.on { background: rgba(120,120,128,.32); color: #fff; }
+.amx-find-empty { position: absolute; left: 0; right: 0; top: 30%; text-align: center; padding: 0 40px; }
+.amx-find-empty .et { font-size: 24px; font-weight: 800; margin-top: 16px; }
+.amx-find-empty .ed { font-size: 17px; color: var(--g2); margin-top: 8px; line-height: 1.35; }
+.amx-findbar { position: absolute; left: 12px; right: 12px; bottom: calc(var(--sab) + 10px); display: flex; align-items: center; gap: 10px; z-index: 45; }
+.amx-findbar .amx-sfield { color: #fff; }
+.amx-findbar .amx-cir { width: 58px; height: 58px; }
+.amx-results { position: absolute; inset: 0; overflow-y: auto; padding: calc(var(--sat) + 84px) 0 calc(var(--sab) + 90px); }
+
+/* ── Хаб (Summertime Sounds): хосты с белой лентой ──────────────────────── */
+.amx-host { width: 196px; flex: 0 0 auto; }
+.amx-host .h-tile { width: 196px; height: 196px; border-radius: 12px; overflow: hidden; position: relative; }
+.amx-host .h-band { position: absolute; left: 0; right: 0; top: 0; height: 30%; background: #F4EFDF; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; z-index: 1; }
+.amx-host .h-band b { font-size: 13px; font-weight: 800; line-height: 1; color: #2F6BD8; letter-spacing: .2px; }
+.amx-host .h-band i { font-size: 9.5px; font-weight: 600; font-style: normal; color: #3A3A3C; }
+.amx-host .h-img { position: absolute; inset: 0; top: 30%; }
+.amx-host .cw-t { font-size: 15px; font-weight: 500; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-host .cw-s { font-size: 14px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Полноэкранный плеер ────────────────────────────────────────────────── */
+.amx-pl { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; border-radius: 0; overflow: hidden; touch-action: none;
+  transition: transform .34s cubic-bezier(.32,.72,.34,1), border-radius .34s; }
+.amx-pl.closing, .amx-pl.pre { transform: translateY(104%); border-radius: 40px; }
+.amx-pl .pl-bg { position: absolute; inset: -40px; filter: blur(0px); }
+.amx-pl .pl-in { position: relative; flex: 1; display: flex; flex-direction: column; padding: calc(var(--sat) + 8px) 24px calc(var(--sab) + 14px); }
+.amx-pl .pl-grab { width: 44px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.4); margin: 6px auto 14px; flex: 0 0 auto; }
+.amx-pl .pl-head { display: flex; align-items: center; gap: 14px; }
+.amx-pl .pl-head .p-art { width: 88px; height: 88px; border-radius: 12px; box-shadow: 0 8px 26px rgba(0,0,0,.35); }
+.amx-pl .pl-head .p-t { font-size: 20px; font-weight: 700; letter-spacing: -.2px; }
+.amx-pl .pl-head .p-s { font-size: 19px; color: rgba(255,255,255,.66); margin-top: 1px; }
+.amx-pl .pl-head .amx-cir { margin-left: auto; width: 48px; height: 48px; background: rgba(255,255,255,.14); box-shadow: none; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.amx-pl .pl-mid { flex: 1; min-height: 0; overflow: hidden; position: relative; margin: 10px -4px 0; }
+.amx-pl .pl-dots { display: flex; gap: 10px; padding: 22px 4px 8px; }
+.amx-pl .pl-dots i { width: 13px; height: 13px; border-radius: 50%; background: rgba(255,255,255,.9); }
+.amx-pl .pl-dots i:nth-child(2) { opacity: .55; } .amx-pl .pl-dots i:nth-child(3) { opacity: .3; }
+.amx-lyr { padding: 6px 4px 30px; }
+.amx-lyr .ln { font-size: 27px; line-height: 1.22; font-weight: 800; letter-spacing: -.3px; color: rgba(255,255,255,.42); margin: 22px 0; filter: blur(2.5px); transition: filter .4s, color .4s; }
+.amx-lyr .ln.on { color: rgba(255,255,255,.96); filter: blur(0); }
+.amx-lyr .ln.next { filter: blur(1.2px); color: rgba(255,255,255,.6); }
+.amx-kara { position: absolute; right: 4px; bottom: 14px; width: 52px; height: 52px; border-radius: 50%; background: rgba(255,255,255,.16); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; }
+/* режим очереди */
+.amx-pl .pl-tog { display: flex; gap: 10px; margin-top: 18px; }
+.amx-pl .pl-tog button { flex: 1; height: 52px; border-radius: 26px; background: rgba(255,255,255,.13); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.8); }
+.amx-pl .pl-tog button.on { background: rgba(255,255,255,.85); color: #4A3A28; }
+.amx-tip { position: relative; margin-top: 16px; background: rgba(30,24,18,.55); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-radius: 18px; padding: 14px 40px 14px 14px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 .5px rgba(255,255,255,.12); animation: amx-pop .3s ease; }
+.amx-tip::before { content: ""; position: absolute; right: 34px; top: -9px; width: 18px; height: 18px; transform: rotate(45deg); background: inherit; border-radius: 4px; box-shadow: inset .5px .5px 0 rgba(255,255,255,.12); }
+.amx-tip .tt { font-size: 17px; font-weight: 700; }
+.amx-tip .td { font-size: 14.5px; color: rgba(255,255,255,.72); margin-top: 2px; line-height: 1.3; }
+.amx-tip .cx { position: absolute; top: 10px; right: 10px; color: rgba(255,255,255,.6); }
+.amx-q { padding: 22px 2px 30px; }
+.amx-q .q-h { font-size: 21px; font-weight: 800; }
+.amx-q .q-s { font-size: 16px; color: rgba(255,255,255,.62); margin-top: 2px; }
+.amx-q .q-row { display: flex; align-items: center; gap: 13px; padding: 12px 0; }
+.amx-q .q-row .amx-cov { width: 56px; height: 56px; border-radius: 8px; }
+.amx-q .q-t { font-size: 16.5px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.amx-q .q-a { font-size: 14.5px; color: rgba(255,255,255,.62); margin-top: 2px; }
+/* транспорт */
+.amx-pl .pl-prog { margin-top: 8px; padding: 8px 0 2px; touch-action: none; }
+.amx-pl .pl-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.28); position: relative; overflow: hidden; }
+.amx-pl .pl-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,.78); border-radius: 3px; }
+.amx-pl .pl-times { display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,.55); margin-top: 8px; font-variant-numeric: tabular-nums; }
+.amx-pl .pl-trans { display: flex; align-items: center; justify-content: center; gap: 58px; margin-top: 18px; }
+.amx-pl .pl-trans button { color: #fff; display: flex; }
+.amx-pl .pl-vol { display: flex; align-items: center; gap: 12px; margin-top: 26px; color: rgba(255,255,255,.6); touch-action: none; }
+.amx-pl .pl-vbar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.28); position: relative; overflow: hidden; }
+.amx-pl .pl-vbar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,.82); border-radius: 3px; }
+.amx-pl .pl-brow { display: flex; justify-content: space-between; padding: 26px 22px 2px; }
+.amx-pl .pl-brow button { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.82); }
+.amx-pl .pl-brow button.on { background: rgba(255,255,255,.86); color: #4A3A28; }
+
+/* ── Шторки (New Playlist, выбор плейлиста) ─────────────────────────────── */
+.amx-sheet { position: absolute; inset: 0; z-index: 55; background: rgba(16,16,17,.98); border-radius: 26px 26px 0 0; margin-top: calc(var(--sat) + 6px); padding: 14px 16px calc(var(--sab) + 16px); animation: amx-up .34s cubic-bezier(.32,.72,.34,1); display: flex; flex-direction: column; }
+@keyframes amx-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.amx-sheet .sh-top { display: flex; align-items: center; }
+.amx-sheet .sh-top .amx-cir { width: 46px; height: 46px; background: rgba(120,120,128,.22); box-shadow: none; }
+.amx-sheet .sh-title { flex: 1; text-align: center; font-size: 20px; font-weight: 700; }
+.amx-npcov { width: 62%; max-width: 280px; aspect-ratio: 1; margin: 46px auto 0; border-radius: 14px; background: #232325; display: flex; align-items: center; justify-content: center; }
+.amx-npcov .pbtn { width: 96px; height: 96px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 10px 28px rgba(250,60,80,.35); }
+.amx-npname { margin-top: 56px; text-align: center; }
+.amx-npname input { width: 100%; text-align: center; font-size: 26px; font-weight: 600; caret-color: var(--red); }
+.amx-npname .ul { height: 1px; background: rgba(255,255,255,.22); margin-top: 14px; transform: scaleY(.5); }
+
+/* ── Разное ─────────────────────────────────────────────────────────────── */
+.amx-fade-top { position: absolute; top: 0; left: 0; right: 0; height: calc(var(--sat) + 4px); z-index: 30; background: linear-gradient(180deg, rgba(0,0,0,.8), rgba(0,0,0,0)); pointer-events: none; }
+.amx-center { display: flex; align-items: center; justify-content: center; }

@@ -1,12 +1,23 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { lazy, Suspense } from "react";
 
 /* ЗДЕСЬ СТОЯЛА РАЗВИЛКА НА ПРОБНУЮ ОБОЛОЧКУ /x.
    Оболочка сделала свою работу: её замеры уехали в `player/` и `ui/`, живыми
    экранами стали Катха и Киртаны. 21.07.2026 основатель распорядился снести
    и её. Развилка ушла вместе с ней — точка входа снова одна, и приложение
    больше не платит за второе дерево ни байтом, ни ветвлением. */
+/* КЛОН APPLE MUSIC — /music. Изолированная оболочка (распоряжение основателя
+   21.07.2026): развилка стоит ЗДЕСЬ, а не внутри App. Приложение о /music не
+   знает и не меняется; законы ONE LOVE внутри оболочки не действуют. */
+const MusicShell = lazy(() => import("./music/MusicApp"));
+function Root() {
+  if (typeof window !== "undefined" && (window.location.pathname === "/music" || window.location.pathname.startsWith("/music/"))) {
+    return <Suspense fallback={null}><MusicShell /></Suspense>;
+  }
+  return <App />;
+}
 import "./ui/globals.css";
 import "./styles.css";
 
@@ -215,6 +226,6 @@ if (typeof window !== "undefined") {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>
 );
