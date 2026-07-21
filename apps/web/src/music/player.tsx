@@ -211,9 +211,12 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
         </div>
 
         <div className="pl-mid">
+          {/* Главный вид прижат ВВЕРХ: 📐 IMG_1950 обложка начинается высоко
+              (91.5), а пустота копится ВНИЗУ, до полосы времени. Центрирование
+              делило зазор поровну и уводило подписи на середину экрана. */}
           {view === "art" ? (
             <div style={{ position: "absolute", inset: 0, display: "flex",
-              flexDirection: "column", justifyContent: "center", padding: "0 4px" }}>
+              flexDirection: "column", justifyContent: "flex-start", padding: "0 4px" }}>
               <Cover id={cur.id} cls="pl-art" />
               <div className="pl-meta">
                 <div style={{ minWidth: 0, flex: 1 }}>

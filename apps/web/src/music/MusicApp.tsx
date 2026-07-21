@@ -203,7 +203,11 @@ function Shell() {
       {isFind ? null : (
         <div className="amx-dock">
           {isSearchRoot ? (
-            <div className="amx-dockrow">
+            <>
+            {/* 📐 IMG_1978: на корне поиска мини-плеер ЕСТЬ, под ним строка
+                ввода с банкой слева. Раньше мини-плеер здесь пропадал вовсе. */}
+            <MiniPlayer onOpen={() => setPlOpen(true)} />
+            <div className="amx-dockrow" style={{ marginTop: 8 }}>
               <button className="amx-cir" onClick={() => setTab("library")}>{I.lib({ s: 26 })}</button>
               <button className="amx-sfield" onClick={() => push({ k: "find" })}>
                 <span style={{ color: "rgba(235,235,245,.5)" }}>{I.search({ s: 19 })}</span>
@@ -211,6 +215,7 @@ function Shell() {
                 <span style={{ color: "rgba(235,235,245,.6)" }}>{I.mic({ s: 20 })}</span>
               </button>
             </div>
+            </>
           ) : sc ? (
             <div className="amx-dockrow">
               <button className="amx-cir" style={{ color: baseTab === "search" ? "#fff" : "var(--red)" }}
