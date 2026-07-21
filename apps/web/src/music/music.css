@@ -452,7 +452,7 @@
 .amx-pl .pl-brow button.on { background: rgba(255,255,255,.86); color: #4A3A28; }
 
 /* ── Шторки (New Playlist, выбор плейлиста) ─────────────────────────────── */
-.amx-sheet { position: absolute; inset: 0; z-index: 55; background: rgba(16,16,17,.98); border-radius: 26px 26px 0 0; margin-top: calc(var(--sat) + 6px); padding: 14px 16px calc(var(--sab) + 16px); animation: amx-up .34s cubic-bezier(.32,.72,.34,1); display: flex; flex-direction: column; }
+.amx-sheet { position: absolute; inset: 0; z-index: 55; background: rgba(16,16,17,.98); border-radius: 40px 40px 0 0;  /* 📐 профиль края → R=40 */ margin-top: calc(var(--sat) + 6px); padding: 14px 16px calc(var(--sab) + 16px); animation: amx-up .34s cubic-bezier(.32,.72,.34,1); display: flex; flex-direction: column; }
 @keyframes amx-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 .amx-sheet .sh-top { display: flex; align-items: center; }
 .amx-sheet .sh-top .amx-cir { width: 44px; height: 44px; background: rgba(120,120,128,.22); box-shadow: none; }

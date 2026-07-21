@@ -154,8 +154,12 @@ export function LibListScreen({ ui, id, onNewPlaylist }: { ui: UI; id: LibId; on
       )}
 
       {menu ? (
+        /* 📐 меню Apple растут ПО СОДЕРЖИМОМУ, а не одной шириной: фильтр
+           «All Songs · Favourites · Downloads» — 248.0 (IMG_1976), сортировка
+           с «Last Played Date» — 305.3 (IMG_1977). */
         <Menu at={menu.at} narrow={menu.kind !== "create"}
-          width={menu.kind === "create" ? 276 : undefined} onClose={() => setMenu(null)}
+          width={menu.kind === "create" ? 276 : menu.kind === "sort" ? 305 : 248}
+          onClose={() => setMenu(null)}
           items={menu.kind === "create" ? createItems : menu.kind === "sort" ? sortItems : filterItems} />
       ) : null}
     </Scr>

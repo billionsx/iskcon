@@ -153,7 +153,10 @@ export function Menu({ at, quick, items, onClose, width, narrow }: {
   const w = width ?? (narrow ? 248 : 296);
   const fr = frameRect();
   const ax = at.x - fr.l, ay = at.y - fr.t;
-  const left = Math.min(Math.max(8, ax - (ax > fr.w / 2 ? w : 0)), fr.w - w - 8);
+  /* 📐 IMG_1976 · IMG_1977: правый край меню 378.7 в обоих → отступ от края
+     кадра 14.3, а не 8. */
+  const edge = 14;
+  const left = Math.min(Math.max(edge, ax - (ax > fr.w / 2 ? w : 0)), fr.w - w - edge);
   const est = (quick ? 78 : 0) + items.reduce((a, it) => a + ("sep" in it ? ("thick" in it && it.thick ? 8 : 1) : ("sub" in it && it.sub ? 62 : narrow ? 36 : 50)), 0);
   const up = at.up ?? (ay + est + 16 > fr.h);
   const style: React.CSSProperties = up
