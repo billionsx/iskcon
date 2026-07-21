@@ -1,17 +1,12 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { lazy, Suspense } from "react";
 
-/* ПРОБНАЯ ОБОЛОЧКА /x — развилка стоит ЗДЕСЬ, а не внутри App.
-   Текущая версия приложения о существовании /x не знает и не меняется. */
-const XShell = lazy(() => import("./x/Shell"));
-function Root() {
-  if (typeof window !== "undefined" && window.location.pathname.startsWith("/x")) {
-    return <Suspense fallback={null}><XShell /></Suspense>;
-  }
-  return <App />;
-}
+/* ЗДЕСЬ СТОЯЛА РАЗВИЛКА НА ПРОБНУЮ ОБОЛОЧКУ /x.
+   Оболочка сделала свою работу: её замеры уехали в `player/` и `ui/`, живыми
+   экранами стали Катха и Киртаны. 21.07.2026 основатель распорядился снести
+   и её. Развилка ушла вместе с ней — точка входа снова одна, и приложение
+   больше не платит за второе дерево ни байтом, ни ветвлением. */
 import "./ui/globals.css";
 import "./styles.css";
 
@@ -220,6 +215,6 @@ if (typeof window !== "undefined") {
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Root />
+    <App />
   </React.StrictMode>
 );
