@@ -12,6 +12,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { lazy, Suspense } from "react";
 import { PlayerHost, type Track } from "./Player";
+import { MediaRow } from "./Library";
 
 const LibraryScreen = lazy(() => import("./Library"));
 
@@ -160,106 +161,91 @@ function PlayScreen() {
   return (
     <Frame>
       <PlayerHost queue={queue} index={index} onIndex={setIndex} tabBarBottom={21}>
-      <main style={{ padding: "16px 16px 96px", height: "100%", overflowY: "auto",
-        background: "var(--color-canvas)", fontFamily: "var(--font-text)" }}>
-        <h1 className="t-display" style={{ margin: "8px 0 4px", fontWeight: 700,
-          color: "var(--color-label)" }}>Плеер</h1>
-        <p style={{ margin: "0 0 20px", fontFamily: "var(--font-text)",
-          fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
-          letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)" }}>
-          Один компонент на шесть видов звука. Различаются они не элементами,
-          а доступными действиями.
-        </p>
+        {/* ЭКРАН, А НЕ ОТЛАДОЧНАЯ СТРАНИЦА. Прежде здесь стояли заголовок
+            «Плеер», пояснение про шесть видов и «витрина видов» — материал для
+            разработки, который я выкатил в прод и на увеличении он спалился
+            весь: сырые плитки, служебные подписи. Каталог собран из уже
+            замеренных кирпичей: круг навигации 46, крупный титул, строка
+            MediaRow с шагом 102 (📐 IMG_1958). */}
+        <main style={{ position: "relative", height: "100%", overflowY: "auto",
+          background: "var(--color-canvas)", paddingBottom: 150,
+          fontFamily: "var(--font-text)" }}>
 
-        {/* ПО РАССКАЗЧИКАМ, А НЕ ПЛОСКИМ СПИСКОМ. Модель катхи — РАССКАЗЧИК →
-            ЦИКЛ → ЧАСТЬ, и голос это КОНТЕКСТ СЛУШАНИЯ, а не признак фильтра
-            (та же мысль, что ЗКН-Н090 в текущей оболочке). Плоский список из 326
-            циклов показывал двенадцать подряд от одного голоса и выглядел так,
-            будто рассказчик в каталоге один. */}
-        <h2 style={sectionHead}>Катха — настоящие записи</h2>
-        {albums === null && <p style={hint}>Загружаю каталог…</p>}
-        {albums?.length === 0 && <p style={hint}>Каталог сейчас недоступен.</p>}
-        {bySpeaker.map(([speaker, list]) => (
-          <section key={speaker} style={{ marginBottom: 18 }}>
-            <h3 style={speakerHead}>{speaker}</h3>
-            <p style={hint}>{list.length} циклов · {hours(list.reduce((s, x) => s + x.secs, 0))}</p>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-              {list.slice(0, 4).map((a) => (
-                <li key={a.id}>
-                  <button type="button" onClick={() => openCycle(a)} disabled={busy}
-                    style={{ ...rowStyle, background: openId === a.id ? "var(--color-fill-1)" : "none" }}>
-                    <span aria-hidden style={monoStyle}>КА</span>
-                    <span style={{ minWidth: 0, flex: 1 }}>
-                      <span style={rowTitle}>{a.title}</span>
-                      <span style={rowSub}>{a.n} ч. · {hours(a.secs)}</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+          {/* 📐 круг 46 на y59, врезка 17 — как на живых снимках */}
+          <div style={{ display: "flex", alignItems: "center",
+            padding: "59px 17px 0" }}>
+            <a href="/x/library" aria-label="Библиотека"
+              style={{ width: 46, height: 46, borderRadius: 23, flexShrink: 0,
+                background: "var(--color-fill-1)", display: "grid",
+                placeItems: "center", color: "var(--color-label)",
+                textDecoration: "none" }}>
+              <svg width={17} height={17} viewBox="0 0 24 24" aria-hidden>
+                <path fill="none" stroke="currentColor" strokeWidth={2.4}
+                  strokeLinecap="round" strokeLinejoin="round"
+                  d="M15 5.5 8.5 12 15 18.5" /></svg>
+            </a>
+          </div>
 
-        <h2 style={sectionHead}>Витрина видов</h2>
-        <p style={hint}>Звука нет — показ раскладки для всех шести повадок.</p>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-          {DEMO.map((d) => (
-            <li key={d.id}>
-              <button type="button" onClick={() => { setQueue(DEMO); setIndex(DEMO.indexOf(d)); setOpenId(null); }}
-                style={rowStyle}>
-                <span aria-hidden style={monoStyle}>{d.kind.slice(0, 2).toUpperCase()}</span>
-                <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={rowTitle}>{d.title}</span>
-                  <span style={rowSub}>{d.subtitle}</span>
-                </span>
-              </button>
-            </li>
+          <h1 className="t-display" style={{ margin: "10px 24px 6px",
+            fontWeight: 700, color: "var(--color-label)" }}>Катха</h1>
+
+          {albums === null && (
+            <p style={{ margin: 0, padding: "8px 24px", fontSize: "var(--text-subhead)",
+              lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
+              color: "var(--color-label-3)" }}>Загружаю каталог…</p>
+          )}
+          {albums?.length === 0 && (
+            <p style={{ margin: 0, padding: "8px 24px", fontSize: "var(--text-subhead)",
+              lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
+              color: "var(--color-label-3)" }}>Каталог сейчас недоступен.</p>
+          )}
+
+          {bySpeaker.map(([speaker, list]) => (
+            <section key={speaker} style={{ marginTop: 14 }}>
+              <h2 style={{ margin: "0 21px", fontFamily: "var(--font-display)",
+                fontSize: "var(--text-headline)", lineHeight: "var(--lh-headline)",
+                letterSpacing: "var(--ls-headline)", fontWeight: 700,
+                color: "var(--color-label)" }}>{speaker}</h2>
+              <p style={{ margin: "0 21px 4px", fontSize: "var(--text-caption2)",
+                lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
+                color: "var(--color-label-3)" }}>
+                {list.length} циклов · {hours(list.reduce((s, x) => s + x.secs, 0))}
+              </p>
+              <div style={{ opacity: busy ? 0.55 : 1 }}>
+                {list.map((a) => (
+                  <MediaRow key={a.id} title={a.title}
+                    subtitle={`${a.n} ч. · ${hours(a.secs)}`}
+                    thumb={<SpeakerTile name={speaker} active={openId === a.id} />}
+                    onClick={() => openCycle(a)} />
+                ))}
+              </div>
+            </section>
           ))}
-        </ul>
-      </main>
+        </main>
       </PlayerHost>
     </Frame>
   );
 }
 
-const sectionHead: React.CSSProperties = {
-  margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
-  lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)", fontWeight: 700,
-  color: "var(--color-label)",
-};
-const speakerHead: React.CSSProperties = {
-  margin: "0 0 2px", padding: "0 var(--inset-row)", fontFamily: "var(--font-display)",
-  fontSize: "var(--text-headline)", lineHeight: "var(--lh-headline)",
-  letterSpacing: "var(--ls-headline)", fontWeight: 700, color: "var(--color-label)",
-};
-const hint: React.CSSProperties = {
-  margin: "0 0 8px", padding: "0 var(--inset-row)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
-  lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
-  color: "var(--color-label-3)",
-};
-const rowStyle: React.CSSProperties = {
-  display: "flex", alignItems: "center", gap: "var(--media-gap)", width: "100%",
-  minHeight: "var(--row-h-media)", padding: "0 var(--inset-row)", background: "none",
-  border: "none", borderRadius: "var(--radius-thumb)", cursor: "pointer", textAlign: "left",
-  WebkitTapHighlightColor: "transparent",
-};
-const monoStyle: React.CSSProperties = {
-  width: "var(--thumb-square)", height: "var(--thumb-square)", flexShrink: 0,
-  borderRadius: "var(--radius-thumb)", background: "var(--color-fill-1)",
-  display: "grid", placeItems: "center", fontFamily: "var(--font-display)",
-  fontSize: "var(--text-caption2)", fontWeight: 600, color: "var(--color-label-3)",
-};
-const rowTitle: React.CSSProperties = {
-  display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
-  lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)", color: "var(--color-label)",
-  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-};
-const rowSub: React.CSSProperties = {
-  display: "block", fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
-  lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
-  color: "var(--color-label-2)", whiteSpace: "nowrap", overflow: "hidden",
-  textOverflow: "ellipsis",
-};
+/**
+ * Плитка цикла: пока настоящих обложек нет — градиент палитры повествования с
+ * монограммой РАССКАЗЧИКА, не серый квадрат со словом «КА». Конвейер обложек по
+ * итемам Архива заменит её фотографией, разметка не изменится.
+ */
+function SpeakerTile({ name, active }: { name: string; active?: boolean }) {
+  const mono = name.split(" ").filter(Boolean).slice(0, 2)
+    .map((w) => w[0]).join("").toUpperCase();
+  return (
+    <span aria-hidden style={{ width: "100%", height: "100%", display: "grid",
+      placeItems: "center",
+      background: "linear-gradient(155deg, rgba(74,96,138,0.55) 0%, rgba(18,22,38,0.9) 100%), var(--color-bg-3)",
+      boxShadow: active ? "inset 0 0 0 2px var(--color-gold-deep)" : undefined }}>
+      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600,
+        fontSize: "var(--text-title3)", letterSpacing: "var(--ls-title3)",
+        color: "rgba(255,255,255,0.5)" }}>{mono}</span>
+    </span>
+  );
+}
 
 export default function XShell() {
   /* ЗКН-Н002 — ВЛАДЕЛЕЦ popstate ОДИН. Второй слушатель гонялся бы с тем, что
