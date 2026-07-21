@@ -1,6 +1,6 @@
 /* /music — экраны вкладок и внутренние страницы. */
 import React, { useMemo, useState } from "react";
-import { Ava, Cover, Dots, E, H2, I, PagedSongs, Scr, Shelf, ShelfCard, SongRow, hueOf, menuAt, mutate, useLongPress, useStore } from "./core";
+import { Ava, Cover, Dots, E, H2, I, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore } from "./core";
 import type { Card, Song } from "./data";
 import {
   ALL_SONGS, ANTHEMS_E, ARTIST_SHOWS, BEST_NEW_SONGS, CITY25, CLUB_MIXES, COMING_SOON,
@@ -335,7 +335,7 @@ export function SearchTab({ ui }: { ui: UI }) {
         {SEARCH_CATS.map((c) => (
           <div key={c.id} className="amx-cat"
             onClick={() => (c.id === "cat-summer" ? ui.push({ k: "hub" }) : ui.play(ALL_SONGS, 0, c.t))}>
-            <Cover id={c.id} hue={c.hue} style={{ position: "absolute", inset: 0 }} />
+            <Cover style={{ position: "absolute", inset: 0 }} />
             <div className="lab">{c.t}</div>
           </div>
         ))}
@@ -361,7 +361,7 @@ export function HubScreen({ ui }: { ui: UI }) {
             <div className="hk">{h.k}</div>
             <div className="ht">{h.t}</div>
             <div className="hs">{h.s}</div>
-            <div className="amx-cov" style={{ background: `radial-gradient(120% 140% at 20% 100%, hsl(${hueOf(h.id)} 55% 42%), hsl(${hueOf(h.id)} 58% 16%))` }}>
+            <div className="amx-cov">
               <div className="band"><b>SUMMERTIME<br />SOUNDS</b></div>
               <div className="mk" />
               {h.cap ? <div className="cap">{h.cap}</div> : null}

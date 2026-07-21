@@ -2,7 +2,7 @@
    в этой оболочке не используется вовсе): очередь, транспорт, перемотка,
    повтор, перемешивание, бесконечный автоплей, AutoMix, караоке-строки. */
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Cover, E, I, Menu, MItem, fmt, hueOf, menuAt, shuffled } from "./core";
+import { Cover, E, I, Menu, MItem, fmt, menuAt, shuffled } from "./core";
 import { LYRICS, QUEUE0, STATION_NAME, Song } from "./data";
 
 type P = {
@@ -136,7 +136,6 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   }, [open]);
 
   const cur = p.cur;
-  const h = cur ? hueOf(cur.id) : 40;
   const lineIdx = useMemo(() => {
     let k = 0;
     for (let i = 0; i < LYRICS.length; i++) if (p.pos >= LYRICS[i].at) k = i;
@@ -196,8 +195,11 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
         borderRadius: drag > 4 || !entered ? 40 : 0,
         transition: dragFrom.current != null ? "none" : undefined,
       }}>
+      {/* Фон плеера — тёплый золотой сумрак, ОДИН на все записи. Прежде он
+          выводился из id обложки и менялся от песни к песне; при едином
+          белом-с-золотом артворке такая пестрота потеряла основание. */}
       <div className="pl-bg" style={{
-        background: `linear-gradient(178deg, hsl(${h} 34% 38%) 0%, hsl(${h} 36% 22%) 46%, hsl(${(h + 14) % 360} 34% 10%) 100%)`,
+        background: "linear-gradient(178deg, #4A3C18 0%, #2E2611 46%, #16130A 100%)",
       }} />
       <div className="pl-in">
         <div onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}>

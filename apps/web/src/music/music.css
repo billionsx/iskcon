@@ -19,6 +19,7 @@
   --glass: rgba(28,28,30,.66);
   --glass-hi: rgba(70,70,74,.55);
   --menu: rgba(44,44,48,.86);
+  --gold: #D2AA1B;          /* знак ИСККОН на обложке */
   --card: #1C1C1E;
   --card2: #2C2C2E;
   --sat: env(safe-area-inset-top, 0px);
@@ -108,31 +109,29 @@
 .amx-kick { font-size: 13px; font-weight: 700; letter-spacing: .4px; color: var(--g2); text-transform: uppercase; }
 
 /* ── Обложка (маска-логотип ISKCON ONE LOVE на цветном поле) ────────────── */
-.amx-cov { position: relative; overflow: hidden; flex: 0 0 auto; background: #222; }
+/* ОБЛОЖКА — ЕДИНЫЙ СТИЛЬ (распоряжение основателя 21.07.2026): белое поле,
+   золотой знак по центру, небольшой. Прежде цвет выводился из id и обложки
+   были все разные — пёстро и без строя. Одно правило на все экраны. */
+.amx-cov { position: relative; overflow: hidden; flex: 0 0 auto; background: #FFFFFF; }
 .amx-cov .mk {
-  position: absolute; inset: 16%;
-  background: rgba(255,255,255,.92);
+  position: absolute; inset: 30%;
+  background: var(--gold);
   -webkit-mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
           mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
 }
 .amx-cov .wm {
-  position: absolute; left: 10%; right: 10%; top: 44%; height: 12%;
-  background: rgba(255,255,255,.9);
+  position: absolute; left: 24%; right: 24%; top: 44%; height: 12%;
+  background: var(--gold);
   -webkit-mask: url(/iskcon-one-love.svg) center / contain no-repeat;
           mask: url(/iskcon-one-love.svg) center / contain no-repeat;
 }
+/* Подписи поверх обложки стали тёмными: поле белое, белый текст на нём слеп. */
 .amx-cov .lab {
   position: absolute; left: 10px; bottom: 8px; right: 10px;
   font-size: 13px; font-weight: 700; letter-spacing: .1px;
-  text-shadow: 0 1px 8px rgba(0,0,0,.35);
+  color: #1C1C1E;
 }
-.amx-cov .brand { position: absolute; top: 7px; right: 9px; font-size: 10.5px; font-weight: 600; color: rgba(255,255,255,.85); }
-.amx-cov.sm .mk {
-  inset: 0;
-  -webkit-mask-size: 200% auto; mask-size: 200% auto;
-  -webkit-mask-position: 50% 12%; mask-position: 50% 12%;
-}
-.amx-cat .mk { inset: 8% 26% 32%; }
+.amx-cov .brand { position: absolute; top: 7px; right: 9px; font-size: 10.5px; font-weight: 600; color: rgba(28,28,30,.55); }
 
 /* ── Ряд песни ──────────────────────────────────────────────────────────── */
 .amx-row { display: flex; align-items: center; gap: 12px; padding: 0 20px; min-height: 74px; position: relative; }
@@ -270,7 +269,7 @@
 /* ── Вкладка Search (обзор) ─────────────────────────────────────────────── */
 .amx-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 11.6px; padding: 4px 20px 0; }  /* 📐 зазор 11.6 */
 .amx-cat { aspect-ratio: 16/9; border-radius: 12px; position: relative; overflow: hidden; }  /* 📐 170.7 × 96.0 */
-.amx-cat .lab { position: absolute; left: 12px; bottom: 10px; font-size: 19px; font-weight: 700; letter-spacing: -.4px; text-shadow: 0 1px 10px rgba(0,0,0,.4); }
+.amx-cat .lab { position: absolute; left: 12px; bottom: 10px; font-size: 19px; font-weight: 700; letter-spacing: -.4px; color: #1C1C1E; }
 
 /* ── Библиотека ─────────────────────────────────────────────────────────── */
 .amx-sync { margin: 10px 20px 4px; background: var(--card); border-radius: 22px; padding: 26px 56px 24px; text-align: center; position: relative; }

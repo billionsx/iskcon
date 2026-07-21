@@ -3,22 +3,16 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import type { Song } from "./data";
 
-/* ── Детеминированный оттенок по id ───────────────────────────────────── */
-export function hueOf(id: string): number {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
-  return h % 360;
-}
-
-/* ── Обложка: логотип ISKCON ONE LOVE на цветном поле ─────────────────── */
-export function Cover({ id, hue, cls, style, label, wm, brand, onClick, children }: {
-  id: string; hue?: number; cls?: string; style?: React.CSSProperties;
+/* ── Обложка: золотой знак ИСККОН на белом поле ───────────────────────────
+   ЕДИНЫЙ СТИЛЬ (распоряжение основателя 21.07.2026). Цвет больше НЕ выводится
+   из id: обложки были все разные, и экран рябил. Поле, знак и его размер
+   заданы в CSS одним правилом — здесь остаётся только разметка. */
+export function Cover({ cls, style, label, wm, brand, onClick, children }: {
+  id?: string; cls?: string; style?: React.CSSProperties;
   label?: string; wm?: boolean; brand?: boolean; onClick?: () => void; children?: React.ReactNode;
 }) {
-  const h = hue ?? hueOf(id);
-  const bg = `radial-gradient(120% 140% at 18% 8%, hsl(${h} 58% 46% / .95) 0%, hsl(${h} 55% 30%) 46%, hsl(${(h + 22) % 360} 60% 13%) 100%)`;
   return (
-    <div className={"amx-cov " + (cls || "")} style={{ ...style, background: bg }} onClick={onClick}>
+    <div className={"amx-cov " + (cls || "")} style={style} onClick={onClick}>
       {wm ? <div className="wm" /> : <div className="mk" />}
       {brand ? <div className="brand">Music</div> : null}
       {label ? <div className="lab">{label}</div> : null}
