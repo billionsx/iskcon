@@ -1,7 +1,7 @@
 /* /music — плеер. Воспроизведение симулируется тактовым таймером (аудио-тег
    в этой оболочке не используется вовсе): очередь, транспорт, перемотка,
    повтор, перемешивание, бесконечный автоплей, AutoMix, караоке-строки. */
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Cover, E, I, Menu, MItem, fmt, menuAt, shuffled, useExit } from "./core";
 import { LYRICS, QUEUE0, STATION_NAME, Song } from "./data";
 
@@ -99,7 +99,7 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   const p = usePlayer();
   const cur = p.cur;
   return (
-    <div className="amx-mini" onClick={() => cur && onOpen()}>
+    <div className="amx-mini" data-amx-mini onClick={() => cur && onOpen()}>
       {cur && p.playing !== undefined && (p.playing || p.pos > 0) ? (
         <Cover id={cur.id} cls="m-art sm" />
       ) : (
@@ -151,22 +151,114 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   const tipSeen = useRef(false);
   const [drag, setDrag] = useState(0);
   const dragFrom = useRef<number | null>(null);
-  const [entered, setEntered] = useState(false);
   const lyrRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [morphing, setMorphing] = useState(true);
+  const closing = useRef(false);
+  const ghostRef = useRef<HTMLDivElement | null>(null);
+
+  /* 🎞 Кривая раскрытия, снятая с open_013–047 (60 fps): ~56 % пути к 50 мс,
+     ~81 % к 167 мс, дальше экспоненциальный хвост ×0.78/кадр до ~560 мс.
+     Перелёта нет — критическое демпфирование. */
+  const OPEN_EASE = "linear(0, 0.28 8%, 0.56 17%, 0.66 20%, 0.81 30%, 0.9 36%, 0.94 42%, 0.965 50%, 0.978 57%, 0.988 66%, 0.994 78%, 0.998 89%, 1)";
+  const OPEN_MS = 560;
+  const CLOSE_EASE = "cubic-bezier(.32,.72,0,1)";  /* 🎞 §5.2: 383 мс ровного выбега */
+  const CLOSE_MS = 400;
+  const noMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const rects = () => {
+    const root = rootRef.current; if (!root) return null;
+    const frame = root.closest(".amx-frame") as HTMLElement | null; if (!frame) return null;
+    const fr = frame.getBoundingClientRect();
+    const mini = frame.querySelector("[data-amx-mini]") as HTMLElement | null;
+    const mArt = mini?.querySelector(".m-art") as HTMLElement | null;
+    const art = root.querySelector(".pl-art.morph") as HTMLElement | null;
+    return { frame, fr, mini: mini?.getBoundingClientRect() ?? null, mArt: mArt?.getBoundingClientRect() ?? null, artEl: art };
+  };
+
+  /* Призрак обложки живёт вне масштабируемой карточки */
+  const anim = (el: Element, kf: Keyframe[], opt: KeyframeAnimationOptions) => {
+    try { return el.animate(kf, opt); }
+    catch { return el.animate(kf, { ...opt, easing: "cubic-bezier(.2,.9,.25,1)" }); }
+  };
+  const flyGhost = (from: DOMRect, to: DOMRect, fr: DOMRect, ease: string, ms: number, rFrom: number, rTo: number) => {
+    const g = ghostRef.current; if (!g) return null;
+    g.style.left = `${to.left - fr.left}px`; g.style.top = `${to.top - fr.top}px`;
+    g.style.width = `${to.width}px`; g.style.height = `${to.height}px`;
+    g.style.display = "block";
+    const s = from.width / to.width;
+    const a = anim(g, [
+      { transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${s})`, borderRadius: `${rFrom / s}px` },
+      { transform: "none", borderRadius: `${rTo}px` },
+    ], { duration: ms, easing: ease, fill: "both" });
+    a.finished.then(() => { g.style.display = "none"; }).catch(() => {});
+    return a;
+  };
+
+  /* Открытие: карточка растёт из прямоугольника пилюли */
+  useLayoutEffect(() => {
+    if (!open) { setMorphing(false); return; }
+    closing.current = false;
+    const R = rects(); const root = rootRef.current;
+    if (!root) return;
+    if (!R || !R.mini || noMotion()) { setMorphing(false); return; }
+    setMorphing(true);
+    const { fr, mini, mArt, artEl } = R;
+    const sx = mini.width / fr.width, sy = mini.height / fr.height;
+    const tx = mini.left - fr.left, ty = mini.top - fr.top;
+    const a = anim(root, [
+      { transform: `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`, borderRadius: `${24 / sx}px / ${24 / sy}px` },
+      { transform: "none", borderRadius: "0px" },
+    ], { duration: OPEN_MS, easing: OPEN_EASE });
+    const inn = root.querySelector(".pl-in") as HTMLElement | null;
+    inn?.animate([
+      { opacity: 0, offset: 0 }, { opacity: 0, offset: 0.4 }, { opacity: 1, offset: 0.78 }, { opacity: 1, offset: 1 },
+    ], { duration: OPEN_MS, easing: "linear" });
+    let ga: Animation | null = null;
+    if (mArt && artEl) ga = flyGhost(mArt, artEl.getBoundingClientRect(), fr, OPEN_EASE, OPEN_MS, 7, 12);
+    a.finished.then(() => setMorphing(false)).catch(() => setMorphing(false));
+    return () => { a.cancel(); ga?.cancel(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  /* Закрытие: обратный полёт в пилюлю из текущего положения (учитывая драг) */
+  const requestCloseRef = useRef<() => void>(() => {});
+  const requestClose = () => {
+    if (closing.current) return;
+    closing.current = true;
+    const R = rects(); const root = rootRef.current;
+    if (!root || !R || !R.mini || noMotion()) { onClose(); return; }
+    setMorphing(true);
+    const { fr, mini, mArt, artEl } = R;
+    const d = drag;
+    const sx = mini.width / fr.width, sy = mini.height / fr.height;
+    const tx = mini.left - fr.left, ty = mini.top - fr.top;
+    const a = anim(root, [
+      { transform: `translateY(${d}px)`, borderRadius: d > 4 ? "40px" : "0px" },
+      { transform: `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`, borderRadius: `${24 / sx}px / ${24 / sy}px` },
+    ], { duration: CLOSE_MS, easing: CLOSE_EASE, fill: "forwards" });
+    const inn = root.querySelector(".pl-in") as HTMLElement | null;
+    inn?.animate([
+      { opacity: 1, offset: 0 }, { opacity: 0, offset: 0.35 }, { opacity: 0, offset: 1 },
+    ], { duration: CLOSE_MS, easing: "linear", fill: "forwards" });
+    if (mArt && artEl) {
+      const ar = artEl.getBoundingClientRect();
+      flyGhost(ar, mArt, fr, CLOSE_EASE, CLOSE_MS, 12, 7);
+    }
+    a.finished.then(() => onClose()).catch(() => onClose());
+  };
+  requestCloseRef.current = requestClose;
 
   /* Esc закрывает плеер — на десктопе свайпа нет, а граббер мал */
   const layered = useRef(false);
   useEffect(() => {
     if (!open) return;
-    const k = (e: KeyboardEvent) => { if (e.key === "Escape" && !layered.current) onClose(); };
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape" && !layered.current) requestCloseRef.current(); };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, [open, onClose]);
 
-  useEffect(() => {
-    if (open) { setDrag(0); requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true))); }
-    else setEntered(false);
-  }, [open]);
+  useEffect(() => { if (open) setDrag(0); }, [open]);
 
   const cur = p.cur;
   const lineIdx = useMemo(() => {
@@ -189,7 +281,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
     if (d > 0) setDrag(d);
   };
   const onTE = () => {
-    if (drag > 130) onClose(); else setDrag(0);
+    if (drag > 130) requestClose(); else setDrag(0);
     dragFrom.current = null;
   };
 
@@ -223,12 +315,11 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   const upcoming = p.q.slice(p.idx + 1);
   layered.current = !!menu || outSheet;
 
-  return (
-    <div className={"amx-pl" + (p.playing ? "" : " paused")}
+  return (<>
+    <div ref={rootRef} className={"amx-pl" + (p.playing ? "" : " paused") + (morphing ? " morphing" : "")}
       style={{
-        transform: entered ? `translateY(${drag}px)` : "translateY(104%)",
-        borderRadius: drag > 4 || !entered ? 40 : 0,
-        transition: dragFrom.current != null ? "none" : undefined,
+        transform: drag > 0 ? `translateY(${drag}px)` : undefined,
+        borderRadius: drag > 4 ? 40 : 0,
       }}>
       {/* Фон плеера — тёплый золотой сумрак, ОДИН на все записи. Прежде он
           выводился из id обложки и менялся от песни к песне; при едином
@@ -363,7 +454,11 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           items={menuItems} onClose={() => setMenu(null)} />
       ) : null}
     </div>
-  );
+    {/* Призрак обложки для морфа пилюля⇄плеер (🎞 §5.2) */}
+    <div ref={ghostRef} className="amx-ghostart" style={{ display: "none" }}>
+      <Cover id={cur.id} cls="amx-ghc" />
+    </div>
+  </>);
 }
 
 /* ── Шторка вывода звука (⚠ §4.5: кадр не разобран; типовая нижняя шторка,

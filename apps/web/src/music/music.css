@@ -298,9 +298,11 @@
   -webkit-backdrop-filter: blur(50px) saturate(1.9); backdrop-filter: blur(50px) saturate(1.9);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 0 0 .5px rgba(255,255,255,.10), 0 18px 50px rgba(0,0,0,.55);
   transform-origin: var(--ox, 90%) var(--oy, 0%);
-  animation: amx-pop .28s var(--spring);  /* 🎞 §5.4 */
+  animation: amx-pop .38s var(--ease-out);  /* 🎞 §5.4 */
 }
-@keyframes amx-pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* 🎞 §5.4: рост из якоря за ~5–6 кадров (b/mn_004–009: короб 43→82 у точки
+   тапа), затем посадка. Прежний scale(.6→1) за 220 мс и был «деревом». */
+@keyframes amx-pop { 0% { transform: scale(.18); opacity: 0; } 55% { opacity: 1; } 62% { transform: scale(1.035); } 100% { transform: scale(1); opacity: 1; } }
 .amx-menu .mq { display: flex; padding: 14px 8px 12px; }
 .amx-menu .mq button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 14px; }
 .amx-menu .mi { display: flex; align-items: center; gap: 14px; padding: 0 16px 0 21px; min-height: 56.67px; font-size: 17px; letter-spacing: -.43px; position: relative; }  /* 📐 шаг разделителей 170 px = 56.67; подпись с 59.00 = 21 + 24 + 14 — IMG_2348 */
@@ -325,15 +327,22 @@
 
 /* ── Док (нижняя зона): мини-плеер + вкладки + поиск ────────────────────── */
 /* 📐 IMG_1966 · IMG_1963 (совпало дважды): врезка 21, низ 21 */
-.amx-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 21px calc(var(--sab) + 21px); pointer-events: none; }
+.amx-dock { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 21px calc(var(--sab) + 21px); pointer-events: none;
+  transition: padding .35s var(--ease-out); }  /* 🎞 морф ~20 кадров (§5.10) */
+/* 📐 dock_static_mask: компакт — мини 334×43 врезка 29.7, капсула w264 только
+   знаки, круг 52.3, зазор 15. Один DOM: свёртка идёт превращением, не заменой. */
+.amx-dock.cmp { padding-left: 29.7px; padding-right: 29.7px; }
 .amx-dock > * { pointer-events: auto; }
 .amx-mini {
   display: flex; align-items: center; gap: 12px; height: 48px; border-radius: 24px; padding: 0 6px 0 7px;  /* 📐 h48; текст с +55 = 7 + 36 + 12 */
+  transition: height .35s var(--ease-out), transform .3s var(--spring);
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
-.amx-mini .m-art { width: 36px; height: 36px; border-radius: 7px; flex: 0 0 auto; }  /* внутрь 48: 48−2×6 */
+.amx-mini .m-art { width: 36px; height: 36px; border-radius: 7px; flex: 0 0 auto; transition: width .35s var(--ease-out), height .35s var(--ease-out); }  /* внутрь 48: 48−2×6 */
+.cmp .amx-mini { height: 43px; }
+.cmp .amx-mini .m-art { width: 33px; height: 33px; }
 .amx-mini .m-art.ph { background: rgba(120,120,128,.3); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.75); }
 .amx-mini .m-c { flex: 1; min-width: 0; }
 .amx-mini .m-t { font-size: 16px; font-weight: 600; letter-spacing: -.31px; /* 📐 чернила 16.3 ⇒ 16 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -344,19 +353,28 @@
 .amx-tabsrow { display: flex; align-items: stretch; gap: 8px; margin-top: 8px; }  /* 📐 зазор 8.0 (761→769) */
 .amx-tabs {
   flex: 1; display: flex; border-radius: 31px; padding: 8.7px;  /* 📐 8.7 + 44.6 + 8.7 = 62 */
+  transition: padding .35s var(--ease-out);
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 /* 📐 вкладка 87.9 × 44.6 · знак 26 · подпись 10 · зазор знак→подпись 4 */
 .amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 22.3px; height: 44.6px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); }
+.amx-tab span { display: block; max-height: 12px; transition: max-height .3s var(--ease-out), opacity .2s ease, margin .3s var(--ease-out); }
+.cmp .amx-tabs { padding: 7px 8.7px; }              /* 57 ≈ 7 + 43 + 7 */
+.cmp .amx-tab { height: 43px; gap: 0; }
+.cmp .amx-tab span { max-height: 0; opacity: 0; margin-top: -4px; }  /* подписи гаснут */
 .amx-tab.on { background: rgba(120,120,128,.30); color: var(--red); font-weight: 600; }
 .amx-scir { width: 62px; height: 62px; border-radius: 50%;  /* 📐 [310 + 62] */ flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  transition: width .35s var(--ease-out), height .35s var(--ease-out), transform .3s var(--spring), background-color .3s var(--spring);
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 .amx-scir.red { color: var(--red); }
+.cmp .amx-scir { width: 52.3px; height: 52.3px; }
+.cmp .amx-tabsrow { gap: 15px; }                     /* 📐 зазор капсула→круг 15 */
+.amx-tabsrow { align-items: center; }
 /* свёрнутый док: [иконка вкладки][мини-плеер][поиск] */
 .amx-dockrow { display: flex; align-items: center; gap: 10px; }
 .amx-dockrow .amx-cir { width: 48px; height: 48px; }
@@ -396,7 +414,7 @@
 
 /* ── Полноэкранный плеер ────────────────────────────────────────────────── */
 .amx-pl { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; border-radius: 0; overflow: hidden; touch-action: none;
-  transition: transform .42s var(--sheet), border-radius .42s var(--sheet);  /* 🎞 §5.2: закрытие 383 мс ровного выбега */ }
+  transition: border-radius .2s ease;  /* морф ведёт WAAPI: linear() из open_013–047 (§5.2) */ }
 .amx-pl.closing, .amx-pl.pre { transform: translateY(104%); border-radius: 40px; }
 .amx-pl .pl-bg { position: absolute; inset: -40px; filter: blur(0px); }
 .amx-pl .pl-in { position: relative; flex: 1; display: flex; flex-direction: column; padding: calc(var(--sat) + 8px) 24px calc(var(--sab) + 14px); }
@@ -601,3 +619,13 @@
   .amx *, .amx *::before, .amx *::after { animation-duration: .001s !important; transition-duration: .001s !important; }
   .amx-marq, .amx-pl .pl-bg::before, .amx-pl .pl-bg::after, .amx-pl .pl-dots i { animation: none !important; }
 }
+
+/* ── Морф пилюля ⇄ плеер (§5.2, снят с open_013–047) ──────────────────── */
+/* Призрак обложки летит из гнезда дока в центр и обратно; настоящая
+   обложка в это время спрятана. Карточка растёт трансформом из прямо-
+   угольника пилюли — содержимое проявляется на второй половине пути. */
+.amx-ghostart { position: absolute; z-index: 61; pointer-events: none; overflow: hidden; border-radius: 12px; transform-origin: 0 0; will-change: transform; }
+.amx-ghostart .amx-cov { position: absolute; inset: 0; width: 100%; height: 100%; }
+.amx-pl.morphing .pl-art.morph { opacity: 0; }
+.amx-pl.morphing { pointer-events: none; }
+.amx-pl { will-change: transform; transform-origin: 0 0; }

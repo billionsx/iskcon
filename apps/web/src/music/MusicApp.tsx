@@ -87,6 +87,20 @@ function Shell() {
   const stackRef = useRef(stack); stackRef.current = stack;
   const [sc, setSc] = useState(false);
   const [navDir, setNavDir] = useState<"fwd" | "back" | "tab">("tab");  /* 🎞 §5.9 */
+  /* 🎞 §5.10: док сворачивает НАПРАВЛЕНИЕ прокрутки (вниз — компакт, вверх —
+     полный), у кромки верха всегда полный. Порог 24px был выдумкой. */
+  const lastY = useRef<number | null>(null);
+  const acc = useRef(0);
+  const onScrollY = (y: number) => {
+    if (y < 10) { lastY.current = y; acc.current = 0; setSc(false); return; }
+    const prev = lastY.current; lastY.current = y;
+    if (prev == null) return;
+    const dy = y - prev;
+    if (dy === 0) return;
+    acc.current = (acc.current > 0) === (dy > 0) ? acc.current + dy : dy;
+    if (acc.current > 14) setSc(true);
+    else if (acc.current < -14) setSc(false);
+  };
   const [plOpen, setPlOpen] = useState(false);
   const [menu, setMenu] = useState<{ at: { x: number; y: number }; items: MItem[]; quick?: MQuick[] } | null>(null);
   const [addFor, setAddFor] = useState<string | null>(null);
@@ -183,7 +197,7 @@ function Shell() {
     <div className="amx">
       <div className="amx-frame">
       <div className={"amx-under" + (plOpen ? " dip" : "")}>
-      <ScrollCtx.Provider value={(t) => setSc(t > 24)}>
+      <ScrollCtx.Provider value={onScrollY}>
         <div key={stack.map((p) => p.k + ("t" in p ? (p as { t: string }).t : "") + ("id" in p ? (p as { id: string }).id : "") + ("g" in p ? (p as { g: string }).g : "")).join("|")} className={"amx-screen nav-" + navDir}>
           {top.k === "tab" ? (
             top.t === "home" ? <HomeScreen ui={ui} /> :
@@ -205,7 +219,7 @@ function Shell() {
 
       {/* ── Док ─────────────────────────────────────────────────────────── */}
       {isFind ? null : (
-        <div className="amx-dock">
+        <div className={"amx-dock" + (sc && !isSearchRoot ? " cmp" : "")}>
           {isSearchRoot ? (
             <div className="amx-dockwrap" key="s">
             {/* 📐 IMG_1978: на корне поиска мини-плеер ЕСТЬ, под ним строка
@@ -220,16 +234,9 @@ function Shell() {
               </button>
             </div>
             </div>
-          ) : sc ? (
-            <div className="amx-dockrow amx-dockwrap" key="m">
-              <button className="amx-cir" style={{ color: baseTab === "search" ? "#fff" : "var(--red)" }}
-                onClick={() => setTab(baseTab)}>{TAB_ICON[baseTab](26)}</button>
-              <MiniPlayer onOpen={() => setPlOpen(true)} />
-              <button className={"amx-cir" + (baseTab === "search" ? " red" : "")}
-                onClick={() => (baseTab === "search" ? push({ k: "find" }) : setTab("search"))}
-                style={baseTab === "search" ? { color: "var(--red)" } : undefined}>{I.search({ s: 24 })}</button>
-            </div>
           ) : (
+            /* Один DOM на оба состояния: свёртка — превращение, не замена
+               (🎞 §5.10, геометрия компакта — 📐 dock_static_mask). */
             <div className="amx-dockwrap" key="f">
               <MiniPlayer onOpen={() => setPlOpen(true)} />
               <div className="amx-tabsrow">
