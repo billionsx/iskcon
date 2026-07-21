@@ -25,6 +25,7 @@
  *   Всё, что ниже помечено 🕳, взято из нашей вёрстки, а не из кадра.
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { Menu, type MenuGroups } from "./Menu";
 
 /* ─────────────────────────── модель ─────────────────────────── */
 
@@ -159,6 +160,15 @@ function ShuffleGlyph({ size = 20 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
     <path {...S} d="M4 7h3.2l9.6 10H20M4 17h3.2l2.4-2.6M14.4 9.6 16.8 7H20" />
     <path {...S} d="M17.6 4.6 20.4 7l-2.8 2.4M17.6 14.6 20.4 17l-2.8 2.4" /></svg>;
+}
+function VolLowGlyph({ size = 14 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path fill="currentColor" d="M12 4.6 7.2 8.8H3.6v6.4h3.6L12 19.4z" /></svg>;
+}
+function VolHighGlyph({ size = 16 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path fill="currentColor" d="M10.4 4.6 5.6 8.8H2v6.4h3.6l4.8 4.2z" />
+    <path {...S} d="M14 9.2a4 4 0 0 1 0 5.6M16.8 6.6a7.8 7.8 0 0 1 0 10.8" /></svg>;
 }
 function ChevronDownGlyph({ size = 18 }: { size?: number }) {
   return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
@@ -343,143 +353,6 @@ export function MiniPlayer({ track, playing, position, onToggle, onOpen, onNext,
   );
 }
 
-/* ─────────────────────────── выбор скорости ─────────────────────────── */
-
-/**
- * ЗКН-Д023 — скорость ВЫБИРАЮТ, а не прокручивают. Список показывает все
- * значения сразу, текущее отмечено. Прокрутка по кругу заставляет человека
- * тыкать шесть раз, чтобы вернуться на единицу, — и это на лекции, которую он
- * слушает второй час.
- */
-function SpeedSheet({ value, onPick, onClose }: {
-  value: number; onPick: (v: number) => void; onClose: () => void;
-}) {
-  return (
-    <div role="dialog" aria-modal="true" aria-label="Скорость"
-      onClick={onClose}
-      style={{ position: "absolute", inset: 0, zIndex: 1600, display: "flex",
-        flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.5)" }}>
-      {/* Лист — стекло, радиус 20 (§4.2: меню · лист · алерт = 20). */}
-      <div onClick={(e) => e.stopPropagation()} className="glass" style={{
-        ["--glass-r" as string]: "20px",
-        ["--color-card" as string]: "var(--color-bg-3)",
-        borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
-        padding: `14px 16px calc(24px + env(safe-area-inset-bottom))` }}>
-        <h2 style={{ margin: "0 0 10px", padding: "0 var(--inset-row)",
-          fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
-          lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)",
-          fontWeight: 700, color: "var(--color-label)" }}>Скорость</h2>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-          {SPEEDS.map((v) => (
-            <li key={v}>
-              <button type="button" onClick={() => { onPick(v); onClose(); }}
-                style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-                  width: "100%", minHeight: "var(--row-h)", padding: "0 var(--inset-row)",
-                  background: "none", border: "none", cursor: "pointer",
-                  fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
-                  lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)",
-                  color: v === value ? "var(--color-gold-deep)" : "var(--color-label)",
-                  WebkitTapHighlightColor: "transparent" }}>
-                <span>{v}×{v === 1 ? "  обычная" : ""}</span>
-                {v === value && <span aria-hidden>✓</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-/* ─────────────────────────── ещё: сон и порядок ─────────────────────────── */
-
-const SLEEP_MIN = [5, 10, 15, 30, 45, 60] as const;
-
-/**
- * ТАЙМЕР СНА — ЗКН-Н054, и это не мелкое удобство.
- *
- * Киртан слушают, ЗАСЫПАЯ: святое имя ставят на ночь. Плеер без таймера
- * заставляет ПРОСЫПАТЬСЯ, чтобы его выключить, — и человек либо не ставит
- * киртан на ночь вовсе, либо утром находит разряженный телефон.
- *
- * Видов два, и «после этой записи» ВАЖНЕЕ минут: обрывать киртан на середине
- * нельзя. Поэтому он стоит первым, а не в конце списка.
- *
- * ПОРЯДОК ставится ПРЯМО (ЗКН-Д023), а не прокручивается по кругу. И он есть
- * не у всех: у глав книги порядок свой, перемешать их значит испортить чтение.
- */
-function MoreSheet({ sleepMin, sleepEnd, order, repeat, onSleep, onSleepEnd, onOrder, onRepeat, onClose }: {
-  sleepMin: number | null; sleepEnd: boolean; order: OrderMode; repeat: boolean;
-  onSleep: (m: number | null) => void; onSleepEnd: (v: boolean) => void;
-  onOrder: (o: OrderMode) => void; onRepeat: () => void; onClose: () => void;
-}) {
-  const row: CSSProperties = {
-    display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%",
-    minHeight: "var(--row-h)", padding: "0 var(--inset-row)", background: "none", border: "none",
-    cursor: "pointer", fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
-    lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)", color: "var(--color-label)",
-    WebkitTapHighlightColor: "transparent",
-  };
-  const head: CSSProperties = {
-    margin: "18px 0 6px", padding: "0 var(--inset-row)", fontFamily: "var(--font-text)",
-    fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
-    letterSpacing: "var(--ls-subhead)", color: "var(--color-label-3)",
-  };
-  return (
-    <div role="dialog" aria-modal="true" aria-label="Ещё" onClick={onClose}
-      style={{ position: "absolute", inset: 0, zIndex: 1600, display: "flex",
-        flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.5)" }}>
-      <div onClick={(e) => e.stopPropagation()} className="glass" style={{
-        ["--glass-r" as string]: "20px",
-        ["--color-card" as string]: "var(--color-bg-3)",
-        borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
-        maxHeight: "82%", overflowY: "auto",
-        padding: "14px 16px calc(24px + env(safe-area-inset-bottom))" }}>
-
-        <>
-            <p style={{ ...head, marginTop: 4 }}>Таймер сна</p>
-            {/* Лист закрывается после выбора — как лист скорости. Человек выбрал,
-                дальше ему нужен экран, а не список. */}
-            <button type="button" style={row}
-              onClick={() => { onSleepEnd(!sleepEnd); onSleep(null); onClose(); }}>
-              <span>После этой записи</span>
-              {sleepEnd && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
-            </button>
-            {SLEEP_MIN.map((m) => (
-              <button key={m} type="button" style={row}
-                onClick={() => { onSleep(sleepMin === m ? null : m); onSleepEnd(false); onClose(); }}>
-                <span>Через {m} мин</span>
-                {sleepMin === m && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
-              </button>
-            ))}
-            {(sleepMin || sleepEnd) && (
-              <button type="button" style={{ ...row, color: "var(--color-label-2)" }}
-                onClick={() => { onSleep(null); onSleepEnd(false); onClose(); }}>
-                <span>Выключить таймер</span>
-              </button>
-            )}
-        </>
-
-        <>
-            <p style={head}>Порядок</p>
-            <button type="button" style={row} onClick={() => { onOrder("forward"); onClose(); }}>
-              <span>По списку</span>
-              {order === "forward" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
-            </button>
-            <button type="button" style={row} onClick={() => { onOrder("shuffle"); onClose(); }}>
-              <span>Перемешать</span>
-              {order === "shuffle" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
-            </button>
-            <button type="button" style={row} onClick={() => { onRepeat(); onClose(); }}>
-              <span>Повторять запись</span>
-              {repeat && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
-            </button>
-        </>
-      </div>
-    </div>
-  );
-}
-
 /* ─────────────────────────── полный экран ─────────────────────────── */
 
 /* ─────────────────────────── фон из обложки ─────────────────────────── */
@@ -523,42 +396,69 @@ function Ambient({ track }: { track: Track }) {
 function QueueSheet({ queue, index, onPick, onClose, kind }: {
   queue: Track[]; index: number; onPick: (i: number) => void; onClose: () => void; kind: PlayKind;
 }) {
-  const title = kind === "book" || kind === "lecture" ? "Оглавление" : "Очередь";
+  const title = kind === "book" || kind === "lecture" ? "Оглавление" : "Дальше";
   return (
     <div role="dialog" aria-modal="true" aria-label={title}
-      style={{ position: "absolute", inset: 0, zIndex: 1500, display: "flex", flexDirection: "column",
-        background: "var(--color-bg-2)", ["--color-card" as string]: "var(--color-bg-3)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 16px", height: 56, flexShrink: 0 }}>
-        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
-          lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)", fontWeight: 700,
-          color: "var(--color-label)" }}>{title}</h2>
-        <button type="button" onClick={onClose} aria-label="Закрыть"
-          style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
-            border: "none", color: "var(--color-label-2)", cursor: "pointer" }}>
-          <ChevronDownGlyph size={20} />
-        </button>
+      style={{ position: "absolute", inset: 0, zIndex: 1500, display: "flex",
+        flexDirection: "column", background: "var(--color-bg-2)",
+        ["--color-card" as string]: "var(--color-bg-3)",
+        paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
+      {/* Граббер — панель закрывается так же, как открывается плеер */}
+      <button type="button" onClick={onClose} aria-label="Закрыть"
+        style={{ alignSelf: "center", width: 88, height: 26, display: "grid",
+          placeItems: "center", background: "none", border: "none", cursor: "pointer",
+          flexShrink: 0, WebkitTapHighlightColor: "transparent" }}>
+        <span aria-hidden style={{ width: 36, height: 5, borderRadius: 3,
+          background: "var(--color-label-3)", opacity: 0.55, display: "block" }} />
+      </button>
+
+      {/* ТЕКУЩАЯ ЗАПИСЬ — компактная шапка панели, как у Apple: миниатюра 48,
+          название, подпись раздела мелко над списком. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12,
+        padding: "6px 20px 12px", flexShrink: 0 }}>
+        <Cover track={queue[index]} size={48} radius={8} />
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <p style={{ margin: 0, fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
+            lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)", fontWeight: 600,
+            color: "var(--color-label)", whiteSpace: "nowrap", overflow: "hidden",
+            textOverflow: "ellipsis" }}>{queue[index]?.title}</p>
+          {queue[index]?.subtitle && (
+            <p style={{ margin: 0, fontFamily: "var(--font-text)",
+              fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+              letterSpacing: "var(--ls-subhead)", color: "var(--color-label-3)",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {queue[index].subtitle}</p>
+          )}
+        </div>
       </div>
-      <ul style={{ listStyle: "none", margin: 0, padding: "0 16px 32px", overflowY: "auto", flex: 1 }}>
-        {queue.map((t, k) => (
-          <li key={t.id}>
-            <button type="button" onClick={() => onPick(k)}
-              style={{ display: "flex", alignItems: "center", gap: "var(--media-gap)", width: "100%",
-                minHeight: "var(--row-h-media)", padding: "0 var(--inset-row)", border: "none",
-                borderRadius: "var(--radius-thumb)", cursor: "pointer", textAlign: "left",
-                background: k === index ? "var(--color-card)" : "none",
+
+      <p style={{ margin: 0, padding: "6px 20px 4px", flexShrink: 0,
+        fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+        lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
+        fontWeight: 700, color: "var(--color-label)" }}>{title}</p>
+
+      <ul style={{ listStyle: "none", margin: 0, padding: "0 8px 24px", overflowY: "auto",
+        flex: 1, minHeight: 0 }}>
+        {queue.map((q, i) => (
+          <li key={q.id}>
+            <button type="button" onClick={() => onPick(i)}
+              style={{ display: "flex", alignItems: "center", gap: 12, width: "100%",
+                minHeight: 58, padding: "5px 12px", background: "none",
+                border: "none", borderRadius: 10, cursor: "pointer", textAlign: "left",
                 WebkitTapHighlightColor: "transparent" }}>
-              <Cover track={t} size={44} radius="var(--radius-thumb)" />
+              <Cover track={q} size={48} radius={8} />
               <span style={{ minWidth: 0, flex: 1 }}>
                 <span style={{ display: "block", fontFamily: "var(--font-text)",
                   fontSize: "var(--text-body)", lineHeight: "var(--lh-body)",
-                  letterSpacing: "var(--ls-body)", whiteSpace: "nowrap", overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  color: k === index ? "var(--color-gold-deep)" : "var(--color-label)" }}>{t.title}</span>
+                  letterSpacing: "var(--ls-body)",
+                  color: i === index ? "var(--color-gold-deep)" : "var(--color-label)",
+                  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {q.title}
+                </span>
                 <span style={{ display: "block", fontFamily: "var(--font-text)",
-                  fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
-                  letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
-                  {clock(t.duration)}
+                  fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+                  letterSpacing: "var(--ls-subhead)", color: "var(--color-label-3)" }}>
+                  {clock(q.duration)}
                 </span>
               </span>
             </button>
@@ -633,6 +533,8 @@ function TextSheet({ track, position, onSeek, onClose }: {
 /* ─────────────────────────── полный экран ─────────────────────────── */
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
+/** Ступени таймера сна (ЗКН-Н054). */
+const SLEEP_MIN = [5, 10, 15, 30, 45, 60] as const;
 
 /** Доля кадра 852 pt — та система отсчёта, в которой сняты все замеры плеера.
  *  Позиция в процентах, а не в пикселях: на экране короче кадра раскладка
@@ -647,54 +549,77 @@ const P = (y: number) => `${(y / 852) * 100}%`;
  * Транспорт зависит от ВИДА, а не один на всех: длинной записи нужна перемотка
  * на ±15 секунд и скорость, песне — переход по трекам и повтор. Матрица CAPS.
  */
-export function FullPlayer({ track, playing, position, speed, fav, sleepOn, order,
-  onToggle, onSeek, onPrev, onNext, onClose, onText, onQueue, onSpeedPick,
-  onFav, onMore }: {
+export function FullPlayer({ track, playing, position, speed, fav, order, repeat,
+  sleepMin, sleepEnd, volume,
+  onToggle, onSeek, onPrev, onNext, onClose, onText, onQueue,
+  onSpeed, onFav, onOrder, onRepeat, onSleepMin, onSleepEnd, onVolume }: {
   track: Track; playing: boolean; position: number; speed: number;
-  fav: boolean; sleepOn: boolean; order: OrderMode;
+  fav: boolean; order: OrderMode; repeat: boolean;
+  sleepMin: number | null; sleepEnd: boolean; volume: number;
   onToggle: () => void; onSeek: (s: number) => void;
   onPrev: () => void; onNext: () => void; onClose: () => void;
   onText: () => void; onQueue: () => void;
-  /** ЗКН-Д023 — скорость ВЫБИРАЮТ из списка, а не прокручивают по кругу:
-   *  у лекции на два часа «1.5×» это решение, а не следующий шаг цикла.
-   *  В первой версии здесь стоял именно цикл — закон уже был написан, я его
-   *  повторно нарушил, прочитав только после. */
-  onSpeedPick: () => void;
-  onFav: () => void; onMore: () => void;
+  /** ЗКН-Д023 — скорость ВЫБИРАЮТ из списка. Список живёт в динамичном меню,
+   *  которое вырастает ИЗ КНОПКИ скорости — как у Apple, а не простынёй снизу. */
+  onSpeed: (v: number) => void;
+  onFav: () => void; onOrder: (o: OrderMode) => void; onRepeat: () => void;
+  onSleepMin: (m: number | null) => void; onSleepEnd: (v: boolean) => void;
+  onVolume: (v: number) => void;
 }) {
   const hasText = !!track.text?.length || !!track.textHref;
+  const sleepOn = sleepEnd || !!sleepMin;
+  const [menu, setMenu] = useState<null | "more" | "speed" | "sleep">(null);
+
+  /* ── НАПОЛНЕНИЕ МЕНЮ. Одно динамичное меню обслуживает всё: скорость, сон,
+     порядок, повтор, избранное. Подменю раскрываются на месте (📐 IMG_1952). */
+  const sleepGroups: MenuGroups = [
+    [{ id: "end", label: "После этой записи", icon: <MoonGlyph size={16} />,
+       checked: sleepEnd, onSelect: () => { onSleepEnd(!sleepEnd); onSleepMin(null); } }],
+    SLEEP_MIN.map((m) => ({ id: `m${m}`, label: `Через ${m} мин`,
+      checked: sleepMin === m,
+      onSelect: () => { onSleepMin(sleepMin === m ? null : m); onSleepEnd(false); } })),
+    ...(sleepOn ? [[{ id: "off", label: "Выключить таймер",
+      onSelect: () => { onSleepMin(null); onSleepEnd(false); } }]] : []),
+  ];
+  const orderGroups: MenuGroups = [[
+    { id: "fw", label: "По списку", checked: order === "forward", onSelect: () => onOrder("forward") },
+    { id: "sh", label: "Перемешать", icon: <ShuffleGlyph size={15} />,
+      checked: order === "shuffle", onSelect: () => onOrder("shuffle") },
+  ]];
+  const speedGroups: MenuGroups = [SPEEDS.map((v) => ({
+    id: `s${v}`, label: `${v}×${v === 1 ? " обычная" : ""}`,
+    checked: v === speed, onSelect: () => onSpeed(v) }))];
+  const moreGroups: MenuGroups = [
+    [{ id: "fav", label: fav ? "В избранном" : "В избранное",
+       icon: <HeartGlyph size={16} filled={fav} />, checked: fav, onSelect: onFav }],
+    [
+      { id: "sleep", label: "Таймер сна", icon: <MoonGlyph size={16} />,
+        sub: sleepEnd ? "После этой записи" : sleepMin ? `Через ${sleepMin} мин` : "Выключен",
+        submenu: sleepGroups },
+      { id: "order", label: "Порядок", icon: <ShuffleGlyph size={15} />,
+        sub: order === "shuffle" ? "Перемешать" : "По списку", submenu: orderGroups },
+      { id: "rep", label: "Повторять запись", icon: <RepeatGlyph size={15} />,
+        checked: repeat, onSelect: onRepeat },
+    ],
+  ];
   return (
     <div role="dialog" aria-modal="true" aria-label={`Сейчас играет: ${track.title}`}
       style={{ position: "absolute", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
         background: "var(--color-bg-2)", paddingTop: "env(safe-area-inset-top)" }}>
       <Ambient track={track} />
 
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column",
-        flex: 1, minHeight: 0 }}>
-        {/* шапка: свернуть слева-по-центру, повтор справа — если вид его знает */}
-        {/* Круглые кнопки шапки — 44 pt (📐 5.15). Избранное слева, «ещё» справа,
-            свёртка по центру: середину занимает то, что человек ищет первым. */}
-        <div style={{ display: "flex", alignItems: "center", height: 44, flexShrink: 0,
-          padding: "0 12px" }}>
-          <button type="button" onClick={onFav} aria-pressed={fav} aria-label="В избранное"
-            style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
-              border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
-              color: fav ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
-            <HeartGlyph size={20} filled={fav} />
-          </button>
-          <button type="button" onClick={onClose} aria-label="Свернуть плеер"
-            style={{ flex: 1, height: 44, display: "grid", placeItems: "center", background: "none",
-              border: "none", color: "var(--color-label-2)", cursor: "pointer",
-              WebkitTapHighlightColor: "transparent" }}>
-            <ChevronDownGlyph size={20} />
-          </button>
-          <button type="button" onClick={onQueue} aria-label="Очередь"
-            style={{ width: 44, height: 44, display: "grid", placeItems: "center", background: "none",
-              border: "none", cursor: "pointer", WebkitTapHighlightColor: "transparent",
-              color: order === "shuffle" ? "var(--color-gold-deep)" : "var(--color-label-3)" }}>
-            {order === "shuffle" ? <ShuffleGlyph size={20} /> : <QueueGlyph size={20} />}
-          </button>
-        </div>
+      <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+        {/* У Apple в плеере НЕТ шапки — только граббер (📐 живые снимки: тонкая
+            пилюля сверху по центру, никаких кнопок). Сердце и всё прочее живёт
+            в меню ⋯ у названия. Шапка с сердцем была моей отсебятиной. */}
+        <button type="button" onClick={onClose} aria-label="Свернуть плеер"
+          style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+            width: 88, height: 30, display: "grid", placeItems: "center",
+            background: "none", border: "none", cursor: "pointer",
+            WebkitTapHighlightColor: "transparent" }}>
+          <span aria-hidden style={{ width: 36, height: 5, borderRadius: 3,
+            background: "var(--color-label-3)", opacity: 0.55, display: "block" }} />
+        </button>
 
         {/* РАСКЛАДКА ПО ПОЗИЦИЯМ, А НЕ ПО ПРОМЕЖУТКАМ.
             Прошлая версия складывала экран стопкой отступов и называла это
@@ -705,7 +630,7 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
             Теперь каждый блок садится на свою высоту, выраженную долей кадра
             852 pt. На экране короче кадра всё сжимается пропорционально —
             замер задаёт ПРОПОРЦИЮ, а не абсолют в пикселях чужого экрана. */}
-        <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+        <div style={{ position: "absolute", inset: 0 }}>
           {/* ОБЛОЖКА — 📐 345.0 × 345.0, врезка 24.0, верх y 91.5, низ 436.5.
               Замер снят с живых снимков iPhone: в корпусном наборе чистого
               «сейчас играет» не было вовсе, все кадры сняты с открытым текстом
@@ -725,7 +650,7 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
               высоты — это высоты при ОДНОСТРОЧНОМ названии; у нас названия
               длинные, и стопка должна расти ВВЕРХ от нижнего края.
               Низ ряда инструментов приходится на 767 из 852 → отступ снизу 85. */}
-          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(85) }}>
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(36) }}>
             <div style={{ marginBottom: 4, fontFamily: "var(--font-text)",
               fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
               letterSpacing: "var(--ls-caption2)", fontWeight: 600,
@@ -743,7 +668,7 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
                 WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
                 {track.title}
               </h1>
-              <button type="button" onClick={onMore} aria-label="Ещё"
+              <button type="button" onClick={() => setMenu("more")} aria-label="Ещё"
                 style={{ ...transportStyle, width: 28, height: 28, flexShrink: 0,
                   borderRadius: 14, background: "var(--color-fill-1)",
                   color: sleepOn ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
@@ -792,6 +717,24 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
               </button>
             </div>
 
+            {/* ГРОМКОСТЬ — 📐 y 732…749: динамик 8 слева, полоса, динамик 18.7
+                справа. Полоса тонкая, наполнение глушёно-белое, бегунка в покое
+                не видно — как на живом снимке. Привязана к настоящему звуку. */}
+            <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 10,
+              padding: "0 3px" }}>
+              <span aria-hidden style={{ color: "var(--color-label-3)", display: "grid" }}>
+                <VolLowGlyph size={13} />
+              </span>
+              <input type="range" min={0} max={1} step={0.01} value={volume}
+                aria-label="Громкость"
+                onChange={(e) => onVolume(Number(e.target.value))}
+                className="xvol"
+                style={{ flex: 1, ["--v" as string]: String(volume * 100) }} />
+              <span aria-hidden style={{ color: "var(--color-label-3)", display: "grid" }}>
+                <VolHighGlyph size={16} />
+              </span>
+            </div>
+
             {!track.src && (
               <p style={{ margin: "12px 0 0", textAlign: "center", fontFamily: "var(--font-text)",
                 fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
@@ -813,7 +756,7 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
                   color: "var(--color-label-2)" }}>
                 <TextGlyph size={21} />
               </button>
-              <button type="button" onClick={onSpeedPick} aria-label={`Скорость ${speed}×`}
+              <button type="button" onClick={() => setMenu("speed")} aria-label={`Скорость ${speed}×`}
                 style={{ ...transportStyle, width: 44, height: 44,
                   color: speed === 1 ? "var(--color-label-2)" : "var(--color-gold-deep)" }}>
                 <span style={{ display: "grid", placeItems: "center", gap: 1 }}>
@@ -822,7 +765,7 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
                     fontWeight: 700, lineHeight: "var(--lh-caption2)" }}>{speed}×</span>
                 </span>
               </button>
-              <button type="button" onClick={onMore} aria-label="Таймер сна"
+              <button type="button" onClick={() => setMenu("sleep")} aria-label="Таймер сна"
                 style={{ ...transportStyle, width: 44, height: 44,
                   color: sleepOn ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
                 <MoonGlyph size={21} />
@@ -834,7 +777,33 @@ export function FullPlayer({ track, playing, position, speed, fav, sleepOn, orde
             </div>
           </div>
         </div>
+
+        {/* ── ДИНАМИЧНОЕ МЕНЮ — у той кнопки, что его вызвало.
+            ⋯ у названия → сверху-справа (📐 IMG_1952: верх 266, правый край 33);
+            скорость и луна внизу → меню растёт ВВЕРХ из кнопки. */}
+        {menu === "more" && (
+          <Menu groups={moreGroups} onClose={() => setMenu(null)}
+            place={{ top: P(266), right: 33 }} origin="top right" />
+        )}
+        {menu === "speed" && (
+          <Menu groups={speedGroups} onClose={() => setMenu(null)}
+            place={{ bottom: P(96), left: 29 }} origin="bottom left" />
+        )}
+        {menu === "sleep" && (
+          <Menu groups={sleepGroups} onClose={() => setMenu(null)}
+            place={{ bottom: P(96), right: 29 }} origin="bottom right" />
+        )}
       </div>
+
+      {/* Полоса громкости без видимого бегунка — он появляется под пальцем */}
+      <style>{`
+        .xvol { -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px;
+          background: linear-gradient(to right, var(--color-label-2) calc(var(--v, 50) * 1%), var(--color-fill-2) 0);
+          outline: none; }
+        .xvol::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px;
+          border-radius: 7px; background: var(--color-label); opacity: 0; transition: opacity 120ms; }
+        .xvol:active::-webkit-slider-thumb, .xvol:focus-visible::-webkit-slider-thumb { opacity: 0.9; }
+      `}</style>
     </div>
   );
 }
@@ -890,7 +859,7 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [state, setState] = useState<LayerState>("mini");
-  const [sheet, setSheet] = useState<"none" | "queue" | "text" | "speed" | "more">("none");
+  const [sheet, setSheet] = useState<"none" | "queue" | "text">("none");
   const [speed, setSpeed] = useState(1);
   const [repeat, setRepeat] = useState(false);
   const [favs, setFavs] = useState<string[]>([]);
@@ -898,6 +867,7 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
   const [sleepMin, setSleepMin] = useState<number | null>(null);
   const [sleepEnd, setSleepEnd] = useState(false);
   const [sleepAt, setSleepAt] = useState<number | null>(null);
+  const [volume, setVolume] = useState(1);
   const audio = useRef<HTMLAudioElement | null>(null);
   const track = queue[index];
 
@@ -993,6 +963,7 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
 
   useEffect(() => { if (audio.current) audio.current.playbackRate = speed; }, [speed, index]);
   useEffect(() => { if (audio.current) audio.current.loop = repeat; }, [repeat, index]);
+  useEffect(() => { if (audio.current) audio.current.volume = volume; }, [volume, index]);
   useEffect(() => {
     const el = audio.current; if (!el || !track?.src) return;
     if (playing) el.play().catch(() => setPlaying(false)); else el.pause();
@@ -1063,15 +1034,18 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
       )}
       {state === "full" && (
         <FullPlayer track={shown} playing={playing} position={position} speed={speed}
-          fav={favs.includes(track.id)} sleepOn={!!sleepMin || sleepEnd} order={order}
-          onFav={toggleFav} onMore={() => setSheet("more")}
+          fav={favs.includes(track.id)} order={order} repeat={repeat}
+          sleepMin={sleepMin} sleepEnd={sleepEnd} volume={volume}
+          onFav={toggleFav}
           onToggle={() => setPlaying((v) => !v)}
           onSeek={seekTo}
           onPrev={prev} onNext={next}
           onClose={() => setState("mini")}
           onText={() => setSheet("text")}
           onQueue={() => setSheet("queue")}
-          onSpeedPick={() => setSheet("speed")} />
+          onSpeed={setSpeed} onOrder={setOrder} onRepeat={() => setRepeat((v) => !v)}
+          onSleepMin={setSleepMin} onSleepEnd={setSleepEnd}
+          onVolume={setVolume} />
       )}
       {sheet === "queue" && (
         <QueueSheet queue={queue} index={index} kind={track.kind}
@@ -1082,15 +1056,7 @@ export function PlayerHost({ queue, index, onIndex, tabBarBottom = 91, children 
         <TextSheet track={shown} position={position} onSeek={seekTo}
           onClose={() => setSheet("none")} />
       )}
-      {sheet === "speed" && (
-        <SpeedSheet value={speed} onPick={setSpeed} onClose={() => setSheet("none")} />
-      )}
-      {sheet === "more" && (
-        <MoreSheet sleepMin={sleepMin} sleepEnd={sleepEnd} order={order} repeat={repeat}
-          onSleep={setSleepMin} onSleepEnd={setSleepEnd} onOrder={setOrder}
-          onRepeat={() => setRepeat((v) => !v)}
-          onClose={() => setSheet("none")} />
-      )}
+
     </>
   );
 }

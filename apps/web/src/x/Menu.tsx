@@ -1,75 +1,79 @@
 /**
- * ВСПЛЫВАЮЩЕЕ МЕНЮ — снято с восьми кадров Music.
+ * ДИНАМИЧНОЕ МЕНЮ — пиксель-в-пиксель с живыми снимками Apple Music.
  *
- * Один компонент, разное наполнение: сетка/список (f01, f21), фильтр (f02, f04,
- * f22, f28), сортировка (f20), действия над записью (f33). Apple не заводит под
- * каждую роль свой вид — и нам не нужно.
+ * Первая версия была плоской коробкой с малым скруглением и без блюра, а листы
+ * скорости и таймера вообще шли простынями на весь низ. Основатель назвал это
+ * тем, чем оно было. Меню Apple — компактный ПАРЯЩИЙ слой У КНОПКИ, которая его
+ * вызвала, и один и тот же слой обслуживает фильтр, сортировку, вид, действия
+ * над записью и подменю.
  *
- * ЗАМЕРЕНО на ЖИВОМ устройстве — четыре снимка 1179 × 2556 (= 393 × 852 @3x):
- *   коробка        ширина 248.0, высота 147.7, верх y 59.0
- *   правый край    12.3 … 15.0 от края экрана
- *   шаг строки     36.3 (фильтр) · 35.7 (сортировка)
- *   ГАЛОЧКА        x 19.3, ширина 8.0 — СЛЕВА
- *   знак           x ≈41, ширина 11.7 … 15.0
- *   подпись        x ≈70
+ * ЗАМЕРЕНО (четыре живых снимка, 393×852 @3x):
+ *   коробка     ширина 248.0 · скругление ≈26 · правый край 12.3…15.0
+ *   верх        y 59.0 (для меню из навигации)
+ *   строка      шаг 36.3 (фильтр) · 35.7 (сортировка)
+ *   галочка     x 19.3, ширина 8 — СЛЕВА
+ *   знак        центр ≈48 · подпись с 70
+ *   разделитель добавляет к шагу ~20
+ *   стекло      полупрозрачная заливка + размытие фона (виден контент под меню)
+ *   подстрока   «Artist / A-Z» — вторая строка мельче и глуше (IMG_1974)
+ *   действия    IMG_1952: две крупные кнопки знак-над-подписью первой группой
+ *   подменю     пункт с шевроном раскрывается НА МЕСТЕ, сверху строка «‹ назад»
  *
- * Прежняя версия ставила галочку СПРАВА — это была догадка, и она оказалась
- * неверной. Живой снимок показал левую колонку отметки: так глаз находит
- * выбранный пункт, не дочитывая строку до конца.
- *
- * Разделитель добавляет к шагу ~20: у меню фильтра шаги 55.7 · 36.3, у меню
- * сортировки — 35.7 · 35.7 ровно, и разделителя там нет. Неровный шаг был не
- * сбоем замера, а группировкой.
- *
- * ГРУППЫ — не украшение. Разделитель на +54.7 отделяет «показать всё» от
- * «показать отобранное»: это разные по смыслу действия, а не соседние пункты
- * одного списка.
+ * Меню ставится ТАМ, ГДЕ КНОПКА: у навигации — сверху-справа, у нижних
+ * инструментов — НАД кнопкой, с ростом из её угла (transform-origin).
  */
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 
 export interface MenuItem {
   id: string;
   label: string;
-  /** Отмечен галочкой — для выбора из набора (фильтр, сортировка, вид). */
-  checked?: boolean;
-  /** Знак слева. */
+  /** Подстрока глуше — как «A-Z» под «Artist» (📐 IMG_1974). */
+  sub?: string;
   icon?: ReactNode;
-  /** Разрушительное действие пишется красным. */
+  checked?: boolean;
   danger?: boolean;
-  onSelect: () => void;
+  /** Подменю: раскрывается на месте, сверху появляется строка «назад». */
+  submenu?: MenuGroups;
+  onSelect?: () => void;
 }
-
-/** Группы разделяются хейрлайном. Одна группа — просто один массив. */
 export type MenuGroups = MenuItem[][];
+/** Крупные действия первой группой — знак над подписью (📐 IMG_1952). */
+export interface MenuAction { id: string; label: string; icon: ReactNode; onSelect: () => void }
 
-/* 📐 шаг 36. Колонки внутри строки: галочка 19.3 · знак 41 · подпись 70 —
-   считая от левого края коробки. */
-const rowStyle: CSSProperties = {
-  display: "flex", alignItems: "center", width: "100%",
-  height: 36, padding: 0, background: "none", border: "none",
-  cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent",
+const row: CSSProperties = {
+  display: "grid",
+  /* 📐 галочка центр ~23 · знак центр ~48 · подпись с 70 */
+  gridTemplateColumns: "31px 30px 1fr",
+  alignItems: "center", width: "100%", minHeight: 36, padding: "0 14px 0 8px",
+  background: "none", border: "none", cursor: "pointer", textAlign: "left",
+  WebkitTapHighlightColor: "transparent",
   fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
   lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
 };
-const checkCol: CSSProperties = {
-  width: 41 - 19.3, paddingLeft: 19.3, flexShrink: 0, display: "grid",
-  placeItems: "start center", color: "var(--color-label)",
-};
-const iconCol: CSSProperties = {
-  width: 70 - 41, flexShrink: 0, display: "grid", placeItems: "center",
-  color: "var(--color-label-2)",
-};
 
-export function Menu({ groups, onClose, anchor = "right" }: {
+function Hairline() {
+  /* 📐 разделитель добавляет к шагу ~20 */
+  return <div aria-hidden style={{ height: 1, margin: "9px 0",
+    background: "var(--color-separator)", opacity: 0.6 }} />;
+}
+function ChevronRightSmall() {
+  return <svg width={13} height={13} viewBox="0 0 24 24" aria-hidden>
+    <path fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round"
+      strokeLinejoin="round" d="M9 5.5 15.5 12 9 18.5" /></svg>;
+}
+
+export function Menu({ groups, actions, place, origin = "top right", onClose }: {
   groups: MenuGroups;
+  actions?: MenuAction[];
+  /** Где стоит меню — у той кнопки, что его вызвала. */
+  place: CSSProperties;
+  /** Из какого угла оно вырастает. */
+  origin?: string;
   onClose: () => void;
-  /** С какой стороны прижато меню. У Apple на этих кадрах — справа. */
-  anchor?: "left" | "right";
 }) {
-  const box = useRef<HTMLDivElement>(null);
+  const [stack, setStack] = useState<{ label: string; groups: MenuGroups }[]>([]);
+  const cur = stack.length ? stack[stack.length - 1].groups : groups;
 
-  /* Меню закрывается по Esc и по нажатию мимо — иначе на клавиатуре из него
-     не выйти, а это уже недоступность, а не мелочь. */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
@@ -78,46 +82,91 @@ export function Menu({ groups, onClose, anchor = "right" }: {
 
   return (
     <div onClick={onClose} style={{ position: "absolute", inset: 0, zIndex: 1700 }}>
-      <div
-        ref={box}
-        role="menu"
-        onClick={(e) => e.stopPropagation()}
-        className="glass"
-        style={{
-          position: "absolute",
-          /* 📐 верх меню совпадает с верхом навигационной капсулы */
-          top: `${(59 / 852) * 100}%`,      /* 📐 верх меню */
-          [anchor]: 14,                     /* 📐 12.3 … 15.0 от края экрана */
-          width: 248,                       /* 📐 живой снимок */
-          /* §4.2: меню · лист · алерт — радиус 20. Стояло 14 — взято ниоткуда.
-             Материал — стекло: 📐 «#111111 стекло над чёрным», не заливка. */
-          ["--glass-r" as string]: "20px",
-          overflow: "hidden",
-          padding: "6px 0",
-        } as CSSProperties}>
-        {groups.map((group, gi) => (
+      <div role="menu" onClick={(e) => e.stopPropagation()} style={{
+        position: "absolute", ...place,
+        width: 248,                                   /* 📐 */
+        borderRadius: 26,                             /* 📐 */
+        overflow: "hidden",
+        /* СТЕКЛО — на живом снимке под меню просвечивает контент */
+        background: "rgba(44,44,46,0.72)",
+        backdropFilter: "blur(40px) saturate(1.8)",
+        WebkitBackdropFilter: "blur(40px) saturate(1.8)",
+        boxShadow: "0 18px 50px rgba(0,0,0,0.55)",
+        transformOrigin: origin,
+        animation: "xMenuIn 150ms ease-out",
+        padding: "6px 0",
+      }}>
+        {/* Крупные действия — только на корневом уровне */}
+        {actions && stack.length === 0 && (
+          <>
+            <div style={{ display: "flex", gap: 6, padding: "8px 10px 4px" }}>
+              {actions.map((a) => (
+                <button key={a.id} type="button"
+                  onClick={() => { a.onSelect(); onClose(); }}
+                  style={{ flex: 1, display: "flex", flexDirection: "column",
+                    alignItems: "center", gap: 6, padding: "8px 4px 6px",
+                    background: "none", border: "none", cursor: "pointer",
+                    color: "var(--color-label)", WebkitTapHighlightColor: "transparent",
+                    fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+                    lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)" }}>
+                  <span style={{ display: "grid" }}>{a.icon}</span>
+                  {a.label}
+                </button>
+              ))}
+            </div>
+            <Hairline />
+          </>
+        )}
+
+        {/* Строка возврата из подменю */}
+        {stack.length > 0 && (
+          <>
+            <button type="button" style={{ ...row, color: "var(--color-label-2)" }}
+              onClick={() => setStack((s) => s.slice(0, -1))}>
+              <span aria-hidden style={{ display: "grid", placeItems: "center",
+                transform: "rotate(180deg)" }}><ChevronRightSmall /></span>
+              <span />
+              <span>{stack[stack.length - 1].label}</span>
+            </button>
+            <Hairline />
+          </>
+        )}
+
+        {cur.map((group, gi) => (
           <div key={gi}>
-            {gi > 0 && (
-              <div aria-hidden style={{ height: 1, margin: "5px 0",
-                background: "var(--color-separator)" }} />
-            )}
+            {gi > 0 && <Hairline />}
             {group.map((it) => (
               <button key={it.id} type="button" role="menuitem"
-                onClick={() => { it.onSelect(); onClose(); }}
-                style={{ ...rowStyle,
-                  color: it.danger ? "var(--color-danger)" : "var(--color-label)" }}>
-                {/* Отметка СЛЕВА — 📐 x 19.3. Глаз находит выбранный пункт,
-                    не дочитывая строку до конца. */}
-                <span aria-hidden style={checkCol}>{it.checked ? "✓" : ""}</span>
-                <span aria-hidden style={iconCol}>{it.icon}</span>
-                <span style={{ flex: 1, minWidth: 0, paddingRight: 14,
-                  whiteSpace: "nowrap", overflow: "hidden",
-                  textOverflow: "ellipsis" }}>{it.label}</span>
+                onClick={() => {
+                  if (it.submenu) { setStack((s) => [...s, { label: it.label, groups: it.submenu! }]); return; }
+                  it.onSelect?.(); onClose();
+                }}
+                style={{ ...row,
+                  color: it.danger ? "var(--color-danger-text)" : "var(--color-label)" }}>
+                {/* 📐 отметка СЛЕВА — глаз находит выбранное, не дочитывая */}
+                <span aria-hidden style={{ display: "grid", placeItems: "center",
+                  color: "var(--color-gold-deep)" }}>{it.checked ? "✓" : ""}</span>
+                <span aria-hidden style={{ display: "grid", placeItems: "center",
+                  color: "var(--color-label-2)" }}>{it.icon}</span>
+                <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                  <span style={{ flex: 1, minWidth: 0 }}>
+                    <span style={{ display: "block", whiteSpace: "nowrap",
+                      overflow: "hidden", textOverflow: "ellipsis" }}>{it.label}</span>
+                    {it.sub && (
+                      <span style={{ display: "block", fontSize: "var(--text-caption2)",
+                        lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
+                        color: "var(--color-label-3)" }}>{it.sub}</span>
+                    )}
+                  </span>
+                  {it.submenu && <span aria-hidden style={{ color: "var(--color-label-3)",
+                    display: "grid" }}><ChevronRightSmall /></span>}
+                </span>
               </button>
             ))}
           </div>
         ))}
       </div>
+      <style>{`@keyframes xMenuIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }`}</style>
     </div>
   );
 }

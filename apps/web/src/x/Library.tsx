@@ -108,16 +108,27 @@ export function EmptyState({ title, hint, action }: {
 
 /* ─────────────────────────── строка раздела ─────────────────────────── */
 
-/** 📐 шаг строки 50 (f16: 51.7 · 50.0 · 54.3). Набор строки 18.3. */
-export function SectionRow({ label, count, onClick }: {
-  label: string; count?: string; onClick?: () => void;
+/**
+ * СТРОКА БИБЛИОТЕКИ — 📐 IMG_1963/1966: знак `[21.3+18.7]` цветом продукта,
+ * подпись с 58.7, шеврон на 364.7, шаг 52, разделитель начинается ОТ ТЕКСТА,
+ * а не от края экрана. У Apple знаки красные — акцент их продукта; наш акцент
+ * золото, и правило стандарта то же: акцент берётся из хрома продукта.
+ */
+export function SectionRow({ label, count, icon, sep, onClick }: {
+  label: string; count?: string; icon?: ReactNode; sep?: boolean; onClick?: () => void;
 }) {
   return (
     <button type="button" onClick={onClick} style={{
-      display: "flex", alignItems: "center", gap: 12, width: "100%", height: 50,
-      padding: "0 var(--inset-row)", background: "none", border: "none",
+      position: "relative", display: "flex", alignItems: "center", gap: 0,
+      width: "100%", height: 52, padding: 0, background: "none", border: "none",
       cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent",
     }}>
+      {sep && <span aria-hidden style={{ position: "absolute", top: 0, left: 58.7,
+        right: 0, height: 1, background: "var(--color-separator)", opacity: 0.55 }} />}
+      <span aria-hidden style={{ width: 58.7, paddingLeft: 21.3, flexShrink: 0,
+        display: "grid", justifyItems: "start", color: "var(--color-gold-deep)" }}>
+        {icon}
+      </span>
       <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)",
         fontSize: "var(--text-body)", lineHeight: "var(--lh-body)",
         letterSpacing: "var(--ls-body)", color: "var(--color-label)",
@@ -127,13 +138,21 @@ export function SectionRow({ label, count, onClick }: {
       {count && (
         <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
           lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
-          color: "var(--color-label-3)", flexShrink: 0 }}>{count}</span>
+          color: "var(--color-label-3)", flexShrink: 0, paddingRight: 10 }}>{count}</span>
       )}
-      <span style={{ color: "var(--color-label-3)", flexShrink: 0, display: "grid" }}>
-        <ChevronRight size={16} />
+      <span style={{ color: "var(--color-label-3)", flexShrink: 0, display: "grid",
+        width: 28.3, justifyItems: "start" }}>
+        <ChevronRight size={15} />
       </span>
     </button>
   );
+}
+
+/** Знак рассказчика — микрофон, как у Apple в Artists. */
+function MicGlyph({ size = 19 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <circle {...S} cx="15.5" cy="7.5" r="3.9" />
+    <path {...S} d="M12.7 10.3 5.2 17.8l-1 3 3-1 7.5-7.5" /></svg>;
 }
 
 /* ─────────────────────── нижняя плавающая панель ─────────────────────── */
@@ -236,8 +255,9 @@ export default function LibraryScreen() {
         {rows === null && <p style={{ padding: "0 var(--inset-row)", color: "var(--color-label-3)",
           fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Загружаю…</p>}
 
-        {sorted?.map((r) => (
+        {sorted?.map((r, i) => (
           <SectionRow key={r.slug} label={r.name} count={`${r.albums} · ${hours(r.secs)}`}
+            icon={<MicGlyph size={19} />} sep={i > 0}
             onClick={() => { window.location.href = "/x/play"; }} />
         ))}
       </div>
@@ -248,7 +268,8 @@ export default function LibraryScreen() {
           hint="Записи появятся здесь, когда каталог будет загружен." />
       )}
 
-      {menu && <Menu groups={groups} onClose={() => setMenu(false)} />}
+      {menu && <Menu groups={groups} onClose={() => setMenu(false)}
+        place={{ top: `${(59 / 852) * 100}%`, right: 14 }} origin="top right" />}
 
       <BottomPanel>
         <span style={{ color: "var(--color-label-3)", display: "grid" }}><SearchGlyph size={18} /></span>
