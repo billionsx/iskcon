@@ -63,6 +63,12 @@
             версии в том, чтобы ставить её на место основной флагом, а не
             миграцией.
 
+ПРАВИЛО 9 — JSX-комментарий закрыт. `{/*` без `*/}` роняет сборку сообщением
+            «Unterminated regular expression» с указанием на строку ЗА ДЕСЯТКИ
+            строк от настоящей причины: пропущенная `}` превращает `*/` в начало
+            регулярного выражения. Ловилось дважды, диагноз занимал по четыре
+            захода — значит место ему в гейте, а не в памяти.
+
 Запуск: python3 tools/ios26-tokens.py
 """
 import json
@@ -178,6 +184,19 @@ def main() -> int:
                 if '/x/' in m.group(1) or m.group(1).startswith('./x/'):
                     leaks.append(f'{f.name} -> {m.group(1)}')
 
+    # правило 9 — JSX-комментарии сбалансированы
+    jsx_bad = []
+    for f in sorted(web.rglob('*.tsx')):
+        txt = f.read_text(encoding='utf-8')
+        if txt.count('{/*') != txt.count('*/}'):
+            depth = 0
+            for ln, line in enumerate(txt.split('\n'), 1):
+                if '{/*' in line and '*/}' not in line:
+                    depth += 1; mark = ln
+                elif '*/}' in line:
+                    depth -= 1
+            jsx_bad.append(f"{f.name}:{mark}")
+
     # правило 3 — храповик
     base = json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else {}
     cap_h, cap_d = base.get("holes", len(holes)), base.get("deviations", len(devs))
@@ -185,6 +204,9 @@ def main() -> int:
     if leaks:
         fail.append('оболочки срастаются: ' + ', '.join(leaks[:4]) +
                     '. Пробная `x/` и текущая делят только `ui/` (правило 8)')
+    if jsx_bad:
+        fail.append('JSX-комментарий не закрыт: ' + ', '.join(jsx_bad) +
+                    '. Нужна `*/}`, а не `*/` — иначе сборка укажет не туда (правило 9)')
     cap_db = base.get("dead_bricks", len(dead_bricks))
     if len(dead_bricks) > cap_db:
         fail.append(f"храповик мёртвых кирпичей: {len(dead_bricks)} > {cap_db} "

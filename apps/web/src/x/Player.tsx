@@ -432,21 +432,23 @@ function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrd
         {caps.sleep && (
           <>
             <p style={{ ...head, marginTop: 4 }}>Таймер сна</p>
+            {/* Лист закрывается после выбора — как лист скорости. Человек выбрал,
+                дальше ему нужен экран, а не список. */}
             <button type="button" style={row}
-              onClick={() => { onSleepEnd(!sleepEnd); onSleep(null); }}>
+              onClick={() => { onSleepEnd(!sleepEnd); onSleep(null); onClose(); }}>
               <span>После этой записи</span>
               {sleepEnd && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
             </button>
             {SLEEP_MIN.map((m) => (
               <button key={m} type="button" style={row}
-                onClick={() => { onSleep(sleepMin === m ? null : m); onSleepEnd(false); }}>
+                onClick={() => { onSleep(sleepMin === m ? null : m); onSleepEnd(false); onClose(); }}>
                 <span>Через {m} мин</span>
                 {sleepMin === m && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
               </button>
             ))}
             {(sleepMin || sleepEnd) && (
               <button type="button" style={{ ...row, color: "var(--color-label-2)" }}
-                onClick={() => { onSleep(null); onSleepEnd(false); }}>
+                onClick={() => { onSleep(null); onSleepEnd(false); onClose(); }}>
                 <span>Выключить таймер</span>
               </button>
             )}
@@ -456,11 +458,11 @@ function MoreSheet({ caps, sleepMin, sleepEnd, order, onSleep, onSleepEnd, onOrd
         {caps.shuffle && (
           <>
             <p style={head}>Порядок</p>
-            <button type="button" style={row} onClick={() => onOrder("forward")}>
+            <button type="button" style={row} onClick={() => { onOrder("forward"); onClose(); }}>
               <span>По списку</span>
               {order === "forward" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
             </button>
-            <button type="button" style={row} onClick={() => onOrder("shuffle")}>
+            <button type="button" style={row} onClick={() => { onOrder("shuffle"); onClose(); }}>
               <span>Перемешать</span>
               {order === "shuffle" && <span aria-hidden style={{ color: "var(--color-gold-deep)" }}>✓</span>}
             </button>
@@ -625,6 +627,11 @@ function TextSheet({ track, position, onSeek, onClose }: {
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2] as const;
 
+/** Доля кадра 852 pt — та система отсчёта, в которой сняты все замеры плеера.
+ *  Позиция в процентах, а не в пикселях: на экране короче кадра раскладка
+ *  сжимается пропорционально, вместо того чтобы уезжать за край. */
+const P = (y: number) => `${(y / 852) * 100}%`;
+
 /**
  * «Сейчас играет». Блок управления стоит на замеренных высотах (📐 apple_music
  * с.31 и 35, кадр 393 × 852): заголовок y 483, знак y 557, транспорт y 635,
@@ -685,43 +692,59 @@ export function FullPlayer({ track, playing, position, speed, repeat, fav, sleep
           ) : <span style={{ width: 44 }} />}
         </div>
 
-        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
-          padding: "0 24px" }}>
-          {/* Квадрат задаётся ШИРИНОЙ и ограничивается высотой экрана. Флекс и
-              aspect-ratio на одном узле спорят за одну величину — их разводим. */}
-          <div style={{ display: "grid", placeItems: "center", paddingBottom: 20 }}>
-            <div style={{ width: "min(100%, 42vh)", aspectRatio: "1", display: "grid" }}>
+        {/* РАСКЛАДКА ПО ПОЗИЦИЯМ, А НЕ ПО ПРОМЕЖУТКАМ.
+            Прошлая версия складывала экран стопкой отступов и называла это
+            «по замеру» — но замер задаёт МЕСТА, а не расстояния: стопка копит
+            погрешность, и заголовок уезжал на 415 вместо 483, транспорт на 578
+            вместо 635, а нижний ряд проваливался на 794 вместо 732.
+
+            Теперь каждый блок садится на свою высоту, выраженную долей кадра
+            852 pt. На экране короче кадра всё сжимается пропорционально —
+            замер задаёт ПРОПОРЦИЮ, а не абсолют в пикселях чужого экрана. */}
+        <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+          {/* ОБЛОЖКА — врезка 24.0 (📐 с.35). Живёт между шапкой и заголовком. */}
+          <div style={{ position: "absolute", top: P(96), left: 24, right: 24,
+            height: P(367), display: "grid", placeItems: "center" }}>
+            <div style={{ height: "100%", aspectRatio: "1", display: "grid" }}>
               <Cover track={track} size="100%" radius="var(--radius-card)" big />
             </div>
           </div>
 
-          <div style={{ marginBottom: 6, fontFamily: "var(--font-text)",
-            fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
-            letterSpacing: "var(--ls-caption2)", fontWeight: 600,
-            color: "var(--color-gold-deep)" }}>
-            {KIND_LABEL[track.kind]}
+          {/* ЗАГОЛОВОК — 📐 y 483 … 504. Надзаголовок стоит НАД ним, поэтому
+              блок начинается выше, а на 483 приходится сама строка названия. */}
+          <div style={{ position: "absolute", top: P(461), left: 24, right: 24 }}>
+            <div style={{ marginBottom: 4, fontFamily: "var(--font-text)",
+              fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+              letterSpacing: "var(--ls-caption2)", fontWeight: 600,
+              color: "var(--color-gold-deep)" }}>
+              {KIND_LABEL[track.kind]}
+            </div>
+            <h1 style={{ margin: 0, fontFamily: "var(--font-display)",
+              fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
+              letterSpacing: "var(--ls-title2)", fontWeight: 700,
+              color: "var(--color-label)", overflow: "hidden",
+              display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+              {track.title}
+            </h1>
+            {track.subtitle && (
+              <p style={{ margin: "2px 0 0", fontFamily: "var(--font-text)",
+                fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+                letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)",
+                whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {track.subtitle}
+              </p>
+            )}
           </div>
-          <h1 style={{ margin: 0, fontFamily: "var(--font-display)",
-            fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
-            letterSpacing: "var(--ls-title2)", fontWeight: 700, color: "var(--color-label)" }}>
-            {track.title}
-          </h1>
-          {track.subtitle && (
-            <p style={{ margin: "2px 0 0", fontFamily: "var(--font-text)",
-              fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
-              letterSpacing: "var(--ls-subhead)", color: "var(--color-label-2)" }}>
-              {track.subtitle}
-            </p>
-          )}
 
-          {/* 483 → 557: разрыв 53 до шкалы (📐) */}
-          <div style={{ marginTop: 22 }}>
+          {/* ШКАЛА — 📐 знак на y 557 … 565 */}
+          <div style={{ position: "absolute", top: P(553), left: 24, right: 24 }}>
             <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
           </div>
 
-          {/* 565 → 635: разрыв 70 до транспорта (📐) */}
-          <div style={{ marginTop: 26, display: "flex", alignItems: "center",
-            justifyContent: "center", gap: 36 }}>
+          {/* ТРАНСПОРТ — 📐 y 635 … 672, ось 196.5 = центр экрана.
+              Кнопка выше своего глифа, поэтому центрируем ПО ОСИ ГЛИФА. */}
+          <div style={{ position: "absolute", top: P(625), left: 0, right: 0,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 36 }}>
             <button type="button" onClick={() => caps.skip ? onSeek(position - 15) : onPrev()}
               aria-label={caps.skip ? "Назад на 15 секунд" : "Предыдущая"} style={transportStyle}>
               {caps.skip ? <Back15Glyph size={28} /> : <PrevGlyph size={26} />}
@@ -736,21 +759,19 @@ export function FullPlayer({ track, playing, position, speed, repeat, fav, sleep
             </button>
           </div>
 
-          {/* Витрина не притворяется плеером. Если звука нет — так и сказано:
-              умолчание здесь было бы обманом, а не деликатностью. */}
+          {/* Витрина не притворяется плеером: если звука нет — так и сказано. */}
           {!track.src && (
-            <p style={{ margin: "14px 0 0", textAlign: "center", fontFamily: "var(--font-text)",
+            <p style={{ position: "absolute", top: P(697), left: 24, right: 24, margin: 0,
+              textAlign: "center", fontFamily: "var(--font-text)",
               fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
               letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
               Запись не подключена — идёт показ раскладки
             </p>
           )}
 
-          {/* НИЖНИЙ РЯД — 📐 врезка 27, ширина 338, y 732…749. Слева наше действие,
-              справа служебные. Слабина уходит сюда, а не в дыру под обложкой. */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
-            gap: 8, padding: "0 3px", marginTop: "auto",
-            marginBottom: "calc(40px + env(safe-area-inset-bottom))" }}>
+          {/* НИЖНИЙ РЯД — 📐 y 732 … 749, врезка 27.0, ширина 338.3 */}
+          <div style={{ position: "absolute", top: P(732), left: 27, right: 27,
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
             <span style={{ display: "flex", gap: 8, minWidth: 0 }}>
               {hasText && (
                 <button type="button" onClick={onText} className="sq" style={pillStyle}>

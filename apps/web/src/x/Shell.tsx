@@ -9,7 +9,7 @@
  * приведённые к замерам за восемь заходов. Иначе через месяц две оболочки
  * срастутся незаметно, и подмена одной на другую станет невозможной.
  */
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { PlayerHost, type Track } from "./Player";
 
 /** Витрина плеера: по одному образцу каждого вида звука. */
@@ -117,6 +117,18 @@ function PlayScreen() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  /* Группировка по голосу. Порядок рассказчиков — по объёму: у кого больше
+     часов, тот и ведёт каталог. */
+  const bySpeaker = useMemo(() => {
+    const m = new Map<string, AlbumRow[]>();
+    for (const a of albums ?? []) {
+      const k = a.speaker ?? "Катха";
+      (m.get(k) ?? m.set(k, []).get(k)!).push(a);
+    }
+    return [...m.entries()].sort((x, y) =>
+      y[1].reduce((s, a) => s + a.secs, 0) - x[1].reduce((s, a) => s + a.secs, 0));
+  }, [albums]);
+
   useEffect(() => {
     fetch("/api/katha/albums", { credentials: "same-origin" })
       .then((r) => r.json() as Promise<{ albums: AlbumRow[] }>)
@@ -156,23 +168,34 @@ function PlayScreen() {
           а доступными действиями.
         </p>
 
+        {/* ПО РАССКАЗЧИКАМ, А НЕ ПЛОСКИМ СПИСКОМ. Модель катхи — РАССКАЗЧИК →
+            ЦИКЛ → ЧАСТЬ, и голос это КОНТЕКСТ СЛУШАНИЯ, а не признак фильтра
+            (та же мысль, что ЗКН-Н090 в текущей оболочке). Плоский список из 326
+            циклов показывал двенадцать подряд от одного голоса и выглядел так,
+            будто рассказчик в каталоге один. */}
         <h2 style={sectionHead}>Катха — настоящие записи</h2>
         {albums === null && <p style={hint}>Загружаю каталог…</p>}
         {albums?.length === 0 && <p style={hint}>Каталог сейчас недоступен.</p>}
-        <ul style={{ listStyle: "none", margin: "0 0 24px", padding: 0 }}>
-          {(albums ?? []).slice(0, 12).map((a) => (
-            <li key={a.id}>
-              <button type="button" onClick={() => openCycle(a)} disabled={busy}
-                style={{ ...rowStyle, background: openId === a.id ? "var(--color-fill-1)" : "none" }}>
-                <span aria-hidden style={monoStyle}>КА</span>
-                <span style={{ minWidth: 0, flex: 1 }}>
-                  <span style={rowTitle}>{a.title}</span>
-                  <span style={rowSub}>{a.speaker ?? "Катха"} · {a.n} ч. · {hours(a.secs)}</span>
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+        {bySpeaker.map(([speaker, list]) => (
+          <section key={speaker} style={{ marginBottom: 18 }}>
+            <h3 style={speakerHead}>{speaker}</h3>
+            <p style={hint}>{list.length} циклов · {hours(list.reduce((s, x) => s + x.secs, 0))}</p>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+              {list.slice(0, 4).map((a) => (
+                <li key={a.id}>
+                  <button type="button" onClick={() => openCycle(a)} disabled={busy}
+                    style={{ ...rowStyle, background: openId === a.id ? "var(--color-fill-1)" : "none" }}>
+                    <span aria-hidden style={monoStyle}>КА</span>
+                    <span style={{ minWidth: 0, flex: 1 }}>
+                      <span style={rowTitle}>{a.title}</span>
+                      <span style={rowSub}>{a.n} ч. · {hours(a.secs)}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
 
         <h2 style={sectionHead}>Витрина видов</h2>
         <p style={hint}>Звука нет — показ раскладки для всех шести повадок.</p>
@@ -201,8 +224,13 @@ const sectionHead: React.CSSProperties = {
   lineHeight: "var(--lh-title2)", letterSpacing: "var(--ls-title2)", fontWeight: 700,
   color: "var(--color-label)",
 };
+const speakerHead: React.CSSProperties = {
+  margin: "0 0 2px", padding: "0 var(--inset-row)", fontFamily: "var(--font-display)",
+  fontSize: "var(--text-headline)", lineHeight: "var(--lh-headline)",
+  letterSpacing: "var(--ls-headline)", fontWeight: 700, color: "var(--color-label)",
+};
 const hint: React.CSSProperties = {
-  margin: "0 0 10px", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+  margin: "0 0 8px", padding: "0 var(--inset-row)", fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
   lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
   color: "var(--color-label-3)",
 };
