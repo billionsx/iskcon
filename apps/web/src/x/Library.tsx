@@ -18,6 +18,7 @@
  * на 49% высоты, а не на 50%. Оптический центр выше геометрического.
  */
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { Menu, type MenuGroups } from "./Menu";
 
 /* ─────────────────────────── знаки ─────────────────────────── */
 
@@ -163,8 +164,15 @@ function hours(secs: number): string {
   return `${h} ч`;
 }
 
+type SortMode = "hours" | "name" | "albums";
+const SORT_LABEL: Record<SortMode, string> = {
+  hours: "По часам", name: "По имени", albums: "По числу циклов",
+};
+
 export default function LibraryScreen() {
   const [rows, setRows] = useState<SpeakerRow[] | null>(null);
+  const [menu, setMenu] = useState(false);
+  const [sort, setSort] = useState<SortMode>("hours");
 
   useEffect(() => {
     fetch("/api/katha/albums", { credentials: "same-origin" })
@@ -183,6 +191,22 @@ export default function LibraryScreen() {
       .catch(() => setRows([]));
   }, []);
 
+  const sorted = rows && [...rows].sort((a, b) =>
+    sort === "name" ? a.name.localeCompare(b.name, "ru")
+    : sort === "albums" ? b.albums - a.albums
+    : b.secs - a.secs);
+
+  /* Меню собирается ГРУППАМИ: разделитель отделяет выбор порядка от действий.
+     Замер это подтверждает — на f02 разделитель стоит после первого пункта,
+     отделяя «показать всё» от «показать отобранное». */
+  const groups: MenuGroups = [
+    (["hours", "name", "albums"] as SortMode[]).map((m) => ({
+      id: m, label: SORT_LABEL[m], checked: sort === m, onSelect: () => setSort(m),
+    })),
+    [{ id: "play", label: "Открыть плеер",
+       onSelect: () => { window.location.href = "/x/play"; } }],
+  ];
+
   return (
     <div style={{ position: "relative", height: "100%", overflow: "hidden",
       background: "var(--color-canvas)" }}>
@@ -197,7 +221,8 @@ export default function LibraryScreen() {
         </NavCapsule>
         <NavCapsule wide>
           <button type="button" style={navBtn} aria-label="Поиск"><SearchGlyph size={18} /></button>
-          <button type="button" style={navBtn} aria-label="Ещё"><DotsGlyph size={18} /></button>
+          <button type="button" style={navBtn} aria-label="Ещё"
+            onClick={() => setMenu(true)}><DotsGlyph size={18} /></button>
         </NavCapsule>
       </div>
 
@@ -209,7 +234,7 @@ export default function LibraryScreen() {
         {rows === null && <p style={{ padding: "0 var(--inset-row)", color: "var(--color-label-3)",
           fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Загружаю…</p>}
 
-        {rows?.map((r) => (
+        {sorted?.map((r) => (
           <SectionRow key={r.slug} label={r.name} count={`${r.albums} · ${hours(r.secs)}`}
             onClick={() => { window.location.href = "/x/play"; }} />
         ))}
@@ -220,6 +245,8 @@ export default function LibraryScreen() {
         <EmptyState title="Пока пусто"
           hint="Записи появятся здесь, когда каталог будет загружен." />
       )}
+
+      {menu && <Menu groups={groups} onClose={() => setMenu(false)} />}
 
       <BottomPanel>
         <span style={{ color: "var(--color-label-3)", display: "grid" }}><SearchGlyph size={18} /></span>
