@@ -24,7 +24,11 @@ export const usePlayer = () => useContext(Ctx)!;
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [st, set] = useState<P>({
     q: QUEUE0, idx: 0, playing: false, pos: 0,
-    shuffle: false, repeat: 0, autoplay: true, automix: true, vol: .62,
+    shuffle: false, repeat: 0, autoplay: true, automix: false, vol: .62,
+    /* AutoMix выключен при старте. Два довода. 📐 IMG_1955: все четыре капсулы
+       одной яркости (~72 при фоне 53.7) — горящих среди них нет. И подсказка
+       «AutoMix is On» показывается ТОЛЬКО при включении: при значении true она
+       не показалась бы никогда, то есть была бы мёртвым кодом. */
     source: STATION_NAME,
   });
   const ref = useRef(st); ref.current = st;

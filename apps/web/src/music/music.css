@@ -270,10 +270,12 @@
 .amx-sync .st { font-size: 17px; font-weight: 700; letter-spacing: -.43px; line-height: 22px; }
 .amx-sync .sb { color: var(--red); font-size: 17px; font-weight: 600; letter-spacing: -.43px; margin-top: 10px; display: inline-block; }
 .amx-sync .cx { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; background: rgba(120,120,128,.26); display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.8); }
-.amx-librow { display: flex; align-items: center; gap: 18px; min-height: 78px; padding: 0 20px; position: relative; font-size: 22px; letter-spacing: -.26px; } /* 📐 живой снимок: чернила 22.0 */
-.amx-librow .li { width: 34px; display: flex; justify-content: center; color: var(--red); }
+/* 📐 IMG_1963: шаг 52.0 · 49.7 · 54.3 → 52. Знак от 21.3 (ширина 18.7),
+   подпись с 58.7 = 21.3 + 18.7 + 18.7. Было 78 — на 26 выше эталона. */
+.amx-librow { display: flex; align-items: center; gap: 18.7px; min-height: 52px; padding: 0 14px 0 21.3px; position: relative; font-size: 22px; letter-spacing: -.26px; }
+.amx-librow .li { width: 18.7px; flex: 0 0 18.7px; display: flex; justify-content: center; color: var(--red); }  /* 📐 [21.3 + 18.7] */
 .amx-librow svg.ch { margin-left: auto; color: rgba(235,235,245,.3); }
-.amx-librow + .amx-librow::before { content: ""; position: absolute; left: 72px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
+.amx-librow + .amx-librow::before { content: ""; position: absolute; left: 58.7px; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }  /* 📐 разделитель ОТ ТЕКСТА */
 .amx-empty { padding: 120px 40px 0; text-align: center; }
 .amx-empty .ei { color: rgba(235,235,245,.5); }
 .amx-empty .et { font-size: 22px; font-weight: 700; letter-spacing: -.26px; line-height: 28px; margin-top: 18px; }
