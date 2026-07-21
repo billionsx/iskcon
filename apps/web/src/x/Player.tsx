@@ -220,8 +220,10 @@ function clock(sec: number): string {
  * дорожкой — два значения по краям, середина пуста. Здесь та же логика внутри
  * плеера: время слева и справа, между ними полоса.
  */
-function Scrubber({ position, duration, onSeek }: {
+function Scrubber({ position, duration, onSeek, bare }: {
   position: number; duration: number; onSeek: (s: number) => void;
+  /** Только дорожка: подписи времени плеер сажает на СВОЮ замеренную высоту. */
+  bare?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const pct = duration > 0 ? Math.min(1, position / duration) : 0;
@@ -254,15 +256,17 @@ function Scrubber({ position, duration, onSeek }: {
         <div style={{ position: "absolute", inset: 0, width: `${pct * 100}%`,
           borderRadius: 2, background: "var(--color-label)" }} />
       </div>
-      <div style={{
-        display: "flex", justifyContent: "space-between", marginTop: 6,
-        fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
-        lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
-        color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums",
-      }}>
-        <span>{clock(position)}</span>
-        <span>−{clock(Math.max(0, duration - position))}</span>
-      </div>
+      {!bare && (
+        <div style={{
+          display: "flex", justifyContent: "space-between", marginTop: 6,
+          fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+          lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
+          color: "var(--color-label-3)", fontVariantNumeric: "tabular-nums",
+        }}>
+          <span>{clock(position)}</span>
+          <span>−{clock(Math.max(0, duration - position))}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -402,7 +406,9 @@ function QueueSheet({ queue, index, onPick, onClose, kind }: {
       style={{ position: "absolute", inset: 0, zIndex: 1500, display: "flex",
         flexDirection: "column", background: "var(--color-bg-2)",
         ["--color-card" as string]: "var(--color-bg-3)",
-        paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
+        paddingTop: "calc(env(safe-area-inset-top) + 8px)",
+        animation: "xSheetUp 320ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
+      <style>{`@keyframes xSheetUp { from { transform: translateY(103%); } to { transform: translateY(0); } }`}</style>
       {/* Граббер — панель закрывается так же, как открывается плеер */}
       <button type="button" onClick={onClose} aria-label="Закрыть"
         style={{ alignSelf: "center", width: 88, height: 26, display: "grid",
@@ -570,6 +576,23 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
   const sleepOn = sleepEnd || !!sleepMin;
   const [menu, setMenu] = useState<null | "more" | "speed" | "sleep">(null);
 
+  /* ДИНАМИКА ЛИСТА. Плеер — лист: выезжает снизу при открытии и ОПУСКАЕТСЯ
+     ВНИЗ за чёрточку при закрытии, по той же кривой, что у Apple.
+     Закрытие в два такта: сначала проигрывается опуск, потом отпускается
+     состояние — иначе лист исчезает мгновенно, без движения. */
+  const [closing, setClosing] = useState(false);
+  const close = useCallback(() => {
+    setClosing((c) => {
+      if (!c) window.setTimeout(onClose, 300);
+      return true;
+    });
+  }, [onClose]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [close]);
+
   /* ── НАПОЛНЕНИЕ МЕНЮ. Одно динамичное меню обслуживает всё: скорость, сон,
      порядок, повтор, избранное. Подменю раскрываются на месте (📐 IMG_1952). */
   const sleepGroups: MenuGroups = [
@@ -605,16 +628,22 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
   return (
     <div role="dialog" aria-modal="true" aria-label={`Сейчас играет: ${track.title}`}
       style={{ position: "absolute", inset: 0, zIndex: 1400, display: "flex", flexDirection: "column",
-        background: "var(--color-bg-2)", paddingTop: "env(safe-area-inset-top)" }}>
+        background: "var(--color-bg-2)", paddingTop: "env(safe-area-inset-top)",
+        transform: closing ? "translateY(103%)" : "translateY(0)",
+        transition: "transform 300ms cubic-bezier(0.32, 0.72, 0, 1)",
+        animation: "xSheetUp 340ms cubic-bezier(0.32, 0.72, 0, 1)" }}>
       <Ambient track={track} />
 
       <div style={{ position: "absolute", inset: 0, zIndex: 1 }}>
         {/* У Apple в плеере НЕТ шапки — только граббер (📐 живые снимки: тонкая
             пилюля сверху по центру, никаких кнопок). Сердце и всё прочее живёт
             в меню ⋯ у названия. Шапка с сердцем была моей отсебятиной. */}
-        <button type="button" onClick={onClose} aria-label="Свернуть плеер"
+        {/* zIndex 2 — контейнер содержимого ниже растянут на весь кадр и без
+            этого ПЕРЕКРЫВАЛ граббер: плеер переставал закрываться вовсе.
+            Прозрачный div тоже ловит нажатия. */}
+        <button type="button" onClick={close} aria-label="Свернуть плеер"
           style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
-            width: 88, height: 30, display: "grid", placeItems: "center",
+            zIndex: 2, width: 88, height: 30, display: "grid", placeItems: "center",
             background: "none", border: "none", cursor: "pointer",
             WebkitTapHighlightColor: "transparent" }}>
           <span aria-hidden style={{ width: 36, height: 5, borderRadius: 3,
@@ -644,22 +673,30 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
             <Cover track={track} size="100%" radius="var(--radius-card)" big />
           </div>
 
-          {/* УПРАВЛЕНИЕ ПРИЖАТО К НИЗУ, а не расставлено по отдельным высотам.
-              Абсолютная посадка каждого блока сломалась ровно там, где название
-              заняло две строки: заголовок пополз вниз и лёг НА ШКАЛУ. Замеренные
-              высоты — это высоты при ОДНОСТРОЧНОМ названии; у нас названия
-              длинные, и стопка должна расти ВВЕРХ от нижнего края.
-              Низ ряда инструментов приходится на 767 из 852 → отступ снизу 85. */}
-          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(36) }}>
+          {/* СЕРЕДИНА ПО ЗАМЕРЕННЫМ НИЗАМ — пиксель-в-пиксель значит, что
+              каждый блок стоит на СВОЁМ y из стандарта, а не в стопке с моими
+              зазорами. Стопка снизу уводила шкалу на 588 вместо 557 и громкость
+              на 718 вместо 740 — «примерно похоже» вместо совпадения.
+
+              Вверх от своего места растёт ТОЛЬКО заголовок: длинное название
+              не сдвигает ни шкалу, ни транспорт — они прибиты каждый к своему
+              низу.
+                титул          низ на 537 → bottom P(315)
+                шкала          557.3…565.3 → bottom P(287)
+                время          под шкалой → bottom P(266)
+                транспорт      635…672, центр 653.5 → bottom P(176.5), высота 44
+                громкость      732.3…748.7 → bottom P(103)
+                плашка         без записи → bottom P(66)
+                инструменты    ≈788…812 → bottom P(38), высота 44 */}
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(315) }}>
             <div style={{ marginBottom: 4, fontFamily: "var(--font-text)",
               fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
               letterSpacing: "var(--ls-caption2)", fontWeight: 600,
               color: "var(--color-gold-deep)" }}>
               {KIND_LABEL[track.kind]}
             </div>
-            {/* Заголовок и ⋯ стоят В ОДНОЙ СТРОКЕ — 📐 кнопка на x 337.0 при
-                врезке заголовка 33.7. Раньше «ещё» жила в шапке; замер показал,
-                что у Apple она принадлежит записи, а не экрану. */}
+            {/* Заголовок и ⋯ В ОДНОЙ СТРОКЕ — 📐 кнопка на x 337.0 при врезке
+                заголовка 33.7: «ещё» принадлежит записи, а не экрану. */}
             <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
               <h1 style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: "var(--font-display)",
                 fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
@@ -683,98 +720,108 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
                 {track.subtitle}
               </p>
             )}
+          </div>
 
-            <div style={{ marginTop: 18 }}>
-              <Scrubber position={position} duration={track.duration} onSeek={onSeek} />
-            </div>
+          {/* 📐 шкала 557.3…565.3 */}
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(287) }}>
+            <Scrubber position={position} duration={track.duration} onSeek={onSeek} bare />
+          </div>
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(266),
+            display: "flex", justifyContent: "space-between",
+            fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+            lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)",
+            color: "var(--color-label-3)" }}>
+            <span>{clock(position)}</span>
+            <span>−{clock(Math.max(0, track.duration - position))}</span>
+          </div>
 
-            {/* ТРАНСПОРТ — пять кнопок, как в действующем плеере приложения:
-                перемотка ±15 И переход по записям СРАЗУ. Ни одна из них не
-                зависит от вида звука. */}
-            <div style={{ marginTop: 20, display: "flex", alignItems: "center",
-              justifyContent: "space-between", gap: 8 }}>
-              <button type="button" onClick={() => onSeek(position - 15)}
-                aria-label="Назад 15 секунд"
-                style={{ ...transportStyle, width: 34, height: 34, color: "var(--color-label-2)" }}>
-                <Back15Glyph size={26} />
-              </button>
-              <button type="button" onClick={onPrev} aria-label="Предыдущая"
-                style={{ ...transportStyle, width: 40, height: 40 }}>
-                <PrevGlyph size={32} />
-              </button>
-              <button type="button" onClick={onToggle} aria-label={playing ? "Пауза" : "Воспроизвести"}
-                style={{ ...transportStyle, width: 64, height: 64 }}>
-                {playing ? <PauseGlyph size={44} /> : <PlayGlyph size={44} />}
-              </button>
-              <button type="button" onClick={onNext} aria-label="Следующая"
-                style={{ ...transportStyle, width: 40, height: 40 }}>
-                <NextGlyph size={32} />
-              </button>
-              <button type="button" onClick={() => onSeek(position + 15)}
-                aria-label="Вперёд 15 секунд"
-                style={{ ...transportStyle, width: 34, height: 34, color: "var(--color-label-2)" }}>
-                <Fwd15Glyph size={26} />
-              </button>
-            </div>
+          {/* 📐 транспорт 635…672, центр 653.5 — пять кнопок на все виды */}
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(176.5),
+            height: 44, display: "flex", alignItems: "center",
+            justifyContent: "space-between", gap: 8 }}>
+            <button type="button" onClick={() => onSeek(position - 15)}
+              aria-label="Назад 15 секунд"
+              style={{ ...transportStyle, width: 34, height: 34, color: "var(--color-label-2)" }}>
+              <Back15Glyph size={26} />
+            </button>
+            <button type="button" onClick={onPrev} aria-label="Предыдущая"
+              style={{ ...transportStyle, width: 40, height: 40 }}>
+              <PrevGlyph size={32} />
+            </button>
+            <button type="button" onClick={onToggle} aria-label={playing ? "Пауза" : "Воспроизвести"}
+              style={{ ...transportStyle, width: 64, height: 64 }}>
+              {playing ? <PauseGlyph size={44} /> : <PlayGlyph size={44} />}
+            </button>
+            <button type="button" onClick={onNext} aria-label="Следующая"
+              style={{ ...transportStyle, width: 40, height: 40 }}>
+              <NextGlyph size={32} />
+            </button>
+            <button type="button" onClick={() => onSeek(position + 15)}
+              aria-label="Вперёд 15 секунд"
+              style={{ ...transportStyle, width: 34, height: 34, color: "var(--color-label-2)" }}>
+              <Fwd15Glyph size={26} />
+            </button>
+          </div>
 
-            {/* ГРОМКОСТЬ — 📐 y 732…749: динамик 8 слева, полоса, динамик 18.7
-                справа. Полоса тонкая, наполнение глушёно-белое, бегунка в покое
-                не видно — как на живом снимке. Привязана к настоящему звуку. */}
-            <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 10,
-              padding: "0 3px" }}>
-              <span aria-hidden style={{ color: "var(--color-label-3)", display: "grid" }}>
-                <VolLowGlyph size={13} />
-              </span>
-              <input type="range" min={0} max={1} step={0.01} value={volume}
-                aria-label="Громкость"
-                onChange={(e) => onVolume(Number(e.target.value))}
-                className="xvol"
-                style={{ flex: 1, ["--v" as string]: String(volume * 100) }} />
-              <span aria-hidden style={{ color: "var(--color-label-3)", display: "grid" }}>
-                <VolHighGlyph size={16} />
-              </span>
-            </div>
+          {/* 📐 громкость 732.3…748.7: динамик · полоса · динамик, настоящий звук */}
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(103),
+            display: "flex", alignItems: "center", gap: 10, padding: "0 3px" }}>
+            <span aria-hidden style={{ color: "var(--color-label-3)", display: "grid" }}>
+              <VolLowGlyph size={13} />
+            </span>
+            <input type="range" min={0} max={1} step={0.01} value={volume}
+              aria-label="Громкость"
+              onChange={(e) => onVolume(Number(e.target.value))}
+              className="xvol"
+              style={{ flex: 1, ["--v" as string]: String(volume * 100) }} />
+            <span aria-hidden style={{ color: "var(--color-label-3)", display: "grid" }}>
+              <VolHighGlyph size={16} />
+            </span>
+          </div>
 
-            {!track.src && (
-              <p style={{ margin: "12px 0 0", textAlign: "center", fontFamily: "var(--font-text)",
-                fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
-                letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
-                Запись не подключена — идёт показ раскладки
-              </p>
-            )}
+          {!track.src && (
+            <p style={{ position: "absolute", left: 24, right: 24, bottom: P(66),
+              margin: 0, textAlign: "center", fontFamily: "var(--font-text)",
+              fontSize: "var(--text-caption2)", lineHeight: "var(--lh-caption2)",
+              letterSpacing: "var(--ls-caption2)", color: "var(--color-label-3)" }}>
+              Запись не подключена — идёт показ раскладки
+            </p>
+          )}
 
-            {/* ИНСТРУМЕНТЫ — четыре, как в действующем плеере. У Apple здесь
-                лирика · AirPlay · очередь; у нас лирики нет, зато есть
-                двухчасовая лекция и киртан на ночь. Предмет другой, язык тот же.
-                «Текст» ГАСНЕТ при отсутствии текста, но не исчезает: строка
-                действий не должна плясать от записи к записи. */}
-            <div style={{ marginTop: 22, display: "flex", alignItems: "center",
-              justifyContent: "space-around" }}>
-              <button type="button" onClick={onText} disabled={!hasText} aria-label="Текст"
-                style={{ ...transportStyle, width: 44, height: 44,
-                  opacity: hasText ? 1 : 0.32, cursor: hasText ? "pointer" : "default",
-                  color: "var(--color-label-2)" }}>
-                <TextGlyph size={21} />
-              </button>
-              <button type="button" onClick={() => setMenu("speed")} aria-label={`Скорость ${speed}×`}
-                style={{ ...transportStyle, width: 44, height: 44,
-                  color: speed === 1 ? "var(--color-label-2)" : "var(--color-gold-deep)" }}>
-                <span style={{ display: "grid", placeItems: "center", gap: 1 }}>
-                  <SpeedGlyph size={19} />
-                  <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
-                    fontWeight: 700, lineHeight: "var(--lh-caption2)" }}>{speed}×</span>
+          {/* ИНСТРУМЕНТЫ — четыре, как в действующем плеере. У Apple здесь
+              лирика · AirPlay · очередь; у нас двухчасовая лекция и киртан на
+              ночь. Предмет другой, язык тот же. «Текст» гаснет, но не исчезает:
+              строка действий не пляшет от записи к записи. */}
+          <div style={{ position: "absolute", left: 24, right: 24, bottom: P(38),
+            height: 44, display: "flex", alignItems: "center",
+            justifyContent: "space-around" }}>
+            <button type="button" onClick={onText} disabled={!hasText} aria-label="Текст"
+              style={{ ...transportStyle, width: 44, height: 44,
+                opacity: hasText ? 1 : 0.32, cursor: hasText ? "pointer" : "default",
+                color: "var(--color-label-2)" }}>
+              <TextGlyph size={21} />
+            </button>
+            <button type="button" onClick={() => setMenu("speed")} aria-label={`Скорость ${speed}×`}
+              style={{ ...transportStyle, width: 44, height: 44,
+                color: speed !== 1 ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
+              <span style={{ display: "grid", justifyItems: "center" }}>
+                <SpeedGlyph size={20} />
+                <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-caption2)",
+                  lineHeight: "var(--lh-caption2)", letterSpacing: "var(--ls-caption2)" }}>
+                  {speed}×
                 </span>
-              </button>
-              <button type="button" onClick={() => setMenu("sleep")} aria-label="Таймер сна"
-                style={{ ...transportStyle, width: 44, height: 44,
-                  color: sleepOn ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
-                <MoonGlyph size={21} />
-              </button>
-              <button type="button" onClick={onQueue} aria-label="Очередь"
-                style={{ ...transportStyle, width: 44, height: 44, color: "var(--color-label-2)" }}>
-                <QueueGlyph size={21} />
-              </button>
-            </div>
+              </span>
+            </button>
+            <button type="button" onClick={() => setMenu("sleep")} aria-label="Таймер сна"
+              style={{ ...transportStyle, width: 44, height: 44,
+                color: sleepOn ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
+              <MoonGlyph size={20} />
+            </button>
+            <button type="button" onClick={onQueue} aria-label="Очередь"
+              style={{ ...transportStyle, width: 44, height: 44,
+                color: order === "shuffle" ? "var(--color-gold-deep)" : "var(--color-label-2)" }}>
+              <QueueGlyph size={20} />
+            </button>
           </div>
         </div>
 
@@ -797,6 +844,7 @@ export function FullPlayer({ track, playing, position, speed, fav, order, repeat
 
       {/* Полоса громкости без видимого бегунка — он появляется под пальцем */}
       <style>{`
+        @keyframes xSheetUp { from { transform: translateY(103%); } to { transform: translateY(0); } }
         .xvol { -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px;
           background: linear-gradient(to right, var(--color-label-2) calc(var(--v, 50) * 1%), var(--color-fill-2) 0);
           outline: none; }
