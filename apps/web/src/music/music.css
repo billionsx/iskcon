@@ -187,7 +187,7 @@
 .amx-hero .hk { font-size: 13px; font-weight: 600; letter-spacing: .4px; color: var(--g2); }
 .amx-hero .ht { font-size: 22px; font-weight: 500; letter-spacing: -.26px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .amx-hero .hs { font-size: 21px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.amx-hero .amx-cov { width: 100%; aspect-ratio: 5/3; border-radius: 14px; margin-top: 12px; }  /* 📐 294 × 176.67 — IMG_2339 */
+.amx-hero .amx-cov { width: 100%; aspect-ratio: 3/2; border-radius: 14px; margin-top: 12px; }  /* 📐 294 × 195.33 — IMG_2339 + 2354 + 2377, кромки голосованием строк (голос 0.97) */
 .amx-hero .cap {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 16px 12px;
   font-size: 15px; line-height: 1.32; color: rgba(255,255,255,.96);
