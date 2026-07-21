@@ -7,7 +7,7 @@
  * нигде больше не снято, а у нас пустых разделов много.
  *
  * ЧТО ЗАМЕРЕНО (📐, совпало на нескольких кадрах):
- *   навигационная капсула   высота 42.0, верх y 60.0, --player-mini-bg
+ *   навигационная капсула   высота 42.0, верх y 60.0, материал — стекло
  *                           одиночная 41.3 (круг), парная 101.3
  *   нижняя панель           высота 46.0, верх y 714.0, врезка 22.7, ширина 348.3
  *   шаг строки библиотеки   51.7 · 50.0 · 54.3, набор строки 18.3
@@ -54,12 +54,13 @@ function DotsGlyph({ size = 18 }: { size?: number }) {
  * на чёрном холсте, то есть ступень поверхности, а не рамка.
  */
 export function NavCapsule({ children, wide }: { children: ReactNode; wide?: boolean }) {
+  /* Капсула — СТЕКЛО. Радиус h/2 = 21 (§4.2: кнопка · чип · поле = капсула). */
   return (
-    <span className="sq" style={{
+    <span className="glass" style={{
+      ["--glass-r" as string]: "21px",
       display: "inline-flex", alignItems: "center", justifyContent: "center",
-      height: 42, width: wide ? 101.3 : 42, borderRadius: 21,
-      background: "var(--player-mini-bg)", flexShrink: 0,
-    }}>{children}</span>
+      height: 42, width: wide ? 101.3 : 42, flexShrink: 0,
+    } as CSSProperties}>{children}</span>
   );
 }
 
@@ -145,13 +146,14 @@ export function SectionRow({ label, count, onClick }: {
  * содержимым, а мини-плеер лежит ПОВЕРХ него.
  */
 export function BottomPanel({ children }: { children: ReactNode }) {
+  /* Панель — СТЕКЛО, капсула h/2 = 23. */
   return (
-    <div className="sq" style={{
+    <div className="glass" style={{
+      ["--glass-r" as string]: "23px",
       position: "absolute", left: "50%", transform: "translateX(-50%)",
       top: `${(714 / 852) * 100}%`, width: 348.3, height: 46,
-      background: "var(--player-mini-bg)", display: "flex", alignItems: "center",
-      padding: "0 14px", gap: 10,
-    }}>{children}</div>
+      display: "flex", alignItems: "center", padding: "0 14px", gap: 10,
+    } as CSSProperties}>{children}</div>
   );
 }
 

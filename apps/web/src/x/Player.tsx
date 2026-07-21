@@ -9,10 +9,12 @@
  * ЧТО ЗДЕСЬ ЗАМЕРЕНО, А ЧТО НЕТ.
  *
  * Замерено (📐):
- *   мини-плеер     высота 48.0, врезка 21.0, ширина 351.0, заливка --player-mini-bg (5.17)
+ *   мини-плеер     высота 48.0, врезка 21.0, ширина 351.0 (5.17)
+ *                  материал — СТЕКЛО; #181818 в переписи это его непрозрачный
+ *                  эквивалент над чёрным, а не заливка (§2.1 · ЗКН-Д016)
  *   зазор до таб-бара  8.0 — совпал на пяти кадрах (5.17)
  *   сегменты внутри    [28 + 48] обложка · [88 + 277] содержимое (5.20, состояние 6)
- *   плеер как слой     высота 38.0, ширина 277.0, заливка --player-bar-bg, ось 56 (5.20)
+ *   плеер как слой     высота 38.0, ширина 277.0, ось 56 (5.20), материал — стекло
  *   обложка на весь экран  врезка 24.0 симметрично (apple_music с.35)
  *   центральная кнопка  ось 196.5 = центр экрана (apple_music с.31, 35)
  *
@@ -282,9 +284,16 @@ export function MiniPlayer({ track, playing, position, onToggle, onOpen, onNext,
       height: 48,                                /* 📐 5.17 */
       zIndex: 45,
     }}>
-      <div className="sq" style={{
-        position: "relative", height: "100%", overflow: "hidden",
-        background: "var(--player-mini-bg)",     /* 📐 5.17 · заливка мини-плеера */
+      {/* МАТЕРИАЛ — СТЕКЛО, а не заливка (ЗКН-Д016 · §2.1). Здесь стояло
+          `background: #181818`, снятое переписью с чёрного кадра. Но стандарт
+          прямо говорит: #181818 — НЕПРОЗРАЧНЫЙ ЭКВИВАЛЕНТ стекла над чёрным,
+          «10 из 10 (бары, меню, листы)». На чёрном фоне стекло и выглядит
+          плоским — перепись меряет результат отрисовки, а не материал.
+          Радиус: плавающий бар — КАПСУЛА h/2 (§4.2, профиль совпал с
+          окружностью до пикселя), то есть 24 при высоте 48. */}
+      <div className="glass" style={{
+        ["--glass-r" as string]: "24px",
+        height: "100%", overflow: "hidden",
         display: "flex", alignItems: "center",
         padding: "0 7px",                        /* ⚙️ следствие: 28 − 21 */
         gap: 12,                                 /* ⚙️ следствие: 88 − (28 + 48) */
@@ -350,9 +359,11 @@ function SpeedSheet({ value, onPick, onClose }: {
       onClick={onClose}
       style={{ position: "absolute", inset: 0, zIndex: 1600, display: "flex",
         flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.5)" }}>
-      <div onClick={(e) => e.stopPropagation()} className="sq" style={{
-        background: "var(--color-bg-2)", ["--color-card" as string]: "var(--color-bg-3)",
-        borderTopLeftRadius: 40, borderTopRightRadius: 40,
+      {/* Лист — стекло, радиус 20 (§4.2: меню · лист · алерт = 20). */}
+      <div onClick={(e) => e.stopPropagation()} className="glass" style={{
+        ["--glass-r" as string]: "20px",
+        ["--color-card" as string]: "var(--color-bg-3)",
+        borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
         padding: `14px 16px calc(24px + env(safe-area-inset-bottom))` }}>
         <h2 style={{ margin: "0 0 10px", padding: "0 var(--inset-row)",
           fontFamily: "var(--font-display)", fontSize: "var(--text-title2)",
@@ -418,9 +429,11 @@ function MoreSheet({ sleepMin, sleepEnd, order, repeat, onSleep, onSleepEnd, onO
     <div role="dialog" aria-modal="true" aria-label="Ещё" onClick={onClose}
       style={{ position: "absolute", inset: 0, zIndex: 1600, display: "flex",
         flexDirection: "column", justifyContent: "flex-end", background: "rgba(0,0,0,0.5)" }}>
-      <div onClick={(e) => e.stopPropagation()} className="sq" style={{
-        background: "var(--color-bg-2)", ["--color-card" as string]: "var(--color-bg-3)",
-        borderTopLeftRadius: 40, borderTopRightRadius: 40, maxHeight: "82%", overflowY: "auto",
+      <div onClick={(e) => e.stopPropagation()} className="glass" style={{
+        ["--glass-r" as string]: "20px",
+        ["--color-card" as string]: "var(--color-bg-3)",
+        borderBottomLeftRadius: 0, borderBottomRightRadius: 0,
+        maxHeight: "82%", overflowY: "auto",
         padding: "14px 16px calc(24px + env(safe-area-inset-bottom))" }}>
 
         <>

@@ -69,15 +69,16 @@ export function Menu({ groups, onClose, anchor = "right" }: {
         ref={box}
         role="menu"
         onClick={(e) => e.stopPropagation()}
-        className="sq"
+        className="glass"
         style={{
           position: "absolute",
           /* 📐 верх меню совпадает с верхом навигационной капсулы */
           top: `${(60 / 852) * 100}%`,
           [anchor]: 16,                     /* 📐 16.0 от края экрана */
           width: 230.7,                     /* 📐 */
-          background: "var(--player-bar-bg)", /* 📐 #111111 */
-          borderRadius: 14,
+          /* §4.2: меню · лист · алерт — радиус 20. Стояло 14 — взято ниоткуда.
+             Материал — стекло: 📐 «#111111 стекло над чёрным», не заливка. */
+          ["--glass-r" as string]: "20px",
           overflow: "hidden",
           padding: "6px 0",
         } as CSSProperties}>
