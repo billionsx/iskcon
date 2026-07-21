@@ -89,7 +89,10 @@ export function LibListScreen({ ui, id, onNewPlaylist }: { ui: UI; id: LibId; on
     { label: "Create New Folder", icon: I.folder({ s: 22 }), onTap: () => { } },
   ];
 
-  const showFavSongs = id === "songs" && (filter === "Favourites" ? favSongs : favSongs).length > 0 && (filter === "Favourites" || favSongs.length > 0);
+  /* «Songs» показывает избранное при «All» и «Favourites»; «Downloads» пуст —
+     скачиваний в этой оболочке нет. Прежнее условие дважды проверяло одно и
+     то же выражение и не выражало ничего. */
+  const showFavSongs = id === "songs" && filter !== "Downloads" && favSongs.length > 0;
 
   return (
     <Scr>
@@ -110,8 +113,8 @@ export function LibListScreen({ ui, id, onNewPlaylist }: { ui: UI; id: LibId; on
             {store.pl.map((p) => (
               <div key={p.id} onClick={() => ui.push({ k: "upl", id: p.id })}>
                 <Cover id={p.id} style={{ aspectRatio: "1", borderRadius: 10 }} />
-                <div style={{ fontSize: 15.5, fontWeight: 500, marginTop: 8 }}>{p.title}</div>
-                <div style={{ fontSize: 14, color: "var(--g2)", marginTop: 1 }}>{p.ids.length} songs</div>
+                <div style={{ fontSize: 15, fontWeight: 400, letterSpacing: -.23, marginTop: 8 }}>{p.title}</div>
+                <div style={{ fontSize: 13, letterSpacing: -.08, color: "var(--g2)", marginTop: 1 }}>{p.ids.length} songs</div>
               </div>
             ))}
           </div>

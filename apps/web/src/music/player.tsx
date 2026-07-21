@@ -114,6 +114,14 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   const [entered, setEntered] = useState(false);
   const lyrRef = useRef<HTMLDivElement | null>(null);
 
+  /* Esc закрывает плеер — на десктопе свайпа нет, а граббер мал */
+  useEffect(() => {
+    if (!open) return;
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [open, onClose]);
+
   useEffect(() => {
     if (open) { setDrag(0); requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true))); }
     else setEntered(false);
@@ -212,7 +220,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
             <div style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
               <div className="pl-tog">
                 <button className={p.shuffle ? "on" : ""} onClick={p.toggleShuffle}>{I.shuffle({ s: 22 })}</button>
-                <button className={p.repeat ? "on" : ""} onClick={p.cycleRepeat}>{I.repeat({ s: 22 })}{p.repeat === 1 ? <span style={{ fontSize: 11, fontWeight: 800, marginLeft: 2 }}>1</span> : null}</button>
+                <button className={p.repeat ? "on" : ""} onClick={p.cycleRepeat}>{I.repeat({ s: 22 })}{p.repeat === 1 ? <span style={{ fontSize: 11, fontWeight: 700, marginLeft: 2 }}>1</span> : null}</button>
                 <button className={p.autoplay ? "on" : ""} onClick={p.toggleAutoplay}>{I.infin({ s: 24 })}</button>
                 <button className={p.automix ? "on" : ""} onClick={() => {
                   const was = p.automix; p.toggleAutomix();
@@ -274,7 +282,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
             { icon: favNow ? I.starF({ s: 24 }) : I.star({ s: 24 }), label: "Favourite", onTap: () => onFav(cur) },
             { icon: I.share({ s: 24 }), label: "Share" },
           ]}
-          items={menuItems} onClose={() => setMenu(false)} />
+          items={menuItems} onClose={() => setMenu(null)} />
       ) : null}
     </div>
   );

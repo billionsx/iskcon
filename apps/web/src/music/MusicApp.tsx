@@ -204,7 +204,7 @@ function Shell() {
         <div className="amx-dock">
           {isSearchRoot ? (
             <div className="amx-dockrow">
-              <button className="amx-cir">{I.lib({ s: 26 })}</button>
+              <button className="amx-cir" onClick={() => setTab("library")}>{I.lib({ s: 26 })}</button>
               <button className="amx-sfield" onClick={() => push({ k: "find" })}>
                 <span style={{ color: "rgba(235,235,245,.5)" }}>{I.search({ s: 19 })}</span>
                 <span className="ph">Artists, Songs, Lyrics and More</span>

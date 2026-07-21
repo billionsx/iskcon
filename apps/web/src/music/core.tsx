@@ -161,6 +161,12 @@ export function Menu({ at, quick, items, onClose, width }: {
     ? { left, bottom: Math.max(10, fr.h - ay + 10), ["--oy" as never]: "100%" as never }
     : { left, top: Math.min(ay + 10, fr.h - est - 14) };
   const ox = ax > fr.w / 2 ? "86%" : "14%";
+  /* Esc — обязательный выход: без него меню на клавиатуре не закрыть */
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [onClose]);
   return (
     <div className="amx-dim" onClick={onClose} style={{ background: "rgba(0,0,0,.32)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
       <div className="amx-menu" style={{ ...style, width: w, ["--ox" as never]: ox as never }} onClick={(e) => e.stopPropagation()}>
