@@ -1,0 +1,232 @@
+/**
+ * БИБЛИОТЕКА — экран Apple Music, снятый с кадров f16 · f22 · f28.
+ *
+ * Разбор всех 35 кадров набора Music показал, что плеерных там пять, а
+ * остальные — библиотека, списки и промо. И что экраны библиотеки ПУСТЫЕ:
+ * у снятого аккаунта нет фонотеки. Это оказалось удачей — пустое состояние
+ * нигде больше не снято, а у нас пустых разделов много.
+ *
+ * ЧТО ЗАМЕРЕНО (📐, совпало на нескольких кадрах):
+ *   навигационная капсула   высота 42.0, верх y 60.0, --player-mini-bg
+ *                           одиночная 41.3 (круг), парная 101.3
+ *   нижняя панель           высота 46.0, верх y 714.0, врезка 22.7, ширина 348.3
+ *   шаг строки библиотеки   51.7 · 50.0 · 54.3, набор строки 18.3
+ *   пустое состояние        заголовок y 393…443 (h 40.3),
+ *                           пояснение строкой 12.3 с шагом 19.0
+ *
+ * Заголовок пустого состояния стоит ВЫШЕ середины: центр его набора приходится
+ * на 49% высоты, а не на 50%. Оптический центр выше геометрического.
+ */
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+
+/* ─────────────────────────── знаки ─────────────────────────── */
+
+const S = { fill: "none", stroke: "currentColor", strokeWidth: 1.33,
+            strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
+
+function ChevronRight({ size = 16 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M9.5 6l6 6-6 6" /></svg>;
+}
+function SearchGlyph({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <circle {...S} cx="11" cy="11" r="6.4" /><path {...S} d="M15.8 15.8 20 20" /></svg>;
+}
+function BackGlyph({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <path {...S} d="M14.5 6l-6 6 6 6" /></svg>;
+}
+function DotsGlyph({ size = 18 }: { size?: number }) {
+  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
+    <circle cx="5.5" cy="12" r="1.7" fill="currentColor" />
+    <circle cx="12" cy="12" r="1.7" fill="currentColor" />
+    <circle cx="18.5" cy="12" r="1.7" fill="currentColor" /></svg>;
+}
+
+/* ─────────────────────── навигационная капсула ─────────────────────── */
+
+/**
+ * 📐 f16 · f28: высота 42.0, верх y 60.0, заливка та же, что у мини-плеера.
+ * Одиночная кнопка выходит кругом (41.3 ≈ 42), пара — капсулой 101.3.
+ *
+ * Кнопки НЕ лежат на плоском фоне и не обведены: у Apple это заливка #181818
+ * на чёрном холсте, то есть ступень поверхности, а не рамка.
+ */
+export function NavCapsule({ children, wide }: { children: ReactNode; wide?: boolean }) {
+  return (
+    <span className="sq" style={{
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      height: 42, width: wide ? 101.3 : 42, borderRadius: 21,
+      background: "var(--player-mini-bg)", flexShrink: 0,
+    }}>{children}</span>
+  );
+}
+
+const navBtn: CSSProperties = {
+  width: 42, height: 42, display: "grid", placeItems: "center", background: "none",
+  border: "none", color: "var(--color-label)", cursor: "pointer",
+  WebkitTapHighlightColor: "transparent",
+};
+
+/* ─────────────────────────── пустое состояние ─────────────────────────── */
+
+/**
+ * 📐 f22 · f28. Заголовок y 393…443 (высота набора 40.3), пояснение строками
+ * 12.3 с шагом 19.0, по центру.
+ *
+ * Пустое состояние — не заглушка, а полноценный экран: у нас пустых разделов
+ * много (главы без текста, божества, циклы без обложек), и «ничего нет» надо
+ * говорить так же внятно, как «вот содержимое».
+ */
+export function EmptyState({ title, hint, action }: {
+  title: string; hint?: string; action?: ReactNode;
+}) {
+  return (
+    <div style={{
+      position: "absolute", left: 24, right: 24,
+      /* 📐 393 из 852 — заголовок стоит ВЫШЕ середины экрана */
+      top: `${(393 / 852) * 100}%`, textAlign: "center",
+    }}>
+      <h2 style={{ margin: 0, fontFamily: "var(--font-display)",
+        fontSize: "var(--text-title2)", lineHeight: "var(--lh-title2)",
+        letterSpacing: "var(--ls-title2)", fontWeight: 700, color: "var(--color-label)" }}>
+        {title}
+      </h2>
+      {hint && (
+        <p style={{ margin: "10px 0 0", fontFamily: "var(--font-text)",
+          fontSize: "var(--text-subhead)", lineHeight: "var(--lh-subhead)",
+          letterSpacing: "var(--ls-subhead)", color: "var(--color-label-3)" }}>
+          {hint}
+        </p>
+      )}
+      {action && <div style={{ marginTop: 18 }}>{action}</div>}
+    </div>
+  );
+}
+
+/* ─────────────────────────── строка раздела ─────────────────────────── */
+
+/** 📐 шаг строки 50 (f16: 51.7 · 50.0 · 54.3). Набор строки 18.3. */
+export function SectionRow({ label, count, onClick }: {
+  label: string; count?: string; onClick?: () => void;
+}) {
+  return (
+    <button type="button" onClick={onClick} style={{
+      display: "flex", alignItems: "center", gap: 12, width: "100%", height: 50,
+      padding: "0 var(--inset-row)", background: "none", border: "none",
+      cursor: "pointer", textAlign: "left", WebkitTapHighlightColor: "transparent",
+    }}>
+      <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-text)",
+        fontSize: "var(--text-body)", lineHeight: "var(--lh-body)",
+        letterSpacing: "var(--ls-body)", color: "var(--color-label)",
+        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        {label}
+      </span>
+      {count && (
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)",
+          lineHeight: "var(--lh-subhead)", letterSpacing: "var(--ls-subhead)",
+          color: "var(--color-label-3)", flexShrink: 0 }}>{count}</span>
+      )}
+      <span style={{ color: "var(--color-label-3)", flexShrink: 0, display: "grid" }}>
+        <ChevronRight size={16} />
+      </span>
+    </button>
+  );
+}
+
+/* ─────────────────────── нижняя плавающая панель ─────────────────────── */
+
+/**
+ * 📐 f16 · f22 · f28: высота 46.0, верх y 714.0, врезка 22.7, ширина 348.3.
+ *
+ * Она НЕ мини-плеер: тот 48.0 при врезке 21.0 и ширине 351.0. Разница в два
+ * пункта не случайность — панель поиска у́же и ниже, потому что стоит под
+ * содержимым, а мини-плеер лежит ПОВЕРХ него.
+ */
+export function BottomPanel({ children }: { children: ReactNode }) {
+  return (
+    <div className="sq" style={{
+      position: "absolute", left: "50%", transform: "translateX(-50%)",
+      top: `${(714 / 852) * 100}%`, width: 348.3, height: 46,
+      background: "var(--player-mini-bg)", display: "flex", alignItems: "center",
+      padding: "0 14px", gap: 10,
+    }}>{children}</div>
+  );
+}
+
+/* ─────────────────────────── экран ─────────────────────────── */
+
+interface SpeakerRow { slug: string; name: string; albums: number; secs: number }
+
+function hours(secs: number): string {
+  const h = Math.round(secs / 3600);
+  return `${h} ч`;
+}
+
+export default function LibraryScreen() {
+  const [rows, setRows] = useState<SpeakerRow[] | null>(null);
+
+  useEffect(() => {
+    fetch("/api/katha/albums", { credentials: "same-origin" })
+      .then((r) => r.json() as Promise<{ albums: { speaker: string | null; secs: number }[] }>)
+      .then((d) => {
+        const m = new Map<string, { albums: number; secs: number }>();
+        for (const a of d.albums ?? []) {
+          const k = a.speaker ?? "Катха";
+          const v = m.get(k) ?? { albums: 0, secs: 0 };
+          v.albums += 1; v.secs += a.secs; m.set(k, v);
+        }
+        setRows([...m.entries()]
+          .map(([name, v]) => ({ slug: name, name, ...v }))
+          .sort((x, y) => y.secs - x.secs));
+      })
+      .catch(() => setRows([]));
+  }, []);
+
+  return (
+    <div style={{ position: "relative", height: "100%", overflow: "hidden",
+      background: "var(--color-canvas)" }}>
+      {/* НАВИГАЦИЯ — 📐 капсулы 42.0 на высоте y60.0 */}
+      <div style={{ position: "absolute", top: `${(60 / 852) * 100}%`, left: 17.7, right: 17.7,
+        display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <NavCapsule>
+          <button type="button" style={navBtn} aria-label="Назад"
+            onClick={() => { window.location.href = "/x/play"; }}>
+            <BackGlyph size={18} />
+          </button>
+        </NavCapsule>
+        <NavCapsule wide>
+          <button type="button" style={navBtn} aria-label="Поиск"><SearchGlyph size={18} /></button>
+          <button type="button" style={navBtn} aria-label="Ещё"><DotsGlyph size={18} /></button>
+        </NavCapsule>
+      </div>
+
+      <div style={{ position: "absolute", top: `${(118 / 852) * 100}%`, left: 0, right: 0,
+        bottom: `${(852 - 700) / 852 * 100}%`, overflowY: "auto", padding: "0 16px" }}>
+        <h1 className="t-display" style={{ margin: "0 0 6px", padding: "0 var(--inset-row)",
+          fontWeight: 700, color: "var(--color-label)" }}>Библиотека</h1>
+
+        {rows === null && <p style={{ padding: "0 var(--inset-row)", color: "var(--color-label-3)",
+          fontFamily: "var(--font-text)", fontSize: "var(--text-subhead)" }}>Загружаю…</p>}
+
+        {rows?.map((r) => (
+          <SectionRow key={r.slug} label={r.name} count={`${r.albums} · ${hours(r.secs)}`}
+            onClick={() => { window.location.href = "/x/play"; }} />
+        ))}
+      </div>
+
+      {/* ПУСТОЕ СОСТОЯНИЕ — показывается, только когда каталог правда пуст */}
+      {rows?.length === 0 && (
+        <EmptyState title="Пока пусто"
+          hint="Записи появятся здесь, когда каталог будет загружен." />
+      )}
+
+      <BottomPanel>
+        <span style={{ color: "var(--color-label-3)", display: "grid" }}><SearchGlyph size={18} /></span>
+        <span style={{ fontFamily: "var(--font-text)", fontSize: "var(--text-body)",
+          lineHeight: "var(--lh-body)", letterSpacing: "var(--ls-body)",
+          color: "var(--color-label-3)" }}>Поиск по библиотеке</span>
+      </BottomPanel>
+    </div>
+  );
+}

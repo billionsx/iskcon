@@ -10,7 +10,10 @@
  * срастутся незаметно, и подмена одной на другую станет невозможной.
  */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { lazy, Suspense } from "react";
 import { PlayerHost, type Track } from "./Player";
+
+const LibraryScreen = lazy(() => import("./Library"));
 
 /** Витрина плеера: по одному образцу каждого вида звука. */
 /**
@@ -265,6 +268,9 @@ export default function XShell() {
      появится своя навигация, она возьмёт подписку из общего места, а не заведёт
      вторую. */
   const path = typeof window === "undefined" ? "/x" : window.location.pathname;
+  if (path.startsWith("/x/library")) {
+    return <Frame><Suspense fallback={null}><LibraryScreen /></Suspense></Frame>;
+  }
   if (path.startsWith("/x/play")) return <PlayScreen />;
   return (
     <Frame>
