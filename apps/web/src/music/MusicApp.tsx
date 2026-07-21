@@ -178,6 +178,7 @@ function Shell() {
 
   return (
     <div className="amx">
+      <div className="amx-frame">
       <ScrollCtx.Provider value={(t) => setSc(t > 24)}>
         <div key={stack.map((p) => p.k + ("t" in p ? (p as { t: string }).t : "") + ("id" in p ? (p as { id: string }).id : "") + ("g" in p ? (p as { g: string }).g : "")).join("|")} style={{ position: "absolute", inset: 0 }}>
           {top.k === "tab" ? (
@@ -251,6 +252,7 @@ function Shell() {
           onNew={() => { setNewPl({ pending: addFor }); setAddFor(null); }} />
       ) : null}
       {newPl ? <NewPlaylistSheet pendingSong={newPl.pending} onClose={() => setNewPl(null)} /> : null}
+      </div>
     </div>
   );
 }

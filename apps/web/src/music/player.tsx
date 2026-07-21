@@ -2,7 +2,7 @@
    в этой оболочке не используется вовсе): очередь, транспорт, перемотка,
    повтор, перемешивание, бесконечный автоплей, AutoMix, караоке-строки. */
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Cover, E, I, Menu, MItem, fmt, hueOf, shuffled } from "./core";
+import { Cover, E, I, Menu, MItem, fmt, hueOf, menuAt, shuffled } from "./core";
 import { LYRICS, QUEUE0, STATION_NAME, Song } from "./data";
 
 type P = {
@@ -106,7 +106,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
 }) {
   const p = usePlayer();
   const [view, setView] = useState<"lyrics" | "queue">("lyrics");
-  const [menu, setMenu] = useState(false);
+  const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
   const [tip, setTip] = useState(false);
   const tipSeen = useRef(false);
   const [drag, setDrag] = useState(0);
@@ -191,7 +191,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
               <div className="p-t">{cur.t}</div>
               <div className="p-s">{cur.a}</div>
             </div>
-            <button className="amx-cir" onClick={() => setMenu(true)}>{I.dots({ s: 22 })}</button>
+            <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 22 })}</button>
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
       </div>
 
       {menu ? (
-        <Menu at={{ x: (typeof window !== "undefined" ? window.innerWidth : 393) - 40, y: 96 }}
+        <Menu at={menu}
           quick={[
             { icon: I.plus({ s: 24 }), label: "Add" },
             { icon: favNow ? I.starF({ s: 24 }) : I.star({ s: 24 }), label: "Favourite", onTap: () => onFav(cur) },

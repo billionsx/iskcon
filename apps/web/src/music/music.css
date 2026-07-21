@@ -30,6 +30,17 @@
 .amx input::placeholder { color: rgba(235,235,245,.45); }
 .amx ::-webkit-scrollbar { width: 0; height: 0; }
 
+/* ── Телефонный кадр ────────────────────────────────────────────────────
+   Эталон — iPhone (393pt). На узких экранах кадр = весь экран; на десктопе
+   кадр центрируется колонкой 393px, иначе проценты раскладки взрываются. */
+.amx-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
+@media (min-width: 560px) {
+  .amx-frame {
+    width: 393px; left: 50%; right: auto; transform: translateX(-50%);
+    box-shadow: 0 0 0 1px rgba(255,255,255,.10), 0 40px 120px rgba(0,0,0,.75);
+  }
+}
+
 /* ── Экран-скроллер ─────────────────────────────────────────────────────── */
 .amx-scr {
   position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden;

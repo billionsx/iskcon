@@ -137,19 +137,30 @@ export type MQuick = { icon: React.ReactNode; label: string; onTap?: () => void 
 export type MItem =
   | { sep: true; thick?: boolean }
   | { label: string; sub?: string; icon?: React.ReactNode; check?: boolean; noIcon?: boolean; onTap?: () => void };
+/* Геометрия телефонного кадра: меню и шторки живут в его координатах. */
+export function frameRect(): { l: number; t: number; w: number; h: number } {
+  if (typeof document !== "undefined") {
+    const el = document.querySelector(".amx-frame");
+    if (el) { const r = el.getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height }; }
+  }
+  const w = typeof window !== "undefined" ? window.innerWidth : 393;
+  const h = typeof window !== "undefined" ? window.innerHeight : 852;
+  return { l: 0, t: 0, w, h };
+}
+
 export function Menu({ at, quick, items, onClose, width }: {
   at: { x: number; y: number; up?: boolean }; quick?: MQuick[]; items: MItem[]; onClose: () => void; width?: number;
 }) {
   const w = width ?? 296;
-  const vw = typeof window !== "undefined" ? window.innerWidth : 393;
-  const vh = typeof window !== "undefined" ? window.innerHeight : 852;
-  const left = Math.min(Math.max(8, at.x - (at.x > vw / 2 ? w : 0)), vw - w - 8);
+  const fr = frameRect();
+  const ax = at.x - fr.l, ay = at.y - fr.t;
+  const left = Math.min(Math.max(8, ax - (ax > fr.w / 2 ? w : 0)), fr.w - w - 8);
   const est = (quick ? 78 : 0) + items.reduce((a, it) => a + ("sep" in it ? ("thick" in it && it.thick ? 8 : 1) : ("sub" in it && it.sub ? 62 : 50)), 0);
-  const up = at.up ?? (at.y + est + 16 > vh);
+  const up = at.up ?? (ay + est + 16 > fr.h);
   const style: React.CSSProperties = up
-    ? { left, bottom: Math.max(10, vh - at.y + 10), ["--oy" as never]: "100%" as never }
-    : { left, top: Math.min(at.y + 10, vh - est - 14) };
-  const ox = at.x > vw / 2 ? "86%" : "14%";
+    ? { left, bottom: Math.max(10, fr.h - ay + 10), ["--oy" as never]: "100%" as never }
+    : { left, top: Math.min(ay + 10, fr.h - est - 14) };
+  const ox = ax > fr.w / 2 ? "86%" : "14%";
   return (
     <div className="amx-dim" onClick={onClose} style={{ background: "rgba(0,0,0,.32)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
       <div className="amx-menu" style={{ ...style, width: w, ["--ox" as never]: ox as never }} onClick={(e) => e.stopPropagation()}>
