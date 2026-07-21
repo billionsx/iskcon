@@ -77,6 +77,7 @@ export const I = {
   bolt: ({ s }: IcP = {}) => <Sv s={s} w={1.9}><path d="M13.6 3.2 6.2 13.6h4.7L10 20.8l7.6-10.6h-4.8Z" /></Sv>,
   heart: ({ s }: IcP = {}) => <Sv s={s} w={2}><path d="M12 20.2C7 16.4 3.6 13.2 3.6 9.5A4.5 4.5 0 0 1 8.1 5c1.6 0 3 .8 3.9 2.1A4.7 4.7 0 0 1 15.9 5a4.5 4.5 0 0 1 4.5 4.5c0 3.7-3.4 6.9-8.4 10.7Z" /></Sv>,
   grab: ({ s }: IcP = {}) => <Sv s={s} w={2}><path d="M5 9h14M5 15h14" /></Sv>,
+  iphone: ({ s }: IcP = {}) => <Sv s={s} w={1.8}><rect x="7.4" y="2.9" width="9.2" height="18.2" rx="2.6" /><path d="M10.4 18.4h3.2" /></Sv>,
 };
 
 /* ── Кнопка ⋯ у ряда ──────────────────────────────────────────────────── */
@@ -163,20 +164,22 @@ export function Menu({ at, quick, items, onClose, width, narrow }: {
     ? { left, bottom: Math.max(10, fr.h - ay + 10), ["--oy" as never]: "100%" as never }
     : { left, top: Math.min(ay + 10, fr.h - est - 14) };
   const ox = ax > fr.w / 2 ? "86%" : "14%";
+  const ex = useExit(onClose, 175);  /* 🎞 §5.4: выход 160 мс + запас кадра */
   /* Esc — обязательный выход: без него меню на клавиатуре не закрыть */
   useEffect(() => {
-    const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") ex.close(); };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
-  }, [onClose]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
-    <div className="amx-dim" onClick={onClose} style={{ background: "rgba(0,0,0,.32)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
-      <div className={"amx-menu" + (narrow ? " narrow" : "")} style={{ ...style, width: w, ["--ox" as never]: ox as never }} onClick={(e) => e.stopPropagation()}>
+    <div className={"amx-dim" + (ex.out ? " out" : "")} onClick={ex.close} style={{ background: "rgba(0,0,0,.32)", backdropFilter: "blur(5px)", WebkitBackdropFilter: "blur(5px)" }}>
+      <div className={"amx-menu" + (narrow ? " narrow" : "") + (ex.out ? " out" : "")} style={{ ...style, width: w, ["--ox" as never]: ox as never }} onClick={(e) => e.stopPropagation()}>
         {quick ? (
           <>
             <div className="mq">
               {quick.map((q, i) => (
-                <button key={i} onClick={() => { q.onTap?.(); onClose(); }}>{q.icon}<span>{q.label}</span></button>
+                <button key={i} onClick={() => { q.onTap?.(); ex.close(); }}>{q.icon}<span>{q.label}</span></button>
               ))}
             </div>
             <div className="sep" />
@@ -187,7 +190,7 @@ export function Menu({ at, quick, items, onClose, width, narrow }: {
             <div key={i} className={"sep" + (it.thick ? " thick" : "")} />
           ) : (
             <button key={i} className="mi" style={{ width: "100%", textAlign: "left" }}
-              onClick={() => { it.onTap?.(); onClose(); }}>
+              onClick={() => { it.onTap?.(); ex.close(); }}>
               {it.icon ?? (it.check !== undefined ? <span className="chk">{it.check ? I.check({ s: 18 }) : null}</span> : null)}
               <span className="mc">
                 <div>{it.label}</div>
@@ -204,6 +207,19 @@ export const menuAt = (e: React.MouseEvent): { x: number; y: number } => {
   const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
   return { x: r.left + r.width / 2, y: r.bottom };
 };
+
+/* ── Выходной такт слоя: сыграть «out» и лишь потом снять с экрана ─────
+   LAW_MUSIC §5.4–5.5: у меню и шторок обязан быть выход. */
+export function useExit(onClose: () => void, ms = 300) {
+  const [out, setOut] = useState(false);
+  const done = useRef(false);
+  const close = () => {
+    if (done.current) return;
+    done.current = true; setOut(true);
+    window.setTimeout(onClose, ms);
+  };
+  return { out, close };
+}
 
 /* ── Долгое нажатие ───────────────────────────────────────────────────── */
 export function useLongPress(cb: (x: number, y: number) => void) {

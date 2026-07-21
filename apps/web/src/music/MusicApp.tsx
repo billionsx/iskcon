@@ -86,6 +86,7 @@ function Shell() {
   const [stack, setStack] = useState<Pg[]>(() => parseStack(window.location.pathname));
   const stackRef = useRef(stack); stackRef.current = stack;
   const [sc, setSc] = useState(false);
+  const [navDir, setNavDir] = useState<"fwd" | "back" | "tab">("tab");  /* 🎞 §5.9 */
   const [plOpen, setPlOpen] = useState(false);
   const [menu, setMenu] = useState<{ at: { x: number; y: number }; items: MItem[]; quick?: MQuick[] } | null>(null);
   const [addFor, setAddFor] = useState<string | null>(null);
@@ -96,7 +97,7 @@ function Shell() {
     window.history.replaceState({ amx: stackRef.current.length }, "", urlFor(stackRef.current[stackRef.current.length - 1]));
     const onPop = (e: PopStateEvent) => {
       const d = typeof (e.state as { amx?: number } | null)?.amx === "number" ? (e.state as { amx: number }).amx : 1;
-      setStack((s) => (d < s.length ? s.slice(0, Math.max(1, d)) : s));
+      setStack((s) => { if (d < s.length) { setNavDir("back"); return s.slice(0, Math.max(1, d)); } return s; });
     };
     window.addEventListener("popstate", onPop);
     const onAdd = (e: Event) => setAddFor((e as CustomEvent<string>).detail);
@@ -105,12 +106,14 @@ function Shell() {
   }, []);
 
   const push = (pg: Pg) => {
+    setNavDir("fwd");
     setStack((s) => { const n = [...s, pg]; window.history.pushState({ amx: n.length }, "", urlFor(pg)); return n; });
     setSc(false);
   };
   const back = () => { if (stackRef.current.length > 1) window.history.back(); };
   const setTab = (t: Tab) => {
     const base: Pg = { k: "tab", t };
+    setNavDir("tab");
     setStack([base]); setSc(false);
     window.history.replaceState({ amx: 1 }, "", urlFor(base));
   };
@@ -179,8 +182,9 @@ function Shell() {
   return (
     <div className="amx">
       <div className="amx-frame">
+      <div className={"amx-under" + (plOpen ? " dip" : "")}>
       <ScrollCtx.Provider value={(t) => setSc(t > 24)}>
-        <div key={stack.map((p) => p.k + ("t" in p ? (p as { t: string }).t : "") + ("id" in p ? (p as { id: string }).id : "") + ("g" in p ? (p as { g: string }).g : "")).join("|")} style={{ position: "absolute", inset: 0 }}>
+        <div key={stack.map((p) => p.k + ("t" in p ? (p as { t: string }).t : "") + ("id" in p ? (p as { id: string }).id : "") + ("g" in p ? (p as { g: string }).g : "")).join("|")} className={"amx-screen nav-" + navDir}>
           {top.k === "tab" ? (
             top.t === "home" ? <HomeScreen ui={ui} /> :
             top.t === "new" ? <NewScreen ui={ui} /> :
@@ -203,7 +207,7 @@ function Shell() {
       {isFind ? null : (
         <div className="amx-dock">
           {isSearchRoot ? (
-            <>
+            <div className="amx-dockwrap" key="s">
             {/* 📐 IMG_1978: на корне поиска мини-плеер ЕСТЬ, под ним строка
                 ввода с банкой слева. Раньше мини-плеер здесь пропадал вовсе. */}
             <MiniPlayer onOpen={() => setPlOpen(true)} />
@@ -215,9 +219,9 @@ function Shell() {
                 <span style={{ color: "rgba(235,235,245,.6)" }}>{I.mic({ s: 20 })}</span>
               </button>
             </div>
-            </>
+            </div>
           ) : sc ? (
-            <div className="amx-dockrow">
+            <div className="amx-dockrow amx-dockwrap" key="m">
               <button className="amx-cir" style={{ color: baseTab === "search" ? "#fff" : "var(--red)" }}
                 onClick={() => setTab(baseTab)}>{TAB_ICON[baseTab](26)}</button>
               <MiniPlayer onOpen={() => setPlOpen(true)} />
@@ -226,7 +230,7 @@ function Shell() {
                 style={baseTab === "search" ? { color: "var(--red)" } : undefined}>{I.search({ s: 24 })}</button>
             </div>
           ) : (
-            <>
+            <div className="amx-dockwrap" key="f">
               <MiniPlayer onOpen={() => setPlOpen(true)} />
               <div className="amx-tabsrow">
                 <div className="amx-tabs">
@@ -241,10 +245,11 @@ function Shell() {
                   onClick={() => (baseTab === "search" ? push({ k: "find" }) : setTab("search"))}
                   style={baseTab === "search" ? { color: "var(--red)" } : undefined}>{I.search({ s: 26, w: 2.2 })}</button>
               </div>
-            </>
+            </div>
           )}
         </div>
       )}
+      </div>
 
       {/* ── Полноэкранный плеер ─────────────────────────────────────────── */}
       <FullPlayer open={plOpen} onClose={() => setPlOpen(false)}

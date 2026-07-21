@@ -2,7 +2,7 @@
    в этой оболочке не используется вовсе): очередь, транспорт, перемотка,
    повтор, перемешивание, бесконечный автоплей, AutoMix, караоке-строки. */
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Cover, E, I, Menu, MItem, fmt, menuAt, shuffled } from "./core";
+import { Cover, E, I, Menu, MItem, fmt, menuAt, shuffled, useExit } from "./core";
 import { LYRICS, QUEUE0, STATION_NAME, Song } from "./data";
 
 type P = {
@@ -73,6 +73,27 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
 }
 
+/* Бегущая строка: мерим чернила один раз (key=t перемонтирует на смене трека),
+   плывёт только то, что не влезло — LAW_MUSIC §5.11. */
+function Marq({ t, cls }: { t: string; cls: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const need = el.scrollWidth - el.clientWidth;
+    if (need > 8) setW(el.scrollWidth + 40);
+  }, [t]);
+  return (
+    <div ref={ref} className={cls + (w ? " mq" : "")}>
+      {w ? (
+        <div className="amx-marq" style={{ ["--marq-w" as never]: `${w}px` as never, ["--marq-d" as never]: `${Math.max(6, w / 28)}s` as never }}>
+          <span>{t}</span><span aria-hidden>{t}</span>
+        </div>
+      ) : t}
+    </div>
+  );
+}
+
 /* ── Мини-плеер (капсула дока) ────────────────────────────────────────── */
 export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   const p = usePlayer();
@@ -87,7 +108,7 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
       <div className="m-c">
         {cur && (p.playing || p.pos > 0) ? (
           <>
-            <div className="m-t">{cur.t}</div>
+            <Marq key={cur.id} t={cur.t} cls="m-t" />
             <div className="m-s">{cur.a}</div>
           </>
         ) : (
@@ -95,7 +116,7 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
         )}
       </div>
       <button className="m-b" onClick={(e) => { e.stopPropagation(); p.toggle(); }}>
-        {p.playing ? I.stopSq({ s: 24 }) : I.play({ s: 24 })}
+        <span className="ic-swap" key={p.playing ? 1 : 0}>{p.playing ? I.stopSq({ s: 24 }) : I.play({ s: 24 })}</span>
       </button>
       <button className={"m-b" + (p.playing ? "" : " dim")} onClick={(e) => { e.stopPropagation(); p.next(); }}>
         {I.next({ s: 26 })}
@@ -113,8 +134,19 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
      (📐 IMG_1950/1951: 345×345 при врезке 24); лирика и очередь — ОТДЕЛЬНЫЕ
      режимы, куда переходят кнопками внизу. Клон открывался сразу в лирику и
      большой обложки не показывал ни разу. */
-  const [view, setView] = useState<"art" | "lyrics" | "queue">("art");
+  const [view, setViewRaw] = useState<"art" | "lyrics" | "queue">("art");
+  const [outV, setOutV] = useState<"art" | "lyrics" | "queue" | null>(null);
+  const outTm = useRef<number | null>(null);
+  const setView = (v: "art" | "lyrics" | "queue") => {
+    if (v === view) return;
+    if (outTm.current) window.clearTimeout(outTm.current);
+    setOutV(view); setViewRaw(v);
+    outTm.current = window.setTimeout(() => setOutV(null), 330);
+  };
   const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
+  const [outSheet, setOutSheet] = useState(false);
+  const [skD, setSkD] = useState(false);   /* палец на полосе времени — §5.7 */
+  const [vlD, setVlD] = useState(false);
   const [tip, setTip] = useState(false);
   const tipSeen = useRef(false);
   const [drag, setDrag] = useState(0);
@@ -123,9 +155,10 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   const lyrRef = useRef<HTMLDivElement | null>(null);
 
   /* Esc закрывает плеер — на десктопе свайпа нет, а граббер мал */
+  const layered = useRef(false);
   useEffect(() => {
     if (!open) return;
-    const k = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape" && !layered.current) onClose(); };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
   }, [open, onClose]);
@@ -160,14 +193,15 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
     dragFrom.current = null;
   };
 
-  const seekFromEvent = (e: React.PointerEvent, cb: (r: number) => void) => {
+  const seekFromEvent = (e: React.PointerEvent, cb: (r: number) => void, flag?: (on: boolean) => void) => {
     const el = e.currentTarget as HTMLElement;
+    flag?.(true);
     const move = (ev: PointerEvent) => {
       const r = el.getBoundingClientRect();
       cb(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)));
     };
     move(e.nativeEvent);
-    const upH = () => { window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", upH); };
+    const upH = () => { flag?.(false); window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", upH); };
     window.addEventListener("pointermove", move); window.addEventListener("pointerup", upH);
   };
 
@@ -187,9 +221,10 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
   ];
 
   const upcoming = p.q.slice(p.idx + 1);
+  layered.current = !!menu || outSheet;
 
   return (
-    <div className={"amx-pl" + (entered && drag === 0 ? "" : " ")}
+    <div className={"amx-pl" + (p.playing ? "" : " paused")}
       style={{
         transform: entered ? `translateY(${drag}px)` : "translateY(104%)",
         borderRadius: drag > 4 || !entered ? 40 : 0,
@@ -205,7 +240,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
         <div onTouchStart={onTS} onTouchMove={onTM} onTouchEnd={onTE}>
           <button className="pl-grab" onClick={onClose} aria-label="close" />
           {view === "art" ? null : (
-          <div className="pl-head">
+          <div className="pl-head pl-head-anim" key={view}>
             <Cover id={cur.id} cls="p-art" />
             <div style={{ minWidth: 0 }}>
               <div className="p-t">{cur.t}</div>
@@ -216,14 +251,20 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           )}
         </div>
 
+        {/* Главный вид прижат ВВЕРХ: 📐 IMG_1950 обложка начинается высоко
+            (91.5), а пустота копится ВНИЗУ, до полосы времени. Центрирование
+            делило зазор поровну и уводило подписи на середину экрана.
+            Смена вида — два слоя: исходящий доигрывает выход (🎞 §5.3),
+            обложка сжимается к углу в миниатюру шапки, а не исчезает. */}
         <div className="pl-mid">
-          {/* Главный вид прижат ВВЕРХ: 📐 IMG_1950 обложка начинается высоко
-              (91.5), а пустота копится ВНИЗУ, до полосы времени. Центрирование
-              делило зазор поровну и уводило подписи на середину экрана. */}
-          {view === "art" ? (
+          {(outV ? [outV, view] : [view]).map((vv, li, arr) => {
+            const cls = "v" + (arr.length === 2 ? (li === 0 ? " out" : " in") : "");
+            return (
+          <div className={cls} key={vv}>
+          {vv === "art" ? (
             <div style={{ position: "absolute", inset: 0, display: "flex",
               flexDirection: "column", justifyContent: "flex-start", padding: "0 4px" }}>
-              <Cover id={cur.id} cls="pl-art" />
+              <Cover id={cur.id} cls="pl-art morph" />
               <div className="pl-meta">
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div className="mt">{cur.t}</div>
@@ -232,9 +273,9 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
                 <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 17 })}</button>
               </div>
             </div>
-          ) : view === "lyrics" ? (
+          ) : vv === "lyrics" ? (
             <>
-              <div ref={lyrRef} className="amx-lyr" style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
+              <div ref={li === arr.length - 1 ? lyrRef : undefined} className="amx-lyr" style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
                 <div className="pl-dots"><i /><i /><i /></div>
                 {LYRICS.map((l, i) => (
                   <div key={i} className={"ln" + (i === lineIdx ? " on" : i === lineIdx + 1 ? " next" : "")}
@@ -280,19 +321,22 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
               </div>
             </div>
           )}
+          </div>
+            );
+          })}
         </div>
 
-        <div className="pl-prog" onPointerDown={(e) => seekFromEvent(e, (r) => p.seek(r * cur.d))}>
+        <div className={"pl-prog" + (skD ? " drag" : "")} onPointerDown={(e) => seekFromEvent(e, (r) => p.seek(r * cur.d), setSkD)}>
           <div className="pl-bar"><i style={{ width: `${(p.pos / cur.d) * 100}%` }} /></div>
           <div className="pl-times"><span>{fmt(p.pos)}</span><span>−{fmt(Math.max(0, cur.d - p.pos))}</span></div>
         </div>
         <div className="pl-trans">
           <button onClick={p.prev}>{I.prev({ s: 44 })}</button>
           {/* 📐 знак 38.0: бокс 65 = 38 × 24/14 */}
-          <button onClick={p.toggle}>{p.playing ? I.pause({ s: 52 }) : I.play({ s: 65 })}</button>
+          <button onClick={p.toggle}><span className="ic-swap" key={p.playing ? 1 : 0}>{p.playing ? I.pause({ s: 52 }) : I.play({ s: 65 })}</span></button>
           <button onClick={p.next}>{I.next({ s: 44 })}</button>
         </div>
-        <div className="pl-vol" onPointerDown={(e) => seekFromEvent(e, (r) => p.setVol(r))}>
+        <div className={"pl-vol" + (vlD ? " drag" : "")} onPointerDown={(e) => seekFromEvent(e, (r) => p.setVol(r), setVlD)}>
           {I.spkLo({ s: 18 })}
           <div className="pl-vbar"><i style={{ width: `${p.vol * 100}%` }} /></div>
           {I.spkHi({ s: 20 })}
@@ -301,11 +345,13 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           {/* Повторное нажатие возвращает к обложке — как у Apple */}
           <button className={view === "lyrics" ? "on" : ""}
             onClick={() => setView(view === "lyrics" ? "art" : "lyrics")}>{I.quote({ s: 24 })}</button>
-          <button>{I.airplay({ s: 24 })}</button>
+          <button onClick={() => setOutSheet(true)}>{I.airplay({ s: 24 })}</button>
           <button className={view === "queue" ? "on" : ""}
             onClick={() => setView(view === "queue" ? "art" : "queue")}>{I.queue({ s: 24 })}</button>
         </div>
       </div>
+
+      {outSheet ? <OutputSheet onClose={() => setOutSheet(false)} /> : null}
 
       {menu ? (
         <Menu at={menu}
@@ -316,6 +362,35 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           ]}
           items={menuItems} onClose={() => setMenu(null)} />
       ) : null}
+    </div>
+  );
+}
+
+/* ── Шторка вывода звука (⚠ §4.5: кадр не разобран; типовая нижняя шторка,
+   R 40 по 📐 IMG_1983). Выбор устройства живой: отметка переезжает. ───── */
+function OutputSheet({ onClose }: { onClose: () => void }) {
+  const ex = useExit(onClose, 310);
+  const [dev, setDev] = useState<"iphone" | "room">("iphone");
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") ex.close(); };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div className={"amx-dim" + (ex.out ? " out" : "")} style={{ background: "rgba(0,0,0,.32)", zIndex: 57 }} onClick={ex.close}>
+      <div className={"amx-osheet" + (ex.out ? " out" : "")} onClick={(e) => e.stopPropagation()}>
+        <div className="og" />
+        <div className="ot">Speakers &amp; TVs</div>
+        <button className="or" onClick={() => setDev("iphone")}>
+          {I.iphone({ s: 24 })}<span>iPhone</span>
+          {dev === "iphone" ? <span className="ck">{I.check({ s: 20 })}</span> : null}
+        </button>
+        <button className="or" onClick={() => setDev("room")}>
+          {I.airplay({ s: 24 })}<span>Living Room</span>
+          {dev === "room" ? <span className="ck">{I.check({ s: 20 })}</span> : null}
+        </button>
+      </div>
     </div>
   );
 }

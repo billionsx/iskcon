@@ -2,7 +2,7 @@
    Albums · Songs), меню + / сортировка / фильтр, пустые состояния,
    создание плейлиста и добавление песен (живое, localStorage). */
 import React, { useState } from "react";
-import { Ava, Cover, Dots, H2, I, Menu, MItem, Scr, SongRow, menuAt, mutate, useStore } from "./core";
+import { Ava, Cover, Dots, H2, I, Menu, MItem, Scr, SongRow, menuAt, mutate, useExit, useStore } from "./core";
 import { ALL_SONGS, Song } from "./data";
 import type { UI } from "./MusicApp";
 
@@ -192,6 +192,7 @@ export function UserPlaylistScreen({ ui, id }: { ui: UI; id: string }) {
 
 /* ── Шторка «Новый плейлист» ──────────────────────────────────────────── */
 export function NewPlaylistSheet({ pendingSong, onClose }: { pendingSong?: string | null; onClose: (createdId?: string) => void }) {
+  const ex = useExit(() => onClose(), 310);  /* §5.5 */
   const [name, setName] = useState("");
   const save = () => {
     const title = name.trim() || "New Playlist";
@@ -200,9 +201,9 @@ export function NewPlaylistSheet({ pendingSong, onClose }: { pendingSong?: strin
     onClose(id);
   };
   return (
-    <div className="amx-sheet">
+    <div className={"amx-sheet" + (ex.out ? " out" : "")}>
       <div className="sh-top">
-        <button className="amx-cir" onClick={() => onClose()}>{I.x({ s: 19 })}</button>
+        <button className="amx-cir" onClick={ex.close}>{I.x({ s: 19 })}</button>
         <div className="sh-title">New Playlist</div>
         <button className="amx-cir" onClick={save}>{I.check({ s: 20 })}</button>
       </div>
@@ -221,6 +222,7 @@ export function NewPlaylistSheet({ pendingSong, onClose }: { pendingSong?: strin
 
 /* ── Шторка «Add to a Playlist» ───────────────────────────────────────── */
 export function PlaylistPicker({ songId, onClose, onNew }: { songId: string; onClose: () => void; onNew: () => void }) {
+  const ex = useExit(onClose, 310);  /* §5.5 */
   const store = useStore();
   const add = (plId: string) => {
     mutate((s) => ({
@@ -230,9 +232,9 @@ export function PlaylistPicker({ songId, onClose, onNew }: { songId: string; onC
     onClose();
   };
   return (
-    <div className="amx-sheet">
+    <div className={"amx-sheet" + (ex.out ? " out" : "")}>
       <div className="sh-top">
-        <button className="amx-cir" onClick={onClose}>{I.x({ s: 19 })}</button>
+        <button className="amx-cir" onClick={ex.close}>{I.x({ s: 19 })}</button>
         <div className="sh-title">Add to a Playlist</div>
         <span style={{ width: 46 }} />
       </div>
