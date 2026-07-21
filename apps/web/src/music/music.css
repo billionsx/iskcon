@@ -25,8 +25,8 @@
   --sab: env(safe-area-inset-bottom, 0px);
 }
 .amx img { pointer-events: none; }
-.amx button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-.amx input { font: inherit; color: #fff; background: none; border: 0; outline: none; }
+.amx :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit; }
+.amx :where(input) { font: inherit; color: #fff; background: none; border: 0; outline: none; }
 .amx input::placeholder { color: rgba(235,235,245,.45); }
 .amx ::-webkit-scrollbar { width: 0; height: 0; }
 
@@ -98,7 +98,7 @@
 /* ── Обложка (маска-логотип ISKCON ONE LOVE на цветном поле) ────────────── */
 .amx-cov { position: relative; overflow: hidden; flex: 0 0 auto; background: #222; }
 .amx-cov .mk {
-  position: absolute; inset: 18%;
+  position: absolute; inset: 16%;
   background: rgba(255,255,255,.92);
   -webkit-mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
           mask: url(/iskcon-one-love-mark.svg) center / contain no-repeat;
@@ -115,6 +115,12 @@
   text-shadow: 0 1px 8px rgba(0,0,0,.35);
 }
 .amx-cov .brand { position: absolute; top: 7px; right: 9px; font-size: 10.5px; font-weight: 600; color: rgba(255,255,255,.85); }
+.amx-cov.sm .mk {
+  inset: 0;
+  -webkit-mask-size: 200% auto; mask-size: 200% auto;
+  -webkit-mask-position: 50% 12%; mask-position: 50% 12%;
+}
+.amx-cat .mk { inset: 8% 26% 32%; }
 
 /* ── Ряд песни ──────────────────────────────────────────────────────────── */
 .amx-row { display: flex; align-items: center; gap: 12px; padding: 0 20px; min-height: 74px; position: relative; }
@@ -188,7 +194,7 @@
 .amx-pick .pk { margin-top: auto; font-size: 16px; font-weight: 600; }
 .amx-pick .pt { font-size: 20px; font-weight: 800; letter-spacing: -.2px; margin-top: 2px; }
 .amx-mood { width: 208px; flex: 0 0 auto; }
-.amx-mood .tile { width: 208px; height: 208px; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; }
+.amx-mood .tile { width: 208px; height: 208px; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
 .amx-mood .tile .brand { position: absolute; top: 8px; right: 10px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.92); }
 .amx-mood .mt { font-size: 16px; font-weight: 600; margin-top: 8px; }
 .amx-mood .ms { font-size: 14.5px; color: var(--g2); margin-top: 1px; }

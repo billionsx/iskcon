@@ -104,7 +104,7 @@ export const E = () => <span className="amx-e">E</span>;
 export function SongRow({ s, big, onPlay, onDots }: { s: Song; big?: boolean; onPlay: () => void; onDots: (e: React.MouseEvent) => void }) {
   return (
     <div className={"amx-row" + (big ? " big" : "")} onClick={onPlay}>
-      <Cover id={s.id} cls="r-art" />
+      <Cover id={s.id} cls={"r-art" + (big ? "" : " sm")} />
       <div className="r-c">
         <div className="r-t"><span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{s.t}</span>{s.e ? <E /> : null}</div>
         <div className="r-s">{s.a}</div>

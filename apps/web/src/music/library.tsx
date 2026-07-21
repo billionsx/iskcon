@@ -230,7 +230,7 @@ export function PlaylistPicker({ songId, onClose, onNew }: { songId: string; onC
         </button>
         {store.pl.map((p) => (
           <button key={p.id} className="amx-librow" style={{ width: "100%" }} onClick={() => add(p.id)}>
-            <span className="li"><Cover id={p.id} style={{ width: 34, height: 34, borderRadius: 6 }} /></span>
+            <span className="li"><Cover id={p.id} cls="sm" style={{ width: 34, height: 34, borderRadius: 6 }} /></span>
             <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.title}</span>
             <span style={{ marginLeft: "auto", fontSize: 15, color: "var(--g2)" }}>{p.ids.length}</span>
           </button>

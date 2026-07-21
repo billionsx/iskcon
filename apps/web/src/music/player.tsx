@@ -76,7 +76,7 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="amx-mini" onClick={() => cur && onOpen()}>
       {cur && p.playing !== undefined && (p.playing || p.pos > 0) ? (
-        <Cover id={cur.id} cls="m-art" />
+        <Cover id={cur.id} cls="m-art sm" />
       ) : (
         <div className="m-art ph">{I.note({ s: 20 })}</div>
       )}
@@ -234,7 +234,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
                 <div className="q-s">{p.source}</div>
                 {(upcoming.length ? upcoming : p.q).map((s, i) => (
                   <div className="q-row" key={s.id + i} onClick={() => p.playList(p.q, p.q.indexOf(s), p.source)}>
-                    <Cover id={s.id} />
+                    <Cover id={s.id} cls="sm" />
                     <div style={{ minWidth: 0 }}>
                       <div className="q-t"><span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{s.t}</span>{s.e ? <E /> : null}</div>
                       <div className="q-a">{s.a}</div>
