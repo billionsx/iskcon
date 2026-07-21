@@ -439,16 +439,16 @@
 .amx-q .q-t { font-size: 17px; font-weight: 400; letter-spacing: -.43px; display: flex; align-items: center; gap: 6px; }
 .amx-q .q-a { font-size: 15px; letter-spacing: -.23px; color: rgba(255,255,255,.62); margin-top: 2px; }
 /* транспорт */
-.amx-pl .pl-prog { margin-top: 8px; padding: 8px 0 2px; touch-action: none; }
-.amx-pl .pl-bar { height: 5px; border-radius: 3px; background: rgba(255,255,255,.28); position: relative; overflow: hidden; }
-.amx-pl .pl-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,.78); border-radius: 3px; }
+.amx-pl .pl-prog { margin-top: 8px; padding: 8px 8px 2px; touch-action: none; }  /* 📐 24 + 8 = врезка 32 */
+.amx-pl .pl-bar { height: 7px; border-radius: 3.5px;  /* 📐 высота дорожки 7.0 */ background: rgba(255,255,255,.28); position: relative; overflow: hidden; }
+.amx-pl .pl-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,.78); border-radius: 3.5px; }
 .amx-pl .pl-times { display: flex; justify-content: space-between; font-size: 13px; letter-spacing: -.08px; color: rgba(255,255,255,.55); margin-top: 8px; font-variant-numeric: tabular-nums; }
 .amx-pl .pl-trans { display: flex; align-items: center; justify-content: center; gap: 58px; margin-top: 18px; }
 .amx-pl .pl-trans button { color: #fff; display: flex; }
 .amx-pl .pl-vol { display: flex; align-items: center; gap: 12px; margin-top: 26px; color: rgba(255,255,255,.6); touch-action: none; }
 .amx-pl .pl-vbar { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,.28); position: relative; overflow: hidden; }
 .amx-pl .pl-vbar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,.82); border-radius: 3px; }
-.amx-pl .pl-brow { display: flex; justify-content: space-between; padding: 26px 22px 2px; }
+.amx-pl .pl-brow { display: flex; justify-content: space-around; padding: 26px 0 2px; }  /* 📐 центры 82.1 · 196.3 · 310.5 */
 .amx-pl .pl-brow button { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.82); }
 .amx-pl .pl-brow button.on { background: rgba(255,255,255,.86); color: #4A3A28; }
 

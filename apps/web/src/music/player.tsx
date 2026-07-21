@@ -286,7 +286,8 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
         </div>
         <div className="pl-trans">
           <button onClick={p.prev}>{I.prev({ s: 44 })}</button>
-          <button onClick={p.toggle}>{p.playing ? I.pause({ s: 48 }) : I.play({ s: 48 })}</button>
+          {/* 📐 знак 38.0: бокс 65 = 38 × 24/14 */}
+          <button onClick={p.toggle}>{p.playing ? I.pause({ s: 52 }) : I.play({ s: 65 })}</button>
           <button onClick={p.next}>{I.next({ s: 44 })}</button>
         </div>
         <div className="pl-vol" onPointerDown={(e) => seekFromEvent(e, (r) => p.setVol(r))}>

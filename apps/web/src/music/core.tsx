@@ -59,7 +59,9 @@ export const I = {
   repeat: ({ s }: IcP = {}) => <Sv s={s} w={1.9}><path d="M6.8 7.4h8.4a4 4 0 0 1 4 4v.8M17.2 16.6H8.8a4 4 0 0 1-4-4v-.8" /><path d="M9.2 5 6.6 7.4 9.2 9.8M14.8 19l2.6-2.4-2.6-2.4" /></Sv>,
   infin: ({ s }: IcP = {}) => <Sv s={s} w={2}><path d="M7.3 15.5c-2 0-3.5-1.6-3.5-3.5s1.5-3.5 3.5-3.5c3.4 0 6-7 9.4-7" transform="translate(0 3.5) scale(1 .78)" opacity="0" /><path d="M7.2 15.4C5.3 15.4 3.8 13.9 3.8 12s1.5-3.4 3.4-3.4c3.3 0 6.3 6.8 9.6 6.8 1.9 0 3.4-1.5 3.4-3.4s-1.5-3.4-3.4-3.4c-3.3 0-6.3 6.8-9.6 6.8Z" /></Sv>,
   automix: ({ s }: IcP = {}) => <Sv s={s} w={1.9}><circle cx="9.4" cy="12" r="5.3" /><circle cx="14.6" cy="12" r="5.3" /></Sv>,
-  play: ({ s }: IcP = {}) => <Sv s={s}><path fill="currentColor" stroke="none" d="M8 5.2v13.6L19.6 12Z" /></Sv>,
+  /* 📐 IMG_1950: знак пуска 38.0 × 38.0 — КВАДРАТНЫЙ. Прежний путь был уже,
+     чем выше (11.6 × 13.6), и на транспорте выходил 23 вместо 38. */
+  play: ({ s }: IcP = {}) => <Sv s={s}><path fill="currentColor" stroke="none" d="M6 5v14L20 12Z" /></Sv>,
   pause: ({ s }: IcP = {}) => <Sv s={s}><rect x="6.6" y="5" width="3.9" height="14" rx="1.2" fill="currentColor" stroke="none" /><rect x="13.5" y="5" width="3.9" height="14" rx="1.2" fill="currentColor" stroke="none" /></Sv>,
   stopSq: ({ s }: IcP = {}) => <Sv s={s}><rect x="6.4" y="6.4" width="11.2" height="11.2" rx="2.6" fill="currentColor" stroke="none" /></Sv>,
   next: ({ s }: IcP = {}) => <Sv s={s}><path fill="currentColor" stroke="none" d="M4.6 6.2v11.6L12.4 12ZM12.6 6.2v11.6L20.4 12Z" /></Sv>,
