@@ -217,15 +217,13 @@ export default function LibraryScreen() {
     : sort === "albums" ? b.albums - a.albums
     : b.secs - a.secs);
 
-  /* Меню собирается ГРУППАМИ: разделитель отделяет выбор порядка от действий.
-     Замер это подтверждает — на f02 разделитель стоит после первого пункта,
-     отделяя «показать всё» от «показать отобранное». */
+  /* Меню собирается ГРУППАМИ: разделитель отделяет выбор порядка от действий
+     (📐 f02 — разделитель после первого пункта). Действий сейчас нет: группа с
+     переходом в плеер ушла вместе с самим плеером пробной оболочки. */
   const groups: MenuGroups = [
     (["hours", "name", "albums"] as SortMode[]).map((m) => ({
       id: m, label: SORT_LABEL[m], checked: sort === m, onSelect: () => setSort(m),
     })),
-    [{ id: "play", label: "Открыть плеер",
-       onSelect: () => { window.location.href = "/x/play"; } }],
   ];
 
   return (
@@ -236,7 +234,7 @@ export default function LibraryScreen() {
         display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <NavCapsule>
           <button type="button" style={navBtn} aria-label="Назад"
-            onClick={() => { window.location.href = "/x/play"; }}>
+            onClick={() => { window.location.href = "/x"; }}>
             <BackGlyph size={18} />
           </button>
         </NavCapsule>
@@ -257,8 +255,7 @@ export default function LibraryScreen() {
 
         {sorted?.map((r, i) => (
           <SectionRow key={r.slug} label={r.name} count={`${r.albums} · ${hours(r.secs)}`}
-            icon={<MicGlyph size={19} />} sep={i > 0}
-            onClick={() => { window.location.href = "/x/play"; }} />
+            icon={<MicGlyph size={19} />} sep={i > 0} />
         ))}
       </div>
 

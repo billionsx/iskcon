@@ -1,6 +1,4 @@
 [
-  "apps/web/src/AccountScreen.tsx: error TS2322: Type 'Dispatch<SetStateAction<\"\" | DevoteeLevel>>' is not assignable to type '(v: string) => void'.",
-  "apps/web/src/AccountScreen.tsx: error TS2322: Type 'Dispatch<SetStateAction<\"\" | Initiation>>' is not assignable to type '(v: string) => void'.",
   "apps/web/src/App.tsx: error TS2322: Type '(work: string, id: string) => void' is not assignable to type '(work: string) => void'.",
   "apps/web/src/App.tsx: error TS2322: Type 'string' is not assignable to type 'SectionId'.",
   "apps/web/src/App.tsx: error TS2353: Object literal may only specify known properties, and 'shareUrl' does not exist in type 'SetStateAction<{ url: string; data: QrData; }>'.",
