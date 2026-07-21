@@ -183,7 +183,7 @@
 .amx-link + .amx-link::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--hair); transform: scaleY(.5); }
 
 /* ── Герой-карточки вкладки New / хаба ──────────────────────────────────── */
-.amx-heroes { display: flex; gap: 16px; overflow-x: auto; padding: 2px 20px 4px; scroll-snap-type: x mandatory; }
+.amx-heroes { display: flex; gap: 14px; overflow-x: auto; padding: 2px 20px 4px; scroll-snap-type: x mandatory; }  /* 📐 зазор 14 (306 − 292) */
 .amx-hero { flex: 0 0 86%; scroll-snap-align: start; }
 .amx-hero .hk { font-size: 13px; font-weight: 600; letter-spacing: .4px; color: var(--g2); }
 .amx-hero .ht { font-size: 22px; font-weight: 500; letter-spacing: -.26px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -234,7 +234,7 @@
 .rt-musica { font-size: 19px; font-weight: 900; font-style: italic; color: #D63384; text-align: center; line-height: .95; letter-spacing: -.3px; }
 .rt-club { font-size: 27px; font-weight: 900; letter-spacing: -1px; color: #111; -webkit-text-stroke: 1px #111; font-style: italic; }
 .rt-chill { font-size: 27px; font-weight: 800; color: #2E7CF6; letter-spacing: -.5px; }
-.amx-onair { flex: 0 0 88%; scroll-snap-align: start; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 22px rgba(0,0,0,.4); }
+.amx-onair { flex: 0 0 74.3%; scroll-snap-align: start; border-radius: 18px; overflow: hidden; box-shadow: 0 6px 22px rgba(0,0,0,.4); }  /* 📐 292 из 393 */
 .amx-onair .oa-top { background: #F5F5F7; aspect-ratio: 10/7.4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 .amx-onair .oa-top .rt-one { font-size: 128px; }
 .amx-onair .oa-top .rl { font-size: 20px; font-weight: 600; color: #3A3A3C; }
