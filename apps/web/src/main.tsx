@@ -154,7 +154,12 @@ if (typeof window !== "undefined" && !new URLSearchParams(window.location.search
     window.addEventListener("load", () => {
       navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" }).then((reg) => {
         reg.update().catch(() => {});
-        setInterval(() => reg.update().catch(() => {}), 120000);
+        setInterval(() => reg.update().catch(() => {}), 45000);
+        // Пробуждение вкладки (Chrome усыпляет фоновые, таймеры стоят):
+        // мгновенный чек sw.js — свежий деплой подхватывается в секунды, а не через цикл.
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") reg.update().catch(() => {});
+        });
       }).catch(() => {});
     });
   }
