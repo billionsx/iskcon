@@ -631,3 +631,7 @@
 .amx-pl.morphing .pl-art.morph { opacity: 0; }
 .amx-pl.morphing { pointer-events: none; }
 .amx-pl { will-change: transform; transform-origin: 0 0; }
+
+/* §8.3: ни одной мёртвой кнопки — универсальный отклик нажатия для кнопок
+   без собственного :active-правила (Edit, Turn On, Set Location, фото) */
+.amx button:active { opacity: .55; transition: opacity .09s; }

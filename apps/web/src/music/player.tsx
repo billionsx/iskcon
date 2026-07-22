@@ -407,7 +407,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
                 ))}
                 <div style={{ height: 90 }} />
               </div>
-              <button className="amx-kara">{I.karaoke({ s: 26 })}</button>
+              <button className="amx-kara" onClick={() => document.querySelector(".amx-lyr .ln.on")?.scrollIntoView({ behavior: "smooth", block: "center" })}>{I.karaoke({ s: 26 })}</button>
             </>
           ) : (
             <div style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
