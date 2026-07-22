@@ -34,7 +34,8 @@ export const I = {
   lib: ({ s }: IcP = {}) => <Sv s={s} w={1.6}><path d="M7.4 2.8h9.2M5.6 5.6h12.8" /><path fill="currentColor" stroke="none" fillRule="evenodd" d="M7.6 8h8.8A3.1 3.1 0 0 1 19.5 11.1v7.2a3.1 3.1 0 0 1-3.1 3.1H7.6a3.1 3.1 0 0 1-3.1-3.1v-7.2A3.1 3.1 0 0 1 7.6 8Zm3.6 2.9v4.6a2 2 0 1 0 1.2 1.83V13.2l3.1-.95v2.4a2 2 0 1 0 1.2 1.83V9.5Z" /></Sv>,
   search: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.1}><circle cx="10.4" cy="10.4" r="7.8" /><path d="M16 16 21.3 21.3" /></Sv>,  /* 📐 IMG_2336: кольцо d17, полный размах 22.3 в круге 62 */
   mic: ({ s }: IcP = {}) => <Sv s={s} w={1.8}><rect x="9.3" y="2.8" width="5.4" height="10.4" rx="2.7" fill="currentColor" stroke="none" /><path d="M6.2 11.2a5.8 5.8 0 0 0 11.6 0M12 17.4v3M8.8 20.6h6.4" /></Sv>,
-  dots: ({ s }: IcP = {}) => <Sv s={s}>{[3.6, 12, 20.4].map((x) => <circle key={x} cx={x} cy="12" r="2.45" fill="currentColor" stroke="none" />)}</Sv>,  /* 📐 pl_q15: точки d3.7, шаг 6.3 при s=18 */
+  dots: ({ s }: IcP = {}) => <Sv s={s}>{[3.6, 12, 20.4].map((x) => <circle key={x} cx={x} cy="12" r="2.45" fill="currentColor" stroke="none" />)}</Sv>,  /* шапки */
+  dotsSm: ({ s }: IcP = {}) => <Sv s={s}>{[6.63, 12, 17.37].map((x) => <circle key={x} cx={x} cy="12" r=".97" fill="currentColor" stroke="none" />)}</Sv>,  /* 📐 IMG_2348 y435: рядные точки d1.7, шаг 4.7 */  /* 📐 pl_q15: точки d3.7, шаг 6.3 при s=18 */
   back: ({ s }: IcP = {}) => <Sv s={s} w={2.9} st={{ transform: "translateX(-1.4px)" }}><path d="M16.75 3.6 7.25 12l9.5 8.4" /></Sv>,  /* 📐 IMG_2381: глиф 8.7×15.4, оптический сдвиг −1.4 */
   chev: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.6}><path d="M9 5.4 15.7 12 9 18.6" /></Sv>,
   plus: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2}><path d="M12 4.8v14.4M4.8 12h14.4" /></Sv>,
@@ -83,7 +84,7 @@ export const I = {
 
 /* ── Кнопка ⋯ у ряда ──────────────────────────────────────────────────── */
 export function Dots({ onTap }: { onTap: (e: React.MouseEvent) => void }) {
-  return <button className="r-dots" onClick={(e) => { e.stopPropagation(); onTap(e); }}>{I.dots({ s: 21 })}</button>;
+  return <button className="r-dots" onClick={(e) => { e.stopPropagation(); onTap(e); }}>{I.dotsSm({ s: 21 })}</button>;
 }
 
 /* ── Заголовок секции ─────────────────────────────────────────────────── */
