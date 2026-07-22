@@ -29,9 +29,9 @@ const Sv = ({ s = 24, vb = 24, children, w }: { s?: number; vb?: number; childre
 );
 export const I = {
   house: ({ s }: IcP = {}) => <Sv s={s}><path fill="currentColor" stroke="none" d="M12 3.6 4 10.7V19a1.6 1.6 0 0 0 1.6 1.6H9.6V15h4.8v5.6H18.4A1.6 1.6 0 0 0 20 19v-8.3Z" /></Sv>,
-  grid: ({ s }: IcP = {}) => <Sv s={s}>{[[4, 4], [13.2, 4], [4, 13.2], [13.2, 13.2]].map(([x, y], i) => <rect key={i} x={x} y={y} width="6.8" height="6.8" rx="2" fill="currentColor" stroke="none" />)}</Sv>,
+  grid: ({ s }: IcP = {}) => <Sv s={s}>{[[2.2, 2.2], [12.8, 2.2], [2.2, 12.8], [12.8, 12.8]].map(([x, y], i) => <rect key={i} x={x} y={y} width="9" height="9" rx="2.2" fill="currentColor" stroke="none" />)}</Sv>,
   radio: ({ s }: IcP = {}) => <Sv s={s} w={1.9}><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" /><path d="M8.6 8.6a4.8 4.8 0 0 0 0 6.8M15.4 8.6a4.8 4.8 0 0 1 0 6.8M6 6a8.5 8.5 0 0 0 0 12M18 6a8.5 8.5 0 0 1 0 12" /></Sv>,
-  lib: ({ s }: IcP = {}) => <Sv s={s} w={1.9}><path d="M7.4 2.8h9.2M5.6 5.6h12.8" /><path fill="currentColor" stroke="none" fillRule="evenodd" d="M7.6 8h8.8A3.1 3.1 0 0 1 19.5 11.1v7.2a3.1 3.1 0 0 1-3.1 3.1H7.6a3.1 3.1 0 0 1-3.1-3.1v-7.2A3.1 3.1 0 0 1 7.6 8Zm3.6 2.9v4.6a2 2 0 1 0 1.2 1.83V13.2l3.1-.95v2.4a2 2 0 1 0 1.2 1.83V9.5Z" /></Sv>,
+  lib: ({ s }: IcP = {}) => <Sv s={s} w={1.6}><path d="M7.4 2.8h9.2M5.6 5.6h12.8" /><path fill="currentColor" stroke="none" fillRule="evenodd" d="M7.6 8h8.8A3.1 3.1 0 0 1 19.5 11.1v7.2a3.1 3.1 0 0 1-3.1 3.1H7.6a3.1 3.1 0 0 1-3.1-3.1v-7.2A3.1 3.1 0 0 1 7.6 8Zm3.6 2.9v4.6a2 2 0 1 0 1.2 1.83V13.2l3.1-.95v2.4a2 2 0 1 0 1.2 1.83V9.5Z" /></Sv>,
   search: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.1}><circle cx="10.8" cy="10.8" r="5.7" /><path d="M15.1 15.1 20 20" /></Sv>,
   mic: ({ s }: IcP = {}) => <Sv s={s} w={1.8}><rect x="9.3" y="2.8" width="5.4" height="10.4" rx="2.7" fill="currentColor" stroke="none" /><path d="M6.2 11.2a5.8 5.8 0 0 0 11.6 0M12 17.4v3M8.8 20.6h6.4" /></Sv>,
   dots: ({ s }: IcP = {}) => <Sv s={s}>{[5.4, 12, 18.6].map((x) => <circle key={x} cx={x} cy="12" r="1.9" fill="currentColor" stroke="none" />)}</Sv>,
