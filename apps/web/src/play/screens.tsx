@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 import { Ava, Cover, Dots, E, H2, I, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore } from "./core";
 import { BOOKS } from "../books";
+import { BookHeroCard } from "../BookHeroCard";
 import { usePlayer as useCore, type AudioMode, type Track as CoreTrack } from "../player/store";
 import { api } from "../api";
 import { bookSlug } from "../books";
@@ -57,63 +58,25 @@ function CardShelf({ items, ui, wide, tall, src }: { items: Card[]; ui: UI; wide
 
 /* ── HOME ─────────────────────────────────────────────────────────────── */
 export function HomeScreen({ ui }: { ui: UI }) {
-  const core = useCore();
+  /* Первая категория раздела — автор. Витрина книг Шрилы Прабхупады идёт
+     слайдером тем же модулем BookHeroCard, что и в основном приложении
+     (ЗКН-К002: сердце · наушники · корзина · ⋯ — единый юнит-стандарт). */
+  const byPrabhupada = React.useMemo(
+    () => Object.values(BOOKS).filter((b) => b.author.includes("Прабхупада")),
+    [],
+  );
   return (
     <Scr>
       <div className="amx-top"><div className="amx-h1">Книги</div><Ava /></div>
 
-      {/* П-Ф2: живая библиотека — реальные обложки, реальный звук (playBook) */}
-      <H2 t="Библиотека" />
-      <Shelf>
-        {Object.values(BOOKS).map((b) => (
-          <ShelfCard key={b.work} id={"bk-" + b.work} src={b.covers[0]} t={b.titleLine1}
-            s={b.tagline} onOpen={() => ui.push({ k: "book", b: b.work })} />
-        ))}
-      </Shelf>
-
-      <H2 t="Top Picks for You" />
-      <Shelf>
-        {TOP_PICKS.map((p) => (
-          <div key={p.id} className="amx-pick" onClick={() => ui.play(BEST_NEW_SONGS, 0, p.t)}
-            style={{ background: `radial-gradient(130% 110% at 50% 0%, hsl(${p.hue} 72% 50%) 0%, hsl(${p.hue} 68% 37%) 55%, hsl(${(p.hue + 14) % 360} 66% 22%) 100%)` }}>
-            <div className="brand">Music</div>
-            <div className="bub" style={{ left: "9%", top: "7%", width: "56%", aspectRatio: "1" }}><Cover id={p.id + "1"} /></div>
-            <div className="bub" style={{ right: "8%", top: "38%", width: "34%", aspectRatio: "1" }}><Cover id={p.id + "2"} /></div>
-            <div className="bub" style={{ left: "24%", top: "52%", width: "26%", aspectRatio: "1" }}><Cover id={p.id + "3"} /></div>
-            <div className="pk" style={{ color: `hsl(${p.hue} 92% 80%)` }}>{p.k}</div>
-            <div className="pt">{p.t}</div>
+      <H2 t="Шрила Прабхупада" />
+      <div className="amx-showcase">
+        {byPrabhupada.map((b) => (
+          <div key={b.work} className="amx-showcase-i">
+            <BookHeroCard book={b} onOpen={() => ui.push({ k: "book", b: b.work })} />
           </div>
         ))}
-      </Shelf>
-
-      <H2 t="Find Your Mood" />
-      <Shelf>
-        {MOODS.map((m) => (
-          <div key={m.id} className="amx-mood" onClick={() => ui.play(ALL_SONGS, 0, `${m.t} Station`)}>
-            <div className="tile" style={{ background: m.bg, color: "#F4ECC9" }}>
-              <div className="brand">Music</div>
-              {m.glyph === "bolt" ? I.bolt({ s: 108 }) : m.glyph === "heart" ? I.heart({ s: 112 }) : (
-                <div style={{ position: "absolute", right: -56, top: "50%", transform: "translateY(-50%)" }}>
-                  <svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeDasharray="2.6 2.2" strokeLinecap="round">
-                    <path d="M12 20.2C7 16.4 3.6 13.2 3.6 9.5A4.5 4.5 0 0 1 8.1 5c1.6 0 3 .8 3.9 2.1A4.7 4.7 0 0 1 15.9 5a4.5 4.5 0 0 1 4.5 4.5c0 3.7-3.4 6.9-8.4 10.7Z" />
-                  </svg>
-                </div>
-              )}
-            </div>
-            <div className="mt">{m.t}</div>
-            <div className="ms">{m.s}</div>
-          </div>
-        ))}
-      </Shelf>
-
-      <H2 t="Radio Takeover" />
-      <div className="amx-tkbig" onClick={() => ui.push({ k: "show" })}>
-        <Cover id={TAKEOVER.id} style={{ position: "absolute", inset: 0 }} />
-        <div className="cap">{TAKEOVER.cap}</div>
       </div>
-
-      <H2 t="Concerts" />
-      <ConcertsCard />
     </Scr>
   );
 }

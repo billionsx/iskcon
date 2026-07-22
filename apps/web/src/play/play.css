@@ -66,7 +66,7 @@
 
 /* ── Верх: крупный заголовок + аватар ───────────────────────────────────── */
 .amx-top { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 6px; }
-.amx-h1 { font-size: 34px; font-weight: 700; letter-spacing: .4px; line-height: 41px; } /* §3.2 Large Title 34/41 +0.40; вес Bold, не Heavy */
+.amx-h1 { font-size: 34px; font-weight: 700; letter-spacing: -1px; line-height: 41px; }  /* 📐 «New» эталон IMG_2339 vs прод: глифы совпали (0.836/0.699/1.068 cap), а межбуквенные зазоры у нас 0.204/0.102 против 0.137/0.055 — лишние 1.4 pt на зазор (браузер берёт метрики SF Pro Text вместо Display). Компенсация трекингом: +0.4 → −1.0 */
 /* 📐 IMG_1963: аватар [329.0 + 44.0], правый край 373 → врезка 20 */
 .amx-ava {
   width: 44px; height: 44px; border-radius: 50%; flex: 0 0 auto;
@@ -651,3 +651,8 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
 .amx .amx-chip { height: 35px; padding: 0 16px; border-radius: 17.5px; background: #2C2C2C; color: #fff; font-size: 15px; font-weight: 500; display: flex; align-items: center; }  /* чип 35 #2C2C2C — канон */
 .amx .amx-chip.on { background: #fff; color: #000; }
 .amx .amx-row .r-num { width: 41.33px; flex: 0 0 41.33px; text-align: center; font-size: 17px; color: var(--g2); font-variant-numeric: tabular-nums; }
+
+/* Витрина книг слайдером (первый экран «Книги») */
+.amx-showcase { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 20px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.amx-showcase::-webkit-scrollbar { display: none; }
+.amx-showcase-i { flex: 0 0 353px; max-width: calc(100% - 40px); scroll-snap-align: start; }
