@@ -35,7 +35,7 @@ export const I = {
   search: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.1}><circle cx="10.8" cy="10.8" r="5.7" /><path d="M15.1 15.1 20 20" /></Sv>,
   mic: ({ s }: IcP = {}) => <Sv s={s} w={1.8}><rect x="9.3" y="2.8" width="5.4" height="10.4" rx="2.7" fill="currentColor" stroke="none" /><path d="M6.2 11.2a5.8 5.8 0 0 0 11.6 0M12 17.4v3M8.8 20.6h6.4" /></Sv>,
   dots: ({ s }: IcP = {}) => <Sv s={s}>{[5.4, 12, 18.6].map((x) => <circle key={x} cx={x} cy="12" r="1.9" fill="currentColor" stroke="none" />)}</Sv>,
-  back: ({ s }: IcP = {}) => <Sv s={s} w={2.5}><path d="M14.6 4.8 7.6 12l7 7.2" /></Sv>,
+  back: ({ s }: IcP = {}) => <Sv s={s} w={2.7}><path d="M14.6 4.8 7.6 12l7 7.2" /></Sv>,
   chev: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.6}><path d="M9 5.4 15.7 12 9 18.6" /></Sv>,
   plus: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2}><path d="M12 4.8v14.4M4.8 12h14.4" /></Sv>,
   star: ({ s }: IcP = {}) => <Sv s={s} w={1.7}><path d="m12 3.6 2.5 5.4 5.9.6-4.4 4 1.2 5.8L12 16.4l-5.2 3 1.2-5.8-4.4-4 5.9-.6Z" /></Sv>,

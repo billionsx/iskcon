@@ -16,7 +16,7 @@
   --g2: rgba(235,235,245,.62);
   --g3: rgba(235,235,245,.34);
   --hair: rgba(255,255,255,.10);
-  --glass: rgba(64,64,70,.42);      /* 📐 IMG_2336: хром над чёрным ≈ #1A1A1A, над контентом светлеет — заливка серая полупрозрачная (LAW_MUSIC §1.1) */
+  --glass: rgba(58,58,64,.42);      /* 📐 IMG_2336: хром над чёрным ≈ #1A1A1A, над контентом светлеет — заливка серая полупрозрачная (LAW_MUSIC §1.1) */
   --glass-press: rgba(96,96,104,.5);
   --onart: rgba(255,255,255,.14);   /* стекло поверх артворка (LAW_MUSIC §1.3) */
   --menu: rgba(58,58,62,.80);       /* меню-материал (LAW_MUSIC §1.2) */
@@ -85,17 +85,17 @@
 /* Стеклянные круги и капсулы кнопок */
 /* 📐 круг 42.0 (был 52 — вся навигация ехала на каждом внутреннем экране) */
 .amx-cir {
-  width: 42px; height: 42px; border-radius: 50%; flex: 0 0 auto;
+  width: 44px; height: 44px; border-radius: 50%; flex: 0 0 auto;  /* 📐 IMG_2381: x16..60 = 44, y59..102 */
   display: flex; align-items: center; justify-content: center;
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.09);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 .amx-pill {
   display: flex; align-items: center; border-radius: 22px; height: 44px;  /* 📐 капсула 44 */
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.09);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 .amx-pill > button { width: 51px; height: 44px;  /* 📐 101.3 на две · 154.7 на три */ display: flex; align-items: center; justify-content: center; }
 .amx-pill > button + button { position: relative; }
@@ -338,7 +338,7 @@
   transition: height .35s var(--ease-out), transform .3s var(--spring);
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.09), 0 10px 30px rgba(0,0,0,.45);  /* отрыв дока от контента */  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 .amx-mini .m-art { width: 36px; height: 36px; border-radius: 7px; flex: 0 0 auto; transition: width .35s var(--ease-out), height .35s var(--ease-out); }  /* внутрь 48: 48−2×6 */
 .cmp .amx-mini { height: 43px; }
@@ -356,7 +356,7 @@
   transition: padding .35s var(--ease-out);
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.09), 0 10px 30px rgba(0,0,0,.45);  /* отрыв дока от контента */  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 /* 📐 вкладка 87.9 × 44.6 · знак 26 · подпись 10 · зазор знак→подпись 4 */
 .amx-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 22.3px; height: 44.6px; font-size: 10px; font-weight: 500; letter-spacing: .12px; color: rgba(235,235,245,.85); }
@@ -369,7 +369,7 @@
   transition: width .35s var(--ease-out), height .35s var(--ease-out), transform .3s var(--spring), background-color .3s var(--spring);
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.09);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
 }
 .amx-scir.red { color: var(--red); }
 .cmp .amx-scir { width: 52.3px; height: 52.3px; }
@@ -384,7 +384,7 @@
   flex: 1; display: flex; align-items: center; gap: 10px; height: 48px; border-radius: 24px; padding: 0 14px;
   background: var(--glass);
   -webkit-backdrop-filter: blur(34px) saturate(1.85); backdrop-filter: blur(34px) saturate(1.85);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 0 rgba(0,0,0,.22), inset 0 0 0 .5px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.45);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), inset 0 -1px 0 rgba(255,255,255,.07), inset 0 0 0 .5px rgba(255,255,255,.09);  /* LAW_MUSIC §1.1: блик · тень кромки · волосок · отрыв */
   color: rgba(235,235,245,.6); font-size: 17px;
 }
 .amx-sfield .ph { flex: 1; letter-spacing: -.43px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
@@ -424,7 +424,7 @@
 .amx-pl .pl-head .p-t { font-size: 20px; font-weight: 700; letter-spacing: -.45px; } /* §3.2 Title 3 */
 .amx-pl .pl-head .p-s { font-size: 13px; letter-spacing: -.08px; color: rgba(255,255,255,.66); margin-top: 2px; }  /* 📐 чернила ~12.4 */
 .amx-pl .pl-head .hb { margin-left: auto; display: flex; gap: 16px; }  /* 📐 звезда x281.3, ⋯ x329.3: зазор 16 */
-.amx-pl .pl-head .amx-cir { width: 32px; height: 32px; background: var(--onart); box-shadow: inset 0 1px 0 rgba(255,255,255,.18); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }  /* 📐 круги шапки d32, НЕ 48 */
+.amx-pl .pl-head .amx-cir { width: 32px; height: 32px; background: rgba(255,255,255,.09); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }  /* 📐 круги шапки d32, НЕ 48 */
 .amx-pl .pl-mid { flex: 1; min-height: 0; overflow: hidden; position: relative; margin: 10px -4px 0; }
 .amx-pl .pl-dots { display: flex; gap: 10px; padding: 22px 4px 8px; }
 .amx-pl .pl-dots i { width: 13px; height: 13px; border-radius: 50%; background: rgba(255,255,255,.9); animation: amx-dot 1.4s ease-in-out infinite; }
@@ -446,8 +446,8 @@
 
 /* режим очереди */
 .amx-pl .pl-tog { display: flex; gap: 13px; padding: 0; margin-top: 32px; }  /* 📐 pl_q15: капсулы x32/117.7/203.3/288.7 — зазор 13; верх 179 при низе арта 146.7 */
-.amx-pl .pl-tog button { flex: 1; height: 38.3px; border-radius: 19.2px; background: var(--onart); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.18); }  /* 📐 pl_q15: 72.5 × 38 (4 шт. на 329) · LAW_MUSIC §1.3 */
-.amx-pl .pl-tog button.on { background: rgba(255,255,255,.5); color: rgba(16,14,6,.88); box-shadow: none; }  /* 📐 заливка ~50 % белого (159/164/146 на 69), глиф ТЁМНЫЙ (46/51/37) */
+.amx-pl .pl-tog button { flex: 1; height: 38.3px; border-radius: 19.2px; background: transparent; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.8); }  /* 📐 pl_q15: 72.5 × 38 (4 шт. на 329) · LAW_MUSIC §1.3 */
+.amx-pl .pl-tog button.on { background: rgba(255,255,255,.55); color: rgba(40,36,28,.92); box-shadow: none; }  /* 📐 заливка ~50 % белого (159/164/146 на 69), глиф ТЁМНЫЙ (46/51/37) */
 .amx-tip { position: relative; margin-top: 16px; background: rgba(30,24,18,.55); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-radius: 18px; padding: 14px 40px 14px 14px; display: flex; gap: 12px; align-items: center; box-shadow: inset 0 0 0 .5px rgba(255,255,255,.12); animation: amx-pop .3s ease; }
 .amx-tip::before { content: ""; position: absolute; right: 34px; top: -9px; width: 18px; height: 18px; transform: rotate(45deg); background: inherit; border-radius: 4px; box-shadow: inset .5px .5px 0 rgba(255,255,255,.12); }
 .amx-tip .tt { font-size: 17px; font-weight: 700; letter-spacing: -.43px; }
@@ -475,7 +475,7 @@
 .amx-pl .pl-bar, .amx-pl .pl-vbar { transition: height .22s ease, background-color .22s ease; }
 .amx-pl .pl-brow { display: flex; justify-content: space-between; margin: 0 31.3px; padding: 19px 0 2px; }  /* 📐 pl_q15: центры 82.5/196.5/310.9; верх ряда 766 при низе громкости ~747 */
 .amx-pl .pl-brow button { width: 38.3px; height: 38.3px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.52); }  /* 📐 иконки luma ~150 ⇒ .52 */
-.amx-pl .pl-brow button.on { background: rgba(255,255,255,.5); color: rgba(16,14,6,.88); }  /* 📐 pl_q15 y784: круг d38.3, заливка ~146, глиф тёмный 61 */
+.amx-pl .pl-brow button.on { background: rgba(255,255,255,.5); color: rgba(40,36,28,.92); }  /* 📐 pl_q15 y784: круг d38.3, заливка ~146, глиф тёмный 61 */
 
 /* ── Шторки (New Playlist, выбор плейлиста) ─────────────────────────────── */
 .amx-sheet { position: absolute; inset: 0; z-index: 55; background: rgba(16,16,17,.98); border-radius: 40px 40px 0 0;  /* 📐 профиль края → R=40 */ margin-top: calc(var(--sat) + 6px); padding: 14px 16px calc(var(--sab) + 16px); animation: amx-up .42s var(--sheet);  /* 🎞 §5.5 */ display: flex; flex-direction: column; }
