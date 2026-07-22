@@ -7,8 +7,10 @@
 
 .amx, .amx * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 .amx {
-  position: fixed; inset: 0; z-index: 2147480000;
+  position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 393px; max-width: 100vw; z-index: 2147480000;
   background: #000; color: #fff;
+  /* Телефонная рамка 393pt: все каноны сняты для ширины iPhone; transform делает .amx containing block для fixed-детей (док/плеер живут внутри рамки) */
   font-family: -apple-system, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   overflow: hidden; user-select: none; -webkit-user-select: none;
