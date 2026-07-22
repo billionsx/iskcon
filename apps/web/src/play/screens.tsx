@@ -1,6 +1,8 @@
 /* /play — экраны вкладок и внутренние страницы. */
 import React, { useMemo, useState } from "react";
 import { Ava, Cover, Dots, E, H2, I, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore } from "./core";
+import { BOOKS } from "../books";
+import { usePlayer as useCore } from "../player/store";
 import type { Card, Song } from "./data";
 import {
   ALL_SONGS, ANTHEMS_E, ARTIST_SHOWS, BEST_NEW_SONGS, CITY25, CLUB_MIXES, COMING_SOON,
@@ -53,9 +55,19 @@ function CardShelf({ items, ui, wide, tall, src }: { items: Card[]; ui: UI; wide
 
 /* ── HOME ─────────────────────────────────────────────────────────────── */
 export function HomeScreen({ ui }: { ui: UI }) {
+  const core = useCore();
   return (
     <Scr>
       <div className="amx-top"><div className="amx-h1">Книги</div><Ava /></div>
+
+      {/* П-Ф2: живая библиотека — реальные обложки, реальный звук (playBook) */}
+      <H2 t="Библиотека" />
+      <Shelf>
+        {Object.values(BOOKS).map((b) => (
+          <ShelfCard key={b.work} id={"bk-" + b.work} src={b.covers[0]} t={b.titleLine1}
+            s={b.tagline} onOpen={() => core.playBook({ book: b.work, expand: false })} />
+        ))}
+      </Shelf>
 
       <H2 t="Top Picks for You" />
       <Shelf>

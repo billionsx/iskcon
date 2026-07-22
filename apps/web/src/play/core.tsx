@@ -7,13 +7,13 @@ import type { Song } from "./data";
    ЕДИНЫЙ СТИЛЬ (распоряжение основателя 21.07.2026). Цвет больше НЕ выводится
    из id: обложки были все разные, и экран рябил. Поле, знак и его размер
    заданы в CSS одним правилом — здесь остаётся только разметка. */
-export function Cover({ cls, style, label, wm, brand, onClick, children }: {
-  id?: string; cls?: string; style?: React.CSSProperties;
+export function Cover({ cls, style, label, wm, brand, src, onClick, children }: {
+  id?: string; cls?: string; style?: React.CSSProperties; src?: string;
   label?: string; wm?: boolean; brand?: boolean; onClick?: () => void; children?: React.ReactNode;
 }) {
   return (
     <div className={"amx-cov " + (cls || "")} style={style} onClick={onClick}>
-      {wm ? <div className="wm" /> : <div className="mk" />}
+      {src ? <img className="real" src={src} alt="" loading="lazy" /> : wm ? <div className="wm" /> : <div className="mk" />}
       {brand ? <div className="brand">Music</div> : null}
       {label ? <div className="lab">{label}</div> : null}
       {children}
@@ -309,12 +309,12 @@ export function useVH(): number {
 export const noop = () => {};
 
 /* Карточка полки (обложка + подписи) */
-export function ShelfCard({ id, t, s, e, wide, tall, cap, onOpen }: {
-  id: string; t: string; s?: string; e?: boolean; wide?: boolean; tall?: boolean; cap?: string; onOpen?: () => void;
+export function ShelfCard({ id, t, s, e, wide, tall, cap, src, onOpen }: {
+  id: string; t: string; s?: string; e?: boolean; wide?: boolean; tall?: boolean; cap?: string; src?: string; onOpen?: () => void;
 }) {
   return (
     <div className={"amx-cardw" + (wide ? " wide" : "") + (tall ? " tall" : "")} onClick={onOpen}>
-      <Cover id={id} label={cap} />
+      <Cover id={id} label={cap} src={src} />
       <div className="cw-t"><span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{t}</span>{e ? <E /> : null}</div>
       {s ? <div className="cw-s">{s}</div> : null}
     </div>

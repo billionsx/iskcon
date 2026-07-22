@@ -3,7 +3,8 @@
    повтор, перемешивание, бесконечный автоплей, AutoMix, караоке-строки. */
 import React, { createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Cover, E, I, Menu, MItem, fmt, menuAt, shuffled, useExit } from "./core";
-import { LYRICS, QUEUE0, STATION_NAME, Song } from "./data";
+import { LYRICS, Song } from "./data";
+import { PlayerProvider as CoreProvider, usePlayer as useCore, type Track as CoreTrack } from "../player/store";
 
 type P = {
   q: Song[]; idx: number; playing: boolean; pos: number;
@@ -21,56 +22,46 @@ type Api = P & {
 const Ctx = createContext<Api | null>(null);
 export const usePlayer = () => useContext(Ctx)!;
 
-export function PlayerProvider({ children }: { children: React.ReactNode }) {
-  const [st, set] = useState<P>({
-    q: QUEUE0, idx: 0, playing: false, pos: 0,
-    shuffle: false, repeat: 0, autoplay: true, automix: false, vol: .62,
-    /* AutoMix выключен при старте. Два довода. 📐 IMG_1955: все четыре капсулы
-       одной яркости (~72 при фоне 53.7) — горящих среди них нет. И подсказка
-       «AutoMix is On» показывается ТОЛЬКО при включении: при значении true она
-       не показалась бы никогда, то есть была бы мёртвым кодом. */
-    source: STATION_NAME,
+/* МОСТ П-Ф2 (ONE_LOVE_PLAYER §4): оболочка /play рисуется прежними компонентами,
+   но звук ведёт БОЕВОЙ движок src/player (книги · лекции · киртаны · бхаджаны).
+   Тактовый симулятор демо удалён: время, очередь и транспорт — настоящие. */
+function Bridge({ children }: { children: React.ReactNode }) {
+  const c = useCore();
+  const [vol, setVolSt] = useState(.62);
+  const [autoplay, setAp] = useState(true);
+  const [automix, setAm] = useState(false);
+  const toSong = (t: CoreTrack, i: number): Song => ({
+    id: `${c.kind}:${c.book}:${i}`,
+    t: t.title,
+    a: c.kind === "book" ? c.bookTitle : (t.artist || c.artist || c.bookTitle),
+    d: i === c.index ? (c.duration || t.durationSec || 0) : (t.durationSec || 0),
   });
-  const ref = useRef(st); ref.current = st;
-
-  /* тактовый таймер вместо аудио */
-  useEffect(() => {
-    if (!st.playing) return;
-    let last = Date.now();
-    const t = window.setInterval(() => {
-      const now = Date.now(); const dt = (now - last) / 1000; last = now;
-      const s = ref.current; const cur = s.q[s.idx];
-      if (!cur) return;
-      let pos = s.pos + dt;
-      if (pos >= cur.d) {
-        if (s.repeat === 1) { set({ ...s, pos: 0 }); return; }
-        if (s.idx + 1 < s.q.length) { set({ ...s, idx: s.idx + 1, pos: 0 }); return; }
-        if (s.repeat === 2 || s.autoplay) { set({ ...s, idx: 0, pos: 0 }); return; }
-        set({ ...s, pos: cur.d, playing: false }); return;
-      }
-      set({ ...s, pos });
-    }, 250);
-    return () => window.clearInterval(t);
-  }, [st.playing]);
-
   const api: Api = {
-    ...st,
-    cur: st.q[st.idx] ?? null,
-    playList: (songs, idx, source) => set((s) => ({
-      ...s, q: s.shuffle ? [songs[idx], ...shuffled(songs.filter((_, i) => i !== idx))] : songs,
-      idx: s.shuffle ? 0 : idx, pos: 0, playing: true, source: source ?? s.source,
-    })),
-    toggle: () => set((s) => ({ ...s, playing: !s.playing && s.q.length > 0 })),
-    next: () => set((s) => ({ ...s, idx: (s.idx + 1) % Math.max(1, s.q.length), pos: 0 })),
-    prev: () => set((s) => (s.pos > 4 ? { ...s, pos: 0 } : { ...s, idx: (s.idx - 1 + s.q.length) % Math.max(1, s.q.length), pos: 0 })),
-    seek: (sec) => set((s) => ({ ...s, pos: Math.max(0, Math.min(sec, (s.q[s.idx]?.d ?? 1) - .1)) })),
-    setVol: (v) => set((s) => ({ ...s, vol: Math.max(0, Math.min(1, v)) })),
-    toggleShuffle: () => set((s) => ({ ...s, shuffle: !s.shuffle })),
-    cycleRepeat: () => set((s) => ({ ...s, repeat: ((s.repeat + 1) % 3) as 0 | 1 | 2 })),
-    toggleAutoplay: () => set((s) => ({ ...s, autoplay: !s.autoplay })),
-    toggleAutomix: () => set((s) => ({ ...s, automix: !s.automix })),
+    q: c.tracks.map(toSong),
+    idx: c.index,
+    playing: c.isPlaying,
+    pos: c.currentTime,
+    shuffle: c.order === "shuffle",
+    repeat: c.repeat === "one" ? 1 : c.repeat === "off" ? 0 : 2,
+    autoplay, automix, vol,
+    source: c.kind === "book" ? c.bookTitle : (c.artist || c.bookTitle),
+    cur: c.track ? toSong(c.track, c.index) : null,
+    playList: () => {},
+    toggle: c.togglePlay,
+    next: c.next,
+    prev: c.prev,
+    seek: c.seek,
+    setVol: (v) => setVolSt(Math.max(0, Math.min(1, v))),
+    toggleShuffle: () => c.setOrder(c.order === "shuffle" ? "forward" : "shuffle"),
+    cycleRepeat: c.cycleRepeat,
+    toggleAutoplay: () => setAp((v) => !v),
+    toggleAutomix: () => setAm((v) => !v),
   };
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;
+}
+
+export function PlayerProvider({ children }: { children: React.ReactNode }) {
+  return <CoreProvider><Bridge>{children}</Bridge></CoreProvider>;
 }
 
 /* Бегущая строка: мерим чернила один раз (key=t перемонтирует на смене трека),

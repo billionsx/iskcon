@@ -645,3 +645,4 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
 .amx-cat .lab { z-index: 1; }
 .amx-exit { padding: 0; }
 .amx-exit img { width: 24px; height: 24px; filter: brightness(0) invert(1); }
+.amx-cov .real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
