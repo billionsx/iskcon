@@ -131,10 +131,10 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
    Play: клин 30.3 × 39.7. Всё白ое #FFF. */
 function TrSkip({ back }: { back?: boolean }) {
   return (
-    <svg width="35.7" height="25" viewBox="0 0 35.7 25" fill="#fff"
+    <svg width="35.7" height="21.3" viewBox="0 0 35.7 21.3" fill="#fff"
       style={back ? { transform: "scaleX(-1)" } : undefined}>
-      <path d="M0 0 L16 12.5 L0 25 Z" />
-      <path d="M19.7 0 L35.7 12.5 L19.7 25 Z" />
+      <path d="M0 0 L16 10.65 L0 21.3 Z" />
+      <path d="M19.7 0 L35.7 10.65 L19.7 21.3 Z" />
     </svg>
   );
 }

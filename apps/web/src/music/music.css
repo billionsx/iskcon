@@ -429,7 +429,7 @@
 .amx-pl .pl-dots { display: flex; gap: 10px; padding: 22px 4px 8px; }
 .amx-pl .pl-dots i { width: 13px; height: 13px; border-radius: 50%; background: rgba(255,255,255,.9); animation: amx-dot 1.4s ease-in-out infinite; }
 .amx-pl .pl-dots i:nth-child(2) { animation-delay: .2s; } .amx-pl .pl-dots i:nth-child(3) { animation-delay: .4s; }
-.amx-lyr { padding: 6px 4px 30px; }
+.amx-lyr { padding: 6px 4px 30px; margin-left: -5px; }  /* 📐 lyr(111с): строки стартуют x≈27 при врезке колонки 32 */
 .amx-lyr .ln { font-size: 27px; line-height: 1.22; font-weight: 700; letter-spacing: -.4px; /* потолок трекинга ±0.4 */ color: rgba(255,255,255,.42); margin: 12px 0; filter: blur(2.5px); transform-origin: 0 50%; transition: filter .4s, color .4s, transform .4s; }  /* 📐 lyr(111с): шаг строк 57.3 ⇒ поля 12 */
 .amx-lyr .ln.on { color: rgba(255,255,255,.96); filter: blur(0); transform: scale(1.015); }
 .amx-lyr .ln.next { filter: blur(1.2px); color: rgba(255,255,255,.6); }
@@ -464,8 +464,8 @@
 .amx-pl .pl-prog { margin-top: 8px; padding: 8px 0 2px; touch-action: none; }  /* 📐 полоса ровно x32…361 при врезке 32 */
 .amx-pl .pl-bar { height: 7px; border-radius: 3.5px;  /* 📐 высота дорожки 7.0 */ background: rgba(255,255,255,.21); position: relative; overflow: hidden; }  /* 📐 дорожка +42 над фоном 52 ⇒ .21 */
 .amx-pl .pl-bar i { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(255,255,255,.58); border-radius: 3.5px; transition: width .25s linear; }  /* 📐 ход luma 170 ⇒ .58 */
-.amx-pl .pl-times { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0; color: rgba(255,255,255,.55); margin-top: 8px; font-variant-numeric: tabular-nums; }  /* 📐 чернила 7 ⇒ 11 */
-.amx-pl .pl-trans { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 40px; }  /* 📐 транспорт y634 при временах ~577 */
+.amx-pl .pl-times { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0; color: rgba(255,255,255,.55); margin-top: 12px; font-variant-numeric: tabular-nums; }  /* 📐 чернила 7.7 ⇒ 11; верх строки y579.7 при низе полосы 565 */
+.amx-pl .pl-trans { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 36px; }  /* 📐 транспорт y634 при временах y579.7 */
 .amx-pl .pl-trans button { width: 105px; height: 56px; align-items: center; justify-content: center; }  /* 📐 шаг центров 105 */
 .amx-pl .pl-trans button { color: #fff; display: flex; }
 .amx-pl .pl-vol { display: flex; align-items: center; gap: 12px; margin-top: 52px; color: rgba(255,255,255,.62); touch-action: none; }  /* 📐 полоса громкости y737…744 */
