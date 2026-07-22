@@ -9,7 +9,7 @@
 .amx {
   position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
   width: 393px; max-width: 100vw; z-index: 2147480000;
-  background: #000; color: #fff;
+  overflow: hidden; background: #000; color: #fff;
   /* Телефонная рамка 393pt: все каноны сняты для ширины iPhone; transform делает .amx containing block для fixed-детей (док/плеер живут внутри рамки) */
   font-family: -apple-system, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
@@ -48,9 +48,9 @@
    Эталон — iPhone (393pt). На узких экранах кадр = весь экран; на десктопе
    кадр центрируется колонкой 393px, иначе проценты раскладки взрываются. */
 .amx-frame { position: absolute; inset: 0; overflow: hidden; background: #000; }
+/* Рамка теперь держится КОРНЕМ .amx (393, центр, overflow hidden) — media не нужна */
 @media (min-width: 560px) {
   .amx-frame {
-    width: 393px; left: 50%; right: auto; transform: translateX(-50%);
     box-shadow: 0 0 0 1px rgba(255,255,255,.10), 0 40px 120px rgba(0,0,0,.75);
   }
 }
@@ -638,3 +638,5 @@
 /* §8.3: ни одной мёртвой кнопки — универсальный отклик нажатия для кнопок
    без собственного :active-правила (Edit, Turn On, Set Location, фото) */
 .amx button:active { opacity: .55; transition: opacity .09s; }
+/* Железо: пока смонтирован плеер — сайт-поток под ним не скроллится и не светится */
+body:has(.amx) { background: #000 !important; overflow: hidden !important; }
