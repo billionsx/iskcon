@@ -593,9 +593,10 @@ export function BookScreen({ ui, b }: { ui: UI; b: string }) {
     let dead = false;
     fetch(api(`/books/${b}/audio`)).then((r) => r.json()).then((m) => {
       if (dead) return;
-      const list = (m.tracks?.[mode === "commentary" && m.hasCommentary ? "commentary" : "plain"] ?? m.tracks ?? []) as CoreTrack[];
+      const md = mode === "commentary" && m.modes?.commentary ? "commentary" : "plain";
+      const list = (m.modes?.[md]?.tracks ?? []) as CoreTrack[];
       setTracks(Array.isArray(list) ? list : []);
-      setMeta({ hasCommentary: !!m.hasCommentary });
+      setMeta({ hasCommentary: !!m.modes?.commentary });
     }).catch(() => { if (!dead) setTracks([]); });
     return () => { dead = true; };
   }, [b, mode]);
