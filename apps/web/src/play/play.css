@@ -646,3 +646,8 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
 .amx-exit { padding: 0; }
 .amx-exit img { width: 24px; height: 24px; filter: brightness(0) invert(1); }
 .amx-cov .real { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* П-Ф3 — страница книги */
+.amx .amx-capsule { flex: 1; height: 50px; border-radius: 12px; background: var(--card2); color: var(--red); font-size: 17px; font-weight: 600; letter-spacing: -.43px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.amx .amx-chip { height: 35px; padding: 0 16px; border-radius: 17.5px; background: #2C2C2C; color: #fff; font-size: 15px; font-weight: 500; display: flex; align-items: center; }  /* чип 35 #2C2C2C — канон */
+.amx .amx-chip.on { background: #fff; color: #000; }
+.amx .amx-row .r-num { width: 41.33px; flex: 0 0 41.33px; text-align: center; font-size: 17px; color: var(--g2); font-variant-numeric: tabular-nums; }

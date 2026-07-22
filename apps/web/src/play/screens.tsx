@@ -2,7 +2,9 @@
 import React, { useMemo, useState } from "react";
 import { Ava, Cover, Dots, E, H2, I, PagedSongs, Scr, Shelf, ShelfCard, SongRow, menuAt, mutate, useLongPress, useStore } from "./core";
 import { BOOKS } from "../books";
-import { usePlayer as useCore } from "../player/store";
+import { usePlayer as useCore, type AudioMode, type Track as CoreTrack } from "../player/store";
+import { api } from "../api";
+import { bookSlug } from "../books";
 import type { Card, Song } from "./data";
 import {
   ALL_SONGS, ANTHEMS_E, ARTIST_SHOWS, BEST_NEW_SONGS, CITY25, CLUB_MIXES, COMING_SOON,
@@ -65,7 +67,7 @@ export function HomeScreen({ ui }: { ui: UI }) {
       <Shelf>
         {Object.values(BOOKS).map((b) => (
           <ShelfCard key={b.work} id={"bk-" + b.work} src={b.covers[0]} t={b.titleLine1}
-            s={b.tagline} onOpen={() => core.playBook({ book: b.work, expand: false })} />
+            s={b.tagline} onOpen={() => ui.push({ k: "book", b: b.work })} />
         ))}
       </Shelf>
 
@@ -576,5 +578,66 @@ export function FindScreen({ ui, onClose }: { ui: UI; onClose: () => void }) {
         <button className="amx-cir" onClick={onClose}>{I.x({ s: 20 })}</button>
       </div>
     </div>
+  );
+}
+
+/* П-Ф3: страница книги — обложка, Слушать/Читать, тумблер режима, главы-треклист.
+   Манифест читается тем же эндпоинтом, что и боевой плеер (/books/<id>/audio). */
+export function BookScreen({ ui, b }: { ui: UI; b: string }) {
+  const core = useCore();
+  const book = BOOKS[b];
+  const [mode, setMode] = useState<AudioMode>("plain");
+  const [tracks, setTracks] = useState<CoreTrack[] | null>(null);
+  const [meta, setMeta] = useState<{ hasCommentary?: boolean }>({});
+  React.useEffect(() => {
+    let dead = false;
+    fetch(api(`/books/${b}/audio`)).then((r) => r.json()).then((m) => {
+      if (dead) return;
+      const list = (m.tracks?.[mode === "commentary" && m.hasCommentary ? "commentary" : "plain"] ?? m.tracks ?? []) as CoreTrack[];
+      setTracks(Array.isArray(list) ? list : []);
+      setMeta({ hasCommentary: !!m.hasCommentary });
+    }).catch(() => { if (!dead) setTracks([]); });
+    return () => { dead = true; };
+  }, [b, mode]);
+  if (!book) return null;
+  return (
+    <Scr>
+      <div className="amx-nav">
+        <button className="amx-cir" onClick={ui.back}>{I.back({ s: 22 })}</button>
+        <div className="nv-title" />
+      </div>
+      <div style={{ padding: "0 20px", textAlign: "center" }}>
+        <img src={book.covers[0]} alt="" style={{ width: 232, height: 232, borderRadius: 10, objectFit: "cover", boxShadow: "0 14px 40px rgba(0,0,0,.5)" }} />
+        <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-.26px", marginTop: 16 }}>{book.titleLine1}{book.titleLine2 ? ` ${book.titleLine2}` : ""}</div>
+        <div style={{ fontSize: 15, color: "var(--g2)", marginTop: 2 }}>{book.author}</div>
+        <div style={{ display: "flex", gap: 9, marginTop: 16 }}>
+          <button className="amx-capsule" onClick={() => { core.playBook({ book: b, mode, expand: false }); }}>
+            {I.play({ s: 18 })}<span>Слушать</span>
+          </button>
+          <button className="amx-capsule" onClick={() => window.location.assign(`/${bookSlug(book.work)}`)}>
+            {I.lib({ s: 18 })}<span>Читать</span>
+          </button>
+        </div>
+        {meta.hasCommentary ? (
+          <div style={{ display: "flex", gap: 8, marginTop: 14, justifyContent: "center" }}>
+            {(["plain", "commentary"] as AudioMode[]).map((m) => (
+              <button key={m} className={"amx-chip" + (mode === m ? " on" : "")} onClick={() => setMode(m)}>
+                {m === "plain" ? "Текст" : "С комментарием"}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <div style={{ marginTop: 18 }}>
+        {tracks === null ? null : tracks.filter((tr) => tr.kind !== "song").map((tr, i) => (
+          <div key={tr.file + i} className="amx-row" onClick={() => { core.playChapter(b, tr.chapter ?? 0, mode, tr.lila, tr.ref ?? null); }}>
+            <div className="r-num">{tr.chapter ?? "·"}</div>
+            <div className="r-c"><div className="r-t">{tr.title}</div>
+              {tr.lilaLabel ? <div className="r-s">{tr.lilaLabel}</div> : null}</div>
+            <Dots onTap={() => {}} />
+          </div>
+        ))}
+      </div>
+    </Scr>
   );
 }

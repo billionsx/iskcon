@@ -8,7 +8,7 @@ import { ALL_SONGS, Song } from "./data";
 import { FullPlayer, MiniPlayer, PlayerProvider, usePlayer } from "./player";
 import {
   FindScreen, GenreScreen, HomeScreen, HubScreen, LinksScreen, NewScreen,
-  PlistScreen, RadioScreen, SearchTab, ShowScreen, SongsScreen,
+  BookScreen, PlistScreen, RadioScreen, SearchTab, ShowScreen, SongsScreen,
 } from "./screens";
 import { LibListScreen, LibraryScreen, NewPlaylistSheet, PlaylistPicker, UserPlaylistScreen } from "./library";
 
@@ -21,6 +21,7 @@ export type Pg =
   | { k: "genre"; g: string }
   | { k: "show" }
   | { k: "links"; title: string; items: string[] }
+  | { k: "book"; b: string }
   | { k: "lib"; id: "playlists" | "artists" | "albums" | "songs" }
   | { k: "upl"; id: string }
   | { k: "find" };
@@ -43,6 +44,7 @@ function urlFor(pg: Pg): string {
     case "hub": return "/play/summertime-sounds";
     case "plist": return "/play/summer-escapes";
     case "songs": return pg.id === "bns" ? "/play/best-new-songs" : "/play/summer-anthems";
+    case "book": return `/play/book/${pg.b}`;
     case "genre": return `/play/station/${slug(pg.g)}`;
     case "show": return "/play/radio-takeover";
     case "links": return "/play/explore";
@@ -64,6 +66,7 @@ function parseStack(path: string): Pg[] {
   if (p === "summer-escapes") return [tab("search"), { k: "hub" }, { k: "plist" }];
   if (p === "summer-anthems") return [tab("search"), { k: "hub" }, { k: "songs", id: "anthems", title: "Summer Anthems", kind: "track" }];
   if (p === "best-new-songs") return [tab("new"), { k: "songs", id: "bns", title: "Best New Songs", kind: "editorial" }];
+  if (p.startsWith("book/")) return [tab("home"), { k: "book", b: p.slice(5) }];
   if (p === "radio-takeover") return [tab("home"), { k: "show" }];
   if (p === "explore") return [tab("new"), { k: "links", title: "More to explore", items: [] }];
   if (p.startsWith("library/")) {
@@ -208,6 +211,7 @@ function Shell() {
           ) : top.k === "hub" ? <HubScreen ui={ui} />
             : top.k === "plist" ? <PlistScreen ui={ui} />
             : top.k === "songs" ? <SongsScreen ui={ui} id={top.id} title={top.title} kind={top.kind} />
+            : top.k === "book" ? <BookScreen ui={ui} b={top.b} />
             : top.k === "genre" ? <GenreScreen ui={ui} g={top.g} />
             : top.k === "show" ? <ShowScreen ui={ui} />
             : top.k === "links" ? <LinksScreen ui={ui} title={top.title} items={top.items} />
