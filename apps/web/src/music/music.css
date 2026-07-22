@@ -145,8 +145,8 @@
 .amx-row .r-s { font-size: 12px; letter-spacing: 0; line-height: 14px; color: var(--g2); margin-top: 0; /* 📐 капитель 25 px — IMG_2347+2381+2382 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .amx-row .r-dots { width: 44px; height: 44px; margin-right: 0; /* 📐 центр многоточия 350.67 — IMG_2347 */ display: flex; align-items: center; justify-content: center; color: rgba(235,235,245,.7); }
 .amx-row + .amx-row::before, .amx-hr {
-  content: ""; position: absolute; left: 73.33px; right: 0; top: 0; height: 1px;  /* 📐 разделитель 73.33→373 — IMG_2347+2381+2382 */
-  background: var(--hair); transform: scaleY(.5);
+  content: ""; position: absolute; left: 73.33px; right: 0; top: 0; height: .33px;  /* 📐 IMG_2382 y162.33: волосок 1 физ. px, люма 50 ⇒ .2; 73.33→373 — IMG_2347+2381+2382 */
+  background: rgba(255,255,255,.2);
 }
 .amx-e {
   flex: 0 0 auto; font-size: 10.5px; font-weight: 700; line-height: 1;
