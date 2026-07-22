@@ -155,9 +155,9 @@
 }
 
 /* Крупный ряд (плейлисты «Summer In:», станции жанра) */
-.amx-row.big { min-height: 128px; }
-.amx-row.big .r-art { width: 112px; height: 112px; border-radius: 10px; }
-.amx-row.big + .amx-row.big::before { left: 144px; }
+.amx-row.big { min-height: 102px; }  /* 📐 IMG_2378: шаг big-рядов 102 */
+.amx-row.big .r-art { width: 88px; height: 88px; border-radius: 10px; }  /* 📐 IMG_2378: арт 88×88 */
+.amx-row.big + .amx-row.big::before { left: 120px; }
 .amx-row.big .r-t { font-size: 17px; font-weight: 400; }
 .amx-row.big .r-s { font-size: 15px; letter-spacing: -.23px; }
 
