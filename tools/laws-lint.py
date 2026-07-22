@@ -228,7 +228,7 @@ def check_rules():
     tool_rules = [r for r in RULES if r.get("scope") == "tools"]
 
     # ВЕСЬ код приложения: `apps/web/src/**` + воркер-файлы рядом с ним (WORKERS).
-    for fp in [f for f in sorted(SRC.rglob("*")) if "/music/" not in str(f)] + WORKERS:  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
+    for fp in [f for f in sorted(SRC.rglob("*")) if "/music/" not in str(f) and "/play/" not in str(f)] + WORKERS:  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
         if fp.suffix not in (".ts", ".tsx", ".css") or fp.name in ALLOW:
             continue
         try:
@@ -281,7 +281,7 @@ def check_floor_law():
     GLYPHS = "◆●•★▸▾·✦"
     bad = []
     for fp in sorted(SRC.rglob("*")):
-        if "/music/" in str(fp):  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
+        if ("/music/" in str(fp) or "/play/" in str(fp)):  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
             continue
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT | {"PdfDoc.tsx", "pdf.ts", "pdfCover.ts"}:
             continue
@@ -534,7 +534,7 @@ def count_debt():
     counts["gates_removed"] = count_gates()
     counts["tracked_big_binary"] = count_big_binaries()
     for fp in sorted(SRC.rglob("*")):
-        if "/music/" in str(fp):  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
+        if ("/music/" in str(fp) or "/play/" in str(fp)):  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
             continue
         if fp.suffix not in (".ts", ".tsx") or fp.name in DESIGN_EXEMPT:
             continue

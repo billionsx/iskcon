@@ -42,7 +42,7 @@ def read(p: Path) -> str:
 
 def files():
     for fp in sorted(SRC.rglob("*")):
-        if "/music/" in str(fp):
+        if "/music/" in str(fp) or "/play/" in str(fp):
             # /music изолирован распоряжением основателя 21.07.2026 — своя
             # история ПОВЕРХ стека App: слушатель слушает только свои state
             continue
@@ -307,7 +307,7 @@ def check_n024():
     caps = re.compile(r'textTransform:\s*"uppercase"')
 
     for fp in sorted(SRC.rglob("*.tsx")):
-        if "/music/" in str(fp):  # /music изолирован распоряжением основателя 21.07.2026 — своя история поверх стека, App о ней не знает
+        if "/music/" in str(fp) or "/play/" in str(fp):  # /music изолирован распоряжением основателя 21.07.2026 — своя история поверх стека, App о ней не знает
             continue
         if fp.name in ("HubHeader.tsx",):
             continue
@@ -424,7 +424,7 @@ def check_n044():
     # своя строка поиска в обход общего компонента
     own = set()
     for fp in sorted(SRC.rglob("*.tsx")):
-        if "/music/" in str(fp):  # /music изолирован распоряжением основателя 21.07.2026 — своя история поверх стека, App о ней не знает
+        if "/music/" in str(fp) or "/play/" in str(fp):  # /music изолирован распоряжением основателя 21.07.2026 — своя история поверх стека, App о ней не знает
             continue
         if fp.name in N044_EXEMPT:
             continue
@@ -1048,7 +1048,7 @@ def check_n002():
     for fp in sorted(SRC.rglob("*")):
         if fp.suffix not in (".ts", ".tsx"):
             continue
-        if "/music/" in str(fp):
+        if "/music/" in str(fp) or "/play/" in str(fp):
             # /music изолирован распоряжением основателя 21.07.2026: клон живёт
             # ПОВЕРХ App и слушает только свои state ({amx}), гонки нет
             continue

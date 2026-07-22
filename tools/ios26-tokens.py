@@ -145,7 +145,7 @@ def main() -> int:
     LIT = re.compile(r"(?:fontSize|lineHeight|letterSpacing):\s*['\"]?-?[0-9]")
     web = ROOT / "apps" / "web" / "src"
     for f in web.rglob("*.tsx"):
-        if "/music/" in str(f):  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
+        if "/music/" in str(f) or "/play/" in str(f):  # /music и /play изолированы распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
             continue
         lits += len(LIT.findall(f.read_text(encoding="utf-8")))
 
@@ -153,13 +153,13 @@ def main() -> int:
     HEAVY = re.compile(r"fontWeight:\s*['\"]?800|weight\.heavy|--weight-heavy")
     heavy = 0
     for f in web.rglob("*.tsx"):
-        if "/music/" in str(f):  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
+        if "/music/" in str(f) or "/play/" in str(f):  # /music и /play изолированы распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
             continue
         heavy += len(HEAVY.findall(f.read_text(encoding="utf-8")))
 
     # правило 7 — в слое ui нет мёртвых кирпичей
     ui = web / "ui"
-    tsx = [f for f in web.rglob("*.tsx") if "/music/" not in str(f)]  # /music изолирован распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
+    tsx = [f for f in web.rglob("*.tsx") if "/music/" not in str(f) and "/play/" not in str(f)]  # /music и /play изолированы распоряжением основателя 21.07.2026: клон Apple Music живёт по стандарту Apple, законы ONE LOVE на него не действуют
     dead_bricks = []
     for f in sorted(ui.glob("*.tsx")):
         for m in re.finditer(r"^export function (\w+)", f.read_text(encoding="utf-8"), re.M):

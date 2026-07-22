@@ -12,9 +12,13 @@ import { lazy, Suspense } from "react";
    21.07.2026): развилка стоит ЗДЕСЬ, а не внутри App. Приложение о /music не
    знает и не меняется; законы ONE LOVE внутри оболочки не действуют. */
 const MusicShell = lazy(() => import("./music/MusicApp"));
+const PlayShell = lazy(() => import("./play/MusicApp"));
 function Root() {
   if (typeof window !== "undefined" && (window.location.pathname === "/music" || window.location.pathname.startsWith("/music/"))) {
     return <Suspense fallback={null}><MusicShell /></Suspense>;
+  }
+  if (typeof window !== "undefined" && (window.location.pathname === "/play" || window.location.pathname.startsWith("/play/"))) {
+    return <Suspense fallback={null}><PlayShell /></Suspense>;
   }
   return <App />;
 }
