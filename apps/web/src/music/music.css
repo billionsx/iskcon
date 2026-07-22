@@ -11,7 +11,8 @@
   width: 393px; max-width: 100vw; z-index: 2147480000;
   overflow: hidden; background: #000; color: #fff;
   /* Телефонная рамка 393pt: все каноны сняты для ширины iPhone; transform делает .amx containing block для fixed-детей (док/плеер живут внутри рамки) */
-  font-family: -apple-system, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
   overflow: hidden; user-select: none; -webkit-user-select: none;
   --red: #FA2D4B;         /* 🍎 перепись Д026: акцент Music */
@@ -190,9 +191,9 @@
 /* ── Герой-карточки вкладки New / хаба ──────────────────────────────────── */
 .amx-heroes { display: flex; gap: 12px; overflow-x: auto; padding: 2px 20px 4px; scroll-snap-type: x mandatory; }  /* 📐 зазор 12, шаг 306 — IMG_2377 */
 .amx-hero { flex: 0 0 294px; scroll-snap-align: start; }  /* 📐 обложка 294 — IMG_2339+2377 */
-.amx-hero .hk { font-size: 13px; font-weight: 600; letter-spacing: .4px; color: var(--g2); }
-.amx-hero .ht { font-size: 22px; font-weight: 500; letter-spacing: -.26px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.amx-hero .hs { font-size: 21px; color: var(--g2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-hero .hk { font-size: 13px; line-height: 16px; font-weight: 600; letter-spacing: .4px; color: var(--g2); }
+.amx-hero .ht { font-size: 22px; line-height: 26px; font-weight: 500; letter-spacing: -.26px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }  /* 📐 скрин@2x: asc 32 ⇒ 21.3≈22; ритм уплотнён */
+.amx-hero .hs { font-size: 20px; line-height: 25px; color: var(--g2); margin-top: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }  /* 📐 скрин@2x: asc+desc 38 ⇒ 20 */
 .amx-hero .amx-cov { width: 100%; aspect-ratio: 3/2; border-radius: 14px; margin-top: 12px; }  /* 📐 294 × 195.33 — IMG_2339 + 2354 + 2377, кромки голосованием строк (голос 0.97) */
 .amx-hero .cap {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 16px 12px;
