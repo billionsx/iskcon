@@ -2,7 +2,7 @@
    45 эталонных экранов; редакционные подписи переписаны своими словами.
    Все обложки рисуются логотипом ISKCON ONE LOVE (см. Cover в core.tsx). */
 
-export type Song = { id: string; t: string; a: string; e?: boolean; d: number };
+export type Song = { id: string; t: string; a: string; e?: boolean; d: number; cov?: string };
 export type Card = { id: string; t: string; s?: string; k?: string; cap?: string; e?: boolean; hue?: number };
 
 const S = (id: string, t: string, a: string, d: number, e?: boolean): Song => ({ id, t, a, d, e });

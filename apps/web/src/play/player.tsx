@@ -35,6 +35,7 @@ function Bridge({ children }: { children: React.ReactNode }) {
     t: t.title,
     a: c.kind === "book" ? c.bookTitle : (t.artist || c.artist || c.bookTitle),
     d: i === c.index ? (c.duration || t.durationSec || 0) : (t.durationSec || 0),
+    cov: c.cover,
   });
   const api: Api = {
     q: c.tracks.map(toSong),
@@ -92,7 +93,7 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="amx-mini" data-amx-mini onClick={() => cur && onOpen()}>
       {cur && p.playing !== undefined && (p.playing || p.pos > 0) ? (
-        <Cover id={cur.id} cls="m-art sm" />
+        <Cover id={cur.id} src={cur.cov} cls="m-art sm" />
       ) : (
         <div className="m-art ph">{I.note({ s: 20 })}</div>
       )}
@@ -379,7 +380,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           {vv === "art" ? (
             <div style={{ position: "absolute", inset: 0, display: "flex",
               flexDirection: "column", justifyContent: "flex-start", margin: "0 -8px" }}>  {/* 📐 IMG_1950: обложка 345, врезка 24 (32−8) */}
-              <Cover id={cur.id} cls="pl-art morph" />
+              <Cover id={cur.id} src={cur.cov} cls="pl-art morph" />
               <div className="pl-meta">
                 <div style={{ minWidth: 0, flex: 1 }}>
                   <div className="mt">{cur.t}</div>
