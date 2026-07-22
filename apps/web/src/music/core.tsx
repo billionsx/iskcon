@@ -22,20 +22,20 @@ export function Cover({ cls, style, label, wm, brand, onClick, children }: {
 }
 
 /* ── Иконки (упрощённые SF-глифы) ─────────────────────────────────────── */
-type IcP = { s?: number; w?: number };
-const Sv = ({ s = 24, vb = 24, children, w }: { s?: number; vb?: number; children: React.ReactNode; w?: number }) => (
+type IcP = { s?: number; w?: number; st?: React.CSSProperties };
+const Sv = ({ s = 24, vb = 24, children, w, st }: { s?: number; vb?: number; children: React.ReactNode; w?: number; st?: React.CSSProperties }) => (
   <svg width={s} height={s} viewBox={`0 0 ${vb} ${vb}`} fill="none" stroke="currentColor"
-    strokeWidth={w ?? 0} strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>{children}</svg>
+    strokeWidth={w ?? 0} strokeLinecap="round" strokeLinejoin="round" style={{ display: "block", ...st }}>{children}</svg>
 );
 export const I = {
   house: ({ s }: IcP = {}) => <Sv s={s}><path fill="currentColor" stroke="none" d="M12 3.6 4 10.7V19a1.6 1.6 0 0 0 1.6 1.6H9.6V15h4.8v5.6H18.4A1.6 1.6 0 0 0 20 19v-8.3Z" /></Sv>,
   grid: ({ s }: IcP = {}) => <Sv s={s}>{[[2.2, 2.2], [12.8, 2.2], [2.2, 12.8], [12.8, 12.8]].map(([x, y], i) => <rect key={i} x={x} y={y} width="9" height="9" rx="2.2" fill="currentColor" stroke="none" />)}</Sv>,
   radio: ({ s }: IcP = {}) => <Sv s={s} w={1.9}><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none" /><path d="M8.6 8.6a4.8 4.8 0 0 0 0 6.8M15.4 8.6a4.8 4.8 0 0 1 0 6.8M6 6a8.5 8.5 0 0 0 0 12M18 6a8.5 8.5 0 0 1 0 12" /></Sv>,
   lib: ({ s }: IcP = {}) => <Sv s={s} w={1.6}><path d="M7.4 2.8h9.2M5.6 5.6h12.8" /><path fill="currentColor" stroke="none" fillRule="evenodd" d="M7.6 8h8.8A3.1 3.1 0 0 1 19.5 11.1v7.2a3.1 3.1 0 0 1-3.1 3.1H7.6a3.1 3.1 0 0 1-3.1-3.1v-7.2A3.1 3.1 0 0 1 7.6 8Zm3.6 2.9v4.6a2 2 0 1 0 1.2 1.83V13.2l3.1-.95v2.4a2 2 0 1 0 1.2 1.83V9.5Z" /></Sv>,
-  search: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.1}><circle cx="10.8" cy="10.8" r="5.7" /><path d="M15.1 15.1 20 20" /></Sv>,
+  search: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.1}><circle cx="10.4" cy="10.4" r="7.8" /><path d="M16 16 21.3 21.3" /></Sv>,  /* 📐 IMG_2336: кольцо d17, полный размах 22.3 в круге 62 */
   mic: ({ s }: IcP = {}) => <Sv s={s} w={1.8}><rect x="9.3" y="2.8" width="5.4" height="10.4" rx="2.7" fill="currentColor" stroke="none" /><path d="M6.2 11.2a5.8 5.8 0 0 0 11.6 0M12 17.4v3M8.8 20.6h6.4" /></Sv>,
-  dots: ({ s }: IcP = {}) => <Sv s={s}>{[5.4, 12, 18.6].map((x) => <circle key={x} cx={x} cy="12" r="1.9" fill="currentColor" stroke="none" />)}</Sv>,
-  back: ({ s }: IcP = {}) => <Sv s={s} w={2.7}><path d="M14.6 4.8 7.6 12l7 7.2" /></Sv>,
+  dots: ({ s }: IcP = {}) => <Sv s={s}>{[3.6, 12, 20.4].map((x) => <circle key={x} cx={x} cy="12" r="2.45" fill="currentColor" stroke="none" />)}</Sv>,  /* 📐 pl_q15: точки d3.7, шаг 6.3 при s=18 */
+  back: ({ s }: IcP = {}) => <Sv s={s} w={2.9} st={{ transform: "translateX(-1.4px)" }}><path d="M16.75 3.6 7.25 12l9.5 8.4" /></Sv>,  /* 📐 IMG_2381: глиф 8.7×15.4, оптический сдвиг −1.4 */
   chev: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.6}><path d="M9 5.4 15.7 12 9 18.6" /></Sv>,
   plus: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2}><path d="M12 4.8v14.4M4.8 12h14.4" /></Sv>,
   star: ({ s }: IcP = {}) => <Sv s={s} w={1.7}><path d="m12 3.6 2.5 5.4 5.9.6-4.4 4 1.2 5.8L12 16.4l-5.2 3 1.2-5.8-4.4-4 5.9-.6Z" /></Sv>,
