@@ -125,6 +125,35 @@ export function MiniPlayer({ onOpen }: { onOpen: () => void }) {
   );
 }
 
+/* ── Глифы транспорта — 📐 pl_q15 y650 и 12.5-кадр y634 ─────────────────
+   prev/next: два клина по 16 pt, зазор 3.7 (общая 35.7; высота 25 — ⚠ хорда
+   14.7 снята на x80, основание не снято). Пауза: палки 12.7 × 39.7, зазор 4.9.
+   Play: клин 30.3 × 39.7. Всё白ое #FFF. */
+function TrSkip({ back }: { back?: boolean }) {
+  return (
+    <svg width="35.7" height="25" viewBox="0 0 35.7 25" fill="#fff"
+      style={back ? { transform: "scaleX(-1)" } : undefined}>
+      <path d="M0 0 L16 12.5 L0 25 Z" />
+      <path d="M19.7 0 L35.7 12.5 L19.7 25 Z" />
+    </svg>
+  );
+}
+function TrPause() {
+  return (
+    <svg width="30.3" height="39.7" viewBox="0 0 30.3 39.7" fill="#fff">
+      <rect x="0" y="0" width="12.7" height="39.7" rx="2.6" />
+      <rect x="17.6" y="0" width="12.7" height="39.7" rx="2.6" />
+    </svg>
+  );
+}
+function TrPlay() {
+  return (
+    <svg width="30.3" height="39.7" viewBox="0 0 30.3 39.7" fill="#fff">
+      <path d="M2.2 3.1 C2.2 1 4.4 -0.3 6.2 .8 L28.4 17.6 c1.6 1 1.6 3.5 0 4.5 L6.2 38.9 C4.4 40 2.2 38.7 2.2 36.6 Z" />
+    </svg>
+  );
+}
+
 /* ── Полноэкранный плеер ──────────────────────────────────────────────── */
 export function FullPlayer({ open, onClose, onFav, favOn }: {
   open: boolean; onClose: () => void; onFav: (s: Song) => void; favOn: (s: Song) => boolean;
@@ -337,7 +366,11 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
               <div className="p-t">{cur.t}</div>
               <div className="p-s">{cur.a}</div>
             </div>
-            <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 22 })}</button>
+            <div className="hb">
+              <button className="amx-cir" onClick={() => onFav(cur)}
+                style={favNow ? { color: "var(--red)" } : undefined}>{favNow ? I.starFill({ s: 17 }) : I.star({ s: 17 })}</button>
+              <button className="amx-cir" onClick={(e) => setMenu(menuAt(e))}>{I.dots({ s: 18 })}</button>
+            </div>
           </div>
           )}
         </div>
