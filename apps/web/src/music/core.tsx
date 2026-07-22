@@ -35,7 +35,7 @@ export const I = {
   search: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.1}><circle cx="10.4" cy="10.4" r="7.8" /><path d="M16 16 21.3 21.3" /></Sv>,  /* 📐 IMG_2336: кольцо d17, полный размах 22.3 в круге 62 */
   mic: ({ s }: IcP = {}) => <Sv s={s} w={1.8}><rect x="9.3" y="2.8" width="5.4" height="10.4" rx="2.7" fill="currentColor" stroke="none" /><path d="M6.2 11.2a5.8 5.8 0 0 0 11.6 0M12 17.4v3M8.8 20.6h6.4" /></Sv>,
   dots: ({ s }: IcP = {}) => <Sv s={s}>{[3.6, 12, 20.4].map((x) => <circle key={x} cx={x} cy="12" r="2.45" fill="currentColor" stroke="none" />)}</Sv>,  /* шапки */
-  dotsSm: ({ s }: IcP = {}) => <Sv s={s}>{[6.63, 12, 17.37].map((x) => <circle key={x} cx={x} cy="12" r=".97" fill="currentColor" stroke="none" />)}</Sv>,  /* 📐 IMG_2348 y435: рядные точки d1.7, шаг 4.7 */  /* 📐 pl_q15: точки d3.7, шаг 6.3 при s=18 */
+  dotsSm: ({ s }: IcP = {}) => <Sv s={s}>{[6.51, 12, 17.49].map((x) => <circle key={x} cx={x} cy="12" r="1.54" fill="currentColor" stroke="none" />)}</Sv>,  /* 📐 IMG_2382 y187: рядные точки d2.7, шаг 4.8, центр x351 */  /* 📐 pl_q15: точки d3.7, шаг 6.3 при s=18 */
   back: ({ s }: IcP = {}) => <Sv s={s} w={2.9} st={{ transform: "translateX(-1.4px)" }}><path d="M16.75 3.6 7.25 12l9.5 8.4" /></Sv>,  /* 📐 IMG_2381: глиф 8.7×15.4, оптический сдвиг −1.4 */
   chev: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2.6}><path d="M9 5.4 15.7 12 9 18.6" /></Sv>,
   plus: ({ s, w }: IcP = {}) => <Sv s={s} w={w ?? 2}><path d="M12 4.8v14.4M4.8 12h14.4" /></Sv>,
