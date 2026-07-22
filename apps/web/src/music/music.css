@@ -165,8 +165,8 @@
 .amx-shelf { display: flex; gap: 12px; overflow-x: auto; padding: 0 20px 4px; scroll-snap-type: x mandatory; }
 .amx-shelf > * { scroll-snap-align: start; }
 .amx-cardw { width: 141px; flex: 0 0 auto; }  /* 📐 шаг 153 − зазор 12 */
-.amx-cardw .cw-t { font-size: 15px; font-weight: 400; letter-spacing: -.23px; margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
-.amx-cardw .cw-s { font-size: 13px; letter-spacing: -.08px; color: var(--g2); margin-top: 1px; /* §3.2 Footnote */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amx-cardw .cw-t { font-size: 15px; font-weight: 400; letter-spacing: -.23px; margin-top: 9.4px; line-height: 15px;  /* 📐 libgrid(139.5с): зазор 9.4, шаг баз подписей 15 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
+.amx-cardw .cw-s { font-size: 13px; letter-spacing: -.08px; color: var(--g2); margin-top: 0; line-height: 14px; /* §3.2 Footnote · 📐 шаг 15 */ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .amx-cardw .amx-cov { width: 141px; height: 141px; border-radius: 10px; }  /* 📐 141 × 141 */
 .amx-cardw.wide { width: 240px; }
 .amx-cardw.wide .amx-cov { width: 240px; height: 150px; border-radius: 12px; }
