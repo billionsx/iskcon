@@ -653,12 +653,13 @@ body:has(.amx) { background: #000 !important; overflow: hidden !important; }
 .amx .amx-row .r-num { width: 41.33px; flex: 0 0 41.33px; text-align: center; font-size: 17px; color: var(--g2); font-variant-numeric: tabular-nums; }
 
 /* Витрина книг слайдером (первый экран «Книги») */
-.amx-showcase { display: flex; align-items: stretch; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 20px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.amx-showcase { display: flex; align-items: flex-start; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 0 20px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .amx-showcase::-webkit-scrollbar { display: none; }
 .amx-showcase-i { flex: 0 0 353px; max-width: calc(100% - 40px); scroll-snap-align: start; display: flex; }
-/* Карточка ВКК жёстко держит 4:5. В колонке 353 pt её текст (полное имя автора +
-   аннотация) выше этой рамки: при justify-content:flex-end контент выдавливало
-   ВВЕРХ, и заголовок влезал в ряд действий. Здесь пропорцию отпускаем: высоту
-   ряда задаёт самая длинная карточка, остальные тянутся до неё (align-items:
-   stretch) — обрезки нет ни у одной, ряд остаётся ровным. */
-.amx-showcase-i > article { aspect-ratio: auto !important; width: 100%; min-height: 100%; }
+/* ВКК держит родную пропорцию 4:5, как в основном приложении. Чтобы длинный
+   текст (полное имя автора + аннотация) не выдавливал заголовок в ряд действий,
+   он усекается по строкам — как усекает Apple, а не растягивает карточку. */
+.amx-showcase-i > article { aspect-ratio: 4 / 5 !important; width: 100%; }
+.amx-showcase-i article p { display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+.amx-showcase-i article p:nth-of-type(1) { -webkit-line-clamp: 2; }
+.amx-showcase-i article p:nth-of-type(2) { -webkit-line-clamp: 3; }
