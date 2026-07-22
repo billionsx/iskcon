@@ -441,7 +441,7 @@
    345×345 при врезке 24 (393−24−24=345), под ней название, исполнитель и ⋯
    в одной строке. Экран лирики — ОТДЕЛЬНЫЙ режим с компактной шапкой; клон
    открывался сразу в него, и большой обложки не показывал вовсе. */
-.amx-pl .pl-art { width: 100%; aspect-ratio: 1; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,.5); }
+.amx-pl .pl-art { width: 345px; max-width: 100%; aspect-ratio: 1; border-radius: 12px; margin: calc(58.5px - var(--sat, 0px)) auto 0; box-shadow: 0 18px 50px rgba(0,0,0,.5); }  /* 📐 IMG_1950: 345, x24 (центр в контейнере 409), верх 91.5 (33+58.5) */
 .amx-pl .pl-meta { display: flex; align-items: flex-start; gap: 12px; margin-top: 46.5px; }  /* 📐 436.5 → 483 */
 .amx-pl .pl-meta .mt { font-size: 22px; font-weight: 700; letter-spacing: -.26px; line-height: 28px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .amx-pl .pl-meta .ms { font-size: 22px; font-weight: 400; letter-spacing: -.26px; line-height: 28px; color: rgba(255,255,255,.62); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
