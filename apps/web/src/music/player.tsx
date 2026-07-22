@@ -387,7 +387,7 @@ export function FullPlayer({ open, onClose, onFav, favOn }: {
           <div className={cls} key={vv}>
           {vv === "art" ? (
             <div style={{ position: "absolute", inset: 0, display: "flex",
-              flexDirection: "column", justifyContent: "flex-start", padding: "0 4px" }}>
+              flexDirection: "column", justifyContent: "flex-start", margin: "0 -8px" }}>  {/* 📐 IMG_1950: обложка 345, врезка 24 (32−8) */}
               <Cover id={cur.id} cls="pl-art morph" />
               <div className="pl-meta">
                 <div style={{ minWidth: 0, flex: 1 }}>

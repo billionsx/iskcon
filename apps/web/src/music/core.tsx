@@ -207,7 +207,8 @@ export function Menu({ at, quick, items, onClose, width, narrow }: {
 }
 export const menuAt = (e: React.MouseEvent): { x: number; y: number } => {
   const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  return { x: r.left + r.width / 2, y: r.bottom };
+  const host = (e.currentTarget as HTMLElement).closest(".amx")?.getBoundingClientRect();
+  return { x: r.left + r.width / 2 - (host?.left ?? 0), y: r.bottom - (host?.top ?? 0) };
 };
 
 /* ── Выходной такт слоя: сыграть «out» и лишь потом снять с экрана ─────
