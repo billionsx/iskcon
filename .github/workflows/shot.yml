@@ -66,7 +66,7 @@ jobs:
               ".amx", ".amx-top", ".amx-h1", ".amx-h2", ".amx-showcase-i",
               ".amx-showcase-i article", ".amx-dock", "[data-amx-mini]", ".m-art",
               ".amx-capsule", ".amx-chip", ".amx-row", ".r-num",
-              ".amx-pl", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms",
+              ".amx-pl", ".pl-in", ".pl-art", ".pl-meta", ".pl-meta .mt", ".pl-meta .ms", ".pl-tr", ".pl-tog",
               ".pl-bar", ".pl-times", ".amx-cir",
           ])
           STATES = {
