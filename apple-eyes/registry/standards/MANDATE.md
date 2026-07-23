@@ -107,3 +107,8 @@
 | долг проекта | храповик `--ratchet` (`state/ae-baseline.json`): долг по правилу может только падать |
 | маркетинг · бейджи | источник `app-store-marketing` + знание |
 | кроссплатформенность | источники designing-for-ipados/macos/tvos + split-views |
+| свечение | **AE2 расширен**: text-shadow и drop-shadow на чёрном — красный |
+| надавливание · отклик пальца | **AE12**: `:active` отвечает ≤120 мс (📐 press_response_ms_max) |
+| маркетинг · рейтинги · отзывы · popup · геймификация | источник `app-review-guidelines` (App Review Guidelines) → знание |
+| UI/UX-эталоны | источник `design-awards`; `wwdc-videos` — анонсы Liquid Glass/iOS 27 |
+| iOS 27: рельсы базы | автокаркас `standards/ios27/tokens.next.json` + `MIGRATION.md` (устав §7.6) |

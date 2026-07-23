@@ -69,6 +69,60 @@ def scan_ios27(root: Path) -> list:
     return ev
 
 
+def _skeleton(node, trail=""):
+    """Схема ios26.5 → каркас следующей базы: каждое ЧИСЛО становится 🕳
+    с памяткой прежнего значения. Строки-пояснения и refs сохраняются как
+    контекст. Автоматика разворачивает РЕЛЬСЫ — заполняют их только замеры."""
+    if isinstance(node, dict):
+        return {k: _skeleton(v, f"{trail}.{k}" if trail else k) for k, v in node.items()}
+    if isinstance(node, list):
+        if node and all(isinstance(x, (int, float)) for x in node):
+            return f"🕳 замерить (ios26: {node})"
+        return [_skeleton(x, trail) for x in node]
+    if isinstance(node, bool) or node is None:
+        return node
+    if isinstance(node, (int, float)):
+        return f"🕳 замерить (ios26: {node})"
+    return node
+
+
+MANDATE_DOMAINS = [
+    "кернинг/трекинг", "шрифты/роли", "цвета/поверхности", "отступы (⅓pt, сетки нет)",
+    "иконки/SF Symbols", "плашки/чипы", "Liquid Glass/материал", "меню", "архитектура/суб-приложения",
+    "blur/многослойность", "opacity", "свечение/тени", "анимация/кинетика", "жесты",
+    "вибрации/haptics", "надавливание/press", "кроссплатформенность", "градиенты",
+    "геймификация/рейтинги/отзывы", "маркетинг/popup", "продукты-эталоны (12)",
+]
+
+
+def scaffold_ios27(root: Path, first_seen: str) -> None:
+    """Каркас смены базы: tokens.next.json (все числа 🕳) + MIGRATION.md.
+    Идемпотентно: существующий каркас не перезаписывается — в нём живут замеры."""
+    proto = root / "registry" / "standards" / "ios27"
+    proto.mkdir(parents=True, exist_ok=True)
+    nxt = proto / "tokens.next.json"
+    if not nxt.exists():
+        tok_f = root / "registry" / "standards" / "tokens.json"
+        if not tok_f.exists():
+            tok_f = ROOT / "registry" / "standards" / "tokens.json"  # переносимость: каркас всегда от измеренной базы департамента
+        base = json.loads(tok_f.read_text(encoding="utf-8"))
+        sk = _skeleton(base)
+        sk["base"] = "ios27-dark (КАРКАС: ни одно 🕳 не закрыто — база НЕ действует, Д028)"
+        sk["_рельсы"] = ("создано дозором " + first_seen + "; заполняется только конвейером "
+                         "intake → инструменты → храповик; перенос чисел из ios26 запрещён")
+        nxt.write_text(json.dumps(sk, ensure_ascii=False, indent=1), encoding="utf-8")
+    mig = proto / "MIGRATION.md"
+    if not mig.exists():
+        mig.write_text(
+            f"# iOS 27 · МИГРАЦИЯ БАЗЫ · каркас развёрнут {first_seen}\n\n"
+            "Правило одно: домен закрыт, когда его числа стоят в `tokens.next.json` "
+            "с адресами замеров. Знание дозора (`../../knowledge/`, домен ios27) — сырьё, не источник чисел.\n\n"
+            "| Домен мандата | Статус |\n|---|---|\n"
+            + "\n".join(f"| {d} | 🕳 |" for d in MANDATE_DOMAINS)
+            + "\n\nЗакрытие: 🕳 → 📐 построчно; строка со статусом 🕳 не даёт переключить `base`.\n",
+            encoding="utf-8")
+
+
 def cmd_ios27(root: Path, issue: bool) -> int:
     reg = root / "registry"
     wf = reg / "state" / "ios27-watch.json"
@@ -91,8 +145,10 @@ def cmd_ios27(root: Path, issue: bool) -> int:
             + "\n".join(f"- `{e['source']}` · «…{e['context']}…»" for e in ev[:20]) + "\n",
             encoding="utf-8")
         print(f"iOS 27 ОБНАРУЖЕН · улик: {len(ev)} · протокол: registry/standards/ios27/DETECTED.md")
+        scaffold_ios27(root, w["first_seen"])
     elif ev:
         w["evidence"] = ev[:20]
+        scaffold_ios27(root, w.get("first_seen", _now()))
         print(f"iOS 27: подтверждён ранее ({w.get('first_seen')}) · улик сейчас: {len(ev)}")
     else:
         print("iOS 27: не обнаружен")
@@ -124,7 +180,7 @@ def cmd_ios27(root: Path, issue: bool) -> int:
 def apply_ratchet(root: Path, adapter_name: str, res: dict, baseline_file: Path) -> int:
     """Храповик советника: долг по каждому правилу может только уменьшаться.
     Рост = красный даже в report-режиме; улучшение само ужимает базу."""
-    counts = {}
+    counts = {r: 0 for r in res.get("rules", [])}   # ноль тоже база: первое нарушение нового правила = рост
     for r, *_ in res["findings"]:
         counts[r] = counts.get(r, 0) + 1
     base = json.loads(baseline_file.read_text(encoding="utf-8")) if baseline_file.exists() else {}
@@ -154,7 +210,7 @@ def cmd_attach(root: Path, project: str, report_glob: list, strict_glob: list) -
         "allow_extra": [],
         "sizes_extra": [],
         "report": {"globs": report_glob,
-                   "rules": ["AE1", "AE2", "AE3", "AE4", "AE5", "AE6", "AE7", "AE8", "AE9", "AE10", "AE11"]},
+                   "rules": ["AE1", "AE2", "AE3", "AE4", "AE5", "AE6", "AE7", "AE8", "AE9", "AE10", "AE11", "AE12"]},
         "strict": {"globs": strict_glob, "rules": ["AE2", "AE3", "AE4", "AE6", "AE7"]},
         "radius_extra": [],
         "_порядок": "новый проект начинает с report; правило переводится в strict, когда его долг = 0",
@@ -222,6 +278,18 @@ def cmd_selftest(root: Path) -> int:
         w = json.loads((reg / "state" / "ios27-watch.json").read_text(encoding="utf-8"))
         check("протокол DETECTED.md создан, статус зафиксирован",
               w.get("detected") and (reg / "standards" / "ios27" / "DETECTED.md").exists())
+        nxt_f = reg / "standards" / "ios27" / "tokens.next.json"
+        mig_f = reg / "standards" / "ios27" / "MIGRATION.md"
+        nxt = json.loads(nxt_f.read_text(encoding="utf-8"))
+        flat = json.dumps(nxt, ensure_ascii=False)
+        check("рельсы новой базы: каркас развёрнут, все числа 🕳, чисел ios26 без пометки нет",
+              mig_f.exists() and "🕳" in flat
+              and not re.search(r'":\s*\d', flat.replace('"level":', ""))
+              and "НЕ действует" in str(nxt.get("base", "")))
+        nxt_f.write_text(json.dumps({"base": "заполнено замером"}, ensure_ascii=False), encoding="utf-8")
+        cmd_ios27(tmp, issue=False)
+        check("каркас идемпотентен: замеры в нём не затираются",
+              json.loads(nxt_f.read_text(encoding="utf-8"))["base"] == "заполнено замером")
         print("SELFTEST · разведка DocC (JS-скорлупа обходится данными)")
         shutil.copy(fx / "hig-fixture.json", fxdir / "fixture-page.json")
         (fxdir / "fixture-page.html").unlink()
@@ -258,27 +326,31 @@ def cmd_selftest(root: Path) -> int:
         shutil.rmtree(tmp, ignore_errors=True)
 
     print("SELFTEST · исполнительная власть (AE7–AE11)")
-    adapter = {"strict": {"globs": ["bad.css"], "rules": ["AE7", "AE8", "AE9", "AE10", "AE11"]},
+    adapter = {"strict": {"globs": ["bad.css"], "rules": ["AE7", "AE8", "AE9", "AE10", "AE11", "AE12"]},
                "allow_extra": [], "sizes_extra": [], "radius_extra": []}
     got7 = {r for r, *_ in lint_mod.run(root, adapter, tokens, "strict", fx)["findings"]}
-    check("ломаю → красный: bad.css даёт AE7..AE11", {"AE7", "AE8", "AE9", "AE10", "AE11"} <= got7)
+    check("ломаю → красный: bad.css даёт AE7..AE12", {"AE7", "AE8", "AE9", "AE10", "AE11", "AE12"} <= got7)
     adapter["strict"]["globs"] = ["good.css"]
-    check("чиню → зелёный: good.css чист по AE7..AE11",
+    check("чиню → зелёный: good.css чист по AE7..AE12",
           not lint_mod.run(root, adapter, tokens, "strict", fx)["findings"])
     adapter["strict"]["globs"] = ["commented.css"]
-    check("нарушители AE7..AE11 в комментарии не считаются",
+    check("нарушители AE7..AE12 в комментарии не считаются",
           not lint_mod.run(root, adapter, tokens, "strict", fx)["findings"])
 
     print("SELFTEST · храповик советника")
     tmp2 = Path(tempfile.mkdtemp(prefix="apple-eyes-r-"))
     try:
         bl = tmp2 / "baseline.json"
-        res_w = {"findings": [("AE1", "f", 1, "x")] * 3}
-        check("первый замер пишет базу и зелёный",
-              apply_ratchet(root, "t", res_w, bl) == 0 and json.loads(bl.read_text())["t"]["AE1"] == 3)
-        res_worse = {"findings": [("AE1", "f", 1, "x")] * 4}
+        res_w = {"rules": ["AE1", "AE9"], "findings": [("AE1", "f", 1, "x")] * 3}
+        check("первый замер пишет базу и зелёный (ноль тоже прибит)",
+              apply_ratchet(root, "t", res_w, bl) == 0
+              and json.loads(bl.read_text())["t"] == {"AE1": 3, "AE9": 0})
+        res_zero_worse = {"rules": ["AE1", "AE9"], "findings": [("AE1", "f", 1, "x")] * 3 + [("AE9", "f", 2, "y")]}
+        check("нарушение правила с нулевой базой → красный",
+              apply_ratchet(root, "t", res_zero_worse, bl) == 1)
+        res_worse = {"rules": ["AE1", "AE9"], "findings": [("AE1", "f", 1, "x")] * 4}
         check("долг вырос → красный", apply_ratchet(root, "t", res_worse, bl) == 1)
-        res_better = {"findings": [("AE1", "f", 1, "x")] * 2}
+        res_better = {"rules": ["AE1", "AE9"], "findings": [("AE1", "f", 1, "x")] * 2}
         check("долг упал → зелёный и база ужалась",
               apply_ratchet(root, "t", res_better, bl) == 0 and json.loads(bl.read_text())["t"]["AE1"] == 2)
 

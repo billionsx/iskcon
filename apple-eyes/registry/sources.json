@@ -468,6 +468,37 @@
     "иконки"
    ],
    "enrolled": "2026-07-23 17:38 UTC"
+  },
+  {
+   "id": "app-review-guidelines",
+   "url": "https://developer.apple.com/app-store/review/guidelines/",
+   "kind": "html",
+   "domains": [
+    "маркетинг",
+    "рейтинги",
+    "отзывы",
+    "popup",
+    "геймификация"
+   ]
+  },
+  {
+   "id": "design-awards",
+   "url": "https://developer.apple.com/design/awards/",
+   "kind": "html",
+   "domains": [
+    "UI/UX",
+    "эталоны"
+   ]
+  },
+  {
+   "id": "wwdc-videos",
+   "url": "https://developer.apple.com/videos/wwdc2026/",
+   "kind": "html",
+   "domains": [
+    "ios27",
+    "анимация",
+    "Liquid Glass"
+   ]
   }
  ]
 }

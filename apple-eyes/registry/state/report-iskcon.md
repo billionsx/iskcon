@@ -1,5 +1,5 @@
 # APPLE EYES · отчёт линта · адаптер `iskcon` · режим report
-Файлов просмотрено: 117 · правила: AE1, AE2, AE3, AE4, AE6, AE7, AE8, AE9, AE10, AE11 · находок: 326
+Файлов просмотрено: 117 · правила: AE1, AE2, AE3, AE4, AE6, AE7, AE8, AE9, AE10, AE11, AE12 · находок: 327
 
 ## AE1 · 14
 - `apps/web/src/music/music.css:109` — фон #FFFFFF вне лестницы поверхностей (#000000 → #1C1C1E → #2C2C2E)
@@ -107,61 +107,62 @@
 - `apps/web/src/ui/globals.css:950` — border-radius 25px вне измеренной лестницы [8.0, 12.0, 16.0, 24.0, 29.0, 37.8]
 - `apps/web/src/main.tsx:163` — border-radius 10px вне измеренной лестницы [8.0, 12.0, 16.0, 24.0, 29.0, 37.8]
 
-## AE2 · 54
-- `apps/web/src/music/music.css:46` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:86` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:92` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:220` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:230` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:287` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:325` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:343` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:356` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:371` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:379` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:408` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:412` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:423` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:427` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:433` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:434` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:469` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:551` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/music/music.css:589` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:46` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:86` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:92` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:220` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:230` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:287` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:325` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:343` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:356` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:371` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:379` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:408` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:412` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:423` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:427` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:433` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:434` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:469` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:551` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/play/play.css:589` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:431` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:448` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:453` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:654` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:709` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:744` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:819` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:841` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:853` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/ui/globals.css:917` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/AccountScreen.tsx:104` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/AccountScreen.tsx:106` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/dhama/DhamaMap.tsx:83` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
-- `apps/web/src/main.tsx:163` — box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности
+## AE2 · 55
+- `apps/web/src/music/music.css:46` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:86` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:92` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:220` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:230` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:287` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:325` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:343` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:356` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:371` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:379` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:408` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:412` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:423` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:427` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:433` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:434` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:469` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:551` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/music/music.css:589` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:46` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:86` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:92` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:220` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:230` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:287` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:325` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:343` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:356` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:371` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:379` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:408` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:412` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:423` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:427` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:433` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:434` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:469` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:551` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/play/play.css:589` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:431` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:448` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:453` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:654` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:709` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:744` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:819` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:841` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:853` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/ui/globals.css:917` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/AccountScreen.tsx:104` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/AccountScreen.tsx:106` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/dhama/DhamaMap.tsx:83` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/main.tsx:163` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
+- `apps/web/src/prasad/covers.tsx:100` — свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности
 
 ## AE3 · 2
 - `apps/web/src/music/music.css:34` — border-radius 14.0px > 12pt без формы суперэллипса (clip-path:path / corner-shape)

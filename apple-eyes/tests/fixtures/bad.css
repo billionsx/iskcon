@@ -8,3 +8,7 @@
 .dim { opacity: 0.42; }
 .brand { font-family: "Comic Sans MS", cursive; }
 .round { border-radius: 19px; }
+
+.glow { text-shadow: 0 0 12px #fff; }
+.press { }
+.press:active { transition: transform 300ms cubic-bezier(.32,.72,0,1); }

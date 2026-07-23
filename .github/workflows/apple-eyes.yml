@@ -71,13 +71,18 @@ jobs:
         if: steps.kind.outputs.net == 'yes'
         run: python3 apple-eyes/bin/apple_eyes.py digest
 
-      - name: "Советник + храповик — долг iskcon может только падать (§7.4)"
+      - name: "Советник + храповик — по ВСЕМ адаптерам, долг только падает (§7.4)"
         run: |
-          python3 apple-eyes/bin/apple_eyes.py lint --adapter iskcon --mode report \
-            --out apple-eyes/registry/state/report-iskcon.md \
-            --ratchet apple-eyes/registry/state/ae-baseline.json > /tmp/lint.out || { cat /tmp/lint.out; exit 1; }
-          head -3 apple-eyes/registry/state/report-iskcon.md
-          tail -5 /tmp/lint.out
+          rc=0
+          for f in apple-eyes/adapters/*.json; do
+            a=$(basename "$f" .json)
+            python3 apple-eyes/bin/apple_eyes.py lint --adapter "$a" --mode report \
+              --out "apple-eyes/registry/state/report-$a.md" \
+              --ratchet apple-eyes/registry/state/ae-baseline.json > /tmp/lint.out \
+              || { echo "=== $a ==="; cat /tmp/lint.out; rc=1; }
+            head -2 "apple-eyes/registry/state/report-$a.md" | tail -1
+          done
+          exit $rc
 
       - name: "Хроника — коммит состояния в репозиторий"
         run: |

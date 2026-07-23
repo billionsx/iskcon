@@ -36,6 +36,9 @@ APPLE EYES · ИСПОЛНИТЕЛЬНАЯ ВЛАСТЬ. Переносимый 
                    system-ui / SF Pro) — подмена первой позиции ломает метрики.
   AE11 РАДИУС      border-radius из измеренной лестницы (советник: чужой
                    радиус — чужая геометрия).
+  AE12 НАЖАТИЕ     переход в :active не длиннее press_response_ms_max —
+                   нажатие отвечает ≤120 мс (LAW_MUSIC §5), дольше =
+                   мёртвая рука под пальцем.
 
 Отступы правилом НЕ проверяются — ключевой замер: точечной сетки НЕТ,
 шаг CSS = ⅓pt при @3x; «линт сетки отступов» противоречил бы измерениям.
@@ -60,7 +63,7 @@ def strip_comments(text: str, suffix: str) -> str:
 
 HEX = r"#[0-9A-Fa-f]{6}\b"
 BG_PROP = re.compile(r"(?:background|background-color)\s*:\s*(" + HEX + ")", re.I)
-SHADOW = re.compile(r"\bbox-shadow\s*:\s*(?!\s*none)", re.I)
+SHADOW = re.compile(r"\b(?:box-shadow|text-shadow)\s*:\s*(?!\s*none)|drop-shadow\(", re.I)
 RADIUS = re.compile(r"border-radius\s*:\s*([\d.]+)px", re.I)
 SUPER = re.compile(r"clip-path\s*:\s*path\(|corner-shape", re.I)
 LSPX = re.compile(r"letter-spacing\s*:\s*(-?[\d.]+)px", re.I)
@@ -70,6 +73,7 @@ MOTION = re.compile(r"\b(?:transition|animation)\s*:\s*([^;}\n]+)", re.I)
 MS = re.compile(r"([\d.]+)\s*(ms|s)\b")
 OPACITY = re.compile(r"(?<![-\w])opacity\s*:\s*(0?\.\d+|[01])(?![\d.])", re.I)
 FFAM = re.compile(r"font-family\s*:\s*([^;}\n]+)", re.I)
+ACTIVE_BLOCK = re.compile(r":active[^{]*\{([^}]*)\}", re.I | re.S)
 
 
 def _line_of(text: str, pos: int) -> int:
@@ -91,6 +95,7 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
     min_ms = float(tokens.get("motion", {}).get("min_ms_for_curve", 200))
     rad_ladder = {float(v) for v in tokens["geometry"].get("radius_ladder_pt", [])} | {float(v) for v in adapter.get("radius_extra", [])}
     stack_head = tuple(s.lower() for s in tokens["typography"].get("font_stack_head", []))
+    press_max = float(tokens.get("motion", {}).get("press_response_ms_max", 120))
 
     findings, files_n = [], 0
     for g in globs:
@@ -112,7 +117,7 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
             if "AE2" in rules:
                 for m in SHADOW.finditer(t):
                     findings.append(("AE2", rel, _line_of(t, m.start()),
-                                     "box-shadow: на чёрном холсте теней нет — глубина = ступень поверхности"))
+                                     "свечение/тень на чёрном холсте запрещены (box/text-shadow, drop-shadow) — глубина = ступень поверхности"))
             if "AE3" in rules:
                 bigs = [(float(m.group(1)), m.start()) for m in RADIUS.finditer(t) if float(m.group(1)) > rad_lim]
                 if bigs and not SUPER.search(t):
@@ -170,6 +175,15 @@ def run(root: Path, adapter: dict, tokens: dict, mode: str, project_root: Path) 
                     if rad_ladder and v not in rad_ladder:
                         findings.append(("AE11", rel, _line_of(t, m.start()),
                                          f"border-radius {v:g}px вне измеренной лестницы {sorted(rad_ladder)}"))
+            if "AE12" in rules:
+                for m in ACTIVE_BLOCK.finditer(t):
+                    body = m.group(1)
+                    if "var(" in body.lower():
+                        continue
+                    dur = max((float(x) * (1000 if u == "s" else 1) for x, u in MS.findall(body)), default=0)
+                    if dur > press_max:
+                        findings.append(("AE12", rel, _line_of(t, m.start()),
+                                         f":active отвечает {dur:g}ms — нажатие обязано ответить ≤{press_max:g}ms (мёртвая рука)"))
 
     return {"mode": mode, "files": files_n, "findings": findings, "rules": rules}
 
