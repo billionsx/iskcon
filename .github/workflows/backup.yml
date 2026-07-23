@@ -1,0 +1,185 @@
+name: backup (D1 + репозиторий → Internet Archive)
+
+# ОФФСАЙТ-БЭКАП. Смысл: пережить компрометацию GitHub И Cloudflare сразу.
+# Поэтому склад — Internet Archive: третий провайдер, отдельные ключи, своя
+# история версий. Внутри CF (Time Travel, R2) бэкап от злоумышленника с
+# доступом к CF не спасает — это копия для быстрого отката, а не защита.
+#
+# Кладём два артефакта, каждого достаточно для восстановления своей половины:
+#   d1-<дата>.sql.gz  — полный дамп базы (схема + данные), export API D1
+#   repo-<дата>.bundle.gz — git bundle: ВСЯ история и все ветки одним файлом
+# Плюс manifest.json с sha256 — он коммитится в main, чтобы подмена файла на
+# складе была видна (у злоумышленника нет способа переписать историю коммитов
+# незаметно, если включена защита ветки).
+
+on:
+  schedule:
+    - cron: "17 2 * * *"     # ежедневно 02:17 UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Только собрать, не выгружать"
+        default: "false"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: Зависимости
+        run: pip install "internetarchive>=3.5" >/dev/null
+
+      - name: Дамп D1
+        env:
+          CF: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set +e
+          python3 - <<'PY' 2>&1 | tee d1-dump.log
+          import gzip, json, os, time, urllib.error, urllib.request
+
+          CF   = os.environ["CF"]
+          ACCT = "d5cbe19470dc38599873eabfe148e6d1"
+          DB   = "6226aded-dd03-4e74-977f-9cd0b509e73d"
+          ROOT = f"https://api.cloudflare.com/client/v4/accounts/{ACCT}/d1/database/{DB}"
+          H    = {"Authorization": f"Bearer {CF}", "Content-Type": "application/json"}
+
+          def post(url, body):
+              rq = urllib.request.Request(url, data=json.dumps(body).encode(), headers=H)
+              with urllib.request.urlopen(rq, timeout=180) as r:
+                  return json.loads(r.read().decode())
+
+          def query(sql):
+              return post(ROOT + "/query", {"sql": sql})["result"][0]["results"]
+
+          # 1) Штатный export D1: отдаёт ссылку на полный SQL-дамп (схема+данные).
+          url, bookmark = None, None
+          try:
+              for _ in range(60):
+                  body = {"output_format": "polling"}
+                  if bookmark: body["current_bookmark"] = bookmark
+                  r = post(ROOT + "/export", body)
+                  res = r.get("result") or {}
+                  if res.get("signed_url"):
+                      url = res["signed_url"]; break
+                  bookmark = res.get("at_bookmark") or bookmark
+                  time.sleep(5)
+          except urllib.error.HTTPError as e:
+              print("export API недоступен:", e.code, e.read().decode()[:300])
+
+          if url:
+              with urllib.request.urlopen(url, timeout=600) as r, gzip.open("d1.sql.gz", "wb") as w:
+                  n = 0
+                  while True:
+                      chunk = r.read(1 << 20)
+                      if not chunk: break
+                      w.write(chunk); n += len(chunk)
+              print(f"✓ export D1: {n/1048576:.1f} МБ (несжатых)")
+          else:
+              # 2) Запасной путь: таблица за таблицей через query.
+              print("↻ запасной дамп через query")
+              tabs = [t["name"] for t in query(
+                  "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%'")]
+              with gzip.open("d1.sql.gz", "wt", encoding="utf-8") as w:
+                  for t in tabs:
+                      ddl = query(f"SELECT sql FROM sqlite_master WHERE name='{t}'")
+                      if ddl and ddl[0].get("sql"): w.write(ddl[0]["sql"].rstrip(";") + ";\n")
+                      off, total = 0, 0
+                      while True:
+                          rows = query(f"SELECT * FROM \"{t}\" LIMIT 500 OFFSET {off}")
+                          if not rows: break
+                          for row in rows:
+                              cols = ",".join(f'"{c}"' for c in row)
+                              vals = ",".join("NULL" if v is None else
+                                              (str(v) if isinstance(v, (int, float)) else
+                                               "'" + str(v).replace("'", "''") + "'") for v in row.values())
+                              w.write(f'INSERT INTO "{t}" ({cols}) VALUES ({vals});\n')
+                          off += len(rows); total += len(rows)
+                          if len(rows) < 500: break
+                      print(f"  {t}: {total}")
+              print("✓ запасной дамп готов")
+          PY
+          test -s d1.sql.gz || { echo "ДАМП ПУСТ — прерываю"; exit 1; }
+          ls -lh d1.sql.gz
+
+      - name: Бандл репозитория
+        run: |
+          git bundle create repo.bundle --all
+          gzip -9 -f repo.bundle
+          ls -lh repo.bundle.gz
+
+      - name: Манифест и контрольные суммы
+        id: man
+        run: |
+          STAMP=$(date -u +%Y%m%d)
+          echo "stamp=$STAMP" >> $GITHUB_OUTPUT
+          mv d1.sql.gz "d1-$STAMP.sql.gz"
+          mv repo.bundle.gz "repo-$STAMP.bundle.gz"
+          python3 - <<PY
+          import hashlib, json, os, datetime
+          out = {"stamp": "$STAMP", "utc": datetime.datetime.utcnow().isoformat() + "Z", "files": {}}
+          for f in ("d1-$STAMP.sql.gz", "repo-$STAMP.bundle.gz"):
+              h = hashlib.sha256()
+              with open(f, "rb") as fh:
+                  for b in iter(lambda: fh.read(1 << 20), b""): h.update(b)
+              out["files"][f] = {"sha256": h.hexdigest(), "bytes": os.path.getsize(f)}
+          os.makedirs("docs/backups", exist_ok=True)
+          json.dump(out, open("docs/backups/latest.json", "w"), indent=1)
+          print(json.dumps(out, indent=1))
+          PY
+
+      - name: Выгрузка в Internet Archive
+        if: ${{ inputs.dry_run != 'true' }}
+        env:
+          IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+          IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+          STAMP: ${{ steps.man.outputs.stamp }}
+        run: |
+          set +e
+          python3 - <<'PY' 2>&1 | tee ia.log
+          import os
+          from internetarchive import get_session
+          s = get_session(config={"s3": {"access": os.environ["IA_ACCESS_KEY"],
+                                         "secret": os.environ["IA_SECRET_KEY"]}})
+          stamp = os.environ["STAMP"]
+          ident = f"iskcone-backup-{stamp}"
+          md = {"title": f"ISKCON ONE LOVE — backup {stamp}",
+                "collection": "opensource", "mediatype": "data",
+                "subject": ["iskcon", "backup", "d1", "git"]}
+          item = s.get_item(ident)
+          files = [f"d1-{stamp}.sql.gz", f"repo-{stamp}.bundle.gz", "docs/backups/latest.json"]
+          r = item.upload(files, metadata=md, retries=3, verbose=True)
+          ok = all(getattr(x, "status_code", 200) in (200, 201) for x in (r or []))
+          print(("✓ выгружено: " if ok else "✗ проблемы при выгрузке: ") + f"https://archive.org/details/{ident}")
+          PY
+          echo "rc=${PIPESTATUS[0]}"
+
+      - name: Записать манифест в main
+        if: ${{ inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
+          git add docs/backups/latest.json
+          git commit -q -m "backup ${{ steps.man.outputs.stamp }}: манифест" || echo "без изменений"
+          for i in 1 2 3 4 5 6; do
+            git fetch origin main -q && git rebase -q origin/main && git push -q origin HEAD:main && break
+            sleep $((i * 4))
+          done
+
+      - name: Отчёт в ветку shots (канал для агента)
+        if: always()
+        run: |
+          mkdir -p _rep && cp d1-dump.log ia.log docs/backups/latest.json _rep/ 2>/dev/null || true
+          git config user.name "Billions X"; git config user.email "ceo@billionsx.com"
+          git fetch origin shots -q || true
+          git checkout -B shots origin/shots 2>/dev/null || git checkout --orphan shots
+          mkdir -p backup && cp _rep/* backup/ 2>/dev/null || true
+          git add -A backup && git commit -q -m "backup log ${{ steps.man.outputs.stamp }}" || true
+          git push -q -f origin shots || true
