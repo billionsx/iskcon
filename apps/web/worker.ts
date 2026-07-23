@@ -2176,7 +2176,14 @@ export default {
             }
             return out;
           }, sels);
-          const b64 = btoa(String.fromCharCode(...new Uint8Array(png as ArrayBuffer)));
+          // Разворачивать двухмегабайтный массив в аргументы нельзя — стек
+          // переполняется («Maximum call stack size exceeded»). Кусками по 8 КБ.
+          const bytes = new Uint8Array(png as ArrayBuffer);
+          let bin = "";
+          for (let i = 0; i < bytes.length; i += 8192) {
+            bin += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + 8192)));
+          }
+          const b64 = btoa(bin);
           return new Response(JSON.stringify({ __meta: meta, geom, png: b64 }), {
             headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
           });
