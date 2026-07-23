@@ -71,6 +71,9 @@ jobs:
         if: steps.kind.outputs.net == 'yes'
         run: python3 apple-eyes/bin/apple_eyes.py digest
 
+      - name: "Сверка — конституция ↔ реестр ↔ знание Apple (ст. 45)"
+        run: python3 apple-eyes/bin/apple_eyes.py verify
+
       - name: "Советник + храповик — по ВСЕМ адаптерам, долг только падает (§7.4)"
         run: |
           rc=0

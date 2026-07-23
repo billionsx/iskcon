@@ -1,7 +1,7 @@
 # знание · `hig-widgets`
 Источник: https://developer.apple.com/design/human-interface-guidelines/widgets
 Домены мандата: динамические-острова, кроссплатформенность
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 71 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,34 @@
 - Use full-color images judiciously.
 - Consider reserving full-color images to represent media content, such as album art for a music app’s widget, and use full-color images with smaller dimensions than the size of the widget.
 - Prefer light backgrounds for the light appearance and dark backgrounds for the dark appearance, and consider using the semantic system colors for text and backgrounds to let the colors dynamically adapt to the current appearance.
+- Use white or light gray for the most prominent content and darker grayscale values for secondary elements to establish hierarchy.
+- Confirm that image content has sufficient contrast in grayscale, and use opaque grayscale values, rather than opacities of white, to achieve the best vibrant material effect.
+- For example, use rectangles of different widths to suggest lines of text, and circles or squares in place of glyphs and images.
+- If your widget is available in multiple sizes, group them together so people don’t think each size is a different widget.
+- Provide a single description of your widget — regardless of how many sizes you offer — to avoid repetition and to help people understand how each size provides a slightly different perspective on the same content and functionality.
+- Provide useful information in your Lock Screen widget, and don’t treat it only as an additional way for people to launch into your app.
+- Support the Always-On display on iPhone.
+- Devices with the Always-On display render widgets on the Lock Screen with reduced luminance.
+- Use levels of gray that provide enough contrast in the Always-On display, and make sure your content remains legible.
+- Widgets don’t show real-time information.
+- Widgets and Live Activities use the same underlying frameworks and share design similarities.
+- CarPlay and StandBy widgets both use the small system family widget with the background removed and scaled up to best fit the grid on the Widgets screen.
+- Instead, make use of the additional space by scaling up and rearranging text so people can glance at the widget content from a greater distance.
+- To seamlessly blend with the black background, don’t use background colors for your widget when it appears in StandBy.
+- Additionally, people can customize the frame width of widgets that use the elevated mounting style, and custom options that are unique to the widget.
+- In visionOS, widgets don’t float in isolation but are part of living rooms, kitchens, offices, and more.
+- Make sure your widget’s tone, contrast, and legibility remain consistent and intentional.
+- If you choose to exclude UI elements from tinting, test your widget in every provided tint color palette to make sure the untinted elements remain legible when a person customizes their widgets with tint colors.
+- When a person views the widget from nearby, show more details and use a smaller type size.
+- Use print design principles like clear hierarchy, strong typography, and scale to make sure your content remains glanceable.
+- On horizontal surfaces — for example, on a desk — the widget always appears elevated and gently tilts backward, providing a subtle angle that improves readability, and casts a soft shadow that helps it feel grounded on the surface.
+- Horizontal surfaces don’t use the recessed mounting style.
+- By default, widgets use the elevated mounting style, because it works for horizontal and vertical surfaces.
+- By default, visionOS widgets use the elevated mounting style, which is ideal for content that you want to stand out and feel present, like reminders, media, or glanceable data.
+- Use the property of your to declare supported mounting styles — elevated, recessed, or both — for all widgets included in the configuration.
+- People can choose from different system-defined frame widths for widgets that use the elevated mounting style.
+- You can’t change your layout based on the frame width a person chooses, so make sure your widget layout stays visually balanced for each frame width.
+- The foreground elements always stay bright and legible, and don’t dim or brighten, even as ambient light changes.
+- Foreground elements appear in full color, unaffected by ambient lighting, to make sure important content stays sharp and legible.
+- By default, widgets in the Smart Stack use a black background.
+- As you design your widgets, use the following values for guidance.

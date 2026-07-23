@@ -1,7 +1,7 @@
 # знание · `hig-buttons`
 Источник: https://developer.apple.com/design/human-interface-guidelines/buttons
 Домены мандата: плашки, капсулы
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 56 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,19 @@
 - In visionOS, buttons don’t support custom hover effects.
 - In general, buttons that contain text don’t need to display a tooltip because the button’s descriptive label communicates what it does.
 - Prefer buttons that have a discernible background shape and fill.
+- The following guidelines can help you ensure that a button looks good in different contexts: When a button appears on top of a glass , use the material as the button’s background.
+- When a button appears floating in space, use the for its background.
+- Avoid creating a custom button that uses a white background fill and black text or icons.
+- In general, prefer circular or capsule-shape buttons.
+- When you need to display a button by itself, prefer a capsule-shape button.
+- Aim to place buttons so their centers are always at least 60 pts apart.
+- If your buttons measure 60 pts or larger, add 4 pts of padding around them to keep the hover effect from overlapping.
+- Also, it’s usually best to avoid displaying small or mini buttons in a vertical stack or horizontal row.
+- Specifically, prefer the rounded-rectangle shape in a vertical stack of buttons and prefer the capsule shape in a horizontal row of buttons.
+- Use standard controls to take advantage of the audible feedback sounds people already know.
+- Use a toolbar to place buttons in the corners.
+- Prefer buttons that span the width of the screen for primary actions in your app.
+- If two buttons must share the same horizontal space, use the same height for both, and use images or short text titles for each button’s content.
+- Use toolbar buttons to provide either navigation to related areas or contextual actions for the view’s content.
+- Use the same height for vertical stacks of one- and two-line text buttons.
+- As much as possible, use identical button heights for visual consistency.

@@ -1,7 +1,7 @@
 # знание · `fonts`
 Источник: https://developer.apple.com/fonts/
 Домены мандата: шрифты, кернинг
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 44 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,7 @@
 - SHOULD THE APPLE FONT PROVE DEFECTIVE, YOU ASSUME THE ENTIRE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
 - SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF LIABILITY FOR PERSONAL INJURY, OR OF INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THIS LIMITATION MAY NOT APPLY TO YOU.
 - In no event shall Apple's total liability to you for all damages (other than as may be required by applicable law in cases involving personal injury) exceed the amount of fifty dollars ($50.00).
+- You may not use or otherwise export or re-export the Apple Font except as authorized by United States law and the laws of the jurisdiction(s) in which the Apple Font was obtained.
+- You also agree that you will not use the Apple Font for any purposes prohibited by United States law, including, without limitation, the development, design, manufacture or production of missiles, nuclear, chemical or biological weapons.
+- This License constitutes the entire agreement between you and Apple relating to the use of the Apple Font licensed hereunder and supersedes all prior or contemporaneous understandings regarding such subject matter.
+- To the extent that there are any inconsistent terms in any applicable Apple software license agreements, these terms shall govern your use of the Apple Font.

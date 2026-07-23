@@ -1,7 +1,7 @@
 # знание · `app-review-guidelines`
 Источник: https://developer.apple.com/app-store/review/guidelines/
 Домены мандата: маркетинг, рейтинги, отзывы, popup, геймификация
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 120 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,83 @@
 - require additional purchases.
 - 2.3.3 Screenshots should show the app in use, and not merely the title art, login page, or splash screen.
 - To ensure people understand what they’ll be getting with your app, previews may only use video screen captures of the app itself.
+- If your app includes media that requires the display of content ratings or warnings (e.g.
+- 2.3.7 Choose a unique app name, assign keywords that accurately describe your app, and don’t try to pack any of your metadata with trademarked terms, popular app names, pricing information, or other irrelevant phrases just to game the system.
+- App names must be limited to 30 characters.
+- Metadata such as app names, subtitles, screenshots, and previews should not include prices, terms, or descriptions that are not specific to the metadata type.
+- App subtitles are a great way to provide additional context for your app; they must follow our standard metadata rules and should not include inappropriate content, reference other apps, or make unverifiable product claims.
+- 2.3.8 Metadata should be appropriate for all audiences, so make sure your app and in-app purchase icons, screenshots, and previews adhere to a 4+ age rating even if your app is rated higher.
+- For example, if your app is a game that includes violence, select images that don’t depict a gruesome death or a gun pointed at a specific character.
+- Use of terms like “For Kids” and “For Children” in app metadata is reserved in the App Store for the Kids Category.
+- Remember to ensure your metadata, including app name and icons (small, large, Apple Watch app, alternate icons, etc.), are similar to avoid creating confusion.
+- 2.3.9 You are responsible for securing the rights to use all materials in your app icons, screenshots, and previews, and you should display fictional account information instead of data from a real person.
+- 2.3.10 Make sure your app is focused on the experience of the Apple platforms it supports, and don’t include names, icons, or imagery of other mobile platforms or alternative app marketplaces in your app or metadata, unless there is specific, approved interactive functionality.
+- Make sure your app metadata is focused on the app itself and its experience.
+- Don’t include irrelevant information.
+- 2.3.11 Apps you submit for pre-order on the App Store must be complete and deliverable as submitted.
+- change business models), you should restart your pre-order sales.
+- 2.3.12 Apps must clearly describe new features and product changes in their “What’s New” text.
+- Simple bug fixes, security updates, and performance improvements may rely on a generic description, but more significant changes must be listed in the notes.
+- To feature your event on the App Store, it must fall within an event type provided in App Store Connect.
+- All event metadata must be accurate and pertain to the event itself, rather than the app more generally.
+- Events must happen at the times and dates you select in App Store Connect, including across multiple storefronts.
+- And your event deep link must direct users to the proper destination within your app.
+- 2.4 Hardware Compatibility 2.4.1 To ensure people get the most out of your app, iPhone apps should run on iPad whenever possible.
+- We encourage you to consider building apps so customers can use them on all of their devices .
+- 2.4.2 Design your app to use power efficiently and be used in a way that does not risk damage to the device.
+- Apps should not rapidly drain battery, generate excessive heat, or put unnecessary strain on device resources.
+- For example, apps should not encourage placing the device under a mattress or pillow while charging or perform excessive write cycles to the solid state drive.
+- 2.4.3 People should be able to use your Apple TV app without the need for hardware inputs beyond the Siri remote or third-party game controllers, but feel free to provide enhanced functionality when other peripherals are connected.
+- If you require a game controller, make sure you clearly explain that in your metadata so customers know they need additional equipment to play.
+- 2.4.4 Apps should never suggest or require a restart of the device or modifications to system settings unrelated to the core functionality of the app.
+- For example, don’t encourage users to turn off Wi-Fi, disable security features, etc.
+- 2.4.5 Apps distributed via the Mac App Store have some additional requirements to keep in mind: (i) They must be appropriately sandboxed, and follow macOS File System Documentation .
+- They should also only use the appropriate macOS APIs for modifying user data stored by other apps (e.g.
+- (ii) They must be packaged and submitted using technologies provided in Xcode; no third-party installers allowed.
+- They must also be self-contained, single app installation bundles and cannot install code or resources in shared locations.
+- They should not automatically add their icons to the Dock or leave shortcuts on the user desktop.
+- (v) They may not request escalation to root privileges or use setuid attributes.
+- (vi) They may not present a license screen at launch, require license keys, or implement their own copy protection.
+- (vii) They must use the Mac App Store to distribute updates; other update mechanisms are not allowed.
+- (viii) Apps should run on the currently shipping OS and may not use deprecated or optionally installed technologies (e.g.
+- Java) (ix) Apps must contain all language and localization support in a single app bundle.
+- 2.5 Software Requirements 2.5.1 Apps may only use public APIs and must run on the currently shipping OS.
+- Keep your apps up-to-date and make sure you phase out any deprecated features, frameworks or technologies that will no longer be supported in future versions of an OS.
+- Apps should use APIs and frameworks for their intended purposes and indicate that integration in their app description.
+- For example, the HomeKit framework should provide home automation services; and HealthKit should be used for health and fitness purposes and integrate with the Health app.
+- 2.5.2 Apps should be self-contained in their bundles, and may not read or write data outside the designated container area, nor may they download, install, or execute code which introduces or changes features or functionality of the app, including other apps.
+- Such apps must make the source code provided by the app completely viewable and editable by the user.
+- 2.5.4 Multitasking apps may only use background services for their intended purposes: VoIP, audio playback, location, task completion, local notifications, etc.
+- 2.5.5 Apps must be fully functional on IPv6-only networks.
+- 2.5.6 Apps that browse the web must use the appropriate WebKit framework and WebKit JavaScript.
+- You may apply for an entitlement to use an alternative web browser engine in your app.
+- For example, apps should not block links out to other apps or other features that users would expect to work a certain way.
+- 2.5.11 SiriKit and Shortcuts (i) Apps integrating SiriKit and Shortcuts should only sign up for intents they can handle without the support of an additional app and that users would expect from the stated functionality.
+- For example, if your app is a meal planning app, you should not incorporate an intent to start a workout, even if the app shares integration with a fitness app.
+- Aliases must relate directly to your app or company name and should not be generic terms or include third-party app names or services.
+- (iii) Resolve the Siri request or Shortcut in the most direct way possible and do not insert ads or other marketing between the request and its fulfillment.
+- Only request a disambiguation when required to complete the task (e.g.
+- 2.5.12 Apps using CallKit or including an SMS Fraud Extension should only block phone numbers that are confirmed spam.
+- Apps that include call-, SMS-, and MMS- blocking functionality or spam identification must clearly identify these features in their marketing text and explain the criteria for their blocked and spam lists.
+- You may not use the data accessed via these tools for any purpose not directly related to operating or improving your app or extension (e.g.
+- you may not use, share, or sell it for tracking purposes, creating user profiles, etc.).
+- 2.5.13 Apps using facial recognition for account authentication must use LocalAuthentication (and not ARKit or other facial recognition technology) where possible, and must use an alternate authentication method for users under 13 years old.
+- 2.5.14 Apps must request explicit user consent and provide a clear visual and/or audible indication when recording, logging, or otherwise making a record of user activity.
+- This includes any use of the device camera, microphone, screen recordings, or other user inputs.
+- 2.5.15 Apps that enable users to view and select files should include items from the Files app and the user’s iCloud documents.
+- 2.5.16 Widgets, extensions, and notifications should be related to the content and functionality of your app.
+- (a) Additionally, all App Clip features and functionality must be included in the main app binary.
+- 2.5.17 Apps that support Matter must use Apple’s support framework for Matter to initiate pairing.
+- In addition, if you choose to use any Matter software component in your app other than the Matter SDK provided by Apple, the software component must be certified by the Connectivity Standards Alliance for the platform it runs on.
+- 2.5.18 Display advertising should be limited to your main app binary, and should not be included in extensions, App Clips, widgets, notifications, keyboards, watchOS apps, etc.
+- Interstitial ads or ads that interrupt or block the user experience must clearly indicate that they are an ad, must not manipulate or trick users into tapping into them, and must provide easily accessible and visible close/skip buttons large enough for people to easily dismiss the ad.
+- Apps that contain ads must also include the ability for users to report any inappropriate or age-inappropriate ads.
+- If your business model isn’t obvious, make sure to explain in its metadata and App Review notes.
+- 3.1 Payments 3.1.1 In-App Purchase: If you want to unlock features or functionality within your app, (by way of example: subscriptions, in-game currencies, game levels, access to premium content, or unlocking a full version), you must use in-app purchase.
+- Apps may not use their own mechanisms to unlock content or functionality, such as license keys, augmented reality markers, QR codes, cryptocurrencies and cryptocurrency wallets, etc.
+- Apps may use in-app purchase currencies to enable customers to “tip” the developer or digital content providers in the app.
+- Any credits or in-game currencies purchased via in-app purchase may not expire, and you should make sure you have a restore mechanism for any restorable in-app purchases.
+- Apps offering “loot boxes” or other mechanisms that provide randomized virtual items for purchase must disclose the odds of receiving each type of item to customers prior to purchase.
+- Physical gift cards that are sold within an app and then mailed to customers may use payment methods other than in-app purchase.
+- Apps may use in-app purchase to sell and sell services related to non-fungible tokens (NFTs), such as minting, listing, and transferring.
+- These entitlements are not required for developers to include buttons, external links, or other calls to action in their United States storefront apps.

@@ -92,6 +92,7 @@ def extract_docc(raw: str) -> dict:
     import json as _json
     d = _json.loads(raw)
     title = _norm(str(((d.get("metadata") or {}).get("title")) or ""))
+    refs = d.get("references") or {}
     heads, chunks = [], []
 
     def walk(node):
@@ -103,8 +104,20 @@ def extract_docc(raw: str) -> dict:
                 chunks.append("\n## " + h + "\n")
             elif t in ("text", "codeVoice") and node.get("text") is not None:
                 chunks.append(str(node["text"]))
+            if isinstance(node.get("identifiers"), list):
+                # оглавление (topicSections): секция несёт title + список ссылок;
+                # имена страниц достаются из карты references — это и есть индекс
+                if node.get("title"):
+                    h = _norm(str(node["title"]))
+                    heads.append(h)
+                    chunks.append("\n## " + h + "\n")
+                for ident in node["identifiers"]:
+                    r = refs.get(ident) or {}
+                    if r.get("title"):
+                        chunks.append(_norm(str(r["title"])) + ".")
             for k in ("primaryContentSections", "sections", "content",
-                      "inlineContent", "items", "abstract", "chapters"):
+                      "inlineContent", "items", "abstract", "chapters",
+                      "topicSections"):
                 if k in node:
                     walk(node[k])
         elif isinstance(node, list):

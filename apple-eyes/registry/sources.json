@@ -40,7 +40,8 @@
     "свечение",
     "стекло-движение"
    ],
-   "note": "технический обзор внедрения Liquid Glass"
+   "note": "технический обзор внедрения Liquid Glass",
+   "kind": "docc"
   },
   {
    "id": "hig-color",
@@ -305,7 +306,8 @@
    "url": "https://developer.apple.com/documentation/ios-ipados-release-notes",
    "domains": [
     "ios27"
-   ]
+   ],
+   "kind": "docc"
   },
   {
    "id": "dev-news",
@@ -339,7 +341,8 @@
     "ios27",
     "hig"
    ],
-   "note": "журнал обновлений документации"
+   "note": "журнал обновлений документации",
+   "kind": "docc"
   },
   {
    "id": "app-store-marketing",

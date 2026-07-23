@@ -29,6 +29,7 @@ ROOT = BIN.parent
 sys.path.insert(0, str(BIN))
 import crawler  # noqa: E402
 import digest as digest_mod  # noqa: E402
+import verify as verify_mod  # noqa: E402
 import lint as lint_mod  # noqa: E402
 
 IOS27 = re.compile(r"\b(?:iOS|iPadOS)\s*27\b")
@@ -411,6 +412,38 @@ def cmd_selftest(root: Path) -> int:
           all(s in const_t for s in ("32.0", "35.0", "±0.4", ".05", ".06", ".09",
                                      "383", "120", "2.5–2.6", "#1C1C1E", "#2C2C2E")))
 
+    print("SELFTEST · сверка (verify: обе стороны)")
+    import verify as verify_mod
+    rv = verify_mod.run(root)
+    check("живая сверка сходится: расхождений 0", rv["bad"] == 0 and rv["confirmed"] >= 3)
+    tmpv = Path(tempfile.mkdtemp(prefix="apple-eyes-v-"))
+    try:
+        (tmpv / "registry" / "standards").mkdir(parents=True)
+        (tmpv / "registry" / "state").mkdir()
+        (tmpv / "registry" / "knowledge").mkdir()
+        shutil.copy(root / "CONSTITUTION.md", tmpv / "CONSTITUTION.md")
+        tk2 = json.loads((root / "registry" / "standards" / "tokens.json").read_text(encoding="utf-8"))
+        tk2["geometry"]["button_height_pt"] = 33.0  # подделка: конституция говорит 32.0
+        (tmpv / "registry" / "standards" / "tokens.json").write_text(
+            json.dumps(tk2, ensure_ascii=False), encoding="utf-8")
+        (tmpv / "registry" / "state" / "watch-state.json").write_text("{}", encoding="utf-8")
+        (tmpv / "registry" / "knowledge" / "hig-buttons.md").write_text(
+            "Нормативных положений: 1\n- Use at least 44x44 pt.\n", encoding="utf-8")
+        rv2 = verify_mod.run(tmpv)
+        check("подделка числа базы → РАСХОЖДЕНИЕ пойман (и в кодексе, и против 44×44)",
+              rv2["bad"] >= 2)
+    finally:
+        shutil.rmtree(tmpv, ignore_errors=True)
+
+    print("SELFTEST · оглавление DocC (topicSections → references)")
+    import extractor as ex_mod
+    idx_fx = json.dumps({"metadata": {"title": "HIG"},
+                         "references": {"doc://a": {"title": "Buttons"}, "doc://b": {"title": "Sliders"}},
+                         "topicSections": [{"title": "Components", "identifiers": ["doc://a", "doc://b"]}]})
+    exd = ex_mod.extract_docc(idx_fx)
+    check("индекс раскрыт: секция стала заголовком, страницы — строками",
+          "Components" in exd["headings"] and "Buttons" in exd["text"] and "Sliders" in exd["text"])
+
     print("SELFTEST:", "ЗЕЛЁНЫЙ" if ok else "КРАСНЫЙ")
     return 0 if ok else 1
 
@@ -431,6 +464,7 @@ def main() -> int:
     ln.add_argument("--out")
     ln.add_argument("--ratchet", help="файл базы долга: рост = красный, улучшение ужимает базу")
     sub.add_parser("digest")
+    sub.add_parser("verify")
     pr = sub.add_parser("probe")
     pr.add_argument("--fixtures")
     at = sub.add_parser("attach")
@@ -464,6 +498,10 @@ def main() -> int:
         r = digest_mod.build(ROOT)
         print(f"знание: источников {r['sources']} · обновлено выжимок {len(r['changed'])}")
         return 0
+    if a.cmd == "verify":
+        r = verify_mod.run(ROOT)
+        print(f"сверка: строк {r['rows']} · подтверждено знанием {r['confirmed']} · расхождений {r['bad']}")
+        return 1 if r["bad"] else 0
     if a.cmd == "probe":
         r = crawler.probe(ROOT, fixtures=Path(a.fixtures) if a.fixtures else None)
         print(f"пробы iOS 27: проверено {r['checked']} · завербовано {len(r['enrolled'])}"

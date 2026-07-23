@@ -1,7 +1,7 @@
 # знание · `hig-color`
 Источник: https://developer.apple.com/design/human-interface-guidelines/color
 Домены мандата: цвет, градиенты
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 46 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,9 @@
 - Prefer using color in bold text and large areas.
 - For example, avoid displaying a bright object on a very dark or black background, especially if the object flashes or moves.
 - Use background color to support existing content or supply additional information.
+- Use background color when you have something to communicate, rather than as a solely visual flourish.
+- Avoid using full-screen background color in views that are likely to remain onscreen for long periods of time, such as in a workout or audio-playing app.
+- Recognize that people might prefer graphic complications to use tinted mode instead of full color.
+- The system can use a single color that’s based on the wearer’s selected color in a graphic complication’s images, gauges, and text.
+- visionOS system colors use the default dark color values.
+- Judicious use of color can enhance communication, evoke your brand, provide visual continuity, communicate status and feedback, and help people understand information.

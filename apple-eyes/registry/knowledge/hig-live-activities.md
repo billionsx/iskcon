@@ -1,7 +1,7 @@
 # знание · `hig-live-activities`
 Источник: https://developer.apple.com/design/human-interface-guidelines/live-activities
 Домены мандата: динамические-острова
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 62 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,25 @@
 - Alerts also show the expanded presentation in the Dynamic Island or a banner on devices that don’t support the Dynamic Island.
 - To ensure your Live Activities provide the most value, avoid alerting people too often or with updates that aren’t crucial, and don’t use push notifications alongside Live Activities for the same updates.
 - Instead of creating separate Live Activities people need to jump between to track different events, prefer a single Live Activity that uses a dynamic layout and rotates through events.
+- Always end a Live Activity immediately when the task or event ends, and consider setting a custom dismissal time.
+- Use the compact presentation to show dynamic, up-to-date information that’s essential to the Live Activity and easy to understand.
+- Though the TrueDepth camera separates the leading and trailing elements, design them to read as a single piece of information, and use consistent color and typography to help create a connection between both elements.
+- Try not to obscure key information in the status bar, and don’t add padding between content and the TrueDepth camera.
+- Maintain a balanced layout with similarly sized views for both leading and trailing elements; for example, use shortened units or less precise data to maintain appropriate width and balance.
+- Arrange content close to the TrueDepth camera, and try to avoid leaving too much room around it to use space more efficiently and to help diminish the camera’s presence.
+- Don’t replicate notification layouts.
+- To make a Live Activity fit a custom Lock Screen aesthetic while remaining legible, use custom background or tint colors and opacity sparingly.
+- Make sure your design, assets, and colors look great and offer enough contrast in Dark Mode and on an Always-On display.
+- If you use a custom background color, choose a color that works well in both modes or a different color for each appearance.
+- Verify your choices on a device with an Always-On display with reduced luminance because the system adapts colors as needed in this appearance.
+- Use standard margins to align your design with notifications.
+- While tighter margins may be appropriate for elements like graphics or buttons, avoid crowding the edges and creating a cluttered appearance.
+- Make sure assets look great at the larger scale, and consider creating a custom layout that makes use of the extra space.
+- Use standard margins and avoid extending graphic elements to the edge of the screen.
+- If people are likely to start or observe your Live Activity while driving, prefer displaying timely content rather than buttons and toggles.
+- If people are likely to start or observe your Live Activity while driving, don’t include buttons or toggles in your custom watchOS layout.
+- Use space in the Smart Stack as efficiently as possible and think of the most useful information that a Live Activity can convey: Progress, like the estimated arrival time of a delivery Interactive elements, like stopwatch or timer controls Significant updates, like sports score changes
+- When you design your Live Activities, use the following values for guidance.
+- Use the listed values to verify your design: Test your designs with the CarPlay simulator and the following configurations for Smart Display Zoom — available in in Settings > Display in CarPlay:
+- Use the provided iOS dimensions.
+- Live Activities in the Smart Stack use the same dimensions as watchOS widgets.

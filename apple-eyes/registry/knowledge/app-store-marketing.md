@@ -1,7 +1,7 @@
 # знание · `app-store-marketing`
 Источник: https://developer.apple.com/app-store/marketing/guidelines/
 Домены мандата: маркетинг, бейджи, реклама
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 108 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,71 @@
 - Only show the back of a device in an authentic manner to illustrate natural use of the device.
 - Don’t feature the Apple logo to take advantage of the promotional value of the Apple brand.
 - Don’t obscure or cover the logo.
+- Use straightforward transitions such as fade or dissolve.
+- Don’t use Apple user interaction gestures such as Multi-Touch or trackpad swipes to perform scene transitions.
+- You can use the sounds that your app makes naturally as audio elements of your video, but don’t use the native sounds of the Apple device.
+- Don’t display a blank screen on an Apple product, or on a television screen when showcasing Apple TV.
+- Approved Devices Use only the devices and colors provided.
+- Always display the product “as is” — don’t add cases or covers.
+- Don’t show an Apple product along with a competing product from another manufacturer.
+- For Apple TV communications, avoid showing the television manufacturer’s name.
+- Messaging and Writing Style When promoting your app, your headline and copy should focus on your app, not on Apple product features.
+- Use clear, simple messaging.
+- Always include a call to action to download your app.
+- Refer to the correct product names your app supports, and avoid referring to iOS, macOS, tvOS, or watchOS in your marketing communications.
+- Don’t refer to Apple devices generically as “smartphones” or “tablets.” Use the product names.
+- Product Names Use Apple product names such as Apple Watch, iPhone, iPad, iPod touch, or Apple TV in a referential phrase to indicate that your app is compatible with these products.
+- For example, say app name for iPhone or app name for iPad , or use a phrase such as works with or compatible with .
+- Don’t say iPhone app name .
+- Don’t list Apple products that are not compatible with your app.
+- Spelling and Language Always use the correct Apple product names with the correct capitalization as shown on the Apple Trademark List .
+- Always use Apple product names in singular form.
+- Never typeset Apple product names using all uppercase letters.
+- iPhone, iPad, and iPod touch Always typeset iPhone , iPad , or iPod touch with a lowercase i and an uppercase P followed by lowercase letters.
+- Always typeset touch with a lowercase t .
+- The name iPhone , iPad , or iPod touch should start with a lowercase i even when it is the first word in a sentence, paragraph, or title.
+- Don’t use variations such as touch or iTouch .
+- Never use a lowercase i followed by all uppercase letters.
+- iPhone X S, iPhone X S Max, and iPhone X R For headlines and copy, use an uppercase X , small cap S , and small cap R whenever technically possible and when you can ensure efficient and accurate implementation.
+- When you cannot ensure that small caps will render accurately or when technical limitations may prevent the display of small caps, use an uppercase X, S, and R .
+- To implement small caps on webpages, make sure your specified font supports OpenType and use the font-variant CSS property font-variant: small-caps; .
+- MacBook Air, MacBook Pro, and iMac Mac is always set with an uppercase M followed by lowercase letters; MacBook is one word with an uppercase M and B ; and iMac always begins with a lowercase i followed by an uppercase M followed by lowercase letters.
+- Apple Vision Pro Always typeset Apple Vision Pro as three words with an uppercase A , V , and P followed by lowercase letters.
+- Don’t break Apple Vision Pro over two lines.
+- Don’t use the article the before Apple Vision Pro .
+- Don’t refer to Apple Vision Pro generically as a “headset.” The phrase “Apple Vision Pro” can’t be included in your app name, but it can be included in your app description.
+- Don’t describe your app experience as augmented reality (AR), virtual reality (VR), extended reality (XR), or mixed reality (MR).
+- Apple Watch Always typeset Apple Watch as two words with an uppercase A and an uppercase W followed by lowercase letters.
+- Don’t break Apple Watch over two lines.
+- Don’t use the article the before Apple Watch .
+- When promoting your app, your headlines and copy should focus on your app, not on Apple Watch features.
+- Don’t use the word watch or time as a pun or verb in your marketing materials.
+- App Store Always typeset App Store with an uppercase A and an uppercase S followed by lowercase letters.
+- Refer to just the App Store unless you need to be more specific; in that case, you can use App Store for iPhone , App Store for iPad , Mac App Store , App Store for Apple TV, App Store for Apple Watch , or App Store for iMessage .
+- To refer to all the versions, use this order: App Store for iPhone, iPad, Mac, Apple Watch, Apple TV, and iMessage .
+- Don’t use terms such as Apple Watch App Store or App Store for watchOS .
+- Never include other descriptors; for example, don’t say iTunes App Store , Apple App Store , or iPhone App Store .
+- Don’t add superlatives such as the best App Store.
+- Don’t use at the App Store .
+- Don’t use the term downloadable .
+- Apple Apps and Services When using the Apple names Apple Pay , Wallet , Messages , Siri , Phone , or Maps , always typeset with a capital letter.
+- iMessage, the service within the Messages app, must be spelled with a lowercase i and an uppercase M followed by lowercase letters.
+- Although the names of other products can be used in promotional copy, never display Apple product images alongside the images of other products.
+- Never start a URL with an Apple trademark.
+- Acceptable: www.company.com/app/iphone or www.company.com/ipad Not acceptable: www.iphoneapp.com or www.ipadweatherapp.com Do Not Translate Always set Apple trademarks in English, even when they appear within text in a language other than English.
+- Terms that should not be translated or transliterated include: App Store Apple Pay Apple Pencil Apple TV Apple Vision Pro Apple Watch iMac iPad iPhone iPod touch MacBook Air MacBook Pro Siri For a list of Apple trademarks, please see the Apple Trademark List .
+- Legal Requirements Trademark Symbols In communications distributed only in the United States, the appropriate symbol (™, ℠, or ®) must follow each Apple trademark the first time it is mentioned in body copy.
+- Do not use trademark symbols on products, product documentation, or other product communications that will be distributed outside the United States.
+- For example, use Apple Watch®, iPhone®, iPad®, iPod touch®, Apple TV®, App Store®, Mac App Store℠, Mac®, MacBook Pro®, MacBook Air® , and iMac® .
+- Don’t add symbols to headline copy or to the App Store badge artwork provided by Apple.
+- Credit Lines Use the appropriate credit lines in all communications worldwide, listing all the Apple trademarks and products included in your communication and advertising.
+- Refer to the Apple Trademark List for the correct trademark symbol, spelling of the trademark, and generic term to use with the trademark.
+- Use the following formats for distribution within the United States only: ______ and ______ are registered trademarks of Apple Inc .
+- For distribution outside the United States, use one of the following international credit notices: ______ and______ are trademarks of Apple Inc.
+- Apple may use Your name and the name of each of Your Applications in any index of products or developers that work with Apple-branded products running iOS, watchOS, tvOS, or macOS.
+- Upon Apple’s request, You shall supply Apple, at no cost and with no obligation to return, suitable specimens of Your use of the Artwork to verify Your compliance with this Marketing Agreement.
+- Your use of the Artwork shall exclusively inure to the benefit of Apple.
+- THE ARTWORK IS PROVIDED TO YOU ON AN “AS IS” BASIS AND YOU ARE SOLELY RESPONSIBLE FOR YOUR USE OF THE ARTWORK.
+- APPLE SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES ARISING FROM OR RELATED TO YOUR USE OF THE ARTWORK, OR TERMINATION OF THIS MARKETING AGREEMENT.
+- You must agree to download.
+- Terms of Use Privacy Policy Agreements and Guidelines

@@ -1,7 +1,7 @@
 # знание · `hig-apple-pay`
 Источник: https://developer.apple.com/design/human-interface-guidelines/apple-pay
 Домены мандата: apple-pay
-Нормативных положений: 40 (детерминированная выжимка, не пересказ)
+Нормативных положений: 74 (детерминированная выжимка, не пересказ)
 
 
 ## без раздела
@@ -45,3 +45,37 @@
 - can use Apple Pay to accept donations.
 - Use a line item to identify a donation.
 - You can reduce steps in the donation process by offering recommended donations, like $25, $50, $100.
+- Include an Other Amount option too, so people can customize the donation if they prefer.
+- Use the Apple-provided APIs to create them.
+- Unlike button graphics, API-generated buttons always have the correct appearance and are localized automatically.
+- Don’t create custom Apple Pay button designs or try to replicate the Apple-provided ones.
+- Use the graphic to communicate the availability of Apple Pay wherever you highlight payment options.
+- Use the buttons below to initiate payment.
+- In some contexts, the system automatically displays an image of the default card on payment buttons, letting people know Apple Pay is set up and ready to use.
+- When a device supports Apple Pay but the person hasn’t set it up yet, you can use the Set Up Apple Pay button to show that you accept Apple Pay, and to give the person an explicit opportunity to set it up.
+- Use the automatic style to let the current system appearance determine the appearance of Apple Pay buttons.
+- Use on white or light-color backgrounds that provide sufficient contrast.
+- Don’t use on black or dark backgrounds.
+- Use on white or light-color backgrounds that don’t provide sufficient contrast.
+- Don’t place on dark or saturated backgrounds.
+- Use on dark-color backgrounds that provide sufficient contrast.
+- Make the Apple Pay button no smaller than other payment buttons, and avoid making people scroll to see it.
+- Maintain the minimum button size and margins around the button.
+- Use the following values for guidance.
+- Use the Apple Pay mark graphic to show that Apple Pay is an available payment option when showing other available payment options.
+- Use only the artwork provided by Apple, with no alterations other than height.
+- You can specify a height for the Apple Pay mark, but make sure that the height you use is equal to or larger than other payment brand marks in your payment flow.
+- Don’t adjust the width, corner radius, or aspect ratio of the artwork; don’t add a trademark symbol or any other content; don’t remove the border; don’t add visual effects to the mark, such as shadows, glows, or reflections; and don’t flip, rotate, or animate the Apple Pay mark.
+- Maintain a minimum clear space around the mark of 1/10 of its height.
+- Don’t let the Apple Pay mark share its surrounding border with another graphic or button.
+- You can use plain text to promote Apple Pay and indicate that Apple Pay is a payment option.
+- As with all Apple product names, use Apple Pay exactly as shown in — never make it plural or possessive — and adhere to .
+- Use two words with an uppercase A , an uppercase P , and lowercase for all other letters.
+- Never use the Apple logo to represent the name Apple in text.
+- In the United States, use the registered trademark symbol (®) the first time Apple Pay appears in body text.
+- Don’t include a registered trademark symbol when Apple Pay appears as a selection option during checkout.
+- Don’t mimic Apple typography.
+- Instead, use text attributes that are consistent with the rest of your app or website.
+- Don’t translate Apple Pay or any other Apple trademark.
+- Always use Apple trademarks in English, even when they appear within non-English text.
+- If any other payment option description includes an icon or logo, you must use the Apple Pay mark graphic as described in .

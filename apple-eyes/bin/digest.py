@@ -23,7 +23,7 @@ NORM = re.compile(
     r"at least|minimum|maximum|recommended|be sure|make sure)\b", re.I)
 QTY = re.compile(r"\b\d+(?:\.\d+)?\s*(?:pt|px|ms|%|×|x\b)", re.I)
 HEAD = re.compile(r"^={2,4} (.+)$")           # снимок хранит заголовки как ==/===/====
-SENT_MAX = 40                                  # предложений на источник — кап детерминизма
+SENT_MAX = 120                                 # предложений на источник — кап детерминизма
 LINE_MAX = 300
 
 
