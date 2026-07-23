@@ -1,7 +1,0 @@
-name = "iskcon-gcal"
-main = "src/entry.py"
-compatibility_date = "2026-06-01"
-compatibility_flags = ["python_workers"]
-account_id = "d5cbe19470dc38599873eabfe148e6d1"
-workers_dev = true
-

@@ -1,4 +1,0 @@
-telethon>=1.36
-internetarchive>=4.1
-tqdm>=4.66
-Pillow>=10.0
